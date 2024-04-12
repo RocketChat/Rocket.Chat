@@ -3051,6 +3051,7 @@
   "LDAP_Sync_User_Active_State_Both": "Enable and Disable Users",
   "LDAP_Sync_User_Active_State_Description": "Determine if users should be enabled or disabled on Rocket.Chat based on the LDAP status. The 'pwdAccountLockedTime' attribute will be used to determine if the user is disabled.",
   "LDAP_Sync_User_Active_State_Disable": "Disable Users",
+  "LDAP_Sync_User_Active_State_Enable": "Enable Users",
   "LDAP_Sync_User_Active_State_Nothing": "Do Nothing",
   "LDAP_Sync_User_Avatar": "Sync User Avatar",
   "LDAP_Sync_User_Data_Roles": "Sync LDAP Groups",
