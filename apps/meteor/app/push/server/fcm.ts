@@ -1,7 +1,9 @@
-import type { IAppsTokens, RequiredField } from '@rocket.chat/core-typings';
+import type { IAppsTokens } from '@rocket.chat/core-typings';
 
-import type { PendingPushNotification, PushOptions } from './definition';
+import { settings } from '../../settings/server';
+import type { PendingPushNotification } from './definition';
 import { logger } from './logger';
+import type { NativeNotificationParameters } from './push';
 
 type FCMDataField = Record<string, any>;
 
@@ -43,6 +45,27 @@ type FCMMessage = {
 export type FCMMessageWithToken = FCMMessage & { token: string };
 export type FCMMessageWithTopic = FCMMessage & { topic: string };
 export type FCMMessageWithCondition = FCMMessage & { condition: string };
+
+async function fetchWithRetry(url: string, options: RequestInit, retries = 0): Promise<Response> {
+	const MAX_RETRIES = 5;
+
+	try {
+		return await fetch(url, options);
+	} catch (error) {
+		if (retries >= MAX_RETRIES) {
+			throw error;
+		}
+		return fetchWithRetry(url, options, retries + 1);
+	}
+}
+
+function onNotificationSentSuccess(
+	response: Response,
+	userTokens: string[],
+	notification: PendingPushNotification,
+	_replaceToken: (currentToken: IAppsTokens['token'], newToken: IAppsTokens['token']) => void,
+	_removeToken: (token: IAppsTokens['token']) => void,
+): void {}
 
 function getFCMMessagesFromPushData(userTokens: string[], notification: PendingPushNotification): FCMMessageWithToken[] {
 	// first we will get the `data` field from the notification
@@ -90,19 +113,7 @@ function getFCMMessagesFromPushData(userTokens: string[], notification: PendingP
 	return userTokens.map((token) => ({ ...message, token }));
 }
 
-export const sendFCM = function ({
-	userTokens,
-	notification,
-	_replaceToken,
-	_removeToken,
-	options,
-}: {
-	userTokens: string | string[];
-	notification: PendingPushNotification;
-	_replaceToken: (currentToken: IAppsTokens['token'], newToken: IAppsTokens['token']) => void;
-	_removeToken: (token: IAppsTokens['token']) => void;
-	options: RequiredField<PushOptions, 'gcm'>;
-}): void {
+export const sendFCM = function ({ userTokens, notification, _replaceToken, _removeToken, options }: NativeNotificationParameters): void {
 	// Make sure userTokens are an array of strings
 	if (typeof userTokens === 'string') {
 		userTokens = [userTokens];
@@ -119,15 +130,30 @@ export const sendFCM = function ({
 	const messages = getFCMMessagesFromPushData(userTokens, notification);
 	const authHeader = `Bearer ${options?.gcm.apiKey}`;
 
-	// then we will send the message to each token
-	messages.forEach((message) => {
-		const promise = fetch('https://fcm.googleapis.com/v1/projects/rocket.chat/messages:send', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': authHeader,
-			},
-			body: JSON.stringify(message),
-		});
-	});
+	const project = settings.get<string>('Push_google_project_id');
+	if (!project) {
+		logger.error('Push_google_project_id is not configured');
+		return;
+	}
+
+	for (const message of messages) {
+		const url = `https://fcm.googleapis.com/v1/projects/${project}/messages:send`;
+		const headers = {
+			'Content-Type': 'application/json',
+			'Authorization': authHeader,
+		};
+
+		const data = {
+			validate_only: false,
+			message,
+		};
+
+		const response = fetchWithRetry(url, { method: 'POST', headers, body: JSON.stringify(data) });
+
+		response
+			.then((res) => onNotificationSentSuccess(res, userTokens as string[], notification, _replaceToken, _removeToken))
+			.catch((err) => {
+				logger.error('sendFCM error', err);
+			});
+	}
 };

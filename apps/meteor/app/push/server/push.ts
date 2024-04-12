@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../settings/server';
 import { initAPN, sendAPN } from './apn';
 import type { PushOptions, PendingPushNotification } from './definition';
+import { sendFCM } from './fcm';
 import { sendGCM } from './gcm';
 import { logger } from './logger';
 
@@ -57,6 +58,21 @@ type GatewayNotification = {
 	createdAt: Date;
 	createdBy?: string;
 };
+
+export type NativeNotificationParameters = {
+	userTokens: string | string[];
+	notification: PendingPushNotification;
+	_replaceToken: (currentToken: IAppsTokens['token'], newToken: IAppsTokens['token']) => void;
+	_removeToken: (token: IAppsTokens['token']) => void;
+	options: RequiredField<PushOptions, 'gcm'>;
+};
+
+type NativeNotificationProvider = (params: NativeNotificationParameters) => void;
+
+function getNativeNotificationProvider(): NativeNotificationProvider {
+	const hasLegacyProvider = settings.get<boolean>('Push_UseLegacy');
+	return hasLegacyProvider ? sendGCM : sendFCM;
+}
 
 class PushClass {
 	options: PushOptions = {
@@ -125,7 +141,9 @@ class PushClass {
 			// We do support multiple here - so we should construct an array
 			// and send it bulk - Investigate limit count of id's
 			if (this.options.gcm?.apiKey) {
-				sendGCM({
+				const nativeNotificationProvider = getNativeNotificationProvider();
+
+				nativeNotificationProvider({
 					userTokens: app.token.gcm,
 					notification,
 					_replaceToken: this.replaceToken,
