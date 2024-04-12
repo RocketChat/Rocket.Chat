@@ -27,7 +27,6 @@ const SAMLLoginRoute = () => {
 					},
 					{ replace: true },
 				);
-				window.location.href = decodeURIComponent(redirectUrl);
 			} else {
 				router.navigate(
 					{
