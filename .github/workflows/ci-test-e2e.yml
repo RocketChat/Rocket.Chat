@@ -93,6 +93,8 @@ jobs:
           theme: dark
           job_summary: true
           comment_on_pr: false
+          proc_trace_chart_max_count: 200
+          metric_frequency: 1
 
       - name: Login to GitHub Container Registry
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
