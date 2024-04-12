@@ -41,6 +41,10 @@ export class HomeContent {
 		return this.page.locator('.rcx-room-header button > i.rcx-icon--name-key');
 	}
 
+	get lastIgnoredUserMessage(): Locator {
+		return this.lastUserMessageBody.locator('role=button[name="This message was ignored"]');
+	}
+
 	get btnJoinRoom(): Locator {
 		return this.page.locator('role=button[name="Join"]');
 	}

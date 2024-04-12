@@ -26,6 +26,18 @@ export class HomeFlextabMembers {
 		await this.page.getByRole('dialog').getByRole('button').first().click();
 	}
 
+	async ignoreUser(username: string) {
+		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
+		await this.page.locator('role=button[name="More"]').click();
+		await this.page.locator('role=menuitem[name="Ignore"]').click();
+	}
+
+	async unignoreUser(username: string) {
+		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
+		await this.page.locator('role=button[name="More"]').click();
+		await this.page.locator('role=menuitem[name="Unignore"]').click();
+	}
+
 	async setUserAsModerator(username: string) {
 		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
 		await this.page.locator('role=button[name="More"]').click();
