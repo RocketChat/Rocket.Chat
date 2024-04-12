@@ -3772,7 +3772,6 @@
   "room_disallowed_reacting": "Пользователь {{user_by}} запретил реакции в комнате",
   "Room_Edit": "Редактировать чат",
   "Room_has_been_archived": "Комната была архивирована",
-  "Room_has_been_deleted": "Комната была удалена",
   "Room_has_been_removed": "Комната удалена",
   "Room_has_been_unarchived": "Канал был восстановлен",
   "Room_Info": "Информация о чате",

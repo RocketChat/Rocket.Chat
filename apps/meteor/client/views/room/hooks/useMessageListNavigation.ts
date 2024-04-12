@@ -3,10 +3,6 @@ import type { RefCallback } from 'react';
 import { useCallback } from 'react';
 import { useFocusManager } from 'react-aria';
 
-type MessageListProps = {
-	'aria-orientation': 'vertical' | 'horizontal';
-};
-
 const isListItem = (node: EventTarget) =>
 	(node as HTMLElement).getAttribute('role') === 'listitem' || (node as HTMLElement).getAttribute('role') === 'link';
 const isMessageToolbarAction = (node: EventTarget) => (node as HTMLElement).parentElement?.getAttribute('role') === 'toolbar';
@@ -17,13 +13,14 @@ const isThreadMessage = (node: EventTarget) => (node as HTMLElement).classList.c
  * Custom hook to provide the room navigation by keyboard.
  * @param ref - A ref to the message list DOM element.
  */
-export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLElement>; messageListProps: MessageListProps } => {
+export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLElement> } => {
 	const roomFocusManager = useFocusManager();
 
 	const messageListRef = useCallback(
 		(node: HTMLElement | null) => {
 			let lastMessageFocused: HTMLElement | null = null;
 			let triggeredByKeyboard = false;
+			let initialFocus = true;
 
 			if (!node) {
 				return;
@@ -70,8 +67,9 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 					}
 
 					lastMessageFocused = document.activeElement as HTMLElement;
-					triggeredByKeyboard = true;
 				}
+
+				triggeredByKeyboard = true;
 			});
 
 			node.addEventListener(
@@ -91,6 +89,12 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 			node.addEventListener(
 				'focus',
 				(e) => {
+					if (initialFocus) {
+						massageListFocusManager.focusLast({ accept: (node) => isListItem(node) });
+						lastMessageFocused = document.activeElement as HTMLElement;
+						initialFocus = false;
+					}
+
 					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
 						return;
 					}
@@ -109,8 +113,5 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 
 	return {
 		messageListRef,
-		messageListProps: {
-			'aria-orientation': 'vertical',
-		},
 	};
 };

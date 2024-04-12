@@ -17,6 +17,7 @@ export interface ILivechatDepartment {
 	departmentsAllowedToForward?: string[];
 	maxNumberSimultaneousChat?: number;
 	ancestors?: string[];
+	allowReceiveForwardOffline?: boolean;
 	// extra optional fields
 	[k: string]: any;
 }
@@ -32,4 +33,5 @@ export type LivechatDepartmentDTO = {
 	chatClosingTags?: string[] | undefined;
 	fallbackForwardDepartment?: string | undefined;
 	departmentsAllowedToForward?: string[] | undefined;
+	allowReceiveForwardOffline?: boolean;
 };

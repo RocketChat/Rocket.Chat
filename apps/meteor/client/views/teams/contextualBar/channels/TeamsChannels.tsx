@@ -1,92 +1,155 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useMutableCallback, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, usePermission } from '@rocket.chat/ui-contexts';
-import type { FC, SyntheticEvent } from 'react';
-import React, { useCallback, useMemo, useState } from 'react';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { useMutableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ChangeEvent, Dispatch, SetStateAction, SyntheticEvent } from 'react';
+import React, { useMemo } from 'react';
+import { Virtuoso } from 'react-virtuoso';
 
-import { useRecordList } from '../../../../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../../../../lib/asyncState';
-import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import CreateChannelWithData from '../../../../sidebar/header/CreateChannel';
-import { useRoom } from '../../../room/contexts/RoomContext';
-import { useRoomToolbox } from '../../../room/contexts/RoomToolboxContext';
-import RoomInfo from '../../../room/contextualBar/Info';
-import AddExistingModal from './AddExistingModal';
-import BaseTeamsChannels from './BaseTeamsChannels';
-import { useTeamsChannelList } from './hooks/useTeamsChannelList';
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarFooter,
+	ContextualbarEmptyContent,
+} from '../../../../components/Contextualbar';
+import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
+import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
+import TeamsChannelItem from './TeamsChannelItem';
 
-const useReactModal = (Component: FC<any>, teamId: string, reload: () => void) => {
-	const setModal = useSetModal();
-
-	return useMutableCallback((e: SyntheticEvent) => {
-		e.preventDefault();
-
-		const handleClose = () => {
-			setModal(null);
-			reload();
-		};
-
-		setModal(() => <Component onClose={handleClose} teamId={teamId} />);
-	});
+type TeamsChannelsProps = {
+	loading: boolean;
+	channels: IRoom[];
+	mainRoom: IRoom;
+	text: string;
+	type: 'all' | 'autoJoin';
+	setType: Dispatch<SetStateAction<'all' | 'autoJoin'>>;
+	setText: (e: ChangeEvent<HTMLInputElement>) => void;
+	onClickClose: () => void;
+	onClickAddExisting: false | ((e: SyntheticEvent) => void);
+	onClickCreateNew: false | ((e: SyntheticEvent) => void);
+	total: number;
+	loadMoreItems: (start: number, end: number) => void;
+	onClickView: (room: IRoom) => void;
+	reload: () => void;
 };
 
-const TeamsChannels = () => {
-	const room = useRoom();
-	const { teamId } = room;
+const TeamsChannels = ({
+	loading,
+	channels = [],
+	mainRoom,
+	text,
+	type,
+	setText,
+	setType,
+	onClickClose,
+	onClickAddExisting,
+	onClickCreateNew,
+	total,
+	loadMoreItems,
+	onClickView,
+	reload,
+}: TeamsChannelsProps) => {
+	const t = useTranslation();
+	const inputRef = useAutoFocus<HTMLInputElement>(true);
 
-	if (!teamId) {
-		throw new Error('Invalid teamId');
-	}
-
-	const [state, setState] = useState<{ tab?: string; rid?: string }>({});
-	const { closeTab } = useRoomToolbox();
-
-	const [type, setType] = useLocalStorage<'all' | 'autoJoin'>('channels-list-type', 'all');
-	const [text, setText] = useState('');
-
-	const debouncedText = useDebouncedValue(text, 800);
-
-	const { teamsChannelList, loadMoreItems, reload } = useTeamsChannelList(
-		useMemo(() => ({ teamId, text: debouncedText, type }), [teamId, debouncedText, type]),
+	const options: SelectOption[] = useMemo(
+		() => [
+			['all', t('All')],
+			['autoJoin', t('Team_Auto-join')],
+		],
+		[t],
 	);
 
-	const { phase, items, itemCount: total } = useRecordList(teamsChannelList);
+	const lm = useMutableCallback((start) => !loading && loadMoreItems(start, Math.min(50, total - start)));
 
-	const handleTextChange = useCallback((event) => {
-		setText(event.currentTarget.value);
-	}, []);
+	const loadMoreChannels = useDebouncedCallback(
+		() => {
+			if (channels.length >= total) {
+				return;
+			}
 
-	const canAddExistingTeam = usePermission('add-team-channel', room._id);
-	const addExisting = useReactModal(AddExistingModal, teamId, reload);
-	const createNew = useReactModal(CreateChannelWithData, teamId, reload);
-
-	const goToRoom = useCallback((room) => roomCoordinator.openRouteLink(room.t, room), []);
-	const handleBack = useCallback(() => setState({}), [setState]);
-	const viewRoom = useMutableCallback((room: IRoom) => {
-		goToRoom(room);
-	});
-
-	if (state?.tab === 'RoomInfo' && state?.rid) {
-		return <RoomInfo onClickBack={handleBack} onEnterRoom={goToRoom} resetState={() => setState({})} />;
-	}
+			lm(channels.length);
+		},
+		300,
+		[lm, channels],
+	);
 
 	return (
-		<BaseTeamsChannels
-			loading={phase === AsyncStatePhase.LOADING}
-			type={type}
-			text={text}
-			setType={setType}
-			setText={handleTextChange}
-			channels={items}
-			mainRoom={room}
-			total={total}
-			onClickClose={closeTab}
-			onClickAddExisting={canAddExistingTeam && addExisting}
-			onClickCreateNew={canAddExistingTeam && createNew}
-			onClickView={viewRoom}
-			loadMoreItems={loadMoreItems}
-			reload={reload}
-		/>
+		<>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='hash' />
+				<ContextualbarTitle>{t('Team_Channels')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
+			<ContextualbarContent p={12}>
+				<Box display='flex' flexDirection='row' p={12} flexShrink={0}>
+					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
+						<Margins inline={4}>
+							<TextInput
+								placeholder={t('Search')}
+								value={text}
+								ref={inputRef}
+								onChange={setText}
+								addon={<Icon name='magnifier' size='x20' />}
+							/>
+							<Box w='x144'>
+								<Select onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
+							</Box>
+						</Margins>
+					</Box>
+				</Box>
+				{loading && (
+					<Box pi={24} pb={12}>
+						<Throbber size='x12' />
+					</Box>
+				)}
+				{!loading && channels.length === 0 && <ContextualbarEmptyContent title={t('No_channels_in_team')} />}
+				{!loading && channels.length > 0 && (
+					<>
+						<Box pi={18} pb={12}>
+							<Box is='span' color='hint' fontScale='p2'>
+								{t('Showing')}: {channels.length}
+							</Box>
+
+							<Box is='span' color='hint' fontScale='p2' mis={8}>
+								{t('Total')}: {total}
+							</Box>
+						</Box>
+						<Box w='full' h='full' overflow='hidden' flexShrink={1}>
+							<Virtuoso
+								totalCount={total}
+								data={channels}
+								// eslint-disable-next-line react/no-multi-comp
+								components={{ Scroller: VirtuosoScrollbars, Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
+								itemContent={(index, data) => (
+									<TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} key={index} />
+								)}
+							/>
+						</Box>
+					</>
+				)}
+			</ContextualbarContent>
+			{(onClickAddExisting || onClickCreateNew) && (
+				<ContextualbarFooter>
+					<ButtonGroup stretch>
+						{onClickAddExisting && (
+							<Button onClick={onClickAddExisting} width='50%'>
+								{t('Team_Add_existing')}
+							</Button>
+						)}
+						{onClickCreateNew && (
+							<Button onClick={onClickCreateNew} width='50%'>
+								{t('Create_new')}
+							</Button>
+						)}
+					</ButtonGroup>
+				</ContextualbarFooter>
+			)}
+		</>
 	);
 };
 

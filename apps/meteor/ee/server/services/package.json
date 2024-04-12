@@ -1,7 +1,7 @@
 {
 	"name": "rocketchat-services",
 	"private": true,
-	"version": "1.1.23",
+	"version": "1.1.29",
 	"description": "Rocket.Chat Authorization service",
 	"main": "index.js",
 	"scripts": {
@@ -18,7 +18,7 @@
 	"author": "Rocket.Chat",
 	"license": "MIT",
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.41.0",
+		"@rocket.chat/apps-engine": "^1.42.1",
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "~0.31.25",
@@ -50,7 +50,7 @@
 		"ws": "^8.8.1"
 	},
 	"devDependencies": {
-		"@rocket.chat/icons": "^0.33.0",
+		"@rocket.chat/icons": "^0.34.0",
 		"@types/cookie": "^0.5.3",
 		"@types/cookie-parser": "^1.4.5",
 		"@types/ejson": "^2.2.1",
