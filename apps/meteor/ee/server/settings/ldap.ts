@@ -100,6 +100,7 @@ export function addSettings(): Promise<void> {
 						values: [
 							{ key: 'none', i18nLabel: 'LDAP_Sync_User_Active_State_Nothing' },
 							{ key: 'disable', i18nLabel: 'LDAP_Sync_User_Active_State_Disable' },
+							{ key: 'enable', i18nLabel: 'LDAP_Sync_User_Active_State_Enable' },
 							{ key: 'both', i18nLabel: 'LDAP_Sync_User_Active_State_Both' },
 						],
 						i18nDescription: 'LDAP_Sync_User_Active_State_Description',
