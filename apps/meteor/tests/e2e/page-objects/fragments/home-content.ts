@@ -25,6 +25,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"]').last();
 	}
 
+	nthMessage(index: number): Locator {
+		return this.page.locator('[data-qa-type="message"]').nth(index);
+	}
+
 	get lastUserMessageNotThread(): Locator {
 		return this.page.locator('div.messages-box [data-qa-type="message"]').last();
 	}

@@ -88,14 +88,14 @@ test.describe.serial('channel-management', () => {
 		const user1Channel = new HomeChannel(user1Page);
 		await user1Page.goto(`/channel/${targetChannel}`);
 		await user1Channel.waitForChannel();
-		await user1Channel.content.sendMessage('hello');
+		await user1Channel.content.sendMessage('message to check ignore');
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toContainText('This message was ignored');
 
 		await user1Page.close();
 	});
 
-	test('should uniggnore single "user1" message', async ({ browser }) => {
+	test('should unignore single "user1" message', async ({ browser }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 
 		const user1Page = await browser.newPage({ storageState: Users.user1.state });
@@ -115,20 +115,25 @@ test.describe.serial('channel-management', () => {
 
 
 	test('should unignore "user1" messages', async ({ browser }) => {
+		const user1Page = await browser.newPage({ storageState: Users.user1.state });
+		const user1Channel = new HomeChannel(user1Page);
+		await user1Page.goto(`/channel/${targetChannel}`);
+		await user1Channel.waitForChannel();
+		await user1Channel.content.sendMessage('message before being unignored');
+
 		await poHomeChannel.sidenav.openChat(targetChannel);
+		await expect(poHomeChannel.content.lastUserMessageBody).toContainText('This message was ignored');
+
 		await poHomeChannel.tabs.btnTabMembers.click();
 		await poHomeChannel.tabs.members.showAllUsers();
 		await poHomeChannel.tabs.members.unignoreUser('user1');
 
 		await expect(poHomeChannel.toastSuccess).toBeVisible();
 
-		const user1Page = await browser.newPage({ storageState: Users.user1.state });
-		const user1Channel = new HomeChannel(user1Page);
-		await user1Page.goto(`/channel/${targetChannel}`);
-		await user1Channel.waitForChannel();
-		await user1Channel.content.sendMessage('world');
+		await user1Channel.content.sendMessage('message after being unignored');
 
-		await expect(poHomeChannel.content.lastUserMessageBody).toContainText('world');
+		await expect(poHomeChannel.content.nthMessage(-2)).toContainText('message before being unignored');
+		await expect(poHomeChannel.content.lastUserMessageBody).toContainText('message after being unignored');
 
 		await user1Page.close();
 	});
