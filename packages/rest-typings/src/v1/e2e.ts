@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -87,6 +87,15 @@ const E2eSetRoomKeyIdSchema = {
 
 export const isE2eSetRoomKeyIdProps = ajv.compile<E2eSetRoomKeyIdProps>(E2eSetRoomKeyIdSchema);
 
+type E2EProvideUsersGroupKey = {
+	usersSuggestedGroupKeys: {
+		[rid: string]: {
+			_id: IUser['_id'];
+			key: string;
+		}[]
+	}
+}
+
 export type E2eEndpoints = {
 	'/v1/e2e.setUserPublicAndPrivateKeys': {
 		POST: (params: E2eSetUserPublicAndPrivateKeysProps) => void;
@@ -111,4 +120,10 @@ export type E2eEndpoints = {
 	'/v1/e2e.fetchMyKeys': {
 		GET: () => { public_key: string; private_key: string };
 	};
+	'/v1/e2e.fetchUsersWaitingForGroupKey': {
+		GET: () => { usersWaitingForE2EKeys: Record<IRoom['_id'], { _id: IUser['_id']; public_key: string; }[]>; hasMore: boolean; }
+	};
+	'/v1/e2e.provideUsersSuggestedGroupKeys': {
+		POST: (params: E2EProvideUsersGroupKey) => void;
+	}
 };

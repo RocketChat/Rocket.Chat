@@ -18,6 +18,7 @@ import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordMod
 import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
+import { isTruthy } from '../../../lib/isTruthy';
 import { ChatRoom, Subscriptions, Messages } from '../../models/client';
 import { settings } from '../../settings/client';
 import { getUserAvatarURL } from '../../utils/client';
@@ -39,6 +40,7 @@ import {
 } from './helper';
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
+
 import './events.js';
 
 let failedToDecodeKey = false;
@@ -77,6 +79,8 @@ class E2E extends Emitter {
 
 			await this.decryptSubscriptions();
 			this.log('decryptSubscriptions -> Done');
+
+			await this.initiateKeyDistribution();
 		});
 	}
 
@@ -166,6 +170,9 @@ class E2E extends Emitter {
 		let { public_key, private_key } = this.getKeysFromLocalStorage();
 
 		await this.loadKeysFromDB();
+
+		// for testing
+		await this.requestSubscriptionKeys();
 
 		if (!public_key && this.db_public_key) {
 			public_key = this.db_public_key;
@@ -506,6 +513,50 @@ class E2E extends Emitter {
 		);
 
 		return message;
+	}
+
+	fetchUsersWithWaitingKeys() {
+		return sdk.rest.get('/v1/e2e.fetchUsersWaitingForGroupKey');
+	}
+
+	provideUsersSuggestedGroupKeys(usersSuggestedGroupKeys) {
+		console.log('provideUsersGroupKey', usersSuggestedGroupKeys);
+		return sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', usersSuggestedGroupKeys);
+	}
+
+	async initiateKeyDistribution() {
+		const { usersWaitingForE2EKeys, hasMore } = await this.fetchUsersWithWaitingKeys();
+
+		console.log({ usersWaitingForE2EKeys, hasMore });
+
+		const roomIds = Object.keys(usersWaitingForE2EKeys);
+		console.log({ roomIds });
+		const userKeysWithRooms = Object.fromEntries(
+			(
+				await Promise.all(
+					roomIds.map(async (room) => {
+						const e2eRoom = await this.getInstanceByRoomId(room);
+
+						if (!e2eRoom) {
+							return;
+						}
+						const usersWithKeys = await e2eRoom.encryptGroupKeyForOtherParticipants(usersWaitingForE2EKeys[room]);
+
+						if (!usersWithKeys) {
+							return;
+						}
+
+						console.log('users - ', usersWaitingForE2EKeys[room], { usersWithKeys });
+
+						return [room, usersWithKeys];
+					}),
+				)
+			).filter(isTruthy),
+		);
+
+		console.log({ userKeysWithRooms });
+
+		await this.provideUsersSuggestedGroupKeys({ usersSuggestedGroupKeys: userKeysWithRooms });
 	}
 }
 

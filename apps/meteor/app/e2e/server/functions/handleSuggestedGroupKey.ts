@@ -1,4 +1,4 @@
-import { Subscriptions } from '@rocket.chat/models';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 export async function handleSuggestedGroupKey(
@@ -23,6 +23,11 @@ export async function handleSuggestedGroupKey(
 
 	if (handle === 'accept') {
 		await Subscriptions.setGroupE2EKey(sub._id, suggestedKey);
+		await Rooms.removeUserFromE2EEQueueByRoomId(sub.rid, userId);
+	}
+
+	if (handle === 'reject') {
+		await Rooms.addUserIdToE2EEQueueByRoomId(sub.rid, userId);
 	}
 
 	await Subscriptions.unsetGroupE2ESuggestedKey(sub._id);

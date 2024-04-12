@@ -1970,4 +1970,99 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 		return this.updateOne(query, update);
 	}
+
+	addUserIdToE2EEQueue(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id: {
+				$in: roomIds,
+			},
+			encrypted: true,
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$push: {
+				usersWaitingForE2EKeys: { $each: [uid], $slice: -50 },
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	addUserIdToE2EEQueueByRoomId(roomId: IRoom['_id'], uid: IUser['_id']): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id: roomId,
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$push: {
+				usersWaitingForE2EKeys: { $each: [uid], $slice: -50 },
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	removeUserFromE2EEQueue(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id: {
+				$in: roomIds,
+			},
+			usersWaitingForE2EKeys: {
+				$in: [uid],
+			},
+			encrypted: true,
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				usersWaitingForE2EKeys: uid,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	removeUserFromE2EEQueueByRoomId(roomId: IRoom['_id'], uid: IUser['_id']): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id: roomId,
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				usersWaitingForE2EKeys: uid,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	findRoomsByRoomIdsWithE2EEQueue(roomIds: IRoom['_id'][], options?: FindOptions<IRoom>): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
+			_id: {
+				$in: roomIds,
+			},
+			usersWaitingForE2EKeys: {
+				$exists: true,
+			},
+			encrypted: true,
+		};
+
+		return this.find(query, options);
+	}
+
+	removeE2EEQueueByRoomIds(roomIds: IRoom['_id'][]): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id: {
+				$in: roomIds,
+			},
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$unset: {
+				usersWaitingForE2EKeys: 1,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
 }

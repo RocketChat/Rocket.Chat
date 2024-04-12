@@ -1,4 +1,4 @@
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import * as Mailer from '../../app/mailer/server/api';
@@ -54,6 +54,14 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 	}
 };
 
+const addUserToE2EKeysWaitingQueue = async (uid: string): Promise<void> => {
+	const subscribedRoomIds = (await Subscriptions.findByUserId(uid, { projection: { rid: 1 } }).toArray()).map((sub) => sub.rid);
+
+	await Rooms.removeUserFromE2EEQueue(subscribedRoomIds, uid);
+
+	await Rooms.addUserIdToE2EEQueue(subscribedRoomIds, uid);
+};
+
 export async function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean): Promise<boolean> {
 	if (notifyUser) {
 		await sendResetNotification(uid);
@@ -66,6 +74,9 @@ export async function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean
 
 	await Users.resetE2EKey(uid);
 	await Subscriptions.resetUserE2EKey(uid);
+
+	// Add user to room waiting queue
+	await addUserToE2EKeysWaitingQueue(uid);
 
 	// Force the user to logout, so that the keys can be generated again
 	await Users.unsetLoginTokens(uid);
