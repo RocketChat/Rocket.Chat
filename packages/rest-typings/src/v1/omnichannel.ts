@@ -25,6 +25,7 @@ import type {
 	ReportResult,
 	ReportWithUnmatchingElements,
 	SMSProviderResponse,
+	ILivechatTriggerActionResponse,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
@@ -3134,34 +3135,74 @@ const POSTLivechatTriggersParamsSchema = {
 		actions: {
 			type: 'array',
 			items: {
-				type: 'object',
-				properties: {
-					name: {
-						type: 'string',
-						enum: ['send-message'],
-					},
-					params: {
+				oneOf: [
+					{
 						type: 'object',
-						nullable: true,
 						properties: {
-							sender: {
-								type: 'string',
-								enum: ['queue', 'custom'],
-							},
-							msg: {
-								type: 'string',
-							},
 							name: {
 								type: 'string',
+								enum: ['send-message'],
+							},
+							params: {
+								type: 'object',
 								nullable: true,
+								properties: {
+									sender: {
+										type: 'string',
+										enum: ['queue', 'custom'],
+									},
+									msg: {
+										type: 'string',
+									},
+									name: {
+										type: 'string',
+										nullable: true,
+									},
+								},
+								required: ['sender', 'msg'],
+								additionalProperties: false,
 							},
 						},
-						required: ['sender', 'msg'],
+						required: ['name'],
 						additionalProperties: false,
 					},
-				},
-				required: ['name'],
-				additionalProperties: false,
+					{
+						type: 'object',
+						properties: {
+							name: {
+								type: 'string',
+								enum: ['use-external-service'],
+							},
+							params: {
+								type: 'object',
+								nullable: true,
+								properties: {
+									sender: {
+										type: 'string',
+										enum: ['queue', 'custom'],
+									},
+									name: {
+										type: 'string',
+										nullable: true,
+									},
+									serviceUrl: {
+										type: 'string',
+									},
+									serviceTimeout: {
+										type: 'number',
+									},
+									serviceFallbackMessage: {
+										type: 'string',
+									},
+								},
+								required: ['serviceUrl', 'serviceTimeout', 'serviceFallbackMessage'],
+								additionalProperties: false,
+							},
+						},
+						required: ['name'],
+						additionalProperties: false,
+					},
+				],
 			},
 			minItems: 1,
 		},
@@ -3178,7 +3219,7 @@ export const isPOSTLivechatTriggersParams = ajv.compile<POSTLivechatTriggersPara
 
 type POSTLivechatAppearanceParams = {
 	_id: string;
-	value: string | boolean | number;
+	value: string | boolean | number | string[];
 }[];
 
 const POSTLivechatAppearanceParamsSchema = {
@@ -3191,7 +3232,7 @@ const POSTLivechatAppearanceParamsSchema = {
 			},
 			value: {
 				// Be careful with anyOf - https://github.com/ajv-validator/ajv/issues/1140
-				type: ['string', 'boolean', 'number'],
+				type: ['string', 'boolean', 'number', 'array'],
 			},
 		},
 		required: ['_id', 'value'],
@@ -3288,6 +3329,90 @@ const LivechatAnalyticsOverviewPropsSchema = {
 };
 
 export const isLivechatAnalyticsOverviewProps = ajv.compile<LivechatAnalyticsOverviewProps>(LivechatAnalyticsOverviewPropsSchema);
+
+type LivechatTriggerWebhookTestParams = {
+	webhookUrl: string;
+	timeout: number;
+	fallbackMessage: string;
+	extraData: {
+		key: string;
+		value: string;
+	}[];
+};
+
+const LivechatTriggerWebhookTestParamsSchema = {
+	type: 'object',
+	properties: {
+		webhookUrl: {
+			type: 'string',
+		},
+		timeout: {
+			type: 'number',
+		},
+		fallbackMessage: {
+			type: 'string',
+		},
+		extraData: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					key: {
+						type: 'string',
+					},
+					value: {
+						type: 'string',
+					},
+				},
+				required: ['key', 'value'],
+				additionalProperties: false,
+			},
+			nullable: true,
+		},
+	},
+	required: ['webhookUrl', 'timeout', 'fallbackMessage'],
+	additionalProperties: false,
+};
+
+export const isLivechatTriggerWebhookTestParams = ajv.compile<LivechatTriggerWebhookTestParams>(LivechatTriggerWebhookTestParamsSchema);
+
+type LivechatTriggerWebhookCallParams = {
+	token: string;
+	extraData?: {
+		key: string;
+		value: string;
+	}[];
+};
+
+const LivechatTriggerWebhookCallParamsSchema = {
+	type: 'object',
+	properties: {
+		token: {
+			type: 'string',
+		},
+		extraData: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					key: {
+						type: 'string',
+					},
+					value: {
+						type: 'string',
+					},
+				},
+				required: ['key', 'value'],
+				additionalProperties: false,
+			},
+			nullable: true,
+		},
+	},
+	required: ['token'],
+	additionalProperties: false,
+};
+
+export const isLivechatTriggerWebhookCallParams = ajv.compile<LivechatTriggerWebhookCallParams>(LivechatTriggerWebhookCallParamsSchema);
 
 export type OmnichannelEndpoints = {
 	'/v1/livechat/appearance': {
@@ -3771,6 +3896,12 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/sms-incoming/:service': {
 		POST: (params: unknown) => SMSProviderResponse;
+	};
+	'/v1/livechat/triggers/external-service/test': {
+		POST: (params: LivechatTriggerWebhookTestParams) => ILivechatTriggerActionResponse;
+	};
+	'/v1/livechat/triggers/:_id/external-service/call': {
+		POST: (params: LivechatTriggerWebhookCallParams) => ILivechatTriggerActionResponse;
 	};
 } & {
 	// EE

@@ -1,5 +1,287 @@
 # @rocket.chat/livechat Change Log
 
+## 1.15.0
+
+### Minor Changes
+
+- ([#31820](https://github.com/RocketChat/Rocket.Chat/pull/31820)) **Added the ability for premium workspaces to hide Rocket.Chat's watermark as well as change the Livechat widget's logo**
+
+  The new settings (named below) can be found in the Omnichannel workspace settings within the livechat section.
+
+  - Hide "powered by Rocket.Chat"
+  - Livechat widget logo (svg, png, jpg)
+
+- ([#31751](https://github.com/RocketChat/Rocket.Chat/pull/31751)) Added Livechat setting `Hide system messages` & API method `setHiddenSystemMessages`, to customize system message visibility within the widget.
+
+- ([#31772](https://github.com/RocketChat/Rocket.Chat/pull/31772)) Improved Livechat's theming capabilities
+
+  | Name (`setTheme`, `initialize`) | Workspace setting                      | Default value | Description                                                                                                                                                |
+  | ------------------------------- | -------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | `position`                      | Livechat widget position on the screen | `right`       | Changes the widget position on the screen. Can be `left` or `right`                                                                                        |
+  | `background`                    | Livechat background                    | `N/A`         | Changes the message list background. Accepts the same values as the CSS property [background](https://developer.mozilla.org/en-US/docs/Web/CSS/background) |
+  | `guestBubbleBackgroundColor`    | `N/A`                                  | `N/A`         | Changes the guest's message bubble background color                                                                                                        |
+  | `agentBubbleBackgroundColor`    | `N/A`                                  | `N/A`         | Changes the agent's message bubble background color                                                                                                        |
+  | `hideGuestAvatar`               | `N/A`                                  | `false`       | Hides/shows the guest avatar                                                                                                                               |
+  | `hideAgentAvatar`               | `N/A`                                  | `true`        | Hides/shows the agent avatar                                                                                                                               |
+
+- ([#30924](https://github.com/RocketChat/Rocket.Chat/pull/30924)) chore: Refactor & Improve Livechat Widget API
+  Refactors and adds better error handling to the widget's API calls
+- ([#31268](https://github.com/RocketChat/Rocket.Chat/pull/31268)) Added new Livechat trigger action "Send message (external service)"
+
+### Patch Changes
+
+- ([#31663](https://github.com/RocketChat/Rocket.Chat/pull/31663)) Fixes issue causing the setDepartment Livechat API overriding some triggers conditions
+
+- ([#31718](https://github.com/RocketChat/Rocket.Chat/pull/31718)) Allows the after-guest-registration trigger to run when starting a new chat after finishing a chat when the clear guest data when chat ended setting is set to false
+
+- ([#32069](https://github.com/RocketChat/Rocket.Chat/pull/32069)) Livechat: A registered user loses their messages if 'registerGuest' is called using the same token.
+
+- ([#32031](https://github.com/RocketChat/Rocket.Chat/pull/32031)) Fixes issue where the livechat offline form would render even when disabled
+
+- ([#31752](https://github.com/RocketChat/Rocket.Chat/pull/31752)) fixed livechat UI blinking different colors when the chat is finished
+
+- ([#31792](https://github.com/RocketChat/Rocket.Chat/pull/31792)) Fixes issue of the `setDepartment` Livechat API method not setting the store value properly (is was only setting on the guest object)
+
+- ([#32135](https://github.com/RocketChat/Rocket.Chat/pull/32135)) Fixes issue causing a desync in different browser windows when a chat is closed and started again
+
+- <details><summary>Updated dependencies [5ad65ff3da]:</summary>
+
+  - @rocket.chat/message-parser@0.31.29
+  - @rocket.chat/gazzodown@5.0.0
+  - @rocket.chat/random@1.2.2
+  - @rocket.chat/ui-kit@0.33.0
+  </details>
+
+## 1.15.0-rc.4
+
+### Patch Changes
+
+- ([#32135](https://github.com/RocketChat/Rocket.Chat/pull/32135)) Fixes issue causing a desync in different browser windows when a chat is closed and started again
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.0-rc.4
+  </details>
+
+## 1.15.0-rc.3
+
+### Patch Changes
+
+- ([#32069](https://github.com/RocketChat/Rocket.Chat/pull/32069)) Livechat: A registered user loses their messages if 'registerGuest' is called using the same token.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.0-rc.3
+  </details>
+
+## 1.15.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.0-rc.2
+  </details>
+
+## 1.15.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.0-rc.1
+  </details>
+
+## 1.15.0-rc.0
+
+### Minor Changes
+
+- ([#31820](https://github.com/RocketChat/Rocket.Chat/pull/31820)) **Added the ability for premium workspaces to hide Rocket.Chat's watermark as well as change the Livechat widget's logo**
+
+  The new settings (named below) can be found in the Omnichannel workspace settings within the livechat section.
+
+  - Hide "powered by Rocket.Chat"
+  - Livechat widget logo (svg, png, jpg)
+
+- ([#31751](https://github.com/RocketChat/Rocket.Chat/pull/31751)) Added Livechat setting `Hide system messages` & API method `setHiddenSystemMessages`, to customize system message visibility within the widget.
+
+- ([#31772](https://github.com/RocketChat/Rocket.Chat/pull/31772)) Improved Livechat's theming capabilities
+
+  | Name (`setTheme`, `initialize`) | Workspace setting                      | Default value | Description                                                                                                                                                |
+  | ------------------------------- | -------------------------------------- | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | `position`                      | Livechat widget position on the screen | `right`       | Changes the widget position on the screen. Can be `left` or `right`                                                                                        |
+  | `background`                    | Livechat background                    | `N/A`         | Changes the message list background. Accepts the same values as the CSS property [background](https://developer.mozilla.org/en-US/docs/Web/CSS/background) |
+  | `guestBubbleBackgroundColor`    | `N/A`                                  | `N/A`         | Changes the guest's message bubble background color                                                                                                        |
+  | `agentBubbleBackgroundColor`    | `N/A`                                  | `N/A`         | Changes the agent's message bubble background color                                                                                                        |
+  | `hideGuestAvatar`               | `N/A`                                  | `false`       | Hides/shows the guest avatar                                                                                                                               |
+  | `hideAgentAvatar`               | `N/A`                                  | `true`        | Hides/shows the agent avatar                                                                                                                               |
+
+- ([#30924](https://github.com/RocketChat/Rocket.Chat/pull/30924)) chore: Refactor & Improve Livechat Widget API
+  Refactors and adds better error handling to the widget's API calls
+- ([#31268](https://github.com/RocketChat/Rocket.Chat/pull/31268)) Added new Livechat trigger action "Send message (external service)"
+
+### Patch Changes
+
+- ([#31663](https://github.com/RocketChat/Rocket.Chat/pull/31663)) Fixes issue causing the setDepartment Livechat API overriding some triggers conditions
+
+- ([#31718](https://github.com/RocketChat/Rocket.Chat/pull/31718)) Allows the after-guest-registration trigger to run when starting a new chat after finishing a chat when the clear guest data when chat ended setting is set to false
+
+- ([#32031](https://github.com/RocketChat/Rocket.Chat/pull/32031)) Fixes issue where the livechat offline form would render even when disabled
+
+- ([#31752](https://github.com/RocketChat/Rocket.Chat/pull/31752)) fixed livechat UI blinking different colors when the chat is finished
+
+- ([#31792](https://github.com/RocketChat/Rocket.Chat/pull/31792)) Fixes issue of the `setDepartment` Livechat API method not setting the store value properly (is was only setting on the guest object)
+
+- <details><summary>Updated dependencies [5ad65ff3da]:</summary>
+
+  - @rocket.chat/message-parser@0.31.29-rc.0
+  - @rocket.chat/gazzodown@5.0.0-rc.0
+  - @rocket.chat/random@1.2.2
+  - @rocket.chat/ui-kit@0.33.0
+  </details>
+
+## 1.14.19
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.6
+  </details>
+
+## 1.14.18
+
+### Patch Changes
+
+- ([#31792](https://github.com/RocketChat/Rocket.Chat/pull/31792)) Fixes issue of the `setDepartment` Livechat API method not setting the store value properly (is was only setting on the guest object)
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.5
+  </details>
+
+## 1.14.17
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.4
+  </details>
+
+## 1.14.16
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.3
+  </details>
+
+## 1.14.15
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.2
+  </details>
+
+## 1.14.14
+
+### Patch Changes
+
+- ([#31752](https://github.com/RocketChat/Rocket.Chat/pull/31752)) fixed livechat UI blinking different colors when the chat is finished
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.1
+  </details>
+
+## 1.14.13
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- ([#31349](https://github.com/RocketChat/Rocket.Chat/pull/31349) by [@Subhojit-Dey1234](https://github.com/Subhojit-Dey1234)) feat: Implemented InlineCode handling in Bold, Italic and Strike
+
+- ([#31454](https://github.com/RocketChat/Rocket.Chat/pull/31454)) Fixed an issue with translations that caused text containing special characters to be shown escaped on UI
+
+- ([#31302](https://github.com/RocketChat/Rocket.Chat/pull/31302)) Fixed a problem that caused Livechat Widget registration page to ignore the `showOnRegistration` flag for departments, showing all items.
+
+- <details><summary>Updated dependencies [b223cbde14, dbb08ef948]:</summary>
+
+  - @rocket.chat/ui-kit@0.33.0
+  - @rocket.chat/gazzodown@4.0.0
+  - @rocket.chat/random@1.2.2
+  </details>
+
+## 1.14.13-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.0-rc.7
+  </details>
+
+## 1.14.13-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.0-rc.6
+  </details>
+
+## 1.14.13-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.0-rc.5
+  </details>
+
+## 1.14.13-rc.4
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.4
+
+## 1.14.13-rc.3
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.3
+
+## 1.14.13-rc.2
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.2
+
+## 1.14.13-rc.1
+
+### Patch Changes
+
+- @rocket.chat/gazzodown@4.0.0-rc.1
+
+## 1.14.13-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- dbb08ef948: feat: Implemented InlineCode handling in Bold, Italic and Strike
+- bc28633c69: Fixed an issue with translations that caused text containing special characters to be shown escaped on UI
+- 5d73947a4f: Fixed a problem that caused Livechat Widget registration page to ignore the `showOnRegistration` flag for departments, showing all items.
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+  - @rocket.chat/ui-kit@0.33.0-rc.0
+  - @rocket.chat/gazzodown@4.0.0-rc.0
+  - @rocket.chat/random@1.2.2-rc.0
+
 ## 1.14.12
 
 ### Patch Changes

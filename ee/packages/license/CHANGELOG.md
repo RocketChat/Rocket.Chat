@@ -1,5 +1,190 @@
 # @rocket.chat/license
 
+## 0.1.11
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0
+  </details>
+
+## 0.1.11-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.4
+  </details>
+
+## 0.1.11-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.3
+  </details>
+
+## 0.1.11-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.2
+  </details>
+
+## 0.1.11-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.1
+  </details>
+
+## 0.1.11-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.0
+  </details>
+
+## 0.1.10
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.6
+  </details>
+
+## 0.1.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.5
+  </details>
+
+## 0.1.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.4
+  </details>
+
+## 0.1.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.3
+  </details>
+
+## 0.1.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.2
+  </details>
+
+## 0.1.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.1
+  </details>
+
+## 0.1.4
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- <details><summary>Updated dependencies [b223cbde14, dbb08ef948, fdd9852079, b4b2cd20a8]:</summary>
+
+  - @rocket.chat/core-typings@6.6.0
+  - @rocket.chat/logger@0.0.2
+  - @rocket.chat/jwt@0.1.1
+  </details>
+
+## 0.1.4-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.7
+  </details>
+
+## 0.1.4-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.6
+  </details>
+
+## 0.1.4-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.5
+  </details>
+
+## 0.1.4-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.4
+
+## 0.1.4-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.3
+
+## 0.1.4-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.2
+
+## 0.1.4-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.1
+
+## 0.1.4-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+- Updated dependencies [fdd9852079]
+- Updated dependencies [b4b2cd20a8]
+  - @rocket.chat/core-typings@6.6.0-rc.0
+  - @rocket.chat/logger@0.0.2-rc.0
+  - @rocket.chat/jwt@0.1.1-rc.0
+
 ## 0.1.3
 
 ### Patch Changes

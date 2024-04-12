@@ -1,5 +1,113 @@
 # @rocket.chat/core-typings
 
+## 6.7.0
+
+### Minor Changes
+
+- ([#31820](https://github.com/RocketChat/Rocket.Chat/pull/31820)) **Added the ability for premium workspaces to hide Rocket.Chat's watermark as well as change the Livechat widget's logo**
+
+  The new settings (named below) can be found in the Omnichannel workspace settings within the livechat section.
+
+  - Hide "powered by Rocket.Chat"
+  - Livechat widget logo (svg, png, jpg)
+
+- ([#31268](https://github.com/RocketChat/Rocket.Chat/pull/31268)) Added new Livechat trigger action "Send message (external service)"
+
+### Patch Changes
+
+- ([#31663](https://github.com/RocketChat/Rocket.Chat/pull/31663)) Fixes issue causing the setDepartment Livechat API overriding some triggers conditions
+
+- <details><summary>Updated dependencies [5ad65ff3da]:</summary>
+
+  - @rocket.chat/message-parser@0.31.29
+  - @rocket.chat/ui-kit@0.33.0
+  </details>
+
+## 6.7.0-rc.4
+
+## 6.7.0-rc.3
+
+## 6.7.0-rc.2
+
+## 6.7.0-rc.1
+
+## 6.7.0-rc.0
+
+### Minor Changes
+
+- ([#31820](https://github.com/RocketChat/Rocket.Chat/pull/31820)) **Added the ability for premium workspaces to hide Rocket.Chat's watermark as well as change the Livechat widget's logo**
+
+  The new settings (named below) can be found in the Omnichannel workspace settings within the livechat section.
+
+  - Hide "powered by Rocket.Chat"
+  - Livechat widget logo (svg, png, jpg)
+
+- ([#31268](https://github.com/RocketChat/Rocket.Chat/pull/31268)) Added new Livechat trigger action "Send message (external service)"
+
+### Patch Changes
+
+- ([#31663](https://github.com/RocketChat/Rocket.Chat/pull/31663)) Fixes issue causing the setDepartment Livechat API overriding some triggers conditions
+
+- <details><summary>Updated dependencies [5ad65ff3da]:</summary>
+
+  - @rocket.chat/message-parser@0.31.29-rc.0
+  - @rocket.chat/ui-kit@0.33.0
+  </details>
+
+## 6.6.6
+
+## 6.6.5
+
+## 6.6.4
+
+## 6.6.3
+
+## 6.6.2
+
+## 6.6.1
+
+## 6.6.0
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- ([#31349](https://github.com/RocketChat/Rocket.Chat/pull/31349) by [@Subhojit-Dey1234](https://github.com/Subhojit-Dey1234)) feat: Implemented InlineCode handling in Bold, Italic and Strike
+
+- ([#30478](https://github.com/RocketChat/Rocket.Chat/pull/30478)) Added `chat.getURLPreview` endpoint to enable users to retrieve previews for URL (ready to be provided in message send/update)
+
+- ([#31328](https://github.com/RocketChat/Rocket.Chat/pull/31328)) Fixed an issue caused by the `Fallback Forward Department` feature. Feature could be configured by admins in a way that mimis a loop, causing a chat to be forwarded "infinitely" between those departments. System will now prevent Self & 1-level deep circular references from being saved, and a new setting is added to control the maximum number of hops that the system will do between fallback departments before considering a transfer failure.
+
+- <details><summary>Updated dependencies [b223cbde14]:</summary>
+
+  - @rocket.chat/ui-kit@0.33.0
+  </details>
+
+## 6.6.0-rc.7
+
+## 6.6.0-rc.6
+
+## 6.6.0-rc.5
+
+## 6.6.0-rc.4
+
+## 6.6.0-rc.3
+
+## 6.6.0-rc.2
+
+## 6.6.0-rc.1
+
+## 6.6.0-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- dbb08ef948: feat: Implemented InlineCode handling in Bold, Italic and Strike
+- fdd9852079: Added `chat.getURLPreview` endpoint to enable users to retrieve previews for URL (ready to be provided in message send/update)
+- b4b2cd20a8: Fixed an issue caused by the `Fallback Forward Department` feature. Feature could be configured by admins in a way that mimis a loop, causing a chat to be forwarded "infinitely" between those departments. System will now prevent Self & 1-level deep circular references from being saved, and a new setting is added to control the maximum number of hops that the system will do between fallback departments before considering a transfer failure.
+- Updated dependencies [b223cbde14]
+  - @rocket.chat/ui-kit@0.33.0-rc.0
+
 ## 6.5.3
 
 ## 6.5.2

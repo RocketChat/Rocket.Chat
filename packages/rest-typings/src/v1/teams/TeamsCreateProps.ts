@@ -21,7 +21,7 @@ type ITeamCreateRoom = {
 	members?: Array<string>;
 	readOnly?: boolean;
 	extraData?: Partial<ICreateTeamRoomExtraData>;
-	options?: { nameValidationRegex?: string; creator: string; subscriptionExtra?: ISubscriptionExtraData };
+	options?: { creator: string; subscriptionExtra?: ISubscriptionExtraData };
 };
 
 export type TeamsCreateProps = {

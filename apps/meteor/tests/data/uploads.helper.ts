@@ -7,18 +7,30 @@ import { password } from './user';
 import { createUser, login } from './users.helper';
 import { imgURL } from './interactions';
 import { updateSetting } from './permissions.helper';
-import { createRoom } from './rooms.helper';
+import { createRoom, deleteRoom } from './rooms.helper';
 import { createVisitor } from './livechat/rooms';
 
-export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.files' | 'im.files', room: { _id: string; name?: string; t: string;}, invalidRoomError = 'error-room-not-found') {
+export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.files' | 'im.files', roomType: 'c' | 'd' | 'p', invalidRoomError = 'error-room-not-found') {
+	let testRoom: Record<string, any>;
+	const propertyMap = {
+		'c': 'channel',
+		'p': 'group',
+		'd': 'room',
+	};
+
 	before(async function () {
 		await updateSetting('VoIP_Enabled', true);
 		await updateSetting('Message_KeepHistory', true);
+
+		testRoom = (await createRoom({ type: roomType, ...(roomType === 'd' ? { username: 'rocket.cat' } : { name: `channel-files-${Date.now()}` }) } as any)).body[propertyMap[roomType]];
 	});
 
 	after(async function () {
-		await updateSetting('VoIP_Enabled', false);
-		await updateSetting('Message_KeepHistory', false);
+		await Promise.all([
+			deleteRoom({ type: 'c', roomId: testRoom._id }),
+			updateSetting('VoIP_Enabled', false),
+			updateSetting('Message_KeepHistory', false),
+		]);
 	});
 
 	const createVoipRoom = async function () {
@@ -33,7 +45,9 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			name: null,
 			username: null,
 			members: null,
+			extraData: null,
 		});
+
 		return roomResponse.body.room;
 	};
 
@@ -74,7 +88,7 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			.get(api(filesEndpoint))
 			.set(credentials)
 			.query({
-				roomId: room._id,
+				roomId: testRoom._id,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -90,7 +104,7 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			.get(api(filesEndpoint))
 			.set(credentials)
 			.query({
-				roomId: room._id,
+				roomId: testRoom._id,
 				count: 5,
 				offset: 0,
 			})
@@ -104,14 +118,14 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 	});
 
 	it('should succeed when searching by roomName', function (done) {
-		if (!room.name) {
+		if (!testRoom.name) {
 			this.skip();
 		}
 		request
 			.get(api(filesEndpoint))
 			.set(credentials)
 			.query({
-				roomName: room.name,
+				roomName: testRoom.name,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -123,14 +137,14 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 	});
 
 	it('should succeed when searching by roomName even requested with count and offset params', function (done) {
-		if (!room.name) {
+		if (!testRoom.name) {
 			this.skip();
 		}
 		request
 			.get(api(filesEndpoint))
 			.set(credentials)
 			.query({
-				roomName: room.name,
+				roomName: testRoom.name,
 				count: 5,
 				offset: 0,
 			})
@@ -145,7 +159,7 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 
 	it('should not return thumbnails', async function () {
 		await request
-			.post(api(`rooms.upload/${room._id}`))
+			.post(api(`rooms.upload/${testRoom._id}`))
 			.set(credentials)
 			.attach('file', imgURL)
 			.expect('Content-Type', 'application/json')
@@ -158,7 +172,7 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			.get(api(filesEndpoint))
 			.set(credentials)
 			.query({
-				roomId: room._id,
+				roomId: testRoom._id,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -179,7 +193,7 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 		let fileId: string;
 
 		await request
-			.post(api(`rooms.upload/${room._id}`))
+			.post(api(`rooms.upload/${testRoom._id}`))
 			.set(credentials)
 			.attach('file', imgURL)
 			.expect('Content-Type', 'application/json')
@@ -195,7 +209,7 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			.post(api('chat.delete'))
 			.set(credentials)
 			.send({
-				roomId: room._id,
+				roomId: testRoom._id,
 				msgId,
 			})
 			.expect('Content-Type', 'application/json')
@@ -205,7 +219,7 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			.get(api(filesEndpoint))
 			.set(credentials)
 			.query({
-				roomId: room._id,
+				roomId: testRoom._id,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)

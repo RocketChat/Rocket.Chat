@@ -1,5 +1,206 @@
 # @rocket.chat/web-ui-registration
 
+## 5.0.0
+
+### Patch Changes
+
+- ([#31583](https://github.com/RocketChat/Rocket.Chat/pull/31583)) Fixed login email verification flow when a user tries to join with username
+
+- ([#31804](https://github.com/RocketChat/Rocket.Chat/pull/31804)) fixed the login page crashing when receiving unexpected errors
+
+- ([#31625](https://github.com/RocketChat/Rocket.Chat/pull/31625) by [@abhipatel0211](https://github.com/abhipatel0211)) Fixed a bug that caused the Login page to crash when closing the Two-Factor Authentication modal using the Cancel button or the X button.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@5.0.0
+  </details>
+
+## 5.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@5.0.0-rc.4
+  </details>
+
+## 5.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@5.0.0-rc.3
+  </details>
+
+## 5.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@5.0.0-rc.2
+  </details>
+
+## 5.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@5.0.0-rc.1
+  </details>
+
+## 5.0.0-rc.0
+
+### Patch Changes
+
+- ([#31583](https://github.com/RocketChat/Rocket.Chat/pull/31583)) Fixed login email verification flow when a user tries to join with username
+
+- ([#31804](https://github.com/RocketChat/Rocket.Chat/pull/31804)) fixed the login page crashing when receiving unexpected errors
+
+- ([#31625](https://github.com/RocketChat/Rocket.Chat/pull/31625) by [@abhipatel0211](https://github.com/abhipatel0211)) Fixed a bug that caused the Login page to crash when closing the Two-Factor Authentication modal using the Cancel button or the X button.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@5.0.0-rc.0
+  </details>
+
+## 4.0.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.6
+  </details>
+
+## 4.0.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.5
+  </details>
+
+## 4.0.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.4
+  </details>
+
+## 4.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.3
+  </details>
+
+## 4.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.2
+  </details>
+
+## 4.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.1
+  </details>
+
+## 4.0.0
+
+### Minor Changes
+
+- ([#30680](https://github.com/RocketChat/Rocket.Chat/pull/30680)) feat: Skip to main content shortcut and useDocumentTitle
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- <details><summary>Updated dependencies [b223cbde14, b2b0035162]:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.0
+  - @rocket.chat/tools@0.2.1
+  </details>
+
+## 4.0.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.0-rc.7
+  </details>
+
+## 4.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.0-rc.6
+  </details>
+
+## 4.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.0-rc.5
+  </details>
+
+## 4.0.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@4.0.0-rc.4
+
+## 4.0.0-rc.3
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@4.0.0-rc.3
+
+## 4.0.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@4.0.0-rc.2
+
+## 4.0.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/ui-contexts@4.0.0-rc.1
+
+## 4.0.0-rc.0
+
+### Minor Changes
+
+- dd5fd6d2c8: feat: Skip to main content shortcut and useDocumentTitle
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- Updated dependencies [b223cbde14]
+- Updated dependencies [b2b0035162]
+  - @rocket.chat/ui-contexts@4.0.0-rc.0
+  - @rocket.chat/tools@0.2.1-rc.0
+
 ## 3.0.3
 
 ### Patch Changes

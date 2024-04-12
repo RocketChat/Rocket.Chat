@@ -3,7 +3,7 @@ import { Tabs, TabsItem, ContextualbarHeader, ContextualbarTitle } from '@rocket
 import { useTranslation, useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
-import { Contextualbar, ContextualbarClose } from '../../../components/Contextualbar';
+import { Contextualbar, ContextualbarClose, ContextualbarDialog } from '../../../components/Contextualbar';
 import UserMessages from './UserMessages';
 import UserReportInfo from './UserReports/UserReportInfo';
 
@@ -21,22 +21,24 @@ const ModConsoleReportDetails = ({ userId, default: defaultTab, onRedirect }: Mo
 	const activeTab = useRouteParameter('tab');
 
 	return (
-		<Contextualbar>
-			<ContextualbarHeader>
-				<ContextualbarTitle>{t('Reports')}</ContextualbarTitle>
-				<ContextualbarClose onClick={() => moderationRoute.navigate(`/admin/moderation/${activeTab}`, { replace: true })} />
-			</ContextualbarHeader>
-			<Tabs paddingBlockStart={8}>
-				<TabsItem selected={tab === 'messages'} onClick={() => setTab('messages')}>
-					{t('Messages')}
-				</TabsItem>
-				<TabsItem selected={tab === 'users'} onClick={() => setTab('users')}>
-					{t('User')}
-				</TabsItem>
-			</Tabs>
-			{tab === 'messages' && <UserMessages userId={userId} onRedirect={onRedirect} />}
-			{tab === 'users' && <UserReportInfo userId={userId} />}
-		</Contextualbar>
+		<ContextualbarDialog>
+			<Contextualbar>
+				<ContextualbarHeader>
+					<ContextualbarTitle>{t('Reports')}</ContextualbarTitle>
+					<ContextualbarClose onClick={() => moderationRoute.navigate(`/admin/moderation/${activeTab}`, { replace: true })} />
+				</ContextualbarHeader>
+				<Tabs paddingBlockStart={8}>
+					<TabsItem selected={tab === 'messages'} onClick={() => setTab('messages')}>
+						{t('Messages')}
+					</TabsItem>
+					<TabsItem selected={tab === 'users'} onClick={() => setTab('users')}>
+						{t('User')}
+					</TabsItem>
+				</Tabs>
+				{tab === 'messages' && <UserMessages userId={userId} onRedirect={onRedirect} />}
+				{tab === 'users' && <UserReportInfo userId={userId} />}
+			</Contextualbar>
+		</ContextualbarDialog>
 	);
 };
 
