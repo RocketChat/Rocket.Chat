@@ -1,40 +1,106 @@
+import { MockedServerContext, MockedUserContext } from '@rocket.chat/mock-providers';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import proxyquire from 'proxyquire';
+import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import sinon from 'sinon';
 
+import SAMLLoginRoute from '../../../../../client/views/root/SAMLLoginRoute';
 import RouterContextMock from '../../../../mocks/client/RouterContextMock';
 
-const loginWithSamlTokenStub = sinon.stub();
+const loginWithSamlTokenStub = Meteor.loginWithSamlToken as sinon.SinonStub;
 const navigateStub = sinon.stub();
 
-const { SAMLLoginRoute } = proxyquire.noCallThru().load('../../../../../client/views/root/SAMLLoginRoute.tsx', {
-	'meteor/meteor': {
-		Meteor: {
-			loginWithSamlToken: loginWithSamlTokenStub,
-		},
-	},
-});
-
 describe('views/root/SAMLLoginRoute', () => {
-	beforeAll(() => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+		navigateStub.resetHistory();
+		loginWithSamlTokenStub.reset();
 		loginWithSamlTokenStub.callsFake((_token, callback) => callback());
 	});
 
-	it('should look good', async () => {
+	it('should redirect to /home when userId is not null', async () => {
 		render(
-			<RouterContextMock searchParameters={{ redirectUrl: 'test' }} navigate={navigateStub}>
-				<SAMLLoginRoute />
-			</RouterContextMock>,
+			<MockedServerContext>
+				<MockedUserContext>
+					<RouterContextMock searchParameters={{ redirectUrl: 'http://rocket.chat' }} navigate={navigateStub}>
+						<SAMLLoginRoute />
+					</RouterContextMock>
+				</MockedUserContext>
+			</MockedServerContext>,
 		);
 
+		expect(navigateStub.calledTwice).toBe(true);
 		expect(
 			navigateStub.calledWith(
 				sinon.match({
 					pathname: '/home',
 				}),
 			),
-		).to.be.true;
+		).toBe(true);
+	});
+
+	it('should redirect to /home when userId is null and redirectUrl is not within the workspace domain', async () => {
+		render(
+			<MockedServerContext>
+				<RouterContextMock searchParameters={{ redirectUrl: 'http://rocket.chat' }} navigate={navigateStub}>
+					<SAMLLoginRoute />
+				</RouterContextMock>
+			</MockedServerContext>,
+		);
+
+		expect(
+			navigateStub.calledOnceWith(
+				sinon.match({
+					pathname: '/home',
+				}),
+			),
+		).toBe(true);
+	});
+
+	it('should redirect to the provided redirectUrl when userId is null and redirectUrl is within the workspace domain', async () => {
+		render(
+			<MockedServerContext>
+				<RouterContextMock searchParameters={{ redirectUrl: 'http://localhost:3000/invite/test' }} navigate={navigateStub}>
+					<SAMLLoginRoute />
+				</RouterContextMock>
+			</MockedServerContext>,
+		);
+
+		expect(
+			navigateStub.calledOnceWith(
+				sinon.match({
+					pathname: '/invite/test',
+				}),
+			),
+		).toBe(true);
+	});
+
+	it('should call loginWithSamlToken when component is mounted', async () => {
+		render(
+			<MockedServerContext>
+				<RouterContextMock searchParameters={{ redirectUrl: 'http://rocket.chat' }} navigate={navigateStub}>
+					<SAMLLoginRoute />
+				</RouterContextMock>
+			</MockedServerContext>,
+		);
+
+		expect(loginWithSamlTokenStub.calledOnceWith(undefined)).toBe(true);
+	});
+
+	it('should call loginWithSamlToken with the token when it is present', async () => {
+		render(
+			<MockedUserContext>
+				<RouterContextMock
+					searchParameters={{ redirectUrl: 'http://rocket.chat' }}
+					routeParameters={{ token: 'testToken' }}
+					navigate={navigateStub}
+				>
+					<SAMLLoginRoute />
+				</RouterContextMock>
+			</MockedUserContext>,
+		);
+
+		expect(loginWithSamlTokenStub.calledOnceWith('testToken')).toBe(true);
 	});
 });

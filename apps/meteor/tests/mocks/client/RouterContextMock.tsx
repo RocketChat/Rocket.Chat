@@ -60,9 +60,16 @@ type RouterContextMockProps = {
 	navigate?: (toOrDelta: number | To) => void;
 	currentPath?: MutableRefObject<string | undefined>;
 	searchParameters?: Record<string, any>;
+	routeParameters?: Record<string, any>;
 };
 
-const RouterContextMock = ({ children, navigate, currentPath, searchParameters = {} }: RouterContextMockProps): ReactElement => {
+const RouterContextMock = ({
+	children,
+	navigate,
+	currentPath,
+	searchParameters = {},
+	routeParameters = {},
+}: RouterContextMockProps): ReactElement => {
 	const history = useRef<{ stack: To[]; index: number }>({ stack: ['/'], index: 0 });
 
 	if (currentPath) {
@@ -76,7 +83,7 @@ const RouterContextMock = ({ children, navigate, currentPath, searchParameters =
 					subscribeToRouteChange: () => () => undefined,
 					getLocationPathname: () => '/',
 					getLocationSearch: () => '',
-					getRouteParameters: () => ({}),
+					getRouteParameters: () => routeParameters,
 					getSearchParameters: () => searchParameters,
 					getRouteName: () => 'home',
 					buildRoutePath,
