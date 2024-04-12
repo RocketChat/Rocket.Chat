@@ -60,14 +60,14 @@ function register<T extends Record<string, any>>(name: string, instance: NormalO
 export function proxify<T extends Record<string, any>>(
 	namespace: string,
 ): T & {
-	register: (instance: T, overwriteExisting?: boolean) => void;
+	register: (instance: NormalOrLazyModel<T>, overwriteExisting?: boolean) => void;
 } {
 	return new Proxy(
 		{
-			register: (instance: T, overwriteExisting = true) => register(namespace, instance, overwriteExisting),
+			register: (instance: NormalOrLazyModel<T>, overwriteExisting = true) => register(namespace, instance, overwriteExisting),
 		},
 		handler(namespace, models),
 	) as unknown as T & {
-		register: (instance: T, overwriteExisting?: boolean) => void;
+		register: (instance: NormalOrLazyModel<T>, overwriteExisting?: boolean) => void;
 	};
 }
