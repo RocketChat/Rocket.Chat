@@ -19,7 +19,6 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 	const messageListRef = useCallback(
 		(node: HTMLElement | null) => {
 			let lastMessageFocused: HTMLElement | null = null;
-			let triggeredByKeyboard = false;
 			let initialFocus = true;
 
 			if (!node) {
@@ -28,14 +27,6 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 
 			const massageListFocusManager = createFocusManager({
 				current: node,
-			});
-
-			document.addEventListener('mousedown', () => {
-				triggeredByKeyboard = false;
-			});
-
-			document.addEventListener('keydown', () => {
-				triggeredByKeyboard = true;
 			});
 
 			node.addEventListener('keydown', (e) => {
@@ -81,6 +72,8 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 			node.addEventListener(
 				'blur',
 				(e) => {
+					const triggeredByKeyboard = document.body.classList.contains('js-focus-visible');
+
 					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
 						return;
 					}
@@ -95,6 +88,7 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 			node.addEventListener(
 				'focus',
 				(e) => {
+					const triggeredByKeyboard = document.body.classList.contains('js-focus-visible');
 					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
 						return;
 					}
