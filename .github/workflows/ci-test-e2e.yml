@@ -29,7 +29,7 @@ on:
       transporter:
         type: string
       mongodb-version:
-        default: "['4.4', '6.0']"
+        default: "['5.0', '7.0']"
         required: false
         type: string
       release:
@@ -74,8 +74,8 @@ jobs:
   test:
     runs-on: ubuntu-20.04
     env:
-      RC_DOCKERFILE: ${{ matrix.mongodb-version == '6.0' && inputs.rc-dockerfile-alpine || inputs.rc-dockerfile }}
-      RC_DOCKER_TAG: ${{ matrix.mongodb-version == '6.0' && inputs.rc-docker-tag-alpine || inputs.rc-docker-tag }}
+      RC_DOCKERFILE: ${{ matrix.mongodb-version == '7.0' && inputs.rc-dockerfile-alpine || inputs.rc-dockerfile }}
+      RC_DOCKER_TAG: ${{ matrix.mongodb-version == '7.0' && inputs.rc-docker-tag-alpine || inputs.rc-docker-tag }}
 
     strategy:
       fail-fast: false
