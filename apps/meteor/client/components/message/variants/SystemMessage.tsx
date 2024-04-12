@@ -60,6 +60,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	return (
 		<MessageSystem
 			role='listitem'
+			aria-roledescription={t('system_message')}
 			tabIndex={0}
 			onClick={isSelecting ? toggleSelected : undefined}
 			isSelected={isSelected}
