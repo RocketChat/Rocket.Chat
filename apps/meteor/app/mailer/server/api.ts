@@ -170,7 +170,7 @@ export const sendNoWrap = async ({
 
 	const email = { to, from, replyTo, subject, html, text, headers };
 
-	const eventResult = await Apps?.triggerEvent(AppEvents.IPreEmailSent, { email });
+	const eventResult = await Apps.self?.triggerEvent(AppEvents.IPreEmailSent, { email });
 
 	setImmediate(() => Email.sendAsync(eventResult || email).catch((e) => console.error(e)));
 };

@@ -23,7 +23,7 @@ export const updateMessage = async function (
 	let messageData: IMessage = Object.assign({}, originalMessage, message);
 
 	// For the Rocket.Chat Apps :)
-	if (message && Apps && Apps.isLoaded()) {
+	if (message && Apps.self && Apps.isLoaded()) {
 		const prevent = await Apps.getBridges().getListenerBridge().messageEvent(AppEvents.IPreMessageUpdatedPrevent, messageData);
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-updating', 'A Rocket.Chat App prevented the message updating.');
@@ -76,7 +76,7 @@ export const updateMessage = async function (
 		},
 	);
 
-	if (Apps?.isLoaded()) {
+	if (Apps.self?.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
 		// so, we don't really care if it is successful or fails
 		void Apps.getBridges()?.getListenerBridge().messageEvent(AppEvents.IPostMessageUpdated, messageData);
