@@ -1,8 +1,8 @@
 import { Logger } from '@rocket.chat/logger';
-import debounce from 'lodash.debounce';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings/server';
+import { debounce } from '../../utils/debounce';
 import { SAMLUtils } from './lib/Utils';
 import { loadSamlServiceProviders, addSettings } from './lib/settings';
 

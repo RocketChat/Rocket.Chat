@@ -11,7 +11,6 @@ import type {
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { compact } from 'lodash';
 import mem from 'mem';
 import type {
 	Collection,
@@ -254,7 +253,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 		const subscriptions = await this.find(query, { projection: { 'u._id': 1 } }).toArray();
 
-		const users = compact(subscriptions.map((subscription) => subscription.u?._id).filter(Boolean));
+		const users = subscriptions.map((subscription) => subscription.u?._id).filter(Boolean);
 
 		// TODO remove dependency to other models - this logic should be inside a function/service
 		return Users.find<P>({ _id: { $in: users } }, options || {});

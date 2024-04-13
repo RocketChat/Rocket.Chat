@@ -1,6 +1,5 @@
-import { debounce } from 'lodash';
-
 import { settings } from '../../settings/server';
+import { debounce } from '../../utils/debounce';
 import RocketAdapter from './RocketAdapter.js';
 import SlackAdapter from './SlackAdapter.js';
 import { classLogger, connLogger } from './logger';

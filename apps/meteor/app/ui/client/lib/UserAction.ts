@@ -1,10 +1,10 @@
 import type { IExtras, IRoomActivity, IActionsObject, IUser } from '@rocket.chat/core-typings';
-import { debounce } from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveDict } from 'meteor/reactive-dict';
 
 import { settings } from '../../../settings/client';
 import { sdk } from '../../../utils/client/lib/SDKClient';
+import { debounce } from '../../../utils/debounce';
 
 const TIMEOUT = 15000;
 const RENEW = TIMEOUT / 3;
@@ -36,7 +36,7 @@ const shownName = function (user: IUser | null | undefined): string | undefined 
 	return user.username;
 };
 
-const emitActivities = debounce(async (rid: string, extras: IExtras): Promise<void> => {
+const emitActivities = debounce(async (rid: string, extras: IExtras) => {
 	const activities = roomActivities.get(extras?.tmid || rid) || new Set();
 	sdk.publish('notify-room', [`${rid}/${USER_ACTIVITY}`, shownName(Meteor.user() as unknown as IUser), [...activities], extras]);
 }, 500);
