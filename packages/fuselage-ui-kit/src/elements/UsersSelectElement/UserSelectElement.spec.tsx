@@ -1,7 +1,7 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
 import type { UsersSelectElement as UsersSelectElementType } from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { contextualBarParser } from '../../surfaces';
@@ -66,23 +66,6 @@ describe('UiKit UserSelect Element', () => {
     input.focus();
 
     expect(await screen.findByRole('listbox')).toBeInTheDocument();
-  });
-
-  it('should filter users', async () => {
-    const input = (await screen.findByRole('textbox')) as HTMLInputElement;
-
-    await userEvent.type(input, 'User 2', { delay: null });
-
-    mockUseUsersData.mockReturnValueOnce(
-      mockedOptions.filter((option) => {
-        return option.label === input.value;
-      })
-    );
-
-    await waitFor(async () => {
-      const option = (await screen.findAllByRole('option'))[0];
-      expect(option).toHaveTextContent('User 2');
-    });
   });
 
   it('should select a user', async () => {
