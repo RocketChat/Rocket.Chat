@@ -1,7 +1,7 @@
 import QueryString from 'querystring';
 import URL from 'url';
 
-import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import EJSON from 'ejson';
@@ -65,12 +65,15 @@ class E2E extends Emitter {
 
 	public privateKey: CryptoKey | undefined;
 
+	private timeout: ReturnType<typeof setInterval> | null;
+
 	constructor() {
 		super();
 		this.started = false;
 		this.enabled = new ReactiveVar(false);
 		this._ready = new ReactiveVar(false);
 		this.instancesByRoomId = {};
+		this.timeout = null;
 
 		this.on('ready', async () => {
 			this._ready.set(true);
@@ -519,19 +522,13 @@ class E2E extends Emitter {
 		return sdk.rest.get('/v1/e2e.fetchUsersWaitingForGroupKey');
 	}
 
-	provideUsersSuggestedGroupKeys(usersSuggestedGroupKeys) {
-		console.log('provideUsersGroupKey', usersSuggestedGroupKeys);
-		return sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', usersSuggestedGroupKeys);
+	provideUsersSuggestedGroupKeys(data: { usersSuggestedGroupKeys: Record<IRoom['_id'], { _id: IUser['_id']; key: string }[]> }) {
+		return sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', data);
 	}
 
-	async initiateKeyDistribution() {
-		const { usersWaitingForE2EKeys, hasMore } = await this.fetchUsersWithWaitingKeys();
-
-		console.log({ usersWaitingForE2EKeys, hasMore });
-
+	async getSuggestedE2EEKeys(usersWaitingForE2EKeys: Record<IRoom['_id'], { _id: IUser['_id']; public_key: string }[]>) {
 		const roomIds = Object.keys(usersWaitingForE2EKeys);
-		console.log({ roomIds });
-		const userKeysWithRooms = Object.fromEntries(
+		return Object.fromEntries(
 			(
 				await Promise.all(
 					roomIds.map(async (room) => {
@@ -553,10 +550,24 @@ class E2E extends Emitter {
 				)
 			).filter(isTruthy),
 		);
+	}
 
-		console.log({ userKeysWithRooms });
+	async initiateKeyDistribution() {
+		if (this.timeout) {
+			return;
+		}
 
-		await this.provideUsersSuggestedGroupKeys({ usersSuggestedGroupKeys: userKeysWithRooms });
+		this.timeout = setInterval(async () => {
+			const { usersWaitingForE2EKeys, hasMore } = await this.fetchUsersWithWaitingKeys();
+
+			if (!hasMore && this.timeout) {
+				clearTimeout(this.timeout);
+			}
+
+			const userKeysWithRooms = await this.getSuggestedE2EEKeys(usersWaitingForE2EKeys);
+
+			await this.provideUsersSuggestedGroupKeys({ usersSuggestedGroupKeys: userKeysWithRooms });
+		}, 10000);
 	}
 }
 
