@@ -127,5 +127,9 @@ export const addUserToRoom = async function (
 		await Team.addMember(inviter || userToBeAdded, userToBeAdded._id, room.teamId);
 	}
 
+	if (room.encrypted) {
+		await Rooms.addUserIdToE2EEQueueByRoomIds([room._id], userToBeAdded._id);
+	}
+
 	return true;
 };

@@ -64,6 +64,10 @@ export const removeUserFromRoom = async function (
 		await Team.removeMember(room.teamId, user._id);
 	}
 
+	if (room.encrypted) {
+		await Rooms.removeUserFromE2EEQueueByRoomIds([room._id], user._id);
+	}
+
 	// TODO: CACHE: maybe a queue?
 	await afterLeaveRoomCallback.run(user, room);
 
