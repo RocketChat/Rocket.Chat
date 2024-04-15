@@ -32,7 +32,7 @@ const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: 
 			annotation={t('You_can_do_from_account_preferences')}
 		>
 			<p>
-				<span>{t('E2E_password_reveal_text')}</span>
+				<span dangerouslySetInnerHTML={{ __html: t('E2E_password_reveal_text', { randomPassword }) }} />
 				<ExternalLink to={DOCS_URL} mis={4}>
 					{t('Learn_more_about_E2EE')}
 				</ExternalLink>
@@ -41,7 +41,7 @@ const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: 
 				{t('E2E_password_save_text')}
 			</Box>
 			<p>{t('Your_E2EE_password_is')}</p>
-			<CodeSnippet buttonText={hasCopied ? t('Copied') : t('Copy_password')} buttonDisabled={hasCopied} onClick={() => copy()}>
+			<CodeSnippet buttonText={hasCopied ? t('Copied') : t('Copy')} buttonDisabled={hasCopied} onClick={() => copy()} mbs={8}>
 				{randomPassword}
 			</CodeSnippet>
 		</GenericModal>
