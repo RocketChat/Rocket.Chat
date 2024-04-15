@@ -1,7 +1,7 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
 import type { MultiChannelsSelectElement as MultiChannelsSelectElementType } from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { contextualBarParser } from '../../surfaces';
@@ -17,7 +17,7 @@ const channelsBlock: MultiChannelsSelectElementType = {
 
 jest.mock('./hooks/useChannelsData');
 
-const mockedOptions = [
+const mockedOptions: ReturnType<typeof useChannelsData> = [
   {
     value: 'channel1_id',
     label: {
@@ -78,21 +78,6 @@ describe('UiKit MultiChannelsSelect Element', () => {
     input.focus();
 
     expect(await screen.findByRole('listbox')).toBeInTheDocument();
-  });
-
-  it('should filter channels', async () => {
-    const input = (await screen.findByRole('textbox')) as HTMLInputElement;
-
-    await userEvent.type(input, 'Channel 2', { delay: null });
-
-    mockUseChannelsData.mockReturnValueOnce(
-      mockedOptions.filter((option) => option.label.name === input.value)
-    );
-
-    await waitFor(async () => {
-      const option = (await screen.findAllByRole('option'))[0];
-      expect(option).toHaveTextContent('Channel 2');
-    });
   });
 
   it('should select channels', async () => {

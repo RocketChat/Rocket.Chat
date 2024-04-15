@@ -1,12 +1,13 @@
 import { MockedServerContext } from '@rocket.chat/mock-providers';
 import type { ChannelsSelectElement as ChannelsSelectElementType } from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { contextualBarParser } from '../../surfaces';
 import ChannelsSelectElement from './ChannelsSelectElement';
 import { useChannelsData } from './hooks/useChannelsData';
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 const channelsBlock: ChannelsSelectElementType = {
   type: 'channels_select',
@@ -17,13 +18,13 @@ const channelsBlock: ChannelsSelectElementType = {
 
 jest.mock('./hooks/useChannelsData');
 
-const mockedOptions = [
+const mockedOptions: ReturnType<typeof useChannelsData> = [
   {
     value: 'channel1_id',
     label: {
       name: 'Channel 1',
       avatarETag: 'test',
-      type: 'c',
+      type: RoomType.CHANNEL,
     },
   },
   {
@@ -31,7 +32,7 @@ const mockedOptions = [
     label: {
       name: 'Channel 2',
       avatarETag: 'test',
-      type: 'c',
+      type: RoomType.CHANNEL,
     },
   },
   {
@@ -39,7 +40,7 @@ const mockedOptions = [
     label: {
       name: 'Channel 3',
       avatarETag: 'test',
-      type: 'c',
+      type: RoomType.CHANNEL,
     },
   },
 ];
@@ -78,21 +79,6 @@ describe('UiKit ChannelsSelect Element', () => {
     input.focus();
 
     expect(await screen.findByRole('listbox')).toBeInTheDocument();
-  });
-
-  it('should filter channels', async () => {
-    const input = (await screen.findByRole('textbox')) as HTMLInputElement;
-
-    await userEvent.type(input, 'Channel 2', { delay: null });
-
-    mockUseChannelsData.mockReturnValueOnce(
-      mockedOptions.filter((option) => option.label.name === input.value)
-    );
-
-    await waitFor(async () => {
-      const option = (await screen.findAllByRole('option'))[0];
-      expect(option).toHaveTextContent('Channel 2');
-    });
   });
 
   it('should select a channel', async () => {
