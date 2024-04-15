@@ -5,6 +5,7 @@ import {
 	ise2eSetUserPublicAndPrivateKeysParamsPOST,
 	ise2eUpdateGroupKeyParamsPOST,
 } from '@rocket.chat/rest-typings';
+import { isE2EProvideUsersGroupKeyProps } from '@rocket.chat/rest-typings/dist/v1/e2e';
 import { Meteor } from 'meteor/meteor';
 
 import { fetchUsersWaitingForGroupKey } from '../../../e2e/server/functions/fetchUsersWaitingForGroupKey';
@@ -255,6 +256,7 @@ API.v1.addRoute(
 	'e2e.provideUsersSuggestedGroupKeys',
 	{
 		authRequired: true,
+		validateParams: isE2EProvideUsersGroupKeyProps,
 	},
 	{
 		async post() {
@@ -263,6 +265,8 @@ API.v1.addRoute(
 			if (!usersSuggestedGroupKeys) {
 				return API.v1.failure();
 			}
+
+			console.log({ usersSuggestedGroupKeys });
 
 			await provideUsersSuggestedGroupKeys(usersSuggestedGroupKeys);
 
