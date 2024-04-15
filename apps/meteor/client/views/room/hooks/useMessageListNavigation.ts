@@ -72,7 +72,10 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 			node.addEventListener(
 				'blur',
 				(e) => {
-					if (!(e.relatedTarget as HTMLElement)?.classList.contains('focus-visible') || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
+					if (
+						!(e.relatedTarget as HTMLElement)?.classList.contains('focus-visible') ||
+						!(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)
+					) {
 						return;
 					}
 
