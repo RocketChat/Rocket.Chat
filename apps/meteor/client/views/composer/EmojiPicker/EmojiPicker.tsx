@@ -188,6 +188,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 			<EmojiPickerContainer role='dialog' aria-label={t('Emoji_picker')} onKeyDown={handleKeyDown}>
 				<EmojiPickerHeader>
 					<TextInput
+						// FIXME: remove autoFocus prop when rewriting the emojiPicker dropdown
 						autoFocus
 						ref={mergedTextInputRef}
 						value={searchTerm}
