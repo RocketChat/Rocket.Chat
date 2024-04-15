@@ -276,10 +276,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	removeDirectRoomContainingUsername(username: string): Promise<DeleteResult>;
 	countDiscussions(): Promise<number>;
 	setOTRForDMByRoomID(rid: string): Promise<UpdateResult>;
-	addUserIdToE2EEQueue(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult>;
-	addUserIdToE2EEQueueByRoomId(roomId: IRoom['_id'], uid: IUser['_id']): Promise<Document | UpdateResult>;
-	removeUserFromE2EEQueue(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult>;
+	addUserIdToE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult>;
+	removeUserFromE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult>;
 	findRoomsByRoomIdsWithE2EEQueue(roomIds: IRoom['_id'][], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	removeE2EEQueueByRoomIds(roomIds: IRoom['_id'][]): Promise<Document | UpdateResult>;
-	removeUserFromE2EEQueueByRoomId(roomId: IRoom['_id'], uid: IUser['_id']): Promise<Document | UpdateResult>;
 }

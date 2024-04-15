@@ -57,9 +57,9 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 const addUserToE2EKeysWaitingQueue = async (uid: string): Promise<void> => {
 	const subscribedRoomIds = (await Subscriptions.findByUserId(uid, { projection: { rid: 1 } }).toArray()).map((sub) => sub.rid);
 
-	await Rooms.removeUserFromE2EEQueue(subscribedRoomIds, uid);
+	await Rooms.removeUserFromE2EEQueueByRoomIds(subscribedRoomIds, uid);
 
-	await Rooms.addUserIdToE2EEQueue(subscribedRoomIds, uid);
+	await Rooms.addUserIdToE2EEQueueByRoomIds(subscribedRoomIds, uid);
 };
 
 export async function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean): Promise<boolean> {

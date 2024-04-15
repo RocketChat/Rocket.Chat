@@ -255,7 +255,6 @@ export class E2ERoom extends Emitter {
 		// Get existing group key
 		// const keyID = groupKey.slice(0, 12);
 		groupKey = groupKey.slice(12);
-		console.log({ groupKey });
 		groupKey = Base64.decode(groupKey);
 
 		// Decrypt obtained encrypted session key
@@ -491,7 +490,6 @@ export class E2ERoom extends Emitter {
 			users.map(async (user) => {
 				const { _id, public_key } = user;
 				const key = await this.encryptGroupKeyForParticipant(public_key);
-				console.log('key -', { _id, key });
 				return { _id, key };
 			}),
 		);

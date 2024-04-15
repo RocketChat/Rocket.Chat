@@ -13,8 +13,6 @@ export const provideUsersSuggestedGroupKeys = async (
 		throw new Meteor.Error('error-invalid-user', 'Invalid user');
 	}
 
-	console.log('provideUserGroup key - ', usersSuggestedGroupKeys);
-
 	const roomIds = Object.keys(usersSuggestedGroupKeys);
 
 	if (!roomIds) {

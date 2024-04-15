@@ -23,11 +23,11 @@ export async function handleSuggestedGroupKey(
 
 	if (handle === 'accept') {
 		await Subscriptions.setGroupE2EKey(sub._id, suggestedKey);
-		await Rooms.removeUserFromE2EEQueueByRoomId(sub.rid, userId);
+		await Rooms.removeUserFromE2EEQueueByRoomIds([sub.rid], userId);
 	}
 
 	if (handle === 'reject') {
-		await Rooms.addUserIdToE2EEQueueByRoomId(sub.rid, userId);
+		await Rooms.addUserIdToE2EEQueueByRoomIds([sub.rid], userId);
 	}
 
 	await Subscriptions.unsetGroupE2ESuggestedKey(sub._id);

@@ -22,13 +22,12 @@ export async function fetchUsersWaitingForGroupKey(): Promise<{
 
 	const hasMore = count > 10;
 	const rooms = await cursor.limit(10).toArray();
-	console.log({ rooms: JSON.stringify(rooms) });
+
 	const usersWaitingForE2EKeys = Object.fromEntries(
 		(
 			await Promise.all(
 				rooms.map(async (room) => {
-					const userIds = room.usersWaitingForE2EKeys;
-					// ?.filter(uid => uid !== userId);
+					const userIds = room.usersWaitingForE2EKeys?.filter((uid) => uid !== userId);
 
 					if (!userIds) {
 						return;
@@ -44,8 +43,6 @@ export async function fetchUsersWaitingForGroupKey(): Promise<{
 			)
 		).filter(isTruthy),
 	);
-
-	console.log({ usersWaitingForE2EKeys: JSON.stringify(usersWaitingForE2EKeys), hasMore });
 
 	return { usersWaitingForE2EKeys, hasMore };
 }
