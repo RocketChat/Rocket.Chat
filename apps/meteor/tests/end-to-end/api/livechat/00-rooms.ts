@@ -18,7 +18,7 @@ import type { Response } from 'supertest';
 import type { SuccessResult } from '../../../../app/api/server/definition';
 import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
 import { createCustomField } from '../../../data/livechat/custom-fields';
-import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import { createDepartmentWithAnOfflineAgent, createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../../data/livechat/department';
 import { createSLA, getRandomPriority } from '../../../data/livechat/priorities';
 import {
 	createVisitor,
@@ -32,6 +32,7 @@ import {
 	closeOmnichannelRoom,
 	createDepartment,
 	fetchMessages,
+	makeAgentUnavailable,
 } from '../../../data/livechat/rooms';
 import { saveTags } from '../../../data/livechat/tags';
 import type { DummyResponse } from '../../../data/livechat/utils';
@@ -700,6 +701,35 @@ describe('LIVECHAT - rooms', function () {
 			await deleteUser(initialAgentAssignedToChat);
 			await deleteUser(forwardChatToUser);
 		});
+
+		(IS_EE ? it : it.skip)('should return error message when transferred to a offline agent', async () => {
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+			const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+			const { department: forwardToOfflineDepartment } = await createDepartmentWithAnOfflineAgent({ allowReceiveForwardOffline: false });
+
+			const newVisitor = await createVisitor(initialDepartment._id);
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			await request
+				.post(api('livechat/room.forward'))
+				.set(credentials)
+				.send({
+					roomId: newRoom._id,
+					departmentId: forwardToOfflineDepartment._id,
+					clientAction: true,
+					comment: 'test comment',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'error-no-agents-online-in-department');
+				});
+
+			await deleteDepartment(initialDepartment._id);
+			await deleteDepartment(forwardToOfflineDepartment._id);
+		});
+
 		(IS_EE ? it : it.skip)('should return a success message when transferred successfully to a department', async () => {
 			const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
 			const { department: forwardToDepartment } = await createDepartmentWithAnOnlineAgent();
@@ -734,6 +764,112 @@ describe('LIVECHAT - rooms', function () {
 			expect((latestRoom.lastMessage as any)?.transferData?.scope).to.be.equal('department');
 			expect((latestRoom.lastMessage as any)?.transferData?.nextDepartment?._id).to.be.equal(forwardToDepartment._id);
 		});
+		(IS_EE ? it : it.skip)(
+			'should return a success message when transferred successfully to an offline department when the department accepts it',
+			async () => {
+				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnOfflineAgent({ allowReceiveForwardOffline: true });
+
+				const newVisitor = await createVisitor(initialDepartment._id);
+				const newRoom = await createLivechatRoom(newVisitor.token);
+
+				await request
+					.post(api('livechat/room.forward'))
+					.set(credentials)
+					.send({
+						roomId: newRoom._id,
+						departmentId: forwardToOfflineDepartment._id,
+						clientAction: true,
+						comment: 'test comment',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				await deleteDepartment(initialDepartment._id);
+				await deleteDepartment(forwardToOfflineDepartment._id);
+			},
+		);
+		(IS_EE ? it : it.skip)('inquiry should be taken automatically when agent on department is online again', async () => {
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+			const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+			const { department: forwardToOfflineDepartment } = await createDepartmentWithAnOfflineAgent({ allowReceiveForwardOffline: true });
+
+			const newVisitor = await createVisitor(initialDepartment._id);
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			await request.post(api('livechat/room.forward')).set(credentials).send({
+				roomId: newRoom._id,
+				departmentId: forwardToOfflineDepartment._id,
+				clientAction: true,
+				comment: 'test comment',
+			});
+
+			await makeAgentAvailable();
+
+			const latestRoom = await getLivechatRoomInfo(newRoom._id);
+
+			expect(latestRoom).to.have.property('departmentId');
+			expect(latestRoom.departmentId).to.be.equal(forwardToOfflineDepartment._id);
+
+			expect(latestRoom).to.have.property('lastMessage');
+			expect(latestRoom.lastMessage?.t).to.be.equal('livechat_transfer_history');
+			expect(latestRoom.lastMessage?.u?.username).to.be.equal(adminUsername);
+			expect((latestRoom.lastMessage as any)?.transferData?.comment).to.be.equal('test comment');
+			expect((latestRoom.lastMessage as any)?.transferData?.scope).to.be.equal('department');
+			expect((latestRoom.lastMessage as any)?.transferData?.nextDepartment?._id).to.be.equal(forwardToOfflineDepartment._id);
+
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+			await deleteDepartment(initialDepartment._id);
+			await deleteDepartment(forwardToOfflineDepartment._id);
+		});
+
+		(IS_EE ? it : it.skip)('when manager forward to offline department the inquiry should be set to the queue', async () => {
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+			const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
+			const { department: forwardToOfflineDepartment, agent: offlineAgent } = await createDepartmentWithAnOfflineAgent({
+				allowReceiveForwardOffline: true,
+			});
+
+			const newVisitor = await createVisitor(initialDepartment._id);
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			await makeAgentUnavailable(offlineAgent.credentials);
+
+			const manager: IUser = await createUser();
+			const managerCredentials = await login(manager.username, password);
+			await createManager(manager.username);
+
+			await request.post(api('livechat/room.forward')).set(managerCredentials).send({
+				roomId: newRoom._id,
+				departmentId: forwardToOfflineDepartment._id,
+				clientAction: true,
+				comment: 'test comment',
+			});
+
+			await request
+				.get(api(`livechat/queue`))
+				.set(credentials)
+				.query({
+					count: 1,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.queue).to.be.an('array');
+					expect(res.body.queue[0].chats).not.to.undefined;
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+				});
+
+			await deleteDepartment(initialDepartment._id);
+			await deleteDepartment(forwardToOfflineDepartment._id);
+		});
+
 		let roomId: string;
 		let visitorToken: string;
 		(IS_EE ? it : it.skip)('should return a success message when transferring to a fallback department', async () => {

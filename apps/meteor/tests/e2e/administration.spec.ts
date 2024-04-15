@@ -104,8 +104,12 @@ test.describe.parallel('administration', () => {
 				await poAdmin.inputSearchRooms.type(targetChannel);
 				await poAdmin.getRoomRow(targetChannel).click();
 				await poAdmin.defaultLabel.click();
-				await poAdmin.btnSave.click();
-	
+
+				await test.step('should close contextualbar after saving', async () => {
+					await poAdmin.btnSave.click();
+					await expect(poAdmin.page).toHaveURL(new RegExp('/admin/rooms$'));
+				});
+
 				await poAdmin.getRoomRow(targetChannel).click();
 				await expect(poAdmin.defaultInput).toBeChecked();
 			});
@@ -118,6 +122,21 @@ test.describe.parallel('administration', () => {
 
 				await poAdmin.getRoomRow(targetChannel).click();
 				await expect(poAdmin.favoriteInput).toBeChecked();
+			});
+
+			test('should see favorite switch disabled when default is not true', async () => {
+				await poAdmin.inputSearchRooms.type(targetChannel);
+				await poAdmin.getRoomRow(targetChannel).click();
+				await poAdmin.defaultLabel.click();
+
+				await expect(poAdmin.favoriteInput).toBeDisabled();
+			});
+
+			test('should see favorite switch enabled when default is true', async () => {
+				await poAdmin.inputSearchRooms.type(targetChannel);
+				await poAdmin.getRoomRow(targetChannel).click();
+
+				await expect(poAdmin.favoriteInput).toBeEnabled();
 			});
 		});
 	});
@@ -137,13 +156,13 @@ test.describe.parallel('administration', () => {
 	test.describe('Mailer', () => {
 		test.beforeEach(async ({ page }) => {
 			await page.goto('/admin/mailer');
-		})
+		});
 
 		test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
-		})
-	})
+		});
+	});
 
 	test.describe('Settings', () => {
 		test.describe('General', () => {

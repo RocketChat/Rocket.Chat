@@ -1,6 +1,7 @@
 import dns from 'dns';
 import * as util from 'util';
 
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Message, VideoConf, api, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelRoom,
@@ -42,7 +43,6 @@ import moment from 'moment-timezone';
 import type { Filter, FindCursor, UpdateFilter } from 'mongodb';
 import UAParser from 'ua-parser-js';
 
-import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
@@ -329,8 +329,8 @@ class LivechatClass {
 			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
 			 * in the next major version of the Apps-Engine
 			 */
-			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
-			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
+			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
+			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
 		});
 		if (process.env.TEST_MODE) {
 			await callbacks.run('livechat.closeRoom', {
@@ -1126,6 +1126,11 @@ class LivechatClass {
 			'Livechat_show_agent_info',
 			'Livechat_clear_local_storage_when_chat_ended',
 			'Livechat_history_monitor_type',
+			'Livechat_hide_system_messages',
+			'Livechat_widget_position',
+			'Livechat_background',
+			'Assets_livechat_widget_logo',
+			'Livechat_hide_watermark',
 		] as const;
 
 		type SettingTypes = (typeof validSettings)[number] | 'Livechat_Show_Connecting';
@@ -1421,7 +1426,7 @@ class LivechatClass {
 		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
 
 		setImmediate(() => {
-			void Apps.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
+			void Apps.self?.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
 		});
 
 		return ret;
@@ -1787,7 +1792,7 @@ class LivechatClass {
 		await LivechatRooms.saveRoomById(roomData);
 
 		setImmediate(() => {
-			void Apps.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
+			void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
 		});
 
 		if (guestData?.name?.trim().length) {
