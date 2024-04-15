@@ -4,7 +4,6 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Messages, EmojiCustom, Rooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../../server/lib/i18n';
@@ -70,7 +69,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 	if (userAlreadyReacted) {
 		const oldMessage = JSON.parse(JSON.stringify(message));
 		removeUserReaction(message, reaction, user.username as string);
-		if (_.isEmpty(message.reactions)) {
+		if (Object.getOwnPropertyNames(message.reactions).length === 0) {
 			delete message.reactions;
 			if (isTheLastMessage(room, message)) {
 				await Rooms.unsetReactionsInLastMessage(room._id);

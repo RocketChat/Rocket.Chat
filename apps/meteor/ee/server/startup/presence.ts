@@ -2,9 +2,9 @@ import { Presence } from '@rocket.chat/core-services';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import { throttle } from 'underscore';
 
-// update connections count every 30 seconds
+import { throttle } from '../../../app/utils/throttle';
+
 const updateConns = throttle(function _updateConns() {
 	void InstanceStatus.updateConnections(Meteor.server.sessions.size);
 }, 30000);

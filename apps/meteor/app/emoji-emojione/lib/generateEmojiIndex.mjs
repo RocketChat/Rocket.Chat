@@ -5,7 +5,6 @@
 // node --experimental-modules generateEmojiIndex.mjs
 import fs from 'fs';
 import nsg from 'node-sprite-generator';
-import _ from 'underscore';
 import gm from 'gm'; // lgtm[js/unused-local-variable]
 
 const assetFolder = '../../../node_modules/emojione-assets';
@@ -26,7 +25,7 @@ function generateEmojiPicker(data) {
 	let toneList = [];
 	let emojisByCategory = {};
 
-	_.sortBy(Object.entries(emojiList), (a) => a[1].order).forEach(([code, emoji]) => {
+	Object.entries(emojiList).sort((a) => a[1].order).forEach(([code, emoji]) => {
 		if (emoji && emoji.shortname) {
 			const toneIndex = emoji.shortname.indexOf('_tone');
 			if (toneIndex !== -1) {
@@ -114,10 +113,10 @@ function generateEmojiPicker(data) {
 	for (let category in emojisByCategory) {
 		let srcList = [];
 		let diversityList = [];
-		const emojis = _.filter(emojiList, (x) => x.category === category);
+		const emojis = emojiList.filter((x) => x.category === category);
 		const spritePath = `../../../public/packages/emojione/${category}-sprites.png`;
 
-		_.each(emojis, function (emoji) {
+		emojis.forEach((emoji) => {
 			srcList.push(`${assetFolder}/png/64/${emoji.code_points.base}.png`);
 			if (emoji.diversity) {
 				diversityList[emoji.code_points.base] = true;

@@ -4,7 +4,6 @@
 
 import type { IMessage, IProviderMetadata, ISupportedLanguage, ITranslationResult, MessageAttachment } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import _ from 'underscore';
 
 import { i18n } from '../../../server/lib/i18n';
 import { settings } from '../../settings/server';
@@ -116,7 +115,7 @@ class MsAutoTranslate extends AutoTranslate {
 		let translations: { [k: string]: string } = {};
 		const supportedLanguages = await this.getSupportedLanguages('en');
 		targetLanguages = targetLanguages.map((language) => {
-			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
+			if (language.indexOf('-') !== -1 && !supportedLanguages.find((lang) => lang.language === language)) {
 				language = language.substr(0, 2);
 			}
 			return language;

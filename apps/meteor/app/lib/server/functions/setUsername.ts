@@ -3,12 +3,12 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Invites, Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
+import { escapeHtml } from '../../../utils/escapeHtml';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
@@ -46,12 +46,12 @@ export const setUsernameWithValidation = async (userId: string, username: string
 	if (!nameValidation.test(username)) {
 		throw new Meteor.Error(
 			'username-invalid',
-			`${_.escape(username)} is not a valid username, use only letters, numbers, dots, hyphens and underscores`,
+			`${escapeHtml(username)} is not a valid username, use only letters, numbers, dots, hyphens and underscores`,
 		);
 	}
 
 	if (!(await checkUsernameAvailability(username))) {
-		throw new Meteor.Error('error-field-unavailable', `<strong>${_.escape(username)}</strong> is already in use :(`, {
+		throw new Meteor.Error('error-field-unavailable', `<strong>${escapeHtml(username)}</strong> is already in use :(`, {
 			method: 'setUsername',
 			field: username,
 		});

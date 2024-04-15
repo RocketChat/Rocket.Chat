@@ -1,7 +1,6 @@
-import _ from 'underscore';
-
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
+import { debounce } from '../../../utils/debounce';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../../ufs/Webdav/server';
 
@@ -45,7 +44,7 @@ const WebdavUserDataFiles = new FileUploadClass({
 	// store setted bellow
 });
 
-const configure = _.debounce(() => {
+const configure = debounce(() => {
 	const uploadFolderPath = settings.get('FileUpload_Webdav_Upload_Folder_Path');
 	const server = settings.get('FileUpload_Webdav_Server_URL');
 	const username = settings.get('FileUpload_Webdav_Username');

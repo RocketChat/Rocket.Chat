@@ -1,11 +1,10 @@
-import _ from 'underscore';
-
 import { logger } from '../../../../server/features/EmailInbox/logger';
 import { settings } from '../../../settings/server';
+import { debounce } from '../../../utils/debounce';
 import { DirectReplyIMAPInterceptor, POP3Helper } from '../lib/interceptDirectReplyEmails.js';
 
 let client: DirectReplyIMAPInterceptor | POP3Helper | undefined;
-const startEmailInterceptor = _.debounce(async () => {
+const startEmailInterceptor = debounce(async () => {
 	logger.info('Email Interceptor...');
 	const protocol = settings.get('Direct_Reply_Protocol');
 

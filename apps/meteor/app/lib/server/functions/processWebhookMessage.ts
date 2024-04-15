@@ -1,6 +1,5 @@
 import type { IMessage, IUser, RequiredField, MessageAttachment } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { trim } from '../../../../lib/utils/stringUtils';
@@ -34,9 +33,50 @@ type DefaultValues = {
 	emoji: string;
 };
 
+type User = IUser & { username: RequiredField<IUser, 'username'> };
+
+const getRoom = async (nameOrId: string, channelType: string, user: User) => {
+	switch (channelType) {
+		case '#':
+			return getRoomByNameOrIdWithOptionToJoin({
+				user,
+				nameOrId,
+				joinChannel: true,
+			});
+		case '@':
+			return getRoomByNameOrIdWithOptionToJoin({
+				user,
+				nameOrId,
+				type: 'd',
+			});
+		default:
+			nameOrId = channelType + nameOrId;
+
+			// Try to find the room by id or name if they didn't include the prefix.
+			const room = await getRoomByNameOrIdWithOptionToJoin({
+				user,
+				nameOrId,
+				joinChannel: true,
+				errorOnEmpty: false,
+			});
+
+			if (room) {
+				return room;
+			}
+
+			// We didn't get a room, let's try finding direct messages
+			return getRoomByNameOrIdWithOptionToJoin({
+				user,
+				nameOrId,
+				tryDirectByUserIdOnly: true,
+				type: 'd',
+			});
+	}
+};
+
 export const processWebhookMessage = async function (
 	messageObj: Payload,
-	user: IUser & { username: RequiredField<IUser, 'username'> },
+	user: User,
 	defaultValues: DefaultValues = { channel: '', alias: '', avatar: '', emoji: '' },
 ) {
 	const sentData = [];
@@ -46,51 +86,12 @@ export const processWebhookMessage = async function (
 	for await (const channel of channels) {
 		const channelType = channel[0];
 
-		let channelValue = channel.substr(1);
-		let room;
+		const channelValue = channel.substring(1);
 
-		switch (channelType) {
-			case '#':
-				room = await getRoomByNameOrIdWithOptionToJoin({
-					user,
-					nameOrId: channelValue,
-					joinChannel: true,
-				});
-				break;
-			case '@':
-				room = await getRoomByNameOrIdWithOptionToJoin({
-					user,
-					nameOrId: channelValue,
-					type: 'd',
-				});
-				break;
-			default:
-				channelValue = channelType + channelValue;
+		const room = await getRoom(channelValue, channelType, user);
 
-				// Try to find the room by id or name if they didn't include the prefix.
-				room = await getRoomByNameOrIdWithOptionToJoin({
-					user,
-					nameOrId: channelValue,
-					joinChannel: true,
-					errorOnEmpty: false,
-				});
-				if (room) {
-					break;
-				}
-
-				// We didn't get a room, let's try finding direct messages
-				room = await getRoomByNameOrIdWithOptionToJoin({
-					user,
-					nameOrId: channelValue,
-					tryDirectByUserIdOnly: true,
-					type: 'd',
-				});
-				if (room) {
-					break;
-				}
-
-				// No room, so throw an error
-				throw new Meteor.Error('invalid-channel');
+		if (!room) {
+			throw new Meteor.Error('invalid-channel');
 		}
 
 		if (messageObj.attachments && !Array.isArray(messageObj.attachments)) {
@@ -111,13 +112,16 @@ export const processWebhookMessage = async function (
 			tmid: messageObj.tmid,
 		};
 
-		if (!_.isEmpty(messageObj.icon_url) || !_.isEmpty(messageObj.avatar)) {
+		if ((messageObj.icon_url && messageObj.icon_url.length > 0) || (messageObj.avatar && messageObj.avatar.length > 0)) {
 			message.avatar = messageObj.icon_url || messageObj.avatar;
-		} else if (!_.isEmpty(messageObj.icon_emoji) || !_.isEmpty(messageObj.emoji)) {
+		} else if (
+			(messageObj.icon_emoji && messageObj.icon_emoji.length > 0) ||
+			(messageObj.emoji && messageObj.icon_emoji && messageObj.icon_emoji.length > 0)
+		) {
 			message.emoji = messageObj.icon_emoji || messageObj.emoji;
-		} else if (!_.isEmpty(defaultValues.avatar)) {
+		} else if (defaultValues.avatar?.length > 0) {
 			message.avatar = defaultValues.avatar;
-		} else if (!_.isEmpty(defaultValues.emoji)) {
+		} else if (defaultValues.emoji?.length > 0) {
 			message.emoji = defaultValues.emoji;
 		}
 

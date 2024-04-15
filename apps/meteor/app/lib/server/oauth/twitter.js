@@ -1,6 +1,5 @@
 import { Match, check } from 'meteor/check';
 import Twit from 'twit';
-import _ from 'underscore';
 
 import { registerAccessTokenService } from './oauth';
 
@@ -18,7 +17,7 @@ const getIdentity = async function (accessToken, appId, appSecret, accessTokenSe
 
 		return result.data;
 	} catch (err) {
-		throw _.extend(new Error(`Failed to fetch identity from Twwiter. ${err.message}`), {
+		throw Object.assign(new Error(`Failed to fetch identity from Twwiter. ${err.message}`), {
 			response: err.response,
 		});
 	}
@@ -43,8 +42,8 @@ registerAccessTokenService('twitter', async (options) => {
 		expiresAt: +new Date() + 1000 * parseInt(options.expiresIn, 10),
 	};
 
-	const fields = _.pick(identity, whitelistedFields);
-	_.extend(serviceData, fields);
+	const fields = Object.fromEntries(Object.entries(identity).filter(([prop]) => whitelistedFields.includes(prop)));
+	Object.assign(serviceData, fields);
 
 	return {
 		serviceData,

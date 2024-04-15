@@ -7,7 +7,6 @@ import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import client from 'prom-client';
 import gcStats from 'prometheus-gc-stats';
-import _ from 'underscore';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { getControl } from '../../../../server/lib/migrations';
@@ -36,7 +35,7 @@ const setPrometheusData = async (): Promise<void> => {
 	const authenticatedSessions = sessions.filter((s) => s.userId);
 	metrics.ddpSessions.set(Meteor.server.sessions.size);
 	metrics.ddpAuthenticatedSessions.set(authenticatedSessions.length);
-	metrics.ddpConnectedUsers.set(_.unique(authenticatedSessions.map((s) => s.userId)).length);
+	metrics.ddpConnectedUsers.set([...new Set(authenticatedSessions.map((s) => s.userId))].length);
 
 	// Apps metrics
 	const { totalInstalled, totalActive, totalFailed } = getAppsStatistics();

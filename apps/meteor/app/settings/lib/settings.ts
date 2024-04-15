@@ -1,6 +1,5 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { sdk } from '../../utils/client/lib/SDKClient';
 
@@ -11,6 +10,10 @@ interface ISettingRegexCallbacks {
 	regex: RegExp;
 	callbacks: SettingCallback[];
 }
+
+const isRegExp = (obj: unknown): obj is RegExp => {
+	return toString.call(obj) === '[object RegExp]';
+};
 
 export class SettingsBase {
 	private callbacks = new Map<string, SettingCallback[]>();
@@ -42,7 +45,7 @@ export class SettingsBase {
 					callback(key, value);
 				});
 			}
-			if (_.isRegExp(_id) && Meteor.settings) {
+			if (isRegExp(_id) && Meteor.settings) {
 				return Object.keys(Meteor.settings).forEach((key) => {
 					if (!_id.test(key)) {
 						return;
@@ -65,7 +68,7 @@ export class SettingsBase {
 			return;
 		}
 
-		if (_.isRegExp(_id)) {
+		if (isRegExp(_id)) {
 			return Object.keys(Meteor.settings).reduce((items: SettingComposedValue<T>[], key) => {
 				const value = Meteor.settings[key];
 				if (_id.test(key)) {
@@ -118,7 +121,7 @@ export class SettingsBase {
 		// 	callback key, Meteor.settings[_id], false
 		const keys: Array<string | RegExp> = Array.isArray(key) ? key : [key];
 		keys.forEach((k) => {
-			if (_.isRegExp(k)) {
+			if (isRegExp(k)) {
 				if (!this.regexCallbacks.has(k.source)) {
 					this.regexCallbacks.set(k.source, {
 						regex: k,

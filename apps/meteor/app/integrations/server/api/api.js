@@ -1,6 +1,5 @@
 import { Integrations, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import _ from 'underscore';
 
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
@@ -153,7 +152,7 @@ async function executeIntegrationRest() {
 
 	// TODO: Turn this into an option on the integrations - no body means a success
 	// TODO: Temporary fix for https://github.com/RocketChat/Rocket.Chat/issues/7770 until the above is implemented
-	if (!this.bodyParams || (_.isEmpty(this.bodyParams) && !this.integration.scriptEnabled)) {
+	if (!this.bodyParams || (Object.getOwnPropertyNames(this.bodyParams).length === 0 && !this.integration.scriptEnabled)) {
 		// return RocketChat.API.v1.failure('body-empty');
 		return API.v1.success();
 	}
@@ -166,7 +165,7 @@ async function executeIntegrationRest() {
 
 	try {
 		const message = await processWebhookMessage(this.bodyParams, this.user, defaultValues);
-		if (_.isEmpty(message)) {
+		if (Object.getOwnPropertyNames(message).length === 0) {
 			return API.v1.failure('unknown-error');
 		}
 

@@ -2,7 +2,6 @@ import { Integrations, Users, Rooms, Messages } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
@@ -29,7 +28,7 @@ class RocketChatIntegrationHandler {
 			outgoingLogger.debug('The integration doesnt rely on channels.');
 			// We don't use any channels, so it's special ;)
 			channels = ['__any'];
-		} else if (_.isEmpty(record.channel)) {
+		} else if (Object.getOwnPropertyNames(record.channel).length === 0) {
 			outgoingLogger.debug('The integration had an empty channel property, so it is going on all the public channels.');
 			channels = ['all_public_channels'];
 		} else {

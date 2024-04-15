@@ -2,7 +2,6 @@ import type { IOmnichannelRoom, IRoom, RoomType } from '@rocket.chat/core-typing
 import { Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { canAccessRoomAsync } from '../../../app/authorization/server';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
@@ -22,7 +21,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 const roomMap = (record: IRoom | IOmnichannelRoom) => {
-	return _.pick(record, ...Object.keys(roomFields)) as PublicRoom;
+	return Object.fromEntries(Object.entries(record).filter(([prop]) => Object.keys(roomFields).includes(prop))) as PublicRoom;
 };
 
 Meteor.methods<ServerMethods>({

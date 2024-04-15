@@ -11,7 +11,6 @@ import { Logger } from '@rocket.chat/logger';
 import { Messages, Subscriptions } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { callbacks } from '../../../lib/callbacks';
 import { isTruthy } from '../../../lib/isTruthy';
@@ -304,7 +303,7 @@ export abstract class AutoTranslate {
 				targetMessage = this.tokenize(targetMessage);
 
 				const translations = await this._translateMessage(targetMessage, targetLanguages);
-				if (!_.isEmpty(translations)) {
+				if (Object.getOwnPropertyNames(translations).length > 0) {
 					await Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider] || '');
 					this.notifyTranslatedMessage(message._id);
 				}
@@ -320,7 +319,7 @@ export abstract class AutoTranslate {
 						const attachmentMessage = { ...attachment, text: translatedText };
 						const translations = await this._translateAttachmentDescriptions(attachmentMessage, targetLanguages);
 
-						if (!_.isEmpty(translations)) {
+						if (Object.getOwnPropertyNames(translations).length > 0) {
 							await Messages.addAttachmentTranslations(message._id, String(index), translations);
 							this.notifyTranslatedMessage(message._id);
 						}

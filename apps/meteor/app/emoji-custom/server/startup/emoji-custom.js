@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import _ from 'underscore';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { RocketChatFile } from '../../../file/server';
@@ -38,7 +37,7 @@ Meteor.startup(() => {
 	return WebApp.connectHandlers.use('/emoji-custom/', async (req, res /* , next*/) => {
 		const params = { emoji: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
 
-		if (_.isEmpty(params.emoji)) {
+		if (params.emoji === '') {
 			res.writeHead(403);
 			res.write('Forbidden');
 			res.end();

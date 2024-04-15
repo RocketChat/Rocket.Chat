@@ -2,10 +2,10 @@ import { hashLoginToken } from '@rocket.chat/account-utils';
 import { Users } from '@rocket.chat/models';
 import { Cookies } from 'meteor/ostrio:cookies';
 import sharp from 'sharp';
-import { throttle } from 'underscore';
 
 import { settings } from '../../../app/settings/server';
 import { getAvatarColor } from '../../../app/utils/lib/getAvatarColor';
+import { throttle } from '../../../app/utils/throttle';
 
 const FALLBACK_LAST_MODIFIED = 'Thu, 01 Jan 2015 00:00:00 GMT';
 

@@ -4,7 +4,6 @@ import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { callbacks } from '../../../lib/callbacks';
 import { sleep } from '../../../lib/utils/sleep';
@@ -170,7 +169,7 @@ export default class RocketAdapter {
 			await slack.postMessage(slack.getSlackChannel(rocketMessage.rid), rocketMessage);
 		} else {
 			// They want to limit to certain groups
-			const outSlackChannels = _.pluck(settings.get('SlackBridge_Out_Channels'), '_id') || [];
+			const outSlackChannels = settings.get('SlackBridge_Out_Channels').map((value) => value._id) || [];
 			// rocketLogger.debug('Out SlackChannels: ', outSlackChannels);
 			if (outSlackChannels.indexOf(rocketMessage.rid) !== -1) {
 				await slack.postMessage(slack.getSlackChannel(rocketMessage.rid), rocketMessage);
@@ -457,7 +456,7 @@ export default class RocketAdapter {
 	async createAndSaveMessage(rocketChannel, rocketUser, slackMessage, rocketMsgDataDefaults, isImporting, slack) {
 		if (slackMessage.type === 'message') {
 			let rocketMsgObj = {};
-			if (!_.isEmpty(slackMessage.subtype)) {
+			if (Object.getOwnPropertyNames(slackMessage.subtype).length > 0) {
 				rocketMsgObj = await slack.processSubtypedMessage(rocketChannel, rocketUser, slackMessage, isImporting);
 				if (!rocketMsgObj) {
 					return;
@@ -474,7 +473,7 @@ export default class RocketAdapter {
 
 				this.addAliasToMsg(rocketUser.username, rocketMsgObj);
 			}
-			_.extend(rocketMsgObj, rocketMsgDataDefaults);
+			Object.assign(rocketMsgObj, rocketMsgDataDefaults);
 			if (slackMessage.edited) {
 				rocketMsgObj.editedAt = new Date(parseInt(slackMessage.edited.ts.split('.')[0]) * 1000);
 			}
@@ -492,7 +491,7 @@ export default class RocketAdapter {
 			if (slackMessage.pinned_to && slackMessage.pinned_to.indexOf(slackMessage.channel) !== -1) {
 				rocketMsgObj.pinned = true;
 				rocketMsgObj.pinnedAt = Date.now;
-				rocketMsgObj.pinnedBy = _.pick(rocketUser, '_id', 'username');
+				rocketMsgObj.pinnedBy = Object.fromEntries(Object.entries(rocketUser).filter(([prop]) => ['_id', 'username'].includes(prop)));
 			}
 			if (slackMessage.subtype === 'bot_message') {
 				setTimeout(async () => {
@@ -513,7 +512,7 @@ export default class RocketAdapter {
 
 	async convertSlackMsgTxtToRocketTxtFormat(slackMsgTxt) {
 		const regex = /(?:<@)([a-zA-Z0-9]+)(?:\|.+)?(?:>)/g;
-		if (!_.isEmpty(slackMsgTxt)) {
+		if (slackMsgTxt) {
 			slackMsgTxt = slackMsgTxt.replace(/<!everyone>/g, '@all');
 			slackMsgTxt = slackMsgTxt.replace(/<!channel>/g, '@all');
 			slackMsgTxt = slackMsgTxt.replace(/<!here>/g, '@here');

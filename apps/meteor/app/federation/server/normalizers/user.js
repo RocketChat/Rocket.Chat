@@ -1,5 +1,4 @@
 import { Users } from '@rocket.chat/models';
-import _ from 'underscore';
 
 import { getNameAndDomain, isFullyQualified } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
@@ -27,17 +26,10 @@ const denormalizeAllUsers = (resources) => resources.map(denormalizeUser);
 
 const normalizeUser = async (originalResource) => {
 	// Get only what we need, non-sensitive data
-	const resource = _.pick(
-		originalResource,
-		'_id',
-		'username',
-		'type',
-		'emails',
-		'name',
-		'federation',
-		'isRemote',
-		'createdAt',
-		'_updatedAt',
+	const resource = Object.fromEntries(
+		Object.entries(originalResource).filter(([prop]) =>
+			['_id', 'username', 'type', 'emails', 'name', 'federation', 'isRemote', 'createdAt', '_updatedAt'].includes(prop),
+		),
 	);
 
 	resource.emails = [

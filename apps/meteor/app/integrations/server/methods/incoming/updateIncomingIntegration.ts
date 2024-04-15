@@ -4,7 +4,6 @@ import { wrapExceptions } from '@rocket.chat/tools';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Babel } from 'meteor/babel-compiler';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../lib/validateScriptEngine';
@@ -86,7 +85,7 @@ Meteor.methods<ServerMethods>({
 			if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
 				try {
 					let babelOptions = Babel.getDefaultOptions({ runtime: false });
-					babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
+					babelOptions = Object.assign(babelOptions, { compact: true, minified: true, comments: false });
 
 					scriptCompiled = Babel.compile(integration.script, babelOptions).code;
 					scriptError = undefined;

@@ -11,7 +11,6 @@ import type {
 	ISupportedLanguage,
 } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import _ from 'underscore';
 
 import { i18n } from '../../../server/lib/i18n';
 import { SystemLogger } from '../../../server/lib/logger/system';
@@ -212,7 +211,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 		const msgs = message.msg.split('\n');
 		const supportedLanguages = await this.getSupportedLanguages('en');
 		for await (let language of targetLanguages) {
-			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
+			if (language.indexOf('-') !== -1 && !supportedLanguages.find((lang) => lang.language === language)) {
 				language = language.substr(0, 2);
 			}
 			try {
@@ -258,7 +257,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 		const translations: { [k: string]: string } = {};
 		const supportedLanguages = await this.getSupportedLanguages('en');
 		for await (let language of targetLanguages) {
-			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
+			if (language.indexOf('-') !== -1 && !supportedLanguages.find((lang) => lang.language === language)) {
 				language = language.substr(0, 2);
 			}
 			try {

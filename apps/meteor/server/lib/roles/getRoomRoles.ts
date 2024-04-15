@@ -1,6 +1,5 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Roles, Subscriptions, Users } from '@rocket.chat/models';
-import _ from 'underscore';
 
 import { settings } from '../../../app/settings/server';
 
@@ -19,7 +18,11 @@ export async function getRoomRoles(rid: IRoom['_id']): Promise<ISubscription[]> 
 	const useRealName = settings.get('UI_Use_Real_Name') === true;
 
 	const roles = await Roles.find({ scope: 'Subscriptions', description: { $exists: true, $ne: '' } }).toArray();
-	const subscriptions = await Subscriptions.findByRoomIdAndRoles(rid, _.pluck(roles, '_id'), options).toArray();
+	const subscriptions = await Subscriptions.findByRoomIdAndRoles(
+		rid,
+		roles.map((role) => role._id),
+		options,
+	).toArray();
 
 	if (!useRealName) {
 		return subscriptions;

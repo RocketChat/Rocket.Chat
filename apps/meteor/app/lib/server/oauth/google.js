@@ -1,7 +1,6 @@
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
 import { Google } from 'meteor/google-oauth';
-import _ from 'underscore';
 
 import { registerAccessTokenService } from './oauth';
 
@@ -17,7 +16,7 @@ async function getIdentity(accessToken) {
 
 		return request.json();
 	} catch (err) {
-		throw _.extend(new Error(`Failed to fetch identity from Google. ${err.message}`), {
+		throw Object.assign(new Error(`Failed to fetch identity from Google. ${err.message}`), {
 			response: err.message,
 		});
 	}
@@ -35,7 +34,7 @@ async function getScopes(accessToken) {
 
 		return (await request.json()).scope.split(' ');
 	} catch (err) {
-		throw _.extend(new Error(`Failed to fetch tokeninfo from Google. ${err.message}`), {
+		throw Object.assign(new Error(`Failed to fetch tokeninfo from Google. ${err.message}`), {
 			response: err.message,
 		});
 	}
@@ -62,8 +61,8 @@ registerAccessTokenService('google', async (options) => {
 		scope: options.scopes || (await getScopes(options.accessToken)),
 	};
 
-	const fields = _.pick(identity, Google.whitelistedFields);
-	_.extend(serviceData, fields);
+	const fields = Object.fromEntries(Object.entries(identity).filter(([prop]) => Google.whitelistedFields.includes(prop)));
+	Object.assign(serviceData, fields);
 
 	// only set the token in serviceData if it's there. this ensures
 	// that we don't lose old ones (since we only get this on the first

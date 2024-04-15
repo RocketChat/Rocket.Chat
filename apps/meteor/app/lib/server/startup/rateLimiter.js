@@ -2,11 +2,11 @@ import { Logger } from '@rocket.chat/logger';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 import { RateLimiter } from 'meteor/rate-limit';
-import _ from 'underscore';
 
 import { sleep } from '../../../../lib/utils/sleep';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
+import { debounce } from '../../../utils/debounce';
 
 const logger = new Logger('RateLimiter');
 
@@ -62,7 +62,7 @@ RateLimiter.prototype.check = function (input) {
 	};
 
 	const matchedRules = self._findAllMatchingRules(input);
-	_.each(matchedRules, (rule) => {
+	matchedRules.forEach((rule) => {
 		// ==== BEGIN OVERRIDE ====
 		const callbackReply = {
 			allowed: true,
@@ -169,28 +169,28 @@ const reconfigureLimit = Meteor.bindEnvironment((name, rules, factor = 1) => {
 	);
 });
 
-const configIP = _.debounce(() => {
+const configIP = debounce(() => {
 	reconfigureLimit('IP', {
 		broadcastAuth: false,
 		clientAddress: (clientAddress) => clientAddress !== '127.0.0.1',
 	});
 }, 1000);
 
-const configUser = _.debounce(() => {
+const configUser = debounce(() => {
 	reconfigureLimit('User', {
 		broadcastAuth: false,
 		userId: (userId) => userId != null,
 	});
 }, 1000);
 
-const configConnection = _.debounce(() => {
+const configConnection = debounce(() => {
 	reconfigureLimit('Connection', {
 		broadcastAuth: false,
 		connectionId: () => true,
 	});
 }, 1000);
 
-const configUserByMethod = _.debounce(() => {
+const configUserByMethod = debounce(() => {
 	reconfigureLimit('User_By_Method', {
 		broadcastAuth: false,
 		type: () => true,
@@ -209,7 +209,7 @@ const configUserByMethod = _.debounce(() => {
 	);
 }, 1000);
 
-const configConnectionByMethod = _.debounce(() => {
+const configConnectionByMethod = debounce(() => {
 	reconfigureLimit('Connection_By_Method', {
 		broadcastAuth: false,
 		type: () => true,

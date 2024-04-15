@@ -1,9 +1,9 @@
 import type { OauthConfig } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
 import { settings } from '../../settings/server';
+import { debounce } from '../../utils/debounce';
 
 const config: OauthConfig = {
 	serverURL: '',
@@ -20,7 +20,7 @@ const config: OauthConfig = {
 
 const Nextcloud = new CustomOAuth('nextcloud', config);
 
-const fillServerURL = _.debounce((): void => {
+const fillServerURL = debounce((): void => {
 	const nextcloudURL = settings.get<string>('Accounts_OAuth_Nextcloud_URL');
 	if (!nextcloudURL) {
 		if (nextcloudURL === undefined) {

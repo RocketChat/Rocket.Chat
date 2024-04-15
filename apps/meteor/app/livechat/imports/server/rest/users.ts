@@ -1,7 +1,6 @@
 import { Users } from '@rocket.chat/models';
 import { isLivechatUsersManagerGETProps, isPOSTLivechatUsersTypeProps } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
-import _ from 'underscore';
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
@@ -25,7 +24,7 @@ API.v1.addRoute(
 		},
 	},
 	{
-		async get() {
+		async get(): Promise<any> {
 			check(this.urlParams, {
 				type: String,
 			});
@@ -114,7 +113,11 @@ API.v1.addRoute(
 
 			if (user.roles.indexOf(role) !== -1) {
 				return API.v1.success({
-					user: _.pick(user, '_id', 'username', 'name', 'status', 'statusLivechat', 'emails', 'livechat'),
+					user: Object.fromEntries(
+						Object.entries(user).filter(([prop]) =>
+							['_id', 'username', 'name', 'status', 'statusLivechat', 'emails', 'livechat'].includes(prop),
+						),
+					),
 				});
 			}
 

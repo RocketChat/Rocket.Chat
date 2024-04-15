@@ -41,17 +41,23 @@ export const withDebouncing =
 		let timer: ReturnType<typeof setTimeout> | undefined = undefined;
 		let result: ReturnType<TFunction>;
 		let previous: number;
+		let later: () => void;
+		let callFn: () => void;
 
 		function debounced(this: ThisParameterType<TFunction>, ...args: Parameters<TFunction>) {
 			previous = Date.now();
 			if (!timer) {
-				const later = () => {
+				callFn = () => {
+					result = fn.apply(this, args);
+				};
+
+				later = () => {
 					const passed = Date.now() - previous;
 					if (wait > passed) {
 						timer = setTimeout(later, wait - passed);
 					} else {
 						timer = undefined;
-						if (!immediate) result = fn.apply(this, args);
+						if (!immediate) callFn();
 					}
 				};
 				timer = setTimeout(later, wait);
@@ -60,10 +66,18 @@ export const withDebouncing =
 			return result;
 		}
 
+		const flush = () => {
+			if (timer && !immediate) {
+				clearTimeout(timer);
+				timer = undefined;
+				callFn();
+			}
+		};
+
 		const cancel = () => {
 			clearTimeout(timer);
 			timer = undefined;
 		};
 
-		return Object.assign(debounced, { cancel });
+		return Object.assign(debounced, { cancel, flush });
 	};

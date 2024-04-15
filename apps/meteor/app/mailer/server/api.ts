@@ -6,12 +6,12 @@ import juice from 'juice';
 import { Email } from 'meteor/email';
 import { Meteor } from 'meteor/meteor';
 import stripHtml from 'string-strip-html';
-import _ from 'underscore';
 
 import { validateEmail } from '../../../lib/emailValidator';
 import { strLeft, strRightBack } from '../../../lib/utils/stringUtils';
 import { i18n } from '../../../server/lib/i18n';
 import { settings } from '../../settings/server';
+import { debounce } from '../../utils/debounce';
 import { replaceVariables } from './replaceVariables';
 
 let contentHeader: string | undefined;
@@ -101,7 +101,7 @@ export const getTemplate = (template: ISetting['_id'], fn: (html: string) => voi
 
 export const getTemplateWrapped = (template: ISetting['_id'], fn: (html: string) => void): void => {
 	let html = '';
-	const wrapInlineCSS = _.debounce(() => fn(wrap(inlinecss(html))), 100);
+	const wrapInlineCSS = debounce(() => fn(wrap(inlinecss(html))), 100);
 
 	settings.watch<string>('Email_Header', () => html && wrapInlineCSS());
 	settings.watch<string>('Email_Footer', () => html && wrapInlineCSS());

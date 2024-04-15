@@ -3,7 +3,6 @@ import { EmojiCustom } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { trim } from '../../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -66,7 +65,11 @@ Meteor.methods<ServerMethods>({
 					field: 'Alias_Set',
 				});
 			}
-			aliases = _.without(emojiData.aliases.split(/[\s,]/).filter(Boolean), emojiData.name);
+
+			aliases = emojiData.aliases
+				.split(/[\s,]/)
+				.filter(Boolean)
+				.filter((value) => !(emojiData.name === value));
 		}
 
 		emojiData.extension = emojiData.extension === 'svg+xml' ? 'png' : emojiData.extension;

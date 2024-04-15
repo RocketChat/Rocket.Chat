@@ -3,7 +3,6 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { UpdateResult } from 'mongodb';
-import _ from 'underscore';
 
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
@@ -49,7 +48,7 @@ Meteor.methods<ServerMethods>({
 					updateData[item.name] = item.value;
 				}
 			}
-			if (!_.isEmpty(updateData)) {
+			if (!(Object.getOwnPropertyNames(updateData).length === 0)) {
 				return LivechatRooms.updateSurveyFeedbackById(room._id, updateData);
 			}
 		}

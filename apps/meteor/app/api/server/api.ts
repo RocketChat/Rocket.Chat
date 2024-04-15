@@ -11,7 +11,6 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import type { Request, Response } from 'meteor/rocketchat:restivus';
 import { Restivus } from 'meteor/rocketchat:restivus';
-import _ from 'underscore';
 
 import { isObject } from '../../../lib/utils/isObject';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
@@ -704,7 +703,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 				return bodyParams;
 			}
 
-			if (_.without(Object.keys(bodyParams), 'user', 'username', 'email', 'password', 'code').length > 0) {
+			if (Object.keys(bodyParams).filter((value) => !['user', 'username', 'email', 'password', 'code'].includes(value)).length > 0) {
 				return bodyParams;
 			}
 
@@ -818,10 +817,8 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 
 					const extraData = self._config.onLoggedIn?.call(this);
 
-					if (extraData != null) {
-						_.extend(response.data, {
-							extra: extraData,
-						});
+					if (extraData) {
+						response.data = Object.assign(response.data, { extra: extraData });
 					}
 
 					return response as unknown as SuccessResult<Record<string, any>>;
@@ -858,10 +855,8 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 
 			// Call the logout hook with the authenticated user attached
 			const extraData = self._config.onLoggedOut?.call(this);
-			if (extraData != null) {
-				_.extend(response.data, {
-					extra: extraData,
-				});
+			if (extraData) {
+				response.data = { ...response.data, extra: extraData } as typeof response.data & { extra: Record<string, any> };
 			}
 			return response;
 		};

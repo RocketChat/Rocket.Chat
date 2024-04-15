@@ -1,12 +1,10 @@
-import _ from 'underscore';
-
 export const fileUploadMediaWhiteList = function (customWhiteList: string): string[] | undefined {
 	const mediaTypeWhiteList = customWhiteList;
 
 	if (!mediaTypeWhiteList || mediaTypeWhiteList === '*') {
 		return;
 	}
-	return _.map(mediaTypeWhiteList.split(','), (item) => {
+	return mediaTypeWhiteList.split(',').map((item) => {
 		return item.trim();
 	});
 };
@@ -17,18 +15,18 @@ const fileUploadMediaBlackList = function (customBlackList: string): string[] | 
 		return;
 	}
 
-	return _.map(blacklist.split(','), (item) => item.trim());
+	return blacklist.split(',').map((item) => item.trim());
 };
 
 const isTypeOnList = function (type: string, list: string[]): boolean | undefined {
-	if (_.contains(list, type)) {
+	if (list.includes(type)) {
 		return true;
 	}
 	const wildCardGlob = '/*';
-	const wildcards = _.filter(list, (item) => {
+	const wildcards = list.filter((item) => {
 		return item.indexOf(wildCardGlob) > 0;
 	});
-	if (_.contains(wildcards, type.replace(/(\/.*)$/, wildCardGlob))) {
+	if (wildcards.includes(type.replace(/(\/.*)$/, wildCardGlob))) {
 		return true;
 	}
 };

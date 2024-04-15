@@ -1,8 +1,8 @@
 import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import _ from 'underscore';
 
 import { SystemLogger } from '../../../server/lib/logger/system';
+import { debounce } from '../../utils/debounce';
 
 const warn = process.env.NODE_ENV === 'development' || process.env.TEST_MODE;
 
@@ -181,7 +181,7 @@ export class CachedSettings
 			const settings = _id.map((id) => this.store.get(id)?.value);
 			callback(settings as T[]);
 		}
-		const mergeFunction = _.debounce((): void => {
+		const mergeFunction = debounce((): void => {
 			callback(_id.map((id) => this.store.get(id)?.value) as T[]);
 		}, 100);
 
@@ -256,8 +256,8 @@ export class CachedSettings
 		callback: (args: T) => void,
 		config?: OverCustomSettingsConfig,
 	): () => void {
-		const { debounce } = this.getConfig(config);
-		return this.on(_id, _.debounce(callback, debounce) as any);
+		const { debounce: wait } = this.getConfig(config);
+		return this.on(_id, debounce(callback, wait) as any);
 	}
 
 	/**
@@ -303,8 +303,8 @@ export class CachedSettings
 		callback: (args: T) => void,
 		config?: OverCustomSettingsConfig,
 	): () => void {
-		const { debounce } = this.getConfig(config);
-		return this.once(_id, _.debounce(callback, debounce) as any);
+		const { debounce: wait } = this.getConfig(config);
+		return this.once(_id, debounce(callback, wait) as any);
 	}
 
 	/**
@@ -365,8 +365,8 @@ export class CachedSettings
 		const store: Map<string, (...args: [string, SettingValue]) => void> = new Map();
 		return this.on('*', ([_id, value]) => {
 			if (regex.test(_id)) {
-				const { debounce } = this.getConfig(config);
-				const cb = store.get(_id) || _.debounce(callback, debounce);
+				const { debounce: wait } = this.getConfig(config);
+				const cb = store.get(_id) || debounce(callback, wait);
 				cb(_id, value);
 				store.set(_id, cb);
 			}

@@ -4,7 +4,6 @@ import url from 'url';
 import { validate } from '@rocket.chat/cas-validate';
 import type { ICredentialToken } from '@rocket.chat/core-typings';
 import { CredentialTokens } from '@rocket.chat/models';
-import _ from 'underscore';
 
 import { settings } from '../../../app/settings/server';
 import { logger } from './logger';
@@ -48,7 +47,7 @@ const casTicket = function (req: IncomingMessageWithUrl, token: string, callback
 
 				// CAS 2.0 attributes handling
 				if (details?.attributes) {
-					_.extend(userInfo, { attributes: details.attributes });
+					Object.assign(userInfo, { attributes: details.attributes });
 				}
 				await CredentialTokens.create(token, userInfo);
 			} else {

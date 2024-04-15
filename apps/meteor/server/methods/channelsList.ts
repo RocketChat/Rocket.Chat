@@ -4,7 +4,6 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
-import _ from 'underscore';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
@@ -43,7 +42,7 @@ Meteor.methods<ServerMethods>({
 			},
 		};
 
-		if (_.isNumber(limit)) {
+		if (toString.call(limit) === '[object Number]') {
 			options.limit = limit;
 		}
 

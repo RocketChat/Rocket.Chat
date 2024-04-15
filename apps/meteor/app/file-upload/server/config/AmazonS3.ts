@@ -2,9 +2,8 @@ import http from 'http';
 import https from 'https';
 import URL from 'url';
 
-import _ from 'underscore';
-
 import { settings } from '../../../settings/server';
+import { debounce } from '../../../utils/debounce';
 import type { S3Options } from '../../ufs/AmazonS3/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server';
@@ -64,7 +63,7 @@ const AmazonS3UserDataFiles = new FileUploadClass({
 	// store setted bellow
 });
 
-const configure = _.debounce(() => {
+const configure = debounce(() => {
 	const Bucket = settings.get<string>('FileUpload_S3_Bucket');
 	const Acl = settings.get<string>('FileUpload_S3_Acl');
 	const AWSAccessKeyId = settings.get<string>('FileUpload_S3_AWSAccessKeyId');

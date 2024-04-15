@@ -2,9 +2,9 @@ import { Team } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { settings } from '../../../settings/server';
+import { escapeHtml } from '../../../utils/escapeHtml';
 import { validateName } from './validateName';
 
 let usernameBlackList: RegExp[] = [];
@@ -41,7 +41,7 @@ export const checkUsernameAvailabilityWithValidation = async function (userId: s
 
 export const checkUsernameAvailability = async function (username: string): Promise<boolean> {
 	if (usernameIsBlocked(username, usernameBlackList) || !validateName(username)) {
-		throw new Meteor.Error('error-blocked-username', `${_.escape(username)} is blocked and can't be used!`, {
+		throw new Meteor.Error('error-blocked-username', `${escapeHtml(username)} is blocked and can't be used!`, {
 			method: 'checkUsernameAvailability',
 			field: username,
 		});

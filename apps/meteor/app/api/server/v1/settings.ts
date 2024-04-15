@@ -10,7 +10,6 @@ import { LoginServiceConfiguration as LoginServiceConfigurationModel, Settings }
 import { isSettingsUpdatePropDefault, isSettingsUpdatePropsActions, isSettingsUpdatePropsColor } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
-import _ from 'underscore';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { SettingsEvents, settings } from '../../../settings/server';
@@ -159,7 +158,8 @@ API.v1.addRoute(
 			if (!setting) {
 				return API.v1.failure();
 			}
-			return API.v1.success(_.pick(setting, '_id', 'value'));
+
+			return API.v1.success(Object.fromEntries(Object.entries(settings).filter(([prop]) => ['_id', 'value'].includes(prop))));
 		},
 		post: {
 			twoFactorRequired: true,

@@ -2,9 +2,8 @@ import http from 'http';
 import https from 'https';
 import URL from 'url';
 
-import _ from 'underscore';
-
 import { settings } from '../../../settings/server';
+import { debounce } from '../../../utils/debounce';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../../ufs/GoogleStorage/server';
 
@@ -64,7 +63,7 @@ const GoogleCloudStorageUserDataFiles = new FileUploadClass({
 	// store setted bellow
 });
 
-const configure = _.debounce(() => {
+const configure = debounce(() => {
 	const bucket = settings.get('FileUpload_GoogleStorage_Bucket');
 	const projectId = settings.get('FileUpload_GoogleStorage_ProjectId');
 	const accessId = settings.get('FileUpload_GoogleStorage_AccessId');

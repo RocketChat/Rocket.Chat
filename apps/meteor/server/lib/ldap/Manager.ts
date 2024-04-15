@@ -6,7 +6,6 @@ import limax from 'limax';
 // #ToDo: #TODO: Remove Meteor dependencies
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
 import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
@@ -384,8 +383,9 @@ export class LDAPManager {
 		if (!uniqueIdentifierField.length) {
 			uniqueIdentifierField.push('dn');
 		}
-
-		const key = uniqueIdentifierField.find((field) => !_.isEmpty(ldapUser._raw[field]));
+		const key = uniqueIdentifierField.find(
+			(field) => !([Object, Array].includes(ldapUser._raw[field]?.constructor) && !Object.entries(ldapUser._raw[field] || {}).length),
+		);
 		if (key) {
 			return {
 				attribute: key,
@@ -398,7 +398,7 @@ export class LDAPManager {
 	}
 
 	private static ldapKeyExists(ldapUser: ILDAPEntry, key: string): boolean {
-		return !_.isEmpty(ldapUser[key.trim()]);
+		return !([Object, Array].includes(ldapUser[key.trim()]?.constructor) && !Object.entries(ldapUser[key.trim()] || {}).length);
 	}
 
 	private static getLdapString(ldapUser: ILDAPEntry, key: string): string {

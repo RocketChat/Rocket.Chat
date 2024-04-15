@@ -16,7 +16,6 @@ import { Logger } from '@rocket.chat/logger';
 import { Users, VoipRoom, PbxEvents } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { FindOptions } from 'mongodb';
-import _ from 'underscore';
 
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import type { IOmniRoomClosingMessage } from './internalTypes';
@@ -201,10 +200,13 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		const allocatedExtensions = await this.getAllocatedExtesionAllocationData({
 			extension: 1,
 		});
-		const filtered = _.difference(
-			_.pluck(allExtensions.result as IVoipExtensionBase[], 'extension'),
-			_.pluck(allocatedExtensions, 'extension'),
-		) as string[];
+		const allExtensionsResult = allExtensions.result as IVoipExtensionBase[];
+		const extensionArrays = [
+			allExtensionsResult.map((extension) => extension.extension),
+			allocatedExtensions.map((extension) => extension.extension),
+		];
+		const filtered = extensionArrays.reduce((a, b) => a.filter((c) => !b.includes(c))) as string[];
+
 		return filtered;
 	}
 

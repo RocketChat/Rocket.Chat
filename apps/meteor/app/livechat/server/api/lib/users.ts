@@ -80,7 +80,7 @@ export async function findAgents({
 	pagination: { offset, count, sort },
 }: {
 	text?: string;
-	onlyAvailable: boolean;
+	onlyAvailable?: boolean;
 	excludeId?: string;
 	showIdleAgents?: boolean;
 	pagination: { offset: number; count: number; sort: any };

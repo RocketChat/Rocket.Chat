@@ -1,6 +1,5 @@
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import _ from 'underscore';
 
 export async function configureAccounts() {
 	const orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
@@ -31,7 +30,10 @@ export async function configureAccounts() {
 					verified: true,
 				};
 
-				if (user.services?.password && !_.findWhere(user.emails, findQuery)) {
+				if (
+					user.services?.password &&
+					!user.emails.find((email) => email.address === findQuery.address && email.verified === findQuery.verified)
+				) {
 					await Users.resetPasswordAndSetRequirePasswordChange(
 						user._id,
 						true,

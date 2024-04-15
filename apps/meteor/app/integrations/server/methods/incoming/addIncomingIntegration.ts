@@ -5,7 +5,6 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Babel } from 'meteor/babel-compiler';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { validateScriptEngine, isScriptEngineFrozen } from '../../lib/validateScriptEngine';
@@ -109,13 +108,19 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 	) {
 		try {
 			let babelOptions = Babel.getDefaultOptions({ runtime: false });
-			babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
+			babelOptions = Object.assign(babelOptions, { compact: true, minified: true, comments: false });
 
 			integrationData.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
 			integrationData.scriptError = undefined;
 		} catch (e) {
 			integrationData.scriptCompiled = undefined;
-			integrationData.scriptError = e instanceof Error ? _.pick(e, 'name', 'message', 'stack') : undefined;
+			integrationData.scriptError =
+				e instanceof Error
+					? (Object.fromEntries(Object.entries(e).filter(([prop]) => ['name', 'message', 'stack'].includes(prop))) as Pick<
+							Error,
+							'name' | 'message' | 'stack'
+					  >)
+					: undefined;
 		}
 	}
 

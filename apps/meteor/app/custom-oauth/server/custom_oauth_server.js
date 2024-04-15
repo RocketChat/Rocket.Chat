@@ -7,7 +7,6 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import _ from 'underscore';
 
 import { callbacks } from '../../../lib/callbacks';
 import { isURL } from '../../../lib/utils/isURL';
@@ -146,7 +145,7 @@ export class CustomOAuth {
 			response = await request.json();
 		} catch (err) {
 			const error = new Error(`Failed to complete OAuth handshake with ${this.name} at ${this.tokenPath}. ${err.message}`);
-			throw _.extend(error, { response: err.response });
+			throw Object.assign(error, { response: err.response });
 		}
 
 		if (response.error) {
@@ -184,7 +183,7 @@ export class CustomOAuth {
 			return this.normalizeIdentity(response);
 		} catch (err) {
 			const error = new Error(`Failed to fetch identity from ${this.name} at ${this.identityPath}. ${err.message}`);
-			throw _.extend(error, { response: err.response });
+			throw Object.assign(error, { response: err.response });
 		}
 	}
 
@@ -209,7 +208,7 @@ export class CustomOAuth {
 				serviceData.refreshToken = response.refresh_token;
 			}
 
-			_.extend(serviceData, identity);
+			Object.assign(serviceData, identity);
 
 			const data = {
 				serviceData,
@@ -418,8 +417,8 @@ export class CustomOAuth {
 				expiresAt: +new Date() + 1000 * parseInt(options.expiresIn, 10),
 			};
 
-			const fields = _.pick(identity, whitelisted);
-			_.extend(serviceData, fields);
+			const fields = Object.fromEntries(Object.entries(identity).filter(([prop]) => whitelisted.includes(prop)));
+			Object.assign(serviceData, fields);
 
 			return {
 				serviceData,

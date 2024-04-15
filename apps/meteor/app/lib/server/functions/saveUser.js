@@ -4,7 +4,6 @@ import { Users } from '@rocket.chat/models';
 import Gravatar from 'gravatar';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
@@ -13,6 +12,8 @@ import { getRoles } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
+import { compareArrayPrimitives } from '../../../utils/compareArrayPrimitives';
+import { escapeHtml } from '../../../utils/escapeHtml';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { validateEmailDomain } from '../lib';
 import { generatePassword } from '../lib/generatePassword';
@@ -66,7 +67,7 @@ async function _sendUserEmail(subject, html, userData) {
 }
 
 async function validateUserData(userId, userData) {
-	const existingRoles = _.pluck(await getRoles(), '_id');
+	const existingRoles = (await getRoles()).map((role) => role._id);
 
 	if (userData._id && userId !== userData._id && !(await hasPermissionAsync(userId, 'edit-other-user-info'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed', {
@@ -81,8 +82,7 @@ async function validateUserData(userId, userData) {
 			action: 'Adding_user',
 		});
 	}
-
-	if (userData.roles && _.difference(userData.roles, existingRoles).length > 0) {
+	if (userData.roles && userData.roles.filter((value) => !existingRoles.includes(value)).length > 0) {
 		throw new Meteor.Error('error-action-not-allowed', 'The field Roles consist invalid role id', {
 			method: 'insertOrUpdateUser',
 			action: 'Assign_role',
@@ -119,7 +119,7 @@ async function validateUserData(userId, userData) {
 	}
 
 	if (userData.username && !nameValidation.test(userData.username)) {
-		throw new Meteor.Error('error-input-is-not-a-valid-field', `${_.escape(userData.username)} is not a valid username`, {
+		throw new Meteor.Error('error-input-is-not-a-valid-field', `${escapeHtml(userData.username)} is not a valid username`, {
 			method: 'insertOrUpdateUser',
 			input: userData.username,
 			field: 'Username',
@@ -135,14 +135,14 @@ async function validateUserData(userId, userData) {
 
 	if (!userData._id) {
 		if (!(await checkUsernameAvailability(userData.username))) {
-			throw new Meteor.Error('error-field-unavailable', `${_.escape(userData.username)} is already in use :(`, {
+			throw new Meteor.Error('error-field-unavailable', `${escapeHtml(userData.username)} is already in use :(`, {
 				method: 'insertOrUpdateUser',
 				field: userData.username,
 			});
 		}
 
 		if (userData.email && !(await checkEmailAvailability(userData.email))) {
-			throw new Meteor.Error('error-field-unavailable', `${_.escape(userData.email)} is already in use :(`, {
+			throw new Meteor.Error('error-field-unavailable', `${escapeHtml(userData.email)} is already in use :(`, {
 				method: 'insertOrUpdateUser',
 				field: userData.email,
 			});
@@ -164,7 +164,7 @@ export async function validateUserEditing(userId, userData) {
 	const user = await Users.findOneById(userData._id);
 
 	const isEditingUserRoles = (previousRoles, newRoles) =>
-		typeof newRoles !== 'undefined' && !_.isEqual(_.sortBy(previousRoles), _.sortBy(newRoles));
+		typeof newRoles !== 'undefined' && !compareArrayPrimitives(previousRoles.sort(), newRoles.sort());
 	const isEditingField = (previousValue, newValue) => typeof newValue !== 'undefined' && newValue !== previousValue;
 
 	if (isEditingUserRoles(user.roles, userData.roles) && !(await hasPermissionAsync(userId, 'assign-roles'))) {

@@ -1,10 +1,10 @@
 import type { OauthConfig } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import _ from 'underscore';
 
 import { CustomOAuth } from '../../custom-oauth/client/CustomOAuth';
 import { settings } from '../../settings/client';
+import { debounce } from '../../utils/debounce';
 
 const config: OauthConfig = {
 	serverURL: '',
@@ -19,7 +19,7 @@ const config: OauthConfig = {
 
 const WordPress = new CustomOAuth('wordpress', config);
 
-const fillSettings = _.debounce(async (): Promise<void> => {
+const fillSettings = debounce(async (): Promise<void> => {
 	config.serverURL = settings.get('API_Wordpress_URL');
 	if (!config.serverURL) {
 		if (config.serverURL === undefined) {

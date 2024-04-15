@@ -3,7 +3,6 @@ import crypto from 'crypto';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
 import { OAuth } from 'meteor/oauth';
-import _ from 'underscore';
 
 import { registerAccessTokenService } from './oauth';
 
@@ -31,7 +30,7 @@ const getIdentity = async function (accessToken, fields, secret) {
 
 		return request.json();
 	} catch (err) {
-		throw _.extend(new Error(`Failed to fetch identity from Facebook. ${err.message}`), {
+		throw Object.assign(new Error(`Failed to fetch identity from Facebook. ${err.message}`), {
 			response: err.message,
 		});
 	}
@@ -54,8 +53,8 @@ registerAccessTokenService('facebook', async (options) => {
 		expiresAt: +new Date() + 1000 * parseInt(options.expiresIn, 10),
 	};
 
-	const fields = _.pick(identity, whitelisted);
-	_.extend(serviceData, fields);
+	const fields = Object.fromEntries(Object.entries(identity).filter(([prop]) => whitelisted.includes(prop)));
+	Object.assign(serviceData, fields);
 
 	return {
 		serviceData,

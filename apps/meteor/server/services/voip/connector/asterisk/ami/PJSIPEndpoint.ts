@@ -32,7 +32,6 @@ import { EndpointState } from '@rocket.chat/core-typings';
 import type { IVoipConnectorResult, IExtensionDetails } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { Db } from 'mongodb';
-import _ from 'underscore';
 
 import { Command, CommandType } from '../Command';
 import { Commands } from '../Commands';
@@ -127,7 +126,7 @@ export class PJSIPEndpoint extends Command {
 			return;
 		}
 		this.resetEventHandlers();
-		const extensions = _.sortBy(this.result.endpoints, (o: any) => {
+		const extensions = [...this.result.endpoints].sort((o: any) => {
 			return o.extension;
 		});
 		this.returnResolve({ result: extensions } as IVoipConnectorResult);

@@ -11,7 +11,6 @@ import type {
 	MessageAttachment,
 } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import _ from 'underscore';
 
 import { i18n } from '../../../server/lib/i18n';
 import { SystemLogger } from '../../../server/lib/logger/system';
@@ -130,7 +129,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 		const supportedLanguages = await this.getSupportedLanguages('en');
 
 		for await (let language of targetLanguages) {
-			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
+			if (language.indexOf('-') !== -1 && !supportedLanguages.find((lang) => lang.language === language)) {
 				language = language.substr(0, 2);
 			}
 
@@ -177,7 +176,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 		const supportedLanguages = await this.getSupportedLanguages('en');
 
 		for await (let language of targetLanguages) {
-			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
+			if (language.indexOf('-') !== -1 && !supportedLanguages.find((lang) => lang.language === language)) {
 				language = language.substr(0, 2);
 			}
 

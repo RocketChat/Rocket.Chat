@@ -5,7 +5,6 @@ import { Random } from '@rocket.chat/random';
 import S3 from 'aws-sdk/clients/s3';
 import { check } from 'meteor/check';
 import type { OptionalId } from 'mongodb';
-import _ from 'underscore';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { UploadFS } from '../../../../server/ufs';
@@ -38,15 +37,12 @@ class AmazonS3Store extends UploadFS.Store {
 		// options.region,
 		// options.sslEnabled // optional
 
-		options = _.extend(
-			{
-				httpOptions: {
-					timeout: 6000,
-					agent: false,
-				},
+		options = Object.assign(options, {
+			httpOptions: {
+				timeout: 6000,
+				agent: false,
 			},
-			options,
-		);
+		});
 
 		super(options);
 
