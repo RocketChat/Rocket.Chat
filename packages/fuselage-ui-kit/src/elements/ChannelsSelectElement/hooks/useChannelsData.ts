@@ -30,16 +30,17 @@ export const useChannelsData = ({
 
   const { data } = useQuery(
     ['rooms.autocomplete.channelAndPrivate', filter],
-    () => getRooms(generateQuery(filter)),
+    async () =>
+      (await getRooms(generateQuery(filter))).items.map(
+        ({ fname, name, _id, avatarETag, t }) => ({
+          value: _id,
+          label: { name: name || fname, avatarETag, type: t },
+        })
+      ),
     {
       keepPreviousData: true,
     }
   );
 
-  const result = data?.items.map(({ fname, name, _id, avatarETag, t }) => ({
-    value: _id,
-    label: { name: name || fname, avatarETag, type: t },
-  }));
-
-  return result || [];
+  return data || [];
 };
