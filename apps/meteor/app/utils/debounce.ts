@@ -1,39 +1,62 @@
-export const debounce = <P extends unknown[], F extends (...args: P) => unknown>(
-	func: (...args: P) => F | void | Promise<void>,
+// based on _.debounce
+export const debounce = <FuncType extends (...args: any[]) => any>(
+	func: FuncType,
 	wait = 0,
-): ((...args: P) => void) & {
+	immediate = false,
+): ((...args: any[]) => ReturnType<typeof func>) & {
 	flush: () => void;
 	cancel: () => void;
 } => {
-	let timeout: NodeJS.Timeout | null;
+	let result: ReturnType<FuncType>;
+	let timeout: ReturnType<typeof setTimeout> | null;
+	let previous: number;
+	let later: () => void;
+	let callFn: () => void;
 
-	let timerFunc: () => void;
+	function debounced(this: ThisParameterType<FuncType>, ...args: any[]) {
+		previous = Date.now();
 
-	const flush = () => {
-		if (timeout) {
-			clearTimeout(timeout);
-			timerFunc();
+		if (!timeout) {
+			callFn = () => {
+				result = func.apply(this, args);
+			};
+
+			later = () => {
+				const passed = Date.now() - previous;
+
+				if (wait > passed) {
+					timeout = setTimeout(later, wait - passed);
+				} else {
+					timeout = null;
+					if (!immediate) {
+						callFn();
+					}
+				}
+			};
+
+			timeout = setTimeout(later, wait);
+			if (immediate) {
+				result = func.apply(this, args);
+			}
 		}
-	};
 
-	const cancel = () => {
-		if (timeout) {
+		return result;
+	}
+
+	debounced.flush = () => {
+		if (timeout && !immediate) {
 			clearTimeout(timeout);
-		}
-	};
-
-	const debounced = (...args: P) => {
-		timerFunc = () => {
 			timeout = null;
-			void func(...args);
-		};
-
-		if (timeout) {
-			clearTimeout(timeout);
+			callFn();
 		}
-
-		timeout = setTimeout(() => timerFunc, wait);
 	};
 
-	return Object.assign(debounced, { flush, cancel });
+	debounced.cancel = () => {
+		if (timeout) {
+			clearTimeout(timeout);
+			timeout = null;
+		}
+	};
+
+	return debounced;
 };
