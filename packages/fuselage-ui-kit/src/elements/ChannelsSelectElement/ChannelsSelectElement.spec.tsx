@@ -1,3 +1,4 @@
+import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { MockedServerContext } from '@rocket.chat/mock-providers';
 import type { ChannelsSelectElement as ChannelsSelectElementType } from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
@@ -7,7 +8,6 @@ import userEvent from '@testing-library/user-event';
 import { contextualBarParser } from '../../surfaces';
 import ChannelsSelectElement from './ChannelsSelectElement';
 import { useChannelsData } from './hooks/useChannelsData';
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
 const channelsBlock: ChannelsSelectElementType = {
   type: 'channels_select',
