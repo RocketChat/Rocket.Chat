@@ -1,9 +1,10 @@
 import type { IAppsTokens } from '@rocket.chat/core-typings';
 
-import { settings } from '../../settings/server';
 import type { PendingPushNotification } from './definition';
 import { logger } from './logger';
 import type { NativeNotificationParameters } from './push';
+
+const FCM_API_URL = 'https://fcm.googleapis.com/fcm/send';
 
 type FCMDataField = Record<string, any>;
 
@@ -65,7 +66,11 @@ function onNotificationSentSuccess(
 	notification: PendingPushNotification,
 	_replaceToken: (currentToken: IAppsTokens['token'], newToken: IAppsTokens['token']) => void,
 	_removeToken: (token: IAppsTokens['token']) => void,
-): void {}
+): void {
+	response;
+	userTokens;
+	notification;
+}
 
 function getFCMMessagesFromPushData(userTokens: string[], notification: PendingPushNotification): FCMMessageWithToken[] {
 	// first we will get the `data` field from the notification
@@ -128,16 +133,9 @@ export const sendFCM = function ({ userTokens, notification, _replaceToken, _rem
 	logger.debug('sendFCM', userTokens, notification);
 
 	const messages = getFCMMessagesFromPushData(userTokens, notification);
-	const authHeader = `Bearer ${options?.gcm.apiKey}`;
-
-	const project = settings.get<string>('Push_google_project_id');
-	if (!project) {
-		logger.error('Push_google_project_id is not configured');
-		return;
-	}
+	const authHeader = `key=${options?.gcm.apiKey}`;
 
 	for (const message of messages) {
-		const url = `https://fcm.googleapis.com/v1/projects/${project}/messages:send`;
 		const headers = {
 			'Content-Type': 'application/json',
 			'Authorization': authHeader,
@@ -148,7 +146,7 @@ export const sendFCM = function ({ userTokens, notification, _replaceToken, _rem
 			message,
 		};
 
-		const response = fetchWithRetry(url, { method: 'POST', headers, body: JSON.stringify(data) });
+		const response = fetchWithRetry(FCM_API_URL, { method: 'POST', headers, body: JSON.stringify(data) });
 
 		response
 			.then((res) => onNotificationSentSuccess(res, userTokens as string[], notification, _replaceToken, _removeToken))
