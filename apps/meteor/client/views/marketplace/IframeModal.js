@@ -1,5 +1,4 @@
 import { Box, Modal } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect } from 'react';
 
 const iframeMsgListener = (confirm, cancel) => (e) => {
@@ -14,8 +13,6 @@ const iframeMsgListener = (confirm, cancel) => (e) => {
 };
 
 const IframeModal = ({ url, confirm, cancel, wrapperHeight = 'x360', ...props }) => {
-	const t = useTranslation();
-
 	useEffect(() => {
 		const listener = iframeMsgListener(confirm, cancel);
 
@@ -29,7 +26,7 @@ const IframeModal = ({ url, confirm, cancel, wrapperHeight = 'x360', ...props })
 	return (
 		<Modal height={wrapperHeight} {...props}>
 			<Box padding='x12' w='full' h='full' flexGrow={1} bg='white' borderRadius='x8'>
-				<iframe title={t('Marketplace_apps')} style={{ border: 'none', height: '100%', width: '100%' }} src={url} />
+				<iframe style={{ border: 'none', height: '100%', width: '100%' }} src={url} />
 			</Box>
 		</Modal>
 	);

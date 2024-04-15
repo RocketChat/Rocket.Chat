@@ -280,9 +280,7 @@ const CallPage: FC<CallPageProps> = ({
 						transform: 'scaleX(-1)',
 						display: isRemoteCameraOn ? 'block' : 'none',
 					}}
-				>
-					<track kind='captions' />
-				</video>
+				></video>
 				<Box
 					position='absolute'
 					zIndex={1}

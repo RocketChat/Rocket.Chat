@@ -19,15 +19,9 @@ const IgnoredContent = ({ onShowMessageIgnored }: IgnoredContentProps): ReactEle
 	return (
 		<MessageBody data-qa-type='message-body' dir='auto'>
 			<Box display='flex' alignItems='center' fontSize='c2' color='hint'>
-				<span
-					tabIndex={0}
-					role='button'
-					onClick={showMessageIgnored}
-					onKeyDown={(e) => e.code === 'Enter' && showMessageIgnored(e)}
-					style={{ cursor: 'pointer' }}
-				>
+				<p role='button' onClick={showMessageIgnored} style={{ cursor: 'pointer' }}>
 					<Icon name='chevron-left' /> {t('Message_Ignored')}
-				</span>
+				</p>
 			</Box>
 		</MessageBody>
 	);

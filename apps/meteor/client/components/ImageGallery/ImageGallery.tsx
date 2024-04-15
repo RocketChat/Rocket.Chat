@@ -128,7 +128,7 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 	return createPortal(
 		<FocusScope contain autoFocus>
 			<Box className={swiperStyle}>
-				<div role='presentation' className='swiper-container' onClick={onClose}>
+				<div className='swiper-container' onClick={onClose}>
 					<ButtonGroup className='rcx-swiper-controls' onClick={preventPropagation}>
 						{zoomScale !== 1 && <IconButton small icon='arrow-collapse' title='Resize' rcx-swiper-zoom-out onClick={handleResize} />}
 						<IconButton small icon='h-bar' title='Zoom out' rcx-swiper-zoom-out onClick={handleZoomOut} disabled={zoomScale === 1} />
@@ -155,10 +155,7 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 						{images?.map(({ _id, url }) => (
 							<SwiperSlide key={_id}>
 								<div className='swiper-zoom-container'>
-									<span tabIndex={0} role='link' onClick={preventPropagation} onKeyDown={preventPropagation}>
-										<img src={url} loading='lazy' alt='' />
-									</span>
-
+									<img src={url} loading='lazy' onClick={preventPropagation} />
 									<div className='rcx-lazy-preloader'>
 										<Throbber inheritColor />
 									</div>

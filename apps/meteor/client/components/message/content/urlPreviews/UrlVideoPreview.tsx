@@ -8,7 +8,6 @@ const UrlVideoPreview = ({ url, originalType }: Omit<UrlPreviewMetadata, 'type'>
 	<video controls style={style}>
 		<source src={url} type={originalType} />
 		Your browser doesn't support the video element.
-		<track kind='captions' />
 	</video>
 );
 

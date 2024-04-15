@@ -218,7 +218,6 @@ const RoomBody = (): ReactElement => {
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
 			<Box key={room._id} className={['main-content-flex', listStyle]}>
 				<section
-					role='presentation'
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
 					onClick={hideFlexTab && handleCloseFlexTab}
