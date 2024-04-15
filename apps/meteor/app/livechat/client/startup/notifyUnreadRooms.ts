@@ -29,15 +29,12 @@ Meteor.startup(() => {
 			}
 		}
 
-		const user = await Users.findOne(
-			{ _id },
-			{
-				projection: {
-					'settings.preferences.newRoomNotification': 1,
-					'settings.preferences.notificationsSoundVolume': 1,
-				},
+		const user = Users.findOne(_id, {
+			fields: {
+				'settings.preferences.newRoomNotification': 1,
+				'settings.preferences.notificationsSoundVolume': 1,
 			},
-		);
+		});
 
 		newRoomNotification = getUserPreference<string>(user, 'newRoomNotification');
 		const audioVolume = getUserPreference(user, 'notificationsSoundVolume', 100);
