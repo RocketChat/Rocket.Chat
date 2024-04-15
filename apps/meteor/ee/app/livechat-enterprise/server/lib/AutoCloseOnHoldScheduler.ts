@@ -11,7 +11,7 @@ import { schedulerLogger } from './logger';
 
 const SCHEDULER_NAME = 'omnichannel_auto_close_on_hold_scheduler';
 
-class AutoCloseOnHoldSchedulerClass {
+export class AutoCloseOnHoldSchedulerClass {
 	scheduler: Agenda;
 
 	schedulerUser: IUser;
