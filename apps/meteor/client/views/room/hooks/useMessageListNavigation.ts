@@ -72,9 +72,7 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 			node.addEventListener(
 				'blur',
 				(e) => {
-					const triggeredByKeyboard = document.body.classList.contains('js-focus-visible');
-
-					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
+					if (!(e.relatedTarget as HTMLElement)?.classList.contains('focus-visible') || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
 						return;
 					}
 
@@ -88,7 +86,7 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 			node.addEventListener(
 				'focus',
 				(e) => {
-					const triggeredByKeyboard = document.body.classList.contains('js-focus-visible');
+					const triggeredByKeyboard = (e.target as HTMLElement)?.classList.contains('focus-visible');
 					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
 						return;
 					}
