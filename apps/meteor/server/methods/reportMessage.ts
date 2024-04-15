@@ -77,7 +77,7 @@ Meteor.methods<ServerMethods>({
 
 		await ModerationReports.createWithMessageDescriptionAndUserId(message, description, roomInfo, reportedBy);
 
-		await Apps?.triggerEvent(AppEvents.IPostMessageReported, message, await Meteor.userAsync(), description);
+		await Apps.self?.triggerEvent(AppEvents.IPostMessageReported, message, await Meteor.userAsync(), description);
 
 		return true;
 	},

@@ -9,6 +9,7 @@ import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { callbacks } from '../../../../lib/callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 
 export const addUserToRoom = async function (
 	rid: string,
@@ -54,7 +55,7 @@ export const addUserToRoom = async function (
 	}
 
 	try {
-		await Apps?.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter);
+		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter);
 	} catch (error: any) {
 		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
@@ -81,6 +82,7 @@ export const addUserToRoom = async function (
 		userMentions: 1,
 		groupMentions: 0,
 		...autoTranslateConfig,
+		...getDefaultSubscriptionPref(userToBeAdded as IUser),
 	});
 
 	if (!userToBeAdded.username) {
@@ -118,7 +120,7 @@ export const addUserToRoom = async function (
 			// Keep the current event
 			await callbacks.run('afterJoinRoom', userToBeAdded, room);
 
-			void Apps?.triggerEvent(AppEvents.IPostRoomUserJoined, room, userToBeAdded, inviter);
+			void Apps.self?.triggerEvent(AppEvents.IPostRoomUserJoined, room, userToBeAdded, inviter);
 		});
 	}
 
