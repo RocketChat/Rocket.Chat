@@ -29,7 +29,7 @@ export async function fetchUsersWaitingForGroupKey(): Promise<{
 				rooms.map(async (room) => {
 					const userIds = room.usersWaitingForE2EKeys?.filter((uid) => uid !== userId);
 
-					if (!userIds) {
+					if (!userIds || userIds.length === 0) {
 						return;
 					}
 

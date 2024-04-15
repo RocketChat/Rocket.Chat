@@ -543,8 +543,6 @@ class E2E extends Emitter {
 							return;
 						}
 
-						console.log('users - ', usersWaitingForE2EKeys[room], { usersWithKeys });
-
 						return [room, usersWithKeys];
 					}),
 				)
@@ -564,9 +562,18 @@ class E2E extends Emitter {
 				clearTimeout(this.timeout);
 			}
 
+			if (!usersWaitingForE2EKeys) {
+				return;
+			}
+
 			const userKeysWithRooms = await this.getSuggestedE2EEKeys(usersWaitingForE2EKeys);
 
-			await this.provideUsersSuggestedGroupKeys({ usersSuggestedGroupKeys: userKeysWithRooms });
+			try {
+				await this.provideUsersSuggestedGroupKeys({ usersSuggestedGroupKeys: userKeysWithRooms });
+			} catch (error) {
+				this.timeout && clearTimeout(this.timeout);
+				return this.error('Error providing group key to users: ', error);
+			}
 		}, 10000);
 	}
 }

@@ -3,6 +3,7 @@ import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 
 export const provideUsersSuggestedGroupKeys = async (
 	usersSuggestedGroupKeys: Record<IRoom['_id'], { _id: IUser['_id']; key: string }[]>,
@@ -17,6 +18,12 @@ export const provideUsersSuggestedGroupKeys = async (
 
 	if (!roomIds) {
 		return;
+	}
+
+	for (const roomId of roomIds) {
+		if (!(await canAccessRoomIdAsync(roomId, userId))) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room');
+		}
 	}
 
 	const completedRoomIds = (
