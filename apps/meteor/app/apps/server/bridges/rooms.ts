@@ -104,15 +104,15 @@ export class AppRoomBridge extends RoomBridge {
 
 	protected async getMessages(
 		roomId: string,
-		appId: string,
 		options: {
-			limit?: number;
+			limit: number;
 			skip?: number;
 			sort?: Record<string, 1 | -1>;
-		} = {},
+		},
+		appId: string,
 	): Promise<IMessage[]> {
 		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}"`);
-		const { limit = 100, skip, sort = { ts: -1 } } = options;
+		const { limit, skip, sort = { ts: -1 } } = options;
 
 		const messageQueryOptions = {
 			limit: Math.min(limit, 100),
