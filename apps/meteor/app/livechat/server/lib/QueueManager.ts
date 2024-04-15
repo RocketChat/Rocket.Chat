@@ -105,7 +105,7 @@ export const QueueManager: queueManager = {
 			throw new Error('inquiry-not-found');
 		}
 
-		void Apps?.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
+		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
 		await LivechatRooms.updateRoomCount();
 
 		await queueInquiry(inquiry, agent);

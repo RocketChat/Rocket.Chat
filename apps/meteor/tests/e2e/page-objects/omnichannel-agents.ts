@@ -72,7 +72,7 @@ export class OmnichannelAgents {
 
 	async selectDepartment(name: string) {
 		await this.inputDepartment.click();
-		await this.inputDepartment.type(name);
+		await this.inputDepartment.press(name[0]); // department input doesn't accept text, this only makes it focus on the first element that begins with that letter
 		await this.page.locator(`.rcx-option__content:has-text("${name}")`).click();
 	}
 
@@ -82,8 +82,7 @@ export class OmnichannelAgents {
 	}
 
 	async selectUsername(username: string) {
-		await this.inputUsername.fill('');
-		await this.inputUsername.type(username);
+		await this.inputUsername.fill(username);
 		await this.page.locator(`role=option[name="${username}"]`).click();
 	}
 
