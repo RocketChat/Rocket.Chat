@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
@@ -69,7 +70,8 @@ test.describe.serial('admin-rooms', () => {
 		const input = page.locator('[data-qa-id="AdminRoomSearchInput"]');
 
 		await input.click();
-		await input.fill('Wrong-channel');
+		const wrongChannel = faker.string.alpha(10);
+		await input.fill(wrongChannel);
 
 		const dropdown = page.locator('[data-qa-id="AdminRoomDropdownInput"]');
 		await dropdown.click();
