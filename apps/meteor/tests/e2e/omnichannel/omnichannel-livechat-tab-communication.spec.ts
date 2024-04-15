@@ -38,8 +38,6 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 	});
 
 	test('OC - Livechat - Send messages, close chat and start again 2 tabs', async () => {
-		test.fail();
-
 		const firstUser = {
 			name: `${faker.person.firstName()} ${faker.string.uuid()}}`,
 			email: faker.internet.email(),
