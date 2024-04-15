@@ -145,7 +145,7 @@ describe('AutoCloseOnHoldScheduler', () => {
 			try {
 				await scheduler.unscheduleRoom('roomId');
 			} catch (e) {
-				expect(e).to.not.to.be.undefined;
+				expect(e).not.to.be.undefined;
 			}
 		});
 
