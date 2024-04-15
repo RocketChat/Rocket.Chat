@@ -1,29 +1,15 @@
 import { log } from 'console';
 
 import { Analytics } from '@rocket.chat/core-services';
+import type { IStats } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { CannedResponse, OmnichannelServiceLevelAgreements, LivechatRooms, LivechatTag, LivechatUnit, Users } from '@rocket.chat/models';
 
-type ENTERPRISE_STATISTICS = GenericStats & Partial<EEOnlyStats>;
+type ENTERPRISE_STATISTICS = IStats['enterprise'];
 
-type GenericStats = {
-	modules: string[];
-	tags: string[];
-	seatRequests: number;
-};
+type GenericStats = Pick<ENTERPRISE_STATISTICS, 'modules' | 'tags' | 'seatRequests'>;
 
-type EEOnlyStats = {
-	livechatTags: number;
-	cannedResponses: number;
-	priorities: number;
-	slas: number;
-	businessUnits: number;
-	omnichannelPdfTranscriptRequested: number;
-	omnichannelPdfTranscriptSucceeded: number;
-	omnichannelRoomsWithSlas: number;
-	omnichannelRoomsWithPriorities: number;
-	livechatMonitors: number;
-};
+type EEOnlyStats = Omit<ENTERPRISE_STATISTICS, keyof GenericStats>;
 
 export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 	const genericStats: GenericStats = {
@@ -42,7 +28,6 @@ export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
 	return statistics;
 }
 
-// These models are only available on EE license so don't import them inside CE license as it will break the build
 async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 	if (!License.hasModule('livechat-enterprise')) {
 		return;
