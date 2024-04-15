@@ -3,7 +3,7 @@ import type { IUserCreationOptions, IUser, UserType } from '@rocket.chat/apps-en
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import { Presence } from '@rocket.chat/core-services';
 import type { UserStatus } from '@rocket.chat/core-typings';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
 import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
@@ -162,5 +162,31 @@ export class AppUserBridge extends UserBridge {
 
 	protected async getUserUnreadMessageCount(uid: string): Promise<number> {
 		return Subscriptions.getBadgeCount(uid);
+	}
+
+	protected async getUserUnreadMessageCountByRoom(uid: string, roomId: string, appId: string): Promise<number> {
+		this.orch.debugLog(`The App ${appId} is getting the unread messages count of the room: "${roomId}" for the user: "${uid}"`);
+
+		const user = await Users.findOneById(uid, { projection: { _id: 1 } });
+
+		if (!user) {
+			throw new Error('User not found');
+		}
+
+		const room = await Rooms.findOneById(roomId, { projection: { _id: 1 } });
+
+		if (!room) {
+			throw new Error('Room not found');
+		}
+
+		const lastSeen = (await Subscriptions.findOneByRoomIdAndUserId(roomId, uid))?.ls;
+
+		if (!lastSeen) {
+			return 0;
+		}
+
+		const totalMessages = await Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, lastSeen, new Date(), []);
+
+		return totalMessages;
 	}
 }

@@ -5,7 +5,7 @@ import type { ITypingDescriptor } from '@rocket.chat/apps-engine/server/bridges/
 import { MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
 import { api } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Users, Subscriptions, Messages } from '@rocket.chat/models';
+import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -47,6 +47,12 @@ export class AppMessageBridge extends MessageBridge {
 		} = {},
 	): Promise<Array<IAppsEngineMessage>> {
 		this.orch.debugLog(`The App ${appId} is getting the unread messages for the user: "${userId}" in the room: "${roomId}"`);
+
+		const room = await Rooms.findOneById(roomId, { projection: { _id: 1 } });
+
+		if (!room) {
+			throw new Error('Room not found');
+		}
 
 		const { limit = 100, skip, sort = { ts: 1 } } = options;
 
