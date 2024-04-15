@@ -308,16 +308,24 @@ export class E2ERoom extends Emitter {
 		// Encrypt generated session key for every user in room and publish to subscription model.
 		try {
 			const { users } = await sdk.call('e2e.getUsersOfRoomWithoutKey', this.roomId);
-			users.forEach((user) => this.encryptForParticipant(user));
+			users.forEach(async (user) => {
+				if (!user?.e2e?.public_key) {
+					return;
+				}
+
+				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e.public_key);
+				// Key has been encrypted. Publish to that user's subscription model for this room.
+				await sdk.call('e2e.updateGroupKey', this.roomId, user._id, encryptedGroupKey);
+			});
 		} catch (error) {
 			return this.error('Error getting room users: ', error);
 		}
 	}
 
-	async encryptForParticipant(user) {
+	async encryptGroupKeyForParticipant(public_key) {
 		let userKey;
 		try {
-			userKey = await importRSAKey(JSON.parse(user.e2e.public_key), ['encrypt']);
+			userKey = await importRSAKey(JSON.parse(public_key), ['encrypt']);
 		} catch (error) {
 			return this.error('Error importing user key: ', error);
 		}
@@ -326,8 +334,8 @@ export class E2ERoom extends Emitter {
 		// Encrypt session key for this user with his/her public key
 		try {
 			const encryptedUserKey = await encryptRSA(userKey, toArrayBuffer(this.sessionKeyExportedString));
-			// Key has been encrypted. Publish to that user's subscription model for this room.
-			await sdk.call('e2e.updateGroupKey', this.roomId, user._id, this.keyID + Base64.encode(new Uint8Array(encryptedUserKey)));
+			// return the encrypted key
+			return this.keyID + Base64.encode(new Uint8Array(encryptedUserKey));
 		} catch (error) {
 			return this.error('Error encrypting user key: ', error);
 		}
@@ -459,26 +467,6 @@ export class E2ERoom extends Emitter {
 		}
 
 		this.encryptKeyForOtherParticipants();
-	}
-
-	async encryptGroupKeyForParticipant(public_key) {
-		let userKey;
-		try {
-			userKey = await importRSAKey(JSON.parse(public_key), ['encrypt']);
-		} catch (error) {
-			return this.error('Error importing user key: ', error);
-		}
-		// const vector = crypto.getRandomValues(new Uint8Array(16));
-
-		// Encrypt session key for this user with his/her public key
-		try {
-			const encryptedUserKey = await encryptRSA(userKey, toArrayBuffer(this.sessionKeyExportedString));
-			// Key has been encrypted. Publish to that user's subscription model for this room.
-			// await sdk.call('e2e.updateGroupKey', this.roomId, user._id, this.keyID + Base64.encode(new Uint8Array(encryptedUserKey)));
-			return this.keyID + Base64.encode(new Uint8Array(encryptedUserKey));
-		} catch (error) {
-			return this.error('Error encrypting user key: ', error);
-		}
 	}
 
 	async encryptGroupKeyForOtherParticipants(users) {
