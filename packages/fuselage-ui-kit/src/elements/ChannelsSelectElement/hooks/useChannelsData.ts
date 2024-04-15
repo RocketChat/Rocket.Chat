@@ -5,15 +5,6 @@ type useChannelsDataProps = {
   filter: string;
 };
 
-type useChannelsDataReturn = {
-  value: string;
-  label: {
-    name?: string;
-    avatarETag?: string;
-    type: string;
-  };
-}[];
-
 const generateQuery = (
   term = ''
 ): {
@@ -22,7 +13,7 @@ const generateQuery = (
 
 export const useChannelsData = ({
   filter,
-}: useChannelsDataProps): useChannelsDataReturn => {
+}: useChannelsDataProps) => {
   const getRooms = useEndpoint(
     'GET',
     '/v1/rooms.autocomplete.channelAndPrivate'
@@ -30,17 +21,20 @@ export const useChannelsData = ({
 
   const { data } = useQuery(
     ['rooms.autocomplete.channelAndPrivate', filter],
-    async () =>
-      (await getRooms(generateQuery(filter))).items.map(
-        ({ fname, name, _id, avatarETag, t }) => ({
-          value: _id,
-          label: { name: name || fname, avatarETag, type: t },
-        })
-      ),
+    async () => {
+      const channels = (await getRooms(generateQuery(filter)))
+
+      const options = channels.items.map(({ fname, name, _id, avatarETag, t }) => ({
+        value: _id,
+        label: { name: name || fname, avatarETag, type: t },
+      }))
+
+      return options || [];
+    },
     {
       keepPreviousData: true,
     }
   );
 
-  return data || [];
+  return data;
 };
