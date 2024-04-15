@@ -62,7 +62,7 @@
     "@babel/preset-env": "~7.22.20",
     "@babel/preset-react": "~7.22.15",
     "@babel/preset-typescript": "~7.22.15",
-    "@rocket.chat/apps-engine": "^1.42.1",
+    "@rocket.chat/apps-engine": "1.43.0-alpha.694",
     "@rocket.chat/eslint-config": "workspace:^",
     "@rocket.chat/fuselage": "^0.53.2",
     "@rocket.chat/fuselage-hooks": "^0.33.1",
