@@ -19,11 +19,13 @@ test.describe('Translations', () => {
 
     test('expect to respect browser language', async ({ page }) => {
         await page.goto('/home');
+        await page.waitForTimeout(5000);
         await expect(page.locator('h2')).toHaveText('Bem-vindo ao Rocket.Chat');
     });
 
     test('expect to respect user preference', async ({ page, api }) => {
         await page.goto('/home');
+        await page.waitForTimeout(5000);
         await expect(page.locator('h2')).toHaveText('Bem-vindo ao Rocket.Chat');
 
         const response = page.waitForResponse('**/i18n/es.json');
