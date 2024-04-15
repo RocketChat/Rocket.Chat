@@ -12,7 +12,7 @@ interface IMemoizeDebouncedFunction<F extends (...args: any[]) => any> {
 export function memoizeDebounce<P extends any[], F extends (...args: P) => any>(func: F, wait = 0): IMemoizeDebouncedFunction<F> {
 	const debounceMemo = mem((..._args: Parameters<F>) => debounce(func, wait));
 
-	function wrappedFunction(this: IMemoizeDebouncedFunction<F>, ...args: Parameters<F>): ReturnType<F> | void {
+	function wrappedFunction(this: IMemoizeDebouncedFunction<F>, ...args: Parameters<F>): ReturnType<F> | undefined {
 		return debounceMemo(...args)(...args);
 	}
 
