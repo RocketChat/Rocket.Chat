@@ -27,15 +27,15 @@ test.describe.serial('omnichannel-manager', () => {
 			await page.locator('role=option[name="user1"]').click();
 			await poOmnichannelManagers.btnAdd.click();
 
-			await expect(poOmnichannelManagers.firstRowInTable('user1')).toBeVisible();
+			await expect(poOmnichannelManagers.findRowByName('user1')).toBeVisible();
 		});
 
 		await test.step('expect search for manager', async () => {
 			await poOmnichannelManagers.search('user1');
-			await expect(poOmnichannelManagers.firstRowInTable('user1')).toBeVisible();
+			await expect(poOmnichannelManagers.findRowByName('user1')).toBeVisible();
 			
 			await poOmnichannelManagers.search('NonExistingUser');
-			await expect(poOmnichannelManagers.firstRowInTable('user1')).toBeHidden();
+			await expect(poOmnichannelManagers.findRowByName('user1')).toBeHidden();
 
 			await poOmnichannelManagers.clearSearch();
 		});
@@ -45,7 +45,7 @@ test.describe.serial('omnichannel-manager', () => {
 			await poOmnichannelManagers.btnDeleteSelectedAgent('user1').click();
 			await poOmnichannelManagers.btnModalRemove.click();
 
-			await expect(poOmnichannelManagers.firstRowInTable('user1')).toBeHidden();
+			await expect(poOmnichannelManagers.findRowByName('user1')).toBeHidden();
 		});
 	});
 });

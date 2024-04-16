@@ -30,12 +30,17 @@ export class OmnichannelManager {
 		return this.page.locator('input').first();
 	}
 
+	async selectUsername(username: string) {
+		await this.inputUsername.fill(username);
+		await this.page.locator(`role=option[name="${username}"]`).click();
+	}
+
 	get btnAdd(): Locator {
 		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add manager"');
 	}
 
-	firstRowInTable(userId: string) {
-		return this.page.locator(`[data-qa-id="GenericTableManagerInfoBody"] [qa-user-id="${userId}"]`);
+	findRowByName(name: string) {
+		return this.page.locator('tr', { has: this.page.locator(`td >> text="${name}"`) });
 	}
 
 	get btnDeleteFirstRowInTable() {
