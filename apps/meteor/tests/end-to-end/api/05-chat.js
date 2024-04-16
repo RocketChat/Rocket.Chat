@@ -1101,6 +1101,127 @@ describe('[Chat]', function () {
 				})
 				.end(done);
 		});
+
+		describe.only('customFields', () => {
+			describe('when disabled', () => {
+				before(async () => {
+					await updateSetting('Message_CustomFields_Enabled', false);
+				});
+
+				it('should not allow sending custom fields', async () => {
+					await request
+						.post(api('chat.sendMessage'))
+						.set(credentials)
+						.send({
+							message: {
+								rid: testChannel._id,
+								msg: 'Sample message',
+								customFields: {
+									field1: 'value1',
+								},
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'Custom fields not enabled');
+						});
+				});
+			});
+
+			describe('when enabled', () => {
+				before(async () => {
+					await updateSetting('Message_CustomFields_Enabled', true);
+					await updateSetting('Message_CustomFields', JSON.stringify({
+						"properties": {
+							"priority": {
+								"type": "string",
+								"nullable": false,
+								"enum": ["low", "medium", "high"]
+							}
+						},
+						"required": ["priority"]
+					}));
+				});
+
+				it('should allow not sending custom fields', async () => {
+					await request
+						.post(api('chat.sendMessage'))
+						.set(credentials)
+						.send({
+							message: {
+								rid: testChannel._id,
+								msg: 'Sample message',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						});
+				});
+
+				it('should not allow sending empty custom fields', async () => {
+					await request
+						.post(api('chat.sendMessage'))
+						.set(credentials)
+						.send({
+							message: {
+								rid: testChannel._id,
+								msg: 'Sample message',
+								customFields: {},
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						});
+				});
+
+				it('should not allow sending wrong custom fields', async () => {
+					await request
+						.post(api('chat.sendMessage'))
+						.set(credentials)
+						.send({
+							message: {
+								rid: testChannel._id,
+								msg: 'Sample message',
+								customFields: {
+									field1: 'value1',
+								},
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						});
+				});
+
+				it('should allow sending correct custom fields', async () => {
+					await request
+						.post(api('chat.sendMessage'))
+						.set(credentials)
+						.send({
+							message: {
+								rid: testChannel._id,
+								msg: 'Sample message',
+								customFields: {
+									priority: 'low',
+								},
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body.message).to.have.property('customFields').to.deep.equal({ priority: 'low' });
+						});
+				});
+			});
+		});
 	});
 
 	describe('/chat.update', () => {
