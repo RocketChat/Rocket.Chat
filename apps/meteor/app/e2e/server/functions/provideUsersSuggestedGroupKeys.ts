@@ -20,7 +20,7 @@ export const provideUsersSuggestedGroupKeys = async (
 		return;
 	}
 
-	for (const roomId of roomIds) {
+	for await (const roomId of roomIds) {
 		if (!(await canAccessRoomIdAsync(roomId, userId))) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
