@@ -179,6 +179,9 @@ new FileUploadClass({
 
 	async get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
+		const contentDisposition = file.type === 'PDF' ? 'inline' : 'attachment';
+		console.log('contentDisposition', contentDisposition);
+		res.setHeader('Content-Disposition', `${contentDisposition}; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
 
 		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
 		file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
