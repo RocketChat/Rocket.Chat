@@ -9,7 +9,7 @@ addMigration({
 	version: 292,
 	name: 'Add checksum signature to existing apps',
 	async up() {
-		if (!Apps) {
+		if (!Apps.self) {
 			throw new Error('Apps Orchestrator not registered.');
 		}
 
