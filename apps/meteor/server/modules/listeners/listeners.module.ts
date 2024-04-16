@@ -209,12 +209,6 @@ export class ListenersModule {
 		});
 
 		service.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {
-			// We do not need inquiries on the client when the routing method is not manual
-			// When the routing method changes, client fetches inquiries again and discards the received ones
-			if (settings.get('Livechat_Routing_Method') !== 'Manual_Selection') {
-				return;
-			}
-
 			const type = minimongoChangeMap[clientAction] as 'added' | 'changed' | 'removed';
 			if (clientAction === 'removed') {
 				notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {

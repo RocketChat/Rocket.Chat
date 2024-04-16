@@ -1,4 +1,4 @@
-import { License } from '@rocket.chat/license';
+import { License } from './licenseImp';
 
 export const applyLicense = async (license: string, isNewLicense: boolean): Promise<boolean> => {
 	const enterpriseLicense = (license ?? '').trim();
