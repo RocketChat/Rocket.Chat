@@ -10,6 +10,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
+import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { createDirectRoom } from './createDirectRoom';
 
@@ -36,14 +37,14 @@ async function createUsersSubscriptions({
 	options?: ICreateRoomParams['options'];
 }) {
 	if (shouldBeHandledByFederation) {
-		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
-		extra.open = true;
-		extra.ls = now;
-		extra.roles = ['owner'];
-
-		if (room.prid) {
-			extra.prid = room.prid;
-		}
+		const extra: Partial<ISubscriptionExtraData> = {
+			...options?.subscriptionExtra,
+			open: true,
+			ls: now,
+			roles: ['owner'],
+			...(room.prid && { prid: room.prid }),
+			...getDefaultSubscriptionPref(owner),
+		};
 
 		await Subscriptions.createWithRoomAndUser(room, owner, extra);
 
