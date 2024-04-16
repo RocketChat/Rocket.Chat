@@ -12,8 +12,8 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { FileUpload } from '../../../file-upload/server';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { settings } from '../../../settings/server';
-import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
+import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 // TODO: most of the types here are wrong, but I don't want to change them now
 
@@ -175,7 +175,11 @@ export const validateMessage = async (message: any, room: any, user: any) => {
 	}
 
 	if (message.customFields) {
-		validateCustomMessageFields(message.customFields, settings.get('Message_CustomFields_Enabled'), settings.get<string>('Message_CustomFields'));
+		validateCustomMessageFields(
+			message.customFields,
+			settings.get('Message_CustomFields_Enabled'),
+			settings.get<string>('Message_CustomFields'),
+		);
 	}
 };
 

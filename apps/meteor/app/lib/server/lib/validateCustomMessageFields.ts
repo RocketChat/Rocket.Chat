@@ -1,5 +1,5 @@
-import mem from 'mem';
 import Ajv from 'ajv';
+import mem from 'mem';
 
 const ajv = new Ajv();
 
@@ -17,7 +17,11 @@ const customFieldsValidate = mem((customFieldsSetting: string) => {
 	});
 });
 
-export const validateCustomMessageFields = (customFields: Record<string, any>, messageCustomFieldsEnabled: boolean, messageCustomFields: string) => {
+export const validateCustomMessageFields = (
+	customFields: Record<string, any>,
+	messageCustomFieldsEnabled: boolean,
+	messageCustomFields: string,
+) => {
 	// get the json schema for the custom fields of the message and validate it using ajv
 	// if the validation fails, throw an error
 	// if there are no custom fields, the message object remains unchanged

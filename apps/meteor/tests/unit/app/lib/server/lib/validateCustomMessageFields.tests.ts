@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+
 import { validateCustomMessageFields } from '../../../../../../app/lib/server/lib/validateCustomMessageFields';
 
 describe('validateCustomMessageFields', () => {
@@ -29,7 +30,7 @@ describe('validateCustomMessageFields', () => {
 						type: 'string',
 					},
 				},
-				additionalProperties: true
+				additionalProperties: true,
 			});
 			expect(() => validateCustomMessageFields(customFields, true, config)).to.throw('Invalid custom fields');
 		});
@@ -38,7 +39,7 @@ describe('validateCustomMessageFields', () => {
 			const customFields = [1, 2];
 			const config = JSON.stringify({
 				type: 'array',
-				items: [{type: "integer"}, {type: "integer"}],
+				items: [{ type: 'integer' }, { type: 'integer' }],
 			});
 			expect(() => validateCustomMessageFields(customFields, true, config)).to.throw('Invalid custom fields config');
 		});

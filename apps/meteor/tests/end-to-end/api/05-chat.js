@@ -1102,7 +1102,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 
-		describe.only('customFields', () => {
+		describe('customFields', () => {
 			describe('when disabled', () => {
 				it('should not allow sending custom fields', async () => {
 					await request
@@ -1129,16 +1129,19 @@ describe('[Chat]', function () {
 			describe('when enabled', () => {
 				before(async () => {
 					await updateSetting('Message_CustomFields_Enabled', true);
-					await updateSetting('Message_CustomFields', JSON.stringify({
-						"properties": {
-							"priority": {
-								"type": "string",
-								"nullable": false,
-								"enum": ["low", "medium", "high"]
-							}
-						},
-						"required": ["priority"]
-					}));
+					await updateSetting(
+						'Message_CustomFields',
+						JSON.stringify({
+							properties: {
+								priority: {
+									type: 'string',
+									nullable: false,
+									enum: ['low', 'medium', 'high'],
+								},
+							},
+							required: ['priority'],
+						}),
+					);
 				});
 
 				after(async () => {
