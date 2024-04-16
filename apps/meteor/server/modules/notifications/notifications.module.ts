@@ -285,12 +285,8 @@ export class NotificationsModule {
 
 		this.streamUser.allowWrite(async function (eventName, data: unknown) {
 			const [, e] = eventName.split('/');
-			console.log(eventName, data, e);
 			if (e === 'otr' && (data === 'handshake' || data === 'acknowledge')) {
-				console.log('validOTR');
 				const isEnable = await Settings.getValueById('OTR_Enable');
-				console.log('OTRENABLED', isEnable);
-				console.log('OTRALLOWEDWRITE', Boolean(this.userId) && (isEnable === 'true' || isEnable === true));
 				return Boolean(this.userId) && (isEnable === 'true' || isEnable === true);
 			}
 			if (e === 'webrtc') {
