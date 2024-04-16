@@ -22,7 +22,7 @@ test.describe('Translations', () => {
         await page.waitForTimeout(5000);
         await expect(page.locator('h2')).toHaveText('Welcome to Rocket.Chat');
 
-        const response = page.waitForResponse('**/i18n/es.json');
+        const response = page.waitForResponse('**/i18n/pt-BR.json');
         expect((await setUserPreferences(api, { language: 'pt-BR' })).status()).toBe(200);
         await response;
         await expect(page.locator('h2')).toHaveText('Bem-vindo ao Rocket.Chat');
