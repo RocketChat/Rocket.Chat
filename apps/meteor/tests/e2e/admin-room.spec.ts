@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
+import { Admin } from './page-objects';
 import { createTargetChannel, createTargetPrivateChannel } from './utils';
 import { expect, test } from './utils/test';
 
@@ -14,6 +15,12 @@ test.describe.serial('admin-rooms', () => {
 
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/admin/rooms');
+	});
+
+	let admin: Admin;
+
+	test.beforeEach(async ({ page }) => {
+		admin = new Admin(page);
 	});
 
 	test.beforeAll(async ({ browser, api }) => {
@@ -29,17 +36,13 @@ test.describe.serial('admin-rooms', () => {
 	});
 
 	test('should filter room by name', async ({ page }) => {
-		const input = page.locator('[data-qa-id="AdminRoomSearchInput"]');
-
-		await input.click();
-		await input.fill(channel);
+		await admin.inputSearchRooms.fill(channel);
 
 		await expect(page.locator(`[qa-room-name="${channel}"]`)).toBeVisible();
 	});
 
 	test('should filter rooms by type', async ({ page }) => {
-		const dropdown = page.locator('[data-qa-id="AdminRoomDropdownInput"]');
-		await dropdown.click();
+		await admin.dropdownFilterRoomType.click();
 
 		const privateOption = page.locator('text=Private channels');
 
@@ -50,13 +53,9 @@ test.describe.serial('admin-rooms', () => {
 	});
 
 	test('should filter rooms by type and name', async ({ page }) => {
-		const input = page.locator('[data-qa-id="AdminRoomSearchInput"]');
+		await admin.inputSearchRooms.fill(privateRoom);
 
-		await input.click();
-		await input.fill(privateRoom);
-
-		const dropdown = page.locator('[data-qa-id="AdminRoomDropdownInput"]');
-		await dropdown.click();
+		await admin.dropdownFilterRoomType.click();
 
 		const privateOption = page.locator('text=Private channels');
 
@@ -67,14 +66,11 @@ test.describe.serial('admin-rooms', () => {
 	});
 
 	test('should be empty in case of the search does not find any room', async ({ page }) => {
-		const input = page.locator('[data-qa-id="AdminRoomSearchInput"]');
+		const nonExistingChannel = faker.string.alpha(10);
 
-		await input.click();
-		const wrongChannel = faker.string.alpha(10);
-		await input.fill(wrongChannel);
+		await admin.inputSearchRooms.fill(nonExistingChannel);
 
-		const dropdown = page.locator('[data-qa-id="AdminRoomDropdownInput"]');
-		await dropdown.click();
+		await admin.dropdownFilterRoomType.click();
 
 		const privateOption = page.locator('text=Private channels');
 
@@ -85,13 +81,9 @@ test.describe.serial('admin-rooms', () => {
 	});
 
 	test('should filter rooms by type and name and keep the filter after changing section', async ({ page }) => {
-		const input = page.locator('[data-qa-id="AdminRoomSearchInput"]');
+		await admin.inputSearchRooms.fill(privateRoom);
 
-		await input.click();
-		await input.fill(privateRoom);
-
-		const dropdown = page.locator('[data-qa-id="AdminRoomDropdownInput"]');
-		await dropdown.click();
+		await admin.dropdownFilterRoomType.click();
 
 		const privateOption = page.locator('text=Private channels');
 
@@ -111,6 +103,6 @@ test.describe.serial('admin-rooms', () => {
 
 		expect(isChecked).toBe(true);
 
-		await expect(input).toHaveValue(privateRoom);
+		await expect(admin.inputSearchRooms).toHaveValue(privateRoom);
 	});
 });

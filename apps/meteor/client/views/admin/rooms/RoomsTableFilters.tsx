@@ -92,7 +92,7 @@ const RoomsTableFilters = ({
 		>
 			<Box minWidth='x224' display='flex' m='x4' flexGrow={2}>
 				<TextInput
-					data-qa-id='AdminRoomSearchInput'
+					data-testid='AdminRoomSearchInput'
 					name='search-rooms'
 					alignItems='center'
 					placeholder={t('Search_rooms')}

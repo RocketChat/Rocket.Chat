@@ -184,4 +184,8 @@ export class Admin {
 	get inputAssetsLogo(): Locator {
 		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> input[type="file"]');
 	}
+
+	get dropdownFilterRoomType(): Locator {
+		return this.page.locator('[data-qa-id="AdminRoomDropdownInput"]');
+	}
 }
