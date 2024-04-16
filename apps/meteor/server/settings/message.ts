@@ -385,4 +385,32 @@ export const createMessageSettings = () =>
 			type: 'boolean',
 			public: true,
 		});
+
+		await this.add('Message_CustomFields_Enabled', false, {
+			type: 'boolean',
+		});
+		await this.add('Message_CustomFields', `
+{
+	"type": "object",
+	"properties": {
+		"priority": {
+			"type": "string",
+			"nullable": false,
+			"enum": ["low", "medium", "high"]
+		}
+	},
+	"required": ["priority"]
+}
+		`, {
+			type: 'code',
+			code: 'application/json',
+			invalidValue: '',
+			multiline: true,
+			enableQuery: [
+				{
+					_id: 'Message_CustomFields_Enabled',
+					value: true,
+				},
+			],
+		});
 	});
