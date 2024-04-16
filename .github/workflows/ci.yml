@@ -168,6 +168,12 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
+        with:
+          theme: dark
+          job_summary: true
+          comment_on_pr: false
       - name: Github Info
         run: |
           echo "GITHUB_ACTION: $GITHUB_ACTION"
@@ -192,6 +198,12 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
+        with:
+          theme: dark
+          job_summary: true
+          comment_on_pr: false
       - name: Github Info
         run: |
           echo "GITHUB_ACTION: $GITHUB_ACTION"
@@ -219,7 +231,6 @@ jobs:
       RC_DOCKER_TAG: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
-      SERVICES_PUBLISH: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
 
     strategy:
       fail-fast: false
@@ -237,6 +248,7 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
           platform: ${{ matrix.platform }}
+          build-containers: ${{ matrix.platform == 'alpine' && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
 
   build-gh-docker:
     name: 🚢 Build Docker Images for Production
@@ -248,7 +260,6 @@ jobs:
       RC_DOCKER_TAG: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
-      SERVICES_PUBLISH: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
 
     strategy:
       fail-fast: false
@@ -264,6 +275,7 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
           platform: ${{ matrix.platform }}
+          build-containers: ${{ matrix.platform == 'alpine' && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
 
       - name: Rename official Docker tag to GitHub Container Registry
         if: matrix.platform == 'official'
