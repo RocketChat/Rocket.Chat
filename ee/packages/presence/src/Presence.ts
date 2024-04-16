@@ -120,12 +120,10 @@ export class Presence extends ServiceClass implements IPresence {
 		session: string | undefined,
 		nodeId: string,
 	): Promise<{ uid: string; connectionId: string } | undefined> {
-		console.log('NEWCONNECTION', uid, session, nodeId);
 		if (!uid || !session) {
 			return;
 		}
 
-		console.log('ADDINGCONNECTION', uid, 'ONLINE');
 		await UsersSessions.addConnectionById(uid, {
 			id: session,
 			instanceId: nodeId,
@@ -140,11 +138,9 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async removeConnection(uid: string | undefined, session: string | undefined): Promise<{ uid: string; session: string } | undefined> {
-		console.log('REMOVINGCONNECTION', uid, session);
 		if (!uid || !session) {
 			return;
 		}
-		console.log('REMOVECONNECTION', session);
 		await UsersSessions.removeConnectionByConnectionId(session);
 
 		await this.updateUserPresence(uid);
@@ -157,10 +153,8 @@ export class Presence extends ServiceClass implements IPresence {
 
 	async removeLostConnections(nodeID?: string): Promise<string[]> {
 		if (nodeID) {
-			console.log('NODEIDDIED', nodeID);
 			const affectedUsers = await UsersSessions.findByInstanceId(nodeID).toArray();
 
-			console.log('REMOVINGAFFECTEDUSERS', affectedUsers);
 			const { modifiedCount } = await UsersSessions.removeConnectionsFromInstanceId(nodeID);
 			if (modifiedCount === 0) {
 				return [];
@@ -169,18 +163,15 @@ export class Presence extends ServiceClass implements IPresence {
 			return affectedUsers.map(({ _id }) => _id);
 		}
 
-		console.log('SOMENODEDIED');
 		const nodes = (await this.api?.nodeList()) || [];
 
 		const ids = nodes.filter((node) => node.available).map(({ id }) => id);
-		console.log('NODEDIED', ids);
 		if (ids.length === 0) {
 			return [];
 		}
 
 		const affectedUsers = await UsersSessions.findByOtherInstanceIds(ids, { projection: { _id: 1 } }).toArray();
 
-		console.log('REMOVINGAFFECTEDUSERS', affectedUsers);
 		const { modifiedCount } = await UsersSessions.removeConnectionsFromOtherInstanceIds(ids);
 		if (modifiedCount === 0) {
 			return [];
@@ -213,7 +204,6 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async setConnectionStatus(uid: string, status: UserStatus, session: string): Promise<boolean> {
-		console.log('SETCONNNECTIONSTATUS', uid, status, session);
 		const result = await UsersSessions.updateConnectionStatusById(uid, session, status);
 
 		await this.updateUserPresence(uid);
@@ -222,7 +212,6 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async updateUserPresence(uid: string): Promise<void> {
-		console.log('UPDATEUSERPRESENCE', uid);
 		const user = await Users.findOneById<Pick<IUser, 'username' | 'statusDefault' | 'statusText' | 'roles' | 'status'>>(uid, {
 			projection: {
 				username: 1,
@@ -233,7 +222,6 @@ export class Presence extends ServiceClass implements IPresence {
 			},
 		});
 		if (!user) {
-			console.log('USERNOTFOUND');
 			return;
 		}
 
@@ -243,13 +231,11 @@ export class Presence extends ServiceClass implements IPresence {
 
 		const { status, statusConnection } = processPresenceAndStatus(userSessions.connections, statusDefault);
 
-		console.log('UPDATINGSTATUS', uid, status, statusConnection);
 		const result = await Users.updateStatusById(uid, {
 			status,
 			statusConnection,
 		});
 
-		console.log('STATUSUPDATED', result);
 		if (result.modifiedCount > 0) {
 			this.broadcast({ _id: uid, username: user.username, status, statusText: user.statusText, roles: user.roles }, user.status);
 		}
@@ -259,12 +245,9 @@ export class Presence extends ServiceClass implements IPresence {
 		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'roles'>,
 		previousStatus: UserStatus | undefined,
 	): void {
-		console.log('BROADCASTING', this.broadcastEnabled);
 		if (!this.broadcastEnabled) {
 			return;
 		}
-
-		console.log('BROADCAST TO API', this.api);
 		this.api?.broadcast('presence.status', {
 			user,
 			previousStatus,
