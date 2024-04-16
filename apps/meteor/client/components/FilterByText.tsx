@@ -8,6 +8,7 @@ type FilterByTextCommonProps = {
 	children?: ReactNode | undefined;
 	placeholder?: string;
 	onChange: (filter: { text: string }) => void;
+	shouldAutoFocus?: boolean;
 };
 
 type FilterByTextPropsWithButton = FilterByTextCommonProps & {
@@ -21,13 +22,13 @@ type FilterByTextProps = FilterByTextCommonProps | FilterByTextPropsWithButton;
 const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
 	'displayButton' in props && props.displayButton === true;
 
-const FilterByText = forwardRef<HTMLElement, FilterByTextProps>(function FilterByText(
-	{ placeholder, onChange: setFilter, children, ...props },
+const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function FilterByText(
+	{ placeholder, onChange: setFilter, shouldAutoFocus, children, ...props },
 	ref,
 ) {
 	const t = useTranslation();
 	const [text, setText] = useState('');
-	const autoFocusRef = useAutoFocus();
+	const autoFocusRef = useAutoFocus(shouldAutoFocus);
 	const mergedRefs = useMergedRefs(ref, autoFocusRef);
 
 	const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
