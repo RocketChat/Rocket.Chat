@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
+import { Box, Button, Callout, Menu, Option } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
@@ -22,19 +22,18 @@ import { useRoomActions } from '../hooks/useRoomActions';
 
 type RoomInfoProps = {
 	room: IRoom;
-	icon: string;
 	onClickBack?: () => void;
 	onClickClose?: () => void;
 	onClickEnterRoom?: () => void;
 	onClickEdit?: () => void;
 	resetState?: () => void;
+	onClickViewChannels?: () => void;
 };
 
-const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onClickEdit, resetState }: RoomInfoProps) => {
+const RoomInfo = ({ room, onClickBack, onClickClose, onClickEnterRoom, onClickEdit, resetState, onClickViewChannels }: RoomInfoProps) => {
 	const t = useTranslation();
 	const { name, fname, description, topic, archived, broadcast, announcement } = room;
-	const roomTitle = fname || name;
-	const isDiscussion = 'prid' in room;
+	const roomName = fname || name;
 
 	const retentionPolicy = useRetentionPolicy(room);
 	const memoizedActions = useRoomActions(room, { onClickEnterRoom, onClickEdit }, resetState);
@@ -67,14 +66,25 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
 
+	const getRoomTitle = useMemo(() => {
+		if (room.teamMain) {
+			return t('Teams_Info');
+		}
+
+		if ('prid' in room) {
+			return t('Discussion_info');
+		}
+
+		return t('Channel_info');
+	}, [room, t]);
+
 	return (
 		<>
 			<ContextualbarHeader>
 				{onClickBack ? <ContextualbarBack onClick={onClickBack} /> : <ContextualbarIcon name='info-circled' />}
-				<ContextualbarTitle>{isDiscussion ? t('Discussion_info') : t('Channel_info')}</ContextualbarTitle>
+				<ContextualbarTitle>{getRoomTitle}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-
 			<ContextualbarScrollableContent p={24}>
 				<InfoPanel>
 					<InfoPanel.Section maxWidth='x332' mi='auto'>
@@ -93,9 +103,10 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 						</InfoPanel.Section>
 					)}
 
-					{roomTitle && (
+					{roomName && (
 						<InfoPanel.Section>
-							<InfoPanel.Title title={roomTitle} icon={icon} />
+							<InfoPanel.Title title={roomName} icon={room.t === 'p' ? 'lock' : 'hashtag'} />
+							{/* <InfoPanel.Title title={room.fname || room.name || ''} icon='team' /> */}
 						</InfoPanel.Section>
 					)}
 
@@ -108,7 +119,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 							</InfoPanel.Field>
 						)}
 
-						{description && description !== '' && (
+						{description && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Description')}</InfoPanel.Label>
 								<InfoPanel.Text withTruncatedText={false}>
@@ -117,7 +128,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 							</InfoPanel.Field>
 						)}
 
-						{announcement && announcement !== '' && (
+						{announcement && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Announcement')}</InfoPanel.Label>
 								<InfoPanel.Text withTruncatedText={false}>
@@ -126,11 +137,22 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 							</InfoPanel.Field>
 						)}
 
-						{topic && topic !== '' && (
+						{topic && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>{t('Topic')}</InfoPanel.Label>
 								<InfoPanel.Text withTruncatedText={false}>
 									<MarkdownText variant='inline' content={topic} />
+								</InfoPanel.Text>
+							</InfoPanel.Field>
+						)}
+
+						{onClickViewChannels && (
+							<InfoPanel.Field>
+								<InfoPanel.Label>{t('Teams_channels')}</InfoPanel.Label>
+								<InfoPanel.Text>
+									<Button onClick={onClickViewChannels} small>
+										{t('View_channels')}
+									</Button>
 								</InfoPanel.Text>
 							</InfoPanel.Field>
 						)}

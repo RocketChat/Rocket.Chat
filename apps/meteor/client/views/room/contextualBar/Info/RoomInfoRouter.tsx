@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { useState } from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import React, { useCallback, useState } from 'react';
 
 import { useRoom } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
@@ -17,11 +17,12 @@ type RoomInfoRouterProps = {
 const RoomInfoRouter = ({ onClickBack, onEnterRoom, resetState }: RoomInfoRouterProps) => {
 	const [isEditing, setIsEditing] = useState(false);
 
-	const { closeTab } = useRoomToolbox();
+	const { openTab, closeTab } = useRoomToolbox();
 	const room = useRoom();
 
 	const canEdit = useCanEditRoom(room);
-	const onClickEnterRoom = useMutableCallback(() => onEnterRoom?.(room));
+	const onClickEnterRoom = useEffectEvent(() => onEnterRoom?.(room));
+	const onClickViewChannels = useCallback(() => openTab('team-channels'), [openTab]);
 
 	if (isEditing) {
 		return <EditRoomInfoWithData onClickBack={() => setIsEditing(false)} />;
@@ -30,13 +31,13 @@ const RoomInfoRouter = ({ onClickBack, onEnterRoom, resetState }: RoomInfoRouter
 	return (
 		<RoomInfo
 			room={room}
-			icon={room.t === 'p' ? 'lock' : 'hashtag'}
 			onClickBack={onClickBack}
 			onClickEdit={canEdit ? () => setIsEditing(true) : undefined}
 			onClickClose={closeTab}
 			{...(Boolean(onEnterRoom) && {
 				onClickEnterRoom,
 			})}
+			onClickViewChannels={room.teamMain ? onClickViewChannels : undefined}
 			resetState={resetState}
 		/>
 	);
