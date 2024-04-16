@@ -1,4 +1,11 @@
-import { MessageBlock, MessageMetrics, MessageMetricsItem, MessageMetricsReply } from '@rocket.chat/fuselage';
+import {
+	MessageBlock,
+	MessageMetrics,
+	MessageMetricsItem,
+	MessageMetricsItemIcon,
+	MessageMetricsItemLabel,
+	MessageMetricsReply,
+} from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -26,8 +33,8 @@ const DiscussionMetrics = ({ lm, count, rid, drid }: DiscussionMetricsProps): Re
 					{count ? t('message_counter', { count }) : t('Reply')}
 				</MessageMetricsReply>
 				<MessageMetricsItem title={lm?.toLocaleString()}>
-					<MessageMetricsItem.Icon name='clock' />
-					<MessageMetricsItem.Label>{lm ? format(lm) : t('No_messages_yet')}</MessageMetricsItem.Label>
+					<MessageMetricsItemIcon name='clock' />
+					<MessageMetricsItemLabel>{lm ? format(lm) : t('No_messages_yet')}</MessageMetricsItemLabel>
 				</MessageMetricsItem>
 			</MessageMetrics>
 		</MessageBlock>
