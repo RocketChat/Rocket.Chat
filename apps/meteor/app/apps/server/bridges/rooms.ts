@@ -112,7 +112,16 @@ export class AppRoomBridge extends RoomBridge {
 		appId: string,
 	): Promise<IMessage[]> {
 		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}"`);
+		if (typeof options.limit !== 'number') {
+			options.limit = 100;
+		}
+
 		const { limit, skip, sort = { ts: -1 } } = options;
+
+		const messageConverter = this.orch.getConverters()?.get('messages');
+		if (!messageConverter) {
+			throw new Error('Message converter not found');
+		}
 
 		const messageQueryOptions = {
 			limit: Math.min(limit, 100),
@@ -121,11 +130,6 @@ export class AppRoomBridge extends RoomBridge {
 		};
 
 		const messages = await Messages.findVisibleByRoomId(roomId, messageQueryOptions).toArray();
-
-		const messageConverter = this.orch.getConverters()?.get('messages');
-		if (!messageConverter) {
-			throw new Error('Message converter not found');
-		}
 
 		return Promise.all(messages.map((message) => messageConverter.convertMessage(message)));
 	}
