@@ -391,7 +391,6 @@ export const createMessageSettings = () =>
 		});
 		await this.add('Message_CustomFields', `
 {
-	"type": "object",
 	"properties": {
 		"priority": {
 			"type": "string",

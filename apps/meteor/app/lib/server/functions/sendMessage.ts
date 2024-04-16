@@ -2,8 +2,6 @@ import { Apps } from '@rocket.chat/apps';
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
-import Ajv from 'ajv';
-import mem from 'mem';
 import { Match, check } from 'meteor/check';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -15,8 +13,7 @@ import { FileUpload } from '../../../file-upload/server';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { settings } from '../../../settings/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
-
-const ajv = new Ajv();
+import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 
 // TODO: most of the types here are wrong, but I don't want to change them now
 
@@ -148,31 +145,6 @@ const validateAttachment = (attachment: any) => {
 
 const validateBodyAttachments = (attachments: any[]) => attachments.map(validateAttachment);
 
-const customFieldsValidate = mem((customFieldsSetting: string) => {
-	const schema = JSON.parse(customFieldsSetting);
-	return ajv.compile({
-		...schema,
-		additionalProperties: false,
-	});
-});
-
-export const validateCustomFields = (customFields: Record<string, any>) => {
-	// get the json schema for the custom fields of the message and validate it using ajv
-	// if the validation fails, throw an error
-	// if there are no custom fields, the message object remains unchanged
-
-	const messageCustomFieldsEnabled = settings.get('Message_CustomFields_Enabled');
-	if (messageCustomFieldsEnabled !== true) {
-		throw new Error('Custom fields not enabled');
-	}
-
-	const messageCustomFields = settings.get<string>('Message_CustomFields');
-	const validate = customFieldsValidate(messageCustomFields);
-	if (!validate(customFields)) {
-		throw new Error('Invalid custom fields');
-	}
-};
-
 export const validateMessage = async (message: any, room: any, user: any) => {
 	check(
 		message,
@@ -203,7 +175,7 @@ export const validateMessage = async (message: any, room: any, user: any) => {
 	}
 
 	if (message.customFields) {
-		validateCustomFields(message.customFields);
+		validateCustomMessageFields(message.customFields, settings.get('Message_CustomFields_Enabled'), settings.get<string>('Message_CustomFields'));
 	}
 };
 

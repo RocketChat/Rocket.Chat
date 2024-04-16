@@ -127,6 +127,8 @@ export type MessageMention = {
 	fname?: string; // incase of channel mentions
 };
 
+export interface IMessageCustomFields {}
+
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
@@ -220,7 +222,7 @@ export interface IMessage extends IRocketChatRecord {
 		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>;
 	};
 
-	customFields?: Record<string, any>;
+	customFields?: IMessageCustomFields;
 }
 
 export type MessageSystem = {
