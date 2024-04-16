@@ -3,7 +3,7 @@ import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definitio
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings } from '@rocket.chat/core-services';
 import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
-import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom, IMessage, IOTRMessage } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -484,6 +484,13 @@ export class ListenersModule {
 		service.onEvent('actions.changed', () => {
 			notifications.streamApps.emitWithoutBroadcast('actions/changed');
 			notifications.streamApps.emitWithoutBroadcast('apps', ['actions/changed', []]);
+		});
+
+		service.onEvent('otrMessage', ({ roomId, message, user, room }: { roomId: string; message: IMessage; user: IUser; room: IRoom }) => {
+			notifications.streamRoomMessage.emit(roomId, message, user, room);
+		});
+		service.onEvent('otrAckUpdate', ({ roomId, acknowledgeMessage }: { roomId: string; acknowledgeMessage: IOTRMessage }) => {
+			notifications.streamRoomMessage.emit(roomId, acknowledgeMessage);
 		});
 	}
 }

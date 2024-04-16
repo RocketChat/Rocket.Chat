@@ -9280,6 +9280,7 @@ __metadata:
     "@types/he": ^1.1.2
     "@types/i18next-sprintf-postprocessor": ^0.2.2
     "@types/imap": ^0.8.39
+    "@types/jaeger-client": ^3
     "@types/jsdom": ^16.2.15
     "@types/jsdom-global": ^3.0.6
     "@types/jsrsasign": ^10.5.11
@@ -9419,6 +9420,7 @@ __metadata:
     ip-range-check: ^0.2.0
     is-svg: ^4.3.2
     isolated-vm: 4.4.2
+    jaeger-client: ^3.19.0
     jest: ~29.6.4
     jschardet: ^3.0.0
     jsdom: ^16.7.0
@@ -13532,6 +13534,17 @@ __metadata:
   dependencies:
     "@types/istanbul-lib-report": "*"
   checksum: f1ad54bc68f37f60b30c7915886b92f86b847033e597f9b34f2415acdbe5ed742fa559a0a40050d74cdba3b6a63c342cac1f3a64dba5b68b66a6941f4abd7903
+  languageName: node
+  linkType: hard
+
+"@types/jaeger-client@npm:^3":
+  version: 3.18.7
+  resolution: "@types/jaeger-client@npm:3.18.7"
+  dependencies:
+    "@types/node": "*"
+    opentracing: ~0.14.3
+    prom-client: ~11.3.0 || ^12.0.0 || ^13.0.0 || ^14.0.0
+  checksum: b8996b156ec7c87f5616006d1d82f82c786ea38f455d0fec31aaa6780c840cdacea7698e2ddd4b8fde0099388d3cc1a791ea43dd6395e0c40ef0bd48a6f5fc50
   languageName: node
   linkType: hard
 
@@ -32371,7 +32384,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"opentracing@npm:^0.14.4":
+"opentracing@npm:^0.14.4, opentracing@npm:~0.14.3":
   version: 0.14.7
   resolution: "opentracing@npm:0.14.7"
   checksum: 5f7e44439062d056a2a72ac89eff463c9cf5659a2aea230ff7f5a226c5e960c195ce04ec2e2cc590140bbb9c5d2be11a5a50a23484cbe2d0e132af4309d4c904
@@ -34644,7 +34657,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prom-client@npm:^14.0.0, prom-client@npm:^14.2.0":
+"prom-client@npm:^14.0.0, prom-client@npm:^14.2.0, prom-client@npm:~11.3.0 || ^12.0.0 || ^13.0.0 || ^14.0.0":
   version: 14.2.0
   resolution: "prom-client@npm:14.2.0"
   dependencies:

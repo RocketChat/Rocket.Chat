@@ -149,7 +149,7 @@ const network = new ServiceBroker({
 			type: 'Jaeger',
 			options: {
 				endpoint: null,
-				host: 'jaeger',
+				host: 'localhost',
 				port: 6832,
 				sampler: {
 					// Sampler type. More info: https://www.jaegertracing.io/docs/1.14/sampling/#client-sampling-configuration

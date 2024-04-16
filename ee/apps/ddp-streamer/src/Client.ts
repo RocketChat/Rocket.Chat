@@ -98,7 +98,7 @@ export class Client extends EventEmitter {
 			this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR, WS_ERRORS_MESSAGES.CLOSE_PROTOCOL_ERROR);
 		});
 
-		this.setMaxListeners(50);
+		this.setMaxListeners(200);
 
 		this.greeting();
 

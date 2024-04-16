@@ -30,16 +30,19 @@ Meteor.startup(() => {
 	});
 
 	Accounts.onLogin((login: any): void => {
+		console.log('Login', login);
 		if (login.type !== 'resume' || !login.connection.id) {
 			return;
 		}
 
 		// validate if it is a real WS connection and is still open
 		const session = Meteor.server.sessions.get(login.connection.id);
+		console.log('Session', session);
 		if (!session) {
 			return;
 		}
 
+		console.log('Calling presence to notify new connection');
 		void (async function () {
 			await Presence.newConnection(login.user._id, login.connection.id, nodeId);
 			updateConns();
