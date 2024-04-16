@@ -3,6 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
+import { useConvertToChannel } from './actions/useConvertToChannel';
 import { useRoomConvertToTeam } from './actions/useRoomConvertToTeam';
 import { useRoomHide } from './actions/useRoomHide';
 import { useRoomLeave } from './actions/useRoomLeave';
@@ -21,6 +22,7 @@ export const useRoomActions = (room: IRoom, { onClickEnterRoom, onClickEdit }: R
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload: resetState });
 	const handleMoveToTeam = useRoomMoveToTeam(room);
 	const handleConvertToTeam = useRoomConvertToTeam(room);
+	const handleConvertToChannel = useConvertToChannel(room);
 
 	const memoizedActions = useMemo(
 		() => ({
@@ -46,6 +48,13 @@ export const useRoomActions = (room: IRoom, { onClickEnterRoom, onClickEdit }: R
 						action: handleDelete,
 					},
 				}),
+			...(handleConvertToChannel && {
+				convertToChannel: {
+					label: t('Convert_to_channel'),
+					action: handleConvertToChannel,
+					icon: 'hash' as const,
+				},
+			}),
 			...(handleMoveToTeam && {
 				move: {
 					label: t('Teams_move_channel_to_team'),
@@ -75,7 +84,18 @@ export const useRoomActions = (room: IRoom, { onClickEnterRoom, onClickEdit }: R
 				},
 			}),
 		}),
-		[onClickEdit, t, handleDelete, handleMoveToTeam, handleConvertToTeam, handleHide, handleLeave, onClickEnterRoom, canDeleteRoom],
+		[
+			t,
+			onClickEnterRoom,
+			onClickEdit,
+			canDeleteRoom,
+			handleDelete,
+			handleConvertToChannel,
+			handleMoveToTeam,
+			handleConvertToTeam,
+			handleHide,
+			handleLeave,
+		],
 	);
 
 	return memoizedActions;

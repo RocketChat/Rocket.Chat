@@ -1,4 +1,4 @@
-import type { ITeam } from '@rocket.chat/core-typings';
+import type { IRoom, ITeam, Serialized } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useUserId, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -11,7 +11,7 @@ import LeaveTeamModal from './LeaveTeamModal/LeaveTeamModal';
 type LeaveTeamWithDataProps = {
 	teamId: ITeam['_id'];
 	onCancel: () => void;
-	onConfirm: () => void;
+	onConfirm: (selectedRooms?: { [key: string]: Serialized<IRoom> & { isLastOwner?: boolean } }) => void;
 };
 
 const LeaveTeamWithData = ({ teamId, onCancel, onConfirm }: LeaveTeamWithDataProps): ReactElement => {

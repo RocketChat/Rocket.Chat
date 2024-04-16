@@ -14,7 +14,7 @@ const LEAVE_TEAM_STEPS = {
 type LeaveTeamModalProps = {
 	rooms: (Serialized<IRoom> & { isLastOwner?: boolean })[];
 	onCancel: () => void;
-	onConfirm: () => void;
+	onConfirm: (selectedRooms?: { [key: string]: Serialized<IRoom> & { isLastOwner?: boolean } }) => void;
 };
 
 const LeaveTeamModal = ({ rooms, onCancel, onConfirm }: LeaveTeamModalProps): ReactElement => {

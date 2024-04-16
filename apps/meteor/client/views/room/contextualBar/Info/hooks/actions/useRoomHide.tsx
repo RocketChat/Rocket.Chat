@@ -1,11 +1,12 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { UiTextContext } from '../../../../../../../definition/IRoomTypeConfig';
-import WarningModal from '../../../../../../components/WarningModal';
+import { GenericModalDoNotAskAgain } from '../../../../../../components/GenericModal';
+import { useDontAskAgain } from '../../../../../../hooks/useDontAskAgain';
 import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
 
 export const useRoomHide = (room: IRoom) => {
@@ -15,7 +16,9 @@ export const useRoomHide = (room: IRoom) => {
 	const hideRoom = useMethod('hideRoom');
 	const router = useRouter();
 
-	const handleHide = useMutableCallback(async () => {
+	const dontAskHideRoom = useDontAskAgain('hideRoom');
+
+	const handleHide = useEffectEvent(async () => {
 		const hide = async () => {
 			try {
 				await hideRoom(room._id);
@@ -28,15 +31,24 @@ export const useRoomHide = (room: IRoom) => {
 
 		const warnText = roomCoordinator.getRoomDirectives(room.t).getUiText(UiTextContext.HIDE_WARNING);
 
+		if (dontAskHideRoom) {
+			return hide();
+		}
+
 		setModal(
-			<WarningModal
-				text={t(warnText as TranslationKey, room.fname || room.name)}
+			<GenericModalDoNotAskAgain
+				variant='danger'
 				confirmText={t('Yes_hide_it')}
-				close={() => setModal(null)}
-				cancel={() => setModal(null)}
 				cancelText={t('Cancel')}
-				confirm={hide}
-			/>,
+				onCancel={() => setModal(null)}
+				onConfirm={hide}
+				dontAskAgain={{
+					action: 'hideRoom',
+					label: t('Hide_room'),
+				}}
+			>
+				{t(warnText as TranslationKey, room.fname)}
+			</GenericModalDoNotAskAgain>,
 		);
 	});
 

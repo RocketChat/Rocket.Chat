@@ -1,13 +1,12 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React from 'react';
 
-import GenericModal from '../../../../components/GenericModal';
-import ChannelDesertionTable from '../../ChannelDesertionTable';
+import GenericModal from '../../../../../../components/GenericModal';
+import ChannelDesertionTable from '../../../../ChannelDesertionTable';
 
-type FirstStepProps = {
+type ConvertToChannelListProps = {
 	onClose: () => void;
 	onCancel: () => void;
 	onConfirm: () => void;
@@ -18,7 +17,7 @@ type FirstStepProps = {
 	selectedRooms: { [key: string]: Serialized<IRoom> };
 };
 
-const FirstStep: FC<FirstStepProps> = ({
+const ConvertToChannelList = ({
 	onClose,
 	onCancel,
 	onConfirm,
@@ -28,7 +27,7 @@ const FirstStep: FC<FirstStepProps> = ({
 	selectedRooms,
 	eligibleRoomsLength,
 	...props
-}) => {
+}: ConvertToChannelListProps) => {
 	const t = useTranslation();
 
 	return (
@@ -46,11 +45,9 @@ const FirstStep: FC<FirstStepProps> = ({
 			<Box mbe={24} fontScale='p2'>
 				{t('Select_the_teams_channels_you_would_like_to_delete')}
 			</Box>
-
 			<Box mbe={24} fontScale='p2'>
 				{t('Notice_that_public_channels_will_be_public_and_visible_to_everyone')}
 			</Box>
-
 			<ChannelDesertionTable
 				lastOwnerWarning={undefined}
 				onToggleAllRooms={onToggleAllRooms}
@@ -63,4 +60,4 @@ const FirstStep: FC<FirstStepProps> = ({
 	);
 };
 
-export default FirstStep;
+export default ConvertToChannelList;
