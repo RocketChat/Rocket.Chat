@@ -29,6 +29,7 @@ runs:
         node-version: ${{ inputs.node-version }}
         cache-modules: true
         install: true
+        deno-dir: ${{ env.DENO_DIR }}
 
     # - name: Free disk space
     #   run: |

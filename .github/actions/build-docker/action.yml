@@ -51,6 +51,7 @@ runs:
         node-version: ${{ inputs.node-version }}
         cache-modules: true
         install: true
+        deno-dir: ${{ env.DENO_DIR }}
 
     - run: yarn build
       shell: bash
