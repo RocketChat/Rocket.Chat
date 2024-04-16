@@ -13,7 +13,7 @@ export const useSidebarListNavigation = () => {
 
 	const sidebarListRef = useCallback(
 		(node: HTMLElement | null) => {
-			let lastMessageFocused: HTMLElement | null = null;
+			let lastItemFocused: HTMLElement | null = null;
 
 			if (!node) {
 				return;
@@ -56,7 +56,7 @@ export const useSidebarListNavigation = () => {
 						sidebarListFocusManager.focusNext({ accept: (node) => isListItem(node) });
 					}
 
-					lastMessageFocused = document.activeElement as HTMLElement;
+					lastItemFocused = document.activeElement as HTMLElement;
 				}
 			});
 
@@ -70,8 +70,8 @@ export const useSidebarListNavigation = () => {
 						return;
 					}
 
-					if (!e.currentTarget.contains(e.relatedTarget) && !lastMessageFocused) {
-						lastMessageFocused = e.target as HTMLElement;
+					if (!e.currentTarget.contains(e.relatedTarget) && !lastItemFocused) {
+						lastItemFocused = e.target as HTMLElement;
 					}
 				},
 				{ capture: true },
@@ -85,8 +85,8 @@ export const useSidebarListNavigation = () => {
 						return;
 					}
 
-					if (lastMessageFocused && !e.currentTarget.contains(e.relatedTarget) && node.contains(e.target as HTMLElement)) {
-						lastMessageFocused?.focus();
+					if (lastItemFocused && !e.currentTarget.contains(e.relatedTarget) && node.contains(e.target as HTMLElement)) {
+						lastItemFocused?.focus();
 					}
 				},
 				{ capture: true },
