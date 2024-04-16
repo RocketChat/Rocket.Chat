@@ -177,7 +177,7 @@ export const FileUpload = {
 
 		// App IPreFileUpload event hook
 		try {
-			await Apps?.triggerEvent(AppEvents.IPreFileUpload, { file, content: content || Buffer.from([]) });
+			await Apps.self?.triggerEvent(AppEvents.IPreFileUpload, { file, content: content || Buffer.from([]) });
 		} catch (error: any) {
 			if (error.name === AppsEngineException.name) {
 				throw new Meteor.Error('error-app-prevented', error.message);
@@ -587,15 +587,7 @@ export const FileUpload = {
 			}
 
 			// eslint-disable-next-line prettier/prettier
-			const headersToProxy = [
-				'age',
-				'cache-control',
-				'content-length',
-				'content-type',
-				'date',
-				'expired',
-				'last-modified',
-			];
+			const headersToProxy = ['age', 'cache-control', 'content-length', 'content-type', 'date', 'expired', 'last-modified'];
 
 			headersToProxy.forEach((header) => {
 				fileRes.headers[header] && res.setHeader(header, String(fileRes.headers[header]));

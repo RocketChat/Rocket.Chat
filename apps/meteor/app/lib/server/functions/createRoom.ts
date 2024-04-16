@@ -10,6 +10,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
+import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { createDirectRoom } from './createDirectRoom';
 
@@ -36,14 +37,14 @@ async function createUsersSubscriptions({
 	options?: ICreateRoomParams['options'];
 }) {
 	if (shouldBeHandledByFederation) {
-		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
-		extra.open = true;
-		extra.ls = now;
-		extra.roles = ['owner'];
-
-		if (room.prid) {
-			extra.prid = room.prid;
-		}
+		const extra: Partial<ISubscriptionExtraData> = {
+			...options?.subscriptionExtra,
+			open: true,
+			ls: now,
+			roles: ['owner'],
+			...(room.prid && { prid: room.prid }),
+			...getDefaultSubscriptionPref(owner),
+		};
 
 		await Subscriptions.createWithRoomAndUser(room, owner, extra);
 
@@ -198,7 +199,7 @@ export const createRoom = async <T extends RoomType>(
 		_USERNAMES: members,
 	};
 
-	const prevent = await Apps?.triggerEvent(AppEvents.IPreRoomCreatePrevent, tmp).catch((error) => {
+	const prevent = await Apps.self?.triggerEvent(AppEvents.IPreRoomCreatePrevent, tmp).catch((error) => {
 		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
 		}
@@ -210,7 +211,7 @@ export const createRoom = async <T extends RoomType>(
 		throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 	}
 
-	const eventResult = await Apps?.triggerEvent(
+	const eventResult = await Apps.self?.triggerEvent(
 		AppEvents.IPreRoomCreateModify,
 		await Apps.triggerEvent(AppEvents.IPreRoomCreateExtend, tmp),
 	);
@@ -245,7 +246,7 @@ export const createRoom = async <T extends RoomType>(
 		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members });
 	}
 
-	void Apps?.triggerEvent(AppEvents.IPostRoomCreate, room);
+	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);
 	return {
 		rid: room._id, // backwards compatible
 		inserted: true,

@@ -828,11 +828,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async getProviderManager(): Promise<AppVideoConfProviderManager> {
-		if (!Apps?.isLoaded()) {
+		if (!Apps.self?.isLoaded()) {
 			throw new Error('apps-engine-not-loaded');
 		}
 
-		const manager = Apps?.getManager()?.getVideoConfProviderManager();
+		const manager = Apps.self?.getManager()?.getVideoConfProviderManager();
 		if (!manager) {
 			throw new Error(availabilityErrors.NO_APP);
 		}
