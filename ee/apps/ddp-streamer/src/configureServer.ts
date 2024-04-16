@@ -117,7 +117,6 @@ server.methods({
 		return Presence.setStatus(userId, status);
 	},
 	'UserPresence:online'() {
-		console.log('ONLINE', this.userId);
 		const { userId, session } = this;
 		if (!userId) {
 			return;
@@ -125,7 +124,6 @@ server.methods({
 		return Presence.setConnectionStatus(userId, UserStatus.ONLINE, session);
 	},
 	'UserPresence:away'() {
-		console.log('AWAY', this.userId);
 		const { userId, session } = this;
 		if (!userId) {
 			return;
