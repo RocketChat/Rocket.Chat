@@ -15,6 +15,7 @@ concurrency:
 
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+  DENO_DIR: ~/.deno-cache/
 
 jobs:
   release-versions:
@@ -148,6 +149,7 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           cache-modules: true
           install: true
+          deno-dir: ${{ env.DENO_DIR }}
 
       - name: Cache vite
         uses: actions/cache@v3

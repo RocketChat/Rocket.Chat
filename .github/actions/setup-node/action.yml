@@ -4,6 +4,10 @@ inputs:
   node-version:
     required: true
     type: string
+  # DENO_DIR env var with the path to cache
+  deno-dir:
+    required: true
+    type: string
   cache-modules:
     required: false
     type: boolean
@@ -26,6 +30,7 @@ runs:
       with:
         path: |
           node_modules
+          ${{ inputs.deno-dir }}
           apps/meteor/node_modules
           apps/meteor/ee/server/services/node_modules
         key: node-modules-${{ hashFiles('yarn.lock') }}
