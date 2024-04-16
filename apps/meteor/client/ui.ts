@@ -27,7 +27,6 @@ import { useRoomInfoRoomAction } from './hooks/roomActions/useRoomInfoRoomAction
 import { useStarredMessagesRoomAction } from './hooks/roomActions/useStarredMessagesRoomAction';
 import { useStartCallRoomAction } from './hooks/roomActions/useStartCallRoomAction';
 import { useTeamChannelsRoomAction } from './hooks/roomActions/useTeamChannelsRoomAction';
-import { useTeamInfoRoomAction } from './hooks/roomActions/useTeamInfoRoomAction';
 import { useThreadRoomAction } from './hooks/roomActions/useThreadRoomAction';
 import { useUploadedFilesListRoomAction } from './hooks/roomActions/useUploadedFilesListRoomAction';
 import { useUserInfoGroupRoomAction } from './hooks/roomActions/useUserInfoGroupRoomAction';
@@ -39,7 +38,6 @@ import type { QuickActionsActionConfig } from './views/room/lib/quickActions';
 
 export const roomActionHooks = [
 	useChannelSettingsRoomAction,
-	useTeamInfoRoomAction,
 	useUserInfoGroupRoomAction,
 	useUserInfoRoomAction,
 	useThreadRoomAction,
