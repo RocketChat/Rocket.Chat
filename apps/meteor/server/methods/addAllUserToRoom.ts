@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
+import { getDefaultSubscriptionPref } from '../../app/utils/lib/getDefaultSubscriptionPref';
 import { callbacks } from '../../lib/callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../lib/getSubscriptionAutotranslateDefaultConfig';
 
@@ -65,6 +66,7 @@ Meteor.methods<ServerMethods>({
 				userMentions: 1,
 				groupMentions: 0,
 				...autoTranslateConfig,
+				...getDefaultSubscriptionPref(user),
 			});
 			await Message.saveSystemMessage('uj', rid, user.username || '', user, { ts: now });
 			await callbacks.run('afterJoinRoom', user, room);
