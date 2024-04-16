@@ -13,9 +13,9 @@ import { syncCloudData } from './syncCloudData';
  */
 export async function syncWorkspace() {
 	try {
+		await getCachedSupportedVersionsToken.reset();
 		await announcementSync();
 		await syncCloudData();
-		await getCachedSupportedVersionsToken.reset();
 	} catch (err) {
 		switch (true) {
 			case err instanceof CloudWorkspaceRegistrationError:
@@ -33,8 +33,8 @@ export async function syncWorkspace() {
 					function: 'syncCloudData',
 				});
 				try {
-					await legacySyncWorkspace();
 					await getCachedSupportedVersionsToken.reset();
+					await legacySyncWorkspace();
 				} catch (err) {
 					switch (true) {
 						case err instanceof CloudWorkspaceRegistrationError:

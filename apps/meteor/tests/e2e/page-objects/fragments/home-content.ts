@@ -79,7 +79,6 @@ export class HomeContent {
 	}
 
 	async forwardMessage(chatName: string) {
-
 		await this.page.locator('[data-qa-type="message"]').last().hover();
 		await this.page.locator('role=button[name="Forward message"]').click();
 
