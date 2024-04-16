@@ -8509,8 +8509,8 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/apps-engine@npm:deno":
-  version: 1.42.0-deno.695
-  resolution: "@rocket.chat/apps-engine@npm:1.42.0-deno.695"
+  version: 1.43.0-deno.700
+  resolution: "@rocket.chat/apps-engine@npm:1.43.0-deno.700"
   dependencies:
     "@msgpack/msgpack": 3.0.0-beta2
     adm-zip: ^0.5.9
@@ -8527,7 +8527,7 @@ __metadata:
     vm2: ^3.9.19
   peerDependencies:
     "@rocket.chat/ui-kit": "*"
-  checksum: 39a4b83fed295403aa82893856ac271f4866dfdd939ae40218b4c92da34977955ebe2fa8b35a1dc0eda3b2c8c495481b81d7acd3ae607f6aca4045d7ce6a8f5c
+  checksum: d8ddec419bacc8212c45bf2e243492296fa24e392585871668cbd5d88dda1fb033c30bf871434d0c048b5cf4bedb93302a4c2d39f039d70ff2349d82946a166f
   languageName: node
   linkType: hard
 
