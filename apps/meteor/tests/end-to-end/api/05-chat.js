@@ -1104,10 +1104,6 @@ describe('[Chat]', function () {
 
 		describe.only('customFields', () => {
 			describe('when disabled', () => {
-				before(async () => {
-					await updateSetting('Message_CustomFields_Enabled', false);
-				});
-
 				it('should not allow sending custom fields', async () => {
 					await request
 						.post(api('chat.sendMessage'))
@@ -1143,6 +1139,10 @@ describe('[Chat]', function () {
 						},
 						"required": ["priority"]
 					}));
+				});
+
+				after(async () => {
+					await updateSetting('Message_CustomFields_Enabled', false);
 				});
 
 				it('should allow not sending custom fields', async () => {
