@@ -39,14 +39,19 @@ export class AppMessageBridge extends MessageBridge {
 	protected async getUnreadByRoomAndUser(
 		roomId: string,
 		userId: string,
-		appId: string,
 		options: {
-			limit?: number;
+			limit: number;
 			skip?: number;
 			sort?: Record<string, 1 | -1>;
-		} = {},
+		},
+		appId: string,
 	): Promise<Array<IAppsEngineMessage>> {
 		this.orch.debugLog(`The App ${appId} is getting the unread messages for the user: "${userId}" in the room: "${roomId}"`);
+
+		const messageConverter = this.orch.getConverters()?.get('messages');
+		if (!messageConverter) {
+			throw new Error('Message converter not found');
+		}
 
 		const room = await Rooms.findOneById(roomId, { projection: { _id: 1 } });
 
@@ -54,7 +59,11 @@ export class AppMessageBridge extends MessageBridge {
 			throw new Error('Room not found');
 		}
 
-		const { limit = 100, skip, sort = { ts: 1 } } = options;
+		if (typeof options.limit !== 'number') {
+			options.limit = 100;
+		}
+
+		const { limit, skip, sort = { ts: 1 } } = options;
 
 		const messageQueryOptions = {
 			limit: Math.min(limit, 100),
@@ -74,11 +83,6 @@ export class AppMessageBridge extends MessageBridge {
 			[],
 			messageQueryOptions,
 		).toArray();
-
-		const messageConverter = this.orch.getConverters()?.get('messages');
-		if (!messageConverter) {
-			throw new Error('Message converter not found');
-		}
 
 		const convertedMessages = Promise.all(messages.map((msg) => messageConverter.convertMessage(msg)));
 		return convertedMessages;

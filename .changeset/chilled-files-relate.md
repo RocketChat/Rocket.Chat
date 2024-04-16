@@ -2,4 +2,7 @@
 '@rocket.chat/meteor': minor
 ---
 
-Introduced functionality allowing Rocket.Chat Apps to retrieve a user's unread messages from a specific room in batches, as well as to count the total number of unread messages.
+Added two methods in the Apps Engine:
+
+1. A method to retrieve unread messages for a user from a specified room.
+2. A method to calculate the total number of unread messages for a user in a specified room.
