@@ -14,7 +14,6 @@ export const useSidebarListNavigation = () => {
 	const sidebarListRef = useCallback(
 		(node: HTMLElement | null) => {
 			let lastMessageFocused: HTMLElement | null = null;
-			let triggeredByKeyboard = false;
 
 			if (!node) {
 				return;
@@ -25,7 +24,7 @@ export const useSidebarListNavigation = () => {
 					return;
 				}
 
-				if (!isListItem(e.target) && !isListItemMenu(e.target)) {
+				if (!isListItem(e.target)) {
 					return;
 				}
 
@@ -59,14 +58,15 @@ export const useSidebarListNavigation = () => {
 
 					lastMessageFocused = document.activeElement as HTMLElement;
 				}
-
-				triggeredByKeyboard = true;
 			});
 
 			node.addEventListener(
 				'blur',
 				(e) => {
-					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
+					if (
+						!(e.relatedTarget as HTMLElement).classList.contains('focus-visible') ||
+						!(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)
+					) {
 						return;
 					}
 
@@ -80,14 +80,13 @@ export const useSidebarListNavigation = () => {
 			node.addEventListener(
 				'focus',
 				(e) => {
+					const triggeredByKeyboard = (e.target as HTMLElement).classList.contains('focus-visible');
 					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
 						return;
 					}
 
 					if (lastMessageFocused && !e.currentTarget.contains(e.relatedTarget) && node.contains(e.target as HTMLElement)) {
 						lastMessageFocused?.focus();
-						lastMessageFocused = null;
-						triggeredByKeyboard = false;
 					}
 				},
 				{ capture: true },
