@@ -43,13 +43,12 @@ test.describe('OC - Manage Units', () => {
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannelUnits = new OmnichannelUnits(page);
+		await page.goto('/omnichannel');
+		await poOmnichannelUnits.sidenav.linkUnits.click();
 	});
 
 	test('OC - Manage Units - Create Unit', async ({ page }) => {
 		const unitName = faker.string.uuid();
-
-		await page.goto('/omnichannel');
-		await poOmnichannelUnits.sidenav.linkUnits.click();
 
 		await test.step('expect correct form default state', async () => {
 			await poOmnichannelUnits.btnCreateUnit.click();
@@ -103,7 +102,7 @@ test.describe('OC - Manage Units', () => {
 		});
 	});
 
-	test('OC - Manage Units - Edit unit', async ({ api, page }) => {
+	test('OC - Manage Units - Edit unit name', async ({ api, page }) => {
 		const editedUnitName = faker.string.uuid();
 
 		const unit = await test.step('expect to create new unit', async () => {
@@ -116,9 +115,6 @@ test.describe('OC - Manage Units', () => {
 
 			return unit;
 		});
-
-		await page.goto('/omnichannel');
-		await poOmnichannelUnits.sidenav.linkUnits.click();
 		
 		await test.step('expect to edit unit', async () => {
 			await poOmnichannelUnits.search(unit.name);
@@ -163,4 +159,52 @@ test.describe('OC - Manage Units', () => {
 			});
 		});
 	});
+
+	test('OC - Manage Units - Edit unit departments', async ({ api, page }) => {
+		const unit = await test.step('expect to create new unit', async () => {
+			const { data: unit } = await createOrUpdateUnit(api, {
+				name: faker.string.uuid(),
+				visibility: 'public',
+				monitors: [{ monitorId: monitor.data._id, username: 'user2' }],
+				departments: [{ departmentId: department.data._id }],
+			});
+
+			return unit;
+		});
+
+		const department2 = await createDepartment(api);
+
+		await test.step('expect to add unit departments', async () => {
+			await poOmnichannelUnits.search(unit.name);
+			await poOmnichannelUnits.findRowByName(unit.name).click();
+			await expect(poOmnichannelUnits.contextualBar).toBeVisible();
+			await poOmnichannelUnits.selectDepartment({ name: department2.data.name, _id: department2.data._id });
+			await poOmnichannelUnits.btnSave.click();
+		});
+
+		await test.step('expect department to be in the chosen departments list', async () => {
+			await poOmnichannelUnits.search(unit.name);
+			await poOmnichannelUnits.findRowByName(unit.name).click();
+			await expect(poOmnichannelUnits.contextualBar).toBeVisible();
+			await expect(page.getByRole('option', { name: department2.data.name })).toBeVisible();
+			await poOmnichannelUnits.btnContextualbarClose.click();
+		});
+
+		await test.step('expect to remove unit departments', async () => {
+			await poOmnichannelUnits.search(unit.name);
+			await poOmnichannelUnits.findRowByName(unit.name).click();
+			await expect(poOmnichannelUnits.contextualBar).toBeVisible();
+			await poOmnichannelUnits.selectDepartment({ name: department2.data.name, _id: department2.data._id });
+			await poOmnichannelUnits.selectMonitor('user2');
+			await poOmnichannelUnits.btnSave.click();
+		});
+
+		await test.step('expect department to not be in the chosen departments list', async () => {
+			await poOmnichannelUnits.search(unit.name);
+			await poOmnichannelUnits.findRowByName(unit.name).click();
+			await expect(poOmnichannelUnits.contextualBar).toBeVisible();
+			await expect(page.getByRole('option', { name: department2.data.name })).toBeHidden();
+			await poOmnichannelUnits.btnContextualbarClose.click();
+		});
+	})
 });
