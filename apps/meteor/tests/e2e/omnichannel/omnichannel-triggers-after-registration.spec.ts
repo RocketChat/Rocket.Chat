@@ -66,6 +66,41 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 		});
 	});
 
+	test.describe('OC - Livechat Triggers - After Registration - Reload', async () => {
+		test('expect trigger message after registration', async () => {
+			await test.step('expect trigger message after registration to be visible', async () => {
+				await poLiveChat.page.goto('/livechat');
+				await poLiveChat.openAnyLiveChat();
+				await poLiveChat.sendMessage(newUser, false);
+				await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();	
+			})
+
+			await test.step('expect trigger message after registration to be visible after reload', async () => {
+				await poLiveChat.page.reload();
+				await poLiveChat.openAnyLiveChat();
+				await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();	
+			})
+
+			await test.step('expect to close room and reload', async () => {
+				await poLiveChat.onlineAgentMessage.type('message_after_trigger');
+				await poLiveChat.btnSendMessageToOnlineAgent.click();
+				await expect(poLiveChat.txtChatMessage('message_after_trigger')).toBeVisible();
+				await poLiveChat.closeChat();
+
+				await poLiveChat.startNewChat();
+				await poLiveChat.page.reload()
+			})
+
+			await test.step('expect trigger message after registration to be visible after reload on new chat', async () => {
+				await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
+			})
+			
+
+			await poLiveChat.startNewChat();
+			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
+		});
+	});
+
 	test.describe('OC - Livechat New Chat Triggers - After Registration, clear Local storage', async () => {
 		test.beforeAll(async ({ api }) => {
 			await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: true });
