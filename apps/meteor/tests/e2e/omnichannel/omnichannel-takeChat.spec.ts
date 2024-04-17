@@ -12,8 +12,6 @@ test.describe('omnichannel-takeChat', () => {
 
 	let agent: { page: Page; poHomeChannel: HomeOmnichannel };
 
-	test.use(Users.user1);
-
 	test.beforeAll(async ({ api, browser }) => {
 		await Promise.all([
 			await api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
