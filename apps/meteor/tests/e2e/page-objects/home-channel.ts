@@ -61,6 +61,10 @@ export class HomeChannel {
 		return this.page.getByRole('button', { name: 'Favorite' });
 	}
 
+	get readOnlyFooter(): Locator {
+		return this.page.locator('footer', { hasText: 'This room is read only' })
+	}
+
 	get roomHeaderToolbar(): Locator {
 		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]');
 	}

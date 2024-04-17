@@ -7,9 +7,13 @@ export class HomeFlextabMembers {
 		this.page = page;
 	}
 
+	memberOption(username: string) {
+		return this.page.getByRole('dialog').locator('li', { hasText: username });
+	}
+
 	async addUser(username: string) {
 		await this.page.locator('role=button[name="Add"]').click();
-		await this.page.locator('//label[contains(text(), "Choose users")]/..//input').type(username);
+		await this.page.locator('//label[contains(text(), "Choose users")]/..//input').fill(username);
 		await this.page.locator(`[data-qa-type="autocomplete-user-option"] >> text=${username}`).first().click();
 		await this.page.locator('role=button[name="Add users"]').click();
 	}
@@ -19,22 +23,23 @@ export class HomeFlextabMembers {
 	}
 
 	async muteUser(username: string) {
-		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
-		await this.page.locator('role=button[name="More"]').click();
+		await this.memberOption(username).hover();
+		await this.memberOption(username).locator('role=button[name="More"]').click();
 		await this.page.locator('role=menuitem[name="Mute user"]').click();
 		await this.page.locator('.rcx-modal .rcx-button--danger').click();
 		await this.page.getByRole('dialog').getByRole('button').first().click();
 	}
 
 	async setUserAsModerator(username: string) {
-		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
-		await this.page.locator('role=button[name="More"]').click();
+		await this.memberOption(username).hover();
+		await this.memberOption(username).locator('role=button[name="More"]').click();
 		await this.page.locator('role=menuitem[name="Set as moderator"]').click();
 	}
 
 	async setUserAsOwner(username: string) {
-		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
-		await this.page.locator('role=button[name="Set as owner"]').click();
+		await this.memberOption(username).hover();
+		await this.memberOption(username).locator('role=button[name="More"]').click();
+		await this.page.locator('role=menuitem[name="Set as owner"]').click();
 	}
 
 	async showAllUsers() {

@@ -63,35 +63,61 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.members.showAllUsers();
 		await poHomeChannel.tabs.members.addUser('user1');
 
+		await expect(poHomeChannel.tabs.members.memberOption('user1')).toBeVisible();
 		await expect(poHomeChannel.getSystemMessageByText('added user1')).toBeVisible();
 	});
 
-	test('should mute user1', async () => {
+	test('should mute user1', async ({ browser }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
 		await poHomeChannel.tabs.members.showAllUsers();
 		await poHomeChannel.tabs.members.muteUser('user1');
 
 		await expect(poHomeChannel.getSystemMessageByText('muted user1')).toBeVisible();
+
+		const user1Page = await browser.newPage({ storageState: Users.user1.state });
+		const user1Channel = new HomeChannel(user1Page);
+		await user1Page.goto(`/channel/${targetChannel}`);
+		await user1Channel.waitForChannel();
+		await expect(user1Channel.readOnlyFooter).toBeVisible();
+
+		await user1Page.close();
 	});
-
-	test('should set user1 as owner', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.tabs.btnTabMembers.click();
-		await poHomeChannel.tabs.members.showAllUsers();
-		await poHomeChannel.tabs.members.setUserAsOwner('user1');
-
-		await expect(poHomeChannel.getSystemMessageByText('set user1 as owner')).toBeVisible();
-	});
-
-
-	test('should set "user1" as moderator', async () => {
+	
+	test('should set "user1" as moderator', async ({ browser }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
 		await poHomeChannel.tabs.members.showAllUsers();
 		await poHomeChannel.tabs.members.setUserAsModerator('user1');
 
 		await expect(poHomeChannel.getSystemMessageByText('set user1 as moderator')).toBeVisible();
+
+		const user1Page = await browser.newPage({ storageState: Users.user1.state });
+		const user1Channel = new HomeChannel(user1Page);
+		await user1Page.goto(`/channel/${targetChannel}`);
+		await user1Channel.waitForChannel();
+		await user1Channel.tabs.btnRoomInfo.click();
+		await expect(user1Channel.tabs.room.btnEdit).toBeVisible();
+
+		await user1Page.close();
+	});
+
+	test('should set user1 as owner', async ({ browser }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.tabs.btnTabMembers.click();
+		await poHomeChannel.tabs.members.showAllUsers();
+		await poHomeChannel.tabs.members.setUserAsOwner('user1');
+
+		await expect(poHomeChannel.getSystemMessageByText('set user1 as owner')).toBeVisible();
+
+		const user1Page = await browser.newPage({ storageState: Users.user1.state });
+		const user1Channel = new HomeChannel(user1Page);
+		await user1Page.goto(`/channel/${targetChannel}`);
+		await user1Channel.waitForChannel();
+		await user1Channel.tabs.btnRoomInfo.click();
+		await expect(user1Channel.tabs.room.btnDelete).toBeVisible();
+
+		await user1Page.close();
 	});
 
 	test('should edit topic of targetChannel', async ({ page }) => {
@@ -209,7 +235,7 @@ test.describe.serial('channel-management', () => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.type(channelName);
+		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
 		await poHomeChannel.sidenav.checkboxPrivateChannel.click();
 		await poHomeChannel.sidenav.checkboxReadOnly.click();
 		await poHomeChannel.sidenav.btnCreate.click();
