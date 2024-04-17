@@ -186,6 +186,6 @@ export class Admin {
 	}
 
 	get dropdownFilterRoomType(): Locator {
-		return this.page.locator('[data-qa-id="AdminRoomDropdownInput"]');
+		return this.page.locator('div[data-qa-id="AdminRoomDropdownInput"][role="listbox"]');
 	}
 }

@@ -101,7 +101,7 @@ const RoomsTableFilters = ({
 					value={prevRoomFilters.current.searchText}
 				/>
 			</Box>
-			<Box minWidth='x224' m='x4' data-qa-id='AdminRoomDropdownInput'>
+			<Box minWidth='x224' m='x4' data-qa-id='AdminRoomDropdownInput' role='listbox' tabIndex={0}>
 				<MultiSelectCustom
 					dropdownOptions={roomTypeFilterStructure}
 					defaultTitle={'All_rooms' as any}
