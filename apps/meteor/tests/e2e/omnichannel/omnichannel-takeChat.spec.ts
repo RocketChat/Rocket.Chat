@@ -67,10 +67,8 @@ test.describe('omnichannel-takeChat', () => {
 	});
 
 	test('When agent is offline user should not take the chat', async () => {
-		test('user should not take the chat', async () => {
-			await agent.poHomeChannel.sidenav.switchStatus('offline');
+		await agent.poHomeChannel.sidenav.switchStatus('offline');
 
-			await expect(poLiveChat.alertMessage('Error starting a new conversation: Sorry, no online agents [no-agent-online]')).toBeVisible();
-		});
+		await expect(poLiveChat.alertMessage('Error starting a new conversation: Sorry, no online agents [no-agent-online]')).toBeVisible();
 	});
 });
