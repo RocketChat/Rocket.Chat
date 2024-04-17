@@ -70,20 +70,17 @@ export const statistics = {
 		const statistics = {} as IStats;
 		const statsPms = [];
 
-		const fetchWizardSettingValue = async <T>(settingName: string): Promise<T | undefined> => {
-			return ((await Settings.findOne(settingName))?.value as T | undefined) ?? undefined;
-		};
-
 		// Setup Wizard
 		const [organizationType, industry, size, country, language, serverType, registerServer] = await Promise.all([
-			fetchWizardSettingValue<string>('Organization_Type'),
-			fetchWizardSettingValue<string>('Industry'),
-			fetchWizardSettingValue<string>('Size'),
-			fetchWizardSettingValue<string>('Country'),
-			fetchWizardSettingValue<string>('Language'),
-			fetchWizardSettingValue<string>('Server_Type'),
-			fetchWizardSettingValue<boolean>('Register_Server'),
+			settings.get<string>('Organization_Type'),
+			settings.get<string>('Industry'),
+			settings.get<string>('Size'),
+			settings.get<string>('Country'),
+			settings.get<string>('Language'),
+			settings.get<string>('Server_Type'),
+			settings.get<boolean>('Register_Server'),
 		]);
+
 		statistics.wizard = {
 			organizationType,
 			industry,
