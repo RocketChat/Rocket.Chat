@@ -1,12 +1,10 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { sleep } from '../../data/livechat/utils';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
 import { test, expect } from '../utils/test';
-
 
 test.describe('omnichannel-take-chat', () => {
 	let poLiveChat: OmnichannelLiveChat;
@@ -18,7 +16,6 @@ test.describe('omnichannel-take-chat', () => {
 		await Promise.all([
 			await api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
 			await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }).then((res) => expect(res.status()).toBe(200)),
-			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }).then((res) => expect(res.status()).toBe(200)),
 		]);
 
 		const { page } = await createAuxContext(browser, Users.user1);
@@ -29,13 +26,13 @@ test.describe('omnichannel-take-chat', () => {
 		await Promise.all([
 			await api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
 			await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
-			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200)),
+			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }).then((res) => expect(res.status()).toBe(200)),
 		]);
 
 		await agent.page.close();
 	});
 
-	test.beforeEach('start a new livechat chat', async ({ page, api },) => {
+	test.beforeEach('start a new livechat chat', async ({ page, api }) => {
 		await agent.poHomeChannel.sidenav.switchStatus('online');
 
 		newVisitor = {
@@ -48,45 +45,92 @@ test.describe('omnichannel-take-chat', () => {
 		await page.goto('/livechat');
 	});
 
-	test('user should take the chat', async () => {
-		await poLiveChat.openChatAndSendMessage(newVisitor, 'this_a_test_message_from_user');
-
-		await agent.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name);
-		await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
-		await agent.poHomeChannel.content.btnTakeChat.click();
-
-		await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
-		await expect(agent.poHomeChannel.content.btnTakeChat).not.toBeVisible();
-		await expect(agent.poHomeChannel.content.inputMessage).toBeVisible();
-
+	test.afterEach(async () => {
 		await poLiveChat.closeChat();
 	});
 
-	test('user should not receive a new chat when offline status and livechat disabled when agent idle', async ({ api }) => {
-		await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200));
-		await agent.poHomeChannel.sidenav.switchStatus('offline');
+	test.describe('When agent is idle', async () => {
+		test.beforeEach(async () => {
+			await agent.poHomeChannel.sidenav.switchStatus('offline');
+		});
 
-		await poLiveChat.openChatAndSendMessage(newVisitor, 'this_a_test_message_from_user');
+		test.describe('When Livechat_enabled_when_agent_idle is true', async () => {
+			test.beforeEach(async ({ api }) => {
+				await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }).then((res) => expect(res.status()).toBe(200));
+			});
 
-		await sleep(2000);
+			test('user should take the chat', async () => {
+				await poLiveChat.openChatAndSendMessage(newVisitor, 'this_a_test_message_from_user');
 
-		await expect(agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name)).toHaveCount(0);
+				await agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name).click();
+
+				await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
+				await agent.poHomeChannel.content.btnTakeChat.click();
+
+				await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+				await expect(agent.poHomeChannel.content.btnTakeChat).not.toBeVisible();
+				await expect(agent.poHomeChannel.content.inputMessage).toBeVisible();
+			});
+		});
+
+		test.describe('Livechat_enabled_when_agent_idle is false', async () => {
+			test.beforeEach(async ({ api }) => {
+				await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200));
+			});
+
+			test('user should not take the chat when offline status', async () => {
+				await poLiveChat.openChatAndSendMessage(newVisitor, 'this_a_test_message_from_user');
+
+				await agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name).click();
+
+				await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
+
+				await agent.poHomeChannel.content.btnTakeChat.click();
+				await expect(agent.page.locator('role=alert')).toBeVisible();
+			});
+		});
 	});
 
-	test('user should not take the chat when offline status', async ({ api }) => {
-		await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }).then((res) => expect(res.status()).toBe(200));
+	test.describe('When agent is online', () => {
+		test.beforeEach(async () => {
+			await agent.poHomeChannel.sidenav.switchStatus('online');
+		});
+		test.describe('When Livechat_enabled_when_agent_idle is true', async () => {
+			test.beforeEach(async ({ api }) => {
+				await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }).then((res) => expect(res.status()).toBe(200));
+			});
 
-		await poLiveChat.openChatAndSendMessage(newVisitor, 'this_a_test_message_from_user');
+			test('user should take the chat', async () => {
+				await poLiveChat.openChatAndSendMessage(newVisitor, 'this_a_test_message_from_user');
 
-		await agent.poHomeChannel.sidenav.switchStatus('offline');
+				await agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name).click();
 
-		await agent.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name);
+				await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
+				await agent.poHomeChannel.content.btnTakeChat.click();
 
-		await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
+				await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+				await expect(agent.poHomeChannel.content.btnTakeChat).not.toBeVisible();
+				await expect(agent.poHomeChannel.content.inputMessage).toBeVisible();
+			});
+		});
 
-		await agent.poHomeChannel.content.btnTakeChat.click();
-		await expect(agent.page.locator('role=alert')).toBeVisible();
+		test.describe('When Livechat_enabled_when_agent_idle is false', async () => {
+			test.beforeEach(async ({ api }) => {
+				await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200));
+			});
 
-		await poLiveChat.closeChat();
+			test('user should take the chat', async () => {
+				await poLiveChat.openChatAndSendMessage(newVisitor, 'this_a_test_message_from_user');
+
+				await agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name).click();
+
+				await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
+				await agent.poHomeChannel.content.btnTakeChat.click();
+
+				await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+				await expect(agent.poHomeChannel.content.btnTakeChat).not.toBeVisible();
+				await expect(agent.poHomeChannel.content.inputMessage).toBeVisible();
+			});
+		});
 	});
 });

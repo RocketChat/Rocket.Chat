@@ -121,11 +121,6 @@ export class HomeSidenav {
 		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
 	}
 
-	// Note: this is a workaround for now since queued omnichannel chats are not searchable yet so we can't use openChat() :(
-	async openQueuedOmnichannelChat(name: string): Promise<void> {
-		await this.getQueuedChat(name).click();
-	}
-
 	async createPublicChannel(name: string) {
 		await this.openNewByLabel('Channel');
 		await this.checkboxPrivateChannel.click();

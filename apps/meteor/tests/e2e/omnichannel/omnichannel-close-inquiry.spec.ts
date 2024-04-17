@@ -48,7 +48,7 @@ test.describe('Omnichannel close inquiry', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeOmnichannel.sidenav.openQueuedOmnichannelChat(newUser.name);
+			await agent.poHomeOmnichannel.sidenav.getQueuedChat(newUser.name).click();
 			await expect(agent.poHomeOmnichannel.content.btnTakeChat).toBeVisible();
 		});
 
