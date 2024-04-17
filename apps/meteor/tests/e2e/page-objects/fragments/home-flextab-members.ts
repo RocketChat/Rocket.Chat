@@ -11,8 +11,21 @@ export class HomeFlextabMembers {
 		return this.page.getByRole('dialog').locator('li', { hasText: username });
 	}
 
+	async openMemberInfo(username: string) {
+		await this.memberOption(username).click();
+	}
+
 	getMenuItemAction(action: string) {
 		return this.page.locator(`role=menuitem[name="${action}"]`);
+	}
+
+	async openMoreActions() {
+		await this.page.locator('role=button[name="More"]').click();
+	}
+
+	async openMemberOptionMoreActions(username: string) {
+		await this.memberOption(username).hover();
+		await this.memberOption(username).locator('role=button[name="More"]').click();
 	}
 
 	async addUser(username: string) {
@@ -27,23 +40,30 @@ export class HomeFlextabMembers {
 	}
 
 	async muteUser(username: string) {
-		await this.memberOption(username).hover();
-		await this.memberOption(username).locator('role=button[name="More"]').click();
-		await this.page.locator('role=menuitem[name="Mute user"]').click();
+		await this.openMemberOptionMoreActions(username);
+		await this.getMenuItemAction('Mute user').click();
 		await this.page.locator('.rcx-modal .rcx-button--danger').click();
 		await this.page.getByRole('dialog').getByRole('button').first().click();
 	}
 
-	async openMoreActions() {
-		await this.page.locator('role=button[name="More"]').click();
+
+	async setUserAsModerator(username: string) {
+		await this.openMemberOptionMoreActions(username);
+		await this.getMenuItemAction('Set as moderator').click();
 	}
 
-	async openUserInfo(username: string) {
-		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
+	async setUserAsOwner(username: string) {
+		await this.openMemberOptionMoreActions(username);
+		await this.getMenuItemAction('Set as owner').click();
+	}
+
+	async showAllUsers() {
+		await this.page.locator('.rcx-select >> text=Online').first().click();
+		await this.page.locator('.rcx-option:has-text("All")').first().click();
 	}
 
 	private async ignoreUserAction(action: string, username: string) {
-		await this.openUserInfo(username);
+		await this.openMemberInfo(username);
 		await this.openMoreActions();
 		await this.getMenuItemAction(action).click();
 	}
@@ -54,22 +74,5 @@ export class HomeFlextabMembers {
 
 	async unignoreUser(username: string) {
 		await this.ignoreUserAction('Unignore', username);
-	}
-
-	async setUserAsModerator(username: string) {
-		await this.memberOption(username).hover();
-		await this.memberOption(username).locator('role=button[name="More"]').click();
-		await this.page.locator('role=menuitem[name="Set as moderator"]').click();
-	}
-
-	async setUserAsOwner(username: string) {
-		await this.memberOption(username).hover();
-		await this.memberOption(username).locator('role=button[name="More"]').click();
-		await this.page.locator('role=menuitem[name="Set as owner"]').click();
-	}
-
-	async showAllUsers() {
-		await this.page.locator('.rcx-select >> text=Online').first().click();
-		await this.page.locator('.rcx-option:has-text("All")').first().click();
 	}
 }
