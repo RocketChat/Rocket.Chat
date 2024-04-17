@@ -52,5 +52,7 @@ export async function syncWorkspace() {
 				}
 			}
 		}
+	} finally {
+		await getCachedSupportedVersionsToken.reset();
 	}
 }
