@@ -11,6 +11,10 @@ export class HomeFlextabMembers {
 		return this.page.getByRole('dialog').locator('li', { hasText: username });
 	}
 
+	getMenuItemAction(action: string) {
+		return this.page.locator(`role=menuitem[name="${action}"]`);
+	}
+
 	async addUser(username: string) {
 		await this.page.locator('role=button[name="Add"]').click();
 		await this.page.locator('//label[contains(text(), "Choose users")]/..//input').fill(username);
@@ -30,10 +34,18 @@ export class HomeFlextabMembers {
 		await this.page.getByRole('dialog').getByRole('button').first().click();
 	}
 
-	private async ignoreUserAction(action: string, username: string) {
-		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
+	async openMoreActions() {
 		await this.page.locator('role=button[name="More"]').click();
-		await this.page.locator(`role=menuitem[name="${action}"]`).click();
+	}
+
+	async openUserInfo(username: string) {
+		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
+	}
+
+	private async ignoreUserAction(action: string, username: string) {
+		await this.openUserInfo(username);
+		await this.openMoreActions();
+		await this.getMenuItemAction(action).click();
 	}
 
 	async ignoreUser(username: string) {

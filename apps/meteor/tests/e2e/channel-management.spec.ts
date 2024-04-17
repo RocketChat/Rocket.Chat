@@ -67,13 +67,14 @@ test.describe.serial('channel-management', () => {
 		await expect(poHomeChannel.getSystemMessageByText('added user1')).toBeVisible();
 	});
 
-	test('should ignore "user1" messages', async ({ browser }) => {
+	test('should ignore user1 messages', async ({ browser }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
 		await poHomeChannel.tabs.members.showAllUsers();
 		await poHomeChannel.tabs.members.ignoreUser('user1');
 
-		await expect(poHomeChannel.toastSuccess).toBeVisible();
+		await poHomeChannel.tabs.members.openMoreActions();
+		await expect(poHomeChannel.tabs.members.getMenuItemAction('Unignore')).toBeVisible();
 
 		const user1Page = await browser.newPage({ storageState: Users.user1.state });
 		const user1Channel = new HomeChannel(user1Page);
@@ -86,7 +87,7 @@ test.describe.serial('channel-management', () => {
 		await user1Page.close();
 	});
 
-	test('should unignore single "user1" message', async ({ browser }) => {
+	test('should unignore single user1 message', async ({ browser }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 
 		const user1Page = await browser.newPage({ storageState: Users.user1.state });
@@ -104,7 +105,7 @@ test.describe.serial('channel-management', () => {
 		await user1Page.close();
 	});
 
-	test('should unignore "user1" messages', async ({ browser }) => {
+	test('should unignore user1 messages', async ({ browser }) => {
 		const user1Page = await browser.newPage({ storageState: Users.user1.state });
 		const user1Channel = new HomeChannel(user1Page);
 		await user1Page.goto(`/channel/${targetChannel}`);
@@ -118,7 +119,8 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.members.showAllUsers();
 		await poHomeChannel.tabs.members.unignoreUser('user1');
 
-		await expect(poHomeChannel.toastSuccess).toBeVisible();
+		await poHomeChannel.tabs.members.openMoreActions();
+		await expect(poHomeChannel.tabs.members.getMenuItemAction('Ignore')).toBeVisible();
 
 		await user1Channel.content.sendMessage('message after being unignored');
 
@@ -145,7 +147,7 @@ test.describe.serial('channel-management', () => {
 		await user1Page.close();
 	});
 	
-	test('should set "user1" as moderator', async ({ browser }) => {
+	test('should set user1 as moderator', async ({ browser }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
 		await poHomeChannel.tabs.members.showAllUsers();
@@ -279,7 +281,7 @@ test.describe.serial('channel-management', () => {
 		await expect(page).toHaveURL(`/channel/${targetChannel}`);
 	});
 
-	test('should edit notification preferences of "targetChannel"', async () => {
+	test('should edit notification preferences of targetChannel', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnNotificationPreferences.click({ force: true });
@@ -292,7 +294,7 @@ test.describe.serial('channel-management', () => {
 	});
 
 	let regularUserPage: Page;
-	test('should "readOnlyChannel" show join button', async ({ browser }) => {
+	test('should readOnlyChannel show join button', async ({ browser }) => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
