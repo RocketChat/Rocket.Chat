@@ -35,7 +35,6 @@ jobs:
           node-version: ${{ inputs.node-version }}
           cache-modules: true
           install: true
-          deno-dir: ${{ env.DENO_DIR }}
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
