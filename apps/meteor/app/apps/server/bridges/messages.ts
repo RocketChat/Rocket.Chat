@@ -59,7 +59,7 @@ export class AppMessageBridge extends MessageBridge {
 			throw new Error('Room not found');
 		}
 
-		if (typeof options.limit !== 'number') {
+		if (!Number.isFinite(options.limit) || options.limit < 1) {
 			options.limit = 100;
 		}
 
