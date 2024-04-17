@@ -531,6 +531,10 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
+		if (syncUserState === 'enable' && deleted) {
+			return;
+		}
+
 		userData.deleted = deleted;
 		logger.info(`${deleted ? 'Deactivating' : 'Activating'} user ${userData.name} (${userData.username})`);
 	}
