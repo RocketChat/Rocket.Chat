@@ -16,6 +16,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateOTRAck' });
 		}
 		const acknowlegedMessage: IOTRMessage = { ...message, otrAck: ack };
-		void api.broadcast('otrAckUpdate', { roomId: message.rid, acknowlegedMessage });
+		void api.broadcast('otrAckUpdate', { roomId: message.rid, acknowledgeMessage });
 	},
 });
