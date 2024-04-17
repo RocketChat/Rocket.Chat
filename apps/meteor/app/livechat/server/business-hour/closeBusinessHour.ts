@@ -1,6 +1,6 @@
 import type { ILivechatBusinessHour, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { makeFunction } from '@rocket.chat/patch-coordinator';
+import { makeFunction } from '@rocket.chat/patch-injection';
 
 import { businessHourLogger } from '../lib/logger';
 import { getAgentIdsForBusinessHour } from './getAgentIdsForBusinessHour';
