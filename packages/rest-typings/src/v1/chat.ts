@@ -63,6 +63,10 @@ const chatSendMessageSchema = {
 					},
 					nullable: true,
 				},
+				customFields: {
+					type: 'object',
+					nullable: true,
+				},
 			},
 		},
 		previewUrls: {
