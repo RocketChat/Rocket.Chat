@@ -175,11 +175,11 @@ export const validateMessage = async (message: any, room: any, user: any) => {
 	}
 
 	if (message.customFields) {
-		validateCustomMessageFields(
-			message.customFields,
-			settings.get('Message_CustomFields_Enabled'),
-			settings.get<string>('Message_CustomFields'),
-		);
+		validateCustomMessageFields({
+			customFields: message.customFields,
+			messageCustomFieldsEnabled: settings.get<boolean>('Message_CustomFields_Enabled'),
+			messageCustomFields: settings.get<string>('Message_CustomFields'),
+		});
 	}
 };
 

@@ -8,7 +8,9 @@ describe('validateCustomMessageFields', () => {
 			const customFields = {
 				test: 'test',
 			};
-			expect(() => validateCustomMessageFields(customFields, false, '')).to.throw('Custom fields not enabled');
+			expect(() => validateCustomMessageFields({ customFields, messageCustomFieldsEnabled: false, messageCustomFields: '' })).to.throw(
+				'Custom fields not enabled',
+			);
 		});
 	});
 
@@ -17,14 +19,16 @@ describe('validateCustomMessageFields', () => {
 			const customFields = {
 				test: 'test',
 			};
-			expect(() => validateCustomMessageFields(customFields, true, '')).to.throw('Unexpected end of JSON input');
+			expect(() => validateCustomMessageFields({ customFields, messageCustomFieldsEnabled: true, messageCustomFields: '' })).to.throw(
+				'Unexpected end of JSON input',
+			);
 		});
 
 		it('should not allow to pass a property not present in config', () => {
 			const customFields = {
 				test: 'test',
 			};
-			const config = JSON.stringify({
+			const messageCustomFields = JSON.stringify({
 				properties: {
 					priority: {
 						type: 'string',
@@ -32,30 +36,51 @@ describe('validateCustomMessageFields', () => {
 				},
 				additionalProperties: true,
 			});
-			expect(() => validateCustomMessageFields(customFields, true, config)).to.throw('Invalid custom fields');
+			expect(() => validateCustomMessageFields({ customFields, messageCustomFieldsEnabled: true, messageCustomFields })).to.throw(
+				'Invalid custom fields',
+			);
+		});
+
+		it('should not allow to pass an invalid custom field value', () => {
+			const customFields = {
+				test: 123,
+			};
+			const messageCustomFields = JSON.stringify({
+				properties: {
+					priority: {
+						type: 'string',
+					},
+				},
+				additionalProperties: true,
+			});
+			expect(() => validateCustomMessageFields({ customFields, messageCustomFieldsEnabled: true, messageCustomFields })).to.throw(
+				'Invalid custom fields',
+			);
 		});
 
 		it('should not allow to pass anything different from an object', () => {
 			const customFields = [1, 2];
-			const config = JSON.stringify({
+			const messageCustomFields = JSON.stringify({
 				type: 'array',
 				items: [{ type: 'integer' }, { type: 'integer' }],
 			});
-			expect(() => validateCustomMessageFields(customFields, true, config)).to.throw('Invalid custom fields config');
+			expect(() => validateCustomMessageFields({ customFields, messageCustomFieldsEnabled: true, messageCustomFields })).to.throw(
+				'Invalid custom fields config',
+			);
 		});
 
 		it('should allow to pass a valid custom fields config', () => {
 			const customFields = {
 				test: 'test',
 			};
-			const config = JSON.stringify({
+			const messageCustomFields = JSON.stringify({
 				properties: {
 					test: {
 						type: 'string',
 					},
 				},
 			});
-			expect(() => validateCustomMessageFields(customFields, true, config)).to.not.throw();
+			expect(() => validateCustomMessageFields({ customFields, messageCustomFieldsEnabled: true, messageCustomFields })).to.not.throw();
 		});
 	});
 });
