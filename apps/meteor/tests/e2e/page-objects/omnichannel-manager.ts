@@ -12,7 +12,7 @@ export class OmnichannelManager {
 		this.sidenav = new OmnichannelSidenav(page);
 	}
 
-	get inputSearch() {
+	private get inputSearch() {
 		return this.page.locator('[placeholder="Search"]');
 	}
 
@@ -40,11 +40,7 @@ export class OmnichannelManager {
 	}
 
 	findRowByName(name: string) {
-		return this.page.locator('tr', { has: this.page.locator(`td >> text="${name}"`) });
-	}
-
-	get btnDeleteFirstRowInTable() {
-		return this.page.locator('button[title="Remove"]');
+		return this.page.locator('role=table[name="Managers"] >> role=row', { has: this.page.locator(`role=cell[name="${name}"]`) });
 	}
 
 	btnDeleteSelectedAgent(text: string) {
