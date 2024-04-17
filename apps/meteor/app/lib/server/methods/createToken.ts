@@ -13,10 +13,9 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-export async function generateAccessToken(callee: string | null, userId: string) {
+export async function generateAccessToken(callee: string, userId: string) {
 	if (
 		!['yes', 'true'].includes(String(process.env.CREATE_TOKENS_FOR_USERS)) ||
-		!callee ||
 		(callee !== userId && !(await hasPermissionAsync(callee, 'user-generate-access-token')))
 	) {
 		throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'createToken' });
@@ -37,6 +36,11 @@ Meteor.methods<ServerMethods>({
 	async createToken(userId) {
 		methodDeprecationLogger.method('createToken', '8.0.0');
 
-		return generateAccessToken(Meteor.userId(), userId);
+		const callee = Meteor.userId();
+		if (!callee) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createToken' });
+		}
+
+		return generateAccessToken(callee, userId);
 	},
 });

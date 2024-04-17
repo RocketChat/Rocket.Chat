@@ -4,6 +4,7 @@ import { Users } from '@rocket.chat/models';
 
 import { getMaxLoginTokens } from '../../lib/getMaxLoginTokens';
 
+// TODO merge this service with Account service
 export class UserService extends ServiceClassInternal implements IUserService {
 	protected name = 'user';
 
