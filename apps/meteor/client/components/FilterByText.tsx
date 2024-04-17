@@ -1,14 +1,14 @@
 import { Box, Icon, TextInput, Button, Margins } from '@rocket.chat/fuselage';
+import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactNode, ChangeEvent, FormEvent, ReactElement } from 'react';
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import type { ReactNode, ChangeEvent, FormEvent } from 'react';
+import React, { forwardRef, memo, useCallback, useEffect, useState } from 'react';
 
 type FilterByTextCommonProps = {
 	children?: ReactNode | undefined;
 	placeholder?: string;
-	inputRef?: () => void;
 	onChange: (filter: { text: string }) => void;
-	autoFocus?: boolean;
+	shouldAutoFocus?: boolean;
 };
 
 type FilterByTextPropsWithButton = FilterByTextCommonProps & {
@@ -22,10 +22,14 @@ type FilterByTextProps = FilterByTextCommonProps | FilterByTextPropsWithButton;
 const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWithButton =>
 	'displayButton' in props && props.displayButton === true;
 
-const FilterByText = ({ placeholder, onChange: setFilter, inputRef, children, autoFocus, ...props }: FilterByTextProps): ReactElement => {
+const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function FilterByText(
+	{ placeholder, onChange: setFilter, shouldAutoFocus, children, ...props },
+	ref,
+) {
 	const t = useTranslation();
-
 	const [text, setText] = useState('');
+	const autoFocusRef = useAutoFocus(shouldAutoFocus);
+	const mergedRefs = useMergedRefs(ref, autoFocusRef);
 
 	const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
 		setText(event.currentTarget.value);
@@ -44,11 +48,10 @@ const FilterByText = ({ placeholder, onChange: setFilter, inputRef, children, au
 			<Box mi={4} display='flex' flexGrow={1}>
 				<TextInput
 					placeholder={placeholder ?? t('Search')}
-					ref={inputRef}
+					ref={mergedRefs}
 					addon={<Icon name='magnifier' size='x20' />}
 					onChange={handleInputChange}
 					value={text}
-					autoFocus={autoFocus}
 					flexGrow={2}
 					minWidth='x220'
 				/>
@@ -62,6 +65,6 @@ const FilterByText = ({ placeholder, onChange: setFilter, inputRef, children, au
 			)}
 		</Box>
 	);
-};
+});
 
-export default memo<FilterByTextProps>(FilterByText);
+export default memo(FilterByText);
