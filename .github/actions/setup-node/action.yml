@@ -24,6 +24,7 @@ runs:
 
   steps:
     - run: echo 'DENO_DIR=${{ inputs.deno-dir }}' >> $GITHUB_ENV
+      shell: bash
 
     - name: Cache Node Modules
       if: inputs.cache-modules
