@@ -76,6 +76,68 @@ test.describe.serial('channel-management', () => {
 		await expect(poHomeChannel.toastSuccess).toBeVisible();
 	});
 
+	test('should ignore "user1" messages', async ({ browser }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.tabs.btnTabMembers.click();
+		await poHomeChannel.tabs.members.showAllUsers();
+		await poHomeChannel.tabs.members.ignoreUser('user1');
+
+		await expect(poHomeChannel.toastSuccess).toBeVisible();
+
+		const user1Page = await browser.newPage({ storageState: Users.user1.state });
+		const user1Channel = new HomeChannel(user1Page);
+		await user1Page.goto(`/channel/${targetChannel}`);
+		await user1Channel.waitForChannel();
+		await user1Channel.content.sendMessage('message to check ignore');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toContainText('This message was ignored');
+
+		await user1Page.close();
+	});
+
+	test('should unignore single "user1" message', async ({ browser }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+
+		const user1Page = await browser.newPage({ storageState: Users.user1.state });
+		const user1Channel = new HomeChannel(user1Page);
+		await user1Page.goto(`/channel/${targetChannel}`);
+		await user1Channel.waitForChannel();
+		await user1Channel.content.sendMessage('only message to be unignored');
+
+		await poHomeChannel.sidenav.openChat(targetChannel);
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toContainText('This message was ignored');
+		await poHomeChannel.content.lastIgnoredUserMessage.click();
+		await expect(poHomeChannel.content.lastUserMessageBody).toContainText('only message to be unignored');
+
+		await user1Page.close();
+	});
+
+
+	test('should unignore "user1" messages', async ({ browser }) => {
+		const user1Page = await browser.newPage({ storageState: Users.user1.state });
+		const user1Channel = new HomeChannel(user1Page);
+		await user1Page.goto(`/channel/${targetChannel}`);
+		await user1Channel.waitForChannel();
+		await user1Channel.content.sendMessage('message before being unignored');
+
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await expect(poHomeChannel.content.lastUserMessageBody).toContainText('This message was ignored');
+
+		await poHomeChannel.tabs.btnTabMembers.click();
+		await poHomeChannel.tabs.members.showAllUsers();
+		await poHomeChannel.tabs.members.unignoreUser('user1');
+
+		await expect(poHomeChannel.toastSuccess).toBeVisible();
+
+		await user1Channel.content.sendMessage('message after being unignored');
+
+		await expect(poHomeChannel.content.nthMessage(-2)).toContainText('message before being unignored');
+		await expect(poHomeChannel.content.lastUserMessageBody).toContainText('message after being unignored');
+
+		await user1Page.close();
+	});
+
 	test.fixme('should mute "user1"', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
@@ -130,6 +192,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.room.btnSave.click();
 
 		targetChannel = `NAME-EDITED-${targetChannel}`;
+		await expect(page.locator(`role=main >> role=heading[name="${targetChannel}"]`)).toBeVisible();
 		await poHomeChannel.sidenav.openChat(targetChannel);
 
 		await expect(page).toHaveURL(`/channel/${targetChannel}`);
@@ -162,7 +225,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.content.btnMenuMoreActions.click();
 		await page.getByRole('menuitem', { name: 'Discussion' }).click();
-		await page.getByRole('textbox', { name: 'Discussion name' }).fill(discussionName);
+		await page.getByRole('textbox', { name: 'Name' }).fill(discussionName);
 		await page.getByRole('button', { name: 'Create' }).click();
 		
 		await expect(page.getByRole('heading', { name: discussionName })).toBeVisible();

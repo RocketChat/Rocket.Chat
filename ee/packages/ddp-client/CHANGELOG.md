@@ -1,5 +1,127 @@
 # @rocket.chat/ddp-client
 
+## 0.2.20
+
+### Patch Changes
+
+- ([#31941](https://github.com/RocketChat/Rocket.Chat/pull/31941)) fix: livechat sdk reconnect not resubscribing
+
+- ([#31823](https://github.com/RocketChat/Rocket.Chat/pull/31823)) Revert unintentional changes real time presence data payload
+
+- <details><summary>Updated dependencies [d1b1ffe9e5]:</summary>
+
+  - @rocket.chat/rest-typings@6.7.0
+  - @rocket.chat/api-client@0.1.29
+  </details>
+
+## 0.2.20-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.7.0-rc.4
+  - @rocket.chat/api-client@0.1.29-rc.4
+  </details>
+
+## 0.2.20-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.7.0-rc.3
+  - @rocket.chat/api-client@0.1.29-rc.3
+  </details>
+
+## 0.2.20-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.7.0-rc.2
+  - @rocket.chat/api-client@0.1.29-rc.2
+  </details>
+
+## 0.2.20-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.7.0-rc.1
+  - @rocket.chat/api-client@0.1.29-rc.1
+  </details>
+
+## 0.2.20-rc.0
+
+### Patch Changes
+
+- ([#31941](https://github.com/RocketChat/Rocket.Chat/pull/31941)) fix: livechat sdk reconnect not resubscribing
+
+- ([#31823](https://github.com/RocketChat/Rocket.Chat/pull/31823)) Revert unintentional changes real time presence data payload
+
+- <details><summary>Updated dependencies [d1b1ffe9e5]:</summary>
+
+  - @rocket.chat/rest-typings@6.7.0-rc.0
+  - @rocket.chat/api-client@0.1.29-rc.0
+  </details>
+
+## 0.2.19
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.6.6
+  - @rocket.chat/api-client@0.1.28
+  </details>
+
+## 0.2.18
+
+### Patch Changes
+
+- ([#31941](https://github.com/RocketChat/Rocket.Chat/pull/31941)) fix: livechat sdk reconnect not resubscribing
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.6.5
+  - @rocket.chat/api-client@0.1.27
+  </details>
+
+## 0.2.17
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.6.4
+  - @rocket.chat/api-client@0.1.26
+  </details>
+
+## 0.2.16
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.6.3
+  - @rocket.chat/api-client@0.1.25
+  </details>
+
+## 0.2.15
+
+### Patch Changes
+
+- ([#31823](https://github.com/RocketChat/Rocket.Chat/pull/31823)) Revert unintentional changes real time presence data payload
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.6.2
+  - @rocket.chat/api-client@0.1.24
+  </details>
+
 ## 0.2.14
 
 ### Patch Changes

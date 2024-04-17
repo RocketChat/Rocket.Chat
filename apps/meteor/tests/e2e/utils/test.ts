@@ -34,6 +34,8 @@ declare global {
 
 let apiContext: APIRequestContext;
 
+const cacheFromCredentials = new Map<string, string>();
+
 export const test = baseTest.extend<BaseTest>({
 	context: async ({ context }, use) => {
 		if (!process.env.E2E_COVERAGE) {
@@ -66,36 +68,38 @@ export const test = baseTest.extend<BaseTest>({
 	},
 
 	api: async ({ request }, use) => {
+		const newContext = async (token: string, userId: string) =>
+			baseRequest.newContext({
+				baseURL: BASE_API_URL,
+				extraHTTPHeaders: {
+					'X-Auth-Token': token,
+					'X-User-Id': userId,
+				},
+			});
+
 		const login = async (credentials: { username: string; password: string }): Promise<APIRequestContext> => {
 			if (credentials.username === Users.admin.data.username) {
-				return baseRequest.newContext({
-					baseURL: BASE_API_URL,
-					extraHTTPHeaders: {
-						'X-Auth-Token': Users.admin.data.loginToken,
-						'X-User-Id': Users.admin.data.username,
-					},
-				});
+				return newContext(Users.admin.data.loginToken, Users.admin.data.username);
+			}
+
+			if (cacheFromCredentials.has(credentials.username + credentials.password)) {
+				const token = cacheFromCredentials.get(credentials.username + credentials.password);
+				return newContext(token!, credentials.username);
 			}
 
 			const resp = await request.post(`${BASE_API_URL}/login`, { data: credentials });
 			const json = await resp.json();
 
-			return baseRequest.newContext({
-				baseURL: BASE_API_URL,
-				extraHTTPHeaders: {
-					'X-Auth-Token': json.data.authToken,
-					'X-User-Id': json.data.userId,
-				},
-			});
+			cacheFromCredentials.set(credentials.username + credentials.password, json.data.authToken);
+
+			return newContext(json.data.authToken, json.data.userId);
 		};
 
 		const recreateContext = async () => {
 			apiContext = await login(ADMIN_CREDENTIALS);
 		};
 
-		if (!apiContext) {
-			await recreateContext();
-		}
+		await recreateContext();
 
 		await use({
 			recreateContext,
@@ -115,11 +119,15 @@ export const test = baseTest.extend<BaseTest>({
 		});
 	},
 	makeAxeBuilder: async ({ page }, use) => {
-		const SELECT_KNOW_ISSUES = ['aria-hidden-focus', 'nested-interactive']
-		
-    const makeAxeBuilder = () => new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).include('body').disableRules([...SELECT_KNOW_ISSUES]);
-    await use(makeAxeBuilder);
-  }
+		const SELECT_KNOW_ISSUES = ['aria-hidden-focus', 'nested-interactive'];
+
+		const makeAxeBuilder = () =>
+			new AxeBuilder({ page })
+				.withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+				.include('body')
+				.disableRules([...SELECT_KNOW_ISSUES]);
+		await use(makeAxeBuilder);
+	},
 });
 
 export const { expect } = test;

@@ -24,7 +24,14 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 		await handleTranscript();
 	}
 
-	const { department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
+	const { room, department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
+
+	if (!room) {
+		console.warn('closeChat called without a room');
+		return;
+	}
+
+	await store.setState({ room: null });
 
 	if (clearLocalStorageWhenChatEnded) {
 		// exclude UI-affecting flags
@@ -101,7 +108,7 @@ export const processIncomingCallMessage = async (message) => {
 
 const processMessage = async (message) => {
 	if (message.t === 'livechat-close') {
-		closeChat(message);
+		await closeChat(message);
 	} else if (message.t === 'command') {
 		commands[message.msg] && commands[message.msg]();
 	} else if (message.webRtcCallEndTs) {
@@ -341,7 +348,7 @@ export const defaultRoomParams = () => {
 store.on('change', ([state, prevState]) => {
 	// Cross-tab communication
 	// Detects when a room is created and then route to the correct container
-	if (!prevState.room && state.room) {
+	if (prevState.room?._id !== state.room?._id) {
 		route('/');
 	}
 });
