@@ -112,7 +112,7 @@ export class AppRoomBridge extends RoomBridge {
 		appId: string,
 	): Promise<IMessage[]> {
 		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}"`);
-		if (typeof options.limit !== 'number') {
+		if (!Number.isFinite(options.limit) || options.limit < 1) {
 			options.limit = 100;
 		}
 
