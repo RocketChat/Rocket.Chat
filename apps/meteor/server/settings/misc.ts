@@ -40,6 +40,7 @@ const verifyFingerPrint = async function () {
 	if (process.env.AUTO_ACCEPT_FINGERPRINT === 'true') {
 		logger.info('Updating fingerprint as AUTO_ACCEPT_FINGERPRINT is true', fingerprint);
 		await updateFingerprint(fingerprint, true);
+		return;
 	}
 
 	logger.warn('Updating fingerprint as pending for admin verification', fingerprint);

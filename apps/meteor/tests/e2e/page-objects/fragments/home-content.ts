@@ -79,7 +79,6 @@ export class HomeContent {
 	}
 
 	async forwardMessage(chatName: string) {
-
 		await this.page.locator('[data-qa-type="message"]').last().hover();
 		await this.page.locator('role=button[name="Forward message"]').click();
 
@@ -246,6 +245,10 @@ export class HomeContent {
 		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+	}
+
+	async sendFileMessage(fileName: string): Promise<void> {
+		await this.page.locator('input[type=file]').setInputFiles(`./tests/e2e/fixtures/files/${fileName}`);
 	}
 
 	async openLastMessageMenu(): Promise<void> {

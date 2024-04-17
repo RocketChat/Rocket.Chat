@@ -12,11 +12,6 @@ type ContextualBarProps = {
 
 const ContextualBar: FC<ContextualBarProps> = ({ chatReload }) => {
 	const page = useRouteParameter('page');
-	const bar = useRouteParameter('bar');
-
-	if (!bar) {
-		return null;
-	}
 
 	switch (page) {
 		case 'contacts':

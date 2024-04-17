@@ -54,7 +54,7 @@ describe('[Failed Login Attempts]', function () {
 			.expect(401)
 			.expect((res) => {
 				expect(res.body).to.have.property('status', 'error');
-				expect(res.body).to.have.property('message', 'Unauthorized');
+				expect(res.body).to.have.property('message', 'Incorrect password');
 			});
 	}
 
