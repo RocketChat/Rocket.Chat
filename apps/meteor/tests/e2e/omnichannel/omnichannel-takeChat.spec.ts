@@ -44,6 +44,11 @@ test.describe('omnichannel-takeChat', () => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
 
 		await page.goto('/livechat');
+
+		await poLiveChat.openLiveChat();
+		await poLiveChat.sendMessage(newVisitor, false);
+		await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
+		await poLiveChat.btnSendMessageToOnlineAgent.click();
 	});
 
 	test.describe('When agent is online', () => {
@@ -56,8 +61,6 @@ test.describe('omnichannel-takeChat', () => {
 		});
 
 		test('user should take the chat', async () => {
-			await poLiveChat.openChatAndSendMessage(newVisitor, 'this_a_test_message_from_user');
-
 			await agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name).click();
 
 			await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
@@ -75,8 +78,6 @@ test.describe('omnichannel-takeChat', () => {
 		});
 
 		test('user should not take the chat', async () => {
-			await poLiveChat.openChatAndSendMessage(newVisitor, 'this_a_test_message_from_user');
-
 			await expect(poLiveChat.alertMessage('Error starting a new conversation: Sorry, no online agents [no-agent-online]')).toBeVisible();
 		});
 	});
