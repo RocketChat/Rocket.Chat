@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/pdf-worker",
-	"version": "0.0.33",
+	"version": "0.0.35",
 	"private": true,
 	"devDependencies": {
 		"@storybook/addon-essentials": "~6.5.16",
@@ -34,7 +34,7 @@
 	"dependencies": {
 		"@react-pdf/renderer": "^3.1.14",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/fuselage-tokens": "^0.33.0",
+		"@rocket.chat/fuselage-tokens": "^0.33.1",
 		"@types/react": "~17.0.69",
 		"emoji-assets": "^7.0.1",
 		"emoji-toolkit": "^7.0.1",
