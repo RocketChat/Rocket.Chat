@@ -9705,18 +9705,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/patch-coordinator@workspace:packages/patch-coordinator":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/patch-coordinator@workspace:packages/patch-coordinator"
-  dependencies:
-    "@types/jest": ~29.5.7
-    eslint: ~8.45.0
-    jest: ~29.6.4
-    ts-jest: ~29.1.1
-    typescript: ~5.3.3
-  languageName: unknown
-  linkType: soft
-
 "@rocket.chat/patch-injection@workspace:^, @rocket.chat/patch-injection@workspace:packages/patch-injection":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/patch-injection@workspace:packages/patch-injection"
