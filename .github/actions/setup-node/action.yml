@@ -10,18 +10,21 @@ inputs:
   install:
     required: false
     type: boolean
+  deno-dir:
+    required: false
+    type: string
+    default: ~/.deno-cache
 
 outputs:
   node-version:
     value: ${{ steps.node-version.outputs.node-version }}
 
-env:
-  DENO_DIR: ~/.deno-cache
-
 runs:
   using: composite
 
   steps:
+    - run: echo 'DENO_DIR=${{ inputs.deno-dir }}' >> $GITHUB_ENV
+
     - name: Cache Node Modules
       if: inputs.cache-modules
       id: cache-node-modules
