@@ -47,11 +47,11 @@ export type FCMMessageWithToken = FCMMessage & { token: string };
 export type FCMMessageWithTopic = FCMMessage & { topic: string };
 export type FCMMessageWithCondition = FCMMessage & { condition: string };
 
-async function fetchWithRetry(url: string, options: RequestInit, retries = 0): Promise<Response> {
+function fetchWithRetry(url: string, options: RequestInit, retries = 0): Promise<Response> {
 	const MAX_RETRIES = 5;
 
 	try {
-		return await fetch(url, options);
+		return fetch(url, options);
 	} catch (error) {
 		if (retries >= MAX_RETRIES) {
 			throw error;
@@ -119,28 +119,21 @@ function getFCMMessagesFromPushData(userTokens: string[], notification: PendingP
 }
 
 export const sendFCM = function ({ userTokens, notification, _replaceToken, _removeToken, options }: NativeNotificationParameters): void {
-	// Make sure userTokens are an array of strings
-	if (typeof userTokens === 'string') {
-		userTokens = [userTokens];
-	}
-
-	// Check if any tokens in there to send
-	if (!userTokens.length) {
+	const tokens = typeof userTokens === 'string' ? [userTokens] : userTokens;
+	if (!tokens.length) {
 		logger.debug('sendFCM no push tokens found');
 		return;
 	}
 
-	logger.debug('sendFCM', userTokens, notification);
+	logger.debug('sendFCM', tokens, notification);
 
-	const messages = getFCMMessagesFromPushData(userTokens, notification);
-	const authHeader = `key=${options?.gcm.apiKey}`;
+	const messages = getFCMMessagesFromPushData(tokens, notification);
+	const headers = {
+		'Content-Type': 'application/json',
+		'Authorization': `Bearer: ${options.gcm.apiKey}`,
+	};
 
 	for (const message of messages) {
-		const headers = {
-			'Content-Type': 'application/json',
-			'Authorization': authHeader,
-		};
-
 		const data = {
 			validate_only: false,
 			message,
@@ -149,7 +142,7 @@ export const sendFCM = function ({ userTokens, notification, _replaceToken, _rem
 		const response = fetchWithRetry(FCM_API_URL, { method: 'POST', headers, body: JSON.stringify(data) });
 
 		response
-			.then((res) => onNotificationSentSuccess(res, userTokens as string[], notification, _replaceToken, _removeToken))
+			.then((res) => onNotificationSentSuccess(res, tokens, notification, _replaceToken, _removeToken))
 			.catch((err) => {
 				logger.error('sendFCM error', err);
 			});

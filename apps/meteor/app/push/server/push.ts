@@ -2,6 +2,7 @@ import type { IAppsTokens, RequiredField, Optional, IPushNotificationConfig } fr
 import { AppsTokens } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { pick } from '@rocket.chat/tools';
+import { JWT } from 'google-auth-library';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -13,6 +14,20 @@ import { sendGCM } from './gcm';
 import { logger } from './logger';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
+
+type FCMCredentials = {
+	type: string;
+	project_id: string;
+	private_key_id: string;
+	private_key: string;
+	client_email: string;
+	client_id: string;
+	auth_uri: string;
+	token_uri: string;
+	auth_provider_x509_cert_url: string;
+	client_x509_cert_url: string;
+	universe_domain: string;
+};
 
 // This type must match the type defined in the push gateway
 type GatewayNotification = {
@@ -67,13 +82,6 @@ export type NativeNotificationParameters = {
 	options: RequiredField<PushOptions, 'gcm'>;
 };
 
-type NativeNotificationProvider = (params: NativeNotificationParameters) => void;
-
-function getNativeNotificationProvider(): NativeNotificationProvider {
-	const hasLegacyProvider = settings.get<boolean>('Push_UseLegacy');
-	return hasLegacyProvider ? sendGCM : sendFCM;
-}
-
 class PushClass {
 	options: PushOptions = {
 		uniqueId: '',
@@ -125,7 +133,12 @@ class PushClass {
 		return Boolean(!!this.options.gateways && settings.get('Register_Server') && settings.get('Cloud_Service_Agree_PrivacyTerms'));
 	}
 
-	private sendNotificationNative(app: IAppsTokens, notification: PendingPushNotification, countApn: string[], countGcm: string[]): void {
+	private async sendNotificationNative(
+		app: IAppsTokens,
+		notification: PendingPushNotification,
+		countApn: string[],
+		countGcm: string[],
+	): Promise<void> {
 		logger.debug('send to token', app.token);
 
 		if ('apn' in app.token && app.token.apn) {
@@ -141,19 +154,60 @@ class PushClass {
 			// We do support multiple here - so we should construct an array
 			// and send it bulk - Investigate limit count of id's
 			if (this.options.gcm?.apiKey) {
-				const nativeNotificationProvider = getNativeNotificationProvider();
+				// TODO: Remove this after the legacy provider is removed
+				const hasLegacyProvider = settings.get<boolean>('Push_UseLegacy');
+				if (!hasLegacyProvider) {
+					// override this.options.gcm.apiKey with the oauth2 token
+					const sendGCMOptions = {
+						...this.options,
+						gcm: {
+							...this.options.gcm,
+							apiKey: await this.getFcmAuthorizationToken(),
+						},
+					};
 
-				nativeNotificationProvider({
-					userTokens: app.token.gcm,
-					notification,
-					_replaceToken: this.replaceToken,
-					_removeToken: this.removeToken,
-					options: this.options as RequiredField<PushOptions, 'gcm'>,
-				});
+					sendFCM({
+						userTokens: app.token.gcm,
+						notification,
+						_replaceToken: this.replaceToken,
+						_removeToken: this.removeToken,
+						options: sendGCMOptions,
+					});
+				} else {
+					sendGCM({
+						userTokens: app.token.gcm,
+						notification,
+						_replaceToken: this.replaceToken,
+						_removeToken: this.removeToken,
+						options: this.options as RequiredField<PushOptions, 'gcm'>,
+					});
+				}
 			}
 		} else {
 			throw new Error('send got a faulty query');
 		}
+	}
+
+	private async getFcmAuthorizationToken(): Promise<string> {
+		const credentialsString = settings.get('Push_google_api_credentials');
+		if (!credentialsString) {
+			throw new Error('Push_google_api_credentials is not set');
+		}
+
+		const credentials = JSON.parse(credentialsString as string) as FCMCredentials;
+
+		const client = new JWT({
+			email: credentials.client_email,
+			key: credentials.private_key,
+			scopes: ['https://www.googleapis.com/auth/firebase.messaging'],
+		});
+
+		const url = `https://dns.googleapis.com/dns/v1/projects/${credentials.project_id}`;
+
+		// aquire token
+		await client.request({ url });
+
+		return client.credentials.access_token as string;
 	}
 
 	private async sendGatewayPush(
@@ -288,7 +342,7 @@ class PushClass {
 				continue;
 			}
 
-			this.sendNotificationNative(app, notification, countApn, countGcm);
+			await this.sendNotificationNative(app, notification, countApn, countGcm);
 		}
 
 		if (settings.get('Log_Level') === '2') {

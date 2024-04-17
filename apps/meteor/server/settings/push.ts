@@ -19,6 +19,12 @@ export const createPushSettings = () =>
 			alert: 'Push_Setting_Requires_Restart_Alert',
 		});
 
+		await this.add('Push_UseLegacy', false, {
+			type: 'boolean',
+			public: true,
+			alert: 'Push_Setting_Legacy_Warning',
+		});
+
 		await this.add('Push_enable_gateway', true, {
 			type: 'boolean',
 			alert: 'Push_Setting_Requires_Restart_Alert',
@@ -107,6 +113,14 @@ export const createPushSettings = () =>
 				enableQuery: [],
 				secret: true,
 			});
+
+			await this.add('Push_google_api_credentials', '', {
+				type: 'string',
+				multiline: true,
+				enableQuery: [],
+				secret: true,
+			});
+
 			return this.add('Push_gcm_project_number', '', {
 				type: 'string',
 				public: true,
