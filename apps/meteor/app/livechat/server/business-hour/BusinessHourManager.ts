@@ -4,10 +4,10 @@ import type { AgendaCronJobs } from '@rocket.chat/cron';
 import { LivechatDepartment, Users } from '@rocket.chat/models';
 import moment from 'moment';
 
-import { closeBusinessHour } from '../../../../ee/app/livechat-enterprise/server/business-hour/Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
+import { closeBusinessHour } from './closeBusinessHour';
 
 export class BusinessHourManager {
 	private types: Map<string, IBusinessHourType> = new Map();
