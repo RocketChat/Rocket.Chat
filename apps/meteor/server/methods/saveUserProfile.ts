@@ -156,7 +156,7 @@ async function saveUserProfile(
 
 	// App IPostUserUpdated event hook
 	const updatedUser = await Users.findOneById(this.userId);
-	await Apps?.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user });
+	await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user });
 
 	return true;
 }

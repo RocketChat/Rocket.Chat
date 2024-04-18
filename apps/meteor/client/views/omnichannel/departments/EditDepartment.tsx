@@ -15,6 +15,7 @@ import {
 	Button,
 	PaginatedSelectFiltered,
 	FieldHint,
+	Option,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
@@ -73,6 +74,7 @@ export type FormValues = {
 	fallbackForwardDepartment: string;
 	agentList: IDepartmentAgent[];
 	chatClosingTags: string[];
+	allowReceiveForwardOffline: boolean;
 };
 
 function withDefault<T>(key: T | undefined | null, defaultValue: T) {
@@ -96,6 +98,7 @@ const getInitialValues = ({ department, agents, allowedToForwardData }: InitialV
 	fallbackForwardDepartment: withDefault(department?.fallbackForwardDepartment, ''),
 	chatClosingTags: department?.chatClosingTags ?? [],
 	agentList: agents || [],
+	allowReceiveForwardOffline: withDefault(department?.allowReceiveForwardOffline, false),
 });
 
 function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmentProps) {
@@ -151,6 +154,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			waitingQueueMessage,
 			departmentsAllowedToForward,
 			fallbackForwardDepartment,
+			allowReceiveForwardOffline,
 		} = data;
 
 		const payload = {
@@ -169,6 +173,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			waitingQueueMessage,
 			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value),
 			fallbackForwardDepartment,
+			allowReceiveForwardOffline,
 		};
 
 		try {
@@ -214,6 +219,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 	const fallbackForwardDepartmentField = useUniqueId();
 	const requestTagBeforeClosingChatField = useUniqueId();
 	const chatClosingTagsField = useUniqueId();
+	const allowReceiveForwardOffline = useUniqueId();
 
 	return (
 		<Page flexDirection='row'>
@@ -412,6 +418,10 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 												onChange={onChange}
 												onlyMyDepartments
 												showArchived
+												withTitle={false}
+												renderItem={({ label, ...props }) => (
+													<Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />
+												)}
 											/>
 										)}
 									/>
@@ -422,6 +432,15 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							<FieldRow>
 								<FieldLabel htmlFor={requestTagBeforeClosingChatField}>{t('Request_tag_before_closing_chat')}</FieldLabel>
 								<ToggleSwitch id={requestTagBeforeClosingChatField} {...register('requestTagBeforeClosingChat')} />
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldRow>
+								<FieldLabel htmlFor={allowReceiveForwardOffline}>{t('Accept_receive_inquiry_no_online_agents')}</FieldLabel>
+								<ToggleSwitch id={allowReceiveForwardOffline} {...register('allowReceiveForwardOffline')} />
+							</FieldRow>
+							<FieldRow>
+								<FieldHint id={`${allowReceiveForwardOffline}-hint`}>{t('Accept_receive_inquiry_no_online_agents_Hint')}</FieldHint>
 							</FieldRow>
 						</Field>
 						{requestTagBeforeClosingChat && (
