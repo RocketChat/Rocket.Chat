@@ -25,6 +25,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"]').last();
 	}
 
+	nthMessage(index: number): Locator {
+		return this.page.locator('[data-qa-type="message"]').nth(index);
+	}
+
 	get lastUserMessageNotThread(): Locator {
 		return this.page.locator('div.messages-box [data-qa-type="message"]').last();
 	}
@@ -39,6 +43,10 @@ export class HomeContent {
 
 	get encryptedRoomHeaderIcon(): Locator {
 		return this.page.locator('.rcx-room-header button > i.rcx-icon--name-key');
+	}
+
+	get lastIgnoredUserMessage(): Locator {
+		return this.lastUserMessageBody.locator('role=button[name="This message was ignored"]');
 	}
 
 	get btnJoinRoom(): Locator {
@@ -76,6 +84,17 @@ export class HomeContent {
 		await this.page.locator('[name="msg"]').type(text);
 		await this.page.keyboard.press('Enter');
 		await this.page.keyboard.press('Enter');
+	}
+
+	async forwardMessage(chatName: string) {
+		await this.page.locator('[data-qa-type="message"]').last().hover();
+		await this.page.locator('role=button[name="Forward message"]').click();
+
+		await this.page.getByRole('textbox', { name: 'Person or Channel' }).click()
+		await this.page.keyboard.type(chatName);
+		await this.page.locator('#position-container').getByText(chatName).waitFor()
+		await this.page.locator('#position-container').getByText(chatName).click()
+		await this.page.locator('role=button[name="Forward"]').click();
 	}
 
 	get btnModalCancel(): Locator {
@@ -204,9 +223,8 @@ export class HomeContent {
 		await this.page.locator(`role=dialog[name="Emoji picker"] >> role=tabpanel >> role=button[name="${emoji}"]`).click();
 	}
 
-	async dragAndDropFile(): Promise<void> {
+	async dragAndDropTxtFile(): Promise<void> {
 		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
-
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
 			const file = new File([`${contract}`], 'any_file.txt', {
@@ -221,6 +239,26 @@ export class HomeContent {
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
+	async dragAndDropLstFile(): Promise<void> {
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/lst-test.lst', 'utf-8');
+		const dataTransfer = await this.page.evaluateHandle((contract) => {
+			const data = new DataTransfer();
+			const file = new File([`${contract}`], 'lst-test.lst', {
+				type: 'text/plain',
+			});
+			data.items.add(file);
+			return data;
+		}, contract);
+
+		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+	}
+
+	async sendFileMessage(fileName: string): Promise<void> {
+		await this.page.locator('input[type=file]').setInputFiles(`./tests/e2e/fixtures/files/${fileName}`);
+	}
+
 	async openLastMessageMenu(): Promise<void> {
 		await this.page.locator('[data-qa-type="message"]').last().hover();
 		await this.page.locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
@@ -228,13 +266,13 @@ export class HomeContent {
 	}
 
 	async openLastThreadMessageMenu(): Promise<void> {
-		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().hover();
-		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
-		await this.page.locator('//main//aside >> [data-qa-type="message"]').last().locator('role=button[name="More"]').click();
+		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().hover();
+		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').waitFor();
+		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().locator('role=button[name="More"]').click();
 	}
 
 	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
-		await this.page.locator('//main//aside >> [name="alsoSendThreadToChannel"]').setChecked(isChecked);
+		await this.page.getByRole('dialog').locator('[name="alsoSendThreadToChannel"]').setChecked(isChecked);
 	}
 
 	get lastSystemMessageBody(): Locator {

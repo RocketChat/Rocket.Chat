@@ -31,7 +31,6 @@ import type {
 
 import { otrSystemMessages } from '../../../app/otr/lib/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { escapeExternalFederationEventId } from '../../services/federation/infrastructure/rocket-chat/adapters/federation-id-escape-helper';
 import { BaseRaw } from './BaseRaw';
 
 type DeepWritable<T> = T extends (...args: any) => any
@@ -549,7 +548,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ _id },
 			{
 				$set: {
-					[`reactions.${reaction}.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username,
+					[`reactions.${reaction}.federationReactionEventIds.${federationEventId}`]: username,
 				} as any,
 			},
 		);
@@ -560,7 +559,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ _id },
 			{
 				$unset: {
-					[`reactions.${reaction}.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: 1,
+					[`reactions.${reaction}.federationReactionEventIds.${federationEventId}`]: 1,
 				},
 			},
 		);
@@ -606,7 +605,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 							$match: {
 								$and: [
 									{ 'reactions.v.usernames': { $in: [username] } },
-									{ [`reactions.v.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username },
+									{ [`reactions.v.federationReactionEventIds.${federationEventId}`]: username },
 								],
 							},
 						},

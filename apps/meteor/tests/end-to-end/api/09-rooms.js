@@ -7,9 +7,9 @@ import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
-import { imgURL } from '../../data/interactions';
-import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
-import { closeRoom, createRoom } from '../../data/rooms.helper';
+import { imgURL, lstURL, svgLogoFileName, svgLogoURL } from '../../data/interactions';
+import { getSettingValueById, updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { closeRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
@@ -83,10 +83,16 @@ describe('[Rooms]', function () {
 		let testChannel;
 		let user;
 		let userCredentials;
-
+		let blockedMediaTypes;
 		before(async () => {
 			user = await createUser({ joinDefaultChannels: false });
 			userCredentials = await login(user.username, password);
+			blockedMediaTypes = await getSettingValueById('FileUpload_MediaTypeBlackList');
+			const newBlockedMediaTypes = blockedMediaTypes
+				.split(',')
+				.filter((type) => type !== 'image/svg+xml')
+				.join(',');
+			await updateSetting('FileUpload_MediaTypeBlackList', newBlockedMediaTypes);
 		});
 
 		after(async () => {
@@ -95,6 +101,7 @@ describe('[Rooms]', function () {
 
 			await updateSetting('FileUpload_Restrict_to_room_members', false);
 			await updateSetting('FileUpload_ProtectFiles', true);
+			await updateSetting('FileUpload_MediaTypeBlackList', blockedMediaTypes);
 		});
 
 		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
@@ -149,8 +156,8 @@ describe('[Rooms]', function () {
 
 		let fileNewUrl;
 		let fileOldUrl;
-		it('upload a file to room', (done) => {
-			request
+		it('should upload a PNG file to room', async () => {
+			await request
 				.post(api(`rooms.upload/${testChannel._id}`))
 				.set(credentials)
 				.attach('file', imgURL)
@@ -159,14 +166,54 @@ describe('[Rooms]', function () {
 				.expect((res) => {
 					const { message } = res.body;
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('message._id', message._id);
-					expect(res.body).to.have.nested.property('message.rid', testChannel._id);
-					expect(res.body).to.have.nested.property('message.file._id', message.file._id);
-					expect(res.body).to.have.nested.property('message.file.type', message.file.type);
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.have.property('attachments');
+					expect(res.body.message.attachments).to.be.an('array').of.length(1);
+					expect(res.body.message.attachments[0]).to.have.property('image_type', 'image/png');
+					expect(res.body.message.attachments[0]).to.have.property('title', '1024x1024.png');
+					expect(res.body.message).to.have.property('files');
+					expect(res.body.message.files).to.be.an('array').of.length(2);
+					expect(res.body.message.files[0]).to.have.property('type', 'image/png');
+					expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
+
 					fileNewUrl = `/file-upload/${message.file._id}/${message.file.name}`;
 					fileOldUrl = `/ufs/GridFS:Uploads/${message.file._id}/${message.file.name}`;
+				});
+		});
+
+		it('should upload a LST file to room', (done) => {
+			request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', lstURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.have.property('attachments');
+					expect(res.body.message.attachments).to.be.an('array').of.length(1);
+					expect(res.body.message.attachments[0]).to.have.property('format', 'LST');
+					expect(res.body.message.attachments[0]).to.have.property('title', 'lst-test.lst');
+					expect(res.body.message).to.have.property('files');
+					expect(res.body.message.files).to.be.an('array').of.length(1);
+					expect(res.body.message.files[0]).to.have.property('name', 'lst-test.lst');
 				})
 				.end(done);
+		});
+
+		it('should not allow uploading a blocked media type to a room', async () => {
+			await updateSetting('FileUpload_MediaTypeBlackList', 'application/octet-stream');
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', lstURL)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
+				});
 		});
 
 		it('should be able to get the file', async () => {
@@ -201,6 +248,58 @@ describe('[Rooms]', function () {
 			await updateSetting('FileUpload_ProtectFiles', false);
 			await request.get(fileNewUrl).expect('Content-Type', 'image/png').expect(200);
 			await request.get(fileOldUrl).expect('Content-Type', 'image/png').expect(200);
+		});
+
+		it('should generate thumbnail for SVG files correctly', async () => {
+			const expectedFileName = `thumb-${svgLogoFileName}`;
+			let thumbUrl;
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', svgLogoURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { message } = res.body;
+					const { files, attachments } = message;
+
+					expect(files).to.be.an('array');
+					const hasThumbFile = files.some((file) => file.type === 'image/png' && file.name === expectedFileName);
+					expect(hasThumbFile).to.be.true;
+
+					expect(attachments).to.be.an('array');
+					const thumbAttachment = attachments.find((attachment) => attachment.title === svgLogoFileName);
+					expect(thumbAttachment).to.be.an('object');
+					thumbUrl = thumbAttachment.image_url;
+				});
+
+			await request.get(thumbUrl).set(credentials).expect('Content-Type', 'image/png');
+		});
+
+		it('should generate thumbnail for JPEG files correctly', async () => {
+			const expectedFileName = `thumb-sample-jpeg.jpg`;
+			let thumbUrl;
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../mocks/files/sample-jpeg.jpg')))
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { message } = res.body;
+					const { files, attachments } = message;
+
+					expect(files).to.be.an('array');
+					const hasThumbFile = files.some((file) => file.type === 'image/jpeg' && file.name === expectedFileName);
+					expect(hasThumbFile).to.be.true;
+
+					expect(attachments).to.be.an('array');
+					const thumbAttachment = attachments.find((attachment) => attachment.title === `sample-jpeg.jpg`);
+					expect(thumbAttachment).to.be.an('object');
+					thumbUrl = thumbAttachment.image_url;
+				});
+
+			await request.get(thumbUrl).set(credentials).expect('Content-Type', 'image/jpeg');
 		});
 	});
 
@@ -1643,14 +1742,27 @@ describe('[Rooms]', function () {
 		});
 	});
 
-	describe('/rooms.saveRoomSettings', () => {
+	describe('rooms.saveRoomSettings', () => {
 		let testChannel;
 		const randomString = `randomString${Date.now()}`;
+		let discussion;
 
-		before('create a channel', async () => {
+		before(async () => {
 			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
 			testChannel = result.body.channel;
+
+			const resDiscussion = await request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testChannel._id,
+					t_name: `discussion-create-from-tests-${testChannel.name}`,
+				});
+
+			discussion = resDiscussion.body.discussion;
 		});
+
+		after(() => Promise.all([deleteRoom({ type: 'p', roomId: discussion._id }), deleteRoom({ type: 'p', roomId: testChannel._id })]));
 
 		it('should update the room settings', (done) => {
 			const imageDataUri = `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), imgURL)).toString('base64')}`;
@@ -1705,6 +1817,236 @@ describe('[Rooms]', function () {
 					expect(res.body.room).to.have.property('reactWhenReadOnly', true);
 				})
 				.end(done);
+		});
+
+		it('should be able to update the discussion name with spaces', async () => {
+			const newDiscussionName = `${randomString} with spaces`;
+
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: discussion._id,
+					roomName: newDiscussionName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: discussion._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', discussion._id);
+					expect(res.body.room).to.have.property('fname', newDiscussionName);
+				});
+		});
+
+		it('should mark a room as favorite', async () => {
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					favorite: {
+						favorite: true,
+						defaultValue: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', testChannel._id);
+					expect(res.body.room).to.have.property('favorite', true);
+				});
+		});
+		it('should not mark a room as favorite when room is not a default room', async () => {
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					favorite: {
+						favorite: true,
+						defaultValue: false,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', testChannel._id);
+					expect(res.body.room).to.not.have.property('favorite');
+				});
+		});
+	});
+
+	describe('rooms.images', () => {
+		let testUserCreds = null;
+		before(async () => {
+			const user = await createUser();
+			testUserCreds = await login(user.username, password);
+		});
+
+		const uploadFile = async ({ roomId, file }) => {
+			const { body } = await request
+				.post(api(`rooms.upload/${roomId}`))
+				.set(credentials)
+				.attach('file', file)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			return body.message.attachments[0];
+		};
+
+		const getIdFromImgPath = (link) => {
+			return link.split('/')[2];
+		};
+
+		it('should return an error when user is not logged in', async () => {
+			await request.get(api('rooms.images')).expect(401);
+		});
+		it('should return an error when the required parameter "roomId" is not provided', async () => {
+			await request.get(api('rooms.images')).set(credentials).expect(400);
+		});
+		it('should return an error when the required parameter "roomId" is not a valid room', async () => {
+			await request.get(api('rooms.images')).set(credentials).query({ roomId: 'invalid' }).expect(403);
+		});
+		it('should return an error when room is valid but user is not part of it', async () => {
+			const { body } = await createRoom({ type: 'p', name: `test-${Date.now()}` });
+
+			const {
+				group: { _id: roomId },
+			} = body;
+			await request.get(api('rooms.images')).set(testUserCreds).query({ roomId }).expect(403);
+
+			await deleteRoom({ type: 'p', roomId });
+		});
+		it('should return an empty array when room is valid and user is part of it but there are no images', async () => {
+			const { body } = await createRoom({ type: 'p', usernames: [credentials.username], name: `test-${Date.now()}` });
+			const {
+				group: { _id: roomId },
+			} = body;
+			await request
+				.get(api('rooms.images'))
+				.set(credentials)
+				.query({ roomId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(0);
+				});
+
+			await deleteRoom({ type: 'p', roomId });
+		});
+		it('should return an array of images when room is valid and user is part of it and there are images', async () => {
+			const { body } = await createRoom({ type: 'p', usernames: [credentials.username], name: `test-${Date.now()}` });
+			const {
+				group: { _id: roomId },
+			} = body;
+			const { title_link } = await uploadFile({
+				roomId,
+				file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+			});
+			const fileId = getIdFromImgPath(title_link);
+			await request
+				.get(api('rooms.images'))
+				.set(credentials)
+				.query({ roomId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+					expect(res.body.files[0]).to.have.property('_id', fileId);
+				});
+
+			await deleteRoom({ type: 'p', roomId });
+		});
+		it('should return multiple images when room is valid and user is part of it and there are multiple images', async () => {
+			const { body } = await createRoom({ type: 'p', usernames: [credentials.username], name: `test-${Date.now()}` });
+			const {
+				group: { _id: roomId },
+			} = body;
+			const { title_link: link1 } = await uploadFile({
+				roomId,
+				file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+			});
+			const { title_link: link2 } = await uploadFile({
+				roomId,
+				file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+			});
+
+			const fileId1 = getIdFromImgPath(link1);
+			const fileId2 = getIdFromImgPath(link2);
+
+			await request
+				.get(api('rooms.images'))
+				.set(credentials)
+				.query({ roomId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(2);
+					expect(res.body.files.find((file) => file._id === fileId1)).to.exist;
+					expect(res.body.files.find((file) => file._id === fileId2)).to.exist;
+				});
+
+			await deleteRoom({ type: 'p', roomId });
+		});
+		it('should allow to filter images passing the startingFromId parameter', async () => {
+			const { body } = await createRoom({ type: 'p', usernames: [credentials.username], name: `test-${Date.now()}` });
+			const {
+				group: { _id: roomId },
+			} = body;
+			const { title_link } = await uploadFile({
+				roomId,
+				file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+			});
+			await uploadFile({
+				roomId,
+				file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+			});
+
+			const fileId2 = getIdFromImgPath(title_link);
+			await request
+				.get(api('rooms.images'))
+				.set(credentials)
+				.query({ roomId, startingFromId: fileId2 })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+					expect(res.body.files[0]).to.have.property('_id', fileId2);
+				});
+
+			await deleteRoom({ type: 'p', roomId });
 		});
 	});
 });

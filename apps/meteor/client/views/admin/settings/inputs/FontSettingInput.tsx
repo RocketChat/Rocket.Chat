@@ -3,20 +3,12 @@ import type { FormEventHandler, ReactElement } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type FontSettingInputProps = {
-	_id: string;
-	label: string;
+type FontSettingInputProps = SettingInputProps & {
 	value: string;
-	placeholder?: string;
-	readonly?: boolean;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	required?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string) => void;
-	onResetButtonClick?: () => void;
 };
+
 function FontSettingInput({
 	_id,
 	label,

@@ -19,6 +19,7 @@ export const sendMessageAction = async (_: string, action: ILivechatSendMessageA
 		u: agent,
 		ts: new Date().toISOString(),
 		_id: createToken(),
+		trigger: true,
 	};
 
 	await upsertMessage(message);
@@ -74,6 +75,7 @@ export const sendMessageExternalServiceAction = async (
 				u: agent,
 				ts: new Date().toISOString(),
 				_id: createToken(),
+				trigger: true,
 			}));
 
 		await Promise.all(messages.map((message) => upsertMessage(message)));
