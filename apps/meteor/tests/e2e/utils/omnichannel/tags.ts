@@ -17,7 +17,7 @@ export const removeTag = async (api: BaseTest['api'], id: string) =>
 
 export const createTag = async (
 	api: BaseTest['api'],
-	{ id = null, name, description = '', departments }: CreateTagParams = {},
+	{ id = null, name, description = '', departments = [] }: CreateTagParams = {},
 	) => {
 		const response = await api.post('/method.call/livechat:saveTag', {
 			message: JSON.stringify({

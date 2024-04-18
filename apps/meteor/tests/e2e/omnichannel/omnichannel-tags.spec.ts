@@ -31,12 +31,13 @@ test.describe('OC - Manage Tags', () => {
 
   test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannelTags = new OmnichannelTags(page);
-		await page.goto('/omnichannel');
-		await poOmnichannelTags.sidenav.linkTags.click();
 	});
 
   test('OC - Manage Tags - Create Tag', async ({ page }) => {
     const tagName = faker.string.uuid();
+
+    await page.goto('/omnichannel');
+		await poOmnichannelTags.sidenav.linkTags.click();
 
     await test.step('expect correct form default state', async () => {
 			await poOmnichannelTags.btnCreateTag.click();
@@ -97,6 +98,9 @@ test.describe('OC - Manage Tags', () => {
 
 			return tag;
 		});
+
+    await page.goto('/omnichannel');
+		await poOmnichannelTags.sidenav.linkTags.click();
 
 		const department2 = await createDepartment(api);
 
