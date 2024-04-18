@@ -1102,7 +1102,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 
-		describe.only('customFields', () => {
+		describe('customFields', () => {
 			describe('when disabled', () => {
 				it('should not allow sending custom fields', async () => {
 					await request
