@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useSetting, useUser, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useUser } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { UserStatus } from '../../components/UserStatus';
@@ -20,7 +20,6 @@ const anon = {
  */
 
 const UserAvatarWithStatus = () => {
-	const t = useTranslation();
 	const user = useUser();
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
 
@@ -32,9 +31,6 @@ const UserAvatarWithStatus = () => {
 			className={css`
 				cursor: pointer;
 			`}
-			aria-label={t('User_menu')}
-			role='button'
-			data-qa='sidebar-avatar-button'
 		>
 			{username && <UserAvatar size='x24' username={username} etag={avatarETag} />}
 			<Box

@@ -225,7 +225,7 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 	}
 
 	// For the Rocket.Chat Apps :)
-	if (Apps?.isLoaded()) {
+	if (Apps.self?.isLoaded()) {
 		const listenerBridge = Apps.getBridges()?.getListenerBridge();
 
 		const prevent = await listenerBridge?.messageEvent('IPreMessageSentPrevent', message);
@@ -275,7 +275,7 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 		message._id = insertedId;
 	}
 
-	if (Apps?.isLoaded()) {
+	if (Apps.self?.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
 		// so, we don't really care if it is successful or fails
 		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
