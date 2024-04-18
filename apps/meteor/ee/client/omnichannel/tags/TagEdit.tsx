@@ -72,7 +72,7 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 	const departmentsField = useUniqueId();
 
 	return (
-		<Contextualbar>
+		<Contextualbar data-qa-id='tags-contextual-bar'>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{_id ? t('Edit_Tag') : t('New_Tag')}</ContextualbarTitle>
 				<ContextualbarClose onClick={() => router.navigate('/omnichannel/tags')}></ContextualbarClose>
@@ -110,8 +110,8 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 								<Controller
 									name='departments'
 									control={control}
-									render={({ field: { onChange, value, onBlur } }) => (
-										<AutoCompleteDepartmentMultiple id={departmentsField} onChange={onChange} value={value} onBlur={onBlur} showArchived />
+									render={({ field: { onChange, value, onBlur, name } }) => (
+										<AutoCompleteDepartmentMultiple name={name} id={departmentsField} onChange={onChange} value={value} onBlur={onBlur} showArchived />
 									)}
 								/>
 							</FieldRow>

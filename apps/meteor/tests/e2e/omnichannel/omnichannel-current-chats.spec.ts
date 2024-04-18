@@ -61,9 +61,9 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 
 	// Create tags
 	test.beforeAll(async ({ api }) => {
-		const promises = await Promise.all([createTag(api, 'tagA'), createTag(api, 'tagB')]);
+		const promises = await Promise.all([createTag(api, { name: 'tagA' }), createTag(api, { name: 'tagB' })]);
 
-		promises.forEach((res) => expect(res.status()).toBe(200));
+		promises.forEach((res) => expect(res.response.status()).toBe(200));
 	});
 
 	// Create rooms

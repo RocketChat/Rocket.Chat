@@ -70,4 +70,8 @@ export class OmnichannelSidenav {
 	get linkLivechatAppearance(): Locator {
 		return this.page.locator('a[href="/omnichannel/appearance"]');
 	}
+
+	get linkTags(): Locator {
+		return this.page.locator('a[href="/omnichannel/tags"]');
+	}
 }
