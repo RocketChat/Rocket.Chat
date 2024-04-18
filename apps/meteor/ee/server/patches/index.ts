@@ -1,1 +1,2 @@
 import './getInstanceList';
+import './isDepartmentCreationAvailable';
