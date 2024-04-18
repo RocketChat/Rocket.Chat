@@ -3,6 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import React, { lazy, memo } from 'react';
+import { FocusScope } from 'react-aria';
 
 import Sidebar from './Sidebar';
 
@@ -101,17 +102,19 @@ const SidebarRegion = () => {
 					<></>
 				</FeaturePreviewOff>
 			</FeaturePreview>
-			<Box
-				id='sidebar-region'
-				className={['rcx-sidebar', !sidebar.isCollapsed && isMobile && 'opened', sideBarStyle, isMobile && sidebarMobileClass].filter(
-					Boolean,
+			<FocusScope>
+				<Box
+					id='sidebar-region'
+					className={['rcx-sidebar', !sidebar.isCollapsed && isMobile && 'opened', sideBarStyle, isMobile && sidebarMobileClass].filter(
+						Boolean,
+					)}
+				>
+					<Sidebar />
+				</Box>
+				{isMobile && (
+					<Box className={[sidebarWrapStyle, !sidebar.isCollapsed && 'opened'].filter(Boolean)} onClick={() => sidebar.toggle()}></Box>
 				)}
-			>
-				<Sidebar />
-			</Box>
-			{isMobile && (
-				<Box className={[sidebarWrapStyle, !sidebar.isCollapsed && 'opened'].filter(Boolean)} onClick={() => sidebar.toggle()}></Box>
-			)}
+			</FocusScope>
 		</>
 	);
 };

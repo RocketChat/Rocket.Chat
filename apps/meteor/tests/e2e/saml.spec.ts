@@ -90,6 +90,7 @@ const setupCustomRole = async (api: BaseTest['api']) => {
 }
 
 test.describe('SAML', () => {
+	
 	let poRegistration: Registration;
 	let samlRoleId: string;
 
@@ -188,17 +189,17 @@ test.describe('SAML', () => {
 			// Redirect back to rocket.chat
 			await expect(page).toHaveURL('/home');
 
-			await expect(page.getByLabel('User Menu')).toBeVisible();
+			await expect(page.getByRole('button', { name: 'User menu' })).toBeVisible();
 		});
 	};
 
 	const doLogoutStep = async (page: Page) => {
 		await test.step('logout', async () => {
-			await page.getByLabel('User Menu').click();
+			await page.getByRole('button', { name: 'User menu' }).click();
 			await page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
 
 			await expect(page).toHaveURL('/home');
-			await expect(page.getByLabel('User Menu')).not.toBeVisible();
+			await expect(page.getByRole('button', { name: 'User menu' })).not.toBeVisible();
 		});
 	};
 

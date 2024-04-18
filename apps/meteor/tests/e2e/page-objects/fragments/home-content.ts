@@ -25,6 +25,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"]').last();
 	}
 
+	nthMessage(index: number): Locator {
+		return this.page.locator('[data-qa-type="message"]').nth(index);
+	}
+
 	get lastUserMessageNotThread(): Locator {
 		return this.page.locator('div.messages-box [data-qa-type="message"]').last();
 	}
@@ -39,6 +43,10 @@ export class HomeContent {
 
 	get encryptedRoomHeaderIcon(): Locator {
 		return this.page.locator('.rcx-room-header button > i.rcx-icon--name-key');
+	}
+
+	get lastIgnoredUserMessage(): Locator {
+		return this.lastUserMessageBody.locator('role=button[name="This message was ignored"]');
 	}
 
 	get btnJoinRoom(): Locator {
@@ -79,7 +87,6 @@ export class HomeContent {
 	}
 
 	async forwardMessage(chatName: string) {
-
 		await this.page.locator('[data-qa-type="message"]').last().hover();
 		await this.page.locator('role=button[name="Forward message"]').click();
 
@@ -246,6 +253,10 @@ export class HomeContent {
 		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+	}
+
+	async sendFileMessage(fileName: string): Promise<void> {
+		await this.page.locator('input[type=file]').setInputFiles(`./tests/e2e/fixtures/files/${fileName}`);
 	}
 
 	async openLastMessageMenu(): Promise<void> {
