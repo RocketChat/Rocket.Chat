@@ -105,8 +105,9 @@ export const MultiSelectCustom = ({
 		<Box display='flex' flexGrow={1} position='relative'>
 			<MultiSelectCustomAnchor
 				ref={reference}
-				onClick={toggleCollapsed as any}
 				collapsed={collapsed}
+				onClick={() => toggleCollapsed(!collapsed)}
+				onKeyDown={(e) => (e.code === 'Enter' || e.code === 'Space') && toggleCollapsed(!collapsed)}
 				defaultTitle={defaultTitle}
 				selectedOptionsTitle={selectedOptionsTitle}
 				selectedOptionsCount={count}
