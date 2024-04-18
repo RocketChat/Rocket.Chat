@@ -1,11 +1,12 @@
-import type { Page } from '@playwright/test';
 import { faker } from '@faker-js/faker';
-import { test, expect } from '../utils/test';
+import type { Page } from '@playwright/test';
+
+import { Users } from '../fixtures/userStates';
+import { OmnichannelTags } from '../page-objects';
 import { createAgent } from '../utils/omnichannel/agents';
 import { createDepartment } from '../utils/omnichannel/departments';
-import { OmnichannelTags } from '../page-objects';
-import { Users } from '../fixtures/userStates';
 import { createTag } from '../utils/omnichannel/tags';
+import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
 

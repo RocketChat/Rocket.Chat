@@ -97,7 +97,15 @@ const TagsTable = () => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.tags.map(({ _id, name, description }) => (
-								<GenericTableRow key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id} data-qa-id={name}>
+								<GenericTableRow
+									key={_id}
+									tabIndex={0}
+									role='link'
+									onClick={() => onRowClick(_id)}
+									action
+									qa-user-id={_id}
+									data-qa-id={name}
+								>
 									<GenericTableCell withTruncatedText>{name}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{description}</GenericTableCell>
 									<GenericTableCell>
