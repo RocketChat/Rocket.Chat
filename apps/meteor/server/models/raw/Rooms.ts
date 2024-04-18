@@ -1981,7 +1981,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 		const update: UpdateFilter<IRoom> = {
 			$push: {
-				usersWaitingForE2EKeys: { $each: [uid], $slice: -50 },
+				usersWaitingForE2EKeys: {
+					$each: [
+						{
+							userId: uid,
+							ts: new Date(),
+						},
+					],
+					$slice: -50,
+				},
 			},
 		};
 
@@ -1990,18 +1998,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	removeUserFromE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
-			_id: {
+			'_id': {
 				$in: roomIds,
 			},
-			usersWaitingForE2EKeys: {
-				$in: [uid],
-			},
-			encrypted: true,
+			'usersWaitingForE2EKeys.userId': uid,
+			'encrypted': true,
 		};
 
 		const update: UpdateFilter<IRoom> = {
 			$pull: {
-				usersWaitingForE2EKeys: uid,
+				usersWaitingForE2EKeys: { userId: uid },
 			},
 		};
 

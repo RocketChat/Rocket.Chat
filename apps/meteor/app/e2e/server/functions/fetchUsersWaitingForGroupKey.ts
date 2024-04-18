@@ -27,7 +27,7 @@ export async function fetchUsersWaitingForGroupKey(): Promise<{
 		(
 			await Promise.all(
 				rooms.map(async (room) => {
-					const userIds = room.usersWaitingForE2EKeys?.filter((uid) => uid !== userId);
+					const userIds = room?.usersWaitingForE2EKeys?.map((item) => item.userId)?.filter((uid) => uid !== userId);
 
 					if (!userIds || userIds.length === 0) {
 						return;
