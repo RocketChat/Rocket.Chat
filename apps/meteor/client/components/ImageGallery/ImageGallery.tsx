@@ -189,7 +189,11 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 						{images?.map(({ _id, url }) => (
 							<SwiperSlide key={_id}>
 								<div className='swiper-zoom-container'>
-									<img src={url} loading='lazy' alt='' />
+									{/* eslint-disable-next-line
+										jsx-a11y/no-noninteractive-element-interactions,
+									 	jsx-a11y/click-events-have-key-events
+									 */}
+									<img src={url} loading='lazy' alt='' onClick={preventPropagation} />
 									<div className='rcx-lazy-preloader'>
 										<Throbber inheritColor />
 									</div>
