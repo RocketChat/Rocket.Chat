@@ -84,6 +84,7 @@ class E2E extends Emitter {
 			this.log('decryptSubscriptions -> Done');
 
 			await this.initiateKeyDistribution();
+			await this.handleAsyncE2EESuggestedKey();
 		});
 	}
 
@@ -101,6 +102,33 @@ class E2E extends Emitter {
 
 	isReady(): boolean {
 		return this.enabled.get() && this._ready.get();
+	}
+
+	async handleAsyncE2EESuggestedKey() {
+		const subs = Subscriptions.find({ E2ESuggestedKey: { $exists: true } }).fetch();
+		await Promise.all(
+			subs.map(async (sub) => {
+				if (!sub.E2ESuggestedKey || sub.E2EKey) {
+					return;
+				}
+
+				const e2eRoom = await e2e.getInstanceByRoomId(sub.rid);
+
+				if (!e2eRoom) {
+					return;
+				}
+
+				if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
+					await e2e.acceptSuggestedKey(sub.rid);
+					e2eRoom.keyReceived();
+				} else {
+					console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+					await e2e.rejectSuggestedKey(sub.rid);
+				}
+
+				sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+			}),
+		);
 	}
 
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
