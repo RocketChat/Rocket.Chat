@@ -27,6 +27,7 @@ test.describe.serial('admin-rooms', () => {
 		channel = await createTargetChannel(api);
 		privateRoom = await createTargetPrivateChannel(api);
 	});
+
 	test('should display the Rooms Table', async ({ page }) => {
 		await expect(page.locator('[data-qa-type="PageHeader-title"]')).toContainText('Rooms');
 	});
@@ -82,7 +83,7 @@ test.describe.serial('admin-rooms', () => {
 		await expect(page.locator('text=No results found')).toBeVisible();
 	});
 
-	test('should filter rooms by type and name and keep the filter after changing section', async ({ page }) => {
+	test('should filter rooms by type and name and clean the filter after changing section', async ({ page }) => {
 		await admin.inputSearchRooms.fill(privateRoom);
 		const dropdown = await admin.dropdownFilterRoomType();
 		await dropdown.click();
@@ -97,15 +98,6 @@ test.describe.serial('admin-rooms', () => {
 		await page.goto('/admin/rooms');
 
 		const selectDropdown = await admin.dropdownFilterRoomType('Rooms (1)');
-		await expect(selectDropdown).toBeVisible();
-
-		await selectDropdown.click();
-
-		const isChecked = await privateOption.isChecked();
-
-		expect(isChecked).toBe(true);
-
-		await expect(admin.inputSearchRooms).toHaveValue(privateRoom);
-		await expect(page.locator(`[qa-room-name="${privateRoom}"]`)).toBeVisible();
+		await expect(selectDropdown).not.toBeVisible();
 	});
 });
