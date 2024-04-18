@@ -47,6 +47,6 @@ describe('Image Gallery', () => {
 	it('Should render images', async () => {
 		render(<ImageGallery images={images} onClose={() => null} />);
 
-		expect(await screen.findAllByRole('link')).toHaveLength(3);
+		expect(await screen.findAllByRole('img')).toHaveLength(3);
 	});
 });

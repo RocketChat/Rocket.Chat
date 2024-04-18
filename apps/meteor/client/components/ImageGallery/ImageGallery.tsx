@@ -106,11 +106,6 @@ const swiperStyle = css`
 	}
 `;
 
-const spanStyle = css`
-	display: flex;
-	align-items: center;
-`;
-
 export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[]; onClose: () => void; loadMore?: () => void }) => {
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();
@@ -135,13 +130,47 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 			<Box className={swiperStyle}>
 				<div role='presentation' className='swiper-container' onClick={onClose}>
 					<ButtonGroup className='rcx-swiper-controls' onClick={preventPropagation}>
-						{zoomScale !== 1 && <IconButton small icon='arrow-collapse' title='Resize' rcx-swiper-zoom-out onClick={handleResize} />}
-						<IconButton small icon='h-bar' title='Zoom out' rcx-swiper-zoom-out onClick={handleZoomOut} disabled={zoomScale === 1} />
-						<IconButton small icon='plus' title='Zoom in' rcx-swiper-zoom-in onClick={handleZoomIn} />
+						{zoomScale !== 1 && (
+							<IconButton
+								small
+								icon='arrow-collapse'
+								aria-label='Restore zoom of the image from gallery'
+								title='Resize'
+								rcx-swiper-zoom-out
+								onClick={handleResize}
+							/>
+						)}
+						<IconButton
+							small
+							icon='h-bar'
+							aria-label='Zoom out the image from gallery'
+							title='Zoom out'
+							rcx-swiper-zoom-out
+							onClick={handleZoomOut}
+							disabled={zoomScale === 1}
+						/>
+						<IconButton
+							small
+							icon='plus'
+							aria-label='Zoom in the image from gallery'
+							title='Zoom in'
+							rcx-swiper-zoom-in
+							onClick={handleZoomIn}
+						/>
 						<IconButton small icon='cross' title='Close' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
 					</ButtonGroup>
-					<IconButton icon='chevron-right' className='rcx-swiper-prev-button' onClick={preventPropagation} />
-					<IconButton icon='chevron-left' className='rcx-swiper-next-button' onClick={preventPropagation} />
+					<IconButton
+						icon='chevron-right'
+						aria-label='Go to next image from gallery'
+						className='rcx-swiper-prev-button'
+						onClick={preventPropagation}
+					/>
+					<IconButton
+						icon='chevron-left'
+						aria-label='Go to previous image from gallery'
+						className='rcx-swiper-next-button'
+						onClick={preventPropagation}
+					/>
 					<Swiper
 						ref={swiperRef}
 						navigation={{
@@ -160,26 +189,7 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 						{images?.map(({ _id, url }) => (
 							<SwiperSlide key={_id}>
 								<div className='swiper-zoom-container'>
-									<Box>
-										<Box
-											is='span'
-											className={spanStyle}
-											tabIndex={0}
-											role='link'
-											onClick={preventPropagation}
-											onKeyDown={preventPropagation}
-										>
-											<img
-												style={{
-													maxWidth: '100vw',
-													maxHeight: '100vh',
-												}}
-												src={url}
-												loading='lazy'
-												alt=''
-											/>
-										</Box>
-									</Box>
+									<img src={url} loading='lazy' alt='' />
 									<div className='rcx-lazy-preloader'>
 										<Throbber inheritColor />
 									</div>
