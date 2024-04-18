@@ -1,7 +1,7 @@
 ---
-"@rocket.chat/meteor": patch
-"@rocket.chat/core-typings": patch
-"@rocket.chat/i18n": patch
+"@rocket.chat/meteor": minor
+"@rocket.chat/core-typings": minor
+"@rocket.chat/i18n": minor
 ---
 
-feat(messages): Allow Custom Fields in Messages. API-only feature. It can be enabled and configured in Workspace Settings.
+Allow Custom Fields in Messages. API-only feature. It can be enabled and configured in Workspace Settings.
