@@ -1,19 +1,12 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
 
-export async function fetchUsersWaitingForGroupKey(): Promise<{
+export async function fetchUsersWaitingForGroupKey(userId: IUser['_id']): Promise<{
 	usersWaitingForE2EKeys: Record<IRoom['_id'], { _id: IUser['_id']; public_key: string }[]>;
 	hasMore: boolean;
 }> {
-	const userId = Meteor.userId();
-
-	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user');
-	}
-
 	const roomIds = (await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray()).map((sub) => sub.rid);
 
 	const cursor = Rooms.findRoomsByRoomIdsWithE2EEQueue(roomIds, { projection: { usersWaitingForE2EKeys: 1 } });

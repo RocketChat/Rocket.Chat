@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 import { beforeLeaveRoomCallback } from '../../../../lib/callbacks/beforeLeaveRoomCallback';
+import { settings } from '../../../settings/server';
 
 export const removeUserFromRoom = async function (
 	rid: string,
@@ -64,7 +65,7 @@ export const removeUserFromRoom = async function (
 		await Team.removeMember(room.teamId, user._id);
 	}
 
-	if (room.encrypted) {
+	if (room.encrypted && settings.get('E2E_Enable')) {
 		await Rooms.removeUserFromE2EEQueueByRoomIds([room._id], user._id);
 	}
 

@@ -34,7 +34,6 @@ API.v1.addRoute(
 	'e2e.getUsersOfRoomWithoutKey',
 	{
 		authRequired: true,
-
 		validateParams: ise2eGetUsersOfRoomWithoutKeyParamsGET,
 	},
 	{
@@ -242,7 +241,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { usersWaitingForE2EKeys, hasMore } = await fetchUsersWaitingForGroupKey();
+			const { usersWaitingForE2EKeys, hasMore } = await fetchUsersWaitingForGroupKey(this.userId);
 
 			return API.v1.success({
 				usersWaitingForE2EKeys,
@@ -260,15 +259,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { usersSuggestedGroupKeys } = this.bodyParams;
-
-			if (!usersSuggestedGroupKeys) {
-				return API.v1.failure();
-			}
-
-			console.log({ usersSuggestedGroupKeys });
-
-			await provideUsersSuggestedGroupKeys(usersSuggestedGroupKeys);
+			await provideUsersSuggestedGroupKeys(this.userId, this.bodyParams.usersSuggestedGroupKeys);
 
 			return API.v1.success();
 		},
