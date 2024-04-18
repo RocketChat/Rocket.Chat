@@ -443,6 +443,7 @@ type ChatUpdate = {
 	msgId: string;
 	text: string;
 	previewUrls?: string[];
+	customFields: IMessage['customFields'];
 };
 
 const ChatUpdateSchema = {
@@ -462,6 +463,10 @@ const ChatUpdateSchema = {
 			items: {
 				type: 'string',
 			},
+			nullable: true,
+		},
+		customFields: {
+			type: 'object',
 			nullable: true,
 		},
 	},
@@ -702,23 +707,23 @@ export const isChatGetDeletedMessagesProps = ajv.compile<ChatGetDeletedMessages>
 
 type ChatPostMessage =
 	| {
-		roomId: string | string[];
-		text?: string;
-		alias?: string;
-		emoji?: string;
-		avatar?: string;
-		attachments?: MessageAttachment[];
-		customFields?: IMessage['customFields'];
-	}
+			roomId: string | string[];
+			text?: string;
+			alias?: string;
+			emoji?: string;
+			avatar?: string;
+			attachments?: MessageAttachment[];
+			customFields?: IMessage['customFields'];
+	  }
 	| {
-		channel: string | string[];
-		text?: string;
-		alias?: string;
-		emoji?: string;
-		avatar?: string;
-		attachments?: MessageAttachment[];
-		customFields?: IMessage['customFields'];
-	};
+			channel: string | string[];
+			text?: string;
+			alias?: string;
+			emoji?: string;
+			avatar?: string;
+			attachments?: MessageAttachment[];
+			customFields?: IMessage['customFields'];
+	  };
 
 const ChatPostMessageSchema = {
 	oneOf: [
