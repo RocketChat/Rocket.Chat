@@ -42,7 +42,10 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 	return (
 		<Box
 			ref={ref}
+			role='button'
+			tabIndex={0}
 			onClick={onClick}
+			onKeyDown={(e) => (e.code === 'Enter' || e.code === 'Space') && onClick}
 			display='flex'
 			justifyContent='space-between'
 			alignItems='center'
