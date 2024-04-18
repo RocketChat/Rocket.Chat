@@ -27,8 +27,8 @@ jest.mock('swiper', () => ({
 }));
 
 jest.mock('swiper/react', () => ({
-	Swiper: forwardRef(({ children }) => <div data-testid='swiper-testid'>{children}</div>),
-	SwiperSlide: ({ children }: { children: ReactNode }) => <div data-testid='swiper-slide-testid'>{children}</div>,
+	Swiper: forwardRef(({ children }, _ref) => <div>{children}</div>),
+	SwiperSlide: ({ children }: { children: ReactNode }) => <div>{children}</div>,
 }));
 
 describe('Image Gallery', () => {
