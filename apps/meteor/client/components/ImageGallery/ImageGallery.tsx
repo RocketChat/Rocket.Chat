@@ -107,8 +107,8 @@ const swiperStyle = css`
 `;
 
 const spanStyle = css`
-	height: 100%;
-	padding: 32px;
+	display: flex;
+	align-items: center;
 `;
 
 export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[]; onClose: () => void; loadMore?: () => void }) => {
@@ -160,21 +160,26 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 						{images?.map(({ _id, url }) => (
 							<SwiperSlide key={_id}>
 								<div className='swiper-zoom-container'>
-									<Box is='span' className={spanStyle} tabIndex={0} role='link' onClick={preventPropagation} onKeyDown={preventPropagation}>
-										<img
-											style={{
-												maxWidth: '100%',
-												maxHeight: '100%',
-												top: '50%',
-												transform: 'translateY(-50 %)',
-												position: 'relative',
-											}}
-											src={url}
-											loading='lazy'
-											alt=''
-										/>
+									<Box>
+										<Box
+											is='span'
+											className={spanStyle}
+											tabIndex={0}
+											role='link'
+											onClick={preventPropagation}
+											onKeyDown={preventPropagation}
+										>
+											<img
+												style={{
+													maxWidth: '100vw',
+													maxHeight: '100vh',
+												}}
+												src={url}
+												loading='lazy'
+												alt=''
+											/>
+										</Box>
 									</Box>
-
 									<div className='rcx-lazy-preloader'>
 										<Throbber inheritColor />
 									</div>
