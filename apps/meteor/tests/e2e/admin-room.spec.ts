@@ -42,12 +42,16 @@ test.describe.serial('admin-rooms', () => {
 	});
 
 	test('should filter rooms by type', async ({ page }) => {
-		await admin.dropdownFilterRoomType.click();
+		const dropdown = await admin.dropdownFilterRoomType();
+		await dropdown.click();
 
 		const privateOption = page.locator('text=Private channels');
 
 		await privateOption.waitFor();
 		await privateOption.click();
+
+		const selectedDropdown = await admin.dropdownFilterRoomType('Rooms (1)');
+		await expect(selectedDropdown).toBeVisible();
 
 		await expect(page.locator('text=Private Channel').first()).toBeVisible();
 	});
@@ -55,7 +59,8 @@ test.describe.serial('admin-rooms', () => {
 	test('should filter rooms by type and name', async ({ page }) => {
 		await admin.inputSearchRooms.fill(privateRoom);
 
-		await admin.dropdownFilterRoomType.click();
+		const dropdown = await admin.dropdownFilterRoomType();
+		await dropdown.click();
 
 		const privateOption = page.locator('text=Private channels');
 
@@ -70,7 +75,8 @@ test.describe.serial('admin-rooms', () => {
 
 		await admin.inputSearchRooms.fill(nonExistingChannel);
 
-		await admin.dropdownFilterRoomType.click();
+		const dropdown = await admin.dropdownFilterRoomType();
+		await dropdown.click();
 
 		const privateOption = page.locator('text=Private channels');
 
@@ -82,8 +88,8 @@ test.describe.serial('admin-rooms', () => {
 
 	test('should filter rooms by type and name and keep the filter after changing section', async ({ page }) => {
 		await admin.inputSearchRooms.fill(privateRoom);
-
-		await admin.dropdownFilterRoomType.click();
+		const dropdown = await admin.dropdownFilterRoomType();
+		await dropdown.click();
 
 		const privateOption = page.locator('text=Private channels');
 
@@ -94,7 +100,7 @@ test.describe.serial('admin-rooms', () => {
 
 		await page.goto('/admin/rooms');
 
-		const selectDropdown = page.locator('text=Rooms (1)');
+		const selectDropdown = await admin.dropdownFilterRoomType('Rooms (1)');
 		await expect(selectDropdown).toBeVisible();
 
 		await selectDropdown.click();

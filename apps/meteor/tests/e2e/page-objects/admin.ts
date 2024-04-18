@@ -185,7 +185,7 @@ export class Admin {
 		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> input[type="file"]');
 	}
 
-	get dropdownFilterRoomType(): Locator {
-		return this.page.locator('div[data-qa-id="AdminRoomDropdownInput"][role="listbox"]');
+	async dropdownFilterRoomType(text = 'All rooms'): Promise<Locator> {
+		return this.page.locator(`div[role="button"]:has-text("${text}")`);
 	}
 }
