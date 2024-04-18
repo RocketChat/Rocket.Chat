@@ -35,8 +35,8 @@ const FileExport = ({ formId, rid, exportOptions, onCancel }: FileExportProps) =
 		roomExportMutation.mutateAsync({
 			rid,
 			type: 'file',
-			dateFrom,
-			dateTo,
+			...(dateFrom && { dateFrom }),
+			...(dateTo && { dateTo }),
 			format,
 		});
 	};
