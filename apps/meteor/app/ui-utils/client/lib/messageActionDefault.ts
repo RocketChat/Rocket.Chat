@@ -51,8 +51,12 @@ Meteor.startup(async () => {
 				return false;
 			}
 
+			if (!user || user._id === message.u._id) {
+				return false;
+			}
+
 			// Check if we already have a DM started with the message user (not ourselves) or we can start one
-			if (!!user && user._id !== message.u._id && !hasPermission('create-d')) {
+			if (!hasPermission('create-d')) {
 				const dmRoom = ChatRoom.findOne({ _id: [user._id, message.u._id].sort().join('') });
 				if (!dmRoom || !Subscriptions.findOne({ 'rid': dmRoom._id, 'u._id': user._id })) {
 					return false;
