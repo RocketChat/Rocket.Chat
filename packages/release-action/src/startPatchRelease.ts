@@ -31,8 +31,11 @@ export async function startPatchRelease({
 
 	const newBranch = `release-${newVersion}`;
 
-	// TODO check if branch exists
-	await createBranch(newBranch);
+	try {
+		await checkoutBranch(newBranch);
+	} catch (error) {
+		await createBranch(newBranch);
+	}
 
 	// by creating a changeset we make sure we'll always bump the version
 	core.info('create a changeset for main package');
