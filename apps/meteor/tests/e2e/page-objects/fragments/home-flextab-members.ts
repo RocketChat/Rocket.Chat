@@ -7,9 +7,30 @@ export class HomeFlextabMembers {
 		this.page = page;
 	}
 
+	memberOption(username: string) {
+		return this.page.getByRole('dialog').locator('li', { hasText: username });
+	}
+
+	async openMemberInfo(username: string) {
+		await this.memberOption(username).click();
+	}
+
+	getMenuItemAction(action: string) {
+		return this.page.locator(`role=menuitem[name="${action}"]`);
+	}
+
+	async openMoreActions() {
+		await this.page.locator('role=button[name="More"]').click();
+	}
+
+	async openMemberOptionMoreActions(username: string) {
+		await this.memberOption(username).hover();
+		await this.memberOption(username).locator('role=button[name="More"]').click();
+	}
+
 	async addUser(username: string) {
 		await this.page.locator('role=button[name="Add"]').click();
-		await this.page.locator('//label[contains(text(), "Choose users")]/..//input').type(username);
+		await this.page.locator('//label[contains(text(), "Choose users")]/..//input').fill(username);
 		await this.page.locator(`[data-qa-type="autocomplete-user-option"] >> text=${username}`).first().click();
 		await this.page.locator('role=button[name="Add users"]').click();
 	}
@@ -19,17 +40,32 @@ export class HomeFlextabMembers {
 	}
 
 	async muteUser(username: string) {
-		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
-		await this.page.locator('role=button[name="More"]').click();
-		await this.page.locator('role=menuitem[name="Mute user"]').click();
+		await this.openMemberOptionMoreActions(username);
+		await this.getMenuItemAction('Mute user').click();
 		await this.page.locator('.rcx-modal .rcx-button--danger').click();
 		await this.page.getByRole('dialog').getByRole('button').first().click();
 	}
 
+
+	async setUserAsModerator(username: string) {
+		await this.openMemberOptionMoreActions(username);
+		await this.getMenuItemAction('Set as moderator').click();
+	}
+
+	async setUserAsOwner(username: string) {
+		await this.openMemberOptionMoreActions(username);
+		await this.getMenuItemAction('Set as owner').click();
+	}
+
+	async showAllUsers() {
+		await this.page.locator('.rcx-select >> text=Online').first().click();
+		await this.page.locator('.rcx-option:has-text("All")').first().click();
+	}
+
 	private async ignoreUserAction(action: string, username: string) {
-		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
-		await this.page.locator('role=button[name="More"]').click();
-		await this.page.locator(`role=menuitem[name="${action}"]`).click();
+		await this.openMemberInfo(username);
+		await this.openMoreActions();
+		await this.getMenuItemAction(action).click();
 	}
 
 	async ignoreUser(username: string) {
@@ -38,21 +74,5 @@ export class HomeFlextabMembers {
 
 	async unignoreUser(username: string) {
 		await this.ignoreUserAction('Unignore', username);
-	}
-
-	async setUserAsModerator(username: string) {
-		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
-		await this.page.locator('role=button[name="More"]').click();
-		await this.page.locator('role=menuitem[name="Set as moderator"]').click();
-	}
-
-	async setUserAsOwner(username: string) {
-		await this.page.locator(`[data-qa="MemberItem-${username}"]`).click();
-		await this.page.locator('role=button[name="Set as owner"]').click();
-	}
-
-	async showAllUsers() {
-		await this.page.locator('.rcx-select >> text=Online').first().click();
-		await this.page.locator('.rcx-option:has-text("All")').first().click();
 	}
 }
