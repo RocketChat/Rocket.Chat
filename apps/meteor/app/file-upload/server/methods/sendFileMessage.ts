@@ -190,7 +190,7 @@ export const sendFileMessage = async (
 		files,
 		attachments,
 		...msgData,
-		customFields: (msgData?.customFields && JSON.parse(msgData?.customFields)) || undefined,
+		...msgData?.customFields && {  customFields: JSON.parse(msgData.customFields) },
 		msg: msgData?.msg ?? '',
 		groupable: msgData?.groupable ?? false,
 	});
