@@ -23,9 +23,9 @@ export const provideUsersSuggestedGroupKeys = async (
 		}),
 	);
 
-	const completedRoomIds = (
-		await Promise.all(
-			roomIds.map(async (roomId) => {
+	await Promise.all(
+		roomIds.map(async (roomId) => {
+			const userIds = (
 				await Promise.all(
 					usersSuggestedGroupKeys[roomId].map(async (user) => {
 						const sub = await Subscriptions.findOneByRoomIdAndUserId(roomId, user._id);
@@ -35,13 +35,13 @@ export const provideUsersSuggestedGroupKeys = async (
 						}
 
 						await Subscriptions.setGroupE2ESuggestedKey(sub._id, user.key);
+
+						return user._id;
 					}),
-				);
+				)
+			).filter(isTruthy);
 
-				return roomId;
-			}),
-		)
-	).filter(isTruthy);
-
-	await Rooms.removeE2EEQueueByRoomIds(completedRoomIds);
+			await Rooms.removeUsersFromE2EEQueueByRoomIds([roomId], userIds);
+		}),
+	);
 };

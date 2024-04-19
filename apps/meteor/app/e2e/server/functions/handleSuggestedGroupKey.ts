@@ -23,7 +23,7 @@ export async function handleSuggestedGroupKey(
 
 	if (handle === 'accept') {
 		await Subscriptions.setGroupE2EKey(sub._id, suggestedKey);
-		await Rooms.removeUserFromE2EEQueueByRoomIds([sub.rid], userId);
+		await Rooms.removeUsersFromE2EEQueueByRoomIds([sub.rid], [userId]);
 	}
 
 	if (handle === 'reject') {

@@ -3,6 +3,9 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { isTruthy } from '../../../../lib/isTruthy';
 
+const NUMBER_OF_ROOMS = 10;
+const QUEUE_SIZE = 50;
+
 export async function fetchUsersWaitingForGroupKey(userId: IUser['_id']): Promise<{
 	usersWaitingForE2EKeys: Record<IRoom['_id'], { _id: IUser['_id']; public_key: string }[]>;
 	hasMore: boolean;
@@ -13,8 +16,10 @@ export async function fetchUsersWaitingForGroupKey(userId: IUser['_id']): Promis
 
 	const count = await cursor.count();
 
-	const hasMore = count > 10;
-	const rooms = await cursor.limit(10).toArray();
+	const hasMore = count > NUMBER_OF_ROOMS;
+	const encryptedRoomIds = (await cursor.toArray()).map((room) => room._id);
+
+	const rooms = await Rooms.fetchRandomUsersFromE2EEQueue(encryptedRoomIds, NUMBER_OF_ROOMS, QUEUE_SIZE);
 
 	const usersWaitingForE2EKeys = Object.fromEntries(
 		(

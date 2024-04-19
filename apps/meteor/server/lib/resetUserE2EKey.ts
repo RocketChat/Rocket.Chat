@@ -54,14 +54,6 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 	}
 };
 
-const addUserToE2EKeysWaitingQueue = async (uid: string): Promise<void> => {
-	const subscribedRoomIds = (await Subscriptions.findByUserId(uid, { projection: { rid: 1 } }).toArray()).map((sub) => sub.rid);
-
-	await Rooms.removeUserFromE2EEQueueByRoomIds(subscribedRoomIds, uid);
-
-	await Rooms.addUserIdToE2EEQueueByRoomIds(subscribedRoomIds, uid);
-};
-
 export async function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean): Promise<boolean> {
 	if (notifyUser) {
 		await sendResetNotification(uid);
@@ -76,7 +68,8 @@ export async function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean
 	await Subscriptions.resetUserE2EKey(uid);
 
 	// Add user to room waiting queue
-	await addUserToE2EKeysWaitingQueue(uid);
+	const subscribedRoomIds = (await Subscriptions.findByUserId(uid, { projection: { rid: 1 } }).toArray()).map((sub) => sub.rid);
+	await Rooms.addUserIdToE2EEQueueByRoomIds(subscribedRoomIds, uid);
 
 	// Force the user to logout, so that the keys can be generated again
 	await Users.unsetLoginTokens(uid);

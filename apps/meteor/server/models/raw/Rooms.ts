@@ -1976,19 +1976,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			_id: {
 				$in: roomIds,
 			},
+			'usersWaitingForE2EKeys.userId': { $ne: uid },
 			encrypted: true,
 		};
 
 		const update: UpdateFilter<IRoom> = {
 			$push: {
 				usersWaitingForE2EKeys: {
-					$each: [
-						{
-							userId: uid,
-							ts: new Date(),
-						},
-					],
-					$slice: -50,
+					userId: uid,
+					ts: new Date(),
 				},
 			},
 		};
@@ -1996,18 +1992,20 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	removeUserFromE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult> {
+	removeUsersFromE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uids: IUser['_id'][]): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
 			'_id': {
 				$in: roomIds,
 			},
-			'usersWaitingForE2EKeys.userId': uid,
-			'encrypted': true,
+			'usersWaitingForE2EKeys.userId': {
+				$in: uids,
+			},
+			encrypted: true,
 		};
 
 		const update: UpdateFilter<IRoom> = {
 			$pull: {
-				usersWaitingForE2EKeys: { userId: uid },
+				usersWaitingForE2EKeys: { userId: { $in: uids }},
 			},
 		};
 
@@ -2043,4 +2041,25 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 		return this.updateMany(query, update);
 	}
+
+	async fetchRandomUsersFromE2EEQueue(roomIds: IRoom['_id'][], numberOfRooms: number, queueSize: number): Promise<IRoom[]> {
+		const aggregate = [
+			{
+				$match: {
+					_id: {
+						$in: roomIds,
+					},
+					usersWaitingForE2EKeys: {
+						$exists: true,
+					},
+					encrypted: true,
+				}
+			},
+			{ $sample: { size: queueSize }},
+			{ $limit: numberOfRooms },
+		];
+
+		return await this.col.aggregate<IRoom>(aggregate).toArray();
+	}
+
 }

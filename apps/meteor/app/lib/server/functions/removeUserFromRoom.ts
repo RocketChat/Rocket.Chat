@@ -66,7 +66,7 @@ export const removeUserFromRoom = async function (
 	}
 
 	if (room.encrypted && settings.get('E2E_Enable')) {
-		await Rooms.removeUserFromE2EEQueueByRoomIds([room._id], user._id);
+		await Rooms.removeUsersFromE2EEQueueByRoomIds([room._id], [user._id]);
 	}
 
 	// TODO: CACHE: maybe a queue?
