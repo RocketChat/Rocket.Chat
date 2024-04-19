@@ -51,7 +51,7 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 			},
 			ts: { $lte: until },
 		};
-		return this.deleteMany(query);
+		return this.col.deleteMany(query);
 	}
 
 	async removeByIdPinnedTimestampLimitAndUsers(
