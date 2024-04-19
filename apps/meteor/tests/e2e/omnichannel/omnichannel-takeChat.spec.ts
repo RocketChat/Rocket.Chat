@@ -43,6 +43,8 @@ test.describe('omnichannel-takeChat', () => {
 	});
 
 	test.beforeEach('start a new livechat chat', async ({ page, api }) => {
+		await agent.poHomeChannel.sidenav.switchStatus('online');
+
 		newVisitor = {
 			name: `${faker.person.firstName()} ${faker.string.uuid()}`,
 			email: faker.internet.email(),
@@ -53,28 +55,36 @@ test.describe('omnichannel-takeChat', () => {
 		await page.goto('/livechat');
 	});
 
-	test('When agent is online user should take the chat', async () => {
-		await agent.poHomeChannel.sidenav.switchStatus('online');
-
+	test('When agent is online should take the chat', async () => {
 		await sendLivechatMessage();
 
 		await agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name).click();
 
 		await expect(agent.poHomeChannel.content.btnTakeChat).toBeVisible();
-		await agent.poHomeChannel.content.btnTakeChat.click();
 
+		await agent.poHomeChannel.content.btnTakeChat.click();
 		await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
+
 		await expect(agent.poHomeChannel.content.btnTakeChat).not.toBeVisible();
 		await expect(agent.poHomeChannel.content.inputMessage).toBeVisible();
 
 		await poLiveChat.closeChat();
 	});
 
-	test('When agent is offline user should not take the chat', async () => {
+	test('When agent is offline should not take the chat', async () => {
 		await agent.poHomeChannel.sidenav.switchStatus('offline');
 
 		await sendLivechatMessage();
 
 		await expect(poLiveChat.alertMessage('Error starting a new conversation: Sorry, no online agents [no-agent-online]')).toBeVisible();
+	});
+
+	test('When agent set to offline after livechat user sent a message should not take the chat', async () => {
+		await sendLivechatMessage();
+
+		await agent.poHomeChannel.sidenav.switchStatus('offline');
+		await agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name).click();
+
+		await expect(agent.poHomeChannel.content.btnTakeChat).toBeDisabled();
 	});
 });
