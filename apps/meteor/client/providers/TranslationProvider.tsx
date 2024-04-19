@@ -23,7 +23,7 @@ import {
 	defaultTranslationNamespace,
 	extractTranslationNamespaces,
 } from '../../app/utils/lib/i18n';
-import { AppClientOrchestratorInstance } from '../../ee/client/apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../apps/orchestrator';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
 
 i18n.use(I18NextHttpBackend).use(initReactI18next).use(sprintf);

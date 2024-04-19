@@ -4,8 +4,8 @@ import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import PageSkeleton from '../../../components/PageSkeleton';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import EditRolePage from './EditRolePage';
 import { useRole } from './hooks/useRole';
 

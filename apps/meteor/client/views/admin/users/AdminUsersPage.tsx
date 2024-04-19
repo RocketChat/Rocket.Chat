@@ -3,8 +3,6 @@ import { usePermission, useRouteParameter, useTranslation, useRouter } from '@ro
 import type { ReactElement } from 'react';
 import React, { useRef } from 'react';
 
-import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
-import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import {
 	Contextualbar,
 	ContextualbarHeader,
@@ -19,7 +17,9 @@ import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
 import AdminUserUpgrade from './AdminUserUpgrade';
+import UserPageHeaderContentWithSeatsCap from './UserPageHeaderContentWithSeatsCap';
 import UsersTable from './UsersTable';
+import { useSeatsCap } from './useSeatsCap';
 
 const UsersPage = (): ReactElement => {
 	const t = useTranslation();

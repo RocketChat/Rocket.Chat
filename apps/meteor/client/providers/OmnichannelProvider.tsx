@@ -14,10 +14,10 @@ import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatI
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
 import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
-import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
+import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 import { useReactiveValue } from '../hooks/useReactiveValue';
 import { useShouldPreventAction } from '../hooks/useShouldPreventAction';
 

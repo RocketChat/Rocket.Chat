@@ -2,7 +2,7 @@ import type { App } from '@rocket.chat/core-typings';
 import { useEndpoint, useRouteParameter, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 import IframeModal from '../IframeModal';

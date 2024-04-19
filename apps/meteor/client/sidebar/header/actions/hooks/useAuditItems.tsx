@@ -1,7 +1,7 @@
 import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 
-import { useHasLicenseModule } from '../../../../../ee/client/hooks/useHasLicenseModule';
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
+import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 
 /**
  * @deprecated Feature preview

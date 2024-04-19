@@ -5,7 +5,7 @@ import { useThemeMode } from '@rocket.chat/ui-theming/src/hooks/useThemeMode';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { SidebarFooterWatermark } from '../../../ee/client/sidebar/footer/SidebarFooterWatermark';
+import { SidebarFooterWatermark } from './SidebarFooterWatermark';
 
 const SidebarFooterDefault = (): ReactElement => {
 	const [, , theme] = useThemeMode();

@@ -3,7 +3,7 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import type { ReactElement } from 'react';
 
-import { useHasLicenseModule } from '../../../../../ee/client/hooks/useHasLicenseModule';
+import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import type { ComposerMessageProps } from '../ComposerMessage';
 import ComposerMessage from '../ComposerMessage';
 import ComposerFederationDisabled from './ComposerFederationDisabled';

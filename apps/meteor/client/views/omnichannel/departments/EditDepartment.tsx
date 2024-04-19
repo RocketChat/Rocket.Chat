@@ -23,11 +23,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useRoomsList } from '../../../hooks/useRoomsList';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentForwarding, DepartmentBusinessHours } from '../additionalForms';

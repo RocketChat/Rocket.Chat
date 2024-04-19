@@ -2,9 +2,9 @@ import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import React from 'react';
 
-import { RoomActivityIcon } from '../../../ee/client/omnichannel/components/RoomActivityIcon';
-import { useOmnichannelPriorities } from '../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
-import { PriorityIcon } from '../../../ee/client/omnichannel/priorities/PriorityIcon';
+import { RoomActivityIcon } from '../../omnichannel/components/RoomActivityIcon';
+import { useOmnichannelPriorities } from '../../omnichannel/hooks/useOmnichannelPriorities';
+import { PriorityIcon } from '../../omnichannel/priorities/PriorityIcon';
 
 export const OmnichannelBadges = ({ room }: { room: ISubscription & IRoom }) => {
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();

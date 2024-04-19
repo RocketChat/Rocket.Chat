@@ -7,11 +7,11 @@ import React, { useMemo } from 'react';
 import type { ReactNode } from 'react';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
+import { CannedResponse } from '../../../../app/canned-responses/client/collections/CannedResponse';
 import { emoji } from '../../../../app/emoji/client';
 import { Subscriptions } from '../../../../app/models/client';
 import { usersFromRoomMessages } from '../../../../app/ui-message/client/popup/messagePopupConfig';
 import { slashCommands } from '../../../../app/utils/client';
-import { CannedResponse } from '../../../../ee/app/canned-responses/client/collections/CannedResponse';
 import ComposerBoxPopupCannedResponse from '../composer/ComposerBoxPopupCannedResponse';
 import type { ComposerBoxPopupEmojiProps } from '../composer/ComposerBoxPopupEmoji';
 import ComposerBoxPopupEmoji from '../composer/ComposerBoxPopupEmoji';

@@ -4,7 +4,7 @@ import { useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
 
-import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const PreferencesConversationTranscript = () => {
 	const t = useTranslation();

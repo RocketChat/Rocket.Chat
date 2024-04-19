@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { useEffect } from 'react';
 
-import { AppClientOrchestratorInstance } from '../../ee/client/apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../apps/orchestrator';
 import { AppsContext } from '../contexts/AppsContext';
 import { useIsEnterprise } from '../hooks/useIsEnterprise';
 import { useInvalidateLicense } from '../hooks/useLicense';

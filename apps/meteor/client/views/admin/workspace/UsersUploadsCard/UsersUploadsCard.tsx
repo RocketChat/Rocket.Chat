@@ -5,8 +5,8 @@ import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
-import { useHasLicenseModule } from '../../../../../ee/client/hooks/useHasLicenseModule';
 import { useFormatMemorySize } from '../../../../hooks/useFormatMemorySize';
+import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import WorkspaceCardSection from '../components/WorkspaceCardSection';
 import WorkspaceCardTextSeparator from '../components/WorkspaceCardTextSeparator';
 

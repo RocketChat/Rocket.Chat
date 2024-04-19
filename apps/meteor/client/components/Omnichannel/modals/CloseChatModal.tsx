@@ -18,7 +18,7 @@ import type { ReactElement } from 'react';
 import React, { useCallback, useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { dispatchToastMessage } from '../../../lib/toast';
 import GenericModal from '../../GenericModal';
 import Tags from '../Tags';

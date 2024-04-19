@@ -7,7 +7,6 @@ module.exports = {
 		'../client/**/*.stories.{js,tsx}',
 		'../app/**/*.stories.{js,tsx}',
 		'../ee/app/**/*.stories.{js,tsx}',
-		'../ee/client/**/*.stories.{js,tsx}',
 	],
 	addons: [
 		'@storybook/addon-essentials',

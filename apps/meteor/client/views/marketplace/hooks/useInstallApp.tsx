@@ -3,7 +3,7 @@ import { useRouter, useSetModal, useUpload, useEndpoint } from '@rocket.chat/ui-
 import { useMutation } from '@tanstack/react-query';
 import React, { useCallback, useState } from 'react';
 
-import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import { useAppsReload } from '../../../contexts/hooks/useAppsReload';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';

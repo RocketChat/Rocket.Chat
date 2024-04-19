@@ -7,12 +7,12 @@ import { useQuery } from '@tanstack/react-query';
 import React, { useCallback } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { UserStatus } from '../../../../../components/UserStatus';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';
+import ContactManagerInfo from '../../../../../omnichannel/ContactManagerInfo';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import CustomField from '../../../components/CustomField';
 import Field from '../../../components/Field';
