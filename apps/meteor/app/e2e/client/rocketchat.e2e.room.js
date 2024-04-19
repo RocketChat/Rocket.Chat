@@ -308,15 +308,17 @@ export class E2ERoom extends Emitter {
 		// Encrypt generated session key for every user in room and publish to subscription model.
 		try {
 			const { users } = await sdk.call('e2e.getUsersOfRoomWithoutKey', this.roomId);
-			users.forEach(async (user) => {
-				if (!user?.e2e?.public_key) {
-					return;
-				}
+			await Promise.all(
+				users.map(async (user) => {
+					if (!user?.e2e?.public_key) {
+						return;
+					}
 
-				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e.public_key);
-				// Key has been encrypted. Publish to that user's subscription model for this room.
-				await sdk.call('e2e.updateGroupKey', this.roomId, user._id, encryptedGroupKey);
-			});
+					const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e.public_key);
+					// Key has been encrypted. Publish to that user's subscription model for this room.
+					await sdk.call('e2e.updateGroupKey', this.roomId, user._id, encryptedGroupKey);
+				}),
+			);
 		} catch (error) {
 			return this.error('Error getting room users: ', error);
 		}
@@ -334,8 +336,8 @@ export class E2ERoom extends Emitter {
 		// Encrypt session key for this user with his/her public key
 		try {
 			const encryptedUserKey = await encryptRSA(userKey, toArrayBuffer(this.sessionKeyExportedString));
-			// return the encrypted key
-			return this.keyID + Base64.encode(new Uint8Array(encryptedUserKey));
+			const encryptedUserKeyToString = this.keyID + Base64.encode(new Uint8Array(encryptedUserKey));
+			return encryptedUserKeyToString;
 		} catch (error) {
 			return this.error('Error encrypting user key: ', error);
 		}
