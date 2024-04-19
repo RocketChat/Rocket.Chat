@@ -13,7 +13,11 @@ import sinon from 'sinon';
 import RoomsTable from '../../../../../../client/views/admin/rooms/RoomsTable';
 
 jest.mock('../../../../../../client/views/admin/rooms/RoomRow', () => {
-	return ({ someProp }: any) => <div data-id='RoomRow'>MockedRoomRow {someProp}</div>;
+	return ({ someProp }: any) => (
+		<tr data-id='RoomRow'>
+			<td>MockedRoomRow {someProp}</td>
+		</tr>
+	);
 });
 
 const createQueryClientWrapper = () => {

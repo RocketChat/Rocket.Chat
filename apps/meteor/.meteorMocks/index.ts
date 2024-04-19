@@ -9,6 +9,7 @@ const callMock = sinon.stub();
 const applyMock = sinon.stub();
 
 class MockLocalStorage {
+	store: {};
 	constructor() {
 		this.store = {};
 	}
@@ -52,6 +53,12 @@ module.exports = {
 	},
 	Mongo: {
 		Collection: class Collection {
+			name: any;
+			find: sinon.SinonStub<any[], any>;
+			findOne: sinon.SinonStub<any[], any>;
+			insert: sinon.SinonStub<any[], any>;
+			update: sinon.SinonStub<any[], any>;
+			remove: sinon.SinonStub<any[], any>;
 			constructor(name) {
 				this.name = name;
 				this.find = sinon.stub().returns({
@@ -85,6 +92,8 @@ module.exports = {
 		autorun: sinon.stub(),
 		nonreactive: sinon.stub(),
 		Dependency: class {
+			depend: sinon.SinonStub<any[], any>;
+			changed: sinon.SinonStub<any[], any>;
 			constructor() {
 				this.depend = sinon.stub();
 				this.changed = sinon.stub();
@@ -92,6 +101,8 @@ module.exports = {
 		},
 	},
 	ReactiveVar: class ReactiveVar {
+		value: any;
+		dep: any;
 		constructor(initialValue) {
 			this.value = initialValue;
 			this.dep = new (require('meteor/tracker').Tracker.Dependency)();
@@ -110,6 +121,8 @@ module.exports = {
 		}
 	},
 	ReactiveDict: class ReactiveDict {
+		dict: Map<any, any>;
+		deps: {};
 		constructor(initialValues) {
 			this.dict = new Map();
 			this.deps = {};
