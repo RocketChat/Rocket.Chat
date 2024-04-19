@@ -4,11 +4,11 @@ import type { AgendaCronJobs } from '@rocket.chat/cron';
 import { LivechatBusinessHours, LivechatDepartment, Users } from '@rocket.chat/models';
 import moment from 'moment';
 
-import { closeBusinessHour } from '../../../../ee/app/livechat-enterprise/server/business-hour/Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { businessHourLogger } from '../lib/logger';
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
+import { closeBusinessHour } from './closeBusinessHour';
 
 const CRON_EVERY_MIDNIGHT_EXPRESSION = '0 0 * * *';
 const CRON_DAYLIGHT_JOB_NAME = 'livechat-business-hour-daylight-saving-time-verifier';
