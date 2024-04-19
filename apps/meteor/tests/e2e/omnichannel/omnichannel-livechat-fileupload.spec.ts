@@ -115,7 +115,7 @@ test.describe('OC - Livechat - OC - File Upload - Disabled', () => {
 			await test.step('expect to upload a txt file', async () => {
 				await poLiveChat.dragAndDropTxtFile();
 
-				await expect(poLiveChat.alertMessage('file_upload_disabled')).toBeVisible();
+				await expect(poLiveChat.alertMessage('File upload is disabled')).toBeVisible();
 			});
 		});
 	});
