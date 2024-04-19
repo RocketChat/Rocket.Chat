@@ -473,10 +473,8 @@ class E2E extends Emitter {
 			const privKey = await decryptAES(vector, masterKey, cipherText);
 			const privateKey = toString(privKey) as string;
 
-			const { public_key } = this.getKeysFromLocalStorage();
-
-			if (public_key && privateKey) {
-				await this.loadKeys({ public_key, private_key: privateKey });
+			if (this.db_public_key && privateKey) {
+				await this.loadKeys({ public_key: this.db_public_key, private_key: privateKey });
 				this.setState(E2EEState.READY);
 			} else {
 				await this.createAndLoadKeys();
