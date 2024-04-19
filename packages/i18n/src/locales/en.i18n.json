@@ -6393,5 +6393,12 @@
   "Go_to_href": "Go to: {{href}}",
   "Anyone_can_send_new_messages": "Anyone can send new messages",
   "Select_messages_to_hide": "Select messages to hide",
-  "Name_cannot_have_special_characters": "Name cannot have spaces or special characters"
+  "Name_cannot_have_special_characters": "Name cannot have spaces or special characters",
+  "Resize": "Resize",
+  "Zoom_out": "Zoom out",
+  "Zoom_in": "Zoom in",
+  "Close_gallery": "Close gallery",
+  "Next_image": "Next Image",
+  "Previous_image": "Previous image",
+  "Image_gallery": "Image gallery"
 }
