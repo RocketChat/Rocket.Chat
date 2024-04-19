@@ -3,19 +3,22 @@ import mem from 'mem';
 
 const ajv = new Ajv();
 
-const customFieldsValidate = mem((customFieldsSetting: string) => {
-	const schema = JSON.parse(customFieldsSetting);
+const customFieldsValidate = mem(
+	(customFieldsSetting: string) => {
+		const schema = JSON.parse(customFieldsSetting);
 
-	if (schema.type && schema.type !== 'object') {
-		throw new Error('Invalid custom fields config');
-	}
+		if (schema.type && schema.type !== 'object') {
+			throw new Error('Invalid custom fields config');
+		}
 
-	return ajv.compile({
-		...schema,
-		type: 'object',
-		additionalProperties: false,
-	});
-});
+		return ajv.compile({
+			...schema,
+			type: 'object',
+			additionalProperties: false,
+		});
+	},
+	{ maxAge: 1000 * 60 },
+);
 
 export const validateCustomMessageFields = ({
 	customFields,
