@@ -15,7 +15,7 @@ export const useContinuousSoundNotification = () => {
 
 	const continuousCustomSoundId = `${newRoomNotification}-continuous`;
 
-	const volume = audioVolume ? Number((audioVolume / 100).toPrecision(2)) : 1;
+	const volume = audioVolume !== undefined ? Number((audioVolume / 100).toPrecision(2)) : 1;
 
 	useEffect(() => {
 		let audio: ICustomSound;
