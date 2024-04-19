@@ -25,6 +25,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"]').last();
 	}
 
+	nthMessage(index: number): Locator {
+		return this.page.locator('[data-qa-type="message"]').nth(index);
+	}
+
 	get lastUserMessageNotThread(): Locator {
 		return this.page.locator('div.messages-box [data-qa-type="message"]').last();
 	}
@@ -39,6 +43,10 @@ export class HomeContent {
 
 	get encryptedRoomHeaderIcon(): Locator {
 		return this.page.locator('.rcx-room-header button > i.rcx-icon--name-key');
+	}
+
+	get lastIgnoredUserMessage(): Locator {
+		return this.lastUserMessageBody.locator('role=button[name="This message was ignored"]');
 	}
 
 	get btnJoinRoom(): Locator {

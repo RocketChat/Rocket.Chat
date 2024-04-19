@@ -15,7 +15,6 @@ export async function syncWorkspace() {
 	try {
 		await announcementSync();
 		await syncCloudData();
-		await getCachedSupportedVersionsToken.reset();
 	} catch (err) {
 		switch (true) {
 			case err instanceof CloudWorkspaceRegistrationError:
@@ -34,7 +33,6 @@ export async function syncWorkspace() {
 				});
 				try {
 					await legacySyncWorkspace();
-					await getCachedSupportedVersionsToken.reset();
 				} catch (err) {
 					switch (true) {
 						case err instanceof CloudWorkspaceRegistrationError:
@@ -52,5 +50,7 @@ export async function syncWorkspace() {
 				}
 			}
 		}
+	} finally {
+		await getCachedSupportedVersionsToken.reset();
 	}
 }

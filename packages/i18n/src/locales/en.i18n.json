@@ -2171,7 +2171,7 @@
   "error-cannot-place-chat-on-hold": "You cannot place chat on-hold",
   "error-contact-sent-last-message-so-cannot-place-on-hold": "You cannot place chat on-hold, when the Contact has sent the last message",
   "error-unserved-rooms-cannot-be-placed-onhold": "Room cannot be placed on hold before being served",
-	"error-timeout": "The request has timed out",
+  "error-timeout": "The request has timed out",
   "Workspace_exceeded_MAC_limit_disclaimer": "The workspace has exceeded the monthly limit of active contacts. Talk to your workspace admin to address this issue.",
   "You_do_not_have_permission_to_do_this": "You do not have permission to do this",
   "You_do_not_have_permission_to_execute_this_command": "You do not have enough permissions to execute command: `/{{command}}`",
