@@ -12,15 +12,11 @@ test.describe.serial('admin-rooms', () => {
 	let adminPage: Page;
 	let channel: string;
 	let privateRoom: string;
-
-	test.beforeEach(async ({ page }) => {
-		await page.goto('/admin/rooms');
-	});
-
 	let admin: Admin;
 
 	test.beforeEach(async ({ page }) => {
 		admin = new Admin(page);
+		await page.goto('/admin/rooms');
 	});
 
 	test.beforeAll(async ({ browser, api }) => {
