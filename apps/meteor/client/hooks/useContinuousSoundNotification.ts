@@ -49,5 +49,5 @@ export const useContinuousSoundNotification = () => {
 			volume,
 			loop: true,
 		});
-	}, [continuousCustomSoundId, newRoomNotification, playNewRoomSoundContinuously, userSubscriptions, volume]);
+	}, [continuousCustomSoundId, playNewRoomSoundContinuously, userSubscriptions, volume]);
 };
