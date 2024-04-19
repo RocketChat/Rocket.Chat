@@ -110,5 +110,6 @@ test.describe.serial('admin-rooms', () => {
 		expect(isChecked).toBe(true);
 
 		await expect(admin.inputSearchRooms).toHaveValue(privateRoom);
+		await expect(page.locator(`[qa-room-name="${privateRoom}"]`)).toBeVisible();
 	});
 });
