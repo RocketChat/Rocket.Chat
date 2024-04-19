@@ -1103,7 +1103,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 
-		describe.only('customFields', () => {
+		describe('customFields', () => {
 			async function testMessageSending({ customFields, testCb, statusCode }) {
 				await request
 					.post(api('chat.sendMessage'))
