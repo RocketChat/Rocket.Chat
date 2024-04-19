@@ -29,6 +29,8 @@ async function getCustomOAuthServices(): Promise<
 						enabled: Boolean(value),
 						mergeRoles: settings.get<boolean>(`Accounts_OAuth_Custom-${name}-merge_roles`),
 						users: await Users.countActiveUsersByService(name, { readPreference }),
+						mapChannels: settings.get<boolean>(`Accounts_OAuth_Custom-${name}-map_channels`),
+						rolesToSync: !!settings.get<string>(`Accounts_OAuth_Custom-${name}-roles_to_sync`),
 					},
 				];
 			}),
@@ -71,6 +73,10 @@ export async function getServicesStatistics(): Promise<Record<string, unknown>> 
 			generateUsername: settings.get('SAML_Custom_Default_generate_username'),
 			updateSubscriptionsOnLogin: settings.get('SAML_Custom_Default_channels_update'),
 			syncRoles: settings.get('SAML_Custom_Default_role_attribute_sync'),
+			userDataCustomFieldMap: !(
+				settings.getSetting('SAML_Custom_Default_user_data_custom_fieldmap')?.packageValue ===
+				settings.getSetting('SAML_Custom_Default_user_data_custom_fieldmap')?.value
+			),
 		},
 		cas: {
 			enabled: settings.get('CAS_enabled'),
