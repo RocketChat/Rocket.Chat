@@ -1,8 +1,8 @@
 import { Media } from '@rocket.chat/core-services';
-import type { IRoom } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Users } from '@rocket.chat/models';
+import type { IRoom, IUpload } from '@rocket.chat/core-typings';
+import { Messages, Rooms, Users, Uploads } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
-import { isGETRoomsNameExists } from '@rocket.chat/rest-typings';
+import { isGETRoomsNameExists, isRoomsImagesProps } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
@@ -322,7 +322,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			// eslint-disable-next-line @typescript-eslint/naming-convention
-			const { prid, pmid, reply, t_name, users, encrypted } = this.bodyParams;
+			const { prid, pmid, reply, t_name, users, encrypted, topic } = this.bodyParams;
 			if (!prid) {
 				return API.v1.failure('Body parameter "prid" is required.');
 			}
@@ -344,6 +344,7 @@ API.v1.addRoute(
 				reply,
 				users: users?.filter(isTruthy) || [],
 				encrypted,
+				topic,
 			});
 
 			return API.v1.success({ discussion });
@@ -378,6 +379,48 @@ API.v1.addRoute(
 			return API.v1.success({
 				discussions,
 				count: discussions.length,
+				offset,
+				total,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.images',
+	{ authRequired: true, validateParams: isRoomsImagesProps },
+	{
+		async get() {
+			const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>>(this.queryParams.roomId, {
+				projection: { t: 1, teamId: 1, prid: 1 },
+			});
+
+			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+				return API.v1.unauthorized();
+			}
+
+			let initialImage: IUpload | null = null;
+			if (this.queryParams.startingFromId) {
+				initialImage = await Uploads.findOneById(this.queryParams.startingFromId);
+			}
+
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			const { cursor, totalCount } = Uploads.findImagesByRoomId(room._id, initialImage?.uploadedAt, {
+				skip: offset,
+				limit: count,
+			});
+
+			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			// If the initial image was not returned in the query, insert it as the first element of the list
+			if (initialImage && !files.find(({ _id }) => _id === (initialImage as IUpload)._id)) {
+				files.splice(0, 0, initialImage);
+			}
+
+			return API.v1.success({
+				files,
+				count,
 				offset,
 				total,
 			});
