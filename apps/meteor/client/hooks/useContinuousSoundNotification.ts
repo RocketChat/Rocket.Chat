@@ -8,7 +8,7 @@ const query = { t: 'l', ls: { $exists: false }, open: true };
 export const useContinuousSoundNotification = () => {
 	const userSubscriptions = useUserSubscriptions(query);
 
-	const setting = useSetting('Livechat_continuous_sound_notification_new_livechat_room');
+	const playNewRoomSoundContinuously = useSetting('Livechat_continuous_sound_notification_new_livechat_room');
 
 	const newRoomNotification = useUserPreference<string>('newRoomNotification') || '';
 	const audioVolume = useUserPreference<number>('notificationsSoundVolume');
@@ -19,11 +19,10 @@ export const useContinuousSoundNotification = () => {
 
 	useEffect(() => {
 		let audio: ICustomSound;
-		if (setting && newRoomNotification) {
-			audio = CustomSounds.getSound(newRoomNotification);
+		if (playNewRoomSoundContinuously && newRoomNotification) {
+			audio = { ...CustomSounds.getSound(newRoomNotification), _id: continuousCustomSoundId };
 
 			if (audio) {
-				audio._id = continuousCustomSoundId;
 				CustomSounds.add(audio);
 			}
 		}
@@ -33,10 +32,10 @@ export const useContinuousSoundNotification = () => {
 				CustomSounds.remove(audio);
 			}
 		};
-	}, [continuousCustomSoundId, newRoomNotification, setting]);
+	}, [continuousCustomSoundId, newRoomNotification, playNewRoomSoundContinuously]);
 
 	useEffect(() => {
-		if (!setting) {
+		if (!playNewRoomSoundContinuously) {
 			CustomSounds.pause(continuousCustomSoundId);
 			return;
 		}
@@ -50,5 +49,5 @@ export const useContinuousSoundNotification = () => {
 			volume,
 			loop: true,
 		});
-	}, [continuousCustomSoundId, newRoomNotification, setting, userSubscriptions, volume]);
+	}, [continuousCustomSoundId, newRoomNotification, playNewRoomSoundContinuously, userSubscriptions, volume]);
 };
