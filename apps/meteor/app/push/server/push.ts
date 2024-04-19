@@ -15,7 +15,7 @@ import { logger } from './logger';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 
-type FCMCredentials = {
+export type FCMCredentials = {
 	type: string;
 	project_id: string;
 	private_key_id: string;
@@ -153,27 +153,30 @@ class PushClass {
 			// Send to GCM
 			// We do support multiple here - so we should construct an array
 			// and send it bulk - Investigate limit count of id's
-			if (this.options.gcm?.apiKey) {
-				// TODO: Remove this after the legacy provider is removed
-				const hasLegacyProvider = settings.get<boolean>('Push_UseLegacy');
-				if (!hasLegacyProvider) {
-					// override this.options.gcm.apiKey with the oauth2 token
-					const sendGCMOptions = {
-						...this.options,
-						gcm: {
-							...this.options.gcm,
-							apiKey: await this.getFcmAuthorizationToken(),
-						},
-					};
+			// TODO: Remove this after the legacy provider is removed
+			const useLegacyProvider = settings.get<boolean>('Push_UseLegacy');
 
-					sendFCM({
-						userTokens: app.token.gcm,
-						notification,
-						_replaceToken: this.replaceToken,
-						_removeToken: this.removeToken,
-						options: sendGCMOptions,
-					});
-				} else {
+			if (!useLegacyProvider) {
+				// override this.options.gcm.apiKey with the oauth2 token
+				const { token, projectNumber } = await this.getFcmAuthorizationToken();
+				const sendGCMOptions = {
+					...this.options,
+					gcm: {
+						...this.options.gcm,
+						apiKey: token,
+						projectNumber,
+					},
+				};
+
+				sendFCM({
+					userTokens: app.token.gcm,
+					notification,
+					_replaceToken: this.replaceToken,
+					_removeToken: this.removeToken,
+					options: sendGCMOptions as RequiredField<PushOptions, 'gcm'>
+				});
+			} else {
+				if (this.options.gcm?.apiKey) {
 					sendGCM({
 						userTokens: app.token.gcm,
 						notification,
@@ -188,26 +191,32 @@ class PushClass {
 		}
 	}
 
-	private async getFcmAuthorizationToken(): Promise<string> {
+	private async getFcmAuthorizationToken(): Promise<{ token: string; projectNumber: string }> {
 		const credentialsString = settings.get('Push_google_api_credentials');
 		if (!credentialsString) {
 			throw new Error('Push_google_api_credentials is not set');
 		}
 
 		const credentials = JSON.parse(credentialsString as string) as FCMCredentials;
-
 		const client = new JWT({
 			email: credentials.client_email,
 			key: credentials.private_key,
-			scopes: ['https://www.googleapis.com/auth/firebase.messaging'],
+			keyId: credentials.private_key_id,
+			scopes: 'https://www.googleapis.com/auth/firebase.messaging',
 		});
 
-		const url = `https://dns.googleapis.com/dns/v1/projects/${credentials.project_id}`;
+		try {
+			await client.authorize();
 
-		// aquire token
-		await client.request({ url });
+			return {
+				token: client.credentials.access_token as string,
+				projectNumber: credentials.project_id,
+			};
 
-		return client.credentials.access_token as string;
+		} catch (error) {
+			logger.error('Error getting FCM token', error);
+			throw new Error('Error getting FCM token');
+		}
 	}
 
 	private async sendGatewayPush(

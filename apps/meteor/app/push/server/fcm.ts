@@ -1,10 +1,10 @@
-import type { IAppsTokens } from '@rocket.chat/core-typings';
-
+import fetch from 'node-fetch';
+import EJSON from 'ejson';
+import type { RequestInit, Response } from 'node-fetch';
 import type { PendingPushNotification } from './definition';
+import { settings } from '../../settings/server';
 import { logger } from './logger';
-import type { NativeNotificationParameters } from './push';
-
-const FCM_API_URL = 'https://fcm.googleapis.com/fcm/send';
+import type { FCMCredentials, NativeNotificationParameters } from './push';
 
 type FCMDataField = Record<string, any>;
 
@@ -17,6 +17,8 @@ type FCMNotificationField = {
 type FCMMessage = {
 	notification?: FCMNotificationField;
 	data?: FCMDataField;
+	token?: string;
+	to?: string;
 	android?: {
 		collapseKey?: string;
 		priority?: 'HIGH' | 'NORMAL';
@@ -43,10 +45,6 @@ type FCMMessage = {
 	};
 };
 
-export type FCMMessageWithToken = FCMMessage & { token: string };
-export type FCMMessageWithTopic = FCMMessage & { topic: string };
-export type FCMMessageWithCondition = FCMMessage & { condition: string };
-
 function fetchWithRetry(url: string, options: RequestInit, retries = 0): Promise<Response> {
 	const MAX_RETRIES = 5;
 
@@ -60,19 +58,7 @@ function fetchWithRetry(url: string, options: RequestInit, retries = 0): Promise
 	}
 }
 
-function onNotificationSentSuccess(
-	response: Response,
-	userTokens: string[],
-	notification: PendingPushNotification,
-	_replaceToken: (currentToken: IAppsTokens['token'], newToken: IAppsTokens['token']) => void,
-	_removeToken: (token: IAppsTokens['token']) => void,
-): void {
-	response;
-	userTokens;
-	notification;
-}
-
-function getFCMMessagesFromPushData(userTokens: string[], notification: PendingPushNotification): FCMMessageWithToken[] {
+function getFCMMessagesFromPushData(userTokens: string[], notification: PendingPushNotification): { message: FCMMessage }[] {
 	// first we will get the `data` field from the notification
 	const data: FCMDataField = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
 
@@ -83,20 +69,20 @@ function getFCMMessagesFromPushData(userTokens: string[], notification: PendingP
 
 	// Set extra details
 	if (notification.badge != null) {
-		data.msgcnt = notification.badge;
+		data.msgcnt = notification.badge.toString();
 	}
 	if (notification.sound != null) {
 		data.soundname = notification.sound;
 	}
 	if (notification.notId != null) {
-		data.notId = notification.notId;
+		data.notId = notification.notId.toString();
 	}
 	if (notification.gcm?.style != null) {
 		data.style = notification.gcm?.style;
 	}
 
 	if (notification.contentAvailable != null) {
-		data['content-available'] = notification.contentAvailable;
+		data['content-available'] = notification.contentAvailable.toString();
 	}
 
 	// then we will create the notification field
@@ -115,10 +101,15 @@ function getFCMMessagesFromPushData(userTokens: string[], notification: PendingP
 	};
 
 	// then we will create the message for each token
-	return userTokens.map((token) => ({ ...message, token }));
+	return userTokens.map((token) => ({ message: { ...message, token, } }));
 }
 
 export const sendFCM = function ({ userTokens, notification, _replaceToken, _removeToken, options }: NativeNotificationParameters): void {
+	// We don't use these parameters, but we need to keep them to keep the function signature
+	// TODO: Remove them when we remove the old sendGCM function
+	_replaceToken;
+	_removeToken;
+
 	const tokens = typeof userTokens === 'string' ? [userTokens] : userTokens;
 	if (!tokens.length) {
 		logger.debug('sendFCM no push tokens found');
@@ -130,19 +121,24 @@ export const sendFCM = function ({ userTokens, notification, _replaceToken, _rem
 	const messages = getFCMMessagesFromPushData(tokens, notification);
 	const headers = {
 		'Content-Type': 'application/json',
-		'Authorization': `Bearer: ${options.gcm.apiKey}`,
-	};
+		'Authorization': `Bearer ${options.gcm.apiKey}`,
+		access_token_auth: true,
+	} as Record<string, any>;
+
+	const credentialsString = settings.get('Push_google_api_credentials');
+	if (!credentialsString) {
+		throw new Error('Push_google_api_credentials is not set');
+	}
+
+	const credentials = JSON.parse(credentialsString as string) as FCMCredentials;
+	
+	const url = `https://fcm.googleapis.com/v1/projects/${credentials.project_id}/messages:send`;
 
 	for (const message of messages) {
-		const data = {
-			validate_only: false,
-			message,
-		};
-
-		const response = fetchWithRetry(FCM_API_URL, { method: 'POST', headers, body: JSON.stringify(data) });
+		logger.debug('sendFCM message', message);
+		const response = fetchWithRetry(url, { method: 'POST', headers, body: JSON.stringify(message) });
 
 		response
-			.then((res) => onNotificationSentSuccess(res, tokens, notification, _replaceToken, _removeToken))
 			.catch((err) => {
 				logger.error('sendFCM error', err);
 			});
