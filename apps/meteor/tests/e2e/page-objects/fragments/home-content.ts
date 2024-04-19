@@ -90,10 +90,10 @@ export class HomeContent {
 		await this.page.locator('[data-qa-type="message"]').last().hover();
 		await this.page.locator('role=button[name="Forward message"]').click();
 
-		await this.page.getByRole('textbox', { name: 'Person or Channel' }).click()
+		await this.page.getByRole('textbox', { name: 'Person or Channel' }).click();
 		await this.page.keyboard.type(chatName);
-		await this.page.locator('#position-container').getByText(chatName).waitFor()
-		await this.page.locator('#position-container').getByText(chatName).click()
+		await this.page.locator('#position-container').getByText(chatName).waitFor();
+		await this.page.locator('#position-container').getByText(chatName).click();
 		await this.page.locator('role=button[name="Forward"]').click();
 	}
 
@@ -213,6 +213,18 @@ export class HomeContent {
 
 	get btnNewCannedResponse(): Locator {
 		return this.page.locator('.rcx-vertical-bar button:has-text("Create")');
+	}
+
+	get imageGallery(): Locator {
+		return this.page.getByRole('dialog', { name: 'Image gallery' });
+	}
+
+	get imageGalleryImage(): Locator {
+		return this.imageGallery.locator('.swiper-zoom-container img');
+	}
+
+	async getGalleryButtonByName(name: string) {
+		return this.imageGallery.locator(`button[name="${name}"]`);
 	}
 
 	async pickEmoji(emoji: string, section = 'Smileys & People') {
