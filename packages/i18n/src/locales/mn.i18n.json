@@ -2097,7 +2097,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "Энэ нь анхдагч суваг бөгөөд үүнийг хувийн бүлэгт өөрчилснөөр энэ нь анхдагч суваг байхаа больсон. Та үргэлжлүүлэхийг хүсч байна уу?",
   "Room_description_changed_successfully": "Өрөөний тодорхойлолт амжилттай болсон",
   "Room_has_been_archived": "Өрөө архивлагдсан байна",
-  "Room_has_been_deleted": "Өрөө устгагдсан байна",
   "Room_has_been_unarchived": "Өрөө нь албан ёсоор бүртгэгдээгүй байна",
   "Room_Info": "Өрөөний мэдээлэл",
   "room_is_blocked": "Энэ өрөө хаагдсан",

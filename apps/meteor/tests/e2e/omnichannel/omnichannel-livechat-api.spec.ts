@@ -70,7 +70,6 @@ test.describe('OC - Livechat API', () => {
 			agent = await createAgent(api, 'user1');
 
 			page = await browser.newPage();
-			await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
 
 			poLiveChat = new OmnichannelLiveChatEmbedded(page);
 
@@ -80,8 +79,7 @@ test.describe('OC - Livechat API', () => {
 			await page.goto('/packages/rocketchat_livechat/assets/demo.html');
 		});
 
-		test.afterAll(async ({ api }) => {
-			await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
+		test.afterAll(async () => {
 			await agent.delete();
 			await poAuxContext.page.close();
 			await page.close();
@@ -231,8 +229,6 @@ test.describe('OC - Livechat API', () => {
 
 			await addAgentToDepartment(api, { department: departmentA, agentId: agent.data._id });
 			await addAgentToDepartment(api, { department: departmentB, agentId: agent2.data._id });
-
-			await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
 			await expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
 		});
 
@@ -267,7 +263,6 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
 			await agent.delete();
 			await agent2.delete();
 
@@ -435,7 +430,8 @@ test.describe('OC - Livechat API', () => {
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
 
 				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor_1')).toBeVisible();
-
+				// wait for load messages to happen
+				await page.waitForResponse(response => response.url().includes(`token=${registerGuestVisitor1.token}`));
 			});
 
 			await test.step('Expect registerGuest to create guest 2', async () => {
@@ -444,7 +440,10 @@ test.describe('OC - Livechat API', () => {
 					registerGuestVisitor2,
 				);
 
-				await poLiveChat.page.frameLocator('#rocketchat-iframe').getByText('this_a_test_message_from_visitor').waitFor({ state: 'hidden' });
+				// wait for load messages to happen
+				await page.waitForResponse(response => response.url().includes(`token=${registerGuestVisitor2.token}`));
+
+				await poLiveChat.page.frameLocator('#rocketchat-iframe').getByText('this_a_test_message_from_visitor_1').waitFor({ state: 'hidden' });
 
 				await expect(poLiveChat.page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
 
@@ -453,7 +452,6 @@ test.describe('OC - Livechat API', () => {
 
 				await poLiveChat.txtChatMessage('this_a_test_message_from_visitor_2').waitFor({ state: 'visible' });
 				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor_2')).toBeVisible();
-
 			});
 		});
 
@@ -465,8 +463,6 @@ test.describe('OC - Livechat API', () => {
 			};
 
 			await test.step('Expect registerGuest work with the same token, multiple times', async () => {
-				test.fail();
-
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
 				await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
 
@@ -487,7 +483,7 @@ test.describe('OC - Livechat API', () => {
 					registerGuestVisitor,
 				);
 
-				await page.waitForTimeout(500);
+				await page.waitForResponse('**/api/v1/livechat/visitor');
 
 				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
 
@@ -496,7 +492,7 @@ test.describe('OC - Livechat API', () => {
 					registerGuestVisitor,
 				);
 
-				await page.waitForTimeout(500);
+				await page.waitForResponse('**/api/v1/livechat/visitor');
 
 				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
 			});
@@ -623,7 +619,6 @@ test.describe('OC - Livechat API', () => {
 
 		test.beforeAll(async ({ api }) => {
 			agent = await createAgent(api, 'user1');
-			await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
 			await expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
 		});
 
@@ -650,8 +645,7 @@ test.describe('OC - Livechat API', () => {
 			await page.close();
 		});
 
-		test.afterAll(async ({ api }) => {
-			await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
+		test.afterAll(async () => {
 			await agent.delete();
 		});
 

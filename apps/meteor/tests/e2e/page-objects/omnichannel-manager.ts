@@ -12,7 +12,7 @@ export class OmnichannelManager {
 		this.sidenav = new OmnichannelSidenav(page);
 	}
 
-	get inputSearch() {
+	private get inputSearch() {
 		return this.page.locator('[placeholder="Search"]');
 	}
 
@@ -30,16 +30,17 @@ export class OmnichannelManager {
 		return this.page.locator('input').first();
 	}
 
+	async selectUsername(username: string) {
+		await this.inputUsername.fill(username);
+		await this.page.locator(`role=option[name="${username}"]`).click();
+	}
+
 	get btnAdd(): Locator {
 		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add manager"');
 	}
 
-	firstRowInTable(userId: string) {
-		return this.page.locator(`[data-qa-id="GenericTableManagerInfoBody"] [qa-user-id="${userId}"]`);
-	}
-
-	get btnDeleteFirstRowInTable() {
-		return this.page.locator('button[title="Remove"]');
+	findRowByName(name: string) {
+		return this.page.locator('role=table[name="Managers"] >> role=row', { has: this.page.locator(`role=cell[name="${name}"]`) });
 	}
 
 	btnDeleteSelectedAgent(text: string) {

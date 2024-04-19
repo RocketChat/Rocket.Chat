@@ -4,6 +4,7 @@ import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { Admin } from './page-objects';
 import { createTargetChannel } from './utils';
+import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -123,6 +124,21 @@ test.describe.parallel('administration', () => {
 				await poAdmin.getRoomRow(targetChannel).click();
 				await expect(poAdmin.favoriteInput).toBeChecked();
 			});
+
+			test('should see favorite switch disabled when default is not true', async () => {
+				await poAdmin.inputSearchRooms.type(targetChannel);
+				await poAdmin.getRoomRow(targetChannel).click();
+				await poAdmin.defaultLabel.click();
+
+				await expect(poAdmin.favoriteInput).toBeDisabled();
+			});
+
+			test('should see favorite switch enabled when default is true', async () => {
+				await poAdmin.inputSearchRooms.type(targetChannel);
+				await poAdmin.getRoomRow(targetChannel).click();
+
+				await expect(poAdmin.favoriteInput).toBeEnabled();
+			});
 		});
 	});
 
@@ -153,6 +169,10 @@ test.describe.parallel('administration', () => {
 		test.describe('General', () => {
 			test.beforeEach(async ({ page }) => {
 				await page.goto('/admin/settings/General');
+			});
+
+			test.afterAll(async ({ api }) => {
+				await setSettingValueById(api, 'Language', 'en')
 			});
 
 			test('expect be able to reset a setting after a change', async () => {
