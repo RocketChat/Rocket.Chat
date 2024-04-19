@@ -204,13 +204,12 @@ class PushClass {
 
 			if (!useLegacyProvider) {
 				// override this.options.gcm.apiKey with the oauth2 token
-				const { token, projectNumber } = await this.getFcmAuthorizationToken();
+				const token = await this.getFcmAuthorizationToken();
 				const sendGCMOptions = {
 					...this.options,
 					gcm: {
 						...this.options.gcm,
 						apiKey: token,
-						projectNumber,
 					},
 				};
 
@@ -235,7 +234,7 @@ class PushClass {
 		}
 	}
 
-	private async getFcmAuthorizationToken(): Promise<{ token: string; projectNumber: string }> {
+	private async getFcmAuthorizationToken(): Promise<string> {
 		const credentialsString = settings.get<string>('Push_google_api_credentials');
 		if (!credentialsString) {
 			throw new Error('Push_google_api_credentials is not set');
@@ -256,10 +255,7 @@ class PushClass {
 		try {
 			await client.authorize();
 
-			return {
-				token: client.credentials.access_token as string,
-				projectNumber: credentials.project_id,
-			};
+			return client.credentials.access_token as string;
 		} catch (error) {
 			logger.error('Error getting FCM token', error);
 			throw new Error('Error getting FCM token');
