@@ -2,6 +2,7 @@ import type { IAppsTokens, RequiredField, Optional, IPushNotificationConfig } fr
 import { AppsTokens } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { pick } from '@rocket.chat/tools';
+import Ajv from 'ajv';
 import { JWT } from 'google-auth-library';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -14,6 +15,10 @@ import { sendGCM } from './gcm';
 import { logger } from './logger';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
+
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
 export type FCMCredentials = {
 	type: string;
@@ -28,6 +33,47 @@ export type FCMCredentials = {
 	client_x509_cert_url: string;
 	universe_domain: string;
 };
+
+export const FCMCredentialsValidationSchema = {
+	type: 'object',
+	properties: {
+		type: {
+			type: 'string',
+		},
+		project_id: {
+			type: 'string',
+		},
+		private_key_id: {
+			type: 'string',
+		},
+		private_key: {
+			type: 'string',
+		},
+		client_email: {
+			type: 'string',
+		},
+		client_id: {
+			type: 'string',
+		},
+		auth_uri: {
+			type: 'string',
+		},
+		token_uri: {
+			type: 'string',
+		},
+		auth_provider_x509_cert_url: {
+			type: 'string',
+		},
+		client_x509_cert_url: {
+			type: 'string',
+		},
+		universe_domain: {
+			type: 'string',
+		},
+	},
+};
+
+export const isFCMCredentials = ajv.compile<FCMCredentials>(FCMCredentialsValidationSchema);
 
 // This type must match the type defined in the push gateway
 type GatewayNotification = {
@@ -190,12 +236,16 @@ class PushClass {
 	}
 
 	private async getFcmAuthorizationToken(): Promise<{ token: string; projectNumber: string }> {
-		const credentialsString = settings.get('Push_google_api_credentials');
+		const credentialsString = settings.get<string>('Push_google_api_credentials');
 		if (!credentialsString) {
 			throw new Error('Push_google_api_credentials is not set');
 		}
 
-		const credentials = JSON.parse(credentialsString as string) as FCMCredentials;
+		const credentials = JSON.parse(credentialsString);
+		if (!isFCMCredentials(credentials)) {
+			throw new Error('Push_google_api_credentials is not in the correct format');
+		}
+
 		const client = new JWT({
 			email: credentials.client_email,
 			key: credentials.private_key,

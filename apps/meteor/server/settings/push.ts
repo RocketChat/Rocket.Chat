@@ -110,21 +110,36 @@ export const createPushSettings = () =>
 			});
 			await this.add('Push_gcm_api_key', '', {
 				type: 'string',
-				enableQuery: [],
+				enableQuery: [
+					{
+						_id: 'Push_UseLegacy',
+						value: true,
+					},
+				],
 				secret: true,
 			});
 
 			await this.add('Push_google_api_credentials', '', {
 				type: 'code',
 				multiline: true,
-				enableQuery: [],
+				enableQuery: [
+					{
+						_id: 'Push_UseLegacy',
+						value: false,
+					},
+				],
 				secret: true,
 			});
 
 			return this.add('Push_gcm_project_number', '', {
 				type: 'string',
 				public: true,
-				enableQuery: [],
+				enableQuery: [
+					{
+						_id: 'Push_UseLegacy',
+						value: true,
+					},
+				],
 				secret: true,
 			});
 		});

@@ -46,8 +46,18 @@ type FCMMessage = {
 	};
 };
 
+// https://firebase.google.com/docs/reference/fcm/rest/v1/ErrorCode
+type FCMError = {
+	error: {
+		code: number;
+		message: string;
+		status: string;
+	};
+};
+
 function fetchWithRetry(url: string, options: RequestInit, retries = 0): Promise<Response> {
 	const MAX_RETRIES = 5;
+	const ERRORS_TO_RETRY = [429, 500, 502, 503, 504];
 
 	try {
 		return fetch(url, options);
@@ -55,6 +65,13 @@ function fetchWithRetry(url: string, options: RequestInit, retries = 0): Promise
 		if (retries >= MAX_RETRIES) {
 			throw error;
 		}
+
+		const errorData = error as FCMError;
+
+		if (!errorData?.error?.code || !ERRORS_TO_RETRY.includes(errorData.error.code)) {
+			throw error;
+		}
+
 		return fetchWithRetry(url, options, retries + 1);
 	}
 }
@@ -126,12 +143,8 @@ export const sendFCM = function ({ userTokens, notification, _replaceToken, _rem
 		'access_token_auth': true,
 	} as Record<string, any>;
 
-	const credentialsString = settings.get('Push_google_api_credentials');
-	if (!credentialsString) {
-		throw new Error('Push_google_api_credentials is not set');
-	}
-
-	const credentials = JSON.parse(credentialsString as string) as FCMCredentials;
+	const credentialsString = settings.get<string>('Push_google_api_credentials');
+	const credentials = JSON.parse(credentialsString) as FCMCredentials;
 
 	const url = `https://fcm.googleapis.com/v1/projects/${credentials.project_id}/messages:send`;
 
