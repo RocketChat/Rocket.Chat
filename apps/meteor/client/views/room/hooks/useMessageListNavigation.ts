@@ -19,7 +19,6 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 	const messageListRef = useCallback(
 		(node: HTMLElement | null) => {
 			let lastMessageFocused: HTMLElement | null = null;
-			let triggeredByKeyboard = false;
 			let initialFocus = true;
 
 			if (!node) {
@@ -68,14 +67,15 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 
 					lastMessageFocused = document.activeElement as HTMLElement;
 				}
-
-				triggeredByKeyboard = true;
 			});
 
 			node.addEventListener(
 				'blur',
 				(e) => {
-					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
+					if (
+						!(e.relatedTarget as HTMLElement)?.classList.contains('focus-visible') ||
+						!(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)
+					) {
 						return;
 					}
 
@@ -89,20 +89,20 @@ export const useMessageListNavigation = (): { messageListRef: RefCallback<HTMLEl
 			node.addEventListener(
 				'focus',
 				(e) => {
+					const triggeredByKeyboard = (e.target as HTMLElement)?.classList.contains('focus-visible');
+					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
+						return;
+					}
+
 					if (initialFocus) {
 						massageListFocusManager.focusLast({ accept: (node) => isListItem(node) });
 						lastMessageFocused = document.activeElement as HTMLElement;
 						initialFocus = false;
-					}
-
-					if (!triggeredByKeyboard || !(e.currentTarget instanceof HTMLElement && e.relatedTarget instanceof HTMLElement)) {
 						return;
 					}
 
 					if (lastMessageFocused && !e.currentTarget.contains(e.relatedTarget) && node.contains(e.target as HTMLElement)) {
 						lastMessageFocused?.focus();
-						lastMessageFocused = null;
-						triggeredByKeyboard = false;
 					}
 				},
 				{ capture: true },
