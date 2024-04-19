@@ -7,10 +7,9 @@ import './models/startup';
 import './settings';
 import '../app/lib/server/startup';
 
-import { startLicense } from '../ee/app/license/server/startup';
-import { registerEEBroker } from '../ee/server';
 import { configureLoginServices } from './configuration';
 import { configureLogLevel } from './configureLogLevel';
+import { startLicense, registerEEBroker } from './ee';
 import { registerServices } from './services/startup';
 import { startup } from './startup';
 import './importPackages';
