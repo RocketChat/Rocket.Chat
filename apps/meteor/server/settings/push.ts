@@ -115,7 +115,7 @@ export const createPushSettings = () =>
 			});
 
 			await this.add('Push_google_api_credentials', '', {
-				type: 'string',
+				type: 'code',
 				multiline: true,
 				enableQuery: [],
 				secret: true,
