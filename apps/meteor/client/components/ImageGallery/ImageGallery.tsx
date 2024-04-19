@@ -132,10 +132,27 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 			<Box className={swiperStyle}>
 				<div role='presentation' className='swiper-container' onClick={onClose}>
 					<ButtonGroup className='rcx-swiper-controls' onClick={preventPropagation}>
-						{zoomScale !== 1 && <IconButton small icon='arrow-collapse' title={t('Resize')} rcx-swiper-zoom-out onClick={handleResize} />}
-						<IconButton small icon='h-bar' title={t('Zoom_out')} rcx-swiper-zoom-out onClick={handleZoomOut} disabled={zoomScale === 1} />
-						<IconButton small icon='plus' title={t('Zoom_in')} rcx-swiper-zoom-in onClick={handleZoomIn} />
-						<IconButton small icon='cross' aria-label={t('Close_gallery')} className='rcx-swiper-close-button' onClick={onClose} />
+						{zoomScale !== 1 && (
+							<IconButton name='resize' small icon='arrow-collapse' title={t('Resize')} rcx-swiper-zoom-out onClick={handleResize} />
+						)}
+						<IconButton
+							name='zoom-out'
+							small
+							icon='h-bar'
+							title={t('Zoom_out')}
+							rcx-swiper-zoom-out
+							onClick={handleZoomOut}
+							disabled={zoomScale === 1}
+						/>
+						<IconButton name='zoom-in' small icon='plus' title={t('Zoom_in')} rcx-swiper-zoom-in onClick={handleZoomIn} />
+						<IconButton
+							name='close'
+							small
+							icon='cross'
+							aria-label={t('Close_gallery')}
+							className='rcx-swiper-close-button'
+							onClick={onClose}
+						/>
 					</ButtonGroup>
 					<IconButton icon='chevron-right' aria-label={t('Next_image')} className='rcx-swiper-prev-button' onClick={preventPropagation} />
 					<IconButton
@@ -166,7 +183,14 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 										jsx-a11y/no-noninteractive-element-interactions,
 									 	jsx-a11y/click-events-have-key-events
 									 */}
-									<img src={url} loading='lazy' alt='' onClick={preventPropagation} />
+									<img
+										src={url}
+										loading='lazy'
+										alt=''
+										data-qa-type='gallery-img'
+										data-qa-zoom-scale={zoomScale}
+										onClick={preventPropagation}
+									/>
 									<div className='rcx-lazy-preloader'>
 										<Throbber inheritColor />
 									</div>
