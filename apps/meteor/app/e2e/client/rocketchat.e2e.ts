@@ -11,6 +11,7 @@ import { Tracker } from 'meteor/tracker';
 import * as banners from '../../../client/lib/banners';
 import type { LegacyBannerPayload } from '../../../client/lib/banners';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
 import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
@@ -212,6 +213,7 @@ class E2E extends Emitter {
 				onConfirm: () => {
 					Meteor._localStorage.removeItem('e2e.randomPassword');
 					this.setState(E2EEState.READY);
+					dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Set') });
 					this.closeAlert();
 					imperativeModal.close();
 				},
