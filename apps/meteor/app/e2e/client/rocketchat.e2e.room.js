@@ -471,7 +471,7 @@ export class E2ERoom extends Emitter {
 		this.encryptKeyForOtherParticipants();
 	}
 
-	async encryptGroupKeyForOtherParticipants(users) {
+	async encryptGroupKeyForParticipantsWaitingForTheKeys(users) {
 		if (!this.isReady()) {
 			return;
 		}

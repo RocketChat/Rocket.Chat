@@ -202,9 +202,6 @@ class E2E extends Emitter {
 
 		await this.loadKeysFromDB();
 
-		// for testing
-		await this.requestSubscriptionKeys();
-
 		if (!public_key && this.db_public_key) {
 			public_key = this.db_public_key;
 		}
@@ -565,7 +562,7 @@ class E2E extends Emitter {
 						if (!e2eRoom) {
 							return;
 						}
-						const usersWithKeys = await e2eRoom.encryptGroupKeyForOtherParticipants(usersWaitingForE2EKeys[room]);
+						const usersWithKeys = await e2eRoom.encryptGroupKeyForParticipantsWaitingForTheKeys(usersWaitingForE2EKeys[room]);
 
 						if (!usersWithKeys) {
 							return;
@@ -588,6 +585,7 @@ class E2E extends Emitter {
 
 			if (!hasMore && this.timeout) {
 				clearTimeout(this.timeout);
+				this.timeout = null;
 			}
 
 			if (!usersWaitingForE2EKeys) {
@@ -600,6 +598,7 @@ class E2E extends Emitter {
 				await this.provideUsersSuggestedGroupKeys({ usersSuggestedGroupKeys: userKeysWithRooms });
 			} catch (error) {
 				this.timeout && clearTimeout(this.timeout);
+				this.timeout = null;
 				return this.error('Error providing group key to users: ', error);
 			}
 		}, 10000);
