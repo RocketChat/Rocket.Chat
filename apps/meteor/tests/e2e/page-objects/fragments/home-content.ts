@@ -25,6 +25,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa-type="message"]').last();
 	}
 
+	nthMessage(index: number): Locator {
+		return this.page.locator('[data-qa-type="message"]').nth(index);
+	}
+
 	get lastUserMessageNotThread(): Locator {
 		return this.page.locator('div.messages-box [data-qa-type="message"]').last();
 	}
@@ -39,6 +43,10 @@ export class HomeContent {
 
 	get encryptedRoomHeaderIcon(): Locator {
 		return this.page.locator('.rcx-room-header button > i.rcx-icon--name-key');
+	}
+
+	get lastIgnoredUserMessage(): Locator {
+		return this.lastUserMessageBody.locator('role=button[name="This message was ignored"]');
 	}
 
 	get btnJoinRoom(): Locator {
@@ -82,10 +90,10 @@ export class HomeContent {
 		await this.page.locator('[data-qa-type="message"]').last().hover();
 		await this.page.locator('role=button[name="Forward message"]').click();
 
-		await this.page.getByRole('textbox', { name: 'Person or Channel' }).click()
+		await this.page.getByRole('textbox', { name: 'Person or Channel' }).click();
 		await this.page.keyboard.type(chatName);
-		await this.page.locator('#position-container').getByText(chatName).waitFor()
-		await this.page.locator('#position-container').getByText(chatName).click()
+		await this.page.locator('#position-container').getByText(chatName).waitFor();
+		await this.page.locator('#position-container').getByText(chatName).click();
 		await this.page.locator('role=button[name="Forward"]').click();
 	}
 
@@ -205,6 +213,18 @@ export class HomeContent {
 
 	get btnNewCannedResponse(): Locator {
 		return this.page.locator('.rcx-vertical-bar button:has-text("Create")');
+	}
+
+	get imageGallery(): Locator {
+		return this.page.getByRole('dialog', { name: 'Image gallery' });
+	}
+
+	get imageGalleryImage(): Locator {
+		return this.imageGallery.locator('.swiper-zoom-container img');
+	}
+
+	async getGalleryButtonByName(name: string) {
+		return this.imageGallery.locator(`button[name="${name}"]`);
 	}
 
 	async pickEmoji(emoji: string, section = 'Smileys & People') {
