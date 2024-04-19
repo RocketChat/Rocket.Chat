@@ -2,5 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-fix(Omnichannel): `audio.stop() is not a function`
-Fixes error `audio.stop() is not a function` and makes the newRoomSound respect the volume set in user preferences
+Fixes error `audio.pause() is not a function` and makes the newRoomSound respect the volume set in user preferences. Also moves the code to a hook instead of meteor.startup
