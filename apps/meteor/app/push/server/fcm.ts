@@ -1,8 +1,9 @@
-import fetch from 'node-fetch';
 import EJSON from 'ejson';
+import fetch from 'node-fetch';
 import type { RequestInit, Response } from 'node-fetch';
-import type { PendingPushNotification } from './definition';
+
 import { settings } from '../../settings/server';
+import type { PendingPushNotification } from './definition';
 import { logger } from './logger';
 import type { FCMCredentials, NativeNotificationParameters } from './push';
 
@@ -101,7 +102,7 @@ function getFCMMessagesFromPushData(userTokens: string[], notification: PendingP
 	};
 
 	// then we will create the message for each token
-	return userTokens.map((token) => ({ message: { ...message, token, } }));
+	return userTokens.map((token) => ({ message: { ...message, token } }));
 }
 
 export const sendFCM = function ({ userTokens, notification, _replaceToken, _removeToken, options }: NativeNotificationParameters): void {
@@ -122,7 +123,7 @@ export const sendFCM = function ({ userTokens, notification, _replaceToken, _rem
 	const headers = {
 		'Content-Type': 'application/json',
 		'Authorization': `Bearer ${options.gcm.apiKey}`,
-		access_token_auth: true,
+		'access_token_auth': true,
 	} as Record<string, any>;
 
 	const credentialsString = settings.get('Push_google_api_credentials');
@@ -131,16 +132,15 @@ export const sendFCM = function ({ userTokens, notification, _replaceToken, _rem
 	}
 
 	const credentials = JSON.parse(credentialsString as string) as FCMCredentials;
-	
+
 	const url = `https://fcm.googleapis.com/v1/projects/${credentials.project_id}/messages:send`;
 
 	for (const message of messages) {
 		logger.debug('sendFCM message', message);
 		const response = fetchWithRetry(url, { method: 'POST', headers, body: JSON.stringify(message) });
 
-		response
-			.catch((err) => {
-				logger.error('sendFCM error', err);
-			});
+		response.catch((err) => {
+			logger.error('sendFCM error', err);
+		});
 	}
 };

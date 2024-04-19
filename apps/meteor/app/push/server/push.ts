@@ -173,18 +173,16 @@ class PushClass {
 					notification,
 					_replaceToken: this.replaceToken,
 					_removeToken: this.removeToken,
-					options: sendGCMOptions as RequiredField<PushOptions, 'gcm'>
+					options: sendGCMOptions as RequiredField<PushOptions, 'gcm'>,
 				});
-			} else {
-				if (this.options.gcm?.apiKey) {
-					sendGCM({
-						userTokens: app.token.gcm,
-						notification,
-						_replaceToken: this.replaceToken,
-						_removeToken: this.removeToken,
-						options: this.options as RequiredField<PushOptions, 'gcm'>,
-					});
-				}
+			} else if (this.options.gcm?.apiKey) {
+				sendGCM({
+					userTokens: app.token.gcm,
+					notification,
+					_replaceToken: this.replaceToken,
+					_removeToken: this.removeToken,
+					options: this.options as RequiredField<PushOptions, 'gcm'>,
+				});
 			}
 		} else {
 			throw new Error('send got a faulty query');
@@ -212,7 +210,6 @@ class PushClass {
 				token: client.credentials.access_token as string,
 				projectNumber: credentials.project_id,
 			};
-
 		} catch (error) {
 			logger.error('Error getting FCM token', error);
 			throw new Error('Error getting FCM token');
