@@ -13,7 +13,6 @@ test.describe.serial('Image Gallery', async () => {
 	};
 
 	test.use({ viewport });
-	// test.use({ storageState: Users.user1.state });
 
 	test.beforeAll(async ({ api, browser }) => {
 		targetChannel = await createTargetChannel(api);
@@ -37,41 +36,41 @@ test.describe.serial('Image Gallery', async () => {
 
 	test('expect to have a large image not out of viewport bounds', async () => {
 		expect(
-			await poHomeChannel.content.galleryImage.evaluate((el) => parseInt(window.getComputedStyle(el).getPropertyValue('width'))),
+			await poHomeChannel.content.imageGalleryImage.evaluate((el) => parseInt(window.getComputedStyle(el).getPropertyValue('width'))),
 		).toBeLessThanOrEqual(viewport.width);
 
 		expect(
-			await poHomeChannel.content.galleryImage.evaluate((el) => parseInt(window.getComputedStyle(el).getPropertyValue('height'))),
+			await poHomeChannel.content.imageGalleryImage.evaluate((el) => parseInt(window.getComputedStyle(el).getPropertyValue('height'))),
 		).toBeLessThanOrEqual(viewport.height);
 	});
 
 	test('expect to zoom in image', async () => {
-		await (await poHomeChannel.content.getGalleryButton('zoom-in')).click();
+		await (await poHomeChannel.content.getGalleryButtonByName('zoom-in')).click();
 
-		expect(parseInt((await poHomeChannel.content.galleryImage.getAttribute('data-qa-zoom-scale')) as string)).toBeGreaterThan(1);
+		expect(parseInt((await poHomeChannel.content.imageGalleryImage.getAttribute('data-qa-zoom-scale')) as string)).toBeGreaterThan(1);
 	});
 
 	test('expect to zoom out image', async () => {
-		await (await poHomeChannel.content.getGalleryButton('zoom-out')).click();
+		await (await poHomeChannel.content.getGalleryButtonByName('zoom-out')).click();
 
-		expect(parseInt((await poHomeChannel.content.galleryImage.getAttribute('data-qa-zoom-scale')) as string)).toEqual(1);
+		expect(parseInt((await poHomeChannel.content.imageGalleryImage.getAttribute('data-qa-zoom-scale')) as string)).toEqual(1);
 	});
 
 	test('expect to resize image to default ratio', async () => {
-		await expect(await poHomeChannel.content.getGalleryButton('zoom-out')).toBeDisabled();
+		await expect(await poHomeChannel.content.getGalleryButtonByName('zoom-out')).toBeDisabled();
 
-		await (await poHomeChannel.content.getGalleryButton('zoom-in')).dblclick();
+		await (await poHomeChannel.content.getGalleryButtonByName('zoom-in')).dblclick();
 
-		await expect(await poHomeChannel.content.getGalleryButton('zoom-out')).toBeEnabled();
+		await expect(await poHomeChannel.content.getGalleryButtonByName('zoom-out')).toBeEnabled();
 
-		await (await poHomeChannel.content.getGalleryButton('resize')).click();
+		await (await poHomeChannel.content.getGalleryButtonByName('resize')).click();
 
-		expect(parseInt((await poHomeChannel.content.galleryImage.getAttribute('data-qa-zoom-scale')) as string)).toEqual(1);
+		expect(parseInt((await poHomeChannel.content.imageGalleryImage.getAttribute('data-qa-zoom-scale')) as string)).toEqual(1);
 	});
 
 	test('expect to close gallery', async () => {
-		await (await poHomeChannel.content.getGalleryButton('close')).click();
+		await (await poHomeChannel.content.getGalleryButtonByName('close')).click();
 
-		await expect(poHomeChannel.content.galleryImage).not.toBeVisible();
+		await expect(poHomeChannel.content.imageGalleryImage).not.toBeVisible();
 	});
 });

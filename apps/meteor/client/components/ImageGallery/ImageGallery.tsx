@@ -129,9 +129,9 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 
 	return createPortal(
 		<FocusScope contain autoFocus>
-			<Box className={swiperStyle}>
+			<Box role='dialog' aria-modal='true' aria-label={t('Image_gallery')} className={swiperStyle}>
 				<div role='presentation' className='swiper-container' onClick={onClose}>
-					<ButtonGroup className='rcx-swiper-controls' onClick={preventPropagation}>
+					<ButtonGroup role='toolbar' className='rcx-swiper-controls' onClick={preventPropagation}>
 						{zoomScale !== 1 && (
 							<IconButton name='resize' small icon='arrow-collapse' title={t('Resize')} rcx-swiper-zoom-out onClick={handleResize} />
 						)}
@@ -183,14 +183,7 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 										jsx-a11y/no-noninteractive-element-interactions,
 									 	jsx-a11y/click-events-have-key-events
 									 */}
-									<img
-										src={url}
-										loading='lazy'
-										alt=''
-										data-qa-type='gallery-img'
-										data-qa-zoom-scale={zoomScale}
-										onClick={preventPropagation}
-									/>
+									<img src={url} loading='lazy' alt='' data-qa-zoom-scale={zoomScale} onClick={preventPropagation} />
 									<div className='rcx-lazy-preloader'>
 										<Throbber inheritColor />
 									</div>

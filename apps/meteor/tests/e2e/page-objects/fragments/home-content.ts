@@ -215,12 +215,16 @@ export class HomeContent {
 		return this.page.locator('.rcx-vertical-bar button:has-text("Create")');
 	}
 
-	get galleryImage(): Locator {
-		return this.page.locator('div.swiper-zoom-container img');
+	get imageGallery(): Locator {
+		return this.page.getByRole('dialog', { name: 'Image gallery' });
 	}
 
-	async getGalleryButton(name: string) {
-		return this.page.locator(`button[name="${name}"]`);
+	get imageGalleryImage(): Locator {
+		return this.imageGallery.locator('.swiper-zoom-container img');
+	}
+
+	async getGalleryButtonByName(name: string) {
+		return this.imageGallery.locator(`button[name="${name}"]`);
 	}
 
 	async pickEmoji(emoji: string, section = 'Smileys & People') {
