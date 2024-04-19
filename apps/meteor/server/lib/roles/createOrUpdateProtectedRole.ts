@@ -1,6 +1,8 @@
 import type { IRole, AtLeast } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
 
+// TODO: roles-out-of-dbwatcher
+// No need to broadcast from here since this function will only iterate over default roles
 export const createOrUpdateProtectedRoleAsync = async (
 	roleId: string,
 	roleData: AtLeast<Omit<IRole, '_id' | 'protected'>, 'name'>,

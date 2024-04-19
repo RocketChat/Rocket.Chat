@@ -191,6 +191,12 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 			clientAction: 'changed',
 			role,
 		});
+
+		console.log({
+			fromWatchers: true,
+			clientAction: 'changed',
+			role,
+		});
 	});
 
 	watcher.on<ILivechatInquiryRecord>(LivechatInquiry.getCollectionName(), async ({ clientAction, id, data, diff }) => {

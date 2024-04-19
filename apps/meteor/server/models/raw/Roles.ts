@@ -1,7 +1,7 @@
 import type { IRole, IRoom, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IRolesModel } from '@rocket.chat/model-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
-import type { Collection, FindCursor, Db, Filter, FindOptions, InsertOneResult, UpdateResult, WithId, Document } from 'mongodb';
+import type { Collection, FindCursor, Db, Filter, FindOptions, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -190,21 +190,31 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		return this.find(query, options || {});
 	}
 
-	updateById(
+	async updateById(
 		_id: IRole['_id'],
 		name: IRole['name'],
 		scope: IRole['scope'],
 		description: IRole['description'] = '',
 		mandatory2fa: IRole['mandatory2fa'] = false,
-	): Promise<UpdateResult> {
-		const queryData = {
-			name,
-			scope,
-			description,
-			mandatory2fa,
-		};
+	): Promise<IRole> {
+		const response = await this.findOneAndUpdate(
+			{ _id },
+			{
+				$set: {
+					name,
+					scope,
+					description,
+					mandatory2fa,
+				},
+			},
+			{ upsert: true, returnDocument: 'after' },
+		);
 
-		return this.updateOne({ _id }, { $set: queryData }, { upsert: true });
+		if (!response.value) {
+			throw new Error('Role not found');
+		}
+
+		return response.value;
 	}
 
 	findUsersInRole(roleId: IRole['_id'], scope?: IRoom['_id']): Promise<FindCursor<IUser>>;
@@ -242,22 +252,29 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		}
 	}
 
-	createWithRandomId(
+	async createWithRandomId(
 		name: IRole['name'],
 		scope: IRole['scope'] = 'Users',
 		description = '',
 		protectedRole = true,
 		mandatory2fa = false,
-	): Promise<InsertOneResult<WithId<IRole>>> {
-		const role = {
+	): Promise<IRole> {
+		const res = await this.insertOne({
+			name,
+			scope,
+			description,
+			protected: protectedRole,
+			mandatory2fa,
+		});
+
+		return {
+			_id: res.insertedId as IRole['_id'],
 			name,
 			scope,
 			description,
 			protected: protectedRole,
 			mandatory2fa,
 		};
-
-		return this.insertOne(role);
 	}
 
 	async canAddUserToRole(uid: IUser['_id'], roleId: IRole['_id'], scope?: IRoom['_id']): Promise<boolean> {

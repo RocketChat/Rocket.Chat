@@ -3,7 +3,7 @@ import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definitio
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings } from '@rocket.chat/core-services';
 import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
-import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom, IMessage, IOTRMessage } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, IRole, VideoConference, ISetting, IOmnichannelRoom, IMessage, IOTRMessage } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -201,11 +201,10 @@ export class ListenersModule {
 		});
 
 		service.onEvent('watch.roles', ({ clientAction, role }): void => {
-			const payload = {
+			notifications.streamRoles.emitWithoutBroadcast('roles', {
 				type: clientAction,
-				...role,
-			};
-			notifications.streamRoles.emitWithoutBroadcast('roles', payload as any);
+				...(role as IRole),
+			});
 		});
 
 		service.onEvent('watch.inquiries', async ({ clientAction, inquiry, diff }): Promise<void> => {

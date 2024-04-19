@@ -1,4 +1,4 @@
-import { api, MeteorError } from '@rocket.chat/core-services';
+import { api, MeteorError, dbWatchersDisabled } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
 
@@ -19,21 +19,21 @@ export const insertRoleAsync = async (roleData: Omit<IRole, '_id'>, options: Ins
 		throw new MeteorError('error-invalid-scope', 'Invalid scope');
 	}
 
-	const result = await Roles.createWithRandomId(name, scope, description, false, mandatory2fa);
+	const role = await Roles.createWithRandomId(name, scope, description, false, mandatory2fa);
 
-	const roleId = result.insertedId;
+	if (dbWatchersDisabled) {
+		void api.broadcast('watch.roles', {
+			clientAction: 'inserted',
+			role,
+		});
+	}
 
 	if (options.broadcastUpdate) {
 		void api.broadcast('user.roleUpdate', {
 			type: 'changed',
-			_id: roleId,
+			_id: role._id,
 		});
 	}
 
-	const newRole = await Roles.findOneById(roleId);
-	if (!newRole) {
-		throw new MeteorError('error-role-not-found', 'Role not found');
-	}
-
-	return newRole;
+	return role;
 };
