@@ -28,7 +28,7 @@ const usersModel = new UsersModel({ collection: () => ({}) } as unknown as any, 
 
 describe('User service', () => {
 	before(() => {
-		registerModel('IUsersModel', () => usersModel);
+		registerModel('IUsersModel', usersModel);
 	});
 
 	afterEach(() => sinon.restore());
