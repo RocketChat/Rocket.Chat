@@ -1,5 +1,5 @@
 import { Apps } from '@rocket.chat/apps';
-import { Message } from '@rocket.chat/core-services';
+import { Message, api } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
@@ -10,7 +10,6 @@ import { isURL } from '../../../../lib/utils/isURL';
 import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
-import notifications from '../../../notifications/server/lib/Notifications';
 import { settings } from '../../../settings/server';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
@@ -216,7 +215,7 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 	prepareMessageObject(message, room._id, user);
 
 	if (message.t === 'otr') {
-		notifications.streamRoomMessage.emit(message.rid, message, user, room);
+		void api.broadcast('otrMessage', { roomId: message.rid, message, user, room });
 		return message;
 	}
 
