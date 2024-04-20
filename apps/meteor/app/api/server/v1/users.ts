@@ -6,6 +6,8 @@ import {
 	isUserSetActiveStatusParamsPOST,
 	isUserDeactivateIdleParamsPOST,
 	isUsersInfoParamsGetProps,
+	isUsersListStatusProps,
+	isUsersSendWelcomeEmailProps,
 	isUserRegisterParamsPOST,
 	isUserLogoutParamsPOST,
 	isUsersListTeamsProps,
@@ -24,6 +26,7 @@ import type { Filter } from 'mongodb';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
+import { sendWelcomeEmail } from '../../../../server/lib/sendWelcomeEmail';
 import { saveUserPreferences } from '../../../../server/methods/saveUserPreferences';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
@@ -49,7 +52,7 @@ import { getUserFromParams } from '../helpers/getUserFromParams';
 import { isUserFromParams } from '../helpers/isUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
-import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
+import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -552,6 +555,60 @@ API.v1.addRoute(
 				offset,
 				total,
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.listByStatus',
+	{
+		authRequired: true,
+		validateParams: isUsersListStatusProps,
+		permissionsRequired: ['view-d-room'],
+	},
+	{
+		async get() {
+			if (
+				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
+				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+			) {
+				return API.v1.unauthorized();
+			}
+
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+			const { status, hasLoggedIn, type, roles, searchTerm } = this.queryParams;
+
+			return API.v1.success(
+				await findPaginatedUsersByStatus({
+					uid: this.userId,
+					offset,
+					count,
+					sort,
+					status,
+					roles,
+					searchTerm,
+					hasLoggedIn,
+					type,
+				}),
+			);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.sendWelcomeEmail',
+	{
+		authRequired: true,
+		validateParams: isUsersSendWelcomeEmailProps,
+		permissionsRequired: ['send-mail'],
+	},
+	{
+		async post() {
+			const { email } = this.bodyParams;
+			await sendWelcomeEmail(email);
+
+			return API.v1.success();
 		},
 	},
 );
