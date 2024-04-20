@@ -1,4 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
+import { User } from '@rocket.chat/core-services';
 import { Roles, Settings, Users } from '@rocket.chat/models';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
@@ -11,6 +12,7 @@ import { beforeCreateUserCallback } from '../../../../lib/callbacks/beforeCreate
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
+import { getMaxLoginTokens } from '../../../../server/lib/getMaxLoginTokens';
 import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
@@ -475,20 +477,14 @@ Accounts.validateNewUser((user) => {
 	return true;
 });
 
-export const MAX_RESUME_LOGIN_TOKENS = parseInt(process.env.MAX_RESUME_LOGIN_TOKENS) || 50;
-
 Accounts.onLogin(async ({ user }) => {
 	if (!user || !user.services || !user.services.resume || !user.services.resume.loginTokens || !user._id) {
 		return;
 	}
 
-	if (user.services.resume.loginTokens.length < MAX_RESUME_LOGIN_TOKENS) {
+	if (user.services.resume.loginTokens.length < getMaxLoginTokens()) {
 		return;
 	}
 
-	const { tokens } = (await Users.findAllResumeTokensByUserId(user._id))[0];
-	if (tokens.length >= MAX_RESUME_LOGIN_TOKENS) {
-		const oldestDate = tokens.reverse()[MAX_RESUME_LOGIN_TOKENS - 1];
-		await Users.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
-	}
+	await User.ensureLoginTokensLimit(user._id);
 });
