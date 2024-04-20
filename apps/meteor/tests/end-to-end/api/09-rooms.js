@@ -301,6 +301,33 @@ describe('[Rooms]', function () {
 
 			await request.get(thumbUrl).set(credentials).expect('Content-Type', 'image/jpeg');
 		});
+
+		it('should correctly save e2ee file description and properties', async () => {
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.field('t', 'e2e')
+				.field('e2e', 'pending')
+				.field('description', 'some_file_description')
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.have.property('attachments');
+					expect(res.body.message.attachments).to.be.an('array').of.length(1);
+					expect(res.body.message.attachments[0]).to.have.property('image_type', 'image/png');
+					expect(res.body.message.attachments[0]).to.have.property('title', '1024x1024.png');
+					expect(res.body.message).to.have.property('files');
+					expect(res.body.message.files).to.be.an('array').of.length(2);
+					expect(res.body.message.files[0]).to.have.property('type', 'image/png');
+					expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
+					expect(res.body.message.attachments[0]).to.have.property('description', 'some_file_description');
+					expect(res.body.message).to.have.property('t', 'e2e');
+					expect(res.body.message).to.have.property('e2e', 'pending');
+				});
+		});
 	});
 
 	describe('/rooms.favorite', () => {
