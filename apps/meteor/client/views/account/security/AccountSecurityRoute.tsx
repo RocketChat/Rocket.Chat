@@ -8,7 +8,9 @@ import AccountSecurityPage from './AccountSecurityPage';
 const AccountSecurityRoute = (): ReactElement => {
 	const isTwoFactorEnabled = useSetting('Accounts_TwoFactorAuthentication_Enabled');
 	const isE2EEnabled = useSetting('E2E_Enable');
-	const canViewSecurity = isTwoFactorEnabled || isE2EEnabled;
+	const allowPasswordChange = useSetting('Accounts_AllowPasswordChange');
+
+	const canViewSecurity = isTwoFactorEnabled || isE2EEnabled || allowPasswordChange;
 
 	if (!canViewSecurity) {
 		return <NotAuthorizedPage />;

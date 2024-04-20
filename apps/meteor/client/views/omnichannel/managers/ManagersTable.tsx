@@ -100,9 +100,9 @@ const ManagersTable = () => {
 			)}
 			{isSuccess && data.users.length > 0 && (
 				<>
-					<GenericTable aria-busy={text !== debouncedText}>
+					<GenericTable aria-busy={text !== debouncedText} aria-label={t('Managers')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody data-qa-id='GenericTableManagerInfoBody'>
+						<GenericTableBody>
 							{data.users.map((user) => (
 								<GenericTableRow key={user._id} tabIndex={0} qa-user-id={user._id}>
 									<GenericTableCell withTruncatedText>
