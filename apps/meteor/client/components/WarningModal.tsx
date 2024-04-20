@@ -15,7 +15,7 @@ type WarningModalProps = {
 const WarningModal = ({ text, confirmText, close, cancel, cancelText, confirm, ...props }: WarningModalProps): ReactElement => {
 	const t = useTranslation();
 	return (
-		<Modal open {...props}>
+		<Modal {...props}>
 			<Modal.Header>
 				<Modal.Icon color='danger' name='modal-warning' />
 				<Modal.Title>{t('Are_you_sure')}</Modal.Title>
