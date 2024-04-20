@@ -185,6 +185,7 @@ export const sendFileMessage = async (
 			groupable: Match.Optional(Boolean),
 			msg: Match.Optional(String),
 			tmid: Match.Optional(String),
+			customFields: Match.Optional(String),
 			t: Match.Optional(String),
 			e2e: Match.Optional(String),
 		}),
@@ -199,6 +200,7 @@ export const sendFileMessage = async (
 		files,
 		attachments,
 		...(msgData as Partial<IMessage>),
+		...(msgData?.customFields && { customFields: JSON.parse(msgData.customFields) }),
 		msg: msgData?.msg ?? '',
 		groupable: msgData?.groupable ?? false,
 	});
