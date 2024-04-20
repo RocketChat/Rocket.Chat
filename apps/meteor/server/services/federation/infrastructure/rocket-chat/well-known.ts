@@ -13,6 +13,8 @@ async function returnMatrixServerJSON(_: IncomingMessage, res: ServerResponse) {
 	const homeserverUrl = settings.get<string>('Federation_Matrix_homeserver_url');
 	const { hostname, port = '443' } = new URL(homeserverUrl); // a case where port isn't specified would be if it's 80 or 443, if 80, federation isn't going to work, so we simply assume 443.
 
+	res.setHeader('content-type', 'application/json');
+
 	res.write(JSON.stringify({ 'm.server': `${hostname}:${port || '443'}` }));
 
 	res.end();
@@ -25,7 +27,11 @@ async function returnMatrixClientJSON(_: IncomingMessage, res: ServerResponse) {
 
 	const homeserverUrl = settings.get<string>('Federation_Matrix_homeserver_url');
 	const { protocol = 'https:', hostname } = new URL(homeserverUrl);
+
+	res.setHeader('content-type', 'application/json');
+
 	res.write(JSON.stringify({ 'm.homeserver': `${protocol}//${hostname}` }));
+
 	res.end();
 }
 
