@@ -2989,6 +2989,8 @@
   "LDAP_Background_Sync_Avatars": "Avatar Background Sync",
   "LDAP_Background_Sync_Avatars_Description": "Enable a separate background process to sync user avatars.",
   "LDAP_Background_Sync_Avatars_Interval": "Avatar Background Sync Interval",
+  "LDAP_Background_Sync_Disable_Missing_Users": "Automatically disable users that are no longer found on LDAP",
+  "LDAP_Background_Sync_Disable_Missing_Users_Description": "This option will deactivate users on Rocket.Chat when their data is not found on LDAP. Any rooms owned by those users will be automatically assigned to new owners, or removed if no other user has access to them.",
   "LDAP_Background_Sync_Import_New_Users": "Background Sync Import New Users",
   "LDAP_Background_Sync_Import_New_Users_Description": "Will import all users (based on your filter criteria) that exists in LDAP and does not exists in Rocket.Chat",
   "LDAP_Background_Sync_Interval": "Background Sync Interval",
@@ -3504,6 +3506,9 @@
   "Message_Code_highlight_Description": "Comma separated list of languages (all supported languages at [highlight.js](https://github.com/highlightjs/highlight.js/tree/11.6.0#supported-languages)) that will be used to highlight code blocks",
   "Message_CustomDomain_AutoLink": "Custom Domain Whitelist for Auto Link",
   "Message_CustomDomain_AutoLink_Description": "If you want to auto link internal links like `https://internaltool.intranet` or `internaltool.intranet`, you need to add the `intranet` domain to the field, multiple domains need to be separated by comma.",
+  "Message_CustomFields_Enabled": "Allow Custom Fields in Messages",
+  "Message_CustomFields": "Custom Fields Validation",
+  "Message_CustomFields_Description": "Custom Fields will be validated according to the rules defined in this setting.\nCheck [ajv.js.org](https://ajv.js.org/json-schema.html) for more information regarding validation options.\nProperties `type` and `additionalProperties` will be forced to `object` and `false` respectively.",
   "message_counter_one": "{{count}} message",
   "message_counter_other": "{{count}} messages",
   "Message_DateFormat": "Date Format",
@@ -6390,5 +6395,12 @@
   "Go_to_href": "Go to: {{href}}",
   "Anyone_can_send_new_messages": "Anyone can send new messages",
   "Select_messages_to_hide": "Select messages to hide",
-  "Name_cannot_have_special_characters": "Name cannot have spaces or special characters"
+  "Name_cannot_have_special_characters": "Name cannot have spaces or special characters",
+  "Resize": "Resize",
+  "Zoom_out": "Zoom out",
+  "Zoom_in": "Zoom in",
+  "Close_gallery": "Close gallery",
+  "Next_image": "Next Image",
+  "Previous_image": "Previous image",
+  "Image_gallery": "Image gallery"
 }

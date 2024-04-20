@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { settings } from '../../../settings/server';
+import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 export const updateMessage = async function (
@@ -58,6 +59,14 @@ export const updateMessage = async function (
 	}
 
 	messageData = await Message.beforeSave({ message: messageData, room, user });
+
+	if (messageData.customFields) {
+		validateCustomMessageFields({
+			customFields: messageData.customFields,
+			messageCustomFieldsEnabled: settings.get<boolean>('Message_CustomFields_Enabled'),
+			messageCustomFields: settings.get<string>('Message_CustomFields'),
+		});
+	}
 
 	const { _id, ...editedMessage } = messageData;
 
