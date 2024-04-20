@@ -557,6 +557,7 @@ export type RoomsEndpoints = {
 			groupable?: boolean;
 			msg?: string;
 			tmid?: string;
+			customFields?: string;
 		}) => { message: IMessage | null };
 	};
 
