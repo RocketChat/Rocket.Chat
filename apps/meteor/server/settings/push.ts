@@ -21,7 +21,6 @@ export const createPushSettings = () =>
 
 		await this.add('Push_UseLegacy', false, {
 			type: 'boolean',
-			public: true,
 			alert: 'Push_Setting_Legacy_Warning',
 		});
 
