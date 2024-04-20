@@ -1,6 +1,7 @@
 import child_process from 'child_process';
 import path from 'path';
 
+import { faker } from '@faker-js/faker';
 import { Page } from '@playwright/test';
 import { v2 as compose } from 'docker-compose'
 import { MongoClient } from 'mongodb';
@@ -49,6 +50,10 @@ const resetTestData = async (cleanupOnly = false) => {
 	await Promise.all(
 		[
 			{
+				_id: 'Accounts_AllowAnonymousRead',
+				value: false,
+			},
+			{
 				_id: 'SAML_Custom_Default_logout_behaviour',
 				value: 'SAML',
 			},
@@ -93,6 +98,9 @@ test.describe('SAML', () => {
 	
 	let poRegistration: Registration;
 	let samlRoleId: string;
+	let targetInviteGroupId: string;
+	let targetInviteGroupName: string;
+	let inviteId: string;
 
 	const containerPath = path.join(__dirname, 'containers', 'saml');
 
@@ -116,6 +124,19 @@ test.describe('SAML', () => {
 		});
 	});
 
+	test.beforeAll(async ({ api }) => {
+		const groupResponse = await api.post('/groups.create', { name: faker.string.uuid() });
+		expect(groupResponse.status()).toBe(200);
+		const { group } = await groupResponse.json();
+		targetInviteGroupId = group._id;
+		targetInviteGroupName = group.name;
+
+		const inviteResponse = await api.post('/findOrCreateInvite', { rid: targetInviteGroupId, days: 1, maxUses: 0 });
+		expect(inviteResponse.status()).toBe(200);
+		const { _id } = await inviteResponse.json();
+		inviteId = _id;
+	});
+
 	test.afterAll(async ({ api }) => {
 		await compose.down({
 			cwd: containerPath,
@@ -137,6 +158,10 @@ test.describe('SAML', () => {
 		if (constants.IS_EE) {
 			expect((await deleteCustomRole(api, 'saml-role')).status()).toBe(200);
 		}
+	});
+
+	test.afterAll(async ({ api }) => {
+		expect((await api.post('/groups.delete', { roomId: targetInviteGroupId })).status()).toBe(200);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -175,7 +200,7 @@ test.describe('SAML', () => {
 		});
 	});
 
-	const doLoginStep = async (page: Page, username: string) => {
+	const doLoginStep = async (page: Page, username: string, redirectUrl = '/home') => {
 		await test.step('expect successful login', async () => {
 			await poRegistration.btnLoginWithSaml.click();
 			// Redirect to Idp
@@ -187,7 +212,7 @@ test.describe('SAML', () => {
 			await page.locator('role=button[name="Login"]').click();
 
 			// Redirect back to rocket.chat
-			await expect(page).toHaveURL('/home');
+			await expect(page).toHaveURL(redirectUrl);
 
 			await expect(page.getByRole('button', { name: 'User menu' })).toBeVisible();
 		});
@@ -313,6 +338,26 @@ test.describe('SAML', () => {
 			expect(user?.roles).toContain(samlRoleId);
 		});
 	});
+
+	test('Redirect to a specific group after login when using a valid invite link', async ({ page }) => {
+		await page.goto(`/invite/${inviteId}`);
+		await page.getByRole('link', { name: 'Back to Login' }).click();
+
+		await doLoginStep(page, 'samluser1', `${constants.BASE_URL}/invite/${inviteId}`);
+
+		await test.step('expect to be redirected to the invited room after succesful login', async () => {
+			await expect(page).toHaveURL(`/group/${targetInviteGroupName}`);
+		});
+	});
+
+	test('Redirect to home after login when no redirectUrl is provided', async ({ page }) => {
+		await doLoginStep(page, 'samluser2');
+
+		await test.step('expect to be redirected to the homepage after succesful login', async () => {
+			await expect(page).toHaveURL('/home');
+		});
+	});
+
 
 	test.fixme('User Merge - By Custom Identifier', async () => {
 		// Test user merge with a custom identifier configured in the fieldmap

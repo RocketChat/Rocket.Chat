@@ -17,6 +17,10 @@ export class HomeContent {
 		return this.page.locator('[name="msg"]');
 	}
 
+	get inputThreadMessage(): Locator {
+		return this.page.getByRole('dialog').locator('[name="msg"]').last();
+	}
+
 	get messagePopupUsers(): Locator {
 		return this.page.locator('role=menu[name="People"]');
 	}
@@ -143,6 +147,14 @@ export class HomeContent {
 		return this.page.locator('div.messages-box ul.messages-list [role=link]').last();
 	}
 
+	get lastThreadMessageFileDescription(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="message-body"]');
+	}
+
+	get lastThreadMessageFileName(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="attachment-title-link"]');
+	}
+
 	get btnOptionEditMessage(): Locator {
 		return this.page.locator('[data-qa-id="edit-message"]');
 	}
@@ -233,6 +245,22 @@ export class HomeContent {
 		await this.page.locator(`role=dialog[name="Emoji picker"] >> role=tablist >> role=tab[name="${section}"]`).click();
 
 		await this.page.locator(`role=dialog[name="Emoji picker"] >> role=tabpanel >> role=button[name="${emoji}"]`).click();
+	}
+
+	async dragAndDropTxtFileToThread(): Promise<void> {
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
+		const dataTransfer = await this.page.evaluateHandle((contract) => {
+			const data = new DataTransfer();
+			const file = new File([`${contract}`], 'any_file.txt', {
+				type: 'text/plain',
+			});
+			data.items.add(file);
+			return data;
+		}, contract);
+
+		await this.inputThreadMessage.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
 	async dragAndDropTxtFile(): Promise<void> {
