@@ -43,6 +43,7 @@ import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
 import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
+import { generateAccessToken } from '../../../lib/server/methods/createToken';
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/server/getURL';
 import { API } from '../api';
@@ -693,11 +694,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.createToken',
-	{ authRequired: true },
+	{ authRequired: true, deprecationVersion: '8.0.0' },
 	{
 		async post() {
 			const user = await getUserFromParams(this.bodyParams);
-			const data = await Meteor.callAsync('createToken', user._id);
+
+			const data = await generateAccessToken(this.userId, user._id);
+
 			return data ? API.v1.success({ data }) : API.v1.unauthorized();
 		},
 	},
