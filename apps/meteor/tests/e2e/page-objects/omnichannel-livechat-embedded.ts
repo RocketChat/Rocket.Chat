@@ -39,6 +39,18 @@ export class OmnichannelLiveChatEmbedded {
 		return this.page.frameLocator('#rocketchat-iframe').locator('[type="button"] >> text="Chat now"');
 	}
 
+	get btnNewChat(): Locator {
+		return this.page.frameLocator('#rocketchat-iframe').locator(`role=button[name="New Chat"]`);
+	}
+
+	get messageList(): Locator {
+		return this.page.frameLocator('#rocketchat-iframe').locator('[data-qa="message-list"]');
+	}
+
+	get messageListBackground(): Promise<string> {
+		return this.messageList.evaluate((el) => window.getComputedStyle(el).getPropertyValue('background-color'));
+	}
+
 	messageBubble(message: string): Locator {
 		return this.page
 			.frameLocator('#rocketchat-iframe')

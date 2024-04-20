@@ -36,11 +36,15 @@ const send = async (
 		msg,
 		rid,
 		tmid,
+		t,
+		e2e,
 	}: {
 		description?: string;
 		msg?: string;
 		rid: string;
 		tmid?: string;
+		t?: IMessage['t'];
+		e2e?: IMessage['e2e'];
 	},
 ): Promise<void> => {
 	const id = Random.id();
@@ -63,6 +67,8 @@ const send = async (
 					tmid,
 					file,
 					description,
+					t,
+					e2e,
 				},
 				{
 					load: (event) => {
@@ -146,6 +152,8 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 	subscribe,
 	wipeFailedOnes,
 	cancel,
-	send: (file: File, { description, msg }: { description?: string; msg?: string }): Promise<void> =>
-		send(file, { description, msg, rid, tmid }),
+	send: (
+		file: File,
+		{ description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] },
+	): Promise<void> => send(file, { description, msg, rid, tmid, t, e2e }),
 });

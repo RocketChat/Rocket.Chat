@@ -182,11 +182,13 @@ export const statistics = {
 		);
 
 		// Number of custom fields
-		statsPms.push(
-			LivechatCustomField.col.count().then((count) => {
-				statistics.totalCustomFields = count;
-			}),
-		);
+		statsPms.push((statistics.totalCustomFields = await LivechatCustomField.countDocuments({})));
+
+		// Number of public custom fields
+		statsPms.push((statistics.totalLivechatPublicCustomFields = await LivechatCustomField.countDocuments({ public: true })));
+
+		// Livechat Automatic forwarding feature enabled
+		statistics.livechatAutomaticForwardingUnansweredChats = settings.get<number>('Livechat_auto_transfer_chat_timeout') !== 0;
 
 		// Type of routing algorithm used on omnichannel
 		statistics.routingAlgorithm = settings.get('Livechat_Routing_Method') || '';
@@ -564,12 +566,14 @@ export const statistics = {
 
 		const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
 
+		// Push notification stats
 		// one bit for each of the following:
 		const pushEnabled = settings.get('Push_enable') ? 1 : 0;
 		const pushGatewayEnabled = settings.get('Push_enable_gateway') ? 2 : 0;
 		const pushGatewayChanged = settings.get('Push_gateway') !== defaultGateway ? 4 : 0;
 
 		statistics.push = pushEnabled | pushGatewayEnabled | pushGatewayChanged;
+		statistics.pushSecured = settings.get<boolean>('Push_request_content_from_server');
 
 		const defaultHomeTitle = (await Settings.findOneById('Layout_Home_Title'))?.packageValue;
 		statistics.homeTitleChanged = settings.get('Layout_Home_Title') !== defaultHomeTitle;
