@@ -21,7 +21,6 @@ import UninstallGrandfatheredAppModal from '../components/UninstallGrandfathered
 import type { Actions } from '../helpers';
 import { appEnabledStatuses, appButtonProps } from '../helpers';
 import { handleAPIError } from '../helpers/handleAPIError';
-// import { marketplaceActions } from '../helpers/marketplaceActions';
 import { warnEnableDisableApp } from '../helpers/warnEnableDisableApp';
 import { useAppInstallationHandler } from './useAppInstallationHandler';
 import type { MarketplaceRouteContext } from './useAppsCountQuery';
