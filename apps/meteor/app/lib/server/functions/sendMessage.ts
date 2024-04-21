@@ -1,5 +1,5 @@
 import { Apps } from '@rocket.chat/apps';
-import { Message } from '@rocket.chat/core-services';
+import { Message, api } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
@@ -10,8 +10,8 @@ import { isURL } from '../../../../lib/utils/isURL';
 import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
-import notifications from '../../../notifications/server/lib/Notifications';
 import { settings } from '../../../settings/server';
+import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 // TODO: most of the types here are wrong, but I don't want to change them now
@@ -172,6 +172,14 @@ export const validateMessage = async (message: any, room: any, user: any) => {
 	if (Array.isArray(message.attachments) && message.attachments.length) {
 		validateBodyAttachments(message.attachments);
 	}
+
+	if (message.customFields) {
+		validateCustomMessageFields({
+			customFields: message.customFields,
+			messageCustomFieldsEnabled: settings.get<boolean>('Message_CustomFields_Enabled'),
+			messageCustomFields: settings.get<string>('Message_CustomFields'),
+		});
+	}
 };
 
 export function prepareMessageObject(
@@ -216,7 +224,7 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 	prepareMessageObject(message, room._id, user);
 
 	if (message.t === 'otr') {
-		notifications.streamRoomMessage.emit(message.rid, message, user, room);
+		void api.broadcast('otrMessage', { roomId: message.rid, message, user, room });
 		return message;
 	}
 

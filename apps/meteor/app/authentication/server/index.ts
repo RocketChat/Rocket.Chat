@@ -1,3 +1,2 @@
 import './hooks/login';
-
-export * from './startup';
+import './startup';
