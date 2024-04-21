@@ -1,17 +1,13 @@
-import type { ILivechatBusinessHour, IBusinessHourTimezone } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import type { AgendaCronJobs } from '@rocket.chat/cron';
-import { LivechatBusinessHours, LivechatDepartment, Users } from '@rocket.chat/models';
+import { LivechatDepartment, Users } from '@rocket.chat/models';
 import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
-import { businessHourLogger } from '../lib/logger';
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { closeBusinessHour } from './closeBusinessHour';
-
-const CRON_EVERY_MIDNIGHT_EXPRESSION = '0 0 * * *';
-const CRON_DAYLIGHT_JOB_NAME = 'livechat-business-hour-daylight-saving-time-verifier';
 
 export class BusinessHourManager {
 	private types: Map<string, IBusinessHourType> = new Map();
@@ -33,8 +29,6 @@ export class BusinessHourManager {
 		this.setupCallbacks();
 		await this.cleanupDisabledDepartmentReferences();
 		await this.behavior.onStartBusinessHours();
-		void this.startDaylightSavingTimeVerifier();
-		void this.registerDaylightSavingTimeCronJob();
 	}
 
 	async stopManager(): Promise<void> {
@@ -42,7 +36,6 @@ export class BusinessHourManager {
 		this.clearCronJobsCache();
 		this.removeCallbacks();
 		await this.behavior.onDisableBusinessHours();
-		await this.cronJobs.remove(CRON_DAYLIGHT_JOB_NAME);
 	}
 
 	async restartManager(): Promise<void> {
@@ -238,53 +231,5 @@ export class BusinessHourManager {
 
 	private clearCronJobsCache(): void {
 		this.cronJobsCache = [];
-	}
-
-	hasDaylightSavingTimeChanged(timezone: IBusinessHourTimezone): boolean {
-		const now = moment().utc().tz(timezone.name);
-		const currentUTC = now.format('Z');
-		const existingTimezoneUTC = moment(timezone.utc, 'Z').utc().tz(timezone.name);
-		const DSTHasChanged = !moment(currentUTC, 'Z').utc().tz(timezone.name).isSame(existingTimezoneUTC);
-
-		return currentUTC !== timezone.utc && DSTHasChanged;
-	}
-
-	async registerDaylightSavingTimeCronJob(): Promise<void> {
-		await this.cronJobs.add(CRON_DAYLIGHT_JOB_NAME, CRON_EVERY_MIDNIGHT_EXPRESSION, this.startDaylightSavingTimeVerifier.bind(this));
-	}
-
-	async startDaylightSavingTimeVerifier(): Promise<void> {
-		const activeBusinessHours = await LivechatBusinessHours.findActiveBusinessHours();
-		const timezonesNeedingAdjustment = activeBusinessHours.filter(
-			({ timezone }) => timezone && this.hasDaylightSavingTimeChanged(timezone),
-		);
-		if (timezonesNeedingAdjustment.length === 0) {
-			return;
-		}
-		const result = await Promise.allSettled(
-			timezonesNeedingAdjustment.map((businessHour) => {
-				const businessHourType = this.getBusinessHourType(businessHour.type);
-				if (!businessHourType) {
-					return;
-				}
-
-				return businessHourType.saveBusinessHour({
-					...businessHour,
-					timezoneName: businessHour.timezone.name,
-					workHours: businessHour.workHours.map((hour) => ({ ...hour, start: hour.start.time, finish: hour.finish.time })) as Record<
-						string,
-						any
-					>[],
-				} as ILivechatBusinessHour & { timezoneName: string });
-			}),
-		);
-		const failed = result.filter((r) => r.status === 'rejected');
-		if (failed.length > 0) {
-			failed.forEach((error: any) => {
-				businessHourLogger.error('Failed to update business hours with new timezone', error.reason);
-			});
-		}
-
-		await this.createCronJobsForWorkHours();
 	}
 }

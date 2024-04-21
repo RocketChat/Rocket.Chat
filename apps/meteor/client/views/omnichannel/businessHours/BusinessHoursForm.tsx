@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { InputBox, Field, MultiSelect, FieldGroup, Box, Select, FieldLabel, FieldRow, Callout } from '@rocket.chat/fuselage';
+import { InputBox, Field, MultiSelect, FieldGroup, Box, Select, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -70,9 +70,6 @@ const BusinessHoursForm = ({ type }: { type?: 'default' | 'custom' }) => {
 						render={({ field }) => <Select id={timezoneField} {...field} options={timeZonesOptions} />}
 					/>
 				</FieldRow>
-				<Callout title={t('Daylight_savings_time')} type='info' mbs='x8'>
-					{t('Business_hours_will_update_automatically')}
-				</Callout>
 			</Field>
 			<Field>
 				<FieldLabel htmlFor={daysOpenField}>{t('Open_days_of_the_week')}</FieldLabel>
