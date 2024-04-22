@@ -1599,7 +1599,7 @@ describe('[Teams]', () => {
 				Promise.all([deleteTeam(credentials, testTeam.name), deleteRoom({ roomId: createdRoom.body.channel._id, type: 'c' })]),
 			);
 
-			after(() => updateSetting('API_User_Limit', 250));
+			after(() => updateSetting('API_User_Limit', 500));
 
 			it('should add members when the members count is less than or equal to the API_User_Limit setting', async () => {
 				await updateSetting('API_User_Limit', 2);
