@@ -85,7 +85,7 @@ async function fetchWithRetry(url: string, options: RequestInit, retries = 0): P
 	}
 
 	if (response.status >= 500 && response.status < 600) {
-		const backoff = Math.pow(2, retries) * 1000;
+		const backoff = Math.pow(2, retries) * 10000;
 		await new Promise((resolve) => setTimeout(resolve, backoff));
 		return fetchWithRetry(url, options, retries + 1);
 	}
