@@ -27,7 +27,12 @@ const config: Config = {
 		{
 			displayName: 'server',
 			testEnvironment: 'node',
-			testMatch: ['<rootDir>/ee/app/authorization/server/validateUserRoles.spec.ts'],
+
+			testMatch: [
+				'<rootDir>/app/livechat/server/business-hour/**/*.spec.ts?(x)',
+				'<rootDir>/app/livechat/server/api/**/*.spec.ts',
+				'<rootDir>/ee/app/authorization/server/validateUserRoles.spec.ts',
+			],
 			transformIgnorePatterns: ['!/node_modules/jose'],
 			errorOnDeprecated: true,
 

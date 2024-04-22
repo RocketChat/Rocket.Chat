@@ -5,29 +5,9 @@ import moment from 'moment';
 
 import { businessHourLogger } from '../lib/logger';
 import { createDefaultBusinessHourRow } from './LivechatBusinessHours';
+import { filterBusinessHoursThatMustBeOpened } from './filterBusinessHoursThatMustBeOpened';
 
-export const filterBusinessHoursThatMustBeOpened = async (
-	businessHours: ILivechatBusinessHour[],
-): Promise<Pick<ILivechatBusinessHour, '_id' | 'type'>[]> => {
-	const currentTime = moment(moment().format('dddd:HH:mm:ss'), 'dddd:HH:mm:ss');
-
-	return businessHours
-		.filter(
-			(businessHour) =>
-				businessHour.active &&
-				businessHour.workHours
-					.filter((hour) => hour.open)
-					.some((hour) => {
-						const localTimeStart = moment(`${hour.start.cron.dayOfWeek}:${hour.start.cron.time}:00`, 'dddd:HH:mm:ss');
-						const localTimeFinish = moment(`${hour.finish.cron.dayOfWeek}:${hour.finish.cron.time}:00`, 'dddd:HH:mm:ss');
-						return currentTime.isSameOrAfter(localTimeStart) && currentTime.isBefore(localTimeFinish);
-					}),
-		)
-		.map((businessHour) => ({
-			_id: businessHour._id,
-			type: businessHour.type,
-		}));
-};
+export { filterBusinessHoursThatMustBeOpened };
 
 export const filterBusinessHoursThatMustBeOpenedByDay = async (
 	businessHours: ILivechatBusinessHour[],
