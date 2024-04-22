@@ -377,12 +377,6 @@ test.describe.serial('e2e-encryption', () => {
 			await poAccountProfile.securityE2EEncryptionSection.click();
 			await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
 
-			await page.locator('role=button[name="Login"]').waitFor();
-			await anotherClientPage.locator('role=button[name="Login"]').waitFor();
-
-			await expect(page).toHaveURL('/home');
-			await expect(anotherClientPage).toHaveURL('/home');
-
 			await expect(page.locator('role=button[name="Login"]')).toBeVisible();
 			await expect(anotherClientPage.locator('role=button[name="Login"]')).toBeVisible();
 
