@@ -54,25 +54,46 @@ type FCMError = {
 	};
 };
 
-function fetchWithRetry(url: string, options: RequestInit, retries = 0): Promise<Response> {
+/**
+ * Set at least a 10 second timeout on send requests before retrying.
+ * Most of FCM's internal Remote Procedure Calls use a 10 second timeout.
+ *
+ * Errors:
+ * - For 400, 401, 403, 404 errors: abort, and do not retry.
+ * - For 429 errors: retry after waiting for the duration set in the retry-after header. If no retry-after header is set, default to 60 seconds.
+ * - For 500 errors: retry with exponential backoff.
+ */
+async function fetchWithRetry(url: string, options: RequestInit, retries = 0): Promise<Response> {
 	const MAX_RETRIES = 5;
-	const ERRORS_TO_RETRY = [429, 500, 502, 503, 504];
+	const response = await fetch(url, options);
 
-	try {
-		return fetch(url, options);
-	} catch (error) {
-		if (retries >= MAX_RETRIES) {
-			throw error;
-		}
+	if (response.ok) {
+		return response;
+	}
 
-		const errorData = error as FCMError;
+	if (retries >= MAX_RETRIES) {
+		logger.error('sendFCM error: max retries reached');
+		return response;
+	}
 
-		if (!errorData?.error?.code || !ERRORS_TO_RETRY.includes(errorData.error.code)) {
-			throw error;
-		}
+	const retryAfter = response.headers.get('retry-after');
+	const retryAfterSeconds = retryAfter ? parseInt(retryAfter, 10) : 60;
 
+	if (response.status === 429) {
+		await new Promise((resolve) => setTimeout(resolve, retryAfterSeconds * 1000));
 		return fetchWithRetry(url, options, retries + 1);
 	}
+
+	if (response.status >= 500 && response.status < 600) {
+		const backoff = Math.pow(2, retries) * 1000;
+		await new Promise((resolve) => setTimeout(resolve, backoff));
+		return fetchWithRetry(url, options, retries + 1);
+	}
+
+	const error: FCMError = await response.json();
+	logger.error('sendFCM error', error);
+
+	return response;
 }
 
 function getFCMMessagesFromPushData(userTokens: string[], notification: PendingPushNotification): { message: FCMMessage }[] {
