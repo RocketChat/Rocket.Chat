@@ -10,6 +10,7 @@ import {
 	Divider,
 	FieldLabel,
 	FieldRow,
+	Option,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
@@ -106,7 +107,7 @@ const ForwardChatModal = ({
 						<FieldLabel>{t('Forward_to_department')}</FieldLabel>
 						<FieldRow>
 							<PaginatedSelectFiltered
-								withTitle
+								withTitle={false}
 								filter={departmentsFilter as string}
 								setFilter={setDepartmentsFilter}
 								options={departments}
@@ -118,6 +119,7 @@ const ForwardChatModal = ({
 								}}
 								flexGrow={1}
 								endReached={endReached}
+								renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
 							/>
 						</FieldRow>
 					</Field>

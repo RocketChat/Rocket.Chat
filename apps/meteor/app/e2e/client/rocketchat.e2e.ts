@@ -2,7 +2,7 @@ import QueryString from 'querystring';
 import URL from 'url';
 
 import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { isE2EEMessage } from '@rocket.chat/core-typings';
+import { isE2EEMessage, isFileAttachment } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
@@ -12,6 +12,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import * as banners from '../../../client/lib/banners';
 import type { LegacyBannerPayload } from '../../../client/lib/banners';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
+import { dispatchToastMessage } from '../../../client/lib/toast';
 import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
 import { waitUntilFind } from '../../../client/lib/utils/waitUntilFind';
 import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordModal';
@@ -223,6 +224,7 @@ class E2E extends Emitter {
 							onConfirm: () => {
 								Meteor._localStorage.removeItem('e2e.randomPassword');
 								this.closeAlert();
+								dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Set') });
 								imperativeModal.close();
 							},
 						},
@@ -420,19 +422,60 @@ class E2E extends Emitter {
 
 		const data = await e2eRoom.decrypt(message.msg);
 
-		if (!data) {
-			return message;
-		}
-
 		const decryptedMessage: IE2EEMessage = {
 			...message,
-			msg: data.text,
-			e2e: 'done',
+			...(data && {
+				msg: data.text,
+				e2e: 'done',
+			}),
 		};
 
 		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
 
-		return decryptedMessageWithQuote;
+		const decryptedMessageWithAttachments = await this.decryptMessageAttachments(decryptedMessageWithQuote);
+
+		return decryptedMessageWithAttachments;
+	}
+
+	async decryptMessageAttachments(message: IMessage): Promise<IMessage> {
+		const { attachments } = message;
+
+		if (!attachments || !attachments.length) {
+			return message;
+		}
+
+		const e2eRoom = await this.getInstanceByRoomId(message.rid);
+
+		if (!e2eRoom) {
+			return message;
+		}
+
+		const decryptedAttachments = await Promise.all(
+			attachments.map(async (attachment) => {
+				if (!isFileAttachment(attachment)) {
+					return attachment;
+				}
+
+				if (!attachment.description) {
+					return attachment;
+				}
+
+				const data = await e2eRoom.decrypt(attachment.description);
+
+				if (!data) {
+					return attachment;
+				}
+
+				attachment.description = data.text;
+				return attachment;
+			}),
+		);
+
+		return {
+			...message,
+			attachments: decryptedAttachments,
+			e2e: 'done',
+		};
 	}
 
 	async decryptPendingMessages(): Promise<void> {
