@@ -7,7 +7,7 @@ import { MessageContent } from '../MessageContent';
 import { TypingDots } from '../TypingDots';
 
 type TypingIndicatorProps = {
-	avatarResolver?: (username: string) => string;
+	avatarResolver: (username: string) => string | undefined;
 	usernames?: string[];
 	text: string;
 };

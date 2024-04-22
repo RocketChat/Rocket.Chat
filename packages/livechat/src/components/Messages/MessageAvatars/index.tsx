@@ -5,16 +5,16 @@ import { Avatar } from '../../Avatar';
 import styles from './styles.scss';
 
 type MessageAvatarsProps = {
-	avatarResolver?: (username: string) => string;
+	avatarResolver: (username: string) => string | undefined;
 	usernames: string[];
 	className?: string;
 	style?: React.CSSProperties;
 };
 
-export const MessageAvatars = memo(({ avatarResolver, usernames = [], className, style = {} }: MessageAvatarsProps) => {
+export const MessageAvatars = memo(({ avatarResolver = () => undefined, usernames = [], className, style = {} }: MessageAvatarsProps) => {
 	const avatars = usernames.filter(Boolean);
 
-	if (!avatars.length || !avatarResolver) {
+	if (!avatars.length) {
 		return null;
 	}
 
