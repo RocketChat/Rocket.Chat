@@ -3,11 +3,14 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
 import type { RouterContext, IActionManager } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
+import { t } from 'i18next';
 import type { ContextType } from 'react';
 import { lazy } from 'react';
 
 import * as banners from '../../../client/lib/banners';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
+import { dispatchToastMessage } from '../../../client/lib/toast';
+import { exhaustiveCheck } from '../../../lib/utils/exhaustiveCheck';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { UiKitTriggerTimeoutError } from './UiKitTriggerTimeoutError';
 
@@ -20,7 +23,7 @@ export class ActionManager implements IActionManager {
 
 	protected events = new Emitter<{ busy: { busy: boolean }; [viewId: string]: any }>();
 
-	protected triggersId = new Map<string, string | undefined>();
+	protected appIdByTriggerId = new Map<string, string | undefined>();
 
 	protected viewInstances = new Map<
 		string,
@@ -35,8 +38,8 @@ export class ActionManager implements IActionManager {
 	public constructor(protected router: ContextType<typeof RouterContext>) {}
 
 	protected invalidateTriggerId(id: string) {
-		const appId = this.triggersId.get(id);
-		this.triggersId.delete(id);
+		const appId = this.appIdByTriggerId.get(id);
+		this.appIdByTriggerId.delete(id);
 		return appId;
 	}
 
@@ -66,40 +69,74 @@ export class ActionManager implements IActionManager {
 
 	public generateTriggerId(appId: string | undefined) {
 		const triggerId = Random.id();
-		this.triggersId.set(triggerId, appId);
+		this.appIdByTriggerId.set(triggerId, appId);
 		setTimeout(() => this.invalidateTriggerId(triggerId), ActionManager.TRIGGER_TIMEOUT);
 		return triggerId;
 	}
 
 	public async emitInteraction(appId: string, userInteraction: DistributiveOmit<UiKit.UserInteraction, 'triggerId'>) {
-		this.notifyBusy();
-
 		const triggerId = this.generateTriggerId(appId);
 
-		let timeout: ReturnType<typeof setTimeout> | undefined;
+		return this.runWithTimeout(
+			async () => {
+				let interaction: UiKit.ServerInteraction | undefined;
 
-		await Promise.race([
-			new Promise((_, reject) => {
-				timeout = setTimeout(() => reject(new UiKitTriggerTimeoutError('Timeout', { triggerId, appId })), ActionManager.TRIGGER_TIMEOUT);
-			}),
-			sdk.rest
-				.post(`/apps/ui.interaction/${appId}`, {
-					...userInteraction,
-					triggerId,
-				})
-				.then((interaction) => this.handleServerInteraction(interaction)),
-		]).finally(() => {
-			if (timeout) clearTimeout(timeout);
-			this.notifyIdle();
-		});
+				try {
+					interaction = (await sdk.rest.post(`/apps/ui.interaction/${appId}`, {
+						...userInteraction,
+						triggerId,
+					})) as UiKit.ServerInteraction;
+
+					this.handleServerInteraction(interaction);
+				} finally {
+					switch (userInteraction.type) {
+						case 'viewSubmit':
+							if (!!interaction && !['errors', 'modal.update', 'contextual_bar.update'].includes(interaction.type))
+								this.disposeView(userInteraction.viewId);
+							break;
+
+						case 'viewClosed':
+							if (!!interaction && interaction.type !== 'errors') this.disposeView(userInteraction.payload.viewId);
+							break;
+					}
+				}
+			},
+			{ triggerId, appId, ...('viewId' in userInteraction ? { viewId: userInteraction.viewId } : {}) },
+		);
 	}
 
-	public handleServerInteraction(interaction: UiKit.ServerInteraction) {
-		const { triggerId } = interaction;
+	protected async runWithTimeout<T>(task: () => Promise<T>, details: { triggerId: string; appId: string; viewId?: string }) {
+		this.notifyBusy();
 
-		if (!this.triggersId.has(triggerId)) {
-			return;
+		let timer: ReturnType<typeof setTimeout> | undefined;
+
+		try {
+			const taskPromise = task();
+			const timeoutPromise = new Promise<T>((_, reject) => {
+				timer = setTimeout(() => {
+					reject(new UiKitTriggerTimeoutError('Timeout', details));
+				}, ActionManager.TRIGGER_TIMEOUT);
+			});
+
+			return await Promise.race([taskPromise, timeoutPromise]);
+		} catch (error) {
+			if (error instanceof UiKitTriggerTimeoutError) {
+				dispatchToastMessage({
+					type: 'error',
+					message: t('UIKit_Interaction_Timeout'),
+				});
+				if (details.viewId) {
+					this.disposeView(details.viewId);
+				}
+			}
+		} finally {
+			if (timer) clearTimeout(timer);
+			this.notifyIdle();
 		}
+	}
+
+	public handleServerInteraction(interaction: UiKit.ServerInteraction): UiKit.ServerInteraction['type'] | undefined {
+		const { triggerId } = interaction;
 
 		const appId = this.invalidateTriggerId(triggerId);
 		if (!appId) {
@@ -162,8 +199,7 @@ export class ActionManager implements IActionManager {
 
 			case 'banner.close': {
 				const { viewId } = interaction;
-				this.viewInstances.get(viewId)?.close();
-
+				this.disposeView(viewId);
 				break;
 			}
 
@@ -175,9 +211,12 @@ export class ActionManager implements IActionManager {
 
 			case 'contextual_bar.close': {
 				const { view } = interaction;
-				this.viewInstances.get(view.id)?.close();
+				this.disposeView(view.id);
 				break;
 			}
+
+			default:
+				exhaustiveCheck(interaction);
 		}
 
 		return interaction.type;

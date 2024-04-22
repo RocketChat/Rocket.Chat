@@ -8,6 +8,7 @@ import { addUserToRoom } from '../../../../../../app/lib/server/functions/addUse
 import { createRoom } from '../../../../../../app/lib/server/functions/createRoom';
 import { removeUserFromRoom } from '../../../../../../app/lib/server/functions/removeUserFromRoom';
 import { settings } from '../../../../../../app/settings/server';
+import { getDefaultSubscriptionPref } from '../../../../../../app/utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../../../../app/utils/server/lib/getValidRoomName';
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import type { FederatedUser } from '../../../domain/FederatedUser';
@@ -157,8 +158,11 @@ export class RocketChatRoomAdapter {
 					if (subscription) {
 						return;
 					}
-					return Subscriptions.createWithRoomAndUser(room, federatedUser.getInternalReference(), {
+
+					const user = federatedUser.getInternalReference();
+					return Subscriptions.createWithRoomAndUser(room, user, {
 						ts: new Date(),
+						...getDefaultSubscriptionPref(user),
 					});
 				})
 				.filter(Boolean),

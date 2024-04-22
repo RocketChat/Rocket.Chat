@@ -2506,7 +2506,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "Bu varsayılan bir kanaldır ve özel bir grup olarak değiştirmek, artık varsayılan kanal olmamasına neden olacaktır. Devam etmek istiyor musunuz?",
   "Room_description_changed_successfully": "Oda açıklaması başarıyla değiştirildi",
   "Room_has_been_archived": "Oda arşivlendi",
-  "Room_has_been_deleted": "Oda silindi",
   "Room_has_been_unarchived": "Oda arşivden çıkarıldı",
   "Room_Info": "Oda Bilgileri",
   "room_is_blocked": "Bu oda engellendi",

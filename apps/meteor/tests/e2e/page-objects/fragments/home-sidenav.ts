@@ -10,15 +10,15 @@ export class HomeSidenav {
 	}
 
 	get checkboxPrivateChannel(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Private"');
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Private' }) });
 	}
 
 	get checkboxEncryption(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Encrypted"');
+		return this.page.locator('role=dialog[name="Create channel"] >> label >> text="Encrypted"');
 	}
 
 	get checkboxReadOnly(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Read Only"');
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Read-only' }) });
 	}
 
 	get inputChannelName(): Locator {
@@ -35,6 +35,18 @@ export class HomeSidenav {
 
 	get inputSearch(): Locator {
 		return this.page.locator('[placeholder="Search (Ctrl+K)"]').first();
+	}
+
+	get userProfileMenu(): Locator {
+		return this.page.getByRole('button', { name: 'User menu' });
+	}
+
+	get sidebarChannelsList(): Locator {
+		return this.page.getByRole('list', { name: 'Channels' });
+	}
+
+	get sidebarToolbar(): Locator {
+		return this.page.getByRole('toolbar', { name: 'Sidebar actions' });
 	}
 
 	getSidebarItemByName(name: string): Locator {
@@ -68,18 +80,18 @@ export class HomeSidenav {
 	}
 
 	async logout(): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
+		await this.userProfileMenu.click();
 		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
 	}
 
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
+		await this.userProfileMenu.click();
 		await this.page.locator(`role=menuitemcheckbox[name="${status}"]`).click();
 	}
 
 	async openChat(name: string): Promise<void> {
 		await this.page.locator('role=navigation >> role=button[name=Search]').click();
-		await this.page.locator('role=search >> role=searchbox').type(name);
+		await this.page.locator('role=search >> role=searchbox').fill(name);
 		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
 		await this.waitForChannel();
 	}

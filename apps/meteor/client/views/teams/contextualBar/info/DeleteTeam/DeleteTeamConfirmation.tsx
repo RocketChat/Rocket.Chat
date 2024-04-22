@@ -20,14 +20,14 @@ const DeleteTeamConfirmation = ({ deletedRooms, keptRooms, onConfirm, onReturn, 
 	return (
 		<GenericModal
 			variant='danger'
-			title={t('Deleting')}
+			title={t('Delete_roomType', { roomType: 'team' })}
 			onConfirm={() => onConfirm(roomIds)}
 			onCancel={onReturn}
-			confirmText={t('Remove')}
+			confirmText={t('Yes_delete_it')}
 			cancelText={t('Back')}
 			onClose={onCancel}
 		>
-			<p>{t('Teams_delete_team')}</p>
+			<p>{t('Delete_roomType_description', { roomType: 'team' })}</p>
 			{!!Object.values(deletedRooms).length && (
 				<>
 					<br />

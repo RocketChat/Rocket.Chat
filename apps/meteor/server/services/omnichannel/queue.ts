@@ -1,4 +1,5 @@
-import type { InquiryWithAgentInfo, IOmnichannelQueue } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { type InquiryWithAgentInfo, type IOmnichannelQueue } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
@@ -98,9 +99,11 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				// Note: this removes the "one-shot" behavior of queue, allowing it to take a conversation again in the future
 				// And sorting them by _updatedAt: -1 will make it so that the oldest inquiries are taken first
 				// preventing us from playing with the same inquiry over and over again
+				queueLogger.debug(`Inquiry ${nextInquiry._id} not taken. Unlocking and re-queueing`);
 				return await LivechatInquiry.unlockAndQueue(nextInquiry._id);
 			}
 
+			queueLogger.debug(`Inquiry ${nextInquiry._id} taken successfully. Unlocking`);
 			await LivechatInquiry.unlock(nextInquiry._id);
 			queueLogger.debug({
 				msg: 'Inquiry processed',
@@ -135,26 +138,74 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		void (routingSupportsAutoAssign ? this.start() : this.stop());
 	}
 
+	private async reconciliation(reason: 'closed' | 'taken' | 'missing', { roomId, inquiryId }: { roomId: string; inquiryId: string }) {
+		switch (reason) {
+			case 'closed': {
+				queueLogger.debug({
+					msg: 'Room closed. Removing inquiry',
+					roomId,
+					inquiryId,
+					step: 'reconciliation',
+				});
+				await LivechatInquiry.removeByRoomId(roomId);
+				break;
+			}
+			case 'taken': {
+				queueLogger.debug({
+					msg: 'Room taken. Updating inquiry status',
+					roomId,
+					inquiryId,
+					step: 'reconciliation',
+				});
+				// Reconciliate served inquiries, by updating their status to taken after queue tried to pick and failed
+				await LivechatInquiry.takeInquiry(inquiryId);
+				break;
+			}
+			case 'missing': {
+				queueLogger.debug({
+					msg: 'Room from inquiry missing. Removing inquiry',
+					roomId,
+					inquiryId,
+					step: 'reconciliation',
+				});
+				await LivechatInquiry.removeByRoomId(roomId);
+				break;
+			}
+			default: {
+				return true;
+			}
+		}
+
+		return true;
+	}
+
 	private async processWaitingQueue(department: string | undefined, inquiry: InquiryWithAgentInfo) {
 		const queue = department || 'Public';
-		queueLogger.debug(`Processing items on queue ${queue}`);
 
 		queueLogger.debug(`Processing inquiry ${inquiry._id} from queue ${queue}`);
 		const { defaultAgent } = inquiry;
 
-		const roomFromDb = await LivechatRooms.findOneById(inquiry.rid, { projection: { servedBy: 1 } });
+		const roomFromDb = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'servedBy' | 'closedAt'>>(inquiry.rid, {
+			projection: { servedBy: 1, closedAt: 1 },
+		});
+
+		// This is a precaution to avoid taking inquiries tied to rooms that no longer exist.
+		// This should never happen.
+		if (!roomFromDb) {
+			return this.reconciliation('missing', { roomId: inquiry.rid, inquiryId: inquiry._id });
+		}
 
 		// This is a precaution to avoid taking the same inquiry multiple times. It should not happen, but it's a safety net
-		if (roomFromDb?.servedBy) {
-			queueLogger.debug(`Inquiry ${inquiry._id} already taken by agent ${roomFromDb.servedBy._id}. Skipping`);
-			return true;
+		if (roomFromDb.servedBy) {
+			return this.reconciliation('taken', { roomId: inquiry.rid, inquiryId: inquiry._id });
+		}
+
+		// This is another precaution. If the room is closed, we should not take it
+		if (roomFromDb.closedAt) {
+			return this.reconciliation('closed', { roomId: inquiry.rid, inquiryId: inquiry._id });
 		}
 
 		const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
-
-		const propagateAgentDelegated = async (rid: string, agentId: string) => {
-			await dispatchAgentDelegated(rid, agentId);
-		};
 
 		if (room?.servedBy) {
 			const {
@@ -163,13 +214,12 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 			} = room;
 			queueLogger.debug(`Inquiry ${inquiry._id} taken successfully by agent ${agentId}. Notifying`);
 			setTimeout(() => {
-				void propagateAgentDelegated(rid, agentId);
+				void dispatchAgentDelegated(rid, agentId);
 			}, 1000);
 
 			return true;
 		}
 
-		queueLogger.debug(`Inquiry ${inquiry._id} not taken by any agent. Queueing again`);
 		return false;
 	}
 }
