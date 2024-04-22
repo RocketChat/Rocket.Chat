@@ -6,7 +6,13 @@ import { MessageContainer } from '../MessageContainer';
 import { MessageContent } from '../MessageContent';
 import { TypingDots } from '../TypingDots';
 
-export const TypingIndicator = memo(({ avatarResolver = () => null, usernames = [], text, ...containerProps }) => (
+type TypingIndicatorProps = {
+	avatarResolver?: (username: string) => string;
+	usernames?: string[];
+	text: string;
+};
+
+export const TypingIndicator = memo(({ avatarResolver, usernames = [], text, ...containerProps }: TypingIndicatorProps) => (
 	<MessageContainer {...containerProps}>
 		<MessageAvatars avatarResolver={avatarResolver} usernames={usernames} />
 		<MessageContent>
