@@ -117,6 +117,16 @@ describe('AutoCloseOnHoldScheduler', () => {
 			mockAgendaDefine.resetHistory();
 		});
 
+		it('should fail if scheduler has not been init', async () => {
+			const scheduler = new AutoCloseOnHoldSchedulerClass();
+
+			try {
+				await scheduler.scheduleRoom('roomId', 5, 'test comment');
+			} catch (e: any) {
+				expect(e.message).to.equal('AutoCloseOnHoldScheduler is not running');
+			}
+		});
+
 		it('should schedule a room', async () => {
 			const scheduler = new AutoCloseOnHoldSchedulerClass();
 
@@ -144,8 +154,8 @@ describe('AutoCloseOnHoldScheduler', () => {
 
 			try {
 				await scheduler.unscheduleRoom('roomId');
-			} catch (e) {
-				expect(e).not.to.be.undefined;
+			} catch (e: any) {
+				expect(e.message).to.equal('AutoCloseOnHoldScheduler is not running');
 			}
 		});
 
