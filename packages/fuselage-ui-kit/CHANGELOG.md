@@ -1,5 +1,136 @@
 # Change Log
 
+## 5.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7ac473df7a]:</summary>
+
+  - @rocket.chat/eslint-config@0.6.2
+  - @rocket.chat/gazzodown@5.0.0
+  - @rocket.chat/ui-contexts@5.0.0
+  - @rocket.chat/ui-kit@0.33.0
+  - @rocket.chat/ui-video-conf@5.0.0
+  - @rocket.chat/ui-avatar@1.0.0
+  </details>
+
+## 5.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.0-rc.4
+  - @rocket.chat/ui-contexts@5.0.0-rc.4
+  - @rocket.chat/ui-avatar@1.0.0-rc.4
+  - @rocket.chat/ui-video-conf@5.0.0-rc.4
+  </details>
+
+## 5.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.0-rc.3
+  - @rocket.chat/ui-contexts@5.0.0-rc.3
+  - @rocket.chat/ui-avatar@1.0.0-rc.3
+  - @rocket.chat/ui-video-conf@5.0.0-rc.3
+  </details>
+
+## 5.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.0-rc.2
+  - @rocket.chat/ui-contexts@5.0.0-rc.2
+  - @rocket.chat/ui-avatar@1.0.0-rc.2
+  - @rocket.chat/ui-video-conf@5.0.0-rc.2
+  </details>
+
+## 5.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.0-rc.1
+  - @rocket.chat/ui-contexts@5.0.0-rc.1
+  - @rocket.chat/ui-avatar@1.0.0-rc.1
+  - @rocket.chat/ui-video-conf@5.0.0-rc.1
+  </details>
+
+## 5.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7ac473df7a]:</summary>
+
+  - @rocket.chat/eslint-config@0.6.2-rc.0
+  - @rocket.chat/gazzodown@5.0.0-rc.0
+  - @rocket.chat/ui-contexts@5.0.0-rc.0
+  - @rocket.chat/ui-kit@0.33.0
+  - @rocket.chat/ui-video-conf@5.0.0-rc.0
+  - @rocket.chat/ui-avatar@1.0.0-rc.0
+  </details>
+
+## 4.0.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.6
+  - @rocket.chat/ui-contexts@4.0.6
+  - @rocket.chat/ui-video-conf@4.0.6
+  </details>
+
+## 4.0.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.5
+  - @rocket.chat/gazzodown@4.0.5
+  - @rocket.chat/ui-video-conf@4.0.5
+  </details>
+
+## 4.0.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.4
+  - @rocket.chat/ui-contexts@4.0.4
+  - @rocket.chat/ui-video-conf@4.0.4
+  </details>
+
+## 4.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.3
+  - @rocket.chat/ui-contexts@4.0.3
+  - @rocket.chat/ui-video-conf@4.0.3
+  </details>
+
+## 4.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@4.0.2
+  - @rocket.chat/gazzodown@4.0.2
+  - @rocket.chat/ui-video-conf@4.0.2
+  </details>
+
 ## 4.0.1
 
 ### Patch Changes

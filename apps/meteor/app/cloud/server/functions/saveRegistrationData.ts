@@ -1,6 +1,6 @@
+import { applyLicense } from '@rocket.chat/license';
 import { Settings, WorkspaceCredentials } from '@rocket.chat/models';
 
-import { applyLicense } from '../../../../ee/app/license/server/applyLicense';
 import { settings } from '../../../settings/server';
 import { syncCloudData } from './syncWorkspace/syncCloudData';
 

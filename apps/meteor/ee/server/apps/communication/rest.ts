@@ -551,10 +551,7 @@ export class AppsRestApi {
 
 					try {
 						const { event, externalComponent } = this.bodyParams;
-						const result = (Apps?.getBridges()?.getListenerBridge() as Record<string, any>).externalComponentEvent(
-							event,
-							externalComponent,
-						);
+						const result = (Apps.getBridges()?.getListenerBridge() as Record<string, any>).externalComponentEvent(event, externalComponent);
 
 						return API.v1.success({ result });
 					} catch (e: any) {
