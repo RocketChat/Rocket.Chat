@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import mock from 'proxyquire';
+import Sinon from 'sinon';
 
 import type { PermissionsPayload } from '../../../../../../../app/api/server/api.helpers';
 
@@ -18,6 +19,11 @@ const mocks = {
 		},
 		hasAtLeastOnePermissionAsync: (userId: string, permissions: string[]): boolean => {
 			return permissions.some((permission) => userPermissions[userId].includes(permission));
+		},
+	},
+	'../../lib/server/lib/deprecationWarningLogger': {
+		apiDeprecationLogger: {
+			endpoint: Sinon.stub(),
 		},
 	},
 };

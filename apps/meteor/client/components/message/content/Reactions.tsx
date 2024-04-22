@@ -23,25 +23,22 @@ const Reactions = ({ message, ...props }: ReactionsProps): ReactElement => {
 	const { toolbarProps } = useToolbar(props, ref);
 
 	return (
-		<MessageReactions>
-			{message.reactions && (
-				<div ref={ref} {...toolbarProps} {...props}>
-					{Object.entries(message.reactions).map(([name, reactions]) => (
-						<Reaction
-							key={name}
-							counter={reactions.usernames.length}
-							hasReacted={hasReacted}
-							name={name}
-							names={reactions.usernames.filter((user) => user !== username).map((username) => `@${username}`)}
-							messageId={message._id}
-							onKeyDown={(e: KeyboardEvent) =>
-								(e.code === 'Space' || e.code === 'Enter') && toggleReactionMutation.mutate({ mid: message._id, reaction: name })
-							}
-							onClick={() => toggleReactionMutation.mutate({ mid: message._id, reaction: name })}
-						/>
-					))}
-				</div>
-			)}
+		<MessageReactions ref={ref} {...toolbarProps} {...props}>
+			{message.reactions &&
+				Object.entries(message.reactions).map(([name, reactions]) => (
+					<Reaction
+						key={name}
+						counter={reactions.usernames.length}
+						hasReacted={hasReacted}
+						name={name}
+						names={reactions.usernames.filter((user) => user !== username).map((username) => `@${username}`)}
+						messageId={message._id}
+						onKeyDown={(e: KeyboardEvent) =>
+							(e.code === 'Space' || e.code === 'Enter') && toggleReactionMutation.mutate({ mid: message._id, reaction: name })
+						}
+						onClick={() => toggleReactionMutation.mutate({ mid: message._id, reaction: name })}
+					/>
+				))}
 			<MessageReactionAction
 				title={t('Add_Reaction')}
 				onKeyDown={(e: KeyboardEvent) => (e.code === 'Space' || e.code === 'Enter') && openEmojiPicker(e)}
