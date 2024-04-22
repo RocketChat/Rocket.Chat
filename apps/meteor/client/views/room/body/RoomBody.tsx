@@ -1,15 +1,12 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
+import type { MouseEventHandler, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo, useRef } from 'react';
 
-import { RoomRoles } from '../../../../app/models/client';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
-import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import Announcement from '../Announcement';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
@@ -19,12 +16,10 @@ import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
-import { useUserCard } from '../contexts/UserCardContext';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
-import LeaderBar from './LeaderBar';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
 import RetentionPolicyWarning from './RetentionPolicyWarning';
 import RoomForeword from './RoomForeword/RoomForeword';
@@ -34,7 +29,6 @@ import { useFileUpload } from './hooks/useFileUpload';
 import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
-import { useLeaderBanner } from './hooks/useLeaderBanner';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
@@ -86,8 +80,6 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
-	const useRealName = useSetting('UI_Use_Real_Name') as boolean;
-
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
 
 	const {
@@ -103,8 +95,6 @@ const RoomBody = (): ReactElement => {
 	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom } = useListIsAtBottom();
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
-
-	const { wrapperRef: leaderBannerWrapperRef, hideLeaderHeader, innerRef: leaderBannerInnerRef } = useLeaderBanner();
 
 	const {
 		uploads,
@@ -130,14 +120,11 @@ const RoomBody = (): ReactElement => {
 		restoreScrollPositionInnerRef,
 		isAtBottomInnerRef,
 		newMessagesScrollRef,
-		leaderBannerInnerRef,
 		unreadBarInnerRef,
 		getMoreInnerRef,
 
 		messageListRef,
 	);
-
-	const wrapperBoxRefs = useMergedRefs(unreadBarWrapperRef, leaderBannerWrapperRef);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat.messageEditing.toPreviousMessage();
@@ -179,39 +166,9 @@ const RoomBody = (): ReactElement => {
 		[toolbox],
 	);
 
-	const { openUserCard, triggerProps } = useUserCard();
-
-	const handleOpenUserCard = useCallback(
-		(event: UIEvent, username: IUser['username']) => {
-			if (!username) {
-				return;
-			}
-
-			openUserCard(event, username);
-		},
-		[openUserCard],
-	);
-
 	useGoToHomeOnRemoved(room, user?._id);
 	useReadMessageWindowEvents();
 	useQuoteMessageByUrl();
-
-	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], () => {
-		const leaderRoomRole = RoomRoles.findOne({
-			'rid': room._id,
-			'roles': 'leader',
-			'u._id': { $ne: user?._id },
-		});
-
-		if (!leaderRoomRole) {
-			return null;
-		}
-
-		return {
-			...leaderRoomRole.u,
-			name: useRealName ? leaderRoomRole.u.name || leaderRoomRole.u.username : leaderRoomRole.u.username,
-		};
-	});
 
 	return (
 		<>
@@ -224,19 +181,9 @@ const RoomBody = (): ReactElement => {
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
-						<div className='messages-container-main' ref={wrapperBoxRefs} {...fileUploadTriggerProps}>
+						<div className='messages-container-main' ref={unreadBarWrapperRef} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<Box position='absolute' w='full'>
-								{roomLeader ? (
-									<LeaderBar
-										_id={roomLeader._id}
-										username={roomLeader.username}
-										name={roomLeader.name}
-										visible={!hideLeaderHeader}
-										onAvatarClick={handleOpenUserCard}
-										triggerProps={triggerProps}
-									/>
-								) : null}
 								<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
 									{uploads.map((upload) => (
 										<UploadProgressIndicator
@@ -260,7 +207,7 @@ const RoomBody = (): ReactElement => {
 								<BubbleDate ref={bubbleRef} {...bubbleDate} />
 							</Box>
 
-							<div className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}>
+							<div className='messages-box'>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
 								<JumpToRecentMessageButton
 									visible={hasMoreNextMessages}
