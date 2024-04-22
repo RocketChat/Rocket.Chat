@@ -14,7 +14,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 	const t = useTranslation();
 	const router = useRouter();
 	const setModal = useSetModal();
-	const isModalOpen = useCurrentModal() !== null;
+	const isModalOpen = !!useCurrentModal();
 
 	const hasDeviceManagement = useHasLicenseModule('device-management') as boolean;
 	const canViewDeviceManagement = usePermission('view-device-management');

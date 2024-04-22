@@ -25,7 +25,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	const t = useTranslation();
 	const canViewEngagementDashboard = usePermission('view-engagement-dashboard');
 	const setModal = useSetModal();
-	const isModalOpen = useCurrentModal() !== null;
+	const isModalOpen = !!useCurrentModal();
 
 	const router = useRouter();
 	const tab = useRouteParameter('tab');
@@ -35,6 +35,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 
 	const { shouldShowUpsell, handleManageSubscription } = useUpsellActions(hasEngagementDashboard);
 
+	console.log({ shouldShowUpsell, handleManageSubscription });
 	useEffect(() => {
 		if (shouldShowUpsell) {
 			setModal(
