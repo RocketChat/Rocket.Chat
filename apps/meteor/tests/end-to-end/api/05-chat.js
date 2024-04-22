@@ -3,6 +3,7 @@ import { after, before, beforeEach, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, message } from '../../data/api-data.js';
 import { sendSimpleMessage, deleteMessage, pinMessage } from '../../data/chat.helper.js';
+import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper.js';
 import { password } from '../../data/user';
@@ -1100,6 +1101,234 @@ describe('[Chat]', function () {
 					expect(res.body).to.have.property('error', 'Not enough permission');
 				})
 				.end(done);
+		});
+
+		describe('customFields', () => {
+			async function testMessageSending({ customFields, testCb, statusCode }) {
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: testChannel._id,
+							msg: 'Sample message',
+							customFields,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(statusCode)
+					.expect(testCb);
+
+				await (customFields
+					? request.post(api(`rooms.upload/${testChannel._id}`)).field('customFields', JSON.stringify(customFields))
+					: request.post(api(`rooms.upload/${testChannel._id}`))
+				)
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect('Content-Type', 'application/json')
+					.expect(statusCode)
+					.expect(testCb);
+
+				await request
+					.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						roomId: testChannel._id,
+						msg: 'Sample message',
+						customFields,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(statusCode)
+					.expect(testCb);
+			}
+			describe('when disabled', () => {
+				it('should not allow sending custom fields', async () => {
+					await testMessageSending({
+						customFields: {
+							field1: 'value1',
+						},
+						statusCode: 400,
+						testCb: (res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'Custom fields not enabled');
+						},
+					});
+				});
+
+				it('should not allow update custom fields', async () => {
+					const res = await sendSimpleMessage({ roomId: testChannel._id });
+					const msgId = res.body.message._id;
+
+					await request
+						.post(api('chat.update'))
+						.set(credentials)
+						.send({
+							roomId: testChannel._id,
+							msgId,
+							text: 'Sample message Updated',
+							customFields: {
+								field1: 'value1',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'Custom fields not enabled');
+						});
+				});
+			});
+
+			describe('when enabled', () => {
+				before(async () => {
+					await updateSetting('Message_CustomFields_Enabled', true);
+					await updateSetting(
+						'Message_CustomFields',
+						JSON.stringify({
+							properties: {
+								priority: {
+									type: 'string',
+									nullable: false,
+									enum: ['low', 'medium', 'high'],
+								},
+							},
+							required: ['priority'],
+						}),
+					);
+				});
+
+				after(async () => {
+					await updateSetting('Message_CustomFields_Enabled', false);
+				});
+
+				it('should allow not sending custom fields', async () => {
+					await testMessageSending({
+						statusCode: 200,
+						testCb: (res) => {
+							expect(res.body).to.have.property('success', true);
+						},
+					});
+				});
+
+				it('should not allow sending empty custom fields', async () => {
+					await testMessageSending({
+						customFields: {},
+						statusCode: 400,
+						testCb: (res) => {
+							expect(res.body).to.have.property('success', false);
+						},
+					});
+				});
+
+				it('should not allow sending wrong custom fields', async () => {
+					await testMessageSending({
+						customFields: {
+							field1: 'value1',
+						},
+						statusCode: 400,
+						testCb: (res) => {
+							expect(res.body).to.have.property('success', false);
+						},
+					});
+				});
+
+				it('should allow sending correct custom fields', async () => {
+					await testMessageSending({
+						customFields: {
+							priority: 'low',
+						},
+						statusCode: 200,
+						testCb: (res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body.message).to.have.property('customFields').to.deep.equal({ priority: 'low' });
+						},
+					});
+				});
+
+				it('should allow not sending custom fields on update', async () => {
+					const res = await sendSimpleMessage({ roomId: testChannel._id });
+					const msgId = res.body.message._id;
+
+					await request
+						.post(api('chat.update'))
+						.set(credentials)
+						.send({
+							roomId: testChannel._id,
+							msgId,
+							text: 'Sample message Updated',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						});
+				});
+
+				it('should not allow update empty custom fields', async () => {
+					const res = await sendSimpleMessage({ roomId: testChannel._id });
+					const msgId = res.body.message._id;
+
+					await request
+						.post(api('chat.update'))
+						.set(credentials)
+						.send({
+							roomId: testChannel._id,
+							msgId,
+							text: 'Sample message Updated',
+							customFields: {},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						});
+				});
+
+				it('should not allow update wrong custom fields', async () => {
+					const res = await sendSimpleMessage({ roomId: testChannel._id });
+					const msgId = res.body.message._id;
+
+					await request
+						.post(api('chat.update'))
+						.set(credentials)
+						.send({
+							roomId: testChannel._id,
+							msgId,
+							text: 'Sample message Updated',
+							customFields: {
+								field1: 'value1',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						});
+				});
+
+				it('should allow update correct custom fields', async () => {
+					const res = await sendSimpleMessage({ roomId: testChannel._id });
+					const msgId = res.body.message._id;
+
+					await request
+						.post(api('chat.update'))
+						.set(credentials)
+						.send({
+							roomId: testChannel._id,
+							msgId,
+							text: 'Sample message Updated',
+							customFields: {
+								priority: 'low',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body.message).to.have.property('customFields').to.deep.equal({ priority: 'low' });
+						});
+				});
+			});
 		});
 	});
 

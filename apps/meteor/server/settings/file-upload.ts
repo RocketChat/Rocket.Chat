@@ -110,6 +110,8 @@ export const createFileUploadSettings = () =>
 				type: 'password',
 				autocomplete: false,
 				secret: true,
+				i18nLabel: 'FileUpload_S3_AWSAccessKeyId',
+				i18nDescription: 'FileUpload_S3_AWSAccessKeyId_desc',
 				enableQuery: {
 					_id: 'FileUpload_Storage_Type',
 					value: 'AmazonS3',
@@ -119,6 +121,8 @@ export const createFileUploadSettings = () =>
 				type: 'password',
 				autocomplete: false,
 				secret: true,
+				i18nLabel: 'FileUpload_S3_AWSSecretAccessKey',
+				i18nDescription: 'FileUpload_S3_AWSSecretAccessKey_desc',
 				enableQuery: {
 					_id: 'FileUpload_Storage_Type',
 					value: 'AmazonS3',
