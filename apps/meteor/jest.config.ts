@@ -22,7 +22,7 @@ const config: Config = {
 				'\\.css$': 'identity-obj-proxy',
 				'^react($|/.+)': '<rootDir>/node_modules/react$1',
 				'^@tanstack/(.+)': '<rootDir>/node_modules/@tanstack/$1',
-				'^meteor/(.*)$': '<rootDir>/.meteorMocks/index.js',
+				'^meteor/(.*)': '<rootDir>/.meteorMocks/index.ts',
 			},
 		},
 		{
