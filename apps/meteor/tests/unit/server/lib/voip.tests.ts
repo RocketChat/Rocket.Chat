@@ -3,7 +3,7 @@ import { FreeSwitchClient, FreeSwitchServer, once } from 'esl';
 
 async function connectVoIP() {
 	const client = new FreeSwitchClient({
-		host: 'host-address',
+		...(process.env.FREESWITCHIP ? { host: process.env.FREESWITCHIP } : {}),
 		port: 8021,
 	});
 
