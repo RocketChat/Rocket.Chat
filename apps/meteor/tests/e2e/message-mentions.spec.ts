@@ -38,6 +38,66 @@ test.describe.serial('message-mentions', () => {
 		await expect(poHomeChannel.content.messagePopupUsers.locator('role=listitem >> text="here"')).toBeVisible();
 	});
 
+	test.describe('Should not allow to send @all mention if permission to do so is disabled', () => {
+		test.beforeAll(async ({ api }) => {
+			expect((await api.post('/permissions.update', { permissions: [{ '_id': 'mention-all', 'roles': [] }] })).status()).toBe(200);
+		});
+
+		test.afterAll(async ({ api }) => {
+			expect((await api.post('/permissions.update', { permissions: [{ '_id': 'mention-all', 'roles': ['admin'] }] })).status()).toBe(200);
+		});
+
+		test('expect to receive an error as notification when sending @all while permission is disabled', async ({ page }) => {
+			const adminPage = new HomeChannel(page);
+			let targetChannel2: string;
+
+			await test.step('create private room', async () => {
+				targetChannel2 = faker.string.uuid();
+
+				await poHomeChannel.sidenav.openNewByLabel('Channel');
+				await poHomeChannel.sidenav.inputChannelName.type(targetChannel2);
+				await poHomeChannel.sidenav.btnCreate.click();
+
+				await expect(page).toHaveURL(`/group/${targetChannel2}`);
+			});
+			await test.step('receive notify message', async () => {
+				await adminPage.sidenav.openChat(targetChannel2);
+				await adminPage.content.dispatchSlashCommand('@all');
+				await expect(adminPage.content.lastUserMessage).toContainText('Notify all in this room is not allowed');
+			});
+		});
+	});
+
+	test.describe('Should not allow to send @here mention if permission to do so is disabled', () => {
+		test.beforeAll(async ({ api }) => {
+			expect((await api.post('/permissions.update', { permissions: [{ '_id': 'mention-here', 'roles': [] }] })).status()).toBe(200);
+		});
+
+		test.afterAll(async ({ api }) => {
+			expect((await api.post('/permissions.update', { permissions: [{ '_id': 'mention-here', 'roles': ['admin'] }] })).status()).toBe(200);
+		});
+
+		test('expect to receive an error as notification when sending here while permission is disabled', async ({ page }) => {
+			const adminPage = new HomeChannel(page);
+			let targetChannel2: string;
+
+			await test.step('create private room', async () => {
+				targetChannel2 = faker.string.uuid();
+
+				await poHomeChannel.sidenav.openNewByLabel('Channel');
+				await poHomeChannel.sidenav.inputChannelName.type(targetChannel2);
+				await poHomeChannel.sidenav.btnCreate.click();
+
+				await expect(page).toHaveURL(`/group/${targetChannel2}`);
+			});
+			await test.step('receive notify message', async () => {
+				await adminPage.sidenav.openChat(targetChannel2);
+				await adminPage.content.dispatchSlashCommand('@here');
+				await expect(adminPage.content.lastUserMessage).toContainText('Notify all in this room is not allowed');
+			});
+		});
+	});
+
 	test.describe('users not in channel', () => {
 		let targetChannel: string;
 		let targetChannel2: string;

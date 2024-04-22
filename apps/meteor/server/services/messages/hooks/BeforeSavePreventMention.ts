@@ -4,8 +4,6 @@ import { type IMessage, type IUser } from '@rocket.chat/core-typings';
 import { i18n } from '../../../lib/i18n';
 
 export class BeforeSavePreventMention {
-	constructor(private api?: IApiService) {}
-
 	async preventMention({
 		message,
 		user,
@@ -32,16 +30,9 @@ export class BeforeSavePreventMention {
 
 		const action = i18n.t('Notify_all_in_this_room', { lng: user.language });
 
-		// Add a notification to the chat, informing the user that this
-		// action is not allowed.
-		void this.api?.broadcast('notify.ephemeralMessage', message.u._id, message.rid, {
-			// TODO: i18n
-			msg: i18n.t('error-action-not-allowed', { action } as any, user.language),
-		});
-
 		// Also throw to stop propagation of 'sendMessage'.
 		throw new MeteorError('error-action-not-allowed', `Notify ${mention} in this room not allowed`, {
-			action: 'Notify_all_in_this_room',
+			action,
 		});
 	}
 }
