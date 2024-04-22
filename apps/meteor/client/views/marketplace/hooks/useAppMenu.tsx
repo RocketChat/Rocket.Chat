@@ -1,6 +1,6 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Icon, type Menu } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
 import {
 	useSetModal,
 	useEndpoint,
@@ -10,7 +10,7 @@ import {
 	usePermission,
 	useRouter,
 } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
+import type { MouseEvent, ReactNode } from 'react';
 import React, { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
 
@@ -29,9 +29,19 @@ import { useMarketplaceActions } from './useMarketplaceActions';
 import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
 import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
 
-type UseAppMenuReturn = { isLoading: boolean; isAdminUser: boolean; menuOptions: ComponentProps<typeof Menu>['options'] };
+export type AppMenuOption = {
+	id: string;
+	section: number;
+	content: ReactNode;
+	disabled?: boolean;
+	onClick?: (e?: MouseEvent<HTMLElement>) => void;
+};
 
-export const useAppMenu = (app: App, isAppDetailsPage: boolean): UseAppMenuReturn => {
+type AppMenuSections = {
+	items: AppMenuOption[];
+}[];
+
+export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const t = useTranslation();
 	const router = useRouter();
 	const setModal = useSetModal();
@@ -62,10 +72,10 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean): UseAppMenuRetur
 		| 'Requested';
 	const action = button?.action || '';
 
-	const setAppStatus = useEndpoint('POST', `/apps/:id/status`, { id: app.id });
+	const setAppStatus = useEndpoint<'POST', '/apps/:id/status'>('POST', '/apps/:id/status', { id: app.id });
 	const buildExternalUrl = useEndpoint('GET', '/apps');
-	const syncApp = useEndpoint('POST', `/apps/:id/sync`, { id: app.id });
-	const uninstallApp = useEndpoint('DELETE', `/apps/:id`, { id: app.id });
+	const syncApp = useEndpoint<'POST', '/apps/:id/sync'>('POST', '/apps/:id/sync', { id: app.id });
+	const uninstallApp = useEndpoint<'DELETE', '/apps/:id'>('DELETE', '/apps/:id', { id: app.id });
 
 	const canAppBeSubscribed = app.purchaseType === 'subscription';
 	const isSubscribed = app.subscriptionInfo && ['active', 'trialing'].includes(app.subscriptionInfo.status);
@@ -295,124 +305,128 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean): UseAppMenuRetur
 
 	const canUpdate = app.installed && app.version && app.marketplaceVersion && semver.lt(app.version, app.marketplaceVersion);
 
-	const menuOptions = useMemo(() => {
-		const bothAppStatusOptions = {
-			...(canAppBeSubscribed &&
+	const menuSections = useMemo(() => {
+		const bothAppStatusOptions = [
+			canAppBeSubscribed &&
 				isSubscribed &&
 				isAdminUser && {
-					subscribe: {
-						label: (
-							<>
-								<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' mie={4} />
-								{t('Subscription')}
-							</>
-						),
-						action: handleSubscription,
-					},
-				}),
-		};
+					id: 'subscribe',
+					section: 0,
+					content: (
+						<>
+							<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' mie={4} />
+							{t('Subscription')}
+						</>
+					),
+					onClick: handleSubscription,
+				},
+		];
 
-		const nonInstalledAppOptions = {
-			...(!app.installed &&
-				button && {
-					acquire: {
-						label: (
-							<>
-								{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' mie={4} />}
-								{t(buttonLabel)}
-							</>
-						),
-						action: handleAcquireApp,
-						disabled: requestedEndUser,
-					},
-				}),
-		};
+		const nonInstalledAppOptions = [
+			!app.installed &&
+				!!button && {
+					id: 'acquire',
+					section: 0,
+					disabled: requestedEndUser,
+					content: (
+						<>
+							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' mie={4} />}
+							{t(buttonLabel)}
+						</>
+					),
+					onClick: handleAcquireApp,
+				},
+		];
 
 		const isEnterpriseOrNot = (app.isEnterpriseOnly && isEnterpriseLicense) || !app.isEnterpriseOnly;
 		const isPossibleToEnableApp = app.installed && isAdminUser && !isAppEnabled && isEnterpriseOrNot;
 		const doesItReachedTheLimit =
 			!app.migrated &&
 			!appCountQuery?.data?.hasUnlimitedApps &&
-			appCountQuery?.data?.enabled &&
+			!!appCountQuery?.data?.enabled &&
 			appCountQuery?.data?.enabled >= appCountQuery?.data?.limit;
 
-		const installedAppOptions = {
-			...(context !== 'details' &&
+		const installedAppOptions = [
+			context !== 'details' &&
 				isAdminUser &&
 				app.installed && {
-					viewLogs: {
-						label: (
-							<>
-								<Icon name='desktop-text' size='x16' mie={4} />
-								{t('View_Logs')}
-							</>
-						),
-						action: handleViewLogs,
-					},
-				}),
-			...(isAdminUser &&
-				canUpdate &&
-				!isAppDetailsPage && {
-					update: {
-						label: (
-							<>
-								<Icon name={incompatibleIconName(app, 'update')} size='x16' mie={4} />
-								{t('Update')}
-							</>
-						),
-						action: handleUpdate,
-					},
-				}),
-			...(app.installed &&
-				isAdminUser &&
-				isAppEnabled && {
-					disable: {
-						label: (
-							<Box color='status-font-on-warning'>
-								<Icon name='ban' size='x16' mie={4} />
-								{t('Disable')}
-							</Box>
-						),
-						action: handleDisable,
-					},
-				}),
-			...(isPossibleToEnableApp && {
-				enable: {
-					label: (
+					id: 'viewLogs',
+					section: 0,
+					content: (
 						<>
-							<Icon name='check' size='x16' marginInlineEnd='x4' />
-							{t('Enable')}
+							<Icon name='desktop-text' size='x16' mie={4} />
+							{t('View_Logs')}
 						</>
 					),
-					disabled: Boolean(doesItReachedTheLimit),
-					action: handleEnable,
+					onClick: handleViewLogs,
 				},
-			}),
-			...(app.installed &&
+			isAdminUser &&
+				!!canUpdate &&
+				!isAppDetailsPage && {
+					id: 'update',
+					section: 0,
+					content: (
+						<>
+							<Icon name={incompatibleIconName(app, 'update')} size='x16' mie={4} />
+							{t('Update')}
+						</>
+					),
+					onClick: handleUpdate,
+				},
+			app.installed &&
+				isAdminUser &&
+				isAppEnabled && {
+					id: 'disable',
+					section: 0,
+					content: (
+						<Box color='status-font-on-warning'>
+							<Icon name='ban' size='x16' mie={4} />
+							{t('Disable')}
+						</Box>
+					),
+					onClick: handleDisable,
+				},
+			isPossibleToEnableApp && {
+				id: 'enable',
+				section: 0,
+				disabled: doesItReachedTheLimit,
+				content: (
+					<>
+						<Icon name='check' size='x16' marginInlineEnd='x4' />
+						{t('Enable')}
+					</>
+				),
+				onClick: handleEnable,
+			},
+			app.installed &&
 				isAdminUser && {
-					divider: {
-						type: 'divider' as 'divider' | 'option' | 'heading',
-					},
-				}),
-			...(app.installed &&
-				isAdminUser && {
-					uninstall: {
-						label: (
-							<Box color='status-font-on-danger'>
-								<Icon name='trash' size='x16' mie={4} />
-								{t('Uninstall')}
-							</Box>
-						),
-						action: handleUninstall,
-					},
-				}),
-		};
+					id: 'uninstall',
+					section: 1,
+					content: (
+						<Box color='status-font-on-danger'>
+							<Icon name='trash' size='x16' mie={4} />
+							{t('Uninstall')}
+						</Box>
+					),
+					onClick: handleUninstall,
+				},
+		];
 
-		return {
-			...bothAppStatusOptions,
-			...nonInstalledAppOptions,
-			...installedAppOptions,
-		};
+		const filtered = [...bothAppStatusOptions, ...nonInstalledAppOptions, ...installedAppOptions].flatMap((value) =>
+			value && typeof value !== 'boolean' ? value : [],
+		);
+
+		const sections: AppMenuSections = [];
+
+		filtered.forEach((option) => {
+			if (typeof sections[option.section] === 'undefined') {
+				sections[option.section] = { items: [] };
+			}
+
+			sections[option.section].items.push(option);
+		});
+
+		return sections;
 	}, [
 		canAppBeSubscribed,
 		isSubscribed,
@@ -422,9 +436,9 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean): UseAppMenuRetur
 		t,
 		handleSubscription,
 		button,
+		requestedEndUser,
 		buttonLabel,
 		handleAcquireApp,
-		requestedEndUser,
 		isEnterpriseLicense,
 		isAppEnabled,
 		appCountQuery?.data?.hasUnlimitedApps,
@@ -440,5 +454,5 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean): UseAppMenuRetur
 		handleUninstall,
 	]);
 
-	return { isLoading, isAdminUser, menuOptions };
+	return { isLoading, isAdminUser, sections: menuSections };
 };

@@ -1,8 +1,10 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Menu, Skeleton } from '@rocket.chat/fuselage';
+import { MenuItem, MenuItemContent, MenuSection, MenuV2, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
+import { useHandleMenuAction } from '../../components/GenericMenu/hooks/useHandleMenuAction';
+import type { AppMenuOption } from './hooks/useAppMenu';
 import { useAppMenu } from './hooks/useAppMenu';
 
 type AppMenuProps = {
@@ -13,17 +15,34 @@ type AppMenuProps = {
 const AppMenu = ({ app, isAppDetailsPage }: AppMenuProps) => {
 	const t = useTranslation();
 
-	const { isLoading, isAdminUser, menuOptions } = useAppMenu(app, isAppDetailsPage);
+	const { isLoading, isAdminUser, sections } = useAppMenu(app, isAppDetailsPage);
+
+	const itemsList = sections.reduce((acc, { items }) => [...acc, ...items], [] as AppMenuOption[]);
+
+	const onAction = useHandleMenuAction(itemsList);
+	const disabledKeys = itemsList.filter((item) => item.disabled).map((item) => item.id);
 
 	if (isLoading) {
 		return <Skeleton variant='rect' height='x28' width='x28' />;
 	}
 
-	if (!isAdminUser && app?.installed) {
+	if (!isAdminUser && app?.installed && sections.length === 0) {
 		return null;
 	}
 
-	return <Menu title={t('More_options')} options={menuOptions} placement='bottom-start' maxHeight='initial' />;
+	return (
+		<MenuV2 title={t('More_options')} onAction={onAction} disabledKeys={disabledKeys} detached>
+			{sections.map(({ items }, idx) => (
+				<MenuSection key={idx} items={items}>
+					{items.map((option) => (
+						<MenuItem key={option.id}>
+							<MenuItemContent>{option.content}</MenuItemContent>
+						</MenuItem>
+					))}
+				</MenuSection>
+			))}
+		</MenuV2>
+	);
 };
 
 export default memo(AppMenu);
