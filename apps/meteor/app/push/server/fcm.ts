@@ -2,10 +2,9 @@ import EJSON from 'ejson';
 import fetch from 'node-fetch';
 import type { RequestInit, Response } from 'node-fetch';
 
-import { settings } from '../../settings/server';
 import type { PendingPushNotification } from './definition';
 import { logger } from './logger';
-import type { FCMCredentials, NativeNotificationParameters } from './push';
+import type { NativeNotificationParameters } from './push';
 
 type FCMDataField = Record<string, any>;
 
@@ -81,25 +80,28 @@ function getFCMMessagesFromPushData(userTokens: string[], notification: PendingP
 	const data: FCMDataField = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
 
 	// Set image
-	if (notification.gcm?.image != null) {
+	if (notification.gcm?.image) {
 		data.image = notification.gcm?.image;
 	}
 
 	// Set extra details
-	if (notification.badge != null) {
+	if (notification.badge) {
 		data.msgcnt = notification.badge.toString();
 	}
-	if (notification.sound != null) {
+
+	if (notification.sound) {
 		data.soundname = notification.sound;
 	}
-	if (notification.notId != null) {
+
+	if (notification.notId) {
 		data.notId = notification.notId.toString();
 	}
-	if (notification.gcm?.style != null) {
+
+	if (notification.gcm?.style) {
 		data.style = notification.gcm?.style;
 	}
 
-	if (notification.contentAvailable != null) {
+	if (notification.contentAvailable) {
 		data['content-available'] = notification.contentAvailable.toString();
 	}
 
@@ -130,7 +132,7 @@ export const sendFCM = function ({ userTokens, notification, _replaceToken, _rem
 
 	const tokens = typeof userTokens === 'string' ? [userTokens] : userTokens;
 	if (!tokens.length) {
-		logger.debug('sendFCM no push tokens found');
+		logger.log('sendFCM no push tokens found');
 		return;
 	}
 
@@ -143,10 +145,12 @@ export const sendFCM = function ({ userTokens, notification, _replaceToken, _rem
 		'access_token_auth': true,
 	} as Record<string, any>;
 
-	const credentialsString = settings.get<string>('Push_google_api_credentials');
-	const credentials = JSON.parse(credentialsString) as FCMCredentials;
+	if (!options.gcm.projectNumber.trim()) {
+		logger.error('sendFCM error: GCM project number is missing');
+		return;
+	}
 
-	const url = `https://fcm.googleapis.com/v1/projects/${credentials.project_id}/messages:send`;
+	const url = `https://fcm.googleapis.com/v1/projects/${options.gcm.projectNumber}/messages:send`;
 
 	for (const message of messages) {
 		logger.debug('sendFCM message', message);

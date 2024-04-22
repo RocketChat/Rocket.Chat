@@ -71,6 +71,7 @@ export const FCMCredentialsValidationSchema = {
 			type: 'string',
 		},
 	},
+	required: ['client_email', 'project_id', 'private_key_id', 'private_key'],
 };
 
 export const isFCMCredentials = ajv.compile<FCMCredentials>(FCMCredentialsValidationSchema);
@@ -204,12 +205,13 @@ class PushClass {
 
 			if (!useLegacyProvider) {
 				// override this.options.gcm.apiKey with the oauth2 token
-				const token = await this.getFcmAuthorizationToken();
+				const { projectId, token } = await this.getNativeNotificationAuthorizationCredentials();
 				const sendGCMOptions = {
 					...this.options,
 					gcm: {
 						...this.options.gcm,
 						apiKey: token,
+						projectNumber: projectId,
 					},
 				};
 
@@ -234,28 +236,31 @@ class PushClass {
 		}
 	}
 
-	private async getFcmAuthorizationToken(): Promise<string> {
+	private async getNativeNotificationAuthorizationCredentials(): Promise<{ token: string; projectId: string }> {
 		const credentialsString = settings.get<string>('Push_google_api_credentials');
-		if (!credentialsString) {
+		if (!credentialsString.trim()) {
 			throw new Error('Push_google_api_credentials is not set');
 		}
 
-		const credentials = JSON.parse(credentialsString);
-		if (!isFCMCredentials(credentials)) {
-			throw new Error('Push_google_api_credentials is not in the correct format');
-		}
-
-		const client = new JWT({
-			email: credentials.client_email,
-			key: credentials.private_key,
-			keyId: credentials.private_key_id,
-			scopes: 'https://www.googleapis.com/auth/firebase.messaging',
-		});
-
 		try {
+			const credentials = JSON.parse(credentialsString);
+			if (!isFCMCredentials(credentials)) {
+				throw new Error('Push_google_api_credentials is not in the correct format');
+			}
+
+			const client = new JWT({
+				email: credentials.client_email,
+				key: credentials.private_key,
+				keyId: credentials.private_key_id,
+				scopes: 'https://www.googleapis.com/auth/firebase.messaging',
+			});
+
 			await client.authorize();
 
-			return client.credentials.access_token as string;
+			return {
+				token: client.credentials.access_token as string,
+				projectId: credentials.project_id,
+			};
 		} catch (error) {
 			logger.error('Error getting FCM token', error);
 			throw new Error('Error getting FCM token');
