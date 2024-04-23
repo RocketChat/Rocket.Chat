@@ -11,7 +11,7 @@ import { schedulerLogger } from './logger';
 
 const SCHEDULER_NAME = 'omnichannel_auto_close_on_hold_scheduler';
 
-class AutoCloseOnHoldSchedulerClass {
+export class AutoCloseOnHoldSchedulerClass {
 	scheduler: Agenda;
 
 	schedulerUser: IUser;
@@ -42,6 +42,10 @@ class AutoCloseOnHoldSchedulerClass {
 	}
 
 	public async scheduleRoom(roomId: string, timeout: number, comment: string): Promise<void> {
+		if (!this.running) {
+			throw new Error('AutoCloseOnHoldScheduler is not running');
+		}
+
 		this.logger.debug(`Scheduling room ${roomId} to be closed in ${timeout} seconds`);
 		await this.unscheduleRoom(roomId);
 
@@ -53,6 +57,9 @@ class AutoCloseOnHoldSchedulerClass {
 	}
 
 	public async unscheduleRoom(roomId: string): Promise<void> {
+		if (!this.running) {
+			throw new Error('AutoCloseOnHoldScheduler is not running');
+		}
 		this.logger.debug(`Unscheduling room ${roomId}`);
 		const jobName = `${SCHEDULER_NAME}-${roomId}`;
 		await this.scheduler.cancel({ name: jobName });

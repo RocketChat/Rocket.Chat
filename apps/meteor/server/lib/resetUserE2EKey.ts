@@ -1,3 +1,4 @@
+import { api } from '@rocket.chat/core-services';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -63,6 +64,10 @@ export async function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean
 	if (isUserFederated) {
 		throw new Meteor.Error('error-not-allowed', 'Federated Users cant have TOTP', { function: 'resetTOTP' });
 	}
+
+	// force logout the live sessions
+
+	await api.broadcast('user.forceLogout', uid);
 
 	await Users.resetE2EKey(uid);
 	await Subscriptions.resetUserE2EKey(uid);
