@@ -1,5 +1,14 @@
 # @rocket.chat/release-action
 
+## 2.2.3-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b7f5035442]:</summary>
+
+  - @rocket.chat/eslint-config@0.7.0-rc.0
+  </details>
+
 ## 2.2.2
 
 ### Patch Changes

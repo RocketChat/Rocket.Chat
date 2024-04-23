@@ -1,5 +1,21 @@
 # @rocket.chat/ui-contexts
 
+## 6.0.0-rc.0
+
+### Minor Changes
+
+- ([#32073](https://github.com/RocketChat/Rocket.Chat/pull/32073)) Fixed an issue affecting the update modal/contextual bar by apps when it comes to error handling and regular surface update
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [845fd64f45, c47a8e3514, 9a6a7d0a40, da45cb6998, 845fd64f45, 9902554388, 4aba7c8a26, c4e58afd8b, c9a92e6ea2]:</summary>
+
+  - @rocket.chat/rest-typings@6.8.0-rc.0
+  - @rocket.chat/core-typings@6.8.0-rc.0
+  - @rocket.chat/i18n@0.3.0-rc.0
+  - @rocket.chat/ddp-client@0.2.21-rc.0
+  </details>
+
 ## 5.0.0
 
 ### Patch Changes

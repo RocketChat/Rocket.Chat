@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/i18n",
-	"version": "0.2.0",
+	"version": "0.3.0-rc.0",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
@@ -25,7 +25,6 @@
 		"/dist"
 	],
 	"type": "module",
-
 	"volta": {
 		"extends": "../../package.json"
 	}

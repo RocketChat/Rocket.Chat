@@ -1,5 +1,19 @@
 # Change Log
 
+## 6.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b7f5035442, c0d54d742a]:</summary>
+
+  - @rocket.chat/eslint-config@0.7.0-rc.0
+  - @rocket.chat/ui-contexts@6.0.0-rc.0
+  - @rocket.chat/gazzodown@6.0.0-rc.0
+  - @rocket.chat/ui-kit@0.33.0
+  - @rocket.chat/ui-video-conf@6.0.0-rc.0
+  - @rocket.chat/ui-avatar@2.0.0-rc.0
+  </details>
+
 ## 5.0.0
 
 ### Patch Changes
