@@ -2027,6 +2027,7 @@
   "error-email-send-failed": "Error trying to send email: {{message}}",
   "error-essential-app-disabled": "Error: a Rocket.Chat App that is essential for this is disabled. Please contact your administrator",
   "error-failed-to-delete-department": "Failed to delete department",
+  "error-field-cannot-contain-only-space": "The field {{field}} cannot contain only spaces.",
   "error-field-unavailable": "<strong>{{field}}</strong> is already in use :(",
   "error-file-too-large": "File is too large",
   "error-forwarding-chat": "Something went wrong while forwarding the chat, Please try again later.",

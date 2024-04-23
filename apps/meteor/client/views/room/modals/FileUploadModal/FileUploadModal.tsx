@@ -99,7 +99,8 @@ const FileUploadModal = ({
 							<FieldRow>
 								<TextInput value={name} onChange={handleName} />
 							</FieldRow>
-							{!name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
+							{!name  && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
+							{name.length>0 && name.trim()==='' && <FieldError>{t('error-field-cannot-contain-only-space', { field: t('Name') })}</FieldError>}
 						</Field>
 						{showDescription && (
 							<Field>
