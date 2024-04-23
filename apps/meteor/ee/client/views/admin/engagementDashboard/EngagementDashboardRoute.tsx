@@ -35,7 +35,6 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 
 	const { shouldShowUpsell, handleManageSubscription } = useUpsellActions(hasEngagementDashboard);
 
-	console.log({ shouldShowUpsell, handleManageSubscription });
 	useEffect(() => {
 		if (shouldShowUpsell) {
 			setModal(
