@@ -9,12 +9,49 @@ import { createToken } from './random';
 import { loadMessages } from './room';
 import Triggers from './triggers';
 
+const evaluateChangesAndLoadConfigByFields = async (fn) => {
+	const oldStore = JSON.parse(
+		JSON.stringify({
+			user: store.state.user || {},
+			department: store.state.department,
+			token: store.state.token,
+		}),
+	);
+	await fn();
+
+	/**
+	 * it solves the issues where the registerGuest is called every time the widget is opened
+	 * and the guest is already registered. If there is nothing different in the data,
+	 * it will not call the loadConfig again.
+	 *
+	 * if user changes, it will call loadConfig
+	 * if department changes, it will call loadConfig
+	 * if token changes, it will call loadConfig
+	 */
+
+	if (oldStore.user._id !== store.state.user?._id) {
+		await loadConfig();
+		await loadMessages();
+		return;
+	}
+
+	if (oldStore.department !== store.state.department) {
+		await loadConfig();
+		await loadMessages();
+		return;
+	}
+
+	if (oldStore.token !== store.state.token) {
+		await loadConfig();
+		await loadMessages();
+	}
+};
+
 const createOrUpdateGuest = async (guest) => {
 	const { token } = guest;
 	token && (await store.setState({ token }));
 	const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...guest } });
 	store.setState({ user });
-	await loadConfig();
 };
 
 const updateIframeGuestData = (data) => {
@@ -76,14 +113,15 @@ const api = {
 		});
 	},
 
-	async setDepartment(value) {
+	setDepartment: async (value) => {
+		await evaluateChangesAndLoadConfigByFields(async () => api._setDepartment(value));
+	},
+
+	async _setDepartment(value) {
 		const {
-			user,
 			config: { departments = [] },
 			defaultAgent,
 		} = store.state;
-
-		const { department: existingDepartment } = user || {};
 
 		const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
 
@@ -92,11 +130,6 @@ const api = {
 
 		if (defaultAgent && defaultAgent.department !== department) {
 			store.setState({ defaultAgent: null });
-		}
-
-		if (department !== existingDepartment) {
-			await loadConfig();
-			await loadMessages();
 		}
 	},
 
@@ -143,7 +176,9 @@ const api = {
 		if (token === localToken) {
 			return;
 		}
-		await createOrUpdateGuest({ token });
+		await evaluateChangesAndLoadConfigByFields(async () => {
+			await createOrUpdateGuest({ token });
+		});
 	},
 
 	setGuestName(name) {
@@ -159,17 +194,19 @@ const api = {
 			return;
 		}
 
-		if (!data.token) {
-			data.token = createToken();
-		}
+		await evaluateChangesAndLoadConfigByFields(async () => {
+			if (!data.token) {
+				data.token = createToken();
+			}
 
-		if (data.department) {
-			api.setDepartment(data.department);
-		}
+			if (data.department) {
+				await api._setDepartment(data.department);
+			}
 
-		Livechat.unsubscribeAll();
+			Livechat.unsubscribeAll();
 
-		await createOrUpdateGuest(data);
+			await createOrUpdateGuest(data);
+		});
 	},
 
 	async setLanguage(language) {
