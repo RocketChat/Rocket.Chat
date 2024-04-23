@@ -33,6 +33,8 @@ const DeploymentCard = ({ serverInfo: { info }, statistics, instances }: Deploym
 			<WorkspaceCardSection title={t('Version')} body={statistics.version} />
 			<WorkspaceCardSection title={t('Deployment_ID')} body={statistics.uniqueId} />
 
+			{statistics.cloudWorkspaceId && <WorkspaceCardSection title={t('Cloud_Workspace_Id')} body={statistics.cloudWorkspaceId} />}
+
 			{appsEngineVersion && <WorkspaceCardSection title={t('Apps_Engine_Version')} body={appsEngineVersion} />}
 			<WorkspaceCardSection title={t('Node_version')} body={statistics.process.nodeVersion} />
 			<WorkspaceCardSection

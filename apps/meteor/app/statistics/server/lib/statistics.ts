@@ -98,6 +98,8 @@ export const statistics = {
 			statistics.installedAt = uniqueID.createdAt.toISOString();
 		}
 
+		statistics.cloudWorkspaceId = settings.get('Cloud_Workspace_Id');
+
 		statistics.deploymentFingerprintHash = settings.get('Deployment_FingerPrint_Hash');
 		statistics.deploymentFingerprintVerified = settings.get('Deployment_FingerPrint_Verified');
 

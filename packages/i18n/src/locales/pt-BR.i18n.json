@@ -939,6 +939,7 @@
   "Cloud_workspace_connected_without_account": "Seu espaço de trabalho está agora conectado ao Rocket.Chat Cloud. Se desejar, você poderá fazer login na Rocket.Chat Cloud e associar seu espaço de trabalho à sua conta na nuvem.",
   "Cloud_workspace_disconnect": "Se você não deseja mais utilizar os serviços da nuvem, você poderá desconectar seu espaço de trabalho da Rocket.Chat Cloud.",
   "Cloud_workspace_support": "Se você tiver um problema com um serviço de nuvem, tente sincronizar primeiro. Se o problema persistir, abra um ticket de suporte no console da nuvem.",
+  "Cloud_Workspace_Id": "ID do espaço de trabalho na nuvem",
   "Collaborative": "Colaborativo",
   "Collapse": "Retrair",
   "Collapse_Embedded_Media_By_Default": "Retrair mídia incorporada por padrão",
