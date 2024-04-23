@@ -12,7 +12,7 @@ import { test, expect } from '../utils/test';
 test.use({ storageState: Users.admin.state });
 
 test.describe('OC - Manage Tags', () => {
-  test.skip(!IS_EE, 'OC - Manage Tags > Enterprise Edition Only');s
+  test.skip(!IS_EE, 'OC - Manage Tags > Enterprise Edition Only');
 
 	let poOmnichannelTags: OmnichannelTags;
 
