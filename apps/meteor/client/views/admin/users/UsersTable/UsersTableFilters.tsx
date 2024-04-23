@@ -1,10 +1,11 @@
 import type { IRole } from '@rocket.chat/core-typings';
-import { Box, Icon, TextInput } from '@rocket.chat/fuselage';
+import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import FilterByText from '../../../../components/FilterByText';
 import type { UsersFilters } from '../AdminUsersPage';
 
 type UsersTableFiltersProps = {
@@ -19,8 +20,7 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 	const [text, setText] = useState('');
 
 	const handleSearchTextChange = useCallback(
-		(event) => {
-			const text = event.currentTarget.value;
+		({ text }) => {
 			setUsersFilters({ text, roles: selectedRoles });
 			setText(text);
 		},
@@ -57,37 +57,21 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 		[roleData],
 	);
 
+	const breakpoints = useBreakpoints();
+	const fixFiltersSize = breakpoints.includes('lg') ? { maxWidth: 'x200', minWidth: 'x200' } : null;
+
 	return (
-		<Box
-			is='form'
-			onSubmit={useCallback((e) => e.preventDefault(), [])}
-			mb='x8'
-			display='flex'
-			flexWrap='wrap'
-			alignItems='center'
-			justifyContent='center'
-		>
-			<Box minWidth='x224' display='flex' m='x4' flexGrow={2}>
-				<TextInput
-					name='Search_Users'
-					alignItems='center'
-					placeholder={t('Search_Users')}
-					addon={<Icon name='magnifier' size='x20' />}
-					onChange={handleSearchTextChange}
-					value={text}
-				/>
-			</Box>
-			<Box minWidth='x224' m='x4'>
-				<MultiSelectCustom
-					dropdownOptions={userRolesFilterStructure}
-					defaultTitle='All_roles'
-					selectedOptionsTitle='Roles'
-					setSelectedOptions={handleRolesChange}
-					selectedOptions={selectedRoles}
-					searchBarText='Search_roles'
-				/>
-			</Box>
-		</Box>
+		<FilterByText shouldAutoFocus placeholder={t('Search_Users')} onChange={handleSearchTextChange}>
+			<MultiSelectCustom
+				dropdownOptions={userRolesFilterStructure}
+				defaultTitle='All_roles'
+				selectedOptionsTitle='Roles'
+				setSelectedOptions={handleRolesChange}
+				selectedOptions={selectedRoles}
+				searchBarText='Search_roles'
+				{...fixFiltersSize}
+			/>
+		</FilterByText>
 	);
 };
 

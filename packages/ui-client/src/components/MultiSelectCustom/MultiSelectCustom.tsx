@@ -1,7 +1,7 @@
-import { Box } from '@rocket.chat/fuselage';
-import { useOutsideClick, useToggle } from '@rocket.chat/fuselage-hooks';
+import { Button } from '@rocket.chat/fuselage';
+import { useToggle } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { FormEvent, ReactElement, RefObject } from 'react';
+import type { ComponentProps, FormEvent, ReactElement, RefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
 import MultiSelectCustomAnchor from './MultiSelectCustomAnchor';
@@ -48,7 +48,7 @@ type DropDownProps = {
 	selectedOptions: OptionProp[];
 	setSelectedOptions: (roles: OptionProp[]) => void;
 	searchBarText?: TranslationKey;
-};
+} & ComponentProps<typeof Button>;
 
 export const MultiSelectCustom = ({
 	dropdownOptions,
@@ -57,9 +57,9 @@ export const MultiSelectCustom = ({
 	selectedOptions,
 	setSelectedOptions,
 	searchBarText,
+	...props
 }: DropDownProps): ReactElement => {
 	const reference = useRef<HTMLInputElement>(null);
-	const target = useRef<HTMLElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
 	const onClose = useCallback(
@@ -73,8 +73,6 @@ export const MultiSelectCustom = ({
 		},
 		[toggleCollapsed],
 	);
-
-	useOutsideClick([target], onClose);
 
 	const onSelect = (item: OptionProp, e?: FormEvent<HTMLElement>): void => {
 		e?.stopPropagation();
@@ -92,7 +90,7 @@ export const MultiSelectCustom = ({
 	const count = dropdownOptions.filter((option) => option.checked).length;
 
 	return (
-		<Box display='flex' flexGrow={1} position='relative'>
+		<>
 			<MultiSelectCustomAnchor
 				ref={reference}
 				collapsed={collapsed}
@@ -102,12 +100,13 @@ export const MultiSelectCustom = ({
 				selectedOptionsTitle={selectedOptionsTitle}
 				selectedOptionsCount={count}
 				maxCount={dropdownOptions.length}
+				{...props}
 			/>
 			{collapsed && (
-				<MultiSelectCustomListWrapper ref={target}>
+				<MultiSelectCustomListWrapper ref={reference} onClose={onClose}>
 					<MultiSelectCustomList options={dropdownOptions} onSelected={onSelect} searchBarText={searchBarText} />
 				</MultiSelectCustomListWrapper>
 			)}
-		</Box>
+		</>
 	);
 };
