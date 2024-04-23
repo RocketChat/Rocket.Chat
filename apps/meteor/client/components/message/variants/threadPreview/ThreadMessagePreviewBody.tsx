@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isQuoteAttachment, isE2EEMessage } from '@rocket.chat/core-typings';
+import { MessageBody } from '@rocket.chat/fuselage';
 import { PreviewMarkup } from '@rocket.chat/gazzodown';
 import type { Root } from '@rocket.chat/message-parser';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -39,7 +40,7 @@ const ThreadMessagePreviewBody = ({ message }: ThreadMessagePreviewBodyProps): R
 			);
 		}
 		if (isEncryptedMessage && message.e2e === 'pending') {
-			return <>{t('E2E_message_encrypted_placeholder')}</>;
+			return <MessageBody>{t('E2E_message_encrypted_placeholder')}</MessageBody>;
 		}
 		return <>{message.msg}</>;
 	};

@@ -1,6 +1,6 @@
 import { MessageReaction as MessageReactionTemplate, MessageReactionEmoji, MessageReactionCounter } from '@rocket.chat/fuselage';
-import { useTooltipClose, useTooltipOpen } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import { useTooltipClose, useTooltipOpen, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ComponentProps, ReactElement } from 'react';
 import React, { useRef, useContext } from 'react';
 
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
@@ -14,10 +14,10 @@ type ReactionProps = {
 	name: string;
 	names: string[];
 	messageId: string;
-	onClick: () => void;
-};
+} & ComponentProps<typeof MessageReactionTemplate>;
 
 const Reaction = ({ hasReacted, counter, name, names, messageId, ...props }: ReactionProps): ReactElement => {
+	const t = useTranslation();
 	const ref = useRef<HTMLDivElement>(null);
 	const openTooltip = useTooltipOpen();
 	const closeTooltip = useTooltipClose();
@@ -32,8 +32,7 @@ const Reaction = ({ hasReacted, counter, name, names, messageId, ...props }: Rea
 			ref={ref}
 			key={name}
 			mine={mine}
-			tabIndex={0}
-			role='button'
+			aria-label={t('React_with__reaction__', { reaction: name })}
 			// if data-tooltip is not set, the tooltip will close on first mouse enter
 			data-tooltip=''
 			onMouseEnter={async (e) => {

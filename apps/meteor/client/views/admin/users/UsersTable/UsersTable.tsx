@@ -1,5 +1,5 @@
 import type { IAdminUserTabs, Serialized } from '@rocket.chat/core-typings';
-import { Box, Icon, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, TextInput } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
@@ -7,6 +7,7 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useCallback, useMemo } from 'react';
 
+import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -124,24 +125,14 @@ const UsersTable = ({
 	);
 
 	const handleSearchTextChange = useCallback(
-		(event) => {
-			const text = event.currentTarget.value;
+		({ text }) => {
 			setUserFilters({ text });
 		},
 		[setUserFilters],
 	);
 	return (
 		<>
-			<Box mb={16} minWidth='x224' maxHeight='x40' display='flex' flexGrow={2}>
-				<TextInput
-					name='Search_Users'
-					alignItems='center'
-					placeholder={t('Search_Users')}
-					addon={<Icon name='magnifier' size='x20' />}
-					onChange={handleSearchTextChange}
-				/>
-			</Box>
-
+			<FilterByText shouldAutoFocus placeholder={t('Search_Users')} onChange={handleSearchTextChange} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser, RoomAdminFieldsType } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -436,6 +436,74 @@ export type Notifications = {
 
 type RoomsGetDiscussionsProps = PaginatedRequest<BaseRoomsProps>;
 
+type RoomsMuteUnmuteUser = { userId: string; roomId: string } | { username: string; roomId: string };
+
+const RoomsMuteUnmuteUserSchema = {
+	type: 'object',
+	oneOf: [
+		{
+			properties: {
+				userId: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['userId', 'roomId'],
+			additionalProperties: false,
+		},
+		{
+			properties: {
+				username: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['username', 'roomId'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isRoomsMuteUnmuteUserProps = ajv.compile<RoomsMuteUnmuteUser>(RoomsMuteUnmuteUserSchema);
+export type RoomsImagesProps = {
+	roomId: string;
+	startingFromId?: string;
+	count?: number;
+	offset?: number;
+};
+const roomsImagesPropsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		startingFromId: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isRoomsImagesProps = ajv.compile<RoomsImagesProps>(roomsImagesPropsSchema);
+
 export type RoomsEndpoints = {
 	'/v1/rooms.autocomplete.channelAndPrivate': {
 		GET: (params: RoomsAutoCompleteChannelAndPrivateProps) => {
@@ -526,6 +594,9 @@ export type RoomsEndpoints = {
 			groupable?: boolean;
 			msg?: string;
 			tmid?: string;
+			customFields?: string;
+			t?: IMessage['t'];
+			e2e?: IMessage['e2e'];
 		}) => { message: IMessage | null };
 	};
 
@@ -571,6 +642,20 @@ export type RoomsEndpoints = {
 	'/v1/rooms.getDiscussions': {
 		GET: (params: RoomsGetDiscussionsProps) => PaginatedResult<{
 			discussions: IRoom[];
+		}>;
+	};
+
+	'/v1/rooms.muteUser': {
+		POST: (params: RoomsMuteUnmuteUser) => void;
+	};
+
+	'/v1/rooms.unmuteUser': {
+		POST: (params: RoomsMuteUnmuteUser) => void;
+	};
+
+	'/v1/rooms.images': {
+		GET: (params: RoomsImagesProps) => PaginatedResult<{
+			files: IUpload[];
 		}>;
 	};
 };
