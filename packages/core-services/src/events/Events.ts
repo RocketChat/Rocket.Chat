@@ -33,6 +33,7 @@ import type {
 	LicenseLimitKind,
 	ICustomUserStatus,
 	IWebdavAccount,
+	IOTRMessage,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
@@ -129,6 +130,7 @@ export type EventSignatures = {
 			  },
 	): void;
 	'user.deleteCustomStatus'(userStatus: Omit<ICustomUserStatus, '_updatedAt'>): void;
+	'user.forceLogout': (uid: string) => void;
 	'user.nameChanged'(user: Pick<IUser, '_id' | 'name' | 'username'>): void;
 	'user.realNameChanged'(user: Partial<IUser>): void;
 	'user.roleUpdate'(update: {
@@ -301,4 +303,6 @@ export type EventSignatures = {
 	'command.updated'(command: string): void;
 	'command.removed'(command: string): void;
 	'actions.changed'(): void;
+	'otrMessage'(data: { roomId: string; message: IMessage; room: IRoom; user: IUser }): void;
+	'otrAckUpdate'(data: { roomId: string; acknowledgeMessage: IOTRMessage }): void;
 };
