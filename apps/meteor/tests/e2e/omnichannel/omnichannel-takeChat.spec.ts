@@ -79,7 +79,7 @@ test.describe('omnichannel-takeChat', () => {
 		await expect(poLiveChat.alertMessage('Error starting a new conversation: Sorry, no online agents [no-agent-online]')).toBeVisible();
 	});
 
-	test('When agent set to offline after livechat user sent a message should not take the chat', async () => {
+	test('When a new livechat conversation starts but agent is offline, it should not be able to take the chat', async () => {
 		await sendLivechatMessage();
 
 		await agent.poHomeChannel.sidenav.switchStatus('offline');
