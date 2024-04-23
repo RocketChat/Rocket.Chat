@@ -24,7 +24,6 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { getLogs } from '../../../../server/stream/stdout';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { passwordPolicy } from '../../../lib/server';
-import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
@@ -410,10 +409,13 @@ API.v1.addRoute(
 	{
 		authRequired: false,
 		validateParams: validateParamsPwGetPolicyRest,
+		deprecation: {
+			version: '7.0.0',
+			alternatives: ['pw.getPolicy'],
+		},
 	},
 	{
 		async get() {
-			apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, ' Use pw.getPolicy instead.');
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({

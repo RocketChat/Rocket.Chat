@@ -1,5 +1,85 @@
 # @rocket.chat/rest-typings
 
+## 6.7.0
+
+### Minor Changes
+
+- ([#32043](https://github.com/RocketChat/Rocket.Chat/pull/32043)) **Added Livechat's new theming settings to Appearance page (available for Premium workspaces)**
+
+  Newly added settings are:
+
+  - `Livechat widget position on the screen`: Changes the widget position between left or right of the viewport
+  - `Livechat background`: Changes the message list background. Receives the same value as the CSS's background property.
+  - `Hide system messages`: Changes the visibility of system messages displayed on the widget.
+  - `Hide "powered by Rocket.Chat"`: Changes the visibility of Rocket.Chat's watermark on the widget.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5, 5ad65ff3da]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0
+  - @rocket.chat/message-parser@0.31.29
+  - @rocket.chat/ui-kit@0.33.0
+  </details>
+
+## 6.7.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.4
+  </details>
+
+## 6.7.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.3
+  </details>
+
+## 6.7.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.2
+  </details>
+
+## 6.7.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.1
+  </details>
+
+## 6.7.0-rc.0
+
+### Minor Changes
+
+- ([#32043](https://github.com/RocketChat/Rocket.Chat/pull/32043)) **Added Livechat's new theming settings to Appearance page (available for Premium workspaces)**
+
+  Newly added settings are:
+
+  - `Livechat widget position on the screen`: Changes the widget position between left or right of the viewport
+  - `Livechat background`: Changes the message list background. Receives the same value as the CSS's background property.
+  - `Hide system messages`: Changes the visibility of system messages displayed on the widget.
+  - `Hide "powered by Rocket.Chat"`: Changes the visibility of Rocket.Chat's watermark on the widget.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5, 5ad65ff3da]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.0
+  - @rocket.chat/message-parser@0.31.29-rc.0
+  - @rocket.chat/ui-kit@0.33.0
+  </details>
+
 ## 6.6.6
 
 ### Patch Changes

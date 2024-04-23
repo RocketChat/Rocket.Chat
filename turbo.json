@@ -39,6 +39,12 @@
 		"@rocket.chat/meteor#build:ci": {
 			"dependsOn": ["^build"],
 			"cache": false
+		},
+
+		"@rocket.chat/ddp-streamer#build": {
+			"dependsOn": ["^build"],
+			"outputs": ["dist/**"],
+			"inputs": ["../../../apps/meteor/server/**", "./src/**"]
 		}
 	}
 }
