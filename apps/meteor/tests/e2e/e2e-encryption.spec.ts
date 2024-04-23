@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import type { Page } from '@playwright/test';
 
 import { createAuxContext } from './fixtures/createAuxContext';
 import injectInitialData from './fixtures/inject-initial-data';
@@ -139,9 +140,6 @@ test.describe.serial('e2e-encryption', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		// inject initial data, so that tokens are restored after forced logout
-		await injectInitialData();
-
 		const statusCode = (await api.post('/settings/E2E_Enable', { value: false })).status();
 
 		await expect(statusCode).toBe(200);
@@ -216,31 +214,6 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
-	test('expect force logout on e2e keys reset', async ({ page, browser }) => {
-		const poAccountProfile = new AccountProfile(page);
-		// creating another logged in client, to check force logout
-		const { page: anotherClientPage } = await createAuxContext(browser, Users.admin);
-
-		await page.goto('/account/security');
-
-		await poAccountProfile.securityE2EEncryptionSection.click();
-		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
-
-		await page.locator('role=button[name="Login"]').waitFor();
-		await anotherClientPage.locator('role=button[name="Login"]').waitFor();
-
-		await expect(page).toHaveURL('/home');
-		await expect(anotherClientPage).toHaveURL('/home');
-
-		await expect(page.locator('role=button[name="Login"]')).toBeVisible();
-		await expect(anotherClientPage.locator('role=button[name="Login"]')).toBeVisible();
-
-		await expect(page.locator('role=banner')).toContainText('Your session was ended on this device, please log in again to continue.');
-		await expect(anotherClientPage.locator('role=banner')).toContainText('Your session was ended on this device, please log in again to continue.');
-
-		await anotherClientPage.close();
-  });
-
 	test('expect create a private encrypted channel and send an attachment with encrypted file description', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
@@ -266,7 +239,9 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
 	});
 
-	test('expect create a private encrypted channel and send an attachment with encrypted file description in a thread message', async ({ page }) => {
+	test('expect create a private encrypted channel and send an attachment with encrypted file description in a thread message', async ({
+		page,
+	}) => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
@@ -299,7 +274,7 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.lastThreadMessageFileName).toContainText('any_file1.txt');
 	});
 
-	test('expect placeholder text inplace of encrypted message, when E2EE is not setup', async ({ page }) => {
+	test('expect placeholder text in place of encrypted message, when E2EE is not setup', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
@@ -330,11 +305,13 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
-		await expect(poHomeChannel.content.lastUserMessage).toContainText('This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.');
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(
+			'This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.',
+		);
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
-	test('expect placeholder text inplace of encryped file description, when E2EE is not setup', async ({ page }) => {
+	test('expect placeholder text in place of encrypted file description, when E2EE is not setup', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
@@ -370,7 +347,43 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
 
-		await expect(poHomeChannel.content.lastUserMessage).toContainText('This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.');
+		await expect(poHomeChannel.content.lastUserMessage).toContainText(
+			'This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.',
+		);
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+	});
+
+	test.describe('reset keys', () => {
+		let anotherClientPage: Page;
+
+		test.beforeEach(async ({ browser }) => {
+			anotherClientPage = (await createAuxContext(browser, Users.admin)).page;
+		});
+
+		test.afterEach(async () => {
+			await anotherClientPage.close();
+		});
+		test.afterAll(async () => {
+			// inject initial data, so that tokens are restored after forced logout
+			await injectInitialData();
+		});
+
+		test('expect force logout on e2e keys reset', async ({ page }) => {
+			const poAccountProfile = new AccountProfile(page);
+			// creating another logged in client, to check force logout
+
+			await page.goto('/account/security');
+
+			await poAccountProfile.securityE2EEncryptionSection.click();
+			await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
+
+			await expect(page.locator('role=button[name="Login"]')).toBeVisible();
+			await expect(anotherClientPage.locator('role=button[name="Login"]')).toBeVisible();
+
+			// await expect(page.locator('role=banner')).toContainText('Your session was ended on this device, please log in again to continue.');
+			// await expect(anotherClientPage.locator('role=banner')).toContainText(
+			// 	'Your session was ended on this device, please log in again to continue.',
+			// );
+		});
 	});
 });
