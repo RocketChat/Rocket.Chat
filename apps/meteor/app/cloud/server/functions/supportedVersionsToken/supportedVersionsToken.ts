@@ -103,7 +103,7 @@ const getSupportedVersionsFromCloud = async () => {
 	const response = await handleResponse<SupportedVersions>(
 		fetch(releaseEndpoint, {
 			headers,
-			timeout: 3000,
+			timeout: 5000,
 		}),
 	);
 
