@@ -74,7 +74,7 @@ providers.registerProvider({
 });
 
 providers.registerProvider({
-	urls: [new RegExp('https?://twitter\\.com/[^/]+/status/\\S+')],
+	urls: [new RegExp('https?://(twitter|x)\\.com/[^/]+/status/\\S+')],
 	endPoint: 'https://publish.twitter.com/oembed',
 });
 
