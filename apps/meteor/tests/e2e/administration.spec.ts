@@ -29,6 +29,38 @@ test.describe.parallel('administration', () => {
 		});
 	});
 
+	test.describe('Engagement dashboard', () => {
+		test('Should show upsell modal', async ({ page }) => {
+			test.skip(IS_EE);
+			await page.goto('/admin/engagement/users');
+
+			await expect(page.locator('role=dialog[name="Engagement dashboard"]')).toBeVisible();
+		});
+
+		test('Should show engagement dashboard', async ({ page }) => {
+			test.skip(!IS_EE);
+			await page.goto('/admin/engagement/users');
+
+			await expect(page.locator('h1 >> text="Engagement"')).toBeVisible();
+		});
+	});
+
+	test.describe('Device management', () => {
+		test('Should show upsell modal', async ({ page }) => {
+			test.skip(IS_EE);
+			await page.goto('/admin/device-management');
+
+			await expect(page.locator('role=dialog[name="Device management"]')).toBeVisible();
+		});
+
+		test('Should show device management page', async ({ page }) => {
+			test.skip(!IS_EE);
+			await page.goto('/admin/device-management');
+
+			await expect(page.locator('h1 >> text="Device management"')).toBeVisible();
+		});
+	});
+
 	test.describe('Users', () => {
 		test.beforeEach(async ({ page }) => {
 			await page.goto('/admin/users');

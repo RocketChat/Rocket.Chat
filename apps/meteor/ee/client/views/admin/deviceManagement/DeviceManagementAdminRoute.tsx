@@ -25,6 +25,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 		if (shouldShowUpsell) {
 			setModal(
 				<GenericUpsellModal
+					aria-label={t('Device_Management')}
 					title={t('Device_Management')}
 					img={getURL('images/device-management.png')}
 					subtitle={t('Ensure_secure_workspace_access')}

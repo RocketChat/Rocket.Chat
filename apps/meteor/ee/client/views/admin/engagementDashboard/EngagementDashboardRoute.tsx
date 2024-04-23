@@ -39,6 +39,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		if (shouldShowUpsell) {
 			setModal(
 				<GenericUpsellModal
+					aria-label={t('Engagement_Dashboard')}
 					title={t('Engagement_Dashboard')}
 					img={getURL('images/engagement.png')}
 					subtitle={t('Analyze_practical_usage')}
