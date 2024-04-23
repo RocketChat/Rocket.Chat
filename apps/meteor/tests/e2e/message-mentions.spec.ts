@@ -39,17 +39,18 @@ test.describe.serial('message-mentions', () => {
 	});
 
 	test.describe('Should not allow to send @all mention if permission to do so is disabled', () => {
+		let targetChannel2: string;
 		test.beforeAll(async ({ api }) => {
 			expect((await api.post('/permissions.update', { permissions: [{ '_id': 'mention-all', 'roles': [] }] })).status()).toBe(200);
 		});
 
 		test.afterAll(async ({ api }) => {
-			expect((await api.post('/permissions.update', { permissions: [{ '_id': 'mention-all', 'roles': ['admin'] }] })).status()).toBe(200);
+			expect((await api.post('/permissions.update', { permissions: [{ '_id': 'mention-all', 'roles': ['admin', 'owner', 'moderator', 'user'] }] })).status()).toBe(200);
+			await deleteChannel(api, targetChannel2);
 		});
 
 		test('expect to receive an error as notification when sending @all while permission is disabled', async ({ page }) => {
 			const adminPage = new HomeChannel(page);
-			let targetChannel2: string;
 
 			await test.step('create private room', async () => {
 				targetChannel2 = faker.string.uuid();
@@ -69,17 +70,18 @@ test.describe.serial('message-mentions', () => {
 	});
 
 	test.describe('Should not allow to send @here mention if permission to do so is disabled', () => {
+		let targetChannel2: string;
 		test.beforeAll(async ({ api }) => {
 			expect((await api.post('/permissions.update', { permissions: [{ '_id': 'mention-here', 'roles': [] }] })).status()).toBe(200);
 		});
 
 		test.afterAll(async ({ api }) => {
-			expect((await api.post('/permissions.update', { permissions: [{ '_id': 'mention-here', 'roles': ['admin'] }] })).status()).toBe(200);
+			expect((await api.post('/permissions.update', { permissions: [{ '_id': 'mention-here', 'roles': ['admin', 'owner', 'moderator', 'user'] }] })).status()).toBe(200);
+			await deleteChannel(api, targetChannel2);
 		});
 
 		test('expect to receive an error as notification when sending here while permission is disabled', async ({ page }) => {
 			const adminPage = new HomeChannel(page);
-			let targetChannel2: string;
 
 			await test.step('create private room', async () => {
 				targetChannel2 = faker.string.uuid();
