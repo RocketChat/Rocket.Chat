@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/ddp-streamer",
 	"private": true,
-	"version": "0.2.5",
+	"version": "0.2.10",
 	"description": "Rocket.Chat DDP-Streamer service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -15,7 +15,7 @@
 	],
 	"author": "Rocket.Chat",
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.41.0",
+		"@rocket.chat/apps-engine": "^1.42.1",
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "~0.31.25",
@@ -57,7 +57,7 @@
 		"eslint": "~8.45.0",
 		"pino-pretty": "^7.6.1",
 		"ts-node": "^10.9.1",
-		"typescript": "~5.3.2"
+		"typescript": "~5.3.3"
 	},
 	"main": "./dist/service.js",
 	"files": [

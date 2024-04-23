@@ -32,21 +32,19 @@
 		"ms": {
 			"dependsOn": ["^build"]
 		},
-		"@rocket.chat/ui-contexts#build": {
-			"dependsOn": ["^build"],
-			"cache": false
-		},
 		"@rocket.chat/meteor#build": {
-			"dependsOn": ["^build"],
-			"cache": false
-		},
-		"@rocket.chat/i18n#build": {
 			"dependsOn": ["^build"],
 			"cache": false
 		},
 		"@rocket.chat/meteor#build:ci": {
 			"dependsOn": ["^build"],
 			"cache": false
+		},
+
+		"@rocket.chat/ddp-streamer#build": {
+			"dependsOn": ["^build"],
+			"outputs": ["dist/**"],
+			"inputs": ["../../../apps/meteor/server/**", "./src/**"]
 		}
 	}
 }

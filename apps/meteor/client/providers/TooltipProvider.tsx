@@ -4,7 +4,7 @@ import { TooltipContext } from '@rocket.chat/ui-contexts';
 import type { FC, ReactNode } from 'react';
 import React, { useEffect, useMemo, useRef, memo, useCallback, useState } from 'react';
 
-import TooltipPortal from '../components/TooltipPortal';
+import TooltipPortal from '../portals/TooltipPortal';
 
 const TooltipProvider: FC = ({ children }) => {
 	const lastAnchor = useRef<HTMLElement>();

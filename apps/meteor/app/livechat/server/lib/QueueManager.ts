@@ -1,3 +1,4 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Omnichannel } from '@rocket.chat/core-services';
 import type { ILivechatInquiryRecord, ILivechatVisitor, IMessage, IOmnichannelRoom, SelectedAgent } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
@@ -104,6 +105,7 @@ export const QueueManager: queueManager = {
 			throw new Error('inquiry-not-found');
 		}
 
+		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
 		await LivechatRooms.updateRoomCount();
 
 		await queueInquiry(inquiry, agent);

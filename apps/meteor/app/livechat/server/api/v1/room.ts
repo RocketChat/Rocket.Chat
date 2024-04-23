@@ -230,7 +230,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/room.transfer',
-	{ validateParams: isPOSTLivechatRoomTransferParams, deprecationVersion: '7.0.0' },
+	{ validateParams: isPOSTLivechatRoomTransferParams, deprecation: { version: '7.0.0' } },
 	{
 		async post() {
 			const { rid, token, department } = this.bodyParams;
@@ -364,7 +364,9 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: ['change-livechat-room-visitor'],
 		validateParams: isPUTLivechatRoomVisitorParams,
-		deprecationVersion: '7.0.0',
+		deprecation: {
+			version: '7.0.0',
+		},
 	},
 	{
 		async put() {

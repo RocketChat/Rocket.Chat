@@ -3,6 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import type { FormattingButton } from '../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import { isPromptButton } from '../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import type { ComposerAPI } from '../../../../../lib/chats/ChatAPI';
 import FormattingToolbarDropdown from './FormattingToolbarDropdown';
 
@@ -24,8 +25,11 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 			<>
 				{'icon' in featuredFormatter && (
 					<MessageComposerAction
-						onClick={() => composer.wrapSelection(featuredFormatter.pattern)}
+						onClick={() =>
+							isPromptButton(featuredFormatter) ? featuredFormatter.prompt(composer) : composer.wrapSelection(featuredFormatter.pattern)
+						}
 						icon={featuredFormatter.icon}
+						title={t(featuredFormatter.label)}
 						disabled={disabled}
 					/>
 				)}
@@ -45,6 +49,10 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 						data-id={formatter.label}
 						title={t(formatter.label)}
 						onClick={(): void => {
+							if (isPromptButton(formatter)) {
+								formatter.prompt(composer);
+								return;
+							}
 							if ('link' in formatter) {
 								window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
 								return;

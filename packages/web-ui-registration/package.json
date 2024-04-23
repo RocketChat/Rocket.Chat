@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/web-ui-registration",
-	"version": "4.0.1",
+	"version": "5.0.0",
 	"private": true,
 	"homepage": "https://rocket.chat",
 	"main": "./dist/index.js",
@@ -46,12 +46,12 @@
 		"react-i18next": "~13.2.2",
 		"storybook-dark-mode": "~3.0.1",
 		"ts-jest": "~29.1.1",
-		"typescript": "~5.3.2"
+		"typescript": "~5.3.3"
 	},
 	"peerDependencies": {
 		"@rocket.chat/layout": "*",
 		"@rocket.chat/tools": "0.2.1",
-		"@rocket.chat/ui-contexts": "4.0.1",
+		"@rocket.chat/ui-contexts": "5.0.0",
 		"@tanstack/react-query": "*",
 		"react": "*",
 		"react-hook-form": "*",

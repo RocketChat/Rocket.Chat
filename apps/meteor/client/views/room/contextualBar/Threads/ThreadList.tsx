@@ -14,7 +14,7 @@ import {
 	ContextualbarTitle,
 	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
+import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import type { ThreadsListOptions } from '../../../../lib/lists/ThreadsList';
@@ -124,7 +124,7 @@ const ThreadList: VFC = () => {
 				<ContextualbarClose onClick={handleTabBarCloseButtonClick} />
 			</ContextualbarHeader>
 
-			<ContextualbarContent paddingInline={0} ref={ref}>
+			<ContextualbarContent paddingInline={0}>
 				<Box
 					display='flex'
 					flexDirection='row'
@@ -164,7 +164,7 @@ const ThreadList: VFC = () => {
 
 				{phase !== AsyncStatePhase.LOADING && itemCount === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
+				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
 					{!error && itemCount > 0 && items.length > 0 && (
 						<Virtuoso
 							style={{
@@ -181,7 +181,7 @@ const ThreadList: VFC = () => {
 							}
 							overscan={25}
 							data={items}
-							components={{ Scroller: ScrollableContentWrapper }}
+							components={{ Scroller: VirtuosoScrollbars }}
 							itemContent={(_index, data: IMessage): ReactElement => (
 								<ThreadListItem
 									thread={data}

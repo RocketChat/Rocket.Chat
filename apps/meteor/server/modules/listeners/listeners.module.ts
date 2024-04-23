@@ -2,8 +2,8 @@ import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings } from '@rocket.chat/core-services';
-import { isSettingColor, isSettingEnterprise } from '@rocket.chat/core-typings';
-import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom, IMessage, IOTRMessage } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -11,6 +11,14 @@ import { settings } from '../../../app/settings/server/cached';
 import type { NotificationsModule } from '../notifications/notifications.module';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
+
+const STATUS_MAP: Record<UserStatus, 0 | 1 | 2 | 3> = {
+	[UserStatus.OFFLINE]: 0,
+	[UserStatus.ONLINE]: 1,
+	[UserStatus.AWAY]: 2,
+	[UserStatus.BUSY]: 3,
+	[UserStatus.DISABLED]: 0,
+} as const;
 
 const minimongoChangeMap: Record<string, string> = {
 	inserted: 'added',
@@ -145,10 +153,10 @@ export class ListenersModule {
 				return;
 			}
 
-			notifications.notifyLoggedInThisInstance('user-status', [_id, username, status, statusText, name, roles]);
+			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText, name, roles]);
 
 			if (_id) {
-				notifications.sendPresence(_id, username, status, statusText);
+				notifications.sendPresence(_id, username, STATUS_MAP[status], statusText);
 			}
 		});
 
@@ -476,6 +484,13 @@ export class ListenersModule {
 		service.onEvent('actions.changed', () => {
 			notifications.streamApps.emitWithoutBroadcast('actions/changed');
 			notifications.streamApps.emitWithoutBroadcast('apps', ['actions/changed', []]);
+		});
+
+		service.onEvent('otrMessage', ({ roomId, message, user, room }: { roomId: string; message: IMessage; user: IUser; room: IRoom }) => {
+			notifications.streamRoomMessage.emit(roomId, message, user, room);
+		});
+		service.onEvent('otrAckUpdate', ({ roomId, acknowledgeMessage }: { roomId: string; acknowledgeMessage: IOTRMessage }) => {
+			notifications.streamRoomMessage.emit(roomId, acknowledgeMessage);
 		});
 	}
 }

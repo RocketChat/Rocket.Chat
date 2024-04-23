@@ -1,4 +1,5 @@
 import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
+import type { FunctionalComponent } from 'preact';
 import { route } from 'preact-router';
 import { useContext } from 'preact/hooks';
 import type { JSXInternal } from 'preact/src/jsx';
@@ -15,22 +16,22 @@ import Screen from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import { loadConfig } from '../../lib/main';
 import { createToken } from '../../lib/random';
+import type { StoreState } from '../../store';
 import { StoreContext } from '../../store';
 import styles from './styles.scss';
 
-const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unknown }; path: string }) => {
+const SwitchDepartment: FunctionalComponent<{ path: string }> = () => {
 	const { t } = useTranslation();
 
 	const {
 		config: {
 			messages: { switchDepartmentMessage },
 			departments: deps = [],
-			theme: { color },
 		},
 		iframe: { guest },
 		iframe,
 		room,
-		loading = false,
+		loading = true,
 		dispatch,
 		alerts,
 		token,
@@ -60,7 +61,10 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 
 		if (!room) {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { department, token } });
-			await dispatch({ user, alerts: (alerts.push({ id: createToken(), children: t('department_switched'), success: true }), alerts) });
+			await dispatch({
+				user: user as StoreState['user'],
+				alerts: (alerts.push({ id: createToken(), children: t('department_switched'), success: true }), alerts),
+			});
 			return route('/');
 		}
 
@@ -84,7 +88,7 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 				throw t('no_available_agents_to_transfer');
 			}
 
-			await dispatch({ iframe: { ...iframe, guest: { ...guest, department } }, loading: false });
+			await dispatch({ iframe: { ...iframe, guest: { ...guest, department } }, loading: false } as Pick<StoreState, 'iframe' | 'loading'>);
 			await loadConfig();
 
 			await ModalManager.alert({
@@ -110,7 +114,7 @@ const SwitchDepartment = ({ screenProps }: { screenProps: { [key: string]: unkno
 	const defaultMessage = t('choose_a_department_1');
 
 	return (
-		<Screen {...screenProps} color={color} theme={{ color }} title={defaultTitle} className={createClassName(styles, 'switch-department')}>
+		<Screen title={defaultTitle} className={createClassName(styles, 'switch-department')}>
 			<Screen.Content>
 				<p className={createClassName(styles, 'switch-department__message')}>{switchDepartmentMessage || defaultMessage}</p>
 

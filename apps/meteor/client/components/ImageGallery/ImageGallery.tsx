@@ -1,6 +1,7 @@
 import type { IUpload } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, IconButton, Palette, Throbber } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useState } from 'react';
 import { FocusScope } from 'react-aria';
 import { createPortal } from 'react-dom';
@@ -107,6 +108,7 @@ const swiperStyle = css`
 `;
 
 export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[]; onClose: () => void; loadMore?: () => void }) => {
+	const t = useTranslation();
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();
 	const [zoomScale, setZoomScale] = useState(1);
@@ -126,17 +128,39 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 	const preventPropagation = usePreventPropagation();
 
 	return createPortal(
-		<FocusScope contain restoreFocus autoFocus>
-			<Box className={swiperStyle}>
-				<div className='swiper-container' onClick={onClose}>
-					<ButtonGroup className='rcx-swiper-controls' onClick={preventPropagation}>
-						{zoomScale !== 1 && <IconButton small icon='arrow-collapse' title='Resize' rcx-swiper-zoom-out onClick={handleResize} />}
-						<IconButton small icon='h-bar' title='Zoom out' rcx-swiper-zoom-out onClick={handleZoomOut} disabled={zoomScale === 1} />
-						<IconButton small icon='plus' title='Zoom in' rcx-swiper-zoom-in onClick={handleZoomIn} />
-						<IconButton small icon='cross' title='Close' aria-label='Close gallery' className='rcx-swiper-close-button' onClick={onClose} />
+		<FocusScope contain autoFocus>
+			<Box role='dialog' aria-modal='true' aria-label={t('Image_gallery')} className={swiperStyle}>
+				<div role='presentation' className='swiper-container' onClick={onClose}>
+					<ButtonGroup role='toolbar' className='rcx-swiper-controls' onClick={preventPropagation}>
+						{zoomScale !== 1 && (
+							<IconButton name='resize' small icon='arrow-collapse' title={t('Resize')} rcx-swiper-zoom-out onClick={handleResize} />
+						)}
+						<IconButton
+							name='zoom-out'
+							small
+							icon='h-bar'
+							title={t('Zoom_out')}
+							rcx-swiper-zoom-out
+							onClick={handleZoomOut}
+							disabled={zoomScale === 1}
+						/>
+						<IconButton name='zoom-in' small icon='plus' title={t('Zoom_in')} rcx-swiper-zoom-in onClick={handleZoomIn} />
+						<IconButton
+							name='close'
+							small
+							icon='cross'
+							aria-label={t('Close_gallery')}
+							className='rcx-swiper-close-button'
+							onClick={onClose}
+						/>
 					</ButtonGroup>
-					<IconButton icon='chevron-right' className='rcx-swiper-prev-button' onClick={preventPropagation} />
-					<IconButton icon='chevron-left' className='rcx-swiper-next-button' onClick={preventPropagation} />
+					<IconButton icon='chevron-right' aria-label={t('Next_image')} className='rcx-swiper-prev-button' onClick={preventPropagation} />
+					<IconButton
+						icon='chevron-left'
+						aria-label={t('Previous_image')}
+						className='rcx-swiper-next-button'
+						onClick={preventPropagation}
+					/>
 					<Swiper
 						ref={swiperRef}
 						navigation={{
@@ -155,7 +179,11 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 						{images?.map(({ _id, url }) => (
 							<SwiperSlide key={_id}>
 								<div className='swiper-zoom-container'>
-									<img src={url} loading='lazy' onClick={preventPropagation} />
+									{/* eslint-disable-next-line
+										jsx-a11y/no-noninteractive-element-interactions,
+									 	jsx-a11y/click-events-have-key-events
+									 */}
+									<img src={url} loading='lazy' alt='' data-qa-zoom-scale={zoomScale} onClick={preventPropagation} />
 									<div className='rcx-lazy-preloader'>
 										<Throbber inheritColor />
 									</div>

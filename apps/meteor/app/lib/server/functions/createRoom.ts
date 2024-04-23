@@ -1,4 +1,5 @@
 /* eslint-disable complexity */
+import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
@@ -6,10 +7,10 @@ import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typ
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { Apps } from '../../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
+import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 import { createDirectRoom } from './createDirectRoom';
 
@@ -36,14 +37,14 @@ async function createUsersSubscriptions({
 	options?: ICreateRoomParams['options'];
 }) {
 	if (shouldBeHandledByFederation) {
-		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
-		extra.open = true;
-		extra.ls = now;
-		extra.roles = ['owner'];
-
-		if (room.prid) {
-			extra.prid = room.prid;
-		}
+		const extra: Partial<ISubscriptionExtraData> = {
+			...options?.subscriptionExtra,
+			open: true,
+			ls: now,
+			roles: ['owner'],
+			...(room.prid && { prid: room.prid }),
+			...getDefaultSubscriptionPref(owner),
+		};
 
 		await Subscriptions.createWithRoomAndUser(room, owner, extra);
 
@@ -164,15 +165,16 @@ export const createRoom = async <T extends RoomType>(
 		delete extraData.reactWhenReadOnly;
 	}
 
+	// this might not be the best way to check if the room is a discussion, we may need a specific field for that
+	const isDiscussion = 'prid' in extraData && extraData.prid !== '';
+
 	const now = new Date();
 
 	const roomProps: Omit<IRoom, '_id' | '_updatedAt'> = {
 		fname: name,
 		_updatedAt: now,
 		...extraData,
-		name: await getValidRoomName(name.trim(), undefined, {
-			...(options?.nameValidationRegex && { nameValidationRegex: options.nameValidationRegex }),
-		}),
+		name: isDiscussion ? name : await getValidRoomName(name.trim(), undefined),
 		t: type,
 		msgs: 0,
 		usersCount: 0,
@@ -197,7 +199,7 @@ export const createRoom = async <T extends RoomType>(
 		_USERNAMES: members,
 	};
 
-	const prevent = await Apps.triggerEvent('IPreRoomCreatePrevent', tmp).catch((error) => {
+	const prevent = await Apps.self?.triggerEvent(AppEvents.IPreRoomCreatePrevent, tmp).catch((error) => {
 		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
 		}
@@ -209,7 +211,10 @@ export const createRoom = async <T extends RoomType>(
 		throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 	}
 
-	const eventResult = await Apps.triggerEvent('IPreRoomCreateModify', await Apps.triggerEvent('IPreRoomCreateExtend', tmp));
+	const eventResult = await Apps.self?.triggerEvent(
+		AppEvents.IPreRoomCreateModify,
+		await Apps.triggerEvent(AppEvents.IPreRoomCreateExtend, tmp),
+	);
 
 	if (eventResult && typeof eventResult === 'object' && delete eventResult._USERNAMES) {
 		Object.assign(roomProps, eventResult);
@@ -241,7 +246,7 @@ export const createRoom = async <T extends RoomType>(
 		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members });
 	}
 
-	void Apps.triggerEvent('IPostRoomCreate', room);
+	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);
 	return {
 		rid: room._id, // backwards compatible
 		inserted: true,

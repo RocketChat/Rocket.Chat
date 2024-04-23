@@ -15,6 +15,8 @@ import type { RocketChatUserAdapter } from './infrastructure/rocket-chat/adapter
 import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/converters/RoomSender';
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
 
+import './infrastructure/rocket-chat/well-known';
+
 export abstract class AbstractFederationService extends ServiceClassInternal {
 	private cancelSettingsObserver: () => void;
 
@@ -121,10 +123,12 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		if (!this.isRunning) {
 			return;
 		}
+
 		if (isFederationEnabled) {
 			await this.onDisableFederation();
 			return this.onEnableFederation();
 		}
+
 		return this.onDisableFederation();
 	}
 
@@ -151,7 +155,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			this.internalQueueInstance,
 			this.bridge,
 		);
-		const federationMessageServiceReceiver = await FederationFactory.buildMessageServiceReceiver(
+		const federationMessageServiceReceiver = FederationFactory.buildMessageServiceReceiver(
 			this.internalRoomAdapter,
 			this.internalUserAdapter,
 			this.internalMessageAdapter,
@@ -329,5 +333,13 @@ export class FederationService extends AbstractBaseFederationService implements 
 		const federationService = new FederationService();
 		await federationService.initialize();
 		return federationService;
+	}
+
+	public async stopped(): Promise<void> {
+		return super.stopped();
+	}
+
+	public async created(): Promise<void> {
+		return super.created();
 	}
 }

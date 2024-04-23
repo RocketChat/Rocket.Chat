@@ -2,13 +2,13 @@
 	"$schema": "https://json.schemastore.org/package",
 	"name": "@rocket.chat/core-typings",
 	"private": true,
-	"version": "6.7.0-develop",
+	"version": "6.8.0-develop",
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
 		"eslint": "~8.45.0",
 		"mongodb": "^4.17.2",
 		"prettier": "~2.8.8",
-		"typescript": "~5.3.2"
+		"typescript": "~5.3.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -23,8 +23,8 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.41.0",
-		"@rocket.chat/icons": "^0.33.0",
+		"@rocket.chat/apps-engine": "^1.42.1",
+		"@rocket.chat/icons": "^0.34.0",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~"
 	},

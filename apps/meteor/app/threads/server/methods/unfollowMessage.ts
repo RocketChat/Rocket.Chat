@@ -1,10 +1,10 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { Apps, AppEvents } from '../../../../ee/server/apps/orchestrator';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { RateLimiter } from '../../../lib/server';
 import { settings } from '../../../settings/server';
@@ -44,7 +44,7 @@ Meteor.methods<ServerMethods>({
 		const unfollowResult = await unfollow({ rid: message.rid, tmid: message.tmid || message._id, uid });
 
 		const isFollowed = false;
-		await Apps.triggerEvent(AppEvents.IPostMessageFollowed, message, await Meteor.userAsync(), isFollowed);
+		await Apps.self?.triggerEvent(AppEvents.IPostMessageFollowed, message, await Meteor.userAsync(), isFollowed);
 
 		return unfollowResult;
 	},

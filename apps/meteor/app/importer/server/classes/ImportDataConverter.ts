@@ -502,6 +502,7 @@ export class ImportDataConverter {
 					}
 
 					const userId = await this.insertUser(data);
+					data._id = userId;
 					insertedIds.add(userId);
 
 					if (!this._options.skipDefaultChannels) {
@@ -1020,13 +1021,13 @@ export class ImportDataConverter {
 					return;
 				}
 				if (roomData.t === 'p') {
-					const user = await Users.findOneById(startedByUserId);
+					const user = await Users.findOneById(creatorId);
 					if (!user) {
 						throw new Error('importer-channel-invalid-creator');
 					}
-					roomInfo = await createPrivateGroupMethod(user, roomData.name, members, false, {}, {}, true);
+					roomInfo = await createPrivateGroupMethod(user, roomData.name, members, false, {}, {});
 				} else {
-					roomInfo = await createChannelMethod(startedByUserId, roomData.name, members, false, {}, {}, true);
+					roomInfo = await createChannelMethod(creatorId, roomData.name, members, false, {}, {});
 				}
 			}
 

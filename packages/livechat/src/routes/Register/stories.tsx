@@ -2,14 +2,11 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import Register from '.';
-import { screenDecorator, screenProps } from '../../../.storybook/helpers';
+import { screenDecorator } from '../../../.storybook/helpers';
 
 export default {
 	title: 'Routes/Register',
 	component: Register,
-	args: {
-		screenProps: screenProps(),
-	},
 	decorators: [screenDecorator],
 	parameters: {
 		layout: 'centered',

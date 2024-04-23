@@ -144,8 +144,8 @@ export class MessageList extends MemoizedComponent {
 		typingUsernames,
 	}) => {
 		const items = [];
-		const { incomingCallAlert } = store.state;
-		const { ongoingCall } = store.state;
+		const { incomingCallAlert, ongoingCall } = store.state;
+		const { hideSenderAvatar = false, hideReceiverAvatar = false } = this.props || {};
 
 		for (let i = 0; i < messages.length; ++i) {
 			const previousMessage = messages[i - 1];
@@ -180,6 +180,7 @@ export class MessageList extends MemoizedComponent {
 				items.push(<MessageSeparator key={`sep-${message.ts}`} use='li' date={message.ts} />);
 			}
 
+			const isMe = uid && message.u && uid === message.u._id;
 			items.push(
 				<Suspense fallback={null}>
 					<Message
@@ -187,7 +188,8 @@ export class MessageList extends MemoizedComponent {
 						attachmentResolver={attachmentResolver}
 						avatarResolver={avatarResolver}
 						use='li'
-						me={uid && message.u && uid === message.u._id}
+						me={isMe}
+						hideAvatar={(isMe && hideSenderAvatar) || (!isMe && hideReceiverAvatar)}
 						compact={nextMessage && message.u && nextMessage.u && message.u._id === nextMessage.u._id && !nextMessage.t}
 						conversationFinishedMessage={conversationFinishedMessage}
 						type={message.t}
@@ -215,6 +217,7 @@ export class MessageList extends MemoizedComponent {
 			className={createClassName(styles, 'message-list', {}, [className])}
 			onClick={this.handleClick}
 			style={style}
+			data-qa='message-list'
 		>
 			<ol className={createClassName(styles, 'message-list__content')}>{this.renderItems(this.props)}</ol>
 		</div>

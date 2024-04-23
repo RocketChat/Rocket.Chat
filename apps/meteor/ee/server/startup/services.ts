@@ -33,7 +33,7 @@ if (!License.hasValidLicense()) {
 void License.onLicense('federation', async () => {
 	const federationServiceEE = await FederationServiceEE.createFederationService();
 	if (federationService) {
-		api.destroyService(federationService);
+		await api.destroyService(federationService);
 	}
 	api.registerService(federationServiceEE);
 });
