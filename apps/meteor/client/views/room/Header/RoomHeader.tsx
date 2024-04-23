@@ -6,7 +6,7 @@ import {
 	HeaderAvatar,
 	HeaderContent,
 	HeaderContentRow,
-	HeaderSubContent,
+	HeaderSection,
 	HeaderSubtitle,
 	HeaderToolbar,
 } from '@rocket.chat/ui-client';
@@ -53,8 +53,8 @@ const RoomHeader = ({ room, topic = '', slots = {}, roomLeader }: RoomHeaderProp
 	const t = useTranslation();
 
 	return (
-		<>
-			<Header>
+		<Header>
+			<HeaderSection>
 				{slots?.start}
 				<HeaderAvatar>
 					<RoomAvatar room={room} size='x28' />
@@ -81,18 +81,18 @@ const RoomHeader = ({ room, topic = '', slots = {}, roomLeader }: RoomHeaderProp
 					</HeaderToolbar>
 				</Suspense>
 				{slots?.end}
-			</Header>
-			{(topic || roomLeader) && (
-				<HeaderSubContent>
+			</HeaderSection>
+			<HeaderSection>
+				{(topic || roomLeader) && (
 					<HeaderContentRow>
 						<HeaderSubtitle is='h2' flexGrow={1}>
 							<MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />
 						</HeaderSubtitle>
 						{roomLeader && <RoomLeader {...roomLeader} />}
 					</HeaderContentRow>
-				</HeaderSubContent>
-			)}
-		</>
+				)}
+			</HeaderSection>
+		</Header>
 	);
 };
 

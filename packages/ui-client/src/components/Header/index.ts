@@ -10,4 +10,4 @@ export * from './HeaderTag';
 export { default as HeaderTitle } from './HeaderTitle';
 export { default as HeaderTitleButton } from './HeaderTitleButton';
 export * from './HeaderToolbar';
-export * from './HeaderSubContent';
+export * from './HeaderSection';
