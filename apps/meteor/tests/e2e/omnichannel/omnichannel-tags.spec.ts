@@ -12,7 +12,7 @@ import { test, expect } from '../utils/test';
 test.use({ storageState: Users.admin.state });
 
 test.describe('OC - Manage Tags', () => {
-  test.skip(!IS_EE, 'OC - Manage Units > Enterprise Edition Only');
+  test.skip(!IS_EE, 'OC - Manage Tags > Enterprise Edition Only');s
 
 	let poOmnichannelTags: OmnichannelTags;
 
@@ -136,7 +136,24 @@ test.describe('OC - Manage Tags', () => {
 			await poOmnichannelTags.findRowByName(tag.name).click();
 			await expect(poOmnichannelTags.contextualBar).toBeVisible();
 			await expect(page.getByRole('option', { name: department2.data.name })).toBeHidden();
-			await poOmnichannelTags.btnContextualbarClose.click();
+		});
+
+    await test.step('expect to delete tag', async () => {
+			await test.step('expect confirm delete tag', async () => {
+        await poOmnichannelTags.btnDeleteByName(tag.name).click();
+        await expect(poOmnichannelTags.confirmDeleteModal).toBeVisible();
+        await poOmnichannelTags.btnConfirmDeleteModal.click();
+        await expect(poOmnichannelTags.confirmDeleteModal).not.toBeVisible();
+			});
+
+			await test.step('expect tag to have been deleted', async () => {
+				if (await poOmnichannelTags.inputSearch.isVisible()) {
+					await poOmnichannelTags.search(tag.name);
+					await expect(poOmnichannelTags.findRowByName(tag.name)).not.toBeVisible();
+				} else {
+					await expect(page.locator('h3 >> text="No tags yet"')).toBeVisible();
+				}
+			});
 		});
 	})
 });
