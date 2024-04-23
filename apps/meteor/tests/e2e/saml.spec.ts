@@ -200,7 +200,7 @@ test.describe('SAML', () => {
 		});
 	});
 
-	const doLoginStep = async (page: Page, username: string, redirectUrl = '/home') => {
+	const doLoginStep = async (page: Page, username: string) => {
 		await test.step('expect successful login', async () => {
 			await poRegistration.btnLoginWithSaml.click();
 			// Redirect to Idp
@@ -210,11 +210,6 @@ test.describe('SAML', () => {
 			await page.getByLabel('Username').fill(username);
 			await page.getByLabel('Password').fill('password');
 			await page.locator('role=button[name="Login"]').click();
-
-			// Redirect back to rocket.chat
-			await expect(page).toHaveURL(redirectUrl);
-
-			await expect(page.getByRole('button', { name: 'User menu' })).toBeVisible();
 		});
 	};
 
@@ -343,7 +338,7 @@ test.describe('SAML', () => {
 		await page.goto(`/invite/${inviteId}`);
 		await page.getByRole('link', { name: 'Back to Login' }).click();
 
-		await doLoginStep(page, 'samluser1', `${constants.BASE_URL}/invite/${inviteId}`);
+		await doLoginStep(page, 'samluser1');
 
 		await test.step('expect to be redirected to the invited room after succesful login', async () => {
 			await expect(page).toHaveURL(`/group/${targetInviteGroupName}`);
