@@ -247,7 +247,7 @@ test.describe.serial('channel-management', () => {
 		targetChannel = hugeName;
 
 		await page.setViewportSize({ width: 640, height: 460 });
-		await expect(page.getByRole('heading', { name: hugeName })).toHaveCSS('width', '423px');
+		await expect(page.getByRole('heading', { name: hugeName })).toHaveCSS('width', '429px');
 	});
 
 	test('should info contextualbar when clicking on roomName', async ({ page }) => {
