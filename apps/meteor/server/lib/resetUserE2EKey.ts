@@ -1,8 +1,8 @@
+import { api } from '@rocket.chat/core-services';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import * as Mailer from '../../app/mailer/server/api';
-import { Notifications } from '../../app/notifications/server';
 import { settings } from '../../app/settings/server';
 import { i18n } from './i18n';
 import { isUserIdFederated } from './isUserIdFederated';
@@ -66,7 +66,8 @@ export async function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean
 	}
 
 	// force logout the live sessions
-	Notifications.notifyUser(uid, 'force_logout');
+
+	await api.broadcast('user.forceLogout', uid);
 
 	await Users.resetE2EKey(uid);
 	await Subscriptions.resetUserE2EKey(uid);
