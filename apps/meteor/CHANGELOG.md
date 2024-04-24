@@ -1,5 +1,51 @@
 # @rocket.chat/meteor
 
+## 6.7.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#32253](https://github.com/RocketChat/Rocket.Chat/pull/32253)) Increased the timeout between calls for the three remaining Omnichannel Agenda Jobs. This should make them happen less often and reduce the load on MongoDB
+
+- ([#32252](https://github.com/RocketChat/Rocket.Chat/pull/32252)) Fixes an issue that forces the focus on the last message when interacting by mouse on message list
+
+- ([#32256](https://github.com/RocketChat/Rocket.Chat/pull/32256)) Fixed open expanded view (galery mode) for image attachments sent by livechat widget
+
+- ([#32254](https://github.com/RocketChat/Rocket.Chat/pull/32254)) Fixed an issue where Rocket.Chat would ask admins to confirm fingerprint change (new workspace vs configuration update), even when `AUTO_ACCEPT_FINGERPRINT` environment variable set to `"true"`.
+
+- ([#32265](https://github.com/RocketChat/Rocket.Chat/pull/32265)) Fixed supported versions not being updated in airgapped environments
+
+- ([#32251](https://github.com/RocketChat/Rocket.Chat/pull/32251)) Fixes an issue where message reactions are vertically misaligned when zooming out
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.1
+  - @rocket.chat/rest-typings@6.7.1
+  - @rocket.chat/api-client@0.1.30
+  - @rocket.chat/license@0.1.12
+  - @rocket.chat/omnichannel-services@0.1.12
+  - @rocket.chat/pdf-worker@0.0.36
+  - @rocket.chat/presence@0.1.12
+  - @rocket.chat/apps@0.0.3
+  - @rocket.chat/core-services@0.3.12
+  - @rocket.chat/cron@0.0.32
+  - @rocket.chat/gazzodown@5.0.1
+  - @rocket.chat/model-typings@0.3.8
+  - @rocket.chat/ui-contexts@5.0.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/fuselage-ui-kit@5.0.1
+  - @rocket.chat/models@0.0.36
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/ui-avatar@1.0.1
+  - @rocket.chat/ui-client@5.0.1
+  - @rocket.chat/ui-video-conf@5.0.1
+  - @rocket.chat/web-ui-registration@5.0.1
+  - @rocket.chat/instance-status@0.0.36
+  </details>
+
 ## 6.7.0
 
 ### Minor Changes
