@@ -53,7 +53,7 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 	useEffect(() => {
 		const updatedStructure = roomTypeFilterStructure.map((option: OptionProp) => ({
 			...option,
-			checked: roomTypeSelectedOptions.some((selectedOption) => selectedOption.id === option.id)
+			checked: roomTypeSelectedOptions.some((selectedOption) => selectedOption.id === option.id),
 		}));
 
 		setRoomTypeFilterStructure(updatedStructure as OptionProp[]);
