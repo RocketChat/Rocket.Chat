@@ -301,6 +301,33 @@ describe('[Rooms]', function () {
 
 			await request.get(thumbUrl).set(credentials).expect('Content-Type', 'image/jpeg');
 		});
+
+		it('should correctly save e2ee file description and properties', async () => {
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.field('t', 'e2e')
+				.field('e2e', 'pending')
+				.field('description', 'some_file_description')
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.have.property('attachments');
+					expect(res.body.message.attachments).to.be.an('array').of.length(1);
+					expect(res.body.message.attachments[0]).to.have.property('image_type', 'image/png');
+					expect(res.body.message.attachments[0]).to.have.property('title', '1024x1024.png');
+					expect(res.body.message).to.have.property('files');
+					expect(res.body.message.files).to.be.an('array').of.length(2);
+					expect(res.body.message.files[0]).to.have.property('type', 'image/png');
+					expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
+					expect(res.body.message.attachments[0]).to.have.property('description', 'some_file_description');
+					expect(res.body.message).to.have.property('t', 'e2e');
+					expect(res.body.message).to.have.property('e2e', 'pending');
+				});
+		});
 	});
 
 	describe('/rooms.favorite', () => {
@@ -2047,6 +2074,141 @@ describe('[Rooms]', function () {
 				});
 
 			await deleteRoom({ type: 'p', roomId });
+		});
+	});
+
+	describe('/rooms.muteUser', () => {
+		let testChannel;
+
+		before('create a channel', async () => {
+			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+		});
+
+		it('should invite rocket.cat user to room', () => {
+			return request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel.name', testChannel.name);
+				});
+		});
+
+		it('should mute the rocket.cat user', () => {
+			return request
+				.post(api('rooms.muteUser'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should contain rocket.cat user in mute list', () => {
+			return request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel.name', testChannel.name);
+					expect(res.body.channel).to.have.property('muted').and.to.be.an('array');
+					expect(res.body.channel.muted).to.have.lengthOf(1);
+					expect(res.body.channel.muted[0]).to.be.equal('rocket.cat');
+				});
+		});
+	});
+
+	describe('/rooms.unmuteUser', () => {
+		let testChannel;
+
+		before('create a channel', async () => {
+			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					readOnly: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel.name', testChannel.name);
+				});
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+		});
+
+		it('should unmute the rocket.cat user in read-only room', () => {
+			return request
+				.post(api('rooms.unmuteUser'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should contain rocket.cat user in unmute list', () => {
+			return request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel.name', testChannel.name);
+					expect(res.body.channel).to.have.property('unmuted').and.to.be.an('array');
+					expect(res.body.channel.unmuted).to.have.lengthOf(1);
+					expect(res.body.channel.unmuted[0]).to.be.equal('rocket.cat');
+				});
 		});
 	});
 });
