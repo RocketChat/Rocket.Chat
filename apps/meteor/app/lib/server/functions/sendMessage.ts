@@ -1,7 +1,7 @@
 import { Apps } from '@rocket.chat/apps';
-import { Message, api } from '@rocket.chat/core-services';
+import { api, dbWatchersDisabled, Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -289,12 +289,21 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
 	}
 
-	/* Defer other updates as their return is not interesting to the user */
-
-	// Execute all callbacks
 	await callbacks.run('afterSaveMessage', message, room);
+
 	void broadcastMessageFromData({
 		id: message._id,
 	});
+
+	if (dbWatchersDisabled) {
+		const room = await Rooms.findOneById(message.rid);
+		if (room) {
+			void api.broadcast('watch.rooms', {
+				clientAction: 'updated',
+				room,
+			});
+		}
+	}
+
 	return message;
 };

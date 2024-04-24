@@ -1,4 +1,4 @@
-import { Message, Team } from '@rocket.chat/core-services';
+import { api, dbWatchersDisabled, Message, Team } from '@rocket.chat/core-services';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
@@ -88,8 +88,18 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		await Team.removeMember(room.teamId, removedUser._id);
 	}
 
-	setImmediate(() => {
+	setImmediate(async () => {
 		void afterRemoveFromRoomCallback.run({ removedUser, userWhoRemoved: fromUser }, room);
+
+		if (dbWatchersDisabled) {
+			const room = await Rooms.findOneById(data.rid);
+			if (room) {
+				void api.broadcast('watch.rooms', {
+					clientAction: 'updated',
+					room,
+				});
+			}
+		}
 	});
 
 	return true;

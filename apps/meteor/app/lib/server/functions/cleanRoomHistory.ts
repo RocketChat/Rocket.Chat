@@ -1,4 +1,4 @@
-import { api } from '@rocket.chat/core-services';
+import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.chat/models';
 
@@ -114,6 +114,16 @@ export async function cleanRoomHistory({
 
 		await Rooms.resetLastMessageById(rid, lastMessage, -count);
 
+		if (dbWatchersDisabled) {
+			const room = await Rooms.findOneById(rid);
+			if (room) {
+				void api.broadcast('watch.rooms', {
+					clientAction: 'updated',
+					room,
+				});
+			}
+		}
+
 		void api.broadcast('notify.deleteMessageBulk', rid, {
 			rid,
 			excludePinned,
@@ -123,5 +133,6 @@ export async function cleanRoomHistory({
 			ids: selectedMessageIds,
 		});
 	}
+
 	return count;
 }

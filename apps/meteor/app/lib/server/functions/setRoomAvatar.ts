@@ -1,4 +1,4 @@
-import { api, Message } from '@rocket.chat/core-services';
+import { api, dbWatchersDisabled, Message } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRegisterUser } from '@rocket.chat/core-typings';
 import { Avatars, Rooms } from '@rocket.chat/models';
@@ -48,4 +48,17 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 		await Message.saveSystemMessage('room_changed_avatar', rid, '', user);
 		void api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });
 	}, 500);
+
+	if (dbWatchersDisabled && result.etag) {
+		const room = await Rooms.findOneById(rid);
+		if (room) {
+			void api.broadcast('watch.rooms', {
+				clientAction: 'updated',
+				room: {
+					...room,
+					avatarETag: result.etag,
+				},
+			});
+		}
+	}
 };

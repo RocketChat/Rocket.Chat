@@ -1,5 +1,6 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
 import type { ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
@@ -129,6 +130,16 @@ export async function createDirectRoom(
 
 	// @ts-expect-error - TODO: room expects `u` to be passed, but it's not part of the original object in here
 	const rid = room?._id || (await Rooms.insertOne(roomInfo)).insertedId;
+
+	if (dbWatchersDisabled) {
+		const room = await Rooms.findOneById(rid);
+		if (room) {
+			void api.broadcast('watch.rooms', {
+				clientAction: isNewRoom ? 'inserted' : 'updated',
+				room,
+			});
+		}
+	}
 
 	if (roomMembers.length === 1) {
 		// dm to yourself

@@ -1,6 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Message, Team } from '@rocket.chat/core-services';
+import { api, dbWatchersDisabled, Message, Team } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -13,6 +13,17 @@ export const removeUserFromRoom = async function (
 	user: IUser,
 	options?: { byUser: Pick<IUser, '_id' | 'username'> },
 ): Promise<void> {
+	console.log('removeUserFromRoom', rid, user);
+	console.log('removeUserFromRoom', rid, user);
+	console.log('removeUserFromRoom', rid, user);
+	console.log('removeUserFromRoom', rid, user);
+	console.log('removeUserFromRoom', rid, user);
+	console.log('removeUserFromRoom', rid, user);
+	console.log('removeUserFromRoom', rid, user);
+	console.log('removeUserFromRoom', rid, user);
+	console.log('removeUserFromRoom', rid, user);
+	console.log('removeUserFromRoom', rid, user);
+
 	const room = await Rooms.findOneById(rid);
 
 	if (!room) {
@@ -66,6 +77,16 @@ export const removeUserFromRoom = async function (
 
 	// TODO: CACHE: maybe a queue?
 	await afterLeaveRoomCallback.run(user, room);
+
+	if (dbWatchersDisabled) {
+		const room = await Rooms.findOneById(rid);
+		if (room) {
+			void api.broadcast('watch.rooms', {
+				clientAction: 'updated',
+				room,
+			});
+		}
+	}
 
 	await Apps.self?.triggerEvent(AppEvents.IPostRoomUserLeave, room, user);
 };

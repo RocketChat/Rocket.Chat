@@ -1,5 +1,5 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import { Message } from '@rocket.chat/core-services';
+import { api, dbWatchersDisabled, Message } from '@rocket.chat/core-services';
 import type { IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -99,6 +99,16 @@ export const updateMessage = async function (
 				id: msg._id,
 				data: msg,
 			});
+
+			if (dbWatchersDisabled) {
+				const room = await Rooms.findOneById(message.rid);
+				if (room) {
+					void api.broadcast('watch.rooms', {
+						clientAction: 'updated',
+						room,
+					});
+				}
+			}
 		}
 	});
 };
