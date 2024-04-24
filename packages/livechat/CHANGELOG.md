@@ -1,5 +1,18 @@
 # @rocket.chat/livechat Change Log
 
+## 1.14.20
+
+### Patch Changes
+
+- ([#32300](https://github.com/RocketChat/Rocket.Chat/pull/32300)) Livechat: A registered user loses their messages if 'registerGuest' is called using the same token.
+
+- ([#32258](https://github.com/RocketChat/Rocket.Chat/pull/32258)) Fixes issue causing a desync in different browser windows when a chat is closed and started again
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.7
+  </details>
+
 ## 1.14.19
 
 ### Patch Changes

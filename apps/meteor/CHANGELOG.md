@@ -1,5 +1,45 @@
 # @rocket.chat/meteor
 
+## 6.6.7
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#32250](https://github.com/RocketChat/Rocket.Chat/pull/32250)) Fixed open expanded view (galery mode) for image attachments sent by livechat widget
+
+- ([#32300](https://github.com/RocketChat/Rocket.Chat/pull/32300)) Livechat: A registered user loses their messages if 'registerGuest' is called using the same token.
+
+- ([#32277](https://github.com/RocketChat/Rocket.Chat/pull/32277)) Fixed an issue where Rocket.Chat would ask admins to confirm fingerprint change (new workspace vs configuration update), even when `AUTO_ACCEPT_FINGERPRINT` environment variable set to `"true"`.
+
+- ([#32262](https://github.com/RocketChat/Rocket.Chat/pull/32262)) Fixed supported versions not being updated in airgapped environments
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.7
+  - @rocket.chat/rest-typings@6.6.7
+  - @rocket.chat/api-client@0.1.29
+  - @rocket.chat/license@0.1.11
+  - @rocket.chat/omnichannel-services@0.1.11
+  - @rocket.chat/pdf-worker@0.0.35
+  - @rocket.chat/presence@0.1.11
+  - @rocket.chat/core-services@0.3.11
+  - @rocket.chat/cron@0.0.31
+  - @rocket.chat/gazzodown@4.0.7
+  - @rocket.chat/model-typings@0.3.7
+  - @rocket.chat/ui-contexts@4.0.7
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/fuselage-ui-kit@4.0.7
+  - @rocket.chat/models@0.0.35
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/ui-client@4.0.7
+  - @rocket.chat/ui-video-conf@4.0.7
+  - @rocket.chat/web-ui-registration@4.0.7
+  - @rocket.chat/instance-status@0.0.35
+  </details>
+
 ## 6.6.6
 
 ### Patch Changes
