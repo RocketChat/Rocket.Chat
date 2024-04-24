@@ -1,5 +1,17 @@
 # @rocket.chat/ddp-streamer
 
+## 0.2.6
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.6
+- @rocket.chat/rest-typings@6.5.6
+- @rocket.chat/core-services@0.3.6
+- @rocket.chat/model-typings@0.2.6
+- @rocket.chat/ui-contexts@3.0.6
+- @rocket.chat/models@0.0.30
+- @rocket.chat/instance-status@0.0.30
+
 ## 0.2.5
 
 ### Patch Changes

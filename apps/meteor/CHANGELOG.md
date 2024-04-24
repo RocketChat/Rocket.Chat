@@ -1,5 +1,33 @@
 # @rocket.chat/meteor
 
+## 6.5.6
+
+### Patch Changes
+
+- 1dc09a2773: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- c0e81f2185: Fixed supported versions not being updated in airgapped environments
+  - @rocket.chat/core-typings@6.5.6
+  - @rocket.chat/rest-typings@6.5.6
+  - @rocket.chat/api-client@0.1.24
+  - @rocket.chat/license@0.1.6
+  - @rocket.chat/omnichannel-services@0.1.6
+  - @rocket.chat/pdf-worker@0.0.30
+  - @rocket.chat/presence@0.1.6
+  - @rocket.chat/core-services@0.3.6
+  - @rocket.chat/cron@0.0.26
+  - @rocket.chat/gazzodown@3.0.6
+  - @rocket.chat/model-typings@0.2.6
+  - @rocket.chat/ui-contexts@3.0.6
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.6
+  - @rocket.chat/models@0.0.30
+  - @rocket.chat/ui-theming@0.1.1
+  - @rocket.chat/ui-client@3.0.6
+  - @rocket.chat/ui-video-conf@3.0.6
+  - @rocket.chat/web-ui-registration@3.0.6
+  - @rocket.chat/instance-status@0.0.30
+
 ## 6.5.5
 
 ### Patch Changes
