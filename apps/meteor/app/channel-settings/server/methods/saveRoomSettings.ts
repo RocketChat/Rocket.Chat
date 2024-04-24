@@ -1,4 +1,4 @@
-import { Team } from '@rocket.chat/core-services';
+import { api, dbWatchersDisabled, Team } from '@rocket.chat/core-services';
 import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
@@ -485,6 +485,16 @@ export async function saveRoomSettings(
 			room,
 			rid,
 		});
+	}
+
+	if (dbWatchersDisabled) {
+		const room = await Rooms.findById(rid);
+		if (room) {
+			void api.broadcast('watch.rooms', {
+				clientAction: 'updated',
+				room,
+			});
+		}
 	}
 
 	return {

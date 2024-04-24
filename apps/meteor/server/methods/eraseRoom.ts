@@ -1,5 +1,5 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import { Message, Team } from '@rocket.chat/core-services';
+import { api, dbWatchersDisabled, Message, Team } from '@rocket.chat/core-services';
 import { Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
