@@ -5,15 +5,16 @@ import { check } from 'meteor/check';
 
 import { API } from '../../../app/api/server/api';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { apiDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 
 API.v1.addRoute(
 	'licenses.get',
-	{ authRequired: true, permissionsRequired: ['view-privileged-setting'] },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-privileged-setting'],
+		deprecation: { version: '7.0.0', alternatives: ['licenses.info'] },
+	},
 	{
 		async get() {
-			apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, ' Use licenses.info instead.');
-
 			const license = License.getUnmodifiedLicenseAndModules();
 			const licenses = license ? [license] : [];
 
@@ -73,10 +74,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'licenses.isEnterprise',
-	{ authOrAnonRequired: true },
+	{ authOrAnonRequired: true, deprecation: { version: '7.0.0', alternatives: ['licenses.info'] } },
 	{
 		get() {
-			apiDeprecationLogger.endpoint(this.request.route, '7.0.0', this.response, ' Use licenses.info instead.');
 			const isEnterpriseEdition = License.hasValidLicense();
 			return API.v1.success({ isEnterprise: isEnterpriseEdition });
 		},

@@ -1,23 +1,13 @@
-import type { IAppsTokens, RequiredField } from '@rocket.chat/core-typings';
 import EJSON from 'ejson';
 import gcm from 'node-gcm';
 
-import type { PendingPushNotification, PushOptions } from './definition';
 import { logger } from './logger';
+import type { NativeNotificationParameters } from './push';
 
-export const sendGCM = function ({
-	userTokens,
-	notification,
-	_replaceToken,
-	_removeToken,
-	options,
-}: {
-	userTokens: string | string[];
-	notification: PendingPushNotification;
-	_replaceToken: (currentToken: IAppsTokens['token'], newToken: IAppsTokens['token']) => void;
-	_removeToken: (token: IAppsTokens['token']) => void;
-	options: RequiredField<PushOptions, 'gcm'>;
-}) {
+/**
+ * @deprecated Use sendFCM instead, node-gcm is deprecated and google will remove it soon
+ */
+export const sendGCM = function ({ userTokens, notification, _replaceToken, _removeToken, options }: NativeNotificationParameters) {
 	// Make sure userTokens are an array of strings
 	if (typeof userTokens === 'string') {
 		userTokens = [userTokens];

@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetPrivateChannel } from './utils';
+import { createTargetPrivateChannel, createTargetTeam, deleteChannel, deleteTeam } from './utils';
 import { test, expect } from './utils/test';
 
 
@@ -45,16 +45,20 @@ test.describe.serial('message-mentions', () => {
 			targetChannel = await createTargetPrivateChannel(api);
 		});
 
+		test.afterAll(async ({ api }) => {
+			await deleteChannel(api, targetChannel);
+		});
+
 		test('all actions', async ({ page }) => {
 			const adminPage = new HomeChannel(page);
 			const mentionText = getMentionText(Users.user1.data.username, 1);
-		
+
 			await test.step('receive bot message', async () => {
 				await adminPage.sidenav.openChat(targetChannel);
 				await adminPage.content.sendMessage(getMentionText(Users.user1.data.username));
 				await expect(adminPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(mentionText);
 			});
-			
+
 			await test.step('show "Do nothing" action', async () => {
 				await expect(adminPage.content.lastUserMessage.locator('button >> text="Do nothing"')).toBeVisible();
 			});
@@ -68,7 +72,7 @@ test.describe.serial('message-mentions', () => {
 			await test.step('dismiss', async () => {
 				await adminPage.content.lastUserMessage.locator('button >> text="Do nothing"').click();
 			});
-			
+
 			await test.step('receive second bot message', async () => {
 				await adminPage.content.sendMessage(getMentionText(Users.user1.data.username));
 				await expect(adminPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(mentionText);
@@ -77,7 +81,7 @@ test.describe.serial('message-mentions', () => {
 				await adminPage.content.lastUserMessage.locator('button >> text="Let them know"').click();
 				await expect(adminPage.content.lastUserMessageBody).toContainText(getMentionText(Users.user1.data.username, 3));
 			});
-			
+
 			await test.step('receive third bot message', async () => {
 				await adminPage.content.sendMessage(getMentionText(Users.user1.data.username));
 				await expect(adminPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(mentionText);
@@ -94,13 +98,13 @@ test.describe.serial('message-mentions', () => {
 			test('dismiss and share message actions', async ({ page }) => {
 				const mentionText = getMentionText(Users.user2.data.username, 1);
 				const userPage = new HomeChannel(page);
-	
+
 				await test.step('receive bot message', async () => {
 					await userPage.sidenav.openChat(targetChannel);
 					await userPage.content.sendMessage(getMentionText(Users.user2.data.username));
 					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(mentionText);
 				});
-				
+
 				await test.step('show "Do nothing" action', async () => {
 					await expect(userPage.content.lastUserMessage.locator('button >> text="Do nothing"')).toBeVisible();
 				});
@@ -110,11 +114,11 @@ test.describe.serial('message-mentions', () => {
 				await test.step('not show "Add them action', async () => {
 					await expect(userPage.content.lastUserMessage.locator('button >> text="Add them"')).not.toBeVisible();
 				});
-	
+
 				await test.step('dismiss', async () => {
 					await userPage.content.lastUserMessage.locator('button >> text="Do nothing"').click();
 				});
-				
+
 				await test.step('receive second bot message', async () => {
 					await userPage.sidenav.openChat(targetChannel);
 					await userPage.content.sendMessage(getMentionText(Users.user2.data.username));
@@ -126,15 +130,15 @@ test.describe.serial('message-mentions', () => {
 				});
 			});
 		})
-		
+
 		test.describe(() => {
 			test.use({ storageState: Users.user1.state });
 			test.beforeAll(async ({ api }) => {
-				expect((await api.post('/permissions.update', { permissions: [{ '_id': 'create-d', 'roles': ['admin'] }] })).status()).toBe(200);			
-			});	
+				expect((await api.post('/permissions.update', { permissions: [{ '_id': 'create-d', 'roles': ['admin'] }] })).status()).toBe(200);
+			});
 
 			test.afterAll(async ({ api }) => {
-				expect((await api.post('/permissions.update', { permissions: [{ '_id': 'create-d', 'roles': ['admin', 'user', 'bot', 'app'] }] })).status()).toBe(200);			
+				expect((await api.post('/permissions.update', { permissions: [{ '_id': 'create-d', 'roles': ['admin', 'user', 'bot', 'app'] }] })).status()).toBe(200);
 			});
 
 			test('dismiss and add users actions', async ({ page }) => {
@@ -165,11 +169,11 @@ test.describe.serial('message-mentions', () => {
 				await test.step('not show "Let them know" action', async () => {
 					await expect(userPage.content.lastUserMessage.locator('button >> text="Let them know"')).not.toBeVisible();
 				});
-				
+
 				await test.step('dismiss', async () => {
 					await userPage.content.lastUserMessage.locator('button >> text="Do nothing"').click();
 				});
-		
+
 				await test.step('receive second bot message', async () => {
 					await userPage.sidenav.openChat(targetChannel2);
 					await userPage.content.sendMessage(getMentionText(Users.user2.data.username));
@@ -181,15 +185,15 @@ test.describe.serial('message-mentions', () => {
 				});
 			});
 		});
-		
+
 		test.describe(() => {
 			test.use({ storageState: Users.user2.state });
 			test.beforeAll(async ({ api }) => {
-				expect((await api.post('/permissions.update', { permissions: [{ '_id': 'create-d', 'roles': ['admin'] }] })).status()).toBe(200);			
-			});	
+				expect((await api.post('/permissions.update', { permissions: [{ '_id': 'create-d', 'roles': ['admin'] }] })).status()).toBe(200);
+			});
 
 			test.afterAll(async ({ api }) => {
-				expect((await api.post('/permissions.update', { permissions: [{ '_id': 'create-d', 'roles': ['admin', 'user', 'bot', 'app'] }] })).status()).toBe(200);			
+				expect((await api.post('/permissions.update', { permissions: [{ '_id': 'create-d', 'roles': ['admin', 'user', 'bot', 'app'] }] })).status()).toBe(200);
 			});
 			test('no actions', async ({ page }) => {
 				const userPage = new HomeChannel(page);
@@ -211,6 +215,29 @@ test.describe.serial('message-mentions', () => {
 				});
 			});
 		})
-		
+
+		test.describe('team mention', () => {
+			let team: string;
+			test.use({ storageState: Users.user1.state });
+			test.beforeAll(async ({ api }) => {
+				team = await createTargetTeam(api);
+			});
+
+			test.afterAll(async ({ api }) => {
+				await deleteTeam(api, team);
+			});
+
+			test('should not receive bot message', async ({ page }) => {
+				const userPage = new HomeChannel(page);
+
+				await test.step('do not receive bot message', async () => {
+					await userPage.sidenav.openChat(targetChannel);
+					await userPage.content.sendMessage(getMentionText(team));
+					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).not.toBeVisible();
+				});
+
+			});
+		})
+
 	})
 });
