@@ -21,15 +21,14 @@ test.describe('OC - Business Hours', () => {
 
   test.beforeAll(async ({ api }) => {
 		department = await createDepartment(api);
+    agent = await createAgent(api, 'user2');
+    await api.post('/settings/Livechat_enable_business_hours', { value: true }).then((res) => expect(res.status()).toBe(200));
 	});
 
-	test.beforeAll(async ({ api }) => {
-		agent = await createAgent(api, 'user2');
-	});
-
-	test.afterAll(async () => {
+	test.afterAll(async ({ api }) => {
 		await department.delete();
 		await agent.delete();
+    await api.post('/settings/Livechat_enable_business_hours', { value: false }).then((res) => expect(res.status()).toBe(200));
 	});
 
   test.beforeEach(async ({ page }: { page: Page }) => {
