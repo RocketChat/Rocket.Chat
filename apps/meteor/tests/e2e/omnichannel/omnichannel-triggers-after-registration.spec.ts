@@ -50,11 +50,16 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 		await Promise.all([
 			api.delete('/livechat/users/agent/user1'),
 			api.delete('/livechat/users/manager/user1'),
-			api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false }),
 		]);
+	
 		await agent.page.close();
 		await poLiveChat.page.close();
 	});
+
+	test.afterAll(async ({ api }) => {
+		const { status } = await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false });
+		await expect(status()).toBe(200);
+	})
 
 	test.describe('OC - Livechat New Chat Triggers - After Registration', async () => {
 		await test('expect trigger message after registration', async () => {
@@ -68,11 +73,12 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 
 	test.describe('OC - Livechat New Chat Triggers - After Registration, clear Local storage', async () => {
 		test.beforeAll(async ({ api }) => {
-			await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: true });
+			const { status } = await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: true });
+			await expect(status()).toBe(200);
+			await poLiveChat.page.goto('/livechat');
 		});
 
 		await test('expect trigger message after registration', async () => {
-			await poLiveChat.page.goto('/livechat');
 			await poLiveChat.sendMessageAndCloseChat(newUser);
 
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
