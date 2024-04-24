@@ -53,7 +53,7 @@
 		"@types/sharp": "^0.30.5",
 		"@types/uuid": "^8.3.4",
 		"@types/ws": "^8.5.8",
-		"eslint": "~8.45.0",
+		"eslint": "~9.1.1",
 		"pino-pretty": "^7.6.1",
 		"ts-node": "^10.9.1",
 		"typescript": "~5.3.3"
