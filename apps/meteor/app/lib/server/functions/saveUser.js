@@ -276,6 +276,8 @@ const saveNewUser = async function (userData, sendPassword) {
 		password: userData.password,
 		joinDefaultChannels: userData.joinDefaultChannels,
 		isGuest,
+		globalRoles: roles,
+		skipNewUserRolesSetting: true,
 	};
 	if (userData.email) {
 		createUser.email = userData.email;
@@ -285,7 +287,6 @@ const saveNewUser = async function (userData, sendPassword) {
 
 	const updateUser = {
 		$set: {
-			roles,
 			...(typeof userData.name !== 'undefined' && { name: userData.name }),
 			settings: userData.settings || {},
 		},

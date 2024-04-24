@@ -436,6 +436,43 @@ export type Notifications = {
 
 type RoomsGetDiscussionsProps = PaginatedRequest<BaseRoomsProps>;
 
+type RoomsMuteUnmuteUser = { userId: string; roomId: string } | { username: string; roomId: string };
+
+const RoomsMuteUnmuteUserSchema = {
+	type: 'object',
+	oneOf: [
+		{
+			properties: {
+				userId: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['userId', 'roomId'],
+			additionalProperties: false,
+		},
+		{
+			properties: {
+				username: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['username', 'roomId'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isRoomsMuteUnmuteUserProps = ajv.compile<RoomsMuteUnmuteUser>(RoomsMuteUnmuteUserSchema);
 export type RoomsImagesProps = {
 	roomId: string;
 	startingFromId?: string;
@@ -607,6 +644,15 @@ export type RoomsEndpoints = {
 			discussions: IRoom[];
 		}>;
 	};
+
+	'/v1/rooms.muteUser': {
+		POST: (params: RoomsMuteUnmuteUser) => void;
+	};
+
+	'/v1/rooms.unmuteUser': {
+		POST: (params: RoomsMuteUnmuteUser) => void;
+	};
+
 	'/v1/rooms.images': {
 		GET: (params: RoomsImagesProps) => PaginatedResult<{
 			files: IUpload[];
