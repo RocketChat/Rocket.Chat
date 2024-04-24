@@ -45,6 +45,7 @@ import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITe
 import type { ITranslationService } from './types/ITranslationService';
 import type { UiKitCoreAppPayload, IUiKitCoreApp, IUiKitCoreAppService } from './types/IUiKitCoreApp';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
+import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
 import type { IVoipService } from './types/IVoipService';
 
@@ -134,6 +135,7 @@ export {
 	IOmnichannelIntegrationService,
 	IImportService,
 	IOmnichannelAnalyticsService,
+	IUserService,
 };
 
 export const dbWatchersDisabled = ['yes', 'true'].includes(String(process.env.DISABLE_DB_WATCHERS).toLowerCase());
@@ -173,6 +175,7 @@ export const Omnichannel = proxifyWithWait<IOmnichannelService>('omnichannel');
 export const OmnichannelEEService = proxifyWithWait<IOmnichannelEEService>('omnichannel-ee');
 export const Import = proxifyWithWait<IImportService>('import');
 export const OmnichannelAnalytics = proxifyWithWait<IOmnichannelAnalyticsService>('omnichannel-analytics');
+export const User = proxifyWithWait<IUserService>('user');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available
