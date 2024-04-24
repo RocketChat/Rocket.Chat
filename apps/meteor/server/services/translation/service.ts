@@ -1,6 +1,6 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ITranslationService } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import mem from 'mem';
 
@@ -22,7 +22,7 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 	}
 
 	// Use translate when you want to translate to the user's language, or server's as a fallback
-	async translate(text: string, user: IUser): Promise<string> {
+	async translate(text: string, user: AtLeast<IUser, 'language'>): Promise<string> {
 		const language = user.language || (await this.getServerLanguageCached());
 
 		return this.translateText(text, language);

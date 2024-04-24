@@ -232,8 +232,17 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					continue;
 				}
 
-				const fileBuffer = await uploadService.getFileBuffer({ file: uploadedFile });
-				files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.extension });
+				try {
+					const fileBuffer = await uploadService.getFileBuffer({ file: uploadedFile });
+					files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.extension });
+				} catch (e) {
+					this.log.error(`Error getting file ${file._id}`, e);
+					if ((e as Error).message === 'MAX_PAYLOAD_EXCEEDED') {
+						this.log.error(`File is too big to be processed by NATS. See NATS config for allowing bigger messages to be sent`);
+					}
+					// Push an empty buffer so parser processes as unsupported file
+					files.push({ name: attachment.title, buffer: null });
+				}
 			}
 
 			// When you send a file message, the things you type in the modal are not "msg", they're in "description" of the attachment
@@ -275,7 +284,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 		this.currentJobNumber++;
 		try {
-			const room = await LivechatRooms.findOneById(details.rid);
+			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'v' | 'servedBy' | 'closedAt'>>(details.rid, {
+				projection: { v: 1, servedBy: 1, closedAt: 1 },
+			});
 			if (!room) {
 				throw new Error('room-not-found');
 			}
@@ -346,11 +357,11 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	private async pdfFailed({ details, e }: { details: WorkDetailsWithSource; e: Error }): Promise<void> {
 		this.log.error(`Transcript for room ${details.rid} by user ${details.userId} - Failed: ${e.message}`);
-		const room = await LivechatRooms.findOneById(details.rid);
+		const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id'>>(details.rid, { projection: { _id: 1 } });
 		if (!room) {
 			return;
 		}
-		const user = await Users.findOneById(details.userId);
+		const user = await Users.findOneById<Pick<IUser, 'language' | '_id'>>(details.userId, { projection: { _id: 1, language: 1 } });
 		if (!user) {
 			return;
 		}
@@ -359,7 +370,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		await LivechatRooms.unsetTranscriptRequestedPdfById(details.rid);
 
 		const { rid } = await roomService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
-		this.log.info(`Transcript for room ${details.rid} by user ${details.userId} - Sending error message to user`);
 		await messageService.sendMessage({
 			fromId: 'rocket.cat',
 			rid,
@@ -369,7 +379,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	private async pdfComplete({ details, file }: { details: WorkDetailsWithSource; file: IUpload }): Promise<void> {
 		this.log.info(`Transcript for room ${details.rid} by user ${details.userId} - Complete`);
-		const user = await Users.findOneById(details.userId);
+		const user = await Users.findOneById<Pick<IUser, '_id' | 'language'>>(details.userId, { projection: { _id: 1, language: 1 } });
 		if (!user) {
 			return;
 		}
@@ -380,7 +390,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				roomService.createDirectMessage({ to: details.userId, from: 'rocket.cat' }),
 			]);
 
-			this.log.info(`Transcript for room ${details.rid} by user ${details.userId} - Sending success message to user`);
 			const result = await Promise.allSettled([
 				uploadService.sendFileMessage({
 					roomId: details.rid,
