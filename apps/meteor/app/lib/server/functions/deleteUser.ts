@@ -1,4 +1,4 @@
-import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
+import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import {
 	Integrations,
@@ -19,6 +19,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
+import { notifyListenerOnRoomsChanges } from '../lib/notifyListenerOnRoomChanges';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
@@ -89,16 +90,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		await Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
 		await Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
-		if (dbWatchersDisabled) {
-			const rooms = await Rooms.findByIds(subscribedRooms.map((room) => room.rid)).toArray();
-			rooms.forEach(async (room) => {
-				console.log(`notifying room ${room._id} of user ${userId} being removed`);
-				void api.broadcast('watch.rooms', {
-					clientAction: 'updated',
-					room,
-				});
-			});
-		}
+		void notifyListenerOnRoomsChanges(await Rooms.findByIds(subscribedRooms.map((room) => room.rid)).toArray());
 
 		await Subscriptions.removeByUserId(userId); // Remove user subscriptions
 

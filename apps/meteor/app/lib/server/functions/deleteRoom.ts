@@ -1,8 +1,8 @@
 import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
-import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { FileUpload } from '../../../file-upload/server';
+import { notifyListenerOnRoomChanges } from '../lib/notifyListenerOnRoomChanges';
 
 export const deleteRoom = async function (rid: string): Promise<void> {
 	await FileUpload.removeFilesByRoomId(rid);
@@ -13,13 +13,5 @@ export const deleteRoom = async function (rid: string): Promise<void> {
 	await callbacks.run('afterDeleteRoom', rid);
 	await Rooms.removeById(rid);
 
-	if (dbWatchersDisabled) {
-		const room = await Rooms.findById(rid);
-		if (room) {
-			void api.broadcast('watch.rooms', {
-				clientAction: 'removed',
-				room,
-			})
-		}
-	}
+	void notifyListenerOnRoomChanges(rid, 'removed');
 };

@@ -1,5 +1,5 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import { api, dbWatchersDisabled, Message } from '@rocket.chat/core-services';
+import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { settings } from '../../../settings/server';
+import { notifyListenerOnRoomChanges } from '../lib/notifyListenerOnRoomChanges';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
@@ -100,15 +101,7 @@ export const updateMessage = async function (
 				data: msg,
 			});
 
-			if (dbWatchersDisabled) {
-				const room = await Rooms.findOneById(message.rid);
-				if (room) {
-					void api.broadcast('watch.rooms', {
-						clientAction: 'updated',
-						room,
-					});
-				}
-			}
+			void notifyListenerOnRoomChanges(message.rid);
 		}
 	});
 };

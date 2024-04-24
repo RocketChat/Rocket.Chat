@@ -1,9 +1,10 @@
-import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
+import { api } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.chat/models';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
+import { notifyListenerOnRoomChanges } from '../lib/notifyListenerOnRoomChanges';
 import { deleteRoom } from './deleteRoom';
 
 export async function cleanRoomHistory({
@@ -114,15 +115,7 @@ export async function cleanRoomHistory({
 
 		await Rooms.resetLastMessageById(rid, lastMessage, -count);
 
-		if (dbWatchersDisabled) {
-			const room = await Rooms.findOneById(rid);
-			if (room) {
-				void api.broadcast('watch.rooms', {
-					clientAction: 'updated',
-					room,
-				});
-			}
-		}
+		void notifyListenerOnRoomChanges(rid);
 
 		void api.broadcast('notify.deleteMessageBulk', rid, {
 			rid,

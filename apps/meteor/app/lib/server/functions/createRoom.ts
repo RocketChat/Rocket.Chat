@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { api, dbWatchersDisabled, Message, Team } from '@rocket.chat/core-services';
+import { Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
@@ -12,6 +12,7 @@ import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreate
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
+import { notifyListenerOnRoomChanges } from '../lib/notifyListenerOnRoomChanges';
 import { createDirectRoom } from './createDirectRoom';
 
 const isValidName = (name: unknown): name is string => {
@@ -130,11 +131,7 @@ export const createRoom = async <T extends RoomType>(
 
 	if (type === 'd') {
 		const room = await createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || owner?.username });
-
-		if (dbWatchersDisabled) {
-			void api.broadcast('watch.rooms', { clientAction: 'inserted', room });
-		}
-
+		void notifyListenerOnRoomChanges(room.rid, 'inserted', room);
 		return room;
 	}
 
@@ -233,9 +230,7 @@ export const createRoom = async <T extends RoomType>(
 
 	const room = await Rooms.createWithFullRoomData(roomProps);
 
-	if (dbWatchersDisabled) {
-		void api.broadcast('watch.rooms', { clientAction: 'inserted', room });
-	}
+	void notifyListenerOnRoomChanges(room._id, 'inserted', room);
 
 	const shouldBeHandledByFederation = room.federated === true || owner.username.includes(':');
 

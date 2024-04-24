@@ -1,4 +1,4 @@
-import { api, dbWatchersDisabled, Message } from '@rocket.chat/core-services';
+import { api, Message } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRegisterUser } from '@rocket.chat/core-typings';
 import { Avatars, Rooms } from '@rocket.chat/models';
@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { FileUpload } from '../../../file-upload/server';
 import { RocketChatFile } from '../../../file/server';
+import { notifyListenerOnRoomChanges } from '../lib/notifyListenerOnRoomChanges';
 
 export const setRoomAvatar = async function (rid: string, dataURI: string, user: IUser): Promise<void> {
 	if (!isRegisterUser(user)) {
@@ -49,16 +50,5 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 		void api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });
 	}, 500);
 
-	if (dbWatchersDisabled && result.etag) {
-		const room = await Rooms.findOneById(rid);
-		if (room) {
-			void api.broadcast('watch.rooms', {
-				clientAction: 'updated',
-				room: {
-					...room,
-					avatarETag: result.etag,
-				},
-			});
-		}
-	}
+	void notifyListenerOnRoomChanges(rid, 'updated', undefined, { avatarETag: result.etag });
 };

@@ -1,4 +1,4 @@
-import { api, dbWatchersDisabled, Team } from '@rocket.chat/core-services';
+import { Team } from '@rocket.chat/core-services';
 import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
@@ -10,6 +10,7 @@ import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
+import { notifyListenerOnRoomChanges } from '../../../lib/server/lib/notifyListenerOnRoomChanges';
 import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
 import { saveRoomCustomFields } from '../functions/saveRoomCustomFields';
@@ -487,15 +488,7 @@ export async function saveRoomSettings(
 		});
 	}
 
-	if (dbWatchersDisabled) {
-		const room = await Rooms.findById(rid);
-		if (room) {
-			void api.broadcast('watch.rooms', {
-				clientAction: 'updated',
-				room,
-			});
-		}
-	}
+	void notifyListenerOnRoomChanges(rid);
 
 	return {
 		result: true,

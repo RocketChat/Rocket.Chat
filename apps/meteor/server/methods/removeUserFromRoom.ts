@@ -1,4 +1,4 @@
-import { api, dbWatchersDisabled, Message, Team } from '@rocket.chat/core-services';
+import { Message, Team } from '@rocket.chat/core-services';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { canAccessRoomAsync, getUsersInRole } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
+import { notifyListenerOnRoomChanges } from '../../app/lib/server/lib/notifyListenerOnRoomChanges';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { callbacks } from '../../lib/callbacks';
 import { afterRemoveFromRoomCallback } from '../../lib/callbacks/afterRemoveFromRoomCallback';
@@ -90,16 +91,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 
 	setImmediate(async () => {
 		void afterRemoveFromRoomCallback.run({ removedUser, userWhoRemoved: fromUser }, room);
-
-		if (dbWatchersDisabled) {
-			const room = await Rooms.findOneById(data.rid);
-			if (room) {
-				void api.broadcast('watch.rooms', {
-					clientAction: 'updated',
-					room,
-				});
-			}
-		}
+		void notifyListenerOnRoomChanges(data.rid);
 	});
 
 	return true;
