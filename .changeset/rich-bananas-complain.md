@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixed the issue of the app not receiving the user status text
+Fixed an issue on Users converter that was not returning the `statusText` property from users even when the typing indicated property existed.
