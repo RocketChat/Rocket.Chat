@@ -92,5 +92,5 @@ export default async (data: ChatTranscriptData): Promise<NodeJS.ReadableStream> 
 	});
 	Font.registerHyphenationCallback((word) => [word]);
 
-	return ReactPDF.renderToFile(<ChatTranscriptPDF {...data} />, './test.pdf');
+	return ReactPDF.renderToStream(<ChatTranscriptPDF {...data} />);
 };
