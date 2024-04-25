@@ -18,7 +18,6 @@ export interface IStats {
 		registerServer?: boolean;
 	};
 	uniqueId: string;
-	cloudWorkspaceId: string;
 	deploymentFingerprintHash: string;
 	deploymentFingerprintVerified: boolean;
 	installedAt?: string;
