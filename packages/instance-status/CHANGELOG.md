@@ -1,6 +1,6 @@
 # @rocket.chat/instance-status
 
-## 0.0.36-rc.0
+## 0.0.37-rc.0
 
 ### Patch Changes
 

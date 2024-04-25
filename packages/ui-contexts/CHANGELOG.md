@@ -14,6 +14,15 @@
   - @rocket.chat/core-typings@6.8.0-rc.0
   - @rocket.chat/i18n@0.3.0-rc.0
   - @rocket.chat/ddp-client@0.2.21-rc.0
+## 5.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.1
+  - @rocket.chat/rest-typings@6.7.1
+  - @rocket.chat/ddp-client@0.2.21
   </details>
 
 ## 5.0.0

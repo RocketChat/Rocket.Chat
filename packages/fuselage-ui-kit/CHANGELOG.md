@@ -12,6 +12,16 @@
   - @rocket.chat/ui-kit@0.33.0
   - @rocket.chat/ui-video-conf@6.0.0-rc.0
   - @rocket.chat/ui-avatar@2.0.0-rc.0
+## 5.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.1
+  - @rocket.chat/ui-contexts@5.0.1
+  - @rocket.chat/ui-avatar@1.0.1
+  - @rocket.chat/ui-video-conf@5.0.1
   </details>
 
 ## 5.0.0
