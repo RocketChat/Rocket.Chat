@@ -4,4 +4,4 @@
 "@rocket.chat/i18n": minor
 ---
 
-**Added "Cloud Workspace ID" to workspace statistics page**
+Added "Rocket.Chat Cloud Workspace ID" to workspace statistics page
