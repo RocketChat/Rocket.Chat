@@ -10,11 +10,6 @@ type CreateTagParams = {
 	departments?: { departmentId: string }[];
 };
 
-export const removeTag = async (api: BaseTest['api'], id: string) =>
-	api.post('/method.call/omnichannel:removeTag', {
-		message: JSON.stringify({ msg: 'method', id: '35', method: 'livechat:removeTag', params: [id] }),
-	});
-
 export const createTag = async (
 	api: BaseTest['api'],
 	{ id = null, name, description = '', departments = [] }: CreateTagParams = {},
@@ -32,6 +27,5 @@ export const createTag = async (
 		return {
 			response,
 			data: tag,
-			delete: async () => removeTag(api, tag?._id),
 		};
 };

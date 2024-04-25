@@ -27,15 +27,7 @@ export const useRemoveTag = () => {
 			}
 		};
 
-		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={handleDelete}
-				onCancel={() => setModal()}
-				confirmText={t('Delete')}
-				data-qa-id='tag-confirm-delete-modal'
-			/>,
-		);
+		setModal(<GenericModal variant='danger' onConfirm={handleDelete} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	});
 
 	return handleDeleteTag;

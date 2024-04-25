@@ -8,7 +8,7 @@ export class OmnichannelTags extends OmnichannelAdministration {
 	}
 
   get contextualBar(): Locator {
-		return this.page.locator('div[data-qa-id="tags-contextual-bar"]');
+		return this.page.locator('div[role="dialog"].rcx-vertical-bar');
 	}
 
   get btnSave(): Locator {
@@ -28,7 +28,7 @@ export class OmnichannelTags extends OmnichannelAdministration {
 	}
 
   get confirmDeleteModal(): Locator {
-		return this.page.locator('dialog[data-qa-id="tag-confirm-delete-modal"]');
+		return this.page.locator('dialog:has(h2:has-text("Are you sure?"))');
 	}
 
   get btnCancelDeleteModal(): Locator {
@@ -40,15 +40,15 @@ export class OmnichannelTags extends OmnichannelAdministration {
 	}
 
   get btnContextualbarClose(): Locator {
-		return this.page.locator('[data-qa="ContextualbarActionClose"]');
+		return this.contextualBar.locator('button[aria-label="Close"]');
 	}
 
   btnDeleteByName(name: string): Locator {
-		return this.page.locator(`button[data-qa-id="remove-tag-${name}"]`);
+		return this.page.locator(`role=link[name="${name} Remove"] >> role=button`);
 	}
 
   findRowByName(name: string): Locator {
-		return this.page.locator(`tr[data-qa-id="${name}"]`);
+		return this.page.locator(`tr:has-text("${name}")`);
 	}
 
   get inputDepartments(): Locator {

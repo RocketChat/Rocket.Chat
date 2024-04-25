@@ -72,7 +72,7 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 	const departmentsField = useUniqueId();
 
 	return (
-		<Contextualbar data-qa-id='tags-contextual-bar'>
+		<Contextualbar>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{_id ? t('Edit_Tag') : t('New_Tag')}</ContextualbarTitle>
 				<ContextualbarClose onClick={() => router.navigate('/omnichannel/tags')}></ContextualbarClose>
