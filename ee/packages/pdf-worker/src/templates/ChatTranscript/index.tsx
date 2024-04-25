@@ -35,6 +35,8 @@ const styles = StyleSheet.create({
 		fontFamily: 'Inter',
 		lineHeight: 1.25,
 		color: colors.n800,
+		// ugh https://github.com/diegomura/react-pdf/issues/684
+		paddingBottom: 32,
 	},
 	wrapper: {
 		paddingHorizontal: 32,
@@ -90,5 +92,5 @@ export default async (data: ChatTranscriptData): Promise<NodeJS.ReadableStream> 
 	});
 	Font.registerHyphenationCallback((word) => [word]);
 
-	return ReactPDF.renderToStream(<ChatTranscriptPDF {...data} />);
+	return ReactPDF.renderToFile(<ChatTranscriptPDF {...data} />, './test.pdf');
 };

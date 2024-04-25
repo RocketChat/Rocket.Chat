@@ -10,6 +10,7 @@ import { Quotes } from './Quotes';
 
 const styles = StyleSheet.create({
 	wrapper: {
+		marginBottom: 16,
 		paddingBottom: 16,
 		paddingHorizontal: 32,
 	},
@@ -22,7 +23,7 @@ const styles = StyleSheet.create({
 export const MessageList = ({ messages, invalidFileMessage }: { messages: ChatTranscriptData['messages']; invalidFileMessage: string }) => (
 	<>
 		{messages.map((message, index) => (
-			<View style={styles.wrapper} key={index} wrap={false}>
+			<View style={styles.wrapper} key={index} wrap={!!message.quotes}>
 				{message.divider && <Divider divider={message.divider} />}
 				<MessageHeader name={message.u.name || message.u.username} time={message.ts} />
 				<View style={styles.message}>{message.md ? <Markup tokens={message.md} /> : <Text>{message.msg}</Text>}</View>
