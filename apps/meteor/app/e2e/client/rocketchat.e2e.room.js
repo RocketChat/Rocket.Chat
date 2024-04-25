@@ -410,6 +410,20 @@ export class E2ERoom extends Emitter {
 		return this.encryptText(data);
 	}
 
+	encryptAttachmentDescription(description, _id) {
+		const ts = new Date();
+
+		const data = new TextEncoder('UTF-8').encode(
+			EJSON.stringify({
+				userId: this.userId,
+				text: description,
+				_id,
+				ts,
+			}),
+		);
+		return this.encryptText(data);
+	}
+
 	// Decrypt messages
 
 	async decryptMessage(message) {

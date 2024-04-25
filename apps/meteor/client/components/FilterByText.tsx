@@ -23,7 +23,7 @@ const isFilterByTextPropsWithButton = (props: any): props is FilterByTextPropsWi
 	'displayButton' in props && props.displayButton === true;
 
 const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function FilterByText(
-	{ placeholder, onChange: setFilter, shouldAutoFocus, children, ...props },
+	{ placeholder, onChange: setFilter, shouldAutoFocus = false, children, ...props },
 	ref,
 ) {
 	const t = useTranslation();
