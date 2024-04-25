@@ -23,6 +23,8 @@ import {
 	importAESKey,
 	importRSAKey,
 	readFileAsArrayBuffer,
+	encryptAESCTR,
+	generateAESCTRKey,
 } from './helper';
 import { log, logError } from './logger';
 import { e2e } from './rocketchat.e2e';
@@ -335,42 +337,40 @@ export class E2ERoom extends Emitter {
 
 	// Encrypts files before upload. I/O is in arraybuffers.
 	async encryptFile(file) {
-		if (!this.isSupportedRoomType(this.typeOfRoom)) {
-			return;
-		}
+		// if (!this.isSupportedRoomType(this.typeOfRoom)) {
+		// 	return;
+		// }
 
 		const fileArrayBuffer = await readFileAsArrayBuffer(file);
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
+		const key = await generateAESCTRKey();
 		let result;
 		try {
-			result = await encryptAES(vector, this.groupSessionKey, fileArrayBuffer);
+			result = await encryptAESCTR(vector, key, fileArrayBuffer);
 		} catch (error) {
+			console.log(error);
 			return this.error('Error encrypting group key: ', error);
 		}
 
-		const output = joinVectorAndEcryptedData(vector, result);
+		const exportedKey = await window.crypto.subtle.exportKey('jwk', key);
 
-		const encryptedFile = new File([toArrayBuffer(EJSON.stringify(output))], file.name);
+		const encryptedFile = new File([toArrayBuffer(result)], file.name);
 
-		return encryptedFile;
+		return {
+			file: encryptedFile,
+			key: exportedKey,
+			iv: Base64.encode(vector),
+			type: file.type,
+		};
 	}
 
 	// Decrypt uploaded encrypted files. I/O is in arraybuffers.
-	async decryptFile(message) {
-		if (message[0] !== '{') {
-			return;
-		}
+	async decryptFile(file, key, iv) {
+		const ivArray = Base64.decode(iv);
+		const cryptoKey = await window.crypto.subtle.importKey('jwk', key, { name: 'AES-CTR' }, true, ['encrypt', 'decrypt']);
 
-		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(message));
-
-		try {
-			return await decryptAES(vector, this.groupSessionKey, cipherText);
-		} catch (error) {
-			this.error('Error decrypting file: ', error);
-
-			return false;
-		}
+		return window.crypto.subtle.decrypt({ name: 'AES-CTR', counter: ivArray, length: 64 }, cryptoKey, file);
 	}
 
 	// Encrypts messages
@@ -440,7 +440,7 @@ export class E2ERoom extends Emitter {
 		return {
 			...message,
 			msg: data.text,
-			e2e: 'done',
+			// e2e: 'done',
 		};
 	}
 

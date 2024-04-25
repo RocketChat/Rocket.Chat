@@ -1,9 +1,11 @@
 import type { Dimensions } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useAttachmentDimensions } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React, { memo, useState, useMemo } from 'react';
 
+import { e2e } from '../../../../../../app/e2e/client';
 import ImageBox from './image/ImageBox';
 import Load from './image/Load';
 import Retry from './image/Retry';
@@ -37,7 +39,7 @@ const getDimensions = (
 	return { width, height, ratio: (height / width) * 100 };
 };
 
-const AttachmentImage: FC<AttachmentImageProps> = ({ id, previewUrl, dataSrc, loadImage = true, setLoadImage, src, ...size }) => {
+const AttachmentImage: FC<AttachmentImageProps> = ({ id, previewUrl, dataSrc, loadImage = true, setLoadImage, src, message, ...size }) => {
 	const limits = useAttachmentDimensions();
 
 	const [error, setError] = useState(false);
@@ -49,6 +51,53 @@ const AttachmentImage: FC<AttachmentImageProps> = ({ id, previewUrl, dataSrc, lo
 			setHasNoError: (): void => setError(false),
 		}),
 		[],
+	);
+
+	async function imageUrlToBase64(blob: Blob) {
+		return new Promise((onSuccess, onError) => {
+			try {
+				const reader = new FileReader();
+				reader.onload = function () {
+					onSuccess(this.result);
+				};
+				reader.readAsDataURL(blob);
+			} catch (e) {
+				onError(e);
+			}
+		});
+	}
+
+	async function imageUrlArrayBuffer(blob: Blob) {
+		return new Promise((onSuccess, onError) => {
+			try {
+				const reader = new FileReader();
+				reader.onload = function () {
+					onSuccess(this.result);
+				};
+				reader.readAsArrayBuffer(blob);
+			} catch (e) {
+				onError(e);
+			}
+		});
+	}
+
+	const base64 = useQuery(
+		[src],
+		async () => {
+			const file = await fetch(src);
+			const blob = await file.blob();
+			if (message.e2e) {
+				const { key, iv } = JSON.parse(message.e2e);
+				const e2eRoom = await e2e.getInstanceByRoomId(message.rid);
+
+				const file = await e2eRoom.decryptFile(await imageUrlArrayBuffer(blob), key, iv);
+				return imageUrlToBase64(new Blob([file]));
+			}
+			return imageUrlToBase64(blob);
+		},
+		{
+			suspense: true,
+		},
 	);
 
 	const dimensions = getDimensions(width, height, limits);
@@ -82,7 +131,7 @@ const AttachmentImage: FC<AttachmentImageProps> = ({ id, previewUrl, dataSrc, lo
 						data-id={id}
 						className='gallery-item'
 						data-src={dataSrc || src}
-						src={src}
+						src={base64.data}
 						alt=''
 						width={dimensions.width}
 						height={dimensions.height}

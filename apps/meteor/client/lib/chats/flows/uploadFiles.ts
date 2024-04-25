@@ -70,7 +70,18 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 
 					const encryptedDescription = await e2eRoom.encryptAttachmentDescription(description, Random.id());
 
-					uploadFile(file, encryptedDescription, { t: 'e2e', e2e: 'pending' });
+					const encryptedFile = await e2eRoom.encryptFile(file);
+
+					if (encryptedFile) {
+						uploadFile(encryptedFile.file, encryptedDescription, {
+							t: 'e2e',
+							e2e: JSON.stringify({
+								key: encryptedFile.key,
+								iv: encryptedFile.iv,
+								type: file.type,
+							}),
+						});
+					}
 				},
 				invalidContentType: !(file.type && fileUploadIsValidContentType(file.type)),
 			},

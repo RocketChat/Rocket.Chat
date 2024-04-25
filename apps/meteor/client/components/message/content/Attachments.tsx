@@ -11,12 +11,12 @@ type AttachmentsProps = {
 	isMessageEncrypted?: boolean;
 };
 
-const Attachments = ({ attachments, id, isMessageEncrypted = false }: AttachmentsProps): ReactElement => {
+const Attachments = ({ attachments, id, isMessageEncrypted = false, message }: AttachmentsProps): ReactElement => {
 	return (
 		<>
 			<AttachmentEncryptionContext.Provider value={{ isMessageEncrypted }}>
 				{attachments?.map((attachment, index) => (
-					<AttachmentsItem key={index} id={id} attachment={{ ...attachment }} />
+					<AttachmentsItem key={index} id={id} attachment={{ ...attachment }} message={message} />
 				))}
 			</AttachmentEncryptionContext.Provider>
 		</>

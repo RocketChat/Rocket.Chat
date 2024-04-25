@@ -33,6 +33,7 @@ export const parseFileIntoMessageAttachments = async (
 	file: Partial<IUpload>,
 	roomId: string,
 	user: IUser,
+	msgData?: Record<string, any>,
 ): Promise<FilesAndAttachments> => {
 	validateFileRequiredFields(file);
 
@@ -41,6 +42,16 @@ export const parseFileIntoMessageAttachments = async (
 	const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
 
 	const attachments: MessageAttachment[] = [];
+
+	let e2e;
+	console.log(msgData?.e2e);
+	if (msgData?.e2e) {
+		e2e = JSON.parse(msgData.e2e);
+	}
+
+	if (e2e.type) {
+		file.type = e2e.type;
+	}
 
 	const files = [
 		{
@@ -68,39 +79,39 @@ export const parseFileIntoMessageAttachments = async (
 			attachment.image_dimensions = file.identify.size;
 		}
 
-		try {
-			attachment.image_preview = await FileUpload.resizeImagePreview(file);
-			const thumbResult = await FileUpload.createImageThumbnail(file);
-			if (thumbResult) {
-				const { data: thumbBuffer, width, height, thumbFileType, thumbFileName, originalFileId } = thumbResult;
-				const thumbnail = await FileUpload.uploadImageThumbnail(
-					{
-						thumbFileName,
-						thumbFileType,
-						originalFileId,
-					},
-					thumbBuffer,
-					roomId,
-					user._id,
-				);
-				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
-				attachment.image_url = thumbUrl;
-				attachment.image_type = thumbnail.type;
-				attachment.image_dimensions = {
-					width,
-					height,
-				};
-				files.push({
-					_id: thumbnail._id,
-					name: thumbnail.name || '',
-					type: thumbnail.type || 'file',
-					size: thumbnail.size || 0,
-					format: thumbnail.identify?.format || '',
-				});
-			}
-		} catch (e) {
-			SystemLogger.error(e);
-		}
+		// try {
+		// 	attachment.image_preview = await FileUpload.resizeImagePreview(file);
+		// 	const thumbResult = await FileUpload.createImageThumbnail(file);
+		// 	if (thumbResult) {
+		// 		const { data: thumbBuffer, width, height, thumbFileType, thumbFileName, originalFileId } = thumbResult;
+		// 		const thumbnail = await FileUpload.uploadImageThumbnail(
+		// 			{
+		// 				thumbFileName,
+		// 				thumbFileType,
+		// 				originalFileId,
+		// 			},
+		// 			thumbBuffer,
+		// 			roomId,
+		// 			user._id,
+		// 		);
+		// 		const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
+		// 		attachment.image_url = thumbUrl;
+		// 		attachment.image_type = thumbnail.type;
+		// 		attachment.image_dimensions = {
+		// 			width,
+		// 			height,
+		// 		};
+		// 		files.push({
+		// 			_id: thumbnail._id,
+		// 			name: thumbnail.name || '',
+		// 			type: thumbnail.type || 'file',
+		// 			size: thumbnail.size || 0,
+		// 			format: thumbnail.identify?.format || '',
+		// 		});
+		// 	}
+		// } catch (e) {
+		// 	SystemLogger.error(e);
+		// }
 		attachments.push(attachment);
 	} else if (/^audio\/.+/.test(file.type as string)) {
 		const attachment: FileAttachmentProps = {
@@ -191,7 +202,7 @@ export const sendFileMessage = async (
 		}),
 	);
 
-	const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
+	const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user, msgData);
 
 	const msg = await executeSendMessage(userId, {
 		rid: roomId,

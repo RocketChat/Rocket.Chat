@@ -68,7 +68,12 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 			)}
 
 			{!!normalizedMessage?.attachments?.length && (
-				<Attachments id={message.files?.[0]?._id} attachments={normalizedMessage.attachments} isMessageEncrypted={isMessageEncrypted} />
+				<Attachments
+					id={message.files?.[0]?._id}
+					attachments={normalizedMessage.attachments}
+					isMessageEncrypted={isMessageEncrypted}
+					message={message}
+				/>
 			)}
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}

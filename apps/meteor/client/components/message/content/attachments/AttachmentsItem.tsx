@@ -12,9 +12,9 @@ type AttachmentsItemProps = {
 	id: string | undefined;
 };
 
-const AttachmentsItem = ({ attachment, id }: AttachmentsItemProps): ReactElement => {
+const AttachmentsItem = ({ attachment, id, message }: AttachmentsItemProps): ReactElement => {
 	if (isFileAttachment(attachment)) {
-		return <FileAttachment id={id} {...attachment} />;
+		return <FileAttachment id={id} message={message} {...attachment} />;
 	}
 
 	if (isQuoteAttachment(attachment)) {
