@@ -29,9 +29,6 @@ test.describe.parallel('Image Gallery', async () => {
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(imageName);
 		}
 
-		await poHomeChannel.content.sendFileMessage('test-large-image.jpeg');
-		await poHomeChannel.content.btnModalConfirm.click();
-
 		await expect(poHomeChannel.content.lastUserMessage).toContainText('test-large-image.jpeg');
 
 		await poHomeChannel.content.lastUserMessage.locator('img.gallery-item').click();
