@@ -3,10 +3,12 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
 import { e2e } from '../../../../app/e2e/client';
+import { ChatRoom } from '../../../../app/models/client';
 import { fileUploadIsValidContentType } from '../../../../app/utils/client';
 import FileUploadModal from '../../../views/room/modals/FileUploadModal';
 import { imperativeModal } from '../../imperativeModal';
 import { prependReplies } from '../../utils/prependReplies';
+import { waitUntilFind } from '../../utils/waitUntilFind';
 import type { ChatAPI } from '../ChatAPI';
 
 export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFileInput?: () => void): Promise<void> => {
@@ -61,7 +63,11 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 						return;
 					}
 
-					const shouldConvertSentMessages = e2eRoom.shouldConvertSentMessages({ msg });
+					const subscription = await waitUntilFind(() => ChatRoom.findOne({ _id: room._id }));
+
+					subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+
+					const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages({ msg });
 
 					if (!shouldConvertSentMessages) {
 						uploadFile(file, description);
