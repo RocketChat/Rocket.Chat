@@ -29,9 +29,6 @@ test.describe.parallel('Image Gallery', async () => {
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(imageName);
 		}
 
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.btnJoinRoom.click();
-
 		await poHomeChannel.content.sendFileMessage('test-large-image.jpeg');
 		await poHomeChannel.content.btnModalConfirm.click();
 
