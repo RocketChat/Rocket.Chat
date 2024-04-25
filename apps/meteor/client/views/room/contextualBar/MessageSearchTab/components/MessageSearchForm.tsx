@@ -43,38 +43,27 @@ const MessageSearchForm = ({ provider, onSearch }: MessageSearchFormProps) => {
 	const t = useTranslation();
 
 	return (
-		<Box
-			display='flex'
-			flexGrow={0}
-			flexShrink={1}
-			flexDirection='column'
-			p={24}
-			borderBlockEndWidth={2}
-			borderBlockEndStyle='solid'
-			borderBlockEndColor='extra-light'
-		>
-			<Box is='form' onSubmit={submitHandler}>
+		<Box is='form' onSubmit={submitHandler}>
+			<Field>
+				<FieldRow>
+					<TextInput
+						addon={<Icon name='magnifier' size='x20' />}
+						placeholder={t('Search_Messages')}
+						aria-label={t('Search_Messages')}
+						autoComplete='off'
+						{...register('searchText')}
+					/>
+				</FieldRow>
+				{provider.description && <FieldHint dangerouslySetInnerHTML={{ __html: t(provider.description as TranslationKey) }} />}
+			</Field>
+			{globalSearchEnabled && (
 				<Field>
 					<FieldRow>
-						<TextInput
-							addon={<Icon name='magnifier' size='x20' />}
-							placeholder={t('Search_Messages')}
-							aria-label={t('Search_Messages')}
-							autoComplete='off'
-							{...register('searchText')}
-						/>
+						<FieldLabel htmlFor={globalSearchToggleId}>{t('Global_Search')}</FieldLabel>
+						<ToggleSwitch id={globalSearchToggleId} {...register('globalSearch')} />
 					</FieldRow>
-					{provider.description && <FieldHint dangerouslySetInnerHTML={{ __html: t(provider.description as TranslationKey) }} />}
 				</Field>
-				{globalSearchEnabled && (
-					<Field>
-						<FieldRow>
-							<FieldLabel htmlFor={globalSearchToggleId}>{t('Global_Search')}</FieldLabel>
-							<ToggleSwitch id={globalSearchToggleId} {...register('globalSearch')} />
-						</FieldRow>
-					</Field>
-				)}
-			</Box>
+			)}
 		</Box>
 	);
 };
