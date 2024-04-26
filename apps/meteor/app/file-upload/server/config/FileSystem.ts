@@ -1,4 +1,5 @@
 import fsp from 'fs/promises';
+import URL from 'url';
 
 import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
@@ -25,8 +26,10 @@ const FileSystemUploads = new FileUploadClass({
 				return;
 			}
 
+			const { query } = URL.parse(req.url || '', true);
+			const forceDownload = typeof query.download !== 'undefined';
 			file = FileUpload.addExtensionTo(file);
-			const contentDisposition = file.type === 'PDF' ? 'inline' : 'attachment';
+			const contentDisposition = forceDownload || file.type !== 'application/pdf' ? 'attachment' : 'inline';
 			res.setHeader('Content-Disposition', `${contentDisposition}; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
 			file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 			res.setHeader('Content-Type', file.type || 'application/octet-stream');

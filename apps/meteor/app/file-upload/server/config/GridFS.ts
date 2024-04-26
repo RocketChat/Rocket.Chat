@@ -1,6 +1,7 @@
 import type * as http from 'http';
 import type { TransformCallback, TransformOptions } from 'stream';
 import stream from 'stream';
+import URL from 'url';
 import zlib from 'zlib';
 
 import type { IUpload } from '@rocket.chat/core-typings';
@@ -159,9 +160,12 @@ new FileUploadClass({
 	name: 'GridFS:Uploads',
 
 	async get(file, req, res) {
+		const { query } = URL.parse(req.url || '', true);
+		const forceDownload = typeof query.download !== 'undefined';
 		file = FileUpload.addExtensionTo(file);
+		const contentDisposition = forceDownload || file.type !== 'application/pdf' ? 'attachment' : 'inline';
 
-		res.setHeader('Content-Disposition', `inline; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
+		res.setHeader('Content-Disposition', `${contentDisposition}; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
 		file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 		res.setHeader('Content-Type', file.type || 'application/octet-stream');
 		res.setHeader('Content-Length', file.size || 0);
@@ -179,11 +183,8 @@ new FileUploadClass({
 
 	async get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
-		const contentDisposition = file.type === 'PDF' ? 'inline' : 'attachment';
-		console.log('contentDisposition', contentDisposition);
-		res.setHeader('Content-Disposition', `${contentDisposition}; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
 
-		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
+		res.setHeader('Content-Disposition', `inline; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
 		file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 		res.setHeader('Content-Type', file.type || '');
 		res.setHeader('Content-Length', file.size || 0);
