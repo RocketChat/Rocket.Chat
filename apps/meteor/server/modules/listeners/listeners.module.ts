@@ -2,8 +2,8 @@ import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings } from '@rocket.chat/core-services';
-import { UserStatus, isSettingColor, isSettingEnterprise } from '@rocket.chat/core-typings';
-import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, VideoConference, ISetting, IOmnichannelRoom, IMessage, IOTRMessage } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
 
@@ -12,11 +12,12 @@ import type { NotificationsModule } from '../notifications/notifications.module'
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
-const STATUS_MAP = {
+const STATUS_MAP: Record<UserStatus, 0 | 1 | 2 | 3> = {
 	[UserStatus.OFFLINE]: 0,
 	[UserStatus.ONLINE]: 1,
 	[UserStatus.AWAY]: 2,
 	[UserStatus.BUSY]: 3,
+	[UserStatus.DISABLED]: 0,
 } as const;
 
 const minimongoChangeMap: Record<string, string> = {
@@ -42,6 +43,10 @@ export class ListenersModule {
 			notifications.notifyLoggedInThisInstance('updateEmojiCustom', {
 				emojiData: emoji,
 			});
+		});
+
+		service.onEvent('user.forceLogout', (uid) => {
+			notifications.notifyUserInThisInstance(uid, 'force_logout');
 		});
 
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
@@ -99,9 +104,10 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('user.deleted', ({ _id: userId }) => {
+		service.onEvent('user.deleted', ({ _id: userId }, data) => {
 			notifications.notifyLoggedInThisInstance('Users:Deleted', {
 				userId,
+				...data,
 			});
 		});
 
@@ -151,12 +157,10 @@ export class ListenersModule {
 				return;
 			}
 
-			const statusChanged = (STATUS_MAP as any)[status] as 0 | 1 | 2 | 3;
-
-			notifications.notifyLoggedInThisInstance('user-status', [_id, username, statusChanged, statusText, name, roles]);
+			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText, name, roles]);
 
 			if (_id) {
-				notifications.sendPresence(_id, username, statusChanged, statusText);
+				notifications.sendPresence(_id, username, STATUS_MAP[status], statusText);
 			}
 		});
 
@@ -166,7 +170,7 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('watch.messages', ({ message }) => {
+		service.onEvent('watch.messages', async ({ message }) => {
 			if (!message.rid) {
 				return;
 			}
@@ -179,6 +183,10 @@ export class ListenersModule {
 			);
 
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
+		});
+
+		service.onEvent('notify.messagesRead', ({ rid, until, tmid }): void => {
+			notifications.notifyRoomInThisInstance(rid, 'messagesRead', { tmid, until });
 		});
 
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
@@ -415,6 +423,13 @@ export class ListenersModule {
 			notifications.notifyUserInThisInstance(uid, 'calendar', data);
 		});
 
+		service.onEvent('notify.importedMessages', ({ roomIds }): void => {
+			roomIds.forEach((rid) => {
+				// couldnt get TS happy by providing no data, so had to provide null
+				notifications.notifyRoomInThisInstance(rid, 'messagesImported', null);
+			});
+		});
+
 		service.onEvent('connector.statuschanged', (enabled): void => {
 			notifications.notifyLoggedInThisInstance('voip.statuschanged', enabled);
 		});
@@ -475,12 +490,11 @@ export class ListenersModule {
 			notifications.streamApps.emitWithoutBroadcast('apps', ['actions/changed', []]);
 		});
 
-		service.onEvent('mac.limitReached', () => {
-			notifications.notifyLoggedInThisInstance('mac.limit', { limitReached: true });
+		service.onEvent('otrMessage', ({ roomId, message, user, room }: { roomId: string; message: IMessage; user: IUser; room: IRoom }) => {
+			notifications.streamRoomMessage.emit(roomId, message, user, room);
 		});
-
-		service.onEvent('mac.limitRestored', () => {
-			notifications.notifyLoggedInThisInstance('mac.limit', { limitReached: false });
+		service.onEvent('otrAckUpdate', ({ roomId, acknowledgeMessage }: { roomId: string; acknowledgeMessage: IOTRMessage }) => {
+			notifications.streamRoomMessage.emit(roomId, acknowledgeMessage);
 		});
 	}
 }

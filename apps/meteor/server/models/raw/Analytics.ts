@@ -14,7 +14,7 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [{ key: { date: 1 } }, { key: { 'room._id': 1, 'date': 1 }, unique: true }];
+		return [{ key: { date: 1 } }, { key: { 'room._id': 1, 'date': 1 }, unique: true, partialFilterExpression: { type: 'rooms' } }];
 	}
 
 	saveMessageSent({ room, date }: { room: IRoom; date: IAnalytic['date'] }): Promise<Document | UpdateResult> {

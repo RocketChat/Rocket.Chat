@@ -1,30 +1,25 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, FormEvent } from 'react';
-import React, { memo, useCallback } from 'react';
+import type { ChangeEvent } from 'react';
+import React, { memo } from 'react';
 
 import AutoCompleteAgent from '../../../../client/components/AutoCompleteAgent';
 
+type SharingValues = '' | 'user' | 'global' | 'department';
+
 type CannedResponsesFilterProps = {
-	sharingValue: string;
-	createdByValue: string;
-	shortcutValue: string;
-	setSharing: (eventOrValue: unknown) => void;
-	setCreatedBy: (eventOrValue: unknown) => void;
-	setShortcut: (eventOrValue: unknown) => void;
+	createdBy: string;
+	setCreatedBy: (value: string) => void;
+	sharing: SharingValues;
+	setSharing: (value: SharingValues) => void;
+	text: string;
+	setText: (text: string) => void;
 };
 
-const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
-	sharingValue = '',
-	createdByValue = '',
-	shortcutValue = '',
-	setSharing,
-	setCreatedBy,
-	setShortcut,
-	...props
-}) => {
+const CannedResponsesFilter = ({ createdBy, setCreatedBy, sharing, setSharing, text, setText }: CannedResponsesFilterProps) => {
 	const t = useTranslation();
+
 	const sharingList: SelectOption[] = [
 		['', t('All')],
 		['user', t('Private')],
@@ -32,24 +27,23 @@ const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
 		['department', t('Department')],
 	];
 
-	const handleFormSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-	}, []);
-
 	return (
-		<Box mb={16} is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='row' color='default' {...props}>
+		<Box mb={16} display='flex' flexDirection='row'>
 			<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
 				<Box mb={4}>{t('Search')}</Box>
-				<TextInput addon={<Icon name='magnifier' size='x20' />} onChange={setShortcut} value={shortcutValue} />
+				<TextInput
+					value={text}
+					onChange={(e: ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
+					addon={<Icon name='magnifier' size='x20' />}
+				/>
 			</Box>
-
 			<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
 				<Box mb={4}>{t('Sharing')}</Box>
-				<Select onChange={setSharing} options={sharingList} value={sharingValue} />
+				<Select value={sharing} onChange={(value) => setSharing(value as SharingValues)} options={sharingList} />
 			</Box>
 			<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
 				<Box mb={4}>{t('Created_by')}</Box>
-				<AutoCompleteAgent onChange={setCreatedBy} value={createdByValue} haveAll />
+				<AutoCompleteAgent value={createdBy} onChange={setCreatedBy} haveAll />
 			</Box>
 		</Box>
 	);

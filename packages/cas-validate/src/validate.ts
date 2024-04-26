@@ -13,15 +13,15 @@ export type CasOptions = {
 };
 
 export type CasCallbackExtendedData = {
-	username?: unknown;
-	attributes?: unknown;
+	username?: string;
+	attributes?: Record<string, string[]>;
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	PGTIOU?: unknown;
-	ticket?: unknown;
-	proxies?: unknown;
+	PGTIOU?: string;
+	ticket?: string;
+	proxies?: string[];
 };
 
-export type CasCallback = (err: any, status?: unknown, username?: unknown, extended?: CasCallbackExtendedData) => void;
+export type CasCallback = (err: any, status?: unknown, username?: string, extended?: CasCallbackExtendedData) => void;
 
 function parseJasigAttributes(elemAttribute: Cheerio<any>, cheerio: CheerioAPI): Record<string, string[]> {
 	// "Jasig Style" Attributes:

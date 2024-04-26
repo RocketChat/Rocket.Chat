@@ -1,21 +1,22 @@
-import type { UiKit } from '@rocket.chat/core-typings';
 import { Avatar, Box, Button, ButtonGroup, ContextualbarFooter, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/fuselage';
-import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	UiKitComponent,
 	UiKitContextualBar as UiKitContextualBarSurfaceRender,
 	contextualBarParser,
 	UiKitContext,
 } from '@rocket.chat/fuselage-ui-kit';
+import type * as UiKit from '@rocket.chat/ui-kit';
 import { BlockContext } from '@rocket.chat/ui-kit';
-import type { ContextType, FormEvent, UIEvent } from 'react';
-import React, { memo, useMemo } from 'react';
+import type { FormEvent, UIEvent } from 'react';
+import React, { memo } from 'react';
 
 import { getURL } from '../../../../../app/utils/client';
-import { useUiKitActionManager } from '../../../../UIKit/hooks/useUiKitActionManager';
-import { useUiKitView } from '../../../../UIKit/hooks/useUiKitView';
 import { ContextualbarClose, ContextualbarScrollableContent } from '../../../../components/Contextualbar';
 import { preventSyntheticEvent } from '../../../../lib/utils/preventSyntheticEvent';
+import { useContextualBarContextValue } from '../../../../uikit/hooks/useContextualBarContextValue';
+import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
+import { useUiKitView } from '../../../../uikit/hooks/useUiKitView';
 import { getButtonStyle } from '../../../modal/uikit/getButtonStyle';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
@@ -25,109 +26,57 @@ type UiKitContextualBarProps = {
 };
 
 const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Element => {
-	const { closeTab } = useRoomToolbox();
 	const actionManager = useUiKitActionManager();
-
 	const { view, values, updateValues, state } = useUiKitView(initialView);
+	const contextValue = useContextualBarContextValue({ view, values, updateValues });
 
-	const emitInteraction = useMemo(() => actionManager.emitInteraction.bind(actionManager), [actionManager]);
-	const debouncedEmitInteraction = useDebouncedCallback(emitInteraction, 700);
+	const { closeTab } = useRoomToolbox();
 
-	const contextValue = useMemo(
-		(): ContextType<typeof UiKitContext> => ({
-			action: async ({ appId, viewId, actionId, dispatchActionConfig, blockId, value }): Promise<void> => {
-				if (!appId || !viewId) {
-					return;
-				}
-
-				const emit = dispatchActionConfig?.includes('on_character_entered') ? debouncedEmitInteraction : emitInteraction;
-
-				await emit(appId, {
-					type: 'blockAction',
-					actionId,
-					container: {
-						type: 'view',
-						id: viewId,
-					},
-					payload: {
-						blockId,
-						value,
-					},
-				});
+	const handleSubmit = useEffectEvent((e: FormEvent) => {
+		preventSyntheticEvent(e);
+		closeTab();
+		void actionManager.emitInteraction(view.appId, {
+			type: 'viewSubmit',
+			payload: {
+				view: {
+					...view,
+					state,
+				},
 			},
-			state: ({ actionId, value, blockId = 'default' }) => {
-				updateValues({
-					actionId,
-					payload: {
-						blockId,
-						value,
-					},
-				});
-			},
-			...view,
-			values,
 			viewId: view.id,
-		}),
-		[debouncedEmitInteraction, emitInteraction, updateValues, values, view],
-	);
+		});
+	});
 
-	const handleSubmit = useMutableCallback((e: FormEvent) => {
+	const handleCancel = useEffectEvent((e: UIEvent) => {
 		preventSyntheticEvent(e);
 		closeTab();
-		void actionManager
-			.emitInteraction(view.appId, {
-				type: 'viewSubmit',
-				payload: {
-					view: {
-						...view,
-						state,
-					},
-				},
+		void actionManager.emitInteraction(view.appId, {
+			type: 'viewClosed',
+			payload: {
 				viewId: view.id,
-			})
-			.finally(() => {
-				actionManager.disposeView(view.id);
-			});
+				view: {
+					...view,
+					state,
+				},
+				isCleared: false,
+			},
+		});
 	});
 
-	const handleCancel = useMutableCallback((e: UIEvent) => {
+	const handleClose = useEffectEvent((e: UIEvent) => {
 		preventSyntheticEvent(e);
 		closeTab();
-		void actionManager
-			.emitInteraction(view.appId, {
-				type: 'viewClosed',
-				payload: {
-					viewId: view.id,
-					view: {
-						...view,
-						state,
-					},
-					isCleared: false,
+		void actionManager.emitInteraction(view.appId, {
+			type: 'viewClosed',
+			payload: {
+				viewId: view.id,
+				view: {
+					...view,
+					state,
 				},
-			})
-			.finally(() => {
-				actionManager.disposeView(view.id);
-			});
-	});
-
-	const handleClose = useMutableCallback((e: UIEvent) => {
-		preventSyntheticEvent(e);
-		closeTab();
-		void actionManager
-			.emitInteraction(view.appId, {
-				type: 'viewClosed',
-				payload: {
-					viewId: view.id,
-					view: {
-						...view,
-						state,
-					},
-					isCleared: true,
-				},
-			})
-			.finally(() => {
-				actionManager.disposeView(view.id);
-			});
+				isCleared: true,
+			},
+		});
 	});
 
 	return (

@@ -2,6 +2,8 @@ version: '3.8'
 
 services:
   rocketchat:
+    volumes:
+      - /tmp/coverage:/tmp/coverage
     platform: linux/amd64
     build:
       dockerfile: ${RC_DOCKERFILE}
@@ -15,6 +17,8 @@ services:
       - 'TRANSPORTER=${TRANSPORTER}'
       - MOLECULER_LOG_LEVEL=info
       - 'ROCKETCHAT_LICENSE=${ENTERPRISE_LICENSE}'
+      - 'COVERAGE_DIR=${COVERAGE_DIR}'
+      - 'COVERAGE_REPORTER=${COVERAGE_REPORTER}'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:

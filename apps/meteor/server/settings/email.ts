@@ -499,7 +499,7 @@ export const createEmailSettings = () =>
 
 			await this.add(
 				'Forgot_Password_Email',
-				'<h2>{Forgot_password}</h2><p>{Lets_get_you_new_one}</p><a class="btn" href="[Forgot_Password_Url]">{Reset}</a><p class="advice">{If_you_didnt_ask_for_reset_ignore_this_email}</p>',
+				'<h2>{Forgot_password}</h2><p>{Lets_get_you_new_one_}</p><a class="btn" href="[Forgot_Password_Url]">{Reset}</a><p class="advice">{If_you_didnt_ask_for_reset_ignore_this_email}</p>',
 				{
 					type: 'code',
 					code: 'text/html',

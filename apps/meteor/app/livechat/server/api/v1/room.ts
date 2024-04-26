@@ -24,7 +24,6 @@ import { hasPermissionAsync } from '../../../../authorization/server/functions/h
 import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
 import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeTransferredByData } from '../../lib/Helper';
-import { Livechat } from '../../lib/Livechat';
 import type { CloseRoomParams } from '../../lib/LivechatTyped';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
@@ -231,7 +230,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/room.transfer',
-	{ validateParams: isPOSTLivechatRoomTransferParams, deprecationVersion: '7.0.0' },
+	{ validateParams: isPOSTLivechatRoomTransferParams, deprecation: { version: '7.0.0' } },
 	{
 		async post() {
 			const { rid, token, department } = this.bodyParams;
@@ -365,7 +364,9 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: ['change-livechat-room-visitor'],
 		validateParams: isPUTLivechatRoomVisitorParams,
-		deprecationVersion: '7.0.0',
+		deprecation: {
+			version: '7.0.0',
+		},
 	},
 	{
 		async put() {
@@ -417,6 +418,10 @@ API.v1.addRoute(
 				throw new Error('error-invalid-room');
 			}
 
+			if (!room.open) {
+				throw new Error('room-closed');
+			}
+
 			if (!(await Omnichannel.isWithinMACLimit(room))) {
 				throw new Error('error-mac-limit-reached');
 			}
@@ -455,7 +460,7 @@ API.v1.addRoute(
 			}
 
 			// We want this both operations to be concurrent, so we have to go with Promise.allSettled
-			const result = await Promise.allSettled([Livechat.saveGuest(guestData, this.userId), Livechat.saveRoomInfo(roomData)]);
+			const result = await Promise.allSettled([LivechatTyped.saveGuest(guestData, this.userId), LivechatTyped.saveRoomInfo(roomData)]);
 
 			const firstError = result.find((item) => item.status === 'rejected');
 			if (firstError) {

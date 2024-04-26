@@ -1,15 +1,14 @@
-import type { ILicenseV3, LicenseLimitKind } from './definition/ILicenseV3';
+import type { ILicenseV3, LicenseLimitKind } from '@rocket.chat/core-typings';
+
 import type { LicenseManager } from './license';
 import { getModules } from './modules';
+import { defaultLimits } from './validation/validateDefaultLimits';
 
-const getLicenseLimit = (license: ILicenseV3 | undefined, kind: LicenseLimitKind) => {
-	if (!license) {
-		return;
-	}
+export const getLicenseLimit = (license: ILicenseV3 | undefined, kind: LicenseLimitKind) => {
+	const limitList = license ? license.limits[kind] : defaultLimits[kind as keyof typeof defaultLimits];
 
-	const limitList = license.limits[kind];
 	if (!limitList?.length) {
-		return;
+		return -1;
 	}
 
 	return Math.min(...limitList.map(({ max }) => max));
@@ -23,8 +22,8 @@ export function getMaxActiveUsers(this: LicenseManager) {
 
 export function getAppsConfig(this: LicenseManager) {
 	return {
-		maxPrivateApps: getLicenseLimit(this.getLicense(), 'privateApps') ?? 3,
-		maxMarketplaceApps: getLicenseLimit(this.getLicense(), 'marketplaceApps') ?? 5,
+		maxPrivateApps: getLicenseLimit(this.getLicense(), 'privateApps'),
+		maxMarketplaceApps: getLicenseLimit(this.getLicense(), 'marketplaceApps'),
 	};
 }
 

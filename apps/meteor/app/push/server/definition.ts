@@ -26,7 +26,6 @@ export type PendingPushNotification = {
 	notId?: number;
 	apn?: {
 		category?: string;
-		topicSuffix?: string;
 	};
 	gcm?: {
 		style?: string;

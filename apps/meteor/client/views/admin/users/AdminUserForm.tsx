@@ -263,16 +263,14 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 						)}
 					</Field>
 					<Field>
-						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
+						<FieldRow>
 							<FieldLabel htmlFor={verifiedId}>{t('Verified')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									control={control}
-									name='verified'
-									render={({ field: { onChange, value } }) => <ToggleSwitch id={verifiedId} checked={value} onChange={onChange} />}
-								/>
-							</FieldRow>
-						</Box>
+							<Controller
+								control={control}
+								name='verified'
+								render={({ field: { onChange, value } }) => <ToggleSwitch id={verifiedId} checked={value} onChange={onChange} />}
+							/>
+						</FieldRow>
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={statusTextId}>{t('StatusMessage')}</FieldLabel>
@@ -370,45 +368,41 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 						</Field>
 					)}
 					<Field>
-						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
+						<FieldRow>
 							<FieldLabel htmlFor={requirePasswordChangeId}>{t('Require_password_change')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									control={control}
-									name='requirePasswordChange'
-									render={({ field: { ref, onChange, value } }) => (
-										<ToggleSwitch
-											ref={ref}
-											id={requirePasswordChangeId}
-											disabled={setRandomPassword}
-											checked={setRandomPassword || value}
-											onChange={onChange}
-										/>
-									)}
-								/>
-							</FieldRow>
-						</Box>
+							<Controller
+								control={control}
+								name='requirePasswordChange'
+								render={({ field: { ref, onChange, value } }) => (
+									<ToggleSwitch
+										ref={ref}
+										id={requirePasswordChangeId}
+										disabled={setRandomPassword}
+										checked={setRandomPassword || value}
+										onChange={onChange}
+									/>
+								)}
+							/>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
+						<FieldRow>
 							<FieldLabel htmlFor={setRandomPasswordId}>{t('Set_random_password_and_send_by_email')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									control={control}
-									name='setRandomPassword'
-									render={({ field: { ref, onChange, value } }) => (
-										<ToggleSwitch
-											ref={ref}
-											id={setRandomPasswordId}
-											aria-describedby={`${setRandomPasswordId}-hint`}
-											checked={value}
-											onChange={onChange}
-											disabled={!isSmtpEnabled}
-										/>
-									)}
-								/>
-							</FieldRow>
-						</Box>
+							<Controller
+								control={control}
+								name='setRandomPassword'
+								render={({ field: { ref, onChange, value } }) => (
+									<ToggleSwitch
+										ref={ref}
+										id={setRandomPasswordId}
+										aria-describedby={`${setRandomPasswordId}-hint`}
+										checked={value}
+										onChange={onChange}
+										disabled={!isSmtpEnabled}
+									/>
+								)}
+							/>
+						</FieldRow>
 						{!isSmtpEnabled && (
 							<FieldHint
 								id={`${setRandomPasswordId}-hint`}
@@ -441,38 +435,34 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 						{errors?.roles && <FieldError>{errors.roles.message}</FieldError>}
 					</Field>
 					<Field>
-						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
+						<FieldRow>
 							<FieldLabel htmlFor={joinDefaultChannelsId}>{t('Join_default_channels')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									control={control}
-									name='joinDefaultChannels'
-									render={({ field: { ref, onChange, value } }) => (
-										<ToggleSwitch id={joinDefaultChannelsId} ref={ref} onChange={onChange} checked={value} />
-									)}
-								/>
-							</FieldRow>
-						</Box>
+							<Controller
+								control={control}
+								name='joinDefaultChannels'
+								render={({ field: { ref, onChange, value } }) => (
+									<ToggleSwitch id={joinDefaultChannelsId} ref={ref} onChange={onChange} checked={value} />
+								)}
+							/>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
+						<FieldRow>
 							<FieldLabel htmlFor={sendWelcomeEmailId}>{t('Send_welcome_email')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									control={control}
-									name='sendWelcomeEmail'
-									render={({ field: { onChange, value } }) => (
-										<ToggleSwitch
-											id={sendWelcomeEmailId}
-											aria-describedby={`${sendWelcomeEmailId}-hint`}
-											onChange={onChange}
-											checked={value}
-											disabled={!isSmtpEnabled}
-										/>
-									)}
-								/>
-							</FieldRow>
-						</Box>
+							<Controller
+								control={control}
+								name='sendWelcomeEmail'
+								render={({ field: { onChange, value } }) => (
+									<ToggleSwitch
+										id={sendWelcomeEmailId}
+										aria-describedby={`${sendWelcomeEmailId}-hint`}
+										onChange={onChange}
+										checked={value}
+										disabled={!isSmtpEnabled}
+									/>
+								)}
+							/>
+						</FieldRow>
 						{!isSmtpEnabled && (
 							<FieldHint
 								id={`${sendWelcomeEmailId}-hint`}

@@ -1,4 +1,4 @@
-import type { IIntegrationHistory, IIntegration, IMessage, AtLeast } from '@rocket.chat/core-typings';
+import type { IIntegrationHistory, OutgoingIntegrationEvent, IIntegration, IMessage, AtLeast } from '@rocket.chat/core-typings';
 import { IntegrationHistory } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
@@ -26,7 +26,7 @@ export const updateHistory = async ({
 	historyId: IIntegrationHistory['_id'];
 	step: IIntegrationHistory['step'];
 	integration?: IIntegration;
-	event?: string;
+	event?: OutgoingIntegrationEvent;
 	triggerWord?: string;
 	ranPrepareScript?: boolean;
 	prepareSentMessage?: { channel: string; message: Partial<IMessage> }[];

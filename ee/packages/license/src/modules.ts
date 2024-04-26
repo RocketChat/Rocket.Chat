@@ -1,4 +1,5 @@
-import type { LicenseModule } from './definition/LicenseModule';
+import type { LicenseModule } from '@rocket.chat/core-typings';
+
 import { moduleRemoved, moduleValidated } from './events/emitter';
 import type { LicenseManager } from './license';
 

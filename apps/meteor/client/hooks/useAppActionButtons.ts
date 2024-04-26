@@ -1,6 +1,6 @@
 import type { IUIActionButton, UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useSingleStream, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useStream, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
@@ -10,8 +10,8 @@ import { UiKitTriggerTimeoutError } from '../../app/ui-message/client/UiKitTrigg
 import type { MessageActionConfig, MessageActionContext } from '../../app/ui-utils/client/lib/MessageAction';
 import type { MessageBoxAction } from '../../app/ui-utils/client/lib/messageBox';
 import { Utilities } from '../../ee/lib/misc/Utilities';
-import { useUiKitActionManager } from '../UIKit/hooks/useUiKitActionManager';
 import type { GenericMenuItemProps } from '../components/GenericMenu/GenericMenuItem';
+import { useUiKitActionManager } from '../uikit/hooks/useUiKitActionManager';
 import { useApplyButtonFilters, useApplyButtonAuthFilter } from './useApplyButtonFilters';
 
 const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${appId}/${actionId}`;
@@ -19,7 +19,7 @@ const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `
 export const useAppActionButtons = <TContext extends `${UIActionButtonContext}`>(context?: TContext) => {
 	const queryClient = useQueryClient();
 
-	const apps = useSingleStream('apps');
+	const apps = useStream('apps');
 	const uid = useUserId();
 
 	const getActionButtons = useEndpoint('GET', '/apps/actionButtons');
@@ -76,7 +76,7 @@ export const useMessageboxAppsActionButtons = () => {
 					return applyButtonFilters(action);
 				})
 				.map((action) => {
-					const item: MessageBoxAction = {
+					const item: Omit<MessageBoxAction, 'icon'> = {
 						id: getIdForActionButton(action),
 						label: Utilities.getI18nKeyForApp(action.labelI18n, action.appId),
 						action: (params) => {

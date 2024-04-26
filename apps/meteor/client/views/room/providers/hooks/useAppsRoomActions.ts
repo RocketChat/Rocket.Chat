@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next';
 
 import { UiKitTriggerTimeoutError } from '../../../../../app/ui-message/client/UiKitTriggerTimeoutError';
 import { Utilities } from '../../../../../ee/lib/misc/Utilities';
-import { useUiKitActionManager } from '../../../../UIKit/hooks/useUiKitActionManager';
 import { useAppActionButtons } from '../../../../hooks/useAppActionButtons';
 import { useApplyButtonFilters } from '../../../../hooks/useApplyButtonFilters';
+import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionManager';
 import { useRoom } from '../../contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext';
 

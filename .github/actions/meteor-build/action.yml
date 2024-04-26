@@ -103,18 +103,19 @@ runs:
       working-directory: ./apps/meteor
       run: meteor reset
 
-    - name: Build Rocket.Chat From Pull Request
+    - name: Build Rocket.Chat
       shell: bash
-      if: startsWith(github.ref, 'refs/pull/') == true
       env:
         METEOR_PROFILE: 1000
         BABEL_ENV: ${{ inputs.coverage == 'true' && 'coverage' || '' }}
-      run: yarn build:ci -- --directory /tmp/dist
+      run: |
+        # check if BABEL_ENV is set to coverage
+        if [[ $BABEL_ENV == "coverage" ]]; then
+          echo -e "rocketchat:coverage\n" >> ./apps/meteor/.meteor/packages
+          echo "Coverage enabled"
+        fi
 
-    - name: Build Rocket.Chat
-      shell: bash
-      if: startsWith(github.ref, 'refs/pull/') != true
-      run: yarn build:ci -- --directory /tmp/dist
+        yarn build:ci
 
     - name: Prepare build
       shell: bash

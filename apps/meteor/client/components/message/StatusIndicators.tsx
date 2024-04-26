@@ -1,5 +1,5 @@
 import type { IMessage, ITranslatedMessage } from '@rocket.chat/core-typings';
-import { isEditedMessage, isE2EEMessage, isOTRMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage, isE2EEMessage, isOTRMessage, isOTRAckMessage } from '@rocket.chat/core-typings';
 import { MessageStatusIndicator, MessageStatusIndicatorItem } from '@rocket.chat/fuselage';
 import { useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -18,7 +18,7 @@ const StatusIndicators = ({ message }: StatusIndicatorsProps): ReactElement => {
 	const following = useShowFollowing({ message });
 
 	const isEncryptedMessage = isE2EEMessage(message);
-	const isOtrMessage = isOTRMessage(message);
+	const isOtrMessage = isOTRMessage(message) || isOTRAckMessage(message);
 
 	const uid = useUserId();
 

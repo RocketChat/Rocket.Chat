@@ -10,17 +10,15 @@ export class HomeSidenav {
 	}
 
 	get checkboxPrivateChannel(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Private"');
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Private' }) });
 	}
 
 	get checkboxEncryption(): Locator {
-		return this.page.locator('role=dialog[name="Create Channel"] >> label >> text="Encrypted"');
+		return this.page.locator('role=dialog[name="Create channel"] >> label >> text="Encrypted"');
 	}
 
 	get checkboxReadOnly(): Locator {
-		return this.page.locator(
-			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Read Only")]/../following-sibling::label/i',
-		);
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Read-only' }) });
 	}
 
 	get inputChannelName(): Locator {
@@ -35,14 +33,30 @@ export class HomeSidenav {
 		return this.page.locator('role=button[name="Create"]');
 	}
 
+	get inputSearch(): Locator {
+		return this.page.locator('[placeholder="Search (Ctrl+K)"]').first();
+	}
+
+	get userProfileMenu(): Locator {
+		return this.page.getByRole('button', { name: 'User menu' });
+	}
+
+	get sidebarChannelsList(): Locator {
+		return this.page.getByRole('list', { name: 'Channels' });
+	}
+
+	get sidebarToolbar(): Locator {
+		return this.page.getByRole('toolbar', { name: 'Sidebar actions' });
+	}
+
 	getSidebarItemByName(name: string): Locator {
 		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
 	}
 
 	async selectPriority(name: string, priority: string) {
 		const sidebarItem = this.getSidebarItemByName(name);
-		await sidebarItem.hover();
-		await sidebarItem.locator(`[data-testid="menu"]`).click();
+		await sidebarItem.focus();
+		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
 		await this.page.locator(`li[value="${priority}"]`).click();
 	}
 
@@ -61,19 +75,23 @@ export class HomeSidenav {
 		await this.page.locator(`role=menuitem[name="${text}"]`).click();
 	}
 
+	async openSearch(): Promise<void> {
+		await this.page.locator('role=button[name="Search"]').click();
+	}
+
 	async logout(): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
+		await this.userProfileMenu.click();
 		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
 	}
 
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
+		await this.userProfileMenu.click();
 		await this.page.locator(`role=menuitemcheckbox[name="${status}"]`).click();
 	}
 
 	async openChat(name: string): Promise<void> {
 		await this.page.locator('role=navigation >> role=button[name=Search]').click();
-		await this.page.locator('role=search >> role=searchbox').type(name);
+		await this.page.locator('role=search >> role=searchbox').fill(name);
 		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
 		await this.waitForChannel();
 	}

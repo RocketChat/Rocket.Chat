@@ -7,7 +7,8 @@ import { match } from 'path-to-regexp';
 const matchRoute = match<{ lng: string }>('/:lng.json', { decode: decodeURIComponent });
 
 const i18nHandler = async function (req: IncomingMessage, res: ServerResponse) {
-	const match = matchRoute(req.url ?? '/');
+	const url = new URL(req.url ?? '/', `https://${req.headers.host}`);
+	const match = matchRoute(url.pathname);
 
 	if (match === false) {
 		res.writeHead(400);

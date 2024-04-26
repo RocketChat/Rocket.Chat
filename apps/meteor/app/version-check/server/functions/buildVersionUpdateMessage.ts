@@ -13,6 +13,10 @@ export const buildVersionUpdateMessage = async (
 		infoUrl: string;
 	}[] = [],
 ) => {
+	if (process.env.TEST_MODE) {
+		return;
+	}
+
 	const lastCheckedVersion = settings.get<string>('Update_LatestAvailableVersion');
 
 	if (!lastCheckedVersion) {
@@ -20,6 +24,11 @@ export const buildVersionUpdateMessage = async (
 	}
 
 	for await (const version of versions) {
+		// Ignore prerelease versions
+		if (semver.prerelease(version.version)) {
+			continue;
+		}
+
 		if (semver.lte(version.version, lastCheckedVersion)) {
 			continue;
 		}

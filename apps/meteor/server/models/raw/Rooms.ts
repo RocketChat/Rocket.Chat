@@ -54,9 +54,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				sparse: true,
 			},
 			{
-				key: { t: 1 },
-			},
-			{
 				key: { 'u._id': 1 },
 			},
 			{
@@ -560,6 +557,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 					fname: name,
 				},
 			],
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneByJoinCodeAndId(joinCode: string, rid: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+		const query: Filter<IRoom> = {
+			_id: rid,
+			joinCode,
 		};
 
 		return this.findOne(query, options);
@@ -1510,7 +1516,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		_id: IRoom['_id'],
 		inc = 1,
 		lastMessageTimestamp: NonNullable<IRoom['lm']>,
-		lastMessage: IRoom['lastMessage'],
+		lastMessage?: IMessage,
 	): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 
@@ -1569,20 +1575,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	async resetLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage']): Promise<UpdateResult> {
+	async resetLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage'] | null, msgCountDelta?: number): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 
-		const update: UpdateFilter<IRoom> = lastMessage
-			? {
-					$set: {
-						lastMessage,
-					},
-			  }
-			: {
-					$unset: {
-						lastMessage: 1,
-					},
-			  };
+		const update = {
+			...(lastMessage ? { $set: { lastMessage } } : { $unset: { lastMessage: 1 as const } }),
+			...(msgCountDelta ? { $inc: { msgs: msgCountDelta } } : {}),
+		};
 
 		return this.updateOne(query, update);
 	}

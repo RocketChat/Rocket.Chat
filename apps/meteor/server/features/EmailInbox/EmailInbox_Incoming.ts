@@ -16,6 +16,7 @@ import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/Live
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';
+import { broadcastMessageFromData } from '../../modules/watchers/lib/messages';
 import { logger } from './logger';
 
 type FileAttachment = VideoAttachmentProps & ImageAttachmentProps & AudioAttachmentProps;
@@ -236,6 +237,9 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 				},
 			);
 			room && (await LivechatRooms.updateEmailThreadByRoomId(room._id, thread));
+			void broadcastMessageFromData({
+				id: msgId,
+			});
 		})
 		.catch((err) => {
 			logger.error({

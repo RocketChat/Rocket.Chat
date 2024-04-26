@@ -21,7 +21,7 @@ jobs:
     name: Unit Tests
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node

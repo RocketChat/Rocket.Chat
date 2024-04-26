@@ -1,6 +1,8 @@
-import type { IRole, IUser } from '@rocket.chat/core-typings';
+import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
+import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { capitalize } from '@rocket.chat/string-helpers';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -8,10 +10,9 @@ import React from 'react';
 
 import { Roles } from '../../../../../app/models/client';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
 
 type UsersTableRowProps = {
-	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>;
+	user: Serialized<DefaultUserInfo>;
 	onClick: (id: IUser['_id']) => void;
 	mediaQuery: boolean;
 };

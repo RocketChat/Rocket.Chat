@@ -1,4 +1,5 @@
-import { License, type ILicenseTag, type LicenseModule } from '@rocket.chat/license';
+import { type ILicenseTag, type LicenseModule } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';

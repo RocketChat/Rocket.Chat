@@ -22,6 +22,7 @@ type AdminUserInfoActionsProps = {
 	onReload: () => void;
 };
 
+// TODO: Replace menu
 const AdminUserInfoActions = ({
 	username,
 	userId,
@@ -131,7 +132,7 @@ const AdminUserInfoActions = ({
 	}, [actionsDefinition, menu]);
 
 	return (
-		<ButtonGroup flexGrow={0} justifyContent='center' data-qa-id='UserInfoActions'>
+		<ButtonGroup align='center' data-qa-id='UserInfoActions'>
 			{actions}
 		</ButtonGroup>
 	);

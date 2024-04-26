@@ -128,7 +128,7 @@ registerOmnichannelRoute('/tags/:context?/:id?', {
 
 registerOmnichannelRoute('/triggers/:context?/:id?', {
 	name: 'omnichannel-triggers',
-	component: lazy(() => import('./triggers/TriggersPage')),
+	component: lazy(() => import('./triggers/TriggersRoute')),
 });
 
 registerOmnichannelRoute('/current/:id?/:tab?/:context?', {

@@ -23,25 +23,36 @@ export const executeUploadImportFile = async (
 
 	const operation = await Import.newOperation(userId, importer.name, importer.key);
 
-	importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
+	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 
 	const date = new Date();
 	const dateStr = `${date.getUTCFullYear()}${date.getUTCMonth()}${date.getUTCDate()}${date.getUTCHours()}${date.getUTCMinutes()}${date.getUTCSeconds()}`;
 	const newFileName = `${dateStr}_${userId}_${fileName}`;
 
 	// Store the file name and content type on the imports collection
-	await importer.instance.startFileUpload(newFileName, contentType);
+	await instance.startFileUpload(newFileName, contentType);
 
 	// Save the file on the File Store
 	const file = Buffer.from(binaryContent, 'base64');
 	const readStream = RocketChatFile.bufferToStream(file);
 	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName, contentType);
 
-	writeStream.on('end', () => {
-		importer.instance.updateProgress(ProgressStep.FILE_LOADED);
+	await new Promise<void>((resolve, reject) => {
+		try {
+			writeStream.on('end', () => {
+				resolve();
+			});
+			writeStream.on('error', (e: Error) => {
+				reject(e);
+			});
+
+			readStream.pipe(writeStream);
+		} catch (error) {
+			reject(error);
+		}
 	});
 
-	readStream.pipe(writeStream);
+	await instance.updateProgress(ProgressStep.FILE_LOADED);
 };
 
 declare module '@rocket.chat/ui-contexts' {

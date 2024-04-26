@@ -1,5 +1,5 @@
-import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
-import { License, type LicenseModule } from '@rocket.chat/license';
+import type { ISetting, SettingValue, LicenseModule } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -59,4 +59,6 @@ Meteor.startup(async () => {
 	await updateSettings();
 
 	License.onValidateLicense(updateSettings);
+	License.onInvalidateLicense(updateSettings);
+	License.onRemoveLicense(updateSettings);
 });

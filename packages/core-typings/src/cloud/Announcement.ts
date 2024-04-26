@@ -1,28 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import type { IBanner } from '../IBanner';
 
-import type { IRocketChatRecord } from '../IRocketChatRecord';
-import type * as UiKit from '../uikit';
-
-type TargetPlatform = 'web' | 'mobile';
-
-type Dictionary = {
-	[lng: string]: {
-		[key: string]: string;
-	};
-};
-
-type Creator = 'cloud' | 'system';
-
-export interface Announcement extends IRocketChatRecord {
+export interface Announcement extends IBanner {
 	selector?: {
 		roles?: string[];
 	};
-	platform: TargetPlatform[];
-	expireAt: Date;
-	startAt: Date;
-	createdBy: Creator;
-	createdAt: Date;
-	dictionary?: Dictionary;
-	view: UiKit.View;
-	surface: 'banner' | 'modal';
 }

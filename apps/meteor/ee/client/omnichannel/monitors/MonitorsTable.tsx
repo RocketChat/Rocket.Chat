@@ -104,7 +104,15 @@ const MonitorsTable = () => {
 			setModal();
 		};
 
-		setModal(<GenericModal variant='danger' onConfirm={onDeleteMonitor} onCancel={() => setModal()} confirmText={t('Delete')} />);
+		setModal(
+			<GenericModal
+				variant='danger'
+				data-qa-id='manage-monitors-confirm-remove'
+				onConfirm={onDeleteMonitor}
+				onCancel={() => setModal()}
+				confirmText={t('Delete')}
+			/>,
+		);
 	};
 
 	const headers = useMemo(
@@ -129,8 +137,8 @@ const MonitorsTable = () => {
 				<Field>
 					<FieldLabel>{t('Username')}</FieldLabel>
 					<FieldRow>
-						<UserAutoComplete value={username} onChange={setUsername as () => void} />
-						<Button primary disabled={!username || addMutation.isLoading} onClick={() => handleAdd()} mis={8}>
+						<UserAutoComplete name='monitor' value={username} onChange={setUsername as () => void} />
+						<Button primary disabled={!username} loading={addMutation.isLoading} onClick={() => handleAdd()} mis={8}>
 							{t('Add_monitor')}
 						</Button>
 					</FieldRow>
@@ -151,17 +159,17 @@ const MonitorsTable = () => {
 					icon='shield-blank'
 					title={t('No_monitors_yet')}
 					description={t('No_monitors_yet_description')}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_monitors')}
 				/>
 			)}
 			{isSuccess && data.monitors.length > 0 && (
 				<>
-					<GenericTable aria-busy={text !== debouncedText} aria-live='assertive'>
+					<GenericTable aria-busy={text !== debouncedText} aria-live='assertive' data-qa-id='manage-monitors-table'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.monitors?.map((monitor) => (
-								<GenericTableRow key={monitor._id} tabIndex={0} width='full'>
+								<GenericTableRow key={monitor._id} tabIndex={0} width='full' data-qa-id={monitor.name}>
 									<GenericTableCell withTruncatedText>{monitor.name}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{monitor.username}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{monitor.email}</GenericTableCell>

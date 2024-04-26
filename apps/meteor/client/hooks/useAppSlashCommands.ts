@@ -1,5 +1,5 @@
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useSingleStream, useUserId } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
@@ -8,7 +8,7 @@ import { slashCommands } from '../../app/utils/lib/slashCommand';
 export const useAppSlashCommands = () => {
 	const queryClient = useQueryClient();
 
-	const apps = useSingleStream('apps');
+	const apps = useStream('apps');
 	const uid = useUserId();
 
 	const invalidate = useDebouncedCallback(

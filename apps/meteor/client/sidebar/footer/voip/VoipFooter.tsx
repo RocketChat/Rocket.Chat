@@ -68,7 +68,7 @@ export const VoipFooter = ({
 
 	const holdTitle = ((): string => {
 		if (!isEnterprise) {
-			return t('Hold_EE_only');
+			return t('Hold_Premium_only');
 		}
 		return paused ? t('Resume') : t('Hold');
 	})();

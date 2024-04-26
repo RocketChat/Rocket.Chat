@@ -18,6 +18,11 @@ flags:
     paths:
       - apps/meteor/
     carryforward: true
+  
+  e2e-api:
+    paths:
+      - apps/meteor/server
+    carryforward: true
 
   client:
     paths:
@@ -26,3 +31,5 @@ flags:
 
 comment:
   layout: 'reach, diff, flags'
+fixes:
+  - '/home/runner/work/Rocket.Chat/Rocket.Chat/::'

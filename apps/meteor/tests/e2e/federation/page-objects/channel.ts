@@ -74,12 +74,12 @@ export class FederationChannel {
 	}
 
 	async createDirectMessagesUsingModal(usernamesToInvite: string[]) {
-		await this.sidenav.openNewByLabel('Direct Messages');
+		await this.sidenav.openNewByLabel('Direct messages');
 		for await (const username of usernamesToInvite) {
 			await this.sidenav.inviteUserToDM(username);
 		}
 		await this.page
-			.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-modal__title") and contains(text(), "Direct Messages")]')
+			.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-modal__title") and contains(text(), "Direct messages")]')
 			.click();
 		await this.sidenav.btnCreateChannel.click();
 	}

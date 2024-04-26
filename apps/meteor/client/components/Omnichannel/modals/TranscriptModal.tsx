@@ -31,7 +31,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 		setValue,
 		setFocus,
 		watch,
-		formState: { errors, isValid },
+		formState: { errors, isValid, isSubmitting },
 	} = useForm({
 		defaultValues: { email: emailDefault || '', subject: t('Transcript_of_your_livechat_conversation') },
 	});
@@ -112,12 +112,12 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 						</Button>
 					)}
 					{roomOpen && !transcriptRequest && (
-						<Button aria-label='request-button' disabled={!canSubmit} primary type='submit'>
+						<Button aria-label='request-button' disabled={!canSubmit} loading={isSubmitting} primary type='submit'>
 							{t('Request')}
 						</Button>
 					)}
 					{!roomOpen && (
-						<Button aria-label='send-button' disabled={!canSubmit} primary type='submit'>
+						<Button aria-label='send-button' disabled={!canSubmit} loading={isSubmitting} primary type='submit'>
 							{t('Send')}
 						</Button>
 					)}

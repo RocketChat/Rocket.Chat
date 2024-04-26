@@ -60,6 +60,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		control,
 		watch,
 		handleSubmit,
+		reset,
 		formState: { errors },
 	} = useFormContext<AccountProfileFormValues>();
 
@@ -126,6 +127,8 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			reset({ email, name, username, statusType, statusText, nickname, bio, customFields });
 		}
 	};
 

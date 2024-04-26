@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import AnalyticsReports from './AnalyticsReports';
 import ServerLogs from './ServerLogs';
 
@@ -13,7 +13,7 @@ const ViewLogsPage = (): ReactElement => {
 
 	return (
 		<Page background='tint'>
-			<Page.Header title={t('Reports')} />
+			<PageHeader title={t('Reports')} />
 			<Margins blockEnd={24}>
 				<Tabs>
 					<Tabs.Item onClick={() => setTab('Logs')} selected={tab === 'Logs'}>
@@ -24,7 +24,7 @@ const ViewLogsPage = (): ReactElement => {
 					</Tabs.Item>
 				</Tabs>
 			</Margins>
-			<Page.Content>{tab === 'Logs' ? <ServerLogs /> : <AnalyticsReports />}</Page.Content>
+			<PageContent>{tab === 'Logs' ? <ServerLogs /> : <AnalyticsReports />}</PageContent>
 		</Page>
 	);
 };

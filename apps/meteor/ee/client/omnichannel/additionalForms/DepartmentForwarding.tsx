@@ -1,4 +1,4 @@
-import { Field, FieldLabel, FieldRow, FieldHint, Box, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldHint, Box, PaginatedMultiSelectFiltered, Option } from '@rocket.chat/fuselage';
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -8,6 +8,7 @@ import React, { useMemo, useState } from 'react';
 import { useDepartmentsList } from '../../../../client/components/Omnichannel/hooks/useDepartmentsList';
 import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 type DepartmentForwardingProps = {
 	departmentId: string;
@@ -19,6 +20,7 @@ type DepartmentForwardingProps = {
 export const DepartmentForwarding = ({ departmentId, value = [], handler, label }: DepartmentForwardingProps) => {
 	const t = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
+	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
@@ -32,6 +34,10 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 		const pending = value.filter(({ value }) => !departmentsItems.find((dep) => dep.value === value));
 		return [...departmentsItems, ...pending];
 	}, [departmentsItems, value]);
+
+	if (!hasLicense) {
+		return null;
+	}
 
 	return (
 		<Field>
@@ -59,6 +65,7 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 										loadMoreDepartments(start, Math.min(50, departmentsTotal));
 								  }
 						}
+						renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
 					/>
 				</Box>
 			</FieldRow>

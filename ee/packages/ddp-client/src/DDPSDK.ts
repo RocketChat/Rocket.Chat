@@ -105,7 +105,7 @@ export class DDPSDK implements SDK {
 				}
 				return {
 					'X-User-Id': account.uid,
-					'X-Auth-Token': account.user?.token,
+					'X-Auth-Token': account.user.token,
 				};
 			}
 		})({ baseUrl: url });
@@ -113,6 +113,9 @@ export class DDPSDK implements SDK {
 		const sdk = new DDPSDK(connection, stream, account, timeoutControl, rest);
 
 		connection.on('connected', () => {
+			if (account.user?.token) {
+				account.loginWithToken(account.user.token);
+			}
 			[...stream.subscriptions.entries()].forEach(([, sub]) => {
 				ddp.subscribeWithId(sub.id, sub.name, sub.params);
 			});

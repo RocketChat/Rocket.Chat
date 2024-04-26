@@ -4,7 +4,7 @@ import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ui-contexts';
 import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
 
-import type { Progress } from '../../../app/importer/server/classes/ImporterProgress';
+import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
 
@@ -531,12 +531,12 @@ export class NotificationsModule {
 		return this.streamUser.emitWithoutBroadcast(`${userId}/${eventName}`, ...args);
 	}
 
-	sendPresence(uid: string, ...args: [username: string, statusChanged: 0 | 1 | 2 | 3, statusText: string | undefined]): void {
+	sendPresence(uid: string, ...args: [username: string, status?: 0 | 1 | 2 | 3, statusText?: string]): void {
 		emit(uid, [args]);
 		return this.streamPresence.emitWithoutBroadcast(uid, args);
 	}
 
-	progressUpdated(progress: { rate: number } | Progress): void {
+	progressUpdated(progress: { rate: number } | ImporterProgress): void {
 		this.streamImporters.emit('progress', progress);
 	}
 }

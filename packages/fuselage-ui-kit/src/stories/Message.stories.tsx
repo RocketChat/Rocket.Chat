@@ -2,6 +2,7 @@
 import { Message, Avatar } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { action } from '@storybook/addon-actions';
+import React from 'react';
 
 import { UiKitContext, UiKitMessage } from '..';
 import * as payloads from './payloads';
@@ -53,9 +54,8 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
           <UiKitContext.Provider
             value={{
               action: action('action'),
-              state: action('state'),
+              updateState: action('updateState'),
               values: {},
-              appId: 'core',
               errors,
             }}
           >
@@ -63,13 +63,13 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]) => {
           </UiKitContext.Provider>
         </Message.Body>
       </Message.Container>
-      <Message.Toolbox.Wrapper>
-        <Message.Toolbox>
-          <Message.Toolbox.Item icon='quote' />
-          <Message.Toolbox.Item icon='clock' />
-          <Message.Toolbox.Item icon='thread' />
-        </Message.Toolbox>
-      </Message.Toolbox.Wrapper>
+      <Message.Toolbar.Wrapper>
+        <Message.Toolbar>
+          <Message.Toolbar.Item icon='quote' />
+          <Message.Toolbar.Item icon='clock' />
+          <Message.Toolbar.Item icon='thread' />
+        </Message.Toolbar>
+      </Message.Toolbar.Wrapper>
     </Message>
   );
   story.args = {

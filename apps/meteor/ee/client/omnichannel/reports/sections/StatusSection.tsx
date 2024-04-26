@@ -7,7 +7,7 @@ export const StatusSection = () => {
 	const { data, ...config } = useStatusSection();
 
 	return (
-		<ReportCard {...config} minHeight={200}>
+		<ReportCard {...config}>
 			<PieChart data={data} width={200} height={200} />
 		</ReportCard>
 	);

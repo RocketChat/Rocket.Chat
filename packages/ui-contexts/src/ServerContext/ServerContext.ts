@@ -38,13 +38,6 @@ export type ServerContextValue = {
 			retransmitToSelf?: boolean | undefined;
 		},
 	) => (eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void) => () => void;
-	getSingleStream: <N extends StreamNames, K extends StreamKeys<N>>(
-		streamName: N,
-		_options?: {
-			retransmit?: boolean | undefined;
-			retransmitToSelf?: boolean | undefined;
-		},
-	) => (eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void) => () => void;
 };
 
 export const ServerContext = createContext<ServerContextValue>({
@@ -57,5 +50,4 @@ export const ServerContext = createContext<ServerContextValue>({
 		throw new Error('not implemented');
 	},
 	getStream: () => () => (): void => undefined,
-	getSingleStream: () => () => (): void => undefined,
 });

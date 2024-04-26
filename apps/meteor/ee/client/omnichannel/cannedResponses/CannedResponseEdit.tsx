@@ -1,161 +1,98 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse, Serialized } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useRoute, usePermission, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
-import React, { memo, useState, useMemo, useEffect, useCallback } from 'react';
+import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useToastMessageDispatch, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
+import React, { memo, useCallback } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 
-import Page from '../../../../client/components/Page';
-import { useForm } from '../../../../client/hooks/useForm';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../../client/components/Page';
 import CannedResponseForm from './components/cannedResponseForm';
+import { useRemoveCannedResponse } from './useRemoveCannedResponse';
 
-const CannedResponseEdit: FC<{
-	data?: {
-		cannedResponse: Serialized<IOmnichannelCannedResponse>;
-	};
-	reload: () => void;
-	totalDataReload: () => void;
-	isNew?: boolean;
-	departmentData?: {
-		department: Serialized<ILivechatDepartment>;
-	};
-}> = ({ data, reload, totalDataReload, isNew = false }) => {
+type CannedResponseEditProps = {
+	cannedResponseData?: Serialized<IOmnichannelCannedResponse>;
+	departmentData?: Serialized<ILivechatDepartment>;
+};
+
+const getInitialData = (cannedResponseData: Serialized<IOmnichannelCannedResponse> | undefined) => ({
+	_id: cannedResponseData?._id || '',
+	shortcut: cannedResponseData?.shortcut || '',
+	text: cannedResponseData?.text || '',
+	tags: cannedResponseData?.tags || [],
+	scope: cannedResponseData?.scope || 'user',
+	departmentId: cannedResponseData?.departmentId || '',
+});
+
+const CannedResponseEdit = ({ cannedResponseData }: CannedResponseEditProps) => {
 	const t = useTranslation();
+	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const Route = useRoute('omnichannel-canned-responses');
-
-	const handleReturn = useMutableCallback(() =>
-		Route.push({
-			context: '',
-		}),
-	);
+	const queryClient = useQueryClient();
 
 	const saveCannedResponse = useEndpoint('POST', '/v1/canned-responses');
 
-	const hasManagerPermission = usePermission('view-all-canned-responses');
-	const hasMonitorPermission = usePermission('save-department-canned-responses');
+	const methods = useForm({ defaultValues: getInitialData(cannedResponseData) });
 
-	const form = useForm({
-		_id: data?.cannedResponse ? data.cannedResponse._id : '',
-		shortcut: data ? data.cannedResponse.shortcut : '',
-		text: data ? data.cannedResponse.text : '',
-		tags: data?.cannedResponse?.tags ?? [],
-		scope: data ? data.cannedResponse.scope : 'user',
-		departmentId: data?.cannedResponse?.departmentId ? data.cannedResponse.departmentId : '',
-	});
+	const {
+		handleSubmit,
+		reset,
+		formState: { isDirty },
+	} = methods;
 
-	const { values, handlers, hasUnsavedChanges } = form;
+	const handleDelete = useRemoveCannedResponse();
 
-	const [errors, setErrors] = useState<any>({});
-	const [radioDescription, setRadioDescription] = useState<string>(t('Canned_Response_Sharing_Private_Description'));
-	const [preview, setPreview] = useState(false);
-
-	const listErrors = useMemo(() => {
-		const empty: any = {};
-
-		for (const [key, value] of Object.entries(values)) {
-			if (['shortcut', 'text'].includes(key) && !value) {
-				empty[key] = t('Field_required');
+	const handleSave = useCallback(
+		async ({ departmentId, ...data }) => {
+			try {
+				await saveCannedResponse({
+					_id: cannedResponseData?._id,
+					...data,
+					...(departmentId && { departmentId }),
+				});
+				dispatchToastMessage({
+					type: 'success',
+					message: t(cannedResponseData?._id ? 'Canned_Response_Updated' : 'Canned_Response_Created'),
+				});
+				router.navigate('/omnichannel/canned-responses');
+				queryClient.invalidateQueries(['getCannedResponses']);
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
 			}
-		}
-
-		if (values.scope === 'department' && !values.departmentId) {
-			empty.departmentId = t('Field_required');
-		}
-
-		return empty;
-	}, [t, values]);
-
-	useEffect(() => {
-		setErrors(listErrors);
-	}, [values.shortcut, values.text, values.departmentId, listErrors]);
-
-	const radioHandlers = {
-		setPublic: (): void => {
-			handlers.handleScope('global');
-			handlers.handleDepartmentId('');
-			setRadioDescription(t('Canned_Response_Sharing_Public_Description'));
 		},
-		setDepartment: (): void => {
-			handlers.handleScope('department');
-			setRadioDescription(t('Canned_Response_Sharing_Department_Description'));
-		},
-		setPrivate: (): void => {
-			handlers.handleScope('user');
-			handlers.handleDepartmentId('');
-			setRadioDescription(t('Canned_Response_Sharing_Private_Description'));
-		},
-	};
-
-	const onSave = useCallback(async (): Promise<void> => {
-		try {
-			const { _id, shortcut, text, scope, tags, departmentId } = values as {
-				_id: string;
-				shortcut: string;
-				text: string;
-				scope: string;
-				tags: any;
-				departmentId: string;
-			};
-			await saveCannedResponse({
-				...(_id && { _id }),
-				shortcut,
-				text,
-				scope,
-				tags,
-				...(departmentId && { departmentId }),
-			});
-			dispatchToastMessage({
-				type: 'success',
-				message: t(_id ? 'Canned_Response_Updated' : 'Canned_Response_Created'),
-			});
-			Route.push({
-				context: '',
-			});
-			reload();
-			totalDataReload();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	}, [values, saveCannedResponse, dispatchToastMessage, t, Route, reload, totalDataReload]);
-
-	const onPreview = (): void => {
-		setPreview(!preview);
-	};
-
-	const { shortcut, text, scope, departmentId } = values;
-
-	const checkDepartment = scope !== 'department' || (scope === 'department' && departmentId);
-
-	const canSave = shortcut && text && checkDepartment;
+		[cannedResponseData?._id, queryClient, saveCannedResponse, dispatchToastMessage, t, router],
+	);
+	const formId = useUniqueId();
 
 	return (
 		<Page>
-			<Page.Header title={isNew ? t('New_CannedResponse') : t('Edit_CannedResponse')}>
+			<PageHeader
+				title={cannedResponseData?._id ? t('Edit_CannedResponse') : t('New_CannedResponse')}
+				onClickBack={() => router.navigate('/omnichannel/canned-responses')}
+			>
+				{cannedResponseData?._id && (
+					<ButtonGroup>
+						<Button danger onClick={() => handleDelete(cannedResponseData._id)}>
+							{t('Delete')}
+						</Button>
+					</ButtonGroup>
+				)}
+			</PageHeader>
+			<PageScrollableContentWithShadow>
+				<FormProvider {...methods}>
+					<Box id={formId} onSubmit={handleSubmit(handleSave)} w='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
+						<CannedResponseForm />
+					</Box>
+				</FormProvider>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
-					<Button icon='back' onClick={handleReturn}>
-						{t('Back')}
-					</Button>
-					<Button primary mie='none' flexGrow={1} disabled={!hasUnsavedChanges || !canSave} onClick={onSave}>
+					<Button onClick={() => reset()}>{t('Cancel')}</Button>
+					<Button form={formId} primary type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-			</Page.Header>
-			<Page.ScrollableContentWithShadow fontScale='p2'>
-				<FieldGroup w='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
-					<CannedResponseForm
-						isManager={hasManagerPermission}
-						isMonitor={hasMonitorPermission}
-						values={values}
-						handlers={handlers}
-						errors={errors}
-						radioHandlers={radioHandlers}
-						radioDescription={radioDescription}
-						onPreview={onPreview}
-						previewState={preview}
-					></CannedResponseForm>
-				</FieldGroup>
-			</Page.ScrollableContentWithShadow>
+			</PageFooter>
 		</Page>
 	);
 };

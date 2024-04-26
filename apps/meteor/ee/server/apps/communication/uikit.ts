@@ -138,10 +138,12 @@ const getCoreAppPayload = (req: UiKitUserInteractionRequest): UiKitCoreAppPayloa
 		const {
 			type,
 			payload: { view, isCleared },
+			triggerId,
 		} = req.body;
 
 		return {
 			appId,
+			triggerId,
 			type,
 			user,
 			payload: {

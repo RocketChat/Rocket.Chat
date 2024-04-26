@@ -1,5 +1,5 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import type { UIEvent } from 'react';
+import type { IActionManager } from '@rocket.chat/ui-contexts';
 
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import type { Subscribable } from '../../definitions/Subscribable';
@@ -100,7 +100,10 @@ export type UploadsAPI = {
 	subscribe(callback: () => void): () => void;
 	wipeFailedOnes(): void;
 	cancel(id: Upload['id']): void;
-	send(file: File, { description, msg }: { description?: string; msg?: string }): Promise<void>;
+	send(
+		file: File,
+		{ description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] },
+	): Promise<void>;
 };
 
 export type ChatAPI = {
@@ -125,11 +128,6 @@ export type ChatAPI = {
 		  }
 		| undefined;
 
-	readonly userCard: {
-		open(username: string): (event: UIEvent) => void;
-		close(): void;
-	};
-
 	readonly emojiPicker: {
 		open(el: Element, cb: (emoji: string) => void): void;
 		close(): void;
@@ -141,7 +139,7 @@ export type ChatAPI = {
 		performContinuously(action: 'recording' | 'uploading' | 'playing'): void;
 	};
 
-	ActionManager: any;
+	ActionManager: IActionManager;
 
 	readonly flows: {
 		readonly uploadFiles: (files: readonly File[], resetFileInput?: () => void) => Promise<void>;

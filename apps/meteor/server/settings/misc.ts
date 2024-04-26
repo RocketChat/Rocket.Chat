@@ -40,15 +40,12 @@ const verifyFingerPrint = async function () {
 	if (process.env.AUTO_ACCEPT_FINGERPRINT === 'true') {
 		logger.info('Updating fingerprint as AUTO_ACCEPT_FINGERPRINT is true', fingerprint);
 		await updateFingerprint(fingerprint, true);
+		return;
 	}
 
 	logger.warn('Updating fingerprint as pending for admin verification', fingerprint);
 	await updateFingerprint(fingerprint, false);
 };
-
-settings.watch('Site_Url', () => {
-	void verifyFingerPrint();
-});
 
 // Insert server unique id if it doesn't exist
 export const createMiscSettings = async () => {
@@ -61,10 +58,14 @@ export const createMiscSettings = async () => {
 		readonly: true,
 	});
 
-	await settingsRegistry.add('Deployment_FingerPrint_Verified', false, {
+	await settingsRegistry.add('Deployment_FingerPrint_Verified', true, {
 		type: 'boolean',
 		public: true,
 		readonly: true,
+	});
+
+	settings.watch('Site_Url', () => {
+		void verifyFingerPrint();
 	});
 
 	await settingsRegistry.add('Initial_Channel_Created', false, {

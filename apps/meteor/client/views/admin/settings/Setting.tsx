@@ -1,8 +1,7 @@
 import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
-import { Button } from '@rocket.chat/fuselage';
+import { Box, Button, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { ExternalLink } from '@rocket.chat/ui-client';
 import { useSettingStructure, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
@@ -97,7 +96,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	const { _id, disabled, readonly, type, packageValue, i18nLabel, i18nDescription, alert, invisible } = setting;
 
-	const label = (t.has(i18nLabel) && t(i18nLabel)) || (t.has(_id) && t(_id)) || i18nLabel || _id;
+	const labelText = (t.has(i18nLabel) && t(i18nLabel)) || (t.has(_id) && t(_id)) || i18nLabel || _id;
 
 	const hint = useMemo(
 		() =>
@@ -113,12 +112,27 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	const showUpgradeButton = useMemo(
 		() =>
 			shouldDisableEnterprise ? (
-				<ExternalLink to={PRICING_URL}>
-					<Button>{t('See_Paid_Plan')}</Button>
-				</ExternalLink>
+				<Button mbs={4} is='a' href={PRICING_URL} target='_blank'>
+					{t('See_Paid_Plan')}
+				</Button>
 			) : undefined,
 		[shouldDisableEnterprise, t],
 	);
+
+	const label = useMemo(() => {
+		if (!shouldDisableEnterprise) {
+			return labelText;
+		}
+
+		return (
+			<>
+				<Box is='span' mie={4}>
+					{labelText}
+				</Box>
+				<Tag variant='featured'>{t('Premium')}</Tag>
+			</>
+		);
+	}, [labelText, shouldDisableEnterprise, t]);
 
 	const hasResetButton =
 		!shouldDisableEnterprise &&
@@ -133,7 +147,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	return (
 		<MemoizedSetting
 			className={className}
-			label={label || undefined}
+			label={label}
 			hint={hint}
 			callout={callout}
 			showUpgradeButton={showUpgradeButton}

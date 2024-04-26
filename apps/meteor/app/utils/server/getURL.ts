@@ -3,7 +3,13 @@ import { getURLWithoutSettings } from '../lib/getURL';
 
 export const getURL = function (
 	path: string, // eslint-disable-next-line @typescript-eslint/naming-convention
-	params: Record<string, any> = {},
+	params: {
+		cdn?: boolean;
+		full?: boolean;
+		cloud?: boolean;
+		cloud_route?: string;
+		cloud_params?: Record<string, string>;
+	} = {},
 	cloudDeepLinkUrl?: string,
 ): string {
 	const cdnPrefix = settings.get<string>('CDN_PREFIX') || '';

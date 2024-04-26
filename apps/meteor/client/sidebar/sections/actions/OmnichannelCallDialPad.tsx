@@ -19,7 +19,7 @@ export const OmniChannelCallDialPad = ({ ...props }): ReactElement => {
 			onClick={(): void => openDialModal()}
 			disabled={!outBoundCallsEnabledForUser}
 			aria-label={t('Open_Dialpad')}
-			data-tooltip={outBoundCallsAllowed ? t('New_Call') : t('New_Call_Enterprise_Edition_Only')}
+			data-tooltip={outBoundCallsAllowed ? t('New_Call') : t('New_Call_Premium_Only')}
 			{...props}
 		/>
 	);

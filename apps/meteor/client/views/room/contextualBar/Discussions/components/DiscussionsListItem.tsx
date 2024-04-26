@@ -1,10 +1,11 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import { Box, Message } from '@rocket.chat/fuselage';
+import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
 
-import MessageAvatar from '../../../../../components/message/header/MessageAvatar';
+import Emoji from '../../../../../components/Emoji';
 import { clickableItem } from '../../../../../lib/clickableItem';
 
 type DiscussionListItemProps = {
@@ -36,7 +37,7 @@ const DiscussionListItem = ({
 	return (
 		<Box is={Message} {...props} className={className} pbs={16} pbe={8}>
 			<Message.LeftContainer>
-				<MessageAvatar username={username} emoji={emoji} size='x36' />
+				<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
 			</Message.LeftContainer>
 			<Message.Container>
 				<Message.Header>

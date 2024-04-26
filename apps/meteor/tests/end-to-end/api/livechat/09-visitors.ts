@@ -6,6 +6,7 @@ import moment from 'moment';
 import { type Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { getLicenseInfo } from '../../../data/licenses.helper';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 import {
 	makeAgentAvailable,
@@ -13,6 +14,7 @@ import {
 	createLivechatRoom,
 	createVisitor,
 	startANewLivechatRoomAndTakeIt,
+	closeOmnichannelRoom,
 } from '../../../data/livechat/rooms';
 import { getRandomVisitorToken } from '../../../data/livechat/users';
 import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
@@ -41,6 +43,10 @@ describe('LIVECHAT - visitors', function () {
 		});
 		it('should fail if visitor.token is not present', async () => {
 			const { body } = await request.post(api('livechat/visitor')).send({ visitor: {} });
+			expect(body).to.have.property('success', false);
+		});
+		it('should fail when token is an empty string', async () => {
+			const { body } = await request.post(api('livechat/visitor')).send({ visitor: { token: '' } });
 			expect(body).to.have.property('success', false);
 		});
 		it('should create a visitor', async () => {
@@ -108,6 +114,105 @@ describe('LIVECHAT - visitors', function () {
 			expect(body2.visitor).to.have.property('token', token);
 			expect(body2.visitor).to.have.property('phone');
 			expect(body2.visitor.phone[0].phoneNumber).to.equal(phone);
+		});
+		it('should update a visitor custom fields when customFields key is provided', async () => {
+			const token = `${new Date().getTime()}-test`;
+			const customFieldName = `new_custom_field_${Date.now()}`;
+			await createCustomField({
+				searchable: true,
+				field: customFieldName,
+				label: customFieldName,
+				defaultValue: 'test_default_address',
+				scope: 'visitor',
+				visibility: 'public',
+				regexp: '',
+			});
+			const { body } = await request.post(api('livechat/visitor')).send({
+				visitor: {
+					token,
+					customFields: [{ key: customFieldName, value: 'Not a real address :)', overwrite: true }],
+				},
+			});
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('visitor');
+			expect(body.visitor).to.have.property('token', token);
+			expect(body.visitor).to.have.property('livechatData');
+			expect(body.visitor.livechatData).to.have.property(customFieldName, 'Not a real address :)');
+		});
+
+		it('should not update a custom field when it does not exists', async () => {
+			const token = `${new Date().getTime()}-test`;
+			const customFieldName = `new_custom_field_${Date.now()}`;
+			const { body } = await request.post(api('livechat/visitor')).send({
+				visitor: {
+					token,
+					customFields: [{ key: customFieldName, value: 'Not a real address :)', overwrite: true }],
+				},
+			});
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('visitor');
+			expect(body.visitor).to.have.property('token', token);
+			expect(body.visitor).to.not.have.property('livechatData');
+		});
+
+		it('should not update a custom field when the scope of it is not visitor', async () => {
+			const token = `${new Date().getTime()}-test`;
+			const customFieldName = `new_custom_field_${Date.now()}`;
+			await createCustomField({
+				searchable: true,
+				field: customFieldName,
+				label: customFieldName,
+				defaultValue: 'test_default_address',
+				scope: 'room',
+				visibility: 'public',
+				regexp: '',
+			});
+			const { body } = await request.post(api('livechat/visitor')).send({
+				visitor: {
+					token,
+					customFields: [{ key: customFieldName, value: 'Not a real address :)', overwrite: true }],
+				},
+			});
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('visitor');
+			expect(body.visitor).to.have.property('token', token);
+			expect(body.visitor).to.not.have.property('livechatData');
+		});
+
+		it('should not update a custom field whe the overwrite flag is false', async () => {
+			const token = `${new Date().getTime()}-test`;
+			const customFieldName = `new_custom_field_${Date.now()}`;
+			await createCustomField({
+				searchable: true,
+				field: customFieldName,
+				label: customFieldName,
+				defaultValue: 'test_default_address',
+				scope: 'visitor',
+				visibility: 'public',
+				regexp: '',
+			});
+			await request.post(api('livechat/visitor')).send({
+				visitor: {
+					token,
+					customFields: [{ key: customFieldName, value: 'Not a real address :)', overwrite: true }],
+				},
+			});
+
+			const { body } = await request.post(api('livechat/visitor')).send({
+				visitor: {
+					token,
+					customFields: [{ key: customFieldName, value: 'This should not change!', overwrite: false }],
+				},
+			});
+
+			expect(body).to.have.property('success', true);
+			expect(body).to.have.property('visitor');
+			expect(body.visitor).to.have.property('token', token);
+			expect(body.visitor).to.have.property('livechatData');
+			expect(body.visitor.livechatData).to.have.property(customFieldName, 'Not a real address :)');
 		});
 	});
 
@@ -305,6 +410,7 @@ describe('LIVECHAT - visitors', function () {
 		});
 
 		it("should return a 'visitor-has-open-rooms' error when there are open rooms", async () => {
+			await updateSetting('Livechat_Allow_collect_and_store_HTTP_header_informations', false);
 			const createdVisitor = await createVisitor();
 			await createLivechatRoom(createdVisitor.token);
 
@@ -317,6 +423,18 @@ describe('LIVECHAT - visitors', function () {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.be.equal('Cannot remove visitors with opened rooms [visitor-has-open-rooms]');
 				});
+		});
+
+		it("should not return a 'visitor-has-open-rooms' when visitor has open rooms but GDPR is enabled", async () => {
+			await updateSetting('Livechat_Allow_collect_and_store_HTTP_header_informations', true);
+			const createdVisitor = await createVisitor();
+			await createLivechatRoom(createdVisitor.token);
+
+			await request
+				.delete(api(`livechat/visitor/${createdVisitor.token}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
 		});
 
 		it('should return a visitor when the query params is all valid', async () => {
@@ -354,6 +472,41 @@ describe('LIVECHAT - visitors', function () {
 			const activeVisitor = await getLivechatVisitorByToken(visitor.token);
 			expect(activeVisitor).to.have.property('activity');
 			expect(activeVisitor.activity).to.include(period);
+		});
+
+		it('should not affect MAC count when a visitor is removed via GDPR', async () => {
+			const { visitor, room } = await startANewLivechatRoomAndTakeIt();
+			// agent should send a message on the room
+			await request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: room._id,
+						msg: 'test',
+					},
+				});
+			const { body: currentLicense } = await getLicenseInfo(true);
+
+			await request
+				.delete(api(`livechat/visitor/${visitor.token}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const { body: licenseAfterGdpr } = await getLicenseInfo(true);
+
+			expect(currentLicense.license).to.have.property('limits');
+			expect(currentLicense.license.limits).to.have.property('monthlyActiveContacts');
+			expect(currentLicense.license.limits.monthlyActiveContacts).to.have.property('value');
+			const currentLimit = currentLicense.license.limits.monthlyActiveContacts.value;
+
+			expect(licenseAfterGdpr.license).to.have.property('limits');
+			expect(licenseAfterGdpr.license.limits).to.have.property('monthlyActiveContacts');
+			expect(licenseAfterGdpr.license.limits.monthlyActiveContacts).to.have.property('value');
+			const limitAfterGdpr = licenseAfterGdpr.license.limits.monthlyActiveContacts.value;
+
+			expect(limitAfterGdpr).to.be.equal(currentLimit);
 		});
 
 		it("should return a 'error-removing-visitor' error when removeGuest's result is false", async () => {
@@ -536,6 +689,88 @@ describe('LIVECHAT - visitors', function () {
 					expect(res.body.history[0]).to.have.property('fname');
 					expect(res.body.history[0]).to.have.property('v');
 				});
+		});
+
+		it('should return only closed chats when closedChatsOnly is true', async () => {
+			const {
+				room: { _id: roomId },
+				visitor: { _id: visitorId },
+			} = await startANewLivechatRoomAndTakeIt();
+
+			await closeOmnichannelRoom(roomId);
+
+			await request
+				.get(api(`livechat/visitors.searchChats/room/${roomId}/visitor/${visitorId}?closedChatsOnly=true&servedChatsOnly=false`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('history');
+					expect(res.body.history).to.be.an('array');
+					expect(res.body.history.find((chat: any) => chat._id === roomId)).to.be.an('object');
+				});
+		});
+
+		it('should return only served chats when servedChatsOnly is true', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+
+			await request
+				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?closedChatsOnly=false&servedChatsOnly=true`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('history');
+					expect(res.body.history).to.be.an('array');
+					expect(res.body.history.find((chat: any) => chat._id === room._id)).to.be.undefined;
+				});
+		});
+
+		it('should return closed rooms (served & unserved) when `closedChatsOnly` is true & `servedChatsOnly` is false', async () => {
+			const {
+				room: { _id: roomId },
+				visitor: { _id: visitorId, token },
+			} = await startANewLivechatRoomAndTakeIt();
+			await closeOmnichannelRoom(roomId);
+			const room2 = await createLivechatRoom(token);
+			await closeOmnichannelRoom(room2._id);
+
+			await request
+				.get(api(`livechat/visitors.searchChats/room/${roomId}/visitor/${visitorId}?closedChatsOnly=true&servedChatsOnly=false`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('history');
+					expect(res.body.history).to.be.an('array');
+					expect(res.body.history.find((chat: any) => chat._id === roomId)).to.be.an('object');
+					expect(res.body.history.find((chat: any) => chat._id === room2._id)).to.be.an('object');
+				});
+		});
+
+		it('should return all chats when both closed & served flags are false', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(room._id);
+			const room2 = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(room2._id);
+			await createLivechatRoom(visitor.token);
+
+			const { body } = await request
+				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?closedChatsOnly=false&servedChatsOnly=false`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(body).to.have.property('success', true);
+			expect(body.count).to.be.equal(3);
+			expect(body.history.filter((chat: any) => !!chat.closedAt).length === 2).to.be.true;
+			expect(body.history.filter((chat: any) => !chat.closedAt).length === 1).to.be.true;
+			expect(body.total).to.be.equal(3);
 		});
 	});
 

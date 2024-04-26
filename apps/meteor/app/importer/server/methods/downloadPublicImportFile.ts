@@ -35,14 +35,12 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 		);
 	}
 	// Check if it's a valid url or path before creating a new import record
-	if (!isUrl) {
-		if (!fs.existsSync(fileUrl)) {
-			throw new Meteor.Error('error-import-file-missing', fileUrl, 'downloadPublicImportFile');
-		}
+	if (!isUrl && !fs.existsSync(fileUrl)) {
+		throw new Meteor.Error('error-import-file-missing', fileUrl, 'downloadPublicImportFile');
 	}
 
 	const operation = await Import.newOperation(userId, importer.name, importer.key);
-	importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
+	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 
 	const oldFileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1).split('?')[0];
 	const date = new Date();
@@ -50,17 +48,17 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	const newFileName = `${dateStr}_${userId}_${oldFileName}`;
 
 	// Store the file name on the imports collection
-	await importer.instance.startFileUpload(newFileName);
-	await importer.instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
+	await instance.startFileUpload(newFileName);
+	await instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
 
 	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName);
 
 	writeStream.on('error', () => {
-		void importer.instance.updateProgress(ProgressStep.ERROR);
+		void instance.updateProgress(ProgressStep.ERROR);
 	});
 
 	writeStream.on('end', () => {
-		void importer.instance.updateProgress(ProgressStep.FILE_LOADED);
+		void instance.updateProgress(ProgressStep.FILE_LOADED);
 	});
 
 	if (isUrl) {
@@ -68,8 +66,8 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	} else {
 		// If the url is actually a folder path on the current machine, skip moving it to the file store
 		if (fs.statSync(fileUrl).isDirectory()) {
-			await importer.instance.updateRecord({ file: fileUrl });
-			await importer.instance.updateProgress(ProgressStep.FILE_LOADED);
+			await instance.updateRecord({ file: fileUrl });
+			await instance.updateProgress(ProgressStep.FILE_LOADED);
 			return;
 		}
 

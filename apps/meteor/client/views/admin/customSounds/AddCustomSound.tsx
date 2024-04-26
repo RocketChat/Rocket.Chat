@@ -4,7 +4,7 @@ import type { ReactElement, FormEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
-import { useFileInput } from '../../../hooks/useFileInput';
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { validate, createSoundData } from './lib';
 
 type AddCustomSoundProps = {
@@ -27,7 +27,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 		setSound(soundFile);
 	}, []);
 
-	const [clickUpload] = useFileInput(handleChangeFile, 'audio/mp3');
+	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
 
 	const saveAction = useCallback(
 		async (name, soundFile): Promise<string | undefined> => {
@@ -110,9 +110,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button mie={4} onClick={close}>
-						{t('Cancel')}
-					</Button>
+					<Button onClick={close}>{t('Cancel')}</Button>
 					<Button primary onClick={handleSave} disabled={name === ''}>
 						{t('Save')}
 					</Button>

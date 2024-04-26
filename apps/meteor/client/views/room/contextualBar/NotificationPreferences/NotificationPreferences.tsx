@@ -32,7 +32,7 @@ const NotificationPreferences = ({
 }: NotificationPreferencesProps): ReactElement => {
 	const t = useTranslation();
 	const {
-		formState: { isDirty },
+		formState: { isDirty, isSubmitting },
 	} = useFormContext();
 
 	return (
@@ -48,7 +48,7 @@ const NotificationPreferences = ({
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					{handleClose && <Button onClick={handleClose}>{t('Cancel')}</Button>}
-					<Button primary disabled={!isDirty} onClick={handleSave}>
+					<Button primary disabled={!isDirty} loading={isSubmitting} onClick={handleSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

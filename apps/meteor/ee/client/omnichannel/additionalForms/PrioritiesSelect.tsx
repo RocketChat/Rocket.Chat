@@ -7,6 +7,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { useCallback, forwardRef, useMemo, useState } from 'react';
 
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 import { PriorityIcon } from '../priorities/PriorityIcon';
 
 type PrioritiesSelectProps = {
@@ -18,6 +19,7 @@ type PrioritiesSelectProps = {
 
 export const PrioritiesSelect = ({ value = '', label, options, onChange }: PrioritiesSelectProps) => {
 	const t = useTranslation();
+	const hasLicense = useHasLicenseModule('livechat-enterprise');
 	const [sorting] = useState<Record<string, LivechatPriorityWeight>>({});
 
 	const formattedOptions = useMemo<SelectOption[]>(() => {
@@ -44,6 +46,10 @@ export const PrioritiesSelect = ({ value = '', label, options, onChange }: Prior
 	const renderOptions = forwardRef<HTMLElement, ComponentProps<typeof Options>>(function OptionsWrapper(props, ref) {
 		return <Options ref={ref} {...props} maxHeight={200} />;
 	});
+
+	if (!hasLicense) {
+		return null;
+	}
 
 	return (
 		<Field>

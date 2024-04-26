@@ -2,13 +2,13 @@ import type {
 	IRoom,
 	IStats,
 	IUser,
-	UiKit,
 	VideoConference,
 	VideoConferenceCapabilities,
 	VideoConferenceCreateData,
 	VideoConferenceInstructions,
 } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type * as UiKit from '@rocket.chat/ui-kit';
 
 export type VideoConferenceJoinOptions = {
 	mic?: boolean;

@@ -22,7 +22,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 	return useQuery(
 		// we need to add uid and username here because `user` is not loaded all at once (see UserProvider -> Meteor.user())
-		['rooms', { type, reference }, { uid: user?._id, username: user?.username }] as const,
+		['rooms', { reference, type }, { uid: user?._id, username: user?.username }] as const,
 		async (): Promise<{ rid: IRoom['_id'] }> => {
 			if ((user && !user.username) || (!user && !allowAnonymousRead)) {
 				throw new NotAuthorizedError();
@@ -75,7 +75,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 
 			const { LegacyRoomManager } = await import('../../../../app/ui-utils/client');
 
-			if (room._id !== reference && type === 'd') {
+			if (reference !== undefined && room._id !== reference && type === 'd') {
 				// Redirect old url using username to rid
 				await LegacyRoomManager.close(type + reference);
 				directRoute.push({ rid: room._id }, (prev) => prev);

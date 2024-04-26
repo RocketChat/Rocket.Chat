@@ -1,25 +1,22 @@
 import { Box, Tag } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { isTruthy } from '../../lib/isTruthy';
-import { useIsEnterprise } from '../hooks/useIsEnterprise';
+import { useLicense } from '../hooks/useLicense';
 
-function PlanTag(): ReactElement {
-	const [plans, setPlans] = useState<string[]>([]);
+const developmentTag = process.env.NODE_ENV === 'development' ? 'Development' : null;
+function PlanTag() {
+	const license = useLicense();
 
-	const { data } = useIsEnterprise();
-
-	useEffect(() => {
-		const developmentTag = process.env.NODE_ENV === 'development' ? 'Development' : null;
-		const enterpriseTag = data?.isEnterprise ? 'Enterprise' : null;
-
-		setPlans([developmentTag, enterpriseTag].filter(isTruthy));
-	}, [setPlans, data?.isEnterprise]);
+	const tags = [
+		developmentTag && { name: developmentTag },
+		...(license.data?.tags ?? []),
+		!license.isLoading && !license.isError && !license.data?.license && { name: 'Community' },
+	].filter(isTruthy);
 
 	return (
 		<>
-			{plans.map((name) => (
+			{tags.map(({ name }) => (
 				<Box marginInline={4} display='inline-block' verticalAlign='middle' key={name}>
 					<Tag variant='primary'>{name}</Tag>
 				</Box>

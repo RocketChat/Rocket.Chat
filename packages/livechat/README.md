@@ -77,6 +77,7 @@ yarn test
 
 # run the storybook
 yarn storybook
+```
 
 ## Screens:
 ![image](https://user-images.githubusercontent.com/5263975/44279585-497b2980-a228-11e8-81a2-36bc3389549e.png)

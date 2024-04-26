@@ -18,7 +18,15 @@ const PeriodSelector = <TPeriod extends Period['key']>({ periods, value, name, o
 
 	const options = useMemo<[string, string][]>(() => periods.map((period) => [period, t(...getPeriod(period).label)]), [periods, t]);
 
-	return <Select name={name} options={options} value={value} onChange={(value): void => onChange(value as TPeriod)} />;
+	return (
+		<Select
+			name={name}
+			options={options}
+			value={value}
+			onChange={(value): void => onChange(value as TPeriod)}
+			aria-label={t('Select_period')}
+		/>
+	);
 };
 
 export default PeriodSelector;

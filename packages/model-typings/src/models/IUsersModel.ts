@@ -9,7 +9,7 @@ import type {
 	AtLeast,
 	ILivechatAgentStatus,
 } from '@rocket.chat/core-typings';
-import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult } from 'mongodb';
+import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult, ModifyResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -76,6 +76,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOneByAppId<T = IUser>(appId: string, options?: FindOptions<IUser>): Promise<T | null>;
 
 	findLDAPUsers<T = IUser>(options?: any): FindCursor<T>;
+
+	findLDAPUsersExceptIds<T = IUser>(userIds: IUser['_id'][], options?: FindOptions<IUser>): FindCursor<T>;
 
 	findConnectedLDAPUsers<T = IUser>(options?: any): FindCursor<T>;
 
@@ -279,8 +281,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	disableEmail2FAByUserId(userId: string): Promise<UpdateResult>;
 	findByIdsWithPublicE2EKey(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	resetE2EKey(userId: string): Promise<UpdateResult>;
-	removeExpiredEmailCodesOfUserId(userId: string): Promise<UpdateResult>;
-	removeEmailCodeByUserIdAndCode(userId: string, code: string): Promise<UpdateResult>;
+	removeExpiredEmailCodeOfUserId(userId: string): Promise<UpdateResult>;
+	removeEmailCodeByUserId(userId: string): Promise<UpdateResult>;
+	increaseInvalidEmailCodeAttempt(userId: string): Promise<UpdateResult>;
+	maxInvalidEmailCodeAttemptsReached(userId: string, maxAttemtps: number): Promise<boolean>;
 	addEmailCodeByUserId(userId: string, code: string, expire: Date): Promise<UpdateResult>;
 	findActiveUsersInRoles(roles: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	countActiveUsersInRoles(roles: string[], options?: FindOptions<IUser>): Promise<number>;
@@ -387,4 +391,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options: FindOptions<IUser>,
 	): Promise<{ sortedResults: (T & { departments: string[] })[]; totalCount: { total: number }[] }[]>;
 	countByRole(roleName: string): Promise<number>;
+	removeEmailCodeOfUserId(userId: string): Promise<UpdateResult>;
+	incrementInvalidEmailCodeAttempt(userId: string): Promise<ModifyResult<IUser>>;
 }

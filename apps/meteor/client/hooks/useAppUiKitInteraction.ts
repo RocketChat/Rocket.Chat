@@ -1,5 +1,5 @@
-import type { UiKit } from '@rocket.chat/core-typings';
 import { useStream, useUserId } from '@rocket.chat/ui-contexts';
+import type * as UiKit from '@rocket.chat/ui-kit';
 import { useEffect } from 'react';
 
 export const useAppUiKitInteraction = (handleServerInteraction: (interaction: UiKit.ServerInteraction) => void) => {
@@ -12,7 +12,6 @@ export const useAppUiKitInteraction = (handleServerInteraction: (interaction: Ui
 		}
 
 		return notifyUser(`${uid}/uiInteraction`, (interaction) => {
-			// @ts-ignore
 			handleServerInteraction(interaction);
 		});
 	}, [notifyUser, uid, handleServerInteraction]);
