@@ -73,7 +73,7 @@ export class ChatTranscript implements IStrategy {
 	}
 
 	parseTemplateData(data: Record<string, unknown | unknown[]>): Data {
-		const x = {
+		return {
 			header: {
 				visitor: data.visitor,
 				agent: data.agent,
@@ -90,7 +90,5 @@ export class ChatTranscript implements IStrategy {
 				: [],
 			t: this.getTranslations(data.translations as Record<string, unknown>[]),
 		};
-
-		return x;
 	}
 }
