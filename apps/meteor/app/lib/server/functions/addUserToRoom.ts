@@ -9,6 +9,7 @@ import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { callbacks } from '../../../../lib/callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 
 export const addUserToRoom = async function (
 	rid: string,
@@ -81,6 +82,7 @@ export const addUserToRoom = async function (
 		userMentions: 1,
 		groupMentions: 0,
 		...autoTranslateConfig,
+		...getDefaultSubscriptionPref(userToBeAdded as IUser),
 	});
 
 	if (!userToBeAdded.username) {

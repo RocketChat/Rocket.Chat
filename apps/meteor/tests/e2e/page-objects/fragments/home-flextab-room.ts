@@ -11,6 +11,10 @@ export class HomeFlextabRoom {
 		return this.page.locator('role=button[name="Edit"]');
 	}
 
+	get btnDelete(): Locator {
+		return this.page.locator('role=button[name="Delete"]');
+	}
+
 	get inputName(): Locator {
 		return this.page.getByRole('dialog').getByRole('textbox', { name: 'Name' });
 	}
