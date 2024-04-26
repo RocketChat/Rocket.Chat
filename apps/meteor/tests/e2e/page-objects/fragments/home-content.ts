@@ -364,7 +364,7 @@ export class HomeContent {
 	}
 
 	get currentGalleryImage(): Locator {
-		return this.page.locator('div[class="swiper-slide swiper-slide-active"]').getByRole('img');
+		return this.page.locator('div[class="swiper-slide swiper-slide-active"] img');
 	}
 
 	findSystemMessage(text: string): Locator {
