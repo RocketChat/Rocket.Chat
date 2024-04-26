@@ -13,7 +13,6 @@ import { syncCloudData } from './syncCloudData';
  */
 export async function syncWorkspace() {
 	try {
-		await getCachedSupportedVersionsToken.reset();
 		await announcementSync();
 		await syncCloudData();
 	} catch (err) {
@@ -33,7 +32,6 @@ export async function syncWorkspace() {
 					function: 'syncCloudData',
 				});
 				try {
-					await getCachedSupportedVersionsToken.reset();
 					await legacySyncWorkspace();
 				} catch (err) {
 					switch (true) {
@@ -52,5 +50,7 @@ export async function syncWorkspace() {
 				}
 			}
 		}
+	} finally {
+		await getCachedSupportedVersionsToken.reset();
 	}
 }
