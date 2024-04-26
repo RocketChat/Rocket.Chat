@@ -1,7 +1,7 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IUser } from '@rocket.chat/core-typings';
 
 export interface ITranslationService {
 	translateText(text: string, targetLanguage: string): Promise<string>;
-	translate(text: string, user: IUser): Promise<string>;
+	translate(text: string, user: AtLeast<IUser, 'language'>): Promise<string>;
 	translateToServerLanguage(text: string): Promise<string>;
 }
