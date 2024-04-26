@@ -97,7 +97,7 @@ test.describe.serial('admin-rooms', () => {
 
 		await page.goto('/admin/rooms');
 
-		const selectDropdown = await admin.dropdownFilterRoomType('Rooms (1)');
-		await expect(selectDropdown).not.toBeVisible();
+		const selectDropdown = await admin.dropdownFilterRoomType('All rooms');
+		await expect(selectDropdown).toBeVisible();
 	});
 });
