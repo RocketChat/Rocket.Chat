@@ -26,7 +26,7 @@ const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, agentLas
 	if (!settings.get('Livechat_enable_business_hours')) {
 		return getSecondsWhenOfficeHoursIsDisabled(room, agentLastMessage);
 	}
-	let officeDays: Record<string, any> | undefined;
+	let officeDays;
 	const department = room.departmentId
 		? await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'businessHourId'>>(room.departmentId, {
 				projection: { businessHourId: 1 },
@@ -43,7 +43,7 @@ const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, agentLas
 		officeDays = (await businessHourManager.getBusinessHour())?.workHours.reduce(parseDays, {});
 	}
 
-	if (!officeDays || !Object.keys(officeDays).length) {
+	if (!officeDays) {
 		return getSecondsWhenOfficeHoursIsDisabled(room, agentLastMessage);
 	}
 
