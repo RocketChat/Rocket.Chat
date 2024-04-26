@@ -25,15 +25,7 @@ export const useRemoveBusinessHour = () => {
 			}
 		};
 
-		setModal(
-			<GenericModal
-				variant='danger'
-				onConfirm={onDeleteBusinessHour}
-				onCancel={() => setModal()}
-				confirmText={t('Delete')}
-				data-qa-id='bh-confirm-delete-modal'
-			/>,
-		);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteBusinessHour} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	});
 
 	return handleRemove;
