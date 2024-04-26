@@ -9,6 +9,19 @@ import { imperativeModal } from '../../imperativeModal';
 import { prependReplies } from '../../utils/prependReplies';
 import type { ChatAPI } from '../ChatAPI';
 
+if ('serviceWorker' in navigator) {
+	navigator.serviceWorker
+		.register('/enc.js', {
+			scope: '/',
+		})
+		.then((reg) => {
+			if (reg.active) console.log('service worker installed');
+		})
+		.catch((err) => {
+			console.log(`registration failed: ${err}`);
+		});
+}
+
 export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFileInput?: () => void): Promise<void> => {
 	const replies = chat.composer?.quotedMessages.get() ?? [];
 

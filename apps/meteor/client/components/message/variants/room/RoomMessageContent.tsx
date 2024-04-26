@@ -1,3 +1,4 @@
+import { Base64 } from '@rocket.chat/base64';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
@@ -46,6 +47,26 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 	const normalizedMessage = useNormalizedMessage(message);
 	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
 
+	if (normalizedMessage?.attachments?.length) {
+		normalizedMessage.attachments.forEach((attachment) => {
+			if (!normalizedMessage.e2e) {
+				return;
+			}
+			console.log(attachment);
+
+			const key = Base64.encode(normalizedMessage.e2e);
+			if (attachment.title_link && !attachment.title_link.startsWith('/file-decrypt/')) {
+				attachment.title_link = `/file-decrypt${attachment.title_link}?key=${key}`;
+			}
+			if (attachment.image_url && !attachment.image_url.startsWith('/file-decrypt/')) {
+				attachment.image_url = `/file-decrypt${attachment.image_url}?key=${key}`;
+			}
+			if (attachment.audio_url && !attachment.audio_url.startsWith('/file-decrypt/')) {
+				attachment.audio_url = `/file-decrypt${attachment.audio_url}?key=${key}`;
+			}
+		});
+	}
+
 	return (
 		<>
 			{!normalizedMessage.blocks?.length && !!normalizedMessage.md?.length && (
@@ -68,12 +89,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 			)}
 
 			{!!normalizedMessage?.attachments?.length && (
-				<Attachments
-					id={message.files?.[0]?._id}
-					attachments={normalizedMessage.attachments}
-					isMessageEncrypted={isMessageEncrypted}
-					message={message}
-				/>
+				<Attachments id={message.files?.[0]?._id} attachments={normalizedMessage.attachments} isMessageEncrypted={isMessageEncrypted} />
 			)}
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}
