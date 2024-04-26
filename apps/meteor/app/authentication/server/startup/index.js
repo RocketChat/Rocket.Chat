@@ -1,4 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
+import { User } from '@rocket.chat/core-services';
 import { Roles, Settings, Users } from '@rocket.chat/models';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
@@ -11,6 +12,7 @@ import { beforeCreateUserCallback } from '../../../../lib/callbacks/beforeCreate
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
+import { getMaxLoginTokens } from '../../../../server/lib/getMaxLoginTokens';
 import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
@@ -263,10 +265,14 @@ Accounts.onCreateUser(function (...args) {
 
 const { insertUserDoc } = Accounts;
 const insertUserDocAsync = async function (options, user) {
-	const globalRoles = [];
+	const globalRoles = new Set();
+
+	if (Match.test(options.globalRoles, [String]) && options.globalRoles.length > 0) {
+		options.globalRoles.map((role) => globalRoles.add(role));
+	}
 
 	if (Match.test(user.globalRoles, [String]) && user.globalRoles.length > 0) {
-		globalRoles.push(...user.globalRoles);
+		user.globalRoles.map((role) => globalRoles.add(role));
 	}
 
 	delete user.globalRoles;
@@ -275,11 +281,12 @@ const insertUserDocAsync = async function (options, user) {
 		const defaultAuthServiceRoles = parseCSV(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles') || '');
 
 		if (defaultAuthServiceRoles.length > 0) {
-			globalRoles.push(...defaultAuthServiceRoles);
+			defaultAuthServiceRoles.map((role) => globalRoles.add(role));
 		}
 	}
 
-	const roles = getNewUserRoles(globalRoles);
+	const arrayGlobalRoles = [...globalRoles];
+	const roles = options.skipNewUserRolesSetting ? arrayGlobalRoles : getNewUserRoles(arrayGlobalRoles);
 
 	if (!user.type) {
 		user.type = 'user';
@@ -324,7 +331,7 @@ const insertUserDocAsync = async function (options, user) {
 	await addUserRolesAsync(_id, roles);
 
 	// Make user's roles to be present on callback
-	user = await Users.findOneById(_id, { projection: { username: 1, type: 1 } });
+	user = await Users.findOneById(_id, { projection: { username: 1, type: 1, roles: 1 } });
 
 	if (user.username) {
 		if (options.joinDefaultChannels !== false) {
@@ -475,20 +482,14 @@ Accounts.validateNewUser((user) => {
 	return true;
 });
 
-export const MAX_RESUME_LOGIN_TOKENS = parseInt(process.env.MAX_RESUME_LOGIN_TOKENS) || 50;
-
 Accounts.onLogin(async ({ user }) => {
 	if (!user || !user.services || !user.services.resume || !user.services.resume.loginTokens || !user._id) {
 		return;
 	}
 
-	if (user.services.resume.loginTokens.length < MAX_RESUME_LOGIN_TOKENS) {
+	if (user.services.resume.loginTokens.length < getMaxLoginTokens()) {
 		return;
 	}
 
-	const { tokens } = (await Users.findAllResumeTokensByUserId(user._id))[0];
-	if (tokens.length >= MAX_RESUME_LOGIN_TOKENS) {
-		const oldestDate = tokens.reverse()[MAX_RESUME_LOGIN_TOKENS - 1];
-		await Users.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
-	}
+	await User.ensureLoginTokensLimit(user._id);
 });

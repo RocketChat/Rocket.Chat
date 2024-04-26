@@ -502,6 +502,7 @@ export class ImportDataConverter {
 					}
 
 					const userId = await this.insertUser(data);
+					data._id = userId;
 					insertedIds.add(userId);
 
 					if (!this._options.skipDefaultChannels) {
