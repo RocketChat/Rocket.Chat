@@ -1,8 +1,11 @@
+import fs from 'fs';
+
 import { PdfWorker } from './index';
 import {
 	bigConversationData,
 	dataWithASingleMessageButAReallyLongMessage,
 	dataWithMultipleMessagesAndABigMessage,
+	dataWithASingleMessageAndAnImage,
 } from './worker.fixtures';
 
 const streamToBuffer = async (stream: NodeJS.ReadableStream) => {
@@ -41,6 +44,14 @@ describe('PdfWorker', () => {
 		const stream = await pdfWorker.renderToStream({ data: dataWithASingleMessageButAReallyLongMessage });
 		const buffer = await streamToBuffer(stream);
 
+		expect(buffer).toBeTruthy();
+	});
+
+	it('should generate a pdf transcript of a single message with an image', async () => {
+		const stream = await pdfWorker.renderToStream({ data: dataWithASingleMessageAndAnImage });
+		const buffer = await streamToBuffer(stream);
+
+		fs.writeFileSync('test.pdf', buffer);
 		expect(buffer).toBeTruthy();
 	});
 
