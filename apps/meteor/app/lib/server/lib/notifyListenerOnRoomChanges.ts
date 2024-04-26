@@ -7,7 +7,7 @@ type ClientAction = 'inserted' | 'updated' | 'removed';
 export async function notifyListenerOnRoomChanges(
 	rid: IRoom['_id'],
 	clientAction: ClientAction = 'updated',
-	existingRoomData?: IRoom | undefined,
+	existingRoomData?: IRoom,
 	args?: { [key: string]: any },
 ): Promise<void> {
 	if (!dbWatchersDisabled) return;

@@ -14,5 +14,5 @@ export const archiveRoom = async function (rid: string, user: IMessage['u']): Pr
 
 	await callbacks.run('afterRoomArchived', room, user);
 
-	void notifyListenerOnRoomChanges(rid, 'updated', room);
+	void notifyListenerOnRoomChanges(rid);
 };
