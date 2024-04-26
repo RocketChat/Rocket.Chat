@@ -217,6 +217,7 @@ export class MessageList extends MemoizedComponent {
 			className={createClassName(styles, 'message-list', {}, [className])}
 			onClick={this.handleClick}
 			style={style}
+			data-qa='message-list'
 		>
 			<ol className={createClassName(styles, 'message-list__content')}>{this.renderItems(this.props)}</ol>
 		</div>

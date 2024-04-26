@@ -10,6 +10,7 @@ import type {
 import { addUserToRoom } from '../../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../../app/lib/server/functions/createRoom';
 import { removeUserFromRoom } from '../../../../app/lib/server/functions/removeUserFromRoom';
+import { setUserActiveStatus } from '../../../../app/lib/server/functions/setUserActiveStatus';
 import { settings } from '../../../../app/settings/server';
 import { getValidRoomName } from '../../../../app/utils/server/lib/getValidRoomName';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
@@ -28,6 +29,7 @@ export class LDAPEEManager extends LDAPManager {
 
 		const createNewUsers = settings.get<boolean>('LDAP_Background_Sync_Import_New_Users') ?? true;
 		const updateExistingUsers = settings.get<boolean>('LDAP_Background_Sync_Keep_Existant_Users_Updated') ?? true;
+		let disableMissingUsers = updateExistingUsers && (settings.get<boolean>('LDAP_Background_Sync_Disable_Missing_Users') ?? false);
 		const mergeExistingUsers = settings.get<boolean>('LDAP_Background_Sync_Merge_Existent_Users') ?? false;
 
 		const options = this.getConverterOptions();
@@ -36,6 +38,7 @@ export class LDAPEEManager extends LDAPManager {
 
 		const ldap = new LDAPConnection();
 		const converter = new LDAPDataConverter(true, options);
+		const touchedUsers = new Set<IUser['_id']>();
 
 		try {
 			await ldap.connect();
@@ -43,7 +46,9 @@ export class LDAPEEManager extends LDAPManager {
 			if (createNewUsers || mergeExistingUsers) {
 				await this.importNewUsers(ldap, converter);
 			} else if (updateExistingUsers) {
-				await this.updateExistingUsers(ldap, converter);
+				await this.updateExistingUsers(ldap, converter, disableMissingUsers);
+				// Missing users will have been disabled automatically by the update operation, so no need to do a separate query for them
+				disableMissingUsers = false;
 			}
 
 			const membersOfGroupFilter = await ldap.searchMembersOfGroupFilter();
@@ -60,9 +65,17 @@ export class LDAPEEManager extends LDAPManager {
 
 					return membersOfGroupFilter.includes(memberFormat);
 				}) as ImporterBeforeImportCallback,
-				afterImportFn: (async ({ data }, isNewRecord: boolean): Promise<void> =>
-					this.advancedSync(ldap, data as IImportUser, converter, isNewRecord)) as ImporterAfterImportCallback,
+				afterImportFn: (async ({ data }, isNewRecord: boolean): Promise<void> => {
+					if (data._id) {
+						touchedUsers.add(data._id);
+					}
+					await this.advancedSync(ldap, data as IImportUser, converter, isNewRecord);
+				}) as ImporterAfterImportCallback,
 			});
+
+			if (disableMissingUsers) {
+				await this.disableMissingUsers([...touchedUsers]);
+			}
 		} catch (error) {
 			logger.error(error);
 		}
@@ -579,7 +592,7 @@ export class LDAPEEManager extends LDAPManager {
 		});
 	}
 
-	private static async updateExistingUsers(ldap: LDAPConnection, converter: LDAPDataConverter): Promise<void> {
+	private static async updateExistingUsers(ldap: LDAPConnection, converter: LDAPDataConverter, disableMissingUsers = false): Promise<void> {
 		const users = await Users.findLDAPUsers().toArray();
 		for await (const user of users) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
@@ -587,8 +600,16 @@ export class LDAPEEManager extends LDAPManager {
 			if (ldapUser) {
 				const userData = this.mapUserData(ldapUser, user.username);
 				converter.addUserSync(userData, { dn: ldapUser.dn, username: this.getLdapUsername(ldapUser) });
+			} else if (disableMissingUsers) {
+				await setUserActiveStatus(user._id, false, true);
 			}
 		}
+	}
+
+	private static async disableMissingUsers(foundUsers: IUser['_id'][]): Promise<void> {
+		const userIds = (await Users.findLDAPUsersExceptIds(foundUsers, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id);
+
+		await Promise.allSettled(userIds.map((id) => setUserActiveStatus(id, false, true)));
 	}
 
 	private static async updateUserAvatars(ldap: LDAPConnection): Promise<void> {

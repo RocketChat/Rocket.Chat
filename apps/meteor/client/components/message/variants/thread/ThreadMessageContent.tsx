@@ -1,5 +1,6 @@
 import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
+import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -36,6 +37,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 	const t = useTranslation();
 
 	const normalizedMessage = useNormalizedMessage(message);
+	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
 
 	return (
 		<>
@@ -44,7 +46,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 					{(!encrypted || normalizedMessage.e2e === 'done') && (
 						<MessageContentBody md={normalizedMessage.md} mentions={normalizedMessage.mentions} channels={normalizedMessage.channels} />
 					)}
-					{encrypted && normalizedMessage.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
+					{isMessageEncrypted && <MessageBody>{t('E2E_message_encrypted_placeholder')}</MessageBody>}
 				</>
 			)}
 
@@ -52,7 +54,13 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />
 			)}
 
-			{normalizedMessage.attachments && <Attachments attachments={normalizedMessage.attachments} id={normalizedMessage.files?.[0]._id} />}
+			{normalizedMessage.attachments && (
+				<Attachments
+					attachments={normalizedMessage.attachments}
+					id={normalizedMessage.files?.[0]._id}
+					isMessageEncrypted={isMessageEncrypted}
+				/>
+			)}
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}
 
