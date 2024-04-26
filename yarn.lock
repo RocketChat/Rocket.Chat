@@ -7140,7 +7140,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-pdf/renderer@npm:^3.1.14":
+"@react-pdf/renderer@npm:3.1.14, @react-pdf/renderer@npm:^3.1.14":
   version: 3.1.14
   resolution: "@react-pdf/renderer@npm:3.1.14"
   dependencies:
@@ -9721,7 +9721,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/pdf-worker@workspace:ee/packages/pdf-worker"
   dependencies:
-    "@react-pdf/renderer": ^3.1.14
+    "@react-pdf/renderer": 3.1.14
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/fuselage-tokens": ^0.33.1
     "@storybook/addon-essentials": ~6.5.16
