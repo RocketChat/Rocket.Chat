@@ -794,12 +794,6 @@
 	& .editing .body {
 		border-radius: var(--border-radius);
 	}
-
-	&.has-leader {
-		& .wrapper {
-			padding-top: 57px;
-		}
-	}
 }
 
 .rcx-message {

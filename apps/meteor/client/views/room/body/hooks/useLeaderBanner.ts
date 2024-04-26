@@ -17,11 +17,14 @@ export const useLeaderBanner = () => {
 		node.addEventListener(
 			'scroll',
 			withThrottling({ wait: 100 })((event) => {
-				const roomLeader = wrapperBoxRef.current?.querySelector('.room-leader');
+				const roomLeader = wrapperBoxRef.current?.querySelector('.rcx-header-section');
+
 				if (roomLeader) {
-					if (event.target.scrollTop < lastScrollTopRef) {
+					if (isAtBottom(node, 0)) {
 						setHideLeaderHeader(false);
-					} else if (isAtBottom(node, 100) === false && event.target.scrollTop > parseFloat(getComputedStyle(roomLeader).height)) {
+					} else if (event.target.scrollTop < lastScrollTopRef) {
+						setHideLeaderHeader(true);
+					} else if (!isAtBottom(node, 100) && event.target.scrollTop > parseFloat(getComputedStyle(roomLeader).height)) {
 						setHideLeaderHeader(true);
 					}
 				}

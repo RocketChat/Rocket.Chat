@@ -82,16 +82,6 @@ const RoomHeader = ({ room, topic = '', slots = {}, roomLeader }: RoomHeaderProp
 				</Suspense>
 				{slots?.end}
 			</HeaderSection>
-			{(topic || roomLeader) && (
-				<HeaderSection>
-					<HeaderContentRow>
-						<HeaderSubtitle is='h2' flexGrow={1}>
-							<MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />
-						</HeaderSubtitle>
-						{roomLeader && <RoomLeader {...roomLeader} />}
-					</HeaderContentRow>
-				</HeaderSection>
-			)}
 		</Header>
 	);
 };

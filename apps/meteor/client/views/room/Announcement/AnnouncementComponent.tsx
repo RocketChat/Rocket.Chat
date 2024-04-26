@@ -29,7 +29,7 @@ const AnnouncementComponent: FC<AnnouncementComponentParams> = ({ children, onCl
 	return (
 		<Box
 			onClick={onClickOpen}
-			height='x40'
+			height='x44'
 			pi={24}
 			alignItems='center'
 			display='flex'

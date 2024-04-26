@@ -19,6 +19,7 @@ export const HeaderSection = (props: ComponentProps<typeof Box>) => {
 				alignItems='center'
 				overflow='hidden'
 				flexDirection='row'
+				bg='room'
 				{...props}
 			/>
 			<HeaderDivider />

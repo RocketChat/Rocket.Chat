@@ -4,9 +4,11 @@ import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPre
 import type { MouseEventHandler, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo, useRef } from 'react';
 
+import { RoomRoles } from '../../../../app/models/client';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
+import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import Announcement from '../Announcement';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
@@ -29,12 +31,17 @@ import { useFileUpload } from './hooks/useFileUpload';
 import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
+import { useLeaderBanner } from './hooks/useLeaderBanner';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useHandleUnread } from './hooks/useUnreadMessages';
+import { HeaderContentRow, HeaderSection, HeaderSubtitle } from '@rocket.chat/ui-client';
+import MarkdownText from '/client/components/MarkdownText';
+import { RoomLeader } from '../Header/RoomLeader';
+import { css } from '@rocket.chat/css-in-js';
 
 const RoomBody = (): ReactElement => {
 	const chat = useChat();
@@ -80,6 +87,8 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
+	const useRealName = useSetting('UI_Use_Real_Name') as boolean;
+
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
 
 	const {
@@ -95,6 +104,8 @@ const RoomBody = (): ReactElement => {
 	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom } = useListIsAtBottom();
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
+
+	const { wrapperRef: leaderBannerWrapperRef, hideLeaderHeader, innerRef: leaderBannerInnerRef } = useLeaderBanner();
 
 	const {
 		uploads,
@@ -120,11 +131,14 @@ const RoomBody = (): ReactElement => {
 		restoreScrollPositionInnerRef,
 		isAtBottomInnerRef,
 		newMessagesScrollRef,
+		leaderBannerInnerRef,
 		unreadBarInnerRef,
 		getMoreInnerRef,
 
 		messageListRef,
 	);
+
+	const wrapperBoxRefs = useMergedRefs(unreadBarWrapperRef);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat.messageEditing.toPreviousMessage();
@@ -170,9 +184,45 @@ const RoomBody = (): ReactElement => {
 	useReadMessageWindowEvents();
 	useQuoteMessageByUrl();
 
+	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], () => {
+		const leaderRoomRole = RoomRoles.findOne({
+			'rid': room._id,
+			'roles': 'leader',
+			'u._id': { $ne: user?._id },
+		});
+
+		if (!leaderRoomRole) {
+			return null;
+		}
+
+		return {
+			...leaderRoomRole.u,
+			name: useRealName ? leaderRoomRole.u.name || leaderRoomRole.u.username : leaderRoomRole.u.username,
+		};
+	});
+
+	const headerSectionStyle = css`
+		&.animated-hidden {
+			height: 0px !important;
+		}
+		height: 44px !important;
+	`;
 	return (
 		<>
+			<Box animated rcx-header-section__wrapper className={[headerSectionStyle, hideLeaderHeader && 'animated-hidden'].filter(isTruthy)} ref={leaderBannerWrapperRef}>
+				{(room.topic || roomLeader) && (
+					<HeaderSection className='rcx-header-section'>
+						<HeaderContentRow>
+							<HeaderSubtitle is='h2' flexGrow={1}>
+								<MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={room.topic} />
+							</HeaderSubtitle>
+							{roomLeader && <RoomLeader {...roomLeader} />}
+						</HeaderContentRow>
+					</HeaderSection>
+				)}
+			</Box>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
+
 			<Box key={room._id} className={['main-content-flex', listStyle]}>
 				<section
 					role='presentation'
@@ -181,9 +231,9 @@ const RoomBody = (): ReactElement => {
 					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
-						<div className='messages-container-main' ref={unreadBarWrapperRef} {...fileUploadTriggerProps}>
+						<div className='messages-container-main' ref={wrapperBoxRefs} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
-							<Box position='absolute' w='full'>
+							<Box position='absolute' w='full' zIndex={12}>
 								<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
 									{uploads.map((upload) => (
 										<UploadProgressIndicator
@@ -207,7 +257,7 @@ const RoomBody = (): ReactElement => {
 								<BubbleDate ref={bubbleRef} {...bubbleDate} />
 							</Box>
 
-							<div className='messages-box'>
+							<div className={['messages-box'].filter(isTruthy).join(' ')}>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
 								<JumpToRecentMessageButton
 									visible={hasMoreNextMessages}
