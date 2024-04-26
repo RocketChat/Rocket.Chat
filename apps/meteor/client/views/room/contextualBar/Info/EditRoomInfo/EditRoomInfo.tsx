@@ -23,10 +23,11 @@ import {
 import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { FormEvent } from 'react';
 import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
+import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypesValues';
 import {
 	ContextualbarHeader,
 	ContextualbarBack,
@@ -54,6 +55,18 @@ const title = {
 	discussion: 'Edit_discussion' as TranslationKey,
 };
 
+const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string => {
+	switch (roomType) {
+		case 'd':
+			return 'RetentionPolicy_MaxAge_DMs';
+		case 'p':
+			return 'RetentionPolicy_MaxAge_Groups';
+		case 'c':
+		default:
+			return 'RetentionPolicy_MaxAge_Channels';
+	}
+};
+
 const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -62,6 +75,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const roomType = 'prid' in room ? 'discussion' : room.teamId ? 'team' : 'channel';
 
 	const retentionPolicy = useSetting<boolean>('RetentionPolicy_Enabled');
+	const retentionPolicyMaxAgeGlobal = useSetting<boolean>(getRetentionSetting(room.t));
 	const defaultValues = useEditRoomInitialValues(room);
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
@@ -103,6 +117,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		reactWhenReadOnly,
 	} = watch();
 
+	console.log({ retentionMaxAge });
 	const {
 		canChangeType,
 		canSetReadOnly,
@@ -468,7 +483,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												<RawText>{t('RetentionPolicyRoom_ReadTheDocs')}</RawText>
 											</Callout>
 											<Field>
-												<FieldLabel htmlFor={retentionMaxAgeField}>{t('RetentionPolicyRoom_MaxAge', { max: retentionMaxAge })}</FieldLabel>
+												<FieldLabel htmlFor={retentionMaxAgeField}>
+													{t('RetentionPolicyRoom_MaxAge', { max: retentionPolicyMaxAgeGlobal })}
+												</FieldLabel>
 												<FieldRow>
 													<Controller
 														control={control}
@@ -477,7 +494,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 															<NumberInput
 																id={retentionMaxAgeField}
 																{...field}
-																onChange={(currentValue) => onChange(Math.max(1, Number(currentValue)))}
+																onChange={(e: FormEvent<HTMLInputElement>) => {
+																	return onChange(Math.max(1, Number(e.currentTarget.value)));
+																}}
 															/>
 														)}
 													/>
