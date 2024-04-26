@@ -23,12 +23,14 @@ test.describe('OC - Business Hours', () => {
 		department = await createDepartment(api);
     agent = await createAgent(api, 'user2');
     await api.post('/settings/Livechat_enable_business_hours', { value: true }).then((res) => expect(res.status()).toBe(200));
+    await api.post('/settings/Livechat_business_hour_type', { value: 'Multiple' }).then((res) => expect(res.status()).toBe(200));
 	});
 
 	test.afterAll(async ({ api }) => {
 		await department.delete();
 		await agent.delete();
     await api.post('/settings/Livechat_enable_business_hours', { value: false }).then((res) => expect(res.status()).toBe(200));
+    await api.post('/settings/Livechat_business_hour_type', { value: 'Single' }).then((res) => expect(res.status()).toBe(200));
 	});
 
   test.beforeEach(async ({ page }: { page: Page }) => {
@@ -62,7 +64,7 @@ test.describe('OC - Business Hours', () => {
 			});
 		});
 
-    await test.step('expect confirm delete business hours', async () => {
+    await test.step('expect to be able to delete business hours', async () => {
       await test.step('expect to be able to cancel delete', async () => {
         await poOmnichannelBusinessHours.btnDeleteByName(BHName).click();
         await expect(poOmnichannelBusinessHours.confirmDeleteModal).toBeVisible();

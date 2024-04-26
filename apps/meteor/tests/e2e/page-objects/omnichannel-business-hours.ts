@@ -32,15 +32,15 @@ export class OmnichannelBusinessHours extends OmnichannelAdministration {
 	}
 
   findRowByName(name: string): Locator {
-		return this.page.locator(`tr[data-qa-id="${name}"]`);
+		return this.page.locator(`tr:has-text("${name}")`);
 	}
 
   btnDeleteByName(name: string): Locator {
-		return this.page.locator(`button[data-qa-id="remove-bh-${name}"]`);
+		return this.page.locator(`tr:has-text("${name}") button[title="Remove"]`);
 	}
 
   get confirmDeleteModal(): Locator {
-		return this.page.locator('dialog[data-qa-id="bh-confirm-delete-modal"]');
+		return this.page.locator('dialog:has(h2:has-text("Are you sure?"))');
 	}
 
   get btnCancelDeleteModal(): Locator {
