@@ -49,7 +49,7 @@ export const parseFileIntoMessageAttachments = async (
 		e2e = JSON.parse(msgData.e2e);
 	}
 
-	if (e2e.type) {
+	if (e2e?.type) {
 		file.type = e2e.type;
 	}
 

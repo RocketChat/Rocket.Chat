@@ -61,14 +61,9 @@ const send = async (
 	try {
 		await new Promise((resolve, reject) => {
 			const xhr = sdk.rest.upload(
-				`/v1/rooms.upload/${rid}`,
+				`/v1/rooms.media/${rid}`,
 				{
-					msg,
-					tmid,
 					file,
-					description,
-					t,
-					e2e,
 				},
 				{
 					load: (event) => {
@@ -114,6 +109,19 @@ const send = async (
 					},
 				},
 			);
+
+			xhr.onload = async () => {
+				if (xhr.readyState === xhr.DONE && xhr.status === 200) {
+					const result = JSON.parse(xhr.responseText);
+					await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${result.file._id}`, {
+						msg,
+						tmid,
+						description,
+						t,
+						e2e,
+					});
+				}
+			};
 
 			if (uploads.length) {
 				UserAction.performContinuously(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });

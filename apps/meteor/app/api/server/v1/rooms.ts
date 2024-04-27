@@ -6,6 +6,7 @@ import { isGETRoomsNameExists, isRoomsImagesProps, isRoomsMuteUnmuteUserProps } 
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
+import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/methods/eraseRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
@@ -139,6 +140,7 @@ API.v1.addRoute(
 	},
 );
 
+// TODO: deprecate API
 API.v1.addRoute(
 	'rooms.upload/:rid',
 	{ authRequired: true },
@@ -186,6 +188,88 @@ API.v1.addRoute(
 			await sendFileMessage(this.userId, { roomId: this.urlParams.rid, file: uploadedFile, msgData: fields });
 
 			const message = await Messages.getMessageByFileIdAndUsername(uploadedFile._id, this.userId);
+
+			return API.v1.success({
+				message,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.media/:rid',
+	{ authRequired: true },
+	{
+		async post() {
+			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
+				return API.v1.unauthorized();
+			}
+
+			const file = await getUploadFormData(
+				{
+					request: this.request,
+				},
+				{ field: 'file', sizeLimit: settings.get<number>('FileUpload_MaxFileSize') },
+			);
+
+			if (!file) {
+				throw new Meteor.Error('invalid-field');
+			}
+
+			let { fileBuffer } = file;
+
+			const details = {
+				name: file.filename,
+				size: fileBuffer.length,
+				type: file.mimetype,
+				rid: this.urlParams.rid,
+				userId: this.userId,
+			};
+
+			const stripExif = settings.get('Message_Attachments_Strip_Exif');
+			if (stripExif) {
+				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
+				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
+			}
+
+			const fileStore = FileUpload.getStore('Uploads');
+			const uploadedFile = await fileStore.insert(details, fileBuffer);
+
+			await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
+
+			const fileUrl = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
+
+			return API.v1.success({
+				file: {
+					_id: uploadedFile._id,
+					url: fileUrl,
+				},
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.mediaConfirm/:rid/:fileId',
+	{ authRequired: true },
+	{
+		async post() {
+			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
+				return API.v1.unauthorized();
+			}
+
+			const file = await Uploads.findOneById(this.urlParams.fileId);
+
+			if (!file) {
+				throw new Meteor.Error('invalid-file');
+			}
+
+			file.description = this.bodyParams.description;
+			delete this.bodyParams.description;
+
+			await sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams });
+
+			const message = await Messages.getMessageByFileIdAndUsername(file._id, this.userId);
 
 			return API.v1.success({
 				message,

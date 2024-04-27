@@ -600,6 +600,25 @@ export type RoomsEndpoints = {
 		}) => { message: IMessage | null };
 	};
 
+	'/v1/rooms.media/:rid': {
+		POST: (params: { file: File }) => { file: { url: string } };
+	};
+
+	'/v1/rooms.mediaConfirm/:rid/:fileId': {
+		POST: (params: {
+			description?: string;
+			avatar?: string;
+			emoji?: string;
+			alias?: string;
+			groupable?: boolean;
+			msg?: string;
+			tmid?: string;
+			customFields?: string;
+			t?: IMessage['t'];
+			e2e?: IMessage['e2e'];
+		}) => { message: IMessage | null };
+	};
+
 	'/v1/rooms.saveNotification': {
 		POST: (params: { roomId: string; notifications: Notifications }) => void;
 	};

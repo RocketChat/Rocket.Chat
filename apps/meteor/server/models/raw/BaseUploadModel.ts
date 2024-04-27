@@ -34,6 +34,8 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.insertOne(fileData);
 	}
 
+	// TODO: upload as temporary, create a cron to delete non used ones and a way to mark as used
+
 	updateFileComplete(fileId: string, userId: string, file: object): Promise<Document | UpdateResult> | undefined {
 		if (!fileId) {
 			return;
