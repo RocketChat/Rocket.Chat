@@ -6,6 +6,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { notifyListenerOnRoomChanges } from '../../app/lib/server/lib/notifyListenerOnRoomChanges';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
@@ -75,6 +76,7 @@ export const unmuteUserInRoom = async (fromId: string, data: { rid: IRoom['_id']
 
 	setImmediate(() => {
 		void callbacks.run('afterUnmuteUser', { unmutedUser, fromUser }, room);
+		void notifyListenerOnRoomChanges(data.rid);
 	});
 
 	return true;

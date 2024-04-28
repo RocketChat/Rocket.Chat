@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { notifyListenerOnRoomChanges } from '../../../lib/server/lib/notifyListenerOnRoomChanges';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -44,5 +45,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		await Rooms.setE2eKeyId(room._id, keyID);
+
+		void notifyListenerOnRoomChanges(room._id);
 	},
 });

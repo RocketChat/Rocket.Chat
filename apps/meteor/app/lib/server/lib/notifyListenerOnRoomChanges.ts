@@ -22,8 +22,6 @@ export async function notifyListenerOnRoomChanges(
 export async function notifyListenerOnRoomsChanges(rooms: IRoom[], clientAction: ClientAction = 'updated'): Promise<void> {
 	if (!dbWatchersDisabled) return;
 	if (!rooms.length) return;
-
 	void notifyListenerOnRoomChanges(rooms[0]._id, clientAction, rooms[0]);
-
 	return notifyListenerOnRoomsChanges(rooms.slice(1), clientAction);
 }

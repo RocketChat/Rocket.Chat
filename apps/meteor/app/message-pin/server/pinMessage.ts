@@ -12,6 +12,7 @@ import { broadcastMessageFromData } from '../../../server/modules/watchers/lib/m
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
+import { notifyListenerOnRoomChanges } from '../../lib/server/lib/notifyListenerOnRoomChanges';
 import { settings } from '../../settings/server';
 import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
@@ -116,6 +117,7 @@ Meteor.methods<ServerMethods>({
 		}
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
+			void notifyListenerOnRoomChanges(room._id);
 		}
 
 		const attachments: MessageAttachment[] = [];
@@ -213,6 +215,7 @@ Meteor.methods<ServerMethods>({
 
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
+			void notifyListenerOnRoomChanges(room._id);
 		}
 
 		// App IPostMessagePinned event hook

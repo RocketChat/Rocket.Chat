@@ -13,6 +13,7 @@ import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
+import { notifyListenerOnRoomChanges } from '../../lib/server/lib/notifyListenerOnRoomChanges';
 
 const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
 	if (!message.reactions) {
@@ -74,6 +75,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 			delete message.reactions;
 			if (isTheLastMessage(room, message)) {
 				await Rooms.unsetReactionsInLastMessage(room._id);
+				void notifyListenerOnRoomChanges(room._id);
 			}
 			await Messages.unsetReactions(message._id);
 		} else {
@@ -99,6 +101,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		await Messages.setReactions(message._id, message.reactions);
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setReactionsInLastMessage(room._id, message.reactions);
+			void notifyListenerOnRoomChanges(room._id);
 		}
 		await callbacks.run('setReaction', message._id, reaction);
 		await callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
