@@ -37,14 +37,12 @@ const send = async (
 		rid,
 		tmid,
 		t,
-		e2e,
 	}: {
 		description?: string;
 		msg?: string;
 		rid: string;
 		tmid?: string;
 		t?: IMessage['t'];
-		e2e?: IMessage['e2e'];
 	},
 	getContent?: (fileId: string, fileUrl: string) => Promise<string>,
 ): Promise<void> => {
@@ -124,7 +122,6 @@ const send = async (
 						tmid,
 						description,
 						t,
-						e2e,
 						content,
 					});
 				}
@@ -169,7 +166,7 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 	cancel,
 	send: (
 		file: File,
-		{ description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] },
+		{ description, msg, t }: { description?: string; msg?: string; t?: IMessage['t'] },
 		getContent?: (fileId: string, fileUrl: string) => Promise<string>,
-	): Promise<void> => send(file, { description, msg, rid, tmid, t, e2e }, getContent),
+	): Promise<void> => send(file, { description, msg, rid, tmid, t }, getContent),
 });

@@ -1,6 +1,5 @@
 import type { IMessage, FileAttachmentProps } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { Random } from '@rocket.chat/random';
 import { EJSON } from 'meteor/ejson';
 
 import { e2e } from '../../../../app/e2e/client';
