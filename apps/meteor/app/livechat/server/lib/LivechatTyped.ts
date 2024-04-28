@@ -57,6 +57,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
+import { notifyListenerOnRoomChanges } from '../../../lib/server/lib/notifyListenerOnRoomChanges';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
@@ -1806,6 +1807,8 @@ class LivechatClass {
 				LivechatInquiry.setNameByRoomId(rid, name),
 				Subscriptions.updateDisplayNameByRoomId(rid, name),
 			]);
+
+			void notifyListenerOnRoomChanges(rid);
 
 			return true;
 		}
