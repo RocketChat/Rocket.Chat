@@ -47,19 +47,11 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 	const normalizedMessage = useNormalizedMessage(message);
 	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
 
-	if (normalizedMessage.content) {
-		// TODO: decrypt
-		const content = JSON.parse(normalizedMessage.content);
-		normalizedMessage.attachments = content.attachments;
-		normalizedMessage.fileInfo = content.file;
-	}
-
 	if (normalizedMessage?.attachments?.length) {
 		normalizedMessage.attachments.forEach((attachment) => {
 			if (!normalizedMessage.fileInfo) {
 				return;
 			}
-			console.log(attachment);
 
 			const key = Base64.encode(JSON.stringify(normalizedMessage.fileInfo));
 			if (attachment.title_link && !attachment.title_link.startsWith('/file-decrypt/')) {

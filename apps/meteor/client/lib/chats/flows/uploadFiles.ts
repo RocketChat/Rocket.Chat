@@ -1,6 +1,7 @@
 import type { IMessage, FileAttachmentProps } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
+import { EJSON } from 'meteor/ejson';
 
 import { e2e } from '../../../../app/e2e/client';
 import { fileUploadIsValidContentType } from '../../../../app/utils/client';
@@ -139,16 +140,19 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 								});
 							}
 
-							// TODO: Encrypt content
-							return JSON.stringify({
-								file: {
-									// url
-									key: encryptedFile.key,
-									iv: encryptedFile.iv,
-									type: file.type,
-								},
-								attachments,
-							});
+							const data = new TextEncoder('UTF-8').encode(
+								EJSON.stringify({
+									file: {
+										// url
+										key: encryptedFile.key,
+										iv: encryptedFile.iv,
+										type: file.type,
+									},
+									attachments,
+								}),
+							);
+
+							return e2eRoom.encryptText(data);
 						};
 
 						uploadFile(

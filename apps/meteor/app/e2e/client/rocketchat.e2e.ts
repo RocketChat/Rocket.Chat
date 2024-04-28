@@ -422,6 +422,13 @@ class E2E extends Emitter {
 
 		const data = await e2eRoom.decrypt(message.msg);
 
+		if (message.content) {
+			const content = await e2eRoom.decrypt(message.content);
+			message.content = content;
+			message.attachments = content.attachments;
+			message.fileInfo = content.file;
+		}
+
 		const decryptedMessage: IE2EEMessage = {
 			...message,
 			...(data && {
