@@ -33,7 +33,6 @@ export const parseFileIntoMessageAttachments = async (
 	file: Partial<IUpload>,
 	roomId: string,
 	user: IUser,
-	msgData?: Record<string, any>,
 ): Promise<FilesAndAttachments> => {
 	validateFileRequiredFields(file);
 
@@ -193,7 +192,7 @@ export const sendFileMessage = async (
 		}),
 	);
 
-	const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user, msgData);
+	const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
 
 	const msg = await executeSendMessage(userId, {
 		rid: roomId,
