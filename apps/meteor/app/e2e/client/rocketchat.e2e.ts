@@ -439,50 +439,7 @@ class E2E extends Emitter {
 
 		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
 
-		const decryptedMessageWithAttachments = await this.decryptMessageAttachments(decryptedMessageWithQuote);
-
-		return decryptedMessageWithAttachments;
-	}
-
-	async decryptMessageAttachments(message: IMessage): Promise<IMessage> {
-		const { attachments } = message;
-
-		if (!attachments || !attachments.length) {
-			return message;
-		}
-
-		const e2eRoom = await this.getInstanceByRoomId(message.rid);
-
-		if (!e2eRoom) {
-			return message;
-		}
-
-		const decryptedAttachments = await Promise.all(
-			attachments.map(async (attachment) => {
-				if (!isFileAttachment(attachment)) {
-					return attachment;
-				}
-
-				if (!attachment.description) {
-					return attachment;
-				}
-
-				const data = await e2eRoom.decrypt(attachment.description);
-
-				if (!data) {
-					return attachment;
-				}
-
-				attachment.description = data.text;
-				return attachment;
-			}),
-		);
-
-		return {
-			...message,
-			attachments: decryptedAttachments,
-			e2e: 'done',
-		};
+		return decryptedMessageWithQuote;
 	}
 
 	async decryptPendingMessages(): Promise<void> {
