@@ -31,7 +31,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 
 	const queue = [...files];
 
-	const uploadFile = (file: File, description?: string, extraData?: Pick<IMessage, 't' | 'e2e'>) => {
+	const uploadFile = (file: File, description?: string, extraData?: Pick<IMessage, 't' | 'e2e' | 'content'>) => {
 		chat.uploads.send(file, {
 			description,
 			msg,
@@ -88,10 +88,14 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					if (encryptedFile) {
 						uploadFile(encryptedFile.file, encryptedDescription, {
 							t: 'e2e',
-							e2e: JSON.stringify({
-								key: encryptedFile.key,
-								iv: encryptedFile.iv,
-								type: file.type,
+							// TODO: Encrypt content
+							content: JSON.stringify({
+								file: {
+									// url
+									key: encryptedFile.key,
+									iv: encryptedFile.iv,
+									type: file.type,
+								},
 							}),
 						});
 					}

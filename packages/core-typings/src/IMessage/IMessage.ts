@@ -223,6 +223,8 @@ export interface IMessage extends IRocketChatRecord {
 	};
 
 	customFields?: IMessageCustomFields;
+
+	content?: string;
 }
 
 export type MessageSystem = {

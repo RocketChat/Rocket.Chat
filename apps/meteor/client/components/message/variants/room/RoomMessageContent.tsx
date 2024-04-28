@@ -49,12 +49,14 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 
 	if (normalizedMessage?.attachments?.length) {
 		normalizedMessage.attachments.forEach((attachment) => {
-			if (!normalizedMessage.e2e) {
+			if (!normalizedMessage.content) {
 				return;
 			}
 			console.log(attachment);
 
-			const key = Base64.encode(normalizedMessage.e2e);
+			const content = JSON.parse(normalizedMessage.content);
+
+			const key = Base64.encode(JSON.stringify(content.file));
 			if (attachment.title_link && !attachment.title_link.startsWith('/file-decrypt/')) {
 				attachment.title_link = `/file-decrypt${attachment.title_link}?key=${key}`;
 			}

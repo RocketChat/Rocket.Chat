@@ -43,14 +43,12 @@ export const parseFileIntoMessageAttachments = async (
 
 	const attachments: MessageAttachment[] = [];
 
-	let e2e;
-	console.log(msgData?.e2e);
-	if (msgData?.e2e) {
-		e2e = JSON.parse(msgData.e2e);
-	}
+	if (msgData?.content) {
+		const content = JSON.parse(msgData.content);
 
-	if (e2e?.type) {
-		file.type = e2e.type;
+		if (content?.file.type) {
+			file.type = content?.file.type;
+		}
 	}
 
 	const files = [
@@ -199,6 +197,7 @@ export const sendFileMessage = async (
 			customFields: Match.Optional(String),
 			t: Match.Optional(String),
 			e2e: Match.Optional(String),
+			content: Match.Optional(String),
 		}),
 	);
 
