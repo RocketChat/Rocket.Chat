@@ -440,7 +440,7 @@ export class E2ERoom extends Emitter {
 		return {
 			...message,
 			msg: data.text,
-			// e2e: 'done',
+			e2e: 'done',
 		};
 	}
 

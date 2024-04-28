@@ -426,7 +426,7 @@ class E2E extends Emitter {
 			...message,
 			...(data && {
 				msg: data.text,
-				// e2e: 'done',
+				e2e: 'done',
 			}),
 		};
 
@@ -474,7 +474,7 @@ class E2E extends Emitter {
 		return {
 			...message,
 			attachments: decryptedAttachments,
-			// e2e: 'done',
+			e2e: 'done',
 		};
 	}
 
