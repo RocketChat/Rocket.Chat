@@ -1,6 +1,14 @@
 import { Base64 } from '@rocket.chat/base64';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage } from '@rocket.chat/core-typings';
+import {
+	isDiscussionMessage,
+	isThreadMainMessage,
+	isE2EEMessage,
+	isFileImageAttachment,
+	isFileAttachment,
+	isFileAudioAttachment,
+	isFileVideoAttachment,
+} from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
@@ -49,19 +57,25 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 
 	if (normalizedMessage?.attachments?.length) {
 		normalizedMessage.attachments.forEach((attachment) => {
-			if (!normalizedMessage.content) {
+			if (!normalizedMessage.content || typeof normalizedMessage.content === 'string') {
 				return;
 			}
 
 			const key = Base64.encode(JSON.stringify(normalizedMessage.content.file));
-			if (attachment.title_link && !attachment.title_link.startsWith('/file-decrypt/')) {
-				attachment.title_link = `/file-decrypt${attachment.title_link}?key=${key}`;
-			}
-			if (attachment.image_url && !attachment.image_url.startsWith('/file-decrypt/')) {
-				attachment.image_url = `/file-decrypt${attachment.image_url}?key=${key}`;
-			}
-			if (attachment.audio_url && !attachment.audio_url.startsWith('/file-decrypt/')) {
-				attachment.audio_url = `/file-decrypt${attachment.audio_url}?key=${key}`;
+
+			if (isFileAttachment(attachment)) {
+				if (attachment.title_link && !attachment.title_link.startsWith('/file-decrypt/')) {
+					attachment.title_link = `/file-decrypt${attachment.title_link}?key=${key}`;
+				}
+				if (isFileImageAttachment(attachment) && !attachment.image_url.startsWith('/file-decrypt/')) {
+					attachment.image_url = `/file-decrypt${attachment.image_url}?key=${key}`;
+				}
+				if (isFileAudioAttachment(attachment) && !attachment.audio_url.startsWith('/file-decrypt/')) {
+					attachment.audio_url = `/file-decrypt${attachment.audio_url}?key=${key}`;
+				}
+				if (isFileVideoAttachment(attachment) && !attachment.video_url.startsWith('/file-decrypt/')) {
+					attachment.video_url = `/file-decrypt${attachment.video_url}?key=${key}`;
+				}
 			}
 		});
 	}
