@@ -103,6 +103,7 @@ export type UploadsAPI = {
 	send(
 		file: File,
 		{ description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] },
+		getContent?: (fileId: string, fileUrl: string) => Promise<string>,
 	): Promise<void>;
 };
 
