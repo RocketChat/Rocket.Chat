@@ -38,7 +38,6 @@ const send = async (
 		tmid,
 		t,
 		e2e,
-		content,
 	}: {
 		description?: string;
 		msg?: string;
@@ -46,8 +45,8 @@ const send = async (
 		tmid?: string;
 		t?: IMessage['t'];
 		e2e?: IMessage['e2e'];
-		content?: string;
 	},
+	getContent?: (fileId: string, fileUrl: string) => Promise<string>,
 ): Promise<void> => {
 	const id = Random.id();
 
@@ -115,6 +114,11 @@ const send = async (
 			xhr.onload = async () => {
 				if (xhr.readyState === xhr.DONE && xhr.status === 200) {
 					const result = JSON.parse(xhr.responseText);
+					let content;
+					if (getContent) {
+						content = await getContent(result.file._id, result.file.url);
+					}
+
 					await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${result.file._id}`, {
 						msg,
 						tmid,
@@ -165,12 +169,7 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 	cancel,
 	send: (
 		file: File,
-		{
-			description,
-			msg,
-			t,
-			e2e,
-			content,
-		}: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e']; content?: string },
-	): Promise<void> => send(file, { description, msg, rid, tmid, t, e2e, content }),
+		{ description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] },
+		getContent?: (fileId: string, fileUrl: string) => Promise<string>,
+	): Promise<void> => send(file, { description, msg, rid, tmid, t, e2e }, getContent),
 });

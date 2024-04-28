@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, FileAttachmentProps } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
@@ -31,12 +31,21 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 
 	const queue = [...files];
 
-	const uploadFile = (file: File, description?: string, extraData?: Pick<IMessage, 't' | 'e2e' | 'content'>) => {
-		chat.uploads.send(file, {
-			description,
-			msg,
-			...extraData,
-		});
+	const uploadFile = (
+		file: File,
+		description?: string,
+		extraData?: Pick<IMessage, 't' | 'e2e' | 'content'>,
+		getContent?: (fileId: string, fileUrl: string) => Promise<string>,
+	) => {
+		chat.uploads.send(
+			file,
+			{
+				description,
+				msg,
+				...extraData,
+			},
+			getContent,
+		);
 		chat.composer?.clear();
 		imperativeModal.close();
 		uploadNextFile();
@@ -86,18 +95,70 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					const encryptedFile = await e2eRoom.encryptFile(file);
 
 					if (encryptedFile) {
-						uploadFile(encryptedFile.file, encryptedDescription, {
-							t: 'e2e',
+						const getContent = async (_id: string, fileUrl: string) => {
+							const attachments = [];
+
+							const attachment: FileAttachmentProps = {
+								title: file.name,
+								type: 'file',
+								description,
+								title_link: fileUrl,
+								title_link_download: true,
+							};
+
+							if (/^image\/.+/.test(file.type)) {
+								attachments.push({
+									...attachment,
+									image_url: fileUrl,
+									image_type: file.type,
+									image_size: file.size,
+								});
+
+								// if (file.identify?.size) {
+								// 	attachment.image_dimensions = file.identify.size;
+								// }
+							} else if (/^audio\/.+/.test(file.type)) {
+								attachments.push({
+									...attachment,
+									audio_url: fileUrl,
+									audio_type: file.type,
+									audio_size: file.size,
+								});
+							} else if (/^video\/.+/.test(file.type)) {
+								attachments.push({
+									...attachment,
+									video_url: fileUrl,
+									video_type: file.type,
+									video_size: file.size,
+								});
+							} else {
+								attachments.push({
+									...attachment,
+									size: file.size,
+									// format: getFileExtension(file.name),
+								});
+							}
+
 							// TODO: Encrypt content
-							content: JSON.stringify({
+							return JSON.stringify({
 								file: {
 									// url
 									key: encryptedFile.key,
 									iv: encryptedFile.iv,
 									type: file.type,
 								},
-							}),
-						});
+								attachments,
+							});
+						};
+
+						uploadFile(
+							encryptedFile.file,
+							encryptedDescription,
+							{
+								t: 'e2e',
+							},
+							getContent,
+						);
 					}
 				},
 				invalidContentType: !(file.type && fileUploadIsValidContentType(file.type)),

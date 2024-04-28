@@ -43,14 +43,6 @@ export const parseFileIntoMessageAttachments = async (
 
 	const attachments: MessageAttachment[] = [];
 
-	if (msgData?.content) {
-		const content = JSON.parse(msgData.content);
-
-		if (content?.file.type) {
-			file.type = content?.file.type;
-		}
-	}
-
 	const files = [
 		{
 			_id: file._id,
@@ -77,39 +69,39 @@ export const parseFileIntoMessageAttachments = async (
 			attachment.image_dimensions = file.identify.size;
 		}
 
-		// try {
-		// 	attachment.image_preview = await FileUpload.resizeImagePreview(file);
-		// 	const thumbResult = await FileUpload.createImageThumbnail(file);
-		// 	if (thumbResult) {
-		// 		const { data: thumbBuffer, width, height, thumbFileType, thumbFileName, originalFileId } = thumbResult;
-		// 		const thumbnail = await FileUpload.uploadImageThumbnail(
-		// 			{
-		// 				thumbFileName,
-		// 				thumbFileType,
-		// 				originalFileId,
-		// 			},
-		// 			thumbBuffer,
-		// 			roomId,
-		// 			user._id,
-		// 		);
-		// 		const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
-		// 		attachment.image_url = thumbUrl;
-		// 		attachment.image_type = thumbnail.type;
-		// 		attachment.image_dimensions = {
-		// 			width,
-		// 			height,
-		// 		};
-		// 		files.push({
-		// 			_id: thumbnail._id,
-		// 			name: thumbnail.name || '',
-		// 			type: thumbnail.type || 'file',
-		// 			size: thumbnail.size || 0,
-		// 			format: thumbnail.identify?.format || '',
-		// 		});
-		// 	}
-		// } catch (e) {
-		// 	SystemLogger.error(e);
-		// }
+		try {
+			attachment.image_preview = await FileUpload.resizeImagePreview(file);
+			const thumbResult = await FileUpload.createImageThumbnail(file);
+			if (thumbResult) {
+				const { data: thumbBuffer, width, height, thumbFileType, thumbFileName, originalFileId } = thumbResult;
+				const thumbnail = await FileUpload.uploadImageThumbnail(
+					{
+						thumbFileName,
+						thumbFileType,
+						originalFileId,
+					},
+					thumbBuffer,
+					roomId,
+					user._id,
+				);
+				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
+				attachment.image_url = thumbUrl;
+				attachment.image_type = thumbnail.type;
+				attachment.image_dimensions = {
+					width,
+					height,
+				};
+				files.push({
+					_id: thumbnail._id,
+					name: thumbnail.name || '',
+					type: thumbnail.type || 'file',
+					size: thumbnail.size || 0,
+					format: thumbnail.identify?.format || '',
+				});
+			}
+		} catch (e) {
+			SystemLogger.error(e);
+		}
 		attachments.push(attachment);
 	} else if (/^audio\/.+/.test(file.type as string)) {
 		const attachment: FileAttachmentProps = {
