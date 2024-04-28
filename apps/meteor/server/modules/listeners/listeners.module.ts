@@ -45,6 +45,10 @@ export class ListenersModule {
 			});
 		});
 
+		service.onEvent('user.forceLogout', (uid) => {
+			notifications.notifyUserInThisInstance(uid, 'force_logout');
+		});
+
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
 			if (!isMessageParserDisabled && message.msg) {
 				const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
