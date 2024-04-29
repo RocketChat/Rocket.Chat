@@ -36,10 +36,12 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 		throw new Error('inquiry-not-found');
 	}
 
-	if (dbInquiry.status === 'ready') {
-		logger.debug(`Inquiry with id ${inquiry._id} is ready. Delegating to agent ${inquiryAgent?.username}`);
-		return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent);
+	if (dbInquiry.status !== 'ready') {
+		return;
 	}
+
+	logger.debug(`Inquiry with id ${inquiry._id} is ready. Delegating to agent ${inquiryAgent?.username}`);
+	void RoutingManager.delegateInquiry(dbInquiry, inquiryAgent);
 };
 
 type queueManager = {
