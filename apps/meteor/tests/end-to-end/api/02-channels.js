@@ -370,7 +370,9 @@ describe('[Channels]', function () {
 				.get(api('channels.list'))
 				.set(credentials)
 				.query({
-					_id: testChannel._id,
+					query: JSON.stringify({
+						_id: testChannel._id,
+					}),
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
