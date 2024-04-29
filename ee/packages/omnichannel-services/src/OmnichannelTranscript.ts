@@ -240,6 +240,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					// Push empty buffer so parser processes this as "unsupported file"
 					files.push({ name: file.name, buffer: null });
 
+					// TODO: this is a NATS error message, even when we shouldn't tie it, since it's the only way we have right now we'll live with it for a while
 					if ((e as Error).message === 'MAX_PAYLOAD_EXCEEDED') {
 						this.log.error(
 							`File is too big to be processed by NATS. See NATS config for allowing bigger messages to be sent between services`,
@@ -287,9 +288,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 		this.currentJobNumber++;
 		try {
-			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'v' | 'closedAt' | 'servedBy'>>(details.rid, {
-				projection: { _id: 1, v: 1, closedAt: 1, servedBy: 1 },
-			});
+			const room = await LivechatRooms.findOneById(details.rid);
 			if (!room) {
 				throw new Error('room-not-found');
 			}
@@ -364,7 +363,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		if (!room) {
 			return;
 		}
-		const user = await Users.findOneById<Pick<IUser, 'language' | '_id'>>(details.userId, { projection: { _id: 1, language: 1 } });
+		const user = await Users.findOneById(details.userId);
 		if (!user) {
 			return;
 		}
@@ -383,7 +382,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	private async pdfComplete({ details, file }: { details: WorkDetailsWithSource; file: IUpload }): Promise<void> {
 		this.log.info(`Transcript for room ${details.rid} by user ${details.userId} - Complete`);
-		const user = await Users.findOneById<Pick<IUser, 'language' | '_id'>>(details.userId, { projection: { _id: 1, language: 1 } });
+		const user = await Users.findOneById(details.userId);
 		if (!user) {
 			return;
 		}
