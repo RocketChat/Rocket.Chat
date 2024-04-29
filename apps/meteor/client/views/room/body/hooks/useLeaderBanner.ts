@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
@@ -7,6 +7,18 @@ export const useLeaderBanner = () => {
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
 
 	const wrapperBoxRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const header = document.querySelector('.rcx-room-header');
+		if (!header) {
+			return;
+		}
+		header.addEventListener('mouseover', () => setHideLeaderHeader(false));
+
+		return () => {
+			header.removeEventListener('mouseover', () => setHideLeaderHeader(false));
+		};
+	}, []);
 
 	const innerScrollRef = useCallback((node: HTMLElement | null) => {
 		if (!node) {

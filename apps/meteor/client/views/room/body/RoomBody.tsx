@@ -1,5 +1,7 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
+import { HeaderContentRow, HeaderSection, HeaderSubtitle } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo, useRef } from 'react';
@@ -7,10 +9,12 @@ import React, { memo, useCallback, useMemo, useRef } from 'react';
 import { RoomRoles } from '../../../../app/models/client';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
+import MarkdownText from '../../../components/MarkdownText';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import Announcement from '../Announcement';
 import { BubbleDate } from '../BubbleDate';
+import { RoomLeader } from '../Header/RoomLeader';
 import { MessageList } from '../MessageList';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import ComposerContainer from '../composer/ComposerContainer';
@@ -38,10 +42,6 @@ import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useHandleUnread } from './hooks/useUnreadMessages';
-import { HeaderContentRow, HeaderSection, HeaderSubtitle } from '@rocket.chat/ui-client';
-import MarkdownText from '/client/components/MarkdownText';
-import { RoomLeader } from '../Header/RoomLeader';
-import { css } from '@rocket.chat/css-in-js';
 
 const RoomBody = (): ReactElement => {
 	const chat = useChat();
@@ -201,15 +201,25 @@ const RoomBody = (): ReactElement => {
 		};
 	});
 
-	const headerSectionStyle = css`
+	const wrapperStyle = css`
+		position: absolute;
+		width: 100%;
+		z-index: 10;
+		top: 0px;
+
 		&.animated-hidden {
-			height: 0px !important;
+			top: -44px;
 		}
-		height: 44px !important;
 	`;
+
 	return (
 		<>
-			<Box animated rcx-header-section__wrapper className={[headerSectionStyle, hideLeaderHeader && 'animated-hidden'].filter(isTruthy)} ref={leaderBannerWrapperRef}>
+			<Box
+				animated
+				rcx-header-section__wrapper
+				className={[wrapperStyle, hideLeaderHeader && 'animated-hidden'].filter(isTruthy)}
+				ref={leaderBannerWrapperRef}
+			>
 				{(room.topic || roomLeader) && (
 					<HeaderSection className='rcx-header-section'>
 						<HeaderContentRow>
