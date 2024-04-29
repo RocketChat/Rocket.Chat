@@ -5,7 +5,7 @@ import store from '../store';
 import { normalizeAgent } from './api';
 import { parentCall } from './parentCall';
 import { createToken } from './random';
-import { getAgent, removeMessage, requestTriggerMessages } from './triggerUtils';
+import { getAgent, removeMessage, requestTriggerMessages, upsertMessage } from './triggerUtils';
 import Triggers from './triggers';
 
 export const sendMessageAction = async (_: string, action: ILivechatSendMessageAction, condition: ILivechatTriggerCondition) => {
@@ -22,9 +22,14 @@ export const sendMessageAction = async (_: string, action: ILivechatSendMessageA
 		trigger: true,
 	};
 
-	store.setState({
-		renderedTriggers: [...store.state.renderedTriggers, message],
-	});
+	await upsertMessage(message);
+
+	// Save the triggers for subsequent renders
+	if (condition.name === 'after-guest-registration') {
+		store.setState({
+			renderedTriggers: [...store.state.renderedTriggers, message],
+		});
+	}
 
 	if (agent && '_id' in agent) {
 		await store.setState({ agent });
@@ -81,11 +86,15 @@ export const sendMessageExternalServiceAction = async (
 			}));
 
 		await Promise.all(
-			messages.map((message) =>
-				store.setState({
-					renderedTriggers: [...store.state.renderedTriggers, message],
-				}),
-			),
+			messages.map((message) => {
+				if (condition.name === 'after-guest-registration') {
+					store.setState({
+						renderedTriggers: [...store.state.renderedTriggers, message],
+					});
+				}
+
+				return upsertMessage(message);
+			}),
 		);
 
 		if (agent && '_id' in agent) {
