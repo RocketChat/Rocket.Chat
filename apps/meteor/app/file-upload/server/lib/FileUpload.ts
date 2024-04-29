@@ -28,7 +28,7 @@ import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { UploadFS } from '../../../../server/ufs';
 import { ufsComplete } from '../../../../server/ufs/ufs-methods';
 import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
-import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
@@ -465,6 +465,12 @@ export const FileUpload = {
 		}
 
 		if (!settings.get('FileUpload_Restrict_to_room_members') || !file?.rid) {
+			return true;
+		}
+
+		// Special check for managers/monitors that can access rooms even when no subscription exist for them
+		// And also for agents that have the permission to access the room even after it is closed
+		if (await canAccessRoomIdAsync(file.rid, user._id)) {
 			return true;
 		}
 
