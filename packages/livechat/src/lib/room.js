@@ -31,7 +31,7 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 		return;
 	}
 
-	await store.setState({ room: null });
+	await store.setState({ room: null, renderedTriggers: [] });
 
 	if (clearLocalStorageWhenChatEnded) {
 		// exclude UI-affecting flags

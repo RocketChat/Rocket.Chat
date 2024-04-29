@@ -87,17 +87,15 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 				await expect(poLiveChat.txtChatMessage('message_after_trigger')).toBeVisible();
 				await poLiveChat.closeChat();
 
+				await expect(poLiveChat.btnNewChat).toBeVisible();
 				await poLiveChat.startNewChat();
 				await poLiveChat.page.reload()
 			})
 
 			await test.step('expect trigger message after registration to be visible after reload on new chat', async () => {
+				await poLiveChat.openAnyLiveChat();
 				await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
 			})
-			
-
-			await poLiveChat.startNewChat();
-			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
 		});
 	});
 
