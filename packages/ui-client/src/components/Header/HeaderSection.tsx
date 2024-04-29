@@ -10,7 +10,6 @@ export const HeaderSection = (props: ComponentProps<typeof Box>) => {
 	return (
 		<>
 			<Box
-				mi='neg-x4'
 				pi={isMobile ? 'x12' : 'x24'}
 				height='x44'
 				display='flex'
