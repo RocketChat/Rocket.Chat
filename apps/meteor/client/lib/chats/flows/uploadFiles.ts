@@ -61,7 +61,11 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 						return;
 					}
 
-					room.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+					if (room.encrypted) {
+						e2eRoom.resume();
+					} else {
+						e2eRoom.pause();
+					}
 
 					const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages({ msg });
 
