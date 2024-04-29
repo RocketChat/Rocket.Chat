@@ -99,7 +99,7 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
 
-	const { wrapperRef: leaderBannerWrapperRef, hideLeaderHeader, innerRef: leaderBannerInnerRef } = useHeaderSection();
+	const { wrapperRef: sectionWrapperRef, hideSection, innerRef: sectionScrollRef } = useHeaderSection();
 
 	const {
 		uploads,
@@ -125,7 +125,7 @@ const RoomBody = (): ReactElement => {
 		restoreScrollPositionInnerRef,
 		isAtBottomInnerRef,
 		newMessagesScrollRef,
-		leaderBannerInnerRef,
+		sectionScrollRef,
 		unreadBarInnerRef,
 		getMoreInnerRef,
 
@@ -185,18 +185,18 @@ const RoomBody = (): ReactElement => {
 		top: 0px;
 
 		&.animated-hidden {
-			top: -44px;
+			top: -88px;
 		}
 	`;
 
 	return (
 		<>
 			<Box position='relative' w='full'>
-				<Box animated className={[wrapperStyle, hideLeaderHeader && 'animated-hidden'].filter(isTruthy)} ref={leaderBannerWrapperRef}>
+				<Box animated className={[wrapperStyle, hideSection && 'animated-hidden'].filter(isTruthy)} ref={sectionWrapperRef}>
 					<RoomHeaderSection room={room} user={user} />
+					{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
 				</Box>
 			</Box>
-			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
 
 			<Box key={room._id} className={['main-content-flex', listStyle]}>
 				<section

@@ -4,7 +4,7 @@ import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 
 export const useHeaderSection = () => {
-	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
+	const [hideSection, setHideSection] = useState(false);
 
 	const wrapperBoxRef = useRef<HTMLDivElement>(null);
 
@@ -14,7 +14,7 @@ export const useHeaderSection = () => {
 		}
 		let lastScrollTopRef = 0;
 
-		wrapperBoxRef.current?.addEventListener('mouseover', () => setHideLeaderHeader(false));
+		wrapperBoxRef.current?.addEventListener('mouseover', () => setHideSection(false));
 
 		node.addEventListener(
 			'scroll',
@@ -23,11 +23,11 @@ export const useHeaderSection = () => {
 
 				if (roomLeader) {
 					if (isAtBottom(node, 0)) {
-						setHideLeaderHeader(false);
+						setHideSection(false);
 					} else if (event.target.scrollTop < lastScrollTopRef) {
-						setHideLeaderHeader(true);
+						setHideSection(true);
 					} else if (!isAtBottom(node, 100) && event.target.scrollTop > parseFloat(getComputedStyle(roomLeader).height)) {
-						setHideLeaderHeader(true);
+						setHideSection(true);
 					}
 				}
 				lastScrollTopRef = event.target.scrollTop;
@@ -38,7 +38,7 @@ export const useHeaderSection = () => {
 
 	return {
 		wrapperRef: wrapperBoxRef,
-		hideLeaderHeader,
+		hideSection,
 		innerRef: innerScrollRef,
 	};
 };
