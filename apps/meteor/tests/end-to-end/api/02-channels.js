@@ -416,7 +416,7 @@ describe('[Channels]', function () {
 
 		it('should be succesful when user does NOT have the permission to view joined rooms, but can view channels', async () => {
 			await updatePermission('view-c-room', ['admin']);
-			await updatePermission('view-joined-room');
+			await updatePermission('view-joined-room', []);
 			await request
 				.get(api('channels.list'))
 				.set(credentials)
