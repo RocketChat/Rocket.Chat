@@ -1,7 +1,8 @@
-import { api, MeteorError, dbWatchersDisabled } from '@rocket.chat/core-services';
+import { api, MeteorError } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
 
+import { notifyListenerOnRoleChanges } from '../../../../app/lib/server/lib/notifyListenerOnRoleChanges';
 import { isValidRoleScope } from '../../../../lib/roles/isValidRoleScope';
 
 type InsertRoleOptions = {
@@ -21,12 +22,7 @@ export const insertRoleAsync = async (roleData: Omit<IRole, '_id'>, options: Ins
 
 	const role = await Roles.createWithRandomId(name, scope, description, false, mandatory2fa);
 
-	if (dbWatchersDisabled) {
-		void api.broadcast('watch.roles', {
-			clientAction: 'inserted',
-			role,
-		});
-	}
+	void notifyListenerOnRoleChanges(role._id, 'inserted', role);
 
 	if (options.broadcastUpdate) {
 		void api.broadcast('user.roleUpdate', {
