@@ -291,10 +291,11 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 
 	/* Defer other updates as their return is not interesting to the user */
 
-	// Execute all callbacks
-	await callbacks.run('afterSaveMessage', message, room);
 	void broadcastMessageFromData({
 		id: message._id,
 	});
+
+	// Execute all callbacks
+	void callbacks.run('afterSaveMessage', message, room);
 	return message;
 };
