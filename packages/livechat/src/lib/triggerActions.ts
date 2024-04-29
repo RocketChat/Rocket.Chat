@@ -5,7 +5,7 @@ import store from '../store';
 import { normalizeAgent } from './api';
 import { parentCall } from './parentCall';
 import { createToken } from './random';
-import { getAgent, removeMessage, requestTriggerMessages, upsertMessage } from './triggerUtils';
+import { getAgent, removeMessage, requestTriggerMessages } from './triggerUtils';
 import Triggers from './triggers';
 
 export const sendMessageAction = async (_: string, action: ILivechatSendMessageAction, condition: ILivechatTriggerCondition) => {
@@ -22,7 +22,9 @@ export const sendMessageAction = async (_: string, action: ILivechatSendMessageA
 		trigger: true,
 	};
 
-	await upsertMessage(message);
+	store.setState({
+		renderedTriggers: [...store.state.renderedTriggers, message],
+	});
 
 	if (agent && '_id' in agent) {
 		await store.setState({ agent });
@@ -78,7 +80,13 @@ export const sendMessageExternalServiceAction = async (
 				trigger: true,
 			}));
 
-		await Promise.all(messages.map((message) => upsertMessage(message)));
+		await Promise.all(
+			messages.map((message) =>
+				store.setState({
+					renderedTriggers: [...store.state.renderedTriggers, message],
+				}),
+			),
+		);
 
 		if (agent && '_id' in agent) {
 			await store.setState({ agent });
