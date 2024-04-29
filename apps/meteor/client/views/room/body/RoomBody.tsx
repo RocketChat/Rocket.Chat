@@ -35,7 +35,7 @@ import { useFileUpload } from './hooks/useFileUpload';
 import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
-import { useLeaderBanner } from './hooks/useLeaderBanner';
+import { useHeaderSection } from './hooks/useHeaderSection';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
@@ -105,7 +105,7 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
 
-	const { wrapperRef: leaderBannerWrapperRef, hideLeaderHeader, innerRef: leaderBannerInnerRef } = useLeaderBanner();
+	const { wrapperRef: leaderBannerWrapperRef, hideLeaderHeader, innerRef: leaderBannerInnerRef } = useHeaderSection();
 
 	const {
 		uploads,
@@ -214,22 +214,19 @@ const RoomBody = (): ReactElement => {
 
 	return (
 		<>
-			<Box
-				animated
-				rcx-header-section__wrapper
-				className={[wrapperStyle, hideLeaderHeader && 'animated-hidden'].filter(isTruthy)}
-				ref={leaderBannerWrapperRef}
-			>
-				{(room.topic || roomLeader) && (
-					<HeaderSection className='rcx-header-section'>
-						<HeaderContentRow>
-							<HeaderSubtitle is='h2' flexGrow={1}>
-								<MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={room.topic} />
-							</HeaderSubtitle>
-							{roomLeader && <RoomLeader {...roomLeader} />}
-						</HeaderContentRow>
-					</HeaderSection>
-				)}
+			<Box position='relative' w='full'>
+				<Box animated className={[wrapperStyle, hideLeaderHeader && 'animated-hidden'].filter(isTruthy)} ref={leaderBannerWrapperRef}>
+					{(room.topic || roomLeader) && (
+						<HeaderSection className='rcx-header-section'>
+							<HeaderContentRow>
+								<HeaderSubtitle is='h2' flexGrow={1}>
+									<MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={room.topic} />
+								</HeaderSubtitle>
+								{roomLeader && <RoomLeader {...roomLeader} />}
+							</HeaderContentRow>
+						</HeaderSection>
+					)}
+				</Box>
 			</Box>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
 
