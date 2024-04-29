@@ -1,20 +1,15 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import { HeaderContentRow, HeaderSection, HeaderSubtitle } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo, useRef } from 'react';
 
-import { RoomRoles } from '../../../../app/models/client';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
-import MarkdownText from '../../../components/MarkdownText';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
-import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import Announcement from '../Announcement';
 import { BubbleDate } from '../BubbleDate';
-import { RoomLeader } from '../Header/RoomLeader';
 import { MessageList } from '../MessageList';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import ComposerContainer from '../composer/ComposerContainer';
@@ -29,6 +24,7 @@ import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
 import RetentionPolicyWarning from './RetentionPolicyWarning';
 import RoomForeword from './RoomForeword/RoomForeword';
+import { RoomHeaderSection } from './RoomHeaderSection';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import { useFileUpload } from './hooks/useFileUpload';
@@ -86,8 +82,6 @@ const RoomBody = (): ReactElement => {
 
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
-
-	const useRealName = useSetting('UI_Use_Real_Name') as boolean;
 
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
 
@@ -184,23 +178,6 @@ const RoomBody = (): ReactElement => {
 	useReadMessageWindowEvents();
 	useQuoteMessageByUrl();
 
-	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], () => {
-		const leaderRoomRole = RoomRoles.findOne({
-			'rid': room._id,
-			'roles': 'leader',
-			'u._id': { $ne: user?._id },
-		});
-
-		if (!leaderRoomRole) {
-			return null;
-		}
-
-		return {
-			...leaderRoomRole.u,
-			name: useRealName ? leaderRoomRole.u.name || leaderRoomRole.u.username : leaderRoomRole.u.username,
-		};
-	});
-
 	const wrapperStyle = css`
 		position: absolute;
 		width: 100%;
@@ -216,16 +193,7 @@ const RoomBody = (): ReactElement => {
 		<>
 			<Box position='relative' w='full'>
 				<Box animated className={[wrapperStyle, hideLeaderHeader && 'animated-hidden'].filter(isTruthy)} ref={leaderBannerWrapperRef}>
-					{(room.topic || roomLeader) && (
-						<HeaderSection className='rcx-header-section'>
-							<HeaderContentRow>
-								<HeaderSubtitle is='h2' flexGrow={1}>
-									<MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={room.topic} />
-								</HeaderSubtitle>
-								{roomLeader && <RoomLeader {...roomLeader} />}
-							</HeaderContentRow>
-						</HeaderSection>
-					)}
+					<RoomHeaderSection room={room} user={user} />
 				</Box>
 			</Box>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}

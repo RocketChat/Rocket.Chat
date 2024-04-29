@@ -16,15 +16,6 @@ import Translate from './icons/Translate';
 
 export type RoomHeaderProps = {
 	room: IRoom;
-	topic?: string;
-	roomLeader?:
-		| {
-				name: string | undefined;
-				_id: string;
-				username?: string | undefined;
-		  }
-		| null
-		| undefined;
 	slots: {
 		start?: unknown;
 		preContent?: unknown;
@@ -39,7 +30,7 @@ export type RoomHeaderProps = {
 	};
 };
 
-const RoomHeader = ({ room, topic = '', slots = {}, roomLeader }: RoomHeaderProps) => {
+const RoomHeader = ({ room, slots = {} }: RoomHeaderProps) => {
 	const t = useTranslation();
 
 	return (
