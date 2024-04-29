@@ -164,6 +164,15 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
+		await poHomeChannel.content.dragAndDropTxtFile();
+		await poHomeChannel.content.descriptionInput.fill('any_description');
+		await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+		await poHomeChannel.content.btnModalConfirm.click();
+
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+		await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
+		await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+
 		await poHomeChannel.tabs.kebab.click({ force: true });
 
 		await expect(poHomeChannel.tabs.btnDisableE2E).toBeVisible();
@@ -171,10 +180,22 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.dismissToast();
 		await page.waitForTimeout(1000);
 
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).not.toBeVisible();
+
 		await poHomeChannel.content.sendMessage('hello world not encrypted');
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world not encrypted');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).not.toBeVisible();
+
+		await poHomeChannel.content.dragAndDropTxtFile();
+		await poHomeChannel.content.descriptionInput.fill('any_description not encrypted');
+		await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+		await poHomeChannel.content.btnModalConfirm.click();
+
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).not.toBeVisible();
+
+		await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description not encrypted');
+		await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
@@ -182,10 +203,22 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.dismissToast();
 		await page.waitForTimeout(1000);
 
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
 		await poHomeChannel.content.sendMessage('hello world encrypted again');
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world encrypted again');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		await poHomeChannel.content.dragAndDropTxtFile();
+		await poHomeChannel.content.descriptionInput.fill('any_description encrypted again');
+		await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+		await poHomeChannel.content.btnModalConfirm.click();
+
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description encrypted again');
+		await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
 	});
 
 	test('expect create a private channel, encrypt it and send an encrypted message', async ({ page }) => {
