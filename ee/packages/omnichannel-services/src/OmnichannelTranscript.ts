@@ -359,7 +359,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	private async pdfFailed({ details, e }: { details: WorkDetailsWithSource; e: Error }): Promise<void> {
 		this.log.error(`Transcript for room ${details.rid} by user ${details.userId} - Failed: ${e.message}`);
-		const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id'>>(details.rid, { projection: { _id: 1 } });
+		const room = await LivechatRooms.findOneById(details.rid);
 		if (!room) {
 			return;
 		}
