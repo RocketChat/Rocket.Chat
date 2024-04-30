@@ -22,6 +22,13 @@ const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: Moder
 		return room.fname || room.name;
 	});
 
+	const normalizeMessage = () => {
+		if (message.startsWith('[ ](')) {
+			return message.split('\n')[1];
+		}
+		return message;
+	};
+
 	const formatDateAndTime = useFormatDateAndTime();
 
 	const concatenatedRoomNames = roomNames.join(', ');
@@ -31,7 +38,7 @@ const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: Moder
 			<GenericTableCell withTruncatedText>
 				<UserColumn username={username} name={name} fontSize='micro' size={isDesktopOrLarger ? 'x20' : 'x40'} />
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{message}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{normalizeMessage()}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{concatenatedRoomNames}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{formatDateAndTime(ts)}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{count}</GenericTableCell>
