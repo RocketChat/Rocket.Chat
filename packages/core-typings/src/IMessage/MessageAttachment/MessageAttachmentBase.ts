@@ -13,6 +13,8 @@ export type MessageAttachmentBase = {
 	format?: string;
 	title_link?: string;
 	title_link_download?: boolean;
-	iv?: string;
-	key?: JsonWebKey;
+	encryption?: {
+		iv: string;
+		key: JsonWebKey;
+	};
 };
