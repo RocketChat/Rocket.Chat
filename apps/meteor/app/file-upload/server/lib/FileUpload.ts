@@ -468,8 +468,8 @@ export const FileUpload = {
 			return true;
 		}
 
-		const fileUploadRestrictedToMembers = settings.get('FileUpload_Restrict_to_room_members');
-		const fileUploadRestrictToUsersWhoCanAccessRoom = settings.get('FileUpload_Restrict_to_users_who_can_access_room');
+		const fileUploadRestrictedToMembers = settings.get<boolean>('FileUpload_Restrict_to_room_members');
+		const fileUploadRestrictToUsersWhoCanAccessRoom = settings.get<boolean>('FileUpload_Restrict_to_users_who_can_access_room');
 
 		if (fileUploadRestrictedToMembers && !fileUploadRestrictToUsersWhoCanAccessRoom) {
 			const sub = await Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { projection: { _id: 1 } });
