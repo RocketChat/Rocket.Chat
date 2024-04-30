@@ -220,7 +220,12 @@ describe('[Roles]', function () {
 				});
 		});
 
-		it('should fail when user does NOT have the access-permissions permission', async () => {
+		it('should fail when user does NOT have the access-permissions permission', async function () {
+			if (!isEnterprise) {
+				this.skip();
+				return;
+			}
+
 			await request
 				.get(api('roles.getUsersInRole'))
 				.set(testUserCredentials)
