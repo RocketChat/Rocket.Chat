@@ -27,7 +27,7 @@ import type { FormEvent } from 'react';
 import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypesValues';
+import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
 import {
 	ContextualbarHeader,
 	ContextualbarBack,
