@@ -42,7 +42,7 @@ export const RoomTopic = ({ room, user }: RoomTopicProps) => {
 	if (!topic && !roomLeader) return null;
 
 	return (
-		<RoomBanner className='rcx-header-section'>
+		<RoomBanner className='rcx-header-section' role='note'>
 			<RoomBannerContent>
 				<MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />
 			</RoomBannerContent>
