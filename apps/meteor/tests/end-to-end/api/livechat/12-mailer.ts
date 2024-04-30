@@ -68,6 +68,7 @@ describe('Mailer', () => {
 				});
 		});
 		it('should throw an error if user does NOT have the send-mail permission', async () => {
+			await updatePermission('send-mail', []);
 			await request
 				.post(api('mailer'))
 				.set(credentials)
