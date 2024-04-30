@@ -9,12 +9,12 @@ import { usePresence } from '../../../hooks/usePresence';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { RoomLeader } from '../Header/RoomLeader';
 
-type RoomHeaderSectionProps = {
+type RoomTopicProps = {
 	room: IRoom;
 	user: IUser | null;
 };
 
-export const RoomHeaderSection = ({ room, user }: RoomHeaderSectionProps) => {
+export const RoomTopic = ({ room, user }: RoomTopicProps) => {
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 	const directUserData = usePresence(directUserId);

@@ -24,14 +24,14 @@ import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
 import RetentionPolicyWarning from './RetentionPolicyWarning';
 import RoomForeword from './RoomForeword/RoomForeword';
-import { RoomHeaderSection } from './RoomHeaderSection';
+import { RoomTopic } from './RoomTopic';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
+import { useBannerSection } from './hooks/useBannerSection';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
-import { useHeaderSection } from './hooks/useHeaderSection';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
@@ -99,7 +99,7 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
 
-	const { wrapperRef: sectionWrapperRef, hideSection, innerRef: sectionScrollRef } = useHeaderSection();
+	const { wrapperRef: sectionWrapperRef, hideSection, innerRef: sectionScrollRef } = useBannerSection();
 
 	const {
 		uploads,
@@ -193,7 +193,7 @@ const RoomBody = (): ReactElement => {
 		<>
 			<Box position='relative' w='full'>
 				<Box animated className={[wrapperStyle, hideSection && 'animated-hidden'].filter(isTruthy)} ref={sectionWrapperRef}>
-					<RoomHeaderSection room={room} user={user} />
+					<RoomTopic room={room} user={user} />
 					{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
 				</Box>
 			</Box>

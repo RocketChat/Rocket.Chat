@@ -3,7 +3,7 @@ import { useCallback, useRef, useState } from 'react';
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 
-export const useHeaderSection = () => {
+export const useBannerSection = () => {
 	const [hideSection, setHideSection] = useState(false);
 
 	const wrapperBoxRef = useRef<HTMLDivElement>(null);
