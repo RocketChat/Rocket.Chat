@@ -1,6 +1,8 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { isTeamRoom } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import { RoomBanner, RoomBannerContent } from '@rocket.chat/ui-client';
-import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { RoomRoles } from '../../../../app/models/client';
@@ -8,6 +10,8 @@ import MarkdownText from '../../../components/MarkdownText';
 import { usePresence } from '../../../hooks/usePresence';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { RoomLeader } from '../Header/RoomLeader';
+import { useRoomToolbox } from '../contexts/RoomToolboxContext';
+import { useCanEditRoom } from '../contextualBar/Info/hooks/useCanEditRoom';
 
 type RoomTopicProps = {
 	room: IRoom;
@@ -15,10 +19,20 @@ type RoomTopicProps = {
 };
 
 export const RoomTopic = ({ room, user }: RoomTopicProps) => {
+	const t = useTranslation();
+	const canEdit = useCanEditRoom(room);
 	const userId = useUserId();
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 	const directUserData = usePresence(directUserId);
 	const useRealName = useSetting('UI_Use_Real_Name') as boolean;
+	const { openTab } = useRoomToolbox();
+
+	const handleAddTopic = () => {
+		if (isTeamRoom(room)) {
+			return openTab('team-info');
+		}
+		return openTab('channel-settings');
+	};
 
 	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], () => {
 		const leaderRoomRole = RoomRoles.findOne({
@@ -44,7 +58,13 @@ export const RoomTopic = ({ room, user }: RoomTopicProps) => {
 	return (
 		<RoomBanner className='rcx-header-section' role='note'>
 			<RoomBannerContent>
-				<MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />
+				{roomLeader && !topic && canEdit ? (
+					<Box is='a' onClick={handleAddTopic} style={{ cursor: 'pointer' }}>
+						{t('Add_topic')}
+					</Box>
+				) : (
+					<MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />
+				)}
 			</RoomBannerContent>
 			{roomLeader && <RoomLeader {...roomLeader} />}
 		</RoomBanner>
