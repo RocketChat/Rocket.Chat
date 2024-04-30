@@ -138,5 +138,7 @@ test.describe('OC - Business Hours', () => {
       await poOmnichannelBusinessHours.btnConfirmDeleteModal.click();
       await expect(poOmnichannelBusinessHours.confirmDeleteModal).not.toBeVisible();
     });
+
+		await department2.delete();
   });
 });
