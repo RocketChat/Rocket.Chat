@@ -7,9 +7,9 @@ const BurgerBadge = ({ children }: { children?: unknown }): ReactElement => (
 	<Box
 		className={css`
 			position: absolute;
-			zindex: 3;
+			z-index: 3;
 			top: -5px;
-			right: -5px;
+			right: 3px;
 		`}
 	>
 		<Badge variant='danger' children={children} />

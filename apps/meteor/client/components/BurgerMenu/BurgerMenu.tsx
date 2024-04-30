@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useSession } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
@@ -11,7 +11,7 @@ const BurgerMenu = (): ReactElement => {
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const unreadMessagesBadge = useSession('unread');
 
-	const toggleSidebar = useMutableCallback(() => sidebar.toggle());
+	const toggleSidebar = useEffectEvent(() => sidebar.toggle());
 
 	return <BurgerMenuButton onClick={toggleSidebar} badge={!isLayoutEmbedded && unreadMessagesBadge && unreadMessagesBadge} />;
 };
