@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { Header, HeaderSection, HeaderToolbar } from '@rocket.chat/ui-client';
+import { Header, HeaderToolbar } from '@rocket.chat/ui-client';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -17,11 +17,9 @@ const RoomNotFound = (): ReactElement => {
 			header={
 				isMobile && (
 					<Header justifyContent='start'>
-						<HeaderSection>
-							<HeaderToolbar>
-								<BurgerMenu />
-							</HeaderToolbar>
-						</HeaderSection>
+						<HeaderToolbar>
+							<BurgerMenu />
+						</HeaderToolbar>
 					</Header>
 				)
 			}

@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { HeaderContentRow, HeaderSection, HeaderSubtitle } from '@rocket.chat/ui-client';
+import { RoomBanner, RoomBannerContent } from '@rocket.chat/ui-client';
 import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -42,13 +42,11 @@ export const RoomHeaderSection = ({ room, user }: RoomHeaderSectionProps) => {
 	if (!topic && !roomLeader) return null;
 
 	return (
-		<HeaderSection className='rcx-header-section'>
-			<HeaderContentRow>
-				<HeaderSubtitle is='h2' flexGrow={1}>
-					<MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />
-				</HeaderSubtitle>
-				{roomLeader && <RoomLeader {...roomLeader} />}
-			</HeaderContentRow>
-		</HeaderSection>
+		<RoomBanner className='rcx-header-section'>
+			<RoomBannerContent>
+				<MarkdownText parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />
+			</RoomBannerContent>
+			{roomLeader && <RoomLeader {...roomLeader} />}
+		</RoomBanner>
 	);
 };

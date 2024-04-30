@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderSection, HeaderToolbar } from '@rocket.chat/ui-client';
+import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderToolbar } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { Suspense } from 'react';
 
@@ -35,34 +35,32 @@ const RoomHeader = ({ room, slots = {} }: RoomHeaderProps) => {
 
 	return (
 		<Header>
-			<HeaderSection>
-				{slots?.start}
-				<HeaderAvatar>
-					<RoomAvatar room={room} size='x28' />
-				</HeaderAvatar>
-				{slots?.preContent}
-				<HeaderContent>
-					<HeaderContentRow>
-						<RoomTitle room={room} />
-						<Favorite room={room} />
-						{room.prid && <ParentRoomWithData room={room} />}
-						{room.teamId && !room.teamMain && <ParentTeam room={room} />}
-						{isRoomFederated(room) && <FederatedRoomOriginServer room={room} />}
-						<Encrypted room={room} />
-						<Translate room={room} />
-						{slots?.insideContent}
-					</HeaderContentRow>
-				</HeaderContent>
-				{slots?.posContent}
-				<Suspense fallback={null}>
-					<HeaderToolbar aria-label={t('Toolbox_room_actions')}>
-						{slots?.toolbox?.pre}
-						{slots?.toolbox?.content || <RoomToolbox />}
-						{slots?.toolbox?.pos}
-					</HeaderToolbar>
-				</Suspense>
-				{slots?.end}
-			</HeaderSection>
+			{slots?.start}
+			<HeaderAvatar>
+				<RoomAvatar room={room} size='x28' />
+			</HeaderAvatar>
+			{slots?.preContent}
+			<HeaderContent>
+				<HeaderContentRow>
+					<RoomTitle room={room} />
+					<Favorite room={room} />
+					{room.prid && <ParentRoomWithData room={room} />}
+					{room.teamId && !room.teamMain && <ParentTeam room={room} />}
+					{isRoomFederated(room) && <FederatedRoomOriginServer room={room} />}
+					<Encrypted room={room} />
+					<Translate room={room} />
+					{slots?.insideContent}
+				</HeaderContentRow>
+			</HeaderContent>
+			{slots?.posContent}
+			<Suspense fallback={null}>
+				<HeaderToolbar aria-label={t('Toolbox_room_actions')}>
+					{slots?.toolbox?.pre}
+					{slots?.toolbox?.content || <RoomToolbox />}
+					{slots?.toolbox?.pos}
+				</HeaderToolbar>
+			</Suspense>
+			{slots?.end}
 		</Header>
 	);
 };
