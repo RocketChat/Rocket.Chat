@@ -188,10 +188,22 @@ describe('[Roles]', function () {
 		});
 
 		after(async () => {
+			if (!isEnterprise) {
+				return;
+			}
+
+			await request.post(api('roles.delete')).set(credentials).send({
+				roleId: testRoleId,
+			});
 			await deleteUser(testUser);
 		});
 
-		it('should successfully get a list of users in a role', async () => {
+		it('should successfully get a list of users in a role', async function () {
+			if (!isEnterprise) {
+				this.skip();
+				return;
+			}
+
 			await request
 				.get(api('roles.getUsersInRole'))
 				.set(credentials)
@@ -255,6 +267,9 @@ describe('[Roles]', function () {
 		});
 
 		after(async () => {
+			await request.post(api('roles.delete')).set(credentials).send({
+				roleId: testRoleId,
+			});
 			await deleteUser(testUser);
 		});
 
@@ -338,6 +353,9 @@ describe('[Roles]', function () {
 		});
 
 		after(async () => {
+			await request.post(api('roles.delete')).set(credentials).send({
+				roleId: testRoleId,
+			});
 			await deleteUser(testUser);
 		});
 
