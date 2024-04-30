@@ -6,10 +6,9 @@ import type { TranslationContextValue } from '@rocket.chat/ui-contexts';
 import { useMethod, useSetting, TranslationContext } from '@rocket.chat/ui-contexts';
 import type i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
-import sprintf from 'i18next-sprintf-postprocessor';
 import moment from 'moment';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
 import { CachedCollectionManager } from '../../app/ui-cached-collection/client';
@@ -26,7 +25,7 @@ import {
 import { AppClientOrchestratorInstance } from '../../ee/client/apps/orchestrator';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';
 
-i18n.use(I18NextHttpBackend).use(initReactI18next).use(sprintf);
+i18n.use(I18NextHttpBackend).use(initReactI18next);
 
 const useCustomTranslations = (i18n: typeof i18next) => {
 	const customTranslations = useSetting('Custom_Translations');
@@ -66,8 +65,11 @@ const useCustomTranslations = (i18n: typeof i18next) => {
 const localeCache = new Map<string, Promise<string>>();
 
 const useI18next = (lng: string): typeof i18next => {
-	if (!i18n.isInitialized) {
-		i18n.init({
+	const initPromise = useRef<Promise<any> | undefined>();
+	// i18n.init is async, so there's a chance a race condition happens and it is initialized twice
+	// This breaks translations because it loads `lng` in the first init but not the second.
+	if (!i18n.isInitialized && !initPromise.current) {
+		initPromise.current = i18n.init({
 			lng,
 			fallbackLng: 'en',
 			ns: availableTranslationNamespaces,
