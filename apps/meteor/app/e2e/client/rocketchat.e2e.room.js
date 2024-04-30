@@ -1,6 +1,5 @@
 import { Base64 } from '@rocket.chat/base64';
 import { Emitter } from '@rocket.chat/emitter';
-import { Random } from '@rocket.chat/random';
 import EJSON from 'ejson';
 
 import { RoomManager } from '../../../client/lib/RoomManager';
@@ -436,10 +435,6 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decrypt(message) {
-		if (!this.isSupportedRoomType(this.typeOfRoom)) {
-			return message;
-		}
-
 		const keyID = message.slice(0, 12);
 
 		if (keyID !== this.keyID) {

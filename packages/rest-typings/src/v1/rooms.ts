@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -615,11 +615,7 @@ export type RoomsEndpoints = {
 			tmid?: string;
 			customFields?: string;
 			t?: IMessage['t'];
-			e2e?: IMessage['e2e'];
-			content?: string;
-			encryption?: {
-				version: string;
-			};
+			content?: IE2EEMessage['content'];
 		}) => { message: IMessage | null };
 	};
 

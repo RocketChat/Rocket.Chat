@@ -142,7 +142,9 @@ Meteor.startup(() => {
 			// Should encrypt this message.
 			const msg = await e2eRoom.encrypt(message);
 
-			message.msg = msg;
+			if (msg) {
+				message.msg = msg;
+			}
 			message.t = 'e2e';
 			message.e2e = 'pending';
 			return message;
