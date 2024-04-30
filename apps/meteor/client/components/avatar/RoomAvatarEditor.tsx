@@ -4,11 +4,10 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation, useRoomAvatarPath, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
-import { getAvatarURL } from '../../../app/utils/client/getAvatarURL';
 import { useSingleFileInput } from '../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../lib/utils/isValidImageFormat';
 
@@ -22,6 +21,8 @@ type RoomAvatarEditorProps = {
 const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }: RoomAvatarEditorProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const getRoomAvatarURL = useRoomAvatarPath();
+	const getUserAvatarURL = useUserAvatarPath();
 
 	const handleChangeAvatar = useMutableCallback(async (file) => {
 		const reader = new FileReader();
@@ -46,7 +47,7 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 		!roomAvatar && reset();
 	}, [roomAvatar, reset]);
 
-	const defaultUrl = room.prid ? getAvatarURL({ roomId: room.prid }) : getAvatarURL({ username: `@${room.name}` }); // Discussions inherit avatars from the parent room
+	const defaultUrl = room.prid ? getRoomAvatarURL(room) : getUserAvatarURL(room.name as string); // Discussions inherit avatars from the parent room
 
 	return (
 		<Box borderRadius='x2' maxWidth='x332' w='full' position='relative'>
