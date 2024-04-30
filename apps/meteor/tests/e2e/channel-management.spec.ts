@@ -237,16 +237,15 @@ test.describe.serial('channel-management', () => {
 	});
 
 	test('should truncate the room name for small screens', async ({ page }) => {
-		const hugeName = faker.string.alpha(100);
+		const hugeName = faker.string.alpha(200);
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
 		await poHomeChannel.tabs.room.btnEdit.click();
 		await poHomeChannel.tabs.room.inputName.fill(hugeName);
 		await poHomeChannel.tabs.room.btnSave.click();
 		targetChannel = hugeName;
-
 		await page.setViewportSize({ width: 640, height: 460 });
-		await expect(page.getByRole('heading', { name: hugeName })).toHaveCSS('width', '429px');
+		await expect(page.getByRole('heading', { name: hugeName })).toHaveCSS('width', '421px');
 	});
 
 	test('should info contextualbar when clicking on roomName', async ({ page }) => {
