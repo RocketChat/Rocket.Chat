@@ -464,20 +464,24 @@ export const FileUpload = {
 			return false;
 		}
 
-		if (!settings.get('FileUpload_Restrict_to_room_members') || !file?.rid) {
+		if (!file?.rid) {
 			return true;
 		}
 
-		// Special check for managers/monitors that can access rooms even when no subscription exist for them
-		// And also for agents that have the permission to access the room even after it is closed
-		if (await canAccessRoomIdAsync(file.rid, user._id)) {
-			return true;
+		const fileUploadRestrictedToMembers = settings.get('FileUpload_Restrict_to_room_members');
+		const fileUploadRestrictToUsersWhoCanAccessRoom = settings.get('FileUpload_Restrict_to_users_who_can_access_room');
+
+		if (fileUploadRestrictedToMembers && !fileUploadRestrictToUsersWhoCanAccessRoom) {
+			const sub = await Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { projection: { _id: 1 } });
+			if (!sub) {
+				return false;
+			}
+
+			return !!sub;
 		}
 
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { projection: { _id: 1 } });
-
-		if (subscription) {
-			return true;
+		if (fileUploadRestrictToUsersWhoCanAccessRoom && !fileUploadRestrictedToMembers) {
+			return canAccessRoomIdAsync(file.rid, user._id);
 		}
 
 		return false;
