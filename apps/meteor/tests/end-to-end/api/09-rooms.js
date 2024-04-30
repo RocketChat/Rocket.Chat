@@ -84,6 +84,8 @@ describe('[Rooms]', function () {
 		let user;
 		let userCredentials;
 		let blockedMediaTypes;
+		let testPrivateChannel;
+
 		before(async () => {
 			user = await createUser({ joinDefaultChannels: false });
 			userCredentials = await login(user.username, password);
@@ -100,6 +102,7 @@ describe('[Rooms]', function () {
 			user = undefined;
 
 			await updateSetting('FileUpload_Restrict_to_room_members', false);
+			await updateSetting('FileUpload_Restrict_to_users_who_can_access_room', false);
 			await updateSetting('FileUpload_ProtectFiles', true);
 			await updateSetting('FileUpload_MediaTypeBlackList', blockedMediaTypes);
 		});
@@ -112,6 +115,14 @@ describe('[Rooms]', function () {
 				done();
 			});
 		});
+		it('create a private channel', async () => {
+			const {
+				body: { group },
+			} = await createRoom({ type: 'p', name: `channel.test.private.${Date.now()}-${Math.random()}` });
+
+			testPrivateChannel = group;
+		});
+
 		it("don't upload a file to room with file field other than file", (done) => {
 			request
 				.post(api(`rooms.upload/${testChannel._id}`))
@@ -223,6 +234,7 @@ describe('[Rooms]', function () {
 
 		it('should be able to get the file when no access to the room if setting allows it', async () => {
 			await updateSetting('FileUpload_Restrict_to_room_members', false);
+			await updateSetting('FileUpload_Restrict_to_users_who_can_access_room', false);
 			await request.get(fileNewUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
 			await request.get(fileOldUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
 		});
@@ -237,6 +249,34 @@ describe('[Rooms]', function () {
 			await updateSetting('FileUpload_Restrict_to_room_members', true);
 			await request.get(fileNewUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
 			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+		});
+
+		it('should be able to get the file if not member but can access room if setting allows', async () => {
+			await updateSetting('FileUpload_Restrict_to_room_members', false);
+			await updateSetting('FileUpload_Restrict_to_users_who_can_access_room', true);
+
+			await request.get(fileNewUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+		});
+
+		it('should not be able to get the file if not member and cannot access room', async () => {
+			const { body } = await request
+				.post(api(`rooms.upload/${testPrivateChannel._id}`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const fileUrl = `/file-upload/${body.message.file._id}/${body.message.file.name}`;
+
+			await request.get(fileUrl).set(userCredentials).expect(403);
+		});
+
+		it('should respect the setting with less permissions when both are true', async () => {
+			await updateSetting('FileUpload_Restrict_to_room_members', true);
+			await updateSetting('FileUpload_Restrict_to_users_who_can_access_room', true);
+			await request.get(fileNewUrl).set(userCredentials).expect(403);
+			await request.get(fileOldUrl).set(userCredentials).expect(403);
 		});
 
 		it('should not be able to get the file without credentials', async () => {
