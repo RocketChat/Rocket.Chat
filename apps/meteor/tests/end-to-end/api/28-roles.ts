@@ -193,9 +193,9 @@ describe('[Roles]', function () {
 
 		it('should successfully get a list of users in a role', async () => {
 			await request
-				.post(api('roles.getUsersInRole'))
+				.get(api('roles.getUsersInRole'))
 				.set(credentials)
-				.send({
+				.query({
 					roleId: testRoleId,
 				})
 				.expect('Content-Type', 'application/json')
