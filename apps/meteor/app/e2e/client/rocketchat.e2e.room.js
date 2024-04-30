@@ -335,6 +335,13 @@ export class E2ERoom extends Emitter {
 		}
 	}
 
+	async sha256Hash(text) {
+		const encoder = new TextEncoder();
+		const data = encoder.encode(text);
+		const hashArray = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', data)));
+		return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+	}
+
 	// Encrypts files before upload. I/O is in arraybuffers.
 	async encryptFile(file) {
 		// if (!this.isSupportedRoomType(this.typeOfRoom)) {
@@ -355,7 +362,9 @@ export class E2ERoom extends Emitter {
 
 		const exportedKey = await window.crypto.subtle.exportKey('jwk', key);
 
-		const encryptedFile = new File([toArrayBuffer(result)], file.name);
+		const fileName = await this.sha256Hash(file.name);
+
+		const encryptedFile = new File([toArrayBuffer(result)], fileName);
 
 		return {
 			file: encryptedFile,
