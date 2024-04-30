@@ -8,7 +8,7 @@ import type i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
 import moment from 'moment';
 import type { ReactElement, ReactNode } from 'react';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
 import { CachedCollectionManager } from '../../app/ui-cached-collection/client';
@@ -63,13 +63,14 @@ const useCustomTranslations = (i18n: typeof i18next) => {
 };
 
 const localeCache = new Map<string, Promise<string>>();
+let isI18nInitialized = false;
 
 const useI18next = (lng: string): typeof i18next => {
-	const initPromise = useRef<Promise<any> | undefined>();
 	// i18n.init is async, so there's a chance a race condition happens and it is initialized twice
 	// This breaks translations because it loads `lng` in the first init but not the second.
-	if (!i18n.isInitialized && !initPromise.current) {
-		initPromise.current = i18n.init({
+	if (!isI18nInitialized) {
+		isI18nInitialized = true;
+		i18n.init({
 			lng,
 			fallbackLng: 'en',
 			ns: availableTranslationNamespaces,
