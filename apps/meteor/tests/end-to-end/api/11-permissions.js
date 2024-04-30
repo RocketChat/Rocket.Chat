@@ -59,14 +59,13 @@ describe('[Permissions]', function () {
 		let testUser;
 		let testUserCredentials;
 		before(async () => {
-			const testUser = await createUser();
+			testUser = await createUser();
 			testUserCredentials = await login(testUser.username, password);
 			await updatePermission('access-permissions', ['admin']);
 		});
 
 		after(async () => {
 			await deleteUser(testUser);
-			await updatePermission('access-permissions', ['admin']);
 		});
 
 		it('should change the permissions on the server', (done) => {
