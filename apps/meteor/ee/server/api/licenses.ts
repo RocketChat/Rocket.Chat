@@ -8,13 +8,13 @@ import { hasPermissionAsync } from '../../../app/authorization/server/functions/
 
 API.v1.addRoute(
 	'licenses.get',
-	{ authRequired: true, deprecation: { version: '7.0.0', alternatives: ['licenses.info'] } },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-privileged-setting'],
+		deprecation: { version: '7.0.0', alternatives: ['licenses.info'] },
+	},
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
-				return API.v1.unauthorized();
-			}
-
 			const license = License.getUnmodifiedLicenseAndModules();
 			const licenses = license ? [license] : [];
 
@@ -40,16 +40,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'licenses.add',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['edit-privileged-setting'] },
 	{
 		async post() {
 			check(this.bodyParams, {
 				license: String,
 			});
-
-			if (!(await hasPermissionAsync(this.userId, 'edit-privileged-setting'))) {
-				return API.v1.unauthorized();
-			}
 
 			const { license } = this.bodyParams;
 			if (!(await License.validateFormat(license))) {
