@@ -3,7 +3,7 @@ import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { updatePermission } from '/tests/data/permissions.helper.js';
+import { updatePermission } from '../../data/permissions.helper.js';
 
 describe('[Roles]', function () {
 	this.retries(0);
