@@ -223,16 +223,6 @@ export interface IMessage extends IRocketChatRecord {
 	};
 
 	customFields?: IMessageCustomFields;
-
-	content?:
-		| string
-		| {
-				attachments?: MessageAttachment[];
-				file: {
-					iv: string;
-					key: JsonWebKey;
-				};
-		  };
 }
 
 export type MessageSystem = {
@@ -367,6 +357,10 @@ export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'vo
 export type IE2EEMessage = IMessage & {
 	t: 'e2e';
 	e2e: 'pending' | 'done';
+	content?: {
+		algorithm: 'rc.v1.aes-sha2';
+		ciphertext: string; // Encrypted subset JSON of IMessage
+	};
 };
 
 export interface IOTRMessage extends IMessage {

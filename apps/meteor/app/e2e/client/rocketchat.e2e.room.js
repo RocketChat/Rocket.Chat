@@ -375,27 +375,23 @@ export class E2ERoom extends Emitter {
 
 	// Encrypts messages
 	async encryptText(data) {
-		if (!(typeof data === 'function' || (typeof data === 'object' && !!data))) {
-			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
-		}
-
-		if (!this.isSupportedRoomType(this.typeOfRoom)) {
-			return data;
-		}
-
 		const vector = crypto.getRandomValues(new Uint8Array(16));
-		let result;
-		try {
-			result = await encryptAES(vector, this.groupSessionKey, data);
-		} catch (error) {
-			return this.error('Error encrypting message: ', error);
-		}
 
-		return this.keyID + Base64.encode(joinVectorAndEcryptedData(vector, result));
+		try {
+			const result = await encryptAES(vector, this.groupSessionKey, data);
+			return this.keyID + Base64.encode(joinVectorAndEcryptedData(vector, result));
+		} catch (error) {
+			this.error('Error encrypting message: ', error);
+			throw error;
+		}
 	}
 
 	// Helper function for encryption of messages
 	encrypt(message) {
+		if (!this.isSupportedRoomType(this.typeOfRoom)) {
+			return;
+		}
+
 		const ts = new Date();
 
 		const data = new TextEncoder('UTF-8').encode(

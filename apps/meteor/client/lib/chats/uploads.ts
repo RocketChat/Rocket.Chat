@@ -1,4 +1,4 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IE2EEMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
 
@@ -44,7 +44,7 @@ const send = async (
 		tmid?: string;
 		t?: IMessage['t'];
 	},
-	getContent?: (fileId: string, fileUrl: string) => Promise<string>,
+	getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
 ): Promise<void> => {
 	const id = Random.id();
 
@@ -167,6 +167,6 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 	send: (
 		file: File,
 		{ description, msg, t }: { description?: string; msg?: string; t?: IMessage['t'] },
-		getContent?: (fileId: string, fileUrl: string) => Promise<string>,
+		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
 	): Promise<void> => send(file, { description, msg, rid, tmid, t }, getContent),
 });

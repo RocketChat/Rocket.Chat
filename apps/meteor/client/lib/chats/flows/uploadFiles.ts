@@ -1,4 +1,4 @@
-import type { IMessage, FileAttachmentProps } from '@rocket.chat/core-typings';
+import type { IMessage, FileAttachmentProps, IE2EEMessage } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { EJSON } from 'meteor/ejson';
 
@@ -33,8 +33,8 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 
 	const uploadFile = (
 		file: File,
-		extraData?: Pick<IMessage, 't' | 'e2e' | 'content'> & { description?: string },
-		getContent?: (fileId: string, fileUrl: string) => Promise<string>,
+		extraData?: Pick<IMessage, 't' | 'e2e'> & { description?: string },
+		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
 	) => {
 		chat.uploads.send(
 			file,
@@ -91,7 +91,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					const encryptedFile = await e2eRoom.encryptFile(file);
 
 					if (encryptedFile) {
-						const getContent = async (_id: string, fileUrl: string) => {
+						const getContent = async (_id: string, fileUrl: string): Promise<IE2EEMessage['content']> => {
 							const attachments = [];
 
 							const attachment: FileAttachmentProps = {
@@ -100,6 +100,8 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 								description,
 								title_link: fileUrl,
 								title_link_download: true,
+								key: encryptedFile.key,
+								iv: encryptedFile.iv,
 							};
 
 							if (/^image\/.+/.test(file.type)) {
@@ -135,19 +137,16 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 								});
 							}
 
-							const data = new TextEncoder('UTF-8').encode(
+							const data = new TextEncoder().encode(
 								EJSON.stringify({
-									file: {
-										// url
-										key: encryptedFile.key,
-										iv: encryptedFile.iv,
-										type: file.type,
-									},
 									attachments,
 								}),
 							);
 
-							return e2eRoom.encryptText(data);
+							return {
+								algorithm: 'rc.v1.aes-sha2',
+								ciphertext: await e2eRoom.encryptText(data),
+							};
 						};
 
 						uploadFile(

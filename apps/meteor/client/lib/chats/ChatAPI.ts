@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IE2EEMessage } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
 
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -103,7 +103,7 @@ export type UploadsAPI = {
 	send(
 		file: File,
 		{ description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] },
-		getContent?: (fileId: string, fileUrl: string) => Promise<string>,
+		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
 	): Promise<void>;
 };
 
