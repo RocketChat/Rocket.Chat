@@ -1,5 +1,18 @@
 # rocketchat-services
 
+## 1.1.31
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.2
+  - @rocket.chat/rest-typings@6.7.2
+  - @rocket.chat/core-services@0.3.13
+  - @rocket.chat/model-typings@0.3.9
+  - @rocket.chat/models@0.0.37
+  </details>
+
 ## 1.1.30
 
 ### Patch Changes

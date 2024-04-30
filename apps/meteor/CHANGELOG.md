@@ -1,5 +1,41 @@
 # @rocket.chat/meteor
 
+## 6.7.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#32315](https://github.com/RocketChat/Rocket.Chat/pull/32315) by [@dionisio-bot](https://github.com/dionisio-bot)) fixed Engagement Dashboard and Device Management admin pages loading indefinitely
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.2
+  - @rocket.chat/rest-typings@6.7.2
+  - @rocket.chat/api-client@0.1.31
+  - @rocket.chat/license@0.1.13
+  - @rocket.chat/omnichannel-services@0.1.13
+  - @rocket.chat/pdf-worker@0.0.37
+  - @rocket.chat/presence@0.1.13
+  - @rocket.chat/apps@0.0.4
+  - @rocket.chat/core-services@0.3.13
+  - @rocket.chat/cron@0.0.33
+  - @rocket.chat/gazzodown@5.0.2
+  - @rocket.chat/model-typings@0.3.9
+  - @rocket.chat/ui-contexts@5.0.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/fuselage-ui-kit@5.0.2
+  - @rocket.chat/models@0.0.37
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/ui-avatar@1.0.2
+  - @rocket.chat/ui-client@5.0.2
+  - @rocket.chat/ui-video-conf@5.0.2
+  - @rocket.chat/web-ui-registration@5.0.2
+  - @rocket.chat/instance-status@0.0.37
+  </details>
+
 ## 6.7.1
 
 ### Patch Changes
