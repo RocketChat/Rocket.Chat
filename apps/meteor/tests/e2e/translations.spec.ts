@@ -29,8 +29,24 @@ test.describe('Translations', () => {
         expect((await setUserPreferences(api, { language: '' })).status()).toBe(200);
     });
 
-    // Browser language not working on CI for some reason. This test passes locally.
-    test.describe.skip('Browser', async () => {
+    test('expect to keep chosen language after refresh', async ({ page, api }) => {
+        await page.goto('/home');
+        await page.waitForTimeout(5000);
+        await expect(page.locator('h2')).toHaveText('Welcome to Rocket.Chat');
+
+        const response = page.waitForResponse('**/i18n/pt-BR.json');
+        expect((await setUserPreferences(api, { language: 'pt-BR' })).status()).toBe(200);
+        await response;
+        await expect(page.locator('h2')).toHaveText('Bem-vindo ao Rocket.Chat');
+
+        // Test if selected language remaing after refresh
+        await page.goto('/home');
+        await expect(page.locator('h2')).toHaveText('Bem-vindo ao Rocket.Chat');
+
+        expect((await setUserPreferences(api, { language: '' })).status()).toBe(200);
+    });
+
+    test.describe('Browser', async () => {
         test.use({ locale: 'pt-BR' });
         test('expect to display text in the browser\'s language', async ({ page }) => {
             await page.goto('/home');
