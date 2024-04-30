@@ -36,7 +36,11 @@ export const ComposerOmnichannelInquiry = (): ReactElement => {
 	return (
 		<MessageFooterCallout aria-busy={result.isLoading}>
 			<MessageFooterCalloutContent>{t('you_are_in_preview_mode_of_incoming_livechat')}</MessageFooterCalloutContent>
-			<MessageFooterCalloutAction disabled={result.isLoading || user?.status === 'offline'} onClick={handleTakeInquiry}>
+			<MessageFooterCalloutAction
+				{...(user?.status === 'offline' && { title: t('meteor_status_offline') })}
+				disabled={result.isLoading || user?.status === 'offline'}
+				onClick={handleTakeInquiry}
+			>
 				{t('Take_it')}
 			</MessageFooterCalloutAction>
 		</MessageFooterCallout>
