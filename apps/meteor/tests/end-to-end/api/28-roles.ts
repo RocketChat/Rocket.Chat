@@ -156,7 +156,7 @@ describe('[Roles]', function () {
 				return;
 			}
 
-			const testUser = await createUser();
+			testUser = await createUser();
 			testUserCredentials = await login(testUser.username, password);
 			await updatePermission('access-permissions', ['admin']);
 			await request
@@ -196,7 +196,7 @@ describe('[Roles]', function () {
 				.get(api('roles.getUsersInRole'))
 				.set(credentials)
 				.query({
-					roleId: testRoleId,
+					role: testRoleId,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -213,7 +213,7 @@ describe('[Roles]', function () {
 				.get(api('roles.getUsersInRole'))
 				.set(testUserCredentials)
 				.query({
-					roleId: testRoleId,
+					role: testRoleId,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(403)
@@ -235,7 +235,7 @@ describe('[Roles]', function () {
 				return;
 			}
 
-			const testUser = await createUser();
+			testUser = await createUser();
 			testUserCredentials = await login(testUser.username, password);
 			await updatePermission('access-permissions', ['admin']);
 			await request
@@ -307,7 +307,7 @@ describe('[Roles]', function () {
 			}
 
 			await updatePermission('access-permissions', ['admin']);
-			const testUser = await createUser();
+			testUser = await createUser();
 			testUserCredentials = await login(testUser.username, password);
 			await request
 				.post(api('roles.create'))
