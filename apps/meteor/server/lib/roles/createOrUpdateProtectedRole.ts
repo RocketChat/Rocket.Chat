@@ -1,7 +1,8 @@
 import type { IRole, AtLeast } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
 
-// TODO: roles-out-of-dbwatcher
+import { notifyListenerOnRoleChanges } from '../../../app/lib/server/lib/notifyListenerOnRoleChanges';
+
 // No need to broadcast from here since this function will only iterate over default roles
 export const createOrUpdateProtectedRoleAsync = async (
 	roleId: string,
@@ -10,8 +11,9 @@ export const createOrUpdateProtectedRoleAsync = async (
 	const role = await Roles.findOneById<Pick<IRole, '_id' | 'name' | 'scope' | 'description' | 'mandatory2fa'>>(roleId, {
 		projection: { name: 1, scope: 1, description: 1, mandatory2fa: 1 },
 	});
+
 	if (role) {
-		await Roles.updateById(
+		const updatedRole = await Roles.updateById(
 			roleId,
 			roleData.name || role.name,
 			roleData.scope || role.scope,
@@ -19,10 +21,12 @@ export const createOrUpdateProtectedRoleAsync = async (
 			roleData.mandatory2fa || role.mandatory2fa,
 		);
 
+		void notifyListenerOnRoleChanges(updatedRole._id);
+
 		return;
 	}
 
-	await Roles.insertOne({
+	const insertedRole = await Roles.insertOne({
 		_id: roleId,
 		scope: 'Users',
 		description: '',
@@ -30,4 +34,6 @@ export const createOrUpdateProtectedRoleAsync = async (
 		...roleData,
 		protected: true,
 	});
+
+	void notifyListenerOnRoleChanges(insertedRole.insertedId, 'inserted');
 };
