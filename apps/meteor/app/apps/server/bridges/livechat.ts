@@ -15,7 +15,7 @@ import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator' {
 	interface IExtraRoomParams {
-		customFields?: Record<string, any>;
+		customFields?: Record<string, unknown>;
 	}
 }
 
@@ -87,7 +87,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		visitor: IVisitor,
 		agent: IUser,
 		appId: string,
-		{ source, customFields, ...extraData }: IExtraRoomParams = {},
+		{ source, ...extraData }: IExtraRoomParams = {},
 	): Promise<ILivechatRoom> {
 		this.orch.debugLog(`The App ${appId} is creating a livechat room.`);
 
@@ -115,7 +115,6 @@ export class AppLivechatBridge extends LivechatBridge {
 						}),
 				},
 			},
-			extraParams: customFields && { customFields },
 			agent: agentRoom,
 			extraData,
 		});
