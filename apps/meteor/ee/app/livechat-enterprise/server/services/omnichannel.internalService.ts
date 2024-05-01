@@ -5,6 +5,7 @@ import type { IOmnichannelRoom, IUser, ILivechatInquiryRecord, IOmnichannelSyste
 import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, Subscriptions, LivechatInquiry } from '@rocket.chat/models';
 
+import { notifyListenerOnLivechatInquiryChanges } from '../../../../../app/lib/server/lib/notifyListenerOnLivechatInquiryChanges';
 import { notifyOnRoomChangedById } from '../../../../../app/lib/server/lib/notifyListener';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
@@ -177,6 +178,8 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			LivechatInquiry.queueInquiryAndRemoveDefaultAgent(inquiryId),
 			RoutingManager.removeAllRoomSubscriptions(room),
 		]);
+
+		void notifyListenerOnLivechatInquiryChanges(inquiryId);
 
 		await dispatchAgentDelegated(roomId);
 

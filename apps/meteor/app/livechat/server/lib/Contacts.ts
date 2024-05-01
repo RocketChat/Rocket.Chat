@@ -6,6 +6,7 @@ import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
+import { notifyListenerOnLivechatInquiryChangesByRoomId } from '../../../lib/server/lib/notifyListenerOnLivechatInquiryChanges';
 import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
 import { i18n } from '../../../utils/lib/i18n';
 
@@ -137,6 +138,12 @@ export const Contacts = {
 		if (rooms?.length) {
 			for await (const room of rooms) {
 				const { _id: rid } = room;
+				if (await Rooms.setFnameById(rid, name)) {
+					if (await LivechatInquiry.setNameByRoomId(rid, name)) {
+						void notifyListenerOnLivechatInquiryChangesByRoomId(rid);
+						await Subscriptions.updateDisplayNameByRoomId(rid, name);
+					}
+				}
 
 				await Promise.all([
 					Rooms.setFnameById(rid, name),

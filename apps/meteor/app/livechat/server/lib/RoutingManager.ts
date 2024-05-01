@@ -18,6 +18,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { notifyListenerOnLivechatInquiryChanges } from '../../../lib/server/lib/notifyListenerOnLivechatInquiryChanges';
 import { settings } from '../../../settings/server';
 import {
 	createLivechatSubscription,
@@ -192,6 +193,9 @@ export const RoutingManager: Routing = {
 		}
 
 		await dispatchInquiryQueued(inquiry);
+
+		void notifyListenerOnLivechatInquiryChanges(inquiry._id);
+
 		return true;
 	},
 
@@ -250,10 +254,13 @@ export const RoutingManager: Routing = {
 		}
 
 		await LivechatInquiry.takeInquiry(_id);
+
 		const inq = await this.assignAgent(inquiry as InquiryWithAgentInfo, agent);
 		logger.info(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
 
 		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);
+
+		void notifyListenerOnLivechatInquiryChanges(_id);
 
 		return LivechatRooms.findOneById(rid);
 	},
@@ -282,6 +289,7 @@ export const RoutingManager: Routing = {
 		if (defaultAgent) {
 			logger.debug(`Delegating Inquiry ${inquiry._id} to agent ${defaultAgent.username}`);
 			await LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
+			void notifyListenerOnLivechatInquiryChanges(inquiry._id);
 		}
 
 		logger.debug(`Queueing inquiry ${inquiry._id}`);

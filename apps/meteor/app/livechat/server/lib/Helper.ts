@@ -481,6 +481,8 @@ export const updateChatDepartment = async ({
 		Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId),
 	]);
 
+	// void notifyListenerOnLivechatInquiryChangesByRoomId(rid);
+
 	setImmediate(() => {
 		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
 			type: LivechatTransferEventType.DEPARTMENT,
@@ -628,6 +630,8 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 			logger.debug(`Inquiry ${inquiry._id} not found`);
 			throw new Error('error-invalid-inquiry');
 		}
+
+		// void notifyListenerOnLivechatInquiryChanges(inquiry._id);
 
 		await queueInquiry(newInquiry);
 		logger.debug(`Inquiry ${inquiry._id} queued succesfully`);

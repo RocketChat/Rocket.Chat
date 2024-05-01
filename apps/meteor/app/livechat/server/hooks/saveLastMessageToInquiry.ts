@@ -2,6 +2,7 @@ import { isOmnichannelRoom, isEditedMessage } from '@rocket.chat/core-typings';
 import { LivechatInquiry } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { notifyListenerOnLivechatInquiryChangesByRoomId } from '../../../lib/server/lib/notifyListenerOnLivechatInquiryChanges';
 import { settings } from '../../../settings/server';
 import { RoutingManager } from '../lib/RoutingManager';
 
@@ -22,6 +23,8 @@ callbacks.add(
 		}
 
 		await LivechatInquiry.setLastMessageByRoomId(room._id, message);
+
+		void notifyListenerOnLivechatInquiryChangesByRoomId(room._id);
 
 		return message;
 	},

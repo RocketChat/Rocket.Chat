@@ -7,6 +7,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { notifyListenerOnLivechatInquiryChanges } from '../../../lib/server/lib/notifyListenerOnLivechatInquiryChanges';
 import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { RoutingManager } from './RoutingManager';
 
@@ -15,6 +16,7 @@ const logger = new Logger('QueueManager');
 export const saveQueueInquiry = async (inquiry: ILivechatInquiryRecord) => {
 	await LivechatInquiry.queueInquiry(inquiry._id);
 	await callbacks.run('livechat.afterInquiryQueued', inquiry);
+	void notifyListenerOnLivechatInquiryChanges(inquiry._id);
 };
 
 export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent?: SelectedAgent) => {
@@ -137,6 +139,7 @@ export const QueueManager: queueManager = {
 		if (oldInquiry) {
 			logger.debug(`Removing old inquiry (${oldInquiry._id}) for room ${rid}`);
 			await LivechatInquiry.removeByRoomId(rid);
+			void notifyListenerOnLivechatInquiryChanges(rid, 'removed');
 		}
 
 		const guest = {

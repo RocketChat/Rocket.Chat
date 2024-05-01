@@ -4,6 +4,7 @@ import { LivechatRooms, LivechatVisitors, LivechatInquiry } from '@rocket.chat/m
 import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { notifyListenerOnLivechatInquiryChangesByRoomId } from '../../../lib/server/lib/notifyListenerOnLivechatInquiryChanges';
 
 callbacks.add(
 	'afterSaveMessage',
@@ -41,6 +42,8 @@ callbacks.add(
 				LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear),
 				LivechatInquiry.markInquiryActiveForPeriod(room._id, monthYear),
 			]);
+
+			void notifyListenerOnLivechatInquiryChangesByRoomId(room._id);
 		}
 
 		if (room.responseBy) {
