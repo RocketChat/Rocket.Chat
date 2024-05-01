@@ -259,21 +259,19 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		protectedRole = true,
 		mandatory2fa = false,
 	): Promise<IRole> {
-		const res = await this.insertOne({
+		const role = {
 			name,
 			scope,
 			description,
 			protected: protectedRole,
 			mandatory2fa,
-		});
+		};
+
+		const res = await this.insertOne(role);
 
 		return {
-			_id: res.insertedId as IRole['_id'],
-			name,
-			scope,
-			description,
-			protected: protectedRole,
-			mandatory2fa,
+			_id: res.insertedId,
+			...role,
 		};
 	}
 

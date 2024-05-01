@@ -8,16 +8,17 @@ export async function notifyListenerOnRoleChanges(
 	rid: IRole['_id'],
 	clientAction: ClientAction = 'updated',
 	existingRoleData?: IRole,
-	args?: { [key: string]: any },
 ): Promise<void> {
-	if (!dbWatchersDisabled) return;
+	if (!dbWatchersDisabled) {
+		return;
+	}
 
 	const role = existingRoleData || (await Roles.findOneById(rid));
 
 	if (role) {
 		void api.broadcast('watch.roles', {
 			clientAction,
-			role: { ...role, ...args },
+			role,
 		});
 	}
 }
