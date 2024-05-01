@@ -7,8 +7,9 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
+import { createLivechatRoom, createLivechatInquiry } from './Helper';
 import { RoutingManager } from './RoutingManager';
+import { Livechat as LivechatTyped } from './LivechatTyped';
 
 const logger = new Logger('QueueManager');
 
@@ -42,7 +43,7 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 	}
 };
 
-type queueManager = {
+interface queueManager {
 	requestRoom: (params: {
 		guest: ILivechatVisitor;
 		rid?: string;
@@ -55,10 +56,37 @@ type queueManager = {
 		extraData?: Record<string, unknown>;
 	}) => Promise<IOmnichannelRoom>;
 	unarchiveRoom: (archivedRoom?: IOmnichannelRoom) => Promise<IOmnichannelRoom>;
-};
+}
 
-export const QueueManager: queueManager = {
-	async requestRoom({ guest, rid = Random.id(), message, roomInfo, agent, extraData }) {
+export const QueueManager = class implements queueManager {
+	private async checkServiceStatus({ guest, agent }: { guest: Pick<ILivechatVisitor, 'department'>; agent?: SelectedAgent }) {
+		if (!agent) {
+			return LivechatTyped.online(guest.department);
+		}
+
+		const { agentId } = agent;
+		const users = await Users.countOnlineAgents(agentId);
+		return users > 0;
+	}
+
+	async requestRoom({
+		guest,
+		rid = Random.id(),
+		message,
+		roomInfo,
+		agent,
+		extraData,
+	}: {
+		guest: ILivechatVisitor;
+		rid?: string;
+		message?: string;
+		roomInfo: {
+			source?: IOmnichannelRoom['source'];
+			[key: string]: unknown;
+		};
+		agent?: SelectedAgent;
+		extraData?: Record<string, unknown>;
+	}) {
 		logger.debug(`Requesting a room for guest ${guest._id}`);
 		check(
 			guest,
@@ -72,7 +100,7 @@ export const QueueManager: queueManager = {
 			}),
 		);
 
-		if (!(await checkServiceStatus({ guest, agent }))) {
+		if (!(await this.checkServiceStatus({ guest, agent }))) {
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 		}
 
@@ -112,9 +140,9 @@ export const QueueManager: queueManager = {
 		}
 
 		return newRoom;
-	},
+	}
 
-	async unarchiveRoom(archivedRoom) {
+	async unarchiveRoom(archivedRoom?: IOmnichannelRoom) {
 		if (!archivedRoom) {
 			throw new Error('no-room-to-unarchive');
 		}
@@ -165,5 +193,5 @@ export const QueueManager: queueManager = {
 		logger.debug(`Inquiry ${inquiry._id} queued`);
 
 		return room;
-	},
+	}
 };

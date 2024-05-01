@@ -443,7 +443,7 @@ class LivechatClass {
 
 		if (!room?.open) {
 			return {
-				room: await this.createRoom({ guest, message: message.msg, roomInfo, agent, extraData }),
+				room: await this.createRoom({ visitor: guest, message: message.msg, roomInfo, agent, extraData }),
 				newRoom: true,
 			};
 		}
