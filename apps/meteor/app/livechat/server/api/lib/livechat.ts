@@ -105,39 +105,6 @@ export async function findOpenRoom(token: string, departmentId?: string): Promis
 		return rooms[0];
 	}
 }
-export function getRoom<
-	E extends Record<string, unknown> & {
-		sla?: string;
-		customFields?: Record<string, unknown>;
-		source?: OmnichannelSourceType;
-	},
->({
-	guest,
-	rid,
-	roomInfo,
-	agent,
-	extraParams,
-}: {
-	guest: ILivechatVisitor;
-	rid: string;
-	roomInfo: {
-		source?: IOmnichannelRoom['source'];
-	};
-	agent?: SelectedAgent;
-	extraParams?: E;
-}): Promise<{ room: IOmnichannelRoom; newRoom: boolean }> {
-	const token = guest?.token;
-
-	const message = {
-		_id: Random.id(),
-		rid,
-		msg: '',
-		token,
-		ts: new Date(),
-	};
-
-	return LivechatTyped.getRoom(guest, message, roomInfo, agent, extraParams);
-}
 
 export async function findAgent(agentId?: string): Promise<void | { hiddenInfo: boolean } | ILivechatAgent> {
 	return normalizeAgent(agentId);

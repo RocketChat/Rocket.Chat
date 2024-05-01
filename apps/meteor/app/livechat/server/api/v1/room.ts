@@ -26,7 +26,7 @@ import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import type { CloseRoomParams } from '../../lib/LivechatTyped';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
+import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { findVisitorInfo } from '../lib/visitors';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
@@ -42,16 +42,15 @@ API.v1.addRoute('livechat/room', {
 
 		check(this.queryParams, extraCheckParams as any);
 
-		const { token, rid: roomId, agentId, ...extraParams } = this.queryParams;
+		const { token, rid, agentId, ...extraParams } = this.queryParams;
 
 		const guest = token && (await findGuest(token));
 		if (!guest) {
 			throw new Error('invalid-token');
 		}
 
-		let room: IOmnichannelRoom | null;
-		if (!roomId) {
-			room = await LivechatRooms.findOneOpenByVisitorToken(token, {});
+		if (!rid) {
+			const room = await LivechatRooms.findOneOpenByVisitorToken(token, {});
 			if (room) {
 				return API.v1.success({ room, newRoom: false });
 			}
@@ -67,18 +66,21 @@ API.v1.addRoute('livechat/room', {
 				}
 			}
 
-			const rid = Random.id();
 			const roomInfo = {
 				source: {
 					type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
 				},
 			};
 
-			const newRoom = await getRoom({ guest, rid, agent, roomInfo, extraParams });
-			return API.v1.success(newRoom);
+			const newRoom = await LivechatTyped.createRoom({ visitor: guest, roomInfo, agent, extraData: extraParams });
+
+			return API.v1.success({
+				room: newRoom,
+				newRoom: true,
+			});
 		}
 
-		const froom = await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, token, {});
+		const froom = await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rid, token, {});
 		if (!froom) {
 			throw new Error('invalid-room');
 		}
