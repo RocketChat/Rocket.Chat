@@ -5,7 +5,7 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper';
-import { password } from '../../data/user';
+import { password, adminUsername } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper.js';
 
 describe('[Roles]', function () {
@@ -152,13 +152,14 @@ describe('[Roles]', function () {
 		let testRoleId = '';
 
 		before(async () => {
+			await updatePermission('access-permissions', ['admin']);
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+
 			if (!isEnterprise) {
 				return;
 			}
 
-			testUser = await createUser();
-			testUserCredentials = await login(testUser.username, password);
-			await updatePermission('access-permissions', ['admin']);
 			await request
 				.post(api('roles.create'))
 				.set(credentials)
@@ -178,7 +179,7 @@ describe('[Roles]', function () {
 				.set(credentials)
 				.send({
 					roleId: testRoleId,
-					userId: credentials['X-User-Id'],
+					username: adminUsername,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -220,17 +221,12 @@ describe('[Roles]', function () {
 				});
 		});
 
-		it('should fail when user does NOT have the access-permissions permission', async function () {
-			if (!isEnterprise) {
-				this.skip();
-				return;
-			}
-
+		it('should fail when user does NOT have the access-permissions permission', async () => {
 			await request
 				.get(api('roles.getUsersInRole'))
 				.set(testUserCredentials)
 				.query({
-					role: testRoleId,
+					role: 'admin',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(403)
@@ -272,9 +268,9 @@ describe('[Roles]', function () {
 		});
 
 		after(async () => {
-			await request.post(api('roles.delete')).set(credentials).send({
-				roleId: testRoleId,
-			});
+			if (!isEnterprise) {
+				return;
+			}
 			await deleteUser(testUser);
 		});
 
