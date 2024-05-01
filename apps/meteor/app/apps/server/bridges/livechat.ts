@@ -98,7 +98,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		}
 
 		const room = await LivechatTyped.createRoom({
-			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
+			visitor: this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			roomInfo: {
 				source: {
 					type: OmnichannelSourceType.APP,
