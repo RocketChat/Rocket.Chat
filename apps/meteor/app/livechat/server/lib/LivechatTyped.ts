@@ -37,7 +37,6 @@ import {
 	Rooms,
 	LivechatCustomField,
 } from '@rocket.chat/models';
-import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -368,6 +367,59 @@ class LivechatClass {
 		}
 	}
 
+	async createRoom({
+		guest,
+		message,
+		rid,
+		roomInfo,
+		agent,
+		extraData,
+	}: {
+		guest: ILivechatVisitor;
+		message?: string;
+		rid?: string;
+		roomInfo: {
+			source?: IOmnichannelRoom['source'];
+			[key: string]: unknown;
+		};
+		agent?: SelectedAgent;
+		extraData?: Record<string, unknown>;
+	}) {
+		if (!this.enabled()) {
+			throw new Meteor.Error('error-omnichannel-is-disabled');
+		}
+
+		const defaultAgent = await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
+		// if no department selected verify if there is at least one active and pick the first
+		if (!defaultAgent && !guest.department) {
+			const department = await this.getRequiredDepartment();
+			Livechat.logger.debug(`No department or default agent selected for ${guest._id}`);
+
+			if (department) {
+				Livechat.logger.debug(`Assigning ${guest._id} to department ${department._id}`);
+				guest.department = department._id;
+			}
+		}
+
+		// delegate room creation to QueueManager
+		Livechat.logger.debug(`Calling QueueManager to request a room for visitor ${guest._id}`);
+
+		const room = await QueueManager.requestRoom({
+			guest,
+			message,
+			rid,
+			roomInfo,
+			agent: defaultAgent,
+			extraData,
+		});
+
+		Livechat.logger.debug(`Room obtained for visitor ${guest._id} -> ${room._id}`);
+
+		await Messages.setRoomIdByToken(guest.token, room._id);
+
+		return room;
+	}
+
 	async getRoom(
 		guest: ILivechatVisitor,
 		message: Pick<IMessage, 'rid' | 'msg' | 'token'>,
@@ -382,63 +434,25 @@ class LivechatClass {
 			throw new Meteor.Error('error-omnichannel-is-disabled');
 		}
 		Livechat.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
-		let room = await LivechatRooms.findOneById(message.rid);
-		let newRoom = false;
+		const room = await LivechatRooms.findOneById(message.rid);
 
 		if (room && !room.open) {
 			Livechat.logger.debug(`Last room for visitor ${guest._id} closed. Creating new one`);
-			message.rid = Random.id();
-			room = null;
 		}
 
-		if (
-			guest.department &&
-			!(await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id'>>(guest.department, { projection: { _id: 1 } }))
-		) {
-			await LivechatVisitors.removeDepartmentById(guest._id);
-			const tmpGuest = await LivechatVisitors.findOneEnabledById(guest._id);
-			if (tmpGuest) {
-				guest = tmpGuest;
-			}
+		if (!room?.open) {
+			return {
+				room: await this.createRoom({ guest, message: message.msg, roomInfo, agent, extraData }),
+				newRoom: true,
+			};
 		}
 
-		if (room == null) {
-			const defaultAgent = await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
-			// if no department selected verify if there is at least one active and pick the first
-			if (!defaultAgent && !guest.department) {
-				const department = await this.getRequiredDepartment();
-				Livechat.logger.debug(`No department or default agent selected for ${guest._id}`);
-
-				if (department) {
-					Livechat.logger.debug(`Assigning ${guest._id} to department ${department._id}`);
-					guest.department = department._id;
-				}
-			}
-
-			// delegate room creation to QueueManager
-			Livechat.logger.debug(`Calling QueueManager to request a room for visitor ${guest._id}`);
-			room = await QueueManager.requestRoom({
-				guest,
-				message,
-				roomInfo,
-				agent: defaultAgent,
-				extraData,
-			});
-			newRoom = true;
-
-			Livechat.logger.debug(`Room obtained for visitor ${guest._id} -> ${room._id}`);
-		}
-
-		if (!room || room.v.token !== guest.token) {
+		if (room.v.token !== guest.token) {
 			Livechat.logger.debug(`Visitor ${guest._id} trying to access another visitor's room`);
 			throw new Meteor.Error('cannot-access-room');
 		}
 
-		if (newRoom) {
-			await Messages.setRoomIdByToken(guest.token, room._id);
-		}
-
-		return { room, newRoom };
+		return { room, newRoom: false };
 	}
 
 	async checkOnlineAgents(department?: string, agent?: { agentId: string }, skipFallbackCheck = false): Promise<boolean> {
