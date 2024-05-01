@@ -1,8 +1,9 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { ILivechatInquiryRecord, ILivechatVisitor, IMessage, IOmnichannelRoom, SelectedAgent } from '@rocket.chat/core-typings';
+import type { ILivechatInquiryRecord, ILivechatVisitor, IOmnichannelRoom, SelectedAgent } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -45,7 +46,8 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 type queueManager = {
 	requestRoom: (params: {
 		guest: ILivechatVisitor;
-		message: Pick<IMessage, 'rid' | 'msg'>;
+		rid?: string;
+		message?: string;
 		roomInfo: {
 			source?: IOmnichannelRoom['source'];
 			[key: string]: unknown;
@@ -57,14 +59,8 @@ type queueManager = {
 };
 
 export const QueueManager: queueManager = {
-	async requestRoom({ guest, message, roomInfo, agent, extraData }) {
+	async requestRoom({ guest, rid = Random.id(), message, roomInfo, agent, extraData }) {
 		logger.debug(`Requesting a room for guest ${guest._id}`);
-		check(
-			message,
-			Match.ObjectIncluding({
-				rid: String,
-			}),
-		);
 		check(
 			guest,
 			Match.ObjectIncluding({
@@ -81,7 +77,6 @@ export const QueueManager: queueManager = {
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 		}
 
-		const { rid } = message;
 		const name = (roomInfo?.fname as string) || guest.name || guest.username;
 
 		const room = await LivechatRooms.findOneById(await createLivechatRoom(rid, name, guest, roomInfo, extraData));
@@ -154,7 +149,15 @@ export const QueueManager: queueManager = {
 		if (!room) {
 			throw new Error('room-not-found');
 		}
-		const inquiry = await LivechatInquiry.findOneById(await createLivechatInquiry({ rid, name, guest, message, extraData: { source } }));
+		const inquiry = await LivechatInquiry.findOneById(
+			await createLivechatInquiry({
+				rid,
+				name,
+				guest,
+				message: message?.msg,
+				extraData: { source },
+			}),
+		);
 		if (!inquiry) {
 			throw new Error('inquiry-not-found');
 		}
