@@ -274,7 +274,14 @@ describe('[Roles]', function () {
 			await deleteUser(testUser);
 		});
 
-		it('should fail deleting a role when user does NOT have the access-permissions permission', async () => {
+		it('should fail deleting a role when user does NOT have the access-permissions permission', async function () {
+			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+			if (!isEnterprise) {
+				this.skip();
+				return;
+			}
+
 			await request
 				.post(api('roles.delete'))
 				.set(testUserCredentials)
