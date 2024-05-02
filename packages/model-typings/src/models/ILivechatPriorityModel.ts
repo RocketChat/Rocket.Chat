@@ -7,6 +7,6 @@ export interface ILivechatPriorityModel extends IBaseModel<ILivechatPriority> {
 	findOneByIdOrName(_idOrName: string, options?: any): Promise<ILivechatPriority | null>;
 	findOneNameUsingRegex(_idOrName: string, options?: any): Promise<ILivechatPriority | null>;
 	canResetPriorities(): Promise<boolean>;
-	resetPriorities(): Promise<void>;
+	resetPriorities(): Promise<ILivechatPriority[]>;
 	updatePriority(_id: string, reset: boolean, name?: string): Promise<ModifyResult<ILivechatPriority>>;
 }

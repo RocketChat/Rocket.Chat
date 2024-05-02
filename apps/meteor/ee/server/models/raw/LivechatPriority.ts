@@ -52,8 +52,12 @@ export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements I
 		return Boolean(await this.findOne({ dirty: true }, { projection: { _id: 1 } }));
 	}
 
-	async resetPriorities(): Promise<void> {
-		await this.updateMany({ dirty: true }, [{ $set: { dirty: false } }, { $unset: 'name' }]);
+	async resetPriorities(): Promise<ILivechatPriority[]> {
+		const eligiblePriorities = await this.find({ dirty: true }).toArray();
+
+		await this.updateMany({ _id: { $in: eligiblePriorities.map(({ _id }) => _id) } }, [{ $set: { dirty: false } }, { $unset: 'name' }]);
+
+		return eligiblePriorities;
 	}
 
 	async updatePriority(_id: string, reset: boolean, name?: string): Promise<ModifyResult<ILivechatPriority>> {
