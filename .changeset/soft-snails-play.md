@@ -1,5 +1,5 @@
 ---
-"@rocket.chat/meteor": major
+"@rocket.chat/meteor": patch
 "@rocket.chat/rest-typings": minor
 ---
 
