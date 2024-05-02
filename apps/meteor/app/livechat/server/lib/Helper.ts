@@ -351,9 +351,11 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 		return;
 	}
 
-	if (!agent || !(await allowAgentSkipQueue(agent))) {
-		await saveQueueInquiry(inquiry);
+	if (agent && !(await allowAgentSkipQueue(agent))) {
+		return;
 	}
+
+	await saveQueueInquiry(inquiry);
 
 	// Alert only the online agents of the queued request
 	const onlineAgents = await LivechatTyped.getOnlineAgents(department, agent);
