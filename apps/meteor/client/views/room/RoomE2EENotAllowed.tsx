@@ -14,7 +14,7 @@ import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-const DOCS_URL = 'https://rocket.chat/docs/user-guides/end-to-end-encryption/';
+const DOCS_URL = 'https://go.rocket.chat/i/e2ee-guide';
 
 type RoomE2EENotAllowedProps = {
 	title: string;
