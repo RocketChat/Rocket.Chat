@@ -176,10 +176,21 @@ export const QueueManager = class {
 				department: guest.department,
 			})) || undefined;
 
-		const serviceStatus = defaultAgent || (guest.department && (await getDepartment(guest.department)));
+		const department = guest.department && (await getDepartment(guest.department));
 
-		if (!serviceStatus) {
+		if (agent && !defaultAgent) {
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+		}
+
+		if (guest.department && !department) {
+			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+		}
+
+		if (!agent && !guest.department) {
+			const serviceStatus = await Livechat.checkOnlineAgents();
+			if (!serviceStatus) {
+				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+			}
 		}
 
 		const name = (roomInfo?.fname as string) || guest.name || guest.username;
