@@ -1,5 +1,14 @@
 # @rocket.chat/rest-typings
 
+## 6.8.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.1
+  </details>
+
 ## 6.8.0-rc.0
 
 ### Minor Changes
@@ -19,6 +28,7 @@
   - @rocket.chat/core-typings@6.8.0-rc.0
   - @rocket.chat/message-parser@0.31.29
   - @rocket.chat/ui-kit@0.33.0
+
 ## 6.7.1
 
 ### Patch Changes

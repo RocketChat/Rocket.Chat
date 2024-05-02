@@ -1,5 +1,7 @@
 # @rocket.chat/core-typings
 
+## 6.8.0-rc.1
+
 ## 6.8.0-rc.0
 
 ### Minor Changes
@@ -16,6 +18,7 @@
   - @rocket.chat/message-parser@0.31.29
   - @rocket.chat/ui-kit@0.33.0
   </details>
+
 ## 6.7.1
 
 ## 6.7.0
