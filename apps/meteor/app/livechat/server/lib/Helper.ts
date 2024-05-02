@@ -644,16 +644,6 @@ export const normalizeTransferredByData = (transferredBy: TransferByData, room: 
 	};
 };
 
-export const checkServiceStatus = async ({ guest, agent }: { guest: Pick<ILivechatVisitor, 'department'>; agent?: SelectedAgent }) => {
-	if (!agent) {
-		return LivechatTyped.online(guest.department);
-	}
-
-	const { agentId } = agent;
-	const users = await Users.countOnlineAgents(agentId);
-	return users > 0;
-};
-
 const parseFromIntOrStr = (value: string | number) => {
 	if (typeof value === 'number') {
 		return value;

@@ -368,14 +368,14 @@ class LivechatClass {
 	}
 
 	async createRoom({
-		guest,
+		visitor,
 		message,
 		rid,
 		roomInfo,
 		agent,
 		extraData,
 	}: {
-		guest: ILivechatVisitor;
+		visitor: ILivechatVisitor;
 		message?: string;
 		rid?: string;
 		roomInfo: {
@@ -389,23 +389,23 @@ class LivechatClass {
 			throw new Meteor.Error('error-omnichannel-is-disabled');
 		}
 
-		const defaultAgent = await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
+		const defaultAgent = await callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, visitor);
 		// if no department selected verify if there is at least one active and pick the first
-		if (!defaultAgent && !guest.department) {
+		if (!defaultAgent && !visitor.department) {
 			const department = await this.getRequiredDepartment();
-			Livechat.logger.debug(`No department or default agent selected for ${guest._id}`);
+			Livechat.logger.debug(`No department or default agent selected for ${visitor._id}`);
 
 			if (department) {
-				Livechat.logger.debug(`Assigning ${guest._id} to department ${department._id}`);
-				guest.department = department._id;
+				Livechat.logger.debug(`Assigning ${visitor._id} to department ${department._id}`);
+				visitor.department = department._id;
 			}
 		}
 
 		// delegate room creation to QueueManager
-		Livechat.logger.debug(`Calling QueueManager to request a room for visitor ${guest._id}`);
+		Livechat.logger.debug(`Calling QueueManager to request a room for visitor ${visitor._id}`);
 
 		const room = await QueueManager.requestRoom({
-			guest,
+			guest: visitor,
 			message,
 			rid,
 			roomInfo,
@@ -413,13 +413,14 @@ class LivechatClass {
 			extraData,
 		});
 
-		Livechat.logger.debug(`Room obtained for visitor ${guest._id} -> ${room._id}`);
+		Livechat.logger.debug(`Room obtained for visitor ${visitor._id} -> ${room._id}`);
 
-		await Messages.setRoomIdByToken(guest.token, room._id);
+		await Messages.setRoomIdByToken(visitor.token, room._id);
 
 		return room;
 	}
 
+	/** @deprecated use getRoomByMessage */
 	async getRoom(
 		guest: ILivechatVisitor,
 		message: Pick<IMessage, 'rid' | 'msg' | 'token'>,
@@ -442,7 +443,7 @@ class LivechatClass {
 
 		if (!room?.open) {
 			return {
-				room: await this.createRoom({ guest, message: message.msg, roomInfo, agent, extraData }),
+				room: await this.createRoom({ visitor: guest, message: message.msg, roomInfo, agent, extraData }),
 				newRoom: true,
 			};
 		}

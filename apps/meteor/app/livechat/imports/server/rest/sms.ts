@@ -104,12 +104,6 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			return API.v1.success(SMSService.error(new Error('Invalid visitor')));
 		}
 
-		const { token } = visitor;
-		const room = await LivechatRooms.findOneOpenByVisitorTokenAndDepartmentIdAndSource(token, targetDepartment, OmnichannelSourceType.SMS);
-		const roomExists = !!room;
-		const location = normalizeLocationSharing(sms);
-		const rid = room?._id || Random.id();
-
 		const roomInfo = {
 			sms: {
 				from: sms.to,
@@ -120,10 +114,15 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			},
 		};
 
-		// create an empty room first place, so attachments have a place to live
-		if (!roomExists) {
-			await LivechatTyped.getRoom(visitor, { rid, token, msg: '' }, roomInfo, undefined);
-		}
+		const { token } = visitor;
+		const room =
+			(await LivechatRooms.findOneOpenByVisitorTokenAndDepartmentIdAndSource(token, targetDepartment, OmnichannelSourceType.SMS)) ??
+			(await LivechatTyped.createRoom({
+				visitor,
+				roomInfo,
+			}));
+		const location = normalizeLocationSharing(sms);
+		const rid = room?._id;
 
 		let file: ILivechatMessage['file'];
 		const attachments: (MessageAttachment | undefined)[] = [];
