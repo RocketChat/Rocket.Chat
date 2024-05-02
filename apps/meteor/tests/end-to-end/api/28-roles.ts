@@ -47,7 +47,7 @@ describe('[Roles]', function () {
 				return;
 			}
 			await request
-				.post(api('roles.create'))
+				.post(api(''))
 				.set(credentials)
 				.send({
 					name: testRoleName,
@@ -148,7 +148,7 @@ describe('[Roles]', function () {
 	describe('[/roles.getUsersInRole]', () => {
 		let testUser: IUser;
 		let testUserCredentials: { 'X-Auth-Token': string; 'X-User-Id': string };
-		const testRoleName = `role.test.${Date.now()}`;
+		const testRoleName = `role.getUsersInRole.${Date.now()}`;
 		let testRoleId = '';
 
 		before(async () => {
@@ -240,7 +240,7 @@ describe('[Roles]', function () {
 	describe('[/roles.delete]', () => {
 		let testUser: IUser;
 		let testUserCredentials: { 'X-Auth-Token': string; 'X-User-Id': string };
-		const testRoleName = `role.test.${Date.now()}`;
+		const testRoleName = `role.delete.${Date.now()}`;
 		let testRoleId = '';
 
 		before(async () => {
@@ -321,7 +321,7 @@ describe('[Roles]', function () {
 	describe('[/roles.removeUserFromRole]', () => {
 		let testUser: IUser;
 		let testUserCredentials: { 'X-Auth-Token': string; 'X-User-Id': string };
-		const testRoleName = `role.test.${Date.now()}`;
+		const testRoleName = `role.removeUsersFromRole.${Date.now()}`;
 		let testRoleId = '';
 
 		before(async () => {
