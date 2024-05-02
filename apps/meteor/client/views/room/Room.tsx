@@ -8,6 +8,7 @@ import { ContextualbarSkeleton } from '../../components/Contextualbar';
 import Header from './Header';
 import MessageHighlightProvider from './MessageList/providers/MessageHighlightProvider';
 import RoomBodyWithE2EESetup from './RoomBodyWithE2EESetup';
+import RoomBody from './body/RoomBody';
 import { useRoom } from './contexts/RoomContext';
 import { useRoomToolbox } from './contexts/RoomToolboxContext';
 import { useAppsContextualBar } from './hooks/useAppsContextualBar';
@@ -37,7 +38,7 @@ const Room = (): ReactElement => {
 									: t('Channel__roomName__', { roomName: room.name })
 							}
 							header={<Header room={room} />}
-							body={<RoomBodyWithE2EESetup room={room} />}
+							body={room?.encrypted ? <RoomBodyWithE2EESetup room={room} /> : <RoomBody />}
 							aside={
 								(toolbox.tab?.tabComponent && (
 									<ErrorBoundary fallback={null}>

@@ -9,13 +9,12 @@ import RoomE2EENotAllowed from './RoomE2EENotAllowed';
 import RoomBody from './body/RoomBody';
 import { useE2EERoomState } from './hooks/useE2EERoomState';
 import { useE2EEState } from './hooks/useE2EEState';
-import { useIsE2EEReady } from './hooks/useIsE2EEReady';
 
 const RoomBodyWithE2EESetup = ({ room }: { room: IRoom }) => {
 	const areUnencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages');
 	const e2eRoomState = useE2EERoomState(room._id);
 	const e2eeState = useE2EEState();
-	const isE2EEReady = useIsE2EEReady();
+	const isE2EEReady = e2eeState === E2EEState.READY;
 	const t = useTranslation();
 	const randomPassword = window.localStorage.getItem('e2e.randomPassword');
 
