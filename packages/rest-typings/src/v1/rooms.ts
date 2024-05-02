@@ -1,12 +1,8 @@
 import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from './Ajv';
 
 type RoomsAutoCompleteChannelAndPrivateProps = { selector: string };
 
@@ -190,7 +186,7 @@ const RoomsExportSchema = {
 		},
 		type: {
 			type: 'string',
-			nullable: true,
+			enum: ['email', 'file'],
 		},
 		toUsers: {
 			type: 'array',
@@ -224,17 +220,19 @@ const RoomsExportSchema = {
 		dateFrom: {
 			type: 'string',
 			nullable: true,
+			format: 'date-time',
 		},
 		dateTo: {
 			type: 'string',
 			nullable: true,
+			format: 'date-time',
 		},
 		format: {
 			type: 'string',
 			nullable: true,
 		},
 	},
-	required: ['rid'],
+	required: ['rid', 'type'],
 	additionalProperties: false,
 };
 
