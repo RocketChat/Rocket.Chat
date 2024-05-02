@@ -39,6 +39,8 @@ Meteor.startup(() => {
 	let offClientMessageReceived: undefined | (() => void);
 	let offClientBeforeSendMessage: undefined | (() => void);
 	let unsubNotifyUser: undefined | (() => void);
+	let listenersAttached = false;
+
 	Tracker.autorun(() => {
 		if (!e2e.isReady()) {
 			offClientMessageReceived?.();
@@ -46,6 +48,11 @@ Meteor.startup(() => {
 			unsubNotifyUser = undefined;
 			observable?.stop();
 			offClientBeforeSendMessage?.();
+			listenersAttached = false;
+			return;
+		}
+
+		if (listenersAttached) {
 			return;
 		}
 
@@ -146,5 +153,7 @@ Meteor.startup(() => {
 			message.e2e = 'pending';
 			return message;
 		});
+
+		listenersAttached = true;
 	});
 });
