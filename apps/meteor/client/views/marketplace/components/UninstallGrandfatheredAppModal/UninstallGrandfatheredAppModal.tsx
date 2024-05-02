@@ -3,9 +3,10 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import MarkdownText from '../../../../components/MarkdownText';
+import type { MarketplaceRouteContext } from '../../hooks/useAppsCountQuery';
 
 type UninstallGrandfatheredAppModalProps = {
-	context: 'explore' | 'marketplace' | 'private';
+	context: MarketplaceRouteContext;
 	limit: number;
 	appName: string;
 	handleUninstall: () => void;
