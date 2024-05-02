@@ -155,5 +155,7 @@ test.describe('OC - Manage Tags', () => {
 				}
 			});
 		});
+
+		await department2.delete();
 	})
 });

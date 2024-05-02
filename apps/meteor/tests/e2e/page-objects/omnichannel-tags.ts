@@ -67,6 +67,5 @@ export class OmnichannelTags extends OmnichannelAdministration {
 		await this.inputDepartments.click();
 		await this.inputDepartments.fill(name);
 		await this.selectOption(_id).click();
-		await this.contextualBar.click({ position: { x: 0, y: 0 } });
 	}
 }
