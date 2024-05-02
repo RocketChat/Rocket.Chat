@@ -1,15 +1,32 @@
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import { Omnichannel } from '@rocket.chat/core-services';
+import { LivechatInquiryStatus, type ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
 import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
-import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
+import { QueueManager, saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { dispatchInquiryPosition } from '../lib/Helper';
 import { cbLogger } from '../lib/logger';
+
+QueueManager.patchInquiryStatus(async ({ room, agent }) => {
+	if (!(await Omnichannel.isWithinMACLimit(room))) {
+		return LivechatInquiryStatus.QUEUED;
+	}
+
+	if (!settings.get('Livechat_waiting_queue')) {
+		return LivechatInquiryStatus.READY;
+	}
+
+	if (agent && (await allowAgentSkipQueue(agent))) {
+		return LivechatInquiryStatus.READY;
+	}
+
+	return LivechatInquiryStatus.QUEUED;
+});
 
 callbacks.add(
 	'livechat.beforeRouteChat',
@@ -76,3 +93,29 @@ callbacks.add(
 	callbacks.priority.HIGH,
 	'livechat-before-routing-chat',
 );
+
+settings.watch('Omnichannel_calculate_dispatch_service_queue_statistics', async (value) => {
+	if (!value) {
+		callbacks.remove('livechat.new-beforeRouteChat', 'livechat-before-routing-chat-queue-statistics');
+	}
+
+	callbacks.add(
+		'livechat.new-beforeRouteChat',
+		async (inquiry) => {
+			if (inquiry.status !== 'ready') {
+				return;
+			}
+
+			const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
+				inquiryId: inquiry._id,
+				department: inquiry.department,
+				queueSortBy: getInquirySortMechanismSetting(),
+			});
+			if (inq) {
+				await dispatchInquiryPosition(inq);
+			}
+		},
+		callbacks.priority.HIGH,
+		'livechat-before-routing-chat-queue-statistics',
+	);
+});

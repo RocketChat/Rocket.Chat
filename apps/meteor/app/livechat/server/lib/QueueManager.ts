@@ -1,15 +1,22 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { ILivechatInquiryRecord, ILivechatVisitor, IMessage, IOmnichannelRoom, SelectedAgent } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import {
+	LivechatInquiryStatus,
+	type ILivechatInquiryRecord,
+	type ILivechatVisitor,
+	type IMessage,
+	type IOmnichannelRoom,
+	type SelectedAgent,
+} from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { createLivechatRoom, createLivechatInquiry } from './Helper';
 import { RoutingManager } from './RoutingManager';
-import { Livechat } from './LivechatTyped';
 
 const logger = new Logger('QueueManager');
 
@@ -27,7 +34,28 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 		return;
 	}
 
-	return QueueManager.queueInquiry(inquiry, room, defaultAgent);
+	return QueueManager.requeueInquiry(inquiry, room, defaultAgent);
+};
+
+const getDepartment = async (department: string): Promise<string | undefined> => {
+	if (!department) {
+		return;
+	}
+
+	if (await LivechatDepartmentAgents.checkOnlineForDepartment(department)) {
+		return department;
+	}
+
+	const departmentDocument = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(
+		department,
+		{
+			projection: { fallbackForwardDepartment: 1 },
+		},
+	);
+
+	if (departmentDocument?.fallbackForwardDepartment) {
+		return getDepartment(departmentDocument.fallbackForwardDepartment);
+	}
 };
 
 type queueManager = {
@@ -45,17 +73,7 @@ type queueManager = {
 };
 
 export const QueueManager = new (class implements queueManager {
-	private async checkServiceStatus({ department, agent }: { department?: string; agent?: SelectedAgent }) {
-		if (agent) {
-			const { agentId } = agent;
-			const users = await Users.countOnlineAgents(agentId);
-			return users > 0;
-		}
-
-		return Livechat.online(department);
-	}
-
-	async queueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent) {
+	async requeueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent) {
 		if (!(await Omnichannel.isWithinMACLimit(room))) {
 			logger.error({ msg: 'MAC limit reached, not routing inquiry', inquiry });
 			// We'll queue these inquiries so when new license is applied, they just start rolling again
@@ -77,6 +95,30 @@ export const QueueManager = new (class implements queueManager {
 			logger.debug(`Inquiry with id ${inquiry._id} is ready. Delegating to agent ${inquiryAgent?.username}`);
 			return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent);
 		}
+	}
+
+	private fnQueueInquiryStatus: (typeof QueueManager)['getInquiryStatus'] | undefined;
+
+	public patchInquiryStatus(fn: (typeof QueueManager)['getInquiryStatus']) {
+		this.fnQueueInquiryStatus = fn;
+	}
+
+	async getInquiryStatus({ room, agent }: { room: IOmnichannelRoom; agent?: SelectedAgent }): Promise<LivechatInquiryStatus> {
+		if (this.fnQueueInquiryStatus) {
+			return this.fnQueueInquiryStatus({ room, agent });
+		}
+
+		return LivechatInquiryStatus.READY;
+	}
+
+	async queueInquiry(inquiry: ILivechatInquiryRecord, defaultAgent?: SelectedAgent | null) {
+		await callbacks.run('livechat.new-beforeRouteChat', inquiry);
+
+		if (inquiry.status === 'ready') {
+			return RoutingManager.delegateInquiry(inquiry, defaultAgent);
+		}
+
+		await callbacks.run('livechat.afterInquiryQueued', inquiry);
 	}
 
 	async requestRoom({
@@ -116,7 +158,14 @@ export const QueueManager = new (class implements queueManager {
 			}),
 		);
 
-		if (!(await this.checkServiceStatus({ department: guest.department, agent }))) {
+		const defaultAgent =
+			(await callbacks.run('livechat.beforeDelegateAgent', agent, {
+				department: guest.department,
+			})) || undefined;
+
+		const serviceStatus = defaultAgent || (guest.department && (await getDepartment(guest.department)));
+
+		if (!serviceStatus) {
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 		}
 
@@ -134,6 +183,7 @@ export const QueueManager = new (class implements queueManager {
 			await createLivechatInquiry({
 				rid,
 				name,
+				initialStatus: await this.getInquiryStatus({ room, agent: defaultAgent }),
 				guest,
 				message,
 				extraData: { ...extraData, source: roomInfo.source },
@@ -147,7 +197,7 @@ export const QueueManager = new (class implements queueManager {
 		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
 		await LivechatRooms.updateRoomCount();
 
-		const newRoom = await this.queueInquiry(inquiry, room, agent);
+		const newRoom = await this.queueInquiry(inquiry, defaultAgent);
 
 		return newRoom ?? room;
 	}
@@ -191,7 +241,7 @@ export const QueueManager = new (class implements queueManager {
 			throw new Error('inquiry-not-found');
 		}
 
-		await queueInquiry(inquiry, defaultAgent);
+		await this.requeueInquiry(inquiry, room, defaultAgent);
 		logger.debug(`Inquiry ${inquiry._id} queued`);
 
 		return room;

@@ -111,6 +111,7 @@ type ChainedCallbackSignatures = {
 	) => Promise<T>;
 
 	'livechat.beforeRouteChat': (inquiry: ILivechatInquiryRecord, agent?: { agentId: string; username: string }) => ILivechatInquiryRecord;
+	'livechat.new-beforeRouteChat': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
 	'livechat.checkDefaultAgentOnNewRoom': (agent: SelectedAgent, visitor?: ILivechatVisitor) => SelectedAgent | null;
 
 	'livechat.onLoadForwardDepartmentRestrictions': (params: { departmentId: string }) => Record<string, unknown>;
@@ -224,7 +225,6 @@ export type Hook =
 	| 'beforeValidateLogin'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeRoom'
-	| 'livechat.beforeRouteChat'
 	| 'livechat.chatQueued'
 	| 'livechat.checkAgentBeforeTakeInquiry'
 	| 'livechat.sendTranscript'
