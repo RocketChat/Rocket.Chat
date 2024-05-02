@@ -72,8 +72,6 @@ callbacks.add(
 				await dispatchInquiryPosition(inq);
 			}
 		}
-
-		return LivechatInquiry.findOneById(_id);
 	},
 	callbacks.priority.HIGH,
 	'livechat-before-routing-chat',
