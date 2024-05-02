@@ -325,13 +325,13 @@ describe('[Roles]', function () {
 		let testRoleId = '';
 
 		before(async () => {
+			await updatePermission('access-permissions', ['admin']);
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
 			if (!isEnterprise) {
 				return;
 			}
 
-			await updatePermission('access-permissions', ['admin']);
-			testUser = await createUser();
-			testUserCredentials = await login(testUser.username, password);
 			await request
 				.post(api('roles.create'))
 				.set(credentials)
@@ -402,6 +402,20 @@ describe('[Roles]', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
+				});
+			await request
+				.get(api('roles.getUsersInRole'))
+				.set(credentials)
+				.query({
+					role: testRoleId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('users');
+					expect(res.body.users).to.be.an('array').that.is.empty;
 				});
 		});
 	});
