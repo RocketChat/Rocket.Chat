@@ -21,7 +21,7 @@ import {
 	notifyOnLivechatInquiryChanged,
 	notifyOnSettingChanged,
 } from '../../../lib/server/lib/notifyListener';
-import { createLivechatRoom, createLivechatInquiry } from './Helper';
+import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
 import { Livechat } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
 
@@ -42,7 +42,9 @@ export const saveQueueInquiry = async (inquiry: ILivechatInquiryRecord) => {
 	});
 };
 
-// @deprecated
+/**
+ *  @deprecated
+ */
 export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent?: SelectedAgent) => {
 	const room = await LivechatRooms.findOneById(inquiry.rid, { projection: { v: 1 } });
 
@@ -119,6 +121,14 @@ export const QueueManager = class {
 	static async getInquiryStatus({ room, agent }: { room: IOmnichannelRoom; agent?: SelectedAgent }): Promise<LivechatInquiryStatus> {
 		if (this.fnQueueInquiryStatus) {
 			return this.fnQueueInquiryStatus({ room, agent });
+		}
+
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			return LivechatInquiryStatus.QUEUED;
+		}
+
+		if (!agent || !(await allowAgentSkipQueue(agent))) {
+			return LivechatInquiryStatus.QUEUED;
 		}
 
 		return LivechatInquiryStatus.READY;
