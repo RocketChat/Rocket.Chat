@@ -31,13 +31,12 @@ const FileExport = ({ formId, rid, exportOptions, onCancel }: FileExportProps) =
 		[t],
 	);
 
-	const handleExport = ({ type, dateFrom, dateTo, format }: MailExportFormValues) => {
+	const handleExport = ({ dateFrom, dateTo, format }: MailExportFormValues) => {
 		roomExportMutation.mutateAsync({
 			rid,
-			type,
-			dateFrom,
-			dateTo,
-			format,
+			type: 'file',
+			...(dateFrom && { dateFrom }),
+			...(dateTo && { dateTo }),
 		});
 	};
 
