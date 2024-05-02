@@ -35,8 +35,6 @@ export class DatabaseWatcher extends EventEmitter {
 
 	private _oplogHandle?: any;
 
-	private metrics?: any;
-
 	private logger: Logger;
 
 	private resumeRetryCount = 0;
@@ -48,13 +46,20 @@ export class DatabaseWatcher extends EventEmitter {
 
 	private watchCollections: string[];
 
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	constructor({ db, _oplogHandle, metrics, logger: LoggerClass }: { db: Db; _oplogHandle?: any; metrics?: any; logger: typeof Logger }) {
+	constructor({
+		db,
+		_oplogHandle,
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		logger: LoggerClass,
+	}: {
+		db: Db;
+		_oplogHandle?: any;
+		logger: typeof Logger;
+	}) {
 		super();
 
 		this.db = db;
 		this._oplogHandle = _oplogHandle;
-		this.metrics = metrics;
 		this.logger = new LoggerClass('DatabaseWatcher');
 	}
 
@@ -218,12 +223,13 @@ export class DatabaseWatcher extends EventEmitter {
 
 		this.lastDocTS = new Date();
 
-		this.metrics?.oplog.inc({
-			collection,
-			op: doc.action,
-		});
+		this.emit('doc', { collection, doc });
 
 		this.emit(collection, doc);
+	}
+
+	onDoc(callback: (event: { collection: string; doc: any }) => void): this {
+		return super.on('doc', callback);
 	}
 
 	on<T>(collection: string, callback: (event: RealTimeData<T>) => void): this {

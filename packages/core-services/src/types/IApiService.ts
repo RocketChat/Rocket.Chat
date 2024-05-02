@@ -1,8 +1,10 @@
 import type { EventSignatures } from '../events/Events';
-import type { IBroker, IBrokerNode } from './IBroker';
+import type { IBroker, IBrokerNode, IServiceMetrics } from './IBroker';
 import type { IServiceClass } from './ServiceClass';
 
 export interface IApiService {
+	readonly metrics: IServiceMetrics | undefined;
+
 	setBroker(broker: IBroker): void;
 
 	destroyService(instance: IServiceClass): Promise<void>;
