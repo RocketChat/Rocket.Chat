@@ -21,10 +21,10 @@ QueueManager.patchInquiryStatus(async ({ room, agent }) => {
 	}
 
 	if (!agent || !(await allowAgentSkipQueue(agent))) {
-		return LivechatInquiryStatus.READY;
+		return LivechatInquiryStatus.QUEUED;
 	}
 
-	return LivechatInquiryStatus.QUEUED;
+	return LivechatInquiryStatus.READY;
 });
 
 callbacks.add(

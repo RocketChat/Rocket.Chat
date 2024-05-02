@@ -256,9 +256,13 @@ export const QueueManager = class {
 			void notifyOnSettingChanged(livechatSetting);
 		}
 
-		const newRoom = await this.queueInquiry(inquiry, defaultAgent);
+		const newRoom = (await this.queueInquiry(inquiry, defaultAgent)) ?? (await LivechatRooms.findOneById(rid));
+		if (!newRoom) {
+			logger.error(`Room with id ${rid} not found`);
+			throw new Error('room-not-found');
+		}
 
-		return newRoom ?? room;
+		return newRoom;
 	}
 
 	static async unarchiveRoom(archivedRoom: IOmnichannelRoom) {
