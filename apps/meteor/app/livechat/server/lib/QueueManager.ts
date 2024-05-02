@@ -1,5 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Omnichannel } from '@rocket.chat/core-services';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import {
 	LivechatInquiryStatus,
 	type ILivechatInquiryRecord,
@@ -9,7 +10,7 @@ import {
 	type OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -50,7 +51,28 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 		return;
 	}
 
-	return QueueManager.queueInquiry(inquiry, room, defaultAgent);
+	return QueueManager.requeueInquiry(inquiry, room, defaultAgent);
+};
+
+const getDepartment = async (department: string): Promise<string | undefined> => {
+	if (!department) {
+		return;
+	}
+
+	if (await LivechatDepartmentAgents.checkOnlineForDepartment(department)) {
+		return department;
+	}
+
+	const departmentDocument = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(
+		department,
+		{
+			projection: { fallbackForwardDepartment: 1 },
+		},
+	);
+
+	if (departmentDocument?.fallbackForwardDepartment) {
+		return getDepartment(departmentDocument.fallbackForwardDepartment);
+	}
 };
 
 export const QueueManager = class {
@@ -64,7 +86,7 @@ export const QueueManager = class {
 		return Livechat.online(department);
 	}
 
-	static async queueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent) {
+	static async requeueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent) {
 		if (!(await Omnichannel.isWithinMACLimit(room))) {
 			logger.error({ msg: 'MAC limit reached, not routing inquiry', inquiry });
 			// We'll queue these inquiries so when new license is applied, they just start rolling again
@@ -86,6 +108,30 @@ export const QueueManager = class {
 			logger.debug(`Inquiry with id ${inquiry._id} is ready. Delegating to agent ${inquiryAgent?.username}`);
 			return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent);
 		}
+	}
+
+	private static fnQueueInquiryStatus: (typeof QueueManager)['getInquiryStatus'] | undefined;
+
+	public static patchInquiryStatus(fn: (typeof QueueManager)['getInquiryStatus']) {
+		this.fnQueueInquiryStatus = fn;
+	}
+
+	static async getInquiryStatus({ room, agent }: { room: IOmnichannelRoom; agent?: SelectedAgent }): Promise<LivechatInquiryStatus> {
+		if (this.fnQueueInquiryStatus) {
+			return this.fnQueueInquiryStatus({ room, agent });
+		}
+
+		return LivechatInquiryStatus.READY;
+	}
+
+	static async queueInquiry(inquiry: ILivechatInquiryRecord, defaultAgent?: SelectedAgent | null) {
+		await callbacks.run('livechat.new-beforeRouteChat', inquiry);
+
+		if (inquiry.status === 'ready') {
+			return RoutingManager.delegateInquiry(inquiry, defaultAgent);
+		}
+
+		await callbacks.run('livechat.afterInquiryQueued', inquiry);
 	}
 
 	static async requestRoom<
@@ -125,7 +171,14 @@ export const QueueManager = class {
 			}),
 		);
 
-		if (!(await this.checkServiceStatus({ department: guest.department, agent }))) {
+		const defaultAgent =
+			(await callbacks.run('livechat.beforeDelegateAgent', agent, {
+				department: guest.department,
+			})) || undefined;
+
+		const serviceStatus = defaultAgent || (guest.department && (await getDepartment(guest.department)));
+
+		if (!serviceStatus) {
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 		}
 
@@ -147,6 +200,7 @@ export const QueueManager = class {
 			await createLivechatInquiry({
 				rid,
 				name,
+				initialStatus: await this.getInquiryStatus({ room, agent: defaultAgent }),
 				guest,
 				message,
 				extraData: { ...extraData, source: roomInfo.source },
@@ -164,7 +218,7 @@ export const QueueManager = class {
 			void notifyOnSettingChanged(livechatSetting);
 		}
 
-		const newRoom = await this.queueInquiry(inquiry, room, agent);
+		const newRoom = await this.queueInquiry(inquiry, defaultAgent);
 
 		return newRoom ?? room;
 	}
@@ -217,7 +271,7 @@ export const QueueManager = class {
 			throw new Error('inquiry-not-found');
 		}
 
-		await queueInquiry(inquiry, defaultAgent);
+		await this.requeueInquiry(inquiry, room, defaultAgent);
 		logger.debug(`Inquiry ${inquiry._id} queued`);
 
 		return room;
