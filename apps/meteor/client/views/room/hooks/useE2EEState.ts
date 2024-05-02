@@ -3,8 +3,7 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { e2e } from '../../../../app/e2e/client';
 import type { E2EEState } from '../../../../app/e2e/client/E2EEState';
 
-export const useE2EEState = (): E2EEState =>
-	useSyncExternalStore(
-		(callback: () => void): (() => void) => e2e.on('E2E_STATE_CHANGED', callback),
-		(): E2EEState => e2e.getState(),
-	);
+const subscribe = (callback: () => void): (() => void) => e2e.on('E2E_STATE_CHANGED', callback);
+const getSnapshot = (): E2EEState => e2e.getState();
+
+export const useE2EEState = (): E2EEState => useSyncExternalStore(subscribe, getSnapshot);
