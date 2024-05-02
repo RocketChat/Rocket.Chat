@@ -2,9 +2,10 @@ import type { IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings'
 import { usePermission, useAtLeastOnePermission, useRole } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
+import { E2EEState } from '../../../../../../app/e2e/client/E2EEState';
 import { RoomSettingsEnum } from '../../../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import { useIsE2EEReady } from '../../../hooks/useIsE2EEReady';
+import { useE2EEState } from '../../../hooks/useE2EEState';
 
 const getCanChangeType = (room: IRoom | IRoomWithRetentionPolicy, canCreateChannel: boolean, canCreateGroup: boolean, isAdmin: boolean) =>
 	(!room.default || isAdmin) && ((room.t === 'p' && canCreateChannel) || (room.t === 'c' && canCreateGroup));
@@ -13,7 +14,8 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 	const isAdmin = useRole('admin');
 	const canCreateChannel = usePermission('create-c');
 	const canCreateGroup = usePermission('create-p');
-	const isE2EEReady = useIsE2EEReady();
+	const e2eeState = useE2EEState();
+	const isE2EEReady = e2eeState === E2EEState.READY || e2eeState === E2EEState.SAVE_PASSWORD;
 	const canChangeType = getCanChangeType(room, canCreateChannel, canCreateGroup, isAdmin);
 	const canSetReadOnly = usePermission('set-readonly', room._id);
 	const canSetReactWhenReadOnly = usePermission('set-react-when-readonly', room._id);
