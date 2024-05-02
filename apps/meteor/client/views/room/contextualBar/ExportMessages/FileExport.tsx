@@ -37,6 +37,7 @@ const FileExport = ({ formId, rid, exportOptions, onCancel }: FileExportProps) =
 			type: 'file',
 			...(dateFrom && { dateFrom }),
 			...(dateTo && { dateTo }),
+			format,
 		});
 	};
 
