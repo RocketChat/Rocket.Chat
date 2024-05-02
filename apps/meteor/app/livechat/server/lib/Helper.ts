@@ -353,7 +353,7 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 		return;
 	}
 
-	if (agent && !(await allowAgentSkipQueue(agent))) {
+	if (agent && (await allowAgentSkipQueue(agent))) {
 		return;
 	}
 
