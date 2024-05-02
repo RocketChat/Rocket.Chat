@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { createFakeMessage } from '../../../../../../mocks/data';
+import { createFakeMessage, createFakeMessageWithAttachment } from '../../../../../../mocks/data';
 
 export const appMessageMock = {
 	id: 'appMessageMock',
@@ -114,32 +114,8 @@ const testUsername = faker.internet.userName();
 const testUserId = faker.database.mongodbObjectId();
 export const exportMessagesMock = [
 	createFakeMessage({ t: 'uj', u: { _id: testUserId, username: testUsername }, msg: testUsername }),
-	createFakeMessage({
-		msg: '',
-		file: {
-			_id: 'txt-file-id',
-			name: 'test.txt',
-			type: 'text/plain',
-			size: 29,
-			format: '',
-		},
-		attachments: [
-			{
-				type: 'file',
-				title: 'test.txt',
-				title_link: '/file-upload/txt-file-id/test.txt',
-			},
-		],
-	}),
-	createFakeMessage({
-		msg: '',
-		file: {
-			_id: 'txt-file-id',
-			name: 'test.txt',
-			type: 'text/plain',
-			size: 29,
-			format: '',
-		},
+	createFakeMessageWithAttachment(),
+	createFakeMessageWithAttachment({
 		attachments: [
 			{
 				type: 'file',
