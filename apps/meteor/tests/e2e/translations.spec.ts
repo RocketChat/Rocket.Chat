@@ -50,7 +50,6 @@ test.describe('Translations', () => {
         test.use({ locale: 'pt-BR' });
         test('expect to display text in the browser\'s language', async ({ page }) => {
             await page.goto('/home');
-            await page.waitForTimeout(5000);
             await expect(page.locator('h2')).toHaveText('Bem-vindo ao Rocket.Chat');
         });
     });
