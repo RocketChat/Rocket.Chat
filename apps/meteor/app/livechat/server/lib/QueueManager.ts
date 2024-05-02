@@ -166,6 +166,24 @@ export const QueueManager = new (class implements queueManager {
 
 		const department = guest.department && (await getDepartment(guest.department));
 
+		/**
+		 * we have 4 cases here
+		 * 1. agent and no department
+		 * 2. no agent and no department
+		 * 3. no agent and department
+		 * 4. agent and department informed
+		 *
+		 * in case 1, we check if the agent is online
+		 * in case 2, we check if there is at least one online agent in the whole service
+		 * in case 3, we check if there is at least one online agent in the department
+		 *
+		 * the case 4 is weird, but we are not throwing an error, just because the application works in some mysterious way
+		 * we don't have explicitly defined what to do in this case so we just kept the old behavior
+		 * it seems that agent has priority over department
+		 * but some cases department is handled before agent
+		 *
+		 */
+
 		if (agent && !defaultAgent) {
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 		}
@@ -175,8 +193,7 @@ export const QueueManager = new (class implements queueManager {
 		}
 
 		if (!agent && !guest.department) {
-			const serviceStatus = await Livechat.checkOnlineAgents();
-			if (!serviceStatus) {
+			if (!(await Livechat.checkOnlineAgents())) {
 				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 			}
 		}

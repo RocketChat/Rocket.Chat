@@ -21,7 +21,7 @@ QueueManager.patchInquiryStatus(async ({ room, agent }) => {
 		return LivechatInquiryStatus.READY;
 	}
 
-	if (agent && (await allowAgentSkipQueue(agent))) {
+	if (!agent || !(await allowAgentSkipQueue(agent))) {
 		return LivechatInquiryStatus.READY;
 	}
 
