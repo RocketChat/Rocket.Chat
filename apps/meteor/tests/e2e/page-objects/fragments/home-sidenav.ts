@@ -49,6 +49,10 @@ export class HomeSidenav {
 		return this.page.getByRole('toolbar', { name: 'Sidebar actions' });
 	}
 
+	get accountProfileOption(): Locator {
+		return this.page.locator('role=menuitemcheckbox[name="Profile"]');
+	}
+
 	getSidebarItemByName(name: string): Locator {
 		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
 	}
