@@ -210,7 +210,7 @@ export const QueueManager = new (class implements queueManager {
 				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 			}
 
-			if (guest.department && !department) {
+			if (!defaultAgent && guest.department && !department) {
 				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 			}
 
