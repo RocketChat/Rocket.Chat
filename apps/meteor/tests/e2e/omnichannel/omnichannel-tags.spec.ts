@@ -93,6 +93,12 @@ test.describe('OC - Manage Tags', () => {
   });
 
   test('OC - Manage Tags - Edit tag departments', async ({ api, page }) => {
+		const department2 = await createDepartment(api);
+
+		test.afterAll(async () => {
+			await department2.delete();
+		});
+
 		const tag = await test.step('expect to create new tag', async () => {
 			const { data: tag } = await createTag(api, {
 				name: faker.string.uuid(),
@@ -104,8 +110,6 @@ test.describe('OC - Manage Tags', () => {
 
     await page.goto('/omnichannel');
 		await poOmnichannelTags.sidenav.linkTags.click();
-
-		const department2 = await createDepartment(api);
 
 		await test.step('expect to add tag departments', async () => {
 			await poOmnichannelTags.search(tag.name);
@@ -155,7 +159,5 @@ test.describe('OC - Manage Tags', () => {
 				}
 			});
 		});
-
-		await department2.delete();
 	})
 });
