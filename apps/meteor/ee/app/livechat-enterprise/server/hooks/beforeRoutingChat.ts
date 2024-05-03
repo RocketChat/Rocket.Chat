@@ -1,32 +1,15 @@
-import { Omnichannel } from '@rocket.chat/core-services';
-import { LivechatInquiryStatus, type ILivechatDepartment } from '@rocket.chat/core-typings';
+import { type ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
 import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
-import { QueueManager, saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
+import { saveQueueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { dispatchInquiryPosition } from '../lib/Helper';
 import { cbLogger } from '../lib/logger';
-
-QueueManager.patchInquiryStatus(async ({ room, agent }) => {
-	if (!(await Omnichannel.isWithinMACLimit(room))) {
-		return LivechatInquiryStatus.QUEUED;
-	}
-
-	if (!settings.get('Livechat_waiting_queue')) {
-		return LivechatInquiryStatus.READY;
-	}
-
-	if (!agent || !(await allowAgentSkipQueue(agent))) {
-		return LivechatInquiryStatus.QUEUED;
-	}
-
-	return LivechatInquiryStatus.READY;
-});
 
 callbacks.add(
 	'livechat.beforeRouteChat',
