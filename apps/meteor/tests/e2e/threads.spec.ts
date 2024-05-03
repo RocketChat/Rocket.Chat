@@ -34,6 +34,19 @@ test.describe.serial('Threads', () => {
 		await expect(page).toHaveURL(/.*thread/);
 		await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
 	});
+	test('expect upload a file attachment in thread with description', async ({ page }) => {
+		await poHomeChannel.content.lastThreadMessagePreviewText.click();
+
+		await expect(page).toHaveURL(/.*thread/);
+
+		await poHomeChannel.content.dragAndDropTxtFileToThread();
+		await poHomeChannel.content.descriptionInput.fill('any_description');
+		await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+		await poHomeChannel.content.btnModalConfirm.click();
+
+		await expect(poHomeChannel.content.lastThreadMessageFileDescription).toHaveText('any_description');
+		await expect(poHomeChannel.content.lastThreadMessageFileName).toContainText('any_file1.txt');
+	});
 	test.describe('hideFlexTab Preference enabled for threads', () => {
 		test.beforeAll(async ({ api }) => {
 			await expect(
@@ -128,7 +141,7 @@ test.describe.serial('Threads', () => {
 			await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await page.locator('role=menuitem[name="Copy text"]').click();
-			
+
 			const clipboardText = await page.evaluate("navigator.clipboard.readText()");
 			expect(clipboardText).toBe('this is a message for reply');
 		});
