@@ -335,6 +335,10 @@ export const dispatchAgentDelegated = async (rid: string, agentId?: string) => {
 	});
 };
 
+/**
+ * @deprecated
+ */
+
 export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, agent?: SelectedAgent | null) => {
 	if (!inquiry?._id) {
 		return;
