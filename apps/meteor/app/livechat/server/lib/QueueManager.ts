@@ -15,6 +15,8 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { sendNotification } from '../../../lib/server';
+import { i18n } from '../../../utils/lib/i18n';
 import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
 import { Livechat } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
@@ -115,6 +117,10 @@ export const QueueManager = new (class implements queueManager {
 			return LivechatInquiryStatus.QUEUED;
 		}
 
+		if (RoutingManager.getConfig()?.autoAssignAgent) {
+			return LivechatInquiryStatus.READY;
+		}
+
 		if (!agent || !(await allowAgentSkipQueue(agent))) {
 			return LivechatInquiryStatus.QUEUED;
 		}
@@ -122,7 +128,7 @@ export const QueueManager = new (class implements queueManager {
 		return LivechatInquiryStatus.READY;
 	}
 
-	async queueInquiry(inquiry: ILivechatInquiryRecord, defaultAgent?: SelectedAgent | null) {
+	async queueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
 		await callbacks.run('livechat.new-beforeRouteChat', inquiry);
 
 		if (inquiry.status === 'ready') {
@@ -130,6 +136,10 @@ export const QueueManager = new (class implements queueManager {
 		}
 
 		await callbacks.run('livechat.afterInquiryQueued', inquiry);
+
+		void callbacks.run('livechat.chatQueued', room);
+
+		await this.dispatchInquiryQueued(inquiry, room, defaultAgent);
 	}
 
 	async requestRoom({
@@ -236,7 +246,7 @@ export const QueueManager = new (class implements queueManager {
 		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
 		await LivechatRooms.updateRoomCount();
 
-		const newRoom = (await this.queueInquiry(inquiry, defaultAgent)) ?? (await LivechatRooms.findOneById(rid));
+		const newRoom = (await this.queueInquiry(inquiry, room, defaultAgent)) ?? (await LivechatRooms.findOneById(rid));
 		if (!newRoom) {
 			logger.error(`Room with id ${rid} not found`);
 			throw new Error('room-not-found');
@@ -289,4 +299,54 @@ export const QueueManager = new (class implements queueManager {
 
 		return room;
 	}
+
+	private dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, agent?: SelectedAgent | null) => {
+		logger.debug(`Notifying agents of new inquiry ${inquiry._id} queued`);
+
+		const { department, rid, v } = inquiry;
+		// Alert only the online agents of the queued request
+		const onlineAgents = await Livechat.getOnlineAgents(department, agent);
+
+		if (!onlineAgents) {
+			logger.debug('Cannot notify agents of queued inquiry. No online agents found');
+			return;
+		}
+
+		logger.debug(`Notifying ${await onlineAgents.count()} agents of new inquiry`);
+		const notificationUserName = v && (v.name || v.username);
+
+		for await (const agent of onlineAgents) {
+			const { _id, active, emails, language, status, statusConnection, username } = agent;
+			await sendNotification({
+				// fake a subscription in order to make use of the function defined above
+				subscription: {
+					rid,
+					u: {
+						_id,
+					},
+					receiver: [
+						{
+							active,
+							emails,
+							language,
+							status,
+							statusConnection,
+							username,
+						},
+					],
+					name: '',
+				},
+				sender: v,
+				hasMentionToAll: true, // consider all agents to be in the room
+				hasReplyToThread: false,
+				disableAllMessageNotifications: false,
+				hasMentionToHere: false,
+				message: { _id: '', u: v, msg: '' },
+				// we should use server's language for this type of messages instead of user's
+				notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName }, language),
+				room: { ...room, name: i18n.t('New_chat_in_queue', {}, language) },
+				mentionIds: [],
+			});
+		}
+	};
 })();
