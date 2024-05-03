@@ -25,11 +25,15 @@ Meteor.startup(() => {
 				return false;
 			}
 
+			if (!user) {
+				return false;
+			}
+
 			if (message.private) {
 				return false;
 			}
 
-			if (roomCoordinator.readOnly(room._id, user!) && !room.reactWhenReadOnly) {
+			if (roomCoordinator.readOnly(room._id, user) && !room.reactWhenReadOnly) {
 				return false;
 			}
 			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);

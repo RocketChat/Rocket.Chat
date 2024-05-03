@@ -80,9 +80,10 @@ const wrapMethods = function (name, originalHandler, methodsMap) {
 const originalMeteorMethods = Meteor.methods;
 
 Meteor.methods = function (methodMap) {
-	_.each(methodMap, (handler, name) => {
+	Object.entries(methodMap).forEach(([name, handler]) => {
 		wrapMethods(name, handler, methodMap);
 	});
+
 	originalMeteorMethods(methodMap);
 };
 

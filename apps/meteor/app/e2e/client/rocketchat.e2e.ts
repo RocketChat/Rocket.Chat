@@ -440,7 +440,7 @@ class E2E extends Emitter {
 	async decryptMessageAttachments(message: IMessage): Promise<IMessage> {
 		const { attachments } = message;
 
-		if (!attachments || !attachments.length) {
+		if (!attachments?.length) {
 			return message;
 		}
 

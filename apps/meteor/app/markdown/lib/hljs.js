@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import hljs from 'hljs9/lib/highlight';
 import clean from 'hljs9/lib/languages/clean';
 import javascript from 'hljs9/lib/languages/javascript';

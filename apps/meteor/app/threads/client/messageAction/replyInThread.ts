@@ -12,6 +12,13 @@ Meteor.startup(() => {
 		if (!settings.get('Threads_enabled')) {
 			return MessageAction.removeButton('reply-in-thread');
 		}
+
+		const routeName = router.getRouteName();
+
+		if (!routeName) {
+			throw new Error('routeName is undefined');
+		}
+
 		MessageAction.addButton({
 			id: 'reply-in-thread',
 			icon: 'thread',
@@ -21,7 +28,7 @@ Meteor.startup(() => {
 				const { message = messageArgs(this).msg } = props;
 				e?.stopPropagation();
 				router.navigate({
-					name: router.getRouteName()!,
+					name: routeName,
 					params: {
 						...router.getRouteParameters(),
 						tab: 'thread',
