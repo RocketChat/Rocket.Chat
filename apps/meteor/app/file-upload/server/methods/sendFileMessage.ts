@@ -1,4 +1,12 @@
-import type { MessageAttachment, FileAttachmentProps, IUser, IUpload, AtLeast, FilesAndAttachments } from '@rocket.chat/core-typings';
+import type {
+	MessageAttachment,
+	FileAttachmentProps,
+	IUser,
+	IUpload,
+	AtLeast,
+	FilesAndAttachments,
+	IMessage,
+} from '@rocket.chat/core-typings';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
@@ -189,8 +197,8 @@ export const sendFileMessage = async (
 		file: files[0],
 		files,
 		attachments,
+		...(msgData as Partial<IMessage>),
 		...(msgData?.customFields && { customFields: JSON.parse(msgData.customFields) }),
-		...(msgData?.tmid && { tmid: msgData.tmid }),
 		msg: msgData?.msg ?? '',
 		groupable: msgData?.groupable ?? false,
 	});
