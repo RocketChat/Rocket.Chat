@@ -141,7 +141,6 @@ test.describe.serial('Threads', () => {
 			await context.grantPermissions(['clipboard-read', 'clipboard-write']);
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await page.locator('role=menuitem[name="Copy text"]').click();
-
 			const clipboardText = await page.evaluate("navigator.clipboard.readText()");
 			expect(clipboardText).toBe('this is a message for reply');
 		});
