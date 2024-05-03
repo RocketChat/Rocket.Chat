@@ -50,12 +50,11 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 	const [roomTypeSelectedOptions, setRoomTypeSelectedOptions] = useState<OptionProp[]>([]);
 
 	const roomTypeFilterStructure = useMemo(() => {
-		return initialRoomTypeFilterStructure.map(option => ({
+		return initialRoomTypeFilterStructure.map((option) => ({
 			...option,
-			checked: roomTypeSelectedOptions.some(selectedOption => selectedOption.id === option.id),
+			checked: roomTypeSelectedOptions.some((selectedOption) => selectedOption.id === option.id),
 		}));
 	}, [roomTypeSelectedOptions]);
-
 
 	const handleSearchTextChange = useCallback(
 		(event) => {
