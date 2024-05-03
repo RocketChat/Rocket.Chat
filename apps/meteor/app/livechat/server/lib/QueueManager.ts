@@ -16,6 +16,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { sendNotification } from '../../../lib/server';
+import { settings } from '../../../settings/server';
 import { i18n } from '../../../utils/lib/i18n';
 import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
 import { Livechat } from './LivechatTyped';
@@ -204,16 +205,16 @@ export const QueueManager = new (class implements queueManager {
 		 *
 		 */
 
-		if (agent && !defaultAgent) {
-			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
-		}
+		if (!settings.get('Livechat_accept_chats_with_no_agents')) {
+			if (agent && !defaultAgent) {
+				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+			}
 
-		if (guest.department && !department) {
-			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
-		}
+			if (guest.department && !department) {
+				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+			}
 
-		if (!agent && !guest.department) {
-			if (!(await Livechat.checkOnlineAgents())) {
+			if (!agent && !guest.department && !(await Livechat.checkOnlineAgents())) {
 				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 			}
 		}
