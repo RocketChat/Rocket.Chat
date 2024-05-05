@@ -19,7 +19,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { notifyListenerOnRoomsChanges } from '../lib/notifyListenerOnRoomChanges';
+import { broadcastOnRoomChanges } from '../../../lib/server/lib/notifyListener';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
@@ -90,7 +90,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		await Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
 		await Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
-		void notifyListenerOnRoomsChanges(await Rooms.findByIds(subscribedRooms.map((room) => room.rid)).toArray());
+		void broadcastOnRoomChanges(subscribedRooms.map((room) => room.rid));
 
 		await Subscriptions.removeByUserId(userId); // Remove user subscriptions
 

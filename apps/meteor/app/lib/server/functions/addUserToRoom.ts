@@ -10,7 +10,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
-import { notifyListenerOnRoomChanges } from '../lib/notifyListenerOnRoomChanges';
+import { broadcastOnRoomChanges } from '../../../lib/server/lib/notifyListener';
 
 export const addUserToRoom = async function (
 	rid: string,
@@ -86,7 +86,7 @@ export const addUserToRoom = async function (
 		...getDefaultSubscriptionPref(userToBeAdded as IUser),
 	});
 
-	void notifyListenerOnRoomChanges(rid);
+	void broadcastOnRoomChanges(rid);
 
 	if (!userToBeAdded.username) {
 		throw new Meteor.Error('error-invalid-user', 'Cannot add an user to a room without a username');

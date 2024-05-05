@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { FileUpload } from '../../../file-upload/server';
 import { RocketChatFile } from '../../../file/server';
-import { notifyListenerOnRoomChanges } from '../lib/notifyListenerOnRoomChanges';
+import { broadcastOnRoomChanges } from '../lib/notifyListener';
 
 export const setRoomAvatar = async function (rid: string, dataURI: string, user: IUser): Promise<void> {
 	if (!isRegisterUser(user)) {
@@ -50,5 +50,5 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 		void api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });
 	}, 500);
 
-	void notifyListenerOnRoomChanges(rid, 'updated', undefined, { avatarETag: result.etag });
+	void broadcastOnRoomChanges(rid, 'updated', { avatarETag: result.etag });
 };
