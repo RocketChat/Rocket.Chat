@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { canAccessRoomAsync, getUsersInRole } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
-import { notifyListenerOnRoomChanges } from '../../app/lib/server/lib/notifyListenerOnRoomChanges';
+import { notifyListener } from '../../app/lib/server/lib/notifyListener';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { callbacks } from '../../lib/callbacks';
 import { afterRemoveFromRoomCallback } from '../../lib/callbacks/afterRemoveFromRoomCallback';
@@ -91,7 +91,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 
 	setImmediate(async () => {
 		void afterRemoveFromRoomCallback.run({ removedUser, userWhoRemoved: fromUser }, room);
-		void notifyListenerOnRoomChanges(data.rid);
+		void notifyListener.onRoomChangedById(data.rid);
 	});
 
 	return true;

@@ -2,7 +2,7 @@ import { api } from '@rocket.chat/core-services';
 import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
-import { notifyListenerOnRoomChanges } from '../../../../app/lib/server/lib/notifyListenerOnRoomChanges';
+import { notifyListener } from '../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -34,7 +34,7 @@ const updateMessages = debounceByRoomId(async ({ _id, lm }) => {
 
 	if (lm <= firstSubscription.ls) {
 		await Rooms.setLastMessageAsRead(_id);
-		void notifyListenerOnRoomChanges(_id);
+		void notifyListener.onRoomChangedById(_id);
 	}
 });
 

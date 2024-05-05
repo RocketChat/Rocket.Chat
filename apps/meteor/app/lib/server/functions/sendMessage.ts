@@ -11,7 +11,7 @@ import { broadcastMessageFromData } from '../../../../server/modules/watchers/li
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { notifyListenerOnRoomChanges } from '../lib/notifyListenerOnRoomChanges';
+import { notifyListener } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
@@ -296,7 +296,7 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 		id: message._id,
 	});
 
-	void notifyListenerOnRoomChanges(message.rid);
+	void notifyListener.onRoomChangedById(message.rid);
 
 	return message;
 };

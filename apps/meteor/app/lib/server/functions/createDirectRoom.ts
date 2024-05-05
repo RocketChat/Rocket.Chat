@@ -11,7 +11,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
-import { notifyListenerOnRoomChanges } from '../lib/notifyListenerOnRoomChanges';
+import { notifyListener } from '../lib/notifyListener';
 
 const generateSubscription = (
 	fname: string,
@@ -131,7 +131,7 @@ export async function createDirectRoom(
 	// @ts-expect-error - TODO: room expects `u` to be passed, but it's not part of the original object in here
 	const rid = room?._id || (await Rooms.insertOne(roomInfo)).insertedId;
 
-	void notifyListenerOnRoomChanges(rid, isNewRoom ? 'inserted' : 'updated');
+	void notifyListener.onRoomChangedById(rid, isNewRoom ? 'inserted' : 'updated');
 
 	if (roomMembers.length === 1) {
 		// dm to yourself
