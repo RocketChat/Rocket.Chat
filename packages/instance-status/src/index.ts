@@ -75,17 +75,23 @@ async function registerInstance(name: string, extraInformation: Record<string, u
 	};
 
 	try {
-		await InstanceStatusModel.updateOne({ _id: ID }, instance as any, { upsert: true });
+		const result = await InstanceStatusModel.updateOne({ _id: ID }, instance as any, { upsert: true });
 
-		const result = await InstanceStatusModel.findOne({ _id: ID });
+		const instanceStatus = await InstanceStatusModel.findOne({ _id: ID });
 
 		start();
 
-		events.emit('registerInstance', result, instance);
+		events.emit('registerInstance', instanceStatus, instance);
+
+		events.emit('watch.instanceStatus', {
+			clientAction: result.upsertedId ? 'inserted' : 'updated',
+			id: ID,
+			data: instanceStatus,
+		});
 
 		process.on('exit', onExit);
 
-		return result;
+		return instanceStatus;
 	} catch (e) {
 		return e;
 	}
@@ -97,6 +103,13 @@ async function unregisterInstance() {
 		stop();
 
 		events.emit('unregisterInstance', ID);
+
+		if (result.deletedCount) {
+			events.emit('watch.instanceStatus', {
+				clientAction: 'removed',
+				id: ID,
+			});
+		}
 
 		process.removeListener('exit', onExit);
 
@@ -148,7 +161,7 @@ async function onExit() {
 }
 
 async function updateConnections(conns: number) {
-	await InstanceStatusModel.updateOne(
+	const result = await InstanceStatusModel.updateOne(
 		{
 			_id: ID,
 		},
@@ -158,6 +171,16 @@ async function updateConnections(conns: number) {
 			},
 		},
 	);
+
+	if (result.modifiedCount) {
+		events.emit('watch.instanceStatus', {
+			clientAction: 'updated',
+			id: ID,
+			diff: {
+				'extraInformation.conns': conns,
+			},
+		});
+	}
 }
 
 export const InstanceStatus = {
