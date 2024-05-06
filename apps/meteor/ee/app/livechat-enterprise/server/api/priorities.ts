@@ -3,10 +3,7 @@ import { isGETLivechatPrioritiesParams, isPUTLivechatPriority } from '@rocket.ch
 
 import { API } from '../../../../../app/api/server';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
-import {
-	notifyListenerOnLivechatPriorityChanges,
-	notifyListenerOnLivechatPrioritiesChanges,
-} from '../../../../../app/lib/server/lib/notifyListenerOnLivechatPriorityChanges';
+import { broadcastOnLivechatPriorityChanges } from '../../../../../app/lib/server/lib/notifyListener';
 import { findPriority, updatePriority } from './lib/priorities';
 
 API.v1.addRoute(
@@ -60,7 +57,7 @@ API.v1.addRoute(
 		async put() {
 			const { priorityId } = this.urlParams;
 			await updatePriority(priorityId, this.bodyParams);
-			void notifyListenerOnLivechatPriorityChanges(priorityId);
+			void broadcastOnLivechatPriorityChanges(priorityId);
 			return API.v1.success();
 		},
 	},
@@ -82,7 +79,7 @@ API.v1.addRoute(
 			}
 
 			const updatedPriorities = await LivechatPriority.resetPriorities();
-			void notifyListenerOnLivechatPrioritiesChanges(updatedPriorities);
+			void broadcastOnLivechatPriorityChanges(updatedPriorities);
 
 			return API.v1.success();
 		},

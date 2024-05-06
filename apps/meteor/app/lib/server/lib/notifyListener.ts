@@ -1,8 +1,23 @@
 import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
-import type { IPermission, IRocketChatRecord, IRoom, ISetting, IPbxEvent, IRole, IIntegration } from '@rocket.chat/core-typings';
-import { Rooms, Permissions, Settings, PbxEvents, Roles, Integrations } from '@rocket.chat/models';
+import type { IPermission, IRocketChatRecord, IRoom, ISetting, IPbxEvent, IRole, IIntegration, ILivechatPriority } from '@rocket.chat/core-typings';
+import { Rooms, Permissions, Settings, PbxEvents, Roles, Integrations, LivechatPriority } from '@rocket.chat/models';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
+
+export async function notifyOnLivechatPriorityChanged(
+	data: ILivechatPriority | ILivechatPriority[],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const items = Array.isArray(data) ? data : [data];
+
+	for (const item of items) {
+		api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
+	}
+}
 
 export async function notifyOnRoomChanged<T extends IRocketChatRecord>(
 	data: T | T[],
