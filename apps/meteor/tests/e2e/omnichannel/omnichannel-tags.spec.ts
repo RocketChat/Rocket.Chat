@@ -17,10 +17,12 @@ test.describe('OC - Manage Tags', () => {
 	let poOmnichannelTags: OmnichannelTags;
 
 	let department: Awaited<ReturnType<typeof createDepartment>>;
+	let department2: Awaited<ReturnType<typeof createDepartment>>;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 
 	test.beforeAll(async ({ api }) => {
 		department = await createDepartment(api);
+		department2 = await createDepartment(api);
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -65,40 +67,24 @@ test.describe('OC - Manage Tags', () => {
 		});
 
     await test.step('expect to delete tag', async () => {
-			await test.step('expect confirm delete tag', async () => {
-				await test.step('expect to be able to cancel delete', async () => {
-					await poOmnichannelTags.btnDeleteByName(tagName).click();
-					await expect(poOmnichannelTags.confirmDeleteModal).toBeVisible();
-					await poOmnichannelTags.btnCancelDeleteModal.click();
-					await expect(poOmnichannelTags.confirmDeleteModal).not.toBeVisible();
-				});
-
-				await test.step('expect to confirm delete', async () => {
-					await poOmnichannelTags.btnDeleteByName(tagName).click();
-					await expect(poOmnichannelTags.confirmDeleteModal).toBeVisible();
-					await poOmnichannelTags.btnConfirmDeleteModal.click();
-					await expect(poOmnichannelTags.confirmDeleteModal).not.toBeVisible();
-				});
+			await test.step('expect to be able to cancel delete', async () => {
+				await poOmnichannelTags.btnDeleteByName(tagName).click();
+				await expect(poOmnichannelTags.confirmDeleteModal).toBeVisible();
+				await poOmnichannelTags.btnCancelDeleteModal.click();
+				await expect(poOmnichannelTags.confirmDeleteModal).not.toBeVisible();
 			});
 
-			await test.step('expect tag to have been deleted', async () => {
-				if (await poOmnichannelTags.inputSearch.isVisible()) {
-					await poOmnichannelTags.search(tagName);
-					await expect(poOmnichannelTags.findRowByName(tagName)).not.toBeVisible();
-				} else {
-					await expect(page.locator('h3 >> text="No tags yet"')).toBeVisible();
-				}
+			await test.step('expect to confirm delete', async () => {
+				await poOmnichannelTags.btnDeleteByName(tagName).click();
+				await expect(poOmnichannelTags.confirmDeleteModal).toBeVisible();
+				await poOmnichannelTags.btnConfirmDeleteModal.click();
+				await expect(poOmnichannelTags.confirmDeleteModal).not.toBeVisible();
+				await expect(page.locator('h3 >> text="No tags yet"')).toBeVisible();
 			});
 		});
   });
 
   test('OC - Manage Tags - Edit tag departments', async ({ api, page }) => {
-		const department2 = await createDepartment(api);
-
-		test.afterAll(async () => {
-			await department2.delete();
-		});
-
 		const tag = await test.step('expect to create new tag', async () => {
 			const { data: tag } = await createTag(api, {
 				name: faker.string.uuid(),
@@ -143,21 +129,11 @@ test.describe('OC - Manage Tags', () => {
 		});
 
     await test.step('expect to delete tag', async () => {
-			await test.step('expect confirm delete tag', async () => {
-        await poOmnichannelTags.btnDeleteByName(tag.name).click();
-        await expect(poOmnichannelTags.confirmDeleteModal).toBeVisible();
-        await poOmnichannelTags.btnConfirmDeleteModal.click();
-        await expect(poOmnichannelTags.confirmDeleteModal).not.toBeVisible();
-			});
-
-			await test.step('expect tag to have been deleted', async () => {
-				if (await poOmnichannelTags.inputSearch.isVisible()) {
-					await poOmnichannelTags.search(tag.name);
-					await expect(poOmnichannelTags.findRowByName(tag.name)).not.toBeVisible();
-				} else {
-					await expect(page.locator('h3 >> text="No tags yet"')).toBeVisible();
-				}
-			});
+			await poOmnichannelTags.btnDeleteByName(tag.name).click();
+			await expect(poOmnichannelTags.confirmDeleteModal).toBeVisible();
+			await poOmnichannelTags.btnConfirmDeleteModal.click();
+			await expect(poOmnichannelTags.confirmDeleteModal).not.toBeVisible();
+			await expect(page.locator('h3 >> text="No results found"')).toBeVisible();
 		});
-	})
+	});
 });
