@@ -22,12 +22,18 @@ const config: Config = {
 				'\\.css$': 'identity-obj-proxy',
 				'^react($|/.+)': '<rootDir>/node_modules/react$1',
 				'^@tanstack/(.+)': '<rootDir>/node_modules/@tanstack/$1',
+				'^meteor/(.*)': '<rootDir>/.meteorMocks/index.ts',
 			},
 		},
 		{
 			displayName: 'server',
 			testEnvironment: 'node',
-			testMatch: ['<rootDir>/ee/app/authorization/server/validateUserRoles.spec.ts'],
+
+			testMatch: [
+				'<rootDir>/app/livechat/server/business-hour/**/*.spec.ts?(x)',
+				'<rootDir>/app/livechat/server/api/**/*.spec.ts',
+				'<rootDir>/ee/app/authorization/server/validateUserRoles.spec.ts',
+			],
 			transformIgnorePatterns: ['!/node_modules/jose'],
 			errorOnDeprecated: true,
 

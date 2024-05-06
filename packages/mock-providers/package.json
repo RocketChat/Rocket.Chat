@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/mock-providers",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"private": true,
 	"dependencies": {
 		"@rocket.chat/i18n": "workspace:~",

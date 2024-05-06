@@ -32,6 +32,7 @@ import {
 	closeOmnichannelRoom,
 	createDepartment,
 	fetchMessages,
+	deleteVisitor,
 	makeAgentUnavailable,
 } from '../../../data/livechat/rooms';
 import { saveTags } from '../../../data/livechat/tags';
@@ -1033,6 +1034,7 @@ describe('LIVECHAT - rooms', function () {
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
 				.expect('Content-Type', 'application/json')
 				.expect(403);
+			await deleteVisitor(visitor.token);
 		});
 
 		it('should throw an error if the file is not attached', async () => {
@@ -1044,9 +1046,60 @@ describe('LIVECHAT - rooms', function () {
 				.set('x-visitor-token', visitor.token)
 				.expect('Content-Type', 'application/json')
 				.expect(400);
+			await deleteVisitor(visitor.token);
+		});
+
+		it('should throw and error if file uploads are enabled but livechat file uploads are disabled', async () => {
+			await updateSetting('Livechat_fileupload_enabled', false);
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await request
+				.post(api(`livechat/upload/${room._id}`))
+				.set(credentials)
+				.set('x-visitor-token', visitor.token)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+			await updateSetting('Livechat_fileupload_enabled', true);
+			await deleteVisitor(visitor.token);
+		});
+
+		it('should throw and error if livechat file uploads are enabled but file uploads are disabled', async () => {
+			await updateSetting('FileUpload_Enabled', false);
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await request
+				.post(api(`livechat/upload/${room._id}`))
+				.set(credentials)
+				.set('x-visitor-token', visitor.token)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+			await updateSetting('FileUpload_Enabled', true);
+			await deleteVisitor(visitor.token);
+		});
+
+		it('should throw and error if both file uploads are disabled', async () => {
+			await updateSetting('Livechat_fileupload_enabled', false);
+			await updateSetting('FileUpload_Enabled', false);
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await request
+				.post(api(`livechat/upload/${room._id}`))
+				.set(credentials)
+				.set('x-visitor-token', visitor.token)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+			await updateSetting('FileUpload_Enabled', true);
+			await updateSetting('Livechat_fileupload_enabled', true);
+
+			await deleteVisitor(visitor.token);
 		});
 
 		it('should upload an image on the room if all params are valid', async () => {
+			await updateSetting('FileUpload_Enabled', true);
+			await updateSetting('Livechat_fileupload_enabled', true);
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			await request
@@ -1056,6 +1109,7 @@ describe('LIVECHAT - rooms', function () {
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
 				.expect('Content-Type', 'application/json')
 				.expect(200);
+			await deleteVisitor(visitor.token);
 		});
 	});
 
@@ -1086,6 +1140,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(body.messages).to.be.an('array');
 			expect(body.total).to.be.an('number').equal(1);
 			expect(body.messages[0]).to.have.property('msg', 'Hello');
+			await deleteVisitor(visitor.token);
 		});
 		it('should return the messages of the room matching by searchTerm', async () => {
 			const visitor = await createVisitor();
@@ -1105,6 +1160,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(body.messages).to.be.an('array');
 			expect(body.total).to.be.an('number').equal(1);
 			expect(body.messages[0]).to.have.property('msg', 'Random');
+			await deleteVisitor(visitor.token);
 		});
 		it('should return the messages of the room matching by partial searchTerm', async () => {
 			const visitor = await createVisitor();
@@ -1124,6 +1180,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(body.messages).to.be.an('array');
 			expect(body.total).to.be.an('number').equal(1);
 			expect(body.messages[0]).to.have.property('msg', 'Random');
+			await deleteVisitor(visitor.token);
 		});
 		it('should return everything when searchTerm is ""', async () => {
 			const visitor = await createVisitor();
@@ -1143,6 +1200,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(body.messages).to.be.an('array');
 			expect(body.messages).to.be.an('array').with.lengthOf.greaterThan(1);
 			expect(body.messages[0]).to.have.property('msg');
+			await deleteVisitor(visitor.token);
 		});
 	});
 
@@ -1179,6 +1237,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('message');
 			expect(body.message).to.have.property('msg', 'Hello');
+			await deleteVisitor(visitor.token);
 		});
 	});
 
@@ -1231,6 +1290,7 @@ describe('LIVECHAT - rooms', function () {
 				.send({ token: visitor.token, rid: 'fadsfdsafads', msg: 'fasfasdfdsf' })
 				.expect('Content-Type', 'application/json')
 				.expect(400);
+			await deleteVisitor(visitor.token);
 		});
 		it('should fail if _id is not a valid message id', async () => {
 			const visitor = await createVisitor();
@@ -1242,6 +1302,7 @@ describe('LIVECHAT - rooms', function () {
 				.send({ token: visitor.token, rid: room._id, msg: 'fasfasdfdsf' })
 				.expect('Content-Type', 'application/json')
 				.expect(400);
+			await deleteVisitor(visitor.token);
 		});
 		it('should update a message if everything is valid', async () => {
 			const visitor = await createVisitor();
@@ -1261,6 +1322,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(body.message).to.have.property('editedAt');
 			expect(body.message).to.have.property('editedBy');
 			expect(body.message.editedBy).to.have.property('username', visitor.username);
+			await deleteVisitor(visitor.token);
 		});
 	});
 
@@ -1299,6 +1361,7 @@ describe('LIVECHAT - rooms', function () {
 				.send({ token: visitor.token, rid: room._id })
 				.expect('Content-Type', 'application/json')
 				.expect(400);
+			await deleteVisitor(visitor.token);
 		});
 		it('should delete a message if everything is valid', async () => {
 			const visitor = await createVisitor();
@@ -1316,6 +1379,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(body).to.have.property('message');
 			expect(body.message).to.have.property('_id', message._id);
 			expect(body.message).to.have.property('ts');
+			await deleteVisitor(visitor.token);
 		});
 	});
 
@@ -1380,6 +1444,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(body.messages[1]).to.have.property('msg', 'Hello 2');
 			expect(body.messages[1]).to.have.property('ts');
 			expect(body.messages[1]).to.have.property('username', visitor.username);
+			await deleteVisitor(visitor.token);
 		});
 	});
 
@@ -1414,6 +1479,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('history').that.is.an('array');
 			expect(body.history.length).to.equal(0);
+			await deleteVisitor(visitor.token);
 		});
 		it('should return the transfer history for a room', async () => {
 			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
@@ -1460,6 +1526,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(body.history[0]).to.have.property('transferredBy').that.is.an('object');
 
 			// cleanup
+			await deleteVisitor(newVisitor.token);
 			await deleteUser(initialAgentAssignedToChat);
 			await deleteUser(forwardChatToUser);
 		});
@@ -1526,6 +1593,7 @@ describe('LIVECHAT - rooms', function () {
 			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 			// delay for 1 second to make sure the routing queue starts again
 			await sleep(1000);
+			await deleteVisitor(newVisitor.token);
 		});
 
 		it('should throw an error if roomData is not provided', async () => {
@@ -1615,6 +1683,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(latestRoom).to.have.property('tags').of.length(2);
 			expect(latestRoom).to.have.property('tags').to.include('tag1');
 			expect(latestRoom).to.have.property('tags').to.include('tag2');
+			await deleteVisitor(newVisitor.token);
 		});
 
 		(IS_EE ? it : it.skip)('should allow user to update the room info - EE fields', async () => {
@@ -1659,6 +1728,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(latestRoom).to.have.property('tags').to.include('tag1');
 			expect(latestRoom).to.have.property('tags').to.include('tag2');
 			expect(latestRoom).to.have.property('livechatData').to.have.property(cfName, 'test-input-1-value');
+			await deleteVisitor(newVisitor.token);
 		});
 
 		(IS_EE ? it : it.skip)('endpoint should handle empty custom fields', async () => {
@@ -1691,6 +1761,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(latestRoom).to.have.property('tags').to.include('tag1');
 			expect(latestRoom).to.have.property('tags').to.include('tag2');
 			expect(latestRoom).to.not.have.property('livechatData');
+			await deleteVisitor(newVisitor.token);
 		});
 
 		(IS_EE ? it : it.skip)('should throw an error if custom fields are not valid', async () => {
@@ -1760,6 +1831,7 @@ describe('LIVECHAT - rooms', function () {
 				.expect(400);
 			expect(response.body).to.have.property('success', false);
 			expect(response.body).to.have.property('error', 'Invalid value for intfield field');
+			await deleteVisitor(newVisitor.token);
 		});
 		(IS_EE ? it : it.skip)('should not throw an error if a valid custom field passes the check', async () => {
 			const newVisitor = await createVisitor();
@@ -1780,6 +1852,7 @@ describe('LIVECHAT - rooms', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200);
 			expect(response2.body).to.have.property('success', true);
+			await deleteVisitor(newVisitor.token);
 		});
 
 		(IS_EE ? it : it.skip)('should update room priority', async () => {
@@ -1813,6 +1886,7 @@ describe('LIVECHAT - rooms', function () {
 			const updatedRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(updatedRoom).to.have.property('priorityId', priority._id);
 			expect(updatedRoom).to.have.property('priorityWeight', priority.sortItem);
+			await deleteVisitor(newVisitor.token);
 		});
 		(IS_EE ? it : it.skip)('should update room sla', async () => {
 			const newVisitor = await createVisitor();
@@ -1839,6 +1913,7 @@ describe('LIVECHAT - rooms', function () {
 
 			const updatedRoom = await getLivechatRoomInfo(newRoom._id);
 			expect(updatedRoom).to.have.property('slaId', sla._id);
+			await deleteVisitor(newVisitor.token);
 		});
 	});
 	(IS_EE ? describe : describe.skip)('livechat/room/:rid/priority', async () => {
@@ -1948,6 +2023,7 @@ describe('LIVECHAT - rooms', function () {
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
 			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(400);
+			await deleteVisitor(visitor.token);
 		});
 		it('should not close a room without comment', async () => {
 			await restorePermissionToRoles('close-others-livechat-room');
@@ -1957,6 +2033,7 @@ describe('LIVECHAT - rooms', function () {
 
 			expect(response.body).to.have.property('success', false);
 			expect(response.body).to.have.property('error', 'error-comment-is-required');
+			await deleteVisitor(visitor.token);
 		});
 		it('should not close a room when comment is an empty string', async () => {
 			await restorePermissionToRoles('close-others-livechat-room');
@@ -1965,11 +2042,13 @@ describe('LIVECHAT - rooms', function () {
 			const response = await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: '' }).expect(400);
 
 			expect(response.body).to.have.property('success', false);
+			await deleteVisitor(visitor.token);
 		});
 		it('should close room if user has permission', async () => {
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
 			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }).expect(200);
+			await deleteVisitor(visitor.token);
 		});
 		it('should fail if room is closed', async () => {
 			const visitor = await createVisitor();
@@ -1980,6 +2059,7 @@ describe('LIVECHAT - rooms', function () {
 
 			// try to close again
 			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }).expect(400);
+			await deleteVisitor(visitor.token);
 		});
 
 		(IS_EE ? it : it.skip)('should close room and generate transcript pdf', async () => {
@@ -2040,6 +2120,7 @@ describe('LIVECHAT - rooms', function () {
 				.post(api(`omnichannel/${_id}/request-transcript`))
 				.set(credentials)
 				.expect(403);
+			await deleteVisitor(visitor.token);
 		});
 		it('should fail if room is not closed', async () => {
 			await updatePermission('request-pdf-transcript', ['admin', 'livechat-agent', 'livechat-manager']);
@@ -2049,6 +2130,7 @@ describe('LIVECHAT - rooms', function () {
 				.post(api(`omnichannel/${_id}/request-transcript`))
 				.set(credentials)
 				.expect(400);
+			await deleteVisitor(visitor.token);
 		});
 		it('should return OK if no one is serving the room (queued)', async () => {
 			const visitor = await createVisitor();
@@ -2058,6 +2140,7 @@ describe('LIVECHAT - rooms', function () {
 				.post(api(`omnichannel/${_id}/request-transcript`))
 				.set(credentials)
 				.expect(200);
+			await deleteVisitor(visitor.token);
 		});
 		let roomWithTranscriptGenerated: string;
 		it('should request a pdf transcript when all conditions are met', async () => {
@@ -2115,6 +2198,7 @@ describe('LIVECHAT - rooms', function () {
 		it("room's subscription should have correct unread count", async () => {
 			const { unread } = await getSubscriptionForRoom(room._id, departmentWithAgent.agent.credentials);
 			expect(unread).to.equal(totalMessagesSent);
+			await deleteVisitor(visitor.token);
 		});
 	});
 
@@ -2144,6 +2228,7 @@ describe('LIVECHAT - rooms', function () {
 		it("room's subscription should have correct unread count", async () => {
 			const { unread } = await getSubscriptionForRoom(room._id, departmentWithAgent.agent.credentials);
 			expect(unread).to.equal(totalMessagesSent);
+			await deleteVisitor(visitor.token);
 		});
 	});
 
@@ -2167,6 +2252,7 @@ describe('LIVECHAT - rooms', function () {
 				.delete(api(`livechat/transcript/${_id}`))
 				.set(credentials)
 				.expect(400);
+			await deleteVisitor(visitor.token);
 		});
 		it('should fail if room doesnt have a transcript request active', async () => {
 			const visitor = await createVisitor();
@@ -2175,6 +2261,7 @@ describe('LIVECHAT - rooms', function () {
 				.delete(api(`livechat/transcript/${_id}`))
 				.set(credentials)
 				.expect(400);
+			await deleteVisitor(visitor.token);
 		});
 		it('should return OK if all conditions are met', async () => {
 			const visitor = await createVisitor();
@@ -2198,6 +2285,7 @@ describe('LIVECHAT - rooms', function () {
 				.delete(api(`livechat/transcript/${_id}`))
 				.set(credentials)
 				.expect(200);
+			await deleteVisitor(visitor.token);
 		});
 	});
 
@@ -2276,6 +2364,7 @@ describe('LIVECHAT - rooms', function () {
 			const result = parseMethodResponse(body);
 			expect(body.success).to.be.true;
 			expect(result).to.have.property('error').that.is.an('object');
+			await deleteVisitor(visitor.token);
 		});
 		it('should fail if token is from another conversation', async () => {
 			const visitor = await createVisitor();
@@ -2297,6 +2386,8 @@ describe('LIVECHAT - rooms', function () {
 			const result = parseMethodResponse(body);
 			expect(body.success).to.be.true;
 			expect(result).to.have.property('error').that.is.an('object');
+			await deleteVisitor(visitor.token);
+			await deleteVisitor(visitor2.token);
 		});
 		it('should fail if email provided is invalid', async () => {
 			const visitor = await createVisitor();
@@ -2317,6 +2408,7 @@ describe('LIVECHAT - rooms', function () {
 			const result = parseMethodResponse(body);
 			expect(body.success).to.be.true;
 			expect(result).to.have.property('error').that.is.an('object');
+			await deleteVisitor(visitor.token);
 		});
 		it('should work if all params are good', async () => {
 			const visitor = await createVisitor();
@@ -2337,6 +2429,7 @@ describe('LIVECHAT - rooms', function () {
 			const result = parseMethodResponse(body);
 			expect(body.success).to.be.true;
 			expect(result).to.have.property('result', true);
+			await deleteVisitor(visitor.token);
 		});
 	});
 });
