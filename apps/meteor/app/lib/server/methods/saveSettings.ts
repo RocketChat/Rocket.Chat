@@ -83,6 +83,12 @@ Meteor.methods<ServerMethods>({
 							break;
 						case 'int':
 							check(value, Number);
+							if (Number.isNaN(value)) {
+								throw new Meteor.Error(`Invalid setting value ${value}`, 'Invalid setting value', {
+									method: 'saveSettings',
+								});
+							}
+
 							break;
 						case 'multiSelect':
 							check(value, Array);
