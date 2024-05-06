@@ -8358,29 +8358,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/apps-engine@npm:^1.42.1":
-  version: 1.42.1
-  resolution: "@rocket.chat/apps-engine@npm:1.42.1"
-  dependencies:
-    adm-zip: ^0.5.9
-    cryptiles: ^4.1.3
-    jose: ^4.11.1
-    lodash.clonedeep: ^4.5.0
-    semver: ^5.7.1
-    stack-trace: 0.0.10
-    uuid: ~8.3.2
-    vm2: ^3.9.19
-  peerDependencies:
-    "@rocket.chat/ui-kit": "*"
-  checksum: b38265f53a0d64e8de9862b2039a93cde600b6111f04435301994c95aab252364c0490d1da8cd9a357f80828f75efd83f11e4cea966a1ca86a150bf6439a5de0
-  languageName: node
-  linkType: hard
-
 "@rocket.chat/apps@workspace:^, @rocket.chat/apps@workspace:packages/apps":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/apps@workspace:packages/apps"
   dependencies:
-    "@rocket.chat/apps-engine": ^1.42.1
+    "@rocket.chat/apps-engine": 1.42.2
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@types/jest": ~29.5.7
