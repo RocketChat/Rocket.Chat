@@ -18,6 +18,7 @@ test.describe('OC - Manage Units', () => {
 	let poOmnichannelUnits: OmnichannelUnits;
 
 	let department: Awaited<ReturnType<typeof createDepartment>>;
+	let department2: Awaited<ReturnType<typeof createDepartment>>;
 
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 
@@ -25,6 +26,7 @@ test.describe('OC - Manage Units', () => {
 
 	test.beforeAll(async ({ api }) => {
 		department = await createDepartment(api);
+		department2 = await createDepartment(api);
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -37,6 +39,7 @@ test.describe('OC - Manage Units', () => {
 
 	test.afterAll(async () => {
 		await department.delete();
+		await department2.delete();
 		await monitor.delete();
 		await agent.delete();
 	});
@@ -160,8 +163,6 @@ test.describe('OC - Manage Units', () => {
 
 			return unit;
 		});
-
-		const department2 = await createDepartment(api);
 
 		await page.reload();
 
