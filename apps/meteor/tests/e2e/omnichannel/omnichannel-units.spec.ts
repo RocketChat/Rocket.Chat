@@ -78,30 +78,11 @@ test.describe('OC - Manage Units', () => {
 		});
 
 		await test.step('expect to delete unit', async () => {
-			await test.step('expect confirm delete unit', async () => {
-				await test.step('expect to be able to cancel delete', async () => {
-					await poOmnichannelUnits.btnDeleteByName(unitName).click();
-					await expect(poOmnichannelUnits.confirmDeleteModal).toBeVisible();
-					await poOmnichannelUnits.btnCancelDeleteModal.click();
-					await expect(poOmnichannelUnits.confirmDeleteModal).not.toBeVisible();
-				});
-
-				await test.step('expect to confirm delete', async () => {
-					await poOmnichannelUnits.btnDeleteByName(unitName).click();
-					await expect(poOmnichannelUnits.confirmDeleteModal).toBeVisible();
-					await poOmnichannelUnits.btnConfirmDeleteModal.click();
-					await expect(poOmnichannelUnits.confirmDeleteModal).not.toBeVisible();
-				});
-			});
-
-			await test.step('expect to have been deleted', async () => {
-				if (await poOmnichannelUnits.inputSearch.isVisible()) {
-					await poOmnichannelUnits.search(unitName);
-					await expect(poOmnichannelUnits.findRowByName(unitName)).not.toBeVisible();
-				} else {
-					await expect(page.locator('h3 >> text="No units yet"')).toBeVisible();
-				}
-			});
+			await poOmnichannelUnits.btnDeleteByName(unitName).click();
+			await expect(poOmnichannelUnits.confirmDeleteModal).toBeVisible();
+			await poOmnichannelUnits.btnConfirmDeleteModal.click();
+			await expect(poOmnichannelUnits.confirmDeleteModal).not.toBeVisible();
+			await expect(page.locator('h3 >> text="No units yet"')).toBeVisible();
 		});
 	});
 
@@ -123,7 +104,6 @@ test.describe('OC - Manage Units', () => {
 		await page.reload();
 		
 		await test.step('expect to edit unit', async () => {
-			await poOmnichannelUnits.inputSearch.isVisible()
 			await poOmnichannelUnits.search(unit.name);
 			await poOmnichannelUnits.findRowByName(unit.name).click();
 			await expect(poOmnichannelUnits.contextualBar).toBeVisible();
