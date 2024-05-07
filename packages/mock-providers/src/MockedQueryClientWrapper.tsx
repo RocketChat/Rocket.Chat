@@ -1,7 +1,7 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React from 'react';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React from "react";
 
-export const createQueryClientWrapper = () => {
+export const MockedQueryClientWrapper = () => {
 	const queryClient = new QueryClient();
 	const provider = ({ children }: any) => {
 		return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
