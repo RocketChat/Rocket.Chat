@@ -7,7 +7,7 @@ import React, { memo } from 'react';
 import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
 import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';
-import SidebarHeader from './header';
+// import SidebarHeader from './header';
 import OmnichannelSection from './sections/OmnichannelSection';
 import StatusDisabledSection from './sections/StatusDisabledSection';
 
@@ -40,7 +40,7 @@ const Sidebar = () => {
 			].filter(Boolean)}
 			data-qa-opened={sidebar.isCollapsed ? 'false' : 'true'}
 		>
-			<SidebarHeader />
+			{/* <SidebarHeader /> */}
 			{presenceDisabled && !bannerDismissed && <StatusDisabledSection onDismiss={() => setBannerDismissed(true)} />}
 			{showOmnichannel && <OmnichannelSection />}
 			<SidebarRoomList />

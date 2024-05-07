@@ -13,11 +13,6 @@ import type { UserStatusDescriptor } from '../../../lib/userStatuses';
 import { useStatusDisabledModal } from '../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
 
-/**
- * @deprecated Moved to NavBar
- * @description duplicated in apps/meteor/client/NavBar/UserMenu/hooks/useStatusItems.tsx until feature is ready
- * @memberof newNavigation
- */
 export const useStatusItems = (): GenericMenuItemProps[] => {
 	// We should lift this up to somewhere else if we want to use it in other places
 

@@ -10,11 +10,6 @@ import UserAvatarWithStatus from './UserAvatarWithStatus';
 import UserAvatarWithStatusUnstable from './UserAvatarWithStatusUnstable';
 import { useUserMenu } from './hooks/useUserMenu';
 
-/**
- * @deprecated Moved to NavBar
- * @description duplicated in apps/meteor/client/NavBar/UserMenu/UserMenu.tsx until feature is ready
- * @memberof newNavigation
- */
 const UserMenu = ({ user }: { user: IUser }) => {
 	const t = useTranslation();
 	const [isOpen, setIsOpen] = useState(false);

@@ -8,11 +8,6 @@ import UserMenuHeader from '../UserMenuHeader';
 import { useAccountItems } from './useAccountItems';
 import { useStatusItems } from './useStatusItems';
 
-/**
- * @deprecated Moved to NavBar
- * @description duplicated in apps/meteor/client/NavBar/UserMenu/hooks/useUserMenu.tsx until feature is ready
- * @memberof newNavigation
- */
 export const useUserMenu = (user: IUser) => {
 	const t = useTranslation();
 

@@ -6,11 +6,6 @@ import React from 'react';
 
 import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 
-/**
- * @deprecated Moved to NavBar
- * @description duplicated in apps/meteor/client/NavBar/UserMenu/hooks/useAccountItems.tsx until feature is ready
- * @memberof newNavigation
- */
 export const useAccountItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
 	const router = useRouter();

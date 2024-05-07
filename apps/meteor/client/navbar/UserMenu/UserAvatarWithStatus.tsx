@@ -14,9 +14,9 @@ const anon = {
 } as const;
 
 /**
- * @deprecated Moved to NavBar
- * @description duplicated in apps/meteor/client/NavBar/UserMenu/UserAvatarWithStatus.tsx until feature is ready
- * @memberof newNavigation
+ * @deprecated Feature preview
+ * @description Should be moved to the core when the feature is ready
+ * @memberof navigationBar
  */
 
 const UserAvatarWithStatus = () => {

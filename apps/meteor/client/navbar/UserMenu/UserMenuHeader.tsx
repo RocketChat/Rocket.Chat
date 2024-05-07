@@ -8,11 +8,6 @@ import MarkdownText from '../../components/MarkdownText';
 import { UserStatus } from '../../components/UserStatus';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 
-/**
- * @deprecated Moved to NavBar
- * @description duplicated in apps/meteor/client/NavBar/UserMenu/UserMenuHeader.tsx until feature is ready
- * @memberof newNavigation
- */
 const UserMenuHeader = ({ user }: { user: IUser }) => {
 	const t = useTranslation();
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
