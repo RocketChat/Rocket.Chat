@@ -4,16 +4,16 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
-import BurgerMenuButton from './BurgerMenuButton';
+import SidebarTogglerButton from './SidebarTogglerButton';
 
-const BurgerMenu = (): ReactElement => {
+const SideBarToggler = (): ReactElement => {
 	const { sidebar } = useLayout();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const unreadMessagesBadge = useSession('unread');
 
 	const toggleSidebar = useEffectEvent(() => sidebar.toggle());
 
-	return <BurgerMenuButton onClick={toggleSidebar} badge={!isLayoutEmbedded && unreadMessagesBadge && unreadMessagesBadge} />;
+	return <SidebarTogglerButton onClick={toggleSidebar} badge={!isLayoutEmbedded && unreadMessagesBadge && unreadMessagesBadge} />;
 };
 
-export default memo(BurgerMenu);
+export default memo(SideBarToggler);

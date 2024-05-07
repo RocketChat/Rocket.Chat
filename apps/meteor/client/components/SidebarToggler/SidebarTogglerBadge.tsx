@@ -1,9 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Badge } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import React from 'react';
 
-const BurgerBadge = ({ children }: { children?: unknown }): ReactElement => (
+const SidebarTogglerBadge = ({ children }: { children?: unknown }) => (
 	<Box
 		className={css`
 			position: absolute;
@@ -16,4 +15,4 @@ const BurgerBadge = ({ children }: { children?: unknown }): ReactElement => (
 	</Box>
 );
 
-export default BurgerBadge;
+export default SidebarTogglerBadge;

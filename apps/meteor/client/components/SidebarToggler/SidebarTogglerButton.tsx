@@ -1,24 +1,23 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import React from 'react';
 
-import BurgerBadge from './BurgerBadge';
+import SidebarTogglerBadge from './SidebarTogglerBadge';
 
-type BurgerMenuButtonProps = {
+type SideBarTogglerButtonProps = {
 	badge?: number | unknown;
 	onClick: () => void;
 };
 
-const BurgerMenuButton = ({ badge, onClick }: BurgerMenuButtonProps): ReactElement => {
+const SideBarTogglerButton = ({ badge, onClick }: SideBarTogglerButtonProps) => {
 	const t = useTranslation();
 
 	return (
 		<Box position='relative'>
 			<IconButton icon='burger-menu' small data-qa-id='burger-menu' aria-label={t('Open_sidebar')} marginInlineEnd={8} onClick={onClick} />
-			{badge && <BurgerBadge>{badge}</BurgerBadge>}
+			{badge && <SidebarTogglerBadge>{badge}</SidebarTogglerBadge>}
 		</Box>
 	);
 };
 
-export default BurgerMenuButton;
+export default SideBarTogglerButton;
