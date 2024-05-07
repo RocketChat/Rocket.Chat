@@ -42,7 +42,7 @@ const RoomE2EENotAllowed = ({ title, subTitle, action, btnText, icon }: RoomE2EE
 						<Button secondary={true} role='link' onClick={handleGoHomeClick}>
 							{t('Back_to_home')}
 						</Button>
-						<StatesAction primary onClick={action}>
+						<StatesAction primary onClick={action} role='button'>
 							{btnText}
 						</StatesAction>
 					</StatesActions>

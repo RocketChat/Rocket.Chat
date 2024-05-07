@@ -41,6 +41,7 @@ const permitedMutations = {
 		E2ERoomState.ERROR,
 		E2ERoomState.DISABLED,
 		E2ERoomState.WAITING_KEYS,
+		E2ERoomState.CREATING_KEYS,
 	],
 };
 
