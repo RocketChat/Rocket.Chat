@@ -1,13 +1,13 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { createElement, lazy, memo, Suspense } from 'react';
 import { FocusScope } from 'react-aria';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import { ContextualbarSkeleton } from '../../components/Contextualbar';
+import RoomE2EESetup from './E2EESetup/RoomE2EESetup';
 import Header from './Header';
 import MessageHighlightProvider from './MessageList/providers/MessageHighlightProvider';
-import RoomBodyWithE2EESetup from './RoomBodyWithE2EESetup';
 import RoomBody from './body/RoomBody';
 import { useRoom } from './contexts/RoomContext';
 import { useRoomToolbox } from './contexts/RoomToolboxContext';
@@ -24,6 +24,8 @@ const Room = (): ReactElement => {
 	const room = useRoom();
 	const toolbox = useRoomToolbox();
 	const contextualBarView = useAppsContextualBar();
+	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages');
+	const shouldDisplayE2EESetup = room?.encrypted && !unencryptedMessagesAllowed;
 
 	return (
 		<ChatProvider>
@@ -38,7 +40,7 @@ const Room = (): ReactElement => {
 									: t('Channel__roomName__', { roomName: room.name })
 							}
 							header={<Header room={room} />}
-							body={room?.encrypted ? <RoomBodyWithE2EESetup room={room} /> : <RoomBody />}
+							body={shouldDisplayE2EESetup ? <RoomE2EESetup /> : <RoomBody />}
 							aside={
 								(toolbox.tab?.tabComponent && (
 									<ErrorBoundary fallback={null}>

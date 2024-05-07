@@ -1,20 +1,22 @@
-import type { IRoom } from '@rocket.chat/core-typings';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
-import { e2e } from '../../../app/e2e/client';
-import { E2EEState } from '../../../app/e2e/client/E2EEState';
-import { E2ERoomState } from '../../../app/e2e/client/E2ERoomState';
+import { e2e } from '../../../../app/e2e/client';
+import { E2EEState } from '../../../../app/e2e/client/E2EEState';
+import { E2ERoomState } from '../../../../app/e2e/client/E2ERoomState';
+import RoomBody from '../body/RoomBody';
+import { useRoom } from '../contexts/RoomContext';
+import { useE2EERoomState } from '../hooks/useE2EERoomState';
+import { useE2EEState } from '../hooks/useE2EEState';
 import RoomE2EENotAllowed from './RoomE2EENotAllowed';
-import RoomBody from './body/RoomBody';
-import { useE2EERoomState } from './hooks/useE2EERoomState';
-import { useE2EEState } from './hooks/useE2EEState';
 
-const RoomBodyWithE2EESetup = ({ room }: { room: IRoom }) => {
-	const areUnencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages');
-	const e2eRoomState = useE2EERoomState(room._id);
+const RoomE2EESetup = () => {
+	const room = useRoom();
+
 	const e2eeState = useE2EEState();
-	const isE2EEReady = e2eeState === E2EEState.READY;
+	const e2eRoomState = useE2EERoomState(room._id);
+	// const isE2EEReady = e2eeState === E2EEState.READY;
+
 	const t = useTranslation();
 	const randomPassword = window.localStorage.getItem('e2e.randomPassword');
 
@@ -27,14 +29,6 @@ const RoomBodyWithE2EESetup = ({ room }: { room: IRoom }) => {
 	}, [randomPassword]);
 
 	const onEnterE2EEPassword = useCallback(() => e2e.decodePrivateKeyFlow(), []);
-
-	if (!room?.encrypted) {
-		return <RoomBody />;
-	}
-
-	if (areUnencryptedMessagesAllowed || (e2eRoomState === E2ERoomState.READY && isE2EEReady && !areUnencryptedMessagesAllowed)) {
-		return <RoomBody />;
-	}
 
 	if (e2eeState === E2EEState.SAVE_PASSWORD) {
 		return (
@@ -70,7 +64,8 @@ const RoomBodyWithE2EESetup = ({ room }: { room: IRoom }) => {
 		);
 	}
 
+	// RoomBodyLoading
 	return <RoomBody />;
 };
 
-export default RoomBodyWithE2EESetup;
+export default RoomE2EESetup;
