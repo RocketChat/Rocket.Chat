@@ -180,7 +180,7 @@ const VideoConferenceBlock = ({
             <VideoConfMessageFooterText>
               {data.users.length > MAX_USERS
                 ? t('__usersCount__member_joined', {
-                    usersCount: data.users.length - MAX_USERS,
+                    count: data.users.length - MAX_USERS,
                   })
                 : t('joined')}
             </VideoConfMessageFooterText>
