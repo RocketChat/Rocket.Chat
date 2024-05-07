@@ -29,7 +29,7 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 			description: 'summary of oplog operations',
 		});
 
-		this.watcher.onDoc(({ collection, doc }) => {
+		this.watcher.onDocument(({ collection, doc }) => {
 			this.api?.metrics?.increment('rocketchat_oplog', { collection, op: doc.action });
 		});
 

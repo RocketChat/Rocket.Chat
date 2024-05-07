@@ -12,7 +12,7 @@ const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 
 const watcher = new DatabaseWatcher({ db, _oplogHandle: (mongo as any)._oplogHandle, logger: Logger });
 
-watcher.onDoc(({ collection, doc }) => {
+watcher.onDocument(({ collection, doc }) => {
 	metrics.oplog.inc({
 		collection,
 		op: doc.action,
