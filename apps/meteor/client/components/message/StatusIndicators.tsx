@@ -17,7 +17,7 @@ const StatusIndicators = ({ message }: StatusIndicatorsProps): ReactElement => {
 	const starred = useShowStarred({ message });
 	const following = useShowFollowing({ message });
 
-	const isEncryptedMessage = isE2EEMessage(message);
+	const isEncryptedMessage = isE2EEMessage(message) || message.t === 'message_pinned_e2e';
 	const isOtrMessage = isOTRMessage(message) || isOTRAckMessage(message);
 
 	const uid = useUserId();

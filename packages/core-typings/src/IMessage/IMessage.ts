@@ -92,6 +92,7 @@ export type MessageTypesValues =
 	| 'command'
 	| 'videoconf'
 	| 'message_pinned'
+	| 'message_pinned_e2e'
 	| 'new-moderator'
 	| 'moderator-removed'
 	| 'new-owner'

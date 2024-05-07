@@ -1,7 +1,7 @@
 import QueryString from 'querystring';
 import URL from 'url';
 
-import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IE2EEMessage, IMessage, IRoom, ISubscription, MessageAttachment } from '@rocket.chat/core-typings';
 import { isE2EEMessage, isFileAttachment } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import EJSON from 'ejson';
@@ -435,6 +435,30 @@ class E2E extends Emitter {
 		const decryptedMessageWithAttachments = await this.decryptMessageAttachments(decryptedMessageWithQuote);
 
 		return decryptedMessageWithAttachments;
+	}
+
+	async decryptPinnedMessage(message: IMessage) {
+		if (!message?.attachments || !message.attachments[0]?.text) {
+			return message;
+		}
+
+		const e2eRoom = await this.getInstanceByRoomId(message.rid);
+		const pinnedMessage = message.attachments[0]?.text;
+
+		if (!e2eRoom || !pinnedMessage) {
+			return message;
+		}
+
+		const data = await e2eRoom.decrypt(pinnedMessage);
+
+		if (!data) {
+			return message;
+		}
+
+		const decryptedPinnedMessage = { ...message } as IMessage & { attachments: MessageAttachment[] };
+		decryptedPinnedMessage.attachments[0].text = data.text;
+
+		return decryptedPinnedMessage;
 	}
 
 	async decryptMessageAttachments(message: IMessage): Promise<IMessage> {
