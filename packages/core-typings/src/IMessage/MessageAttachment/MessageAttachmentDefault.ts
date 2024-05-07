@@ -1,4 +1,3 @@
-import type { IMessage } from '../IMessage';
 import type { Root } from '@rocket.chat/message-parser';
 
 import type { FieldProps } from './FieldProps';
@@ -29,8 +28,5 @@ export type MessageAttachmentDefault = {
 
 	color?: string;
 
-	t?: IMessage['t'];
-	translations?: {
-		[language: string]: string;
-	};
+	t?: 'e2e';
 } & MessageAttachmentBase;
