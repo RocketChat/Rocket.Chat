@@ -25,7 +25,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 	const t = useTranslation();
 	const canViewEngagementDashboard = usePermission('view-engagement-dashboard');
 	const setModal = useSetModal();
-	const isModalOpen = useCurrentModal() !== null;
+	const isModalOpen = !!useCurrentModal();
 
 	const router = useRouter();
 	const tab = useRouteParameter('tab');
@@ -39,6 +39,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 		if (shouldShowUpsell) {
 			setModal(
 				<GenericUpsellModal
+					aria-label={t('Engagement_Dashboard')}
 					title={t('Engagement_Dashboard')}
 					img={getURL('images/engagement.png')}
 					subtitle={t('Analyze_practical_usage')}
