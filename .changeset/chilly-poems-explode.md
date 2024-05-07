@@ -1,6 +1,6 @@
 ---
 "@rocket.chat/meteor": minor
-"@rocket.chat/core-typings": patch
+"@rocket.chat/core-typings": minor
 "@rocket.chat/i18n": patch
 ---
 

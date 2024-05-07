@@ -4,7 +4,7 @@ import type { FC } from 'react';
 import React, { useCallback, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import BurgerMenu from '../../../../components/BurgerMenu';
+import SidebarToggler from '../../../../components/SidebarToggler';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 import RoomHeader from '../RoomHeader';
 import { BackButton } from './BackButton';
@@ -41,7 +41,7 @@ const OmnichannelRoomHeader: FC<OmnichannelRoomHeaderProps> = ({ slots: parentSl
 			...parentSlot,
 			start: (!!isMobile || currentRouteName === 'omnichannel-directory' || currentRouteName === 'omnichannel-current-chats') && (
 				<HeaderToolbar>
-					{isMobile && <BurgerMenu />}
+					{isMobile && <SidebarToggler />}
 					<BackButton routeName={currentRouteName} />
 				</HeaderToolbar>
 			),
