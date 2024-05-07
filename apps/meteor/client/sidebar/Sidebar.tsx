@@ -4,15 +4,15 @@ import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
-import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
+// import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
 import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';
 // import SidebarHeader from './header';
-import OmnichannelSection from './sections/OmnichannelSection';
+// import OmnichannelSection from './sections/OmnichannelSection';
 import StatusDisabledSection from './sections/StatusDisabledSection';
 
 const Sidebar = () => {
-	const showOmnichannel = useOmnichannelEnabled();
+	// const showOmnichannel = useOmnichannelEnabled();
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
@@ -42,7 +42,7 @@ const Sidebar = () => {
 		>
 			{/* <SidebarHeader /> */}
 			{presenceDisabled && !bannerDismissed && <StatusDisabledSection onDismiss={() => setBannerDismissed(true)} />}
-			{showOmnichannel && <OmnichannelSection />}
+			{/* {showOmnichannel && <OmnichannelSection />} */}
 			<SidebarRoomList />
 			<SidebarFooter />
 		</Box>

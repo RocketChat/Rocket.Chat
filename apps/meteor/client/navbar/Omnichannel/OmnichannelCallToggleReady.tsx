@@ -1,15 +1,10 @@
-import { Sidebar } from '@rocket.chat/fuselage';
+import { NavBarItem } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
-import { useCallerInfo, useCallRegisterClient, useCallUnregisterClient, useVoipNetworkStatus } from '../../../contexts/CallContext';
+import { useCallerInfo, useCallRegisterClient, useCallUnregisterClient, useVoipNetworkStatus } from '../../contexts/CallContext';
 
-/**
- * @deprecated Moved to NavBar
- * @description duplicated in apps/meteor/client/NavBar/Omnichannel/OmnichannelCallToggle.tsx until feature is ready
- * @memberof newNavigation
- */
 export const OmnichannelCallToggleReady = ({ ...props }): ReactElement => {
 	const t = useTranslation();
 
@@ -53,7 +48,7 @@ export const OmnichannelCallToggleReady = ({ ...props }): ReactElement => {
 	};
 
 	return (
-		<Sidebar.TopBar.Action
+		<NavBarItem
 			icon={getIcon()}
 			disabled={inCall}
 			aria-checked={registered}

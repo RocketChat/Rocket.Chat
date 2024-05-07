@@ -4,9 +4,9 @@ import { useHasLicenseModule } from '../../../../../ee/client/hooks/useHasLicens
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 
 /**
- * @deprecated Feature preview
- * @description Should be moved to navbar when the feature became part of the core
- * @memberof navigationBar
+ * @deprecated Moved to NavBar
+ * @description duplicated in apps/meteor/client/NavBar/actions/hooks/useAuditMenu.tsx until feature is ready
+ * @memberof newNavigation
  */
 
 export const useAuditItems = (): GenericMenuItemProps[] => {

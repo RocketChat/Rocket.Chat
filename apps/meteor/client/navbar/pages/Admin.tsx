@@ -6,7 +6,7 @@ import React from 'react';
 
 type AdminProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const NavBarPageAdmin = (props: AdminProps) => {
+export const NavBarPageAdmin = (props: AdminProps) => {
 	const router = useRouter();
 	const { sidebar } = useLayout();
 	const handleDirectory = useEffectEvent(() => {
@@ -17,5 +17,3 @@ const NavBarPageAdmin = (props: AdminProps) => {
 
 	return <NavBarItem {...props} icon='cog' onClick={handleDirectory} pressed={currentRoute?.includes('/admin')} />;
 };
-
-export default NavBarPageAdmin;

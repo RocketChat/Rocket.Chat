@@ -2,12 +2,19 @@ import { NavBar as NavBarComponent, NavBarSection, NavBarGroup, NavBarDivider } 
 import { useAtLeastOnePermission, usePermission, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
+import { useIsCallEnabled, useIsCallReady } from '../contexts/CallContext';
+import { useOmnichannelShowQueueLink } from '../hooks/omnichannel/useOmnichannelShowQueueLink';
 import UserMenu from '../sidebar/header/UserMenu';
-import NavBarPageAdmin from './pages/Admin';
-import NavBarPageDirectory from './pages/Directory';
-import NavBarPageHome from './pages/Home';
-import NavBarPageMarketPlace from './pages/MarketPlace';
-import NavBarPageOmnichannel from './pages/Omnichannel';
+import {
+	NavBarItemOmniChannelCallDialPad,
+	NavBarItemOmnichannel,
+	NavBarItemOmnichannelContact,
+	NavBarItemOmnichannelLivechatToggle,
+	NavBarItemOmnichannelQueue,
+	NavBarItemOmnichannelCallToggle,
+} from './Omnichannel';
+import NavBarAuditMenu from './actions/Audit.tsx';
+import { NavBarPageAdmin, NavBarPageDirectory, NavBarPageHome, NavBarPageMarketPlace } from './pages';
 
 const ADMIN_PERMISSIONS = [
 	'view-statistics',
@@ -47,6 +54,10 @@ export const NavBar = () => {
 	const hasAccessMarketplacePermission = usePermission('access-marketplace');
 	const showMarketplace = hasAccessMarketplacePermission || hasManageAppsPermission;
 
+	const showOmnichannelQueueLink = useOmnichannelShowQueueLink();
+	const isCallEnabled = useIsCallEnabled();
+	const isCallReady = useIsCallReady();
+
 	return (
 		<NavBarComponent>
 			<NavBarSection>
@@ -54,11 +65,17 @@ export const NavBar = () => {
 					<NavBarPageHome title={t('Home')} />
 					<NavBarPageDirectory title={t('Directory')} />
 					{showMarketplace && <NavBarPageMarketPlace title={t('Marketplace')} />}
+					<NavBarAuditMenu />
 				</NavBarGroup>
 				<NavBarDivider />
 				{showOmnichannel && (
 					<NavBarGroup role='toolbar'>
-						<NavBarPageOmnichannel title={t('Omnichannel')} />
+						{showOmnichannelQueueLink && <NavBarItemOmnichannelQueue title={t('Queue')} />}
+						{isCallReady && <NavBarItemOmniChannelCallDialPad />}
+						<NavBarItemOmnichannel title={t('Omnichannel')} />
+						<NavBarItemOmnichannelContact title={t('Contacts')} />
+						{isCallEnabled && <NavBarItemOmnichannelCallToggle />}
+						<NavBarItemOmnichannelLivechatToggle />
 					</NavBarGroup>
 				)}
 			</NavBarSection>

@@ -6,7 +6,7 @@ import React from 'react';
 
 type DirectoryProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const NavBarPageDirectory = (props: DirectoryProps) => {
+export const NavBarPageDirectory = (props: DirectoryProps) => {
 	const router = useRouter();
 	const { sidebar } = useLayout();
 	const handleDirectory = useEffectEvent(() => {
@@ -17,5 +17,3 @@ const NavBarPageDirectory = (props: DirectoryProps) => {
 
 	return <NavBarItem {...props} icon='notebook-hashtag' onClick={handleDirectory} pressed={currentRoute?.includes('/directory')} />;
 };
-
-export default NavBarPageDirectory;

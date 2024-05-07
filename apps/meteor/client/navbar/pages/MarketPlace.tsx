@@ -6,7 +6,7 @@ import React from 'react';
 
 type MarketPlaceProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const NavBarPageMarketPlace = (props: MarketPlaceProps) => {
+export const NavBarPageMarketPlace = (props: MarketPlaceProps) => {
 	const router = useRouter();
 	const { sidebar } = useLayout();
 	const handleDirectory = useEffectEvent(() => {
@@ -17,5 +17,3 @@ const NavBarPageMarketPlace = (props: MarketPlaceProps) => {
 
 	return <NavBarItem {...props} icon='store' onClick={handleDirectory} pressed={currentRoute?.includes('/marketplace')} />;
 };
-
-export default NavBarPageMarketPlace;

@@ -3,6 +3,11 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+/**
+ * @deprecated Moved to NavBar
+ * @description duplicated in apps/meteor/client/NavBar/Omnichannel/OmnichannelCallToggle.tsx until feature is ready
+ * @memberof newNavigation
+ */
 export const OmnichannelCallToggleError = ({ ...props }): ReactElement => {
 	const t = useTranslation();
 	return <Sidebar.TopBar.Action icon='phone' danger data-tooltip={t('Error')} disabled {...props} />;

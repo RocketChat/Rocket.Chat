@@ -10,6 +10,11 @@ import SidebarHeaderToolbar from '../header/SidebarHeaderToolbar';
 import { OverMacLimitSection } from './OverMacLimitSection';
 import { OmniChannelCallDialPad, OmnichannelCallToggle, OmnichannelLivechatToggle } from './actions';
 
+/**
+ * @deprecated Moved to NavBar
+ * @description delete when feature is ready
+ * @memberof newNavigation
+ */
 const OmnichannelSection = () => {
 	const t = useTranslation();
 	const isCallEnabled = useIsCallEnabled();
