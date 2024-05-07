@@ -228,11 +228,11 @@ export class DatabaseWatcher extends EventEmitter {
 		this.emit(collection, doc);
 	}
 
-	onDoc(callback: (event: { collection: string; doc: any }) => void): this {
+	onDoc(callback: (event: { collection: string; doc: RealTimeData<IRocketChatRecord> }) => void): this {
 		return super.on('doc', callback);
 	}
 
-	on<T>(collection: string, callback: (event: RealTimeData<T>) => void): this {
+	onCollection<T>(collection: string, callback: (event: RealTimeData<T>) => void): this {
 		return super.on(collection, callback);
 	}
 
