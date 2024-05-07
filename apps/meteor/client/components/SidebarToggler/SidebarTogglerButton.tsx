@@ -14,7 +14,7 @@ const SideBarTogglerButton = ({ badge, onClick }: SideBarTogglerButtonProps) => 
 
 	return (
 		<Box position='relative'>
-			<IconButton icon='burger-menu' small data-qa-id='burger-menu' aria-label={t('Open_sidebar')} marginInlineEnd={8} onClick={onClick} />
+			<IconButton icon='burger-menu' small aria-label={t('Open_sidebar')} marginInlineEnd={8} onClick={onClick} />
 			{badge && <SidebarTogglerBadge>{badge}</SidebarTogglerBadge>}
 		</Box>
 	);
