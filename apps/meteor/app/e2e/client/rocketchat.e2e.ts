@@ -2,7 +2,7 @@ import QueryString from 'querystring';
 import URL from 'url';
 
 import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { isE2EEMessage } from '@rocket.chat/core-typings';
+import { isE2EEMessage, isFileAttachment } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
@@ -422,19 +422,60 @@ class E2E extends Emitter {
 
 		const data = await e2eRoom.decrypt(message.msg);
 
-		if (!data) {
-			return message;
-		}
-
 		const decryptedMessage: IE2EEMessage = {
 			...message,
-			msg: data.text,
-			e2e: 'done',
+			...(data && {
+				msg: data.text,
+				e2e: 'done',
+			}),
 		};
 
 		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
 
-		return decryptedMessageWithQuote;
+		const decryptedMessageWithAttachments = await this.decryptMessageAttachments(decryptedMessageWithQuote);
+
+		return decryptedMessageWithAttachments;
+	}
+
+	async decryptMessageAttachments(message: IMessage): Promise<IMessage> {
+		const { attachments } = message;
+
+		if (!attachments || !attachments.length) {
+			return message;
+		}
+
+		const e2eRoom = await this.getInstanceByRoomId(message.rid);
+
+		if (!e2eRoom) {
+			return message;
+		}
+
+		const decryptedAttachments = await Promise.all(
+			attachments.map(async (attachment) => {
+				if (!isFileAttachment(attachment)) {
+					return attachment;
+				}
+
+				if (!attachment.description) {
+					return attachment;
+				}
+
+				const data = await e2eRoom.decrypt(attachment.description);
+
+				if (!data) {
+					return attachment;
+				}
+
+				attachment.description = data.text;
+				return attachment;
+			}),
+		);
+
+		return {
+			...message,
+			attachments: decryptedAttachments,
+			e2e: 'done',
+		};
 	}
 
 	async decryptPendingMessages(): Promise<void> {

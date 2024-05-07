@@ -11,6 +11,7 @@ import { broadcastMessageFromData } from '../../../../server/modules/watchers/li
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
+import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 // TODO: most of the types here are wrong, but I don't want to change them now
@@ -170,6 +171,14 @@ export const validateMessage = async (message: any, room: any, user: any) => {
 
 	if (Array.isArray(message.attachments) && message.attachments.length) {
 		validateBodyAttachments(message.attachments);
+	}
+
+	if (message.customFields) {
+		validateCustomMessageFields({
+			customFields: message.customFields,
+			messageCustomFieldsEnabled: settings.get<boolean>('Message_CustomFields_Enabled'),
+			messageCustomFields: settings.get<string>('Message_CustomFields'),
+		});
 	}
 };
 

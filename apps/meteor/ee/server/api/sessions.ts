@@ -1,3 +1,4 @@
+import { api } from '@rocket.chat/core-services';
 import type { IUser, ISession, DeviceManagementSession, DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Users, Sessions } from '@rocket.chat/models';
@@ -7,7 +8,6 @@ import Ajv from 'ajv';
 
 import { API } from '../../../app/api/server/api';
 import { getPaginationItems } from '../../../app/api/server/helpers/getPaginationItems';
-import { Notifications } from '../../../app/notifications/server';
 
 const ajv = new Ajv({ coerceTypes: true });
 
@@ -223,7 +223,7 @@ API.v1.addRoute(
 				return API.v1.notFound('Session not found');
 			}
 
-			Notifications.notifyUser(sessionObj.userId, 'force_logout');
+			await api.broadcast('user.forceLogout', sessionObj.userId);
 
 			await Promise.all([
 				Users.unsetOneLoginToken(sessionObj.userId, sessionObj.loginToken),
