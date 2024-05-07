@@ -13,7 +13,7 @@ const NavBarAuditMenu: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) =>
 
 	return (
 		<GenericMenu
-			items={sections}
+			sections={sections}
 			title={t('Audit')}
 			is={NavBarItem}
 			placement='bottom-start'

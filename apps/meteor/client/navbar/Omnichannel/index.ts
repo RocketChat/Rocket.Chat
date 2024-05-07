@@ -1,4 +1,3 @@
-export * from './Omnichannel';
 export * from './OmnichannelCallDialPad';
 export * from './OmnichannelCallToggle';
 export * from './OmnichannelContact';

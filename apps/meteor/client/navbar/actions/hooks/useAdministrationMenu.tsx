@@ -3,7 +3,7 @@ import { usePermission, useRouter, useTranslation } from '@rocket.chat/ui-contex
 import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 
-export const useAuditMenu = () => {
+export const useAdministrationMenu = () => {
 	const router = useRouter();
 	const t = useTranslation();
 
@@ -17,21 +17,21 @@ export const useAuditMenu = () => {
 	}
 
 	const auditMessageItem: GenericMenuItemProps = {
-		id: 'messages',
-		icon: 'document-eye',
-		content: t('Messages'),
-		onClick: () => router.navigate('/audit'),
+		id: 'workspace',
+		icon: 'extended-view',
+		content: t('Workspace'),
+		onClick: () => router.navigate('/admin'),
 	};
 	const auditLogItem: GenericMenuItemProps = {
-		id: 'auditLog',
-		icon: 'document-eye',
-		content: t('Logs'),
-		onClick: () => router.navigate('/audit-log'),
+		id: 'omnichannel',
+		icon: 'headset',
+		content: t('Omnichannel'),
+		onClick: () => router.navigate('/omnichannel/current'),
 	};
 
 	return [
 		{
-			title: t('Audit'),
+			title: t('Administration'),
 			items: [hasAuditPermission && auditMessageItem, hasAuditLogPermission && auditLogItem].filter(Boolean) as GenericMenuItemProps[],
 		},
 	];

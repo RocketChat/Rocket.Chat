@@ -7,14 +7,14 @@ import { useOmnichannelShowQueueLink } from '../hooks/omnichannel/useOmnichannel
 import UserMenu from '../sidebar/header/UserMenu';
 import {
 	NavBarItemOmniChannelCallDialPad,
-	NavBarItemOmnichannel,
 	NavBarItemOmnichannelContact,
 	NavBarItemOmnichannelLivechatToggle,
 	NavBarItemOmnichannelQueue,
 	NavBarItemOmnichannelCallToggle,
 } from './Omnichannel';
+import NavBarAdministrationMenu from './actions/Administration';
 import NavBarAuditMenu from './actions/Audit.tsx';
-import { NavBarPageAdmin, NavBarPageDirectory, NavBarPageHome, NavBarPageMarketPlace } from './pages';
+import { NavBarPageDirectory, NavBarPageHome, NavBarPageMarketPlace } from './pages';
 
 const ADMIN_PERMISSIONS = [
 	'view-statistics',
@@ -72,7 +72,6 @@ export const NavBar = () => {
 					<NavBarGroup role='toolbar'>
 						{showOmnichannelQueueLink && <NavBarItemOmnichannelQueue title={t('Queue')} />}
 						{isCallReady && <NavBarItemOmniChannelCallDialPad />}
-						<NavBarItemOmnichannel title={t('Omnichannel')} />
 						<NavBarItemOmnichannelContact title={t('Contacts')} />
 						{isCallEnabled && <NavBarItemOmnichannelCallToggle />}
 						<NavBarItemOmnichannelLivechatToggle />
@@ -81,7 +80,7 @@ export const NavBar = () => {
 			</NavBarSection>
 			<NavBarSection>
 				<NavBarGroup>
-					{isAdmin && <NavBarPageAdmin title={t('Workspace')} />}
+					{isAdmin && <NavBarAdministrationMenu />}
 					{user && <UserMenu user={user} />}
 				</NavBarGroup>
 			</NavBarSection>
