@@ -1,6 +1,6 @@
 import type { IIntegration, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, IIntegrationsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, IndexDescription } from 'mongodb';
+import type { Collection, Db, FindCursor, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -46,7 +46,15 @@ export class IntegrationsRaw extends BaseRaw<IIntegration> implements IIntegrati
 		});
 	}
 
-	disableByUserId(userId: string): ReturnType<IBaseModel<IIntegration>['updateMany']> {
+	disableByUserId(userId: IIntegration['_id']): ReturnType<IBaseModel<IIntegration>['updateMany']> {
 		return this.updateMany({ userId }, { $set: { enabled: false } });
+	}
+
+	findByUserId(userId: IIntegration['_id']): FindCursor<IIntegration> {
+		return this.find({ userId }, { projection: { _id: 1 } });
+	}
+
+	findByChannels(channels: IIntegration['channel']): FindCursor<IIntegration> {
+		return this.find({ channel: { $in: channels } });
 	}
 }
