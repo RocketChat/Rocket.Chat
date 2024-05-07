@@ -13,6 +13,10 @@ export const buildVersionUpdateMessage = async (
 		infoUrl: string;
 	}[] = [],
 ) => {
+	if (process.env.TEST_MODE) {
+		return;
+	}
+
 	const lastCheckedVersion = settings.get<string>('Update_LatestAvailableVersion');
 
 	if (!lastCheckedVersion) {

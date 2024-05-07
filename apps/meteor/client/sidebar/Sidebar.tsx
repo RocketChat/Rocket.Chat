@@ -27,28 +27,25 @@ const Sidebar = () => {
 	`;
 
 	return (
-		<>
-			<Box
-				display='flex'
-				flexDirection='column'
-				height='100%'
-				is='nav'
-				className={[
-					'rcx-sidebar--main',
-					`rcx-sidebar rcx-sidebar--${sidebarViewMode}`,
-					sidebarHideAvatar && 'rcx-sidebar--hide-avatar',
-					sidebarLink,
-				].filter(Boolean)}
-				role='navigation'
-				data-qa-opened={sidebar.isCollapsed ? 'false' : 'true'}
-			>
-				<SidebarHeader />
-				{presenceDisabled && !bannerDismissed && <StatusDisabledSection onDismiss={() => setBannerDismissed(true)} />}
-				{showOmnichannel && <OmnichannelSection />}
-				<SidebarRoomList />
-				<SidebarFooter />
-			</Box>
-		</>
+		<Box
+			display='flex'
+			flexDirection='column'
+			height='100%'
+			is='nav'
+			className={[
+				'rcx-sidebar--main',
+				`rcx-sidebar rcx-sidebar--${sidebarViewMode}`,
+				sidebarHideAvatar && 'rcx-sidebar--hide-avatar',
+				sidebarLink,
+			].filter(Boolean)}
+			data-qa-opened={sidebar.isCollapsed ? 'false' : 'true'}
+		>
+			<SidebarHeader />
+			{presenceDisabled && !bannerDismissed && <StatusDisabledSection onDismiss={() => setBannerDismissed(true)} />}
+			{showOmnichannel && <OmnichannelSection />}
+			<SidebarRoomList />
+			<SidebarFooter />
+		</Box>
 	);
 };
 

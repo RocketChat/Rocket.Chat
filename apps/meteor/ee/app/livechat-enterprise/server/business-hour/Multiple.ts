@@ -10,10 +10,11 @@ import {
 	filterBusinessHoursThatMustBeOpened,
 	filterBusinessHoursThatMustBeOpenedByDay,
 } from '../../../../../app/livechat/server/business-hour/Helper';
+import { closeBusinessHour } from '../../../../../app/livechat/server/business-hour/closeBusinessHour';
 import { settings } from '../../../../../app/settings/server';
 import { isTruthy } from '../../../../../lib/isTruthy';
 import { bhLogger } from '../lib/logger';
-import { closeBusinessHour, openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
+import { openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 
 interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
 	timezoneName: string;

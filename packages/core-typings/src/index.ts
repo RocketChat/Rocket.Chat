@@ -17,6 +17,7 @@ export * from './UserStatus';
 export * from './IUserAction';
 export * from './IBanner';
 export * from './IStats';
+export * from './IMatrixFederationStatistics';
 export * from './IServerInfo';
 export * from './IWorkspaceInfo';
 export * from './IInstanceStatus';
