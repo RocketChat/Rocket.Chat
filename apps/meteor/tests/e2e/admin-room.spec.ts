@@ -1,15 +1,13 @@
 import { faker } from '@faker-js/faker';
-import { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
-import { Admin } from './page-objects';
+import { Admin, AdminSectionsHref } from './page-objects';
 import { createTargetChannel, createTargetPrivateChannel } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
 test.describe.serial('admin-rooms', () => {
-	let adminPage: Page;
 	let channel: string;
 	let privateRoom: string;
 	let admin: Admin;
@@ -20,12 +18,15 @@ test.describe.serial('admin-rooms', () => {
 	});
 
 	test.beforeAll(async ({ browser, api }) => {
-		adminPage = await browser.newPage({ storageState: Users.admin.state });
-		await adminPage.goto('/home');
-		await adminPage.waitForSelector('[data-qa-id="home-header"]');
-
-		channel = await createTargetChannel(api);
-		privateRoom = await createTargetPrivateChannel(api);
+		[channel, privateRoom] = await Promise.all([
+			createTargetChannel(api),
+			createTargetPrivateChannel(api),
+			browser.newPage({ storageState: Users.admin.state }).then(async (page) => {
+				await page.goto('/home');
+				await page.waitForSelector('[data-qa-id="home-header"]');
+				return page;
+			}),
+		]);
 	});
 
 	test('should display the Rooms Table', async ({ page }) => {
@@ -93,9 +94,11 @@ test.describe.serial('admin-rooms', () => {
 		await privateOption.waitFor();
 		await privateOption.click();
 
-		await page.goto('/admin/info');
+		const workspaceButton = await admin.adminSectionButton(AdminSectionsHref.Workspace);
+		await workspaceButton.click();
 
-		await page.goto('/admin/rooms');
+		const roomsButton = await admin.adminSectionButton(AdminSectionsHref.Rooms);
+		await roomsButton.click();
 
 		const selectDropdown = await admin.dropdownFilterRoomType('All rooms');
 		await expect(selectDropdown).toBeVisible();
