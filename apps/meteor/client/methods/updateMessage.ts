@@ -1,21 +1,20 @@
-import { IEditedMessage } from '@rocket.chat/core-typings';
+import type { IEditedMessage } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
-import _ from 'underscore';
 
-import { hasAtLeastOnePermission } from '../../app/authorization/client';
+import { hasAtLeastOnePermission, hasPermission } from '../../app/authorization/client';
 import { ChatMessage } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
-import { t } from '../../app/utils/client';
-import { callbacks } from '../../lib/callbacks';
+import { t } from '../../app/utils/lib/i18n';
 import { dispatchToastMessage } from '../lib/toast';
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	updateMessage(message) {
 		const uid = Meteor.userId();
 		if (!uid) {
-			return false;
+			return;
 		}
 
 		const originalMessage = ChatMessage.findOne(message._id);
@@ -23,7 +22,7 @@ Meteor.methods({
 		if (!originalMessage) {
 			return;
 		}
-		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
+		const canEditMessage = hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = settings.get('Message_AllowEditing');
 		let editOwn = false;
 
@@ -39,32 +38,34 @@ Meteor.methods({
 		const me = Meteor.users.findOne(uid);
 
 		if (!me) {
-			return false;
+			return;
 		}
 
-		if (!(hasPermission || (editAllowed && editOwn))) {
+		if (!(canEditMessage || (editAllowed && editOwn))) {
 			dispatchToastMessage({
 				type: 'error',
 				message: t('error-action-not-allowed', { action: t('Message_editing') }),
 			});
-			return false;
+			return;
 		}
 
-		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
-		if (_.isNumber(blockEditInMinutes) && blockEditInMinutes !== 0) {
+		const blockEditInMinutes = Number(settings.get('Message_AllowEditing_BlockEditInMinutes') as number | undefined);
+		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete');
+
+		if (!bypassBlockTimeLimit && blockEditInMinutes !== 0) {
 			if (originalMessage.ts) {
 				const msgTs = moment(originalMessage.ts);
 				if (msgTs) {
 					const currentTsDiff = moment().diff(msgTs, 'minutes');
 					if (currentTsDiff > blockEditInMinutes) {
 						dispatchToastMessage({ type: 'error', message: t('error-message-editing-blocked') });
-						return false;
+						return;
 					}
 				}
 			}
 		}
 
-		Tracker.nonreactive(() => {
+		Tracker.nonreactive(async () => {
 			message.editedAt = new Date(Date.now());
 
 			message.editedBy = {
@@ -72,14 +73,13 @@ Meteor.methods({
 				username: me.username,
 			};
 
-			message = callbacks.run('beforeSaveMessage', message);
 			const messageObject: Partial<IEditedMessage> = {
 				editedAt: message.editedAt,
 				editedBy: message.editedBy,
 				msg: message.msg,
 			};
 
-			if (originalMessage.attachments) {
+			if (originalMessage.attachments?.length) {
 				if (originalMessage.attachments[0].description !== undefined) {
 					delete messageObject.msg;
 					originalMessage.attachments[0].description = message.msg;

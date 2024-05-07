@@ -1,6 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-import mem from 'mem';
 import type {
 	IRoom,
 	ISubscription,
@@ -9,10 +6,19 @@ import type {
 	IUser,
 	MessageAttachmentDefault,
 } from '@rocket.chat/core-typings';
+import { isTranslatedMessageAttachment } from '@rocket.chat/core-typings';
+import mem from 'mem';
+import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
-import { Subscriptions, Messages } from '../../../models/client';
+import {
+	hasTranslationLanguageInAttachments,
+	hasTranslationLanguageInMessage,
+} from '../../../../client/views/room/MessageList/lib/autoTranslate';
 import { hasPermission } from '../../../authorization/client';
-import { call } from '../../../../client/lib/utils/call';
+import { Subscriptions, Messages } from '../../../models/client';
+import { settings } from '../../../settings/client';
+import { sdk } from '../../../utils/client/lib/SDKClient';
 
 let userLanguage = 'en';
 let username = '';
@@ -55,6 +61,9 @@ export const AutoTranslate = {
 		language: string,
 		autoTranslateShowInverse: boolean,
 	): MessageAttachmentDefault[] {
+		if (!isTranslatedMessageAttachment(attachments)) {
+			return attachments;
+		}
 		for (const attachment of attachments) {
 			if (attachment.author_name !== username) {
 				if (attachment.text && attachment.translations && attachment.translations[language]) {
@@ -94,7 +103,7 @@ export const AutoTranslate = {
 
 		Tracker.autorun(async (c) => {
 			const uid = Meteor.userId();
-			if (!uid || !hasPermission('auto-translate')) {
+			if (!settings.get('AutoTranslate_Enabled') || !uid || !hasPermission('auto-translate')) {
 				return;
 			}
 
@@ -102,8 +111,8 @@ export const AutoTranslate = {
 
 			try {
 				[this.providersMetadata, this.supportedLanguages] = await Promise.all([
-					call('autoTranslate.getProviderUiMetadata'),
-					call('autoTranslate.getSupportedLanguages', 'en'),
+					sdk.call('autoTranslate.getProviderUiMetadata'),
+					sdk.call('autoTranslate.getSupportedLanguages', 'en'),
 				]);
 			} catch (e: unknown) {
 				// Avoid unwanted error message on UI when autotranslate is disabled while fetching data
@@ -123,49 +132,6 @@ export const AutoTranslate = {
 	},
 };
 
-export const createAutoTranslateMessageRenderer = (): ((message: ITranslatedMessage) => ITranslatedMessage) => {
-	AutoTranslate.init();
-
-	return (message: ITranslatedMessage): ITranslatedMessage => {
-		const subscription = AutoTranslate.findSubscriptionByRid(message.rid);
-		const autoTranslateLanguage = AutoTranslate.getLanguage(message.rid);
-		if (message.u && message.u._id !== Meteor.userId()) {
-			if (!message.translations) {
-				message.translations = {};
-			}
-			if (!!subscription?.autoTranslate !== !!message.autoTranslateShowInverse) {
-				const hasAttachmentsTranslate =
-					message.attachments?.some(
-						(attachment) =>
-							'translations' in attachment &&
-							typeof attachment.translations === 'object' &&
-							autoTranslateLanguage in attachment.translations,
-					) ?? false;
-
-				message.translations.original = message.html;
-				if (message.translations[autoTranslateLanguage] && !hasAttachmentsTranslate) {
-					message.html = message.translations[autoTranslateLanguage];
-				}
-
-				if (message.attachments && message.attachments.length > 0) {
-					message.attachments = AutoTranslate.translateAttachments(
-						message.attachments,
-						autoTranslateLanguage,
-						!!message.autoTranslateShowInverse,
-					);
-				}
-			}
-		} else if (message.attachments && message.attachments.length > 0) {
-			message.attachments = AutoTranslate.translateAttachments(
-				message.attachments,
-				autoTranslateLanguage,
-				!!message.autoTranslateShowInverse,
-			);
-		}
-		return message;
-	};
-};
-
 export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslatedMessage) => void) => {
 	AutoTranslate.init();
 
@@ -177,7 +143,8 @@ export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslate
 				subscription &&
 				subscription.autoTranslate === true &&
 				message.msg &&
-				(!message.translations || !message.translations[language])
+				(!message.translations ||
+					(!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)))
 			) {
 				// || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
 				Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });

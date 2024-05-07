@@ -2,14 +2,6 @@
 	/*
 	* Color palette
 	*/
-	--color-dark-100: #0c0d0f;
-	--color-dark-90: #1e232a;
-	--color-dark-80: #2e343e;
-	--color-dark-70: #53585f;
-	--color-dark-30: #9da2a9;
-	--color-dark-20: #caced1;
-	--color-dark-10: #e0e5e8;
-	--color-dark-05: #f1f2f4;
 	--color-dark-blue: #175cc4;
 	--color-blue: #1d74f5;
 	--color-light-blue: #4eb2f5;
@@ -21,7 +13,6 @@
 	--color-yellow: #ffd21f;
 	--color-dark-yellow: #f6c502;
 	--color-green: #2de0a5;
-	--color-dark-green: #26d198;
 
 	/*
 	* General Colors
@@ -82,6 +73,7 @@
 	--success-color: #2de0a5;
 	--selection-color: #02acec;
 	--attention-color: #9c27b0;
+	--transparent-darker: rgba(0, 0, 0, 0.5);
 
 	/* #endregion */
 
@@ -109,7 +101,7 @@
 	--flex-tab-width: 380px;
 	--flex-tab-webrtc-width: 400px;
 	--flex-tab-webrtc-2-width: 850px;
-	--border: 2px;
+	--border: 1px;
 	--border-radius: 4px;
 	--rc-status-online: var(--rc-color-success);
 	--rc-status-away: var(--rc-color-alert);
@@ -171,14 +163,14 @@
 	*/
 	--input-font-size: 0.875rem;
 	--input-title-text-size: var(--input-font-size);
-	--input-title-color: #2d343d;
-	--input-text-color: var(--color-dark-medium);
-	--input-placeholder-color: var(--color-gray-medium);
-	--input-icon-color: var(--color-dark);
-	--input-border-color: var(--color-gray-light);
+	--input-title-color: var(--rcx-color-font-default, var(--rcx-color-neutral-800, #2f343d));
+	--input-text-color: var(--rcx-color-font-default, var(--rcx-color-neutral-800, #2f343d));
+	--input-placeholder-color: var(--rc-input-colors-placeholder-color, var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, #9ea2a8)));
+	--input-icon-color: var(--rcx-color-font-default, var(--rcx-color-neutral-800, var(--color-dark)));
+	--input-border-color: var(--rcx-input-colors-border-color, var(--rcx-color-stroke-light, var(--rcx-color-neutral-500, var(--color-gray-light))));
 	--input-border-width: var(--border);
 	--input-border-radius: var(--border-radius);
-	--input-description-text-color: var(--color-gray);
+	--input-description-text-color: var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, var(--color-gray)));
 	--input-description-text-size: var(--input-font-size);
 	--input-error-color: var(--rc-color-error);
 
@@ -213,9 +205,10 @@
 	/*
 	* Sidebar
 	*/
-	--sidebar-width: 280px;
+	--sidebar-width: 17.5rem;
+	--sidebar-md-width: 20rem;
+	--sidebar-lg-width: 21rem;
 	--sidebar-small-width: 90%;
-	--sidebar-background: var(--rc-color-primary-background);
 	--sidebar-background-hover: var(--rc-color-primary-dark);
 	--sidebar-background-light: var(--rc-color-primary-lightest);
 	--sidebar-background-light-hover: var(--rc-color-primary-light);
@@ -271,20 +264,6 @@
 	--sidebar-item-text-size: 0.875rem;
 
 	/*
-	* Modal - Create Channel
-	*/
-	--create-channel-gap-between-elements: 1rem;
-	--create-channel-title-color: var(--color-darkest);
-	--create-channel-title-text-size: 1.375rem;
-	--create-channel-description-color: var(--color-gray);
-	--create-channel-description-text-size: 0.875rem;
-
-	/*
-	* Toolbar
-	*/
-	--toolbar-placeholder-color: var(--color-gray);
-
-	/*
 	* Rooms list
 	*/
 	--rooms-list-title-color: var(--rc-color-primary-light);
@@ -332,33 +311,19 @@
 	* Message box
 	*/
 	--message-box-text-size: var(--input-font-size);
-	--message-box-placeholder-color: var(--color-gray-medium);
-	--message-box-markdown-color: var(--color-gray);
-	--message-box-markdown-hover-color: var(--color-dark);
-	--message-box-user-activity-color: var(--color-gray);
+	--message-box-placeholder-color: var(--rc-input-colors-placeholder-color, var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, #9ea2a8)));
+	--message-box-markdown-color: var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, var(--color-gray)));
+	--message-box-markdown-hover-color: var(--rcx-color-font-default, var(--rcx-color-neutral-800, var(--color-dark)));
+	--message-box-user-activity-color: var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, var(--color-gray)));
 	--message-box-user-activity-text-size: 0.75rem;
-	--message-box-user-activity-user-color: var(--color-dark);
-	--message-box-container-border-color: var(--color-gray-medium);
+	--message-box-user-activity-user-color: var(--rcx-color-font-default, var(--rcx-color-neutral-800, var(--color-dark)));
+	--message-box-container-border-color: var(--rcx-input-colors-border-color, var(--rcx-color-stroke-light, var(--rcx-color-neutral-500, var(--color-gray-medium))));
 	--message-box-container-border-width: var(--border);
 	--message-box-container-border-radius: var(--border-radius);
-	--message-box-editing-color: #fff6d6;
-	--message-box-popover-title-text-color: var(--color-gray);
+	--message-box-editing-color: var(--rcx-color-status-background-warning-2, #fff6d6);
+	--message-box-popover-title-text-color: var(--rcx-color-font-annotation, var(--rcx-color-neutral-600, var(--color-gray)));
 	--message-box-popover-title-text-size: 0.75rem;
-
-	/*
-	* Header
-	*/
-	--header-height: 77px;
-	--header-padding: 16px;
-	--header-title-username-color-darker: var(--color-dark);
-	--header-title-font-size: var(--text-default-size);
-	--header-title-font-size--subtitle: var(--text-small-size);
-	--header-title-status-color: var(--color-gray);
-	--header-title-username-weight: 400;
-	--header-title-status-name-weight: 400;
-	--header-title-status-bullet-radius: var(--status-bullet-radius);
-	--header-title-status-bullet-size: var(--status-bullet-size);
-	--header-background-color: var(--color-white);
+	--message-box-color: var(--rcx-color-font-default, var(--rcx-color-neutral-800, #2f343d));
 
 	/*
 	* Flex nav
@@ -389,19 +354,18 @@
 	--tooltip-radius: var(--border-radius);
 
 	/*
-	* alert
+	* Loading
 	*/
-	--alerts-padding: var(--sidebar-default-padding);
-	--alerts-padding-vertical: 10px;
-	--alerts-padding-vertical-large: 20px;
-	--alerts-background: #1d73f5;
-	--alerts-color: var(--color-white);
-	--alerts-font-size: var(--text-default-size);
-	--content-page-padding: 2.5rem;
-
-	/*
-	* badge
-	*/
-	--badge-size: 14px;
-	--badge-font-size: 0.625rem;
+	--page-loading-background-light: var(--rcx-color-surface-tint, #f7f8fa);
+	--page-loading-background-dark: var(--rcx-color-surface-tint, #1f2329);
+	--loading-bounce-color-light: var(--rcx-color-font-default, #2f343d);
+	--loading-bounce-color-dark: var(--rcx-color-font-default, #e4e7ea);
 }
+
+.rcx-sidebar--main {
+	--sidebar-background: var(--rcx-color-surface-tint, #262931);
+	--sidebar-item-text-color: var(--rcx-color-font-default, #9ea2a8);
+	--sidebar-border-color: var(--rcx-color-stroke-extra-light, #2f343d);
+}
+
+/* #endregion */

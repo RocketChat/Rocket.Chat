@@ -1,17 +1,18 @@
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
 
+import type { IImportProgress, IImporterSelection } from '@rocket.chat/core-typings';
+import { Imports } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import type { IImportFileData } from '@rocket.chat/core-typings';
 
-import { RocketChatImportFileInstance } from '../startup/store';
-import { hasPermission } from '../../../authorization/server';
-import { Imports } from '../../../models/server';
-import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { Importers } from '..';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { ProgressStep } from '../../lib/ImporterProgressStep';
+import { RocketChatImportFileInstance } from '../startup/store';
 
-export const executeGetImportFileData = async (): Promise<IImportFileData | { waiting: true }> => {
-	const operation = Imports.findLastImport();
+export const executeGetImportFileData = async (): Promise<IImporterSelection | { waiting: true }> => {
+	const operation = await Imports.findLastImport();
 	if (!operation) {
 		throw new Meteor.Error('error-operation-not-found', 'Import Operation Not Found', 'getImportFileData');
 	}
@@ -23,9 +24,9 @@ export const executeGetImportFileData = async (): Promise<IImportFileData | { wa
 		throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, 'getImportFileData');
 	}
 
-	importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
+	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 
-	const waitingSteps = [
+	const waitingSteps: IImportProgress['step'][] = [
 		ProgressStep.DOWNLOADING_FILE,
 		ProgressStep.PREPARING_CHANNELS,
 		ProgressStep.PREPARING_MESSAGES,
@@ -33,40 +34,49 @@ export const executeGetImportFileData = async (): Promise<IImportFileData | { wa
 		ProgressStep.PREPARING_STARTED,
 	];
 
-	if (waitingSteps.indexOf(importer.instance.progress.step) >= 0) {
-		if (importer.instance.importRecord && importer.instance.importRecord.valid) {
+	if (waitingSteps.indexOf(instance.progress.step) >= 0) {
+		if (instance.importRecord?.valid) {
 			return { waiting: true };
 		}
 		throw new Meteor.Error('error-import-operation-invalid', 'Invalid Import Operation', 'getImportFileData');
 	}
 
-	const readySteps = [ProgressStep.USER_SELECTION, ProgressStep.DONE, ProgressStep.CANCELLED, ProgressStep.ERROR];
+	const readySteps: IImportProgress['step'][] = [
+		ProgressStep.USER_SELECTION,
+		ProgressStep.DONE,
+		ProgressStep.CANCELLED,
+		ProgressStep.ERROR,
+	];
 
-	if (readySteps.indexOf(importer.instance.progress.step) >= 0) {
-		return importer.instance.buildSelection();
+	if (readySteps.indexOf(instance.progress.step) >= 0) {
+		return instance.buildSelection();
 	}
 
-	const fileName = importer.instance.importRecord.file;
-	const fullFilePath = fs.existsSync(fileName) ? fileName : path.join(RocketChatImportFileInstance.absolutePath, fileName);
-	const promise = importer.instance.prepareUsingLocalFile(fullFilePath);
-
-	if (promise && promise instanceof Promise) {
-		//  promise;
-		await promise;
+	const fileName = instance.importRecord.file;
+	if (fileName) {
+		const fullFilePath = fs.existsSync(fileName) ? fileName : path.join(RocketChatImportFileInstance.absolutePath, fileName);
+		await instance.prepareUsingLocalFile(fullFilePath);
 	}
 
-	return importer.instance.buildSelection();
+	return instance.buildSelection();
 };
 
-Meteor.methods({
-	getImportFileData() {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		getImportFileData(): IImporterSelection | { waiting: true };
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async getImportFileData() {
 		const userId = Meteor.userId();
 
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', 'getImportFileData');
 		}
 
-		if (!hasPermission(userId, 'run-import')) {
+		if (!(await hasPermissionAsync(userId, 'run-import'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', 'getImportFileData');
 		}
 

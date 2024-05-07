@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-use-before-define */
 import { compareBSONValues, getBSONType } from './bson';
 import { equals, flatSome, isObject, some } from './comparisons';
 import { createLookupFunction } from './lookups';
-import { BSONType, FieldExpression, Query } from './types';
+import type { BSONType, FieldExpression, Query } from './types';
 
 const isArrayOfFields = <T>(values: unknown[]): values is T[] =>
 	values.every((value) => ['number', 'string', 'symbol'].includes(typeof value));

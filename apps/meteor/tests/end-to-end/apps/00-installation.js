@@ -1,9 +1,10 @@
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials, api } from '../../data/api-data.js';
-import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { APP_URL, apps, APP_USERNAME } from '../../data/apps/apps-data.js';
 import { cleanupApps } from '../../data/apps/helper.js';
+import { updatePermission } from '../../data/permissions.helper';
 import { getUserByUsername } from '../../data/users.helper.js';
 
 describe('Apps - Installation', function () {
@@ -13,47 +14,28 @@ describe('Apps - Installation', function () {
 
 	before(async () => cleanupApps());
 
+	after(() => Promise.all([cleanupApps(), updatePermission('manage-apps', ['admin'])]));
+
 	describe('[Installation]', () => {
 		it('should throw an error when trying to install an app and the apps framework is enabled but the user does not have the permission', (done) => {
-			updateSetting('Apps_Framework_Development_Mode', true)
-				.then(() => updatePermission('manage-apps', []))
-				.then(() => {
-					request
-						.post(apps())
-						.set(credentials)
-						.send({
-							url: APP_URL,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(403)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', false);
-							expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
-						})
-						.end(done);
-				});
-		});
-		it('should throw an error when trying to install an app and the apps framework is disabled', (done) => {
-			updateSetting('Apps_Framework_Development_Mode', false)
-				.then(() => updatePermission('manage-apps', ['admin']))
-				.then(() => {
-					request
-						.post(apps())
-						.set(credentials)
-						.send({
-							url: APP_URL,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', false);
-							expect(res.body.error).to.be.equal('Installation from url is disabled.');
-						})
-						.end(done);
-				});
+			updatePermission('manage-apps', []).then(() => {
+				request
+					.post(apps())
+					.set(credentials)
+					.send({
+						url: APP_URL,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', false);
+						expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+					})
+					.end(done);
+			});
 		});
 		it('should install the app successfully from a URL', (done) => {
-			updateSetting('Apps_Framework_Development_Mode', true).then(() => {
+			updatePermission('manage-apps', ['admin']).then(() => {
 				request
 					.post(apps())
 					.set(credentials)

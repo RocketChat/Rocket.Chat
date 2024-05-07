@@ -1,5 +1,5 @@
-import { IRoom } from '@rocket.chat/core-typings';
-import { useOutsideClick, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { useOutsideClick, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import {
 	VideoConfPopup,
@@ -13,39 +13,61 @@ import {
 	VideoConfPopupTitle,
 	VideoConfPopupFooterButtons,
 } from '@rocket.chat/ui-video-conf';
-import React, { ReactElement, useRef } from 'react';
+import type { KeyboardEvent, ReactElement } from 'react';
+import React, { useCallback, useRef } from 'react';
 
 import { useVideoConfSetPreferences, useVideoConfCapabilities, useVideoConfPreferences } from '../../../../../../contexts/VideoConfContext';
+import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 
-type StartCallPopup = {
+type StartCallPopupProps = {
 	id: string;
+	loading: boolean;
 	room: IRoom;
 	onClose: () => void;
 	onConfirm: () => void;
-	loading: boolean;
 };
 
-const StartCallPopup = ({ loading, room, onClose, onConfirm }: StartCallPopup): ReactElement => {
-	const ref = useRef<HTMLDivElement>(null);
-	useOutsideClick([ref], !loading ? onClose : (): void => undefined);
-
+const StartCallPopup = ({ id, loading, room, onClose, onConfirm }: StartCallPopupProps): ReactElement => {
 	const t = useTranslation();
+	const ref = useRef(null);
+	useOutsideClick([ref], !loading ? onClose : () => undefined);
+
 	const setPreferences = useVideoConfSetPreferences();
 	const videoConfPreferences = useVideoConfPreferences();
 	const { controllersConfig, handleToggleMic, handleToggleCam } = useVideoConfControllers(videoConfPreferences);
 	const capabilities = useVideoConfCapabilities();
+	const roomName = useVideoConfRoomName(room);
+
+	const dialogLabel =
+		room.t === 'd' ? `${t('Start_a_call_with__roomName__', { roomName })}` : `${t('Start_a_call_in__roomName__', { roomName })}`;
 
 	const showCam = !!capabilities.cam;
 	const showMic = !!capabilities.mic;
 
-	const handleStartCall = useMutableCallback(() => {
+	const handleStartCall = useEffectEvent(() => {
 		setPreferences(controllersConfig);
 		onConfirm();
 	});
 
+	const callbackRef = useCallback(
+		(node) => {
+			if (!node) {
+				return;
+			}
+
+			ref.current = node;
+			node.addEventListener('keydown', (e: KeyboardEvent) => {
+				if (e.key === 'Escape') {
+					onClose();
+				}
+			});
+		},
+		[onClose],
+	);
+
 	return (
-		<VideoConfPopup ref={ref}>
+		<VideoConfPopup ref={callbackRef} id={id} aria-label={dialogLabel}>
 			<VideoConfPopupHeader>
 				<VideoConfPopupTitle text={t('Start_a_call')} />
 				{(showCam || showMic) && (

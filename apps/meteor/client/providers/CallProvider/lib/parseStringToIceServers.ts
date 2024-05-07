@@ -1,4 +1,4 @@
-import { IceServer } from '../definitions/IceServer';
+import type { IceServer } from '../definitions/IceServer';
 
 export const parseStringToIceServer = (server: string): IceServer => {
 	const credentials = server.trim().split('@');

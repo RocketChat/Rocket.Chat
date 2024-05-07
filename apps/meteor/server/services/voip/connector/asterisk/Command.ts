@@ -1,5 +1,5 @@
-import type { Db } from 'mongodb';
 import type { IVoipConnectorResult } from '@rocket.chat/core-typings';
+import type { Db } from 'mongodb';
 
 import type { IConnection } from './IConnection';
 

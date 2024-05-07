@@ -2,7 +2,12 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"skipLibCheck": true,
-		"noEmit": true
+		"noEmit": true,
+		"incremental": true,
+		"allowImportingTsExtensions": true,
+		"paths": {
+			"mongodb": ["node_modules/mongodb"]
+		}
 	},
-	"exclude": ["./.meteor/**", "./packages/**", "./imports/client/**", "**/dist/**", "./ee/server/services/**", "**/node_modules/**", "./public/**", "*./private/**"]
+	"exclude": [".meteor", "./packages", "./imports/client", "./ee/server/services", "public/", "private"]
 }

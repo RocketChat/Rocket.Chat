@@ -1,28 +1,39 @@
 import { Box } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import React, { ReactElement } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React from 'react';
+
+import { useLicense, useLicenseName } from '../../../../client/hooks/useLicense';
 
 export const SidebarFooterWatermark = (): ReactElement | null => {
 	const t = useTranslation();
-	const isEnterpriseEdition = useEndpoint('GET', '/v1/licenses.isEnterprise');
-	const result = useQuery(['licenses.isEnterprise'], () => isEnterpriseEdition(), {
-		refetchOnWindowFocus: false,
-	});
 
-	if (!result.isSuccess || result.isLoading || result.data.isEnterprise) {
+	const response = useLicense();
+
+	const licenseName = useLicenseName();
+
+	if (response.isLoading || response.isError) {
+		return null;
+	}
+
+	if (licenseName.isError || licenseName.isLoading) {
+		return null;
+	}
+
+	const license = response.data;
+
+	if (license.activeModules.includes('hide-watermark') && !license.trial) {
 		return null;
 	}
 
 	return (
-		<Box pi='x16' pbe='x8'>
+		<Box pi={16} pbe={8}>
 			<Box is='a' href='https://rocket.chat/' target='_blank' rel='noopener noreferrer'>
-				<Box fontScale='micro' color='hint' pbe='x4'>
+				<Box fontScale='micro' color='hint' pbe={4}>
 					{t('Powered_by_RocketChat')}
 				</Box>
-				<Box fontScale='micro' color={colors.n100} pbe='x4'>
-					{t('Free_Edition')}
+				<Box fontScale='micro' color='pure-white' pbe={4}>
+					{licenseName.data}
 				</Box>
 			</Box>
 		</Box>

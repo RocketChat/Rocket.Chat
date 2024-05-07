@@ -1,22 +1,36 @@
-import { IOAuthApps, Serialized } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, TextInput, Field, Icon, TextAreaInput, ToggleSwitch, FieldGroup } from '@rocket.chat/fuselage';
-import { useSetModal, useToastMessageDispatch, useRoute, useMethod, useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useMemo, ReactElement, ComponentProps } from 'react';
-import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import type { IOAuthApps, Serialized } from '@rocket.chat/core-typings';
+import {
+	Button,
+	ButtonGroup,
+	TextInput,
+	Field,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	FieldHint,
+	TextAreaInput,
+	ToggleSwitch,
+	FieldGroup,
+} from '@rocket.chat/fuselage';
+import { useSetModal, useToastMessageDispatch, useRoute, useAbsoluteUrl, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ComponentProps } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import type { SubmitHandler } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 
+import { ContextualbarScrollableContent } from '../../../components/Contextualbar';
 import GenericModal from '../../../components/GenericModal';
-import VerticalBar from '../../../components/VerticalBar';
 
-export type EditOAuthAddAppPayload = {
+type EditOAuthAddAppPayload = {
 	name: string;
 	active: boolean;
 	redirectUri: string;
 };
 
-export type EditOauthAppProps = {
+type EditOauthAppProps = {
 	onChange: () => void;
 	data: Serialized<IOAuthApps>;
-} & Omit<ComponentProps<typeof VerticalBar.ScrollableContent>, 'data'>;
+} & Omit<ComponentProps<typeof ContextualbarScrollableContent>, 'data'>;
 
 const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactElement => {
 	const t = useTranslation();
@@ -45,12 +59,12 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 	const authUrl = useMemo(() => absoluteUrl('oauth/authorize'), [absoluteUrl]);
 	const tokenUrl = useMemo(() => absoluteUrl('oauth/token'), [absoluteUrl]);
 
-	const saveApp = useMethod('updateOAuthApp');
-	const deleteApp = useMethod('deleteOAuthApp');
+	const saveApp = useEndpoint('POST', '/v1/oauth-apps.update');
+	const deleteApp = useEndpoint('POST', '/v1/oauth-apps.delete');
 
 	const onSubmit: SubmitHandler<EditOAuthAddAppPayload> = async (newData: EditOAuthAddAppPayload) => {
 		try {
-			await saveApp(data._id, newData);
+			await saveApp({ ...newData, appId: data._id });
 			dispatchToastMessage({ type: 'success', message: t('Application_updated') });
 			onChange();
 		} catch (error) {
@@ -60,30 +74,23 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 
 	const onDeleteConfirm = useCallback(async () => {
 		try {
-			await deleteApp(data._id);
-
-			const handleClose = (): void => {
-				setModal();
-				close();
-			};
-
-			setModal(() => (
-				<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
-					{t('Your_entry_has_been_deleted')}
-				</GenericModal>
-			));
+			await deleteApp({ appId: data._id });
+			dispatchToastMessage({ type: 'success', message: t('Your_entry_has_been_deleted') });
+			close();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			setModal(null);
 		}
-	}, [close, data._id, deleteApp, dispatchToastMessage, setModal, t]);
+	}, [data._id, close, deleteApp, dispatchToastMessage, setModal, t]);
 
 	const openConfirmDelete = (): void =>
 		setModal(() => (
 			<GenericModal
 				variant='danger'
 				onConfirm={onDeleteConfirm}
-				onCancel={(): void => setModal(undefined)}
-				onClose={(): void => setModal(undefined)}
+				onCancel={(): void => setModal(null)}
+				onClose={(): void => setModal(null)}
 				confirmText={t('Delete')}
 			>
 				{t('Application_delete_warning')}
@@ -91,81 +98,80 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 		));
 
 	return (
-		<VerticalBar.ScrollableContent w='full' {...props}>
+		<ContextualbarScrollableContent w='full' {...props}>
 			<FieldGroup maxWidth='x600' alignSelf='center' w='full'>
 				<Field>
-					<Field.Label display='flex' justifyContent='space-between' w='full'>
-						{t('Active')}
+					<FieldRow>
+						<FieldLabel>{t('Active')}</FieldLabel>
 						<Controller
 							name='active'
 							control={control}
 							defaultValue={data.active}
 							render={({ field }): ReactElement => <ToggleSwitch onChange={field.onChange} checked={field.value} />}
 						/>
-					</Field.Label>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label>{t('Application_Name')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Application_Name')}</FieldLabel>
+					<FieldRow>
 						<TextInput {...register('name', { required: true })} />
-					</Field.Row>
-					<Field.Hint>{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}</Field.Hint>
-					{errors?.name && <Field.Error>{t('error-the-field-is-required', { field: t('Name') })}</Field.Error>}
+					</FieldRow>
+					<FieldHint>{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}</FieldHint>
+					{errors?.name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
 				</Field>
 				<Field>
-					<Field.Label>{t('Redirect_URI')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Redirect_URI')}</FieldLabel>
+					<FieldRow>
 						<TextAreaInput rows={5} {...register('redirectUri', { required: true })} />
-					</Field.Row>
-					<Field.Hint>{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}</Field.Hint>
-					{errors?.redirectUri && <Field.Error>{t('error-the-field-is-required', { field: t('Redirect_URI') })}</Field.Error>}
+					</FieldRow>
+					<FieldHint>{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}</FieldHint>
+					{errors?.redirectUri && <FieldError>{t('error-the-field-is-required', { field: t('Redirect_URI') })}</FieldError>}
 				</Field>
 				<Field>
-					<Field.Label>{t('Client_ID')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Client_ID')}</FieldLabel>
+					<FieldRow>
 						<TextInput value={data.clientId} />
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label>{t('Client_Secret')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Client_Secret')}</FieldLabel>
+					<FieldRow>
 						<TextInput value={data.clientSecret} />
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label>{t('Authorization_URL')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Authorization_URL')}</FieldLabel>
+					<FieldRow>
 						<TextInput value={authUrl} />
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label>{t('Access_Token_URL')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Access_Token_URL')}</FieldLabel>
+					<FieldRow>
 						<TextInput value={tokenUrl} />
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Row>
-						<ButtonGroup stretch w='full'>
+					<FieldRow>
+						<ButtonGroup stretch>
 							<Button onClick={close}>{t('Cancel')}</Button>
 							<Button primary onClick={handleSubmit(onSubmit)}>
 								{t('Save')}
 							</Button>
 						</ButtonGroup>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Row>
-						<ButtonGroup stretch w='full'>
-							<Button danger onClick={openConfirmDelete}>
-								<Icon name='trash' mie='x4' />
+					<FieldRow>
+						<ButtonGroup stretch>
+							<Button icon='trash' danger onClick={openConfirmDelete}>
 								{t('Delete')}
 							</Button>
 						</ButtonGroup>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 			</FieldGroup>
-		</VerticalBar.ScrollableContent>
+		</ContextualbarScrollableContent>
 	);
 };
 

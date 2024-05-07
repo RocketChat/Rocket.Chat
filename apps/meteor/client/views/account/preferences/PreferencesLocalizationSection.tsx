@@ -1,18 +1,15 @@
-import { Accordion, Field, Select, FieldGroup, SelectOption } from '@rocket.chat/fuselage';
-import { useUserPreference, useLanguages, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect, useMemo } from 'react';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldGroup, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useLanguages, useTranslation } from '@rocket.chat/ui-contexts';
+import React, { useMemo } from 'react';
+import { useFormContext, Controller } from 'react-hook-form';
 
-import { useForm } from '../../../hooks/useForm';
-import type { FormSectionProps } from './AccountPreferencesPage';
-
-const PreferencesLocalizationSection = ({
-	onChange,
-	commitRef,
-	...props
-}: { defaultExpanded?: boolean } & FormSectionProps): ReactElement => {
+const PreferencesLocalizationSection = () => {
 	const t = useTranslation();
-	const userLanguage = useUserPreference('language') || '';
 	const languages = useLanguages();
+
+	const { control } = useFormContext();
 
 	const languageOptions = useMemo(() => {
 		const mapOptions: SelectOption[] = languages.map(({ key, name }) => [key, name]);
@@ -20,25 +17,22 @@ const PreferencesLocalizationSection = ({
 		return mapOptions;
 	}, [languages]);
 
-	const { values, handlers, commit } = useForm({ language: userLanguage }, onChange);
-
-	const { language } = values as { language: string };
-	const { handleLanguage } = handlers;
-
-	useEffect(() => {
-		if (commitRef) {
-			commitRef.current.localization = commit;
-		}
-	}, [commit, commitRef]);
+	const languageId = useUniqueId();
 
 	return (
-		<Accordion.Item title={t('Localization')} {...props}>
+		<Accordion.Item title={t('Localization')} defaultExpanded>
 			<FieldGroup>
 				<Field>
-					<Field.Label>{t('Language')}</Field.Label>
-					<Field.Row>
-						<Select value={language} onChange={handleLanguage} options={languageOptions} />
-					</Field.Row>
+					<FieldLabel htmlFor={languageId}>{t('Language')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='language'
+							render={({ field: { value, onChange } }) => (
+								<Select id={languageId} value={value} onChange={onChange} options={languageOptions} />
+							)}
+						/>
+					</FieldRow>
 				</Field>
 			</FieldGroup>
 		</Accordion.Item>

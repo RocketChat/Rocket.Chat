@@ -1,14 +1,15 @@
-import { DeviceManagementPopulatedSession, DeviceManagementSession, Serialized } from '@rocket.chat/core-typings';
+import type { DeviceManagementPopulatedSession, DeviceManagementSession, Serialized } from '@rocket.chat/core-typings';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, useMemo, useEffect, MutableRefObject } from 'react';
+import type { ReactElement, MutableRefObject } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 
 import FilterByText from '../../../../../../client/components/FilterByText';
 import { GenericTableHeaderCell } from '../../../../../../client/components/GenericTable';
 import { usePagination } from '../../../../../../client/components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../../../client/components/GenericTable/hooks/useSort';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
-import DeviceManagementTable from '../../../../deviceManagement/components/DeviceManagementTable';
+import DeviceManagementTable from '../../../../components/deviceManagement/DeviceManagementTable';
 import DeviceManagementAdminRow from './DeviceManagementAdminRow';
 
 const sortMapping = {
@@ -41,7 +42,7 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 		500,
 	);
 
-	const { value: data, phase, error, reload } = useEndpointData('/v1/sessions/list.all', query);
+	const { value: data, phase, error, reload } = useEndpointData('/v1/sessions/list.all', { params: query });
 
 	useEffect(() => {
 		reloadRef.current = reload;
@@ -51,23 +52,24 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell key={'client'} direction={sortDirection} active={sortBy === 'client'} onClick={setSort} sort='client'>
+			<GenericTableHeaderCell key='client' direction={sortDirection} active={sortBy === 'client'} onClick={setSort} sort='client'>
 				{t('Client')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key={'os'} direction={sortDirection} active={sortBy === 'os'} onClick={setSort} sort='os'>
+			<GenericTableHeaderCell key='rcVersion'>{t('Version')}</GenericTableHeaderCell>,
+			<GenericTableHeaderCell key='os' direction={sortDirection} active={sortBy === 'os'} onClick={setSort} sort='os'>
 				{t('OS')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key={'username'} direction={sortDirection} active={sortBy === 'username'} onClick={setSort} sort='username'>
+			<GenericTableHeaderCell key='username' direction={sortDirection} active={sortBy === 'username'} onClick={setSort} sort='username'>
 				{t('User')}
 			</GenericTableHeaderCell>,
 			mediaQuery && (
-				<GenericTableHeaderCell key={'loginAt'} direction={sortDirection} active={sortBy === 'loginAt'} onClick={setSort} sort='loginAt'>
+				<GenericTableHeaderCell key='loginAt' direction={sortDirection} active={sortBy === 'loginAt'} onClick={setSort} sort='loginAt'>
 					{t('Last_login')}
 				</GenericTableHeaderCell>
 			),
-			mediaQuery && <GenericTableHeaderCell key={'_id'}>{t('Device_ID')}</GenericTableHeaderCell>,
-			mediaQuery && <GenericTableHeaderCell key={'ip'}>{t('IP_Address')}</GenericTableHeaderCell>,
-			<GenericTableHeaderCell width={'5%'} key='menu' />,
+			mediaQuery && <GenericTableHeaderCell key='_id'>{t('Device_ID')}</GenericTableHeaderCell>,
+			mediaQuery && <GenericTableHeaderCell key='ip'>{t('IP_Address')}</GenericTableHeaderCell>,
+			<GenericTableHeaderCell width='5%' key='menu' />,
 		],
 		[t, mediaQuery, setSort, sortDirection, sortBy],
 	);
@@ -90,7 +92,7 @@ const DeviceManagementAdminTable = ({ reloadRef }: { reloadRef: MutableRefObject
 						deviceName={session?.device?.name}
 						deviceType={session?.device?.type}
 						deviceOSName={session?.device?.os?.name}
-						deviceOSVersion={session?.device?.os?.version}
+						rcVersion={session?.device?.version}
 						loginAt={session.loginAt}
 						onReload={reload}
 					/>

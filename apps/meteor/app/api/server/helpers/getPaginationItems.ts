@@ -2,20 +2,22 @@
 // If the count query param isn't defined, then we set it to the "API_Default_Count" setting
 // If the count is zero, then that means unlimited and is only allowed if the setting "API_Allow_Infinite_Count" is true
 import { settings } from '../../../settings/server';
-import { API } from '../api';
 
-API.helperMethods.set('getPaginationItems', function _getPaginationItems(this: any) {
+export async function getPaginationItems(params: { offset?: string | number | null; count?: string | number | null }): Promise<{
+	readonly offset: number;
+	readonly count: number;
+}> {
 	const hardUpperLimitTest = settings.get<number>('API_Upper_Count_Limit');
 	const defaultCountTest = settings.get<number>('API_Default_Count');
 
 	const hardUpperLimit = hardUpperLimitTest && hardUpperLimitTest <= 0 ? 100 : settings.get<number>('API_Upper_Count_Limit');
 	const defaultCount = defaultCountTest && defaultCountTest <= 0 ? 50 : settings.get<number>('API_Default_Count');
-	const offset = this.queryParams.offset ? parseInt(this.queryParams.offset) : 0;
+	const offset = params.offset ? parseInt(String(params.offset || 0)) : 0;
 	let count = defaultCount;
 
 	// Ensure count is an appropriate amount
-	if (typeof this.queryParams.count !== 'undefined') {
-		count = parseInt(this.queryParams.count);
+	if (params.count !== undefined && params.count !== null) {
+		count = parseInt(String(params.count || 0));
 	} else {
 		count = defaultCount;
 	}
@@ -32,4 +34,4 @@ API.helperMethods.set('getPaginationItems', function _getPaginationItems(this: a
 		offset,
 		count,
 	};
-});
+}

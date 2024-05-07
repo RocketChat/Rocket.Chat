@@ -1,5 +1,6 @@
 {
 	"globals": {
-		"Package": false
+		"Package": false,
+		"Npm": false
 	}
 }

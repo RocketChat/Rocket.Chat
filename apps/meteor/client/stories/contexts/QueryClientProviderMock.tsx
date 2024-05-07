@@ -1,5 +1,6 @@
 import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 const queryCache = new QueryCache();
 
@@ -8,6 +9,7 @@ const queryClient = new QueryClient({
 		queries: {
 			retry: false,
 			cacheTime: Infinity,
+			refetchOnWindowFocus: false,
 		},
 	},
 	queryCache,

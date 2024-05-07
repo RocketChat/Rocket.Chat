@@ -4,8 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useScrollableRecordList } from '../../../../../hooks/lists/useScrollableRecordList';
 import { useStreamUpdatesForMessageList } from '../../../../../hooks/lists/useStreamUpdatesForMessageList';
 import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
-import { FilesList, FilesListOptions } from '../../../../../lib/lists/FilesList';
-import { MessageList } from '../../../../../lib/lists/MessageList';
+import type { FilesListOptions } from '../../../../../lib/lists/FilesList';
+import { FilesList } from '../../../../../lib/lists/FilesList';
+import type { MessageList } from '../../../../../lib/lists/MessageList';
 import { getConfig } from '../../../../../lib/utils/getConfig';
 
 export const useFilesList = (
@@ -18,7 +19,7 @@ export const useFilesList = (
 } => {
 	const [filesList, setFilesList] = useState(() => new FilesList(options));
 	const reload = useCallback(() => setFilesList(new FilesList(options)), [options]);
-	const room = useUserRoom(options.rid as string);
+	const room = useUserRoom(options.rid);
 	const uid = useUserId();
 
 	useComponentDidUpdate(() => {
@@ -61,7 +62,8 @@ export const useFilesList = (
 			return {
 				items: files.map((file) => ({
 					...file,
-					_updatedAt: new Date(file._updatedAt),
+					uploadedAt: file.uploadedAt ? new Date(file.uploadedAt) : undefined,
+					modifiedAt: file.modifiedAt ? new Date(file.modifiedAt) : undefined,
 				})),
 				itemCount: total,
 			};
@@ -72,10 +74,7 @@ export const useFilesList = (
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(
 		filesList,
 		fetchMessages,
-		useMemo(() => {
-			const filesListSize = getConfig('discussionListSize');
-			return filesListSize ? parseInt(filesListSize, 10) : undefined;
-		}, []),
+		useMemo(() => parseInt(`${getConfig('discussionListSize', 10)}`), []),
 	);
 
 	// TODO: chapter day : frontend create useStreamUpdatesForUploadList

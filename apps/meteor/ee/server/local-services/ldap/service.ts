@@ -1,6 +1,7 @@
+import { ServiceClassInternal } from '@rocket.chat/core-services';
+
 import { LDAPEEManager } from '../../lib/ldap/Manager';
 import type { ILDAPEEService } from '../../sdk/types/ILDAPEEService';
-import { ServiceClassInternal } from '../../../../server/sdk/types/ServiceClass';
 
 export class LDAPEEService extends ServiceClassInternal implements ILDAPEEService {
 	protected name = 'ldap-enterprise';

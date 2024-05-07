@@ -1,1 +1,0 @@
-export { registerFieldTemplate } from './renderField';

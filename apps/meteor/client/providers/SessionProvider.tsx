@@ -1,6 +1,7 @@
 import { SessionContext } from '@rocket.chat/ui-contexts';
 import { Session } from 'meteor/session';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
 

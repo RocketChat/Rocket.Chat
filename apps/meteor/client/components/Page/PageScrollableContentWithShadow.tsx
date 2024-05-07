@@ -1,4 +1,5 @@
-import React, { useContext, FC, ComponentProps } from 'react';
+import type { FC, ComponentProps } from 'react';
+import React, { useContext } from 'react';
 
 import PageContext from './PageContext';
 import PageScrollableContent from './PageScrollableContent';

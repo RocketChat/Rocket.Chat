@@ -1,0 +1,42 @@
+name: Tests Unit
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+    secrets:
+      CODECOV_TOKEN:
+        required: false
+
+env:
+  MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
+  TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+
+    name: Unit Tests
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache-modules: true
+          install: true
+
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+      - name: Unit Test
+        run: yarn testunit
+
+      - uses: codecov/codecov-action@v3
+        with:
+          flags: unit
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}

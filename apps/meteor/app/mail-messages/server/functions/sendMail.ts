@@ -1,15 +1,28 @@
-import { Meteor } from 'meteor/meteor';
-import { EJSON } from 'meteor/ejson';
-import { FlowRouter } from 'meteor/kadira:flow-router';
-import { escapeHTML } from '@rocket.chat/string-helpers';
-import type { Filter } from 'mongodb';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+import EJSON from 'ejson';
+import { Meteor } from 'meteor/meteor';
+import type { Filter } from 'mongodb';
 
-import { placeholders } from '../../../utils/server';
+import { generatePath } from '../../../../lib/utils/generatePath';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server/api';
+import { placeholders } from '../../../utils/server/placeholders';
 
-export const sendMail = function (from: string, subject: string, body: string, dryrun: boolean, query: string): void {
+export const sendMail = async function ({
+	from,
+	subject,
+	body,
+	dryrun,
+	query,
+}: {
+	from: string;
+	subject: string;
+	body: string;
+	dryrun?: boolean;
+	query?: string;
+}): Promise<void> {
 	Mailer.checkAddressFormatAndThrow(from, 'Mailer.sendMail');
 
 	if (body.indexOf('[unsubscribe]') === -1) {
@@ -24,42 +37,45 @@ export const sendMail = function (from: string, subject: string, body: string, d
 	}
 
 	if (dryrun) {
-		return Meteor.users
-			.find({
-				'emails.address': from,
-			})
-			.forEach((u): void => {
-				const user: Partial<IUser> & Pick<IUser, '_id'> = u;
-				const email = `${user.name} <${user.emails?.[0].address}>`;
-				const html = placeholders.replace(body, {
-					unsubscribe: Meteor.absoluteUrl(
-						FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', {
-							_id: user._id,
-							createdAt: user.createdAt?.getTime().toString() || '',
-						}),
-					),
-					name: user.name,
-					email,
-				});
+		const user = await Users.findOneByEmailAddress(from);
 
-				SystemLogger.debug(`Sending email to ${email}`);
-				return Mailer.send({
-					to: email,
-					from,
-					subject,
-					html,
-				});
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				function: 'Mailer.sendMail',
 			});
+		}
+
+		const email = `${user.name} <${user.emails?.[0].address}>`;
+		const html = placeholders.replace(body, {
+			unsubscribe: Meteor.absoluteUrl(
+				generatePath('mailer/unsubscribe/:_id/:createdAt', {
+					_id: user._id,
+					createdAt: user.createdAt?.getTime().toString() || '',
+				}),
+			),
+			name: user.name,
+			email,
+		});
+
+		SystemLogger.debug(`Sending email to ${email}`);
+		return Mailer.send({
+			to: email,
+			from,
+			subject,
+			html,
+		});
 	}
 
-	return Meteor.users.find(userQuery).forEach(function (u) {
+	const users = await Users.find(userQuery).toArray();
+
+	for await (const u of users) {
 		const user: Partial<IUser> & Pick<IUser, '_id'> = u;
 		if (user?.emails && Array.isArray(user.emails) && user.emails.length) {
 			const email = `${user.name} <${user.emails[0].address}>`;
 
 			const html = placeholders.replace(body, {
 				unsubscribe: Meteor.absoluteUrl(
-					FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', {
+					generatePath('mailer/unsubscribe/:_id/:createdAt', {
 						_id: user._id,
 						createdAt: user.createdAt?.getTime().toString() || '',
 					}),
@@ -68,12 +84,12 @@ export const sendMail = function (from: string, subject: string, body: string, d
 				email: escapeHTML(email),
 			});
 			SystemLogger.debug(`Sending email to ${email}`);
-			return Mailer.send({
+			await Mailer.send({
 				to: email,
 				from,
 				subject,
 				html,
 			});
 		}
-	});
+	}
 };

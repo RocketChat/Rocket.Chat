@@ -1,4 +1,4 @@
-import type { IImport, IImportFileData, IImportProgress } from '@rocket.chat/core-typings';
+import type { IImport, IImporterSelection, IImportProgress, IImporterInfo, ImportStatus, IImportUser } from '@rocket.chat/core-typings';
 
 import type { DownloadPublicImportFileParamsPOST } from './DownloadPublicImportFileParamsPOST';
 import type { StartImportParamsPOST } from './StartImportParamsPOST';
@@ -15,7 +15,7 @@ export type ImportEndpoints = {
 		POST: (params: StartImportParamsPOST) => void;
 	};
 	'/v1/getImportFileData': {
-		GET: () => IImportFileData | { waiting: true };
+		GET: () => IImporterSelection | { waiting: true };
 	};
 	'/v1/getImportProgress': {
 		GET: () => IImportProgress;
@@ -31,5 +31,23 @@ export type ImportEndpoints = {
 	};
 	'/v1/getCurrentImportOperation': {
 		GET: () => { operation: IImport };
+	};
+	'/v1/importers.list': {
+		GET: () => Array<IImporterInfo>;
+	};
+	'/v1/import.clear': {
+		POST: () => void;
+	};
+	'/v1/import.new': {
+		POST: () => { operation: IImport };
+	};
+	'/v1/import.status': {
+		GET: () => ImportStatus;
+	};
+	'/v1/import.addUsers': {
+		POST: (users: Omit<IImportUser, '_id' | 'services' | 'customFields'>[]) => void;
+	};
+	'/v1/import.run': {
+		POST: () => void;
 	};
 };

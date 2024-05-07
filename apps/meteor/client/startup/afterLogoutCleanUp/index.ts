@@ -1,3 +1,3 @@
 import './customScriptOnLogout';
-import './messageBoxState';
+import './purgeAllDrafts';
 import './roomManager';

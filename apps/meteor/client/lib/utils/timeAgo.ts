@@ -1,14 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import moment, { Moment, MomentInput } from 'moment';
+import type { Moment, MomentInput } from 'moment';
+import moment from 'moment';
 
 import { settings } from '../../../app/settings/client';
-import { t } from '../../../app/utils/client';
-import { getUserPreference } from '../../../app/utils/lib/getUserPreference';
+import { getUserPreference } from '../../../app/utils/client';
+import { t } from '../../../app/utils/lib/i18n';
 
 const dayFormat = ['h:mm A', 'H:mm'];
 
-export const timeAgo = (date: MomentInput): string => {
+export const timeAgo = async (date: MomentInput): Promise<string> => {
 	const clockMode = Tracker.nonreactive(() => getUserPreference(Meteor.userId(), 'clockMode', false) as number | boolean);
 	const messageTimeFormat = Tracker.nonreactive(() => settings.get('Message_TimeFormat'));
 	const sameDay = (typeof clockMode === 'number' ? dayFormat[clockMode - 1] : undefined) || messageTimeFormat;

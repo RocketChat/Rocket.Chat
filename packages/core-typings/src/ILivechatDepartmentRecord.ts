@@ -1,5 +1,6 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 
+/** @deprecated */
 export interface ILivechatDepartmentRecord extends IRocketChatRecord {
 	_id: string;
 	name: string;
@@ -14,6 +15,7 @@ export interface ILivechatDepartmentRecord extends IRocketChatRecord {
 	numAgents: number;
 	businessHourId?: string;
 	fallbackForwardDepartment?: string;
+	departmentsAllowedToForward?: string[];
 	// extra optional fields
 	[k: string]: any;
 }

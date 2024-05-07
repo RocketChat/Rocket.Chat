@@ -1,3 +1,4 @@
+import { VideoConf } from '@rocket.chat/core-services';
 import type { VideoConference } from '@rocket.chat/core-typings';
 import {
 	isVideoConfStartProps,
@@ -7,12 +8,12 @@ import {
 	isVideoConfListProps,
 } from '@rocket.chat/rest-typings';
 
-import { API } from '../api';
+import { availabilityErrors } from '../../../../lib/videoConference/constants';
+import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { VideoConf } from '../../../../server/sdk';
-import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
-import { availabilityErrors } from '../../../../lib/videoConference/constants';
+import { API } from '../api';
+import { getPaginationItems } from '../helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'video-conference.start',
@@ -23,6 +24,10 @@ API.v1.addRoute(
 			const { userId } = this;
 			if (!userId || !(await canAccessRoomIdAsync(roomId, userId))) {
 				return API.v1.failure('invalid-params');
+			}
+
+			if (!(await hasPermissionAsync(userId, 'call-management', roomId))) {
+				return API.v1.unauthorized();
 			}
 
 			try {
@@ -114,7 +119,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'video-conference.info',
-	{ authRequired: true, validateParams: isVideoConfInfoProps, rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 1000 } },
+	{ authRequired: true, validateParams: isVideoConfInfoProps, rateLimiterOptions: { numRequestsAllowed: 15, intervalTimeInMS: 3000 } },
 	{
 		async get() {
 			const { callId } = this.queryParams;
@@ -147,7 +152,7 @@ API.v1.addRoute(
 			const { roomId } = this.queryParams;
 			const { userId } = this;
 
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!userId || !(await canAccessRoomIdAsync(roomId, userId))) {
 				return API.v1.failure('invalid-params');

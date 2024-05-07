@@ -2,7 +2,7 @@ import {
   MessageGenericPreview,
   MessageGenericPreviewContent,
   MessageGenericPreviewDescription,
-  MessageGenericPreviewImage,
+  MessageGenericPreviewCoverImage,
   MessageGenericPreviewTitle,
   MessageGenericPreviewFooter,
   MessageGenericPreviewThumb,
@@ -14,7 +14,7 @@ import {
   isPreviewBlockWithPreview,
 } from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 
 import type { BlockProps } from '../utils/BlockProps';
 import ContextBlock from './ContextBlock';
@@ -28,7 +28,7 @@ const PreviewBlock = ({
   <Box>
     <MessageGenericPreview>
       {isPreviewBlockWithPreview(block) && block.preview?.dimensions && (
-        <MessageGenericPreviewImage
+        <MessageGenericPreviewCoverImage
           width={block.preview.dimensions.width}
           height={block.preview.dimensions.height}
           url={block.preview.url}
@@ -38,7 +38,7 @@ const PreviewBlock = ({
         thumb={
           isPreviewBlockWithThumb(block) ? (
             <MessageGenericPreviewThumb>
-              <MessageGenericPreviewImage
+              <MessageGenericPreviewCoverImage
                 height={192}
                 width={368}
                 url={block.thumb.url}

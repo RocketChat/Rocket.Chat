@@ -1,9 +1,10 @@
-import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox, Callout } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, FC } from 'react';
+import { Callout } from '@rocket.chat/fuselage';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
+import { FormSkeleton } from '../../../components/Skeleton';
 import EditCustomEmoji from './EditCustomEmoji';
 
 type EditCustomEmojiWithDataProps = {
@@ -16,39 +17,15 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChan
 	const t = useTranslation();
 	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 
-	const {
-		value: data = {
-			emojis: {
-				update: [],
-			},
-		},
-		phase: state,
-		error,
-		reload,
-	} = useEndpointData('/v1/emoji-custom.list', query);
+	const getEmojis = useEndpoint('GET', '/v1/emoji-custom.list');
 
-	if (state === AsyncStatePhase.LOADING) {
-		return (
-			<Box pb='x20'>
-				<Skeleton mbs='x8' />
-				<InputBox.Skeleton w='full' />
-				<Skeleton mbs='x8' />
-				<InputBox.Skeleton w='full' />
-				<ButtonGroup stretch w='full' mbs='x8'>
-					<Button disabled>
-						<Throbber inheritColor />
-					</Button>
-					<Button primary disabled>
-						<Throbber inheritColor />
-					</Button>
-				</ButtonGroup>
-				<ButtonGroup stretch w='full' mbs='x8'>
-					<Button danger disabled>
-						<Throbber inheritColor />
-					</Button>
-				</ButtonGroup>
-			</Box>
-		);
+	const { data, isLoading, error, refetch } = useQuery(['custom-emojis', query], async () => {
+		const emoji = await getEmojis(query);
+		return emoji;
+	});
+
+	if (isLoading) {
+		return <FormSkeleton pi={20} />;
 	}
 
 	if (error || !data || !data.emojis || data.emojis.update.length < 1) {
@@ -57,7 +34,7 @@ const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChan
 
 	const handleChange = (): void => {
 		onChange?.();
-		reload?.();
+		refetch?.();
 	};
 
 	return <EditCustomEmoji data={data.emojis.update[0]} close={close} onChange={handleChange} {...props} />;

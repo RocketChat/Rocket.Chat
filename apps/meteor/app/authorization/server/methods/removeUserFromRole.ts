@@ -1,26 +1,32 @@
-import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
+import { api } from '@rocket.chat/core-services';
 import type { IRole, IUser } from '@rocket.chat/core-typings';
-import { Roles } from '@rocket.chat/models';
+import { Roles, Users } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Meteor } from 'meteor/meteor';
 
-import { Users } from '../../../models/server';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
-import { hasPermission } from '../functions/hasPermission';
-import { api } from '../../../../server/sdk/api';
-import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { hasPermissionAsync } from '../functions/hasPermission';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'authorization:removeUserFromRole'(roleId: IRole['_id'], username: IUser['username'], scope?: string): Promise<boolean>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async 'authorization:removeUserFromRole'(roleId, username, scope) {
 		const userId = Meteor.userId();
 
-		if (!userId || !hasPermission(userId, 'access-permissions')) {
+		if (!userId || !(await hasPermissionAsync(userId, 'access-permissions'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Access permissions is not allowed', {
 				method: 'authorization:removeUserFromRole',
 				action: 'Accessing_permissions',
 			});
 		}
 
-		if (!roleId || !_.isString(roleId) || !username || !_.isString(username)) {
+		if (!roleId || typeof roleId.valueOf() !== 'string' || !username || typeof username.valueOf() !== 'string') {
 			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
 				method: 'authorization:removeUserFromRole',
 			});
@@ -35,19 +41,22 @@ Meteor.methods({
 				});
 			}
 
-			apiDeprecationLogger.warn(
-				`Calling authorization:removeUserFromRole with role names will be deprecated in future versions of Rocket.Chat`,
+			methodDeprecationLogger.deprecatedParameterUsage(
+				'authorization:removeUserFromRole',
+				'role',
+				'7.0.0',
+				({ parameter, method, version }) => `Calling ${method} with ${parameter} names is deprecated and will be removed ${version}`,
 			);
 		}
 
-		const user = Users.findOneByUsernameIgnoringCase(username, {
-			fields: {
+		const user = await Users.findOneByUsernameIgnoringCase(username, {
+			projection: {
 				_id: 1,
 				roles: 1,
 			},
-		}) as Pick<IUser, '_id' | 'roles'>;
+		});
 
-		if (!user || !user._id) {
+		if (!user?._id) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'authorization:removeUserFromRole',
 			});
@@ -55,13 +64,11 @@ Meteor.methods({
 
 		// prevent removing last user from admin role
 		if (role._id === 'admin') {
-			const adminCount = Meteor.users
-				.find({
-					roles: {
-						$in: ['admin'],
-					},
-				})
-				.count();
+			const adminCount = await Users.col.countDocuments({
+				roles: {
+					$in: ['admin'],
+				},
+			});
 
 			const userIsAdmin = user.roles?.indexOf('admin') > -1;
 			if (adminCount === 1 && userIsAdmin) {
@@ -73,17 +80,19 @@ Meteor.methods({
 		}
 
 		const remove = await Roles.removeUserRoles(user._id, [role._id], scope);
+		const event = {
+			type: 'removed',
+			_id: role._id,
+			u: {
+				_id: user._id,
+				username,
+			},
+			scope,
+		} as const;
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', {
-				type: 'removed',
-				_id: role._id,
-				u: {
-					_id: user._id,
-					username,
-				},
-				scope,
-			});
+			void api.broadcast('user.roleUpdate', event);
 		}
+		void api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: userId });
 
 		return remove;
 	},

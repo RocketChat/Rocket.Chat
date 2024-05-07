@@ -10,8 +10,6 @@ const additionalPackages = {};
 const fs = Npm.require('fs');
 
 Package.onUse(function (api) {
-	api.use('templating', 'client');
-
 	const workingDir = process.env.PWD || '.';
 	const i18nDir = `${workingDir}/packages/rocketchat-i18n/i18n`;
 

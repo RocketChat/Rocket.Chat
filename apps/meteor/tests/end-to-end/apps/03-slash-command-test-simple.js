@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials, api } from '../../data/api-data.js';
 import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
@@ -11,6 +12,8 @@ describe('Apps - Slash Command "test-simple"', function () {
 		await cleanupApps();
 		await installTestApp();
 	});
+
+	after(() => cleanupApps());
 
 	describe('[Slash command "test-simple"]', () => {
 		it('should return an error when no command is provided', (done) => {

@@ -1,15 +1,9 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Tag } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-type ReactionUserTag = {
-	username: IUser['username'];
-	onClick: (e: React.MouseEvent<HTMLElement>) => void;
-	displayName: string;
-};
-
-const ReactionUserTag = ({ username, onClick, displayName }: ReactionUserTag): ReactElement => (
-	<Box mie='x4' mbe='x4' data-username={username} onClick={onClick} key={displayName}>
+const ReactionUserTag = ({ displayName }: { displayName: string }): ReactElement => (
+	<Box mie={4} mbe={4}>
 		<Tag variant='primary'>{displayName}</Tag>
 	</Box>
 );

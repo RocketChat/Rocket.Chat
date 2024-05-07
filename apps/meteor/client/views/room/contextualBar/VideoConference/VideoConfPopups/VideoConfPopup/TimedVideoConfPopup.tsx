@@ -1,6 +1,7 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { useUserRoom } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState } from 'react';
 
 import {
 	useVideoConfAcceptCall,
@@ -14,7 +15,7 @@ import IncomingPopup from './IncomingPopup';
 import OutgoingPopup from './OutgoingPopup';
 import StartCallPopup from './StartCallPopup';
 
-export type TimedVideoConfPopupProps = {
+type TimedVideoConfPopupProps = {
 	id: string;
 	rid: IRoom['_id'];
 	isReceiving?: boolean;

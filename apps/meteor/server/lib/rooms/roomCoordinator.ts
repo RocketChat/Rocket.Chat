@@ -1,26 +1,27 @@
-import type { IRoom, RoomType, IUser, IMessage, ReadReceipt, IRocketChatRecord, ValueOf, AtLeast } from '@rocket.chat/core-typings';
+import type { IRoom, RoomType, IUser, IMessage, ReadReceipt, ValueOf, AtLeast } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
-import type { IRoomTypeConfig, IRoomTypeServerDirectives, RoomSettingsEnum, RoomMemberActions } from '../../../definition/IRoomTypeConfig';
-import { Users } from '../../../app/models/server';
-import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { settings } from '../../../app/settings/server';
+import type { IRoomTypeConfig, IRoomTypeServerDirectives, RoomSettingsEnum, RoomMemberActions } from '../../../definition/IRoomTypeConfig';
+import { getUserDisplayName } from '../../../lib/getUserDisplayName';
+import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 
 class RoomCoordinatorServer extends RoomCoordinator {
 	add(roomConfig: IRoomTypeConfig, directives: Partial<IRoomTypeServerDirectives>): void {
 		this.addRoomType(roomConfig, {
-			allowRoomSettingChange(_room: IRoom, _setting: ValueOf<typeof RoomSettingsEnum>): boolean {
+			allowRoomSettingChange(_room: IRoom, _setting: ValueOf<typeof RoomSettingsEnum>) {
 				return true;
 			},
-			allowMemberAction(_room: IRoom, _action: ValueOf<typeof RoomMemberActions>): boolean {
+			async allowMemberAction(_room: IRoom, _action: ValueOf<typeof RoomMemberActions>, _userId?: IUser['_id']): Promise<boolean> {
 				return false;
 			},
-			roomName(_room: IRoom, _userId?: string): string {
+			async roomName(_room: IRoom, _userId?: string): Promise<string> {
 				return '';
 			},
 			isGroupChat(_room: IRoom): boolean {
 				return false;
 			},
-			canBeDeleted(hasPermission: (permissionId: string, rid?: string) => boolean, room: IRoom): boolean {
+			async canBeDeleted(hasPermission: (permissionId: string, rid?: string) => Promise<boolean> | boolean, room: IRoom): Promise<boolean> {
 				if (!hasPermission && typeof hasPermission !== 'function') {
 					throw new Error('You MUST provide the "hasPermission" to canBeDeleted function');
 				}
@@ -29,26 +30,27 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			preventRenaming(): boolean {
 				return false;
 			},
-			getDiscussionType(): RoomType {
+			async getDiscussionType(): Promise<RoomType> {
 				return 'p';
 			},
-			canAccessUploadedFile(_params: { rc_uid: string; rc_rid: string; rc_token: string }): boolean {
+			async canAccessUploadedFile(_params: { rc_uid: string; rc_rid: string; rc_token: string }): Promise<boolean> {
 				return false;
 			},
-			getNotificationDetails(
+			async getNotificationDetails(
 				room: IRoom,
 				sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 				notificationMessage: string,
 				userId: string,
-			): { title: string | undefined; text: string } {
-				const title = `#${this.roomName(room, userId)}`;
-				const name = settings.get<boolean>('UI_Use_Real_Name') ? sender.name : sender.username;
+			): Promise<{ title: string | undefined; text: string; name: string | undefined }> {
+				const title = `#${await this.roomName(room, userId)}`;
+				const useRealName = settings.get<boolean>('UI_Use_Real_Name');
+				const senderName = getUserDisplayName(sender.name, sender.username, useRealName);
 
-				const text = `${name}: ${notificationMessage}`;
+				const text = `${senderName}: ${notificationMessage}`;
 
-				return { title, text };
+				return { title, text, name: room.name };
 			},
-			getMsgSender(senderId: IRocketChatRecord['_id']): IRocketChatRecord | undefined {
+			getMsgSender(senderId: IUser['_id']): Promise<IUser | null> {
 				return Users.findOneById(senderId);
 			},
 			includeInRoomSearch(): boolean {
@@ -66,20 +68,21 @@ class RoomCoordinatorServer extends RoomCoordinator {
 		});
 	}
 
-	getRoomDirectives(roomType: string): IRoomTypeServerDirectives | undefined {
-		return this.roomTypes[roomType]?.directives as IRoomTypeServerDirectives;
-	}
+	getRoomDirectives(roomType: string): IRoomTypeServerDirectives {
+		const directives = this.roomTypes[roomType]?.directives;
 
-	openRoom(_type: string, _name: string, _render = true): void {
-		// Nothing to do on the server side.
+		if (!directives) {
+			throw new Error(`Room type ${roomType} not found`);
+		}
+		return directives as IRoomTypeServerDirectives;
 	}
 
 	getTypesToShowOnDashboard(): Array<IRoomTypeConfig['identifier']> {
 		return Object.keys(this.roomTypes).filter((key) => (this.roomTypes[key].directives as IRoomTypeServerDirectives).includeInDashboard());
 	}
 
-	getRoomName(roomType: string, roomData: IRoom, userId?: string): string {
-		return this.getRoomDirectives(roomType)?.roomName(roomData, userId) ?? '';
+	async getRoomName(roomType: string, roomData: IRoom, userId?: string): Promise<string> {
+		return (await this.getRoomDirectives(roomType).roomName(roomData, userId)) ?? '';
 	}
 
 	setRoomFind(roomType: string, roomFind: Required<Pick<IRoomTypeServerDirectives, 'roomFind'>>['roomFind']): void {
@@ -96,7 +99,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 	}
 
 	getRoomFind(roomType: string): Required<Pick<IRoomTypeServerDirectives, 'roomFind'>>['roomFind'] | undefined {
-		return this.getRoomDirectives(roomType)?.roomFind;
+		return this.getRoomDirectives(roomType).roomFind;
 	}
 
 	searchableRoomTypes(): Array<string> {

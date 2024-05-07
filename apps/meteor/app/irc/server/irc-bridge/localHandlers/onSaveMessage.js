@@ -1,14 +1,15 @@
-import { SystemLogger } from '../../../../../server/lib/logger/system';
-import { Subscriptions, Users } from '../../../../models/server';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
-export default function handleOnSaveMessage(message, to) {
+import { SystemLogger } from '../../../../../server/lib/logger/system';
+
+export default async function handleOnSaveMessage(message, to) {
 	let toIdentification = '';
 	// Direct message
 	if (to.t === 'd') {
-		const subscriptions = Subscriptions.findByRoomId(to._id);
-		subscriptions.forEach((subscription) => {
+		const subscriptions = Subscriptions.findByRoomId(to._id).toArray();
+		for await (const subscription of subscriptions) {
 			if (subscription.u._id !== message.u._id) {
-				const userData = Users.findOne({ username: subscription.u.username });
+				const userData = await Users.findOne({ username: subscription.u.username });
 				if (userData) {
 					if (userData.profile && userData.profile.irc && userData.profile.irc.nick) {
 						toIdentification = userData.profile.irc.nick;
@@ -19,7 +20,7 @@ export default function handleOnSaveMessage(message, to) {
 					toIdentification = subscription.u.username;
 				}
 			}
-		});
+		}
 
 		if (!toIdentification) {
 			SystemLogger.error('[irc][server] Target user not found');
@@ -29,7 +30,7 @@ export default function handleOnSaveMessage(message, to) {
 		toIdentification = `#${to.name}`;
 	}
 
-	const user = Users.findOne({ _id: message.u._id });
+	const user = await Users.findOne({ _id: message.u._id });
 
 	this.sendCommand('sentMessage', { to: toIdentification, user, message: message.msg });
 }

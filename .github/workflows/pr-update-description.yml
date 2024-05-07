@@ -1,0 +1,39 @@
+name: 'Release PR Description'
+
+on:
+  pull_request:
+    branches:
+      - master
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  update-pr:
+    runs-on: ubuntu-latest
+    if: startsWith(github.head_ref, 'release-')
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_PAT }}
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: 14.21.3
+          cache-modules: true
+          install: true
+
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Update PR description
+        uses: ./packages/release-action
+        with:
+          action: update-pr-description
+        env:
+          GITHUB_TOKEN: ${{ secrets.CI_PAT }}
+

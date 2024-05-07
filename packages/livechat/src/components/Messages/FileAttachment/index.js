@@ -1,5 +1,7 @@
+import { memo } from 'preact/compat';
+
+import { createClassName } from '../../../helpers/createClassName';
 import DownloadIcon from '../../../icons/download.svg';
-import { createClassName, memo } from '../../helpers';
 import { FileAttachmentIcon } from '../FileAttachmentIcon';
 import { MessageBubble } from '../MessageBubble';
 import styles from './styles.scss';

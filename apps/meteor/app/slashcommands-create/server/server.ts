@@ -1,14 +1,16 @@
-import { Meteor } from 'meteor/meteor';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { api } from '@rocket.chat/core-services';
+import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import { Rooms, Users } from '@rocket.chat/models';
 
+import { i18n } from '../../../server/lib/i18n';
+import { createChannelMethod } from '../../lib/server/methods/createChannel';
+import { createPrivateGroupMethod } from '../../lib/server/methods/createPrivateGroup';
 import { settings } from '../../settings/server';
-import { Rooms } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { api } from '../../../server/sdk/api';
 
 slashCommands.add({
 	command: 'create',
-	callback: function Create(_command: 'create', params, item): void {
+	callback: async function Create({ params, message, userId }: SlashCommandCallbackParams<'create'>): Promise<void> {
 		function getParams(str: string): string[] {
 			const regex = /(--(\w+))+/g;
 			const result = [];
@@ -34,12 +36,11 @@ slashCommands.add({
 		if (channelStr === '') {
 			return;
 		}
-		const userId = Meteor.userId() as string;
 
-		const room = Rooms.findOneByName(channelStr);
+		const room = await Rooms.findOneByName(channelStr);
 		if (room != null) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Channel_already_exist', {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+				msg: i18n.t('Channel_already_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channelStr],
 					lng: settings.get('Language') || 'en',
@@ -49,10 +50,15 @@ slashCommands.add({
 		}
 
 		if (getParams(params).indexOf('private') > -1) {
-			return Meteor.call('createPrivateGroup', channelStr, []);
+			const user = await Users.findOneById(userId);
+			if (!user) {
+				return;
+			}
+			await createPrivateGroupMethod(user, channelStr, []);
+			return;
 		}
 
-		Meteor.call('createChannel', channelStr, []);
+		await createChannelMethod(userId, channelStr, []);
 	},
 	options: {
 		description: 'Create_A_New_Channel',

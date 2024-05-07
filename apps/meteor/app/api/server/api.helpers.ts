@@ -1,6 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { apiDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | '*';
 export type PermissionsPayload = {
@@ -10,11 +11,11 @@ export type PermissionsPayload = {
 	};
 };
 
-export type PermissionsPayloadLight = {
+type PermissionsPayloadLight = {
 	[key in RequestMethod]?: string[];
 };
 
-export type PermissionsRequiredKey = string[] | PermissionsPayload | PermissionsPayloadLight;
+type PermissionsRequiredKey = string[] | PermissionsPayload | PermissionsPayloadLight;
 
 const isLegacyPermissionsPayload = (permissionsPayload: PermissionsRequiredKey): permissionsPayload is string[] => {
 	return Array.isArray(permissionsPayload);
@@ -65,7 +66,7 @@ export async function checkPermissionsForInvocation(
 }
 
 // We'll assume options only contains permissionsRequired, as we don't care of the other elements
-export function checkPermissions(options: { permissionsRequired: PermissionsRequiredKey }) {
+export function checkPermissions(options: { permissionsRequired?: PermissionsRequiredKey }) {
 	if (!options.permissionsRequired) {
 		return false;
 	}
@@ -100,4 +101,9 @@ export function checkPermissions(options: { permissionsRequired: PermissionsRequ
 
 	// If reached here, options.permissionsRequired contained an invalid payload
 	return false;
+}
+
+export function parseDeprecation(methodThis: any, { alternatives, version }: { version: string; alternatives?: string[] }): void {
+	const infoMessage = alternatives?.length ? ` Please use the alternative(s): ${alternatives.join(',')}` : '';
+	apiDeprecationLogger.endpoint(methodThis.request.route, version, methodThis.response, infoMessage);
 }

@@ -1,67 +1,42 @@
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
-import React, { useState, useMemo, useCallback, FC } from 'react';
+import { Pagination } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useTranslation, useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
+import { useQuery, hashQueryKey } from '@tanstack/react-query';
+import React, { useState, useMemo } from 'react';
 
-import GenericTable from '../../../../components/GenericTable';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
+import FilterByText from '../../../../components/FilterByText';
+import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
+import {
+	GenericTable,
+	GenericTableBody,
+	GenericTableHeader,
+	GenericTableHeaderCell,
+	GenericTableLoadingRow,
+} from '../../../../components/GenericTable';
+import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
+import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { CallTableRow } from './CallTableRow';
 
-const useQuery = (
-	{
-		text,
-		itemsPerPage,
-		current,
-	}: {
-		text?: string;
-		itemsPerPage: 25 | 50 | 100;
-		current: number;
-	},
-	[column, direction]: string[],
-	userIdLoggedIn: string | null,
-): {
-	sort: string;
-	open: 'false';
-	roomName: string;
-	agents: string[];
-	count?: number;
-	current?: number;
-} =>
-	useMemo(
+const CallTable = () => {
+	const t = useTranslation();
+	const userIdLoggedIn = useUserId();
+
+	const [text, setText] = useState('');
+	const directoryRoute = useRoute('omnichannel-directory');
+	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'phone' | 'queue' | 'ts' | 'callDuration' | 'direction'>('fname');
+
+	const query = useMemo(
 		() => ({
-			sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
-			open: 'false',
+			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
+			open: 'false' as const,
 			roomName: text || '',
 			agents: userIdLoggedIn ? [userIdLoggedIn] : [],
 			...(itemsPerPage && { count: itemsPerPage }),
 			...(current && { offset: current }),
 		}),
-		[column, current, direction, itemsPerPage, userIdLoggedIn, text],
+		[sortBy, current, sortDirection, itemsPerPage, userIdLoggedIn, text],
 	);
-
-const CallTable: FC = () => {
-	const [params, setParams] = useState<{ text?: string; current: number; itemsPerPage: 25 | 50 | 100 }>({
-		text: '',
-		current: 0,
-		itemsPerPage: 25,
-	});
-	const [sort, setSort] = useState<[string, 'asc' | 'desc']>(['closedAt', 'desc']);
-	const t = useTranslation();
-	const debouncedParams = useDebouncedValue(params, 500);
-	const debouncedSort = useDebouncedValue(sort, 500);
-	const userIdLoggedIn = Meteor.userId();
-	const query = useQuery(debouncedParams, debouncedSort, userIdLoggedIn);
-	const directoryRoute = useRoute('omnichannel-directory');
-
-	const onHeaderClick = useMutableCallback((id) => {
-		const [sortBy, sortDirection] = sort;
-
-		if (sortBy === id) {
-			setSort([id, sortDirection === 'asc' ? 'desc' : 'asc']);
-			return;
-		}
-		setSort([id, 'asc']);
-	});
 
 	const onRowClick = useMutableCallback((id, token) => {
 		directoryRoute.push(
@@ -74,74 +49,93 @@ const CallTable: FC = () => {
 		);
 	});
 
-	const { value: data } = useEndpointData('/v1/voip/rooms', query);
+	const getVoipRooms = useEndpoint('GET', '/v1/voip/rooms');
+	const { data, isSuccess, isLoading } = useQuery(['voip-rooms', query], async () => getVoipRooms(query));
 
-	const header = useMemo(
-		() =>
-			[
-				<GenericTable.HeaderCell
-					key={'fname'}
-					direction={sort[1]}
-					active={sort[0] === 'fname'}
-					onClick={onHeaderClick}
-					sort='fname'
-					w='x400'
-				>
-					{t('Contact_Name')}
-				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'phone'}
-					direction={sort[1]}
-					active={sort[0] === 'phone'}
-					onClick={onHeaderClick}
-					sort='phone'
-					w='x200'
-				>
-					{t('Phone')}
-				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell key={'queue'} direction={sort[1]} active={sort[0] === 'queue'} onClick={onHeaderClick} sort='ts' w='x100'>
-					{t('Queue')}
-				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell key={'ts'} direction={sort[1]} active={sort[0] === 'ts'} onClick={onHeaderClick} sort='ts' w='x200'>
-					{t('Started_At')}
-				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key={'callDuration'}
-					direction={sort[1]}
-					active={sort[0] === 'callDuration'}
-					onClick={onHeaderClick}
-					sort='callDuration'
-					w='x120'
-				>
-					{t('Talk_Time')}
-				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell
-					key='direction'
-					direction={sort[1]}
-					active={sort[0] === 'direction'}
-					onClick={onHeaderClick}
-					sort='direction'
-					w='x200'
-				>
-					{t('Direction')}
-				</GenericTable.HeaderCell>,
-				<GenericTable.HeaderCell key='call' width={44} />,
-			].filter(Boolean),
-		[sort, onHeaderClick, t],
+	const [defaultQuery] = useState(hashQueryKey([query]));
+	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
+
+	const headers = (
+		<>
+			<GenericTableHeaderCell key='fname' direction={sortDirection} active={sortBy === 'fname'} onClick={setSort} sort='fname' w='x400'>
+				{t('Contact_Name')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='phone' direction={sortDirection} active={sortBy === 'phone'} onClick={setSort} sort='phone' w='x200'>
+				{t('Phone')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='queue' direction={sortDirection} active={sortBy === 'queue'} onClick={setSort} sort='ts' w='x100'>
+				{t('Queue')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts' w='x200'>
+				{t('Started_At')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell
+				key='callDuration'
+				direction={sortDirection}
+				active={sortBy === 'callDuration'}
+				onClick={setSort}
+				sort='callDuration'
+				w='x120'
+			>
+				{t('Talk_Time')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell
+				key='direction'
+				direction={sortDirection}
+				active={sortBy === 'direction'}
+				onClick={setSort}
+				sort='direction'
+				w='x200'
+			>
+				{t('Direction')}
+			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='call' width={44} />
+		</>
 	);
 
-	const renderRow = useCallback((room) => <CallTableRow room={room} onRowClick={onRowClick} />, [onRowClick]);
-
 	return (
-		<GenericTable
-			header={header}
-			renderRow={renderRow}
-			results={data?.rooms}
-			total={data?.total}
-			setParams={setParams}
-			params={params}
-			// renderFilter={({ onChange, ...props }: any): ReactElement => <FilterByText onChange={onChange} {...props} />}
-		/>
+		<>
+			{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }) => setText(text)} />}
+			{isLoading && (
+				<GenericTable>
+					<GenericTableHeader>{headers}</GenericTableHeader>
+					<GenericTableBody>
+						<GenericTableLoadingRow cols={7} />
+					</GenericTableBody>
+				</GenericTable>
+			)}
+			{isSuccess && data?.rooms.length === 0 && queryHasChanged && <GenericNoResults />}
+			{isSuccess && data?.rooms.length === 0 && !queryHasChanged && (
+				<GenericNoResults
+					icon='phone'
+					title={t('No_calls_yet')}
+					description={t('No_calls_yet_description')}
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkText={t('Learn_more_about_voice_channel')}
+				/>
+			)}
+			{isSuccess && data?.rooms.length > 0 && (
+				<>
+					<GenericTable>
+						<GenericTableHeader>{headers}</GenericTableHeader>
+						<GenericTableBody>
+							{data?.rooms.map((room) => (
+								<CallTableRow key={room._id} room={room} onRowClick={onRowClick} />
+							))}
+						</GenericTableBody>
+					</GenericTable>
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
+				</>
+			)}
+		</>
 	);
 };
 

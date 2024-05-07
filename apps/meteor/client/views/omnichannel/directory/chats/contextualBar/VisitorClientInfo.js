@@ -7,7 +7,7 @@ import { AsyncStatePhase } from '../../../../../lib/asyncState';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
-import { FormSkeleton } from '../../Skeleton';
+import { FormSkeleton } from '../../components/FormSkeleton';
 
 const VisitorClientInfo = ({ uid }) => {
 	const t = useTranslation();
@@ -15,10 +15,8 @@ const VisitorClientInfo = ({ uid }) => {
 		value: userData,
 		phase: state,
 		error,
-	} = useEndpointData(
-		'/v1/livechat/visitors.info',
-		useMemo(() => ({ visitorId: uid }), [uid]),
-	);
+	} = useEndpointData('/v1/livechat/visitors.info', { params: useMemo(() => ({ visitorId: uid }), [uid]) });
+
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}

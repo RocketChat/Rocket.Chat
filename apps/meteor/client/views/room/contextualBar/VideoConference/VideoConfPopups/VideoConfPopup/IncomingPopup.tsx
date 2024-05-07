@@ -1,4 +1,4 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -14,7 +14,8 @@ import {
 	VideoConfPopupTitle,
 	VideoConfPopupHeader,
 } from '@rocket.chat/ui-video-conf';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { useVideoConfSetPreferences } from '../../../../../../contexts/VideoConfContext';
 import { AsyncStatePhase } from '../../../../../../hooks/useAsyncState';
@@ -36,7 +37,7 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 	const setPreferences = useVideoConfSetPreferences();
 
 	const params = useMemo(() => ({ callId: id }), [id]);
-	const { phase, value } = useEndpointData('/v1/video-conference.info', params);
+	const { phase, value } = useEndpointData('/v1/video-conference.info', { params });
 	const showMic = Boolean(value?.capabilities?.mic);
 	const showCam = Boolean(value?.capabilities?.cam);
 

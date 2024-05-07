@@ -1,6 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
-import { escapeHTML } from '@rocket.chat/string-helpers';
 import type {
 	IMessage,
 	IRoom,
@@ -10,12 +7,17 @@ import type {
 	ISupportedLanguage,
 	ITranslationResult,
 } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
+import { Messages, Subscriptions } from '@rocket.chat/models';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+import { Meteor } from 'meteor/meteor';
+import _ from 'underscore';
 
-import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
-import { Subscriptions, Messages } from '../../models/server';
+import { isTruthy } from '../../../lib/isTruthy';
+import { broadcastMessageFromData } from '../../../server/modules/watchers/lib/messages';
 import { Markdown } from '../../markdown/server';
-import { Logger } from '../../logger/server';
+import { settings } from '../../settings/server';
 
 const translationLogger = new Logger('AutoTranslate');
 
@@ -63,14 +65,21 @@ export class TranslationProviderRegistry {
 		return TranslationProviderRegistry[Providers][provider];
 	}
 
-	static getSupportedLanguages(target: string): ISupportedLanguage[] | undefined {
+	static async getSupportedLanguages(target: string): Promise<ISupportedLanguage[] | undefined> {
 		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(target) : undefined;
 	}
 
-	static translateMessage(message: IMessage, room: IRoom, targetLanguage: string): IMessage | undefined {
-		return TranslationProviderRegistry.enabled
-			? TranslationProviderRegistry.getActiveProvider()?.translateMessage(message, room, targetLanguage)
-			: undefined;
+	static async translateMessage(message: IMessage, room: IRoom, targetLanguage?: string): Promise<IMessage | null> {
+		if (!TranslationProviderRegistry.enabled) {
+			return null;
+		}
+
+		const provider = TranslationProviderRegistry.getActiveProvider();
+		if (!provider) {
+			return null;
+		}
+
+		return provider.translateMessage(message, room, targetLanguage);
 	}
 
 	static getProviders(): AutoTranslate[] {
@@ -150,7 +159,7 @@ export abstract class AutoTranslate {
 
 	tokenizeEmojis(message: IMessage): IMessage {
 		let count = message.tokens?.length || 0;
-		message.msg = message.msg.replace(/:[+\w\d]+:/g, function (match) {
+		message.msg = message.msg.replace(/:[+\w\d]+:/g, (match) => {
 			const token = `<i class=notranslate>{${count++}}</i>`;
 			message.tokens?.push({
 				token,
@@ -165,12 +174,12 @@ export abstract class AutoTranslate {
 	tokenizeURLs(message: IMessage): IMessage {
 		let count = message.tokens?.length || 0;
 
-		const schemes = settings.get<string>('Markdown_SupportSchemesForLink')?.split(',').join('|');
+		const schemes = 'http,https';
 
 		// Support ![alt text](http://image url) and [text](http://link)
 		message.msg = message.msg.replace(
 			new RegExp(`(!?\\[)([^\\]]+)(\\]\\((?:${schemes}):\\/\\/[^\\)]+\\))`, 'gm'),
-			function (_match, pre, text, post) {
+			(_match, pre, text, post) => {
 				const pretoken = `<i class=notranslate>{${count++}}</i>`;
 				message.tokens?.push({
 					token: pretoken,
@@ -190,7 +199,7 @@ export abstract class AutoTranslate {
 		// Support <http://link|Text>
 		message.msg = message.msg.replace(
 			new RegExp(`((?:<|&lt;)(?:${schemes}):\\/\\/[^\\|]+\\|)(.+?)(?=>|&gt;)((?:>|&gt;))`, 'gm'),
-			function (_match, pre, text, post) {
+			(_match, pre, text, post) => {
 				const pretoken = `<i class=notranslate>{${count++}}</i>`;
 				message.tokens?.push({
 					token: pretoken,
@@ -281,40 +290,51 @@ export abstract class AutoTranslate {
 	 * @param {object} targetLanguage
 	 * @returns {object} unmodified message object.
 	 */
-	translateMessage(message: IMessage, room: IRoom, targetLanguage: string): IMessage {
+	async translateMessage(message: IMessage, room: IRoom, targetLanguage?: string): Promise<IMessage | null> {
 		let targetLanguages: string[];
 		if (targetLanguage) {
 			targetLanguages = [targetLanguage];
 		} else {
-			targetLanguages = Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u?._id);
+			targetLanguages = (await Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u?._id)).filter(isTruthy);
 		}
 		if (message.msg) {
-			Meteor.defer(() => {
+			setImmediate(async () => {
 				let targetMessage = Object.assign({}, message);
 				targetMessage.html = escapeHTML(String(targetMessage.msg));
 				targetMessage = this.tokenize(targetMessage);
 
-				const translations = this._translateMessage(targetMessage, targetLanguages);
+				const translations = await this._translateMessage(targetMessage, targetLanguages);
 				if (!_.isEmpty(translations)) {
-					Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider]);
+					await Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider] || '');
+					this.notifyTranslatedMessage(message._id);
 				}
 			});
 		}
 
 		if (message.attachments && message.attachments.length > 0) {
-			Meteor.defer(() => {
-				for (const [index, attachment] of message.attachments?.entries() ?? []) {
+			setImmediate(async () => {
+				for await (const [index, attachment] of message.attachments?.entries() ?? []) {
 					if (attachment.description || attachment.text) {
-						const translations = this._translateAttachmentDescriptions(attachment, targetLanguages);
+						// Removes the initial link `[ ](quoterl)` from quote message before translation
+						const translatedText = attachment?.text?.replace(/\[(.*?)\]\(.*?\)/g, '$1') || attachment?.text;
+						const attachmentMessage = { ...attachment, text: translatedText };
+						const translations = await this._translateAttachmentDescriptions(attachmentMessage, targetLanguages);
+
 						if (!_.isEmpty(translations)) {
-							Messages.addAttachmentTranslations(message._id, index, translations);
-							Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider]);
+							await Messages.addAttachmentTranslations(message._id, String(index), translations);
+							this.notifyTranslatedMessage(message._id);
 						}
 					}
 				}
 			});
 		}
 		return Messages.findOneById(message._id);
+	}
+
+	private notifyTranslatedMessage(messageId: string): void {
+		void broadcastMessageFromData({
+			id: messageId,
+		});
 	}
 
 	/**
@@ -334,7 +354,7 @@ export abstract class AutoTranslate {
 	 * @param {string} target - the language into which shall be translated
 	 * @returns [{ language, name }]
 	 */
-	abstract getSupportedLanguages(target: string): ISupportedLanguage[];
+	abstract getSupportedLanguages(target: string): Promise<ISupportedLanguage[]>;
 
 	/**
 	 * Performs the actual translation of a message,
@@ -345,7 +365,7 @@ export abstract class AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @return {object}
 	 */
-	abstract _translateMessage(message: IMessage, targetLanguages: string[]): ITranslationResult;
+	abstract _translateMessage(message: IMessage, targetLanguages: string[]): Promise<ITranslationResult>;
 
 	/**
 	 * Performs the actual translation of an attachment (precisely its description),
@@ -355,7 +375,7 @@ export abstract class AutoTranslate {
 	 * @param {object} targetLanguages
 	 * @returns {object} translated messages for each target language
 	 */
-	abstract _translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): ITranslationResult;
+	abstract _translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): Promise<ITranslationResult>;
 }
 
 Meteor.startup(() => {

@@ -1,6 +1,7 @@
 import '../../startup/broker';
 
-import { api } from '../../../../server/sdk/api';
+import { api } from '@rocket.chat/core-services';
+
 import { ECDHProxy } from './ECDHProxy';
 
 api.registerService(new ECDHProxy());

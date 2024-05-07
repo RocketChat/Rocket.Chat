@@ -20,7 +20,7 @@ export const isValidQuery: {
 	},
 );
 
-export const verifyQuery = (query: Query, allowedAttributes: string[], allowedOperations: string[], parent = ''): boolean => {
+const verifyQuery = (query: Query, allowedAttributes: string[], allowedOperations: string[], parent = ''): boolean => {
 	return Object.entries(removeDangerousProps(query)).every(([key, value]) => {
 		const path = parent ? `${parent}.${key}` : key;
 		if (parent === '' && path.startsWith('$')) {

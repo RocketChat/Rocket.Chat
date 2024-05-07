@@ -1,13 +1,13 @@
 import { EventEmitter } from 'events';
 import type { IncomingMessage } from 'http';
 
+import type { ISocketConnection } from '@rocket.chat/core-typings';
 import { v1 as uuidv1 } from 'uuid';
 import type WebSocket from 'ws';
-import type { ISocketConnection } from '@rocket.chat/core-typings';
 
-import { DDP_EVENTS, WS_ERRORS, WS_ERRORS_MESSAGES, TIMEOUT } from './constants';
 import { SERVER_ID } from './Server';
 import { server } from './configureServer';
+import { DDP_EVENTS, WS_ERRORS, WS_ERRORS_MESSAGES, TIMEOUT } from './constants';
 import type { IPacket } from './types/IPacket';
 
 // TODO why localhost not as 127.0.0.1?
@@ -53,6 +53,8 @@ const getClientAddress = (req: IncomingMessage): string | undefined => {
 
 	return forwardedForClean[forwardedForClean.length - httpForwardedCount];
 };
+
+export const clientMap = new WeakMap<WebSocket, Client>();
 
 export class Client extends EventEmitter {
 	private chain = Promise.resolve();
@@ -114,6 +116,8 @@ export class Client extends EventEmitter {
 		});
 
 		this.send(SERVER_ID);
+
+		clientMap.set(ws, this);
 	}
 
 	greeting(): void {

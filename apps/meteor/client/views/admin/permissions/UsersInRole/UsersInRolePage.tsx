@@ -1,25 +1,39 @@
-import { IRole } from '@rocket.chat/core-typings';
-import { Box, Field, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import type { IRole, IRoom } from '@rocket.chat/core-typings';
+import { Box, Field, FieldLabel, FieldRow, Margins, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useRef, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useRef } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
-import Page from '../../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../../components/Page';
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
-import UserAutoComplete from '../../../../components/UserAutoComplete';
+import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import UsersInRoleTable from './UsersInRoleTable';
+
+type UsersInRolePayload = {
+	rid?: IRoom['_id'];
+	users: string[];
+};
 
 const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 	const t = useTranslation();
 	const reload = useRef<() => void>(() => undefined);
-	const [user, setUser] = useState<string>('');
-	const [rid, setRid] = useState<string>('');
-	const [userError, setUserError] = useState<string>();
 	const dispatchToastMessage = useToastMessageDispatch();
+
+	const {
+		control,
+		handleSubmit,
+		formState: { isDirty },
+		reset,
+		getValues,
+	} = useForm<UsersInRolePayload>({ defaultValues: { users: [] } });
 
 	const { _id, name, description } = role;
 	const router = useRoute('admin-permissions');
 	const addUser = useEndpoint('POST', '/v1/roles.addUserToRole');
+
+	const rid = getValues('rid');
 
 	const handleReturn = useMutableCallback(() => {
 		router.push({
@@ -28,75 +42,72 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		});
 	});
 
-	const handleAdd = useMutableCallback(async () => {
-		if (!user) {
-			return setUserError(t('User_cant_be_empty'));
-		}
-
+	const handleAdd = useMutableCallback(async ({ users, rid }: UsersInRolePayload) => {
 		try {
-			await addUser({ roleId: _id, username: user, roomId: rid });
-			dispatchToastMessage({ type: 'success', message: t('User_added') });
-			setUser('');
-			reload.current?.();
-		} catch (error: unknown) {
+			await Promise.all(
+				users.map(async (user) => {
+					if (user) {
+						await addUser({ roleName: _id, username: user, roomId: rid });
+					}
+				}),
+			);
+			dispatchToastMessage({ type: 'success', message: t('Users_added') });
+			reload.current();
+			reset();
+		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
 	});
 
-	const handleUserChange = useMutableCallback((user) => {
-		if (user !== '') {
-			setUserError(undefined);
-		}
-
-		return setUser(user);
-	});
-
-	const handleChange = (value: unknown): void => {
-		if (typeof value === 'string') {
-			setRid(value);
-		}
-	};
-
 	return (
 		<Page>
-			<Page.Header title={`${t('Users_in_role')} "${description || name}"`}>
+			<PageHeader title={`${t('Users_in_role')} "${description || name}"`}>
 				<ButtonGroup>
 					<Button onClick={handleReturn}>{t('Back')}</Button>
 				</ButtonGroup>
-			</Page.Header>
-			<Page.Content>
+			</PageHeader>
+			<PageContent>
 				<Box display='flex' flexDirection='column' w='full' mi='neg-x4'>
-					<Margins inline='x4'>
+					<Margins inline={4}>
 						{role.scope !== 'Users' && (
-							<Field mbe='x4'>
-								<Field.Label>{t('Choose_a_room')}</Field.Label>
-								<Field.Row>
-									<RoomAutoComplete value={rid} onChange={handleChange} placeholder={t('User')} />
-								</Field.Row>
+							<Field mbe={4}>
+								<FieldLabel>{t('Choose_a_room')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										control={control}
+										name='rid'
+										render={({ field: { onChange, value } }): ReactElement => (
+											<RoomAutoComplete value={value} onChange={onChange} placeholder={t('User')} />
+										)}
+									/>
+								</FieldRow>
 							</Field>
 						)}
 						<Field>
-							<Field.Label>{t('Add_user')}</Field.Label>
-							<Field.Row>
-								<UserAutoComplete value={user} onChange={handleUserChange} placeholder={t('User')} />
+							<FieldLabel>{t('Add_users')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									control={control}
+									name='users'
+									render={({ field: { onChange, value } }): ReactElement => (
+										<UserAutoCompleteMultiple value={value} placeholder={t('User')} onChange={onChange} />
+									)}
+								/>
 
-								<ButtonGroup mis='x8' align='end'>
-									<Button primary onClick={handleAdd}>
-										{t('Add')}
-									</Button>
-								</ButtonGroup>
-							</Field.Row>
-							<Field.Error>{userError}</Field.Error>
+								<Button mis={8} primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
+									{t('Add')}
+								</Button>
+							</FieldRow>
 						</Field>
 					</Margins>
 				</Box>
-				<Margins blockStart='x8'>
+				<Margins blockStart={8}>
 					{(role.scope === 'Users' || rid) && (
 						<UsersInRoleTable reloadRef={reload} rid={rid} roleId={_id} roleName={name} description={description} />
 					)}
 					{role.scope !== 'Users' && !rid && <Callout type='info'>{t('Select_a_room')}</Callout>}
 				</Margins>
-			</Page.Content>
+			</PageContent>
 		</Page>
 	);
 };

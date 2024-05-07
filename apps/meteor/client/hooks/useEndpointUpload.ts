@@ -1,4 +1,5 @@
-import { useToastMessageDispatch, UploadResult, useUpload } from '@rocket.chat/ui-contexts';
+import type { UploadResult } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useUpload } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 export const useEndpointUpload = (

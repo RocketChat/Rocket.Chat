@@ -1,10 +1,10 @@
 import { performance } from 'perf_hooks';
 
-import { EJSON } from 'meteor/ejson';
-import { Log } from 'meteor/logging';
+import { format } from '@rocket.chat/log-format';
+import { getQueuedLogs, logEntries } from '@rocket.chat/logger';
+import EJSON from 'ejson';
 
 import notifications from '../../app/notifications/server/lib/Notifications';
-import { getQueuedLogs, logEntries } from '../lib/logger/logQueue';
 
 const processString = (string: string, date: Date): string => {
 	try {
@@ -14,13 +14,13 @@ const processString = (string: string, date: Date): string => {
 		}
 
 		if ('toJSONValue' in obj) {
-			return Log.format(obj.toJSONValue(), { color: true });
+			return format(obj.toJSONValue(), { color: true });
 		}
 
 		if (!Array.isArray(obj) && !(obj instanceof Date) && !(obj instanceof Uint8Array)) {
-			return Log.format(obj, { color: true });
+			return format(obj, { color: true });
 		}
-		return Log.format(
+		return format(
 			{
 				message: string,
 				time: date,

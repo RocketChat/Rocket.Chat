@@ -1,4 +1,4 @@
-import type { TelemetryMap, ITelemetryEvent, TelemetryEvents } from '../../../../server/sdk/types/ITelemetryEvent';
+import type { TelemetryMap, ITelemetryEvent, TelemetryEvents } from '@rocket.chat/core-services';
 
 type TelemetryEventResponse = Promise<any> | void;
 type TelemetryEventFunction<T extends TelemetryEvents> = (data: TelemetryMap[T]) => TelemetryEventResponse;

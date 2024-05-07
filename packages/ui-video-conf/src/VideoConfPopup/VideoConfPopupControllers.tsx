@@ -1,6 +1,6 @@
 import { ButtonGroup } from '@rocket.chat/fuselage';
-import type { ReactNode, ReactElement } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
 
-const VideoConfPopupControllers = ({ children }: { children: ReactNode }): ReactElement => <ButtonGroup medium>{children}</ButtonGroup>;
+const VideoConfPopupControllers = (props: ComponentProps<typeof ButtonGroup>): ReactElement => <ButtonGroup {...props} />;
 
 export default VideoConfPopupControllers;

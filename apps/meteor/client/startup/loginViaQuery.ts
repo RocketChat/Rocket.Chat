@@ -1,20 +1,31 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { router } from '../providers/RouterProvider';
+
 Meteor.startup(() => {
 	Tracker.afterFlush(() => {
-		const resumeToken = FlowRouter.getQueryParam('resumeToken');
+		const { resumeToken } = router.getSearchParameters();
 		if (!resumeToken) {
 			return;
 		}
 
 		Meteor.loginWithToken(resumeToken, () => {
-			if (FlowRouter.getRouteName()) {
-				FlowRouter.setQueryParams({ resumeToken: null, userId: null });
-				return;
+			const routeName = router.getRouteName();
+
+			if (!routeName) {
+				router.navigate('/home');
 			}
-			FlowRouter.go('/home');
+
+			const { resumeToken: _, userId: __, ...search } = router.getSearchParameters();
+
+			router.navigate(
+				{
+					pathname: router.getLocationPathname(),
+					search,
+				},
+				{ replace: true },
+			);
 		});
 	});
 });

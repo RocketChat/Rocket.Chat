@@ -1,6 +1,7 @@
 import { Select } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import ContentForDays from './ContentForDays';
@@ -44,7 +45,12 @@ const BusiestChatTimesSection = ({ timezone }: BusiestChatTimesSectionProps): Re
 	return (
 		<>
 			<EngagementDashboardCardFilter>
-				<Select options={timeUnitOptions} value={timeUnit} onChange={handleTimeUnitChange} />
+				<Select
+					options={timeUnitOptions}
+					value={timeUnit}
+					onChange={(value) => handleTimeUnitChange(String(value))}
+					aria-label={t('Select_period')}
+				/>
 			</EngagementDashboardCardFilter>
 			<Content
 				displacement={displacement}

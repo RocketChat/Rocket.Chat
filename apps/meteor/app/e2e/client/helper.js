@@ -1,15 +1,14 @@
-/* eslint-disable new-cap, no-proto */
-
+import { Random } from '@rocket.chat/random';
 import ByteBuffer from 'bytebuffer';
 
-import { getRandomFraction } from '../../../lib/random';
-
+// eslint-disable-next-line no-proto
 const StaticArrayBufferProto = new ArrayBuffer().__proto__;
 
 export function toString(thing) {
 	if (typeof thing === 'string') {
 		return thing;
 	}
+	// eslint-disable-next-line new-cap
 	return new ByteBuffer.wrap(thing).toString('binary');
 }
 
@@ -18,6 +17,7 @@ export function toArrayBuffer(thing) {
 		return undefined;
 	}
 	if (thing === Object(thing)) {
+		// eslint-disable-next-line no-proto
 		if (thing.__proto__ === StaticArrayBufferProto) {
 			return thing;
 		}
@@ -26,6 +26,7 @@ export function toArrayBuffer(thing) {
 	if (typeof thing !== 'string') {
 		throw new Error(`Tried to convert a non-string of type ${typeof thing} to an array buffer`);
 	}
+	// eslint-disable-next-line new-cap
 	return new ByteBuffer.wrap(thing, 'binary').toArrayBuffer();
 }
 
@@ -131,23 +132,9 @@ export async function generateMnemonicPhrase(n, sep = ' ') {
 	const taken = new Array(len);
 
 	while (n--) {
-		const x = Math.floor(getRandomFraction() * len);
+		const x = Math.floor(Random.fraction() * len);
 		result[n] = wordList[x in taken ? taken[x] : x];
 		taken[x] = --len in taken ? taken[len] : len;
 	}
 	return result.join(sep);
-}
-
-export class Deferred {
-	constructor() {
-		const p = new Promise((resolve, reject) => {
-			this.resolve = resolve;
-			this.reject = reject;
-		});
-
-		p.resolve = this.resolve;
-		p.reject = this.reject;
-
-		return p;
-	}
 }

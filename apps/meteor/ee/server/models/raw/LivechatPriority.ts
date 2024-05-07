@@ -1,6 +1,7 @@
 import type { ILivechatPriority } from '@rocket.chat/core-typings';
 import type { ILivechatPriorityModel } from '@rocket.chat/model-typings';
-import type { Db } from 'mongodb';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Db, UpdateFilter, ModifyResult, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
@@ -10,7 +11,21 @@ export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements I
 		super(db, 'livechat_priority');
 	}
 
-	findOneByIdOrName(_idOrName: string, options = {}): any {
+	protected modelIndexes(): IndexDescription[] {
+		return [
+			{
+				key: {
+					name: 1,
+				},
+				unique: true,
+				partialFilterExpression: {
+					$and: [{ name: { $exists: true } }, { name: { $gt: '' } }],
+				},
+			},
+		];
+	}
+
+	findOneByIdOrName(_idOrName: string, options = {}): Promise<ILivechatPriority | null> {
 		const query = {
 			$or: [
 				{
@@ -23,5 +38,41 @@ export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements I
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findOneNameUsingRegex(_idOrName: string, options = {}): Promise<ILivechatPriority | null> {
+		const query = {
+			name: new RegExp(`^${escapeRegExp(_idOrName.trim())}$`, 'i'),
+		};
+
+		return this.findOne(query, options);
+	}
+
+	async canResetPriorities(): Promise<boolean> {
+		return Boolean(await this.findOne({ dirty: true }, { projection: { _id: 1 } }));
+	}
+
+	async resetPriorities(): Promise<void> {
+		await this.updateMany({ dirty: true }, [{ $set: { dirty: false } }, { $unset: 'name' }]);
+	}
+
+	async updatePriority(_id: string, reset: boolean, name?: string): Promise<ModifyResult<ILivechatPriority>> {
+		const query = {
+			_id,
+		};
+
+		const update: Pick<UpdateFilter<ILivechatPriority>, '$set' | '$unset'> = {
+			...((reset && {
+				$set: { dirty: false },
+				$unset: { name: 1 },
+			}) || {
+				// Trim value before inserting
+				$set: { name: name?.trim(), dirty: true },
+			}),
+		};
+
+		return this.findOneAndUpdate(query, update, {
+			returnDocument: 'after',
+		});
 	}
 }

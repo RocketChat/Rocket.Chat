@@ -1,12 +1,13 @@
 import type { IImportProgress } from '@rocket.chat/core-typings';
+import { Imports } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization/server';
-import { Imports } from '../../../models/server';
 import { Importers } from '..';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
-export const executeGetImportProgress = (): IImportProgress => {
-	const operation = Imports.findLastImport();
+export const executeGetImportProgress = async (): Promise<IImportProgress> => {
+	const operation = await Imports.findLastImport();
 	if (!operation) {
 		throw new Meteor.Error('error-operation-not-found', 'Import Operation Not Found', 'getImportProgress');
 	}
@@ -17,19 +18,26 @@ export const executeGetImportProgress = (): IImportProgress => {
 		throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, 'getImportProgress');
 	}
 
-	importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
+	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
 
-	return importer.instance.getProgress();
+	return instance.getProgress();
 };
 
-Meteor.methods({
-	getImportProgress() {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		getImportProgress(): IImportProgress;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async getImportProgress() {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', 'getImportProgress');
 		}
 
-		if (!hasPermission(userId, 'run-import')) {
+		if (!(await hasPermissionAsync(userId, 'run-import'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', 'setupImporter');
 		}
 

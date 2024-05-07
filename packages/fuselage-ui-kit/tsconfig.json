@@ -1,27 +1,14 @@
 {
+	"extends": "../../tsconfig.base.client.json",
   "compilerOptions": {
-    "rootDir": "./src",
-    "module": "ESNext",
-    "target": "es5",
-    "lib": ["dom", "es6"],
-    "sourceMap": true,
-    "allowJs": false,
-    "jsx": "react",
-    "declaration": true,
+		"module": "CommonJS",
+    "rootDirs": ["./src", "./.storybook"],
     "outDir": "./dist",
-    "moduleResolution": "node",
-    "forceConsistentCasingInFileNames": true,
+    "allowJs": false,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "noImplicitAny": true,
-    "strict": true,
-    "strictNullChecks": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "importsNotUsedAsValues": "error"
+		"jsx": "react-jsx"
   },
-  "exclude": ["node_modules", "dist"]
+	"include": ["src", ".storybook/**/*"],
+  "exclude": ["node_modules", "dist", "src/**/*.stories.tsx"]
 }

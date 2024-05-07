@@ -1,7 +1,7 @@
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { OAuth } from 'meteor/oauth';
 import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import { OAuth } from 'meteor/oauth';
 
 import { callbacks } from '../../../lib/callbacks';
 import { checkCodeForUser } from './code/index';
@@ -15,7 +15,7 @@ const isCredentialWithError = (credential: any): credential is { error: Error } 
 };
 
 Accounts.registerLoginHandler('totp', function (options) {
-	if (!options.totp || !options.totp.code) {
+	if (!options.totp?.code) {
 		return;
 	}
 
@@ -25,23 +25,22 @@ Accounts.registerLoginHandler('totp', function (options) {
 
 callbacks.add(
 	'onValidateLogin',
-	(login) => {
-		if (login.type === 'resume' || login.type === 'proxy' || login.methodName === 'verifyEmail') {
-			return login;
-		}
-		// CAS login doesn't yet support 2FA.
-		if (login.type === 'cas') {
-			return login;
-		}
-
-		if (!login.user) {
+	async (login) => {
+		if (
+			!login.user ||
+			login.type === 'resume' ||
+			login.type === 'proxy' ||
+			login.type === 'cas' ||
+			(login.type === 'password' && login.methodName === 'resetPassword') ||
+			login.methodName === 'verifyEmail'
+		) {
 			return login;
 		}
 
 		const [loginArgs] = login.methodArguments;
 		const { totp } = loginArgs;
 
-		checkCodeForUser({
+		await checkCodeForUser({
 			user: login.user,
 			code: totp?.code,
 			options: { disablePasswordFallback: true },

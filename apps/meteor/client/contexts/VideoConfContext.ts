@@ -1,8 +1,9 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
-import { Subscription, useSubscription } from 'use-subscription';
+import type { Subscription } from 'use-subscription';
+import { useSubscription } from 'use-subscription';
 
-import { DirectCallParams, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
+import type { DirectCallData, ProviderCapabilities, CallPreferences, VideoConfManager } from '../lib/VideoConfManager';
 
 export type VideoConfPopupPayload = {
 	id: string;
@@ -10,13 +11,8 @@ export type VideoConfPopupPayload = {
 	isReceiving?: boolean;
 };
 
-export type VideoConfIncomingCall = {
-	callId: string;
-	uid: string;
-	rid: string;
-};
-
 type VideoConfContextValue = {
+	manager: typeof VideoConfManager;
 	dispatchOutgoing: (options: Omit<VideoConfPopupPayload, 'id'>) => void;
 	dismissOutgoing: () => void;
 	startCall: (rid: IRoom['_id'], title?: string) => void;
@@ -26,7 +22,7 @@ type VideoConfContextValue = {
 	rejectIncomingCall: (callId: string) => void;
 	abortCall: () => void;
 	setPreferences: (prefs: { mic?: boolean; cam?: boolean }) => void;
-	queryIncomingCalls: Subscription<DirectCallParams[]>;
+	queryIncomingCalls: Subscription<DirectCallData[]>;
 	queryRinging: Subscription<boolean>;
 	queryCalling: Subscription<boolean>;
 	queryCapabilities: Subscription<ProviderCapabilities>;
@@ -51,7 +47,7 @@ export const useVideoConfJoinCall = (): VideoConfContextValue['joinCall'] => use
 export const useVideoConfDismissCall = (): VideoConfContextValue['dismissCall'] => useVideoConfContext().dismissCall;
 export const useVideoConfAbortCall = (): VideoConfContextValue['abortCall'] => useVideoConfContext().abortCall;
 export const useVideoConfRejectIncomingCall = (): VideoConfContextValue['rejectIncomingCall'] => useVideoConfContext().rejectIncomingCall;
-export const useVideoConfIncomingCalls = (): DirectCallParams[] => {
+export const useVideoConfIncomingCalls = (): DirectCallData[] => {
 	const { queryIncomingCalls } = useVideoConfContext();
 	return useSubscription(queryIncomingCalls);
 };
@@ -72,3 +68,5 @@ export const useVideoConfPreferences = (): CallPreferences => {
 	const { queryPreferences } = useVideoConfContext();
 	return useSubscription(queryPreferences);
 };
+
+export const useVideoConfManager = (): typeof VideoConfManager | undefined => useContext(VideoConfContext)?.manager;

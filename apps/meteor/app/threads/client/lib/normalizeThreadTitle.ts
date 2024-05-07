@@ -1,12 +1,12 @@
-import { Meteor } from 'meteor/meteor';
-import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { escapeHTML } from '@rocket.chat/string-helpers';
+import { Meteor } from 'meteor/meteor';
 
+import { emojiParser } from '../../../emoji/client/emojiParser.js';
 import { filterMarkdown } from '../../../markdown/lib/markdown';
+import { MentionsParser } from '../../../mentions/lib/MentionsParser';
 import { Users } from '../../../models/client';
 import { settings } from '../../../settings/client';
-import { MentionsParser } from '../../../mentions/lib/MentionsParser';
-import { emojiParser } from '../../../emoji/client/emojiParser.js';
 
 export function normalizeThreadTitle({ ...message }: Readonly<IMessage>) {
 	if (message.msg) {
@@ -15,7 +15,7 @@ export function normalizeThreadTitle({ ...message }: Readonly<IMessage>) {
 			return filteredMessage;
 		}
 		const uid = Meteor.userId();
-		const me = uid && Users.findOne(uid, { fields: { username: 1 } })?.username;
+		const me = (uid && Users.findOne(uid, { fields: { username: 1 } })?.username) || '';
 		const pattern = settings.get('UTF8_User_Names_Validation');
 		const useRealName = settings.get('UI_Use_Real_Name');
 

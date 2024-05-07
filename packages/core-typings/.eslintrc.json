@@ -8,5 +8,8 @@
 			}
 		}
 	],
-	"ignorePatterns": ["**/dist"]
+	"ignorePatterns": ["**/dist"],
+	"rules": {
+		"@typescript-eslint/no-empty-interface": "off"
+	}
 }

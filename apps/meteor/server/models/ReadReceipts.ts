@@ -1,6 +1,5 @@
 import { registerModel } from '@rocket.chat/models';
 
-import { db } from '../database/utils';
-import { ReadReceiptsRaw } from './raw/ReadReceipts';
+import { ReadReceiptsDummy } from './dummy/ReadReceipts';
 
-registerModel('IReadReceiptsModel', new ReadReceiptsRaw(db));
+registerModel('IReadReceiptsModel', new ReadReceiptsDummy(), false);

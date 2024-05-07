@@ -1,12 +1,15 @@
 import { expect } from 'chai';
+import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { updatePermission } from '../../data/permissions.helper.js';
+import { updatePermission } from '../../data/permissions.helper';
 
 describe('[Statistics]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
+
+	after(() => updatePermission('view-statistics', ['admin']));
 
 	describe('[/statistics]', () => {
 		let lastUptime;

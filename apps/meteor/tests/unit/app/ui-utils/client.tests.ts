@@ -2,7 +2,7 @@
 import { expect } from 'chai';
 import { JSDOM } from 'jsdom';
 
-import { waitUntilWrapperExists } from '../../../../app/ui-utils/client/lib/waitUntilWrapperExists';
+import { waitForElement } from '../../../../client/lib/utils/waitForElement';
 
 describe('waitUntilWrapperExists', () => {
 	const globalDocument = global.document;
@@ -27,7 +27,7 @@ describe('waitUntilWrapperExists', () => {
 	});
 
 	it('should return the element when it is already in the dom', async () => {
-		expect(await waitUntilWrapperExists('.ready')).to.be.equal(document.querySelector('.ready'));
+		expect(await waitForElement('.ready')).to.be.equal(document.querySelector('.ready'));
 	});
 
 	it('should await until the element be in the dom and return it', async () => {
@@ -36,6 +36,6 @@ describe('waitUntilWrapperExists', () => {
 			element.setAttribute('class', 'not-ready');
 			document.body.appendChild(element);
 		}, 5);
-		expect(await waitUntilWrapperExists('.not-ready')).to.be.equal(document.querySelector('.not-ready'));
+		expect(await waitForElement('.not-ready')).to.be.equal(document.querySelector('.not-ready'));
 	});
 });

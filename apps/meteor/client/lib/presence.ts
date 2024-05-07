@@ -1,11 +1,10 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import { Emitter, EventHandlerOf } from '@rocket.chat/emitter';
+import type { EventHandlerOf } from '@rocket.chat/emitter';
+import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 
-import { APIClient } from '../../app/utils/client';
-
-export const STATUS_MAP = [UserStatus.OFFLINE, UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY];
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 
 type InternalEvents = {
 	remove: IUser['_id'];
@@ -34,7 +33,7 @@ const uids = new Set<UserPresence['_id']>();
 
 const update: EventHandlerOf<ExternalEvents, string> = (update) => {
 	if (update?._id) {
-		store.set(update._id, { ...store.get(update._id), ...update });
+		store.set(update._id, { ...store.get(update._id), ...update, ...(status === 'disabled' && { status: UserStatus.DISABLED }) });
 		uids.delete(update._id);
 	}
 };
@@ -76,7 +75,7 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 					ids: [...currentUids],
 				};
 
-				const { users } = await APIClient.get('/v1/users.presence', params);
+				const { users } = await sdk.rest.get('/v1/users.presence', params);
 
 				users.forEach((user) => {
 					if (!store.has(user._id)) {
@@ -145,8 +144,8 @@ const listen = (uid: UserPresence['_id'], handler: EventHandlerOf<ExternalEvents
 };
 
 const stop = (uid: UserPresence['_id'], handler: EventHandlerOf<ExternalEvents, UserPresence['_id']> | (() => void)): void => {
+	emitter.off(uid, handler);
 	setTimeout(() => {
-		emitter.off(uid, handler);
 		emitter.emit('remove', uid);
 	}, 5000);
 };
@@ -174,7 +173,16 @@ const get = async (uid: UserPresence['_id']): Promise<UserPresence | undefined> 
 		listen(uid, callback);
 	});
 
+let status = 'enabled';
+
+const setStatus = (newStatus: 'enabled' | 'disabled'): void => {
+	status = newStatus;
+	reset();
+};
+
 export const Presence = {
+	setStatus,
+	status,
 	listen,
 	stop,
 	reset,

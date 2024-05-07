@@ -1,5 +1,6 @@
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
-import React, { ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React from 'react';
 
 import Line from './Line';
 import Wrapper from './Wrapper';

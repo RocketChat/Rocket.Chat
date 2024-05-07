@@ -1,4 +1,5 @@
-import { RefObject, useEffect } from 'react';
+import type { RefObject } from 'react';
+import { useEffect } from 'react';
 import tinykeys from 'tinykeys';
 
 // used to open the menu option by keyboard

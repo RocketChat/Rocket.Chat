@@ -1,8 +1,8 @@
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch, useMethod, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
-import { Action } from '../../../hooks/useActionSpread';
+import type { Action } from '../../../hooks/useActionSpread';
 
 export const useChangeAdminStatusAction = (userId: IUser['_id'], isAdmin: boolean, onChange: () => void): Action | undefined => {
 	const t = useTranslation();

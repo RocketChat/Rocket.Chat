@@ -1,6 +1,7 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { lazy, ReactElement } from 'react';
 
+import CodeElement from '../code/CodeElement';
 import ColorElement from '../colors/ColorElement';
 import EmojiElement from '../emoji/EmojiElement';
 import KatexErrorBoundary from '../katex/KatexErrorBoundary';
@@ -12,12 +13,12 @@ import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
 import PlainSpan from './PlainSpan';
 import StrikeSpan from './StrikeSpan';
+import Timestamp from './Timestamp';
 
-const CodeElement = lazy(() => import('../code/CodeElement'));
 const KatexElement = lazy(() => import('../katex/KatexElement'));
 
 type InlineElementsProps = {
-	children: MessageParser.Inlines[];
+	children: (MessageParser.Inlines | { fallback: MessageParser.Plain; type: undefined })[];
 };
 
 const InlineElements = ({ children }: InlineElementsProps): ReactElement => (
@@ -34,7 +35,13 @@ const InlineElements = ({ children }: InlineElementsProps): ReactElement => (
 					return <ItalicSpan key={index} children={child.value} />;
 
 				case 'LINK':
-					return <LinkSpan key={index} href={child.value.src.value} label={child.value.label} />;
+					return (
+						<LinkSpan
+							key={index}
+							href={child.value.src.value}
+							label={Array.isArray(child.value.label) ? child.value.label : [child.value.label]}
+						/>
+					);
 
 				case 'PLAIN_TEXT':
 					return <PlainSpan key={index} text={child.value} />;
@@ -64,8 +71,16 @@ const InlineElements = ({ children }: InlineElementsProps): ReactElement => (
 						</KatexErrorBoundary>
 					);
 
-				default:
+				case 'TIMESTAMP': {
+					return <Timestamp key={index} children={child} />;
+				}
+
+				default: {
+					if ('fallback' in child) {
+						return <InlineElements key={index} children={[child.fallback]} />;
+					}
 					return null;
+				}
 			}
 		})}
 	</>

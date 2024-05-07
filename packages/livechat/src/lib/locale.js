@@ -102,5 +102,5 @@ export const getDateFnsLocale = () => {
 	const [languageCode] = fullLanguage.split ? fullLanguage.split(/[-_]/) : [];
 	const locale = [fullLanguage, languageCode, 'en-US'].find((lng) => supportedLocales.indexOf(lng) > -1);
 	// eslint-disable-next-line import/no-dynamic-require
-	return require(`date-fns/locale/${locale}/index.js`);
+	return import(`date-fns/locale/${locale}/index.js`);
 };

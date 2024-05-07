@@ -1,7 +1,7 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import VerticalBar from '../../../../components/VerticalBar';
+import { Contextualbar } from '../../../../components/Contextualbar';
 import KeyboardShortcutsWithData from './KeyboardShortcutsWithData';
 
 export default {
@@ -10,8 +10,8 @@ export default {
 	parameters: {
 		layout: 'fullscreen',
 	},
-	decorators: [(fn) => <VerticalBar height='100vh'>{fn()}</VerticalBar>],
+	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
 } as ComponentMeta<typeof KeyboardShortcutsWithData>;
 
-export const Default: ComponentStory<typeof KeyboardShortcutsWithData> = (args) => <KeyboardShortcutsWithData {...args} />;
+export const Default: ComponentStory<typeof KeyboardShortcutsWithData> = () => <KeyboardShortcutsWithData />;
 Default.storyName = 'KeyboardShortcuts';

@@ -1,7 +1,6 @@
+import type { IPushService } from '@rocket.chat/core-services';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
 import { PushToken } from '@rocket.chat/models';
-
-import type { IPushService } from '../../sdk/types/IPushService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 
 export class PushService extends ServiceClassInternal implements IPushService {
 	protected name = 'push';
@@ -9,18 +8,19 @@ export class PushService extends ServiceClassInternal implements IPushService {
 	constructor() {
 		super();
 
-		this.onEvent('watch.users', async ({ id, diff }) => {
-			if (!diff || !('services.resume.loginTokens' in diff)) {
+		this.onEvent('watch.users', async (data) => {
+			// for some reason data.diff can be set to undefined
+			if (!('diff' in data) || !data.diff || !('services.resume.loginTokens' in data.diff)) {
 				return;
 			}
-			if (diff['services.resume.loginTokens'] === undefined) {
-				await PushToken.removeAllByUserId(id);
+			if (data.diff['services.resume.loginTokens'] === undefined) {
+				await PushToken.removeAllByUserId(data.id);
 				return;
 			}
-			const loginTokens = Array.isArray(diff['services.resume.loginTokens']) ? diff['services.resume.loginTokens'] : [];
+			const loginTokens = Array.isArray(data.diff['services.resume.loginTokens']) ? data.diff['services.resume.loginTokens'] : [];
 			const tokens = loginTokens.map(({ hashedToken }: { hashedToken: string }) => hashedToken);
 			if (tokens.length > 0) {
-				await PushToken.removeByUserIdExceptTokens(id, tokens);
+				await PushToken.removeByUserIdExceptTokens(data.id, tokens);
 			}
 		});
 	}

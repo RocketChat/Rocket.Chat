@@ -1,9 +1,9 @@
-import { Random } from 'meteor/random';
 import { Settings } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 
-import { getRedirectUri } from './getRedirectUri';
 import { settings } from '../../../settings/server';
 import { userScopes } from '../oauthScopes';
+import { getRedirectUri } from './getRedirectUri';
 
 export async function getOAuthAuthorizationUrl() {
 	const state = Random.id();

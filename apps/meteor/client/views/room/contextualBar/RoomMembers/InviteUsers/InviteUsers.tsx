@@ -1,14 +1,21 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import VerticalBar from '../../../../../components/VerticalBar';
+import {
+	ContextualbarHeader,
+	ContextualbarTitle,
+	ContextualbarBack,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+} from '../../../../../components/Contextualbar';
 import EditInviteLink from './EditInviteLink';
 import InviteLink from './InviteLink';
 
 type InviteUsersProps = {
-	onClickBackMembers: () => void;
-	onClickBackLink: () => void;
+	onClickBackMembers?: () => void;
+	onClickBackLink?: () => void;
 	onClickNewLink: (daysAndMaxUses: { days: string; maxUses: string }) => void;
 	onClose: () => void;
 	isEditing: boolean;
@@ -35,16 +42,16 @@ const InviteUsers = ({
 
 	return (
 		<>
-			<VerticalBar.Header>
-				{(onClickBackMembers || onClickBackLink) && <VerticalBar.Back onClick={isEditing ? onClickBackLink : onClickBackMembers} />}
-				<VerticalBar.Text>{t('Invite_Users')}</VerticalBar.Text>
-				{onClose && <VerticalBar.Close onClick={onClose} />}
-			</VerticalBar.Header>
-			<VerticalBar.ScrollableContent>
+			<ContextualbarHeader>
+				{(onClickBackMembers || onClickBackLink) && <ContextualbarBack onClick={isEditing ? onClickBackLink : onClickBackMembers} />}
+				<ContextualbarTitle>{t('Invite_Users')}</ContextualbarTitle>
+				{onClose && <ContextualbarClose onClick={onClose} />}
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent>
 				{error && <Callout type='danger'>{error.toString()}</Callout>}
 				{isEditing && !error && <EditInviteLink onClickNewLink={onClickNewLink} daysAndMaxUses={daysAndMaxUses} />}
 				{!isEditing && !error && <InviteLink captionText={captionText} onClickEdit={onClickEdit} linkText={linkText} />}
-			</VerticalBar.ScrollableContent>
+			</ContextualbarScrollableContent>
 		</>
 	);
 };

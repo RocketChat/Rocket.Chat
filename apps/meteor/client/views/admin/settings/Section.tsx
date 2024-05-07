@@ -1,8 +1,10 @@
-import { isSettingColor } from '@rocket.chat/core-typings';
+import { isSetting, isSettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ReactNode, useMemo } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ReactNode } from 'react';
+import React, { useMemo } from 'react';
 
 import { useEditableSettings, useEditableSettingsDispatch } from '../EditableSettingsContext';
 import SectionSkeleton from './SectionSkeleton';
@@ -82,9 +84,9 @@ function Section({ groupId, hasReset = true, sectionName, tabName = '', solo, he
 			)}
 
 			<FieldGroup>
-				{editableSettings.map((setting) => (
-					<Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />
-				))}
+				{editableSettings.map(
+					(setting) => isSetting(setting) && <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />,
+				)}
 
 				{children}
 			</FieldGroup>
@@ -93,7 +95,7 @@ function Section({ groupId, hasReset = true, sectionName, tabName = '', solo, he
 					children={t('Reset_section_settings')}
 					secondary
 					danger
-					marginBlockStart={'x16'}
+					marginBlockStart={16}
 					data-section={sectionName}
 					onClick={handleResetSectionClick}
 				/>

@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { RocketChatFile } from '../../../file/server';
 import { settings } from '../../../settings/server';
-import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export let RocketChatFileCustomSoundsInstance;
 
-Meteor.startup(function () {
+Meteor.startup(() => {
 	let storeType = 'GridFS';
 
 	if (settings.get('CustomSounds_Storage_Type')) {
@@ -34,51 +34,51 @@ Meteor.startup(function () {
 		absolutePath: path,
 	});
 
-	return WebApp.connectHandlers.use(
-		'/custom-sounds/',
-		Meteor.bindEnvironment(function (req, res /* , next*/) {
-			const fileId = decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''));
+	return WebApp.connectHandlers.use('/custom-sounds/', async (req, res /* , next*/) => {
+		const fileId = decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''));
 
-			if (!fileId) {
-				res.writeHead(403);
-				res.write('Forbidden');
+		if (!fileId) {
+			res.writeHead(403);
+			res.write('Forbidden');
+			res.end();
+			return;
+		}
+
+		const file = await RocketChatFileCustomSoundsInstance.getFileWithReadStream(fileId);
+		if (!file) {
+			res.writeHead(404);
+			res.write('Not found');
+			res.end();
+			return;
+		}
+
+		res.setHeader('Content-Disposition', 'inline');
+
+		let fileUploadDate = undefined;
+		if (file.uploadDate != null) {
+			fileUploadDate = file.uploadDate.toUTCString();
+		}
+
+		const reqModifiedHeader = req.headers['if-modified-since'];
+		if (reqModifiedHeader != null) {
+			if (reqModifiedHeader === fileUploadDate) {
+				res.setHeader('Last-Modified', reqModifiedHeader);
+				res.writeHead(304);
 				res.end();
 				return;
 			}
+		}
 
-			const file = RocketChatFileCustomSoundsInstance.getFileWithReadStream(fileId);
-			if (!file) {
-				return;
-			}
+		res.setHeader('Cache-Control', 'public, max-age=0');
+		res.setHeader('Expires', '-1');
+		if (fileUploadDate != null) {
+			res.setHeader('Last-Modified', fileUploadDate);
+		} else {
+			res.setHeader('Last-Modified', new Date().toUTCString());
+		}
+		res.setHeader('Content-Type', file.contentType);
+		res.setHeader('Content-Length', file.length);
 
-			res.setHeader('Content-Disposition', 'inline');
-
-			let fileUploadDate = undefined;
-			if (file.uploadDate != null) {
-				fileUploadDate = file.uploadDate.toUTCString();
-			}
-
-			const reqModifiedHeader = req.headers['if-modified-since'];
-			if (reqModifiedHeader != null) {
-				if (reqModifiedHeader === fileUploadDate) {
-					res.setHeader('Last-Modified', reqModifiedHeader);
-					res.writeHead(304);
-					res.end();
-					return;
-				}
-			}
-
-			res.setHeader('Cache-Control', 'public, max-age=0');
-			res.setHeader('Expires', '-1');
-			if (fileUploadDate != null) {
-				res.setHeader('Last-Modified', fileUploadDate);
-			} else {
-				res.setHeader('Last-Modified', new Date().toUTCString());
-			}
-			res.setHeader('Content-Type', file.contentType);
-			res.setHeader('Content-Length', file.length);
-
-			file.readStream.pipe(res);
-		}),
-	);
+		file.readStream.pipe(res);
+	});
 });

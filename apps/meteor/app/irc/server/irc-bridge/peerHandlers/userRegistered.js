@@ -1,10 +1,8 @@
-import { Meteor } from 'meteor/meteor';
-
-import { Users } from '../../../../models/server';
+import { Users } from '@rocket.chat/models';
 
 export default async function handleUserRegistered(args) {
 	// Check if there is an user with the given username
-	let user = Users.findOne({
+	let user = await Users.findOne({
 		'profile.irc.username': args.username,
 	});
 
@@ -29,12 +27,12 @@ export default async function handleUserRegistered(args) {
 			},
 		};
 
-		user = Users.create(userToInsert);
+		user = await Users.create(userToInsert);
 	} else {
 		// ...otherwise, log the user in and update the information
 		this.log(`Logging in ${args.username} with nick: ${args.nick}`);
 
-		Meteor.users.update(
+		await Users.updateOne(
 			{ _id: user._id },
 			{
 				$set: {

@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { HomeContent, HomeSidenav, HomeFlextab } from './fragments';
+import { HomeContent, HomeFlextab, HomeSidenav } from './fragments';
 
 export class HomeTeam {
 	private readonly page: Page;
@@ -19,15 +19,23 @@ export class HomeTeam {
 	}
 
 	get inputTeamName(): Locator {
-		return this.page.locator('.rcx-field-group__item:nth-child(1) input');
+		return this.page.locator('role=textbox[name="Name"]');
 	}
 
 	async addMember(memberName: string): Promise<void> {
-		await this.page.locator('.rcx-field-group__item:nth-child(7) input').type(memberName, { delay: 100 });
+		await this.page.locator('role=textbox[name="Members"]').type(memberName, { delay: 100 });
 		await this.page.locator(`.rcx-option__content:has-text("${memberName}")`).click();
 	}
 
 	get btnTeamCreate(): Locator {
-		return this.page.locator('#modal-root button:has-text("Create")');
+		return this.page.locator('role=dialog >> role=group >> role=button[name=Create]');
+	}
+
+	get textPrivate(): Locator {
+		return this.page.locator('label', {has: this.page.getByRole('checkbox', {name: 'Private'})});
+	}
+
+	get textReadOnly(): Locator {
+		return this.page.locator('label', {has: this.page.getByRole('checkbox', {name: 'Read-only'})});
 	}
 }

@@ -1,4 +1,3 @@
-import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, IndexDescription, Collection, Db, FindOptions } from 'mongodb';
 import type {
 	VideoConference,
 	IGroupVideoConference,
@@ -7,8 +6,9 @@ import type {
 	IRoom,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
-import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import type { FindPaginated, InsertionModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
+import type { FindCursor, UpdateOptions, UpdateFilter, UpdateResult, IndexDescription, Collection, Db, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -183,13 +183,16 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 				  }
 				: {
 						$unset: {
-							providerData: 1,
+							providerData: 1 as const,
 						},
 				  }),
 		});
 	}
 
-	public async addUserById(callId: string, user: Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'> & { ts?: Date }): Promise<void> {
+	public async addUserById(
+		callId: string,
+		user: Required<Pick<IUser, '_id' | 'name' | 'username' | 'avatarETag'>> & { ts?: Date },
+	): Promise<void> {
 		await this.updateOneById(callId, {
 			$addToSet: {
 				users: {
@@ -208,7 +211,8 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			$set: {
 				[`messages.${messageType}`]: messageId,
 			},
-		});
+		} as UpdateFilter<VideoConference>); // TODO: Remove this cast when TypeScript is updated
+		// TypeScript is not smart enough to infer that `messages.${'start' | 'end'}` matches two keys of `VideoConference`
 	}
 
 	public async updateUserReferences(userId: IUser['_id'], username: IUser['username'], name: IUser['name']): Promise<void> {

@@ -1,1 +1,1 @@
-export { default } from './AddUsersWithData';
+export { default } from './AddUsers';

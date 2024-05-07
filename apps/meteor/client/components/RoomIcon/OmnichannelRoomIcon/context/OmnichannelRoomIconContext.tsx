@@ -1,7 +1,7 @@
 import { createContext, useMemo, useContext } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { AsyncState } from '../../../../lib/asyncState/AsyncState';
+import type { AsyncState } from '../../../../lib/asyncState/AsyncState';
 import { AsyncStatePhase } from '../../../../lib/asyncState/AsyncStatePhase';
 
 type IOmnichannelRoomIconContext = {

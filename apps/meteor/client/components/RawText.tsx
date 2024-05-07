@@ -1,6 +1,7 @@
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-// @deprecated
+/** @deprecated */
 const RawText = ({ children }: { children: string }): ReactElement => <span dangerouslySetInnerHTML={{ __html: children }} />;
 
 export default RawText;

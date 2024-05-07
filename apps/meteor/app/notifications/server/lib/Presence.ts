@@ -1,15 +1,16 @@
-import { Emitter } from '@rocket.chat/emitter';
-import type { IPublication, IStreamerConstructor, Connection, IStreamer } from 'meteor/rocketchat:streamer';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
+import type { StreamerEvents } from '@rocket.chat/ui-contexts';
+import type { IPublication, IStreamerConstructor, Connection, IStreamer } from 'meteor/rocketchat:streamer';
 
-export type UserPresenceStreamProps = {
+type UserPresenceStreamProps = {
 	added: IUser['_id'][];
 	removed: IUser['_id'][];
 };
 
-export type UserPresenceStreamArgs = {
+type UserPresenceStreamArgs = {
 	uid: string;
-	args: unknown;
+	args: StreamerEvents['user-presence'][number]['args'];
 };
 
 const e = new Emitter<{
@@ -18,14 +19,14 @@ const e = new Emitter<{
 
 const clients = new WeakMap<Connection, UserPresence>();
 
-export class UserPresence {
-	private readonly streamer: IStreamer;
+class UserPresence {
+	private readonly streamer: IStreamer<'user-presence'>;
 
 	private readonly publication: IPublication;
 
 	private readonly listeners: Set<string>;
 
-	constructor(publication: IPublication, streamer: IStreamer) {
+	constructor(publication: IPublication, streamer: IStreamer<'user-presence'>) {
 		this.listeners = new Set();
 		this.publication = publication;
 		this.streamer = streamer;
@@ -54,7 +55,7 @@ export class UserPresence {
 		clients.delete(this.publication.connection);
 	}
 
-	static getClient(publication: IPublication, streamer: IStreamer): [UserPresence, boolean] {
+	static getClient(publication: IPublication, streamer: IStreamer<'user-presence'>): [UserPresence, boolean] {
 		const { connection } = publication;
 		const stored = clients.get(connection);
 
@@ -70,8 +71,8 @@ export class UserPresence {
 
 export class StreamPresence {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	static getInstance(Streamer: IStreamerConstructor, name = 'user-presence'): IStreamer {
-		return new (class StreamPresence extends Streamer {
+	static getInstance(Streamer: IStreamerConstructor, name = 'user-presence'): IStreamer<'user-presence'> {
+		return new (class StreamPresence extends Streamer<'user-presence'> {
 			async _publish(
 				publication: IPublication,
 				_eventName: string,
@@ -96,6 +97,7 @@ export class StreamPresence {
 		} as any)(name);
 	}
 }
-export const emit = (uid: string, args: UserPresenceStreamArgs): void => {
+
+export const emit = (uid: string, args: UserPresenceStreamArgs['args']): void => {
 	e.emit(uid, { uid, args });
 };

@@ -1,6 +1,7 @@
 import { Sidebar } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useVoipOutboundStates } from '../../../contexts/CallContext';
 import { useDialModal } from '../../../hooks/useDialModal';
@@ -18,7 +19,7 @@ export const OmniChannelCallDialPad = ({ ...props }): ReactElement => {
 			onClick={(): void => openDialModal()}
 			disabled={!outBoundCallsEnabledForUser}
 			aria-label={t('Open_Dialpad')}
-			data-tooltip={outBoundCallsAllowed ? t('New_Call') : t('New_Call_Enterprise_Edition_Only')}
+			data-tooltip={outBoundCallsAllowed ? t('New_Call') : t('New_Call_Premium_Only')}
 			{...props}
 		/>
 	);

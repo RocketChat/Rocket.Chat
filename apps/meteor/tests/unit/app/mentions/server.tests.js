@@ -1,14 +1,14 @@
 import { expect } from 'chai';
 
-import MentionsServer from '../../../../app/mentions/server/Mentions';
+import { MentionsServer } from '../../../../app/mentions/server/Mentions';
 
 let mention;
 
-beforeEach(function () {
+beforeEach(() => {
 	mention = new MentionsServer({
-		pattern: '[0-9a-zA-Z-_.]+',
+		pattern: () => '[0-9a-zA-Z-_.]+',
 		messageMaxAll: () => 4, // || RocketChat.settings.get('Message_MaxAll')
-		getUsers: (usernames) =>
+		getUsers: async (usernames) =>
 			[
 				{
 					_id: 1,
@@ -39,12 +39,12 @@ describe('Mention Server', () => {
 			beforeEach(() => {
 				mention.getTotalChannelMembers = () => 5;
 			});
-			it('should return nothing', () => {
+			it('should return nothing', async () => {
 				const message = {
 					msg: '@all',
 				};
 				const expected = [];
-				const result = mention.getUsersByMentions(message);
+				const result = await mention.getUsersByMentions(message);
 				expect(expected).to.be.deep.equal(result);
 			});
 		});
@@ -64,7 +64,7 @@ describe('Mention Server', () => {
 				});
 				// Meteor.users.find({ username: {$in: _.unique(usernames)}}, { fields: {_id: true, username: true }}).fetch();
 			});
-			it('should return "all"', () => {
+			it('should return "all"', async () => {
 				const message = {
 					msg: '@all',
 				};
@@ -74,10 +74,10 @@ describe('Mention Server', () => {
 						username: 'all',
 					},
 				];
-				const result = mention.getUsersByMentions(message);
+				const result = await mention.getUsersByMentions(message);
 				expect(expected).to.be.deep.equal(result);
 			});
-			it('should return "here"', () => {
+			it('should return "here"', async () => {
 				const message = {
 					msg: '@here',
 				};
@@ -87,10 +87,10 @@ describe('Mention Server', () => {
 						username: 'here',
 					},
 				];
-				const result = mention.getUsersByMentions(message);
+				const result = await mention.getUsersByMentions(message);
 				expect(expected).to.be.deep.equal(result);
 			});
-			it('should return "rocket.cat"', () => {
+			it('should return "rocket.cat"', async () => {
 				const message = {
 					msg: '@rocket.cat',
 				};
@@ -100,12 +100,12 @@ describe('Mention Server', () => {
 						username: 'rocket.cat',
 					},
 				];
-				const result = mention.getUsersByMentions(message);
+				const result = await mention.getUsersByMentions(message);
 				expect(expected).to.be.deep.equal(result);
 			});
 		});
 		describe('for two user', () => {
-			it('should return "all and here"', () => {
+			it('should return "all and here"', async () => {
 				const message = {
 					msg: '@all @here',
 				};
@@ -119,10 +119,10 @@ describe('Mention Server', () => {
 						username: 'here',
 					},
 				];
-				const result = mention.getUsersByMentions(message);
+				const result = await mention.getUsersByMentions(message);
 				expect(expected).to.be.deep.equal(result);
 			});
-			it('should return "here and rocket.cat"', () => {
+			it('should return "here and rocket.cat"', async () => {
 				const message = {
 					msg: '@here @rocket.cat',
 				};
@@ -136,11 +136,11 @@ describe('Mention Server', () => {
 						username: 'rocket.cat',
 					},
 				];
-				const result = mention.getUsersByMentions(message);
+				const result = await mention.getUsersByMentions(message);
 				expect(expected).to.be.deep.equal(result);
 			});
 
-			it('should return "here, rocket.cat, jon"', () => {
+			it('should return "here, rocket.cat, jon"', async () => {
 				const message = {
 					msg: '@here @rocket.cat @jon',
 				};
@@ -158,24 +158,24 @@ describe('Mention Server', () => {
 						username: 'jon',
 					},
 				];
-				const result = mention.getUsersByMentions(message);
+				const result = await mention.getUsersByMentions(message);
 				expect(expected).to.be.deep.equal(result);
 			});
 		});
 
 		describe('for an unknow user', () => {
-			it('should return "nothing"', () => {
+			it('should return "nothing"', async () => {
 				const message = {
 					msg: '@unknow',
 				};
 				const expected = [];
-				const result = mention.getUsersByMentions(message);
+				const result = await mention.getUsersByMentions(message);
 				expect(expected).to.be.deep.equal(result);
 			});
 		});
 	});
 	describe('getChannelbyMentions', () => {
-		it('should return the channel "general"', () => {
+		it('should return the channel "general"', async () => {
 			const message = {
 				msg: '#general',
 			};
@@ -185,20 +185,20 @@ describe('Mention Server', () => {
 					name: 'general',
 				},
 			];
-			const result = mention.getChannelbyMentions(message);
+			const result = await mention.getChannelbyMentions(message);
 			expect(result).to.be.deep.equal(expected);
 		});
-		it('should return nothing"', () => {
+		it('should return nothing"', async () => {
 			const message = {
 				msg: '#unknow',
 			};
 			const expected = [];
-			const result = mention.getChannelbyMentions(message);
+			const result = await mention.getChannelbyMentions(message);
 			expect(result).to.be.deep.equal(expected);
 		});
 	});
 	describe('execute', () => {
-		it('should return the channel "general"', () => {
+		it('should return the channel "general"', async () => {
 			const message = {
 				msg: '#general',
 			};
@@ -208,10 +208,10 @@ describe('Mention Server', () => {
 					name: 'general',
 				},
 			];
-			const result = mention.getChannelbyMentions(message);
+			const result = await mention.getChannelbyMentions(message);
 			expect(result).to.be.deep.equal(expected);
 		});
-		it('should return nothing"', () => {
+		it('should return nothing"', async () => {
 			const message = {
 				msg: '#unknow',
 			};
@@ -220,71 +220,8 @@ describe('Mention Server', () => {
 				mentions: [],
 				channels: [],
 			};
-			const result = mention.execute(message);
+			const result = await mention.execute(message);
 			expect(result).to.be.deep.equal(expected);
-		});
-	});
-
-	describe('getters and setters', () => {
-		describe('messageMaxAll', () => {
-			const mention = new MentionsServer({});
-			describe('constant', () => {
-				it('should return the informed value', () => {
-					mention.messageMaxAll = 4;
-					expect(mention.messageMaxAll).to.be.deep.equal(4);
-				});
-			});
-			describe('function', () => {
-				it('should return the informed value', () => {
-					mention.messageMaxAll = () => 4;
-					expect(mention.messageMaxAll).to.be.deep.equal(4);
-				});
-			});
-		});
-		describe('getUsers', () => {
-			const mention = new MentionsServer({});
-			describe('constant', () => {
-				it('should return the informed value', () => {
-					mention.getUsers = 4;
-					expect(mention.getUsers()).to.be.deep.equal(4);
-				});
-			});
-			describe('function', () => {
-				it('should return the informed value', () => {
-					mention.getUsers = () => 4;
-					expect(mention.getUsers()).to.be.deep.equal(4);
-				});
-			});
-		});
-		describe('getChannels', () => {
-			const mention = new MentionsServer({});
-			describe('constant', () => {
-				it('should return the informed value', () => {
-					mention.getChannels = 4;
-					expect(mention.getChannels()).to.be.deep.equal(4);
-				});
-			});
-			describe('function', () => {
-				it('should return the informed value', () => {
-					mention.getChannels = () => 4;
-					expect(mention.getChannels()).to.be.deep.equal(4);
-				});
-			});
-		});
-		describe('getChannel', () => {
-			const mention = new MentionsServer({});
-			describe('constant', () => {
-				it('should return the informed value', () => {
-					mention.getChannel = true;
-					expect(mention.getChannel()).to.be.deep.equal(true);
-				});
-			});
-			describe('function', () => {
-				it('should return the informed value', () => {
-					mention.getChannel = () => true;
-					expect(mention.getChannel()).to.be.deep.equal(true);
-				});
-			});
 		});
 	});
 });

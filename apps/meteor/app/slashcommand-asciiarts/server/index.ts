@@ -1,5 +1,5 @@
-import '../lib/gimme';
-import '../lib/lenny';
-import '../lib/shrug';
-import '../lib/tableflip';
-import '../lib/unflip';
+import './gimme';
+import './lenny';
+import './shrug';
+import './tableflip';
+import './unflip';

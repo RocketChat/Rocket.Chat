@@ -1,6 +1,7 @@
 import { Box, Button, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
 import TextCopy from '../../../components/TextCopy';
 
@@ -22,11 +23,11 @@ const BackupCodesModal: FC<BackupCodesModalProps> = ({ codes, onClose, ...props 
 				<Modal.Close onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
-				<Box mb='x8' withRichContent>
+				<Box mb={8} withRichContent>
 					{t('Make_sure_you_have_a_copy_of_your_codes_1')}
 				</Box>
-				<TextCopy text={codesText} mb='x8' />
-				<Box mb='x8' withRichContent>
+				<TextCopy text={codesText} mb={8} />
+				<Box mb={8} withRichContent>
 					{t('Make_sure_you_have_a_copy_of_your_codes_2')}
 				</Box>
 			</Modal.Content>

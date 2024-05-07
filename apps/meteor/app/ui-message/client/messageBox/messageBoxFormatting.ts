@@ -1,64 +1,88 @@
-import { Markdown } from '../../../markdown/client';
-import { settings } from '../../../settings/client';
+import type { Keys as IconName } from '@rocket.chat/icons';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-type FormattingButton = {
-	label: string;
-	icon?: string;
-	pattern?: string;
-	text?: () => string | undefined;
-	link?: string;
+import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { imperativeModal } from '../../../../client/lib/imperativeModal';
+import { settings } from '../../../settings/client';
+import AddLinkComposerActionModal from './AddLinkComposerActionModal';
+
+type FormattingButtonDefault = { label: TranslationKey; condition?: () => boolean };
+
+type TextButton = {
+	text: () => string | undefined;
+	link: string;
+} & FormattingButtonDefault;
+
+type PatternButton = {
+	icon: IconName;
+	pattern: string;
+	// text?: () => string | undefined;
 	command?: string;
-	condition?: () => boolean;
-};
+	link?: string;
+} & FormattingButtonDefault;
+
+type PromptButton = {
+	prompt: (composer: ComposerAPI) => void;
+	icon: IconName;
+} & FormattingButtonDefault;
+
+export type FormattingButton = PatternButton | PromptButton | TextButton;
+
+export const isPromptButton = (button: FormattingButton): button is PromptButton => 'prompt' in button;
 
 export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	{
-		label: 'bold',
+		label: 'Bold',
 		icon: 'bold',
 		pattern: '*{{text}}*',
 		command: 'b',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'original',
 	},
 	{
-		label: 'bold',
-		icon: 'bold',
-		pattern: '**{{text}}**',
-		command: 'b',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'marked',
-	},
-	{
-		label: 'italic',
+		label: 'Italic',
 		icon: 'italic',
 		pattern: '_{{text}}_',
 		command: 'i',
-		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
-		label: 'strike',
+		label: 'Strike',
 		icon: 'strike',
 		pattern: '~{{text}}~',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'original',
 	},
 	{
-		label: 'strike',
-		icon: 'strike',
-		pattern: '~~{{text}}~~',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'marked',
-	},
-	{
-		label: 'inline_code',
+		label: 'Inline_code',
 		icon: 'code',
 		pattern: '`{{text}}`',
-		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
-		label: 'multi_line',
+		label: 'Multi_line',
 		icon: 'multiline',
 		pattern: '```\n{{text}}\n``` ',
-		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
-		label: 'KaTeX',
+		label: 'Link',
+		icon: 'link',
+		prompt: (composerApi: ComposerAPI) => {
+			const { selection } = composerApi;
+
+			const selectedText = composerApi.substring(selection.start, selection.end);
+
+			const onClose = () => {
+				imperativeModal.close();
+				composerApi.focus();
+			};
+
+			const onConfirm = (url: string, text: string) => {
+				onClose();
+				composerApi.replaceText(`[${text}](${url})`, selection);
+				composerApi.setCursorToEnd();
+			};
+
+			imperativeModal.open({ component: AddLinkComposerActionModal, props: { onConfirm, selectedText, onClose } });
+		},
+	},
+	{
+		label: 'KaTeX' as TranslationKey,
+		icon: 'katex',
 		text: () => {
 			if (!settings.get('Katex_Enabled')) {
 				return;
@@ -74,42 +98,3 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		condition: () => settings.get('Katex_Enabled'),
 	},
 ] as const;
-
-export function applyFormatting(pattern: string, input: HTMLTextAreaElement) {
-	const { selectionEnd = input.value.length, selectionStart = 0 } = input;
-	const initText = input.value.slice(0, selectionStart);
-	const selectedText = input.value.slice(selectionStart, selectionEnd);
-	const finalText = input.value.slice(selectionEnd, input.value.length);
-
-	input.focus();
-
-	const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
-	const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.slice(selectionStart - index - 1, 1) === char);
-
-	if (startPatternFound) {
-		const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
-		const endPatternFound = [...endPattern].every((char, index) => input.value.slice(selectionEnd + index, 1) === char);
-
-		if (endPatternFound) {
-			input.selectionStart = selectionStart - startPattern.length;
-			input.selectionEnd = selectionEnd + endPattern.length;
-
-			if (!document.execCommand || !document.execCommand('insertText', false, selectedText)) {
-				input.value = initText.slice(0, initText.length - startPattern.length) + selectedText + finalText.slice(endPattern.length);
-			}
-
-			input.selectionStart = selectionStart - startPattern.length;
-			input.selectionEnd = input.selectionStart + selectedText.length;
-			$(input).change();
-			return;
-		}
-	}
-
-	if (!document.execCommand || !document.execCommand('insertText', false, pattern.replace('{{text}}', selectedText))) {
-		input.value = initText + pattern.replace('{{text}}', selectedText) + finalText;
-	}
-
-	input.selectionStart = selectionStart + pattern.indexOf('{{text}}');
-	input.selectionEnd = input.selectionStart + selectedText.length;
-	$(input).change();
-}

@@ -1,20 +1,11 @@
-import { Box, Field, Flex, PasswordInput } from '@rocket.chat/fuselage';
-import React, { EventHandler, ReactElement, SyntheticEvent } from 'react';
+import { Field, FieldLabel, FieldRow, PasswordInput } from '@rocket.chat/fuselage';
+import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
+import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type PasswordSettingInputProps = {
-	_id: string;
-	label: string;
-	value?: string | number | readonly string[] | undefined;
-	placeholder?: string;
-	readonly?: boolean;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string) => void;
-	onResetButtonClick?: () => void;
-};
+type PasswordSettingInputProps = SettingInputProps<string | number | readonly string[] | undefined>;
 
 function PasswordSettingInput({
 	_id,
@@ -24,6 +15,7 @@ function PasswordSettingInput({
 	readonly,
 	autocomplete,
 	disabled,
+	required,
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
@@ -33,16 +25,14 @@ function PasswordSettingInput({
 	};
 
 	return (
-		<>
-			<Flex.Container>
-				<Box>
-					<Field.Label htmlFor={_id} title={_id}>
-						{label}
-					</Field.Label>
-					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-				</Box>
-			</Flex.Container>
-			<Field.Row>
+		<Field>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</FieldRow>
+			<FieldRow>
 				<PasswordInput
 					data-qa-setting-id={_id}
 					id={_id}
@@ -50,11 +40,11 @@ function PasswordSettingInput({
 					placeholder={placeholder}
 					disabled={disabled}
 					readOnly={readonly}
-					autoComplete={autocomplete === false ? 'off' : undefined}
+					autoComplete={autocomplete === false ? 'new-password' : undefined}
 					onChange={handleChange}
 				/>
-			</Field.Row>
-		</>
+			</FieldRow>
+		</Field>
 	);
 }
 

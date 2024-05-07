@@ -1,6 +1,5 @@
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-
 import { MessageTypes } from '../../../../app/ui-utils/client';
+import { t } from '../../../../app/utils/lib/i18n';
 
 MessageTypes.registerType({
 	id: 'livechat_transfer_history_fallback',
@@ -16,7 +15,7 @@ MessageTypes.registerType({
 		const to = message.transferData.department.name;
 
 		return {
-			fallback: TAPi18n.__('Livechat_transfer_failed_fallback', { from, to }),
+			fallback: t('Livechat_transfer_failed_fallback', { from, to }),
 		};
 	},
 });

@@ -21,7 +21,7 @@ const AutotranslateSaveSettingsParamsPostSchema = {
 			enum: ['autoTranslate', 'autoTranslateLanguage'],
 		},
 		value: {
-			type: ['boolean', 'string'],
+			anyOf: [{ type: 'boolean' }, { type: 'string' }],
 		},
 		defaultLanguage: {
 			type: 'string',

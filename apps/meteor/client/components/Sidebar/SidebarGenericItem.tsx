@@ -1,56 +1,34 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, SidebarItem } from '@rocket.chat/fuselage';
 import type colors from '@rocket.chat/fuselage-tokens/colors';
-import React, { memo, ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { memo } from 'react';
 
 type SidebarGenericItemProps = {
 	href?: string;
 	active?: boolean;
+	featured?: boolean;
 	children: ReactNode;
 	customColors?: {
-		default: typeof colors[string];
-		hover: typeof colors[string];
-		active: typeof colors[string];
+		default: (typeof colors)[string];
+		hover: (typeof colors)[string];
+		active: (typeof colors)[string];
 	};
-	textColor?: string;
+	externalUrl?: boolean;
 };
 
-const SidebarGenericItem = ({
-	href,
-	active,
-	children,
-	customColors,
-	textColor = 'default',
-	...props
-}: SidebarGenericItemProps): ReactElement => (
-	<Box
+const SidebarGenericItem = ({ href, active, externalUrl, children, ...props }: SidebarGenericItemProps): ReactElement => (
+	<SidebarItem
+		selected={active}
+		clickable
 		is='a'
-		color={textColor}
-		pb='x8'
-		pi='x24'
 		href={href}
-		className={[
-			active && 'active',
-			css`
-				${customColors ? `background-color: ${customColors.default} !important;` : ''}
-				&:hover,
-				&:focus,
-
-				&.active:hover {
-					background-color: ${customColors?.hover || 'var(--sidebar-background-light-hover)'} !important;
-				}
-
-				&.active {
-					background-color: ${customColors?.active || 'var(--sidebar-background-light-active)'} !important;
-				}
-			`,
-		].filter(Boolean)}
+		{...(externalUrl && { target: '_blank', rel: 'noopener noreferrer' })}
 		{...props}
 	>
-		<Box mi='neg-x4' display='flex' flexDirection='row' alignItems='center'>
+		<Box display='flex' flexDirection='row' alignItems='center' pb={8} width='100%'>
 			{children}
 		</Box>
-	</Box>
+	</SidebarItem>
 );
 
 export default memo(SidebarGenericItem);

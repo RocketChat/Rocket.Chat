@@ -1,0 +1,20 @@
+{
+	"extends": "../../../tsconfig.base.server.json",
+	"compilerOptions": {
+		"allowJs": true, // TODO remove asap
+		"incremental": true,
+
+		/* Strict Type-Checking Options */
+		"strictPropertyInitialization": false,
+		"strictFunctionTypes": false,
+
+		/* Additional Checks */
+		"noImplicitReturns": false,
+		"noFallthroughCasesInSwitch": false,
+
+		"outDir": "./dist"
+	},
+	"files": ["./src/service.ts"],
+	"include": ["../../../apps/meteor/definition/externals/meteor"],
+	"exclude": ["./dist"]
+}

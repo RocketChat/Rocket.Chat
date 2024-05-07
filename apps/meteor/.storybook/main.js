@@ -21,7 +21,24 @@ module.exports = {
 			},
 		},
 	],
+	typescript: {
+		reactDocgen: 'react-docgen-typescript-plugin',
+	},
 	webpackFinal: async (config) => {
+		// Those aliases are needed because dependencies in the monorepo use another
+		// dependencies that are not hoisted on this workspace
+		config.resolve.alias = {
+			'react$': require.resolve('../../../node_modules/react'),
+			// 'react/jsx-runtime': require.resolve('../../../node_modules/react/jsx-runtime'),
+			'@tanstack/react-query': require.resolve('../../../node_modules/@tanstack/react-query'),
+		};
+
+		config.module.rules.push({
+			test: /\.mjs$/,
+			include: /node_modules/,
+			type: 'javascript/auto',
+		});
+
 		const cssRule = config.module.rules.find(({ test }) => test.test('index.css'));
 
 		cssRule.use[2].options = {

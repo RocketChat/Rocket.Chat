@@ -1,5 +1,5 @@
-import { WebdavAccounts } from '@rocket.chat/models';
 import type { IWebdavAccount } from '@rocket.chat/core-typings';
+import { WebdavAccounts } from '@rocket.chat/models';
 
 import { getWebdavCredentials } from './getWebdavCredentials';
 import { WebdavClientAdapter } from './webdavClientAdapter';

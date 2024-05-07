@@ -12,7 +12,7 @@
  * (AgentConnect.calleridnum, connectedlinenum, queue) to signify which agent ansered the call from which queue.
  *
  */
-import type { Db } from 'mongodb';
+import { api } from '@rocket.chat/core-services';
 import type {
 	IPbxEvent,
 	IQueueDetails,
@@ -43,15 +43,15 @@ import {
 	isIContactStatusEvent,
 	isICallHangupEvent,
 } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users, PbxEvents } from '@rocket.chat/models';
+import type { Db } from 'mongodb';
 
 import { Command, CommandType } from '../Command';
-import { Logger } from '../../../../../lib/logger/Logger';
+import { Commands } from '../Commands';
+import { ACDQueue } from './ACDQueue';
 import { CallbackContext } from './CallbackContext';
 // import { sendMessage } from '../../../../../../app/lib/server/functions/sendMessage';
-import { api } from '../../../../../sdk/api';
-import { ACDQueue } from './ACDQueue';
-import { Commands } from '../Commands';
 
 export class ContinuousMonitor extends Command {
 	private logger: Logger;
@@ -99,9 +99,9 @@ export class ContinuousMonitor extends Command {
 		});
 		if (user) {
 			if (isIQueueMemberAddedEvent(event)) {
-				api.broadcast(`voip.events`, user._id, { data: { queue, queuedCalls: calls }, event: 'queue-member-added' });
+				void api.broadcast(`voip.events`, user._id, { data: { queue, queuedCalls: calls }, event: 'queue-member-added' });
 			} else if (isIQueueMemberRemovedEvent(event)) {
-				api.broadcast(`voip.events`, user._id, { event: 'queue-member-removed', data: { queue, queuedCalls: calls } });
+				void api.broadcast(`voip.events`, user._id, { event: 'queue-member-removed', data: { queue, queuedCalls: calls } });
 			}
 		}
 	}
@@ -128,7 +128,7 @@ export class ContinuousMonitor extends Command {
 			name: event.calleridname,
 		};
 
-		api.broadcast('voip.events', user._id, { event: 'agent-called', data: { callerId, queue: event.queue } });
+		void api.broadcast('voip.events', user._id, { event: 'agent-called', data: { callerId, queue: event.queue } });
 		// api.broadcast('queue.agentcalled', user._id, event.queue, callerId);
 	}
 
@@ -190,7 +190,10 @@ export class ContinuousMonitor extends Command {
 				await this.storePbxEvent(event, 'QueueCallerJoin');
 				this.logger.debug(`Broadcasting event queue.callerjoined to ${members.length} agents on queue ${event.queue}`);
 				members.forEach((m) => {
-					api.broadcast('voip.events', m, { event: 'caller-joined', data: { callerId, queue: event.queue, queuedCalls: event.count } });
+					void api.broadcast('voip.events', m, {
+						event: 'caller-joined',
+						data: { callerId, queue: event.queue, queuedCalls: event.count },
+					});
 				});
 				break;
 			}
@@ -199,7 +202,7 @@ export class ContinuousMonitor extends Command {
 				await this.storePbxEvent(event, 'QueueCallerAbandon');
 				this.logger.debug(`Broadcasting event queue.callabandoned to ${members.length} agents on queue ${event.queue}`);
 				members.forEach((m) => {
-					api.broadcast('voip.events', m, { event: 'call-abandoned', data: { queue: event.queue, queuedCallAfterAbandon: calls } });
+					void api.broadcast('voip.events', m, { event: 'call-abandoned', data: { queue: event.queue, queuedCallAfterAbandon: calls } });
 				});
 				break;
 			}
@@ -210,7 +213,7 @@ export class ContinuousMonitor extends Command {
 				this.logger.debug(`Broadcasting event queue.agentconnected to ${members.length} agents on queue ${event.queue}`);
 				members.forEach((m) => {
 					// event.holdtime signifies wait time in the queue.
-					api.broadcast('voip.events', m, {
+					void api.broadcast('voip.events', m, {
 						event: 'agent-connected',
 						data: { queue: event.queue, queuedCalls: calls, waitTimeInQueue: event.holdtime },
 					});
@@ -268,7 +271,7 @@ export class ContinuousMonitor extends Command {
 			return;
 		}
 
-		if (event.dialstatus.toLowerCase() !== 'answer' && event.dialstatus.toLowerCase() !== 'ringing') {
+		if (!['answer', 'ringing'].includes(event.dialstatus.toLowerCase())) {
 			this.logger.warn(`Received unexpected event ${event.event} dialstatus =  ${event.dialstatus}`);
 			return;
 		}
@@ -283,7 +286,7 @@ export class ContinuousMonitor extends Command {
 				uniqueId: `${event.event}-${event.calleridnum}-${event.channel}-${event.destchannel}-${event.uniqueid}`,
 				event: event.event,
 				ts: new Date(),
-				phone: event?.connectedlinenum,
+				phone: event?.connectedlinenum.replace(/\D/g, ''), // Remove all non-numeric characters
 				callUniqueId: event.uniqueid,
 				callUniqueIdFallback: event.linkedid,
 				agentExtension: event.calleridnum,

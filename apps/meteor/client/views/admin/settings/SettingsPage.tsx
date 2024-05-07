@@ -1,9 +1,12 @@
-import { Icon, SearchInput, Skeleton, Grid, States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { Icon, SearchInput, Skeleton, CardGrid } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useIsSettingsContextLoading, TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, ReactElement } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useIsSettingsContextLoading, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useCallback, useState } from 'react';
 
-import Page from '../../../components/Page';
+import GenericNoResults from '../../../components/GenericNoResults';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import PageBlockWithBorder from '../../../components/Page/PageBlockWithBorder';
 import SettingsGroupCard from './SettingsGroupCard';
 import { useSettingsGroups } from './hooks/useSettingsGroups';
@@ -18,34 +21,37 @@ const SettingsPage = (): ReactElement => {
 
 	return (
 		<Page background='tint'>
-			<Page.Header title={t('Settings')} borderBlockEndColor='' />
-
+			<PageHeader title={t('Settings')} borderBlockEndColor='' />
 			<PageBlockWithBorder>
 				<SearchInput value={filter} placeholder={t('Search')} onChange={handleChange} addon={<Icon name='magnifier' size='x20' />} />
 			</PageBlockWithBorder>
 
-			<Page.ScrollableContentWithShadow p='0'>
+			<PageScrollableContentWithShadow p={0} mi={24} mbe={16}>
 				{isLoadingGroups && <Skeleton />}
-				<Grid mi='x16' mbe='x18'>
+				<CardGrid
+					breakpoints={{
+						xs: 4,
+						sm: 4,
+						md: 4,
+						lg: 6,
+						xl: 4,
+						p: 8,
+					}}
+				>
 					{!isLoadingGroups &&
 						!!groups.length &&
 						groups.map((group) => (
-							<Grid.Item key={group._id} xs={4} sm={4} md={4} lg={4} xl={3}>
-								<SettingsGroupCard
-									id={group._id}
-									title={group.i18nLabel as TranslationKey}
-									description={group.i18nDescription as TranslationKey}
-								/>
-							</Grid.Item>
+							<SettingsGroupCard
+								key={group._id}
+								id={group._id}
+								title={group.i18nLabel as TranslationKey}
+								description={group.i18nDescription as TranslationKey}
+							/>
 						))}
-				</Grid>
-				{!isLoadingGroups && !groups.length && (
-					<States>
-						<StatesIcon name='magnifier' />
-						<StatesTitle>{t('No_results_found')}</StatesTitle>
-					</States>
-				)}
-			</Page.ScrollableContentWithShadow>
+				</CardGrid>
+
+				{!isLoadingGroups && !groups.length && <GenericNoResults />}
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

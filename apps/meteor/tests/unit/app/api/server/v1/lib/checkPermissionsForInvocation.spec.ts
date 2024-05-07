@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import mock from 'proxyquire';
+import Sinon from 'sinon';
 
 import type { PermissionsPayload } from '../../../../../../../app/api/server/api.helpers';
 
@@ -20,9 +21,13 @@ const mocks = {
 			return permissions.some((permission) => userPermissions[userId].includes(permission));
 		},
 	},
+	'../../lib/server/lib/deprecationWarningLogger': {
+		apiDeprecationLogger: {
+			endpoint: Sinon.stub(),
+		},
+	},
 };
 
-// eslint-disable-next-line
 const { checkPermissionsForInvocation } = mock.noCallThru().load('../../../../../../../app/api/server/api.helpers', mocks);
 
 describe('checkPermissionsForInvocation', () => {

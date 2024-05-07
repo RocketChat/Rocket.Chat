@@ -1,9 +1,10 @@
-import { Meteor } from 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	checkRegistrationSecretURL(hash) {
 		check(hash, String);
 

@@ -1,20 +1,27 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useMemo } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
-import VerticalBar from '../../../components/VerticalBar';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import { FormSkeleton } from './Skeleton';
+import {
+	Contextualbar,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarAction,
+	ContextualbarClose,
+} from '../../../components/Contextualbar';
 import Chat from './chats/Chat';
 import ChatInfoDirectory from './chats/contextualBar/ChatInfoDirectory';
-import RoomEditWithData from './chats/contextualBar/RoomEditWithData';
+import { RoomEditWithData } from './chats/contextualBar/RoomEdit';
+import { FormSkeleton } from './components';
+import { useOmnichannelRoomInfo } from './hooks/useOmnichannelRoomInfo';
 
 const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => {
 	const directoryRoute = useRoute('omnichannel-directory');
 
 	const bar = useRouteParameter('bar') || 'info';
-	const id = useRouteParameter('id');
+	const id = useRouteParameter('id') || '';
 
 	const t = useTranslation();
 
@@ -22,62 +29,55 @@ const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => 
 		id && directoryRoute.push({ page: 'chats', id, bar: 'view' });
 	};
 
-	const handleChatsVerticalBarCloseButtonClick = (): void => {
+	const handleChatsContextualbarCloseButtonClick = (): void => {
 		directoryRoute.push({ page: 'chats' });
 	};
 
-	const handleChatsVerticalBarBackButtonClick = (): void => {
+	const handleChatsContextualbarBackButtonClick = (): void => {
 		id && directoryRoute.push({ page: 'chats', id, bar: 'info' });
 	};
 
-	const query = useMemo(
-		() => ({
-			roomId: id || '',
-		}),
-		[id],
-	);
-
-	const { value: data, phase: state, error, reload: reloadInfo } = useEndpointData(`/v1/rooms.info`, query);
+	const { data: room, isLoading, isError, refetch: reloadInfo } = useOmnichannelRoomInfo(id);
 
 	if (bar === 'view' && id) {
 		return <Chat rid={id} />;
 	}
 
-	if (state === AsyncStatePhase.LOADING) {
+	if (isLoading) {
 		return (
-			<Box pi='x24'>
+			<Box pi={24}>
 				<FormSkeleton />
 			</Box>
 		);
 	}
 
-	if (error || !data || !data.room) {
-		return <Box mbs='x16'>{t('Room_not_found')}</Box>;
+	if (isError || !room) {
+		return <Box mbs={16}>{t('Room_not_found')}</Box>;
 	}
 
 	return (
-		<VerticalBar className={'contextual-bar'}>
-			<VerticalBar.Header>
+		<Contextualbar>
+			<ContextualbarHeader expanded>
 				{bar === 'info' && (
 					<>
-						<VerticalBar.Icon name='info-circled' />
-						<VerticalBar.Text>{t('Room_Info')}</VerticalBar.Text>
-						<VerticalBar.Action title={t('View_full_conversation')} name={'new-window'} onClick={openInRoom} />
+						<ContextualbarIcon name='info-circled' />
+						<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
+						<ContextualbarAction title={t('View_full_conversation')} name='new-window' onClick={openInRoom} />
 					</>
 				)}
 				{bar === 'edit' && (
 					<>
-						<VerticalBar.Icon name='pencil' />
-						<VerticalBar.Text>{t('edit-room')}</VerticalBar.Text>
+						<ContextualbarIcon name='pencil' />
+						<ContextualbarTitle>{t('edit-room')}</ContextualbarTitle>
 					</>
 				)}
-				<VerticalBar.Close onClick={handleChatsVerticalBarCloseButtonClick} />
-			</VerticalBar.Header>
-			{bar === 'info' && <ChatInfoDirectory id={id} room={data.room} />}
+				<ContextualbarClose onClick={handleChatsContextualbarCloseButtonClick} />
+			</ContextualbarHeader>
+			{bar === 'info' && <ChatInfoDirectory id={id} room={room} />}
 			{bar === 'edit' && (
-				<RoomEditWithData id={id} close={handleChatsVerticalBarBackButtonClick} reload={chatReload} reloadInfo={reloadInfo} />
+				<RoomEditWithData id={id} reload={chatReload} reloadInfo={reloadInfo} onClose={handleChatsContextualbarBackButtonClick} />
 			)}
-		</VerticalBar>
+		</Contextualbar>
 	);
 };
 

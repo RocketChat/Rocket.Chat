@@ -1,4 +1,6 @@
-import { createClassName, memo } from '../../helpers';
+import { memo } from 'preact/compat';
+
+import { createClassName } from '../../../helpers/createClassName';
 import styles from './styles.scss';
 
 export const MessageContent = memo(({ reverse, className, style = {}, children }) => (

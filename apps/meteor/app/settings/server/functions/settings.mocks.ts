@@ -40,13 +40,29 @@ class SettingsClass {
 		this.insertCalls++;
 	}
 
-	updateOne(query: any, update: any): void {
+	updateOne(query: any, update: any, options?: any): void {
 		const existent = this.findOne(query);
 
 		const data = { ...existent, ...query, ...update, ...update.$set };
 
 		if (!existent) {
 			Object.assign(data, update.$setOnInsert);
+		}
+
+		if (update.$unset) {
+			Object.keys(update.$unset).forEach((key) => {
+				delete data[key];
+			});
+		}
+
+		const modifiers = ['$set', '$setOnInsert', '$unset'];
+
+		modifiers.forEach((key) => {
+			delete data[key];
+		});
+
+		if (options?.upsert === true && !modifiers.some((key) => Object.keys(update).includes(key))) {
+			throw new Error('Invalid upsert');
 		}
 
 		// console.log(query, data);

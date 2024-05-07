@@ -1,4 +1,5 @@
 declare module 'meteor/rocketchat:streamer' {
+	import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '@rocket.chat/ui-contexts';
 	import type { Subscription } from 'meteor/meteor';
 
 	type Connection = any;
@@ -20,7 +21,7 @@ declare module 'meteor/rocketchat:streamer' {
 		};
 	}
 
-	type Rule = (this: IPublication, eventName: string, ...args: any) => Promise<boolean | object>;
+	type Rule<K extends string = string> = (this: IPublication, eventName: K, ...args: any) => Promise<boolean | object>;
 
 	interface IRules {
 		[k: string]: Rule;
@@ -39,22 +40,27 @@ declare module 'meteor/rocketchat:streamer' {
 		allowed: boolean | object,
 	) => string | false;
 
-	interface IStreamer {
+	interface IStreamer<N extends StreamNames> {
 		serverOnly: boolean;
 
 		subscriptions: Set<DDPSubscription>;
 
 		subscriptionName: string;
 
-		allowEmit(eventName: string | boolean | Rule, fn?: Rule | 'all' | 'none' | 'logged'): void;
+		allowEmit<K extends StreamKeys<N>>(eventName: K, fn?: Rule | 'all' | 'none' | 'logged'): void;
+		allowEmit(rule: Rule<StreamKeys<N>> | 'all' | 'none' | 'logged'): void;
 
-		allowWrite(eventName: string | boolean | Rule, fn?: Rule | 'all' | 'none' | 'logged'): void;
+		allowWrite<K extends StreamKeys<N>>(eventName: K | boolean, fn: Rule | 'all' | 'none' | 'logged'): void;
+		allowWrite(rule: Rule<StreamKeys<N>> | 'all' | 'none' | 'logged'): void;
 
-		allowRead(eventName: string | boolean | Rule, fn?: Rule | 'all' | 'none' | 'logged'): void;
+		allowRead<K extends StreamKeys<N>>(eventName: K | boolean, fn: Rule | 'all' | 'none' | 'logged'): void;
+		allowRead(rule: Rule<StreamKeys<N>> | 'all' | 'none' | 'logged'): void;
 
-		emit(event: string, ...data: any[]): void;
+		emit<K extends StreamKeys<N>>(event: K, ...data: StreamerCallbackArgs<N, K>): void;
 
-		on(event: string, fn: (...data: any[]) => void): void;
+		on<K extends StreamKeys<N>>(event: K, fn: (...data: any[]) => void): void;
+
+		on(event: '_afterPublish', fn: (streamer: this, ...data: any[]) => void): void;
 
 		removeSubscription(subscription: DDPSubscription, eventName: string): void;
 
@@ -66,7 +72,7 @@ declare module 'meteor/rocketchat:streamer' {
 
 		_emit(eventName: string, args: any[], origin: Connection | undefined, broadcast: boolean, transform?: TransformMessage): boolean;
 
-		emitWithoutBroadcast(event: string, ...data: any[]): void;
+		emitWithoutBroadcast<K extends StreamKeys<N>>(event: K, ...data: StreamerCallbackArgs<N, K>): void;
 
 		changedPayload(collection: string, id: string, fields: Record<string, any>): string | false;
 
@@ -74,6 +80,6 @@ declare module 'meteor/rocketchat:streamer' {
 	}
 
 	interface IStreamerConstructor {
-		new (name: string, options?: { retransmit?: boolean; retransmitToSelf?: boolean }): IStreamer;
+		new <N extends StreamNames>(name: N, options?: { retransmit?: boolean; retransmitToSelf?: boolean }): IStreamer<N>;
 	}
 }

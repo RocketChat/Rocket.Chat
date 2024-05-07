@@ -1,18 +1,20 @@
-import { Meteor } from 'meteor/meteor';
+import { Media } from '@rocket.chat/core-services';
 import { EmojiCustom } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
-import { API } from '../api';
-import { getUploadFormData } from '../lib/getUploadFormData';
-import { findEmojisCustom } from '../lib/emoji-custom';
-import { Media } from '../../../../server/sdk';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../settings/server';
+import { API } from '../api';
+import { getPaginationItems } from '../helpers/getPaginationItems';
+import { findEmojisCustom } from '../lib/emoji-custom';
+import { getUploadFormData } from '../lib/getUploadFormData';
 
 API.v1.addRoute(
 	'emoji-custom.list',
 	{ authRequired: true },
 	{
 		async get() {
-			const { query } = this.parseJsonQuery();
+			const { query } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			if (updatedSince) {
 				const updatedSinceDate = new Date(updatedSince);
@@ -46,8 +48,8 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, query } = await this.parseJsonQuery();
 
 			return API.v1.success(
 				await findEmojisCustom({
@@ -68,28 +70,30 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const [emoji, fields] = await getUploadFormData(
+			const emoji = await getUploadFormData(
 				{
 					request: this.request,
 				},
-				{ field: 'emoji' },
+				{ field: 'emoji', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 			);
 
-			const isUploadable = await Media.isImage(emoji.fileBuffer);
+			const { fields, fileBuffer, mimetype } = emoji;
+
+			const isUploadable = await Media.isImage(fileBuffer);
 			if (!isUploadable) {
 				throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
 			}
 
-			const [, extension] = emoji.mimetype.split('/');
+			const [, extension] = mimetype.split('/');
 			fields.extension = extension;
 
 			try {
-				Meteor.call('insertOrUpdateEmoji', {
+				await Meteor.callAsync('insertOrUpdateEmoji', {
 					...fields,
 					newFile: true,
 					aliases: fields.aliases || '',
 				});
-				Meteor.call('uploadEmojiCustom', emoji.fileBuffer, emoji.mimetype, {
+				await Meteor.callAsync('uploadEmojiCustom', fileBuffer, mimetype, {
 					...fields,
 					newFile: true,
 					aliases: fields.aliases || '',
@@ -109,12 +113,14 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const [emoji, fields] = await getUploadFormData(
+			const emoji = await getUploadFormData(
 				{
 					request: this.request,
 				},
-				{ field: 'emoji' },
+				{ field: 'emoji', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 			);
+
+			const { fields, fileBuffer, mimetype } = emoji;
 
 			if (!fields._id) {
 				throw new Meteor.Error('The required "_id" query param is missing.');
@@ -128,23 +134,23 @@ API.v1.addRoute(
 			fields.previousName = emojiToUpdate.name;
 			fields.previousExtension = emojiToUpdate.extension;
 			fields.aliases = fields.aliases || '';
-			const newFile = Boolean(emoji?.fileBuffer.length);
+			const newFile = Boolean(emoji && fileBuffer.length);
 
 			if (fields.newFile) {
-				const isUploadable = await Media.isImage(emoji.fileBuffer);
+				const isUploadable = await Media.isImage(fileBuffer);
 				if (!isUploadable) {
 					throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
 				}
 
-				const [, extension] = emoji.mimetype.split('/');
+				const [, extension] = mimetype.split('/');
 				fields.extension = extension;
 			} else {
 				fields.extension = emojiToUpdate.extension;
 			}
 
-			Meteor.call('insertOrUpdateEmoji', { ...fields, newFile });
+			await Meteor.callAsync('insertOrUpdateEmoji', { ...fields, newFile });
 			if (fields.newFile) {
-				Meteor.call('uploadEmojiCustom', emoji.fileBuffer, emoji.mimetype, { ...fields, newFile });
+				await Meteor.callAsync('uploadEmojiCustom', fileBuffer, mimetype, { ...fields, newFile });
 			}
 			return API.v1.success();
 		},
@@ -155,13 +161,13 @@ API.v1.addRoute(
 	'emoji-custom.delete',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const { emojiId } = this.bodyParams;
 			if (!emojiId) {
 				return API.v1.failure('The "emojiId" params is required!');
 			}
 
-			Meteor.call('deleteEmojiCustom', emojiId);
+			await Meteor.callAsync('deleteEmojiCustom', emojiId);
 
 			return API.v1.success();
 		},

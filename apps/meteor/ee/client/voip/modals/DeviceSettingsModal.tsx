@@ -1,4 +1,5 @@
-import { Modal, Field, Select, Button, SelectOption, Box } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Modal, Field, FieldLabel, FieldRow, Select, Button, Box } from '@rocket.chat/fuselage';
 import {
 	useTranslation,
 	useAvailableDevices,
@@ -7,8 +8,10 @@ import {
 	useSelectedDevices,
 	useIsDeviceManagementEnabled,
 } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState } from 'react';
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
+import type { ReactElement } from 'react';
+import React, { useState } from 'react';
+import type { SubmitHandler } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 
 import { useChangeAudioInputDevice, useChangeAudioOutputDevice } from '../../../../client/contexts/CallContext';
 import { isSetSinkIdAvailable } from '../../../../client/providers/DeviceProvider/lib/isSetSinkIdAvailable';
@@ -54,14 +57,14 @@ const DeviceSettingsModal = (): ReactElement => {
 	};
 
 	return (
-		<Modal is='form' onSubmit={handleSubmit(onSubmit)}>
+		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Device_settings')}</Modal.Title>
 				<Modal.Close onClick={onCancel} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>
 				{!setSinkIdAvailable && (
-					<Box color='danger-600' display='flex' flexDirection='column'>
+					<Box color='status-font-on-danger' display='flex' flexDirection='column'>
 						{t('Device_Changes_Not_Available')}
 						<Box is='a' href='https://rocket.chat/download' target='_blank' rel='noopener noreferrer'>
 							{t('Download_Destkop_App')}
@@ -69,13 +72,13 @@ const DeviceSettingsModal = (): ReactElement => {
 					</Box>
 				)}
 				{!isDeviceManagementEnabled && (
-					<Box color='danger-600' display='flex' flexDirection='column'>
+					<Box color='status-font-on-danger' display='flex' flexDirection='column'>
 						{t('Device_Changes_Not_Available_Insecure_Context')}
 					</Box>
 				)}
 				<Field>
-					<Field.Label>{t('Microphone')}</Field.Label>
-					<Field.Row w='full' display='flex' flexDirection='column' alignItems='stretch'>
+					<FieldLabel>{t('Microphone')}</FieldLabel>
+					<FieldRow w='full' display='flex' flexDirection='column' alignItems='stretch'>
 						<Controller
 							name='inputDevice'
 							control={control}
@@ -83,11 +86,11 @@ const DeviceSettingsModal = (): ReactElement => {
 								<Select disabled={!setSinkIdAvailable} {...field} options={availableInputDevices || []} />
 							)}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 				<Field>
-					<Field.Label>{t('Speakers')}</Field.Label>
-					<Field.Row w='full' display='flex' flexDirection='column' alignItems='stretch'>
+					<FieldLabel>{t('Speakers')}</FieldLabel>
+					<FieldRow w='full' display='flex' flexDirection='column' alignItems='stretch'>
 						<Controller
 							name='outputDevice'
 							control={control}
@@ -95,7 +98,7 @@ const DeviceSettingsModal = (): ReactElement => {
 								<Select disabled={!setSinkIdAvailable} {...field} options={availableOutputDevices || []} />
 							)}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>

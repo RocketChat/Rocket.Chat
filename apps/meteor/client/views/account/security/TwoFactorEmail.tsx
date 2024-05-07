@@ -1,6 +1,7 @@
 import { Box, Button, Margins } from '@rocket.chat/fuselage';
 import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ComponentProps, ReactElement, useCallback } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
@@ -10,8 +11,12 @@ const TwoFactorEmail = (props: ComponentProps<typeof Box>): ReactElement => {
 
 	const isEnabled = user?.services?.email2fa?.enabled;
 
-	const enable2faAction = useEndpointAction('POST', '/v1/users.2fa.enableEmail', undefined, t('Two-factor_authentication_enabled'));
-	const disable2faAction = useEndpointAction('POST', '/v1/users.2fa.disableEmail', undefined, t('Two-factor_authentication_disabled'));
+	const enable2faAction = useEndpointAction('POST', '/v1/users.2fa.enableEmail', {
+		successMessage: t('Two-factor_authentication_enabled'),
+	});
+	const disable2faAction = useEndpointAction('POST', '/v1/users.2fa.disableEmail', {
+		successMessage: t('Two-factor_authentication_disabled'),
+	});
 
 	const handleEnable = useCallback(async () => {
 		await enable2faAction();
@@ -21,8 +26,8 @@ const TwoFactorEmail = (props: ComponentProps<typeof Box>): ReactElement => {
 	}, [disable2faAction]);
 
 	return (
-		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs='x16' {...props}>
-			<Margins blockEnd='x8'>
+		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs={16} {...props}>
+			<Margins blockEnd={8}>
 				<Box fontScale='h4'>{t('Two-factor_authentication_email')}</Box>
 				{isEnabled && (
 					<Button danger onClick={handleDisable}>

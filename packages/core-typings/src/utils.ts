@@ -20,6 +20,17 @@ export type Jsonify<T> = T extends Date
 	  }
 	: T;
 
+// Use AtLeast when you don't care if you receive a partial or full object, as long as the specified attributes are loaded
+// Attributes defined as optional will continue to be optional.
 export type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>;
 
+// Use RequiredField when you want a full object with specific optional fields no longer being optional.
 export type RequiredField<T, K extends keyof T> = T & Required<Pick<T, K>>;
+
+export type DeepWritable<T> = T extends (...args: any) => any
+	? T
+	: {
+			-readonly [P in keyof T]: DeepWritable<T[P]>;
+	  };
+
+export type DistributiveOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : never;

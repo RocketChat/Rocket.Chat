@@ -1,8 +1,35 @@
+codecov:
+  max_report_age: off
 coverage:
   status:
+    patch: off
     project:
       default:
         target: auto
         threshold: 1%
+      client:
+        target: auto
+        flags:
+          - client
+flags:
+  unit:
+    carryforward: true
+  e2e:
+    paths:
+      - apps/meteor/
+    carryforward: true
+  
+  e2e-api:
+    paths:
+      - apps/meteor/server
+    carryforward: true
+
+  client:
+    paths:
+      - apps/meteor/client
+    carryforward: true
+
 comment:
   layout: 'reach, diff, flags'
+fixes:
+  - '/home/runner/work/Rocket.Chat/Rocket.Chat/::'

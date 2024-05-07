@@ -1,6 +1,6 @@
 import type { ITeam, RocketChatRecordDeleted, TEAM_TYPE } from '@rocket.chat/core-typings';
 import type { FindPaginated, ITeamModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, DeleteResult, Filter, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
+import type { Collection, FindCursor, Db, DeleteResult, Document, Filter, FindOptions, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -17,9 +17,9 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 
 	findByNames(names: Array<string>, options: FindOptions<ITeam>): FindCursor<ITeam>;
 
-	findByNames<P>(names: Array<string>, options: FindOptions<P extends ITeam ? ITeam : P>): FindCursor<P>;
+	findByNames<P extends Document>(names: Array<string>, options: FindOptions<P extends ITeam ? ITeam : P>): FindCursor<P>;
 
-	findByNames<P>(
+	findByNames<P extends Document>(
 		names: Array<string>,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P> | FindCursor<ITeam> {
@@ -33,9 +33,13 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 
 	findByIds(ids: Array<string>, options: FindOptions<ITeam>, query?: Filter<ITeam>): FindCursor<ITeam>;
 
-	findByIds<P>(ids: Array<string>, options: FindOptions<P extends ITeam ? ITeam : P>, query?: Filter<ITeam>): FindCursor<P>;
+	findByIds<P extends Document>(
+		ids: Array<string>,
+		options: FindOptions<P extends ITeam ? ITeam : P>,
+		query?: Filter<ITeam>,
+	): FindCursor<P>;
 
-	findByIds<P>(
+	findByIds<P extends Document>(
 		ids: Array<string>,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 		query?: Filter<ITeam>,
@@ -63,9 +67,13 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 
 	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE, options: FindOptions<ITeam>): FindCursor<ITeam>;
 
-	findByIdsAndType<P>(ids: Array<string>, type: TEAM_TYPE, options: FindOptions<P extends ITeam ? ITeam : P>): FindCursor<P>;
+	findByIdsAndType<P extends Document>(
+		ids: Array<string>,
+		type: TEAM_TYPE,
+		options: FindOptions<P extends ITeam ? ITeam : P>,
+	): FindCursor<P>;
 
-	findByIdsAndType<P>(
+	findByIdsAndType<P extends Document>(
 		ids: Array<string>,
 		type: TEAM_TYPE,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
@@ -80,9 +88,9 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 
 	findByType(type: number, options: FindOptions<ITeam>): FindCursor<ITeam>;
 
-	findByType<P>(type: number, options: FindOptions<P extends ITeam ? ITeam : P>): FindCursor<P>;
+	findByType<P extends Document>(type: number, options: FindOptions<P extends ITeam ? ITeam : P>): FindCursor<P>;
 
-	findByType<P>(
+	findByType<P extends Document>(
 		type: number,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<ITeam> | FindCursor<P> {
@@ -96,9 +104,13 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 
 	findByNameAndTeamIds(name: string | RegExp, teamIds: Array<string>, options: FindOptions<ITeam>): FindCursor<ITeam>;
 
-	findByNameAndTeamIds<P>(name: string | RegExp, teamIds: Array<string>, options: FindOptions<P extends ITeam ? ITeam : P>): FindCursor<P>;
+	findByNameAndTeamIds<P extends Document>(
+		name: string | RegExp,
+		teamIds: Array<string>,
+		options: FindOptions<P extends ITeam ? ITeam : P>,
+	): FindCursor<P>;
 
-	findByNameAndTeamIds<P>(
+	findByNameAndTeamIds<P extends Document>(
 		name: string | RegExp,
 		teamIds: Array<string>,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
@@ -140,9 +152,9 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 
 	findOneByName(name: string | RegExp, options: FindOptions<ITeam>): Promise<ITeam | null>;
 
-	findOneByName<P>(name: string | RegExp, options: FindOptions<P>): Promise<P | null>;
+	findOneByName<P extends Document>(name: string | RegExp, options: FindOptions<P>): Promise<P | null>;
 
-	findOneByName<P>(
+	findOneByName<P extends Document>(
 		name: string | RegExp,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): Promise<P | null> | Promise<ITeam | null> {
@@ -156,9 +168,9 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 
 	findOneByMainRoomId(roomId: string, options: FindOptions<ITeam>): Promise<ITeam | null>;
 
-	findOneByMainRoomId<P>(roomId: string, options: FindOptions<P>): Promise<P | null>;
+	findOneByMainRoomId<P extends Document>(roomId: string, options: FindOptions<P>): Promise<P | null>;
 
-	findOneByMainRoomId<P>(
+	findOneByMainRoomId<P extends Document>(
 		roomId: string,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): Promise<P | null> | Promise<ITeam | null> {

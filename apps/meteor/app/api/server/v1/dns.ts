@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 
-import { API } from '../api';
 import { resolveSRV, resolveTXT } from '../../../federation/server/functions/resolveDNS';
+import { API } from '../api';
 
 /**
  * @openapi

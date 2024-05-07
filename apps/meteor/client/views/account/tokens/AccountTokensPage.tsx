@@ -1,7 +1,8 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import AccountTokensTable from './AccountTokensTable';
 
 const AccountTokensPage = (): ReactElement => {
@@ -9,10 +10,10 @@ const AccountTokensPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Personal_Access_Tokens')} />
-			<Page.Content>
+			<PageHeader title={t('Personal_Access_Tokens')} />
+			<PageContent>
 				<AccountTokensTable />
-			</Page.Content>
+			</PageContent>
 		</Page>
 	);
 };

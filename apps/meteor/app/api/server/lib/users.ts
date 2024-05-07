@@ -1,28 +1,24 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IUser } from '@rocket.chat/core-typings';
-import type { Filter } from 'mongodb';
-import { Users } from '@rocket.chat/models';
+import { Users, Subscriptions } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Mongo } from 'meteor/mongo';
+import type { Filter, RootFilterOperators } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { settings } from '../../../settings/server';
 
 type UserAutoComplete = Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>;
+
 export async function findUsersToAutocomplete({
 	uid,
 	selector,
 }: {
 	uid: string;
-	selector: {
-		exceptions: string[];
-		conditions: Filter<IUser>;
-		term: string;
-	};
+	selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string };
 }): Promise<{
 	items: UserAutoComplete[];
 }> {
-	if (!(await hasPermissionAsync(uid, 'view-outside-room'))) {
-		return { items: [] };
-	}
+	const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 	const exceptions = selector.exceptions || [];
 	const conditions = selector.conditions || {};
 	const options = {
@@ -39,6 +35,20 @@ export async function findUsersToAutocomplete({
 		limit: 10,
 	};
 
+	// Search on DMs first, to list known users before others.
+	const contacts = await Subscriptions.findConnectedUsersExcept(uid, selector.term, exceptions, searchFields, conditions, 10, 'd');
+	if (contacts.length >= options.limit) {
+		return { items: contacts as UserAutoComplete[] };
+	}
+
+	options.limit -= contacts.length;
+	contacts.forEach(({ username }) => exceptions.push(username));
+
+	if (!(await hasPermissionAsync(uid, 'view-outside-room'))) {
+		const users = await Subscriptions.findConnectedUsersExcept(uid, selector.term, exceptions, searchFields, conditions, 10);
+		return { items: contacts.concat(users) as UserAutoComplete[] };
+	}
+
 	const users = await Users.findActiveByUsernameOrNameRegexWithExceptionsAndConditions<UserAutoComplete>(
 		new RegExp(escapeRegExp(selector.term), 'i'),
 		exceptions,
@@ -47,7 +57,7 @@ export async function findUsersToAutocomplete({
 	).toArray();
 
 	return {
-		items: users,
+		items: (contacts as UserAutoComplete[]).concat(users),
 	};
 }
 
@@ -108,4 +118,99 @@ export function getNonEmptyQuery<T extends IUser>(query: Mongo.Query<T> | undefi
 	}
 
 	return { ...defaultQuery, ...query };
+}
+
+type FindPaginatedUsersByStatusProps = {
+	uid: string;
+	offset: number;
+	count: number;
+	sort: Record<string, 1 | -1>;
+	status: 'active' | 'deactivated';
+	roles: string[] | null;
+	searchTerm: string;
+	hasLoggedIn: boolean;
+	type: string;
+};
+
+export async function findPaginatedUsersByStatus({
+	uid,
+	offset,
+	count,
+	sort,
+	status,
+	roles,
+	searchTerm,
+	hasLoggedIn,
+	type,
+}: FindPaginatedUsersByStatusProps) {
+	const projection = {
+		name: 1,
+		username: 1,
+		emails: 1,
+		roles: 1,
+		status: 1,
+		active: 1,
+		avatarETag: 1,
+		lastLogin: 1,
+		type: 1,
+		reason: 1,
+	};
+
+	const actualSort: Record<string, 1 | -1> = sort || { username: 1 };
+	if (sort?.status) {
+		actualSort.active = sort.status;
+	}
+	if (sort?.name) {
+		actualSort.nameInsensitive = sort.name;
+	}
+	const match: Filter<IUser & RootFilterOperators<IUser>> = {};
+	switch (status) {
+		case 'active':
+			match.active = true;
+			break;
+		case 'deactivated':
+			match.active = false;
+			break;
+	}
+
+	if (hasLoggedIn !== undefined) {
+		match.lastLogin = { $exists: hasLoggedIn };
+	}
+
+	if (type) {
+		match.type = type;
+	}
+
+	const canSeeAllUserInfo = await hasPermissionAsync(uid, 'view-full-other-user-info');
+
+	match.$or = [
+		...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: escapeRegExp(searchTerm || ''), $options: 'i' } }] : []),
+		{
+			username: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
+		},
+		{
+			name: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
+		},
+	];
+	if (roles?.length && !roles.includes('all')) {
+		match.roles = { $in: roles };
+	}
+	const { cursor, totalCount } = await Users.findPaginated(
+		{
+			...match,
+		},
+		{
+			sort: actualSort,
+			skip: offset,
+			limit: count,
+			projection,
+		},
+	);
+	const [users, total] = await Promise.all([cursor.toArray(), totalCount]);
+	return {
+		users,
+		count: users.length,
+		offset,
+		total,
+	};
 }

@@ -1,24 +1,24 @@
 import type { IRoomTypeConfig } from '../../../definition/IRoomTypeConfig';
 import type { RoomCoordinator } from '../coordinator';
 
-export function getLivechatRoomType(coordinator: RoomCoordinator): IRoomTypeConfig {
+declare module '@rocket.chat/ui-contexts' {
+	export interface IRouterPaths {
+		live: {
+			pathname: `/live/${string}${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/live/:id/:tab?/:context?';
+		};
+	}
+}
+
+export function getLivechatRoomType(_coordinator: RoomCoordinator): IRoomTypeConfig {
 	return {
 		identifier: 'l',
-		order: 5,
-		icon: 'omnichannel',
-		label: 'Omnichannel',
 		route: {
 			name: 'live',
 			path: '/live/:id/:tab?/:context?',
-			action: ({ id } = {}): void => {
-				return coordinator.openRoom('l', id);
-			},
-			link({ rid }): Record<string, string> {
-				return { id: rid || '' };
+			link({ rid, tab }): Record<string, string> {
+				return { id: rid || '', tab: tab ?? 'room-info' };
 			},
 		},
-
-		notSubscribedTpl: 'livechatNotSubscribed',
-		readOnlyTpl: 'livechatReadOnly',
 	};
 }

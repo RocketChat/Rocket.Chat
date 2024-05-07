@@ -1,5 +1,6 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { MouseEvent, MouseEventHandler, TouchEvent, TouchEventHandler, useRef } from 'react';
+import type { MouseEvent, MouseEventHandler, TouchEvent, TouchEventHandler } from 'react';
+import { useRef } from 'react';
 
 type UseLongPressResult = {
 	onClick: MouseEventHandler<HTMLButtonElement>;

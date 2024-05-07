@@ -1,16 +1,16 @@
-import { Meteor } from 'meteor/meteor';
-import { SyncedCron } from 'meteor/littledata:synced-cron';
-import UAParser from 'ua-parser-js';
-import mem from 'mem';
 import type { ISession, ISessionDevice, ISocketConnectionLogged, IUser } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
+import { Logger } from '@rocket.chat/logger';
 import { Sessions, Users } from '@rocket.chat/models';
+import mem from 'mem';
+import { Meteor } from 'meteor/meteor';
+import UAParser from 'ua-parser-js';
 
-import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
-import { aggregates } from '../../../../server/models/raw/Sessions';
-import { Logger } from '../../../../server/lib/logger/Logger';
 import { getMostImportantRole } from '../../../../lib/roles/getMostImportantRole';
-import { sauEvents } from '../../../../server/services/sauMonitor/events';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
+import { aggregates } from '../../../../server/models/raw/Sessions';
+import { sauEvents } from '../../../../server/services/sauMonitor/events';
+import { UAParserMobile, UAParserDesktop } from './UAParserCustom';
 
 type DateObj = { day: number; month: number; year: number };
 
@@ -41,10 +41,12 @@ export class SAUMonitorClass {
 
 	private _dailyFinishSessionsJobName: string;
 
+	private scheduler = cronJobs;
+
 	constructor() {
 		this._started = false;
 		this._dailyComputeJobName = 'aggregate-sessions';
-		this._dailyFinishSessionsJobName = 'aggregate-sessions';
+		this._dailyFinishSessionsJobName = 'finish-sessions';
 	}
 
 	async start(): Promise<void> {
@@ -58,15 +60,19 @@ export class SAUMonitorClass {
 		logger.debug('[start]');
 	}
 
-	stop(): void {
+	async stop(): Promise<void> {
 		if (!this.isRunning()) {
 			return;
 		}
 
 		this._started = false;
 
-		SyncedCron.remove(this._dailyComputeJobName);
-		SyncedCron.remove(this._dailyFinishSessionsJobName);
+		if (await this.scheduler.has(this._dailyComputeJobName)) {
+			await this.scheduler.remove(this._dailyComputeJobName);
+		}
+		if (await this.scheduler.has(this._dailyFinishSessionsJobName)) {
+			await this.scheduler.remove(this._dailyFinishSessionsJobName);
+		}
 
 		logger.debug('[stop]');
 	}
@@ -79,7 +85,7 @@ export class SAUMonitorClass {
 		try {
 			this._handleAccountEvents();
 			this._handleOnConnection();
-			this._startCronjobs();
+			await this._startCronjobs();
 		} catch (err: any) {
 			throw new Meteor.Error(err);
 		}
@@ -140,7 +146,7 @@ export class SAUMonitorClass {
 
 		const searchTerm = this._getSearchTerm(data);
 
-		await Sessions.insertOne({ ...data, searchTerm, createdAt: new Date() });
+		await Sessions.createOrUpdate({ ...data, searchTerm });
 	}
 
 	private async _finishSessionsFromDate(yesterday: Date, today: Date): Promise<void> {
@@ -294,26 +300,16 @@ export class SAUMonitorClass {
 		};
 	}
 
-	private _startCronjobs(): void {
+	private async _startCronjobs(): Promise<void> {
 		logger.info('[aggregate] - Start Cron.');
+		const dailyComputeProcessTime = '0 2 * * *';
+		const dailyFinishSessionProcessTime = '5 1 * * *';
+		await this.scheduler.add(this._dailyComputeJobName, dailyComputeProcessTime, async () => this._aggregate());
+		await this.scheduler.add(this._dailyFinishSessionsJobName, dailyFinishSessionProcessTime, async () => {
+			const yesterday = new Date();
+			yesterday.setDate(yesterday.getDate() - 1);
 
-		SyncedCron.add({
-			name: this._dailyComputeJobName,
-			schedule: (parser: any) => parser.text('at 2:00 am'),
-			job: async () => {
-				await this._aggregate();
-			},
-		});
-
-		SyncedCron.add({
-			name: this._dailyFinishSessionsJobName,
-			schedule: (parser: any) => parser.text('at 1:05 am'),
-			job: async () => {
-				const yesterday = new Date();
-				yesterday.setDate(yesterday.getDate() - 1);
-
-				await this._finishSessionsFromDate(yesterday, new Date());
-			},
+			await this._finishSessionsFromDate(yesterday, new Date());
 		});
 	}
 
@@ -322,33 +318,19 @@ export class SAUMonitorClass {
 			return;
 		}
 
-		logger.info('[aggregate] - Aggregating data.');
+		const today = new Date();
 
-		const date = new Date();
-		date.setDate(date.getDate() - 0); // yesterday
-		const yesterday = getDateObj(date);
+		// get sessions from 3 days ago to make sure even if a few cron jobs were skipped, we still have the data
+		const threeDaysAgo = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 3, 0, 0, 0, 0);
 
-		for await (const record of aggregates.dailySessionsOfYesterday(Sessions.col, yesterday)) {
-			await Sessions.updateOne(
-				{ _id: `${record.userId}-${record.year}-${record.month}-${record.day}` },
-				{ $set: record },
-				{ upsert: true },
-			);
+		const period = { start: getDateObj(threeDaysAgo), end: getDateObj(today) };
+
+		logger.info({ msg: '[aggregate] - Aggregating data.', period });
+
+		for await (const record of aggregates.dailySessions(Sessions.col, period)) {
+			await Sessions.updateDailySessionById(`${record.userId}-${record.year}-${record.month}-${record.day}`, record);
 		}
 
-		await Sessions.updateMany(
-			{
-				type: 'session',
-				year: { $lte: yesterday.year },
-				month: { $lte: yesterday.month },
-				day: { $lte: yesterday.day },
-			},
-			{
-				$set: {
-					type: 'computed-session',
-					_computedAt: new Date(),
-				},
-			},
-		);
+		await Sessions.updateAllSessionsByDateToComputed(period);
 	}
 }

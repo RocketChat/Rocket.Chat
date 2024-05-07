@@ -1,6 +1,7 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import React from 'react';
 
 import DeviceSettingsModal from '../voip/modals/DeviceSettingsModal';
 import { useHasLicenseModule } from './useHasLicenseModule';
@@ -19,7 +20,7 @@ export const useDevicesMenuOption = (): DevicesMenuOption | null => {
 	const option = {
 		label: (
 			<Box alignItems='center' display='flex'>
-				<Icon mie='x4' name='customize' size='x16' />
+				<Icon mie={4} name='customize' size='x16' />
 				{t('Device_settings')}
 			</Box>
 		),

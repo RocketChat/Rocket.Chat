@@ -1,22 +1,41 @@
-import { IRole, IUser } from '@rocket.chat/core-typings';
-import { Box, TableRow, TableCell } from '@rocket.chat/fuselage';
-import { capitalize } from '@rocket.chat/string-helpers';
-import { useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import { UserStatus as Status } from '@rocket.chat/core-typings';
+import type { IAdminUserTabs, IRole, IUser, Serialized } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
+import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { Roles } from '../../../../../app/models/client';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
+import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
+import { UserStatus } from '../../../../components/UserStatus';
 
 type UsersTableRowProps = {
-	user: Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag'>;
-	onClick: (id: IUser['_id']) => void;
+	user: Serialized<DefaultUserInfo>;
+	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
 	mediaQuery: boolean;
+	tab: IAdminUserTabs;
 };
 
-const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): ReactElement => {
+const UsersTableRow = ({ user, onClick, mediaQuery, tab }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
-	const { _id, emails, username, name, roles, status, active, avatarETag } = user;
-	const statusText = active ? t(capitalize(status as string) as TranslationKey) : t('Disabled');
+	const { _id, emails, username, name, roles, status, active, avatarETag, lastLogin, type } = user;
+	const registrationStatusText = useMemo(() => {
+		const usersExcludedFromPending = ['bot', 'app'];
+
+		if (!lastLogin && !usersExcludedFromPending.includes(type)) {
+			return t('Pending');
+		}
+
+		if (active && lastLogin) {
+			return t('Active');
+		}
+
+		if (!active && lastLogin) {
+			return t('Deactivated');
+		}
+	}, [active, lastLogin, t, type]);
 
 	const roleNames = (roles || [])
 		.map((roleId) => (Roles.findOne(roleId, { fields: { name: 1 } }) as IRole | undefined)?.name)
@@ -24,39 +43,50 @@ const UsersTableRow = ({ user, onClick, mediaQuery }: UsersTableRowProps): React
 		.join(', ');
 
 	return (
-		<TableRow onKeyDown={(): void => onClick(_id)} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action qa-user-id={_id}>
-			<TableCell withTruncatedText>
+		<GenericTableRow
+			onKeyDown={(e): void => onClick(_id, e)}
+			onClick={(e): void => onClick(_id, e)}
+			tabIndex={0}
+			role='link'
+			action
+			qa-user-id={_id}
+		>
+			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} username={username} etag={avatarETag} />}
-					<Box display='flex' mi='x8' withTruncatedText>
+					<Box display='flex' mi={8} withTruncatedText>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' color='default' withTruncatedText>
+								<Box display='inline' mie='x8'>
+									<UserStatus status={status || Status.OFFLINE} />
+								</Box>
 								{name || username}
 							</Box>
 							{!mediaQuery && name && (
 								<Box fontScale='p2' color='hint' withTruncatedText>
-									{' '}
-									{`@${username}`}{' '}
+									{`@${username}`}
 								</Box>
 							)}
 						</Box>
 					</Box>
 				</Box>
-			</TableCell>
+			</GenericTableCell>
 			{mediaQuery && (
-				<TableCell>
+				<GenericTableCell>
 					<Box fontScale='p2m' color='hint' withTruncatedText>
 						{username}
-					</Box>{' '}
-					<Box mi='x4' />
-				</TableCell>
+					</Box>
+					<Box mi={4} />
+				</GenericTableCell>
 			)}
-			<TableCell withTruncatedText>{emails?.length && emails[0].address}</TableCell>
-			{mediaQuery && <TableCell withTruncatedText>{roleNames}</TableCell>}
-			<TableCell fontScale='p2' color='hint' withTruncatedText>
-				{statusText}
-			</TableCell>
-		</TableRow>
+			{mediaQuery && <GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>}
+			{mediaQuery && <GenericTableCell withTruncatedText>{roleNames}</GenericTableCell>}
+			{tab === 'all' && (
+				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+					{registrationStatusText}
+				</GenericTableCell>
+			)}
+		</GenericTableRow>
 	);
 };
 

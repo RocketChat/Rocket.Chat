@@ -1,20 +1,27 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+
 import { callbacks } from '../../../../../lib/callbacks';
-import { LivechatEnterprise } from '../lib/LivechatEnterprise';
+import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
 import { cbLogger } from '../lib/logger';
 
-const handleAfterOnHoldChatResumed = async (room: any): Promise<void> => {
-	if (!room || !room._id || !room.onHold) {
-		cbLogger.debug('Skipping callback. No room provided or room is not on hold');
-		return;
+type IRoom = Pick<IOmnichannelRoom, '_id'>;
+
+const handleAfterOnHoldChatResumed = async (room: IRoom): Promise<IRoom> => {
+	if (!room?._id) {
+		return room;
 	}
 
-	cbLogger.debug(`Removing current on hold timers for room ${room._id}`);
-	LivechatEnterprise.releaseOnHoldChat(room);
+	const { _id: roomId } = room;
+
+	cbLogger.debug(`Removing current on hold timers for room ${roomId}`);
+	await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
+
+	return room;
 };
 
 callbacks.add(
 	'livechat:afterOnHoldChatResumed',
-	(room) => Promise.await(handleAfterOnHoldChatResumed(room)),
+	handleAfterOnHoldChatResumed,
 	callbacks.priority.HIGH,
 	'livechat-after-on-hold-chat-resumed',
 );

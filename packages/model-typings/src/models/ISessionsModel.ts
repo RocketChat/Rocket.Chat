@@ -1,4 +1,3 @@
-import type { BulkWriteResult, Document, UpdateResult, FindCursor } from 'mongodb';
 import type {
 	ISession,
 	UserSessionAggregationResult,
@@ -8,8 +7,9 @@ import type {
 	DeviceManagementPopulatedSession,
 	DeviceManagementSession,
 } from '@rocket.chat/core-typings';
+import type { BulkWriteResult, Document, UpdateResult, FindCursor, OptionalId } from 'mongodb';
 
-import type { IBaseModel, ModelOptionalId } from './IBaseModel';
+import type { IBaseModel } from './IBaseModel';
 
 export type DestructuredDate = { year: number; month: number; day: number };
 export type DestructuredDateWithType = {
@@ -144,5 +144,9 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 		logoutBy?: IUser['_id'];
 	}): Promise<UpdateResult | Document>;
 
-	createBatch(sessions: ModelOptionalId<ISession>[]): Promise<BulkWriteResult | undefined>;
+	createBatch(sessions: OptionalId<ISession>[]): Promise<BulkWriteResult | undefined>;
+
+	updateDailySessionById(_id: ISession['_id'], record: Partial<ISession>): Promise<UpdateResult>;
+
+	updateAllSessionsByDateToComputed({ start, end }: DestructuredRange): Promise<UpdateResult | Document>;
 }

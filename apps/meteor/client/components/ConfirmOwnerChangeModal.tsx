@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, ComponentProps } from 'react';
+import type { FC, ComponentProps } from 'react';
+import React from 'react';
 
 import GenericModal from './GenericModal';
 import RawText from './RawText';
@@ -62,12 +63,12 @@ const ConfirmOwnerChangeModal: FC<ConfirmOwnerChangeModalProps> = ({
 			{contentTitle}
 
 			{changeOwnerRooms && (
-				<Box marginBlock='x16'>
+				<Box marginBlock={16}>
 					<RawText>{changeOwnerRooms}</RawText>
 				</Box>
 			)}
 			{removedRooms && (
-				<Box marginBlock='x16'>
+				<Box marginBlock={16}>
 					<RawText>{removedRooms}</RawText>
 				</Box>
 			)}

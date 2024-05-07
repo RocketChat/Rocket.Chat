@@ -168,7 +168,7 @@ const processFilesForBundle = async (files = [], { minifyMode }) => {
 		return;
 	}
 
-	const minifiedFiles = CssTools.minifyCss(code);
+	const minifiedFiles = await CssTools.minifyCssAsync(code);
 
 	minifiedFiles.forEach((data) => {
 		files[0].addStylesheet({ data });

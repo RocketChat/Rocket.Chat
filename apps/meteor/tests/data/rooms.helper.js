@@ -1,6 +1,17 @@
+import { resolve } from 'path';
 import { api, credentials, request } from './api-data';
 
-export const createRoom = ({ name, type, username, token, agentId, members, credentials: customCredentials, voipCallDirection = 'inbound' }) => {
+export const createRoom = ({
+	name,
+	type,
+	username,
+	token,
+	agentId,
+	members,
+	credentials: customCredentials,
+	extraData,
+	voipCallDirection = 'inbound',
+}) => {
 	if (!type) {
 		throw new Error('"type" is required in "createRoom.ts" test helper');
 	}
@@ -31,6 +42,7 @@ export const createRoom = ({ name, type, username, token, agentId, members, cred
 		.send({
 			...params,
 			...(members && { members }),
+			...(extraData && { extraData }),
 		});
 };
 
@@ -39,7 +51,7 @@ export const asyncCreateRoom = ({ name, type, username, members = [] }) =>
 		createRoom({ name, type, username, members }).end(resolve);
 	});
 
-function actionRoom({ action, type, roomId }) {
+function actionRoom({ action, type, roomId, extraData = {} }) {
 	if (!type) {
 		throw new Error(`"type" is required in "${action}Room" test helper`);
 	}
@@ -57,6 +69,7 @@ function actionRoom({ action, type, roomId }) {
 			.set(credentials)
 			.send({
 				roomId,
+				...extraData,
 			})
 			.end(resolve);
 	});
@@ -65,3 +78,41 @@ function actionRoom({ action, type, roomId }) {
 export const deleteRoom = ({ type, roomId }) => actionRoom({ action: 'delete', type, roomId });
 
 export const closeRoom = ({ type, roomId }) => actionRoom({ action: 'close', type, roomId });
+
+export const joinChannel = ({ overrideCredentials = credentials, roomId }) =>
+	request.post(api('channels.join')).set(overrideCredentials).send({
+		roomId,
+	});
+
+export const inviteToChannel = ({ overrideCredentials = credentials, roomId, userId }) =>
+	request.post(api('channels.invite')).set(credentials).send({
+		userId,
+		roomId,
+	});
+
+export const addRoomOwner = ({ type, roomId, userId }) => actionRoom({ action: 'addOwner', type, roomId, extraData: { userId } });
+
+export const removeRoomOwner = ({ type, roomId, userId }) => actionRoom({ action: 'removeOwner', type, roomId, extraData: { userId } });
+
+export const getChannelRoles = async ({ roomId, overrideCredentials = credentials }) =>
+	(
+		await request.get(api('channels.roles')).set(overrideCredentials).query({
+			roomId,
+		})
+	).body.roles;
+
+export const setRoomConfig = ({ roomId, favorite, isDefault }) => {
+	return request
+		.post(api('rooms.saveRoomSettings'))
+		.set(credentials)
+		.send({
+			rid: roomId,
+			default: isDefault,
+			favorite: favorite
+				? {
+						defaultValue: true,
+						favorite: false,
+				  }
+				: undefined,
+		});
+};

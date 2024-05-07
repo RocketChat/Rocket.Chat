@@ -1,22 +1,23 @@
-import { VideoConferenceBridge } from '@rocket.chat/apps-engine/server/bridges/VideoConferenceBridge';
-import type { AppVideoConference, VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders';
+import type { AppVideoConference, VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
+import { VideoConferenceBridge } from '@rocket.chat/apps-engine/server/bridges/VideoConferenceBridge';
+import { VideoConf } from '@rocket.chat/core-services';
 
-import { VideoConf } from '../../../../server/sdk';
-import type { AppServerOrchestrator } from '../orchestrator';
 import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
 import type { AppVideoConferencesConverter } from '../converters/videoConferences';
 
 export class AppVideoConferenceBridge extends VideoConferenceBridge {
-	// eslint-disable-next-line no-empty-function
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 	}
 
 	protected async getById(callId: string, appId: string): Promise<VideoConference> {
 		this.orch.debugLog(`The App ${appId} is getting the video conference byId: "${callId}"`);
 
-		return this.orch.getConverters()?.get('videoConferences').convertById(callId);
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
+		const promise: Promise<VideoConference | undefined> = this.orch.getConverters()?.get('videoConferences').convertById(callId);
+		return promise as Promise<VideoConference>;
 	}
 
 	protected async create(call: AppVideoConference, appId: string): Promise<string> {
@@ -41,12 +42,12 @@ export class AppVideoConferenceBridge extends VideoConferenceBridge {
 		const data = (this.orch.getConverters()?.get('videoConferences') as AppVideoConferencesConverter).convertAppVideoConference(call);
 		await VideoConf.setProviderData(call._id, data.providerData);
 
-		for (const { _id, ts } of data.users) {
+		for await (const { _id, ts } of data.users) {
 			if (oldData.users.find((user) => user._id === _id)) {
 				continue;
 			}
 
-			VideoConf.addUser(call._id, _id, ts);
+			await VideoConf.addUser(call._id, _id, ts);
 		}
 
 		if (data.endedBy && data.endedBy._id !== oldData.endedBy?._id) {

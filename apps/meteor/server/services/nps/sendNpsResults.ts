@@ -1,9 +1,8 @@
-import { HTTP } from 'meteor/http';
-import { Meteor } from 'meteor/meteor';
 import type { INpsVote } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { settings } from '../../../app/settings/server';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
+import { settings } from '../../../app/settings/server';
 import { SystemLogger } from '../../lib/logger/system';
 
 type NPSResultPayload = {
@@ -11,8 +10,8 @@ type NPSResultPayload = {
 	votes: Pick<INpsVote, 'identifier' | 'roles' | 'score' | 'comment'>[];
 };
 
-export const sendNpsResults = Meteor.bindEnvironment(function sendNpsResults(npsId: string, data: NPSResultPayload) {
-	const token = Promise.await(getWorkspaceAccessToken());
+export const sendNpsResults = async function sendNpsResults(npsId: string, data: NPSResultPayload) {
+	const token = await getWorkspaceAccessToken();
 	if (!token) {
 		return false;
 	}
@@ -20,14 +19,17 @@ export const sendNpsResults = Meteor.bindEnvironment(function sendNpsResults(nps
 	const npsUrl = settings.get('Nps_Url');
 
 	try {
-		return HTTP.post(`${npsUrl}/v1/surveys/${npsId}/results`, {
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-			data,
-		});
+		return (
+			await fetch(`${npsUrl}/v1/surveys/${npsId}/results`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+				body: data,
+			})
+		).json();
 	} catch (e) {
 		SystemLogger.error(e);
 		return false;
 	}
-});
+};

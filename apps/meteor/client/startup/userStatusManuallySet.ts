@@ -1,4 +1,4 @@
-import { UserStatus } from '@rocket.chat/core-typings';
+import type { UserStatus } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../lib/callbacks';

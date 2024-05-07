@@ -11,10 +11,10 @@ export type UsersUpdateParamsPOST = {
 		name?: string;
 		password?: string;
 		username?: string;
+		active?: boolean;
 		bio?: string;
 		nickname?: string;
 		statusText?: string;
-		active?: boolean;
 		roles?: string[];
 		joinDefaultChannels?: boolean;
 		requirePasswordChange?: boolean;

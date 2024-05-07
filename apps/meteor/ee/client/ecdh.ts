@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { APIClient } from '../../app/utils/client';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 import type { ClientSession } from '../app/ecdh/client/ClientSession';
 
 let resolveSession: (value: ClientSession | void) => void;
@@ -65,7 +65,7 @@ async function initEncryptedSession(): Promise<void> {
 }
 
 initEncryptedSession();
-APIClient.use(async (request, next) => {
+sdk.rest.use(async (request, next) => {
 	const session = await sessionPromise;
 
 	if (!session) {

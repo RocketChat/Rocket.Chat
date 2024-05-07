@@ -1,6 +1,7 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
 import { usePermission, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 const RemoveAllClosed: FC<{
 	handleClearFilters: any;
@@ -16,7 +17,7 @@ const RemoveAllClosed: FC<{
 		clearFilters: {
 			label: (
 				<Box data-qa='current-chats-options-clearFilters'>
-					<Icon name='refresh' size='x16' marginInlineEnd='x4' />
+					<Icon name='refresh' size='x16' marginInlineEnd={4} />
 					{t('Clear_filters')}
 				</Box>
 			),
@@ -25,8 +26,8 @@ const RemoveAllClosed: FC<{
 		...(canRemove && {
 			removeClosed: {
 				label: (
-					<Box color='danger' data-qa='current-chats-options-removeAllClosed'>
-						<Icon name='trash' size='x16' marginInlineEnd='x4' />
+					<Box color='status-font-on-danger' data-qa='current-chats-options-removeAllClosed'>
+						<Icon name='trash' size='x16' marginInlineEnd={4} />
 						{t('Delete_all_closed_chats')}
 					</Box>
 				),
@@ -38,7 +39,7 @@ const RemoveAllClosed: FC<{
 				customFields: {
 					label: (
 						<Box data-qa='current-chats-options-customFields'>
-							<Icon name='magnifier' size='x16' marginInlineEnd='x4' />
+							<Icon name='magnifier' size='x16' marginInlineEnd={4} />
 							{t('Custom_Fields')}
 						</Box>
 					),

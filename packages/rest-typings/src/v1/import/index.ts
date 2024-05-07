@@ -6,5 +6,7 @@ export * from './GetCurrentImportOperationParamsGET';
 export * from './GetImportFileDataParamsGET';
 export * from './GetImportProgressParamsGET';
 export * from './GetLatestImportOperationsParamsGET';
+export * from './ImportersListParamsGET';
 export * from './StartImportParamsPOST';
 export * from './UploadImportFileParamsPOST';
+export * from './ImportAddUsersParamsPOST';

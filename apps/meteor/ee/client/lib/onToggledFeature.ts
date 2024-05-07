@@ -1,11 +1,11 @@
+import type { LicenseModule } from '@rocket.chat/core-typings';
 import { QueryObserver } from '@tanstack/react-query';
 
 import { queryClient } from '../../../client/lib/queryClient';
-import type { BundleFeature } from '../../app/license/server/bundles';
 import { fetchFeatures } from './fetchFeatures';
 
 export const onToggledFeature = (
-	feature: BundleFeature,
+	feature: LicenseModule,
 	{
 		up,
 		down,

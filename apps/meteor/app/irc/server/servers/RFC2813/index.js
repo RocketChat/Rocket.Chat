@@ -1,11 +1,12 @@
+import { EventEmitter } from 'events';
 import net from 'net';
 import util from 'util';
-import { EventEmitter } from 'events';
 
+import { Logger } from '@rocket.chat/logger';
+
+import localCommandHandlers from './localCommandHandlers';
 import parseMessage from './parseMessage';
 import peerCommandHandlers from './peerCommandHandlers';
-import localCommandHandlers from './localCommandHandlers';
-import { Logger } from '../../../../logger/server';
 
 const logger = new Logger('IRC Server');
 

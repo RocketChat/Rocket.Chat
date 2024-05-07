@@ -1,5 +1,5 @@
 import { Field } from '@rocket.chat/fuselage';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import LanguageSettingInput from './LanguageSettingInput';
@@ -45,6 +45,6 @@ WithResetButton.args = {
 	_id: 'setting_id',
 	label: 'Label',
 	placeholder: 'Placeholder',
-	value: ['1', '2', '3'],
+	value: '1',
 	hasResetButton: true,
 };

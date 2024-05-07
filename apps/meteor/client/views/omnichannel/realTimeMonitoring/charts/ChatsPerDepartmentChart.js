@@ -31,7 +31,11 @@ const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }) => {
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/analytics/dashboards/charts/chats-per-department', params);
+	const {
+		value: data,
+		phase: state,
+		reload,
+	} = useEndpointData('/v1/livechat/analytics/dashboards/charts/chats-per-department', { params });
 
 	reloadRef.current.chatsPerDepartmentChart = reload;
 

@@ -24,7 +24,9 @@ export interface IEmailInbox {
 	_createdAt: Date;
 	_createdBy: {
 		_id: string;
-		username: string;
-	};
+		username?: string;
+	} | null;
 	_updatedAt: Date;
 }
+
+export type IEmailInboxPayload = Omit<IEmailInbox, '_createdAt' | '_createdBy' | '_updatedAt'>;

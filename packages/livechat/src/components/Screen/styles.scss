@@ -39,6 +39,10 @@ $max-lines: 12;
 		background: rgba(31, 35, 41, 0.4);
 	}
 
+	&--position-left {
+		align-items: flex-start !important;
+	}
+
 	&--minimized {
 		.screen__inner,
 		.screen__chat-close-button {
@@ -125,6 +129,10 @@ $max-lines: 12;
 		text-overflow: ellipsis;
 		-webkit-box-orient: vertical;
 		-webkit-line-clamp: $max-lines;
+	}
+
+	&--full {
+		height: 100%;
 	}
 }
 

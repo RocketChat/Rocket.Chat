@@ -1,10 +1,17 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Button, Throbber } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { MouseEventHandler, ReactElement } from 'react';
+import type { MouseEventHandler, ReactElement } from 'react';
+import React from 'react';
 
 import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
-import VerticalBar from '../../../../components/VerticalBar';
+import {
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarScrollableContent,
+} from '../../../../components/Contextualbar';
 import OTREstablished from './components/OTREstablished';
 import OTRStates from './components/OTRStates';
 
@@ -33,7 +40,7 @@ const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh,
 				return (
 					<Box>
 						<Box fontScale='p2'>{t('Please_wait_while_OTR_is_being_established')}</Box>
-						<Box mb='x16'>
+						<Box mb={16}>
 							<Throbber />
 						</Box>
 					</Box>
@@ -72,16 +79,15 @@ const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh,
 
 	return (
 		<>
-			<VerticalBar.Header>
-				<VerticalBar.Icon name='stopwatch' />
-				<VerticalBar.Text>{t('OTR')}</VerticalBar.Text>
-				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
-			</VerticalBar.Header>
-
-			<VerticalBar.ScrollableContent p='x24'>
+			<ContextualbarHeader>
+				<ContextualbarIcon name='stopwatch' />
+				<ContextualbarTitle>{t('OTR')}</ContextualbarTitle>
+				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
+			</ContextualbarHeader>
+			<ContextualbarScrollableContent p={24} color='default'>
 				<Box fontScale='h4'>{t('Off_the_record_conversation')}</Box>
 				{isOnline ? renderOTRState() : <Box fontScale='p2m'>{t('OTR_is_only_available_when_both_users_are_online')}</Box>}
-			</VerticalBar.ScrollableContent>
+			</ContextualbarScrollableContent>
 		</>
 	);
 };

@@ -1,12 +1,12 @@
-import { Box, Margins, Tag, Button, Icon, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization/client';
-import VerticalBar from '../../../../../components/VerticalBar';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
@@ -14,10 +14,10 @@ import CustomField from '../../../components/CustomField';
 import Field from '../../../components/Field';
 import Info from '../../../components/Info';
 import Label from '../../../components/Label';
-import AgentField from './AgentField';
-import ContactField from './ContactField';
+import { AgentField, ContactField, SlaField } from '../../components';
+import PriorityField from '../../components/PriorityField';
+import { formatQueuedAt } from '../../utils/formatQueuedAt';
 import DepartmentField from './DepartmentField';
-import PriorityField from './PriorityField';
 import VisitorClientInfo from './VisitorClientInfo';
 
 function ChatInfoDirectory({ id, route = undefined, room }) {
@@ -28,8 +28,22 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 	const [customFields, setCustomFields] = useState([]);
 	const formatDuration = useFormatDuration();
 
-	const { ts, tags, closedAt, departmentId, v, servedBy, metrics, topic, waitingResponse, responseBy, priorityId, livechatData, queuedAt } =
-		room || { room: { v: {} } };
+	const {
+		ts,
+		tags,
+		closedAt,
+		departmentId,
+		v,
+		servedBy,
+		metrics,
+		topic,
+		waitingResponse,
+		responseBy,
+		slaId,
+		priorityId,
+		livechatData,
+		queuedAt,
+	} = room || { room: { v: {} } };
 
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const canViewCustomFields = () => hasPermission('view-livechat-room-customfields');
@@ -38,6 +52,8 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 	const hasLocalEditRoomPermission = servedBy?._id === Meteor.userId();
 	const visitorId = v?._id;
 	const queueStartedAt = queuedAt || ts;
+
+	const queueTime = useMemo(() => formatQueuedAt(room), [room]);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	useEffect(() => {
@@ -78,7 +94,7 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 
 	return (
 		<>
-			<VerticalBar.ScrollableContent p='x24'>
+			<ContextualbarScrollableContent p={24}>
 				<Margins block='x4'>
 					{room && v && <ContactField contact={v} room={room} />}
 					{visitorId && <VisitorClientInfo uid={visitorId} />}
@@ -89,7 +105,7 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 							<Label>{t('Tags')}</Label>
 							<Info>
 								{tags.map((tag) => (
-									<Box key={tag} mie='x4' display='inline'>
+									<Box key={tag} mie={4} display='inline'>
 										<Tag style={{ display: 'inline' }} disabled>
 											{tag}
 										</Tag>
@@ -107,11 +123,7 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 					{queueStartedAt && (
 						<Field>
 							<Label>{t('Queue_Time')}</Label>
-							{servedBy ? (
-								<Info>{moment(servedBy.ts).from(moment(queueStartedAt), true)}</Info>
-							) : (
-								<Info>{moment(queueStartedAt).fromNow(true)}</Info>
-							)}
+							{queueTime}
 						</Field>
 					)}
 					{closedAt && (
@@ -155,16 +167,17 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 						Object.keys(livechatData).map(
 							(key) => checkIsVisibleAndScopeRoom(key) && livechatData[key] && <CustomField key={key} id={key} value={livechatData[key]} />,
 						)}
+					{slaId && <SlaField id={slaId} />}
 					{priorityId && <PriorityField id={priorityId} />}
 				</Margins>
-			</VerticalBar.ScrollableContent>
-			<VerticalBar.Footer>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button onClick={onEditClick}>
-						<Icon name='pencil' size='x20' /> {t('Edit')}
+					<Button icon='pencil' onClick={onEditClick}>
+						{t('Edit')}
 					</Button>
 				</ButtonGroup>
-			</VerticalBar.Footer>
+			</ContextualbarFooter>
 		</>
 	);
 }

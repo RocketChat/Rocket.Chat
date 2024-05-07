@@ -1,4 +1,4 @@
-import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
+import type { ISetting, ISettingColor, LoginServiceConfiguration } from '@rocket.chat/core-typings';
 
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -7,45 +7,6 @@ type SettingsUpdateProps = SettingsUpdatePropDefault | SettingsUpdatePropsAction
 type SettingsUpdatePropsActions = {
 	execute: boolean;
 };
-
-export type OauthCustomConfiguration = {
-	_id: string;
-	clientId?: string;
-	custom: boolean;
-	service?: string;
-	serverURL: string;
-	tokenPath: string;
-	identityPath: string;
-	authorizePath: string;
-	scope: string;
-	loginStyle: 'popup' | 'redirect';
-	tokenSentVia: 'header' | 'payload';
-	identityTokenSentVia: 'default' | 'header' | 'payload';
-	keyField: 'username' | 'email';
-	usernameField: string;
-	emailField: string;
-	nameField: string;
-	avatarField: string;
-	rolesClaim: string;
-	groupsClaim: string;
-	mapChannels: string;
-	channelsMap: string;
-	channelsAdmin: string;
-	mergeUsers: boolean;
-	mergeRoles: boolean;
-	accessTokenParam: string;
-	showButton: boolean;
-
-	appId: string;
-	consumerKey?: string;
-
-	clientConfig: unknown;
-	buttonLabelText: string;
-	buttonLabelColor: string;
-	buttonColor: string;
-};
-
-export const isOauthCustomConfiguration = (config: any): config is OauthCustomConfiguration => Boolean(config);
 
 export const isSettingsUpdatePropsActions = (props: Partial<SettingsUpdateProps>): props is SettingsUpdatePropsActions =>
 	'execute' in props;
@@ -73,7 +34,7 @@ export type SettingsEndpoints = {
 
 	'/v1/settings.oauth': {
 		GET: () => {
-			services: Partial<OauthCustomConfiguration>[];
+			services: Partial<LoginServiceConfiguration>[];
 		};
 	};
 
@@ -94,10 +55,7 @@ export type SettingsEndpoints = {
 
 	'/v1/service.configurations': {
 		GET: () => {
-			configurations: Array<{
-				appId: string;
-				secret: string;
-			}>;
+			configurations: Array<LoginServiceConfiguration>;
 		};
 	};
 };

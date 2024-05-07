@@ -1,6 +1,7 @@
-import { Box, PasswordInput, TextInput, FieldGroup, Field } from '@rocket.chat/fuselage';
+import { Box, PasswordInput, TextInput, FieldGroup, Field, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useCallback, FC } from 'react';
+import type { FC } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 
@@ -23,34 +24,37 @@ const ActionConfirmModal: FC<ActionConfirmModalProps> = ({ isPassword, onConfirm
 		[setInputText],
 	);
 
-	const handleSave = useCallback(() => {
-		if (inputText === '') {
-			setInputError(t('Invalid_field'));
-			return;
-		}
-		onConfirm(inputText);
-		onCancel();
-	}, [inputText, onConfirm, onCancel, t]);
+	const handleSave = useCallback(
+		(e) => {
+			e.preventDefault();
+			if (inputText === '') {
+				setInputError(t('Invalid_field'));
+				return;
+			}
+			onConfirm(inputText);
+			onCancel();
+		},
+		[inputText, onConfirm, onCancel, t],
+	);
 
 	return (
 		<GenericModal
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSave} {...props} />}
 			onClose={onCancel}
 			onConfirm={handleSave}
 			onCancel={onCancel}
 			variant='danger'
-			title={t('Are_you_sure_you_want_to_delete_your_account')}
-			confirmText={t('Delete')}
+			title={t('Delete_account?')}
+			confirmText={t('Delete_account')}
 		>
-			<Box mb='x8'>
-				{isPassword ? t('For_your_security_you_must_enter_your_current_password_to_continue') : t('If_you_are_sure_type_in_your_username')}
-			</Box>
+			<Box mb={8}>{isPassword ? t('Enter_your_password_to_delete_your_account') : t('Enter_your_username_to_delete_your_account')}</Box>
 			<FieldGroup w='full'>
 				<Field>
-					<Field.Row>
+					<FieldRow>
 						{isPassword && <PasswordInput value={inputText} onChange={handleChange} />}
 						{!isPassword && <TextInput value={inputText} onChange={handleChange} />}
-					</Field.Row>
-					<Field.Error>{inputError}</Field.Error>
+					</FieldRow>
+					<FieldError>{inputError}</FieldError>
 				</Field>
 			</FieldGroup>
 		</GenericModal>

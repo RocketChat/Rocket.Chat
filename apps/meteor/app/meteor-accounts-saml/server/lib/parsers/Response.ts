@@ -1,12 +1,12 @@
 import xmldom from '@xmldom/xmldom';
-import xmlenc from 'xml-encryption';
 import xmlCrypto from 'xml-crypto';
+import xmlenc from 'xml-encryption';
 
-import { SAMLUtils } from '../Utils';
-import { StatusCode } from '../constants';
+import type { ISAMLAssertion } from '../../definition/ISAMLAssertion';
 import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
 import type { IResponseValidateCallback } from '../../definition/callbacks';
-import type { ISAMLAssertion } from '../../definition/ISAMLAssertion';
+import { SAMLUtils } from '../Utils';
+import { StatusCode } from '../constants';
 
 type XmlParent = Element | Document;
 
@@ -21,9 +21,44 @@ export class ResponseParser {
 		// We currently use RelayState to save SAML provider
 		SAMLUtils.log(`Validating response with relay state: ${xml}`);
 
-		const doc = new xmldom.DOMParser().parseFromString(xml, 'text/xml');
+		let error: Error | null = null;
+
+		const doc = new xmldom.DOMParser({
+			errorHandler: {
+				fatalError: (e: any) => {
+					if (e instanceof Error) {
+						error = e;
+						return;
+					}
+
+					if (typeof e === 'string') {
+						error = new Error(e);
+						return;
+					}
+
+					error = new Error();
+				},
+				error: (e: Error) => {
+					if (e instanceof Error) {
+						error = e;
+						return;
+					}
+
+					if (typeof e === 'string') {
+						error = new Error(e);
+						return;
+					}
+
+					error = new Error();
+				},
+			},
+		}).parseFromString(xml, 'text/xml');
 		if (!doc) {
 			return callback('No Doc Found');
+		}
+
+		if (error) {
+			return callback(error, null, false);
 		}
 
 		const allResponses = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'Response');
@@ -175,7 +210,7 @@ export class ResponseParser {
 		if (typeof encAssertion !== 'undefined') {
 			const options = { key: this.serviceProviderOptions.privateKey };
 			const encData = encAssertion.getElementsByTagNameNS('*', 'EncryptedData')[0];
-			xmlenc.decrypt(encData, options, function (err, result) {
+			xmlenc.decrypt(encData, options, (err, result) => {
 				if (err) {
 					SAMLUtils.error(err);
 				}
@@ -287,7 +322,6 @@ export class ResponseParser {
 		const sig = new xmlCrypto.SignedXml();
 
 		sig.keyInfoProvider = {
-			file: '',
 			getKeyInfo: () => '<X509Data></X509Data>',
 			getKey: () => Buffer.from(SAMLUtils.certToPEM(cert)),
 		};

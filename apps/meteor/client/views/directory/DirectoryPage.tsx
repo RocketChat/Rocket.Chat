@@ -1,36 +1,44 @@
 import { Tabs } from '@rocket.chat/fuselage';
-import { useCurrentRoute, useRoute, useRouteParameter, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useCallback, ReactElement } from 'react';
+import { useRouter, useRouteParameter, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useEffect, useCallback } from 'react';
 
-import Page from '../../components/Page';
-import ChannelsTab from './ChannelsTab';
-import TeamsTab from './TeamsTab';
-import UserTab from './UserTab';
+import { Page, PageHeader, PageContent } from '../../components/Page';
+import ChannelsTab from './tabs/channels/ChannelsTab';
+import TeamsTab from './tabs/teams/TeamsTab';
+import UsersTab from './tabs/users/UsersTab';
 
-function DirectoryPage(): ReactElement {
+type TabName = 'users' | 'channels' | 'teams' | 'external';
+
+const DirectoryPage = (): ReactElement => {
 	const t = useTranslation();
 
-	const defaultTab = String(useSetting('Accounts_Directory_DefaultView'));
+	const defaultTab = useSetting<TabName>('Accounts_Directory_DefaultView') ?? 'users';
 	const federationEnabled = useSetting('FEDERATION_Enabled');
-	const [routeName] = useCurrentRoute();
-	const tab = useRouteParameter('tab');
-	const directoryRoute = useRoute('directory');
+	const tab = useRouteParameter('tab') as TabName | undefined;
+	const router = useRouter();
 
-	useEffect(() => {
-		if (routeName !== 'directory') {
-			return;
-		}
+	useEffect(
+		() =>
+			router.subscribeToRouteChange(() => {
+				if (router.getRouteName() !== 'directory') {
+					return;
+				}
 
-		if (!tab || (tab === 'external' && !federationEnabled)) {
-			return directoryRoute.replace({ tab: defaultTab });
-		}
-	}, [routeName, directoryRoute, tab, federationEnabled, defaultTab]);
+				const { tab } = router.getRouteParameters();
 
-	const handleTabClick = useCallback((tab) => (): void => directoryRoute.push({ tab }), [directoryRoute]);
+				if (!tab || (tab === 'external' && !federationEnabled)) {
+					router.navigate(`/directory/${defaultTab}`, { replace: true });
+				}
+			}),
+		[router, federationEnabled, defaultTab],
+	);
+
+	const handleTabClick = useCallback((tab: TabName) => () => router.navigate(`/directory/${tab}`), [router]);
 
 	return (
-		<Page>
-			<Page.Header title={t('Directory')} />
+		<Page background='room'>
+			<PageHeader title={t('Directory')} />
 			<Tabs flexShrink={0}>
 				<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
 					{t('Channels')}
@@ -47,16 +55,14 @@ function DirectoryPage(): ReactElement {
 					</Tabs.Item>
 				)}
 			</Tabs>
-			<Page.Content>
-				{tab === 'users' && <UserTab />}
+			<PageContent>
 				{tab === 'channels' && <ChannelsTab />}
+				{tab === 'users' && <UsersTab />}
 				{tab === 'teams' && <TeamsTab />}
-				{federationEnabled && tab === 'external' && <UserTab workspace='external' />}
-			</Page.Content>
+				{federationEnabled && tab === 'external' && <UsersTab workspace='external' />}
+			</PageContent>
 		</Page>
 	);
-}
-
-DirectoryPage.displayName = 'DirectoryPage';
+};
 
 export default DirectoryPage;

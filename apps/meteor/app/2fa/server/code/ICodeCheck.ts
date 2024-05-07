@@ -2,8 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 
 export interface IProcessInvalidCodeResult {
 	codeGenerated: boolean;
-	codeCount?: number;
-	codeExpires?: Date[];
+	codeExpires?: Date;
 	emailOrUsername?: string;
 }
 
@@ -12,7 +11,9 @@ export interface ICodeCheck {
 
 	isEnabled(user: IUser, force?: boolean): boolean;
 
-	verify(user: IUser, code: string, force?: boolean): boolean;
+	verify(user: IUser, code: string, force?: boolean): Promise<boolean>;
 
-	processInvalidCode(user: IUser): IProcessInvalidCodeResult;
+	processInvalidCode(user: IUser): Promise<IProcessInvalidCodeResult>;
+
+	maxFaildedAttemtpsReached(user: IUser): Promise<boolean>;
 }

@@ -1,23 +1,28 @@
-import { IUser, isRoomFederated } from '@rocket.chat/core-typings';
-import { useTranslation, useUserRoom, useUserId, useUserSubscriptionByName } from '@rocket.chat/ui-contexts';
+import type { IUser } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
+import { useTranslation, useUserRoom, useUserId, useUserSubscriptionByName, useSetting, usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { closeUserCard } from '../../../../../../app/ui/client/lib/UserCard';
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../../../contexts/VideoConfContext';
 import { VideoConfManager } from '../../../../../lib/VideoConfManager';
-import { Action } from '../../../../hooks/useActionSpread';
-import { useVideoConfWarning } from '../../../contextualBar/VideoConference/useVideoConfWarning';
+import { useUserCard } from '../../../contexts/UserCardContext';
+import { useVideoConfWarning } from '../../../contextualBar/VideoConference/hooks/useVideoConfWarning';
+import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
 
-export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): Action | undefined => {
+export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const usernameSubscription = useUserSubscriptionByName(user.username ?? '');
 	const room = useUserRoom(usernameSubscription?.rid || '');
+	const { closeUserCard } = useUserCard();
 
 	const dispatchWarning = useVideoConfWarning();
 	const dispatchPopup = useVideoConfDispatchOutgoing();
 	const isCalling = useVideoConfIsCalling();
 	const isRinging = useVideoConfIsRinging();
 	const ownUserId = useUserId();
+
+	const enabledForDMs = useSetting('VideoConf_Enable_DMs');
+	const permittedToCallManagement = usePermission('call-management', room?._id);
 
 	const videoCallOption = useMemo(() => {
 		const action = async (): Promise<void> => {
@@ -34,14 +39,30 @@ export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): Action | u
 			}
 		};
 
-		return room && !isRoomFederated(room) && user._id !== ownUserId
+		const shouldShowStartCall =
+			room && !isRoomFederated(room) && user._id !== ownUserId && enabledForDMs && permittedToCallManagement && !isCalling && !isRinging;
+
+		return shouldShowStartCall
 			? {
-					label: t('Start_call'),
-					icon: 'phone',
-					action,
+					content: t('Start_call'),
+					icon: 'phone' as const,
+					onClick: action,
+					type: 'communication' as UserInfoActionType,
 			  }
 			: undefined;
-	}, [t, room, dispatchPopup, dispatchWarning, isCalling, isRinging, ownUserId, user._id]);
+	}, [
+		room,
+		user._id,
+		ownUserId,
+		enabledForDMs,
+		permittedToCallManagement,
+		isCalling,
+		isRinging,
+		t,
+		dispatchPopup,
+		dispatchWarning,
+		closeUserCard,
+	]);
 
 	return videoCallOption;
 };

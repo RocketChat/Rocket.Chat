@@ -1,15 +1,14 @@
 import { createHash } from 'crypto';
 
+import type { INPSService, NPSVotePayload, NPSCreatePayload } from '@rocket.chat/core-services';
+import { ServiceClassInternal, Banner, NPS } from '@rocket.chat/core-services';
 import type { INpsVote, INps } from '@rocket.chat/core-typings';
 import { NPSStatus, INpsVoteStatus } from '@rocket.chat/core-typings';
 import { Nps, NpsVote, Settings } from '@rocket.chat/models';
 
-import type { INPSService, NPSVotePayload, NPSCreatePayload } from '../../sdk/types/INPSService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { Banner, NPS } from '../../sdk';
-import { sendNpsResults } from './sendNpsResults';
-import { getBannerForAdmins, notifyAdmins } from './notification';
 import { SystemLogger } from '../../lib/logger/system';
+import { getBannerForAdmins, notifyAdmins } from './notification';
+import { sendNpsResults } from './sendNpsResults';
 
 export class NPSService extends ServiceClassInternal implements INPSService {
 	protected name = 'nps';
@@ -22,9 +21,9 @@ export class NPSService extends ServiceClassInternal implements INPSService {
 
 		const any = await Nps.findOne({}, { projection: { _id: 1 } });
 		if (!any) {
-			Banner.create(getBannerForAdmins(nps.startAt));
+			await Banner.create(getBannerForAdmins(nps.startAt));
 
-			notifyAdmins(nps.startAt);
+			await notifyAdmins(nps.startAt);
 		}
 
 		const { npsId, startAt, expireAt, createdBy } = nps;
@@ -83,7 +82,7 @@ export class NPSService extends ServiceClassInternal implements INPSService {
 
 		const sending = await Promise.all(
 			votesToSend.map(async (vote) => {
-				const { value } = await NpsVote.col.findOneAndUpdate(
+				const { value } = await NpsVote.findOneAndUpdate(
 					{
 						_id: vote._id,
 						status: INpsVoteStatus.NEW,
@@ -122,7 +121,8 @@ export class NPSService extends ServiceClassInternal implements INPSService {
 				total,
 				votes: votesWithoutIds,
 			};
-			sendNpsResults(nps._id, payload);
+
+			await sendNpsResults(nps._id, payload);
 
 			await NpsVote.updateVotesToSent(voteIds);
 		}

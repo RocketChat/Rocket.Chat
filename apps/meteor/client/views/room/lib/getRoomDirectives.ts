@@ -1,4 +1,4 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
@@ -13,18 +13,26 @@ type getRoomDirectiesType = {
 	roomCanRemove: boolean;
 };
 
-export const getRoomDirectives = (room: IRoom): getRoomDirectiesType => {
+export const getRoomDirectives = ({
+	room,
+	showingUserId,
+	userSubscription,
+}: {
+	room: IRoom;
+	showingUserId: IUser['_id'];
+	userSubscription?: ISubscription;
+}): getRoomDirectiesType => {
 	const roomDirectives = room?.t && roomCoordinator.getRoomDirectives(room.t);
 
 	const [roomCanSetOwner, roomCanSetLeader, roomCanSetModerator, roomCanIgnore, roomCanBlock, roomCanMute, roomCanRemove] = [
 		...((roomDirectives && [
-			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_OWNER),
-			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_LEADER),
-			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_MODERATOR),
-			roomDirectives.allowMemberAction(room, RoomMemberActions.IGNORE),
-			roomDirectives.allowMemberAction(room, RoomMemberActions.BLOCK),
-			roomDirectives.allowMemberAction(room, RoomMemberActions.MUTE),
-			roomDirectives.allowMemberAction(room, RoomMemberActions.REMOVE_USER),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_OWNER, showingUserId, userSubscription),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_LEADER, showingUserId, userSubscription),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_MODERATOR, showingUserId, userSubscription),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.IGNORE, showingUserId, userSubscription),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.BLOCK, showingUserId, userSubscription),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.MUTE, showingUserId, userSubscription),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.REMOVE_USER, showingUserId, userSubscription),
 		]) ??
 			[]),
 	];

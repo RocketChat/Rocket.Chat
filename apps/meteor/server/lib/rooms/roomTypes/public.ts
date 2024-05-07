@@ -1,17 +1,21 @@
+import { Team } from '@rocket.chat/core-services';
 import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, TEAM_TYPE } from '@rocket.chat/core-typings';
 
-import { Federation } from '../../../../app/federation-v2/server/Federation';
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
+import { Federation } from '../../../services/federation/Federation';
 import { roomCoordinator } from '../roomCoordinator';
 
-export const PublicRoomType = getPublicRoomType(roomCoordinator);
+const PublicRoomType = getPublicRoomType(roomCoordinator);
 
 roomCoordinator.add(PublicRoomType, {
 	allowRoomSettingChange(room, setting) {
+		if (isRoomFederated(room)) {
+			return Federation.isRoomSettingAllowed(room, setting);
+		}
 		switch (setting) {
 			case RoomSettingsEnum.BROADCAST:
 				return Boolean(room.broadcast);
@@ -27,9 +31,9 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	allowMemberAction(_room, action) {
+	async allowMemberAction(_room, action, userId) {
 		if (isRoomFederated(_room as IRoom)) {
-			return Federation.actionAllowed(_room, action);
+			return Federation.actionAllowed(_room, action, userId);
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:
@@ -39,8 +43,8 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	roomName(room, _userId?) {
-		if (room.prid) {
+	async roomName(room, _userId?) {
+		if (room.prid || isRoomFederated(room)) {
 			return room.fname;
 		}
 		if (settings.get('UI_Allow_room_names_with_special_chars')) {
@@ -57,7 +61,13 @@ roomCoordinator.add(PublicRoomType, {
 		return true;
 	},
 
-	getDiscussionType() {
+	async getDiscussionType(room) {
+		if (room?.teamId) {
+			const team = await Team.getOneById(room.teamId, { projection: { type: 1 } });
+			if (team?.type === TEAM_TYPE.PRIVATE) {
+				return 'p';
+			}
+		}
 		return 'c';
 	},
 

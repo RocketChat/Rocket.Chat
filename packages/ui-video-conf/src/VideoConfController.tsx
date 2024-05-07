@@ -1,10 +1,10 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import type { IconProps } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactElement, ButtonHTMLAttributes } from 'react';
 
 type VideoConfControllerProps = {
-	icon: IconProps['name'];
+	icon: IconName;
 	active?: boolean;
 	secondary?: boolean;
 	disabled?: boolean;
@@ -16,6 +16,7 @@ const VideoConfController = ({ icon, active, secondary, disabled, small = true, 
 
 	return (
 		<IconButton
+			aria-live='assertive'
 			small={small}
 			icon={icon}
 			id={id}

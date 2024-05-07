@@ -1,40 +1,36 @@
+import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
-import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
-import { useEndpointData } from '../../../../client/hooks/useEndpointData';
-import '../../../definition/rest';
 import CannedResponseEdit from './CannedResponseEdit';
 import CannedResponseEditWithDepartmentData from './CannedResponseEditWithDepartmentData';
 
-const CannedResponseEditWithData: FC<{
-	cannedResponseId: string;
-	reload: () => void;
-	totalDataReload: () => void;
-}> = ({ cannedResponseId, reload, totalDataReload }) => {
-	const { value: data, phase: state, error } = useEndpointData(`/v1/canned-responses/${cannedResponseId}`);
-
+const CannedResponseEditWithData = ({ cannedResponseId }: { cannedResponseId: IOmnichannelCannedResponse['_id'] }) => {
 	const t = useTranslation();
 
-	if (state === AsyncStatePhase.LOADING) {
+	const getCannedResponseById = useEndpoint('GET', '/v1/canned-responses/:_id', { _id: cannedResponseId });
+	const { data, isLoading, isError } = useQuery(['getCannedResponseById', cannedResponseId], async () => getCannedResponseById());
+
+	if (isLoading) {
 		return <FormSkeleton />;
 	}
 
-	if (error) {
+	if (isError) {
 		return (
-			<Callout m='x16' type='danger'>
+			<Callout m={16} type='danger'>
 				{t('Not_Available')}
 			</Callout>
 		);
 	}
 
 	if (data?.cannedResponse?.scope === 'department') {
-		return <CannedResponseEditWithDepartmentData data={data} reload={reload} totalDataReload={totalDataReload} />;
+		return <CannedResponseEditWithDepartmentData cannedResponseData={data.cannedResponse} />;
 	}
 
-	return <CannedResponseEdit data={data} reload={reload} totalDataReload={totalDataReload} />;
+	return <CannedResponseEdit cannedResponseData={data.cannedResponse} />;
 };
 
 export default CannedResponseEditWithData;

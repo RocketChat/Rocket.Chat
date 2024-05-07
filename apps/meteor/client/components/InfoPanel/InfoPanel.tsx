@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 const InfoPanel: FC = ({ children }) => (
 	<Box flexGrow={1} mb='neg-x24'>

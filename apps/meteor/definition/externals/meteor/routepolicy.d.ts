@@ -1,5 +1,5 @@
 declare module 'meteor/routepolicy' {
-	export class RoutePolicy {
+	class RoutePolicy {
 		static declare(urlPrefix: string, type: string): void;
 	}
 }

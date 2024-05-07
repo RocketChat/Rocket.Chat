@@ -1,22 +1,22 @@
-import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Meteor } from 'meteor/meteor';
 
-import { SAMLUtils } from './lib/Utils';
-import { SAML } from './lib/SAML';
+import { i18n } from '../../../server/lib/i18n';
 import { SystemLogger } from '../../../server/lib/logger/system';
+import { SAML } from './lib/SAML';
+import { SAMLUtils } from './lib/Utils';
 
 const makeError = (message: string): Record<string, any> => ({
 	type: 'saml',
 	error: new Meteor.Error(Accounts.LoginCancelledError.numericError, message),
 });
 
-Accounts.registerLoginHandler('saml', function (loginRequest) {
+Accounts.registerLoginHandler('saml', async (loginRequest) => {
 	if (!loginRequest.saml || !loginRequest.credentialToken || typeof loginRequest.credentialToken !== 'string') {
 		return undefined;
 	}
 
-	const loginResult = Promise.await(SAML.retrieveCredential(loginRequest.credentialToken));
+	const loginResult = await SAML.retrieveCredential(loginRequest.credentialToken);
 	SAMLUtils.log({ msg: 'RESULT', loginResult });
 
 	if (!loginResult) {
@@ -29,7 +29,7 @@ Accounts.registerLoginHandler('saml', function (loginRequest) {
 
 	try {
 		const userObject = SAMLUtils.mapProfileToUserObject(loginResult.profile);
-		const updatedUser = SAML.insertOrUpdateSAMLUser(userObject);
+		const updatedUser = await SAML.insertOrUpdateSAMLUser(userObject);
 		SAMLUtils.events.emit('updateCustomFields', loginResult, updatedUser);
 
 		return updatedUser;
@@ -46,7 +46,7 @@ Accounts.registerLoginHandler('saml', function (loginRequest) {
 		}
 
 		if (errorCode) {
-			const localizedMessage = TAPi18n.__(errorCode);
+			const localizedMessage = i18n.t(errorCode);
 			if (localizedMessage && localizedMessage !== errorCode) {
 				message = localizedMessage;
 			}

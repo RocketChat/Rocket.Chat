@@ -1,25 +1,25 @@
-/* eslint-disable react/display-name */
-import {
-	IMessage,
-	IRoom,
-	isDirectMessageRoom,
-	isMultipleDirectMessageRoom,
-	isOmnichannelRoom,
-	ISubscription,
-} from '@rocket.chat/core-typings';
-import { Badge, Sidebar, SidebarItemAction } from '@rocket.chat/fuselage';
-import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { AllHTMLAttributes, ComponentType, memo, ReactElement, ReactNode } from 'react';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
+import { Badge, Sidebar, SidebarItemAction, SidebarItemActions, Margins } from '@rocket.chat/fuselage';
+import type { useTranslation } from '@rocket.chat/ui-contexts';
+import { useLayout } from '@rocket.chat/ui-contexts';
+import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
+import React, { memo, useMemo } from 'react';
 
+import { useOmnichannelPriorities } from '../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomMenu from '../RoomMenu';
-import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import { OmnichannelBadges } from '../badges/OmnichannelBadges';
+import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { normalizeSidebarMessage } from './normalizeSidebarMessage';
 
 const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: ReturnType<typeof useTranslation>): string | undefined => {
 	if (!lastMessage) {
 		return t('No_messages_yet');
+	}
+	if (isVideoConfMessage(lastMessage)) {
+		return t('Call_started');
 	}
 	if (!lastMessage.u) {
 		return normalizeSidebarMessage(lastMessage, t);
@@ -31,6 +31,30 @@ const getMessage = (room: IRoom, lastMessage: IMessage | undefined, t: ReturnTyp
 		return normalizeSidebarMessage(lastMessage, t);
 	}
 	return `${lastMessage.u.name || lastMessage.u.username}: ${normalizeSidebarMessage(lastMessage, t)}`;
+};
+
+const getBadgeTitle = (
+	userMentions: number,
+	threadUnread: number,
+	groupMentions: number,
+	unread: number,
+	t: ReturnType<typeof useTranslation>,
+) => {
+	const title = [] as string[];
+	if (userMentions) {
+		title.push(t('mentions_counter', { count: userMentions }));
+	}
+	if (threadUnread) {
+		title.push(t('threads_counter', { count: threadUnread }));
+	}
+	if (groupMentions) {
+		title.push(t('group_mentions_counter', { count: groupMentions }));
+	}
+	const count = unread - userMentions - groupMentions;
+	if (count > 0) {
+		title.push(t('unread_messages_counter', { count }));
+	}
+	return title.join(', ');
 };
 
 type RoomListRowProps = {
@@ -61,7 +85,6 @@ type RoomListRowProps = {
 	isAnonymous?: boolean;
 
 	room: ISubscription & IRoom;
-	lastMessage?: IMessage;
 	id?: string;
 	/* @deprecated */
 	style?: AllHTMLAttributes<HTMLElement>['style'];
@@ -83,7 +106,6 @@ function SideBarItemTemplateWithData({
 	SideBarItemTemplate,
 	AvatarTemplate,
 	t,
-	// sidebarViewMode,
 	isAnonymous,
 	videoConfActions,
 }: RoomListRowProps): ReactElement {
@@ -115,34 +137,54 @@ function SideBarItemTemplateWithData({
 		</Sidebar.Item.Icon>
 	);
 
+	const actions = useMemo(
+		() =>
+			videoConfActions && (
+				<SidebarItemActions>
+					<SidebarItemAction onClick={videoConfActions.acceptCall} secondary success icon='phone' />
+					<SidebarItemAction onClick={videoConfActions.rejectCall} secondary danger icon='phone-off' />
+				</SidebarItemActions>
+			),
+		[videoConfActions],
+	);
+
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
+	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
+
+	const message = extended && getMessage(room, lastMessage, t);
+	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
 
 	const threadUnread = tunread.length > 0;
-	const message = extended && getMessage(room, lastMessage, t);
-
-	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
 	const variant =
-		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
+		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'secondary';
+
 	const isUnread = unread > 0 || threadUnread;
-	const showBadge = !hideUnreadStatus || (!hideMentionStatus && userMentions);
-	const badges =
-		showBadge && isUnread ? (
-			// TODO: Remove any
-			<Badge {...({ style: { flexShrink: 0 } } as any)} variant={variant}>
-				{unread + tunread?.length}
-			</Badge>
-		) : null;
+	const showBadge = !hideUnreadStatus || (!hideMentionStatus && (Boolean(userMentions) || tunreadUser.length > 0));
+
+	const badgeTitle = getBadgeTitle(userMentions, tunread.length, groupMentions, unread, t);
+
+	const badges = (
+		<Margins inlineStart={8}>
+			{showBadge && isUnread && (
+				<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant} title={badgeTitle}>
+					{unread + tunread?.length}
+				</Badge>
+			)}
+			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
+		</Margins>
+	);
 
 	return (
 		<SideBarItemTemplate
 			is='a'
 			id={id}
 			data-qa='sidebar-item'
-			aria-level={2}
 			unread={highlighted}
 			selected={selected}
 			href={href}
-			onClick={(): void => !selected && sidebar.toggle()}
+			onClick={(): void => {
+				!selected && sidebar.toggle();
+			}}
 			aria-label={title}
 			title={title}
 			time={lastMessage?.ts}
@@ -151,17 +193,10 @@ function SideBarItemTemplateWithData({
 			style={style}
 			badges={badges}
 			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
-			actions={
-				videoConfActions && (
-					<>
-						<SidebarItemAction onClick={videoConfActions.acceptCall} secondary success icon='phone' />
-						<SidebarItemAction onClick={videoConfActions.rejectCall} secondary danger icon='phone-off' />
-					</>
-				)
-			}
+			actions={actions}
 			menu={
 				!isAnonymous &&
-				!isQueued &&
+				(!isQueued || (isQueued && isPriorityEnabled)) &&
 				((): ReactElement => (
 					<RoomMenu
 						alert={alert}
@@ -172,6 +207,7 @@ function SideBarItemTemplateWithData({
 						type={type}
 						cl={cl}
 						name={title}
+						hideDefaultOptions={isQueued}
 					/>
 				))
 			}
@@ -195,6 +231,7 @@ const keys: (keyof RoomListRowProps)[] = [
 	'AvatarTemplate',
 	't',
 	'sidebarViewMode',
+	'videoConfActions',
 ];
 
 // eslint-disable-next-line react/no-multi-comp
@@ -213,16 +250,24 @@ export default memo(SideBarItemTemplateWithData, (prevProps, nextProps) => {
 	if (prevProps.room._updatedAt?.toISOString() !== nextProps.room._updatedAt?.toISOString()) {
 		return false;
 	}
-	if (safeDateNotEqualCheck(prevProps.lastMessage?._updatedAt, nextProps.lastMessage?._updatedAt)) {
+	if (safeDateNotEqualCheck(prevProps.room.lastMessage?._updatedAt, nextProps.room.lastMessage?._updatedAt)) {
 		return false;
 	}
 	if (prevProps.room.alert !== nextProps.room.alert) {
 		return false;
 	}
-	if (isOmnichannelRoom(prevProps.room) && isOmnichannelRoom(nextProps.room) && prevProps.room.v.status !== nextProps.room.v.status) {
+	if (isOmnichannelRoom(prevProps.room) && isOmnichannelRoom(nextProps.room) && prevProps.room?.v?.status !== nextProps.room?.v?.status) {
 		return false;
 	}
 	if (prevProps.room.teamMain !== nextProps.room.teamMain) {
+		return false;
+	}
+
+	if (
+		isOmnichannelRoom(prevProps.room) &&
+		isOmnichannelRoom(nextProps.room) &&
+		prevProps.room.priorityWeight !== nextProps.room.priorityWeight
+	) {
 		return false;
 	}
 

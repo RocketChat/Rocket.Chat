@@ -1,12 +1,13 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { GenericTableHeaderCell } from '../../../../../../client/components/GenericTable';
 import { usePagination } from '../../../../../../client/components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../../../client/components/GenericTable/hooks/useSort';
 import { useEndpointData } from '../../../../../../client/hooks/useEndpointData';
-import DeviceManagementTable from '../../../../deviceManagement/components/DeviceManagementTable';
+import DeviceManagementTable from '../../../../components/deviceManagement/DeviceManagementTable';
 import DeviceManagementAccountRow from './DeviceManagementAccountRow';
 
 const sortMapping = {
@@ -29,23 +30,23 @@ const DeviceManagementAccountTable = (): ReactElement => {
 		[itemsPerPage, current, sortBy, sortDirection],
 	);
 
-	const { value: data, phase, error, reload } = useEndpointData('/v1/sessions/list', query);
+	const { value: data, phase, error, reload } = useEndpointData('/v1/sessions/list', { params: query });
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell key={'client'} direction={sortDirection} active={sortBy === 'client'} onClick={setSort} sort={'client'}>
+			<GenericTableHeaderCell key='client' direction={sortDirection} active={sortBy === 'client'} onClick={setSort} sort='client'>
 				{t('Client')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key={'os'} direction={sortDirection} active={sortBy === 'os'} onClick={setSort} sort={'os'}>
+			<GenericTableHeaderCell key='os' direction={sortDirection} active={sortBy === 'os'} onClick={setSort} sort='os'>
 				{t('OS')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key={'loginAt'} direction={sortDirection} active={sortBy === 'loginAt'} onClick={setSort} sort={'loginAt'}>
+			<GenericTableHeaderCell key='loginAt' direction={sortDirection} active={sortBy === 'loginAt'} onClick={setSort} sort='loginAt'>
 				{t('Last_login')}
 			</GenericTableHeaderCell>,
-			mediaQuery && <GenericTableHeaderCell key={'_id'}>{t('Device_ID')}</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key={'logout'} />,
+			mediaQuery && <GenericTableHeaderCell key='_id'>{t('Device_ID')}</GenericTableHeaderCell>,
+			<GenericTableHeaderCell key='logout' />,
 		],
 		[t, mediaQuery, sortDirection, sortBy, setSort],
 	);
@@ -64,7 +65,6 @@ const DeviceManagementAccountTable = (): ReactElement => {
 					deviceName={session.device?.name}
 					deviceType={session.device?.type}
 					deviceOSName={session.device?.os.name}
-					deviceOSVersion={session.device?.os.version}
 					loginAt={session.loginAt}
 					onReload={reload}
 				/>

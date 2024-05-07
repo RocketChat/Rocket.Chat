@@ -1,18 +1,19 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Flex, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/dataView/CounterSet';
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
+import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
+import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
+import { usePeriodLabel } from '../../../../components/dashboards/usePeriodLabel';
+import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
-import DownloadDataButton from '../dataView/DownloadDataButton';
-import PeriodSelector from '../dataView/PeriodSelector';
-import { usePeriodLabel } from '../dataView/usePeriodLabel';
-import { usePeriodSelectorState } from '../dataView/usePeriodSelectorState';
 import { useNewUsers } from './useNewUsers';
 
 const TICK_WIDTH = 45;
@@ -149,8 +150,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 											tickRotation: 0,
 										}}
 										animate={true}
-										motionStiffness={90}
-										motionDamping={15}
+										motionConfig='stiff'
 										theme={{
 											// TODO: Get it from theme
 											axis: {
@@ -167,18 +167,11 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 													},
 												},
 											},
-											tooltip: {
-												// @ts-ignore
-												backgroundColor: colors.n900,
-												boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
-												borderRadius: 2,
-												padding: 4,
-											},
 										}}
-										tooltip={({ value, indexValue }): ReactElement => (
-											<Box fontScale='p1m' color='alternative'>
+										tooltip={({ value, indexValue }) => (
+											<Tooltip>
 												{t('Value_users', { value })}, {formatDate(indexValue)}
-											</Box>
+											</Tooltip>
 										)}
 									/>
 								</Box>

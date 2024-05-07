@@ -1,6 +1,6 @@
 import type { Serialized } from '@rocket.chat/core-typings';
-import type { Method, PathFor, OperationParams, MatchPathPattern, OperationResult, PathPattern } from '@rocket.chat/rest-typings';
-import { useCallback, useContext } from 'react';
+import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
+import { useCallback, useContext, useRef } from 'react';
 
 import { ServerContext } from '../ServerContext';
 
@@ -11,11 +11,23 @@ export type EndpointFunction<TMethod extends Method, TPathPattern extends PathPa
 	? (params?: OperationParams<TMethod, TPathPattern>) => Promise<Serialized<OperationResult<TMethod, TPathPattern>>>
 	: (params: OperationParams<TMethod, TPathPattern>) => Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
 
-export const useEndpoint = <TMethod extends Method, TPath extends PathFor<TMethod>>(
+export function useEndpoint<TMethod extends Method, TPathPattern extends PathPattern>(
 	method: TMethod,
-	path: TPath,
-): EndpointFunction<TMethod, MatchPathPattern<TPath>> => {
+	pathPattern: TPathPattern,
+	...[keys]: undefined extends UrlParams<TPathPattern> ? [keys?: UrlParams<TPathPattern>] : [keys: UrlParams<TPathPattern>]
+): EndpointFunction<TMethod, TPathPattern> {
 	const { callEndpoint } = useContext(ServerContext);
+	const keysRef = useRef(keys);
+	keysRef.current = keys;
 
-	return useCallback((params: any) => callEndpoint(method, path, params), [callEndpoint, path, method]);
-};
+	return useCallback(
+		(params: OperationParams<TMethod, TPathPattern> | undefined) =>
+			callEndpoint({
+				method,
+				pathPattern,
+				keys: keysRef.current as UrlParams<TPathPattern>,
+				params: params as OperationParams<TMethod, TPathPattern>,
+			}),
+		[callEndpoint, pathPattern, method],
+	);
+}

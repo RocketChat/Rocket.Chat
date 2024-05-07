@@ -1,4 +1,3 @@
-import { registerCallback } from '../lib/callbacks';
 import { definition as afterAddedToRoomDef } from '../hooks/afterAddedToRoom';
 import { definition as afterCreateDirectRoomDef } from '../hooks/afterCreateDirectRoom';
 import { definition as afterCreateRoomDef } from '../hooks/afterCreateRoom';
@@ -11,6 +10,7 @@ import { definition as afterSetReactionDef } from '../hooks/afterSetReaction';
 import { definition as afterUnmuteUserDef } from '../hooks/afterUnmuteUser';
 import { definition as afterUnsetReactionDef } from '../hooks/afterUnsetReaction';
 import { definition as beforeDeleteRoomDef } from '../hooks/beforeDeleteRoom';
+import { registerCallback } from '../lib/callbacks';
 
 registerCallback(afterAddedToRoomDef);
 registerCallback(afterCreateDirectRoomDef);

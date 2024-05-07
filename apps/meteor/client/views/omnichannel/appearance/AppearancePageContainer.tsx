@@ -1,8 +1,9 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -24,13 +25,13 @@ const AppearancePageContainer: FC = () => {
 		return <PageSkeleton />;
 	}
 
-	if (!data || !data.appearance || error) {
+	if (!data?.appearance || error) {
 		return (
 			<Page>
-				<Page.Header title={t('Edit_Custom_Field')} />
-				<Page.ScrollableContentWithShadow>
+				<PageHeader title={t('Edit_Custom_Field')} />
+				<PageScrollableContentWithShadow>
 					<Callout type='danger'>{t('Error')}</Callout>
-				</Page.ScrollableContentWithShadow>
+				</PageScrollableContentWithShadow>
 			</Page>
 		);
 	}

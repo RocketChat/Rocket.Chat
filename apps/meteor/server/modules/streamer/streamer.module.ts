@@ -1,11 +1,12 @@
+import { MeteorError } from '@rocket.chat/core-services';
+import type { StreamerEvents } from '@rocket.chat/ui-contexts';
 import { EventEmitter } from 'eventemitter3';
 import type { IPublication, Rule, Connection, DDPSubscription, IStreamer, IRules, TransformMessage } from 'meteor/rocketchat:streamer';
 
 import { SystemLogger } from '../../lib/logger/system';
-import { MeteorError } from '../../sdk/errors';
 
-class StreamerCentralClass extends EventEmitter {
-	public instances: Record<string, Streamer> = {};
+class StreamerCentralClass<N extends keyof StreamerEvents> extends EventEmitter {
+	public instances: Record<string, Streamer<N>> = {};
 
 	constructor() {
 		super();
@@ -14,7 +15,7 @@ class StreamerCentralClass extends EventEmitter {
 
 export const StreamerCentral = new StreamerCentralClass();
 
-export abstract class Streamer extends EventEmitter implements IStreamer {
+export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmitter implements IStreamer<N> {
 	public subscriptions = new Set<DDPSubscription>();
 
 	protected subscriptionsByEventName = new Map<string, Set<DDPSubscription>>();
@@ -258,12 +259,12 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		}
 
 		const subscriptions = this.subscriptionsByEventName.get(eventName);
-		if (!subscriptions || !subscriptions.size) {
+		if (!subscriptions?.size) {
 			return false;
 		}
 
 		if (transform) {
-			this.sendToManySubscriptions(subscriptions, origin, eventName, args, transform);
+			void this.sendToManySubscriptions(subscriptions, origin, eventName, args, transform);
 
 			return true;
 		}
@@ -277,7 +278,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 			return false;
 		}
 
-		this.sendToManySubscriptions(subscriptions, origin, eventName, args, msg);
+		void this.sendToManySubscriptions(subscriptions, origin, eventName, args, msg);
 
 		return true;
 	}

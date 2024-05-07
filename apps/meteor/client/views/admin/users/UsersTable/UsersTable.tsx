@@ -1,9 +1,14 @@
-import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
-import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo, MutableRefObject, useState, useEffect } from 'react';
+import type { IAdminUserTabs, Serialized } from '@rocket.chat/core-typings';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
+import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import type { UseQueryResult } from '@tanstack/react-query';
+import type { ReactElement, Dispatch, SetStateAction } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
+import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -11,68 +16,67 @@ import {
 	GenericTableBody,
 	GenericTableLoadingTable,
 } from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../../lib/asyncState';
+import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
+import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
+import type { UsersFilters } from '../AdminUsersPage';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
-	reload: MutableRefObject<() => void>;
+	tab: IAdminUserTabs;
+	onReload: () => void;
+	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
+	filteredUsersQueryResult: UseQueryResult<PaginatedResult<{ users: Serialized<DefaultUserInfo>[] }>>;
+	paginationData: ReturnType<typeof usePagination>;
+	sortData: ReturnType<typeof useSort<'name' | 'username' | 'emails.address' | 'status'>>;
 };
 
-const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
+// TODO: Missing error state
+const UsersTable = ({
+	filteredUsersQueryResult,
+	setUserFilters,
+	tab,
+	onReload,
+	paginationData,
+	sortData,
+}: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
-	const usersRoute = useRoute('admin-users');
+	const router = useRouter();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
-	const [text, setText] = useState('');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
-	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address' | 'status'>('name');
 
-	const query = useDebouncedValue(
-		useMemo(
-			() => ({
-				fields: JSON.stringify({
-					name: 1,
-					username: 1,
-					emails: 1,
-					roles: 1,
-					status: 1,
-					avatarETag: 1,
-					active: 1,
-				}),
-				query: JSON.stringify({
-					$or: [
-						{ 'emails.address': { $regex: text || '', $options: 'i' } },
-						{ username: { $regex: text || '', $options: 'i' } },
-						{ name: { $regex: text || '', $options: 'i' } },
-					],
-				}),
-				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				count: itemsPerPage,
-				offset: current,
-			}),
-			[text, itemsPerPage, current, sortBy, sortDirection],
-		),
-		500,
-	);
+	const { data, isLoading, isError, isSuccess } = filteredUsersQueryResult;
 
-	const { value, phase, reload: reloadList } = useEndpointData('/v1/users.list', query);
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = paginationData;
+	const { sortBy, sortDirection, setSort } = sortData;
 
-	useEffect(() => {
-		reload.current = reloadList;
-	}, [reload, reloadList]);
+	const isKeyboardEvent = (
+		event: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>,
+	): event is React.KeyboardEvent<HTMLElement> => {
+		return (event as React.KeyboardEvent<HTMLElement>).key !== undefined;
+	};
 
-	const handleClick = useMutableCallback((id): void =>
-		usersRoute.push({
-			context: 'info',
-			id,
-		}),
+	const handleClickOrKeyDown = useEffectEvent(
+		(id, e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>): void => {
+			e.stopPropagation();
+
+			const keyboardSubmitKeys = ['Enter', ' '];
+
+			if (isKeyboardEvent(e) && !keyboardSubmitKeys.includes(e.key)) {
+				return;
+			}
+
+			router.navigate({
+				name: 'admin-users',
+				params: {
+					context: 'info',
+					id,
+				},
+			});
+		},
 	);
 
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell w='x200' key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+			<GenericTableHeaderCell w='x240' key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>,
 			mediaQuery && (
@@ -87,48 +91,76 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 					{t('Username')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell
-				w='x120'
-				key='email'
-				direction={sortDirection}
-				active={sortBy === 'emails.address'}
-				onClick={setSort}
-				sort='emails.address'
-			>
-				{t('Email')}
-			</GenericTableHeaderCell>,
+			mediaQuery && (
+				<GenericTableHeaderCell
+					w='x120'
+					key='email'
+					direction={sortDirection}
+					active={sortBy === 'emails.address'}
+					onClick={setSort}
+					sort='emails.address'
+				>
+					{t('Email')}
+				</GenericTableHeaderCell>
+			),
 			mediaQuery && (
 				<GenericTableHeaderCell w='x120' key='roles' onClick={setSort}>
 					{t('Roles')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell w='x100' key='status' direction={sortDirection} active={sortBy === 'status'} onClick={setSort} sort='status'>
-				{t('Status')}
-			</GenericTableHeaderCell>,
+			tab === 'all' && (
+				<GenericTableHeaderCell
+					w='x100'
+					key='status'
+					direction={sortDirection}
+					active={sortBy === 'status'}
+					onClick={setSort}
+					sort='status'
+				>
+					{t('Registration_status')}
+				</GenericTableHeaderCell>
+			),
 		],
-		[mediaQuery, setSort, sortBy, sortDirection, t],
+		[mediaQuery, setSort, sortBy, sortDirection, t, tab],
 	);
 
-	if (phase === AsyncStatePhase.REJECTED) {
-		return null;
-	}
-
+	const handleSearchTextChange = useCallback(
+		({ text }) => {
+			setUserFilters({ text });
+		},
+		[setUserFilters],
+	);
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
-			{phase === AsyncStatePhase.LOADING && (
+			<FilterByText shouldAutoFocus placeholder={t('Search_Users')} onChange={handleSearchTextChange} />
+			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
-					<GenericTableBody>{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={5} />}</GenericTableBody>
+					<GenericTableBody>
+						<GenericTableLoadingTable headerCells={5} />
+					</GenericTableBody>
 				</GenericTable>
 			)}
-			{value?.users && value.users.length > 0 && phase === AsyncStatePhase.RESOLVED && (
+
+			{isError && (
+				<States>
+					<StatesIcon name='warning' variation='danger' />
+					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+					<StatesActions>
+						<StatesAction onClick={onReload}>{t('Reload_page')}</StatesAction>
+					</StatesActions>
+				</States>
+			)}
+
+			{isSuccess && data.users.length === 0 && <GenericNoResults />}
+
+			{isSuccess && !!data?.users && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{value?.users.map((user) => (
-								<UsersTableRow key={user._id} onClick={handleClick} mediaQuery={mediaQuery} user={user} />
+							{data.users.map((user) => (
+								<UsersTableRow key={user._id} onClick={handleClickOrKeyDown} mediaQuery={mediaQuery} user={user} tab={tab} />
 							))}
 						</GenericTableBody>
 					</GenericTable>
@@ -136,18 +168,12 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={value?.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
+						count={data?.total || 0}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
 						{...paginationProps}
 					/>
 				</>
-			)}
-			{phase === AsyncStatePhase.RESOLVED && value?.users.length === 0 && (
-				<States>
-					<StatesIcon name='magnifier' />
-					<StatesTitle>{t('No_results_found')}</StatesTitle>
-				</States>
 			)}
 		</>
 	);

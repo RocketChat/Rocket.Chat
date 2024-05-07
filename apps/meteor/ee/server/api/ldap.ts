@@ -1,6 +1,6 @@
-import { hasPermission } from '../../../app/authorization/server';
-import { settings } from '../../../app/settings/server';
 import { API } from '../../../app/api/server/api';
+import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
+import { settings } from '../../../app/settings/server';
 import { LDAPEE } from '../sdk';
 
 API.v1.addRoute(
@@ -16,7 +16,7 @@ API.v1.addRoute(
 				throw new Error('error-invalid-user');
 			}
 
-			if (!hasPermission(this.userId, 'sync-auth-services-users')) {
+			if (!(await hasPermissionAsync(this.userId, 'sync-auth-services-users'))) {
 				throw new Error('error-not-authorized');
 			}
 

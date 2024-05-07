@@ -1,16 +1,15 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 
-import { Meteor } from 'meteor/meteor';
-import { WebApp } from 'meteor/webapp';
-import { RoutePolicy } from 'meteor/routepolicy';
-import bodyParser from 'body-parser';
-import fiber from 'fibers';
 import type { IIncomingMessage } from '@rocket.chat/core-typings';
+import bodyParser from 'body-parser';
+import { Meteor } from 'meteor/meteor';
+import { RoutePolicy } from 'meteor/routepolicy';
+import { WebApp } from 'meteor/webapp';
 
 import { SystemLogger } from '../../../server/lib/logger/system';
+import type { ISAMLAction } from './definition/ISAMLAction';
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
-import type { ISAMLAction } from './definition/ISAMLAction';
 
 RoutePolicy.declare('/_saml/', 'network');
 
@@ -39,12 +38,12 @@ const samlUrlToObject = function (url: string | undefined): ISAMLAction | null {
 	return result;
 };
 
-const middleware = function (req: IIncomingMessage, res: ServerResponse, next: (err?: any) => void): void {
+const middleware = async function (req: IIncomingMessage, res: ServerResponse, next: (err?: any) => void): Promise<void> {
 	// Make sure to catch any exceptions because otherwise we'd crash
 	// the runner
 	try {
 		const samlObject = samlUrlToObject(req.url);
-		if (!samlObject || !samlObject.serviceName) {
+		if (!samlObject?.serviceName) {
 			next();
 			return;
 		}
@@ -59,7 +58,7 @@ const middleware = function (req: IIncomingMessage, res: ServerResponse, next: (
 			throw new Error('SAML Service Provider not found.');
 		}
 
-		SAML.processRequest(req, res, service, samlObject);
+		await SAML.processRequest(req, res, service, samlObject);
 	} catch (err) {
 		// @ToDo: Ideally we should send some error message to the client, but there's no way to do it on a redirect right now.
 		SystemLogger.error(err);
@@ -73,10 +72,6 @@ const middleware = function (req: IIncomingMessage, res: ServerResponse, next: (
 };
 
 // Listen to incoming SAML http requests
-WebApp.connectHandlers.use(bodyParser.json()).use(function (req: IncomingMessage, res: ServerResponse, next: (err?: any) => void) {
-	// Need to create a fiber since we're using synchronous http calls and nothing
-	// else is wrapping this in a fiber automatically
-	fiber(function () {
-		middleware(req as IIncomingMessage, res, next);
-	}).run();
-});
+WebApp.connectHandlers
+	.use(bodyParser.json())
+	.use(async (req: IncomingMessage, res: ServerResponse, next: (err?: any) => void) => middleware(req as IIncomingMessage, res, next));
