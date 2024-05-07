@@ -35,6 +35,8 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 	test.afterAll(async () => {
 		await poHomeOmnichannel.page?.close();
 		await agent.delete();
+		await pageLivechat1.page.close();
+		await pageLivechat2.page.close();
 	});
 
 	test('OC - Livechat - Send messages, close chat and start again 2 tabs', async () => {
