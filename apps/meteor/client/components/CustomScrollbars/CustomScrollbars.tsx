@@ -1,3 +1,4 @@
+import { Palette } from '@rocket.chat/fuselage';
 import type { ScrollValues } from 'rc-scrollbars';
 import { Scrollbars } from 'rc-scrollbars';
 import type { MutableRefObject, CSSProperties, ReactNode, ReactElement } from 'react';
@@ -43,7 +44,7 @@ const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function
 				overflowX ? undefined : (props): ReactElement => <div {...props} className='track-horizontal' style={{ display: 'none' }} />
 			}
 			renderThumbVertical={({ style, ...props }): JSX.Element => (
-				<div {...props} style={{ ...style, backgroundColor: 'rgba(0, 0, 0, 0.5)', borderRadius: '7px' }} />
+				<div {...props} style={{ ...style, backgroundColor: Palette.stroke['stroke-dark'].toString(), borderRadius: '4px' }} />
 			)}
 			children={children}
 			ref={refSetter}
