@@ -25,22 +25,23 @@ async function onRoomChangedById<T extends IRocketChatRecord>(
 	}
 
 	const eligibleIds = Array.isArray(ids) ? ids : [ids];
-	const items = await Rooms.find({ _id: { $in: eligibleIds } }).toArray();
+	const items = await Rooms.findByIds(eligibleIds).toArray();
 
 	for (const item of items) {
 		void api.broadcast('watch.rooms', { clientAction, room: item });
 	}
 }
 
-async function onRoomChangedByUserReferences<T extends IRoom>(
-	references: T['u']['_id' | 'username'][],
+async function onRoomChangedByUsernamesOrUids<T extends IRoom>(
+	uids: T['u']['_id'][],
+	usernames: T['u']['username'][],
 	clientAction: ClientAction = 'updated',
 ) {
 	if (dbWatchersDisabled) {
 		return;
 	}
 
-	const items = await Rooms.find({ $or: [{ usernames: { $in: references } }, { uids: { $in: references } }] }).toArray();
+	const items = await Rooms.findByUsernamesOrUids(uids, usernames).toArray();
 
 	for (const item of items) {
 		void api.broadcast('watch.rooms', { clientAction, room: item });
@@ -52,7 +53,7 @@ async function onRoomChangedByUserDM<T extends IRoom>(userId: T['u']['_id'], cli
 		return;
 	}
 
-	const items = await Rooms.find({ uids: { $size: 2, $in: [userId] }, t: 'd' }).toArray();
+	const items = await Rooms.findDMsByUids([userId]).toArray();
 
 	for (const item of items) {
 		void api.broadcast('watch.rooms', { clientAction, room: item });
@@ -62,6 +63,6 @@ async function onRoomChangedByUserDM<T extends IRoom>(userId: T['u']['_id'], cli
 export const notifyListener = {
 	onRoomChanged,
 	onRoomChangedById,
-	onRoomChangedByUserReferences,
+	onRoomChangedByUsernamesOrUids,
 	onRoomChangedByUserDM,
 };

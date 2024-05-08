@@ -136,7 +136,7 @@ async function updateUsernameReferences({
 
 		await LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 
-		void notifyListener.onRoomChangedByUserReferences([user._id, previousUsername, username]);
+		void notifyListener.onRoomChangedByUsernamesOrUids([user._id], [previousUsername, username]);
 	}
 
 	// update other references if either the name or username has changed
