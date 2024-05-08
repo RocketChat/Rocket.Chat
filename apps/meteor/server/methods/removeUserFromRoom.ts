@@ -91,7 +91,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 
 	setImmediate(async () => {
 		void afterRemoveFromRoomCallback.run({ removedUser, userWhoRemoved: fromUser }, room);
-		void notifyListener.onRoomChangedById(data.rid);
+		void notifyListener.onRoomChanged(room);
 	});
 
 	return true;
