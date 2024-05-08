@@ -25,9 +25,9 @@ async function onRoomChangedById<T extends IRocketChatRecord>(
 	}
 
 	const eligibleIds = Array.isArray(ids) ? ids : [ids];
-	const items = await Rooms.findByIds(eligibleIds).toArray();
+	const items = Rooms.findByIds(eligibleIds);
 
-	for (const item of items) {
+	for await (const item of items) {
 		void api.broadcast('watch.rooms', { clientAction, room: item });
 	}
 }
@@ -41,9 +41,9 @@ async function onRoomChangedByUsernamesOrUids<T extends IRoom>(
 		return;
 	}
 
-	const items = await Rooms.findByUsernamesOrUids(uids, usernames).toArray();
+	const items = Rooms.findByUsernamesOrUids(uids, usernames);
 
-	for (const item of items) {
+	for await (const item of items) {
 		void api.broadcast('watch.rooms', { clientAction, room: item });
 	}
 }
@@ -53,9 +53,9 @@ async function onRoomChangedByUserDM<T extends IRoom>(userId: T['u']['_id'], cli
 		return;
 	}
 
-	const items = await Rooms.findDMsByUids([userId]).toArray();
+	const items = Rooms.findDMsByUids([userId]);
 
-	for (const item of items) {
+	for await (const item of items) {
 		void api.broadcast('watch.rooms', { clientAction, room: item });
 	}
 }

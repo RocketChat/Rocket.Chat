@@ -137,13 +137,14 @@ export const Contacts = {
 		if (rooms?.length) {
 			for await (const room of rooms) {
 				const { _id: rid } = room;
-				if (await Rooms.setFnameById(rid, name)) {
-					await Promise.all([
-						LivechatInquiry.setNameByRoomId(rid, name),
-						Subscriptions.updateDisplayNameByRoomId(rid, name),
-						notifyListener.onRoomChangedById(rid),
-					]);
-				}
+
+				await Promise.all([
+					Rooms.setFnameById(rid, name),
+					LivechatInquiry.setNameByRoomId(rid, name),
+					Subscriptions.updateDisplayNameByRoomId(rid, name),
+				]);
+
+				void notifyListener.onRoomChangedById(rid);
 			}
 		}
 
