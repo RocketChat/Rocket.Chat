@@ -38,7 +38,7 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 
 	if (dbInquiry.status === 'ready') {
 		logger.debug(`Inquiry with id ${inquiry._id} is ready. Delegating to agent ${inquiryAgent?.username}`);
-		return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent);
+		return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent, undefined, room);
 	}
 };
 
