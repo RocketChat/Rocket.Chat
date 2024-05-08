@@ -225,7 +225,7 @@ export function addSettings(): Promise<void> {
 						},
 					);
 
-					await this.add('LDAP_Validate_Rooms_For_Each_Login', false, {
+					await this.add('LDAP_Validate_Rooms_For_Each_Login', true, {
 						type: 'boolean',
 						enableQuery: syncRoomsQuery,
 						invalidValue: false,
