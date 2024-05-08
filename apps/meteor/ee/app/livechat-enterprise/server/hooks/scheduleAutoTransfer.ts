@@ -86,10 +86,6 @@ settings.watch('Livechat_auto_transfer_chat_timeout', (value) => {
 				return;
 			}
 
-			if (!autoTransferTimeout || autoTransferTimeout <= 0) {
-				return inquiry;
-			}
-
 			// const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, autoTransferredAt: 1, autoTransferOngoing: 1 } });
 			// if (!room) {
 			// 	return inquiry;
