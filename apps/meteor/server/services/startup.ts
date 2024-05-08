@@ -30,7 +30,7 @@ import { UiKitCoreAppService } from './uikit-core-app/service';
 import { UploadService } from './upload/service';
 import { UserService } from './user/service';
 import { VideoConfService } from './video-conference/service';
-import { VoipService } from './voip/service';
+import { VoipAsteriskService } from './voip-asterisk/service';
 
 export const registerServices = async (): Promise<void> => {
 	const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
@@ -46,7 +46,7 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new NPSService());
 	api.registerService(new RoomService());
 	api.registerService(new SAUMonitorService());
-	api.registerService(new VoipService(db));
+	api.registerService(new VoipAsteriskService(db));
 	api.registerService(new OmnichannelService());
 	api.registerService(new OmnichannelVoipService());
 	api.registerService(new TeamService());
