@@ -144,4 +144,11 @@ export class HomeSidenav {
 		await this.inputChannelName.type(name);
 		await this.btnCreate.click();
 	}
+
+	async createEncryptedChannel(name: string) {
+		await this.openNewByLabel('Channel');
+		await this.inputChannelName.type(name);
+		await this.checkboxEncryption.click();
+		await this.btnCreate.click();
+	}
 }
