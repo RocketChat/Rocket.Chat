@@ -7,15 +7,6 @@ import { Users, storeState, restoreState } from './fixtures/userStates';
 import { AccountProfile, HomeChannel } from './page-objects';
 import { test, expect } from './utils/test';
 
-// OK Enable e2ee on admin
-// OK Test banner and check password, logout and use password
-// OK Set new password, logout and use the password
-// OK Reset key, should logout, login and check banner
-// OK Create channel encrypted and send message
-// OK Disable encryption and send message
-// OK Enable encryption and send message
-// OK Create channel not encrypted, encrypt end send message
-
 test.use({ storageState: Users.admin.state });
 
 test.describe.serial('e2e-encryption initial setup', () => {
@@ -79,7 +70,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await page.locator('role=banner >> text="Enter your E2E password"').click();
 
-		await page.locator('#modal-root input').type(password);
+		await page.locator('#modal-root input').fill(password);
 
 		await page.locator('#modal-root .rcx-button--primary').click();
 
@@ -96,8 +87,8 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await poAccountProfile.securityE2EEncryptionSection.click();
 		await poAccountProfile.securityE2EEncryptionPassword.click();
-		await poAccountProfile.securityE2EEncryptionPassword.type(newPassword);
-		await poAccountProfile.securityE2EEncryptionPasswordConfirmation.type(newPassword);
+		await poAccountProfile.securityE2EEncryptionPassword.fill(newPassword);
+		await poAccountProfile.securityE2EEncryptionPasswordConfirmation.fill(newPassword);
 		await poAccountProfile.securityE2EEncryptionSavePasswordButton.click();
 
 		await poAccountProfile.btnClose.click();
@@ -112,13 +103,13 @@ test.describe.serial('e2e-encryption initial setup', () => {
 
 		await page.locator('role=banner >> text="Enter your E2E password"').click();
 
-		await page.locator('#modal-root input').type(password);
+		await page.locator('#modal-root input').fill(password);
 
 		await page.locator('#modal-root .rcx-button--primary').click();
 
 		await page.locator('role=banner >> text="Wasn\'t possible to decode your encryption key to be imported."').click();
 
-		await page.locator('#modal-root input').type(newPassword);
+		await page.locator('#modal-root input').fill(newPassword);
 
 		await page.locator('#modal-root .rcx-button--primary').click();
 
@@ -152,7 +143,7 @@ test.describe.serial('e2e-encryption', () => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.type(channelName);
+		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
 		await poHomeChannel.sidenav.checkboxEncryption.click();
 		await poHomeChannel.sidenav.btnCreate.click();
 
@@ -195,7 +186,7 @@ test.describe.serial('e2e-encryption', () => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.type(channelName);
+		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
 		await poHomeChannel.sidenav.btnCreate.click();
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
@@ -383,10 +374,10 @@ test.describe.serial('e2e-encryption', () => {
 			await expect(page.locator('role=button[name="Login"]')).toBeVisible();
 			await expect(anotherClientPage.locator('role=button[name="Login"]')).toBeVisible();
 
-			// await expect(page.locator('role=banner')).toContainText('Your session was ended on this device, please log in again to continue.');
-			// await expect(anotherClientPage.locator('role=banner')).toContainText(
-			// 	'Your session was ended on this device, please log in again to continue.',
-			// );
+			await expect(page.locator('role=banner')).toContainText('Your session was ended on this device, please log in again to continue.');
+			await expect(anotherClientPage.locator('role=banner')).toContainText(
+				'Your session was ended on this device, please log in again to continue.',
+			);
 		});
 	});
 });
@@ -433,7 +424,7 @@ test.describe.serial('e2ee room setup', () => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.type(channelName);
+		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
 		await poHomeChannel.sidenav.checkboxEncryption.click();
 		await poHomeChannel.sidenav.btnCreate.click();
 
@@ -481,7 +472,7 @@ test.describe.serial('e2ee room setup', () => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.type(channelName);
+		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
 		await poHomeChannel.sidenav.checkboxEncryption.click();
 		await poHomeChannel.sidenav.btnCreate.click();
 
@@ -522,7 +513,7 @@ test.describe.serial('e2ee room setup', () => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
-		await poHomeChannel.sidenav.inputChannelName.type(channelName);
+		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
 		await poHomeChannel.sidenav.checkboxEncryption.click();
 		await poHomeChannel.sidenav.btnCreate.click();
 
