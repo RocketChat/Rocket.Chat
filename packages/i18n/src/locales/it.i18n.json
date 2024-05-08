@@ -1981,7 +1981,6 @@
   "LDAP_Sync_Now_Description": "Eseguirà **Sincronizzazione di sfondo** ora anziché attendere **Intervallo di sincronizzazione** anche se **Sincronizzazione in background** è False.  \n Questa azione è asincrona, consulta i registri per ulteriori informazioni sul processi",
   "LDAP_Sync_User_Active_State_Nothing": "Non fare nulla",
   "LDAP_Sync_User_Avatar": "Sincronizzazione Avatar Utenti",
-  "LDAP_Sync_User_Data_Channels_Admin": "Amministratore Canale",
   "LDAP_Timeout": "Timeout (ms)",
   "LDAP_Timeout_Description": "Quanti chilometri quanti aspettano un risultato di ricerca prima di restituire un errore",
   "LDAP_Unique_Identifier_Field": "Campo Identificativo Univoco",

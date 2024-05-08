@@ -1776,7 +1776,6 @@
   "LDAP_Merge_Existing_Users_Description": "* احتیاط! * هنگام وارد کردن کاربر از LDAP و کاربر با همان نام کاربری در حال حاضر اطلاعات LDAP و رمز عبور را به کاربر موجود تنظیم شده است.",
   "LDAP_Port": "درگاه",
   "LDAP_Port_Description": "درگاه برای دسترسی به LDAP. به عنوان مثال: `` 389` یا 636` برای LDAPS",
-  "LDAP_Query_To_Get_User_Teams": "کوئری LDAP برای به دست آوردن گروه های کاربر",
   "LDAP_Reconnect": "دوباره متصل شوید",
   "LDAP_Reconnect_Description": "سعی کنید به صورت خودکار دوباره وصل شوید زمانی که اتصال بعضی از دلایل هنگام اجرای عملیات قطع شود",
   "LDAP_Reject_Unauthorized": "رد غیر مجاز",
