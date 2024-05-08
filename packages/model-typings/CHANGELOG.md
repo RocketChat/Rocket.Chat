@@ -21,6 +21,15 @@
 
   - @rocket.chat/core-typings@6.8.0-rc.0
 
+## 0.3.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.2
+  </details>
+
 ## 0.3.8
 
 ### Patch Changes

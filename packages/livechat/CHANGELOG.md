@@ -26,6 +26,15 @@
   - @rocket.chat/random@1.2.2
   - @rocket.chat/ui-kit@0.33.0
 
+## 1.15.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.2
+  </details>
+
 ## 1.15.1
 
 ### Patch Changes

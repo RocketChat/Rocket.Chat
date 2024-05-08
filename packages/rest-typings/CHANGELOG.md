@@ -29,6 +29,15 @@
   - @rocket.chat/message-parser@0.31.29
   - @rocket.chat/ui-kit@0.33.0
 
+## 6.7.2
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.2
+  </details>
+
+> > > > > > > origin/master
+
 ## 6.7.1
 
 ### Patch Changes
