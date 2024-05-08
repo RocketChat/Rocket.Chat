@@ -253,7 +253,14 @@ export const RoutingManager: Routing = {
 		const inq = await this.assignAgent(inquiry as InquiryWithAgentInfo, agent);
 		logger.info(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
 
-		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);
+		callbacks.runAsync(
+			'livechat.afterTakeInquiry',
+			{
+				inquiry: inq,
+				room,
+			},
+			agent,
+		);
 
 		return LivechatRooms.findOneById(rid);
 	},
