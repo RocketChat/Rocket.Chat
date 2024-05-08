@@ -1,4 +1,4 @@
-import type { IImportUser, ILDAPEntry, IUser } from '@rocket.chat/core-typings';
+import type { IImportUser, ILDAPEntry, IUser, RequiredField } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
@@ -91,11 +91,11 @@ Meteor.startup(async () => {
 		callbacks.add(
 			'onLDAPLogin',
 			async ({ user, ldapUser, isNewUser }: { user: IUser; ldapUser: ILDAPEntry; isNewUser: boolean }, ldap?: LDAPConnection) => {
-				if (!ldap) {
+				if (!ldap || user.username === undefined) {
 					return;
 				}
 
-				await LDAPEEManager.advancedSyncForUser(ldap, user, isNewUser, ldapUser.dn);
+				await LDAPEEManager.advancedSyncForUser(ldap, user as RequiredField<IUser, 'username'>, isNewUser, ldapUser.dn);
 			},
 			callbacks.priority.MEDIUM,
 			'advancedLDAPSync',

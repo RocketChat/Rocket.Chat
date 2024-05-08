@@ -805,19 +805,14 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	async insertMemberOnTeams(userId: string, teamIds: Array<string>): Promise<void> {
 		const inviter = { _id: 'rocket.cat', username: 'rocket.cat' };
+		const user = await Users.findOneById(userId);
+		const teams = await Team.findByIds(teamIds, { projection: { roomId: 1 } }).toArray();
 
-		await Promise.all(
-			teamIds.map(async (teamId) => {
-				const team = await Team.findOneById(teamId);
-				const user = await Users.findOneById(userId);
+		if (!teams.length || !user) {
+			return;
+		}
 
-				if (!team || !user) {
-					return;
-				}
-
-				await addUserToRoom(team.roomId, user, inviter, false);
-			}),
-		);
+		await Promise.all(teams.map((team) => addUserToRoom(team.roomId, user, inviter, false)));
 	}
 
 	async removeMemberFromTeams(userId: string, teamIds: Array<string>): Promise<void> {

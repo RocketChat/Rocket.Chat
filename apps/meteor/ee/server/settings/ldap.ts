@@ -179,87 +179,62 @@ export function addSettings(): Promise<void> {
 					});
 				});
 
-				await this.section('LDAP_DataSync_Channels', async function () {
-					await this.add('LDAP_Sync_User_Data_Channels', false, {
+				await this.section('LDAP_DataSync_Rooms', async function () {
+					await this.add('LDAP_Sync_User_Data_Rooms', false, {
 						type: 'boolean',
 						enableQuery,
 						invalidValue: false,
 					});
 
-					const syncChannelsQuery = [enableQuery, { _id: 'LDAP_Sync_User_Data_Channels', value: true }];
+					const syncRoomsQuery = [enableQuery, { _id: 'LDAP_Sync_User_Data_Rooms', value: true }];
 
-					await this.add('LDAP_Sync_User_Data_Channels_Admin', 'rocket.cat', {
+					await this.add('LDAP_Sync_User_Data_Rooms_Admin', 'rocket.cat', {
 						type: 'string',
-						enableQuery: syncChannelsQuery,
+						enableQuery: syncRoomsQuery,
 						invalidValue: 'rocket.cat',
 					});
 
-					await this.add('LDAP_Sync_User_Data_Channels_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', {
+					await this.add('LDAP_Sync_User_Data_Rooms_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', {
 						type: 'string',
-						enableQuery: syncChannelsQuery,
+						enableQuery: syncRoomsQuery,
 						invalidValue: '',
 					});
 
-					await this.add('LDAP_Sync_User_Data_Channels_BaseDN', '', {
+					await this.add('LDAP_Sync_User_Data_Rooms_BaseDN', '', {
 						type: 'string',
-						enableQuery: syncChannelsQuery,
+						enableQuery: syncRoomsQuery,
+						invalidValue: '',
+					});
+
+					await this.add('LDAP_Group_Name_Field', 'ou,cn', {
+						type: 'string',
+						enableQuery: syncRoomsQuery,
 						invalidValue: '',
 					});
 
 					await this.add(
-						'LDAP_Sync_User_Data_ChannelsMap',
+						'LDAP_Sync_User_Data_RoomsMap',
 						'{\n\t"employee": "general",\n\t"techsupport": [\n\t\t"helpdesk",\n\t\t"support"\n\t]\n}',
 						{
 							type: 'code',
 							multiline: true,
 							public: false,
 							code: 'application/json',
-							enableQuery: syncChannelsQuery,
+							enableQuery: syncRoomsQuery,
 							invalidValue: '',
 						},
 					);
 
-					await this.add('LDAP_Sync_User_Data_Channels_Enforce_AutoChannels', false, {
+					await this.add('LDAP_Validate_Rooms_For_Each_Login', false, {
 						type: 'boolean',
-						enableQuery: syncChannelsQuery,
-						invalidValue: false,
-					});
-				});
-
-				await this.section('LDAP_DataSync_Teams', async function () {
-					await this.add('LDAP_Enable_LDAP_Groups_To_RC_Teams', false, {
-						type: 'boolean',
-						enableQuery: { _id: 'LDAP_Enable', value: true },
+						enableQuery: syncRoomsQuery,
 						invalidValue: false,
 					});
 
-					const enableQueryTeams = { _id: 'LDAP_Enable_LDAP_Groups_To_RC_Teams', value: true };
-
-					await this.add('LDAP_Groups_To_Rocket_Chat_Teams', '{}', {
-						type: 'code',
-						enableQuery: enableQueryTeams,
-						invalidValue: '{}',
-					});
-					await this.add('LDAP_Validate_Teams_For_Each_Login', false, {
+					await this.add('LDAP_Sync_User_Data_Rooms_Auto_Leave', false, {
 						type: 'boolean',
-						enableQuery: enableQueryTeams,
+						enableQuery: syncRoomsQuery,
 						invalidValue: false,
-					});
-					await this.add('LDAP_Teams_BaseDN', '', {
-						type: 'string',
-						enableQuery: enableQueryTeams,
-						invalidValue: '',
-					});
-					await this.add('LDAP_Teams_Name_Field', 'ou,cn', {
-						type: 'string',
-						enableQuery: enableQueryTeams,
-						invalidValue: '',
-					});
-
-					await this.add('LDAP_Query_To_Get_User_Teams', '(&(ou=*)(uniqueMember=#{userdn}))', {
-						type: 'string',
-						enableQuery: enableQueryTeams,
-						invalidValue: '',
 					});
 				});
 			},

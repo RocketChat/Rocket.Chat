@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
-import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser, IImportRecord } from '@rocket.chat/core-typings';
-import { Users, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
+import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser, IImportRecord, ITeam, RequiredField } from '@rocket.chat/core-typings';
+import { Users, Roles, Rooms } from '@rocket.chat/models';
 import type ldapjs from 'ldapjs';
 
 import type {
@@ -142,11 +142,15 @@ export class LDAPEEManager extends LDAPManager {
 		}
 	}
 
-	public static async advancedSyncForUser(ldap: LDAPConnection, user: IUser, isNewRecord: boolean, dn: string): Promise<void> {
+	public static async advancedSyncForUser(
+		ldap: LDAPConnection,
+		user: RequiredField<IUser, 'username'>,
+		isNewRecord: boolean,
+		dn: string,
+	): Promise<void> {
 		try {
 			await this.syncUserRoles(ldap, user, dn);
-			await this.syncUserChannels(ldap, user, dn);
-			await this.syncUserTeams(ldap, user, dn, isNewRecord);
+			await this.syncUserRoomsAndTeams(ldap, user, dn, isNewRecord);
 		} catch (e) {
 			logger.debug(`Advanced Sync failed for user: ${dn}`);
 			logger.error(e);
@@ -160,12 +164,12 @@ export class LDAPEEManager extends LDAPManager {
 		isNewRecord: boolean,
 	): Promise<void> {
 		const user = await converter.findExistingUser(importUser);
-		if (!user?.username) {
+		if (!user?.username || user.username === undefined) {
 			return;
 		}
 
 		const dn = importUser.importIds[0];
-		return this.advancedSyncForUser(ldap, user, isNewRecord, dn);
+		return this.advancedSyncForUser(ldap, user as RequiredField<IUser, 'username'>, isNewRecord, dn);
 	}
 
 	private static async isUserInGroup(
@@ -280,18 +284,18 @@ export class LDAPEEManager extends LDAPManager {
 		});
 	}
 
-	private static async createRoomForSync(channel: string): Promise<IRoom | undefined> {
-		logger.debug(`Channel '${channel}' doesn't exist, creating it.`);
+	private static async createRoomForSync(roomName: string, members: string[] = []): Promise<IRoom | undefined> {
+		logger.debug(`Channel '${roomName}' doesn't exist, creating it.`);
 
-		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
+		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Rooms_Admin') || '';
 
 		const user = await Users.findOneByUsernameIgnoringCase(roomOwner);
 
-		const room = await createRoom('c', channel, user, [], false, false, {
+		const room = await createRoom('c', roomName, user, members, false, false, {
 			customFields: { ldap: true },
 		});
 		if (!room?.rid) {
-			logger.error(`Unable to auto-create channel '${channel}' during ldap sync.`);
+			logger.error(`Unable to auto-create channel '${roomName}' during ldap sync.`);
 			return;
 		}
 
@@ -299,98 +303,24 @@ export class LDAPEEManager extends LDAPManager {
 		return room;
 	}
 
-	private static async syncUserChannels(ldap: LDAPConnection, user: IUser, dn: string): Promise<void> {
-		const syncUserChannels = settings.get<boolean>('LDAP_Sync_User_Data_Channels') ?? false;
-		const syncUserChannelsRemove = settings.get<boolean>('LDAP_Sync_User_Data_Channels_Enforce_AutoChannels') ?? false;
-		const syncUserChannelsFieldMap = (settings.get<string>('LDAP_Sync_User_Data_ChannelsMap') ?? '').trim();
-		const syncUserChannelsFilter = (settings.get<string>('LDAP_Sync_User_Data_Channels_Filter') ?? '').trim();
-		const syncUserChannelsBaseDN = (settings.get<string>('LDAP_Sync_User_Data_Channels_BaseDN') ?? '').trim();
-
-		if (!syncUserChannels || !syncUserChannelsFieldMap) {
-			logger.debug('not syncing groups to channels');
-			return;
-		}
-
-		const fieldMap = this.parseJson(syncUserChannelsFieldMap);
-		if (!fieldMap) {
-			logger.debug('missing group channel mapping');
-			return;
-		}
-
-		const { username } = user;
-		if (!username) {
-			return;
-		}
-
-		logger.debug('syncing user channels');
-		const ldapFields = Object.keys(fieldMap);
-		const channelsToAdd = new Set<string>();
-		const channelsToRemove = new Set<string>();
-
-		for await (const ldapField of ldapFields) {
-			if (!fieldMap[ldapField]) {
-				continue;
-			}
-
-			const isUserInGroup = await this.isUserInGroup(ldap, syncUserChannelsBaseDN, syncUserChannelsFilter, { dn, username }, ldapField);
-
-			const channels: Array<string> = [].concat(fieldMap[ldapField]);
-			for await (const channel of channels) {
-				try {
-					const name = await getValidRoomName(channel.trim(), undefined, { allowDuplicates: true });
-					const room = (await Rooms.findOneByNonValidatedName(name)) || (await this.createRoomForSync(channel));
-					if (!room) {
-						return;
-					}
-
-					if (isUserInGroup) {
-						if (room.teamMain) {
-							logger.error(`Can't add user to channel ${channel} because it is a team.`);
-						} else {
-							channelsToAdd.add(room._id);
-						}
-					} else if (syncUserChannelsRemove && !room.teamMain) {
-						channelsToRemove.add(room._id);
-					}
-				} catch (e) {
-					logger.debug(`Failed to sync user room, user = ${username}, channel = ${channel}`);
-					logger.error(e);
-				}
-			}
-		}
-
-		for await (const rid of channelsToAdd) {
-			await addUserToRoom(rid, user);
-			logger.debug(`Synced user channel ${rid} from LDAP for ${username}`);
-		}
-
-		for await (const rid of channelsToRemove) {
-			if (channelsToAdd.has(rid)) {
-				return;
-			}
-
-			const subscription = await SubscriptionsRaw.findOneByRoomIdAndUserId(rid, user._id);
-			if (subscription) {
-				await removeUserFromRoom(rid, user);
-				logger.debug(`Removed user ${username} from channel ${rid}`);
-			}
-		}
-	}
-
-	private static async syncUserTeams(ldap: LDAPConnection, user: IUser, dn: string, isNewRecord: boolean): Promise<void> {
+	private static async syncUserRoomsAndTeams(
+		ldap: LDAPConnection,
+		user: RequiredField<IUser, 'username'>,
+		dn: string,
+		isNewRecord: boolean,
+	): Promise<void> {
 		if (!user.username) {
 			return;
 		}
 
-		const mapTeams =
-			settings.get<boolean>('LDAP_Enable_LDAP_Groups_To_RC_Teams') &&
-			(isNewRecord || settings.get<boolean>('LDAP_Validate_Teams_For_Each_Login'));
-		if (!mapTeams) {
+		const mapRooms =
+			settings.get<boolean>('LDAP_Sync_User_Data_Rooms') && (isNewRecord || settings.get<boolean>('LDAP_Validate_Rooms_For_Each_Login'));
+		if (!mapRooms) {
 			return;
 		}
 
-		const ldapUserTeams = await this.getLdapTeamsByUsername(ldap, user.username, dn);
-		const mapJson = settings.get<string>('LDAP_Groups_To_Rocket_Chat_Teams');
+		const ldapUserGroups = await this.getLdapGroupsByUsername(ldap, user.username, dn);
+		const mapJson = settings.get<string>('LDAP_Sync_User_Data_RoomsMap');
 		if (!mapJson) {
 			return;
 		}
@@ -399,13 +329,22 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const teamNames = this.getRocketChatTeamsByLdapTeams(map, ldapUserTeams);
+		const userRoomNames = this.getMappedRocketChatGroupsByLdapGroups(map, ldapUserGroups);
+		const roomNamesToSync = [...new Set(Object.values(map).flat())];
+		const teamsToSync = await Team.listByNames(roomNamesToSync, { projection: { _id: 1, name: 1 } });
 
-		const allTeamNames = [...new Set(Object.values(map).flat())];
-		const allTeams = await Team.listByNames(allTeamNames, { projection: { _id: 1, name: 1 } });
+		if (teamsToSync.length) {
+			await this.syncUserTeams(user, userRoomNames, teamsToSync);
+		}
 
-		const inTeamIds = allTeams.filter(({ name }) => teamNames.includes(name)).map(({ _id }) => _id);
-		const notInTeamIds = allTeams.filter(({ name }) => !teamNames.includes(name)).map(({ _id }) => _id);
+		const syncedTeamsNames = teamsToSync.map((team) => team.name);
+		await this.syncUserRooms(user, roomNamesToSync, userRoomNames, syncedTeamsNames);
+	}
+
+	private static async syncUserTeams(user: IUser, userMappedRoomNames: string[], teamsToSync: ITeam[]) {
+		const shouldAutoLeaveRooms = settings.get<boolean>('LDAP_Sync_User_Data_Rooms_Auto_Leave');
+		const inTeamIds = teamsToSync.filter(({ name }) => userMappedRoomNames.includes(name)).map(({ _id }) => _id);
+		const notInTeamIds = teamsToSync.filter(({ name }) => !userMappedRoomNames.includes(name)).map(({ _id }) => _id);
 
 		const currentTeams = await Team.listTeamsBySubscriberUserId(user._id, {
 			projection: { teamId: 1 },
@@ -415,18 +354,51 @@ export class LDAPEEManager extends LDAPManager {
 		const teamsToAdd = inTeamIds.filter((teamId) => !currentTeamIds?.includes(teamId));
 
 		await Team.insertMemberOnTeams(user._id, teamsToAdd);
-		if (teamsToRemove) {
+		if (shouldAutoLeaveRooms && teamsToRemove) {
 			await Team.removeMemberFromTeams(user._id, teamsToRemove);
 		}
 	}
 
-	private static getRocketChatTeamsByLdapTeams(mappedTeams: Record<string, string>, ldapUserTeams: Array<string>): Array<string> {
+	private static async syncUserRooms(
+		user: RequiredField<IUser, 'username'>,
+		roomNamesToSync: string[],
+		userMappedRoomNames: string[],
+		syncedTeamsNames: string[],
+	) {
+		const roomsNamesToSync = roomNamesToSync.filter((groupName) => !syncedTeamsNames.includes(groupName));
+		const roomsToSync = await Rooms.findByNamesOrFnames(roomsNamesToSync, false, { projection: { _id: 1, name: 1 } }).toArray();
+		const roomsToAdd = roomsToSync.filter((room) => room.name && userMappedRoomNames.includes(room.name));
+		const shouldAutoLeaveRooms = settings.get<boolean>('LDAP_Sync_User_Data_Rooms_Auto_Leave');
+
+		for await (const { _id: rid } of roomsToAdd) {
+			await addUserToRoom(rid, user);
+			logger.debug(`Synced user channel ${rid} from LDAP for ${user.username}`);
+		}
+
+		if (shouldAutoLeaveRooms) {
+			const roomsToRemove = roomsToSync.filter((room) => room.name && !userMappedRoomNames.includes(room.name));
+			for await (const { _id: rid } of roomsToRemove) {
+				await removeUserFromRoom(rid, user);
+				logger.debug(`Removed user ${user.username} from channel ${rid}`);
+			}
+		}
+
+		const syncedRoomsNames = roomsToSync.filter((room) => !!room.name).map((room) => room.name);
+		const roomsToCreate = roomsNamesToSync.filter((roomName) => !syncedRoomsNames.includes(roomName));
+
+		for await (const roomName of roomsToCreate) {
+			const name = await getValidRoomName(roomName.trim(), undefined, { allowDuplicates: true });
+			await this.createRoomForSync(name, [user.username]);
+		}
+	}
+
+	private static getMappedRocketChatGroupsByLdapGroups(mappedTeams: Record<string, string>, ldapUserTeams: Array<string>): Array<string> {
 		const mappedLdapTeams = Object.keys(mappedTeams);
 		const filteredTeams = ldapUserTeams.filter((ldapTeam) => mappedLdapTeams.includes(ldapTeam));
 
 		if (filteredTeams.length < ldapUserTeams.length) {
 			const unmappedLdapTeams = ldapUserTeams.filter((ldapTeam) => !mappedLdapTeams.includes(ldapTeam));
-			logger.error(`The following LDAP teams are not mapped in Rocket.Chat: "${unmappedLdapTeams.join(', ')}".`);
+			logger.error(`The following LDAP groups are not mapped in Rocket.Chat: "${unmappedLdapTeams.join(', ')}".`);
 		}
 
 		if (!filteredTeams.length) {
@@ -436,9 +408,9 @@ export class LDAPEEManager extends LDAPManager {
 		return [...new Set(filteredTeams.map((ldapTeam) => mappedTeams[ldapTeam]).flat())];
 	}
 
-	private static async getLdapTeamsByUsername(ldap: LDAPConnection, username: string, dn: string): Promise<Array<string>> {
-		const baseDN = (settings.get<string>('LDAP_Teams_BaseDN') ?? '').trim() || ldap.options.baseDN;
-		const query = settings.get<string>('LDAP_Query_To_Get_User_Teams');
+	private static async getLdapGroupsByUsername(ldap: LDAPConnection, username: string, dn: string): Promise<Array<string>> {
+		const baseDN = (settings.get<string>('LDAP_Sync_User_Data_Rooms_BaseDN') ?? '').trim() || ldap.options.baseDN;
+		const query = settings.get<string>('LDAP_Sync_User_Data_Rooms_Filter');
 		if (!query) {
 			return [];
 		}
@@ -449,7 +421,7 @@ export class LDAPEEManager extends LDAPManager {
 			sizeLimit: ldap.options.searchSizeLimit,
 		};
 
-		const attributeNames = (settings.get<string>('LDAP_Teams_Name_Field') ?? '').split(',').map((attributeName) => attributeName.trim());
+		const attributeNames = (settings.get<string>('LDAP_Group_Name_Field') ?? '').split(',').map((attributeName) => attributeName.trim());
 		if (!attributeNames.length) {
 			attributeNames.push('ou');
 		}

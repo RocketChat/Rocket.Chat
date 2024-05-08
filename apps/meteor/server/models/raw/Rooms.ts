@@ -562,6 +562,26 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
+	findByNamesOrFnames(
+		names: NonNullable<IRoom['name'] | IRoom['fname']>[],
+		teams = false,
+		options: FindOptions<IRoom> = {},
+	): FindCursor<IRoom> {
+		const query = {
+			$or: [
+				{
+					name: { $in: names },
+				},
+				{
+					fname: { $in: names },
+				},
+			],
+			...(!teams ? { teamMain: { $exists: false } } : {}),
+		};
+
+		return this.find(query, options);
+	}
+
 	findOneByJoinCodeAndId(joinCode: string, rid: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		const query: Filter<IRoom> = {
 			_id: rid,

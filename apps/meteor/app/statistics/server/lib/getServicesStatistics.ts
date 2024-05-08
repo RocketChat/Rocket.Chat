@@ -51,7 +51,7 @@ export async function getServicesStatistics(): Promise<Record<string, unknown>> 
 			syncRoles: settings.get('LDAP_Sync_User_Data_Roles'),
 			syncRolesAutoRemove: settings.get('LDAP_Sync_User_Data_Roles_AutoRemove'),
 			syncData: settings.get('LDAP_Sync_Custom_Fields'),
-			syncChannels: settings.get('LDAP_Sync_User_Data_Channels'),
+			syncChannels: settings.get('LDAP_Sync_User_Data_Rooms'),
 			syncAvatar: settings.get('LDAP_Sync_User_Avatar'),
 			groupFilter: settings.get('LDAP_Group_Filter_Enable'),
 			backgroundSync: {
