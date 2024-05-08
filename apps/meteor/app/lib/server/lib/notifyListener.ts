@@ -36,7 +36,7 @@ async function onRoomChangedByUsernamesOrUids<T extends IRoom>(
 	uids: T['u']['_id'][],
 	usernames: T['u']['username'][],
 	clientAction: ClientAction = 'updated',
-) {
+): Promise<void> {
 	if (dbWatchersDisabled) {
 		return;
 	}
@@ -48,7 +48,7 @@ async function onRoomChangedByUsernamesOrUids<T extends IRoom>(
 	}
 }
 
-async function onRoomChangedByUserDM<T extends IRoom>(userId: T['u']['_id'], clientAction: ClientAction = 'updated') {
+async function onRoomChangedByUserDM<T extends IRoom>(userId: T['u']['_id'], clientAction: ClientAction = 'updated'): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
 	}
