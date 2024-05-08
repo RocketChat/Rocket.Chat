@@ -1,6 +1,45 @@
 # @rocket.chat/meteor
 
+## 6.8.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#32348](https://github.com/RocketChat/Rocket.Chat/pull/32348)) Fixed an issue where translations would fallback to english some of the times.
+
+- ([#32374](https://github.com/RocketChat/Rocket.Chat/pull/32374)) Fixed an issue with some apps that didn't implement executeViewCloseHandler. This causes opened modals to be open forever on UI (unless Esc was clicked). This is because when the UI attempts to close it, it calls the aforementioned handler, and since it didn't exist, apps engine errored out.
+
+  This returned an empty response to the UI, which ignored the response and continued to show the view.
+
+- <details><summary>Updated dependencies [b94ca7c30b]:</summary>
+
+  - @rocket.chat/apps@0.0.5-rc.2
+  - @rocket.chat/core-services@0.3.14-rc.2
+  - @rocket.chat/core-typings@6.8.0-rc.2
+  - @rocket.chat/fuselage-ui-kit@6.0.0-rc.2
+  - @rocket.chat/rest-typings@6.8.0-rc.2
+  - @rocket.chat/presence@0.1.14-rc.2
+  - @rocket.chat/omnichannel-services@0.1.14-rc.2
+  - @rocket.chat/api-client@0.1.32-rc.2
+  - @rocket.chat/license@0.1.14-rc.2
+  - @rocket.chat/pdf-worker@0.0.38-rc.2
+  - @rocket.chat/cron@0.0.34-rc.2
+  - @rocket.chat/gazzodown@6.0.0-rc.2
+  - @rocket.chat/model-typings@0.4.0-rc.2
+  - @rocket.chat/ui-contexts@6.0.0-rc.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.0.38-rc.2
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/ui-avatar@2.0.0-rc.2
+  - @rocket.chat/ui-client@6.0.0-rc.2
+  - @rocket.chat/ui-video-conf@6.0.0-rc.2
+  - @rocket.chat/web-ui-registration@6.0.0-rc.2
+  - @rocket.chat/instance-status@0.0.38-rc.2
+  </details>
+
 ## 6.8.0-rc.1
+
 ### Patch Changes
 
 - Bump @rocket.chat/meteor version.
