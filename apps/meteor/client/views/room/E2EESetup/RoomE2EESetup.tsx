@@ -15,7 +15,6 @@ const RoomE2EESetup = () => {
 
 	const e2eeState = useE2EEState();
 	const e2eRoomState = useE2EERoomState(room._id);
-	// const isE2EEReady = e2eeState === E2EEState.READY;
 
 	const t = useTranslation();
 	const randomPassword = window.localStorage.getItem('e2e.randomPassword');
@@ -64,7 +63,6 @@ const RoomE2EESetup = () => {
 		);
 	}
 
-	// RoomBodyLoading
 	return <RoomBody />;
 };
 

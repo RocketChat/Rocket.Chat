@@ -176,8 +176,6 @@ test.describe.serial('e2e-encryption', () => {
 
 		await poHomeChannel.content.sendMessage('hello world not encrypted');
 
-		await page.waitForTimeout(10000);
-
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world not encrypted');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).not.toBeVisible();
 
