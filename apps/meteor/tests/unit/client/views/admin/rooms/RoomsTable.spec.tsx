@@ -1,5 +1,6 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import * as Hooks from '@rocket.chat/fuselage-hooks';
+import { MockedQueryClientWrapper as mockedQueryClientWrapper } from '@rocket.chat/mock-providers';
 import * as Contexts from '@rocket.chat/ui-contexts';
 import * as ReactQuery from '@tanstack/react-query';
 import '@testing-library/jest-dom';
@@ -9,8 +10,6 @@ import React from 'react';
 import sinon from 'sinon';
 
 import RoomsTable from '../../../../../../client/views/admin/rooms/RoomsTable';
-import { MockedQueryClientWrapper } from '@rocket.chat/mock-providers';
-
 
 jest.mock('../../../../../../client/views/admin/rooms/RoomRow', () => {
 	return ({ someProp }: any) => (
@@ -55,7 +54,7 @@ describe('RoomsTable', () => {
 			error: undefined,
 		});
 
-		render(<RoomsTable reload={{ current: sinon.fake() }} />, { wrapper: MockedQueryClientWrapper() });
+		render(<RoomsTable reload={{ current: sinon.fake() }} />, { wrapper: mockedQueryClientWrapper() });
 
 		expect(screen.queryByTestId('RoomGenericTableLoadingTable')).not.to.be.undefined;
 
@@ -87,7 +86,7 @@ describe('RoomsTable', () => {
 			error: undefined,
 			isSuccess: true,
 		});
-		render(<RoomsTable reload={{ current: sinon.fake() }} />, { wrapper: MockedQueryClientWrapper() });
+		render(<RoomsTable reload={{ current: sinon.fake() }} />, { wrapper: mockedQueryClientWrapper() });
 		expect(screen.getByText('No_results_found')).to.exist;
 		sinon.assert.calledOnceWithMatch(
 			useQueryStub,
@@ -117,7 +116,7 @@ describe('RoomsTable', () => {
 
 		useDebouncedValueStub.returns('Room');
 
-		render(<RoomsTable reload={{ current: sinon.fake() }} />, { wrapper: MockedQueryClientWrapper() });
+		render(<RoomsTable reload={{ current: sinon.fake() }} />, { wrapper: mockedQueryClientWrapper() });
 
 		expect(screen.queryByTestId('RoomRow')).not.be.undefined;
 		expect(screen.queryByTestId('RoomGenericTableLoadingTable')).to.be.null;
@@ -133,7 +132,7 @@ describe('RoomsTable', () => {
 			refetch: sinon.fake(),
 		});
 
-		render(<RoomsTable reload={{ current: sinon.fake() }} />, { wrapper: MockedQueryClientWrapper() });
+		render(<RoomsTable reload={{ current: sinon.fake() }} />, { wrapper: mockedQueryClientWrapper() });
 		expect(screen.getByText('Something_went_wrong')).not.be.undefined;
 		expect(screen.getByText('Reload_page')).not.be.undefined;
 		sinon.assert.calledOnceWithMatch(
