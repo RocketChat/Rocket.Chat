@@ -14,13 +14,13 @@ addMigration({
 			{ oldSetting: 'LDAP_Sync_User_Data_Channels_BaseDN', newSetting: 'LDAP_Sync_User_Data_Rooms_BaseDN' },
 			{ oldSetting: 'LDAP_Sync_User_Data_ChannelsMap', newSetting: 'LDAP_Sync_User_Data_RoomsMap' },
 			{ oldSetting: 'LDAP_Sync_User_Data_Channels_Enforce_AutoChannels', newSetting: 'LDAP_Sync_User_Data_Rooms_Auto_Leave' },
+			{ oldSetting: 'LDAP_Teams_Name_Field', newSetting: 'LDAP_Group_Name_Field' },
 		];
 		const teamsSettingsToDelete = [
 			'LDAP_Enable_LDAP_Groups_To_RC_Teams',
 			'LDAP_Groups_To_Rocket_Chat_Teams',
 			'LDAP_Validate_Teams_For_Each_Login',
 			'LDAP_Teams_BaseDN',
-			'LDAP_Teams_Name_Field',
 			'LDAP_Query_To_Get_User_Teams',
 		];
 		const settingsToDelete = teamsSettingsToDelete.concat(settingsToReplace.map((settingReplacement) => settingReplacement.oldSetting));
