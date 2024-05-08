@@ -3,7 +3,6 @@ import { Roles } from '@rocket.chat/models';
 
 import { notifyListenerOnRoleChanges } from '../../../app/lib/server/lib/notifyListenerOnRoleChanges';
 
-// No need to broadcast from here since this function will only iterate over default roles
 export const createOrUpdateProtectedRoleAsync = async (
 	roleId: string,
 	roleData: AtLeast<Omit<IRole, '_id' | 'protected'>, 'name'>,
@@ -21,7 +20,7 @@ export const createOrUpdateProtectedRoleAsync = async (
 			roleData.mandatory2fa || role.mandatory2fa,
 		);
 
-		void notifyListenerOnRoleChanges(updatedRole._id);
+		void notifyListenerOnRoleChanges(roleId, 'updated', updatedRole);
 
 		return;
 	}
