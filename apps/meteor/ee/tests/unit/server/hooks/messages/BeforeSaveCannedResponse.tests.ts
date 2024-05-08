@@ -53,8 +53,8 @@ const db = {
 
 describe('Omnichannel canned responses', () => {
 	before(() => {
-		registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsModel(db as unknown as any, 'visitor'));
-		registerModel('IUsersModel', () => new UsersModel(db as unknown as any, 'user'));
+		// registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsModel(db as unknown as any, 'visitor'));
+		// registerModel('IUsersModel', () => new UsersModel(db as unknown as any, 'user'));
 	});
 
 	it('should do nothing if canned response is disabled', async () => {

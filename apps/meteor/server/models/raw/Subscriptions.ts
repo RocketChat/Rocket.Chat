@@ -1,22 +1,11 @@
-import type {
-	AtLeast,
-	IRole,
-	IRoom,
-	ISubscription,
-	IUser,
-	RocketChatRecordDeleted,
-	RoomType,
-	SpotlightUser,
-} from '@rocket.chat/core-typings';
+import type { AtLeast, IRole, IRoom, ISubscription, IUser, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
-import { Rooms, Users } from '@rocket.chat/models';
+import { Rooms, trash, Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { compact } from 'lodash';
 import mem from 'mem';
 import type {
-	Collection,
 	FindCursor,
-	Db,
 	Filter,
 	FindOptions,
 	UpdateResult,
@@ -33,8 +22,8 @@ import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSub
 import { BaseRaw } from './BaseRaw';
 
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISubscription>>) {
-		super(db, 'subscription', trash);
+	constructor() {
+		super('subscription', trash);
 	}
 
 	protected modelIndexes(): IndexDescription[] {

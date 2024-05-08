@@ -1,5 +1,5 @@
 import type { RocketChatRecordDeleted, IUser } from '@rocket.chat/core-typings';
-import type { Db, Collection } from 'mongodb';
+import type { Collection } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { UsersRaw } from '../../../../server/models/raw/Users';
@@ -20,8 +20,8 @@ declare module '@rocket.chat/model-typings' {
 }
 
 export class UsersEE extends UsersRaw {
-	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUser>>) {
-		super(db, trash);
+	constructor(trash?: Collection<RocketChatRecordDeleted<IUser>>) {
+		super(trash);
 	}
 
 	// @ts-expect-error - typings are good, but JS is not helping
