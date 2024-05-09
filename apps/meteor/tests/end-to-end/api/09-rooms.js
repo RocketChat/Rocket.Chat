@@ -305,7 +305,6 @@ describe('[Rooms]', function () {
 				.post(api(`rooms.upload/${testChannel._id}`))
 				.set(credentials)
 				.field('t', 'e2e')
-				.field('e2e', 'pending')
 				.field('description', 'some_file_description')
 				.attach('file', imgURL)
 				.expect('Content-Type', 'application/json')
@@ -323,7 +322,6 @@ describe('[Rooms]', function () {
 					expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
 					expect(res.body.message.attachments[0]).to.have.property('description', 'some_file_description');
 					expect(res.body.message).to.have.property('t', 'e2e');
-					expect(res.body.message).to.have.property('e2e', 'pending');
 				});
 		});
 	});
