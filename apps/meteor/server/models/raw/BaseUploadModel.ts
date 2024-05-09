@@ -11,6 +11,7 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return [
 			{ key: { name: 1 }, sparse: true },
 			{ key: { rid: 1 }, sparse: true },
+			{ key: { expiresAt: 1 }, sparse: true },
 		];
 	}
 
@@ -33,8 +34,6 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 
 		return this.insertOne(fileData);
 	}
-
-	// TODO: upload as temporary, create a cron to delete non used ones and a way to mark as used
 
 	updateFileComplete(fileId: string, userId: string, file: object): Promise<Document | UpdateResult> | undefined {
 		if (!fileId) {
@@ -59,6 +58,25 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		if (update.$set.type) {
 			update.$set.typeGroup = update.$set.type.split('/').shift();
 		}
+
+		return this.updateOne(filter, update);
+	}
+
+	confirmTemporaryFile(fileId: string, userId: string): Promise<Document | UpdateResult> | undefined {
+		if (!fileId) {
+			return;
+		}
+
+		const filter = {
+			_id: fileId,
+			userId,
+		};
+
+		const update: Filter<T> = {
+			$unset: {
+				expiresAt: 1,
+			},
+		};
 
 		return this.updateOne(filter, update);
 	}

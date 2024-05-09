@@ -218,12 +218,16 @@ API.v1.addRoute(
 
 			let { fileBuffer } = file;
 
+			const expiresAt = new Date();
+			expiresAt.setHours(expiresAt.getHours() + 24);
+
 			const details = {
 				name: file.filename,
 				size: fileBuffer.length,
 				type: file.mimetype,
 				rid: this.urlParams.rid,
 				userId: this.userId,
+				expiresAt,
 			};
 
 			const stripExif = settings.get('Message_Attachments_Strip_Exif');
@@ -266,6 +270,8 @@ API.v1.addRoute(
 
 			file.description = this.bodyParams.description;
 			delete this.bodyParams.description;
+
+			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
 
 			await sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams });
 

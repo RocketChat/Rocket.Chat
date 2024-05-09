@@ -8,6 +8,8 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 
 	updateFileComplete(fileId: string, userId: string, file: object): Promise<Document | UpdateResult> | undefined;
 
+	confirmTemporaryFile(fileId: string, userId: string): Promise<Document | UpdateResult> | undefined;
+
 	findOneByName(name: string): Promise<T | null>;
 
 	findOneByRoomId(rid: string): Promise<T | null>;
