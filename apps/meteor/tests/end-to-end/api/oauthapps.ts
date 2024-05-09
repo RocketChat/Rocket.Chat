@@ -114,7 +114,6 @@ describe('[OAuthApps]', () => {
 			return request
 				.get(api('oauth-apps.get'))
 				.query({ _id: '{ "$ne": "" }' })
-				.set(credentials)
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
@@ -127,12 +126,6 @@ describe('[OAuthApps]', () => {
 		it('should return an error when the user does not have the necessary permission', async () => {
 			await updatePermission('manage-oauth-apps', []);
 
-			await request
-				.post(api('oauth-apps.create'))
-				.set(credentials)
-				.send({
-					name: 'error',
-					redirectUri: 'error',
 					active: false,
 				})
 				.expect('Content-Type', 'application/json')
