@@ -146,8 +146,6 @@ export const QueueManager: queueManager = {
 			void notifyOnSettingChanged(livechatSetting);
 		}
 
-		console.log('REQUEST', inquiry, agent, guest);
-
 		await queueInquiry(inquiry, agent);
 		logger.debug(`Inquiry ${inquiry._id} queued`);
 
