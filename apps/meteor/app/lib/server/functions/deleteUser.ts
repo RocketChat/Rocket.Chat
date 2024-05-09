@@ -19,7 +19,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { notifyListener } from '../lib/notifyListener';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
@@ -91,7 +91,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		await Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
 		const rids = subscribedRooms.map((room) => room.rid);
-		void notifyListener.onRoomChangedById(rids);
+		void notifyOnRoomChangedById(rids);
 
 		await Subscriptions.removeByUserId(userId); // Remove user subscriptions
 

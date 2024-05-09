@@ -4,7 +4,10 @@ import { Rooms } from '@rocket.chat/models';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
 
-async function onRoomChanged<T extends IRocketChatRecord>(data: T | T[], clientAction: ClientAction = 'updated'): Promise<void> {
+export async function notifyOnRoomChanged<T extends IRocketChatRecord>(
+	data: T | T[],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
 	if (dbWatchersDisabled) {
 		return;
 	}
@@ -16,7 +19,7 @@ async function onRoomChanged<T extends IRocketChatRecord>(data: T | T[], clientA
 	}
 }
 
-async function onRoomChangedById<T extends IRocketChatRecord>(
+export async function notifyOnRoomChangedById<T extends IRocketChatRecord>(
 	ids: T['_id'] | T['_id'][],
 	clientAction: ClientAction = 'updated',
 ): Promise<void> {
@@ -32,7 +35,7 @@ async function onRoomChangedById<T extends IRocketChatRecord>(
 	}
 }
 
-async function onRoomChangedByUsernamesOrUids<T extends IRoom>(
+export async function notifyOnRoomChangedByUsernamesOrUids<T extends IRoom>(
 	uids: T['u']['_id'][],
 	usernames: T['u']['username'][],
 	clientAction: ClientAction = 'updated',
@@ -48,7 +51,10 @@ async function onRoomChangedByUsernamesOrUids<T extends IRoom>(
 	}
 }
 
-async function onRoomChangedByUserDM<T extends IRoom>(userId: T['u']['_id'], clientAction: ClientAction = 'updated'): Promise<void> {
+export async function notifyOnRoomChangedByUserDM<T extends IRoom>(
+	userId: T['u']['_id'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
 	}
@@ -59,10 +65,3 @@ async function onRoomChangedByUserDM<T extends IRoom>(userId: T['u']['_id'], cli
 		void api.broadcast('watch.rooms', { clientAction, room: item });
 	}
 }
-
-export const notifyListener = {
-	onRoomChanged,
-	onRoomChangedById,
-	onRoomChangedByUsernamesOrUids,
-	onRoomChangedByUserDM,
-};

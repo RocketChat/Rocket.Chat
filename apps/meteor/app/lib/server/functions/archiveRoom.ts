@@ -3,7 +3,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { notifyListener } from '../lib/notifyListener';
+import { notifyOnRoomChanged } from '../lib/notifyListener';
 
 export const archiveRoom = async function (rid: string, user: IMessage['u']): Promise<void> {
 	await Rooms.archiveById(rid);
@@ -15,6 +15,6 @@ export const archiveRoom = async function (rid: string, user: IMessage['u']): Pr
 	await callbacks.run('afterRoomArchived', room, user);
 
 	if (room) {
-		void notifyListener.onRoomChanged(room);
+		void notifyOnRoomChanged(room);
 	}
 };

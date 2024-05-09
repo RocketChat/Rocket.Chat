@@ -12,7 +12,7 @@ import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreate
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
-import { notifyListener } from '../lib/notifyListener';
+import { notifyOnRoomChanged } from '../lib/notifyListener';
 import { createDirectRoom } from './createDirectRoom';
 
 const isValidName = (name: unknown): name is string => {
@@ -228,7 +228,7 @@ export const createRoom = async <T extends RoomType>(
 
 	const room = await Rooms.createWithFullRoomData(roomProps);
 
-	void notifyListener.onRoomChanged(room, 'inserted');
+	void notifyOnRoomChanged(room, 'inserted');
 
 	const shouldBeHandledByFederation = room.federated === true || owner.username.includes(':');
 

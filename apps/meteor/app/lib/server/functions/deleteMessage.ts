@@ -9,7 +9,7 @@ import { broadcastMessageFromData } from '../../../../server/modules/watchers/li
 import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { notifyListener } from '../lib/notifyListener';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 
 export const deleteMessageValidatingPermission = async (message: AtLeast<IMessage, '_id'>, userId: IUser['_id']): Promise<void> => {
 	if (!message?._id) {
@@ -90,7 +90,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 
 	await callbacks.run('afterDeleteMessage', deletedMsg, room);
 
-	void notifyListener.onRoomChangedById(message.rid);
+	void notifyOnRoomChangedById(message.rid);
 
 	if (keepHistory || showDeletedStatus) {
 		void broadcastMessageFromData({

@@ -6,7 +6,7 @@ import { isGETWebRTCCall, isPUTWebRTCCallId } from '@rocket.chat/rest-typings';
 import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
 import { canSendMessageAsync } from '../../../../authorization/server/functions/canSendMessage';
-import { notifyListener } from '../../../../lib/server/lib/notifyListener';
+import { notifyOnRoomChangedById } from '../../../../lib/server/lib/notifyListener';
 import { settings as rcSettings } from '../../../../settings/server';
 import { Livechat } from '../../lib/LivechatTyped';
 import { settings } from '../lib/livechat';
@@ -49,7 +49,7 @@ API.v1.addRoute(
 				await Settings.incrementValueById('WebRTC_Calls_Count');
 				callStatus = 'ringing';
 				await Rooms.setCallStatusAndCallStartTime(room._id, callStatus);
-				void notifyListener.onRoomChangedById(room._id);
+				void notifyOnRoomChangedById(room._id);
 				await Message.saveSystemMessage('livechat_webrtc_video_call', room._id, i18n.t('Join_my_room_to_start_the_video_call'), this.user, {
 					actionLinks: config.theme.actionLinks.webrtc,
 				});

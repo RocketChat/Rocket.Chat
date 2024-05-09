@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { settings } from '../../../settings/server';
-import { notifyListener } from '../lib/notifyListener';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
@@ -103,7 +103,7 @@ export const updateMessage = async function (
 			});
 
 			if (room?.lastMessage?._id === msg._id) {
-				void notifyListener.onRoomChangedById(message.rid);
+				void notifyOnRoomChangedById(message.rid);
 			}
 		}
 	});

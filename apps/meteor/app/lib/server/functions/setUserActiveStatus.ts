@@ -8,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { notifyListener } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnRoomChangedByUserDM } from '../lib/notifyListener';
 import { closeOmnichannelConversations } from './closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
@@ -39,7 +39,7 @@ async function reactivateDirectConversations(userId: string) {
 	}, []);
 
 	await Rooms.setDmReadOnlyByUserId(userId, roomsToReactivate, false, false);
-	void notifyListener.onRoomChangedById(roomsToReactivate);
+	void notifyOnRoomChangedById(roomsToReactivate);
 }
 
 export async function setUserActiveStatus(userId: string, active: boolean, confirmRelinquish = false): Promise<boolean | undefined> {
@@ -107,7 +107,7 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 	if (active === false) {
 		await Users.unsetLoginTokens(userId);
 		await Rooms.setDmReadOnlyByUserId(userId, undefined, true, false);
-		void notifyListener.onRoomChangedByUserDM(userId);
+		void notifyOnRoomChangedByUserDM(userId);
 	} else {
 		await Users.unsetReason(userId);
 		await reactivateDirectConversations(userId);
