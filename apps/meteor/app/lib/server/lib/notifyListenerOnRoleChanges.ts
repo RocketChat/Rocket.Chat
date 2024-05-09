@@ -14,11 +14,12 @@ export async function notifyListenerOnRoleChanges(
 	}
 
 	const role = existingRoleData || (await Roles.findOneById(rid));
-
-	if (role) {
-		void api.broadcast('watch.roles', {
-			clientAction,
-			role,
-		});
+	if (!role) {
+		return;
 	}
+
+	void api.broadcast('watch.roles', {
+		clientAction,
+		role,
+	});
 }
