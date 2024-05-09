@@ -5,7 +5,7 @@ import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { lazy, memo, useMemo } from 'react';
 
-import BurgerMenu from '../../../components/BurgerMenu';
+import SidebarToggler from '../../../components/SidebarToggler';
 
 const OmnichannelRoomHeader = lazy(() => import('./Omnichannel/OmnichannelRoomHeader'));
 const VoipRoomHeader = lazy(() => import('./Omnichannel/VoipRoomHeader'));
@@ -22,7 +22,7 @@ const Header = ({ room }: HeaderProps<IRoom>): ReactElement | null => {
 		() => ({
 			start: isMobile && (
 				<HeaderToolbar>
-					<BurgerMenu />
+					<SidebarToggler />
 				</HeaderToolbar>
 			),
 		}),
