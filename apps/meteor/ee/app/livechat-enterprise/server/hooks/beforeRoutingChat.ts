@@ -1,4 +1,4 @@
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import { type ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
 import { online } from '../../../../../app/livechat/server/api/lib/livechat';
@@ -72,9 +72,33 @@ callbacks.add(
 				await dispatchInquiryPosition(inq);
 			}
 		}
-
-		return LivechatInquiry.findOneById(_id);
 	},
 	callbacks.priority.HIGH,
 	'livechat-before-routing-chat',
 );
+
+settings.watch('Omnichannel_calculate_dispatch_service_queue_statistics', async (value) => {
+	if (!value) {
+		callbacks.remove('livechat.new-beforeRouteChat', 'livechat-before-routing-chat-queue-statistics');
+	}
+
+	callbacks.add(
+		'livechat.new-beforeRouteChat',
+		async (inquiry) => {
+			if (inquiry.status !== 'ready') {
+				return;
+			}
+
+			const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
+				inquiryId: inquiry._id,
+				department: inquiry.department,
+				queueSortBy: getInquirySortMechanismSetting(),
+			});
+			if (inq) {
+				await dispatchInquiryPosition(inq);
+			}
+		},
+		callbacks.priority.HIGH,
+		'livechat-before-routing-chat-queue-statistics',
+	);
+});
