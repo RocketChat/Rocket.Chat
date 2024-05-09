@@ -27,10 +27,10 @@ describe('[OAuthApps]', function () {
 				request
 					.get(api('oauth-apps.list'))
 					.set(credentials)
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-allowed');
+						expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 					})
 					.end(done);
 			});
@@ -75,31 +75,27 @@ describe('[OAuthApps]', function () {
 				})
 				.end(done);
 		});
-		it('should return a 403 Forbidden error when the user does not have the necessary permission by client id', (done) => {
-			updatePermission('manage-oauth-apps', []).then(() => {
-				request
-					.get(api('oauth-apps.get?clientId=zapier'))
-					.set(credentials)
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
-					.end(done);
-			});
+		it('should return a 403 Forbidden error when the user does not have the necessary permission by client id', async () => {
+			await updatePermission('manage-oauth-apps', []);
+			await request
+				.get(api('oauth-apps.get?clientId=zapier'))
+				.set(credentials)
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				});
 		});
-		it('should return a 403 Forbidden error when the user does not have the necessary permission by app id', (done) => {
-			updatePermission('manage-oauth-apps', []).then(() => {
-				request
-					.get(api('oauth-apps.get?appId=zapier'))
-					.set(credentials)
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
-					.end(done);
-			});
+		it('should return a 403 Forbidden error when the user does not have the necessary permission by app id', async () => {
+			await updatePermission('manage-oauth-apps', []);
+			await request
+				.get(api('oauth-apps.get?appId=zapier'))
+				.set(credentials)
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				});
 		});
 	});
 
@@ -116,7 +112,11 @@ describe('[OAuthApps]', function () {
 					active: false,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(403);
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				});
 			await updatePermission('manage-oauth-apps', ['admin']);
 		});
 
@@ -199,11 +199,12 @@ describe('[OAuthApps]', function () {
 	describe('[/oauth-apps.update]', () => {
 		let appId;
 
-		before((done) => {
+		before(async () => {
+			await updatePermission('manage-oauth-apps', ['admin']);
 			const name = 'test-oauth-app';
 			const redirectUri = 'https://test.com';
 			const active = true;
-			request
+			const res = await request
 				.post(api('oauth-apps.create'))
 				.set(credentials)
 				.send({
@@ -212,12 +213,13 @@ describe('[OAuthApps]', function () {
 					active,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.end((err, res) => {
-					appId = res.body.application._id;
-					createdAppsIds.push(appId);
-					done();
-				});
+				.expect(200);
+			appId = res.body.application._id;
+			createdAppsIds.push(appId);
+		});
+
+		after(async () => {
+			await updatePermission('manage-oauth-apps', ['admin']);
 		});
 
 		it("should update an app's name, its Active and Redirect URI fields correctly by its id", async () => {
@@ -243,16 +245,40 @@ describe('[OAuthApps]', function () {
 					expect(res.body).to.have.property('name', name);
 				});
 		});
+
+		it('should fail updating an app if user does NOT have the manage-oauth-apps permission', async () => {
+			const name = `new app ${Date.now()}`;
+			const redirectUri = 'http://localhost:3000';
+			const active = false;
+
+			await updatePermission('manage-oauth-apps', []);
+			await request
+				.post(api(`oauth-apps.update`))
+				.set(credentials)
+				.send({
+					appId,
+					name,
+					redirectUri,
+					active,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+				});
+		});
 	});
 
 	describe('[/oauth-apps.delete]', () => {
 		let appId;
 
-		before((done) => {
+		before(async () => {
+			await updatePermission('manage-oauth-apps', ['admin']);
 			const name = 'test-oauth-app';
 			const redirectUri = 'https://test.com';
 			const active = true;
-			request
+			const res = await request
 				.post(api('oauth-apps.create'))
 				.set(credentials)
 				.send({
@@ -261,11 +287,12 @@ describe('[OAuthApps]', function () {
 					active,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.end((err, res) => {
-					appId = res.body.application._id;
-					done();
-				});
+				.expect(200);
+			appId = res.body.application._id;
+		});
+
+		after(async () => {
+			await updatePermission('manage-oauth-apps', ['admin']);
 		});
 
 		it('should delete an app by its id', async () => {
@@ -279,6 +306,22 @@ describe('[OAuthApps]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.equals(true);
+				});
+		});
+
+		it('should fail deleting an app by its id if user does NOT have the manage-oauth-apps permission', async () => {
+			await updatePermission('manage-oauth-apps', []);
+			await request
+				.post(api(`oauth-apps.delete`))
+				.set(credentials)
+				.send({
+					appId,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 				});
 		});
 	});
