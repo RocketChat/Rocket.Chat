@@ -129,7 +129,7 @@ const AdminUsersPage = (): ReactElement => {
 							{t('All')}
 						</TabsItem>
 						<TabsItem selected={tab === 'pending'} onClick={() => handleTabChangeAndSort('pending')}>
-							{pendingUsersCount ? `${t('Pending')} (${pendingUsersCount})` : t('Pending')}
+							{pendingUsersCount.isSuccess ? `${t('Pending')} (${pendingUsersCount.data})` : t('Pending')}
 						</TabsItem>
 					</Tabs>
 					<UsersTable

@@ -19,7 +19,7 @@ const usePendingUsersCount = (users: Serialized<DefaultUserInfo[]> | undefined) 
 			return getUsers(payload);
 		},
 		{ enabled: !!users, select: (data) => data?.total },
-	).data;
+	);
 };
 
 export default usePendingUsersCount;
