@@ -1,4 +1,5 @@
 import type { IRoom, IMessage, IUser } from '@rocket.chat/core-typings';
+import { UserStatus, UserStatusMap } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
@@ -275,6 +276,7 @@ export class OTRRoom implements IOTRRoom {
 				let timeout: NodeJS.Timeout;
 
 				const establishConnection = async (): Promise<void> => {
+					console.log('Establish Connection');
 					this.setState(OtrRoomState.ESTABLISHING);
 					clearTimeout(timeout);
 					try {
@@ -365,6 +367,13 @@ export class OTRRoom implements IOTRRoom {
 						await sdk.rest.post('/v1/chat.otr', {
 							roomId: this._roomId,
 							type: otrSystemMessages.USER_JOINED_OTR,
+						});
+
+						// When other user goes offline, end OTR
+						sdk.stream('user-presence', [data.userId], ([, status]) => {
+							if (this.getState() === OtrRoomState.ESTABLISHED && UserStatusMap[status] === UserStatus.OFFLINE) {
+								this.end();
+							}
 						});
 					}
 					this.isFirstOTR = false;
