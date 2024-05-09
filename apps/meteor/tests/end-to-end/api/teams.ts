@@ -2,7 +2,7 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { IRole, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
+import { before, after, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -812,17 +812,18 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.listAll', () => {
-		let teamName;
 		before(async () => {
 			await updatePermission('view-all-teams', ['admin']);
-			teamName = `test-team-${Date.now()}`;
+			const teamName = `test-team-${Date.now()}`;
 			await request.post(api('teams.create')).set(credentials).send({
 				name: teamName,
 				type: 0,
 			});
 		});
 
-		after(() => Promise.all([deleteTeam(credentials, teamName), updatePermission('view-all-teams', ['admin'])]));
+		after(async () => {
+			return updatePermission('view-all-teams', ['admin']);
+		});
 
 		it('should list all teams', async () => {
 			await request
@@ -836,7 +837,7 @@ describe('[Teams]', () => {
 					expect(res.body).to.have.property('offset', 0);
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('teams');
-					expect(res.body.teams).to.be.an('array').that.is.not.empty;
+					expect(res.body.teams).to.have.length.greaterThan(1);
 					expect(res.body.teams[0]).to.include.property('_id');
 					expect(res.body.teams[0]).to.include.property('_updatedAt');
 					expect(res.body.teams[0]).to.include.property('name');
