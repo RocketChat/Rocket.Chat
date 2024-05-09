@@ -1,13 +1,13 @@
-import { Voip } from '@rocket.chat/core-services';
+import { VoipAsterisk } from '@rocket.chat/core-services';
 
 import { settings } from '../../settings/server';
 
 settings.watch('VoIP_Enabled', async (value: boolean) => {
 	try {
 		if (value) {
-			await Voip.init();
+			await VoipAsterisk.init();
 		} else {
-			await Voip.stop();
+			await VoipAsterisk.stop();
 		}
 	} catch (e) {
 		// do nothing
@@ -21,7 +21,7 @@ settings.changeMultiple(
 		// So to avoid stopping/starting voip too often, we debounce the call and restart 1 second after the last setting has reached us.
 		if (settings.get('VoIP_Enabled')) {
 			try {
-				await Voip.refresh();
+				await VoipAsterisk.refresh();
 			} catch (e) {
 				// do nothing
 			}
