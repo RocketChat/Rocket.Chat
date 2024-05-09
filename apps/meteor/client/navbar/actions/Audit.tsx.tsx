@@ -18,7 +18,7 @@ const NavBarAuditMenu: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) =>
 			is={NavBarItem}
 			placement='bottom-start'
 			icon='document-eye'
-			pressed={currentRoute?.includes('/home')}
+			pressed={currentRoute?.includes('/audit')}
 			{...props}
 		/>
 	);
