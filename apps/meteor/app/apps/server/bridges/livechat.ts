@@ -111,11 +111,12 @@ export class AppLivechatBridge extends LivechatBridge {
 					type: OmnichannelSourceType.APP,
 					id: appId,
 					alias: this.orch.getManager()?.getOneById(appId)?.getName(),
-					...(source.type === 'app' && {
-						sidebarIcon: source.sidebarIcon,
-						defaultIcon: source.defaultIcon,
-						label: source.label,
-					}),
+					...(source &&
+						source.type === 'app' && {
+							sidebarIcon: source.sidebarIcon,
+							defaultIcon: source.defaultIcon,
+							label: source.label,
+						}),
 				},
 			},
 			extraParams: customFields && { customFields },
