@@ -1,5 +1,5 @@
 import type { IAdminUserTabs } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, Callout, ContextualbarIcon, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Callout, ContextualbarIcon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
@@ -128,8 +128,10 @@ const AdminUsersPage = (): ReactElement => {
 						<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChangeAndSort('all')}>
 							{t('All')}
 						</TabsItem>
-						<TabsItem selected={tab === 'pending'} onClick={() => handleTabChangeAndSort('pending')}>
-							{pendingUsersCount.isSuccess ? `${t('Pending')} (${pendingUsersCount.data})` : t('Pending')}
+						<TabsItem selected={tab === 'pending'} onClick={() => handleTabChangeAndSort('pending')} display='flex' flexDirection='row'>
+							{`${t('Pending')} `}
+							{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' mis={8} />}
+							{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
 						</TabsItem>
 					</Tabs>
 					<UsersTable
