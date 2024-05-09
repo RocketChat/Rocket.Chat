@@ -93,11 +93,6 @@ export class AppLivechatBridge extends LivechatBridge {
 	): Promise<ILivechatRoom> {
 		this.orch.debugLog(`The App ${appId} is creating a livechat room.`);
 
-		if (source?.type !== 'app') {
-			throw new Error('Invalid source type for livechat room');
-		}
-		const { sidebarIcon, defaultIcon, label } = source;
-
 		let agentRoom: SelectedAgent | undefined;
 		if (agent?.id) {
 			const user = await Users.getAgentInfo(agent.id, settings.get('Livechat_show_agent_email'));
@@ -116,9 +111,11 @@ export class AppLivechatBridge extends LivechatBridge {
 					type: OmnichannelSourceType.APP,
 					id: appId,
 					alias: this.orch.getManager()?.getOneById(appId)?.getName(),
-					label,
-					sidebarIcon,
-					defaultIcon,
+					...(source.type === 'app' && {
+						sidebarIcon: source.sidebarIcon,
+						defaultIcon: source.defaultIcon,
+						label: source.label,
+					}),
 				},
 			},
 			extraParams: customFields && { customFields },
