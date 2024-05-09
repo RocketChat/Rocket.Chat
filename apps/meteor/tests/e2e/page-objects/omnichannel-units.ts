@@ -35,6 +35,10 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 		return this.page.locator('button', { has: this.page.locator('select[name="visibility"]') });
 	}
 
+	get btnContextualbarClose(): Locator {
+		return this.page.locator('[data-qa="ContextualbarActionClose"]');
+	}
+
 	private selectOption(name: string) {
 		return this.page.locator(`[role=option][value="${name}"]`);
 	}
