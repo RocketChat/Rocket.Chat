@@ -5,6 +5,11 @@ import { useAdministrationItems } from './useAdministrationItems';
 import { useAppsItems } from './useAppsItems';
 import { useAuditItems } from './useAuditItems';
 
+/**
+ * @deprecated Moved to NavBar
+ * @description delete when feature is ready
+ * @memberof newNavigation
+ */
 export const useAdministrationMenu = () => {
 	const t = useTranslation();
 

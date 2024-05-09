@@ -31,11 +31,10 @@ const ADMIN_PERMISSIONS = [
 ];
 
 /**
- * @deprecated Feature preview
- * @description Should be moved to navbar when the feature became part of the core
- * @memberof navigationBar
+ * @deprecated Moved to NavBar
+ * @description delete when feature is ready
+ * @memberof newNavigation
  */
-
 export const useAdministrationItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
 	const router = useRouter();
