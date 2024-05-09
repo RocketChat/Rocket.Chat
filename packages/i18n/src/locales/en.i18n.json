@@ -6028,7 +6028,7 @@
   "Your_temporary_password_is_password": "Your temporary password is <strong>[password]</strong>.",
   "Your_TOTP_has_been_reset": "Your Two Factor TOTP has been reset.",
   "Your_web_browser_blocked_Rocket_Chat_from_opening_tab": "Your web browser blocked Rocket.Chat from opening a new tab.",
-  "Your_workspace_exceeded_the_seat_license_limit": "Your workspace exceeded the seat license limit. This limit cannot be exceeded further. Talk to sales to increase limits.",
+  "Your_workspace_exceeded_the_seat_license_limit": "Your workspace exceeded the seat license limit. This limit cannot be exceeded further. <1>Manage your subscription</1> to increase limits.",
   "Your_workspace_is_ready": "Your workspace is ready to use 🎉",
   "Youre_not_a_part_of__channel__and_I_mentioned_you_there": "You're not a part of {{channel}} and I mentioned you there",
   "Zapier": "Zapier",
