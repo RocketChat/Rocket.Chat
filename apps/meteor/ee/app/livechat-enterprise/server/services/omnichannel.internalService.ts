@@ -5,6 +5,7 @@ import type { IOmnichannelRoom, IUser, ILivechatInquiryRecord, IOmnichannelSyste
 import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, Subscriptions, LivechatInquiry } from '@rocket.chat/models';
 
+import { notifyOnRoomChangedById } from '../../../../../app/lib/server/lib/notifyListener';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
@@ -59,6 +60,8 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		]);
 
 		await callbacks.run('livechat:afterOnHold', room);
+
+		void notifyOnRoomChangedById(roomId);
 	}
 
 	async resumeRoomOnHold(
@@ -108,6 +111,8 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		]);
 
 		await callbacks.run('livechat:afterOnHoldChatResumed', room);
+
+		void notifyOnRoomChangedById(roomId);
 	}
 
 	private async attemptToAssignRoomToServingAgentElseQueueIt({
@@ -174,5 +179,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		]);
 
 		await dispatchAgentDelegated(roomId);
+
+		void notifyOnRoomChangedById(roomId);
 	}
 }
