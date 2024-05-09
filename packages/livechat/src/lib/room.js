@@ -265,10 +265,11 @@ export const loadMessages = async () => {
 	const previousMessages = getGreetingMessages(storedMessages);
 	await store.setState({ loading: true });
 
-	let rawMessages = await Livechat.loadMessages(rid);
+	const rawMessages = (await Livechat.loadMessages(rid)) ?? [];
 
-	if (!rawMessages || rawMessages?.length < 20) {
-		rawMessages = [...rawMessages, ...(previousMessages.length === 0 ? renderedTriggers : previousMessages)];
+	if (rawMessages?.length < 20) {
+		const triggers = previousMessages.length === 0 ? renderedTriggers : previousMessages;
+		rawMessages.push(...triggers.reverse());
 	}
 
 	const messages = (await normalizeMessages(rawMessages)).map(transformAgentInformationOnMessage);
