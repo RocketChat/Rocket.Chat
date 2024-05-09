@@ -8826,6 +8826,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/fuselage@npm:dev":
+  version: 0.0.0-dev-20240425224212
+  resolution: "@rocket.chat/fuselage@npm:0.0.0-dev-20240425224212"
+  dependencies:
+    "@rocket.chat/css-in-js": ^0.31.25
+    "@rocket.chat/css-supports": ^0.31.25
+    "@rocket.chat/fuselage-tokens": ^0.33.1
+    "@rocket.chat/memo": ^0.31.25
+    "@rocket.chat/styled": ^0.31.25
+    invariant: ^2.2.4
+    react-aria: ~3.23.1
+    react-keyed-flatten-children: ^1.3.0
+    react-stately: ~3.17.0
+  peerDependencies:
+    "@rocket.chat/fuselage-hooks": "*"
+    "@rocket.chat/fuselage-polyfills": "*"
+    "@rocket.chat/icons": "*"
+    react: ^17.0.2
+    react-dom: ^17.0.2
+    react-virtuoso: 1.2.4
+  checksum: 079aca3e670a678f68aeaffa92cada63db0b91e5235bfae68f068f8fbdaef6eea98fe48250ddb9c97744b8382a46df2a0843c9fb99c989734ecd75f323e8d2c9
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/gazzodown@workspace:^, @rocket.chat/gazzodown@workspace:packages/gazzodown":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/gazzodown@workspace:packages/gazzodown"
@@ -8905,6 +8929,13 @@ __metadata:
     typescript: ~5.3.3
   languageName: unknown
   linkType: soft
+
+"@rocket.chat/icons@npm:^0.34.0":
+  version: 0.34.0
+  resolution: "@rocket.chat/icons@npm:0.34.0"
+  checksum: d84af3174b3ba75639be8ebbe31a4bb5ca6467a9d2a3db6e4d38589dfa378f0fdb118fd337dd938dfb0f8fd493352e53102956e96f310b6dbcb69d3b72a3266c
+  languageName: node
+  linkType: hard
 
 "@rocket.chat/icons@npm:^0.35.0":
   version: 0.35.0
@@ -9193,7 +9224,7 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.2
     "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.3
-    "@rocket.chat/fuselage": ^0.53.6
+    "@rocket.chat/fuselage": dev
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/fuselage-polyfills": ~0.31.25
     "@rocket.chat/fuselage-toastbar": ^0.31.26
@@ -9201,7 +9232,7 @@ __metadata:
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
     "@rocket.chat/gazzodown": "workspace:^"
     "@rocket.chat/i18n": "workspace:^"
-    "@rocket.chat/icons": ^0.35.0
+    "@rocket.chat/icons": ^0.34.0
     "@rocket.chat/instance-status": "workspace:^"
     "@rocket.chat/jwt": "workspace:^"
     "@rocket.chat/layout": ~0.31.26
