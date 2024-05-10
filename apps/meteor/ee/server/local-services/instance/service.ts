@@ -7,6 +7,7 @@ import EJSON from 'ejson';
 import type { BrokerNode } from 'moleculer';
 import { ServiceBroker, Transporters, Serializers } from 'moleculer';
 
+import { notifyOnInstanceStatusChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
 import { getLogger } from './getLogger';
@@ -155,6 +156,10 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		};
 
 		await InstanceStatus.registerInstance('rocket.chat', instance);
+		void notifyOnInstanceStatusChangedById(InstanceStatus.id(), 'inserted');
+		process.on('exit', async () => {
+			void notifyOnInstanceStatusChangedById(InstanceStatus.id(), 'removed');
+		});
 
 		try {
 			const hasLicense = await License.hasModule('scalability');

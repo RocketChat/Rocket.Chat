@@ -1,6 +1,6 @@
 import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
-import type { IPermission, IRocketChatRecord, IRoom, ISetting, IPbxEvent, IRole } from '@rocket.chat/core-typings';
-import { Rooms, Permissions, Settings, PbxEvents, Roles } from '@rocket.chat/models';
+import type { IPermission, IRocketChatRecord, IRoom, ISetting, IPbxEvent, IRole, IInstanceStatus } from '@rocket.chat/core-typings';
+import { Rooms, Permissions, Settings, PbxEvents, Roles, InstanceStatus } from '@rocket.chat/models';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
 
@@ -63,6 +63,23 @@ export async function notifyOnRoomChangedByUserDM<T extends IRoom>(
 
 	for await (const item of items) {
 		void api.broadcast('watch.rooms', { clientAction, room: item });
+	}
+}
+
+export async function notifyOnInstanceStatusChangedById<T extends IInstanceStatus>(
+	id: T['_id'],
+	clientAction: 'inserted' | 'updated' | 'removed',
+	data?: Record<string, unknown>,
+	diff?: Record<string, unknown>,
+) {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const instanceStatus = await InstanceStatus.findOneById(id);
+
+	if (instanceStatus) {
+		void api.broadcast('watch.instanceStatus', { id, clientAction, data, diff });
 	}
 }
 

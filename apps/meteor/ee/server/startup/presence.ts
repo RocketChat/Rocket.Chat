@@ -4,9 +4,15 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { throttle } from 'underscore';
 
+import { notifyOnInstanceStatusChangedById } from '../../../app/lib/server/lib/notifyListener';
+
 // update connections count every 30 seconds
-const updateConns = throttle(function _updateConns() {
-	void InstanceStatus.updateConnections(Meteor.server.sessions.size);
+const updateConns = throttle(async () => {
+	const { modifiedCount } = await InstanceStatus.updateConnections(Meteor.server.sessions.size);
+
+	if (modifiedCount) {
+		void notifyOnInstanceStatusChangedById(InstanceStatus.id(), 'updated', { 'extraInformation.conns': Meteor.server.sessions.size });
+	}
 }, 30000);
 
 Meteor.startup(() => {
@@ -21,7 +27,7 @@ Meteor.startup(() => {
 			}
 
 			await Presence.removeConnection(session.userId, connection.id, nodeId);
-			updateConns();
+			await updateConns();
 		});
 	});
 
@@ -42,13 +48,12 @@ Meteor.startup(() => {
 
 		void (async function () {
 			await Presence.newConnection(login.user._id, login.connection.id, nodeId);
-			updateConns();
+			await updateConns();
 		})();
 	});
 
-	Accounts.onLogout((login: any): void => {
+	Accounts.onLogout(async (login: any): Promise<void> => {
 		void Presence.removeConnection(login.user._id, login.connection.id, nodeId);
-
-		updateConns();
+		await updateConns();
 	});
 });

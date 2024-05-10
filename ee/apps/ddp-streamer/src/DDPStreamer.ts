@@ -9,6 +9,7 @@ import WebSocket from 'ws';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
 import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
 import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
+import { notifyOnInstanceStatusChangedById } from '../../../../apps/meteor/app/lib/server/lib/notifyListener';
 import { Client, clientMap } from './Client';
 import { events, server } from './configureServer';
 import { DDP_EVENTS } from './constants';
@@ -64,8 +65,12 @@ export class DDPStreamer extends ServiceClass {
 	}
 
 	// update connections count every 30 seconds
-	updateConnections = throttle(() => {
-		InstanceStatus.updateConnections(this.wss?.clients.size ?? 0);
+	updateConnections = throttle(async () => {
+		const { modifiedCount } = await InstanceStatus.updateConnections(this.wss?.clients.size ?? 0);
+
+		if (modifiedCount) {
+			notifyOnInstanceStatusChangedById(InstanceStatus.id(), 'updated', { 'extraInformation.conns': this.wss?.clients.size ?? 0 });
+		}
 	}, 30000);
 
 	async created(): Promise<void> {
@@ -205,7 +210,8 @@ export class DDPStreamer extends ServiceClass {
 
 			this.wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
 
-			InstanceStatus.registerInstance('ddp-streamer', {});
+			await InstanceStatus.registerInstance('ddp-streamer', {});
+			void notifyOnInstanceStatusChangedById(InstanceStatus.id(), 'inserted');
 		} catch (err) {
 			console.error('DDPStreamer did not start correctly', err);
 		}

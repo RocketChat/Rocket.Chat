@@ -1,8 +1,8 @@
-// import { IInstanceStatus } from '@rocket.chat/core-typings';
 import { EventEmitter } from 'events';
 
 import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
 import { v4 as uuidv4 } from 'uuid';
+import type { UpdateResult } from 'mongodb';
 
 const events = new EventEmitter();
 
@@ -10,21 +10,6 @@ const defaultPingInterval = parseInt(String(process.env.MULTIPLE_INSTANCES_PING_
 
 // if not set via env var ensures at least 3 ticks before expiring (multiple of 60s)
 const indexExpire = (parseInt(String(process.env.MULTIPLE_INSTANCES_EXPIRE)) || Math.ceil((defaultPingInterval * 3) / 60)) * 60;
-
-const dbWatchersDisabled = ['yes', 'true'].includes(String(process.env.DISABLE_DB_WATCHERS).toLowerCase());
-
-function notifyOnInstanceStatusChangedById(
-	id: string,
-	clientAction: 'inserted' | 'updated' | 'removed',
-	data?: Record<string, unknown>,
-	diff?: Record<string, unknown>,
-) {
-	if (!dbWatchersDisabled) {
-		return;
-	}
-
-	events.emit('watch.instanceStatus', { clientAction, id, data, diff });
-}
 
 let createIndexes = async () => {
 	await InstanceStatusModel.col
@@ -90,15 +75,12 @@ async function registerInstance(name: string, extraInformation: Record<string, u
 	};
 
 	try {
-		const result = await InstanceStatusModel.updateOne({ _id: ID }, instance as any, { upsert: true });
-
-		const instanceStatus = await InstanceStatusModel.findOne({ _id: ID });
+		await InstanceStatusModel.updateOne({ _id: ID }, instance as any, { upsert: true });
+		const instanceStatus = await InstanceStatusModel.findOneById(ID);
 
 		start();
 
 		events.emit('registerInstance', instanceStatus, instance);
-
-		notifyOnInstanceStatusChangedById(ID, result.upsertedId ? 'inserted' : 'updated', { ...instanceStatus });
 
 		process.on('exit', onExit);
 
@@ -114,10 +96,6 @@ async function unregisterInstance() {
 		stop();
 
 		events.emit('unregisterInstance', ID);
-
-		if (result.deletedCount) {
-			notifyOnInstanceStatusChangedById(ID, 'removed');
-		}
 
 		process.removeListener('exit', onExit);
 
@@ -168,8 +146,8 @@ async function onExit() {
 	await unregisterInstance();
 }
 
-async function updateConnections(conns: number) {
-	const result = await InstanceStatusModel.updateOne(
+async function updateConnections(conns: number): Promise<UpdateResult> {
+	return InstanceStatusModel.updateOne(
 		{
 			_id: ID,
 		},
@@ -179,10 +157,6 @@ async function updateConnections(conns: number) {
 			},
 		},
 	);
-
-	if (result.modifiedCount) {
-		notifyOnInstanceStatusChangedById(ID, 'updated', undefined, { 'extraInformation.conns': conns });
-	}
 }
 
 export const InstanceStatus = {
