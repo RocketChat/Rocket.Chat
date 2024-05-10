@@ -8,7 +8,7 @@ export async function notifyOnRoomChanged<T extends IRocketChatRecord>(
 	data: T | T[],
 	clientAction: ClientAction = 'updated',
 ): Promise<void> {
-	if (dbWatchersDisabled) {
+	if (!dbWatchersDisabled) {
 		return;
 	}
 
@@ -23,7 +23,7 @@ export async function notifyOnRoomChangedById<T extends IRocketChatRecord>(
 	ids: T['_id'] | T['_id'][],
 	clientAction: ClientAction = 'updated',
 ): Promise<void> {
-	if (dbWatchersDisabled) {
+	if (!dbWatchersDisabled) {
 		return;
 	}
 
@@ -40,7 +40,7 @@ export async function notifyOnRoomChangedByUsernamesOrUids<T extends IRoom>(
 	usernames: T['u']['username'][],
 	clientAction: ClientAction = 'updated',
 ): Promise<void> {
-	if (dbWatchersDisabled) {
+	if (!dbWatchersDisabled) {
 		return;
 	}
 
