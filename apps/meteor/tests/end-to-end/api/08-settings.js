@@ -82,15 +82,14 @@ describe('[Settings]', function () {
 
 		it('should fail returning a setting if user does NOT have the view-privileged-setting permission (GET)', async () => {
 			await updatePermission('view-privileged-setting', []);
-			request
+			return request
 				.get(api('settings/Site_Url'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(403)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('_id', 'Site_Url');
-					expect(res.body).to.have.property('value');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				});
 		});
 
@@ -110,7 +109,7 @@ describe('[Settings]', function () {
 
 		it('should fail updating the value of a setting if user does NOT have the edit-privileged-setting permission (POST)', async () => {
 			await updatePermission('edit-privileged-setting', []);
-			request
+			return request
 				.post(api('settings/LDAP_Enable'))
 				.set(credentials)
 				.send({
