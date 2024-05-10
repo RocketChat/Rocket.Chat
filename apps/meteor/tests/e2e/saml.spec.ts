@@ -12,9 +12,9 @@ import { Users } from './fixtures/userStates';
 import { Registration } from './page-objects';
 import { createCustomRole, deleteCustomRole } from './utils/custom-role';
 import { getUserInfo } from './utils/getUserInfo';
+import { parseMeteorResponse } from './utils/parseMeteorResponse';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect, BaseTest } from './utils/test';
-import { parseMeteorResponse } from './utils/parseMeteorResponse';
 
 const resetTestData = async (cleanupOnly = false) => {
 	// Reset saml users' data on mongo in the beforeAll hook to allow re-running the tests within the same playwright session
