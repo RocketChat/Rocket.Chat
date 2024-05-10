@@ -271,9 +271,9 @@ API.v1.addRoute(
 			file.description = this.bodyParams.description;
 			delete this.bodyParams.description;
 
-			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
-
 			await sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams });
+
+			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
 
 			const message = await Messages.getMessageByFileIdAndUsername(file._id, this.userId);
 

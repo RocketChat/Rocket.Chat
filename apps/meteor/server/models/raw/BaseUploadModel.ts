@@ -1,6 +1,16 @@
 import type { IUpload } from '@rocket.chat/core-typings';
 import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
-import type { DeleteResult, IndexDescription, UpdateResult, Document, InsertOneResult, WithId, Filter } from 'mongodb';
+import type {
+	DeleteResult,
+	IndexDescription,
+	UpdateResult,
+	Document,
+	InsertOneResult,
+	WithId,
+	Filter,
+	FindOptions,
+	FindCursor,
+} from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -78,6 +88,7 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 			},
 		};
 
+		console.log('confirm', filter, update);
 		return this.updateOne(filter, update);
 	}
 
@@ -87,6 +98,17 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 
 	async findOneByRoomId(rid: string): Promise<T | null> {
 		return this.findOne({ rid });
+	}
+
+	findExpiredTemporaryFiles(options?: FindOptions<T>): FindCursor<T> {
+		return this.find(
+			{
+				expiresAt: {
+					$lte: new Date(),
+				},
+			},
+			options,
+		);
 	}
 
 	async updateFileNameById(fileId: string, name: string): Promise<Document | UpdateResult> {
