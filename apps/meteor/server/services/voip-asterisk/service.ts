@@ -21,8 +21,8 @@ import { CommandHandler } from './connector/asterisk/CommandHandler';
 import { Commands } from './connector/asterisk/Commands';
 import { getServerConfigDataFromSettings, voipEnabled } from './lib/Helper';
 
-export class VoipService extends ServiceClassInternal implements IVoipService {
-	protected name = 'voip';
+export class VoipAsteriskService extends ServiceClassInternal implements IVoipService {
+	protected name = 'voip-asterisk';
 
 	private logger: Logger;
 
@@ -33,7 +33,7 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 	constructor(db: Db) {
 		super();
 
-		this.logger = new Logger('VoIPService');
+		this.logger = new Logger('VoIPAsteriskService');
 		this.commandHandler = new CommandHandler(db);
 		if (!voipEnabled()) {
 			this.logger.warn({ msg: 'Voip is not enabled. Cant start the service' });
@@ -45,9 +45,9 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 	}
 
 	async init(): Promise<void> {
-		this.logger.info('Starting VoIP service');
+		this.logger.info('Starting VoIP Asterisk service');
 		if (this.active) {
-			this.logger.warn({ msg: 'VoIP service already started' });
+			this.logger.warn({ msg: 'VoIP Asterisk service already started' });
 			return;
 		}
 
@@ -55,16 +55,16 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 			await this.commandHandler.initConnection(CommandType.AMI);
 			this.active = true;
 			void api.broadcast('connector.statuschanged', true);
-			this.logger.info('VoIP service started');
+			this.logger.info('VoIP Asterisk service started');
 		} catch (err) {
-			this.logger.error({ msg: 'Error initializing VOIP service', err });
+			this.logger.error({ msg: 'Error initializing VOIP Asterisk service', err });
 		}
 	}
 
 	async stop(): Promise<void> {
-		this.logger.info('Stopping VoIP service');
+		this.logger.info('Stopping VoIP Asterisk service');
 		if (!this.active) {
-			this.logger.warn({ msg: 'VoIP service already stopped' });
+			this.logger.warn({ msg: 'VoIP Asterisk service already stopped' });
 			return;
 		}
 
@@ -72,21 +72,21 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 			this.commandHandler.stop();
 			this.active = false;
 			void api.broadcast('connector.statuschanged', false);
-			this.logger.info('VoIP service stopped');
+			this.logger.info('VoIP Asterisk service stopped');
 		} catch (err) {
-			this.logger.error({ msg: 'Error stopping VoIP service', err });
+			this.logger.error({ msg: 'Error stopping VoIP Asterisk service', err });
 		}
 	}
 
 	async refresh(): Promise<void> {
-		this.logger.info('Restarting VoIP service due to settings changes');
+		this.logger.info('Restarting VoIP Asterisk service due to settings changes');
 		try {
 			// Disable voip service
 			await this.stop();
 			// To then restart it
 			await this.init();
 		} catch (err) {
-			this.logger.error({ msg: 'Error refreshing VoIP service', err });
+			this.logger.error({ msg: 'Error refreshing VoIP Asterisk service', err });
 		}
 	}
 
