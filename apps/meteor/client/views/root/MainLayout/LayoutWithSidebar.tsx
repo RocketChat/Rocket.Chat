@@ -43,6 +43,7 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 
 	return (
 		<>
+			<AccessibilityShortcut />
 			<NavBar />
 			<Box
 				bg='surface-light'
@@ -50,7 +51,6 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 				aria-hidden={Boolean(modal)}
 			>
-				<AccessibilityShortcut />
 				<PaletteStyleTag theme={theme} selector='.rcx-content--main, .rcx-tile' />
 				<PaletteStyleTag theme='dark' selector='.rcx-sidebar--main' tagId='sidebar-palette' />
 
