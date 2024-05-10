@@ -13,7 +13,7 @@ const VirtuosoScrollbars = forwardRef(function VirtuosoScrollbars(
 		<CustomScrollbars
 			style={{ ...style, flexGrow: 1, overflowY: 'hidden', width: '100%', willChange: 'transform' }}
 			ref={ref}
-			renderView={(viewProps): ReactElement => <div {...viewProps} {...props} />}
+			renderView={(viewProps): ReactElement => <div {...viewProps} {...props} tabIndex={-1} />}
 		>
 			{children}
 		</CustomScrollbars>
