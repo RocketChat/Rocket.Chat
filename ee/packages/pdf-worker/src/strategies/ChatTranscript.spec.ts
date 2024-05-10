@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import '@testing-library/jest-dom';
 import { invalidData, validData, newDayData, sameDayData, translationsData } from '../templates/ChatTranscript/ChatTranscript.fixtures';
@@ -31,7 +31,10 @@ describe('Strategies/ChatTranscript', () => {
 	it('should creates a divider if message is from a new day', () => {
 		const result = chatTranscript.parseTemplateData(newDayData);
 		expect(result.messages[0]).toHaveProperty('divider');
-		expect(result.messages[1]).toHaveProperty('divider', moment(newDayData.messages[1].ts).format(newDayData.dateFormat));
+		expect(result.messages[1]).toHaveProperty(
+			'divider',
+			moment(newDayData.messages[1].ts).tz(newDayData.timezone).format(newDayData.dateFormat),
+		);
 	});
 
 	it('should not create a divider if message is from the same day', () => {

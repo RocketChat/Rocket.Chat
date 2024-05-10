@@ -22,6 +22,8 @@
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",
+		"test:worker": "jest --config ./jest.worker.config.ts",
+		"testunit": "yarn run test && yarn run test:worker",
 		"build": "rm -rf dist && tsc -p tsconfig.json && cp -r src/public dist/public",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"storybook": "start-storybook -p 6006"
