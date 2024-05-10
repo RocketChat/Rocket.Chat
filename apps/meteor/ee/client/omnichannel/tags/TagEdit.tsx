@@ -110,16 +110,7 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 								<Controller
 									name='departments'
 									control={control}
-									render={({ field: { onChange, value, onBlur, name } }) => (
-										<AutoCompleteDepartmentMultiple
-											name={name}
-											id={departmentsField}
-											onChange={onChange}
-											value={value}
-											onBlur={onBlur}
-											showArchived
-										/>
-									)}
+									render={({ field }) => <AutoCompleteDepartmentMultiple id={departmentsField} showArchived {...field} />}
 								/>
 							</FieldRow>
 						</Field>
