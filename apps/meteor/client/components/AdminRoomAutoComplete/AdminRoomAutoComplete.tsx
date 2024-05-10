@@ -5,9 +5,10 @@ import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import React, { memo, useMemo, useState } from 'react';
 
-type RoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
+type AdminRoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
 
-const RoomAutoComplete = ({ value, onChange, ...props }: RoomAutoCompleteProps) => {
+// TODO: merge AutoCompletes???
+const AdminRoomAutoComplete = ({ value, onChange, ...props }: AdminRoomAutoCompleteProps) => {
 	const [filter, setFilter] = useState('');
 
 	const performRoomSearch = useEndpoint('GET', '/v1/rooms.autocomplete.adminRooms');
@@ -48,4 +49,4 @@ const RoomAutoComplete = ({ value, onChange, ...props }: RoomAutoCompleteProps) 
 	);
 };
 
-export default memo(RoomAutoComplete);
+export default memo(AdminRoomAutoComplete);

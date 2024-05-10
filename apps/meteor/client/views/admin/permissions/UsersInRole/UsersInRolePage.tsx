@@ -6,8 +6,8 @@ import type { ReactElement } from 'react';
 import React, { useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import AdminRoomAutoComplete from '../../../../components/AdminRoomAutoComplete';
 import { Page, PageHeader, PageContent } from '../../../../components/Page';
-import RoomAutoComplete from '../../../../components/RoomAutoComplete';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import UsersInRoleTable from './UsersInRoleTable';
 
@@ -77,7 +77,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 										control={control}
 										name='rid'
 										render={({ field: { onChange, value } }): ReactElement => (
-											<RoomAutoComplete value={value} onChange={onChange} placeholder={t('User')} />
+											<AdminRoomAutoComplete value={value} onChange={onChange} placeholder={t('User')} />
 										)}
 									/>
 								</FieldRow>
