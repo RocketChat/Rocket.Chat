@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/pdf-worker",
-	"version": "0.0.34",
+	"version": "0.0.36",
 	"private": true,
 	"devDependencies": {
 		"@storybook/addon-essentials": "~6.5.16",
@@ -22,6 +22,8 @@
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",
+		"test:worker": "jest --config ./jest.worker.config.ts",
+		"testunit": "yarn run test && yarn run test:worker",
 		"build": "rm -rf dist && tsc -p tsconfig.json && cp -r src/public dist/public",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"storybook": "start-storybook -p 6006"
@@ -34,7 +36,7 @@
 	"dependencies": {
 		"@react-pdf/renderer": "^3.1.14",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/fuselage-tokens": "^0.33.0",
+		"@rocket.chat/fuselage-tokens": "^0.33.1",
 		"@types/react": "~17.0.69",
 		"emoji-assets": "^7.0.1",
 		"emoji-toolkit": "^7.0.1",

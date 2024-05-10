@@ -115,7 +115,7 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition(room._id);
 
-	const { messageListRef, messageListProps } = useMessageListNavigation();
+	const { messageListRef } = useMessageListNavigation();
 
 	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages, newMessagesScrollRef } =
 		useHasNewMessages(room._id, user?._id, atBottomRef, {
@@ -218,6 +218,7 @@ const RoomBody = (): ReactElement => {
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
 			<Box key={room._id} className={['main-content-flex', listStyle]}>
 				<section
+					role='presentation'
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
 					onClick={hideFlexTab && handleCloseFlexTab}
@@ -283,7 +284,7 @@ const RoomBody = (): ReactElement => {
 								>
 									<MessageListErrorBoundary>
 										<CustomScrollbars ref={innerRef}>
-											<ul className='messages-list' aria-live='polite' aria-busy={isLoadingMoreMessages} {...messageListProps}>
+											<ul className='messages-list' aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages}>
 												{canPreview ? (
 													<>
 														{hasMorePreviousMessages ? (

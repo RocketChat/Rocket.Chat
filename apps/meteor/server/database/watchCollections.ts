@@ -1,3 +1,4 @@
+import { dbWatchersDisabled } from '@rocket.chat/core-services';
 import {
 	Messages,
 	Users,
@@ -29,14 +30,10 @@ const onlyCollections = DBWATCHER_ONLY_COLLECTIONS.split(',')
 
 export function getWatchCollections(): string[] {
 	const collections = [
-		Messages.getCollectionName(),
 		Users.getCollectionName(),
-		Subscriptions.getCollectionName(),
 		LivechatInquiry.getCollectionName(),
 		LivechatDepartmentAgents.getCollectionName(),
 		Permissions.getCollectionName(),
-		Roles.getCollectionName(),
-		Rooms.getCollectionName(),
 		LoginServiceConfiguration.getCollectionName(),
 		InstanceStatus.getCollectionName(),
 		IntegrationHistory.getCollectionName(),
@@ -45,7 +42,15 @@ export function getWatchCollections(): string[] {
 		PbxEvents.getCollectionName(),
 		Settings.getCollectionName(),
 		LivechatPriority.getCollectionName(),
+		Subscriptions.getCollectionName(),
 	];
+
+	// add back to the list of collections in case db watchers are enabled
+	if (!dbWatchersDisabled) {
+		collections.push(Messages.getCollectionName());
+		collections.push(Roles.getCollectionName());
+		collections.push(Rooms.getCollectionName());
+	}
 
 	if (onlyCollections.length > 0) {
 		return collections.filter((collection) => onlyCollections.includes(collection));

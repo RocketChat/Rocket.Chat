@@ -9,7 +9,7 @@ import WebSocket from 'ws';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
 import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
 import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
-import { Client } from './Client';
+import { Client, clientMap } from './Client';
 import { events, server } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { Autoupdate } from './lib/Autoupdate';
@@ -47,6 +47,15 @@ export class DDPStreamer extends ServiceClass {
 			if (data) {
 				events.emit('meteor.loginServiceConfiguration', clientAction === 'inserted' ? 'added' : 'changed', data);
 			}
+		});
+
+		this.onEvent('user.forceLogout', (uid: string) => {
+			this.wss?.clients.forEach((ws) => {
+				const client = clientMap.get(ws);
+				if (client?.userId === uid) {
+					ws.terminate();
+				}
+			});
 		});
 
 		this.onEvent('meteor.clientVersionUpdated', (versions): void => {

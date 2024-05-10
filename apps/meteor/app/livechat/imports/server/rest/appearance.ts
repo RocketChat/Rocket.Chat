@@ -58,7 +58,7 @@ API.v1.addRoute(
 				throw new Error('invalid-setting');
 			}
 
-			const dbSettings = await Settings.findByIds(validSettingList, { projection: { _id: 1, value: 1, type: 1 } })
+			const dbSettings = await Settings.findByIds(validSettingList, { projection: { _id: 1, value: 1, type: 1, values: 1 } })
 				.map((dbSetting) => {
 					const setting = settings.find(({ _id }) => _id === dbSetting._id);
 					if (!setting || dbSetting.value === setting.value) {

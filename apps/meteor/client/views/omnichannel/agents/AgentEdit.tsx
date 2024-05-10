@@ -12,6 +12,7 @@ import {
 	Select,
 	ContextualbarFooter,
 	ButtonGroup,
+	CheckOption,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
@@ -185,6 +186,9 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 												options={departmentsOptions}
 												{...field}
 												placeholder={t('Select_an_option')}
+												renderItem={({ label, ...props }) => (
+													<CheckOption {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />
+												)}
 											/>
 										)}
 									/>

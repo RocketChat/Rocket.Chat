@@ -227,7 +227,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		notificationOriginField: string,
 	): Promise<UpdateResult | Document>;
 	removeByUserId(userId: string): Promise<number>;
-	createWithRoomAndUser(room: IRoom, user: IUser, extraData?: Record<string, any>): Promise<InsertOneResult<ISubscription>>;
+	createWithRoomAndUser(room: IRoom, user: IUser, extraData?: Partial<ISubscription>): Promise<InsertOneResult<ISubscription>>;
 	createWithRoomAndManyUsers(
 		room: IRoom,
 		users: { user: AtLeast<IUser, '_id' | 'username' | 'name' | 'settings'>; extraData: Record<string, any> }[],

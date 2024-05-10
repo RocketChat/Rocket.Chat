@@ -13,6 +13,7 @@ import { IUserCredentialsHeader, adminUsername } from '../user';
 import { getRandomVisitorToken } from './users';
 import { DummyResponse, sleep } from './utils';
 import { Response } from 'supertest';
+import { imgURL } from '../interactions';
 
 export const createLivechatRoom = async (visitorToken: string, extraRoomParams?: Record<string, string>): Promise<IOmnichannelRoom> => {
 	const urlParams = new URLSearchParams();
@@ -61,6 +62,10 @@ export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 				});
 		});
 	});
+
+export const deleteVisitor = async (token: string): Promise<void> => {
+	await request.delete(api(`livechat/visitor/${token}`));
+}
 
 export const takeInquiry = async (inquiryId: string, agentCredentials?: IUserCredentialsHeader): Promise<void> => {
     const userId = agentCredentials ? agentCredentials['X-User-Id'] : credentials['X-User-Id'];
@@ -208,6 +213,21 @@ export const sendMessage = (roomId: string, message: string, visitorToken: strin
 	});
 };
 
+export const uploadFile = (roomId: string, visitorToken: string): Promise<IMessage> => {
+	return new Promise((resolve, reject) => {
+		request
+			.post(api(`livechat/upload/${roomId}`))
+			.set({ 'x-visitor-token': visitorToken, ...credentials })
+			.attach('file', imgURL)
+			.end((err: Error, res: DummyResponse<IMessage>) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body as unknown as IMessage);
+			});
+	});
+};
+
 // Sends a message using sendMessage method from agent
 export const sendAgentMessage = (roomId: string, msg?: string): Promise<IMessage> => {
 	return new Promise((resolve, reject) => {
@@ -243,6 +263,12 @@ export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMe
 				if (err) {
 					return reject(err);
 				}
+
+				if (!res.body.success) {
+					reject(res.body);
+					return;
+				}
+
 				resolve(res.body.messages);
 			});
 	});

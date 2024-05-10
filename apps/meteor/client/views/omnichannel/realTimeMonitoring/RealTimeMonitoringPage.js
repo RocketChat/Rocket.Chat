@@ -1,4 +1,4 @@
-import { Box, Select, Margins } from '@rocket.chat/fuselage';
+import { Box, Select, Margins, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useState, useMemo, useEffect, Fragment } from 'react';
@@ -80,6 +80,8 @@ const RealTimeMonitoringPage = () => {
 								placeholder={t('All')}
 								label={t('All')}
 								onlyMyDepartments
+								withTitle={false}
+								renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
 							/>
 						</Box>
 						<Box maxWidth='50%' display='flex' mi={4} flexGrow={1} flexDirection='column'>
