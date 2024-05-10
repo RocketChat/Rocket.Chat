@@ -377,7 +377,7 @@ describe('[Direct Messages]', function () {
 	});
 
 	describe('/im.messages.others', () => {
-		it('should fail when the endpoint is disabled', async () => {
+		it('should fail when the endpoint is disabled and the user has permissions', async () => {
 			await updateSetting('API_Enable_Direct_Message_History_EndPoint', false);
 			await request
 				.get(api('im.messages.others'))
@@ -390,6 +390,22 @@ describe('[Direct Messages]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-endpoint-disabled');
+				});
+		});
+		it('should fail when the endpoint is disabled and the user doesnt have permission', async () => {
+			await updateSetting('API_Enable_Direct_Message_History_EndPoint', false);
+			await updatePermission('view-room-administration', ['admin']);
+			await request
+				.get(api('im.messages.others'))
+				.set(credentials)
+				.query({
+					roomId: directMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				});
 		});
 		it('should fail when the endpoint is enabled but the user doesnt have permission', async () => {
