@@ -2,10 +2,10 @@
 	"$schema": "https://json.schemastore.org/package",
 	"name": "@rocket.chat/core-typings",
 	"private": true,
-	"version": "6.9.0-develop",
+	"version": "7.0.0-develop",
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
-		"eslint": "~8.45.0",
+		"eslint": "~9.1.1",
 		"mongodb": "^4.17.2",
 		"prettier": "~2.8.8",
 		"typescript": "~5.3.3"

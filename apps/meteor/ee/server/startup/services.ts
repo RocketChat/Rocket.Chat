@@ -23,17 +23,19 @@ if (!isRunningMs()) {
 	api.registerService(new InstanceService());
 }
 
-let federationService: FederationService;
+export const startFederationService = async (): Promise<void> => {
+	let federationService: FederationService;
 
-if (!License.hasValidLicense()) {
-	federationService = await FederationService.createFederationService();
-	api.registerService(federationService);
-}
-
-void License.onLicense('federation', async () => {
-	const federationServiceEE = await FederationServiceEE.createFederationService();
-	if (federationService) {
-		await api.destroyService(federationService);
+	if (!License.hasValidLicense()) {
+		federationService = await FederationService.createFederationService();
+		api.registerService(federationService);
 	}
-	api.registerService(federationServiceEE);
-});
+
+	void License.onLicense('federation', async () => {
+		const federationServiceEE = await FederationServiceEE.createFederationService();
+		if (federationService) {
+			await api.destroyService(federationService);
+		}
+		api.registerService(federationServiceEE);
+	});
+};
