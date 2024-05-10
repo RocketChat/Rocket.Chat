@@ -9,6 +9,7 @@ import { createRoom } from '../../data/rooms.helper';
 import { testFileUploads } from '../../data/uploads.helper';
 import { adminUsername, password } from '../../data/user';
 import { createUser, login, deleteUser } from '../../data/users.helper';
+import { deleteTeam } from '../../data/teams.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve /* , reject*/) => {
@@ -1880,19 +1881,7 @@ describe('[Groups]', function () {
 				});
 		});
 
-		after(() =>
-			Promise.all([
-				request
-					.post(api('groups.delete'))
-					.set(credentials)
-					.send({
-						roomName: newGroup.name,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200),
-				updatePermission('create-team', ['admin', 'user']),
-			]),
-		);
+		after(() => Promise.all([deleteTeam(credentials, newGroup.name), updatePermission('create-team', ['admin', 'user'])]));
 
 		it('should fail to convert group if lacking edit-room permission', (done) => {
 			updatePermission('create-team', []).then(() => {

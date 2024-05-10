@@ -518,7 +518,7 @@ describe('[Teams]', () => {
 					expect(res.body).to.have.property('offset', 0);
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('teams');
-					expect(res.body.teams).to.have.length.greaterThanOrEqual(1);
+					expect(res.body.teams.length).equal(1);
 					expect(res.body.teams[0]).to.include.property('_id');
 					expect(res.body.teams[0]).to.include.property('_updatedAt');
 					expect(res.body.teams[0]).to.include.property('name');

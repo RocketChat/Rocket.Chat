@@ -9,6 +9,7 @@ import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { testFileUploads } from '../../data/uploads.helper';
 import { adminUsername, password } from '../../data/user';
 import { createUser, login, deleteUser } from '../../data/users.helper';
+import { deleteTeam } from '../../data/teams.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve /* , reject*/) => {
@@ -2036,7 +2037,7 @@ describe('[Channels]', function () {
 			await Promise.all([
 				updatePermission('create-team', ['admin', 'user']),
 				updatePermission('edit-room', ['admin', 'owner', 'moderator']),
-				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				deleteTeam(credentials, testChannel.name),
 			]);
 		});
 
