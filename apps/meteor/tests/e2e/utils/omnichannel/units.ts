@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 
 import { BaseTest } from '../test';
-import { parseMeteorResponse } from './utils';
+import { parseMeteorResponse } from '../parseMeteorResponse';
 
 type CreateUnitParams = {
 	id?: string | null;
