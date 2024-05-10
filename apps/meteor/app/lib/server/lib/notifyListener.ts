@@ -74,7 +74,7 @@ export async function notifyOnPbxEventChangedById<T extends IPbxEvent>(
 		return;
 	}
 
-	const item = await PbxEvents.findOneById(id, PbxEvents);
+	const item = await PbxEvents.findOneById(id);
 
 	if (item) {
 		void api.broadcast('watch.pbxevents', { clientAction, id, data: item });
