@@ -196,19 +196,23 @@ export const sendFileMessage = async (
 		}),
 	);
 
-	const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
-
-	const msg = await executeSendMessage(userId, {
+	const data = {
 		rid: roomId,
 		ts: new Date(),
-		file: files[0],
-		files,
-		attachments,
 		...(msgData as Partial<IMessage>),
 		...(msgData?.customFields && { customFields: JSON.parse(msgData.customFields) }),
 		msg: msgData?.msg ?? '',
 		groupable: msgData?.groupable ?? false,
-	});
+	};
+
+	if (msgData?.t !== 'e2e') {
+		const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
+		data.file = files[0];
+		data.files = files;
+		data.attachments = attachments;
+	}
+
+	const msg = await executeSendMessage(userId, data);
 
 	callbacks.runAsync('afterFileUpload', { user, room, message: msg });
 

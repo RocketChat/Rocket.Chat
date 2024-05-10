@@ -82,6 +82,8 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 
 	return (
 		<>
+			{isMessageEncrypted && <MessageBody>{t('E2E_message_encrypted_placeholder')}</MessageBody>}
+
 			{!normalizedMessage.blocks?.length && !!normalizedMessage.md?.length && (
 				<>
 					{(!encrypted || normalizedMessage.e2e === 'done') && (
@@ -93,7 +95,6 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 							searchText={searchText}
 						/>
 					)}
-					{isMessageEncrypted && <MessageBody>{t('E2E_message_encrypted_placeholder')}</MessageBody>}
 				</>
 			)}
 
