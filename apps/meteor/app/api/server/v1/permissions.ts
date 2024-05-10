@@ -4,7 +4,7 @@ import { isBodyParamsValidPermissionUpdate } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { notifyListenerOnPermissionChanges } from '../../../lib/server/lib/notifyListenerOnPermissionChanges';
+import { notifyOnPermissionChangedById } from '../../../lib/server/lib/notifyListener';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -71,7 +71,7 @@ API.v1.addRoute(
 
 			for await (const permission of bodyParams.permissions) {
 				await Permissions.setRoles(permission._id, permission.roles);
-				void notifyListenerOnPermissionChanges(permission._id);
+				void notifyOnPermissionChangedById(permission._id);
 			}
 
 			const result = (await Meteor.callAsync('permissions/get')) as IPermission[];

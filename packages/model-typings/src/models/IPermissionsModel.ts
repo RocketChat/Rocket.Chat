@@ -1,5 +1,5 @@
 import type { IPermission, IRole } from '@rocket.chat/core-typings';
-import type { FindCursor } from 'mongodb';
+import type { FindCursor, FindOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -10,4 +10,6 @@ export interface IPermissionsModel extends IBaseModel<IPermission> {
 	setRoles(permission: string, roles: IRole['_id'][]): Promise<void>;
 	removeRole(permission: string, role: IRole['_id']): Promise<void>;
 	findByLevel(level: 'settings', settingId?: string): FindCursor<IPermission>;
+	findOneById(id: IPermission['_id'], options?: FindOptions<IPermission>): Promise<IPermission | null>;
+	findOneByGroupPermissionId(groupPermissionId: IPermission['groupPermissionId']): Promise<IPermission | null>;
 }

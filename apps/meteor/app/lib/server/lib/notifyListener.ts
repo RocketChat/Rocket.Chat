@@ -1,6 +1,6 @@
 import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
-import type { IPbxEvent, IRocketChatRecord, IRoom } from '@rocket.chat/core-typings';
-import { PbxEvents, Rooms } from '@rocket.chat/models';
+import type { IPermission, IRocketChatRecord, IRoom, ISetting, IPbxEvent } from '@rocket.chat/core-typings';
+import { Rooms, Permissions, Settings, PbxEvents } from '@rocket.chat/models';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
 
@@ -63,6 +63,53 @@ export async function notifyOnRoomChangedByUserDM<T extends IRoom>(
 
 	for await (const item of items) {
 		void api.broadcast('watch.rooms', { clientAction, room: item });
+	}
+}
+
+export async function notifyOnSettingChangedById(sid: ISetting['_id'], clientAction: ClientAction = 'updated'): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const setting = await Settings.findOneById(sid);
+
+	if (setting) {
+		void api.broadcast('watch.settings', { clientAction, setting });
+	}
+}
+
+export async function notifyOnPermissionChangedById(pid: IPermission['_id'], clientAction: ClientAction = 'updated'): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const permission = await Permissions.findOneById(pid);
+
+	if (permission) {
+		void api.broadcast('permission.changed', { clientAction, data: permission });
+	}
+
+	if (permission?.level === 'settings' && permission?.settingId) {
+		void notifyOnSettingChangedById(permission.settingId);
+	}
+}
+
+export async function notifyOnPermissionChangedByGroupPermissionId(
+	pid: IPermission['groupPermissionId'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const permission = await Permissions.findOneByGroupPermissionId(pid);
+
+	if (permission) {
+		void api.broadcast('permission.changed', { clientAction, data: permission });
+	}
+
+	if (permission?.level === 'settings' && permission?.settingId) {
+		void notifyOnSettingChangedById(permission.settingId);
 	}
 }
 

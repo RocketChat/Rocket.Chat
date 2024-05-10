@@ -2,7 +2,7 @@ import { Permissions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { notifyListenerOnPermissionChanges } from '../../../lib/server/lib/notifyListenerOnPermissionChanges';
+import { notifyOnPermissionChangedById } from '../../../lib/server/lib/notifyListener';
 import { CONSTANTS, AuthorizationUtils } from '../../lib';
 import { hasPermissionAsync } from '../functions/hasPermission';
 
@@ -46,10 +46,10 @@ Meteor.methods<ServerMethods>({
 		// for setting-based-permissions, authorize the group access as well
 		if (permission.groupPermissionId) {
 			await Permissions.addRole(permission.groupPermissionId, role);
-			void notifyListenerOnPermissionChanges(permission.groupPermissionId);
 		}
 
 		await Permissions.addRole(permission._id, role);
-		void notifyListenerOnPermissionChanges(permission._id);
+
+		void notifyOnPermissionChangedById(permission._id);
 	},
 });

@@ -2,7 +2,7 @@ import { Permissions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { notifyListenerOnPermissionChanges } from '../../../lib/server/lib/notifyListenerOnPermissionChanges';
+import { notifyOnPermissionChangedByGroupPermissionId, notifyOnPermissionChangedById } from '../../../lib/server/lib/notifyListener';
 import { CONSTANTS } from '../../lib';
 import { hasPermissionAsync } from '../functions/hasPermission';
 
@@ -39,10 +39,10 @@ Meteor.methods<ServerMethods>({
 		// related to this group have been removed
 		if (permission.groupPermissionId) {
 			await Permissions.removeRole(permission.groupPermissionId, role);
-			void notifyListenerOnPermissionChanges(permission.groupPermissionId);
+			void notifyOnPermissionChangedByGroupPermissionId(permission.groupPermissionId);
 		}
 
 		await Permissions.removeRole(permission._id, role);
-		void notifyListenerOnPermissionChanges(permission._id);
+		void notifyOnPermissionChangedById(permission._id);
 	},
 });
