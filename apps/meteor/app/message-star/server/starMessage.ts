@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { broadcastMessageFromData } from '../../../server/modules/watchers/lib/messages';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
+import { notifyOnRoomChangedById } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -55,6 +56,7 @@ Meteor.methods<ServerMethods>({
 
 		if (isTheLastMessage(room, message)) {
 			await Rooms.updateLastMessageStar(room._id, uid, message.starred);
+			void notifyOnRoomChangedById(room._id);
 		}
 
 		await Apps.self?.triggerEvent(AppEvents.IPostMessageStarred, message, await Meteor.userAsync(), message.starred);

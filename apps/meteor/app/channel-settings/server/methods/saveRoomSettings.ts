@@ -10,6 +10,7 @@ import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
+import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
 import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomAnnouncement } from '../functions/saveRoomAnnouncement';
 import { saveRoomCustomFields } from '../functions/saveRoomCustomFields';
@@ -486,6 +487,8 @@ export async function saveRoomSettings(
 			rid,
 		});
 	}
+
+	void notifyOnRoomChangedById(rid);
 
 	return {
 		result: true,
