@@ -1,8 +1,8 @@
 import { EventEmitter } from 'events';
 
 import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
-import { v4 as uuidv4 } from 'uuid';
 import type { UpdateResult } from 'mongodb';
+import { v4 as uuidv4 } from 'uuid';
 
 const events = new EventEmitter();
 
