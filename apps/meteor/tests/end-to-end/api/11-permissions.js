@@ -65,6 +65,7 @@ describe('[Permissions]', function () {
 		});
 
 		after(async () => {
+			await updatePermission('access-permissions', ['admin']);
 			await deleteUser(testUser);
 		});
 
