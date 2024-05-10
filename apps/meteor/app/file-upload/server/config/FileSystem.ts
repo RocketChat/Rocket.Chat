@@ -27,9 +27,9 @@ const FileSystemUploads = new FileUploadClass({
 			}
 
 			const { query } = URL.parse(req.url || '', true);
-			const forceDownload = typeof query.download !== 'undefined';
 			file = FileUpload.addExtensionTo(file);
-			const contentDisposition = forceDownload || file.type !== 'application/pdf' ? 'attachment' : 'inline';
+			const contentDisposition = query.contentDisposition === 'inline' ? 'inline' : 'attachment';
+
 			res.setHeader('Content-Disposition', `${contentDisposition}; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
 			file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 			res.setHeader('Content-Type', file.type || 'application/octet-stream');

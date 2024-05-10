@@ -10,7 +10,17 @@ import '../../ufs/GoogleStorage/server';
 
 const get: FileUploadClass['get'] = async function (this: FileUploadClass, file, req, res) {
 	const { query } = URL.parse(req.url || '', true);
-	const forceDownload = typeof query.download !== 'undefined';
+	let forceDownload = typeof query.download !== 'undefined';
+	if (!forceDownload) {
+		switch (query.contentDisposition) {
+			case 'inline':
+				forceDownload = false;
+				break;
+			case 'attachment':
+				forceDownload = true;
+				break;
+		}
+	}
 
 	const fileUrl = await this.store.getRedirectURL(file, forceDownload);
 	if (!fileUrl || !file.store) {
