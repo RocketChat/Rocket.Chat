@@ -21,13 +21,14 @@ import { useSendWelcomeEmailMutation } from '../hooks/useSendWelcomeEmailMutatio
 type UsersTableRowProps = {
 	user: Serialized<DefaultUserInfo>;
 	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
-	mediaQuery: boolean;
+	isMobile: boolean;
+	isLaptop: boolean;
 	onReload: () => void;
 	tab: IAdminUserTabs;
 	isSeatsCapExceeded: boolean;
 };
 
-const UsersTableRow = ({ user, onClick, mediaQuery, onReload, tab, isSeatsCapExceeded }: UsersTableRowProps): ReactElement => {
+const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSeatsCapExceeded }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -129,7 +130,7 @@ const UsersTableRow = ({ user, onClick, mediaQuery, onReload, tab, isSeatsCapExc
 		>
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
-					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} username={username} etag={avatarETag} />}
+					{username && <UserAvatar size={isMobile || isLaptop ? 'x28' : 'x40'} username={username} etag={avatarETag} />}
 					<Box display='flex' flexGrow={1} flexShrink={1} flexBasis='0%' alignSelf='center' alignItems='center' withTruncatedText>
 						<Box mi={8}>
 							<UserStatus status={status || Status.OFFLINE} />
@@ -141,7 +142,7 @@ const UsersTableRow = ({ user, onClick, mediaQuery, onReload, tab, isSeatsCapExc
 				</Box>
 			</GenericTableCell>
 
-			{mediaQuery && (
+			{!isMobile && (
 				<GenericTableCell>
 					<Box fontScale='p2m' color='hint' withTruncatedText>
 						{username}
@@ -149,17 +150,17 @@ const UsersTableRow = ({ user, onClick, mediaQuery, onReload, tab, isSeatsCapExc
 				</GenericTableCell>
 			)}
 
-			{mediaQuery && <GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>}
+			{!isLaptop && <GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>}
 
-			{mediaQuery && <GenericTableCell withTruncatedText>{roleNames}</GenericTableCell>}
+			{!isLaptop && <GenericTableCell withTruncatedText>{roleNames}</GenericTableCell>}
 
-			{tab === 'all' && (
+			{tab === 'all' && !isMobile && (
 				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 					{registrationStatusText}
 				</GenericTableCell>
 			)}
 
-			{tab === 'pending' && (
+			{tab === 'pending' && !isMobile && (
 				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 					<Box display='flex' flexDirection='row' alignContent='flex-end'>
 						{active ? t('User_first_log_in') : t('Activation')}

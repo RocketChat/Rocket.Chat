@@ -1,6 +1,6 @@
 import type { IAdminUserTabs, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
-import { useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
@@ -42,7 +42,10 @@ const UsersTable = ({
 }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const router = useRouter();
-	const mediaQuery = useMediaQuery('(min-width: 1024px)');
+	const breakpoints = useBreakpoints();
+
+	const isMobile = !breakpoints.includes('xl');
+	const isLaptop = !breakpoints.includes('xxl');
 
 	const { data, isLoading, isError, isSuccess } = filteredUsersQueryResult;
 
@@ -80,7 +83,7 @@ const UsersTable = ({
 			<GenericTableHeaderCell w='x186' key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>,
-			mediaQuery && (
+			!isMobile && (
 				<GenericTableHeaderCell
 					w='x186'
 					key='username'
@@ -92,7 +95,7 @@ const UsersTable = ({
 					{t('Username')}
 				</GenericTableHeaderCell>
 			),
-			mediaQuery && (
+			!isLaptop && (
 				<GenericTableHeaderCell
 					w='x186'
 					key='email'
@@ -104,12 +107,12 @@ const UsersTable = ({
 					{t('Email')}
 				</GenericTableHeaderCell>
 			),
-			mediaQuery && (
+			!isLaptop && (
 				<GenericTableHeaderCell w='x186' key='roles' onClick={setSort}>
 					{t('Roles')}
 				</GenericTableHeaderCell>
 			),
-			tab === 'all' && (
+			tab === 'all' && !isMobile && (
 				<GenericTableHeaderCell
 					w='x186'
 					key='status'
@@ -121,7 +124,7 @@ const UsersTable = ({
 					{t('Registration_status')}
 				</GenericTableHeaderCell>
 			),
-			tab === 'pending' && (
+			tab === 'pending' && !isMobile && (
 				<GenericTableHeaderCell
 					w='x186'
 					key='action'
@@ -135,7 +138,7 @@ const UsersTable = ({
 			),
 			<GenericTableHeaderCell key='actions' w='x186' />,
 		],
-		[mediaQuery, setSort, sortBy, sortDirection, t, tab],
+		[isLaptop, isMobile, setSort, sortBy, sortDirection, t, tab],
 	);
 
 	const handleSearchTextChange = useCallback(
@@ -177,7 +180,8 @@ const UsersTable = ({
 								<UsersTableRow
 									key={user._id}
 									onClick={handleClickOrKeyDown}
-									mediaQuery={mediaQuery}
+									isMobile={isMobile}
+									isLaptop={isLaptop}
 									user={user}
 									onReload={onReload}
 									tab={tab}

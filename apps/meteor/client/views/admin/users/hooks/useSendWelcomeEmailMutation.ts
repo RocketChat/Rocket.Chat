@@ -12,14 +12,8 @@ export const useSendWelcomeEmailMutation = (): UseMutationResult<null, Error, us
 
 	const sendWelcomeEmail = useEndpoint('POST', '/v1/users.sendWelcomeEmail');
 
-	return useMutation(
-		async ({ email }) => {
-			const result = await sendWelcomeEmail({ email });
-			return result;
-		},
-		{
-			onSuccess: () => dispatchToastMessage({ type: 'success', message: t('Welcome_email_resent') }),
-			onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
-		},
-	);
+	return useMutation(async ({ email }) => sendWelcomeEmail({ email }), {
+		onSuccess: () => dispatchToastMessage({ type: 'success', message: t('Welcome_email_resent') }),
+		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
+	});
 };
