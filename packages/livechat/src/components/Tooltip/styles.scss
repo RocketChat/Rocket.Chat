@@ -1,0 +1,181 @@
+@import '../../styles/colors';
+@import '../../styles/variables';
+
+.tooltip {
+	$tail-size: 0.3125rem;
+
+	position: relative;
+	z-index: 15;
+
+	display: inline-block;
+	visibility: visible;
+
+	margin: 0.5rem;
+	padding: 0.5rem 0.75rem;
+
+	user-select: none;
+	transition: opacity $default-time-animation;
+	text-align: center;
+	white-space: nowrap;
+	letter-spacing: 0;
+	pointer-events: none;
+
+	opacity: 1;
+
+	color: $color-text-lighter;
+	border-radius: $default-border-radius;
+
+	background-color: $bg-color-darker;
+	box-shadow:
+		0 0 0.125rem 0 rgba($bg-color-dark, 0.08),
+		0 0 0.75rem 0 rgba($bg-color-dark, 0.12);
+
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1rem;
+
+	&--hidden {
+		visibility: hidden;
+
+		opacity: 0;
+	}
+
+	&--placement {
+		@mixin tail {
+			&::before {
+				position: absolute;
+
+				content: "";
+
+				border: $tail-size solid $bg-color-darker;
+				@content;
+			}
+		}
+
+		&-left {
+			@include tail {
+				top: calc(50% - #{$tail-size});
+				left: 100%;
+
+				border-top-color: transparent;
+				border-right-color: transparent;
+				border-bottom-color: transparent;
+			}
+		}
+
+		&-right {
+			@include tail {
+				top: calc(50% - #{$tail-size});
+				right: 100%;
+
+				border-top-color: transparent;
+				border-bottom-color: transparent;
+				border-left-color: transparent;
+			}
+		}
+
+		&-top {
+			@include tail {
+				top: 100%;
+				left: calc(50% - #{$tail-size});
+
+				border-right-color: transparent;
+				border-bottom-color: transparent;
+				border-left-color: transparent;
+			}
+		}
+
+		&-top-left {
+			@include tail {
+				top: 100%;
+				right: $default-border-radius;
+
+				border-right-color: transparent;
+				border-bottom-color: transparent;
+				border-left-color: transparent;
+			}
+		}
+
+		&-top-right {
+			@include tail {
+				top: 100%;
+				left: $default-border-radius;
+
+				border-right-color: transparent;
+				border-bottom-color: transparent;
+				border-left-color: transparent;
+			}
+		}
+
+		&-bottom {
+			@include tail {
+				bottom: 100%;
+				left: calc(50% - #{$tail-size});
+
+				border-top-color: transparent;
+				border-right-color: transparent;
+				border-left-color: transparent;
+			}
+		}
+
+		&-bottom-left {
+			@include tail {
+				right: $default-border-radius;
+				bottom: 100%;
+
+				border-top-color: transparent;
+				border-right-color: transparent;
+				border-left-color: transparent;
+			}
+		}
+
+		&-bottom-right {
+			@include tail {
+				bottom: 100%;
+				left: $default-border-radius;
+
+				border-top-color: transparent;
+				border-right-color: transparent;
+				border-left-color: transparent;
+			}
+		}
+	}
+
+	&--floating {
+		position: fixed;
+
+		margin: 0;
+
+		transform: translate(-50%, #{$tail-size});
+
+		&.tooltip--placement {
+			&-left {
+				transform: translate(calc(-100% - #{$tail-size}), -50%);
+			}
+
+			&-right {
+				transform: translate(#{$tail-size}, -50%);
+			}
+
+			&-top {
+				transform: translate(-50%, calc(-100% - #{$tail-size}));
+			}
+
+			&-top-left {
+				transform: translate(calc(-100% + #{$tail-size}), calc(-100% - #{$tail-size}));
+			}
+
+			&-top-right {
+				transform: translate(calc(0% - #{$tail-size}), calc(-100% - #{$tail-size}));
+			}
+
+			&-bottom-left {
+				transform: translate(calc(-100% + #{$tail-size}), #{$tail-size});
+			}
+
+			&-bottom-right {
+				transform: translate(calc(0% - #{$tail-size}), #{$tail-size});
+			}
+		}
+	}
+}

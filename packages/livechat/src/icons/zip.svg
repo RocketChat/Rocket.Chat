@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 32 32">
+	<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(7.000000, 4.000000)">
+		<path d="M13.5007334,0 L18,4.52002448 L18,22 C18,23.1045695 17.1045695,24 16,24 L2,24 C0.8954305,24 1.3527075e-16,23.1045695 0,22 L0,2 C-1.3527075e-16,0.8954305 0.8954305,2.02906125e-16 2,0 L13.5007334,0 Z" fill="#F6C502" />
+		<g transform="translate(6.750000, 4.500000)">
+			<polygon fill="#FFFFFF" points="0 2.25 1.875 2.25 1.875 0.375 0 0.375" />
+			<polygon fill="#FFFFFF" points="1.875 4.125 3.75 4.125 3.75 2.25 1.875 2.25" />
+			<polygon fill="#FFFFFF" points="0 6 1.875 6 1.875 4.125 0 4.125" />
+			<polygon fill="#FFFFFF" points="1.875 7.875 3.75 7.875 3.75 6 1.875 6" />
+			<polygon fill="#FFFFFF" points="0 9.75 1.875 9.75 1.875 7.875 0 7.875" />
+			<polygon fill="#FFFFFF" points="0 13.5 3.75 13.5 3.75 9.75 0 9.75" />
+			<polygon fill="#F6C502" points="0.9375 12.5625 2.8125 12.5625 2.8125 10.6875 0.9375 10.6875" />
+		</g>
+		<path d="M13.5,0.00217437744 L13.5,3.50313568 C13.5,4.05542043 13.9477153,4.50313568 14.5,4.50313568 L18,4.50313568 L13.5,0.00217437744 Z" fill="#FFFFFF" opacity="0.5" />
+	</g>
+</svg>

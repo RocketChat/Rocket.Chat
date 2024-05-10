@@ -1,0 +1,17 @@
+{
+    "name": "RocketChat",
+    "description": "The Ultimate Open Source WebChat Platform",
+    "launch_path": "/",
+    "icons": {
+        "192": "/assets/favicon_192.png",
+        "512": "/assets/favicon_512.png"
+    },
+    "developer": {
+        "name": "Rocket.Chat",
+        "url": "https://rocket.chat/"
+    },
+    "fullscreen": "true",
+    "chrome": {
+        "navigation": false
+    }
+}

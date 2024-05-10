@@ -1,0 +1,82 @@
+{
+	"extends": [
+		"plugin:@typescript-eslint/recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"@rocket.chat/eslint-config/original",
+		"@rocket.chat/eslint-config/react",
+		"prettier",
+		"plugin:anti-trojan-source/recommended",
+		"plugin:react/jsx-runtime",
+		"plugin:storybook/recommended"
+	],
+	"parser": "@typescript-eslint/parser",
+	"plugins": ["@typescript-eslint", "react", "react-hooks", "prettier"],
+	"rules": {
+		"import/named": "error",
+		"import/order": [
+			"error",
+			{
+				"newlines-between": "always",
+				"groups": ["builtin", "external", "internal", ["parent", "sibling", "index"]],
+				"alphabetize": {
+					"order": "asc"
+				}
+			}
+		],
+		"jsx-quotes": ["error", "prefer-single"],
+		"new-cap": ["error"],
+		"prefer-arrow-callback": ["error", { "allowNamedFunctions": true }],
+		"prettier/prettier": 2,
+		"react/display-name": "error",
+		"react/jsx-uses-vars": "error",
+		"react/jsx-no-undef": "error",
+		"react/jsx-fragments": ["error", "syntax"],
+		"react/no-multi-comp": "error",
+		"react-hooks/rules-of-hooks": "error",
+		"react-hooks/exhaustive-deps": "warn"
+	},
+	"settings": {
+		"import/resolver": {
+			"node": {
+				"extensions": [".js", ".ts", ".tsx"]
+			}
+		},
+		"react": {
+			"version": "detect"
+		}
+	},
+	"ignorePatterns": ["**/dist"],
+	"overrides": [
+		{
+			"files": ["*.ts", "*.tsx"],
+			"rules": {
+				"@typescript-eslint/ban-ts-ignore": "off",
+				"@typescript-eslint/explicit-function-return-type": "warn",
+				"@typescript-eslint/indent": "off",
+				"@typescript-eslint/no-extra-parens": "off",
+				"@typescript-eslint/no-explicit-any": "off",
+				"@typescript-eslint/no-unused-vars": [
+					"error",
+					{
+						"argsIgnorePattern": "^_"
+					}
+				],
+				"@typescript-eslint/prefer-optional-chain": "warn",
+				"func-call-spacing": "off",
+				"indent": "off",
+				"no-extra-parens": "off",
+				"no-spaced-func": "off",
+				"no-undef": "off",
+				"no-unused-vars": "off",
+				"no-useless-constructor": "off",
+				"no-use-before-define": "off"
+			}
+		},
+		{
+			"files": ["*.stories.tsx"],
+			"rules": {
+				"react/no-multi-comp": "off"
+			}
+		}
+	]
+}

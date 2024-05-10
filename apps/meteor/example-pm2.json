@@ -1,0 +1,63 @@
+{
+	"apps": [{
+		"name": "rocket.chat.0",
+		"max_memory_restart": "1024M",
+		"log_date_format": "YYYY-MM-DD HH:mm:ss SSS",
+		"script": "/var/www/rocket.chat/bundle/main.js",
+		"out_file": "/var/log/rocket.chat/app.log",
+		"error_file": "/var/log/rocket.chat/err.log",
+		"port": "8080",
+		"env": {
+			"MONGO_URL": "mongodb://localhost:27017/rocketchat",
+			"MONGO_OPLOG_URL": "mongodb://localhost:27017/local",
+			"ROOT_URL": "https://open.rocket.chat",
+			"DDP_DEFAULT_CONNECTION_URL": "https://open.rocket.chat",
+			"PORT": "8080"
+		}
+	}, {
+		"name": "rocket.chat.1",
+		"max_memory_restart": "1024M",
+		"log_date_format": "YYYY-MM-DD HH:mm:ss SSS",
+		"script": "/var/www/rocket.chat/bundle/main.js",
+		"out_file": "/var/log/rocket.chat/app.log",
+		"error_file": "/var/log/rocket.chat/err.log",
+		"port": "8081",
+		"env": {
+			"MONGO_URL": "mongodb://localhost:27017/rocketchat",
+			"MONGO_OPLOG_URL": "mongodb://localhost:27017/local",
+			"ROOT_URL": "https://open.rocket.chat",
+			"DDP_DEFAULT_CONNECTION_URL": "https://open.rocket.chat",
+			"PORT": "8081"
+		}
+	}, {
+		"name": "rocket.chat.2",
+		"max_memory_restart": "1024M",
+		"log_date_format": "YYYY-MM-DD HH:mm:ss SSS",
+		"script": "/var/www/rocket.chat/bundle/main.js",
+		"out_file": "/var/log/rocket.chat/app.log",
+		"error_file": "/var/log/rocket.chat/err.log",
+		"port": "8082",
+		"env": {
+			"MONGO_URL": "mongodb://localhost:27017/rocketchat",
+			"MONGO_OPLOG_URL": "mongodb://localhost:27017/local",
+			"ROOT_URL": "https://open.rocket.chat",
+			"DDP_DEFAULT_CONNECTION_URL": "https://open.rocket.chat",
+			"PORT": "8082"
+		}
+	}, {
+		"name": "rocket.chat.3",
+		"max_memory_restart": "1024M",
+		"log_date_format": "YYYY-MM-DD HH:mm:ss SSS",
+		"script": "/var/www/rocket.chat/bundle/main.js",
+		"out_file": "/var/log/rocket.chat/app.log",
+		"error_file": "/var/log/rocket.chat/err.log",
+		"port": "8083",
+		"env": {
+			"MONGO_URL": "mongodb://localhost:27017/rocketchat",
+			"MONGO_OPLOG_URL": "mongodb://localhost:27017/local",
+			"ROOT_URL": "https://open.rocket.chat",
+			"DDP_DEFAULT_CONNECTION_URL": "https://open.rocket.chat",
+			"PORT": "8083"
+		}
+	}]
+}

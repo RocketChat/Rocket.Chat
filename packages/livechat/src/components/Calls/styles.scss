@@ -1,0 +1,128 @@
+@import '../../styles/colors';
+@import '../../styles/variables';
+
+.call-notification {
+	position: relative;
+
+	display: flex;
+
+	width: 100%;
+	height: 50%;
+
+	&__content {
+		display: flex;
+		flex-direction: column;
+
+		width: 100%;
+		height: 100%;
+
+		background: #1f2329;
+
+		font-weight: 600;
+		justify-content: space-evenly;
+
+		&-avatar {
+			display: flex;
+
+			margin: 0 auto;
+			align-self: flex-end;
+		}
+
+		&-message {
+			margin: 0 auto;
+
+			color: #ffffff;
+		}
+
+		&-actions {
+			display: flex;
+			flex-direction: row;
+
+			margin: 0 auto;
+			margin-bottom: 15px;
+
+			color: white;
+
+			align-items: flex-end;
+
+			> button {
+				margin-bottom: 0;
+				margin-left: 10px;
+			}
+
+			&-accept {
+				border-color: green;
+				background-color: #2de0a5;
+			}
+
+			&-decline {
+				border-color: red;
+				background-color: #f5455c;
+			}
+		}
+	}
+}
+
+.call-iframe {
+	position: absolute;
+	top: 0;
+
+	width: 100%;
+	height: 41%;
+
+	&__content {
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.joinCall {
+	width: 300px;
+	margin: 15px;
+
+	padding: 5px;
+
+	border: 1px solid #e4e7ea;
+
+	&__content {
+		display: flex;
+		flex-direction: row;
+
+		padding: 15px;
+
+		line-height: 16px;
+		justify-content: space-around;
+
+		&-videoIcon {
+			display: flex;
+
+			height: 7%;
+			margin-right: 10px;
+
+			padding: 5px;
+
+			border: 1px solid white;
+			background-color: #d1ebfe;
+		}
+
+		&-action {
+			display: block;
+
+			width: 120px;
+			margin-top: 0;
+			margin-bottom: 3%;
+			margin-left: 20%;
+			padding: 5px;
+
+			color: white;
+			border: 1px solid  blue;
+			background-color: #1d74f5;
+		}
+	}
+}
+
+@media screen and (min-width: 410px) {
+	.joinCall {
+		margin-left: 3%;
+	}
+}

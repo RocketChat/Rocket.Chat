@@ -1,0 +1,43 @@
+@import '../../../../styles/colors';
+@import '../../../../styles/variables';
+
+.uikit-section-block {
+	display: flex;
+
+	margin: 0 2px 8px;
+
+	color: $color-text-dark;
+
+	font-family: $font-family;
+	font-size: 0.875rem;
+	font-weight: normal;
+	line-height: 1.25rem;
+	flex-wrap: nowrap;
+
+	&__content {
+		flex: 1 1 auto;
+
+		margin: 0 6px;
+	}
+
+	&__text {
+		display: block;
+	}
+
+	&__fields {
+		display: flex;
+		align-items: flex-start;
+		flex-wrap: wrap;
+		justify-content: space-between;
+	}
+
+	&__field {
+		flex: 1 1 50%;
+	}
+
+	&__accessory {
+		flex: 0 0 auto;
+
+		margin: 0 6px;
+	}
+}

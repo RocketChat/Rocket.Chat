@@ -1,0 +1,14 @@
+{
+	"plugins": {
+		"postcss-easy-import": {},
+		"postcss-custom-properties": {
+			"preserve": true
+		},
+		"postcss-media-minmax": {},
+		"postcss-nested": {},
+		"autoprefixer": {}
+	},
+	"excludedPackages": [
+		"deepwell:bootstrap-datepicker2"
+	]
+}

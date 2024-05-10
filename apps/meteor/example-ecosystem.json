@@ -1,0 +1,12 @@
+{
+	"deploy": {
+		"production": {
+			"user": "root",
+			"host": ["rocket.chat"],
+			"ref": "origin/master",
+			"repo": "https://github.com/RocketChat/Rocket.Chat.git",
+			"path": "/var/www/rocket.chat",
+			"post-deploy": "source build.sh production"
+		}
+	}
+}

@@ -1,0 +1,8 @@
+$image-attachment-media-max-height: 250px;
+
+.image-attachment {
+	&__inner {
+		max-width: 100%;
+		max-height: $image-attachment-media-max-height;
+	}
+}

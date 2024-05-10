@@ -1,0 +1,1 @@
+export { PasswordPolicy } from './PasswordPolicyClass';
