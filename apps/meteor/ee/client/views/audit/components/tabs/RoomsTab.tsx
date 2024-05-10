@@ -4,7 +4,7 @@ import React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 
-import RoomAutoComplete from '../../../../../../client/components/AdminRoomAutoComplete/AdminRoomAutoComplete';
+import RoomAutoComplete from '../../../../../../client/components/RoomAutoComplete';
 import type { AuditFields } from '../../hooks/useAuditForm';
 
 type RoomsTabProps = {
@@ -21,6 +21,7 @@ const RoomsTab = ({ form: { control } }: RoomsTabProps) => {
 			<FieldLabel>{t('Channel_name')}</FieldLabel>
 			<FieldRow>
 				<RoomAutoComplete
+					scope='admin'
 					value={ridField.value}
 					error={!!ridFieldState.error}
 					placeholder={t('Channel_Name_Placeholder')}
