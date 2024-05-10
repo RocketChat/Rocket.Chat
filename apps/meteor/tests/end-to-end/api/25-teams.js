@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, after, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
@@ -60,6 +60,14 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.create', () => {
+		before(async () => {
+			return updatePermission('create-team', ['admin', 'user']);
+		});
+
+		after(async () => {
+			return updatePermission('create-team', ['admin', 'user']);
+		});
+
 		it('should create a public team', (done) => {
 			request
 				.post(api('teams.create'))
@@ -180,6 +188,23 @@ describe('[Teams]', () => {
 					expect(res.body.error).to.be.equal('team-name-already-exists');
 				})
 				.end(done);
+		});
+
+		it('should not allow creating a team when the user does NOT have the create-team permission', async () => {
+			await updatePermission('create-team', []);
+			await request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: `test-team-${Date.now()}`,
+					type: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+				});
 		});
 	});
 
@@ -535,6 +560,61 @@ describe('[Teams]', () => {
 					expect(res.body.teams[0]).to.include.property('numberOfUsers');
 				})
 				.end(done);
+		});
+	});
+
+	describe('/teams.listAll', () => {
+		before(async () => {
+			await updatePermission('view-all-teams', ['admin']);
+			const teamName = `test-team-${Date.now()}`;
+			await request.post(api('teams.create')).set(credentials).send({
+				name: teamName,
+				type: 0,
+			});
+		});
+
+		after(async () => {
+			return updatePermission('view-all-teams', ['admin']);
+		});
+
+		it('should list all teams', async () => {
+			await request
+				.get(api('teams.listAll'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('offset', 0);
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('teams');
+					expect(res.body.teams).to.have.length.greaterThan(1);
+					expect(res.body.teams[0]).to.include.property('_id');
+					expect(res.body.teams[0]).to.include.property('_updatedAt');
+					expect(res.body.teams[0]).to.include.property('name');
+					expect(res.body.teams[0]).to.include.property('type');
+					expect(res.body.teams[0]).to.include.property('roomId');
+					expect(res.body.teams[0]).to.include.property('createdBy');
+					expect(res.body.teams[0].createdBy).to.include.property('_id');
+					expect(res.body.teams[0].createdBy).to.include.property('username');
+					expect(res.body.teams[0]).to.include.property('createdAt');
+					expect(res.body.teams[0]).to.include.property('rooms');
+					expect(res.body.teams[0]).to.include.property('numberOfUsers');
+				});
+		});
+
+		it('should return an error when the user does NOT have the view-all-teams permission', async () => {
+			await updatePermission('view-all-teams', []);
+			await request
+				.get(api('teams.listAll'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+				});
 		});
 	});
 
