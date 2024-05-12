@@ -3150,7 +3150,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "将默认频道更改为私人组将使其不再是默认频道。您想继续吗？",
   "Room_description_changed_successfully": "聊天室描述修改成功",
   "Room_has_been_archived": "聊天室已归档",
-  "Room_has_been_deleted": "聊天室已被删除",
   "Room_has_been_unarchived": "已撤销Room归档",
   "Room_Info": "聊天室信息",
   "room_is_blocked": "这个聊天室已被屏蔽",

@@ -3568,7 +3568,6 @@
   "room_disallowed_reacting": "Roomで{{user_by}}による応答が禁止されました",
   "Room_Edit": "Roomの編集",
   "Room_has_been_archived": "Roomはアーカイブされました",
-  "Room_has_been_deleted": "Roomが削除されました",
   "Room_has_been_removed": "Roomが削除されました",
   "Room_has_been_unarchived": "Roomのアーカイブが解除されました",
   "Room_Info": "Room情報",

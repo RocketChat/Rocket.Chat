@@ -3478,7 +3478,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "這是一個預設頻道，並將其更改為專用群組將使其不再是預設頻道。你想繼續嗎？",
   "Room_description_changed_successfully": "Room 描述已成功更改",
   "Room_has_been_archived": "Room 已封存",
-  "Room_has_been_deleted": "Room 已經被刪除",
   "Room_has_been_unarchived": "Room 已被取消封存",
   "Room_Info": "Room 資訊",
   "room_is_blocked": "這個房間被封鎖了",

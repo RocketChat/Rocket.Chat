@@ -2201,7 +2201,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "Đây là kênh mặc định và thay đổi kênh đó thành một nhóm riêng sẽ khiến kênh đó không còn là kênh mặc định. Bạn có muốn tiếp tục?",
   "Room_description_changed_successfully": "Mô tả phòng đã được thay đổi thành công",
   "Room_has_been_archived": "Phòng đã được lưu trữ",
-  "Room_has_been_deleted": "Phòng đã bị xóa",
   "Room_has_been_unarchived": "Phòng chưa được lưu trữ",
   "Room_Info": "Thông tin phòng",
   "room_is_blocked": "Phòng này bị chặn",

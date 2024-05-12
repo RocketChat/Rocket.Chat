@@ -2105,7 +2105,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "Dies ist ein Standardkanal und wenn Sie ihn in eine private Gruppe ändern, wird er nicht mehr als Standardkanal angezeigt. Willst du fortfahren?",
   "Room_description_changed_successfully": "Raumbeschreibung erfolgreich geändert",
   "Room_has_been_archived": "Das Zimmer wurde archiviert",
-  "Room_has_been_deleted": "Der Raum wurde gelöscht.",
   "Room_has_been_unarchived": "Der Raum wurde entfernt",
   "Room_Info": "Raum",
   "room_is_blocked": "Dieser Raum ist blockiert",

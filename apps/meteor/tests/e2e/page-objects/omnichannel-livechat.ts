@@ -1,3 +1,5 @@
+import fs from 'fs/promises';
+
 import type { Page, Locator, APIResponse } from '@playwright/test';
 
 import { expect } from '../utils/test';
@@ -13,7 +15,7 @@ export class OmnichannelLiveChat {
 		return this.page.locator(`role=button[name="${label}"]`);
 	}
 
-	btnOpenLiveChat(): Locator {
+	get btnOpenLiveChat(): Locator {
 		return this.page.locator(`[data-qa-id="chat-button"]`);
 	}
 
@@ -44,23 +46,25 @@ export class OmnichannelLiveChat {
 	get btnChatNow(): Locator {
 		return this.page.locator('[type="button"] >> text="Chat now"');
 	}
-	
+
 	get headerTitle(): Locator {
 		return this.page.locator('[data-qa="header-title"]');
 	}
 
-	txtChatMessage(message: string): Locator {
-		return this.page.locator(`text="${message}"`);
+	get txtWatermark(): Locator {
+		return this.page.locator('[data-qa="livechat-watermark"]');
 	}
 
-	async changeDepartment (department: string): Promise<void> {
-		await this.btnOptions.click();
-		await this.btnChangeDepartment.click();
-		await this.selectDepartment.waitFor({ state: 'visible' });
-		await this.selectDepartment.selectOption({ label: department });
-		await this.btnSendMessage('Start chat').click();
-		await this.btnYes.click();
-		await this.btnOk.click();
+	get imgLogo(): Locator {
+		return this.btnOpenLiveChat.locator('img[alt="Livechat"]');
+	}
+
+	alertMessage(message: string): Locator {
+		return this.page.getByRole('alert').locator(`text="${message}"`);
+	}
+
+	txtChatMessage(message: string): Locator {
+		return this.page.locator(`text="${message}"`);
 	}
 
 	async closeChat(): Promise<void> {
@@ -77,7 +81,7 @@ export class OmnichannelLiveChat {
 	// TODO: replace openLivechat with this method and create a new method for openOnlineLivechat
 	// as openLivechat only opens a chat that is in the 'online' state
 	async openAnyLiveChat(): Promise<void> {
-		await this.btnOpenLiveChat().click();
+		await this.btnOpenLiveChat.click();
 	}
 
 	async startNewChat(): Promise<void> {
@@ -126,8 +130,20 @@ export class OmnichannelLiveChat {
 		return this.page.locator('footer div div div:nth-child(3) button');
 	}
 
-	get firstAutoMessage(): Locator {
-		return this.page.locator('div.message-text__WwYco p');
+	get livechatModal(): Locator {
+		return this.page.locator('[data-qa-type="modal-overlay"]');
+	}
+
+	livechatModalText(text: string): Locator {
+		return this.page.locator(`[data-qa-type="modal-overlay"] >> text=${text}`);
+	}
+
+	get fileUploadTarget(): Locator {
+		return this.page.locator('#files-drop-target');
+	}
+
+	findUploadedFileLink(fileName: string): Locator {
+		return this.page.getByRole('link', { name: fileName });
 	}
 
 	public async sendMessage(liveChatUser: { name: string; email: string }, isOffline = true, department?: string): Promise<void> {
@@ -157,5 +173,37 @@ export class OmnichannelLiveChat {
 		await this.btnSendMessageToOnlineAgent.click();
 		await expect(this.txtChatMessage(message)).toBeVisible();
 		await this.closeChat();
+	}
+
+	async dragAndDropTxtFile(): Promise<void> {
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
+		const dataTransfer = await this.page.evaluateHandle((contract) => {
+			const data = new DataTransfer();
+			const file = new File([`${contract}`], 'any_file.txt', {
+				type: 'text/plain',
+			});
+			data.items.add(file);
+			return data;
+		}, contract);
+
+		await this.fileUploadTarget.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.fileUploadTarget.dispatchEvent('drop', { dataTransfer });
+	}
+
+	async dragAndDropLstFile(): Promise<void> {
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/lst-test.lst', 'utf-8');
+		const dataTransfer = await this.page.evaluateHandle((contract) => {
+			const data = new DataTransfer();
+			const file = new File([`${contract}`], 'lst-test.lst', {
+				type: 'text/plain',
+			});
+			data.items.add(file);
+			return data;
+		}, contract);
+
+		await this.fileUploadTarget.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.fileUploadTarget.dispatchEvent('drop', { dataTransfer });
 	}
 }

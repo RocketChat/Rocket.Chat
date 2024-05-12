@@ -1,6 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { LicenseLimitKind } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
+import { applyLicense, applyLicenseOrRemove, License } from '@rocket.chat/license';
 import { Subscriptions, Users, Settings, LivechatVisitors } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
 import moment from 'moment';
@@ -8,7 +8,6 @@ import moment from 'moment';
 import { syncWorkspace } from '../../../../app/cloud/server/functions/syncWorkspace';
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { applyLicense, applyLicenseOrRemove } from './applyLicense';
 import { getAppCount } from './lib/getAppCount';
 
 export const startLicense = async () => {

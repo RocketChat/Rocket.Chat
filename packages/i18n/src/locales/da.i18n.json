@@ -3125,7 +3125,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "Dette er en standardkanal og ændrer den til en privat gruppe, fordi den ikke længere er en standardkanal. Vil du fortsætte?",
   "Room_description_changed_successfully": "Værelsesbeskrivelsen er ændret",
   "Room_has_been_archived": "Værelset er blevet arkiveret",
-  "Room_has_been_deleted": "Værelset er blevet slettet",
   "Room_has_been_unarchived": "Værelset er blevet arkiveret",
   "Room_Info": "Info om rummet",
   "room_is_blocked": "Dette rum er blokeret",

@@ -10,6 +10,7 @@ import {
 	Divider,
 	FieldLabel,
 	FieldRow,
+	Option,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
@@ -36,7 +37,15 @@ const ForwardChatModal = ({
 	const getUserData = useEndpoint('GET', '/v1/users.info');
 	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle') as boolean;
 
-	const { getValues, handleSubmit, register, setFocus, setValue, watch } = useForm();
+	const {
+		getValues,
+		handleSubmit,
+		register,
+		setFocus,
+		setValue,
+		watch,
+		formState: { isSubmitting },
+	} = useForm();
 
 	useEffect(() => {
 		setFocus('comment');
@@ -71,7 +80,7 @@ const ForwardChatModal = ({
 				uid = user?._id;
 			}
 
-			onForward(departmentId, uid, comment);
+			await onForward(departmentId, uid, comment);
 		},
 		[getUserData, onForward],
 	);
@@ -98,7 +107,7 @@ const ForwardChatModal = ({
 						<FieldLabel>{t('Forward_to_department')}</FieldLabel>
 						<FieldRow>
 							<PaginatedSelectFiltered
-								withTitle
+								withTitle={false}
 								filter={departmentsFilter as string}
 								setFilter={setDepartmentsFilter}
 								options={departments}
@@ -110,6 +119,7 @@ const ForwardChatModal = ({
 								}}
 								flexGrow={1}
 								endReached={endReached}
+								renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
 							/>
 						</FieldRow>
 					</Field>
@@ -146,7 +156,7 @@ const ForwardChatModal = ({
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button type='submit' disabled={!username && !department} primary>
+					<Button type='submit' disabled={!username && !department} primary loading={isSubmitting}>
 						{t('Forward')}
 					</Button>
 				</Modal.FooterControllers>

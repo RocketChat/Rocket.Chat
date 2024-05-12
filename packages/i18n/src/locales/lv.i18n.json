@@ -2113,7 +2113,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "Šis ir noklusējuma kanāls, mainot to uz privātu grupu, tas vairs nebūs noklusējuma kanāls. Vai vēlaties turpināt?",
   "Room_description_changed_successfully": "Istabas apraksts ir veiksmīgi mainīts",
   "Room_has_been_archived": "Istaba ir arhivēta",
-  "Room_has_been_deleted": "Istaba ir dzēsta",
   "Room_has_been_unarchived": "Istaba ir izņemta no arhīva",
   "Room_Info": "Istabas informācija",
   "room_is_blocked": "Šī istaba ir bloķēta",

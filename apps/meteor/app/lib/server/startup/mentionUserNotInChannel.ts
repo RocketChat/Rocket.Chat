@@ -62,7 +62,7 @@ callbacks.add(
 			return message;
 		}
 
-		const mentions = message.mentions.filter(({ _id }) => _id !== 'all' && _id !== 'here');
+		const mentions = message.mentions.filter(({ _id, type }) => _id !== 'all' && _id !== 'here' && type !== 'team');
 		if (!mentions.length) {
 			return message;
 		}

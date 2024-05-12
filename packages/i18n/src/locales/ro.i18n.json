@@ -2101,7 +2101,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "Acesta este un canal implicit și schimbarea acestuia într-un grup privat va determina ca acesta să nu mai fie un canal implicit. Doriți să continuați?",
   "Room_description_changed_successfully": "Descrierea camerei sa schimbat cu succes",
   "Room_has_been_archived": "Camera a fost arhivată",
-  "Room_has_been_deleted": "Camera a fost ștearsă",
   "Room_has_been_unarchived": "Camera a fost dezarhivată",
   "Room_Info": "Info cameră",
   "room_is_blocked": "Această cameră este blocată",

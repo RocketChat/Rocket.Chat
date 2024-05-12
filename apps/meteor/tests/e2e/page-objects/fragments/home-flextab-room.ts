@@ -11,6 +11,10 @@ export class HomeFlextabRoom {
 		return this.page.locator('role=button[name="Edit"]');
 	}
 
+	get btnDelete(): Locator {
+		return this.page.locator('role=button[name="Delete"]');
+	}
+
 	get inputName(): Locator {
 		return this.page.getByRole('dialog').getByRole('textbox', { name: 'Name' });
 	}
@@ -28,7 +32,7 @@ export class HomeFlextabRoom {
 	}
 
 	get checkboxReadOnly(): Locator {
-		return this.page.locator('text=Read OnlyOnly authorized users can write new messages >> i');
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Read-only' }) });
 	}
 
 	get btnSave(): Locator {

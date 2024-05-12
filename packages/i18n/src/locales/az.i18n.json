@@ -2102,7 +2102,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "Bu standart bir kanaldır və onu xüsusi bir qrupa dəyişir, artıq bir default kanal olmayacaq. Davam etmək istəyirsinizmi?",
   "Room_description_changed_successfully": "Otaq təsviri uğurla dəyişdi",
   "Room_has_been_archived": "Otaq arxivləşdirildi",
-  "Room_has_been_deleted": "Otaq silindi",
   "Room_has_been_unarchived": "Otaq arxivləşdirilmişdir",
   "Room_Info": "Otaq məlumatı",
   "room_is_blocked": "Bu otaq blokdur",

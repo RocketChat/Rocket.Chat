@@ -1742,7 +1742,7 @@ describe('[Rooms]', function () {
 		});
 	});
 
-	describe('/rooms.saveRoomSettings', () => {
+	describe('rooms.saveRoomSettings', () => {
 		let testChannel;
 		const randomString = `randomString${Date.now()}`;
 		let discussion;
@@ -1845,6 +1845,342 @@ describe('[Rooms]', function () {
 
 					expect(res.body.room).to.have.property('_id', discussion._id);
 					expect(res.body.room).to.have.property('fname', newDiscussionName);
+				});
+		});
+
+		it('should mark a room as favorite', async () => {
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					favorite: {
+						favorite: true,
+						defaultValue: true,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', testChannel._id);
+					expect(res.body.room).to.have.property('favorite', true);
+				});
+		});
+		it('should not mark a room as favorite when room is not a default room', async () => {
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					favorite: {
+						favorite: true,
+						defaultValue: false,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+
+					expect(res.body.room).to.have.property('_id', testChannel._id);
+					expect(res.body.room).to.not.have.property('favorite');
+				});
+		});
+	});
+
+	describe('rooms.images', () => {
+		let testUserCreds = null;
+		before(async () => {
+			const user = await createUser();
+			testUserCreds = await login(user.username, password);
+		});
+
+		const uploadFile = async ({ roomId, file }) => {
+			const { body } = await request
+				.post(api(`rooms.upload/${roomId}`))
+				.set(credentials)
+				.attach('file', file)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			return body.message.attachments[0];
+		};
+
+		const getIdFromImgPath = (link) => {
+			return link.split('/')[2];
+		};
+
+		it('should return an error when user is not logged in', async () => {
+			await request.get(api('rooms.images')).expect(401);
+		});
+		it('should return an error when the required parameter "roomId" is not provided', async () => {
+			await request.get(api('rooms.images')).set(credentials).expect(400);
+		});
+		it('should return an error when the required parameter "roomId" is not a valid room', async () => {
+			await request.get(api('rooms.images')).set(credentials).query({ roomId: 'invalid' }).expect(403);
+		});
+		it('should return an error when room is valid but user is not part of it', async () => {
+			const { body } = await createRoom({ type: 'p', name: `test-${Date.now()}` });
+
+			const {
+				group: { _id: roomId },
+			} = body;
+			await request.get(api('rooms.images')).set(testUserCreds).query({ roomId }).expect(403);
+
+			await deleteRoom({ type: 'p', roomId });
+		});
+		it('should return an empty array when room is valid and user is part of it but there are no images', async () => {
+			const { body } = await createRoom({ type: 'p', usernames: [credentials.username], name: `test-${Date.now()}` });
+			const {
+				group: { _id: roomId },
+			} = body;
+			await request
+				.get(api('rooms.images'))
+				.set(credentials)
+				.query({ roomId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(0);
+				});
+
+			await deleteRoom({ type: 'p', roomId });
+		});
+		it('should return an array of images when room is valid and user is part of it and there are images', async () => {
+			const { body } = await createRoom({ type: 'p', usernames: [credentials.username], name: `test-${Date.now()}` });
+			const {
+				group: { _id: roomId },
+			} = body;
+			const { title_link } = await uploadFile({
+				roomId,
+				file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+			});
+			const fileId = getIdFromImgPath(title_link);
+			await request
+				.get(api('rooms.images'))
+				.set(credentials)
+				.query({ roomId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+					expect(res.body.files[0]).to.have.property('_id', fileId);
+				});
+
+			await deleteRoom({ type: 'p', roomId });
+		});
+		it('should return multiple images when room is valid and user is part of it and there are multiple images', async () => {
+			const { body } = await createRoom({ type: 'p', usernames: [credentials.username], name: `test-${Date.now()}` });
+			const {
+				group: { _id: roomId },
+			} = body;
+			const { title_link: link1 } = await uploadFile({
+				roomId,
+				file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+			});
+			const { title_link: link2 } = await uploadFile({
+				roomId,
+				file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+			});
+
+			const fileId1 = getIdFromImgPath(link1);
+			const fileId2 = getIdFromImgPath(link2);
+
+			await request
+				.get(api('rooms.images'))
+				.set(credentials)
+				.query({ roomId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(2);
+					expect(res.body.files.find((file) => file._id === fileId1)).to.exist;
+					expect(res.body.files.find((file) => file._id === fileId2)).to.exist;
+				});
+
+			await deleteRoom({ type: 'p', roomId });
+		});
+		it('should allow to filter images passing the startingFromId parameter', async () => {
+			const { body } = await createRoom({ type: 'p', usernames: [credentials.username], name: `test-${Date.now()}` });
+			const {
+				group: { _id: roomId },
+			} = body;
+			const { title_link } = await uploadFile({
+				roomId,
+				file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+			});
+			await uploadFile({
+				roomId,
+				file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+			});
+
+			const fileId2 = getIdFromImgPath(title_link);
+			await request
+				.get(api('rooms.images'))
+				.set(credentials)
+				.query({ roomId, startingFromId: fileId2 })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+					expect(res.body.files[0]).to.have.property('_id', fileId2);
+				});
+
+			await deleteRoom({ type: 'p', roomId });
+		});
+	});
+
+	describe('/rooms.muteUser', () => {
+		let testChannel;
+
+		before('create a channel', async () => {
+			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+		});
+
+		it('should invite rocket.cat user to room', () => {
+			return request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel.name', testChannel.name);
+				});
+		});
+
+		it('should mute the rocket.cat user', () => {
+			return request
+				.post(api('rooms.muteUser'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should contain rocket.cat user in mute list', () => {
+			return request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel.name', testChannel.name);
+					expect(res.body.channel).to.have.property('muted').and.to.be.an('array');
+					expect(res.body.channel.muted).to.have.lengthOf(1);
+					expect(res.body.channel.muted[0]).to.be.equal('rocket.cat');
+				});
+		});
+	});
+
+	describe('/rooms.unmuteUser', () => {
+		let testChannel;
+
+		before('create a channel', async () => {
+			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testChannel._id,
+					readOnly: true,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel.name', testChannel.name);
+				});
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+		});
+
+		it('should unmute the rocket.cat user in read-only room', () => {
+			return request
+				.post(api('rooms.unmuteUser'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					username: 'rocket.cat',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should contain rocket.cat user in unmute list', () => {
+			return request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel.name', testChannel.name);
+					expect(res.body.channel).to.have.property('unmuted').and.to.be.an('array');
+					expect(res.body.channel.unmuted).to.have.lengthOf(1);
+					expect(res.body.channel.unmuted[0]).to.be.equal('rocket.cat');
 				});
 		});
 	});

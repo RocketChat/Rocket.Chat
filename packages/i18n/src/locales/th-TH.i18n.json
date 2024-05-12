@@ -2095,7 +2095,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "นี่เป็นช่องทางเริ่มต้นและเปลี่ยนเป็นกลุ่มส่วนตัวจะทำให้ช่องนี้ไม่ได้เป็นช่องเริ่มต้นอีกต่อไป คุณต้องการดำเนินการต่อหรือไม่?",
   "Room_description_changed_successfully": "เปลี่ยนรายละเอียดห้องเรียบร้อยแล้ว",
   "Room_has_been_archived": "ห้องพักได้รับการเก็บถาวรแล้ว",
-  "Room_has_been_deleted": "ห้องถูกลบแล้ว",
   "Room_has_been_unarchived": "ห้องพักได้รับการยกเลิกการเก็บถาวรแล้ว",
   "Room_Info": "ข้อมูลห้องพัก",
   "room_is_blocked": "ห้องนี้ถูกบล็อก",

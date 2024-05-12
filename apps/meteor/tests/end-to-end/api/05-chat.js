@@ -3,15 +3,23 @@ import { after, before, beforeEach, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, message } from '../../data/api-data.js';
 import { sendSimpleMessage, deleteMessage, pinMessage } from '../../data/chat.helper.js';
+import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom } from '../../data/rooms.helper.js';
+import { createRoom, deleteRoom } from '../../data/rooms.helper.js';
 import { password } from '../../data/user';
-import { createUser, login } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Chat]', function () {
 	this.retries(0);
+	let testChannel;
 
 	before((done) => getCredentials(done));
+
+	before(async () => {
+		testChannel = (await createRoom({ type: 'c', name: `chat.api-test-${Date.now()}` })).body.channel;
+	});
+
+	after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
 	describe('/chat.postMessage', () => {
 		it('should throw an error when at least one of required parameters(channel, roomId) is not sent', (done) => {
@@ -38,7 +46,7 @@ describe('[Chat]', function () {
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
-					channel: 'general',
+					channel: testChannel.name,
 					alias: 'Gruggy',
 					text: 'Sample message',
 					emoji: ':smirk:',
@@ -79,7 +87,7 @@ describe('[Chat]', function () {
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
-						channel: 'general',
+						channel: testChannel.name,
 						alias: 'Gruggy',
 						text: 'Sample message',
 						avatar: 'http://res.guggy.com/logo_128.png',
@@ -106,7 +114,7 @@ describe('[Chat]', function () {
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
-						channel: 'general',
+						channel: testChannel.name,
 						text: 'Sample message',
 						alias: 'Gruggy',
 						emoji: ':smirk:',
@@ -133,7 +141,7 @@ describe('[Chat]', function () {
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
-						channel: 'general',
+						channel: testChannel.name,
 						text: 'Sample message',
 						alias: 'Gruggy',
 						emoji: ':smirk:',
@@ -160,7 +168,7 @@ describe('[Chat]', function () {
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
-						channel: 'general',
+						channel: testChannel.name,
 						text: 'Sample message',
 						alias: 'Gruggy',
 						emoji: ':smirk:',
@@ -194,7 +202,7 @@ describe('[Chat]', function () {
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
-						channel: 'general',
+						channel: testChannel.name,
 						text: 'Sample message',
 						emoji: ':smirk:',
 						avatar: 'javascript:alert("xss")',
@@ -228,7 +236,7 @@ describe('[Chat]', function () {
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
-						channel: 'general',
+						channel: testChannel.name,
 						text: 'Sample message',
 						alias: 'Gruggy',
 						emoji: ':smirk:',
@@ -263,7 +271,7 @@ describe('[Chat]', function () {
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
-						channel: 'general',
+						channel: testChannel.name,
 						text: 'Sample message',
 						emoji: ':smirk:',
 						alias: 'Gruggy',
@@ -291,7 +299,7 @@ describe('[Chat]', function () {
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
-						channel: 'general',
+						channel: testChannel.name,
 						text: 'Sample message',
 						emoji: ':smirk:',
 						alias: 'Gruggy',
@@ -319,7 +327,7 @@ describe('[Chat]', function () {
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
-						channel: 'general',
+						channel: testChannel.name,
 						text: 'Sample message',
 						alias: 'Gruggy',
 						emoji: ':smirk:',
@@ -346,7 +354,7 @@ describe('[Chat]', function () {
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
-						channel: 'general',
+						channel: testChannel.name,
 						text: 'Sample message',
 						alias: 'Gruggy',
 						emoji: ':smirk:',
@@ -373,7 +381,7 @@ describe('[Chat]', function () {
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
-						channel: 'general',
+						channel: testChannel.name,
 						alias: 'Gruggy',
 						text: 'Sample message',
 						emoji: ':smirk:',
@@ -402,7 +410,7 @@ describe('[Chat]', function () {
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
-					channel: 'general',
+					channel: testChannel.name,
 					text: 'Sample message',
 					emoji: ':smirk:',
 					alias: 'Gruggy',
@@ -448,7 +456,7 @@ describe('[Chat]', function () {
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
-					channel: 'general',
+					channel: testChannel.name,
 					text: 'Sample message',
 					emoji: ':smirk:',
 					attachments: [
@@ -540,7 +548,7 @@ describe('[Chat]', function () {
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
-						channel: 'general',
+						channel: testChannel.name,
 						alias: 'Gruggy',
 						text: 'Sample message',
 						emoji: ':smirk:',
@@ -567,7 +575,7 @@ describe('[Chat]', function () {
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
-						channel: 'general',
+						channel: testChannel.name,
 						text: 'Sample message',
 						alias: 'Gruggy',
 						emoji: ':smirk:',
@@ -594,7 +602,7 @@ describe('[Chat]', function () {
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
-						channel: 'general',
+						channel: testChannel.name,
 						text: 'Sample message',
 						alias: 'Gruggy',
 						emoji: ':smirk:',
@@ -621,7 +629,7 @@ describe('[Chat]', function () {
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
-						channel: 'general',
+						channel: testChannel.name,
 						text: 'Sample message',
 						alias: 'Gruggy',
 						emoji: ':smirk:',
@@ -657,7 +665,7 @@ describe('[Chat]', function () {
 				.set(credentials)
 				.send({
 					message: {
-						channel: 'general',
+						channel: testChannel.name,
 						text: 'Sample message',
 						alias: 'Gruggy',
 						emoji: ':smirk:',
@@ -701,7 +709,7 @@ describe('[Chat]', function () {
 				.send({
 					message: {
 						_id: message._id,
-						rid: 'GENERAL',
+						rid: testChannel._id,
 						msg: 'Sample message',
 						emoji: ':smirk:',
 						attachments: [
@@ -750,20 +758,19 @@ describe('[Chat]', function () {
 			let ytEmbedMsgId;
 			let imgUrlMsgId;
 
-			before(async () => {
-				await Promise.all([updateSetting('API_EmbedIgnoredHosts', ''), updateSetting('API_EmbedSafePorts', '80, 443, 3000')]);
-			});
-			after(async () => {
-				await Promise.all([
+			before(() => Promise.all([updateSetting('API_EmbedIgnoredHosts', ''), updateSetting('API_EmbedSafePorts', '80, 443, 3000')]));
+
+			after(() =>
+				Promise.all([
 					updateSetting('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16'),
 					updateSetting('API_EmbedSafePorts', '80, 443'),
-				]);
-			});
+				]),
+			);
 
 			before(async () => {
 				const ytEmbedMsgPayload = {
 					_id: `id-${Date.now()}`,
-					rid: 'GENERAL',
+					rid: testChannel._id,
 					msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
 					emoji: ':smirk:',
 				};
@@ -774,7 +781,7 @@ describe('[Chat]', function () {
 			before(async () => {
 				const imgUrlMsgPayload = {
 					_id: `id-${Date.now()}1`,
-					rid: 'GENERAL',
+					rid: testChannel._id,
 					msg: 'http://localhost:3000/images/logo/logo.png',
 					emoji: ':smirk:',
 				};
@@ -832,7 +839,7 @@ describe('[Chat]', function () {
 					.set(credentials)
 					.send({
 						message: {
-							rid: 'GENERAL',
+							rid: testChannel._id,
 							msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4',
 						},
 						previewUrls: [],
@@ -868,7 +875,7 @@ describe('[Chat]', function () {
 					.set(credentials)
 					.send({
 						message: {
-							rid: 'GENERAL',
+							rid: testChannel._id,
 							msg: 'https://www.youtube.com/watch?v=T2v29gK8fP4 https://www.rocket.chat/',
 						},
 						previewUrls: ['https://www.rocket.chat/'],
@@ -914,7 +921,7 @@ describe('[Chat]', function () {
 					.set(credentials)
 					.send({
 						message: {
-							rid: 'GENERAL',
+							rid: testChannel._id,
 							msg: urls.join(' '),
 						},
 						previewUrls: urls,
@@ -948,33 +955,21 @@ describe('[Chat]', function () {
 
 		describe('Read only channel', () => {
 			let readOnlyChannel;
-
-			const userCredentials = {};
+			let userCredentials;
 			let user;
-			before((done) => {
-				const username = `user.test.readonly.${Date.now()}`;
-				const email = `${username}@rocket.chat`;
-				request
-					.post(api('users.create'))
-					.set(credentials)
-					.send({ email, name: username, username, password })
-					.end((err, res) => {
-						user = res.body.user;
-						request
-							.post(api('login'))
-							.send({
-								user: username,
-								password,
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.expect((res) => {
-								userCredentials['X-Auth-Token'] = res.body.data.authToken;
-								userCredentials['X-User-Id'] = res.body.data.userId;
-							})
-							.end(done);
-					});
+
+			before(async () => {
+				user = await createUser();
+				userCredentials = await login(user.username, password);
 			});
+
+			after(async () =>
+				Promise.all([
+					deleteRoom({ type: 'c', roomId: readOnlyChannel._id }),
+					deleteUser(user),
+					updatePermission('post-readonly', ['admin', 'owner', 'moderator']),
+				]),
+			);
 
 			it('Creating a read-only channel', (done) => {
 				request
@@ -1065,8 +1060,6 @@ describe('[Chat]', function () {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('message').and.to.be.an('object');
 					});
-
-				await updatePermission('post-readonly', ['admin', 'owner', 'moderator']);
 			});
 		});
 
@@ -1076,7 +1069,7 @@ describe('[Chat]', function () {
 				.set(credentials)
 				.send({
 					message: {
-						rid: 'GENERAL',
+						rid: testChannel._id,
 						msg: 'Sample message',
 						alias: 'Gruggy',
 					},
@@ -1096,7 +1089,7 @@ describe('[Chat]', function () {
 				.set(credentials)
 				.send({
 					message: {
-						rid: 'GENERAL',
+						rid: testChannel._id,
 						msg: 'Sample message',
 						avatar: 'http://site.com/logo.png',
 					},
@@ -1108,6 +1101,234 @@ describe('[Chat]', function () {
 					expect(res.body).to.have.property('error', 'Not enough permission');
 				})
 				.end(done);
+		});
+
+		describe('customFields', () => {
+			async function testMessageSending({ customFields, testCb, statusCode }) {
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: testChannel._id,
+							msg: 'Sample message',
+							customFields,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(statusCode)
+					.expect(testCb);
+
+				await (customFields
+					? request.post(api(`rooms.upload/${testChannel._id}`)).field('customFields', JSON.stringify(customFields))
+					: request.post(api(`rooms.upload/${testChannel._id}`))
+				)
+					.set(credentials)
+					.attach('file', imgURL)
+					.expect('Content-Type', 'application/json')
+					.expect(statusCode)
+					.expect(testCb);
+
+				await request
+					.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						roomId: testChannel._id,
+						msg: 'Sample message',
+						customFields,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(statusCode)
+					.expect(testCb);
+			}
+			describe('when disabled', () => {
+				it('should not allow sending custom fields', async () => {
+					await testMessageSending({
+						customFields: {
+							field1: 'value1',
+						},
+						statusCode: 400,
+						testCb: (res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'Custom fields not enabled');
+						},
+					});
+				});
+
+				it('should not allow update custom fields', async () => {
+					const res = await sendSimpleMessage({ roomId: testChannel._id });
+					const msgId = res.body.message._id;
+
+					await request
+						.post(api('chat.update'))
+						.set(credentials)
+						.send({
+							roomId: testChannel._id,
+							msgId,
+							text: 'Sample message Updated',
+							customFields: {
+								field1: 'value1',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'Custom fields not enabled');
+						});
+				});
+			});
+
+			describe('when enabled', () => {
+				before(async () => {
+					await updateSetting('Message_CustomFields_Enabled', true);
+					await updateSetting(
+						'Message_CustomFields',
+						JSON.stringify({
+							properties: {
+								priority: {
+									type: 'string',
+									nullable: false,
+									enum: ['low', 'medium', 'high'],
+								},
+							},
+							required: ['priority'],
+						}),
+					);
+				});
+
+				after(async () => {
+					await updateSetting('Message_CustomFields_Enabled', false);
+				});
+
+				it('should allow not sending custom fields', async () => {
+					await testMessageSending({
+						statusCode: 200,
+						testCb: (res) => {
+							expect(res.body).to.have.property('success', true);
+						},
+					});
+				});
+
+				it('should not allow sending empty custom fields', async () => {
+					await testMessageSending({
+						customFields: {},
+						statusCode: 400,
+						testCb: (res) => {
+							expect(res.body).to.have.property('success', false);
+						},
+					});
+				});
+
+				it('should not allow sending wrong custom fields', async () => {
+					await testMessageSending({
+						customFields: {
+							field1: 'value1',
+						},
+						statusCode: 400,
+						testCb: (res) => {
+							expect(res.body).to.have.property('success', false);
+						},
+					});
+				});
+
+				it('should allow sending correct custom fields', async () => {
+					await testMessageSending({
+						customFields: {
+							priority: 'low',
+						},
+						statusCode: 200,
+						testCb: (res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body.message).to.have.property('customFields').to.deep.equal({ priority: 'low' });
+						},
+					});
+				});
+
+				it('should allow not sending custom fields on update', async () => {
+					const res = await sendSimpleMessage({ roomId: testChannel._id });
+					const msgId = res.body.message._id;
+
+					await request
+						.post(api('chat.update'))
+						.set(credentials)
+						.send({
+							roomId: testChannel._id,
+							msgId,
+							text: 'Sample message Updated',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+						});
+				});
+
+				it('should not allow update empty custom fields', async () => {
+					const res = await sendSimpleMessage({ roomId: testChannel._id });
+					const msgId = res.body.message._id;
+
+					await request
+						.post(api('chat.update'))
+						.set(credentials)
+						.send({
+							roomId: testChannel._id,
+							msgId,
+							text: 'Sample message Updated',
+							customFields: {},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						});
+				});
+
+				it('should not allow update wrong custom fields', async () => {
+					const res = await sendSimpleMessage({ roomId: testChannel._id });
+					const msgId = res.body.message._id;
+
+					await request
+						.post(api('chat.update'))
+						.set(credentials)
+						.send({
+							roomId: testChannel._id,
+							msgId,
+							text: 'Sample message Updated',
+							customFields: {
+								field1: 'value1',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						});
+				});
+
+				it('should allow update correct custom fields', async () => {
+					const res = await sendSimpleMessage({ roomId: testChannel._id });
+					const msgId = res.body.message._id;
+
+					await request
+						.post(api('chat.update'))
+						.set(credentials)
+						.send({
+							roomId: testChannel._id,
+							msgId,
+							text: 'Sample message Updated',
+							customFields: {
+								priority: 'low',
+							},
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body.message).to.have.property('customFields').to.deep.equal({ priority: 'low' });
+						});
+				});
+			});
 		});
 	});
 
@@ -1125,7 +1346,7 @@ describe('[Chat]', function () {
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
-					roomId: 'GENERAL',
+					roomId: testChannel._id,
 					msgId: message._id,
 					text: 'This message was edited via API',
 				})
@@ -1144,7 +1365,7 @@ describe('[Chat]', function () {
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
-					roomId: 'GENERAL',
+					roomId: testChannel._id,
 					msgId: message._id,
 					text: `Testing quotes ${quotedMsgLink}`,
 				})
@@ -1164,7 +1385,7 @@ describe('[Chat]', function () {
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
-					roomId: 'GENERAL',
+					roomId: testChannel._id,
 					msgId: message._id,
 					text: `Testing quotes ${quotedMsgLink}`,
 				})
@@ -1185,7 +1406,7 @@ describe('[Chat]', function () {
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
-					roomId: 'GENERAL',
+					roomId: testChannel._id,
 					msgId: message._id,
 					text: `${newQuotedMsgLink} Testing quotes ${quotedMsgLink}`,
 				})
@@ -1205,7 +1426,7 @@ describe('[Chat]', function () {
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
-					roomId: 'GENERAL',
+					roomId: testChannel._id,
 					msgId: message._id,
 					text: 'This message was edited via API',
 				})
@@ -1223,53 +1444,21 @@ describe('[Chat]', function () {
 		let msgId;
 		let user;
 		let userCredentials;
-		before((done) => {
-			const username = `user.test.${Date.now()}`;
-			const email = `${username}@rocket.chat`;
-			request
-				.post(api('users.create'))
-				.set(credentials)
-				.send({ email, name: username, username, password })
-				.end((err, res) => {
-					user = res.body.user;
-					done();
-				});
+
+		before(async () => {
+			user = await createUser();
+			userCredentials = await login(user.username, password);
 		});
-		before((done) => {
-			request
-				.post(api('login'))
-				.send({
-					user: user.username,
-					password,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					userCredentials = {};
-					userCredentials['X-Auth-Token'] = res.body.data.authToken;
-					userCredentials['X-User-Id'] = res.body.data.userId;
-				})
-				.end(done);
-		});
-		after((done) => {
-			request
-				.post(api('users.delete'))
-				.set(credentials)
-				.send({
-					userId: user._id,
-				})
-				.end(() => {
-					user = undefined;
-					done();
-				});
-		});
+
+		after(() => deleteUser(user));
+
 		beforeEach((done) => {
 			request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
 					message: {
-						rid: 'GENERAL',
+						rid: testChannel._id,
 						msg: 'Sample message',
 					},
 				})
@@ -1286,7 +1475,7 @@ describe('[Chat]', function () {
 				.post(api('chat.delete'))
 				.set(credentials)
 				.send({
-					roomId: 'GENERAL',
+					roomId: testChannel._id,
 					msgId,
 				})
 				.expect('Content-Type', 'application/json')
@@ -1302,7 +1491,7 @@ describe('[Chat]', function () {
 				.set(userCredentials)
 				.send({
 					message: {
-						rid: 'GENERAL',
+						rid: testChannel._id,
 						msg: 'Sample message',
 					},
 				})
@@ -1319,7 +1508,7 @@ describe('[Chat]', function () {
 				.post(api('chat.delete'))
 				.set(credentials)
 				.send({
-					roomId: 'GENERAL',
+					roomId: testChannel._id,
 					msgId,
 					asUser: true,
 				})
@@ -1340,7 +1529,7 @@ describe('[Chat]', function () {
 					.set(credentials)
 					.send({
 						message: {
-							rid: 'GENERAL',
+							rid: testChannel._id,
 							msg: text,
 						},
 					});
@@ -1357,7 +1546,7 @@ describe('[Chat]', function () {
 				.get(api('chat.search'))
 				.set(credentials)
 				.query({
-					roomId: 'GENERAL',
+					roomId: testChannel._id,
 					searchText: 'msg1',
 				})
 				.expect('Content-Type', 'application/json')
@@ -1373,7 +1562,7 @@ describe('[Chat]', function () {
 				.get(api('chat.search'))
 				.set(credentials)
 				.query({
-					roomId: 'GENERAL',
+					roomId: testChannel._id,
 					searchText: 'msg1',
 					count: 1,
 				})
@@ -1391,7 +1580,7 @@ describe('[Chat]', function () {
 				.get(api('chat.search'))
 				.set(credentials)
 				.query({
-					roomId: 'GENERAL',
+					roomId: testChannel._id,
 					searchText: 'msg1',
 					offset: 1,
 					count: 3,
@@ -1411,7 +1600,7 @@ describe('[Chat]', function () {
 				.get(api('chat.search'))
 				.set(credentials)
 				.query({
-					roomId: 'GENERAL',
+					roomId: testChannel._id,
 					searchText: 'msg1',
 					offset: 9999,
 					count: 3,
@@ -1662,18 +1851,19 @@ describe('[Chat]', function () {
 
 	describe('[/chat.getDeletedMessages]', () => {
 		let roomId;
-		before((done) => {
-			createRoom({
-				type: 'c',
-				name: `channel.test.${Date.now()}`,
-			}).end((err, res) => {
-				roomId = res.body.channel._id;
-				sendSimpleMessage({ roomId }).end((err, res) => {
-					const msgId = res.body.message._id;
-					deleteMessage({ roomId, msgId }).end(done);
-				});
-			});
+
+		before(async () => {
+			roomId = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}`,
+				})
+			).body.channel._id;
+			const msgId = (await sendSimpleMessage({ roomId })).body.message._id;
+			await deleteMessage({ roomId, msgId });
 		});
+
+		after(() => deleteRoom({ type: 'c', roomId }));
 
 		describe('when execute successfully', () => {
 			it('should return a list of deleted messages', (done) => {
@@ -1789,6 +1979,10 @@ describe('[Chat]', function () {
 	});
 
 	describe('[/chat.pinMessage]', () => {
+		after(() =>
+			Promise.all([updateSetting('Message_AllowPinning', true), updatePermission('pin-message', ['owner', 'moderator', 'admin'])]),
+		);
+
 		it('should return an error when pinMessage is not allowed in this server', (done) => {
 			updateSetting('Message_AllowPinning', false).then(() => {
 				request
@@ -1847,6 +2041,10 @@ describe('[Chat]', function () {
 	});
 
 	describe('[/chat.unPinMessage]', () => {
+		after(() =>
+			Promise.all([updateSetting('Message_AllowPinning', true), updatePermission('pin-message', ['owner', 'moderator', 'admin'])]),
+		);
+
 		it('should return an error when pinMessage is not allowed in this server', (done) => {
 			updateSetting('Message_AllowPinning', false).then(() => {
 				request
@@ -1905,6 +2103,8 @@ describe('[Chat]', function () {
 	});
 
 	describe('[/chat.unStarMessage]', () => {
+		after(() => updateSetting('Message_AllowStarring', true));
+
 		it('should return an error when starMessage is not allowed in this server', (done) => {
 			updateSetting('Message_AllowStarring', false).then(() => {
 				request
@@ -1943,6 +2143,8 @@ describe('[Chat]', function () {
 	});
 
 	describe('[/chat.starMessage]', () => {
+		after(() => updateSetting('Message_AllowStarring', true));
+
 		it('should return an error when starMessage is not allowed in this server', (done) => {
 			updateSetting('Message_AllowStarring', false).then(() => {
 				request
@@ -1981,6 +2183,8 @@ describe('[Chat]', function () {
 	});
 
 	describe('[/chat.ignoreUser]', () => {
+		after(() => deleteRoom({ type: 'd', roomId: 'rocket.catrocketchat.internal.admin.test' }));
+
 		it('should fail if invalid roomId', (done) => {
 			request
 				.get(api('chat.ignoreUser'))
@@ -2056,18 +2260,21 @@ describe('[Chat]', function () {
 
 	describe('[/chat.getPinnedMessages]', () => {
 		let roomId;
-		before((done) => {
-			createRoom({
-				type: 'c',
-				name: `channel.test.${Date.now()}`,
-			}).end((err, res) => {
-				roomId = res.body.channel._id;
-				sendSimpleMessage({ roomId }).end((err, res) => {
-					const msgId = res.body.message._id;
-					pinMessage({ msgId }).end(done);
-				});
-			});
+
+		before(async () => {
+			roomId = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}`,
+				})
+			).body.channel._id;
+
+			const msgId = (await sendSimpleMessage({ roomId })).body.message._id;
+
+			await pinMessage({ msgId });
 		});
+
+		after(() => deleteRoom({ type: 'c', roomId }));
 
 		describe('when execute successfully', () => {
 			it('should return a list of pinned messages', (done) => {
@@ -2144,6 +2351,19 @@ describe('[Chat]', function () {
 	});
 
 	describe('[/chat.getMentionedMessages]', () => {
+		let testChannel;
+
+		before(async () => {
+			testChannel = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}`,
+				})
+			).body.channel;
+		});
+
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+
 		it('should return an error when the required "roomId" parameter is not sent', (done) => {
 			request
 				.get(api('chat.getMentionedMessages'))
@@ -2172,7 +2392,7 @@ describe('[Chat]', function () {
 
 		it('should return the mentioned messages', (done) => {
 			request
-				.get(api('chat.getMentionedMessages?roomId=GENERAL'))
+				.get(api(`chat.getMentionedMessages?roomId=${testChannel._id}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2188,6 +2408,19 @@ describe('[Chat]', function () {
 	});
 
 	describe('[/chat.getStarredMessages]', () => {
+		let testChannel;
+
+		before(async () => {
+			testChannel = (
+				await createRoom({
+					type: 'c',
+					name: `channel.test.${Date.now()}`,
+				})
+			).body.channel;
+		});
+
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+
 		it('should return an error when the required "roomId" parameter is not sent', (done) => {
 			request
 				.get(api('chat.getStarredMessages'))
@@ -2216,7 +2449,7 @@ describe('[Chat]', function () {
 
 		it('should return the starred messages', (done) => {
 			request
-				.get(api('chat.getStarredMessages?roomId=GENERAL'))
+				.get(api(`chat.getStarredMessages?roomId=${testChannel._id}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2243,10 +2476,12 @@ describe('[Chat]', function () {
 			messageText.charAt(0),
 			' ',
 		];
-		before((done) => {
-			createRoom({ type: 'c', name: `channel.test.threads.${Date.now()}` }).end((err, room) => {
-				testChannel = room.body.channel;
-				request
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.getDiscussions.${Date.now()}` })).body.channel;
+
+			discussionRoom = (
+				await request
 					.post(api('rooms.createDiscussion'))
 					.set(credentials)
 					.send({
@@ -2255,12 +2490,10 @@ describe('[Chat]', function () {
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.end((err, res) => {
-						discussionRoom = res.body.discussion;
-						done();
-					});
-			});
+			).body.discussion;
 		});
+
+		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
 		it('should return an error when the required "roomId" parameter is not sent', (done) => {
 			request
@@ -2290,7 +2523,7 @@ describe('[Chat]', function () {
 
 		it('should return the discussions of a room', (done) => {
 			request
-				.get(api('chat.getDiscussions?roomId=GENERAL'))
+				.get(api(`chat.getDiscussions?roomId=${testChannel._id}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2308,7 +2541,7 @@ describe('[Chat]', function () {
 				.get(api('chat.getDiscussions'))
 				.set(credentials)
 				.query({
-					roomId: 'GENERAL',
+					roomId: testChannel._id,
 					count: 5,
 					offset: 0,
 				})
@@ -2379,16 +2612,29 @@ describe('[Chat]', function () {
 });
 
 describe('Threads', () => {
-	after((done) => {
-		updateSetting('API_Upper_Count_Limit', 100)
-			.then(() => updatePermission('view-c-room', ['admin', 'user', 'bot']))
-			.then(done);
+	let testThreadChannel;
+
+	before((done) => getCredentials(done));
+
+	before(async () => {
+		testThreadChannel = (await createRoom({ type: 'c', name: `chat.api-test-${Date.now()}` })).body.channel;
+
+		await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']);
 	});
+
+	after(() =>
+		Promise.all([
+			updateSetting('Threads_enabled', true),
+			updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
+			deleteRoom({ type: 'c', roomId: testThreadChannel._id }),
+		]),
+	);
 
 	describe('[/chat.getThreadsList]', () => {
 		const messageText = 'Message to create thread';
 		let testChannel;
 		let threadMessage;
+		let user;
 		const messageWords = [
 			...messageText.split(' '),
 			...messageText.toUpperCase().split(' '),
@@ -2397,10 +2643,11 @@ describe('Threads', () => {
 			messageText.charAt(0),
 			' ',
 		];
-		before((done) => {
-			createRoom({ type: 'c', name: `channel.test.threads.${Date.now()}` }).end((err, room) => {
-				testChannel = room.body.channel;
-				request
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.threads.${Date.now()}` })).body.channel;
+			const { message } = (
+				await request
 					.post(api('chat.sendMessage'))
 					.set(credentials)
 					.send({
@@ -2411,26 +2658,32 @@ describe('Threads', () => {
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
-					.then((response) => {
-						request
-							.post(api('chat.sendMessage'))
-							.set(credentials)
-							.send({
-								message: {
-									rid: testChannel._id,
-									msg: 'Thread message',
-									tmid: response.body.message._id,
-								},
-							})
-							.expect('Content-Type', 'application/json')
-							.expect(200)
-							.end((err, res) => {
-								threadMessage = res.body.message;
-								done();
-							});
-					});
-			});
+			).body;
+
+			threadMessage = (
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: testChannel._id,
+							msg: 'Thread message',
+							tmid: message._id,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+			).body.message;
 		});
+
+		after(() =>
+			Promise.all([
+				updateSetting('Threads_enabled', true),
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
+				deleteUser(user),
+			]),
+		);
 
 		it('should return an error for chat.getThreadsList when threads are not allowed in this server', (done) => {
 			updateSetting('Threads_enabled', false).then(() => {
@@ -2453,6 +2706,7 @@ describe('Threads', () => {
 
 		it('should return an error when the user is not allowed access the room', (done) => {
 			createUser().then((createdUser) => {
+				user = createdUser;
 				login(createdUser.username, password).then((userCredentials) => {
 					updateSetting('Threads_enabled', true).then(() => {
 						updatePermission('view-c-room', []).then(() => {
@@ -2602,24 +2856,32 @@ describe('Threads', () => {
 	describe('[/chat.syncThreadsList]', () => {
 		let testChannel;
 		let threadMessage;
-		before((done) => {
-			createRoom({ type: 'c', name: `.threads.sync.${Date.now()}` }).end((err, channel) => {
-				testChannel = channel.body.channel;
-				sendSimpleMessage({
-					roomId: testChannel._id,
-					text: 'Message to create thread',
-				}).end((err, message) => {
-					sendSimpleMessage({
-						roomId: testChannel._id,
-						text: 'Thread Message',
-						tmid: message.body.message._id,
-					}).end((err, res) => {
-						threadMessage = res.body.message;
-						done();
-					});
-				});
+		let user;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `.threads.sync.${Date.now()}` })).body.channel;
+			const { body: { message } = {} } = await sendSimpleMessage({
+				roomId: testChannel._id,
+				text: 'Message to create thread',
 			});
+
+			threadMessage = (
+				await sendSimpleMessage({
+					roomId: testChannel._id,
+					text: 'Thread Message',
+					tmid: message._id,
+				})
+			).body.message;
 		});
+
+		after(() =>
+			Promise.all([
+				updateSetting('Threads_enabled', true),
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
+				deleteUser(user),
+			]),
+		);
 
 		it('should return an error for chat.getThreadsList when threads are not allowed in this server', (done) => {
 			updateSetting('Threads_enabled', false).then(() => {
@@ -2701,6 +2963,7 @@ describe('Threads', () => {
 
 		it('should return an error when the user is not allowed access the room', (done) => {
 			createUser().then((createdUser) => {
+				user = createdUser;
 				login(createdUser.username, password).then((userCredentials) => {
 					updatePermission('view-c-room', []).then(() => {
 						request
@@ -2752,25 +3015,34 @@ describe('Threads', () => {
 		let testChannel;
 		let threadMessage;
 		let createdThreadMessage;
-		before((done) => {
-			createRoom({ type: 'c', name: `channel.test.threads.${Date.now()}` }).end((err, res) => {
-				testChannel = res.body.channel;
-				sendSimpleMessage({
+		let user;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.threads.${Date.now()}` })).body.channel;
+			createdThreadMessage = (
+				await sendSimpleMessage({
 					roomId: testChannel._id,
 					text: 'Message to create thread',
-				}).end((err, message) => {
-					createdThreadMessage = message.body.message;
-					sendSimpleMessage({
-						roomId: testChannel._id,
-						text: 'Thread Message',
-						tmid: createdThreadMessage._id,
-					}).end((err, res) => {
-						threadMessage = res.body.message;
-						done();
-					});
-				});
-			});
+				})
+			).body.message;
+
+			threadMessage = (
+				await sendSimpleMessage({
+					roomId: testChannel._id,
+					text: 'Thread Message',
+					tmid: createdThreadMessage._id,
+				})
+			).body.message;
 		});
+
+		after(() =>
+			Promise.all([
+				updateSetting('Threads_enabled', true),
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
+				deleteUser(user),
+			]),
+		);
 
 		it('should return an error for chat.getThreadMessages when threads are not allowed in this server', (done) => {
 			updateSetting('Threads_enabled', false).then(() => {
@@ -2793,6 +3065,7 @@ describe('Threads', () => {
 
 		it('should return an error when the user is not allowed access the room', (done) => {
 			createUser().then((createdUser) => {
+				user = createdUser;
 				login(createdUser.username, password).then((userCredentials) => {
 					updateSetting('Threads_enabled', true).then(() => {
 						updatePermission('view-c-room', []).then(() => {
@@ -2844,25 +3117,34 @@ describe('Threads', () => {
 		let testChannel;
 		let threadMessage;
 		let createdThreadMessage;
-		before((done) => {
-			createRoom({ type: 'c', name: `message.threads.${Date.now()}` }).end((err, res) => {
-				testChannel = res.body.channel;
-				sendSimpleMessage({
+		let user;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `message.threads.${Date.now()}` })).body.channel;
+			createdThreadMessage = (
+				await sendSimpleMessage({
 					roomId: testChannel._id,
 					text: 'Message to create thread',
-				}).end((err, message) => {
-					createdThreadMessage = message.body.message;
-					sendSimpleMessage({
-						roomId: testChannel._id,
-						text: 'Thread Message',
-						tmid: createdThreadMessage._id,
-					}).end((err, res) => {
-						threadMessage = res.body.message;
-						done();
-					});
-				});
-			});
+				})
+			).body.message;
+
+			threadMessage = (
+				await sendSimpleMessage({
+					roomId: testChannel._id,
+					text: 'Thread Message',
+					tmid: createdThreadMessage._id,
+				})
+			).body.message;
 		});
+
+		after(() =>
+			Promise.all([
+				updateSetting('Threads_enabled', true),
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
+				deleteUser(user),
+			]),
+		);
 
 		it('should return an error for chat.syncThreadMessages when threads are not allowed in this server', (done) => {
 			updateSetting('Threads_enabled', false).then(() => {
@@ -2945,6 +3227,7 @@ describe('Threads', () => {
 
 		it('should return an error when the user is not allowed access the room', (done) => {
 			createUser().then((createdUser) => {
+				user = createdUser;
 				login(createdUser.username, password).then((userCredentials) => {
 					updatePermission('view-c-room', []).then(() => {
 						request
@@ -2995,24 +3278,32 @@ describe('Threads', () => {
 	describe('[/chat.followMessage]', () => {
 		let testChannel;
 		let threadMessage;
-		before((done) => {
-			createRoom({ type: 'c', name: `channel.test.threads.follow.${Date.now()}` }).end((err, res) => {
-				testChannel = res.body.channel;
-				sendSimpleMessage({
-					roomId: testChannel._id,
-					text: 'Message to create thread',
-				}).end((err, message) => {
-					sendSimpleMessage({
-						roomId: testChannel._id,
-						text: 'Thread Message',
-						tmid: message.body.message._id,
-					}).end((err, res) => {
-						threadMessage = res.body.message;
-						done();
-					});
-				});
+		let user;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.threads.follow${Date.now()}` })).body.channel;
+			const { body: { message } = {} } = await sendSimpleMessage({
+				roomId: testChannel._id,
+				text: 'Message to create thread',
 			});
+
+			threadMessage = (
+				await sendSimpleMessage({
+					roomId: testChannel._id,
+					text: 'Thread Message',
+					tmid: message._id,
+				})
+			).body.message;
 		});
+
+		after(() =>
+			Promise.all([
+				updateSetting('Threads_enabled', true),
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
+				deleteUser(user),
+			]),
+		);
 
 		it('should return an error for chat.followMessage when threads are not allowed in this server', (done) => {
 			updateSetting('Threads_enabled', false).then(() => {
@@ -3054,6 +3345,7 @@ describe('Threads', () => {
 
 		it('should return an error when the user is not allowed access the room', (done) => {
 			createUser().then((createdUser) => {
+				user = createdUser;
 				login(createdUser.username, password).then((userCredentials) => {
 					updatePermission('view-c-room', []).then(() => {
 						request
@@ -3096,25 +3388,32 @@ describe('Threads', () => {
 	describe('[/chat.unfollowMessage]', () => {
 		let testChannel;
 		let threadMessage;
-		before((done) => {
-			createRoom({ type: 'c', name: `channel.test.threads.unfollow.${Date.now()}` }).end((err, res) => {
-				testChannel = res.body.channel;
-				sendSimpleMessage({
-					roomId: testChannel._id,
-					text: 'Message to create thread',
-				}).end((err, message) => {
-					sendSimpleMessage({
-						roomId: testChannel._id,
-						text: 'Thread Message',
-						tmid: message.body.message._id,
-					}).end((err, res) => {
-						threadMessage = res.body.message;
-						done();
-					});
-				});
+		let user;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: `channel.test.threads.unfollow.${Date.now()}` })).body.channel;
+			const { body: { message } = {} } = await sendSimpleMessage({
+				roomId: testChannel._id,
+				text: 'Message to create thread',
 			});
+
+			threadMessage = (
+				await sendSimpleMessage({
+					roomId: testChannel._id,
+					text: 'Thread Message',
+					tmid: message._id,
+				})
+			).body.message;
 		});
 
+		after(() =>
+			Promise.all([
+				updateSetting('Threads_enabled', true),
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']),
+				deleteUser(user),
+			]),
+		);
 		it('should return an error for chat.unfollowMessage when threads are not allowed in this server', (done) => {
 			updateSetting('Threads_enabled', false).then(() => {
 				request
@@ -3155,6 +3454,7 @@ describe('Threads', () => {
 
 		it('should return an error when the user is not allowed access the room', (done) => {
 			createUser().then((createdUser) => {
+				user = createdUser;
 				login(createdUser.username, password).then((userCredentials) => {
 					updatePermission('view-c-room', []).then(() => {
 						request
@@ -3201,7 +3501,7 @@ describe('Threads', () => {
 				.get(api('chat.getURLPreview'))
 				.set(credentials)
 				.query({
-					roomId: 'GENERAL',
+					roomId: testThreadChannel._id,
 					url,
 				})
 				.expect('Content-Type', 'application/json')
@@ -3234,7 +3534,7 @@ describe('Threads', () => {
 					.get(api('chat.getURLPreview'))
 					.set(credentials)
 					.query({
-						roomId: 'GENERAL',
+						roomId: testThreadChannel._id,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)

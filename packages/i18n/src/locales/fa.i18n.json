@@ -2413,7 +2413,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "این یک کانال پیشفرض است و تغییر آن به یک گروه خصوصی سبب میشود دیگر کانال پیشفرض نباشد. آیا شما می خواهید ادامه دهید؟",
   "Room_description_changed_successfully": "توضیحات اتاق با موفقیت تغییر کرد",
   "Room_has_been_archived": "اتاق بایگانی شده است",
-  "Room_has_been_deleted": "اتاق حذف شده است",
   "Room_has_been_unarchived": "اتاق آرام شده است",
   "Room_Info": "اطلاعات اتاق",
   "room_is_blocked": "این اتاق مسدود شده است",

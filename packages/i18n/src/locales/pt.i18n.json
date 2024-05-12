@@ -2442,7 +2442,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "Este é um canal padrão e mudá-lo para um grupo privado fará com que ele não seja mais um canal padrão. Você quer prosseguir?",
   "Room_description_changed_successfully": "A descrição da sala mudou com sucesso",
   "Room_has_been_archived": "A sala foi arquivada",
-  "Room_has_been_deleted": "A sala foi removida",
   "Room_has_been_unarchived": "A sala foi desarquivada",
   "Room_Info": "Informações da sala",
   "room_is_blocked": "Esta sala está bloqueada",

@@ -3553,7 +3553,6 @@
   "room_disallowed_reacting": "Room no permesa reaccionant per <em> {{user_by}}</em>",
   "Room_Edit": "Editar Room ",
   "Room_has_been_archived": "La sala s'ha arxivat",
-  "Room_has_been_deleted": "La sala s'ha eliminat",
   "Room_has_been_removed": "Room ha estat eliminat",
   "Room_has_been_unarchived": "La Room s'ha desarxivat",
   "Room_Info": "Informació de la Room",

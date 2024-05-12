@@ -3077,7 +3077,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "이 채널은 기본 채널이며 비공개 그룹으로 변경하면 더 이상 기본 채널이 될 수 없습니다. 진행하시겠습니까?",
   "Room_description_changed_successfully": "대화방 설명을 변경했습니다.",
   "Room_has_been_archived": "대화방이 보관되었습니다.",
-  "Room_has_been_deleted": "대화방이 삭제되었습니다.",
   "Room_has_been_unarchived": "대화방 보관이 해제되었습니다.",
   "Room_Info": "대화방 정보",
   "room_is_blocked": "이 대화방은 차단되었습니다.",

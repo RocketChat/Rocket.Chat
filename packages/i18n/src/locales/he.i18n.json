@@ -1146,7 +1146,6 @@
   "Room_archived": "חדר בארכיון",
   "room_changed_privacy": "סוג החדר השנה ל:{{room_type}} ע\"י {{user_by}}",
   "room_changed_topic": "נושא החדר שונה ל:{{room_topic}} ע\"י {{user_by}}",
-  "Room_has_been_deleted": "חדר נמחק",
   "Room_Info": "פרטי החדר",
   "Room_name_changed": "שם החדר שונה ל: {{room_name}} על ידי המשתמש {{user_by}}",
   "Room_name_changed_successfully": "שם החדר שונה בהצלחה",

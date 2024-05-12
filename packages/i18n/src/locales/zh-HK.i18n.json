@@ -2123,7 +2123,6 @@
   "Room_default_change_to_private_will_be_default_no_more": "这是一个默认频道，并将其更改为专用群组将使其不再是默认频道。你想继续吗？",
   "Room_description_changed_successfully": "房间描述已成功更改",
   "Room_has_been_archived": "房间已存档",
-  "Room_has_been_deleted": "房间已被删除",
   "Room_has_been_unarchived": "房间已被取消存档",
   "Room_Info": "客房信息",
   "room_is_blocked": "这个房间被封锁了",
