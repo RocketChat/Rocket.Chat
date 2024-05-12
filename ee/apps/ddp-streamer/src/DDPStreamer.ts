@@ -6,10 +6,10 @@ import polka from 'polka';
 import { throttle } from 'underscore';
 import WebSocket from 'ws';
 
+import { notifyOnInstanceStatusChangedById } from '../../../../apps/meteor/app/lib/server/lib/notifyListener';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
 import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
 import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
-import { notifyOnInstanceStatusChangedById } from '../../../../apps/meteor/app/lib/server/lib/notifyListener';
 import { Client, clientMap } from './Client';
 import { events, server } from './configureServer';
 import { DDP_EVENTS } from './constants';
