@@ -1,5 +1,7 @@
 import { settingsRegistry } from '../../app/settings/server';
 
+const THIRTY_DAYS = 2592000000;
+
 export const createRetentionSettings = () =>
 	settingsRegistry.addGroup('RetentionPolicy', async function () {
 		const globalQuery = {
@@ -68,13 +70,13 @@ export const createRetentionSettings = () =>
 				type: 'boolean',
 				public: true,
 				i18nLabel: 'RetentionPolicy_AppliesToChannels',
+				i18nDescription: 'RetentionPolicy_AppliesToChannels_Description',
 				enableQuery: globalQuery,
 			});
-			await this.add('RetentionPolicy_MaxAge_Channels', 30, {
-				type: 'int',
+			await this.add('RetentionPolicy_MaxAge_Channels', THIRTY_DAYS, {
+				type: 'timespan',
 				public: true,
 				i18nLabel: 'RetentionPolicy_MaxAge_Channels',
-				i18nDescription: 'RetentionPolicy_MaxAge_Description',
 				enableQuery: [
 					{
 						_id: 'RetentionPolicy_AppliesToChannels',
@@ -88,13 +90,13 @@ export const createRetentionSettings = () =>
 				type: 'boolean',
 				public: true,
 				i18nLabel: 'RetentionPolicy_AppliesToGroups',
+				i18nDescription: 'RetentionPolicy_AppliesToGroups_Description',
 				enableQuery: globalQuery,
 			});
-			await this.add('RetentionPolicy_MaxAge_Groups', 30, {
-				type: 'int',
+			await this.add('RetentionPolicy_MaxAge_Groups', THIRTY_DAYS, {
+				type: 'timespan',
 				public: true,
 				i18nLabel: 'RetentionPolicy_MaxAge_Groups',
-				i18nDescription: 'RetentionPolicy_MaxAge_Description',
 				enableQuery: [
 					{
 						_id: 'RetentionPolicy_AppliesToGroups',
@@ -111,11 +113,10 @@ export const createRetentionSettings = () =>
 				enableQuery: globalQuery,
 			});
 
-			await this.add('RetentionPolicy_MaxAge_DMs', 30, {
-				type: 'int',
+			await this.add('RetentionPolicy_MaxAge_DMs', THIRTY_DAYS, {
+				type: 'timespan',
 				public: true,
 				i18nLabel: 'RetentionPolicy_MaxAge_DMs',
-				i18nDescription: 'RetentionPolicy_MaxAge_Description',
 				enableQuery: [
 					{
 						_id: 'RetentionPolicy_AppliesToDMs',
