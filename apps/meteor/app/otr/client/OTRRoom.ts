@@ -111,6 +111,33 @@ export class OTRRoom implements IOTRRoom {
 		}
 	}
 
+	// Starts listening to other user's status changes and end OTR if any of the Users goes offline
+	// this should be called in 2 places: on acknowledge (meaning user accepted OTR) or on establish (meaning user initiated OTR)
+	listenToUserStatus(userId: IUser['_id']): void {
+		const { stop } = sdk.stream('user-presence', [userId], async ([, status]) => {
+			if (UserStatusMap[status] === UserStatus.OFFLINE) {
+				console.warn(`OTR Room ${this._roomId} ended because ${userId} went offline`);
+				this.end();
+				stop();
+				const obj = await Presence.get(this.peerId);
+				if (!obj) {
+					return;
+				}
+				imperativeModal.open({
+					component: GenericModal,
+					props: {
+						variant: 'warning',
+						title: t('OTR'),
+						children: t('OTR_Session_ended_other_user_went_offline', { username: obj.username }),
+						confirmText: t('Ok'),
+						onClose: imperativeModal.close,
+						onConfirm: imperativeModal.close,
+					},
+				});
+			}
+		});
+	}
+
 	acknowledge(): void {
 		void sdk.rest.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
 
@@ -276,7 +303,6 @@ export class OTRRoom implements IOTRRoom {
 				let timeout: NodeJS.Timeout;
 
 				const establishConnection = async (): Promise<void> => {
-					console.log('Establish Connection');
 					this.setState(OtrRoomState.ESTABLISHING);
 					clearTimeout(timeout);
 					try {
@@ -287,6 +313,7 @@ export class OTRRoom implements IOTRRoom {
 						setTimeout(async () => {
 							this.setState(OtrRoomState.ESTABLISHED);
 							this.acknowledge();
+							this.listenToUserStatus(data.userId);
 
 							if (data.refresh) {
 								await sdk.rest.post('/v1/chat.otr', {
@@ -357,6 +384,7 @@ export class OTRRoom implements IOTRRoom {
 				break;
 
 			case 'acknowledge':
+				console.log({ data, 'this.getState()': this.getState(), 'this.isFirstOTR': this.isFirstOTR, 'this.peerId': this.peerId });
 				try {
 					if (!data.publicKey) throw new Error('Public key is not generated');
 					await this.importPublicKey(data.publicKey);
@@ -364,16 +392,11 @@ export class OTRRoom implements IOTRRoom {
 					this.setState(OtrRoomState.ESTABLISHED);
 
 					if (this.isFirstOTR) {
+						console.log('First OTR handshake, listening presence events for user ', data.userId);
+						this.listenToUserStatus(data.userId);
 						await sdk.rest.post('/v1/chat.otr', {
 							roomId: this._roomId,
 							type: otrSystemMessages.USER_JOINED_OTR,
-						});
-
-						// When other user goes offline, end OTR
-						sdk.stream('user-presence', [data.userId], ([, status]) => {
-							if (this.getState() === OtrRoomState.ESTABLISHED && UserStatusMap[status] === UserStatus.OFFLINE) {
-								this.end();
-							}
 						});
 					}
 					this.isFirstOTR = false;

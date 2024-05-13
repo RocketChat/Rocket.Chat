@@ -5,7 +5,6 @@ import { Tracker } from 'meteor/tracker';
 import OTR from '../../app/otr/client/OTR';
 import { OtrRoomState } from '../../app/otr/lib/OtrRoomState';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
-import { t } from '../../app/utils/lib/i18n';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
 

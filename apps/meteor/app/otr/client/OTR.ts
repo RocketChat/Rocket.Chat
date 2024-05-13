@@ -26,10 +26,7 @@ class OTR implements IOTR {
 	}
 
 	closeAllInstances(): void {
-		Object.keys(this.instancesByRoomId).forEach((rid) => {
-			console.log('Closing OTR room', rid);
-			this.instancesByRoomId[rid].end();
-		});
+		this.instancesByRoomId = {};
 	}
 }
 
