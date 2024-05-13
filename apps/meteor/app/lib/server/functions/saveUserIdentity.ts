@@ -3,6 +3,7 @@ import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptio
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { FileUpload } from '../../../file-upload/server';
+import { notifyOnRoomChangedByUsernamesOrUids } from '../lib/notifyListener';
 import { _setRealName } from './setRealName';
 import { _setUsername } from './setUsername';
 import { updateGroupDMsName } from './updateGroupDMsName';
@@ -134,6 +135,8 @@ async function updateUsernameReferences({
 		await Subscriptions.setUserUsernameByUserId(user._id, username);
 
 		await LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
+
+		void notifyOnRoomChangedByUsernamesOrUids([user._id], [previousUsername, username]);
 	}
 
 	// update other references if either the name or username has changed
