@@ -140,6 +140,23 @@ test.describe('OC - Manage Units', () => {
 			await expect(poOmnichannelUnits.inputMonitors).toHaveText(/user3/);
 		});
 
+		await test.step('expect unit to remove one of the two monitors', async () => {
+			await expect(poOmnichannelUnits.inputSearch).toBeVisible();
+			await poOmnichannelUnits.search(editedUnitName);
+			await expect(poOmnichannelUnits.findRowByName(editedUnitName)).toBeVisible();
+			await poOmnichannelUnits.findRowByName(editedUnitName).click();
+			await expect(poOmnichannelUnits.contextualBar).toBeVisible();
+			await poOmnichannelUnits.selectMonitor('user2');
+			await poOmnichannelUnits.btnSave.click();
+
+			await expect(poOmnichannelUnits.inputSearch).toBeVisible();
+			await poOmnichannelUnits.search(editedUnitName);
+			await expect(poOmnichannelUnits.findRowByName(editedUnitName)).toBeVisible();
+			await poOmnichannelUnits.findRowByName(editedUnitName).click();
+			await expect(poOmnichannelUnits.inputMonitors).toHaveText(/user3/);
+			await expect(poOmnichannelUnits.inputMonitors).not.toHaveText(/user2/);
+		});
+
 		await test.step('expect to delete unit', async () => {
 			await poOmnichannelUnits.findRowByName(editedUnitName).click();
 			await expect(poOmnichannelUnits.contextualBar).toBeVisible();
