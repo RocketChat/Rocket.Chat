@@ -21,6 +21,9 @@ export async function removeLicense() {
 		}
 
 		const workspaceRegistrationClientUri = await Settings.getValueById('Cloud_Workspace_Registration_Client_Uri');
+		if (!workspaceRegistrationClientUri || typeof workspaceRegistrationClientUri !== 'string') {
+			throw new CloudWorkspaceConnectionError('Cloud_Workspace_Registration_Client_Uri setting is not set');
+		}
 
 		const response = await fetch(`${workspaceRegistrationClientUri}/client/downgrade`, {
 			method: 'POST',
