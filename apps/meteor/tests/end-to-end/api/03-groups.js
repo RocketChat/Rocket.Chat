@@ -6,10 +6,10 @@ import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
+import { deleteTeam } from '../../data/teams.helper';
 import { testFileUploads } from '../../data/uploads.helper';
 import { adminUsername, password } from '../../data/user';
 import { createUser, login, deleteUser } from '../../data/users.helper';
-import { deleteTeam } from '../../data/teams.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve /* , reject*/) => {
