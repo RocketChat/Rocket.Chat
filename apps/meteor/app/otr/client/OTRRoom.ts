@@ -384,7 +384,6 @@ export class OTRRoom implements IOTRRoom {
 				break;
 
 			case 'acknowledge':
-				console.log({ data, 'this.getState()': this.getState(), 'this.isFirstOTR': this.isFirstOTR, 'this.peerId': this.peerId });
 				try {
 					if (!data.publicKey) throw new Error('Public key is not generated');
 					await this.importPublicKey(data.publicKey);
@@ -392,7 +391,6 @@ export class OTRRoom implements IOTRRoom {
 					this.setState(OtrRoomState.ESTABLISHED);
 
 					if (this.isFirstOTR) {
-						console.log('First OTR handshake, listening presence events for user ', data.userId);
 						this.listenToUserStatus(data.userId);
 						await sdk.rest.post('/v1/chat.otr', {
 							roomId: this._roomId,
