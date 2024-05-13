@@ -1040,22 +1040,25 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne(query, options);
 	}
 
-	getLastVisibleMessageSentWithNoTypeByRoomId(rid: string, messageId?: string): Promise<IMessage | null> {
-		const query = {
+	getLastVisibleUserMessageSentByRoomId(rid: string, messageId?: string): Promise<IMessage | null> {
+		type IMessageWithNoType = IMessage & {
+			t?: MessageTypesValues | null;
+		};
+		const query: Filter<IMessageWithNoType> = {
 			rid,
 			_hidden: { $ne: true },
-			t: { $exists: false },
+			t: { $in: [null, 'e2e'] },
 			$or: [{ tmid: { $exists: false } }, { tshow: true }],
 			...(messageId && { _id: { $ne: messageId } }),
 		};
 
-		const options: FindOptions<IMessage> = {
+		const options: FindOptions<IMessageWithNoType> = {
 			sort: {
 				ts: -1,
 			},
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<IMessageWithNoType>(query, options);
 	}
 
 	async cloneAndSaveAsHistoryByRecord(record: IMessage, user: IMessage['u']): Promise<InsertOneResult<IMessage>> {
