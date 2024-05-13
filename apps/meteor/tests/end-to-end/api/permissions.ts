@@ -1,8 +1,13 @@
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
+import { password } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
+import type { TestUser } from '../../data/users.helper.js';
 
 describe('[Permissions]', () => {
 	before((done) => getCredentials(done));
@@ -54,6 +59,19 @@ describe('[Permissions]', () => {
 	});
 
 	describe('[/permissions.update]', () => {
+		let testUser: TestUser<IUser>;
+		let testUserCredentials: Credentials;
+		before(async () => {
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+			await updatePermission('access-permissions', ['admin']);
+		});
+
+		after(async () => {
+			await updatePermission('access-permissions', ['admin']);
+			await deleteUser(testUser);
+		});
+
 		it('should change the permissions on the server', (done) => {
 			const permissions = [
 				{
@@ -126,6 +144,24 @@ describe('[Permissions]', () => {
 					expect(res.body).to.have.property('success', false);
 				})
 				.end(done);
+		});
+		it('should fail updating permission if user does NOT have the access-permissions permission', async () => {
+			const permissions = [
+				{
+					_id: 'add-oauth-service',
+					roles: ['admin', 'user'],
+				},
+			];
+			await request
+				.post(api('permissions.update'))
+				.set(testUserCredentials)
+				.send({ permissions })
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+				});
 		});
 	});
 });
