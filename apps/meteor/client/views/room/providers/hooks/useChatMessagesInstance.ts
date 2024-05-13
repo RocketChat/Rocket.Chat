@@ -16,7 +16,7 @@ export function useChatMessagesInstance({
 }: {
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
-	encrypted: boolean;
+	encrypted: IRoom['encrypted'];
 }): ChatAPI {
 	const uid = useUserId();
 	const subscription = useRoomSubscription();

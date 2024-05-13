@@ -11,7 +11,7 @@ type ChatProviderProps = {
 };
 
 const ChatProvider = ({ children, tmid }: ChatProviderProps): ReactElement => {
-	const { _id: rid, encrypted = false } = useRoom();
+	const { _id: rid, encrypted } = useRoom();
 	const value = useChatMessagesInstance({ rid, tmid, encrypted });
 
 	return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
