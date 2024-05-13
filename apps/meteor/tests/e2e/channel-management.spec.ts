@@ -259,7 +259,7 @@ test.describe.serial('channel-management', () => {
 		await expect(page.getByRole('navigation')).toBeVisible();
 	});
 
-	test('should info contextualbar when clicking on roomName', async ({ page }) => {
+	test('should open room info when clicking on roomName', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await page.getByRole('button', { name: targetChannel }).first().focus();
 		await page.keyboard.press('Space');
