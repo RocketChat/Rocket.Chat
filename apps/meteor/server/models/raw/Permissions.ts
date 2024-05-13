@@ -39,7 +39,7 @@ export class PermissionsRaw extends BaseRaw<IPermission> implements IPermissions
 	}
 
 	async create(id: string, roles: IRole['_id'][]): Promise<IPermission['_id']> {
-		const exists = await this.findOneById(id, { projection: { _id: 1 } });
+		const exists = await super.findOneById(id, { projection: { _id: 1 } });
 		if (exists) {
 			return exists._id;
 		}
