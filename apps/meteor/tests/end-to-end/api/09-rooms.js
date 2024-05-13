@@ -105,6 +105,7 @@ describe('[Rooms]', function () {
 			await updateSetting('FileUpload_Restrict_to_users_who_can_access_room', false);
 			await updateSetting('FileUpload_ProtectFiles', true);
 			await updateSetting('FileUpload_MediaTypeBlackList', blockedMediaTypes);
+			await deleteRoom({ roomId: testPrivateChannel._id, type: 'p' });
 		});
 
 		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
@@ -255,8 +256,8 @@ describe('[Rooms]', function () {
 			await updateSetting('FileUpload_Restrict_to_room_members', false);
 			await updateSetting('FileUpload_Restrict_to_users_who_can_access_room', true);
 
-			await request.get(fileNewUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
-			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileNewUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
 		it('should not be able to get the file if not member and cannot access room', async () => {
@@ -273,6 +274,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should respect the setting with less permissions when both are true', async () => {
+			await updateSetting('FileUpload_ProtectFiles', true);
 			await updateSetting('FileUpload_Restrict_to_room_members', true);
 			await updateSetting('FileUpload_Restrict_to_users_who_can_access_room', true);
 			await request.get(fileNewUrl).set(userCredentials).expect(403);

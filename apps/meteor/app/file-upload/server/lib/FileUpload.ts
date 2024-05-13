@@ -477,10 +477,6 @@ export const FileUpload = {
 
 		if (fileUploadRestrictedToMembers && !fileUploadRestrictToUsersWhoCanAccessRoom) {
 			const sub = await Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { projection: { _id: 1 } });
-			if (!sub) {
-				return false;
-			}
-
 			return !!sub;
 		}
 
