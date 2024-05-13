@@ -351,7 +351,7 @@ describe('[Roles]', function () {
 				.set(credentials)
 				.send({
 					roleId: testRoleId,
-					userId: testUser.username,
+					username: testUser.username,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
