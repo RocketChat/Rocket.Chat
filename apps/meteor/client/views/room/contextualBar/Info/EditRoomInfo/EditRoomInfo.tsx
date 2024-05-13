@@ -117,7 +117,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		reactWhenReadOnly,
 	} = watch();
 
-	console.log({ retentionMaxAge });
 	const {
 		canChangeType,
 		canSetReadOnly,
