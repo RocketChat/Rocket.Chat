@@ -17,6 +17,10 @@ export class HomeContent {
 		return this.page.locator('[name="msg"]');
 	}
 
+	get inputThreadMessage(): Locator {
+		return this.page.getByRole('dialog').locator('[name="msg"]').last();
+	}
+
 	get messagePopupUsers(): Locator {
 		return this.page.locator('role=menu[name="People"]');
 	}
@@ -90,10 +94,10 @@ export class HomeContent {
 		await this.page.locator('[data-qa-type="message"]').last().hover();
 		await this.page.locator('role=button[name="Forward message"]').click();
 
-		await this.page.getByRole('textbox', { name: 'Person or Channel' }).click()
+		await this.page.getByRole('textbox', { name: 'Person or Channel' }).click();
 		await this.page.keyboard.type(chatName);
-		await this.page.locator('#position-container').getByText(chatName).waitFor()
-		await this.page.locator('#position-container').getByText(chatName).click()
+		await this.page.locator('#position-container').getByText(chatName).waitFor();
+		await this.page.locator('#position-container').getByText(chatName).click();
 		await this.page.locator('role=button[name="Forward"]').click();
 	}
 
@@ -141,6 +145,14 @@ export class HomeContent {
 
 	get lastThreadMessagePreviewText(): Locator {
 		return this.page.locator('div.messages-box ul.messages-list [role=link]').last();
+	}
+
+	get lastThreadMessageFileDescription(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="message-body"]');
+	}
+
+	get lastThreadMessageFileName(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="attachment-title-link"]');
 	}
 
 	get btnOptionEditMessage(): Locator {
@@ -215,6 +227,18 @@ export class HomeContent {
 		return this.page.locator('.rcx-vertical-bar button:has-text("Create")');
 	}
 
+	get imageGallery(): Locator {
+		return this.page.getByRole('dialog', { name: 'Image gallery' });
+	}
+
+	get imageGalleryImage(): Locator {
+		return this.imageGallery.locator('.swiper-zoom-container img');
+	}
+
+	async getGalleryButtonByName(name: string) {
+		return this.imageGallery.locator(`button[name="${name}"]`);
+	}
+
 	async pickEmoji(emoji: string, section = 'Smileys & People') {
 		await this.page.locator('role=toolbar[name="Composer Primary Actions"] >> role=button[name="Emoji"]').click();
 
@@ -251,6 +275,22 @@ export class HomeContent {
 		}, contract);
 
 		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+	}
+
+	async dragAndDropTxtFileToThread(): Promise<void> {
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
+		const dataTransfer = await this.page.evaluateHandle((contract) => {
+			const data = new DataTransfer();
+			const file = new File([`${contract}`], 'any_file.txt', {
+				type: 'text/plain',
+			});
+			data.items.add(file);
+			return data;
+		}, contract);
+
+		await this.inputThreadMessage.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}

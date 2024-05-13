@@ -1,5 +1,6 @@
 import type { CpuInfo } from 'os';
 
+import type { IMatrixFederationStatistics } from './IMatrixFederationStatistics';
 import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
 import type { ISettingStatisticsObject } from './ISetting';
 import type { ITeamStats } from './ITeam';
@@ -46,6 +47,8 @@ export interface IStats {
 	totalLivechatAgents: number;
 	totalLivechatManagers: number;
 	totalCustomFields: number;
+	totalLivechatPublicCustomFields: number;
+	livechatAutomaticForwardingUnansweredChats: boolean;
 	livechatEnabled: boolean;
 	isDepartmentRemovalEnabled: boolean;
 	totalChannelMessages: number;
@@ -225,11 +228,10 @@ export interface IStats {
 	totalWebRTCCalls: number;
 	uncaughtExceptionsCount: number;
 	push: number;
+	pushSecured: boolean;
 	dailyPeakConnections: number;
 	maxMonthlyPeakConnections: number;
-	matrixFederation: {
-		enabled: boolean;
-	};
+	matrixFederation: IMatrixFederationStatistics;
 	webRTCEnabled: boolean;
 	webRTCEnabledForOmnichannel: boolean;
 	omnichannelWebRTCCalls: number;

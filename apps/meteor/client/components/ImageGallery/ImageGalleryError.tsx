@@ -19,7 +19,7 @@ export const ImageGalleryError = ({ onClose }: { onClose: () => void }) => {
 	return createPortal(
 		<ModalBackdrop display='flex' justifyContent='center' color='pure-white'>
 			<GenericError buttonAction={onClose} buttonTitle={t('Close')} />
-			<IconButton icon='cross' aria-label='Close gallery' className={closeButtonStyle} onClick={onClose} />
+			<IconButton icon='cross' aria-label={t('Close_gallery')} className={closeButtonStyle} onClick={onClose} />
 		</ModalBackdrop>,
 		document.body,
 	);

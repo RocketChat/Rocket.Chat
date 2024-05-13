@@ -432,6 +432,17 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findLDAPUsersExceptIds(userIds, options = {}) {
+		const query = {
+			ldap: true,
+			_id: {
+				$nin: userIds,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	findConnectedLDAPUsers(options) {
 		const query = {
 			'ldap': true,

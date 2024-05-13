@@ -97,8 +97,6 @@ test.describe('OC - Livechat - OC - File Upload - Disabled', () => {
 		const testName = endpoints.map((endpoint) => endpoint.url.split('/').pop()?.concat(`=${endpoint.value}`)).join(' ');
 
 		test(`OC - Livechat - txt Drag & Drop - ${testName}`, async ({ page, api }) => {
-			test.fail();
-
 			poLiveChat = new OmnichannelLiveChat(page, api);
 
 			await Promise.all(endpoints.map(async (endpoint: { url: string, value: boolean }) => {
@@ -117,7 +115,7 @@ test.describe('OC - Livechat - OC - File Upload - Disabled', () => {
 			await test.step('expect to upload a txt file', async () => {
 				await poLiveChat.dragAndDropTxtFile();
 
-				await expect(poLiveChat.alertMessage('file_upload_disabled')).toBeVisible();
+				await expect(poLiveChat.alertMessage('File upload is disabled')).toBeVisible();
 			});
 		});
 	});
