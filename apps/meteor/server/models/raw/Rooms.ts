@@ -1981,11 +1981,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	addUserIdToE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
-			_id: {
+			'_id': {
 				$in: roomIds,
 			},
 			'usersWaitingForE2EKeys.userId': { $ne: uid },
-			encrypted: true,
+			'encrypted': true,
 		};
 
 		const update: UpdateFilter<IRoom> = {
@@ -2008,12 +2008,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			'usersWaitingForE2EKeys.userId': {
 				$in: uids,
 			},
-			encrypted: true,
+			'encrypted': true,
 		};
 
 		const update: UpdateFilter<IRoom> = {
 			$pull: {
-				usersWaitingForE2EKeys: { userId: { $in: uids }},
+				usersWaitingForE2EKeys: { userId: { $in: uids } },
 			},
 		};
 
@@ -2045,13 +2045,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 						$exists: true,
 					},
 					encrypted: true,
-				}
+				},
 			},
-			{ $sample: { size: queueSize }},
+			{ $sample: { size: queueSize } },
 			{ $limit: numberOfRooms },
 		];
 
-		return await this.col.aggregate<IRoom>(aggregate).toArray();
+		return this.col.aggregate<IRoom>(aggregate).toArray();
 	}
-
 }
