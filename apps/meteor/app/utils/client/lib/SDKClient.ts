@@ -222,4 +222,10 @@ export const createSDK = (rest: RestClientInterface) => {
 	};
 };
 
-export const sdk = createSDK(APIClient);
+let sdk = createSDK(APIClient);
+
+Accounts.onLogin(() => {
+	sdk = createSDK(APIClient);
+});
+
+export { sdk };
