@@ -29,7 +29,7 @@ async function job(): Promise<void> {
 	// get all rooms with default values
 	for await (const type of types) {
 		const maxAge = maxTimes[type] || 0;
-		const latest = new Date(now.getTime() - toDays(maxAge));
+		const latest = new Date(now.getTime() - maxAge);
 
 		const rooms = await Rooms.find(
 			{
