@@ -41,16 +41,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'licenses.add',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['edit-privileged-setting'] },
 	{
 		async post() {
 			check(this.bodyParams, {
 				license: String,
 			});
-
-			if (!(await hasPermissionAsync(this.userId, 'edit-privileged-setting'))) {
-				return API.v1.unauthorized();
-			}
 
 			const { license } = this.bodyParams;
 			if (!(await License.validateFormat(license))) {
