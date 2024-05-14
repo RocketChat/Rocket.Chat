@@ -8,6 +8,7 @@ import { Tracker } from 'meteor/tracker';
 
 import GenericModal from '../../../client/components/GenericModal';
 import { imperativeModal } from '../../../client/lib/imperativeModal';
+import type { UserPresence } from '../../../client/lib/presence';
 import { Presence } from '../../../client/lib/presence';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { getUidDirectMessage } from '../../../client/lib/utils/getUidDirectMessage';
@@ -114,10 +115,16 @@ export class OTRRoom implements IOTRRoom {
 	// Starts listening to other user's status changes and end OTR if any of the Users goes offline
 	// this should be called in 2 places: on acknowledge (meaning user accepted OTR) or on establish (meaning user initiated OTR)
 	listenToUserStatus(userId: IUser['_id']): void {
-		Presence.listen(userId, (event: any) => {
+		Presence.listen(userId, (event: UserPresence | undefined) => {
+			if (!event) {
+				return;
+			}
 			if (event.status === UserStatus.OFFLINE) {
 				console.warn(`OTR Room ${this._roomId} ended because ${userId} went offline`);
 				this.end();
+				Presence.stop(userId, () => {
+					console.debug(`OTR Room ${this._roomId} stopped listening to ${userId}`);
+				});
 				imperativeModal.open({
 					component: GenericModal,
 					props: {
