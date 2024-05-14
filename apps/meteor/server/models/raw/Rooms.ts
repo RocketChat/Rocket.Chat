@@ -2061,13 +2061,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findRoomsByRoomIdsWithE2EEQueue(roomIds: IRoom['_id'][], options?: FindOptions<IRoom>): FindCursor<IRoom> {
 		const query: Filter<IRoom> = {
-			_id: {
+			'_id': {
 				$in: roomIds,
 			},
-			usersWaitingForE2EKeys: {
+			'usersWaitingForE2EKeys.0': {
 				$exists: true,
 			},
-			encrypted: true,
+			'encrypted': true,
 		};
 
 		return this.find(query, options);

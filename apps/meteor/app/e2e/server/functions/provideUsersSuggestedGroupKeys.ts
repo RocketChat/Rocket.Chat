@@ -1,5 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
+import type { isE2EProvideUsersGroupKeyProps } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
@@ -7,7 +8,7 @@ import { canAccessRoomIdAsync } from '../../../authorization/server/functions/ca
 
 export const provideUsersSuggestedGroupKeys = async (
 	userId: IUser['_id'],
-	usersSuggestedGroupKeys: Record<IRoom['_id'], { _id: IUser['_id']; key: string }[]>,
+	usersSuggestedGroupKeys: isE2EProvideUsersGroupKeyProps['usersSuggestedGroupKeys'],
 ) => {
 	const roomIds = Object.keys(usersSuggestedGroupKeys);
 
@@ -28,7 +29,7 @@ export const provideUsersSuggestedGroupKeys = async (
 			const userIds = (
 				await Promise.all(
 					usersSuggestedGroupKeys[roomId].map(async (user) => {
-						const sub = await Subscriptions.findOneByRoomIdAndUserId(roomId, user._id);
+						const sub = await Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { projection: { _id: 1 } });
 
 						if (!sub) {
 							return;

@@ -4,8 +4,8 @@ import {
 	ise2eSetRoomKeyIDParamsPOST,
 	ise2eSetUserPublicAndPrivateKeysParamsPOST,
 	ise2eUpdateGroupKeyParamsPOST,
+	isE2EProvideUsersGroupKeyProps,
 } from '@rocket.chat/rest-typings';
-import { isE2EProvideUsersGroupKeyProps } from '@rocket.chat/rest-typings/dist/v1/e2e';
 import { Meteor } from 'meteor/meteor';
 
 import { fetchUsersWaitingForGroupKey } from '../../../e2e/server/functions/fetchUsersWaitingForGroupKey';

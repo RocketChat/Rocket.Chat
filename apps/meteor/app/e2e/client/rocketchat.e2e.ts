@@ -108,27 +108,25 @@ class E2E extends Emitter {
 	async handleAsyncE2EESuggestedKey() {
 		const subs = Subscriptions.find({ E2ESuggestedKey: { $exists: true } }).fetch();
 		await Promise.all(
-			subs.map(async (sub) => {
-				if (!sub.E2ESuggestedKey || sub.E2EKey) {
-					return;
-				}
+			subs
+				.filter((sub) => sub.E2ESuggestedKey && !sub.E2EKey)
+				.map(async (sub) => {
+					const e2eRoom = await e2e.getInstanceByRoomId(sub.rid);
 
-				const e2eRoom = await e2e.getInstanceByRoomId(sub.rid);
+					if (!e2eRoom) {
+						return;
+					}
 
-				if (!e2eRoom) {
-					return;
-				}
+					if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
+						await e2e.acceptSuggestedKey(sub.rid);
+						e2eRoom.keyReceived();
+					} else {
+						console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+						await e2e.rejectSuggestedKey(sub.rid);
+					}
 
-				if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
-					await e2e.acceptSuggestedKey(sub.rid);
-					e2eRoom.keyReceived();
-				} else {
-					console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
-					await e2e.rejectSuggestedKey(sub.rid);
-				}
-
-				sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
-			}),
+					sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+				}),
 		);
 	}
 
