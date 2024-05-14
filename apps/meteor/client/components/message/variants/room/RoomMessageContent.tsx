@@ -1,14 +1,5 @@
-import { Base64 } from '@rocket.chat/base64';
 import type { IMessage } from '@rocket.chat/core-typings';
-import {
-	isDiscussionMessage,
-	isThreadMainMessage,
-	isE2EEMessage,
-	isFileImageAttachment,
-	isFileAttachment,
-	isFileAudioAttachment,
-	isFileVideoAttachment,
-} from '@rocket.chat/core-typings';
+import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
@@ -54,31 +45,6 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 
 	const normalizedMessage = useNormalizedMessage(message);
 	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
-
-	if (encrypted && normalizedMessage?.attachments?.length) {
-		normalizedMessage.attachments.forEach((attachment) => {
-			if (!attachment.encryption) {
-				return;
-			}
-
-			const key = Base64.encode(JSON.stringify(attachment.encryption));
-
-			if (isFileAttachment(attachment)) {
-				if (attachment.title_link && !attachment.title_link.startsWith('/file-decrypt/')) {
-					attachment.title_link = `/file-decrypt${attachment.title_link}?key=${key}`;
-				}
-				if (isFileImageAttachment(attachment) && !attachment.image_url.startsWith('/file-decrypt/')) {
-					attachment.image_url = `/file-decrypt${attachment.image_url}?key=${key}`;
-				}
-				if (isFileAudioAttachment(attachment) && !attachment.audio_url.startsWith('/file-decrypt/')) {
-					attachment.audio_url = `/file-decrypt${attachment.audio_url}?key=${key}`;
-				}
-				if (isFileVideoAttachment(attachment) && !attachment.video_url.startsWith('/file-decrypt/')) {
-					attachment.video_url = `/file-decrypt${attachment.video_url}?key=${key}`;
-				}
-			}
-		});
-	}
 
 	return (
 		<>

@@ -1,55 +1,100 @@
-function base64Decode (string) {
+function base64Decode(string) {
 	string = atob(string);
-	const
-	  length = string.length,
-	  buf = new ArrayBuffer(length),
-	  bufView = new Uint8Array(buf);
-	for (var i = 0; i < string.length; i++) { bufView[i] = string.charCodeAt(i) }
-	return buf
+	const length = string.length,
+		buf = new ArrayBuffer(length),
+		bufView = new Uint8Array(buf);
+	for (var i = 0; i < string.length; i++) {
+		bufView[i] = string.charCodeAt(i);
+	}
+	return buf;
 }
 
-function base64DecodeString (string) {
+function base64DecodeString(string) {
 	return atob(string);
 }
+
+const decrypt = async (key, iv, file) => {
+	const ivArray = base64Decode(iv);
+	const cryptoKey = await crypto.subtle.importKey('jwk', key, { name: 'AES-CTR' }, true, ['encrypt', 'decrypt']);
+	const result = await crypto.subtle.decrypt({ name: 'AES-CTR', counter: ivArray, length: 64 }, cryptoKey, file);
+
+	return result;
+};
+const getUrlParams = (url) => {
+	const urlObj = new URL(url);
+
+	const k = base64DecodeString(urlObj.searchParams.get('key'));
+
+	const { key, iv } = JSON.parse(k);
+
+	const newUrl = urlObj.href.replace('/file-decrypt/', '/');
+
+	return { key, iv, url: newUrl };
+};
 
 self.addEventListener('fetch', (event) => {
 	if (!event.request.url.includes('/file-decrypt/')) {
 		return;
 	}
 
-	const url = new URL(event.request.url);
-	const k = base64DecodeString(url.searchParams.get('key'));
+	try {
+		const { url, key, iv } = getUrlParams(event.request.url);
 
-	console.log(url);
-	const {
-		key,
-		iv
-	} = JSON.parse(k);
+		const requestToFetch = new Request(url, event.request);
 
-	const newUrl = url.href.replace('/file-decrypt/', '/');
+		event.respondWith(
+			caches.match(requestToFetch).then((response) => {
+				if (response) {
+					return response;
+				}
 
-	const requestToFetch = new Request(newUrl, event.request);
+				return fetch(requestToFetch)
+					.then(async (res) => {
+						const file = await res.arrayBuffer();
+						const result = await decrypt(key, iv, file);
+						const response = new Response(result);
+						await caches.open('v1').then((cache) => {
+							cache.put(requestToFetch, response.clone());
+						});
 
-	event.respondWith(
-		caches.match(requestToFetch).then((response) => {
-			if (response) {
-				console.log('cached');
-				return response;
-			}
+						return response;
+					})
+					.catch((error) => {
+						console.error('Fetching failed:', error);
 
-			return fetch(requestToFetch)
-				.then(async (response) => {
-					const file = await response.arrayBuffer();
-					const ivArray = base64Decode(iv);
-					const cryptoKey = await crypto.subtle.importKey('jwk', key, { name: 'AES-CTR' }, true, ['encrypt', 'decrypt']);
-					const result = await crypto.subtle.decrypt({ name: 'AES-CTR', counter: ivArray, length: 64 }, cryptoKey, file);
-					return new Response(result);
-				})
-				.catch((error) => {
-					console.error("Fetching failed:", error);
+						throw error;
+					});
+			}),
+		);
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
+});
 
-					throw error;
-				});
-		}),
-	);
+self.addEventListener('message', async (event) => {
+	if (event.data.type !== 'attachment-download') {
+		return;
+	}
+	const requestToFetch = new Request(url);
+
+	const { url, key, iv } = getUrlParams(event.data.url);
+	const res = (await caches.match(requestToFetch)) ?? (await fetch(url));
+
+	const file = await res.arrayBuffer();
+	const result = await decrypt(key, iv, file);
+	event.source
+		.postMessage({
+			id: event.data.id,
+			type: 'attachment-download-result',
+			result,
+		})
+		.catch((error) => {
+			console.error('Posting message failed:', error);
+			event.source.postMessage({
+				id: event.data.id,
+				type: 'attachment-download-result',
+				error,
+			});
+		});
 });
