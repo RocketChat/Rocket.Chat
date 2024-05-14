@@ -114,7 +114,7 @@ export class OTRRoom implements IOTRRoom {
 	// Starts listening to other user's status changes and end OTR if any of the Users goes offline
 	// this should be called in 2 places: on acknowledge (meaning user accepted OTR) or on establish (meaning user initiated OTR)
 	listenToUserStatus(userId: IUser['_id']): void {
-		Presence.listen(userId, (event: Pick<IUser, 'status' | 'username'>) => {
+		Presence.listen(userId, (event: any) => {
 			if (event.status === UserStatus.OFFLINE) {
 				console.warn(`OTR Room ${this._roomId} ended because ${userId} went offline`);
 				this.end();
