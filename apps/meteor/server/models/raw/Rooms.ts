@@ -2031,7 +2031,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 							ts: new Date(),
 						},
 					],
-					$slice: -10,
+					$slice: -50,
 				},
 			},
 		};
