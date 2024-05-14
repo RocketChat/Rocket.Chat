@@ -186,8 +186,6 @@ export const sendFileMessage = async (
 			msg: Match.Optional(String),
 			tmid: Match.Optional(String),
 			customFields: Match.Optional(String),
-			t: Match.Optional(String),
-			e2e: Match.Optional(String),
 		}),
 	);
 
