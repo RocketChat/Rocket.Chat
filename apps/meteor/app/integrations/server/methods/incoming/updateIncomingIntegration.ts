@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../lib/validateScriptEngine';
 
 const validChannelChars = ['@', '#'];
@@ -164,7 +165,7 @@ Meteor.methods<ServerMethods>({
 
 		await Roles.addUserRoles(user._id, ['bot']);
 
-		await Integrations.updateOne(
+		const updatedIntegration = await Integrations.findOneAndUpdate(
 			{ _id: integrationId },
 			{
 				$set: {
@@ -190,6 +191,10 @@ Meteor.methods<ServerMethods>({
 			},
 		);
 
-		return Integrations.findOneById(integrationId);
+		if (updatedIntegration.value) {
+			void notifyOnIntegrationChanged(updatedIntegration.value);
+		}
+
+		return updatedIntegration.value;
 	},
 });
