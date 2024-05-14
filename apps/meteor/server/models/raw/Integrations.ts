@@ -46,11 +46,11 @@ export class IntegrationsRaw extends BaseRaw<IIntegration> implements IIntegrati
 		});
 	}
 
-	disableByUserId(userId: IIntegration['_id']): ReturnType<IBaseModel<IIntegration>['updateMany']> {
+	disableByUserId(userId: IIntegration['userId']): ReturnType<IBaseModel<IIntegration>['updateMany']> {
 		return this.updateMany({ userId }, { $set: { enabled: false } });
 	}
 
-	findByUserId(userId: IIntegration['_id']): FindCursor<IIntegration> {
+	findByUserId(userId: IIntegration['userId']): FindCursor<IIntegration> {
 		return this.find({ userId }, { projection: { _id: 1 } });
 	}
 
