@@ -1,4 +1,4 @@
-import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
