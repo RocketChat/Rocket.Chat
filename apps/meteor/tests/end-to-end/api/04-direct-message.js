@@ -394,7 +394,7 @@ describe('[Direct Messages]', function () {
 		});
 		it('should fail when the endpoint is disabled and the user doesnt have permission', async () => {
 			await updateSetting('API_Enable_Direct_Message_History_EndPoint', false);
-			await updatePermission('view-room-administration', ['admin']);
+			await updatePermission('view-room-administration', []);
 			await request
 				.get(api('im.messages.others'))
 				.set(credentials)
