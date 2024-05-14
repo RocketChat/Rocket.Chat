@@ -49,6 +49,8 @@ export class OTRRoom implements IOTRRoom {
 
 	private isFirstOTR: boolean;
 
+	private onPresenceEventHook: (event: UserPresence | undefined) => void;
+
 	protected constructor(uid: IUser['_id'], rid: IRoom['_id'], peerId: IUser['_id']) {
 		this._userId = uid;
 		this._roomId = rid;
@@ -56,6 +58,7 @@ export class OTRRoom implements IOTRRoom {
 		this._sessionKey = null;
 		this.peerId = peerId;
 		this.isFirstOTR = true;
+		this.onPresenceEventHook = this.onPresenceEvent.bind(this);
 	}
 
 	public static create(uid: IUser['_id'], rid: IRoom['_id']): OTRRoom | undefined {
@@ -112,32 +115,33 @@ export class OTRRoom implements IOTRRoom {
 		}
 	}
 
+	onPresenceEvent(event: UserPresence | undefined): void {
+		if (!event) {
+			return;
+		}
+		if (event.status !== UserStatus.OFFLINE) {
+			return;
+		}
+		console.warn(`OTR Room ${this._roomId} ended because ${this.peerId} went offline`);
+		this.end();
+
+		imperativeModal.open({
+			component: GenericModal,
+			props: {
+				variant: 'warning',
+				title: t('OTR'),
+				children: t('OTR_Session_ended_other_user_went_offline', { username: event.username }),
+				confirmText: t('Ok'),
+				onClose: imperativeModal.close,
+				onConfirm: imperativeModal.close,
+			},
+		});
+	}
+
 	// Starts listening to other user's status changes and end OTR if any of the Users goes offline
 	// this should be called in 2 places: on acknowledge (meaning user accepted OTR) or on establish (meaning user initiated OTR)
-	listenToUserStatus(userId: IUser['_id']): void {
-		Presence.listen(userId, (event: UserPresence | undefined) => {
-			if (!event) {
-				return;
-			}
-			if (event.status === UserStatus.OFFLINE) {
-				console.warn(`OTR Room ${this._roomId} ended because ${userId} went offline`);
-				this.end();
-				Presence.stop(userId, () => {
-					console.debug(`OTR Room ${this._roomId} stopped listening to ${userId}`);
-				});
-				imperativeModal.open({
-					component: GenericModal,
-					props: {
-						variant: 'warning',
-						title: t('OTR'),
-						children: t('OTR_Session_ended_other_user_went_offline', { username: event.username }),
-						confirmText: t('Ok'),
-						onClose: imperativeModal.close,
-						onConfirm: imperativeModal.close,
-					},
-				});
-			}
-		});
+	listenToUserStatus(): void {
+		Presence.listen(this.peerId, this.onPresenceEventHook);
 	}
 
 	acknowledge(): void {
@@ -179,6 +183,7 @@ export class OTRRoom implements IOTRRoom {
 		this.isFirstOTR = true;
 		this.reset();
 		this.setState(OtrRoomState.NOT_STARTED);
+		Presence.stop(this.peerId, this.onPresenceEventHook);
 		sdk.publish('notify-user', [
 			`${this.peerId}/otr`,
 			'end',
@@ -323,7 +328,7 @@ export class OTRRoom implements IOTRRoom {
 						setTimeout(async () => {
 							this.setState(OtrRoomState.ESTABLISHED);
 							this.acknowledge();
-							this.listenToUserStatus(data.userId);
+							this.listenToUserStatus();
 
 							if (data.refresh) {
 								await sdk.rest.post('/v1/chat.otr', {
@@ -401,7 +406,7 @@ export class OTRRoom implements IOTRRoom {
 					this.setState(OtrRoomState.ESTABLISHED);
 
 					if (this.isFirstOTR) {
-						this.listenToUserStatus(data.userId);
+						this.listenToUserStatus();
 						await sdk.rest.post('/v1/chat.otr', {
 							roomId: this._roomId,
 							type: otrSystemMessages.USER_JOINED_OTR,
