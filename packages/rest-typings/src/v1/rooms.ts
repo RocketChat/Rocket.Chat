@@ -595,8 +595,6 @@ export type RoomsEndpoints = {
 			msg?: string;
 			tmid?: string;
 			customFields?: string;
-			t?: IMessage['t'];
-			e2e?: IMessage['e2e'];
 		}) => { message: IMessage | null };
 	};
 
