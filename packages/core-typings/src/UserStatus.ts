@@ -5,5 +5,3 @@ export enum UserStatus {
 	BUSY = 'busy',
 	DISABLED = 'disabled',
 }
-
-export const UserStatusMap = [UserStatus.OFFLINE, UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY, UserStatus.DISABLED];
