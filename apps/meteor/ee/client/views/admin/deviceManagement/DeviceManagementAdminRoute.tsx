@@ -14,7 +14,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 	const t = useTranslation();
 	const router = useRouter();
 	const setModal = useSetModal();
-	const isModalOpen = useCurrentModal() !== null;
+	const isModalOpen = !!useCurrentModal();
 
 	const hasDeviceManagement = useHasLicenseModule('device-management') as boolean;
 	const canViewDeviceManagement = usePermission('view-device-management');
@@ -25,6 +25,7 @@ const DeviceManagementAdminRoute = (): ReactElement => {
 		if (shouldShowUpsell) {
 			setModal(
 				<GenericUpsellModal
+					aria-label={t('Device_Management')}
 					title={t('Device_Management')}
 					img={getURL('images/device-management.png')}
 					subtitle={t('Ensure_secure_workspace_access')}

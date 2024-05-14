@@ -247,7 +247,16 @@ test.describe.serial('channel-management', () => {
 		targetChannel = hugeName;
 
 		await page.setViewportSize({ width: 640, height: 460 });
-		await expect(page.getByRole('heading', { name: hugeName })).toHaveCSS('width', '423px');
+		await expect(page.getByRole('heading', { name: hugeName })).toHaveCSS('width', '419px');
+	});
+
+	test('should open sidebar clicking on sidebar toggler', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+
+		await page.setViewportSize({ width: 640, height: 460 });
+		await page.getByRole('button', { name: 'Open sidebar' }).click();
+
+		await expect(page.getByRole('navigation')).toBeVisible();
 	});
 
 	test('should info contextualbar when clicking on roomName', async ({ page }) => {

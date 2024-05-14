@@ -16,7 +16,7 @@ type DeploymentCardProps = {
 	statistics: IStats;
 };
 
-const DeploymentCard = ({ serverInfo: { info }, statistics, instances }: DeploymentCardProps): ReactElement => {
+const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, instances }: DeploymentCardProps): ReactElement => {
 	const t = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const setModal = useSetModal();
@@ -32,6 +32,8 @@ const DeploymentCard = ({ serverInfo: { info }, statistics, instances }: Deploym
 			<WorkspaceCardSection title={t('Deployment')} />
 			<WorkspaceCardSection title={t('Version')} body={statistics.version} />
 			<WorkspaceCardSection title={t('Deployment_ID')} body={statistics.uniqueId} />
+
+			{cloudWorkspaceId && <WorkspaceCardSection title={t('Cloud_Workspace_Id')} body={cloudWorkspaceId} />}
 
 			{appsEngineVersion && <WorkspaceCardSection title={t('Apps_Engine_Version')} body={appsEngineVersion} />}
 			<WorkspaceCardSection title={t('Node_version')} body={statistics.process.nodeVersion} />
