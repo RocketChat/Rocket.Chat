@@ -1,6 +1,5 @@
 import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
 import type {
-	IPbxEvent,
 	IRocketChatRecord,
 	IRoom,
 	ILoginServiceConfiguration,
