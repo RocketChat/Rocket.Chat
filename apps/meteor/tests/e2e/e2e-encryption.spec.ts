@@ -310,6 +310,8 @@ test.describe.serial('e2ee room setup', () => {
 		await injectInitialData();
 		await restoreState(page, Users.admin);
 
+		await page.goto('/home');
+
 		await page.locator('role=banner >> text="Save your encryption password"').waitFor();
 		await expect(page.locator('role=banner >> text="Save your encryption password"')).toBeVisible();
 
