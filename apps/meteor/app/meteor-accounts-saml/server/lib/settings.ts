@@ -3,7 +3,7 @@ import { LoginServiceConfiguration } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { broadcastOnLoginServiceConfiguration } from '../../../lib/server/lib/notifyListener';
+import { notifyOnLoginServiceConfigurationChangedByService } from '../../../lib/server/lib/notifyListener';
 import { settings, settingsRegistry } from '../../../settings/server';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 import { SAMLUtils } from './Utils';
@@ -118,11 +118,15 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 					const samlConfigs = getSamlConfigs(key);
 					SAMLUtils.log(key);
 					await LoginServiceConfiguration.createOrUpdateService(serviceName, samlConfigs);
-					void broadcastOnLoginServiceConfiguration(serviceName);
+					void notifyOnLoginServiceConfigurationChangedByService(serviceName);
 					return configureSamlService(samlConfigs);
 				}
-				await LoginServiceConfiguration.removeService(serviceName);
-				void broadcastOnLoginServiceConfiguration(serviceName, 'removed');
+
+				const { deletedCount } = await LoginServiceConfiguration.removeService(serviceName);
+				if (deletedCount) {
+					void notifyOnLoginServiceConfigurationChangedByService(serviceName, 'removed');
+				}
+
 				return false;
 			}),
 		)

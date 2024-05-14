@@ -15,7 +15,7 @@ export class LoginServiceConfigurationRaw extends BaseRaw<LoginServiceConfigurat
 	}
 
 	async createOrUpdateService(
-		serviceName: string,
+		serviceName: LoginServiceConfiguration['service'],
 		serviceData: Partial<LoginServiceConfiguration>,
 	): Promise<LoginServiceConfiguration['_id']> {
 		const service = serviceName.toLowerCase();
@@ -44,9 +44,13 @@ export class LoginServiceConfigurationRaw extends BaseRaw<LoginServiceConfigurat
 		return existing._id;
 	}
 
-	async removeService(serviceName: string): Promise<DeleteResult> {
+	async removeService(serviceName: LoginServiceConfiguration['service']): Promise<DeleteResult> {
 		const service = serviceName.toLowerCase();
 
 		return this.deleteOne({ service });
+	}
+
+	async findOneByService(serviceName: string): Promise<LoginServiceConfiguration | null> {
+		return this.findOne({ service: serviceName.toLowerCase() });
 	}
 }

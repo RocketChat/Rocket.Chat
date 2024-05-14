@@ -1,6 +1,16 @@
 import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
-import type { IPermission, IRocketChatRecord, IRoom, ISetting, IPbxEvent, IRole, IIntegration } from '@rocket.chat/core-typings';
-import { Rooms, Permissions, Settings, PbxEvents, Roles, Integrations } from '@rocket.chat/models';
+import type {
+	IPbxEvent,
+	IRocketChatRecord,
+	IRoom,
+	ILoginServiceConfiguration,
+	ISetting,
+	IRole,
+	IPermission,
+	IIntegration,
+	IPbxEvent,
+} from '@rocket.chat/core-typings';
+import { Rooms, Permissions, Settings, PbxEvents, Roles, Integrations, LoginServiceConfiguration } from '@rocket.chat/models';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
 
@@ -142,25 +152,22 @@ export async function notifyOnRoleChangedById<T extends IRole>(
 	void notifyOnRoleChanged(role, clientAction);
 }
 
-import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
-import type { ILoginServiceConfiguration } from '@rocket.chat/core-typings';
-import { LoginServiceConfiguration } from '@rocket.chat/models';
-
-type ClientAction = 'inserted' | 'updated' | 'removed';
-
-export async function broadcastOnLoginServiceConfiguration<T extends ILoginServiceConfiguration>(
+export async function notifyOnLoginServiceConfigurationChangedByService<T extends ILoginServiceConfiguration>(
 	service: T['service'],
 	clientAction: ClientAction = 'updated',
 ): Promise<void> {
-	if (dbWatchersDisabled) {
-		const serviceConfiguration = await LoginServiceConfiguration.findOne({ service });
-		if (serviceConfiguration) {
-			void api.broadcast('watch.loginServiceConfiguration', {
-				clientAction,
-				id: serviceConfiguration._id,
-				data: serviceConfiguration,
-			});
-		}
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const item = await LoginServiceConfiguration.findOneByService(service);
+
+	if (item) {
+		void api.broadcast('watch.loginServiceConfiguration', {
+			clientAction,
+			id: item._id,
+			data: item,
+		});
 	}
 }
 

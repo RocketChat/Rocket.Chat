@@ -3,8 +3,8 @@ import type { DeleteResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ILoginServiceConfigurationModel extends IBaseModel<LoginServiceConfiguration> {
-	createOrUpdateService(serviceName: string, serviceData: Partial<LoginServiceConfiguration>): Promise<LoginServiceConfiguration['_id']>;
-	removeService(serviceName: string): Promise<DeleteResult>;
+	createOrUpdateService(serviceName: LoginServiceConfiguration['service'], serviceData: Partial<LoginServiceConfiguration>): Promise<LoginServiceConfiguration['_id']>;
+	removeService(serviceName: LoginServiceConfiguration['service']): Promise<DeleteResult>;
+	findOneByService(serviceName: LoginServiceConfiguration['service']): Promise<LoginServiceConfiguration | null>;
 }

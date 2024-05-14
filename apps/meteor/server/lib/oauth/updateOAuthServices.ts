@@ -8,7 +8,7 @@ import type {
 import { LoginServiceConfiguration } from '@rocket.chat/models';
 
 import { CustomOAuth } from '../../../app/custom-oauth/server/custom_oauth_server';
-import { broadcastOnLoginServiceConfiguration } from '../../../app/lib/server/lib/notifyListener';
+import { notifyOnLoginServiceConfigurationChangedByService } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server/cached';
 import { logger } from './logger';
 
@@ -114,10 +114,12 @@ export async function updateOAuthServices(): Promise<void> {
 			}
 
 			await LoginServiceConfiguration.createOrUpdateService(serviceKey, data);
-			void broadcastOnLoginServiceConfiguration(serviceKey);
+			void notifyOnLoginServiceConfigurationChangedByService(serviceKey);
 		} else {
-			await LoginServiceConfiguration.removeService(serviceKey);
-			void broadcastOnLoginServiceConfiguration(serviceKey, 'removed');
+			const { deletedCount } = await LoginServiceConfiguration.removeService(serviceKey);
+			if (deletedCount) {
+				void notifyOnLoginServiceConfigurationChangedByService(serviceKey, 'removed');
+			}
 		}
 	}
 }
