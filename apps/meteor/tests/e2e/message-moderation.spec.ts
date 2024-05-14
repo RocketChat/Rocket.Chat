@@ -1,8 +1,7 @@
 import { Users } from './fixtures/userStates';
-import { test, expect } from './utils/test';
-import { Moderation } from './page-objects';
-import { HomeChannel } from './page-objects';
+import { Moderation , HomeChannel } from './page-objects';
 import { createTargetChannel, deleteChannel } from './utils';
+import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 

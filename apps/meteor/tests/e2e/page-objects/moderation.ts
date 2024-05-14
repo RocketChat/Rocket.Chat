@@ -34,4 +34,4 @@ export class Moderation {
 	findRowByName(name: string): Locator {
 		return this.page.locator(`tr:has-text("${name}")`);
 	}
-};
+}
