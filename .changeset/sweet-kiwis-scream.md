@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": minor
 ---
 
- In the Desktop App, clicking on a message attachment link will now initiate a direct download of the attachment if not a PDF
+Clicking on a message attachment link in the Desktop App will now initiate a direct download of the attachment only when the attachment is not a PDF file
