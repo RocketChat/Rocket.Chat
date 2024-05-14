@@ -9,7 +9,7 @@ import { getUsersInRolePaginated } from '../../../authorization/server/functions
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { notifyListenerOnRoleChanges } from '../../../lib/server/lib/notifyListenerOnRoleChanges';
+import { notifyOnRoleChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server/index';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -180,7 +180,7 @@ API.v1.addRoute(
 
 			await Roles.removeById(role._id);
 
-			void notifyListenerOnRoleChanges(role._id, 'removed', role);
+			void notifyOnRoleChanged(role, 'removed');
 
 			return API.v1.success();
 		},
