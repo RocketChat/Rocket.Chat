@@ -10,5 +10,4 @@ export interface IPermissionsModel extends IBaseModel<IPermission> {
 	setRoles(permission: string, roles: IRole['_id'][]): Promise<void>;
 	removeRole(permission: string, role: IRole['_id']): Promise<void>;
 	findByLevel(level: 'settings', settingId?: string): FindCursor<IPermission>;
-	findOneByGroupPermissionId(groupPermissionId: IPermission['groupPermissionId']): Promise<IPermission | null>;
 }

@@ -46,6 +46,7 @@ Meteor.methods<ServerMethods>({
 		// for setting-based-permissions, authorize the group access as well
 		if (permission.groupPermissionId) {
 			await Permissions.addRole(permission.groupPermissionId, role);
+			void notifyOnPermissionChangedById(permission.groupPermissionId);
 		}
 
 		await Permissions.addRole(permission._id, role);

@@ -64,8 +64,4 @@ export class PermissionsRaw extends BaseRaw<IPermission> implements IPermissions
 	findByLevel(level: 'settings', settingId?: string): FindCursor<IPermission> {
 		return this.find({ level, ...(settingId && { settingId }) });
 	}
-
-	findOneByGroupPermissionId(groupPermissionId: IPermission['groupPermissionId']): Promise<IPermission | null> {
-		return this.findOne({ groupPermissionId });
-	}
 }
