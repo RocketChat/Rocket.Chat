@@ -20,12 +20,12 @@ export const createOrUpdateProtectedRoleAsync = async (
 			roleData.mandatory2fa || role.mandatory2fa,
 		);
 
-		void notifyOnRoleChanged(updatedRole, 'updated');
+		void notifyOnRoleChanged(updatedRole);
 
 		return;
 	}
 
-	const insertedRole = await Roles.insertOne({
+	await Roles.insertOne({
 		_id: roleId,
 		scope: 'Users',
 		description: '',
@@ -34,5 +34,5 @@ export const createOrUpdateProtectedRoleAsync = async (
 		protected: true,
 	});
 
-	void notifyOnRoleChangedById(insertedRole.insertedId, 'inserted');
+	void notifyOnRoleChangedById(roleId);
 };

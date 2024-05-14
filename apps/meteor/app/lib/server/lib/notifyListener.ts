@@ -128,7 +128,7 @@ export async function notifyOnPbxEventChangedById<T extends IPbxEvent>(
 	}
 }
 
-export async function notifyOnRoleChanged<T extends IRole>(role: T, clientAction: ClientAction = 'updated'): Promise<void> {
+export async function notifyOnRoleChanged<T extends IRole>(role: T, clientAction: 'removed' | 'changed' = 'changed'): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
 	}
@@ -136,14 +136,18 @@ export async function notifyOnRoleChanged<T extends IRole>(role: T, clientAction
 	void api.broadcast('watch.roles', { clientAction, role });
 }
 
-export async function notifyOnRoleChangedById<T extends IRole>(id: T['_id'], clientAction: ClientAction = 'updated'): Promise<void> {
+export async function notifyOnRoleChangedById<T extends IRole>(
+	id: T['_id'],
+	clientAction: 'removed' | 'changed' = 'changed',
+): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
 	}
 
 	const role = await Roles.findOneById(id);
-
-	if (role) {
-		void api.broadcast('watch.roles', { clientAction, role });
+	if (!role) {
+		return;
 	}
+
+	void notifyOnRoleChanged(role, clientAction);
 }

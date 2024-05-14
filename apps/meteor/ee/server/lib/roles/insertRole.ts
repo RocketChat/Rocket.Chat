@@ -22,7 +22,7 @@ export const insertRoleAsync = async (roleData: Omit<IRole, '_id'>, options: Ins
 
 	const role = await Roles.createWithRandomId(name, scope, description, false, mandatory2fa);
 
-	void notifyOnRoleChanged(role, 'inserted');
+	void notifyOnRoleChanged(role);
 
 	if (options.broadcastUpdate) {
 		void api.broadcast('user.roleUpdate', {
