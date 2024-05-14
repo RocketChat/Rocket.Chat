@@ -1,6 +1,6 @@
 import type { IPermission, IRole, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IPermissionsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, FindCursor, FindOptions, IndexDescription } from 'mongodb';
+import type { Collection, Db, FindCursor, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -39,7 +39,7 @@ export class PermissionsRaw extends BaseRaw<IPermission> implements IPermissions
 	}
 
 	async create(id: string, roles: IRole['_id'][]): Promise<IPermission['_id']> {
-		const exists = await super.findOneById(id, { projection: { _id: 1 } });
+		const exists = await this.findOneById(id, { projection: { _id: 1 } });
 		if (exists) {
 			return exists._id;
 		}
@@ -59,10 +59,6 @@ export class PermissionsRaw extends BaseRaw<IPermission> implements IPermissions
 
 	async removeRole(permission: string, role: IRole['_id']): Promise<void> {
 		await this.updateOne({ _id: permission, roles: role }, { $pull: { roles: role } });
-	}
-
-	async findOneById(_id: IPermission['_id'], options?: FindOptions<IPermission>): Promise<IPermission | null> {
-		return super.findOneById(_id, options);
 	}
 
 	findByLevel(level: 'settings', settingId?: string): FindCursor<IPermission> {
