@@ -36,7 +36,6 @@ export function getWatchCollections(): string[] {
 		LoginServiceConfiguration.getCollectionName(),
 		InstanceStatus.getCollectionName(),
 		IntegrationHistory.getCollectionName(),
-		Integrations.getCollectionName(),
 		EmailInbox.getCollectionName(),
 		Settings.getCollectionName(),
 		LivechatPriority.getCollectionName(),
@@ -49,6 +48,7 @@ export function getWatchCollections(): string[] {
 		collections.push(Roles.getCollectionName());
 		collections.push(Rooms.getCollectionName());
 		collections.push(PbxEvents.getCollectionName());
+		collections.push(Integrations.getCollectionName());
 		collections.push(Permissions.getCollectionName());
 	}
 
