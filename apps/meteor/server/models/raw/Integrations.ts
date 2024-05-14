@@ -50,7 +50,7 @@ export class IntegrationsRaw extends BaseRaw<IIntegration> implements IIntegrati
 		return this.updateMany({ userId }, { $set: { enabled: false } });
 	}
 
-	findByUserId(userId: IIntegration['userId']): FindCursor<IIntegration> {
+	findByUserId(userId: IIntegration['userId']): FindCursor<Pick<IIntegration, '_id'>> {
 		return this.find({ userId }, { projection: { _id: 1 } });
 	}
 
