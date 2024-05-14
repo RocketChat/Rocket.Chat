@@ -1,6 +1,6 @@
 import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
-import type { IPermission, IRocketChatRecord, IRoom, ISetting, IPbxEvent } from '@rocket.chat/core-typings';
-import { Rooms, Permissions, Settings, PbxEvents } from '@rocket.chat/models';
+import type { IPermission, IRocketChatRecord, IRoom, ISetting, IPbxEvent, IRole } from '@rocket.chat/core-typings';
+import { Rooms, Permissions, Settings, PbxEvents, Roles } from '@rocket.chat/models';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
 
@@ -125,5 +125,25 @@ export async function notifyOnPbxEventChangedById<T extends IPbxEvent>(
 
 	if (item) {
 		void api.broadcast('watch.pbxevents', { clientAction, id, data: item });
+	}
+}
+
+export async function notifyOnRoleChanged<T extends IRole>(role: T, clientAction: ClientAction = 'updated'): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	void api.broadcast('watch.roles', { clientAction, role });
+}
+
+export async function notifyOnRoleChangedById<T extends IRole>(id: T['_id'], clientAction: ClientAction = 'updated'): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const role = await Roles.findOneById(id);
+
+	if (role) {
+		void api.broadcast('watch.roles', { clientAction, role });
 	}
 }
