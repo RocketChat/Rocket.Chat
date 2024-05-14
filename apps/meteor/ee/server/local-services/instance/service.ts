@@ -156,7 +156,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		};
 
 		await InstanceStatus.registerInstance('rocket.chat', instance);
-		void notifyOnInstanceStatusChangedById(InstanceStatus.id(), 'inserted');
+
 		process.on('exit', async () => {
 			void notifyOnInstanceStatusChangedById(InstanceStatus.id(), 'removed');
 		});

@@ -69,7 +69,6 @@ export async function notifyOnRoomChangedByUserDM<T extends IRoom>(
 export async function notifyOnInstanceStatusChangedById<T extends IInstanceStatus>(
 	id: T['_id'],
 	clientAction: 'inserted' | 'updated' | 'removed',
-	data?: Record<string, unknown>,
 	diff?: Record<string, unknown>,
 ) {
 	if (!dbWatchersDisabled) {
@@ -77,10 +76,11 @@ export async function notifyOnInstanceStatusChangedById<T extends IInstanceStatu
 	}
 
 	const instanceStatus = await InstanceStatus.findOneById(id);
-
-	if (instanceStatus) {
-		void api.broadcast('watch.instanceStatus', { id, clientAction, data, diff });
+	if (!instanceStatus) {
+		return;
 	}
+
+	void api.broadcast('watch.instanceStatus', { id, clientAction, data: instanceStatus, diff });
 }
 
 export async function notifyOnSettingChanged(setting: ISetting, clientAction: ClientAction = 'updated'): Promise<void> {

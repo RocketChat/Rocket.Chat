@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
 
+import { dbWatchersDisabled } from '@rocket.chat/core-services';
 import type { IRocketChatRecord } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -241,6 +242,9 @@ export class DatabaseWatcher extends EventEmitter {
 	 * @returns Indicates if the last document received is older than it should be. If that happens, it means that the oplog is not working properly
 	 */
 	isLastDocDelayed(): boolean {
+		if (dbWatchersDisabled) {
+			return false;
+		}
 		return this.getLastDocDelta() > maxDocMs;
 	}
 }
