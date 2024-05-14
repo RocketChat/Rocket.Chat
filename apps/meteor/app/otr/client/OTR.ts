@@ -26,6 +26,12 @@ class OTR implements IOTR {
 	}
 
 	closeAllInstances(): void {
+		// Resets state, but doesnt emit events
+		// Other party should receive event and fire events
+		Object.values(this.instancesByRoomId).forEach((instance) => {
+			instance.softReset();
+		});
+
 		this.instancesByRoomId = {};
 	}
 }

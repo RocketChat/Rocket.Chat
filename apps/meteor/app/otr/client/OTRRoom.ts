@@ -1,5 +1,5 @@
 import type { IRoom, IMessage, IUser } from '@rocket.chat/core-typings';
-import { UserStatus, UserStatusMap } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
@@ -114,21 +114,16 @@ export class OTRRoom implements IOTRRoom {
 	// Starts listening to other user's status changes and end OTR if any of the Users goes offline
 	// this should be called in 2 places: on acknowledge (meaning user accepted OTR) or on establish (meaning user initiated OTR)
 	listenToUserStatus(userId: IUser['_id']): void {
-		const { stop } = sdk.stream('user-presence', [userId], async ([, status]) => {
-			if (UserStatusMap[status] === UserStatus.OFFLINE) {
+		Presence.listen(userId, (event: Pick<IUser, 'status' | 'username'>) => {
+			if (event.status === UserStatus.OFFLINE) {
 				console.warn(`OTR Room ${this._roomId} ended because ${userId} went offline`);
 				this.end();
-				stop();
-				const obj = await Presence.get(this.peerId);
-				if (!obj) {
-					return;
-				}
 				imperativeModal.open({
 					component: GenericModal,
 					props: {
 						variant: 'warning',
 						title: t('OTR'),
-						children: t('OTR_Session_ended_other_user_went_offline', { username: obj.username }),
+						children: t('OTR_Session_ended_other_user_went_offline', { username: event.username }),
 						confirmText: t('Ok'),
 						onClose: imperativeModal.close,
 						onConfirm: imperativeModal.close,
@@ -163,6 +158,14 @@ export class OTRRoom implements IOTRRoom {
 				userId: this._userId,
 			},
 		]);
+	}
+
+	softReset(): void {
+		this.isFirstOTR = true;
+		this.setState(OtrRoomState.NOT_STARTED);
+		this._keyPair = null;
+		this._exportedPublicKey = {};
+		this._sessionKey = null;
 	}
 
 	end(): void {
