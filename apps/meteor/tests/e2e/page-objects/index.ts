@@ -17,4 +17,5 @@ export * from './omnichannel-units';
 export * from './home-omnichannel';
 export * from './omnichannel-monitors';
 export * from './omnichannel-settings';
+export * from './omnichannel-tags';
 export * from './utils';
