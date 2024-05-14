@@ -2039,7 +2039,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	removeUsersFromE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uids: IUser['_id'][]): Promise<Document | UpdateResult> {
+	async removeUsersFromE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uids: IUser['_id'][]): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
 			'_id': {
 				$in: roomIds,
@@ -2056,7 +2056,18 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 
-		return this.updateMany(query, update);
+		await this.updateMany(query, update);
+
+		return this.updateMany(
+			{
+				'_id': {
+					$in: roomIds,
+				},
+				'usersWaitingForE2EKeys.0': { $exists: false },
+				'encrypted': true,
+			},
+			{ $unset: { usersWaitingForE2EKeys: 1 } },
+		);
 	}
 
 	findRoomsByRoomIdsWithE2EEQueue(roomIds: IRoom['_id'][], options?: FindOptions<IRoom>): FindCursor<IRoom> {
