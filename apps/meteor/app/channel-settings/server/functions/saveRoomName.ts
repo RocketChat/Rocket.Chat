@@ -74,11 +74,13 @@ export async function saveRoomName(
 
 	if (room.name && !isDiscussion) {
 		await Integrations.updateRoomName(room.name, slugifiedRoomName);
-		void notifyOnIntegrationChangedByChannels([room.name, slugifiedRoomName]);
+		void notifyOnIntegrationChangedByChannels([slugifiedRoomName]);
 	}
+
 	if (sendMessage) {
 		await Message.saveSystemMessage('r', rid, displayName, user);
 	}
+
 	await callbacks.run('afterRoomNameChange', { rid, name: displayName, oldName: room.name });
 	return displayName;
 }

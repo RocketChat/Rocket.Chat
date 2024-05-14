@@ -180,7 +180,10 @@ export async function notifyOnIntegrationChangedByUserId<T extends IIntegration>
 	}
 }
 
-export async function notifyOnIntegrationChangedByChannels(channels: string[], clientAction: ClientAction = 'updated'): Promise<void> {
+export async function notifyOnIntegrationChangedByChannels<T extends IIntegration>(
+	channels: T['channel'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
 	}
