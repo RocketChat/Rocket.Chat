@@ -1979,6 +1979,40 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
+	async getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]> {
+		return (
+			await this.col
+				.aggregate([
+					{ $match: { encrypted: true } },
+					{
+						$lookup: {
+							from: 'rocketchat_subscription',
+							localField: '_id',
+							foreignField: 'rid',
+							as: 'subs',
+						},
+					},
+					{
+						$unwind: '$subs',
+					},
+					{
+						$match: {
+							'subs.u._id': uid,
+							'subs.E2EKey': {
+								$exists: false,
+							},
+						},
+					},
+					{
+						$project: {
+							_id: 1,
+						},
+					},
+				])
+				.toArray()
+		).map(({ _id }) => _id);
+	}
+
 	addUserIdToE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
 			'_id': {
@@ -1991,8 +2025,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		const update: UpdateFilter<IRoom> = {
 			$push: {
 				usersWaitingForE2EKeys: {
-					userId: uid,
-					ts: new Date(),
+					$each: [
+						{
+							userId: uid,
+							ts: new Date(),
+						},
+					],
+					$slice: -10,
 				},
 			},
 		};

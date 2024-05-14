@@ -133,7 +133,7 @@ export const addUserToRoom = async function (
 		await Team.addMember(inviter || userToBeAdded, userToBeAdded._id, room.teamId);
 	}
 
-	if (room.encrypted && settings.get('E2E_Enable')) {
+	if (room.encrypted && settings.get('E2E_Enable') && userToBeAdded.e2e?.public_key) {
 		await Rooms.addUserIdToE2EEQueueByRoomIds([room._id], userToBeAdded._id);
 	}
 
