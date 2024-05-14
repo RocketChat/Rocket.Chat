@@ -66,15 +66,27 @@ export async function notifyOnRoomChangedByUserDM<T extends IRoom>(
 	}
 }
 
-export async function notifyOnSettingChangedById(sid: ISetting['_id'], clientAction: ClientAction = 'updated'): Promise<void> {
+export async function notifyOnSettingChanged(setting: ISetting, clientAction: ClientAction = 'updated'): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
 	}
 
-	const setting = await Settings.findOneById(sid);
+	void api.broadcast('watch.settings', { clientAction, setting });
+}
 
-	if (setting) {
-		void api.broadcast('watch.settings', { clientAction, setting });
+export async function notifyOnPermissionChanged(permission: IPermission, clientAction: ClientAction = 'updated'): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	void api.broadcast('permission.changed', { clientAction, data: permission });
+
+	if (permission.level === 'settings' && permission.settingId) {
+		const setting = await Settings.findOneNotHiddenById(permission.settingId);
+		if (!setting) {
+			return;
+		}
+		void notifyOnSettingChanged(setting, 'updated');
 	}
 }
 
@@ -84,33 +96,11 @@ export async function notifyOnPermissionChangedById(pid: IPermission['_id'], cli
 	}
 
 	const permission = await Permissions.findOneById(pid);
-
-	if (permission) {
-		void api.broadcast('permission.changed', { clientAction, data: permission });
-	}
-
-	if (permission?.level === 'settings' && permission?.settingId) {
-		void notifyOnSettingChangedById(permission.settingId);
-	}
-}
-
-export async function notifyOnPermissionChangedByGroupPermissionId(
-	pid: IPermission['groupPermissionId'],
-	clientAction: ClientAction = 'updated',
-): Promise<void> {
-	if (!dbWatchersDisabled) {
+	if (!permission) {
 		return;
 	}
 
-	const permission = await Permissions.findOneByGroupPermissionId(pid);
-
-	if (permission) {
-		void api.broadcast('permission.changed', { clientAction, data: permission });
-	}
-
-	if (permission?.level === 'settings' && permission?.settingId) {
-		void notifyOnSettingChangedById(permission.settingId);
-	}
+	return notifyOnPermissionChanged(permission, clientAction);
 }
 
 export async function notifyOnPbxEventChangedById<T extends IPbxEvent>(
