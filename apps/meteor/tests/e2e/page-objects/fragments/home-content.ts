@@ -159,6 +159,10 @@ export class HomeContent {
 		return this.page.locator('[data-qa-id="edit-message"]');
 	}
 
+	get btnOptionQuoteMessage(): Locator {
+		return this.page.getByRole('button', { name: 'Quote' });
+	}
+
 	get btnOptionDeleteMessage(): Locator {
 		return this.page.locator('[data-qa-id="delete-message"]');
 	}
