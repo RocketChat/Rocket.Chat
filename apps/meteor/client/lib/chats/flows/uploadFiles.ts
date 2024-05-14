@@ -2,7 +2,6 @@ import type { IMessage, FileAttachmentProps, IE2EEMessage } from '@rocket.chat/c
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { EJSON } from 'meteor/ejson';
 
-import { e2e } from '../../../../app/e2e/client';
 import { fileUploadIsValidContentType } from '../../../../app/utils/client';
 import FileUploadModal from '../../../views/room/modals/FileUploadModal';
 import { imperativeModal } from '../../imperativeModal';
@@ -67,7 +66,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					imperativeModal.close();
 					uploadNextFile();
 				},
-				onSubmit: async (fileName: string, description?: string): Promise<void> => {
+				onSubmit: (fileName: string, description?: string): void => {
 					Object.defineProperty(file, 'name', {
 						writable: true,
 						value: fileName,

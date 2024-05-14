@@ -1,5 +1,59 @@
 # @rocket.chat/uikit-playground
 
+## 0.2.22
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b94ca7c30b, c0d54d742a]:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@6.0.0
+  - @rocket.chat/ui-contexts@6.0.0
+  - @rocket.chat/ui-avatar@2.0.0
+  </details>
+
+## 0.2.22-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b94ca7c30b]:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@6.0.0-rc.2
+  - @rocket.chat/ui-contexts@6.0.0-rc.2
+  - @rocket.chat/ui-avatar@2.0.0-rc.2
+  </details>
+
+## 0.2.23-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@6.0.0-rc.1
+  - @rocket.chat/fuselage-ui-kit@6.0.0-rc.1
+  - @rocket.chat/ui-avatar@2.0.0-rc.1
+  </details>
+
+## 0.2.23-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c0d54d742a]:</summary>
+
+  - @rocket.chat/ui-contexts@6.0.0-rc.0
+  - @rocket.chat/fuselage-ui-kit@6.0.0-rc.0
+  - @rocket.chat/ui-avatar@2.0.0-rc.0
+
+## 0.2.22
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@5.0.2
+  - @rocket.chat/fuselage-ui-kit@5.0.2
+  - @rocket.chat/ui-avatar@1.0.2
+  </details>
+
 ## 0.2.21
 
 ### Patch Changes
