@@ -10,7 +10,14 @@ import { initWatchers } from '../modules/watchers/watchers.module';
 
 const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 
-const watcher = new DatabaseWatcher({ db, _oplogHandle: (mongo as any)._oplogHandle, metrics, logger: Logger });
+const watcher = new DatabaseWatcher({ db, _oplogHandle: (mongo as any)._oplogHandle, logger: Logger });
+
+watcher.onDocument(({ collection, doc }) => {
+	metrics.oplog.inc({
+		collection,
+		op: doc.action,
+	});
+});
 
 initWatchers(watcher, api.broadcastLocal.bind(api));
 

@@ -21,6 +21,18 @@ export class StreamHub extends ServiceClass implements IServiceClass {
 		if (!this.api) {
 			return;
 		}
+
+		this.api.metrics?.register({
+			name: 'rocketchat_oplog',
+			type: 'counter',
+			labelNames: ['collection', 'op'],
+			description: 'summary of oplog operations',
+		});
+
+		this.watcher.onDocument(({ collection, doc }) => {
+			this.api?.metrics?.increment('rocketchat_oplog', { collection, op: doc.action });
+		});
+
 		initWatchers(this.watcher, this.api.broadcast.bind(this.api));
 
 		try {

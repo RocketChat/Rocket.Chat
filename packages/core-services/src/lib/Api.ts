@@ -8,6 +8,10 @@ export class Api implements IApiService {
 
 	private broker?: IBroker;
 
+	get metrics() {
+		return this.broker?.metrics;
+	}
+
 	// set a broker for the API and registers all services in the broker
 	setBroker(broker: IBroker): void {
 		this.broker = broker;
