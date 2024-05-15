@@ -6,9 +6,15 @@ import { renderMessageBlocks } from '../../uiKit';
 import Surface from '../../uiKit/message/Surface';
 import styles from './styles.scss';
 
-const MessageBlocks = ({ blocks = [], mid = undefined, rid = undefined }) => {
+type MessageBlocksProps = {
+	blocks?: unknown[];
+	mid?: string;
+	rid?: string;
+};
+
+const MessageBlocks = ({ blocks = [], mid = undefined, rid = undefined }: MessageBlocksProps) => {
 	const dispatchAction = useCallback(
-		({ appId, actionId, payload }) =>
+		({ appId, actionId, payload }: { appId: string; actionId: string; payload: unknown }) =>
 			triggerAction({
 				appId,
 				type: UIKitIncomingInteractionType.BLOCK,
