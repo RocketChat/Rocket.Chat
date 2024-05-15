@@ -1,6 +1,6 @@
 import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
-import type { IPermission, IRocketChatRecord, IRoom, ISetting, IPbxEvent, IRole } from '@rocket.chat/core-typings';
-import { Rooms, Permissions, Settings, PbxEvents, Roles } from '@rocket.chat/models';
+import type { IPermission, IRocketChatRecord, IRoom, ISetting, IPbxEvent, IRole, IIntegration } from '@rocket.chat/core-typings';
+import { Rooms, Permissions, Settings, PbxEvents, Roles, Integrations } from '@rocket.chat/models';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
 
@@ -140,4 +140,57 @@ export async function notifyOnRoleChangedById<T extends IRole>(
 	}
 
 	void notifyOnRoleChanged(role, clientAction);
+}
+
+export async function notifyOnIntegrationChanged<T extends IIntegration>(data: T, clientAction: ClientAction = 'updated'): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	void api.broadcast('watch.integrations', { clientAction, id: data._id, data });
+}
+
+export async function notifyOnIntegrationChangedById<T extends IIntegration>(
+	id: T['_id'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const item = await Integrations.findOneById(id);
+
+	if (item) {
+		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
+	}
+}
+
+export async function notifyOnIntegrationChangedByUserId<T extends IIntegration>(
+	id: T['userId'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const items = Integrations.findByUserId(id);
+
+	for await (const item of items) {
+		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
+	}
+}
+
+export async function notifyOnIntegrationChangedByChannels<T extends IIntegration>(
+	channels: T['channel'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const items = Integrations.findByChannels(channels);
+
+	for await (const item of items) {
+		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
+	}
 }
