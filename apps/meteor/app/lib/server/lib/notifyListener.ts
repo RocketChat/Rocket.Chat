@@ -121,10 +121,11 @@ export async function notifyOnPbxEventChangedById<T extends IPbxEvent>(
 	}
 
 	const item = await PbxEvents.findOneById(id);
-
-	if (item) {
-		void api.broadcast('watch.pbxevents', { clientAction, id, data: item });
+	if (!item) {
+		return;
 	}
+
+	void api.broadcast('watch.pbxevents', { clientAction, id, data: item });
 }
 
 export async function notifyOnRoleChanged<T extends IRole>(role: T, clientAction: 'removed' | 'changed' = 'changed'): Promise<void> {
@@ -175,14 +176,15 @@ export async function notifyOnLoginServiceConfigurationChangedByService<T extend
 	}
 
 	const item = await LoginServiceConfiguration.findOneByService(service);
-
-	if (item) {
-		void api.broadcast('watch.loginServiceConfiguration', {
-			clientAction,
-			id: item._id,
-			data: item,
-		});
+	if (!item) {
+		return;
 	}
+
+	void api.broadcast('watch.loginServiceConfiguration', {
+		clientAction,
+		id: item._id,
+		data: item,
+	});
 }
 
 export async function notifyOnIntegrationChanged<T extends IIntegration>(data: T, clientAction: ClientAction = 'updated'): Promise<void> {
@@ -202,10 +204,11 @@ export async function notifyOnIntegrationChangedById<T extends IIntegration>(
 	}
 
 	const item = await Integrations.findOneById(id);
-
-	if (item) {
-		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
+	if (!item) {
+		return;
 	}
+
+	void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
 }
 
 export async function notifyOnIntegrationChangedByUserId<T extends IIntegration>(

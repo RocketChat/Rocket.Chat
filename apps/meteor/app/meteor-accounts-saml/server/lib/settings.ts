@@ -126,12 +126,16 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 				}
 
 				const service = await LoginServiceConfiguration.findOneByService(serviceName, { projection: { _id: 1 } });
-				if (service?._id) {
-					const { deletedCount } = await LoginServiceConfiguration.removeService(service._id);
-					if (deletedCount === 1) {
-						void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
-					}
+				if (!service?._id) {
+					return false;
 				}
+
+				const { deletedCount } = await LoginServiceConfiguration.removeService(service._id);
+				if (!deletedCount) {
+					return false;
+				}
+
+				void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
 
 				return false;
 			}),
