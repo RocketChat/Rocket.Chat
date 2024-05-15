@@ -9,38 +9,21 @@ import type {
 	IIntegration,
 	ILivechatPriority,
 } from '@rocket.chat/core-typings';
-import { Rooms, Permissions, Settings, PbxEvents, Roles, Integrations, LivechatPriority } from '@rocket.chat/models';
+import { Rooms, Permissions, Settings, PbxEvents, Roles, Integrations } from '@rocket.chat/models';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
 
 export async function notifyOnLivechatPriorityChanged(
-	data: ILivechatPriority | ILivechatPriority[],
+	data: Pick<ILivechatPriority, 'name' | '_id'>,
 	clientAction: ClientAction = 'updated',
 ): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
 	}
 
-	const items = Array.isArray(data) ? data : [data];
+	const { _id, ...rest } = data;
 
-	for (const item of items) {
-		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
-	}
-}
-
-export async function notifyOnLivechatPriorityChangedById(
-	ids: ILivechatPriority['_id'][],
-	clientAction: ClientAction = 'updated',
-): Promise<void> {
-	if (!dbWatchersDisabled) {
-		return;
-	}
-
-	const items = LivechatPriority.findByIds(ids);
-
-	for await (const item of items) {
-		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
-	}
+	void api.broadcast('watch.priorities', { clientAction, id: _id, diff: { ...rest } });
 }
 
 export async function notifyOnRoomChanged<T extends IRocketChatRecord>(

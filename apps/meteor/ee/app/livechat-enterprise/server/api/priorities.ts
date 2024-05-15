@@ -57,11 +57,9 @@ API.v1.addRoute(
 		async put() {
 			const { priorityId } = this.urlParams;
 
-			const updatedPriority = await updatePriority(priorityId, this.bodyParams);
+			await updatePriority(priorityId, this.bodyParams);
 
-			if (updatedPriority) {
-				void notifyOnLivechatPriorityChanged(updatedPriority, 'updated');
-			}
+			void notifyOnLivechatPriorityChanged({ _id: priorityId, ...this.bodyParams });
 
 			return API.v1.success();
 		},
@@ -83,8 +81,11 @@ API.v1.addRoute(
 				return API.v1.failure();
 			}
 
-			const updatedPriorities = await LivechatPriority.resetPriorities();
-			void notifyOnLivechatPriorityChanged(updatedPriorities);
+			const eligiblePriorities = (await LivechatPriority.findByDirty().toArray()).map(({ _id }) => _id);
+			await LivechatPriority.resetPriorities(eligiblePriorities);
+			for (const _id of eligiblePriorities) {
+				void notifyOnLivechatPriorityChanged({ _id, name: undefined });
+			}
 
 			return API.v1.success();
 		},

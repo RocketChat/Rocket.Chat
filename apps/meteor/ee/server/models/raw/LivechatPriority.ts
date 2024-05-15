@@ -48,20 +48,16 @@ export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements I
 		return this.findOne(query, options);
 	}
 
-	findByIds(_ids: ILivechatPriority['_id'][]): FindCursor<ILivechatPriority> {
-		return this.find({ _id: { $in: _ids } });
+	findByDirty(): FindCursor<Pick<ILivechatPriority, '_id'>> {
+		return this.find({ dirty: true }, { projection: { _id: 1 } });
 	}
 
 	async canResetPriorities(): Promise<boolean> {
 		return Boolean(await this.findOne({ dirty: true }, { projection: { _id: 1 } }));
 	}
 
-	async resetPriorities(): Promise<ILivechatPriority[]> {
-		const eligiblePriorities = await this.find({ dirty: true }).toArray();
-
-		await this.updateMany({ _id: { $in: eligiblePriorities.map(({ _id }) => _id) } }, [{ $set: { dirty: false } }, { $unset: 'name' }]);
-
-		return eligiblePriorities;
+	async resetPriorities(ids: ILivechatPriority['_id'][]): Promise<void> {
+		await this.updateMany({ _id: { $in: ids } }, [{ $set: { dirty: false } }, { $unset: 'name' }]);
 	}
 
 	async updatePriority(_id: string, reset: boolean, name?: string): Promise<ModifyResult<ILivechatPriority>> {

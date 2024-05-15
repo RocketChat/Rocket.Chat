@@ -287,12 +287,7 @@ export type EventSignatures = {
 	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
 	'connector.statuschanged'(enabled: boolean): void;
 	'federation.userRoleChanged'(update: Record<string, any>): void;
-	'watch.priorities'(data: {
-		clientAction: ClientAction;
-		data: Partial<ILivechatPriority>;
-		id: string;
-		diff?: Record<string, string>;
-	}): void;
+	'watch.priorities'(data: { clientAction: ClientAction; id: ILivechatPriority['_id']; diff?: Record<string, string> }): void;
 	'apps.added'(appId: string): void;
 	'apps.removed'(appId: string): void;
 	'apps.updated'(appId: string): void;

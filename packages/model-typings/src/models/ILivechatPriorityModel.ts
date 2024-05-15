@@ -6,8 +6,8 @@ import type { IBaseModel } from './IBaseModel';
 export interface ILivechatPriorityModel extends IBaseModel<ILivechatPriority> {
 	findOneByIdOrName(_idOrName: string, options?: any): Promise<ILivechatPriority | null>;
 	findOneNameUsingRegex(_idOrName: string, options?: any): Promise<ILivechatPriority | null>;
-	findByIds(_ids: ILivechatPriority['_id'][]): FindCursor<ILivechatPriority>;
+	findByDirty(): FindCursor<Pick<ILivechatPriority, '_id'>>;
 	canResetPriorities(): Promise<boolean>;
-	resetPriorities(): Promise<ILivechatPriority[]>;
+	resetPriorities(ids: ILivechatPriority['_id'][]): Promise<void>;
 	updatePriority(_id: string, reset: boolean, name?: string): Promise<ModifyResult<ILivechatPriority>>;
 }
