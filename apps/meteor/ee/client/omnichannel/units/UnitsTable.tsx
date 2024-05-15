@@ -84,7 +84,7 @@ const UnitsTable = () => {
 					icon='business'
 					title={t('No_units_yet')}
 					description={t('No_units_yet_description')}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					buttonAction={handleAddNew}
 					buttonTitle={t('Create_unit')}
 					linkText={t('Learn_more_about_units')}

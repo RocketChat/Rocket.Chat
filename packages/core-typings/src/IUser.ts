@@ -71,6 +71,7 @@ export interface IUserServices {
 		enabled: boolean;
 		hashedBackup: string[];
 		secret: string;
+		tempSecret?: string;
 	};
 	email2fa?: {
 		enabled: boolean;
@@ -228,3 +229,5 @@ export type AvatarServiceObject = {
 };
 
 export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject;
+
+export type IAdminUserTabs = 'all' | 'active' | 'deactivated' | 'pending';

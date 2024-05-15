@@ -1,11 +1,11 @@
 import type { IAuditLog } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
 
 import { GenericTableRow, GenericTableCell } from '../../../../../client/components/GenericTable';
-import UserAvatar from '../../../../../client/components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../../../client/hooks/useFormatDateAndTime';
 import AuditFiltersDisplay from './AuditFiltersDisplay';
 

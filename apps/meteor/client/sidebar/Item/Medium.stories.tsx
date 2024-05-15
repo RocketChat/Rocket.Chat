@@ -1,10 +1,10 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { action } from '@storybook/addon-actions';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import * as Status from '../../components/UserStatus';
-import UserAvatar from '../../components/avatar/UserAvatar';
 import Medium from './Medium';
 
 export default {

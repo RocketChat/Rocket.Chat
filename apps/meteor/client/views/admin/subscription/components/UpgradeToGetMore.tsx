@@ -63,12 +63,14 @@ const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) =>
 					return <GenericCard key={index} icon='check' type='success' height='full' {...card} />;
 				})}
 			</CardGrid>
-			<ButtonGroup large vertical pbs={24}>
-				<Button icon='new-window' onClick={() => handleOpenLink(PRICING_LINK)} role='link'>
-					{t('Compare_plans')}
-				</Button>
-				{children}
-			</ButtonGroup>
+			<Box pbs={24}>
+				<ButtonGroup large vertical>
+					<Button icon='new-window' onClick={() => handleOpenLink(PRICING_LINK)} role='link'>
+						{t('Compare_plans')}
+					</Button>
+					{children}
+				</ButtonGroup>
+			</Box>
 		</Box>
 	);
 };

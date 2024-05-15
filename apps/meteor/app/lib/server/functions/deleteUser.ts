@@ -19,12 +19,20 @@ import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
+import { notifyOnRoomChangedById, notifyOnIntegrationChangedByUserId } from '../lib/notifyListener';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { updateGroupDMsName } from './updateGroupDMsName';
 
 export async function deleteUser(userId: string, confirmRelinquish = false, deletedBy?: IUser['_id']): Promise<void> {
+	if (userId === 'rocket.cat') {
+		throw new Meteor.Error('error-action-not-allowed', 'Deleting the rocket.cat user is not allowed', {
+			method: 'deleteUser',
+			action: 'Delete_user',
+		});
+	}
+
 	const user = await Users.findOneById(userId, {
 		projection: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 },
 	});
@@ -82,6 +90,9 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		await Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
 		await Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
+		const rids = subscribedRooms.map((room) => room.rid);
+		void notifyOnRoomChangedById(rids);
+
 		await Subscriptions.removeByUserId(userId); // Remove user subscriptions
 
 		if (user.roles.includes('livechat-agent')) {
@@ -103,7 +114,9 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 			await FileUpload.getStore('Avatars').deleteByName(user.username);
 		}
 
-		await Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
+		// Disables all the integrations which rely on the user being deleted.
+		await Integrations.disableByUserId(userId);
+		void notifyOnIntegrationChangedByUserId(userId);
 
 		// Don't broadcast user.deleted for Erasure Type of 'Keep' so that messages don't disappear from logged in sessions
 		if (messageErasureType === 'Delete') {

@@ -1,14 +1,14 @@
-import type { OauthConfig } from '@rocket.chat/core-typings';
+import type { OAuthConfiguration, OauthConfig } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { capitalize } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
-import { ServiceConfiguration } from 'meteor/service-configuration';
 
 import type { IOAuthProvider } from '../../../client/definitions/IOAuthProvider';
 import { overrideLoginMethod, type LoginCallback } from '../../../client/lib/2fa/overrideLoginMethod';
+import { loginServices } from '../../../client/lib/loginServices';
 import { createOAuthTotpLoginMethod } from '../../../client/meteorOverrides/login/oauth';
 import { isURL } from '../../../lib/utils/isURL';
 
@@ -86,7 +86,7 @@ export class CustomOAuth implements IOAuthProvider {
 		options: Meteor.LoginWithExternalServiceOptions = {},
 		credentialRequestCompleteCallback: (credentialTokenOrError?: string | Error) => void,
 	) {
-		const config = await ServiceConfiguration.configurations.findOneAsync({ service: this.name });
+		const config = await loginServices.loadLoginService<OAuthConfiguration>(this.name);
 		if (!config) {
 			if (credentialRequestCompleteCallback) {
 				credentialRequestCompleteCallback(new Accounts.ConfigError());
@@ -95,7 +95,7 @@ export class CustomOAuth implements IOAuthProvider {
 		}
 
 		const credentialToken = Random.secret();
-		const loginStyle = OAuth._loginStyle(this.name, config, options);
+		const loginStyle = OAuth._loginStyle(this.name, config);
 
 		const separator = this.authorizePath.indexOf('?') !== -1 ? '&' : '?';
 

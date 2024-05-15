@@ -237,8 +237,8 @@ const checkFiles = async (sourceDirPath: string, sourceLng: string, fix = false)
 
 	for await (const { path, json, lng } of translations) {
 		await checkPlaceholdersFormat({ json, path, fix });
-		await checkMissingPlurals({ json, path, lng, fix });
 		await checkExceedingKeys({ json, path, lng, sourceJson, sourceLng, fix });
+		await checkMissingPlurals({ json, path, lng, fix });
 	}
 };
 

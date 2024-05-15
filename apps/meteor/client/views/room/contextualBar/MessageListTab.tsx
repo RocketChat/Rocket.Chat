@@ -17,7 +17,7 @@ import {
 	ContextualbarClose,
 	ContextualbarEmptyContent,
 } from '../../../components/Contextualbar';
-import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
+import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
@@ -71,7 +71,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 											totalCount={queryResult.data.length}
 											overscan={25}
 											data={queryResult.data}
-											components={{ Scroller: ScrollableContentWrapper }}
+											components={{ Scroller: VirtuosoScrollbars }}
 											itemContent={(index, message) => {
 												const previous = queryResult.data[index - 1];
 

@@ -1,10 +1,10 @@
 import type { IMessage, MessageReport } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
-import { Message, MessageName, MessageToolboxItem, MessageToolboxWrapper, MessageUsername } from '@rocket.chat/fuselage';
+import { Message, MessageName, MessageToolbarItem, MessageToolbarWrapper, MessageUsername } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import UserAvatar from '../../../../components/avatar/UserAvatar';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import Attachments from '../../../../components/message/content/Attachments';
 import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
@@ -77,23 +77,23 @@ const ContextMessage = ({
 						)}
 
 						{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
-						{message.attachments && <Attachments id={message.files[0]._id} attachments={message.attachments} />}
+						{message.attachments?.length > 0 && <Attachments id={message.files?.[0]._id} attachments={message.attachments} />}
 					</Message.Body>
 					<ReportReasonCollapsible>
 						<MessageReportInfo msgId={message._id} />
 					</ReportReasonCollapsible>
 				</Message.Container>
-				<MessageToolboxWrapper>
-					<Message.Toolbox>
-						<MessageToolboxItem
+				<MessageToolbarWrapper>
+					<Message.Toolbar>
+						<MessageToolbarItem
 							icon='checkmark-circled'
 							title={t('Moderation_Dismiss_reports')}
 							onClick={() => dismissMsgReport.action()}
 						/>
-						<MessageToolboxItem icon='arrow-forward' title={t('Moderation_Go_to_message')} onClick={() => onRedirect(message._id)} />
-						<MessageToolboxItem disabled={deleted} icon='trash' title={t('Moderation_Delete_message')} onClick={() => deleteMessage()} />
-					</Message.Toolbox>
-				</MessageToolboxWrapper>
+						<MessageToolbarItem icon='arrow-forward' title={t('Moderation_Go_to_message')} onClick={() => onRedirect(message._id)} />
+						<MessageToolbarItem disabled={deleted} icon='trash' title={t('Moderation_Delete_message')} onClick={() => deleteMessage()} />
+					</Message.Toolbar>
+				</MessageToolbarWrapper>
 			</Message>
 		</>
 	);

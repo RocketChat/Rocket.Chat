@@ -1,18 +1,24 @@
-import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useSetModal, useToastMessageDispatch, useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import GenericModal from '../../../../components/GenericModal';
 
-const useDismissUserAction = (userId: string): GenericMenuItemProps => {
-	const t = useTranslation();
+const useDismissUserAction = (userId: string, isUserReport?: boolean): GenericMenuItemProps => {
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const moderationRoute = useRouter();
+	const tab = useRouteParameter('tab');
 	const queryClient = useQueryClient();
 
-	const dismissUser = useEndpoint('POST', '/v1/moderation.dismissReports');
+	const dismissMsgReports = useEndpoint('POST', '/v1/moderation.dismissReports');
+
+	const dismissUserReports = useEndpoint('POST', '/v1/moderation.dismissUserReports');
+
+	const dismissUser = isUserReport ? dismissUserReports : dismissMsgReports;
 
 	const handleDismissUser = useMutation({
 		mutationFn: dismissUser,
@@ -20,15 +26,15 @@ const useDismissUserAction = (userId: string): GenericMenuItemProps => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Moderation_Reports_dismissed_plural') });
+			dispatchToastMessage({ type: 'success', message: t('Moderation_Reports_all_dismissed') });
 		},
 	});
 
 	const onDismissUser = async () => {
 		await handleDismissUser.mutateAsync({ userId });
-		queryClient.invalidateQueries({ queryKey: ['moderation.reports'] });
+		queryClient.invalidateQueries({ queryKey: ['moderation', 'userReports'] });
 		setModal();
-		moderationRoute.navigate('/admin/moderation', { replace: true });
+		moderationRoute.navigate(`/admin/moderation/${tab}`, { replace: true });
 	};
 
 	const confirmDismissUser = (): void => {

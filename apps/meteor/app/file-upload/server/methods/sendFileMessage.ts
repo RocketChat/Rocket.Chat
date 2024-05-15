@@ -1,4 +1,12 @@
-import type { MessageAttachment, FileAttachmentProps, IUser, IUpload, AtLeast } from '@rocket.chat/core-typings';
+import type {
+	MessageAttachment,
+	FileAttachmentProps,
+	IUser,
+	IUpload,
+	AtLeast,
+	FilesAndAttachments,
+	IMessage,
+} from '@rocket.chat/core-typings';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
@@ -25,7 +33,7 @@ export const parseFileIntoMessageAttachments = async (
 	file: Partial<IUpload>,
 	roomId: string,
 	user: IUser,
-): Promise<Record<string, any>> => {
+): Promise<FilesAndAttachments> => {
 	validateFileRequiredFields(file);
 
 	await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
@@ -37,8 +45,10 @@ export const parseFileIntoMessageAttachments = async (
 	const files = [
 		{
 			_id: file._id,
-			name: file.name,
-			type: file.type,
+			name: file.name || '',
+			type: file.type || 'file',
+			size: file.size || 0,
+			format: file.identify?.format || '',
 		},
 	];
 
@@ -62,8 +72,17 @@ export const parseFileIntoMessageAttachments = async (
 			attachment.image_preview = await FileUpload.resizeImagePreview(file);
 			const thumbResult = await FileUpload.createImageThumbnail(file);
 			if (thumbResult) {
-				const { data: thumbBuffer, width, height } = thumbResult;
-				const thumbnail = await FileUpload.uploadImageThumbnail(file, thumbBuffer, roomId, user._id);
+				const { data: thumbBuffer, width, height, thumbFileType, thumbFileName, originalFileId } = thumbResult;
+				const thumbnail = await FileUpload.uploadImageThumbnail(
+					{
+						thumbFileName,
+						thumbFileType,
+						originalFileId,
+					},
+					thumbBuffer,
+					roomId,
+					user._id,
+				);
 				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
 				attachment.image_url = thumbUrl;
 				attachment.image_type = thumbnail.type;
@@ -73,8 +92,10 @@ export const parseFileIntoMessageAttachments = async (
 				};
 				files.push({
 					_id: thumbnail._id,
-					name: file.name,
-					type: thumbnail.type,
+					name: thumbnail.name || '',
+					type: thumbnail.type || 'file',
+					size: thumbnail.size || 0,
+					format: thumbnail.identify?.format || '',
 				});
 			}
 		} catch (e) {
@@ -164,6 +185,7 @@ export const sendFileMessage = async (
 			groupable: Match.Optional(Boolean),
 			msg: Match.Optional(String),
 			tmid: Match.Optional(String),
+			customFields: Match.Optional(String),
 		}),
 	);
 
@@ -175,7 +197,8 @@ export const sendFileMessage = async (
 		file: files[0],
 		files,
 		attachments,
-		...msgData,
+		...(msgData as Partial<IMessage>),
+		...(msgData?.customFields && { customFields: JSON.parse(msgData.customFields) }),
 		msg: msgData?.msg ?? '',
 		groupable: msgData?.groupable ?? false,
 	});

@@ -17,19 +17,19 @@ import {
 	MessageSystemBody,
 	MessageSystemTimestamp,
 } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { memo } from 'react';
 
 import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import StatusIndicators from '../../../../components/message/StatusIndicators';
 import Attachments from '../../../../components/message/content/Attachments';
 import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
-import { useChat } from '../../../room/contexts/ChatContext';
+import { useUserCard } from '../../../room/contexts/UserCardContext';
 
 const ContactHistoryMessage: FC<{
 	message: IMessage;
@@ -37,11 +37,11 @@ const ContactHistoryMessage: FC<{
 	isNewDay: boolean;
 	showUserAvatar: boolean;
 }> = ({ message, sequential, isNewDay, showUserAvatar }) => {
+	const t = useTranslation();
+	const { triggerProps, openUserCard } = useUserCard();
+
 	const format = useFormatDate();
 	const formatTime = useFormatTime();
-
-	const t = useTranslation();
-	const chat = useChat();
 
 	if (message.t === 'livechat-close') {
 		return (
@@ -52,8 +52,10 @@ const ContactHistoryMessage: FC<{
 							url={message.avatar}
 							username={message.u.username}
 							size='x18'
-							onClick={chat?.userCard.open(message.u.username)}
+							onClick={(e) => openUserCard(e, message.u.username)}
 							style={{ cursor: 'pointer' }}
+							role='button'
+							{...triggerProps}
 						/>
 					)}
 				</MessageSystemLeftContainer>
@@ -80,8 +82,10 @@ const ContactHistoryMessage: FC<{
 							url={message.avatar}
 							username={message.u.username}
 							size='x36'
-							onClick={chat?.userCard.open(message.u.username)}
+							onClick={(e) => openUserCard(e, message.u.username)}
 							style={{ cursor: 'pointer' }}
+							role='button'
+							{...triggerProps}
 						/>
 					)}
 					{sequential && <StatusIndicators message={message} />}

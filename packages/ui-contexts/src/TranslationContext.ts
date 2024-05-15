@@ -8,7 +8,13 @@ export type TranslationLanguage = {
 	key: string;
 };
 
-export type TranslationKey = RocketchatI18nKeys | `app-${string}.${string}`;
+type KeysWithoutSuffix = {
+	[K in RocketchatI18nKeys as K extends `${infer T extends string}_${'one' | 'other' | 'zero' | 'few' | 'many' | 'two' | 'three' | 'four'}`
+		? T
+		: K]: never;
+};
+
+export type TranslationKey = keyof KeysWithoutSuffix | `app-${string}.${string}`;
 
 export type TranslationContextValue = {
 	languages: TranslationLanguage[];

@@ -1,4 +1,3 @@
-import { api } from '@rocket.chat/core-services';
 import type {
 	IMessage,
 	IRoom,
@@ -16,7 +15,7 @@ import _ from 'underscore';
 
 import { callbacks } from '../../../lib/callbacks';
 import { isTruthy } from '../../../lib/isTruthy';
-import { broadcastMessageSentEvent } from '../../../server/modules/watchers/lib/messages';
+import { broadcastMessageFromData } from '../../../server/modules/watchers/lib/messages';
 import { Markdown } from '../../markdown/server';
 import { settings } from '../../settings/server';
 
@@ -333,9 +332,8 @@ export abstract class AutoTranslate {
 	}
 
 	private notifyTranslatedMessage(messageId: string): void {
-		void broadcastMessageSentEvent({
+		void broadcastMessageFromData({
 			id: messageId,
-			broadcastCallback: (message) => api.broadcast('message.sent', message),
 		});
 	}
 

@@ -5,7 +5,7 @@ import type { IServiceClass } from './ServiceClass';
 export interface IApiService {
 	setBroker(broker: IBroker): void;
 
-	destroyService(instance: IServiceClass): void;
+	destroyService(instance: IServiceClass): Promise<void>;
 
 	registerService(instance: IServiceClass): void;
 

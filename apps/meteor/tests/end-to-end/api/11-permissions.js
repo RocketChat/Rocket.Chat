@@ -1,12 +1,15 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { updatePermission } from '../../data/permissions.helper';
 
 describe('[Permissions]', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
+
+	after(() => updatePermission('add-oauth-service', ['admin']));
 
 	describe('[/permissions.listAll]', () => {
 		it('should return an array with update and remove properties', (done) => {

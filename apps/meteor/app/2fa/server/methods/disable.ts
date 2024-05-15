@@ -26,6 +26,10 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		if (!user.services?.totp) {
+			return false;
+		}
+
 		const verified = await TOTP.verify({
 			secret: user.services.totp.secret,
 			token: code,

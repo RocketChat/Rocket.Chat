@@ -13,11 +13,11 @@ import type { IUser } from '../IUser';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 
-type MessageUrl = {
+export type MessageUrl = {
 	url: string;
 	source?: string;
 	meta: Record<string, string>;
-	headers?: { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string };
+	headers?: { contentLength?: string; contentType?: string };
 	ignoreParse?: boolean;
 	parsedUrl?: Pick<UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
 };
@@ -124,7 +124,10 @@ export type MessageMention = {
 	_id: string;
 	name?: string;
 	username?: string;
+	fname?: string; // incase of channel mentions
 };
+
+export interface IMessageCustomFields {}
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
@@ -218,6 +221,8 @@ export interface IMessage extends IRocketChatRecord {
 		definedBy: Pick<IUser, '_id' | 'username'>;
 		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>;
 	};
+
+	customFields?: IMessageCustomFields;
 }
 
 export type MessageSystem = {
@@ -286,9 +291,6 @@ export interface IMessageReactionsNormalized extends IMessage {
 		};
 	};
 }
-
-export const isMessageReactionsNormalized = (message: IMessage): message is IMessageReactionsNormalized =>
-	Boolean('reactions' in message && message.reactions && message.reactions[0] && 'names' in message.reactions[0]);
 
 export interface IOmnichannelSystemMessage extends IMessage {
 	navigation?: {

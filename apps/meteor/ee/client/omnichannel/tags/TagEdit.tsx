@@ -110,9 +110,7 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 								<Controller
 									name='departments'
 									control={control}
-									render={({ field: { onChange, value, onBlur } }) => (
-										<AutoCompleteDepartmentMultiple id={departmentsField} onChange={onChange} value={value} onBlur={onBlur} showArchived />
-									)}
+									render={({ field }) => <AutoCompleteDepartmentMultiple id={departmentsField} showArchived {...field} />}
 								/>
 							</FieldRow>
 						</Field>
@@ -127,11 +125,13 @@ const TagEdit = ({ tagData, currentDepartments }: TagEditProps) => {
 					</Button>
 				</ButtonGroup>
 				{_id && (
-					<ButtonGroup stretch mbs={8}>
-						<Button icon='trash' danger onClick={() => handleDeleteTag(_id)}>
-							{t('Delete')}
-						</Button>
-					</ButtonGroup>
+					<Box mbs={8}>
+						<ButtonGroup stretch>
+							<Button icon='trash' danger onClick={() => handleDeleteTag(_id)}>
+								{t('Delete')}
+							</Button>
+						</ButtonGroup>
+					</Box>
 				)}
 			</ContextualbarFooter>
 		</Contextualbar>

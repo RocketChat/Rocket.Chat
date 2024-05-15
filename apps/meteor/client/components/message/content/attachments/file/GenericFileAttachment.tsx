@@ -20,7 +20,7 @@ const openDocumentViewer = window.RocketChatDesktop?.openDocumentViewer;
 
 type GenericFileAttachmentProps = MessageAttachmentBase;
 
-export const GenericFileAttachment = ({
+const GenericFileAttachment = ({
 	title,
 	description,
 	descriptionMd,
@@ -69,3 +69,5 @@ export const GenericFileAttachment = ({
 		</>
 	);
 };
+
+export default GenericFileAttachment;

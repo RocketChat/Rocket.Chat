@@ -53,7 +53,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 						<UserInfo.Avatar data-qa='AgentUserInfoAvatar' username={username} />
 					</Box>
 				)}
-				<ButtonGroup mi='neg-x4' flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center'>
+				<ButtonGroup align='center'>
 					<AgentInfoAction
 						key={t('Edit')}
 						title={t('Edit')}

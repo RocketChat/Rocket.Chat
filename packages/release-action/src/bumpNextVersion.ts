@@ -9,7 +9,7 @@ import { createNpmFile } from './createNpmFile';
 import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
 import { commitChanges, createBranch, createTag, pushNewBranch } from './gitUtils';
 import { setupOctokit } from './setupOctokit';
-import { getChangelogEntry, bumpFileVersions, readPackageJson, getEngineVersionsMd } from './utils';
+import { getChangelogEntry, bumpFileVersions, readPackageJson, getEngineVersionsMd, createTempReleaseNotes } from './utils';
 
 export async function bumpNextVersion({
 	githubToken,
@@ -81,7 +81,7 @@ export async function bumpNextVersion({
 			base: 'master',
 			head: newBranch,
 			title: finalPrTitle,
-			body: prBody,
+			body: createTempReleaseNotes(finalVersion, prBody),
 			...github.context.repo,
 		});
 	} else {

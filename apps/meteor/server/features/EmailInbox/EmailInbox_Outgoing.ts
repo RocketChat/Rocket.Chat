@@ -1,4 +1,3 @@
-import { api } from '@rocket.chat/core-services';
 import { isIMessageInbox } from '@rocket.chat/core-typings';
 import type { IEmailInbox, IUser, IMessage, IOmnichannelRoom, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Messages, Uploads, LivechatRooms, Rooms, Users } from '@rocket.chat/models';
@@ -11,7 +10,7 @@ import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
-import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
+import { broadcastMessageFromData } from '../../modules/watchers/lib/messages';
 import { inboxes } from './EmailInbox';
 import type { Inbox } from './EmailInbox';
 import { logger } from './logger';
@@ -172,9 +171,8 @@ slashCommands.add({
 				},
 			},
 		);
-		void broadcastMessageSentEvent({
+		void broadcastMessageFromData({
 			id: message._id,
-			broadcastCallback: (message) => api.broadcast('message.sent', message),
 		});
 
 		return sendSuccessReplyMessage({

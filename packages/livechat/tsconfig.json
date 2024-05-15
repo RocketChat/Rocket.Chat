@@ -1,12 +1,13 @@
 {
 	"extends": "../../tsconfig.base.client.json",
 	"compilerOptions": {
+		"module": "CommonJS",
 		"outDir": "./dist",
 		"allowJs": true,
 		"checkJs": false,
 		"jsxImportSource": "preact",
 	},
-	"include": ["./src", "./webpack.config.ts", "./svg-component-loader.ts"],
+	"include": ["./src", "./webpack.config.ts", "./svg-component-loader.ts", ".storybook/**/*.ts"],
 	"exclude": [
 		"./node_modules",
 		"./dist"

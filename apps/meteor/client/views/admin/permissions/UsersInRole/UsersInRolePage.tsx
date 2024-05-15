@@ -93,11 +93,10 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 										<UserAutoCompleteMultiple value={value} placeholder={t('User')} onChange={onChange} />
 									)}
 								/>
-								<ButtonGroup mis={8} align='end'>
-									<Button primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
-										{t('Add')}
-									</Button>
-								</ButtonGroup>
+
+								<Button mis={8} primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
+									{t('Add')}
+								</Button>
 							</FieldRow>
 						</Field>
 					</Margins>

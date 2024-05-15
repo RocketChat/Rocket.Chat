@@ -1,10 +1,9 @@
 import { AutoComplete, Option, Options } from '@rocket.chat/fuselage';
+import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import React, { memo, useMemo, useState } from 'react';
-
-import RoomAvatar from '../../../../../../client/components/avatar/RoomAvatar';
 
 type RoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
 

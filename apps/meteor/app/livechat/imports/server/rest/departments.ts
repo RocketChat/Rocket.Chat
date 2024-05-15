@@ -3,7 +3,6 @@ import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/model
 import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 
-import { LivechatEnterprise } from '../../../../../ee/app/livechat-enterprise/server/lib/LivechatEnterprise';
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
@@ -17,6 +16,7 @@ import {
 } from '../../../server/api/lib/departments';
 import { DepartmentHelper } from '../../../server/lib/Departments';
 import { Livechat as LivechatTs } from '../../../server/lib/LivechatTyped';
+import { isDepartmentCreationAvailable } from '../../../server/lib/isDepartmentCreationAvailable';
 
 API.v1.addRoute(
 	'livechat/department',
@@ -60,7 +60,7 @@ API.v1.addRoute(
 			});
 
 			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
-			const department = await LivechatEnterprise.saveDepartment(null, this.bodyParams.department as ILivechatDepartment, agents);
+			const department = await LivechatTs.saveDepartment(null, this.bodyParams.department as ILivechatDepartment, agents);
 
 			if (department) {
 				return API.v1.success({
@@ -117,23 +117,17 @@ API.v1.addRoute(
 			const { _id } = this.urlParams;
 			const { department, agents } = this.bodyParams;
 
-			let success;
-			if (permissionToSave) {
-				success = await LivechatEnterprise.saveDepartment(_id, department);
+			if (!permissionToSave) {
+				throw new Error('error-not-allowed');
 			}
 
-			if (success && agents && permissionToAddAgents) {
-				success = await LivechatTs.saveDepartmentAgents(_id, { upsert: agents });
-			}
+			const agentParam = permissionToAddAgents && agents ? { upsert: agents } : {};
+			await LivechatTs.saveDepartment(_id, department, agentParam);
 
-			if (success) {
-				return API.v1.success({
-					department: await LivechatDepartment.findOneById(_id),
-					agents: await LivechatDepartmentAgents.findByDepartmentId(_id).toArray(),
-				});
-			}
-
-			return API.v1.failure();
+			return API.v1.success({
+				department: await LivechatDepartment.findOneById(_id),
+				agents: await LivechatDepartmentAgents.findByDepartmentId(_id).toArray(),
+			});
 		},
 		async delete() {
 			check(this.urlParams, {
@@ -308,8 +302,8 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const isDepartmentCreationAvailable = await LivechatEnterprise.isDepartmentCreationAvailable();
-			return API.v1.success({ isDepartmentCreationAvailable });
+			const available = await isDepartmentCreationAvailable();
+			return API.v1.success({ isDepartmentCreationAvailable: available });
 		},
 	},
 );

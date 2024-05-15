@@ -9,11 +9,11 @@ import SplitPlaneContainer from './SplitPlaneContainer/SplitPlaneContainer';
 const Wrapper = () => {
   const { ref, contentBoxSize } = useResizeObserver();
   const {
-    state: { isTablet, tabsToggle },
+    state: { isTablet, previewTabsToggle },
   } = useContext(context);
 
   const tabChangeStyle = () => {
-    switch (tabsToggle) {
+    switch (previewTabsToggle) {
       case 0:
         return css`
           transition: 0.5s ease;
@@ -28,9 +28,9 @@ const Wrapper = () => {
   };
 
   return (
-    <Box position='relative' width={'100%'} flexGrow={1}>
+    <Box position="relative" width={'100%'} flexGrow={1}>
       <Box
-        position='absolute'
+        position="absolute"
         width={isTablet ? '200%' : '100%'}
         height={'100%'}
         display={'flex'}

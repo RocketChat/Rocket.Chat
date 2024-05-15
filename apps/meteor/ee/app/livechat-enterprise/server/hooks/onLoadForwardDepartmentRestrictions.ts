@@ -1,3 +1,4 @@
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
@@ -9,7 +10,7 @@ callbacks.add(
 		if (!departmentId) {
 			return options;
 		}
-		const department = await LivechatDepartment.findOneById(departmentId, {
+		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'departmentsAllowedToForward'>>(departmentId, {
 			projection: { departmentsAllowedToForward: 1 },
 		});
 		if (!department) {

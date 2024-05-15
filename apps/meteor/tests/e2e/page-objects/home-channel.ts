@@ -41,7 +41,35 @@ export class HomeChannel {
 		await this.page.mouse.move(0, 0);
 	}
 
-	get composerToolboxActions(): Locator {
+	get composer(): Locator {
+		return this.page.locator('textarea[name="msg"]');
+	}
+
+	get userCardToolbar(): Locator {
+		return this.page.locator('[role=toolbar][aria-label="User card actions"]');
+	}
+
+	get composerToolbar(): Locator {
+		return this.page.locator('[role=toolbar][aria-label="Composer Primary Actions"]');
+	}
+
+	get composerToolbarActions(): Locator {
 		return this.page.locator('[role=toolbar][aria-label="Composer Primary Actions"] button');
+	}
+
+	get roomHeaderFavoriteBtn(): Locator {
+		return this.page.getByRole('button', { name: 'Favorite' });
+	}
+
+	get readOnlyFooter(): Locator {
+		return this.page.locator('footer', { hasText: 'This room is read only' })
+	}
+
+	get roomHeaderToolbar(): Locator {
+		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]');
+	}
+
+	getSystemMessageByText(text: string): Locator {
+		return this.page.locator('[aria-roledescription="system message"]', { hasText: text });
 	}
 }

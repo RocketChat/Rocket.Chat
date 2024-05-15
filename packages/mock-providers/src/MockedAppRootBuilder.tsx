@@ -40,13 +40,16 @@ export class MockedAppRootBuilder {
 
 	private server: ContextType<typeof ServerContext> = {
 		absoluteUrl: (path: string) => `http://localhost:3000/${path}`,
-		callEndpoint: <TMethod extends Method, TPathPattern extends PathPattern>(_args: {
+		callEndpoint: <TMethod extends Method, TPathPattern extends PathPattern>({
+			method,
+			pathPattern,
+		}: {
 			method: TMethod;
 			pathPattern: TPathPattern;
 			keys: UrlParams<TPathPattern>;
 			params: OperationParams<TMethod, TPathPattern>;
 		}): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
-			throw new Error('not implemented');
+			throw new Error(`not implemented (method: ${method}, pathPattern: ${pathPattern})`);
 		},
 		getStream: () => () => () => undefined,
 		uploadToEndpoint: () => Promise.reject(new Error('not implemented')),
@@ -77,11 +80,7 @@ export class MockedAppRootBuilder {
 	};
 
 	private user: ContextType<typeof UserContext> = {
-		loginWithPassword: () => Promise.reject(new Error('not implemented')),
 		logout: () => Promise.reject(new Error('not implemented')),
-		loginWithService: () => () => Promise.reject(new Error('not implemented')),
-		loginWithToken: () => Promise.reject(new Error('not implemented')),
-		queryAllServices: () => [() => () => undefined, () => []],
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => undefined],
 		querySubscription: () => [() => () => undefined, () => undefined],
@@ -91,7 +90,7 @@ export class MockedAppRootBuilder {
 	};
 
 	private modal: ContextType<typeof ModalContext> = {
-		currentModal: null,
+		currentModal: { component: null },
 		modal: {
 			setModal: () => undefined,
 		},

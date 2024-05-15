@@ -1,13 +1,25 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { updatePermission } from '../../data/permissions.helper';
 
 describe('[OAuthApps]', function () {
+	const createdAppsIds = [];
 	this.retries(0);
 
 	before((done) => getCredentials(done));
+
+	after(() =>
+		Promise.all([
+			updatePermission('manage-oauth-apps', ['admin']),
+			...createdAppsIds.map((appId) =>
+				request.post(api(`oauth-apps.delete`)).set(credentials).send({
+					appId,
+				}),
+			),
+		]),
+	);
 
 	describe('[/oauth-apps.list]', () => {
 		it('should return an error when the user does not have the necessary permission', (done) => {
@@ -179,6 +191,7 @@ describe('[OAuthApps]', function () {
 					expect(res.body).to.have.nested.property('application.name', name);
 					expect(res.body).to.have.nested.property('application.redirectUri', redirectUri);
 					expect(res.body).to.have.nested.property('application.active', active);
+					createdAppsIds.push(res.body.application._id);
 				});
 		});
 	});
@@ -202,6 +215,7 @@ describe('[OAuthApps]', function () {
 				.expect(200)
 				.end((err, res) => {
 					appId = res.body.application._id;
+					createdAppsIds.push(appId);
 					done();
 				});
 		});

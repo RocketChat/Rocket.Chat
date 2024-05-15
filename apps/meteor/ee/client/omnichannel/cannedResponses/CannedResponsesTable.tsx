@@ -1,5 +1,6 @@
 import { Box, IconButton, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashQueryKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
@@ -16,7 +17,6 @@ import {
 } from '../../../../client/components/GenericTable';
 import { usePagination } from '../../../../client/components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../client/components/GenericTable/hooks/useSort';
-import UserAvatar from '../../../../client/components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../../client/hooks/useFormatDateAndTime';
 import CannedResponseFilter from './CannedResponseFilter';
 import { useRemoveCannedResponse } from './useRemoveCannedResponse';
@@ -141,7 +141,7 @@ const CannedResponsesTable = () => {
 					description={t('No_Canned_Responses_Yet-description')}
 					buttonTitle={t('Create_canned_response')}
 					buttonAction={handleAddNew}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_canned_responses')}
 				/>
 			)}

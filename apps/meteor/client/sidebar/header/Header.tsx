@@ -1,8 +1,9 @@
 import { Sidebar } from '@rocket.chat/fuselage';
-import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
+import SidebarHeaderToolbar from './SidebarHeaderToolbar';
 import UserAvatarWithStatus from './UserAvatarWithStatus';
 import UserMenu from './UserMenu';
 import Administration from './actions/Administration';
@@ -26,7 +27,7 @@ const Header = (): ReactElement => {
 	return (
 		<Sidebar.TopBar.Section>
 			{user ? <UserMenu user={user} /> : <UserAvatarWithStatus />}
-			<Sidebar.TopBar.Actions>
+			<SidebarHeaderToolbar aria-label={t('Sidebar_actions')}>
 				<Home title={t('Home')} />
 				<Search title={t('Search')} />
 				{user && (
@@ -38,7 +39,7 @@ const Header = (): ReactElement => {
 					</>
 				)}
 				{!user && <Login title={t('Login')} />}
-			</Sidebar.TopBar.Actions>
+			</SidebarHeaderToolbar>
 		</Sidebar.TopBar.Section>
 	);
 };

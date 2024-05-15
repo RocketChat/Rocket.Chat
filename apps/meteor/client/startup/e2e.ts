@@ -4,8 +4,8 @@ import { Tracker } from 'meteor/tracker';
 
 import { e2e } from '../../app/e2e/client/rocketchat.e2e';
 import { Subscriptions, ChatRoom } from '../../app/models/client';
-import { Notifications } from '../../app/notifications/client';
 import { settings } from '../../app/settings/client';
+import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
 import { isLayoutEmbedded } from '../lib/utils/isLayoutEmbedded';
@@ -38,23 +38,25 @@ Meteor.startup(() => {
 	let observable: Meteor.LiveQueryHandle | null = null;
 	let offClientMessageReceived: undefined | (() => void);
 	let offClientBeforeSendMessage: undefined | (() => void);
+	let unsubNotifyUser: undefined | (() => void);
 	Tracker.autorun(() => {
 		if (!e2e.isReady()) {
 			offClientMessageReceived?.();
-			Notifications.unUser('e2ekeyRequest');
+			unsubNotifyUser?.();
+			unsubNotifyUser = undefined;
 			observable?.stop();
 			offClientBeforeSendMessage?.();
 			return;
 		}
 
-		Notifications.onUser('e2ekeyRequest', async (roomId, keyId): Promise<void> => {
+		unsubNotifyUser = sdk.stream('notify-user', [`${Meteor.userId()}/e2ekeyRequest`], async (roomId, keyId): Promise<void> => {
 			const e2eRoom = await e2e.getInstanceByRoomId(roomId);
 			if (!e2eRoom) {
 				return;
 			}
 
 			e2eRoom.provideKeyToUser(keyId);
-		});
+		}).stop;
 
 		observable = Subscriptions.find().observe({
 			changed: async (sub: ISubscription) => {

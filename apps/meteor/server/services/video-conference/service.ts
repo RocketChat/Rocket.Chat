@@ -1,3 +1,4 @@
+import { Apps } from '@rocket.chat/apps';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
@@ -41,7 +42,6 @@ import { settings } from '../../../app/settings/server';
 import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
-import { Apps } from '../../../ee/server/apps';
 import { callbacks } from '../../../lib/callbacks';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -49,7 +49,7 @@ import { i18n } from '../../lib/i18n';
 import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatibleWithVideoConfRinging';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
-import { broadcastMessageSentEvent } from '../../modules/watchers/lib/messages';
+import { broadcastMessageFromData } from '../../modules/watchers/lib/messages';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -328,9 +328,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			const text = i18n.t('video_livechat_missed', { username: name });
 			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(text)]);
 
-			await broadcastMessageSentEvent({
+			await broadcastMessageFromData({
 				id: call.messages.started,
-				broadcastCallback: (message) => api.broadcast('message.sent', message),
 			});
 		}
 
@@ -618,7 +617,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await Push.send({
 			from: 'push',
 			badge: 0,
-			sound: 'default',
+			sound: 'ringtone.mp3',
 			priority: 10,
 			title: `@${call.createdBy.username}`,
 			text: i18n.t('Video_Conference'),
@@ -829,11 +828,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async getProviderManager(): Promise<AppVideoConfProviderManager> {
-		if (!Apps?.isLoaded()) {
+		if (!Apps.self?.isLoaded()) {
 			throw new Error('apps-engine-not-loaded');
 		}
 
-		const manager = Apps.getManager()?.getVideoConfProviderManager();
+		const manager = Apps.self?.getManager()?.getVideoConfProviderManager();
 		if (!manager) {
 			throw new Error(availabilityErrors.NO_APP);
 		}

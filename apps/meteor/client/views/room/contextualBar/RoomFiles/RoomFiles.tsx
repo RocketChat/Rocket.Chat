@@ -14,7 +14,7 @@ import {
 	ContextualbarContent,
 	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
+import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import FileItem from './components/FileItem';
 
 type RoomFilesProps = {
@@ -97,7 +97,7 @@ const RoomFiles = ({
 							endReached={(start) => loadMoreItems(start, Math.min(50, total - start))}
 							overscan={50}
 							data={filesItems}
-							components={{ Scroller: ScrollableContentWrapper }}
+							components={{ Scroller: VirtuosoScrollbars }}
 							itemContent={(_, data) => <FileItem fileData={data} onClickDelete={onClickDelete} />}
 						/>
 					</Box>

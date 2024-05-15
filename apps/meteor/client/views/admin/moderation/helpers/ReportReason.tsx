@@ -8,7 +8,7 @@ const ReportReason = ({ ind, uinfo, msg, ts }: { ind: number; uinfo: string | un
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' marginBlock={10}>
 			<Tag variant='danger'>Report #{ind}</Tag>
-			<Box marginBlock={5} fontSize='p2b'>
+			<Box wordBreak='break-word' marginBlock={5} fontSize='p2b'>
 				{msg}
 			</Box>
 			<Box>

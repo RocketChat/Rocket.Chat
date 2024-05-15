@@ -65,7 +65,7 @@ Meteor.startup(async () => {
 	await createDefaultBusinessHourIfNotExists();
 
 	settings.watch<boolean>('Livechat_enable_business_hours', async (value) => {
-		logger.info(`Changing business hour type to ${value}`);
+		logger.debug(`Starting business hour manager ${value}`);
 		if (value) {
 			await businessHourManager.startManager();
 			return;
@@ -73,8 +73,8 @@ Meteor.startup(async () => {
 		await businessHourManager.stopManager();
 	});
 
-	settings.watch<string>('Livechat_Routing_Method', (value) => {
-		void RoutingManager.setMethodNameAndStartQueue(value);
+	settings.watch<string>('Livechat_Routing_Method', () => {
+		void RoutingManager.startQueue();
 	});
 
 	// Remove when accounts.onLogout is async

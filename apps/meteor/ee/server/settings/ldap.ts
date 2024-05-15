@@ -27,6 +27,7 @@ export function addSettings(): Promise<void> {
 					});
 
 					const backgroundSyncQuery = [enableQuery, { _id: 'LDAP_Background_Sync', value: true }];
+					const backgroundUpdateQuery = [...backgroundSyncQuery, { _id: 'LDAP_Background_Sync_Keep_Existant_Users_Updated', value: true }];
 
 					await this.add('LDAP_Background_Sync_Interval', 'every_24_hours', {
 						type: 'select',
@@ -70,11 +71,13 @@ export function addSettings(): Promise<void> {
 
 					await this.add('LDAP_Background_Sync_Merge_Existent_Users', false, {
 						type: 'boolean',
-						enableQuery: [
-							...backgroundSyncQuery,
-							{ _id: 'LDAP_Background_Sync_Keep_Existant_Users_Updated', value: true },
-							{ _id: 'LDAP_Merge_Existing_Users', value: true },
-						],
+						enableQuery: [...backgroundUpdateQuery, { _id: 'LDAP_Merge_Existing_Users', value: true }],
+						invalidValue: false,
+					});
+
+					await this.add('LDAP_Background_Sync_Disable_Missing_Users', false, {
+						type: 'boolean',
+						enableQuery: backgroundUpdateQuery,
 						invalidValue: false,
 					});
 
@@ -84,10 +87,10 @@ export function addSettings(): Promise<void> {
 						invalidValue: false,
 					});
 
-					await this.add('LDAP_Background_Sync_Avatars_Interval', 'Every 24 hours', {
+					await this.add('LDAP_Background_Sync_Avatars_Interval', '0 0 * * *', {
 						type: 'string',
 						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_Avatars', value: true }],
-						invalidValue: 'Every 24 hours',
+						invalidValue: '0 0 * * *',
 					});
 				});
 
@@ -97,6 +100,7 @@ export function addSettings(): Promise<void> {
 						values: [
 							{ key: 'none', i18nLabel: 'LDAP_Sync_User_Active_State_Nothing' },
 							{ key: 'disable', i18nLabel: 'LDAP_Sync_User_Active_State_Disable' },
+							{ key: 'enable', i18nLabel: 'LDAP_Sync_User_Active_State_Enable' },
 							{ key: 'both', i18nLabel: 'LDAP_Sync_User_Active_State_Both' },
 						],
 						i18nDescription: 'LDAP_Sync_User_Active_State_Description',
@@ -118,7 +122,7 @@ export function addSettings(): Promise<void> {
 						invalidValue: false,
 					});
 
-					await this.add('LDAP_Sync_AutoLogout_Interval', 'Every 5 minutes', {
+					await this.add('LDAP_Sync_AutoLogout_Interval', '*/5 * * * *', {
 						type: 'string',
 						enableQuery: [enableQuery, { _id: 'LDAP_Sync_AutoLogout_Enabled', value: true }],
 						invalidValue: '',

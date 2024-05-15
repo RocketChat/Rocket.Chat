@@ -78,6 +78,10 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.find(query, options);
 	}
 
+	findByAgentIds(agentIds: string[], options?: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents> {
+		return this.find({ agentId: { $in: agentIds } }, options);
+	}
+
 	findByAgentId(agentId: string, options?: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents> {
 		return this.find({ agentId }, options);
 	}

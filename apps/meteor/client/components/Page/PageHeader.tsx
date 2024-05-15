@@ -1,10 +1,10 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import { HeaderToolbox, useDocumentTitle } from '@rocket.chat/ui-client';
+import { HeaderToolbar, useDocumentTitle } from '@rocket.chat/ui-client';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, ComponentProps, ReactNode } from 'react';
 import React, { useContext } from 'react';
 
-import BurgerMenu from '../BurgerMenu';
+import SidebarToggler from '../SidebarToggler';
 import PageContext from './PageContext';
 
 type PageHeaderProps = {
@@ -31,9 +31,9 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 		>
 			<Box height='100%' marginInline={24} display='flex' flexDirection='row' flexWrap='wrap' alignItems='center' color='default'>
 				{isMobile && (
-					<HeaderToolbox>
-						<BurgerMenu />
-					</HeaderToolbox>
+					<HeaderToolbar>
+						<SidebarToggler />
+					</HeaderToolbar>
 				)}
 				{onClickBack && <IconButton small mie={8} icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
 				<Box is='h1' fontScale='h2' flexGrow={1} data-qa-type='PageHeader-title'>

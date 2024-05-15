@@ -78,4 +78,8 @@ export class HomeOmnichannelContent extends HomeContent {
 	get btnOnHoldConfirm(): Locator {
 		return this.modalOnHold.locator('role=button[name="Place chat On-Hold"]');
 	}
+
+	get infoHeaderName(): Locator {
+		return this.page.locator('.rcx-room-header').getByRole('heading');
+	}
 }

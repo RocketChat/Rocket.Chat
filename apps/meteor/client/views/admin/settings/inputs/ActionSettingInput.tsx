@@ -19,9 +19,10 @@ function ActionSettingInput({ _id, actionText, value, disabled, sectionChanged }
 
 	const handleClick = async (): Promise<void> => {
 		try {
-			const data: { message: TranslationKey; params: string[] } = await actionMethod();
+			const data: { message: TranslationKey; params?: string[] } = await actionMethod();
 
-			dispatchToastMessage({ type: 'success', message: t(data.message, ...data.params) });
+			const params = data.params || [];
+			dispatchToastMessage({ type: 'success', message: t(data.message, ...params) });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

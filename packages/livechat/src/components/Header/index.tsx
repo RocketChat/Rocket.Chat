@@ -2,15 +2,13 @@ import type { ComponentChildren, Ref } from 'preact';
 import { toChildArray } from 'preact';
 import type { JSXInternal } from 'preact/src/jsx';
 
+import { type Theme } from '../../Theme';
 import { createClassName } from '../../helpers/createClassName';
 import styles from './styles.scss';
 
 type HeaderProps = {
 	children?: ComponentChildren;
-	theme?: {
-		color?: string;
-		fontColor?: string;
-	};
+	theme?: Partial<Theme>;
 	className?: string;
 	post?: ComponentChildren;
 	large?: boolean;
@@ -56,7 +54,7 @@ export const Content = ({ children, className = undefined, ...props }: HeaderCom
 );
 
 export const Title = ({ children, className = undefined, ...props }: HeaderComponentProps) => (
-	<div className={createClassName(styles, 'header__title', {}, [className])} {...props}>
+	<div className={createClassName(styles, 'header__title', {}, [className])} data-qa='header-title' {...props}>
 		{children}
 	</div>
 );

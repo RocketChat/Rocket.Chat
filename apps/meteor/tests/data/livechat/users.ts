@@ -1,8 +1,8 @@
 import { faker } from "@faker-js/faker";
-import type { IUser } from "@rocket.chat/core-typings";
+import type { ILivechatAgent, IUser } from "@rocket.chat/core-typings";
 import { IUserCredentialsHeader, password } from "../user";
 import { createUser, login } from "../users.helper";
-import { createAgent, makeAgentAvailable } from "./rooms";
+import { createAgent, makeAgentAvailable, makeAgentUnavailable } from "./rooms";
 import { api, credentials, request } from "../api-data";
 
 export const createBotAgent = async (): Promise<{
@@ -23,6 +23,13 @@ export const createBotAgent = async (): Promise<{
 }
 
 export const getRandomVisitorToken = (): string => faker.string.alphanumeric(17);
+
+export const getAgent = async (userId: string): Promise<ILivechatAgent> => {
+    const { body } = await request.get(api(`livechat/users/agent/${userId}`))
+        .set(credentials)
+        .expect(200);
+    return body.user;
+}
 
 export const removeAgent = async (userId: string): Promise<void> => {
     await request.delete(api(`livechat/users/agent/${userId}`))
@@ -50,3 +57,21 @@ export const createAnOnlineAgent = async (): Promise<{
         user: agent,
     };
 }
+
+export const createAnOfflineAgent = async (): Promise<{
+	credentials: IUserCredentialsHeader;
+	user: IUser & { username: string };
+}> => {
+	const username = `user.test.${Date.now()}.offline`;
+	const email = `${username}.offline@rocket.chat`;
+	const { body } = await request.post(api('users.create')).set(credentials).send({ email, name: username, username, password });
+	const agent = body.user;
+	const createdUserCredentials = await login(agent.username, password);
+	await createAgent(agent.username);
+	await makeAgentUnavailable(createdUserCredentials);
+
+	return {
+		credentials: createdUserCredentials,
+		user: agent,
+	};
+};

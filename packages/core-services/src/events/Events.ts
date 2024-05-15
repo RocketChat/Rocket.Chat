@@ -18,9 +18,7 @@ import type {
 	ISocketConnection,
 	ISubscription,
 	IUser,
-	IUserStatus,
 	IInvite,
-	IWebdavAccount,
 	ICustomSound,
 	VoipEventDataSignature,
 	UserStatus,
@@ -33,6 +31,9 @@ import type {
 	IBanner,
 	ILivechatVisitor,
 	LicenseLimitKind,
+	ICustomUserStatus,
+	IWebdavAccount,
+	IOTRMessage,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
@@ -128,7 +129,8 @@ export type EventSignatures = {
 					replaceByUser: { _id: IUser['_id']; username: IUser['username']; alias: string };
 			  },
 	): void;
-	'user.deleteCustomStatus'(userStatus: IUserStatus): void;
+	'user.deleteCustomStatus'(userStatus: Omit<ICustomUserStatus, '_updatedAt'>): void;
+	'user.forceLogout': (uid: string) => void;
 	'user.nameChanged'(user: Pick<IUser, '_id' | 'name' | 'username'>): void;
 	'user.realNameChanged'(user: Partial<IUser>): void;
 	'user.roleUpdate'(update: {
@@ -137,7 +139,7 @@ export type EventSignatures = {
 		u?: { _id: IUser['_id']; username: IUser['username']; name?: IUser['name'] };
 		scope?: string;
 	}): void;
-	'user.updateCustomStatus'(userStatus: IUserStatus): void;
+	'user.updateCustomStatus'(userStatus: Omit<ICustomUserStatus, '_updatedAt'>): void;
 	'user.typing'(data: { user: Partial<IUser>; isTyping: boolean; roomId: string }): void;
 	'user.video-conference'(data: {
 		userId: IUser['_id'];
@@ -152,7 +154,7 @@ export type EventSignatures = {
 		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
 	}): void;
-	'watch.messages'(data: { clientAction: ClientAction; message: IMessage }): void;
+	'watch.messages'(data: { message: IMessage }): void;
 	'watch.roles'(
 		data:
 			| { clientAction: Exclude<ClientAction, 'removed'>; role: IRole }
@@ -225,6 +227,7 @@ export type EventSignatures = {
 						_id: string;
 						u?: Pick<IUser, '_id' | 'username' | 'name'>;
 						rid?: string;
+						t?: string;
 					};
 			  },
 	): void;
@@ -300,5 +303,6 @@ export type EventSignatures = {
 	'command.updated'(command: string): void;
 	'command.removed'(command: string): void;
 	'actions.changed'(): void;
-	'message.sent'(message: IMessage): void;
+	'otrMessage'(data: { roomId: string; message: IMessage; room: IRoom; user: IUser }): void;
+	'otrAckUpdate'(data: { roomId: string; acknowledgeMessage: IOTRMessage }): void;
 };

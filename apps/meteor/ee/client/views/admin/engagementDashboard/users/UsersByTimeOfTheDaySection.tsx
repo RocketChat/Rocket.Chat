@@ -62,7 +62,21 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 		return [dates, values];
 	}, [data, isLoading, utc]);
 
-	const tooltip = useCallback(({ cell }): ReactElement => <Tooltip>{t('Value_users', { value: cell.data.y })}</Tooltip>, [t]);
+	const tooltip = useCallback(
+		({ cell }): ReactElement => {
+			return (
+				<Tooltip>
+					{moment(cell.data.x).format('ddd')}{' '}
+					{moment()
+						.set({ hour: parseInt(cell.serieId, 10), minute: 0, second: 0 })
+						.format('LT')}
+					<br />
+					{t('Value_users', { value: cell.data.y })}
+				</Tooltip>
+			);
+		},
+		[t],
+	);
 
 	return (
 		<>
@@ -124,14 +138,14 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 									axisBottom={{
 										// TODO: Get it from theme
 										tickSize: 0,
-										tickPadding: 4,
+										tickPadding: 8,
 										tickRotation: 0,
-										format: (isoString): string => (dates?.length === 7 ? moment(isoString).format('dddd') : ''),
+										format: (isoString): string => (dates?.length === 8 ? moment(isoString).format('ddd') : ''),
 									}}
 									axisLeft={{
 										// TODO: Get it from theme
 										tickSize: 0,
-										tickPadding: 4,
+										tickPadding: 8,
 										tickRotation: 0,
 										format: (hour): string =>
 											moment()

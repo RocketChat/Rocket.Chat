@@ -1,4 +1,4 @@
-import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatRooms } from '@rocket.chat/models';
 
@@ -10,7 +10,9 @@ class DepartmentHelperClass {
 	async removeDepartment(departmentId: string) {
 		this.logger.debug(`Removing department: ${departmentId}`);
 
-		const department = await LivechatDepartment.findOneById(departmentId);
+		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'businessHourId'>>(departmentId, {
+			projection: { _id: 1, businessHourId: 1 },
+		});
 		if (!department) {
 			throw new Error('error-department-not-found');
 		}
@@ -44,9 +46,7 @@ class DepartmentHelperClass {
 			}
 		});
 
-		setImmediate(() => {
-			void callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
-		});
+		await callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
 
 		return ret;
 	}
