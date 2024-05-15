@@ -33,7 +33,6 @@ export function getWatchCollections(): string[] {
 		Users.getCollectionName(),
 		LivechatInquiry.getCollectionName(),
 		LivechatDepartmentAgents.getCollectionName(),
-		LoginServiceConfiguration.getCollectionName(),
 		InstanceStatus.getCollectionName(),
 		IntegrationHistory.getCollectionName(),
 		EmailInbox.getCollectionName(),
@@ -50,6 +49,7 @@ export function getWatchCollections(): string[] {
 		collections.push(PbxEvents.getCollectionName());
 		collections.push(Integrations.getCollectionName());
 		collections.push(Permissions.getCollectionName());
+		collections.push(LoginServiceConfiguration.getCollectionName());
 	}
 
 	if (onlyCollections.length > 0) {
