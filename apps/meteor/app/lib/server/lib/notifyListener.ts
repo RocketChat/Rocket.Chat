@@ -8,6 +8,7 @@ import type {
 	IPermission,
 	IIntegration,
 	IPbxEvent,
+	LoginServiceConfiguration as LoginServiceConfigurationData,
 } from '@rocket.chat/core-typings';
 import { Rooms, Permissions, Settings, PbxEvents, Roles, Integrations, LoginServiceConfiguration } from '@rocket.chat/models';
 
@@ -153,7 +154,7 @@ export async function notifyOnRoleChangedById<T extends IRole>(
 }
 
 export async function notifyOnLoginServiceConfigurationChanged<T extends ILoginServiceConfiguration>(
-	service: Pick<T, '_id'>,
+	service: Partial<T> & Pick<T, '_id'>,
 	clientAction: ClientAction = 'updated',
 ): Promise<void> {
 	if (!dbWatchersDisabled) {
@@ -175,16 +176,14 @@ export async function notifyOnLoginServiceConfigurationChangedByService<T extend
 		return;
 	}
 
-	const item = await LoginServiceConfiguration.findOneByService(service);
+	const item = await LoginServiceConfiguration.findOneByService<Omit<LoginServiceConfigurationData, 'secret'>>(service, {
+		projection: { secret: 0 },
+	});
 	if (!item) {
 		return;
 	}
 
-	void api.broadcast('watch.loginServiceConfiguration', {
-		clientAction,
-		id: item._id,
-		data: item,
-	});
+	void notifyOnLoginServiceConfigurationChanged(item, clientAction);
 }
 
 export async function notifyOnIntegrationChanged<T extends IIntegration>(data: T, clientAction: ClientAction = 'updated'): Promise<void> {

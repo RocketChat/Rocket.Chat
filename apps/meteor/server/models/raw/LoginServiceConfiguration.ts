@@ -1,6 +1,6 @@
-import type { ILoginServiceConfiguration, LoginServiceConfiguration, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { LoginServiceConfiguration, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILoginServiceConfigurationModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, DeleteResult, FindOptions } from 'mongodb';
+import type { Collection, Db, DeleteResult, Document, FindOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -48,10 +48,10 @@ export class LoginServiceConfigurationRaw extends BaseRaw<LoginServiceConfigurat
 		return this.deleteOne({ _id });
 	}
 
-	async findOneByService(
-		serviceName: string,
-		options?: FindOptions<ILoginServiceConfiguration>,
-	): Promise<LoginServiceConfiguration | null> {
+	async findOneByService<P extends Document = LoginServiceConfiguration>(
+		serviceName: LoginServiceConfiguration['service'],
+		options?: FindOptions<P>,
+	): Promise<P | null> {
 		return this.findOne({ service: serviceName.toLowerCase() }, options);
 	}
 }
