@@ -90,6 +90,11 @@ export const removeMessage = async (messageId: string) => {
 	await store.setState({ messages: messages.filter(({ _id }) => _id !== messageId) });
 };
 
+export const removeTriggerMessage = async (messageId: string) => {
+	const { renderedTriggers } = store.state;
+	await store.setState({ renderedTriggers: renderedTriggers.filter(({ _id }) => _id !== messageId) });
+};
+
 export const hasTriggerCondition = (conditionName: ILivechatTriggerType) => (trigger: ILivechatTrigger) => {
 	return trigger.conditions.some((condition) => condition.name === conditionName);
 };
