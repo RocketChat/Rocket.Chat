@@ -38,6 +38,7 @@ export async function notifyOnRoomChangedById<T extends IRocketChatRecord>(
 	}
 
 	const eligibleIds = Array.isArray(ids) ? ids : [ids];
+
 	const items = Rooms.findByIds(eligibleIds);
 
 	for await (const item of items) {
