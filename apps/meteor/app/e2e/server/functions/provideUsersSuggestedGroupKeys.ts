@@ -42,7 +42,7 @@ export const provideUsersSuggestedGroupKeys = async (
 				)
 			).filter(isTruthy);
 
-			await Rooms.removeUsersFromE2EEQueueByRoomIds([roomId], userIds);
+			await Rooms.removeUsersFromE2EEQueueByRoomId(roomId, userIds);
 		}),
 	);
 };

@@ -91,7 +91,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 	}
 
 	if (room.encrypted && settings.get('E2E_Enable')) {
-		await Rooms.removeUsersFromE2EEQueueByRoomIds([room._id], [removedUser._id]);
+		await Rooms.removeUsersFromE2EEQueueByRoomId(room._id, [removedUser._id]);
 	}
 
 	setImmediate(() => {
