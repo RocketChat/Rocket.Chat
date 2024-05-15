@@ -1124,9 +1124,10 @@ describe('LIVECHAT - rooms', function () {
 				.expect(200);
 
 			const {
-				attachments: [{ image_url }],
+				files: [{ _id, name }],
 			} = body;
-			await request.get(image_url).query({ rc_token: visitor.token, rc_room_type: 'l', rc_rid: room._id }).expect(200);
+			const imageUrl = `/file-upload/${_id}/${name}`;
+			await request.get(imageUrl).query({ rc_token: visitor.token, rc_room_type: 'l', rc_rid: room._id }).expect(200);
 			await deleteVisitor(visitor.token);
 			await closeOmnichannelRoom(room._id);
 		});
@@ -1143,9 +1144,10 @@ describe('LIVECHAT - rooms', function () {
 
 			await closeOmnichannelRoom(room._id);
 			const {
-				attachments: [{ image_url }],
+				files: [{ _id, name }],
 			} = body;
-			await request.get(image_url).query({ rc_token: visitor.token, rc_room_type: 'l', rc_rid: room._id }).expect(200);
+			const imageUrl = `/file-upload/${_id}/${name}`;
+			await request.get(imageUrl).query({ rc_token: visitor.token, rc_room_type: 'l', rc_rid: room._id }).expect(200);
 			await deleteVisitor(visitor.token);
 		});
 
@@ -1163,9 +1165,10 @@ describe('LIVECHAT - rooms', function () {
 
 			await closeOmnichannelRoom(room._id);
 			const {
-				attachments: [{ image_url }],
+				files: [{ _id, name }],
 			} = body;
-			await request.get(image_url).query({ rc_token: visitor2.token, rc_room_type: 'l', rc_rid: room._id }).expect(403);
+			const imageUrl = `/file-upload/${_id}/${name}`;
+			await request.get(imageUrl).query({ rc_token: visitor2.token, rc_room_type: 'l', rc_rid: room._id }).expect(403);
 			await deleteVisitor(visitor.token);
 		});
 	});
