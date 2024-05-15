@@ -151,6 +151,21 @@ export async function notifyOnRoleChangedById<T extends IRole>(
 	void notifyOnRoleChanged(role, clientAction);
 }
 
+export async function notifyOnLoginServiceConfigurationChanged<T extends ILoginServiceConfiguration>(
+	service: Pick<T, '_id'>,
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	void api.broadcast('watch.loginServiceConfiguration', {
+		clientAction,
+		id: service._id,
+		data: service,
+	});
+}
+
 export async function notifyOnLoginServiceConfigurationChangedByService<T extends ILoginServiceConfiguration>(
 	service: T['service'],
 	clientAction: ClientAction = 'updated',
