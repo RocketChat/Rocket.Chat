@@ -2,6 +2,8 @@ import type { ILivechatPriority } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { LivechatPriority } from '@rocket.chat/models';
 
+import { notifyOnLivechatPriorityChangedById } from '../../../../app/lib/server/lib/notifyListener';
+
 const defaultPriorities: Omit<ILivechatPriority, '_id' | '_updatedAt'>[] = [
 	{
 		i18n: 'Lowest',
@@ -34,6 +36,7 @@ export const createDefaultPriorities = async (): Promise<void> => {
 	const priorities = await LivechatPriority.col.countDocuments({});
 
 	if (!priorities) {
-		await LivechatPriority.insertMany(defaultPriorities);
+		const { insertedIds } = await LivechatPriority.insertMany(defaultPriorities);
+		void notifyOnLivechatPriorityChangedById(Object.values(insertedIds), 'inserted');
 	}
 };

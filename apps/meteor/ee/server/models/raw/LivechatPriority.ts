@@ -1,7 +1,7 @@
 import type { ILivechatPriority } from '@rocket.chat/core-typings';
 import type { ILivechatPriorityModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Db, UpdateFilter, ModifyResult, IndexDescription } from 'mongodb';
+import type { Db, UpdateFilter, ModifyResult, IndexDescription, FindCursor } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
@@ -46,6 +46,10 @@ export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements I
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findByIds(_ids: ILivechatPriority['_id'][]): FindCursor<ILivechatPriority> {
+		return this.find({ _id: { $in: _ids } });
 	}
 
 	async canResetPriorities(): Promise<boolean> {

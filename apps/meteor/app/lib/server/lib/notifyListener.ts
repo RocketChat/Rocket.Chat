@@ -1,5 +1,14 @@
 import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
-import type { IPermission, IRocketChatRecord, IRoom, ISetting, IPbxEvent, IRole, IIntegration, ILivechatPriority } from '@rocket.chat/core-typings';
+import type {
+	IPermission,
+	IRocketChatRecord,
+	IRoom,
+	ISetting,
+	IPbxEvent,
+	IRole,
+	IIntegration,
+	ILivechatPriority,
+} from '@rocket.chat/core-typings';
 import { Rooms, Permissions, Settings, PbxEvents, Roles, Integrations, LivechatPriority } from '@rocket.chat/models';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
@@ -15,7 +24,22 @@ export async function notifyOnLivechatPriorityChanged(
 	const items = Array.isArray(data) ? data : [data];
 
 	for (const item of items) {
-		api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
+		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
+	}
+}
+
+export async function notifyOnLivechatPriorityChangedById(
+	ids: ILivechatPriority['_id'][],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const items = LivechatPriority.findByIds(ids);
+
+	for await (const item of items) {
+		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
 	}
 }
 
