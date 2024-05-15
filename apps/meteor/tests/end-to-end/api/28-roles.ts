@@ -413,7 +413,7 @@ describe('[Roles]', function () {
 				.expect(200)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('total', 0);
 					expect(res.body).to.have.property('users');
 					expect(res.body.users).to.be.an('array').that.is.empty;
 				});
