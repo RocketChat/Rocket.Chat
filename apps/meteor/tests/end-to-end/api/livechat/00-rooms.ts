@@ -1170,6 +1170,7 @@ describe('LIVECHAT - rooms', function () {
 			const imageUrl = `/file-upload/${_id}/${name}`;
 			await request.get(imageUrl).query({ rc_token: visitor2.token, rc_room_type: 'l', rc_rid: room._id }).expect(403);
 			await deleteVisitor(visitor.token);
+			await deleteVisitor(visitor2.token);
 		});
 	});
 
