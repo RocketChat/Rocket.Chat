@@ -10,13 +10,13 @@ type TimespanSettingInputProps = SettingInputProps<string, string | number> & {
 	value: string;
 };
 
-enum TIMEUNIT {
+export enum TIMEUNIT {
 	days = 'days',
 	hours = 'hours',
 	minutes = 'minutes',
 }
 
-const timeUnitToMs = (unit: TIMEUNIT, timespan: number) => {
+export const timeUnitToMs = (unit: TIMEUNIT, timespan: number) => {
 	if (unit === TIMEUNIT.days) {
 		return timespan * 24 * 60 * 60 * 1000;
 	}
@@ -32,7 +32,7 @@ const timeUnitToMs = (unit: TIMEUNIT, timespan: number) => {
 	throw new Error('TimespanSettingInput - timeUnitToMs - invalid time unit');
 };
 
-const msToTimeUnit = (unit: TIMEUNIT, timespan: number) => {
+export const msToTimeUnit = (unit: TIMEUNIT, timespan: number) => {
 	if (unit === TIMEUNIT.days) {
 		return timespan / 24 / 60 / 60 / 1000;
 	}
@@ -48,7 +48,7 @@ const msToTimeUnit = (unit: TIMEUNIT, timespan: number) => {
 	throw new Error('TimespanSettingInput - msToTimeUnit - invalid time unit');
 };
 
-const getHighestTimeUnit = (value: number): TIMEUNIT => {
+export const getHighestTimeUnit = (value: number): TIMEUNIT => {
 	const minutes = msToTimeUnit(TIMEUNIT.minutes, value);
 	if (minutes % 60 !== 0) {
 		return TIMEUNIT.minutes;
