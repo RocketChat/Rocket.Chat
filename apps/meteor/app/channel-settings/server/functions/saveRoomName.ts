@@ -8,6 +8,7 @@ import type { Document, UpdateResult } from 'mongodb';
 import { callbacks } from '../../../../lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
+import { notifyOnIntegrationChangedByChannels } from '../../../lib/server/lib/notifyListener';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 
 const updateFName = async (rid: string, displayName: string): Promise<(UpdateResult | Document)[]> => {
@@ -73,10 +74,13 @@ export async function saveRoomName(
 
 	if (room.name && !isDiscussion) {
 		await Integrations.updateRoomName(room.name, slugifiedRoomName);
+		void notifyOnIntegrationChangedByChannels([slugifiedRoomName]);
 	}
+
 	if (sendMessage) {
 		await Message.saveSystemMessage('r', rid, displayName, user);
 	}
+
 	await callbacks.run('afterRoomNameChange', { rid, name: displayName, oldName: room.name });
 	return displayName;
 }

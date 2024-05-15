@@ -1,6 +1,6 @@
 import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
-import type { IPbxEvent, IRocketChatRecord, IRoom } from '@rocket.chat/core-typings';
-import { PbxEvents, Rooms } from '@rocket.chat/models';
+import type { IPermission, IRocketChatRecord, IRoom, ISetting, IPbxEvent, IRole, IIntegration } from '@rocket.chat/core-typings';
+import { Rooms, Permissions, Settings, PbxEvents, Roles, Integrations } from '@rocket.chat/models';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
 
@@ -66,6 +66,43 @@ export async function notifyOnRoomChangedByUserDM<T extends IRoom>(
 	}
 }
 
+export async function notifyOnSettingChanged(setting: ISetting, clientAction: ClientAction = 'updated'): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	void api.broadcast('watch.settings', { clientAction, setting });
+}
+
+export async function notifyOnPermissionChanged(permission: IPermission, clientAction: ClientAction = 'updated'): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	void api.broadcast('permission.changed', { clientAction, data: permission });
+
+	if (permission.level === 'settings' && permission.settingId) {
+		const setting = await Settings.findOneNotHiddenById(permission.settingId);
+		if (!setting) {
+			return;
+		}
+		void notifyOnSettingChanged(setting, 'updated');
+	}
+}
+
+export async function notifyOnPermissionChangedById(pid: IPermission['_id'], clientAction: ClientAction = 'updated'): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const permission = await Permissions.findOneById(pid);
+	if (!permission) {
+		return;
+	}
+
+	return notifyOnPermissionChanged(permission, clientAction);
+}
+
 export async function notifyOnPbxEventChangedById<T extends IPbxEvent>(
 	id: T['_id'],
 	clientAction: ClientAction = 'updated',
@@ -78,5 +115,82 @@ export async function notifyOnPbxEventChangedById<T extends IPbxEvent>(
 
 	if (item) {
 		void api.broadcast('watch.pbxevents', { clientAction, id, data: item });
+	}
+}
+
+export async function notifyOnRoleChanged<T extends IRole>(role: T, clientAction: 'removed' | 'changed' = 'changed'): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	void api.broadcast('watch.roles', { clientAction, role });
+}
+
+export async function notifyOnRoleChangedById<T extends IRole>(
+	id: T['_id'],
+	clientAction: 'removed' | 'changed' = 'changed',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const role = await Roles.findOneById(id);
+	if (!role) {
+		return;
+	}
+
+	void notifyOnRoleChanged(role, clientAction);
+}
+
+export async function notifyOnIntegrationChanged<T extends IIntegration>(data: T, clientAction: ClientAction = 'updated'): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	void api.broadcast('watch.integrations', { clientAction, id: data._id, data });
+}
+
+export async function notifyOnIntegrationChangedById<T extends IIntegration>(
+	id: T['_id'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const item = await Integrations.findOneById(id);
+
+	if (item) {
+		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
+	}
+}
+
+export async function notifyOnIntegrationChangedByUserId<T extends IIntegration>(
+	id: T['userId'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const items = Integrations.findByUserId(id);
+
+	for await (const item of items) {
+		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
+	}
+}
+
+export async function notifyOnIntegrationChangedByChannels<T extends IIntegration>(
+	channels: T['channel'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const items = Integrations.findByChannels(channels);
+
+	for await (const item of items) {
+		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
 	}
 }
