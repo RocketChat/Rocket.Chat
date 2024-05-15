@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 import { beforeLeaveRoomCallback } from '../../../../lib/callbacks/beforeLeaveRoomCallback';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 
 export const removeUserFromRoom = async function (
 	rid: string,
@@ -66,6 +67,8 @@ export const removeUserFromRoom = async function (
 
 	// TODO: CACHE: maybe a queue?
 	await afterLeaveRoomCallback.run(user, room);
+
+	void notifyOnRoomChangedById(rid);
 
 	await Apps.self?.triggerEvent(AppEvents.IPostRoomUserLeave, room, user);
 };
