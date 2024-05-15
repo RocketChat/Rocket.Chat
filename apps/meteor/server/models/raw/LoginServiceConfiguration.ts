@@ -48,7 +48,10 @@ export class LoginServiceConfigurationRaw extends BaseRaw<LoginServiceConfigurat
 		return this.deleteOne({ _id });
 	}
 
-	async findOneByService(serviceName: string, options?: FindOptions<ILoginServiceConfiguration>): Promise<LoginServiceConfiguration | null> {
+	async findOneByService(
+		serviceName: string,
+		options?: FindOptions<ILoginServiceConfiguration>,
+	): Promise<LoginServiceConfiguration | null> {
 		return this.findOne({ service: serviceName.toLowerCase() }, options);
 	}
 }

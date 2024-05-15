@@ -9,5 +9,8 @@ export interface ILoginServiceConfigurationModel extends IBaseModel<LoginService
 		serviceData: Partial<LoginServiceConfiguration>,
 	): Promise<LoginServiceConfiguration['_id']>;
 	removeService(_id: LoginServiceConfiguration['_id']): Promise<DeleteResult>;
-	findOneByService(serviceName: LoginServiceConfiguration['service'], options?: FindOptions<ILoginServiceConfiguration>): Promise<LoginServiceConfiguration | null>;
+	findOneByService(
+		serviceName: LoginServiceConfiguration['service'],
+		options?: FindOptions<ILoginServiceConfiguration>,
+	): Promise<LoginServiceConfiguration | null>;
 }
