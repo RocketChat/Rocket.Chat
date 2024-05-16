@@ -526,7 +526,13 @@ export const CallProvider: FC = ({ children }) => {
 	return (
 		<CallContext.Provider value={contextValue}>
 			{children}
-			{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
+			{contextValue.enabled &&
+				createPortal(
+					<audio ref={remoteAudioMediaRef}>
+						<track kind='captions' />
+					</audio>,
+					document.body,
+				)}
 		</CallContext.Provider>
 	);
 };

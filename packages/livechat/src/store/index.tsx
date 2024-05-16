@@ -6,9 +6,17 @@ import { useContext } from 'preact/hooks';
 import type { CustomField } from '../components/Form/CustomFields';
 import type { Agent } from '../definitions/agents';
 import type { Department } from '../definitions/departments';
+import type { TriggerMessage } from '../definitions/triggerMessage';
 import { parentCall } from '../lib/parentCall';
 import { createToken } from '../lib/random';
 import Store from './Store';
+
+export type LivechatHiddenSytemMessageType =
+	| 'uj' // User joined
+	| 'ul' // User left
+	| 'livechat-close' // Chat closed
+	| 'livechat-started' // Chat started
+	| 'livechat_transfer_history'; // Chat transfered
 
 export type StoreState = {
 	token: string;
@@ -20,6 +28,8 @@ export type StoreState = {
 			color?: string;
 			offlineTitle?: string;
 			offlineColor?: string;
+			position: 'left' | 'right';
+			background?: string;
 			actionLinks?: {
 				webrtc: {
 					actionLinksAlignment: string;
@@ -45,6 +55,9 @@ export type StoreState = {
 			showConnecting?: any;
 			limitTextLength?: any;
 			displayOfflineForm?: boolean;
+			hiddenSystemMessages?: LivechatHiddenSytemMessageType[];
+			hideWatermark?: boolean;
+			livechatLogo?: { url: string };
 		};
 		online?: boolean;
 		departments: Department[];
@@ -68,10 +81,18 @@ export type StoreState = {
 			fontColor?: string;
 			iconColor?: string;
 			offlineTitle?: string;
+			position?: 'left' | 'right';
+			guestBubbleBackgroundColor?: string;
+			agentBubbleBackgroundColor?: string;
+			background?: string;
+			hideGuestAvatar?: boolean;
+			hideAgentAvatar?: boolean;
 		};
 		visible?: boolean;
 		department?: string;
 		language?: string;
+		defaultDepartment?: string;
+		hiddenSystemMessages?: LivechatHiddenSytemMessageType[];
 	};
 	gdpr: {
 		accepted: boolean;
@@ -100,6 +121,7 @@ export type StoreState = {
 	parentUrl?: string;
 	connecting?: boolean;
 	messageListPosition?: 'top' | 'bottom' | 'free';
+	renderedTriggers: TriggerMessage[];
 };
 
 export const initialState = (): StoreState => ({
@@ -108,7 +130,9 @@ export const initialState = (): StoreState => ({
 	config: {
 		messages: {},
 		settings: {},
-		theme: {},
+		theme: {
+			position: 'right',
+		},
 		triggers: [],
 		departments: [],
 		resources: {},
@@ -122,7 +146,10 @@ export const initialState = (): StoreState => ({
 	},
 	iframe: {
 		guest: {},
-		theme: {},
+		theme: {
+			hideGuestAvatar: true,
+			hideAgentAvatar: false,
+		},
 		visible: true,
 	},
 	gdpr: {
@@ -135,6 +162,7 @@ export const initialState = (): StoreState => ({
 	incomingCallAlert: null,
 	ongoingCall: null, // TODO: store call info like url, startTime, timeout, etc here
 	businessUnit: null,
+	renderedTriggers: [],
 });
 
 const dontPersist = [

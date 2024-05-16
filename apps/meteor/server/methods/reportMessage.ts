@@ -1,3 +1,4 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { ModerationReports, Rooms, Users, Messages } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
@@ -6,7 +7,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../app/authorization/server/functions/canAccessRoom';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
-import { AppEvents, Apps } from '../../ee/server/apps';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -77,7 +77,7 @@ Meteor.methods<ServerMethods>({
 
 		await ModerationReports.createWithMessageDescriptionAndUserId(message, description, roomInfo, reportedBy);
 
-		await Apps.triggerEvent(AppEvents.IPostMessageReported, message, await Meteor.userAsync(), description);
+		await Apps.self?.triggerEvent(AppEvents.IPostMessageReported, message, await Meteor.userAsync(), description);
 
 		return true;
 	},

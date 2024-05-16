@@ -12,6 +12,7 @@ import {
 	ContextualbarContent,
 	ContextualbarClose,
 	ContextualbarEmptyContent,
+	ContextualbarTitle,
 } from '../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
@@ -40,27 +41,26 @@ function DiscussionsList({
 	text,
 	onChangeFilter,
 }: DiscussionsListProps) {
-	const showRealNames = Boolean(useSetting('UI_Use_Real_Name'));
-
 	const t = useTranslation();
+	const showRealNames = useSetting<boolean>('UI_Use_Real_Name') || false;
 	const inputRef = useAutoFocus(true);
+
 	const onClick = useCallback((e) => {
 		const { drid } = e.currentTarget.dataset;
 		goToRoomById(drid);
 	}, []);
+
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
 	});
+
 	return (
 		<>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='discussion' />
-				<Box flexShrink={1} flexGrow={1} withTruncatedText mi={8}>
-					{t('Discussions')}
-				</Box>
+				<ContextualbarTitle>{t('Discussions')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-
 			<ContextualbarContent paddingInline={0} ref={ref}>
 				<Box
 					display='flex'

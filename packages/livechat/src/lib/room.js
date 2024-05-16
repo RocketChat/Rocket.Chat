@@ -15,6 +15,7 @@ import { parentCall } from './parentCall';
 import { createToken } from './random';
 import { normalizeMessage, normalizeMessages } from './threads';
 import { handleTranscript } from './transcript';
+import Triggers from './triggers';
 
 const commands = new Commands();
 
@@ -23,7 +24,14 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 		await handleTranscript();
 	}
 
-	const { department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
+	const { room, department, config: { settings: { clearLocalStorageWhenChatEnded } = {} } = {} } = store.state;
+
+	if (!room) {
+		console.warn('closeChat called without a room');
+		return;
+	}
+
+	await store.setState({ room: null, renderedTriggers: [] });
 
 	if (clearLocalStorageWhenChatEnded) {
 		// exclude UI-affecting flags
@@ -32,6 +40,8 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 		initial.iframe = { ...currentIframe, guest: { department } };
 		await store.setState(initial);
 	}
+
+	Triggers.processTrigger('after-guest-registration');
 
 	await loadConfig();
 	parentCall('callback', 'chat-ended');
@@ -98,7 +108,7 @@ export const processIncomingCallMessage = async (message) => {
 
 const processMessage = async (message) => {
 	if (message.t === 'livechat-close') {
-		closeChat(message);
+		await closeChat(message);
 	} else if (message.t === 'command') {
 		commands[message.msg] && commands[message.msg]();
 	} else if (message.webRtcCallEndTs) {
@@ -241,11 +251,11 @@ export const onMessage = async (originalMessage) => {
 	await doPlaySound(message);
 };
 
-export const getGreetingMessages = (messages) => messages && messages.filter((msg) => msg.trigger && msg.triggerAfterRegistration);
+export const getGreetingMessages = (messages) => messages && messages.filter((msg) => msg.trigger);
 export const getLatestCallMessage = (messages) => messages && messages.filter((msg) => isVideoCallMessage(msg)).pop();
 
 export const loadMessages = async () => {
-	const { ongoingCall, messages: storedMessages, room } = store.state;
+	const { ongoingCall, messages: storedMessages, room, renderedTriggers } = store.state;
 
 	if (!room?._id) {
 		return;
@@ -253,9 +263,15 @@ export const loadMessages = async () => {
 
 	const { _id: rid, callStatus } = room;
 	const previousMessages = getGreetingMessages(storedMessages);
-
 	await store.setState({ loading: true });
-	const rawMessages = (await Livechat.loadMessages(rid)).concat(previousMessages);
+
+	const rawMessages = (await Livechat.loadMessages(rid)) ?? [];
+
+	if (rawMessages?.length < 20) {
+		const triggers = previousMessages.length === 0 ? renderedTriggers : previousMessages;
+		rawMessages.push(...triggers.reverse());
+	}
+
 	const messages = (await normalizeMessages(rawMessages)).map(transformAgentInformationOnMessage);
 
 	await initRoom();
@@ -305,7 +321,7 @@ export const loadMessages = async () => {
 };
 
 export const loadMoreMessages = async () => {
-	const { room, messages = [], noMoreMessages = false } = store.state;
+	const { room, messages = [], noMoreMessages = false, renderedTriggers } = store.state;
 	const { _id: rid } = room || {};
 
 	if (!rid || noMoreMessages) {
@@ -317,9 +333,13 @@ export const loadMoreMessages = async () => {
 	const rawMessages = await Livechat.loadMessages(rid, { limit: messages.length + 10 });
 	const moreMessages = (await normalizeMessages(rawMessages)).map(transformAgentInformationOnMessage);
 
+	const newNoMoreMessages = messages.length + 10 > moreMessages.length;
+	const triggers = newNoMoreMessages ? [...renderedTriggers] : [];
+	const newMessages = ([...moreMessages, ...triggers] || []).reverse();
+
 	await store.setState({
-		messages: (moreMessages || []).reverse(),
-		noMoreMessages: messages.length + 10 > moreMessages.length,
+		messages: newMessages,
+		noMoreMessages: newNoMoreMessages,
 		loading: false,
 	});
 };
@@ -338,7 +358,7 @@ export const defaultRoomParams = () => {
 store.on('change', ([state, prevState]) => {
 	// Cross-tab communication
 	// Detects when a room is created and then route to the correct container
-	if (!prevState.room && state.room) {
+	if (prevState.room?._id !== state.room?._id) {
 		route('/');
 	}
 });

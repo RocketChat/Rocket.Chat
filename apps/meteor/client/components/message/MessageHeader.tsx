@@ -47,6 +47,7 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 			<MessageNameContainer
 				tabIndex={0}
 				role='button'
+				id={`${message._id}-displayName`}
 				aria-label={getUserDisplayName(user.name, user.username, showRealName)}
 				onClick={(e) => openUserCard(e, message.u.username)}
 				onKeyDown={(e: KeyboardEvent<HTMLSpanElement>) => {
@@ -72,7 +73,9 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 				)}
 			</MessageNameContainer>
 			{shouldShowRolesList && <MessageRoles roles={roles} isBot={message.bot} />}
-			<MessageTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageTimestamp>
+			<MessageTimestamp id={`${message._id}-time`} title={formatDateAndTime(message.ts)}>
+				{formatTime(message.ts)}
+			</MessageTimestamp>
 			{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}
 			<StatusIndicators message={message} />
 		</FuselageMessageHeader>

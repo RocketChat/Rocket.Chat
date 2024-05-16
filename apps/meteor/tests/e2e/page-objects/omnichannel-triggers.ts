@@ -86,25 +86,26 @@ export class OmnichannelTriggers {
 		await this.page.locator(`li.rcx-option[data-key="${sender}"]`).click();
 	}
 
-	public async createTrigger(triggersName: string, triggerMessage: string) {
+	public async createTrigger(triggersName: string, triggerMessage: string, condition: "time-on-site" | "chat-opened-by-visitor" | "after-guest-registration", conditionValue?: number | string) {
 		await this.headingButtonNew('Create trigger').click();
 		await this.fillTriggerForm({
 			name: triggersName,
 			description: 'Creating a fresh trigger',
-			condition: 'time-on-site',
-			conditionValue: 5,
+			condition,
+			conditionValue,
 			triggerMessage,
 		});
 		await this.btnSave.click();
 	}
 
-	public async updateTrigger(newName: string) {
+	public async updateTrigger(newName: string, triggerMessage: string) {
 		await this.fillTriggerForm({
 			name: `edited-${newName}`,
 			description: 'Updating the existing trigger',
 			condition: 'chat-opened-by-visitor',
 			sender: 'custom',
 			agentName: 'Rocket.cat',
+			triggerMessage,
 		});
 		await this.btnSave.click();
 	}

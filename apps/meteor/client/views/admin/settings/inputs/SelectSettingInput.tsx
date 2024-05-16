@@ -5,20 +5,10 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type SelectSettingInputProps = {
-	_id: string;
-	label: string;
-	value?: string;
+type SelectSettingInputProps = SettingInputProps & {
 	values?: { key: string; i18nLabel: TranslationKey }[];
-	placeholder?: string;
-	readonly?: boolean;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	required?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string) => void;
-	onResetButtonClick?: () => void;
 };
 
 function SelectSettingInput({
