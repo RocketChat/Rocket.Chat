@@ -9,10 +9,24 @@ import type {
 	IIntegration,
 	IPbxEvent,
 	LoginServiceConfiguration as LoginServiceConfigurationData,
+	ILivechatPriority,
 } from '@rocket.chat/core-typings';
 import { Rooms, Permissions, Settings, PbxEvents, Roles, Integrations, LoginServiceConfiguration } from '@rocket.chat/models';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
+
+export async function notifyOnLivechatPriorityChanged(
+	data: Pick<ILivechatPriority, 'name' | '_id'>,
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const { _id, ...rest } = data;
+
+	void api.broadcast('watch.priorities', { clientAction, id: _id, diff: { ...rest } });
+}
 
 export async function notifyOnRoomChanged<T extends IRocketChatRecord>(
 	data: T | T[],
