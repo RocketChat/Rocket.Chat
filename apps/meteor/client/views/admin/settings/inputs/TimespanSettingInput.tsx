@@ -17,35 +17,32 @@ export enum TIMEUNIT {
 }
 
 export const timeUnitToMs = (unit: TIMEUNIT, timespan: number) => {
-	if (unit === TIMEUNIT.days) {
-		return timespan * 24 * 60 * 60 * 1000;
-	}
+	switch (unit) {
+		case TIMEUNIT.days:
+			return timespan * 24 * 60 * 60 * 1000;
 
-	if (unit === TIMEUNIT.hours) {
-		return timespan * 60 * 60 * 1000;
-	}
+		case TIMEUNIT.hours:
+			return timespan * 60 * 60 * 1000;
 
-	if (unit === TIMEUNIT.minutes) {
-		return timespan * 60 * 1000;
-	}
+		case TIMEUNIT.minutes:
+			return timespan * 60 * 1000;
 
-	throw new Error('TimespanSettingInput - timeUnitToMs - invalid time unit');
+		default:
+			throw new Error('TimespanSettingInput - timeUnitToMs - invalid time unit');
+	}
 };
 
 export const msToTimeUnit = (unit: TIMEUNIT, timespan: number) => {
-	if (unit === TIMEUNIT.days) {
-		return timespan / 24 / 60 / 60 / 1000;
+	switch (unit) {
+		case TIMEUNIT.days:
+			return timespan / 24 / 60 / 60 / 1000;
+		case TIMEUNIT.hours:
+			return timespan / 60 / 60 / 1000;
+		case TIMEUNIT.minutes:
+			return timespan / 60 / 1000;
+		default:
+			throw new Error('TimespanSettingInput - msToTimeUnit - invalid time unit');
 	}
-
-	if (unit === TIMEUNIT.hours) {
-		return timespan / 60 / 60 / 1000;
-	}
-
-	if (unit === TIMEUNIT.minutes) {
-		return timespan / 60 / 1000;
-	}
-
-	throw new Error('TimespanSettingInput - msToTimeUnit - invalid time unit');
 };
 
 export const getHighestTimeUnit = (value: number): TIMEUNIT => {
@@ -60,6 +57,16 @@ export const getHighestTimeUnit = (value: number): TIMEUNIT => {
 	}
 
 	return TIMEUNIT.days;
+};
+
+const sanitizeInputValue = (value: number) => {
+	if (!value) {
+		return 0;
+	}
+
+	const sanitizedValue = Math.max(0, value).toFixed(0);
+
+	return Number(sanitizedValue);
 };
 
 function TimespanSettingInput({
@@ -81,14 +88,11 @@ function TimespanSettingInput({
 	const [internalValue, setInternalValue] = useState<number>(msToTimeUnit(timeUnit, Number(value)));
 
 	const handleChange: FormEventHandler<HTMLInputElement> = (event) => {
-		const newValue = Math.max(1, Number(event.currentTarget.value)) || 1;
+		const newValue = sanitizeInputValue(Number(event.currentTarget.value));
 
-		try {
-			setInternalValue(newValue);
-			onChangeValue?.(timeUnitToMs(timeUnit, newValue));
-		} catch (error) {
-			console.log(error);
-		}
+		onChangeValue?.(newValue);
+
+		setInternalValue(newValue);
 	};
 
 	const handleChangeTimeUnit = (nextTimeUnit: string | number) => {
@@ -96,7 +100,15 @@ function TimespanSettingInput({
 			return;
 		}
 		setTimeUnit((prevTimeUnit) => {
-			setInternalValue((currentValue) => msToTimeUnit(nextTimeUnit as TIMEUNIT, timeUnitToMs(prevTimeUnit, currentValue)));
+			setInternalValue((currentValue) => {
+				const newValue = sanitizeInputValue(msToTimeUnit(nextTimeUnit as TIMEUNIT, timeUnitToMs(prevTimeUnit, currentValue)));
+
+				// Update the external value since the new internal value could have changed during sanitization
+				onChangeValue?.(timeUnitToMs(nextTimeUnit as TIMEUNIT, newValue));
+
+				return newValue;
+			});
+
 			return nextTimeUnit as TIMEUNIT;
 		});
 	};
