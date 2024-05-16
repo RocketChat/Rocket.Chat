@@ -1,3 +1,4 @@
+import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
@@ -10,8 +11,12 @@ test.describe.serial('read-receipts', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 
+	test.skip(!IS_EE, 'Enterprise Only');
+
 	test.beforeAll(async ({ api }) => {
 		await setSettingValueById(api, 'Message_Read_Receipt_Enabled', true);
+		await setSettingValueById(api, 'Message_Read_Receipt_Store_Users', true);
+		
 		targetChannel = await createTargetChannel(api);
 	});
 
@@ -36,9 +41,7 @@ test.describe.serial('read-receipts', () => {
 		await expect(poHomeChannel.content.lastUserMessage.getByRole('status', { name: 'Message viewed' })).toBeVisible();		
 	});
 
-	test('should show the reads receipt modal with the users who read the message', async ({ page, api }) => {
-		await setSettingValueById(api, 'Message_Read_Receipt_Store_Users', true);
-
+	test('should show the reads receipt modal with the users who read the message', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Read receipts"]').click();
