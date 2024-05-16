@@ -213,7 +213,7 @@ class E2E extends Emitter {
 				onConfirm: () => {
 					Meteor._localStorage.removeItem('e2e.randomPassword');
 					this.setState(E2EEState.READY);
-					dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Set') });
+					dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Enabled') });
 					this.closeAlert();
 					imperativeModal.close();
 				},
@@ -420,6 +420,7 @@ class E2E extends Emitter {
 				onClose: imperativeModal.close,
 				onCancel: () => {
 					failedToDecodeKey = false;
+					dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Not_Enabled') });
 					this.closeAlert();
 					imperativeModal.close();
 				},
@@ -482,6 +483,7 @@ class E2E extends Emitter {
 				await this.createAndLoadKeys();
 				this.setState(E2EEState.READY);
 			}
+			dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Enabled') });
 		} catch (error) {
 			this.setState(E2EEState.ERROR);
 			throw new Error('E2E -> Error decrypting private key');
