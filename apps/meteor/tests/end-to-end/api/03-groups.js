@@ -121,7 +121,7 @@ describe('[Groups]', function () {
 			});
 		});
 
-		describe('validate E2E rooms', () => {
+		describe.only('validate E2E rooms', () => {
 			before(async () => {
 				await Promise.all([updateSetting('E2E_Enable', true), updateSetting('E2E_Allow_Unencrypted_Messages', false)]);
 			});
@@ -192,6 +192,26 @@ describe('[Groups]', function () {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error').that.is.a('string');
+					});
+			});
+
+			it('should allow sending un-encrypted messages in encrypted room when setting is enabled', async () => {
+				await updateSetting('E2E_Allow_Unencrypted_Messages', true);
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							text: 'Unencrypted Message',
+							rid,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message');
+						expect(res.body).to.have.nested.property('message.text', 'Unencrypted Message');
 					});
 			});
 		});
