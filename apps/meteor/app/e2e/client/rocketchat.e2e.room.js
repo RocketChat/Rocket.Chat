@@ -307,16 +307,16 @@ export class E2ERoom extends Emitter {
 	async encryptKeyForOtherParticipants() {
 		// Encrypt generated session key for every user in room and publish to subscription model.
 		try {
-			const { users } = await sdk.call('e2e.getUsersOfRoomWithoutKey', this.roomId);
-			await Promise.all(
-				users
-					.filter((user) => user?.e2e?.public_key)
-					.map(async (user) => {
-						const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e.public_key);
-						// Key has been encrypted. Publish to that user's subscription model for this room.
-						await sdk.call('e2e.updateGroupKey', this.roomId, user._id, encryptedGroupKey);
-					}),
-			);
+			const users = (await sdk.call('e2e.getUsersOfRoomWithoutKey', this.roomId)).users.filter((user) => user?.e2e?.public_key);
+
+			const usersSuggestedGroupKeys = { [this.roomId]: [] };
+			for await (const user of users) {
+				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e.public_key);
+
+				usersSuggestedGroupKeys[this.roomId].push({ _id: user._id, key: encryptedGroupKey });
+			}
+
+			await sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', { usersSuggestedGroupKeys });
 		} catch (error) {
 			return this.error('Error getting room users: ', error);
 		}
