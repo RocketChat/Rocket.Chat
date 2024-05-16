@@ -50,7 +50,7 @@ type LoginServiceConfigurationEvent = {
 	  }
 	| {
 			clientAction: Omit<ClientAction, 'removed'>;
-			data: Partial<ILoginServiceConfiguration>;
+			data: Omit<Partial<ILoginServiceConfiguration>, 'secret'> & { secret?: never };
 	  }
 );
 

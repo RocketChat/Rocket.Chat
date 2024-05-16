@@ -1,15 +1,17 @@
 import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
 import type {
-	IPermission,
 	IRocketChatRecord,
 	IRoom,
+	ILoginServiceConfiguration,
 	ISetting,
-	IPbxEvent,
 	IRole,
+	IPermission,
 	IIntegration,
+	IPbxEvent,
+	LoginServiceConfiguration as LoginServiceConfigurationData,
 	ILivechatPriority,
 } from '@rocket.chat/core-typings';
-import { Rooms, Permissions, Settings, PbxEvents, Roles, Integrations } from '@rocket.chat/models';
+import { Rooms, Permissions, Settings, PbxEvents, Roles, Integrations, LoginServiceConfiguration } from '@rocket.chat/models';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
 
@@ -50,6 +52,7 @@ export async function notifyOnRoomChangedById<T extends IRocketChatRecord>(
 	}
 
 	const eligibleIds = Array.isArray(ids) ? ids : [ids];
+
 	const items = Rooms.findByIds(eligibleIds);
 
 	for await (const item of items) {
@@ -134,10 +137,11 @@ export async function notifyOnPbxEventChangedById<T extends IPbxEvent>(
 	}
 
 	const item = await PbxEvents.findOneById(id);
-
-	if (item) {
-		void api.broadcast('watch.pbxevents', { clientAction, id, data: item });
+	if (!item) {
+		return;
 	}
+
+	void api.broadcast('watch.pbxevents', { clientAction, id, data: item });
 }
 
 export async function notifyOnRoleChanged<T extends IRole>(role: T, clientAction: 'removed' | 'changed' = 'changed'): Promise<void> {
@@ -164,6 +168,39 @@ export async function notifyOnRoleChangedById<T extends IRole>(
 	void notifyOnRoleChanged(role, clientAction);
 }
 
+export async function notifyOnLoginServiceConfigurationChanged<T extends ILoginServiceConfiguration>(
+	service: Partial<T> & Pick<T, '_id'>,
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	void api.broadcast('watch.loginServiceConfiguration', {
+		clientAction,
+		id: service._id,
+		data: service,
+	});
+}
+
+export async function notifyOnLoginServiceConfigurationChangedByService<T extends ILoginServiceConfiguration>(
+	service: T['service'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const item = await LoginServiceConfiguration.findOneByService<Omit<LoginServiceConfigurationData, 'secret'>>(service, {
+		projection: { secret: 0 },
+	});
+	if (!item) {
+		return;
+	}
+
+	void notifyOnLoginServiceConfigurationChanged(item, clientAction);
+}
+
 export async function notifyOnIntegrationChanged<T extends IIntegration>(data: T, clientAction: ClientAction = 'updated'): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
@@ -181,10 +218,11 @@ export async function notifyOnIntegrationChangedById<T extends IIntegration>(
 	}
 
 	const item = await Integrations.findOneById(id);
-
-	if (item) {
-		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
+	if (!item) {
+		return;
 	}
+
+	void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
 }
 
 export async function notifyOnIntegrationChangedByUserId<T extends IIntegration>(
