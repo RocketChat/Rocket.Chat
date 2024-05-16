@@ -4,6 +4,7 @@ import React from 'react';
 
 import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
 import { useIsCallEnabled, useIsCallReady } from '../contexts/CallContext';
+import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
 import { useOmnichannelShowQueueLink } from '../hooks/omnichannel/useOmnichannelShowQueueLink';
 import UserMenu from '../sidebar/header/UserMenu';
 import {
@@ -28,7 +29,7 @@ export const NavBar = () => {
 
 	const hasAuditLicense = useHasLicenseModule('auditing') === true;
 
-	const showOmnichannel = usePermission('view-livechat-manager');
+	const showOmnichannel = useOmnichannelEnabled();
 	const hasManageAppsPermission = usePermission('manage-apps');
 	const hasAccessMarketplacePermission = usePermission('access-marketplace');
 	const showMarketplace = hasAccessMarketplacePermission || hasManageAppsPermission;
