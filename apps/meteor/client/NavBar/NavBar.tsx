@@ -19,6 +19,7 @@ import {
 	NavBarItemAuditMenu,
 	NavBarItemDirectoryPage,
 	NavBarItemHomePage,
+	NavBarItemLoginPage,
 } from './actions';
 
 export const NavBar = () => {
@@ -59,7 +60,7 @@ export const NavBar = () => {
 			<NavBarSection>
 				<NavBarGroup>
 					<NavBarItemManageMenu />
-					{user && <UserMenu user={user} />}
+					{user ? <UserMenu user={user} /> : <NavBarItemLoginPage />}
 				</NavBarGroup>
 			</NavBarSection>
 		</NavBarComponent>

@@ -109,7 +109,15 @@ export const SearchSection = () => {
 
 	return (
 		<Box className={[isDirty && wrapperStyle]} ref={wrapperRef}>
-			<Box pi={16} pb={8} display='flex' alignItems='center'>
+			<Box
+				pi={16}
+				pb={8}
+				display='flex'
+				alignItems='center'
+				className={css`
+					gap: 8px;
+				`}
+			>
 				<TextInput
 					placeholder={t('Search')}
 					{...rest}
