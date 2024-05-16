@@ -46,7 +46,7 @@ export class HomeContent {
 	}
 
 	get encryptedRoomHeaderIcon(): Locator {
-		return this.page.locator('.rcx-room-header button > i.rcx-icon--name-key');
+		return this.page.getByRole('button', { name: 'Encrypted' });
 	}
 
 	get lastIgnoredUserMessage(): Locator {
