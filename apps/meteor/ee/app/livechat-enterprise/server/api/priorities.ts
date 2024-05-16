@@ -82,10 +82,10 @@ API.v1.addRoute(
 			}
 
 			const eligiblePriorities = (await LivechatPriority.findByDirty().toArray()).map(({ _id }) => _id);
+
 			await LivechatPriority.resetPriorities(eligiblePriorities);
-			for (const _id of eligiblePriorities) {
-				void notifyOnLivechatPriorityChanged({ _id, name: undefined });
-			}
+
+			eligiblePriorities.forEach((_id) => notifyOnLivechatPriorityChanged({ _id, name: undefined }));
 
 			return API.v1.success();
 		},
