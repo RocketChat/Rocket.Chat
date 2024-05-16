@@ -1,5 +1,55 @@
 # @rocket.chat/core-typings
 
+## 6.8.0
+
+### Minor Changes
+
+- ([#32224](https://github.com/RocketChat/Rocket.Chat/pull/32224)) Allow Custom Fields in Messages. API-only feature. It can be enabled and configured in Workspace Settings.
+
+- ([#31976](https://github.com/RocketChat/Rocket.Chat/pull/31976)) Added support for allowing agents to forward inquiries to departments that may not have any online agents given that `Allow department to receive forwarded inquiries even when there's no available agents` is set to `true` in the department configuration.
+  This configuration empowers agents to seamlessly direct incoming requests to the designated department, ensuring efficient handling of queries even when departmental resources are not actively online. When an agent becomes available, any pending inquiries will be automatically routed to them if the routing algorithm supports it.
+
+### Patch Changes
+
+- ([#32374](https://github.com/RocketChat/Rocket.Chat/pull/32374)) Fixed an issue with some apps that didn't implement executeViewCloseHandler. This causes opened modals to be open forever on UI (unless Esc was clicked). This is because when the UI attempts to close it, it calls the aforementioned handler, and since it didn't exist, apps engine errored out.
+
+  This returned an empty response to the UI, which ignored the response and continued to show the view.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/message-parser@0.31.29
+  - @rocket.chat/ui-kit@0.33.0
+  </details>
+
+## 6.8.0-rc.2
+
+### Patch Changes
+
+- ([#32374](https://github.com/RocketChat/Rocket.Chat/pull/32374)) Fixed an issue with some apps that didn't implement executeViewCloseHandler. This causes opened modals to be open forever on UI (unless Esc was clicked). This is because when the UI attempts to close it, it calls the aforementioned handler, and since it didn't exist, apps engine errored out.
+
+  This returned an empty response to the UI, which ignored the response and continued to show the view.
+
+## 6.8.0-rc.1
+
+## 6.8.0-rc.0
+
+### Minor Changes
+
+- ([#32224](https://github.com/RocketChat/Rocket.Chat/pull/32224)) Allow Custom Fields in Messages. API-only feature. It can be enabled and configured in Workspace Settings.
+
+- ([#31976](https://github.com/RocketChat/Rocket.Chat/pull/31976)) Added support for allowing agents to forward inquiries to departments that may not have any online agents given that `Allow department to receive forwarded inquiries even when there's no available agents` is set to `true` in the department configuration.
+  This configuration empowers agents to seamlessly direct incoming requests to the designated department, ensuring efficient handling of queries even when departmental resources are not actively online. When an agent becomes available, any pending inquiries will be automatically routed to them if the routing algorithm supports it.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/message-parser@0.31.29
+  - @rocket.chat/ui-kit@0.33.0
+  </details>
+
+## 6.7.2
+
 ## 6.7.1
 
 ## 6.7.0
