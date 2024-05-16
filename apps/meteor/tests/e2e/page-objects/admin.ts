@@ -177,11 +177,27 @@ export class Admin {
 		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> role=button[name="Delete"]');
 	}
 
+	get inputAssetsLogo(): Locator {
+		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> input[type="file"]');
+	}
+
 	get btnCreateRole(): Locator {
 		return this.page.locator('button[name="New role"]');
 	}
 
-	get inputAssetsLogo(): Locator {
-		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> input[type="file"]');
+	openRoleByName(name: string): Locator {
+		return this.page.getByRole('table').getByRole('button', { name });
+	}
+
+	get btnUsersInRole(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Users in role' });
+	}
+
+	get inputRoom(): Locator {
+		return this.page.locator('input[placeholder="Room"]');
+	}
+
+	getUserRowByUsername(username: string): Locator {
+		return this.page.locator('tr', { hasText: username })
 	}
 }
