@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fix Read Receipt menu item enable settings
+Fix an issue where read receipts menu item wasn't considering the enabled setting to be displayed
