@@ -1,35 +1,21 @@
-import type { IRoom } from '@rocket.chat/core-typings';
-import { useSetting } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { lazy } from 'react';
 
+import { E2EEState } from '../../../../app/e2e/client/E2EEState';
+import { E2ERoomState } from '../../../../app/e2e/client/E2ERoomState';
+import { useE2EERoomState } from '../hooks/useE2EERoomState';
+import { useE2EEState } from '../hooks/useE2EEState';
 import DirectRoomHeader from './DirectRoomHeader';
-import E2EERoomHeader from './E2EERoomHeader';
 import RoomHeader from './RoomHeader';
+import type { RoomHeaderProps } from './RoomHeader';
 
-export type RoomHeaderProps = {
-	room: IRoom;
-	topic?: string;
-	slots: {
-		start?: unknown;
-		preContent?: unknown;
-		insideContent?: unknown;
-		posContent?: unknown;
-		end?: unknown;
-		toolbox?: {
-			pre?: unknown;
-			content?: unknown;
-			pos?: unknown;
-		};
-	};
-};
+const RoomToolboxE2EESetup = lazy(() => import('./RoomToolbox/RoomToolboxE2EESetup'));
 
 const RoomHeaderE2EESetup = ({ room, topic = '', slots = {} }: RoomHeaderProps) => {
-	const encrypted = Boolean(room.encrypted);
-	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages');
-	const shouldDisplayE2EESetup = encrypted && !unencryptedMessagesAllowed;
+	const e2eeState = useE2EEState();
+	const e2eRoomState = useE2EERoomState(room._id);
 
-	if (shouldDisplayE2EESetup) {
-		return <E2EERoomHeader room={room} topic={topic} slots={slots} />;
+	if (e2eeState === E2EEState.SAVE_PASSWORD || e2eeState === E2EEState.ENTER_PASSWORD || e2eRoomState === E2ERoomState.WAITING_KEYS) {
+		return <RoomHeader room={room} topic={topic} slots={slots} roomToolbox={<RoomToolboxE2EESetup />} />;
 	}
 
 	if (room.t === 'd' && (room.uids?.length ?? 0) < 3) {

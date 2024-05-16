@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isVoipRoom } from '@rocket.chat/core-typings';
 import { HeaderToolbar } from '@rocket.chat/ui-client';
-import { useLayout } from '@rocket.chat/ui-contexts';
+import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { lazy, memo, useMemo } from 'react';
 
@@ -10,6 +10,8 @@ import SidebarToggler from '../../../components/SidebarToggler';
 const OmnichannelRoomHeader = lazy(() => import('./Omnichannel/OmnichannelRoomHeader'));
 const VoipRoomHeader = lazy(() => import('./Omnichannel/VoipRoomHeader'));
 const RoomHeaderE2EESetup = lazy(() => import('./RoomHeaderE2EESetup'));
+const DirectRoomHeader = lazy(() => import('./DirectRoomHeader'));
+const RoomHeader = lazy(() => import('./RoomHeader'));
 
 type HeaderProps<T> = {
 	room: T;
@@ -17,6 +19,9 @@ type HeaderProps<T> = {
 
 const Header = ({ room }: HeaderProps<IRoom>): ReactElement | null => {
 	const { isMobile, isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
+	const encrypted = Boolean(room.encrypted);
+	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages');
+	const shouldDisplayE2EESetup = encrypted && !unencryptedMessagesAllowed;
 
 	const slots = useMemo(
 		() => ({
@@ -41,7 +46,15 @@ const Header = ({ room }: HeaderProps<IRoom>): ReactElement | null => {
 		return <VoipRoomHeader slots={slots} room={room} />;
 	}
 
-	return <RoomHeaderE2EESetup slots={slots} room={room} topic={room.topic} />;
+	if (shouldDisplayE2EESetup) {
+		return <RoomHeaderE2EESetup room={room} topic={room.topic} slots={slots} />;
+	}
+
+	if (room.t === 'd' && (room.uids?.length ?? 0) < 3) {
+		return <DirectRoomHeader slots={slots} room={room} />;
+	}
+
+	return <RoomHeader room={room} topic={room.topic} slots={slots} />;
 };
 
 export default memo(Header);
