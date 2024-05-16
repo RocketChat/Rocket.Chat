@@ -2,6 +2,7 @@ import { ADMIN_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel, createTargetTeam } from './utils';
+import { setSettingValueById } from './utils/setSettingValueById';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { expect, test } from './utils/test';
 
@@ -209,5 +210,38 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
+	})
+
+	test.describe('expect read receipts option menu', () => {
+		test.afterAll(async ({ api }) => {
+			await setSettingValueById(api, 'Message_Read_Receipt_Enabled', false);
+			await setSettingValueById(api, 'Message_Read_Receipt_Store_Users', false);
+		});
+
+		test.describe('Enable message read receipt settings', async () => {
+			test.beforeAll(async ({ api }) => {
+				await setSettingValueById(api, 'Message_Read_Receipt_Enabled', true);
+				await setSettingValueById(api, 'Message_Read_Receipt_Store_Users', true);
+			});
+
+			test('Expect message to show Read Receipts item menu when setting is enabled', async ({ page }) => {
+				await poHomeChannel.content.sendFileMessage('This message should have the info menu activated.');
+				await poHomeChannel.content.openLastMessageMenu();
+				expect(page.locator('role=menuitem[name="Info"]')).toBeVisible;
+			})
+		});
+
+		test.describe('Disable message read receipt settings', async () => {
+			test.beforeAll(async ({ api }) => {
+				await setSettingValueById(api, 'Message_Read_Receipt_Enabled', false);
+				await setSettingValueById(api, 'Message_Read_Receipt_Store_Users', false);
+			});
+
+			test('Expect message to not show read receipts item menu when setting is disabled', async ({ page }) => {
+				await poHomeChannel.content.sendFileMessage('This message should not have the info menu activated.');
+				await poHomeChannel.content.openLastMessageMenu();
+				expect(page.locator('role=menuitem[name="Info"]')).not.toBeVisible;
+			})
+		});
 	})
 });
