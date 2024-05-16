@@ -90,19 +90,19 @@ test.describe.serial('Image Gallery', async () => {
 		await poHomeChannel.content.lastUserMessage.locator('img.gallery-item').click();
 		/* eslint-disable no-await-in-loop */
 		for (let i = 0; i < imageNames.length - 1; i++) {
-			await expect(poHomeChannel.content.nextSlideButton).toBeEnabled();
+			await expect(poHomeChannel.content.previousSlideButton).toBeEnabled();
 			await expect(poHomeChannel.content.currentGalleryImage).toHaveAttribute('src', new RegExp(`${imageNames[imageNames.length - (i + 1)]}$`));
-			await poHomeChannel.content.nextSlideButton.click();
+			await poHomeChannel.content.previousSlideButton.click();
 		}
-		await expect(poHomeChannel.content.nextSlideButton).toBeDisabled();
+		await expect(poHomeChannel.content.previousSlideButton).toBeDisabled();
 	});
 
 	test('expect successfully move to newer images by using the right arrow button', async () => {
 		for (let i = 0; i < imageNames.length - 1; i++) {
-			await expect(poHomeChannel.content.previousSlideButton).toBeEnabled();
+			await expect(poHomeChannel.content.nextSlideButton).toBeEnabled();
 			await expect(poHomeChannel.content.currentGalleryImage).toHaveAttribute('src', new RegExp(`${imageNames[i]}$`));
-			await poHomeChannel.content.previousSlideButton.click();
+			await poHomeChannel.content.nextSlideButton.click();
 		}
-		await expect(poHomeChannel.content.previousSlideButton).toBeDisabled();
+		await expect(poHomeChannel.content.nextSlideButton).toBeDisabled();
 	});
 });

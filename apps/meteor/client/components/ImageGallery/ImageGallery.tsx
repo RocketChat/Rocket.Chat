@@ -68,14 +68,14 @@ const swiperStyle = css`
 
 	.rcx-swiper-prev-button,
 	.swiper-rtl .rcx-swiper-next-button {
-		left: auto;
-		right: 10px;
+		right: auto;
+		left: 10px;
 	}
 
 	.rcx-swiper-next-button,
 	.swiper-rtl .rcx-swiper-prev-button {
-		left: 10px;
-		right: auto;
+		right: 10px;
+		left: auto;
 	}
 
 	.rcx-lazy-preloader {
@@ -112,6 +112,7 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();
 	const [zoomScale, setZoomScale] = useState(1);
+	const [gridSize, setGridSize] = useState(images.length);
 
 	const handleZoom = (ratio: number) => {
 		if (swiperRef.current?.swiper.zoom) {
@@ -154,11 +155,11 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 							onClick={onClose}
 						/>
 					</ButtonGroup>
-					<IconButton icon='chevron-right' aria-label={t('Next_image')} className='rcx-swiper-next-button' onClick={preventPropagation} />
+					<IconButton icon='chevron-right' aria-label={t('Next_image')} className='rcx-swiper-prev-button' onClick={preventPropagation} />
 					<IconButton
 						icon='chevron-left'
 						aria-label={t('Previous_image')}
-						className='rcx-swiper-prev-button'
+						className='rcx-swiper-next-button'
 						onClick={preventPropagation}
 					/>
 					<Swiper
@@ -174,9 +175,14 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 						onKeyPress={(_, keyCode) => String(keyCode) === '27' && onClose()}
 						modules={[Navigation, Zoom, Keyboard, A11y]}
 						onInit={(swiper) => setSwiperInst(swiper)}
-						onReachEnd={loadMore}
+						onSlidesGridLengthChange={(swiper) => {
+							swiper.slideTo(images.length - gridSize, 2000);
+							setGridSize(images.length);
+						}}
+						onReachBeginning={loadMore}
+						initialSlide={images.length - 1}
 					>
-						{images?.map(({ _id, url }) => (
+						{images.toReversed().map(({ _id, url }) => (
 							<SwiperSlide key={_id}>
 								<div className='swiper-zoom-container'>
 									{/* eslint-disable-next-line
