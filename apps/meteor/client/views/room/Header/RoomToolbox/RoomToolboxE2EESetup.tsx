@@ -1,7 +1,7 @@
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
 import { HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import React from 'react';
 
 import { roomActionHooksForE2EESetup } from '../../../../ui';
 import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext';
@@ -38,4 +38,4 @@ const RoomToolboxE2EESetup = () => {
 	);
 };
 
-export default memo(RoomToolboxE2EESetup);
+export default RoomToolboxE2EESetup;
