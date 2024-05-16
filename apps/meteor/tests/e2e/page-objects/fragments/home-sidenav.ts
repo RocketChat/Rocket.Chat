@@ -61,7 +61,7 @@ export class HomeSidenav {
 	}
 
 	async openAdministrationByLabel(text: string): Promise<void> {
-		await this.page.locator('role=button[name="Administration"]').click();
+		await this.page.locator('role=button[name="Manage"]').click();
 		await this.page.locator(`role=menuitem[name="${text}"]`).click();
 	}
 
