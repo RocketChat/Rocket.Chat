@@ -4,7 +4,14 @@ import { createClassName } from '../../../helpers/createClassName';
 import { Avatar } from '../../Avatar';
 import styles from './styles.scss';
 
-export const MessageAvatars = memo(({ avatarResolver = () => null, usernames = [], className, style = {} }) => {
+type MessageAvatarsProps = {
+	avatarResolver: (username: string) => string | undefined;
+	usernames: string[];
+	className?: string;
+	style?: React.CSSProperties;
+};
+
+export const MessageAvatars = memo(({ avatarResolver = () => undefined, usernames = [], className, style = {} }: MessageAvatarsProps) => {
 	const avatars = usernames.filter(Boolean);
 
 	if (!avatars.length) {

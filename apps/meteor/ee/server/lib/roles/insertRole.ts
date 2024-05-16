@@ -2,7 +2,7 @@ import { api, MeteorError } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
 
-import { notifyListenerOnRoleChanges } from '../../../../app/lib/server/lib/notifyListenerOnRoleChanges';
+import { notifyOnRoleChanged } from '../../../../app/lib/server/lib/notifyListener';
 import { isValidRoleScope } from '../../../../lib/roles/isValidRoleScope';
 
 type InsertRoleOptions = {
@@ -22,7 +22,7 @@ export const insertRoleAsync = async (roleData: Omit<IRole, '_id'>, options: Ins
 
 	const role = await Roles.createWithRandomId(name, scope, description, false, mandatory2fa);
 
-	void notifyListenerOnRoleChanges(role._id, 'inserted', role);
+	void notifyOnRoleChanged(role);
 
 	if (options.broadcastUpdate) {
 		void api.broadcast('user.roleUpdate', {
