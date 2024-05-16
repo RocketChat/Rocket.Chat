@@ -108,7 +108,7 @@ export const SearchSection = () => {
 	};
 
 	return (
-		<Box className={[isDirty && wrapperStyle]} ref={wrapperRef}>
+		<Box className={['rcx-sidebar', isDirty && wrapperStyle]} ref={wrapperRef} role='search'>
 			<Box
 				pi={16}
 				pb={8}
@@ -122,7 +122,7 @@ export const SearchSection = () => {
 					placeholder={t('Search')}
 					{...rest}
 					ref={mergedRefs}
-					role='search'
+					role='searchbox'
 					small
 					addon={<Icon name={isDirty ? 'cross' : 'magnifier'} size='x20' onClick={handleEscSearch} />}
 				/>
@@ -144,7 +144,6 @@ export const SearchSection = () => {
 					flexShrink={1}
 					h='full'
 					w='full'
-					data-qa='sidebar-search-result'
 					aria-live='polite'
 					aria-atomic='true'
 					aria-busy={isLoading}

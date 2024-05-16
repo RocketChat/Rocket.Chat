@@ -340,7 +340,6 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 			<Sidebar.TopBar.Section {...({ flexShrink: 0 } as any)} is='form'>
 				<TextInput
 					aria-owns={listId}
-					data-qa='sidebar-search-input'
 					ref={autofocus}
 					{...filter}
 					placeholder={placeholder}
@@ -356,7 +355,6 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 				flexShrink={1}
 				h='full'
 				w='full'
-				data-qa='sidebar-search-result'
 				aria-live='polite'
 				aria-atomic='true'
 				aria-busy={isLoading}
