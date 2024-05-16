@@ -6,11 +6,10 @@ import constants from './constants';
 import { loadConfig } from './main';
 import { loadMessages } from './room';
 
-let connectedListener: Promise<() => void> | false;
-let disconnectedListener: Promise<() => void> | false;
+let connectedListener: (() => void) | undefined;
+let disconnectedListener: (() => void) | undefined;
 let initiated = false;
 const { livechatDisconnectedAlertId, livechatConnectedAlertId } = constants;
-const removeListener = (l: any) => l.stop();
 
 const Connection = {
 	async init() {
@@ -27,8 +26,8 @@ const Connection = {
 			await import('../i18next');
 			this.clearListeners();
 			await loadConfig();
-			// await Livechat.connection.connect();
 			this.addListeners();
+			await Livechat.connection.connect();
 			this.clearAlerts();
 		} catch (e) {
 			console.error('Connecting error: ', e);
@@ -81,24 +80,20 @@ const Connection = {
 
 	addListeners() {
 		if (!connectedListener) {
-			connectedListener = Promise.resolve(Livechat.connection.on('connected', this.handleConnected));
+			connectedListener = Livechat.connection.on('connected', this.handleConnected);
 		}
 
 		if (!disconnectedListener) {
-			disconnectedListener = Promise.resolve(Livechat.connection.on('disconnected', this.handleDisconnected));
+			disconnectedListener = Livechat.connection.on('disconnected', this.handleDisconnected);
 		}
 	},
 
 	clearListeners() {
-		if (connectedListener) {
-			connectedListener.then(removeListener);
-			connectedListener = false;
-		}
+		connectedListener?.();
+		connectedListener = undefined;
 
-		if (disconnectedListener) {
-			disconnectedListener.then(removeListener);
-			disconnectedListener = false;
-		}
+		disconnectedListener?.();
+		disconnectedListener = undefined;
 	},
 };
 

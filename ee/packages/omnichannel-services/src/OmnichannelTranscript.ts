@@ -10,7 +10,7 @@ import {
 	Settings as settingsService,
 } from '@rocket.chat/core-services';
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
-import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
@@ -93,7 +93,10 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	async requestTranscript({ details }: { details: WorkDetails }): Promise<void> {
 		this.log.info(`Requesting transcript for room ${details.rid} by user ${details.userId}`);
-		const room = await LivechatRooms.findOneById(details.rid);
+		const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'open' | 'v' | 'pdfTranscriptRequested'>>(details.rid, {
+			projection: { _id: 1, open: 1, v: 1, pdfTranscriptRequested: 1 },
+		});
+
 		if (!room) {
 			throw new Error('room-not-found');
 		}
@@ -229,8 +232,21 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					continue;
 				}
 
-				const fileBuffer = await uploadService.getFileBuffer({ file: uploadedFile });
-				files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.extension });
+				try {
+					const fileBuffer = await uploadService.getFileBuffer({ file: uploadedFile });
+					files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.extension });
+				} catch (e: unknown) {
+					this.log.error(`Failed to get file ${file._id}`, e);
+					// Push empty buffer so parser processes this as "unsupported file"
+					files.push({ name: file.name, buffer: null });
+
+					// TODO: this is a NATS error message, even when we shouldn't tie it, since it's the only way we have right now we'll live with it for a while
+					if ((e as Error).message === 'MAX_PAYLOAD_EXCEEDED') {
+						this.log.error(
+							`File is too big to be processed by NATS. See NATS config for allowing bigger messages to be sent between services`,
+						);
+					}
+				}
 			}
 
 			// When you send a file message, the things you type in the modal are not "msg", they're in "description" of the attachment

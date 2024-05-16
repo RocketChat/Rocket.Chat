@@ -18,7 +18,7 @@ import React, { useMemo } from 'react';
 
 import { ContextualbarScrollableContent } from '../../../../components/Contextualbar';
 import GenericNoResults from '../../../../components/GenericNoResults';
-import UserCard from '../../../../components/UserCard';
+import { UserCardRole } from '../../../../components/UserCard';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import ReportReason from '../helpers/ReportReason';
 import UserColumn from '../helpers/UserColumn';
@@ -79,7 +79,7 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 									<FieldLabel>{t('Roles')}</FieldLabel>
 									<FieldRow justifyContent='flex-start' spacing={1}>
 										{report.user.roles.map((role, index) => (
-											<UserCard.Role key={index}>{role}</UserCard.Role>
+											<UserCardRole key={index}>{role}</UserCardRole>
 										))}
 									</FieldRow>
 								</Field>

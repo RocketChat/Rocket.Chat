@@ -1,8 +1,8 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { MessageBlock, Skeleton } from '@rocket.chat/fuselage';
+import { MessageBlock } from '@rocket.chat/fuselage';
 import { UiKitComponent, UiKitMessage as UiKitMessageSurfaceRender, UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
-import React, { Suspense } from 'react';
+import React from 'react';
 
 import { useMessageBlockContextValue } from '../../../uikit/hooks/useMessageBlockContextValue';
 import GazzodownText from '../../GazzodownText';
@@ -20,9 +20,7 @@ const UiKitMessageBlock = ({ rid, mid, blocks }: UiKitMessageBlockProps) => {
 		<MessageBlock fixedWidth>
 			<UiKitContext.Provider value={contextValue}>
 				<GazzodownText>
-					<Suspense fallback={<Skeleton />}>
-						<UiKitComponent render={UiKitMessageSurfaceRender} blocks={blocks} />
-					</Suspense>
+					<UiKitComponent render={UiKitMessageSurfaceRender} blocks={blocks} />
 				</GazzodownText>
 			</UiKitContext.Provider>
 		</MessageBlock>

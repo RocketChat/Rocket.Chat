@@ -16,8 +16,8 @@ import {
 	ContextualbarFooter,
 	ContextualbarEmptyContent,
 } from '../../../../components/Contextualbar';
+import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import RoomMembersRow from './RoomMembersRow';
 
 type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status'>;
@@ -138,7 +138,7 @@ const RoomMembers = ({
 								overscan={50}
 								data={members}
 								// eslint-disable-next-line react/no-multi-comp
-								components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
+								components={{ Scroller: VirtuosoScrollbars, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
 								itemContent={(index, data): ReactElement => (
 									<RowComponent useRealName={useRealName} data={itemData} user={data} index={index} reload={reload} />
 								)}

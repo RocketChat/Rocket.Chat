@@ -50,7 +50,7 @@
     "ts-loader": "~9.4.2",
     "ts-node": "~10.9.1",
     "ts-patch": "~3.0.2",
-    "typescript": "~5.3.2"
+    "typescript": "~5.3.3"
   },
   "dependencies": {
     "typia": "~5.3.3"

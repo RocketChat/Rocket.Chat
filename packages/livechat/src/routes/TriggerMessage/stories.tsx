@@ -2,7 +2,7 @@ import { action } from '@storybook/addon-actions';
 import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import { screenDecorator, screenProps } from '../../../.storybook/helpers';
+import { screenDecorator } from '../../../.storybook/helpers';
 import TriggerMessage from './component';
 
 const now = new Date(Date.parse('2021-01-01T00:00:00.000Z'));
@@ -28,7 +28,6 @@ export default {
 		title: '',
 		onSubmit: action('submit'),
 		onCancel: action('cancel'),
-		...screenProps(),
 	},
 	decorators: [screenDecorator],
 	parameters: {

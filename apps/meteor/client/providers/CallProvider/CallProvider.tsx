@@ -29,13 +29,13 @@ import { createPortal } from 'react-dom';
 import type { OutgoingByeRequest } from 'sip.js/lib/core';
 
 import { isOutboundClient, useVoipClient } from '../../../ee/client/hooks/useVoipClient';
-import { parseOutboundPhoneNumber } from '../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import { WrapUpCallModal } from '../../../ee/client/voip/components/modals/WrapUpCallModal';
 import type { CallContextValue } from '../../contexts/CallContext';
 import { CallContext, useIsVoipEnterprise } from '../../contexts/CallContext';
 import { useDialModal } from '../../hooks/useDialModal';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import type { QueueAggregator } from '../../lib/voip/QueueAggregator';
+import { parseOutboundPhoneNumber } from '../../lib/voip/parseOutboundPhoneNumber';
 import { useVoipSounds } from './hooks/useVoipSounds';
 
 type NetworkState = 'online' | 'offline';
@@ -526,7 +526,13 @@ export const CallProvider: FC = ({ children }) => {
 	return (
 		<CallContext.Provider value={contextValue}>
 			{children}
-			{contextValue.enabled && createPortal(<audio ref={remoteAudioMediaRef} />, document.body)}
+			{contextValue.enabled &&
+				createPortal(
+					<audio ref={remoteAudioMediaRef}>
+						<track kind='captions' />
+					</audio>,
+					document.body,
+				)}
 		</CallContext.Provider>
 	);
 };

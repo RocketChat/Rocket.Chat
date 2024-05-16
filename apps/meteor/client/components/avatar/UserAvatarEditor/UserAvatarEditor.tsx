@@ -1,13 +1,13 @@
 import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
-import { Box, Button, TextInput, Avatar, IconButton, Label } from '@rocket.chat/fuselage';
+import { Box, Button, Avatar, TextInput, IconButton, Label } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
-import UserAvatar from '../UserAvatar';
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 import { readFileAsDataURL } from './readFileAsDataURL';
@@ -81,11 +81,11 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, disabled, e
 					data-qa-id='UserAvatarEditor'
 					username={currentUsername || ''}
 					etag={etag}
-					onError={() => dispatchToastMessage({ type: 'error', message: t('error-invalid-image-url') })}
 					style={{
-						objectFit: 'contain',
 						imageOrientation: rotateImages ? 'from-image' : 'none',
+						objectFit: 'contain',
 					}}
+					onError={() => dispatchToastMessage({ type: 'error', message: t('error-invalid-image-url') })}
 				/>
 				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis={4}>
 					<Box display='flex' flexDirection='row' mbs='none'>

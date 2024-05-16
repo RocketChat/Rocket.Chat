@@ -1,11 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Margins } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import MarkdownText from '../../components/MarkdownText';
 import { UserStatus } from '../../components/UserStatus';
-import UserAvatar from '../../components/avatar/UserAvatar';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 
 const UserMenuHeader = ({ user }: { user: IUser }) => {

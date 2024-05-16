@@ -1,20 +1,23 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { password } from '../../data/user';
-import { createUser, login } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('licenses', function () {
+	let createdUser;
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 	let unauthorizedUserCredentials;
 
 	before(async () => {
-		const createdUser = await createUser();
+		createdUser = await createUser();
 		unauthorizedUserCredentials = await login(createdUser.username, password);
 	});
+
+	after(() => deleteUser(createdUser));
 
 	describe('[/licenses.add]', () => {
 		it('should fail if not logged in', (done) => {

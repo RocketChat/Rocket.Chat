@@ -24,7 +24,7 @@ await License.onLicense('saml-enterprise', () => {
 
 			const savedRoles = await Roles.findInIdsOrNames(ensureArray<string>(value)).toArray();
 
-			userObject.roles = savedRoles.map((role) => role.name);
+			userObject.roles = savedRoles.map((role) => role._id);
 		}
 	});
 

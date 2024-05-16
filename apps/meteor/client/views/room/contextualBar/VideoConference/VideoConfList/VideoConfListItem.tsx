@@ -2,11 +2,11 @@ import type { IGroupVideoConference } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Button, Message, Box, Avatar, Palette } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useVideoConfJoinCall } from '../../../../../contexts/VideoConfContext';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
@@ -54,16 +54,14 @@ const VideoConfListItem = ({
 	return (
 		<Box
 			color='default'
-			borderBlockEndWidth={2}
+			borderBlockEndWidth={1}
 			borderBlockEndColor='stroke-extra-light'
 			borderBlockEndStyle='solid'
 			className={[...className, hovered].filter(Boolean)}
 			pb={8}
 		>
 			<Message {...props}>
-				<Message.LeftContainer>
-					{username && <UserAvatar username={username} className='rcx-message__avatar' size='x36' />}
-				</Message.LeftContainer>
+				<Message.LeftContainer>{username && <UserAvatar username={username} size='x36' />}</Message.LeftContainer>
 				<Message.Container>
 					<Message.Header>
 						<Message.Name title={username}>{showRealName ? name : username}</Message.Name>

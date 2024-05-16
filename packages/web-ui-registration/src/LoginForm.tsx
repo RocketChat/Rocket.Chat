@@ -56,7 +56,9 @@ const LOGIN_SUBMIT_ERRORS = {
 	},
 } as const;
 
-export type LoginErrors = keyof typeof LOGIN_SUBMIT_ERRORS | 'totp-canceled';
+export type LoginErrors = keyof typeof LOGIN_SUBMIT_ERRORS | 'totp-canceled' | string;
+
+export type LoginErrorState = [error: LoginErrors, message?: string] | undefined;
 
 export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }): ReactElement => {
 	const {
@@ -72,7 +74,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 
 	const { t } = useTranslation();
 	const formLabelId = useUniqueId();
-	const [errorOnSubmit, setErrorOnSubmit] = useState<LoginErrors | undefined>(undefined);
+	const [errorOnSubmit, setErrorOnSubmit] = useState<LoginErrorState>(undefined);
 	const isResetPasswordAllowed = useSetting('Accounts_PasswordReset');
 	const login = useLoginWithPassword();
 	const showFormLogin = useSetting('Accounts_ShowFormLogin');
@@ -92,11 +94,11 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 			}
 
 			if ('error' in error && error.error !== 403) {
-				setErrorOnSubmit(error.error);
+				setErrorOnSubmit([error.error, error.reason]);
 				return;
 			}
 
-			setErrorOnSubmit('user-not-found');
+			setErrorOnSubmit(['user-not-found']);
 		},
 	});
 
@@ -110,18 +112,28 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		}
 	}, [errorOnSubmit]);
 
-	const renderErrorOnSubmit = (error: LoginErrors) => {
+	const renderErrorOnSubmit = ([error, message]: Exclude<LoginErrorState, undefined>) => {
+		if (error in LOGIN_SUBMIT_ERRORS) {
+			const { type, i18n } = LOGIN_SUBMIT_ERRORS[error as Exclude<LoginErrors, string>];
+			return (
+				<Callout id={`${usernameId}-error`} aria-live='assertive' type={type}>
+					{t(i18n)}
+				</Callout>
+			);
+		}
+
 		if (error === 'totp-canceled') {
 			return null;
 		}
 
-		const { type, i18n } = LOGIN_SUBMIT_ERRORS[error];
-
-		return (
-			<Callout id={`${usernameId}-error`} aria-live='assertive' type={type}>
-				{t(i18n)}
-			</Callout>
-		);
+		if (message) {
+			return (
+				<Callout id={`${usernameId}-error`} aria-live='assertive' type='danger'>
+					{message}
+				</Callout>
+			);
+		}
+		return null;
 	};
 
 	if (errors.usernameOrEmail?.type === 'invalid-email') {

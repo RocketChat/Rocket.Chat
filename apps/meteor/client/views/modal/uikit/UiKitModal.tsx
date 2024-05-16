@@ -1,4 +1,4 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import type * as UiKit from '@rocket.chat/ui-kit';
@@ -22,59 +22,47 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 	const { view, errors, values, updateValues, state } = useUiKitView(initialView);
 	const contextValue = useModalContextValue({ view, values, updateValues });
 
-	const handleSubmit = useMutableCallback((e: FormEvent) => {
+	const handleSubmit = useEffectEvent((e: FormEvent) => {
 		preventSyntheticEvent(e);
-		void actionManager
-			.emitInteraction(view.appId, {
-				type: 'viewSubmit',
-				payload: {
-					view: {
-						...view,
-						state,
-					},
+		void actionManager.emitInteraction(view.appId, {
+			type: 'viewSubmit',
+			payload: {
+				view: {
+					...view,
+					state,
 				},
+			},
+			viewId: view.id,
+		});
+	});
+
+	const handleCancel = useEffectEvent((e: FormEvent) => {
+		preventSyntheticEvent(e);
+		void actionManager.emitInteraction(view.appId, {
+			type: 'viewClosed',
+			payload: {
 				viewId: view.id,
-			})
-			.finally(() => {
-				actionManager.disposeView(view.id);
-			});
+				view: {
+					...view,
+					state,
+				},
+				isCleared: false,
+			},
+		});
 	});
 
-	const handleCancel = useMutableCallback((e: FormEvent) => {
-		preventSyntheticEvent(e);
-		void actionManager
-			.emitInteraction(view.appId, {
-				type: 'viewClosed',
-				payload: {
-					viewId: view.id,
-					view: {
-						...view,
-						state,
-					},
-					isCleared: false,
+	const handleClose = useEffectEvent(() => {
+		void actionManager.emitInteraction(view.appId, {
+			type: 'viewClosed',
+			payload: {
+				viewId: view.id,
+				view: {
+					...view,
+					state,
 				},
-			})
-			.finally(() => {
-				actionManager.disposeView(view.id);
-			});
-	});
-
-	const handleClose = useMutableCallback(() => {
-		void actionManager
-			.emitInteraction(view.appId, {
-				type: 'viewClosed',
-				payload: {
-					viewId: view.id,
-					view: {
-						...view,
-						state,
-					},
-					isCleared: true,
-				},
-			})
-			.finally(() => {
-				actionManager.disposeView(view.id);
-			});
+				isCleared: true,
+			},
+		});
 	});
 
 	return (

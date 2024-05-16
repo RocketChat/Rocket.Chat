@@ -10,7 +10,7 @@ import {
 import { Subscriptions, Users } from '@rocket.chat/models';
 import emojione from 'emojione';
 import moment from 'moment';
-import type { Filter, RootFilterOperators } from 'mongodb';
+import type { RootFilterOperators } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -117,7 +117,7 @@ export const sendNotification = async ({
 			disableAllMessageNotifications,
 			status: receiver.status ?? 'offline',
 			statusConnection: receiver.statusConnection ?? 'offline',
-			desktopNotifications: desktopNotifications ?? 'default',
+			desktopNotifications,
 			hasMentionToAll,
 			hasMentionToHere,
 			isHighlighted,
@@ -304,33 +304,32 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 	} as const;
 
 	(['desktop', 'mobile', 'email'] as const).forEach((kind) => {
-		const notificationField = `${kind === 'mobile' ? 'mobilePush' : kind}Notifications`;
+		const notificationField = kind === 'mobile' ? 'mobilePush' : `${kind}Notifications`;
 
-		const filter: Filter<ISubscription> = { [notificationField]: 'all' };
+		query.$or.push({
+			[notificationField]: 'all',
+			...(disableAllMessageNotifications ? { [`${kind}PrefOrigin`]: { $ne: 'user' } } : {}),
+		});
 
 		if (disableAllMessageNotifications) {
-			filter[`${kind}PrefOrigin`] = { $ne: 'user' };
+			return;
 		}
 
-		query.$or.push(filter);
-
-		if (mentionIdsWithoutGroups.length > 0) {
+		if (room.t === 'd') {
+			query.$or.push({
+				[notificationField]: 'mentions',
+			});
+		} else if (mentionIdsWithoutGroups.length > 0) {
 			query.$or.push({
 				[notificationField]: 'mentions',
 				'u._id': { $in: mentionIdsWithoutGroups },
-			});
-		} else if (!disableAllMessageNotifications && (hasMentionToAll || hasMentionToHere)) {
-			query.$or.push({
-				[notificationField]: 'mentions',
 			});
 		}
 
 		const serverField = kind === 'email' ? 'emailNotificationMode' : `${kind}Notifications`;
 		const serverPreference = settings.get(`Accounts_Default_User_Preferences_${serverField}`);
-		if (
-			(room.t === 'd' && serverPreference !== 'nothing') ||
-			(!disableAllMessageNotifications && (serverPreference === 'all' || hasMentionToAll || hasMentionToHere))
-		) {
+
+		if (serverPreference === 'all' || hasMentionToAll || hasMentionToHere || room.t === 'd') {
 			query.$or.push({
 				[notificationField]: { $exists: false },
 			});

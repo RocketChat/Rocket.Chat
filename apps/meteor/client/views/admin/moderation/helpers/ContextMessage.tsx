@@ -1,10 +1,10 @@
 import type { IMessage, MessageReport } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Message, MessageName, MessageToolbarItem, MessageToolbarWrapper, MessageUsername } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import UserAvatar from '../../../../components/avatar/UserAvatar';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import Attachments from '../../../../components/message/content/Attachments';
 import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';

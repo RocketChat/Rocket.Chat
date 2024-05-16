@@ -4,6 +4,7 @@ import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { Admin } from './page-objects';
 import { createTargetChannel } from './utils';
+import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -25,6 +26,38 @@ test.describe.parallel('administration', () => {
 			const [download] = await Promise.all([page.waitForEvent('download'), page.locator('button:has-text("Download info")').click()]);
 
 			await expect(download.suggestedFilename()).toBe('statistics.json');
+		});
+	});
+
+	test.describe('Engagement dashboard', () => {
+		test('Should show upsell modal', async ({ page }) => {
+			test.skip(IS_EE);
+			await page.goto('/admin/engagement/users');
+
+			await expect(page.locator('role=dialog[name="Engagement dashboard"]')).toBeVisible();
+		});
+
+		test('Should show engagement dashboard', async ({ page }) => {
+			test.skip(!IS_EE);
+			await page.goto('/admin/engagement/users');
+
+			await expect(page.locator('h1 >> text="Engagement"')).toBeVisible();
+		});
+	});
+
+	test.describe('Device management', () => {
+		test('Should show upsell modal', async ({ page }) => {
+			test.skip(IS_EE);
+			await page.goto('/admin/device-management');
+
+			await expect(page.locator('role=dialog[name="Device management"]')).toBeVisible();
+		});
+
+		test('Should show device management page', async ({ page }) => {
+			test.skip(!IS_EE);
+			await page.goto('/admin/device-management');
+
+			await expect(page.locator('h1 >> text="Device management"')).toBeVisible();
 		});
 	});
 
@@ -70,7 +103,18 @@ test.describe.parallel('administration', () => {
 			await page.waitForSelector('[qa-room-id="GENERAL"]');
 		});
 
-		test('should edit target channel', async () => {
+		test('should edit target channel name', async () => {
+			await poAdmin.inputSearchRooms.fill(targetChannel);
+			await poAdmin.getRoomRow(targetChannel).click();
+			await poAdmin.roomNameInput.fill(`${targetChannel}-edited`);
+			await poAdmin.btnSave.click();
+
+			await expect(poAdmin.getRoomRow(targetChannel)).toContainText(`${targetChannel}-edited`);
+
+			targetChannel = `${targetChannel}-edited`;
+		});
+
+		test('should edit target channel type', async () => {
 			await poAdmin.inputSearchRooms.type(targetChannel);
 			await poAdmin.getRoomRow(targetChannel).click();
 			await poAdmin.privateLabel.click();
@@ -89,12 +133,16 @@ test.describe.parallel('administration', () => {
 		});
 
 		test.describe.serial('Default rooms', () => {
-			test('expect target channell to be default', async () => {
+			test('expect target channel to be default', async () => {
 				await poAdmin.inputSearchRooms.type(targetChannel);
 				await poAdmin.getRoomRow(targetChannel).click();
 				await poAdmin.defaultLabel.click();
-				await poAdmin.btnSave.click();
-	
+
+				await test.step('should close contextualbar after saving', async () => {
+					await poAdmin.btnSave.click();
+					await expect(poAdmin.page).toHaveURL(new RegExp('/admin/rooms$'));
+				});
+
 				await poAdmin.getRoomRow(targetChannel).click();
 				await expect(poAdmin.defaultInput).toBeChecked();
 			});
@@ -107,6 +155,21 @@ test.describe.parallel('administration', () => {
 
 				await poAdmin.getRoomRow(targetChannel).click();
 				await expect(poAdmin.favoriteInput).toBeChecked();
+			});
+
+			test('should see favorite switch disabled when default is not true', async () => {
+				await poAdmin.inputSearchRooms.type(targetChannel);
+				await poAdmin.getRoomRow(targetChannel).click();
+				await poAdmin.defaultLabel.click();
+
+				await expect(poAdmin.favoriteInput).toBeDisabled();
+			});
+
+			test('should see favorite switch enabled when default is true', async () => {
+				await poAdmin.inputSearchRooms.type(targetChannel);
+				await poAdmin.getRoomRow(targetChannel).click();
+
+				await expect(poAdmin.favoriteInput).toBeEnabled();
 			});
 		});
 	});
@@ -126,18 +189,22 @@ test.describe.parallel('administration', () => {
 	test.describe('Mailer', () => {
 		test.beforeEach(async ({ page }) => {
 			await page.goto('/admin/mailer');
-		})
+		});
 
 		test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
-		})
-	})
+		});
+	});
 
 	test.describe('Settings', () => {
 		test.describe('General', () => {
 			test.beforeEach(async ({ page }) => {
 				await page.goto('/admin/settings/General');
+			});
+
+			test.afterAll(async ({ api }) => {
+				await setSettingValueById(api, 'Language', 'en')
 			});
 
 			test('expect be able to reset a setting after a change', async () => {

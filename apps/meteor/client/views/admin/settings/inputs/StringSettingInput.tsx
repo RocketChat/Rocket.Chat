@@ -3,22 +3,12 @@ import type { EventHandler, ReactElement, SyntheticEvent } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type StringSettingInputProps = {
-	_id: string;
-	label: string;
+type StringSettingInputProps = SettingInputProps & {
 	name?: string;
-	value?: string;
 	multiline?: boolean;
-	placeholder?: string;
-	readonly?: boolean;
 	error?: string;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	required?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string) => void;
-	onResetButtonClick?: () => void;
 };
 
 function StringSettingInput({

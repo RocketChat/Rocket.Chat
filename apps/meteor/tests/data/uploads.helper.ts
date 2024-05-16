@@ -45,6 +45,7 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			name: null,
 			username: null,
 			members: null,
+			extraData: null,
 		});
 
 		return roomResponse.body.room;

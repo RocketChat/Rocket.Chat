@@ -1,10 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, Box, IconButton } from '@rocket.chat/fuselage';
+import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEventHandler, ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
 
-import MessageAvatar from '../../../../../components/message/header/MessageAvatar';
+import Emoji from '../../../../../components/Emoji';
 import { followStyle, anchor } from '../../../../../components/message/helpers/followSyle';
 import AllMentionNotification from '../../../../../components/message/notification/AllMentionNotification';
 import MeMentionNotification from '../../../../../components/message/notification/MeMentionNotification';
@@ -55,7 +56,7 @@ const ThreadListMessage = ({
 		<Box className={[className, !following && followStyle].flat()}>
 			<Box pbs={16} is={Message} {...props}>
 				<Message.LeftContainer>
-					<MessageAvatar emoji={emoji} username={username} size='x36' />
+					<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
 				</Message.LeftContainer>
 				<Message.Container>
 					<Message.Header>

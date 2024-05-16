@@ -15,6 +15,7 @@ import '../app/iframe-login/client';
 import '../app/lib/client';
 import '../app/message-mark-as-unread/client';
 import '../app/nextcloud/client';
+import '../app/notifications/client';
 import '../app/otr/client';
 import '../app/slackbridge/client';
 import '../app/slashcommands-archiveroom/client';

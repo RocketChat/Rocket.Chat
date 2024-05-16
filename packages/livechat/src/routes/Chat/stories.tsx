@@ -2,7 +2,7 @@ import { action } from '@storybook/addon-actions';
 import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import { screenProps, avatarResolver, beepAudio, screenDecorator } from '../../../.storybook/helpers';
+import { avatarResolver, beepAudio, screenDecorator } from '../../../.storybook/helpers';
 import Chat from './component';
 
 const now = new Date(Date.parse('2021-01-01T00:00:00.000Z'));
@@ -53,7 +53,6 @@ export default {
 		onBottom: action('bottom'),
 		onUpload: action('upload'),
 		onSubmit: action('submit'),
-		...screenProps(),
 	},
 	decorators: [screenDecorator],
 	parameters: {

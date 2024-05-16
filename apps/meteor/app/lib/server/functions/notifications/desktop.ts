@@ -81,7 +81,7 @@ export function shouldNotifyDesktop({
 	disableAllMessageNotifications: boolean;
 	status: string;
 	statusConnection: string;
-	desktopNotifications: string;
+	desktopNotifications: string | undefined;
 	hasMentionToAll: boolean;
 	hasMentionToHere: boolean;
 	isHighlighted: boolean;
@@ -90,7 +90,7 @@ export function shouldNotifyDesktop({
 	roomType: string;
 	isThread: boolean;
 }): boolean {
-	if (disableAllMessageNotifications && desktopNotifications == null && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
+	if (disableAllMessageNotifications && !desktopNotifications && !isHighlighted && !hasMentionToUser && !hasReplyToThread) {
 		return false;
 	}
 

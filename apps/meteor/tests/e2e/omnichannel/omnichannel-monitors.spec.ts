@@ -56,10 +56,11 @@ test.describe.serial('OC - Manage Monitors', () => {
 			await poMonitors.selectMonitor('user1');
 			await poMonitors.btnAddMonitor.click();
 
+			await expect(poMonitors.findRowByName('user1')).toBeVisible();
+
 			await poMonitors.selectMonitor('user2');
 			await poMonitors.btnAddMonitor.click();
 
-			await expect(poMonitors.findRowByName('user1')).toBeVisible();
 			await expect(poMonitors.findRowByName('user2')).toBeVisible();
 		});
 
@@ -85,11 +86,12 @@ test.describe.serial('OC - Manage Monitors', () => {
 			await expect(poMonitors.modalConfirmRemove).toBeVisible();
 			await poMonitors.btnConfirmRemove.click();
 
+			await expect(poMonitors.findRowByName('user1')).not.toBeVisible();
+
 			await poMonitors.btnRemoveByName('user2').click();
 			await expect(poMonitors.modalConfirmRemove).toBeVisible();
 			await poMonitors.btnConfirmRemove.click();
 
-			await expect(poMonitors.findRowByName('user1')).not.toBeVisible();
 			await expect(poMonitors.findRowByName('user2')).not.toBeVisible();
 		});
 	});

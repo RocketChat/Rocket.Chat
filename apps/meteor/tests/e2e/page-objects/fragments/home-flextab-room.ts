@@ -11,24 +11,28 @@ export class HomeFlextabRoom {
 		return this.page.locator('role=button[name="Edit"]');
 	}
 
+	get btnDelete(): Locator {
+		return this.page.locator('role=button[name="Delete"]');
+	}
+
 	get inputName(): Locator {
-		return this.page.locator('//aside//label[contains(text(), "Name")]/..//input');
+		return this.page.getByRole('dialog').getByRole('textbox', { name: 'Name' });
 	}
 
 	get inputTopic(): Locator {
-		return this.page.locator('//main//aside//label[contains(text(), "Topic")]/..//textarea');
+		return this.page.getByRole('dialog').getByRole('textbox', { name: 'Topic' });
 	}
 
 	get inputAnnouncement(): Locator {
-		return this.page.locator('//main//aside//label[contains(text(), "Announcement")]/..//textarea');
+		return this.page.getByRole('dialog').getByRole('textbox', { name: 'Announcement' });
 	}
 
 	get inputDescription(): Locator {
-		return this.page.locator('//main//aside//label[contains(text(), "Description")]/..//textarea');
+		return this.page.getByRole('dialog').getByRole('textbox', { name: 'Description' });
 	}
 
 	get checkboxReadOnly(): Locator {
-		return this.page.locator('text=Read OnlyOnly authorized users can write new messages >> i');
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Read-only' }) });
 	}
 
 	get btnSave(): Locator {

@@ -12,7 +12,7 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/node": "^14.18.63",
 		"eslint": "~8.45.0",
-		"typescript": "~5.3.2"
+		"typescript": "~5.3.3"
 	},
 	"dependencies": {
 		"dataloader": "^1.4.0",
