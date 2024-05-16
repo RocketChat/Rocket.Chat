@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, SideBarSection, Icon, TextInput, Palette } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Palette, Sidebar } from '@rocket.chat/fuselage';
 import { useMergedRefs, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement } from 'react';
@@ -109,12 +109,13 @@ export const SearchSection = () => {
 
 	return (
 		<Box className={[isDirty && wrapperStyle]} ref={wrapperRef}>
-			<SideBarSection>
+			<Box pi={16} pb={8} display='flex' alignItems='center'>
 				<TextInput
 					placeholder={t('Search')}
 					{...rest}
 					ref={mergedRefs}
 					role='search'
+					small
 					addon={<Icon name={isDirty ? 'cross' : 'magnifier'} size='x20' onClick={handleEscSearch} />}
 				/>
 
@@ -124,7 +125,8 @@ export const SearchSection = () => {
 						<CreateRoom />
 					</>
 				)}
-			</SideBarSection>
+			</Box>
+			<Sidebar.Divider />
 			{isDirty && (
 				<Box
 					ref={boxRef}
