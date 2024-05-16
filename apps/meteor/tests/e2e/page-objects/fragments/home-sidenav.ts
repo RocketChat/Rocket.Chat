@@ -33,10 +33,6 @@ export class HomeSidenav {
 		return this.page.locator('role=button[name="Create"]');
 	}
 
-	get inputSearch(): Locator {
-		return this.page.locator('[placeholder="Search (Ctrl+K)"]').first();
-	}
-
 	get userProfileMenu(): Locator {
 		return this.page.getByRole('button', { name: 'User menu' });
 	}
@@ -75,8 +71,8 @@ export class HomeSidenav {
 		await this.page.locator(`role=menuitem[name="${text}"]`).click();
 	}
 
-	async openSearch(): Promise<void> {
-		await this.page.locator('role=button[name="Search"]').click();
+	async typeSearch(text: string): Promise<void> {
+		await this.page.getByRole('navigation').getByRole('searchbox').fill(text);
 	}
 
 	async logout(): Promise<void> {
