@@ -45,6 +45,10 @@ export class HomeSidenav {
 		return this.page.getByRole('toolbar', { name: 'Sidebar actions' });
 	}
 
+	get sidebarSearchSection() {
+		return this.page.getByRole('navigation', { name: 'sidebar' }).getByRole('searchbox');
+	}
+
 	getSidebarItemByName(name: string): Locator {
 		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
 	}
@@ -72,7 +76,7 @@ export class HomeSidenav {
 	}
 
 	async typeSearch(text: string): Promise<void> {
-		await this.page.getByRole('navigation').getByRole('searchbox').fill(text);
+		await this.sidebarSearchSection.fill(text);
 	}
 
 	async logout(): Promise<void> {
@@ -86,7 +90,7 @@ export class HomeSidenav {
 	}
 
 	async openChat(name: string): Promise<void> {
-		await this.page.getByRole('navigation').getByRole('searchbox').fill(name);
+		await this.typeSearch(name);
 		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
 		await this.waitForChannel();
 	}
