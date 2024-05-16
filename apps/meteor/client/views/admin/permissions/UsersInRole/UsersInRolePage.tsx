@@ -57,7 +57,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 		<Page>
 			<PageHeader title={`${t('Users_in_role')} "${description || name}"`}>
 				<ButtonGroup>
-					<Button onClick={() => router.navigate(`/admin/permissions/users-in-role/${_id}`)}>{t('Back')}</Button>
+					<Button onClick={() => router.navigate(`/admin/permissions/edit/${_id}`)}>{t('Back')}</Button>
 				</ButtonGroup>
 			</PageHeader>
 			<PageContent>
