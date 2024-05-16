@@ -9,21 +9,14 @@ addMigration({
 	version: 305,
 	name: 'Convert retention policy max age from days to milliseconds',
 	async up() {
-		await Promise.all(
-			(
-				await Settings.findByIds(maxAgeSettings).toArray()
-			).map(async ({ value, packageValue, _id }) => {
-				// if the package value isn't 30 the setting has already been updated
-				if (packageValue !== 30) {
-					return;
-				}
-
+		// if the package value isn't 30 the setting has already been updated
+		await Settings.find({ _id: { $in: maxAgeSettings }, packageValue: 30 }, { projection: { _id: 1, value: 1 } })
+			.map(async ({ value, _id }) => {
 				const newPackageValue = convertDaysToMs(30);
-				// make sure the check passes if the number is 0;
-				const newValue = Number(value) + 1 ? convertDaysToMs(Number(value)) : newPackageValue;
+				const newValue = Number(value) >= 0 ? convertDaysToMs(Number(value)) : newPackageValue;
 
-				return Settings.updateOne({ _id }, { $set: { value: newValue, packageValue: newPackageValue } });
-			}),
-		);
+				await Settings.updateOne({ _id }, { $set: { value: newValue, packageValue: newPackageValue } });
+			})
+			.toArray();
 	},
 });
