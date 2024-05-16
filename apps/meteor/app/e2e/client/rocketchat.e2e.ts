@@ -543,14 +543,6 @@ class E2E extends Emitter {
 		return message;
 	}
 
-	fetchUsersWithWaitingKeys() {
-		return sdk.rest.get('/v1/e2e.fetchUsersWaitingForGroupKey');
-	}
-
-	provideUsersSuggestedGroupKeys(data: { usersSuggestedGroupKeys: Record<IRoom['_id'], { _id: IUser['_id']; key: string }[]> }) {
-		return sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', data);
-	}
-
 	async getSuggestedE2EEKeys(usersWaitingForE2EKeys: Record<IRoom['_id'], { _id: IUser['_id']; public_key: string }[]>) {
 		const roomIds = Object.keys(usersWaitingForE2EKeys);
 		return Object.fromEntries(
@@ -581,7 +573,7 @@ class E2E extends Emitter {
 		}
 
 		this.timeout = setInterval(async () => {
-			const { usersWaitingForE2EKeys, hasMore } = await this.fetchUsersWithWaitingKeys();
+			const { usersWaitingForE2EKeys, hasMore } = await sdk.rest.get('/v1/e2e.fetchUsersWaitingForGroupKey');
 
 			if (!hasMore && this.timeout) {
 				clearTimeout(this.timeout);
@@ -595,7 +587,7 @@ class E2E extends Emitter {
 			const userKeysWithRooms = await this.getSuggestedE2EEKeys(usersWaitingForE2EKeys);
 
 			try {
-				await this.provideUsersSuggestedGroupKeys({ usersSuggestedGroupKeys: userKeysWithRooms });
+				await sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', { usersSuggestedGroupKeys: userKeysWithRooms });
 			} catch (error) {
 				this.timeout && clearTimeout(this.timeout);
 				this.timeout = null;
