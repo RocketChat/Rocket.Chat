@@ -348,6 +348,8 @@ class LivechatClass {
 			});
 		}
 
+		void notifyOnRoomChangedById(newRoom._id);
+
 		this.logger.debug(`Room ${newRoom._id} was closed`);
 	}
 
@@ -1807,7 +1809,6 @@ class LivechatClass {
 				LivechatInquiry.setNameByRoomId(rid, name),
 				Subscriptions.updateDisplayNameByRoomId(rid, name),
 			]);
-			return true;
 		}
 
 		void notifyOnRoomChangedById(roomData._id);

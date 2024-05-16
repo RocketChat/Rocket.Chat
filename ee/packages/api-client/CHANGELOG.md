@@ -1,6 +1,54 @@
 # @rocket.chat/api-client
 
-## 0.1.30
+## 0.1.32
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [845fd64f45, c47a8e3514, 9a6a7d0a40, 845fd64f45, b94ca7c30b, 9902554388, 4aba7c8a26]:</summary>
+
+  - @rocket.chat/rest-typings@6.8.0
+  - @rocket.chat/core-typings@6.8.0
+  </details>
+
+## 0.1.32-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b94ca7c30b]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.2
+  - @rocket.chat/rest-typings@6.8.0-rc.2
+  </details>
+
+## 0.1.32-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+- @rocket.chat/rest-typings@6.8.0-rc.1
+</details>
+
+## 0.1.32-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [845fd64f45, c47a8e3514, 9a6a7d0a40, 845fd64f45, 9902554388, 4aba7c8a26]:</summary>
+
+  - @rocket.chat/rest-typings@6.8.0-rc.0
+  - @rocket.chat/core-typings@6.8.0-rc.0
+
+## 0.1.31
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.2
+  - @rocket.chat/rest-typings@6.7.2
+  </details>
+
+> > > > > > > origin/master
 
 ### Patch Changes
 
