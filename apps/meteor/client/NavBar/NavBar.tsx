@@ -39,7 +39,7 @@ export const NavBar = () => {
 	const isCallReady = useIsCallReady();
 
 	return (
-		<NavBarComponent>
+		<NavBarComponent aria-label='header'>
 			<NavBarSection>
 				<NavBarGroup role='toolbar'>
 					<NavBarItemHomePage title={t('Home')} />
