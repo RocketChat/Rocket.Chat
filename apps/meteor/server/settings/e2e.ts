@@ -10,7 +10,7 @@ export const createE2ESettings = () =>
 			alert: 'E2E_Enable_alert',
 		});
 
-		await this.add('E2E_Allow_Unencrypted_Messages', false, {
+		await this.add('E2E_Allow_Unencrypted_Messages', true, {
 			type: 'boolean',
 			public: true,
 			enableQuery: { _id: 'E2E_Enable', value: true },
