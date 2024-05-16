@@ -12,6 +12,9 @@ export const NavBarItemManageMenu = (props: Omit<HTMLAttributes<HTMLElement>, 'i
 
 	const sections = useManageMenu();
 
+	if (!sections[0].items.length) {
+		return null;
+	}
 	return (
 		<GenericMenu
 			sections={sections}
