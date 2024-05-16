@@ -2,6 +2,7 @@ import { NavBar as NavBarComponent, NavBarSection, NavBarGroup, NavBarDivider } 
 import { usePermission, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
+import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
 import { useIsCallEnabled, useIsCallReady } from '../contexts/CallContext';
 import { useOmnichannelShowQueueLink } from '../hooks/omnichannel/useOmnichannelShowQueueLink';
 import UserMenu from '../sidebar/header/UserMenu';
@@ -12,13 +13,19 @@ import {
 	NavBarItemOmnichannelQueue,
 	NavBarItemOmnichannelCallToggle,
 } from './Omnichannel';
-import NavBarAdministrationMenu from './actions/Administration';
-import NavBarAuditMenu from './actions/Audit.tsx';
-import { NavBarPageDirectory, NavBarPageHome, NavBarPageMarketPlace } from './pages';
+import {
+	NavBarItemManageMenu,
+	NavBarItemMarketPlaceMenu,
+	NavBarItemAuditMenu,
+	NavBarItemDirectoryPage,
+	NavBarItemHomePage,
+} from './actions';
 
 export const NavBar = () => {
 	const t = useTranslation();
 	const user = useUser();
+
+	const hasAuditLicense = useHasLicenseModule('auditing') === true;
 
 	const showOmnichannel = usePermission('view-livechat-manager');
 	const hasManageAppsPermission = usePermission('manage-apps');
@@ -33,10 +40,10 @@ export const NavBar = () => {
 		<NavBarComponent>
 			<NavBarSection>
 				<NavBarGroup role='toolbar'>
-					<NavBarPageHome title={t('Home')} />
-					<NavBarPageDirectory title={t('Directory')} />
-					{showMarketplace && <NavBarPageMarketPlace title={t('Marketplace')} />}
-					<NavBarAuditMenu />
+					<NavBarItemHomePage title={t('Home')} />
+					<NavBarItemDirectoryPage title={t('Directory')} />
+					{showMarketplace && <NavBarItemMarketPlaceMenu />}
+					{hasAuditLicense && <NavBarItemAuditMenu />}
 				</NavBarGroup>
 				<NavBarDivider />
 				{showOmnichannel && (
@@ -51,7 +58,7 @@ export const NavBar = () => {
 			</NavBarSection>
 			<NavBarSection>
 				<NavBarGroup>
-					<NavBarAdministrationMenu />
+					<NavBarItemManageMenu />
 					{user && <UserMenu user={user} />}
 				</NavBarGroup>
 			</NavBarSection>

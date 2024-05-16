@@ -6,7 +6,7 @@ import React from 'react';
 
 type DirectoryProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-export const NavBarPageDirectory = (props: DirectoryProps) => {
+export const NavBarItemDirectoryPage = (props: DirectoryProps) => {
 	const router = useRouter();
 	const { sidebar } = useLayout();
 	const handleDirectory = useEffectEvent(() => {

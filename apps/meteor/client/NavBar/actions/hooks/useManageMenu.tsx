@@ -30,7 +30,7 @@ const ADMIN_PERMISSIONS = [
 	'view-moderation-console',
 ];
 
-export const useAdministrationMenu = () => {
+export const useManageMenu = () => {
 	const router = useRouter();
 	const t = useTranslation();
 
@@ -39,20 +39,18 @@ export const useAdministrationMenu = () => {
 
 	const workspace: GenericMenuItemProps = {
 		id: 'workspace',
-		icon: 'extended-view',
 		content: t('Workspace'),
 		onClick: () => router.navigate('/admin'),
 	};
 	const omnichannel: GenericMenuItemProps = {
 		id: 'omnichannel',
-		icon: 'headset',
 		content: t('Omnichannel'),
 		onClick: () => router.navigate('/omnichannel/current'),
 	};
 
 	return [
 		{
-			title: t('Administration'),
+			title: t('Manage'),
 			items: [isAdmin && workspace, isOmnichannel && omnichannel].filter(Boolean) as GenericMenuItemProps[],
 		},
 	];

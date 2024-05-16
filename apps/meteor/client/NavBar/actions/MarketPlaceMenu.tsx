@@ -1,27 +1,28 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
 import { useCurrentRoutePath, useTranslation } from '@rocket.chat/ui-contexts';
-import type { HTMLAttributes, VFC } from 'react';
+import type { HTMLAttributes } from 'react';
 import React from 'react';
 
 import GenericMenu from '../../components/GenericMenu/GenericMenu';
-import { useAuditMenu } from './hooks/useAuditMenu';
+import { useMarketPlaceMenu } from './hooks/useMarketPlaceMenu';
 
-const NavBarAuditMenu: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
+type MarketPlaceProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+
+export const NavBarItemMarketPlaceMenu = (props: MarketPlaceProps) => {
 	const t = useTranslation();
-	const sections = useAuditMenu();
+	const sections = useMarketPlaceMenu();
+
 	const currentRoute = useCurrentRoutePath();
 
 	return (
 		<GenericMenu
 			sections={sections}
-			title={t('Audit')}
+			title={t('Marketplace')}
 			is={NavBarItem}
 			placement='bottom-start'
-			icon='document-eye'
-			pressed={currentRoute?.includes('/audit')}
+			icon='store'
+			pressed={currentRoute?.includes('/marketplace')}
 			{...props}
 		/>
 	);
 };
-
-export default NavBarAuditMenu;

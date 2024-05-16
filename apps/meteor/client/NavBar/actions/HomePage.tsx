@@ -4,7 +4,7 @@ import { useRouter, useLayout, useSetting, useCurrentRoutePath } from '@rocket.c
 import type { HTMLAttributes, VFC } from 'react';
 import React from 'react';
 
-export const NavBarPageHome: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
+export const NavBarItemHomePage: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
 	const router = useRouter();
 	const { sidebar } = useLayout();
 	const showHome = useSetting('Layout_Show_Home_Button');
