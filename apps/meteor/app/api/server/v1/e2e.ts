@@ -1,14 +1,15 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { Subscriptions } from '@rocket.chat/models';
 import {
 	ise2eGetUsersOfRoomWithoutKeyParamsGET,
 	ise2eSetRoomKeyIDParamsPOST,
 	ise2eSetUserPublicAndPrivateKeysParamsPOST,
 	ise2eUpdateGroupKeyParamsPOST,
 	isE2EProvideUsersGroupKeyProps,
+	isE2EFetchUsersWaitingForGroupKeyProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { fetchUsersWaitingForGroupKey } from '../../../e2e/server/functions/fetchUsersWaitingForGroupKey';
 import { handleSuggestedGroupKey } from '../../../e2e/server/functions/handleSuggestedGroupKey';
 import { provideUsersSuggestedGroupKeys } from '../../../e2e/server/functions/provideUsersSuggestedGroupKeys';
 import { API } from '../api';
@@ -238,14 +239,18 @@ API.v1.addRoute(
 	'e2e.fetchUsersWaitingForGroupKey',
 	{
 		authRequired: true,
+		validateParams: isE2EFetchUsersWaitingForGroupKeyProps,
 	},
 	{
 		async get() {
-			const { usersWaitingForE2EKeys, hasMore } = await fetchUsersWaitingForGroupKey(this.userId);
+			const { roomIds = [] } = this.queryParams;
+			const usersWaitingForE2EKeys = (await Subscriptions.findUsersWithPublicE2EKeyByRids(roomIds).toArray()).reduce<Record<string, any>>(
+				(acc, { rid, users }) => ({ [rid]: users, ...acc }),
+				{} as Record<string, any>,
+			);
 
 			return API.v1.success({
 				usersWaitingForE2EKeys,
-				hasMore,
 			});
 		},
 	},

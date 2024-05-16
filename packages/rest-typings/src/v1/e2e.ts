@@ -116,6 +116,25 @@ const E2EProvideUsersGroupKeySchema = {
 
 export const isE2EProvideUsersGroupKeyProps = ajv.compile<E2EProvideUsersGroupKeyProps>(E2EProvideUsersGroupKeySchema);
 
+type E2EFetchUsersWaitingForGroupKeyProps = { roomIds: string[] };
+
+const E2EFetchUsersWaitingForGroupKeySchema = {
+	type: 'object',
+	properties: {
+		roomIds: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+	},
+	required: ['roomIds'],
+	additionalProperties: false,
+};
+
+export const isE2EFetchUsersWaitingForGroupKeyProps = ajv.compile<E2EFetchUsersWaitingForGroupKeyProps>(E2EFetchUsersWaitingForGroupKeySchema);
+
+
 export type E2eEndpoints = {
 	'/v1/e2e.setUserPublicAndPrivateKeys': {
 		POST: (params: E2eSetUserPublicAndPrivateKeysProps) => void;
@@ -141,7 +160,7 @@ export type E2eEndpoints = {
 		GET: () => { public_key: string; private_key: string };
 	};
 	'/v1/e2e.fetchUsersWaitingForGroupKey': {
-		GET: () => { usersWaitingForE2EKeys: Record<IRoom['_id'], { _id: IUser['_id']; public_key: string }[]>; hasMore: boolean };
+		GET: (params: E2EFetchUsersWaitingForGroupKeyProps) => { usersWaitingForE2EKeys: Record<IRoom['_id'], { _id: IUser['_id']; public_key: string }[]>};
 	};
 	'/v1/e2e.provideUsersSuggestedGroupKeys': {
 		POST: (params: E2EProvideUsersGroupKeyProps) => void;

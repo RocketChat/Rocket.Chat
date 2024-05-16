@@ -5,6 +5,7 @@ import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser } from '@rocke
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import EJSON from 'ejson';
+import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import type { ReactiveVar as ReactiveVarType } from 'meteor/reactive-var';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -50,6 +51,8 @@ type KeyPair = {
 	public_key: string | null;
 	private_key: string | null;
 };
+
+const ROOM_KEY_EXCHANGE_SIZE = 10;
 
 class E2E extends Emitter {
 	private started: boolean;
@@ -279,6 +282,7 @@ class E2E extends Emitter {
 		this.enabled.set(false);
 		this._ready.set(false);
 		this.started = false;
+		this.timeout && clearTimeout(this.timeout);
 	}
 
 	async changePassword(newPassword: string): Promise<void> {
@@ -573,14 +577,14 @@ class E2E extends Emitter {
 		}
 
 		this.timeout = setInterval(async () => {
-			const { usersWaitingForE2EKeys, hasMore } = await sdk.rest.get('/v1/e2e.fetchUsersWaitingForGroupKey');
-
-			if (!hasMore && this.timeout) {
-				clearTimeout(this.timeout);
-				this.timeout = null;
+			const roomIds = ChatRoom.find({ usersWaitingForE2EKeys: { $exists: true } }).map(({ _id }) => _id);
+			if (roomIds.length === 0) {
+				return;
 			}
+			const randomRoomIds = _.sampleSize(roomIds, ROOM_KEY_EXCHANGE_SIZE);
+			const { usersWaitingForE2EKeys = {} } = await sdk.rest.get('/v1/e2e.fetchUsersWaitingForGroupKey', { roomIds: randomRoomIds });
 
-			if (!usersWaitingForE2EKeys) {
+			if (Object.keys(usersWaitingForE2EKeys).length === 0) {
 				return;
 			}
 
@@ -589,8 +593,6 @@ class E2E extends Emitter {
 			try {
 				await sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', { usersSuggestedGroupKeys: userKeysWithRooms });
 			} catch (error) {
-				this.timeout && clearTimeout(this.timeout);
-				this.timeout = null;
 				return this.error('Error providing group key to users: ', error);
 			}
 		}, 10000);
