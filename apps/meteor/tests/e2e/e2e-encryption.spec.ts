@@ -285,15 +285,13 @@ test.describe.serial('e2ee room setup', () => {
 	});
 
 	test.beforeAll(async ({ api }) => {
-		const statusCode = (await api.post('/settings/E2E_Enable', { value: true })).status();
-
-		expect(statusCode).toBe(200);
+		expect((await api.post('/settings/E2E_Enable', { value: true })).status()).toBe(200);
+		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
 	});
 
 	test.afterAll(async ({ api }) => {
-		const statusCode = (await api.post('/settings/E2E_Enable', { value: false })).status();
-
-		expect(statusCode).toBe(200);
+		expect((await api.post('/settings/E2E_Enable', { value: false })).status()).toBe(200);
+		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
 	});
 
 	test('expect save password state on encrypted room', async ({ page }) => {
