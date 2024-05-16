@@ -121,7 +121,7 @@ describe('[Groups]', function () {
 			});
 		});
 
-		describe.only('validate E2E rooms', () => {
+		describe('validate E2E rooms', () => {
 			before(async () => {
 				await Promise.all([updateSetting('E2E_Enable', true), updateSetting('E2E_Allow_Unencrypted_Messages', false)]);
 			});
