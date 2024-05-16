@@ -17,8 +17,8 @@ Meteor.startup(() => {
 
 		MessageAction.addButton({
 			id: 'receipt-detail',
-			icon: 'info-circled',
-			label: 'Info',
+			icon: 'double-check',
+			label: 'Read_Receipts',
 			context: ['starred', 'message', 'message-mobile', 'threads', 'videoconf', 'videoconf-threads'],
 			type: 'duplication',
 			action(_, props) {
