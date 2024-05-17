@@ -38,4 +38,16 @@ export class HomeFlextabRoom {
 	get btnSave(): Locator {
 		return this.page.locator('role=button[name="Save"]');
 	}
+
+	get pruneAccordion(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Prune' });
+	}
+
+	get checkboxPruneMessages(): Locator {
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Automatically prune old messages' }) });
+	}
+
+	get alertRetentionPolicy(): Locator {
+		return this.page.getByRole('alert', { name: 'Unpinned messages older than 30 days are automatically pruned here' });
+	}
 }

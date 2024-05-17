@@ -117,12 +117,12 @@ const validators: RoomSettingsValidators = {
 		}
 	},
 	async retentionEnabled({ userId, value, room, rid }) {
-		if (!hasRetentionPolicy(room)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
+		// if (!hasRetentionPolicy(room)) {
+		// 	throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
+		// 		method: 'saveRoomSettings',
+		// 		action: 'Editing_room',
+		// 	});
+		// }
 
 		if (!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) && value !== room.retention.enabled) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
