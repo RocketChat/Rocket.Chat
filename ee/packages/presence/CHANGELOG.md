@@ -1,5 +1,67 @@
 # @rocket.chat/presence
 
+## 0.1.14
+
+### Patch Changes
+
+- ([#32374](https://github.com/RocketChat/Rocket.Chat/pull/32374)) Fixed an issue with some apps that didn't implement executeViewCloseHandler. This causes opened modals to be open forever on UI (unless Esc was clicked). This is because when the UI attempts to close it, it calls the aforementioned handler, and since it didn't exist, apps engine errored out.
+
+  This returned an empty response to the UI, which ignored the response and continued to show the view.
+
+- <details><summary>Updated dependencies [c47a8e3514, b94ca7c30b, 8b0986d15a, 4aba7c8a26]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0
+  - @rocket.chat/core-services@0.3.14
+  - @rocket.chat/models@0.0.38
+  </details>
+
+## 0.1.14-rc.2
+
+### Patch Changes
+
+- ([#32374](https://github.com/RocketChat/Rocket.Chat/pull/32374)) Fixed an issue with some apps that didn't implement executeViewCloseHandler. This causes opened modals to be open forever on UI (unless Esc was clicked). This is because when the UI attempts to close it, it calls the aforementioned handler, and since it didn't exist, apps engine errored out.
+
+  This returned an empty response to the UI, which ignored the response and continued to show the view.
+
+- <details><summary>Updated dependencies [b94ca7c30b]:</summary>
+
+  - @rocket.chat/core-services@0.3.14-rc.2
+  - @rocket.chat/core-typings@6.8.0-rc.2
+  - @rocket.chat/models@0.0.38-rc.2
+  </details>
+
+## 0.1.14-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.1
+  - @rocket.chat/core-services@0.3.13-rc.1
+  - @rocket.chat/models@0.0.37-rc.1
+  </details>
+
+## 0.1.14-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c47a8e3514, 8b0986d15a, 4aba7c8a26]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.0
+  - @rocket.chat/core-services@0.3.12-rc.0
+  - @rocket.chat/models@0.0.36-rc.0
+
+## 0.1.13
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.2
+  - @rocket.chat/core-services@0.3.13
+  - @rocket.chat/models@0.0.37
+  </details>
+
 ## 0.1.12
 
 ### Patch Changes

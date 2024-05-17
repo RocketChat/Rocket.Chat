@@ -233,6 +233,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findGroupDMsByUids(uids: string[], options?: FindOptions<IDirectMessageRoom>): FindCursor<IDirectMessageRoom>;
 	find1On1ByUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByCreatedOTR(): FindCursor<IRoom>;
+	findByUsernamesOrUids(uids: IRoom['u']['_id'][], usernames: IRoom['u']['username'][]): FindCursor<IRoom>;
+	findDMsByUids(uids: IRoom['u']['_id'][]): FindCursor<IRoom>;
 	addImportIds(rid: string, importIds: string[]): Promise<UpdateResult>;
 	archiveById(rid: string): Promise<UpdateResult>;
 	unarchiveById(rid: string): Promise<UpdateResult>;
