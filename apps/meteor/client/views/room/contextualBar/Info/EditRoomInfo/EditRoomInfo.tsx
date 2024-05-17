@@ -39,6 +39,7 @@ import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { getDirtyFields } from '../../../../../lib/getDirtyFields';
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
+import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
 
@@ -54,6 +55,17 @@ const title = {
 	discussion: 'Edit_discussion' as TranslationKey,
 };
 
+const getPolicyRoomType = (roomType: IRoomWithRetentionPolicy['t']) => {
+	switch (roomType) {
+		case 'c':
+			return 'Channels';
+		case 'p':
+			return 'Groups';
+		case 'd':
+			return 'DMs';
+	}
+};
+
 const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -61,7 +73,8 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	// eslint-disable-next-line no-nested-ternary
 	const roomType = 'prid' in room ? 'discussion' : room.teamId ? 'team' : 'channel';
 
-	const retentionPolicy = useSetting<boolean>('RetentionPolicy_Enabled');
+	const retentionPolicy = useRetentionPolicy(room);
+	const retentionMaxAgeDefault = useSetting<number>(`RetentionPolicy_MaxAge_${getPolicyRoomType(room.t)}`) || 30;
 	const defaultValues = useEditRoomInitialValues(room);
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
@@ -97,7 +110,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		joinCodeRequired,
 		hideSysMes,
 		retentionEnabled,
-		retentionMaxAge,
 		retentionOverrideGlobal,
 		roomType: roomTypeP,
 		reactWhenReadOnly,
@@ -468,18 +480,14 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												<RawText>{t('RetentionPolicyRoom_ReadTheDocs')}</RawText>
 											</Callout>
 											<Field>
-												<FieldLabel htmlFor={retentionMaxAgeField}>{t('RetentionPolicyRoom_MaxAge', { max: retentionMaxAge })}</FieldLabel>
+												<FieldLabel htmlFor={retentionMaxAgeField}>
+													{t('RetentionPolicyRoom_MaxAge', { max: retentionMaxAgeDefault })}
+												</FieldLabel>
 												<FieldRow>
 													<Controller
 														control={control}
 														name='retentionMaxAge'
-														render={({ field: { onChange, ...field } }) => (
-															<NumberInput
-																id={retentionMaxAgeField}
-																{...field}
-																onChange={(currentValue) => onChange(Math.max(1, Number(currentValue)))}
-															/>
-														)}
+														render={({ field }) => <NumberInput id={retentionMaxAgeField} {...field} />}
 													/>
 												</FieldRow>
 											</Field>
