@@ -289,7 +289,7 @@ export async function notifyOnLivechatInquiryChanged(
 		return;
 	}
 
-	const items = Array.isArray(data)? data : [data];
+	const items = Array.isArray(data) ? data : [data];
 
 	for (const item of items) {
 		void api.broadcast('watch.inquiries', { clientAction, inquiry: item, diff });

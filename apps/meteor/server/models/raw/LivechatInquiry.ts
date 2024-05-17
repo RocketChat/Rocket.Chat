@@ -135,8 +135,9 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return updated?.value;
 	}
 
-	async setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ModifyResult<ILivechatInquiryRecord>> {
-		return this.findOneAndUpdate({ rid }, { $set: { lastMessage: message } }, { returnDocument: 'after' });
+	async setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ILivechatInquiryRecord | null> {
+		const updated = await this.findOneAndUpdate({ rid }, { $set: { lastMessage: message } }, { returnDocument: 'after' });
+		return updated?.value;
 	}
 
 	async findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null> {
@@ -432,7 +433,8 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		await this.deleteMany(query);
 	}
 
-	async markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ModifyResult<ILivechatInquiryRecord>> {
-		return this.findOneAndUpdate({ rid }, { $addToSet: { 'v.activity': period } });
+	async markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ILivechatInquiryRecord | null> {
+		const updated = await this.findOneAndUpdate({ rid }, { $addToSet: { 'v.activity': period } });
+		return updated?.value;
 	}
 }
