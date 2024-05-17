@@ -31,6 +31,7 @@ export const newDayData = {
 	closedAt: '2022-11-21T00:00:00.000Z',
 	dateFormat: 'MMM D, YYYY',
 	timeAndDateFormat: 'MMM D, YYYY H:mm:ss',
+	timezone: 'UTC',
 	messages: [
 		{ ts: '2022-11-21T16:00:00.000Z', text: 'Hello' },
 		{ ts: '2022-11-22T16:00:00.000Z', text: 'How are you' },
@@ -41,6 +42,7 @@ export const sameDayData = {
 	closedAt: '2022-11-21T00:00:00.000Z',
 	dateFormat: 'MMM D, YYYY',
 	timeAndDateFormat: 'MMM D, YYYY H:mm:ss',
+	timezone: 'UTC',
 	messages: [
 		{ ts: '2022-11-21T16:00:00.000Z', text: 'Hello' },
 		{ ts: '2022-11-21T16:00:00.000Z', text: 'How are you' },
