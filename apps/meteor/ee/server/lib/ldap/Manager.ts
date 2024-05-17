@@ -440,7 +440,7 @@ export class LDAPEEManager extends LDAPManager {
 
 		if (filteredMappedLdapGroups.length < ldapGroups.length) {
 			const unmappedLdapGroups = ldapGroups.filter((ldapGroup) => !mappedLdapGroups.includes(ldapGroup));
-			logger.error(`The following LDAP teams are not mapped in Rocket.Chat: "${unmappedLdapGroups.join(', ')}".`);
+			logger.error(`The following LDAP groups are not mapped in Rocket.Chat: "${unmappedLdapGroups.join(', ')}".`);
 		}
 
 		if (!filteredMappedLdapGroups.length) {
