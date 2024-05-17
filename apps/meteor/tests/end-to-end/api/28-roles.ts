@@ -47,7 +47,7 @@ describe('[Roles]', function () {
 				return;
 			}
 			await request
-				.post(api(''))
+				.post(api('roles.create'))
 				.set(credentials)
 				.send({
 					name: testRoleName,
