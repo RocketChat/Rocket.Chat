@@ -660,7 +660,7 @@ export class LDAPConnection {
 		this.client._updateIdle(override);
 	}
 
-	protected async maybeBindDN(forceBindAuthenticationUser?: boolean): Promise<void> {
+	protected async maybeBindDN({ forceBindAuthenticationUser = false } = {}): Promise<void> {
 		if (!forceBindAuthenticationUser && (this.usingAuthentication || !this.options.authentication)) {
 			return;
 		}
@@ -689,7 +689,7 @@ export class LDAPConnection {
 	}
 
 	public async bindAuthenticationUser(): Promise<void> {
-		return this.maybeBindDN(true);
+		return this.maybeBindDN({ forceBindAuthenticationUser: true });
 	}
 
 	/*
