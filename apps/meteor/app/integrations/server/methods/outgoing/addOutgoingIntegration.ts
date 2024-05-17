@@ -5,6 +5,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
 import { validateScriptEngine } from '../../lib/validateScriptEngine';
 
@@ -58,8 +59,13 @@ export const addOutgoingIntegration = async (userId: string, integration: INewOu
 
 	const integrationData = await validateOutgoingIntegration(integration, userId);
 
-	const result = await Integrations.insertOne(integrationData);
-	integrationData._id = result.insertedId;
+	const { insertedId } = await Integrations.insertOne(integrationData);
+
+	if (insertedId) {
+		void notifyOnIntegrationChanged({ ...integrationData, _id: insertedId }, 'inserted');
+	}
+
+	integrationData._id = insertedId;
 
 	return integrationData;
 };

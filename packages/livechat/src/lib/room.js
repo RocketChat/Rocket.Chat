@@ -31,7 +31,7 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 		return;
 	}
 
-	await store.setState({ room: null });
+	await store.setState({ room: null, renderedTriggers: [] });
 
 	if (clearLocalStorageWhenChatEnded) {
 		// exclude UI-affecting flags
@@ -255,7 +255,7 @@ export const getGreetingMessages = (messages) => messages && messages.filter((ms
 export const getLatestCallMessage = (messages) => messages && messages.filter((msg) => isVideoCallMessage(msg)).pop();
 
 export const loadMessages = async () => {
-	const { ongoingCall, messages: storedMessages, room } = store.state;
+	const { ongoingCall, messages: storedMessages, room, renderedTriggers } = store.state;
 
 	if (!room?._id) {
 		return;
@@ -263,9 +263,15 @@ export const loadMessages = async () => {
 
 	const { _id: rid, callStatus } = room;
 	const previousMessages = getGreetingMessages(storedMessages);
-
 	await store.setState({ loading: true });
-	const rawMessages = (await Livechat.loadMessages(rid)).concat(previousMessages);
+
+	const rawMessages = (await Livechat.loadMessages(rid)) ?? [];
+
+	if (rawMessages?.length < 20) {
+		const triggers = previousMessages.length === 0 ? renderedTriggers : previousMessages;
+		rawMessages.push(...triggers.reverse());
+	}
+
 	const messages = (await normalizeMessages(rawMessages)).map(transformAgentInformationOnMessage);
 
 	await initRoom();
@@ -315,7 +321,7 @@ export const loadMessages = async () => {
 };
 
 export const loadMoreMessages = async () => {
-	const { room, messages = [], noMoreMessages = false } = store.state;
+	const { room, messages = [], noMoreMessages = false, renderedTriggers } = store.state;
 	const { _id: rid } = room || {};
 
 	if (!rid || noMoreMessages) {
@@ -327,9 +333,13 @@ export const loadMoreMessages = async () => {
 	const rawMessages = await Livechat.loadMessages(rid, { limit: messages.length + 10 });
 	const moreMessages = (await normalizeMessages(rawMessages)).map(transformAgentInformationOnMessage);
 
+	const newNoMoreMessages = messages.length + 10 > moreMessages.length;
+	const triggers = newNoMoreMessages ? [...renderedTriggers] : [];
+	const newMessages = ([...moreMessages, ...triggers] || []).reverse();
+
 	await store.setState({
-		messages: (moreMessages || []).reverse(),
-		noMoreMessages: messages.length + 10 > moreMessages.length,
+		messages: newMessages,
+		noMoreMessages: newNoMoreMessages,
 		loading: false,
 	});
 };
