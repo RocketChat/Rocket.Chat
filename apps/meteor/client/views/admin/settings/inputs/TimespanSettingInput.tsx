@@ -81,6 +81,7 @@ function TimespanSettingInput({
 	onChangeValue,
 	hasResetButton,
 	onResetButtonClick,
+	packageValue,
 }: TimespanSettingInputProps): ReactElement {
 	const t = useTranslation();
 
@@ -90,7 +91,7 @@ function TimespanSettingInput({
 	const handleChange: FormEventHandler<HTMLInputElement> = (event) => {
 		const newValue = sanitizeInputValue(Number(event.currentTarget.value));
 
-		onChangeValue?.(newValue);
+		onChangeValue?.(timeUnitToMs(timeUnit, newValue));
 
 		setInternalValue(newValue);
 	};
@@ -117,13 +118,20 @@ function TimespanSettingInput({
 		return Object.entries(TIMEUNIT).map<readonly [TIMEUNIT, string]>(([label, value]) => [value, t.has(label) ? t(label) : label]); // todo translate
 	}, [t]);
 
+	const handleResetButtonClick = () => {
+		onResetButtonClick?.();
+		const newTimeUnit = getHighestTimeUnit(Number(packageValue));
+		setTimeUnit(newTimeUnit);
+		setInternalValue(msToTimeUnit(newTimeUnit, Number(packageValue)));
+	};
+
 	return (
 		<Field>
 			<FieldRow>
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={handleResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
 				<InputBox

@@ -48,6 +48,7 @@ const inputsByType: Record<ISettingBase['type'], ElementType<any>> = {
 type MemoizedSettingProps = {
 	_id?: string;
 	type: ISettingBase['type'];
+	packageValue: ISettingBase['packageValue'];
 	hint?: ReactNode;
 	callout?: ReactNode;
 	value?: SettingValue;
