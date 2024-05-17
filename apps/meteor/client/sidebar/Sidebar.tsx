@@ -5,8 +5,8 @@ import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import SidebarRoomList from './RoomList';
-import { SearchSection } from './SearchSection/SearchSection';
 import SidebarFooter from './footer';
+import { SearchSection } from './header/SearchSection';
 import StatusDisabledSection from './sections/StatusDisabledSection';
 
 const Sidebar = () => {

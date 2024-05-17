@@ -10,12 +10,12 @@ import tinykeys from 'tinykeys';
 
 import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
 import RoomListWrapper from '../RoomList/RoomListWrapper';
-import CreateRoom from '../header/actions/CreateRoom';
-import Sort from '../header/actions/Sort';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import Row from '../search/Row';
+import CreateRoom from './actions/CreateRoom';
+import Sort from './actions/Sort';
 import { useSearchItems } from './hooks/useSearchItems';
 
 const wrapperStyle = css`
