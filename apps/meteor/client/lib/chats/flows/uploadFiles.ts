@@ -1,5 +1,8 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 
+import { e2e } from '../../../../app/e2e/client';
 import { fileUploadIsValidContentType } from '../../../../app/utils/client';
 import FileUploadModal from '../../../views/room/modals/FileUploadModal';
 import { imperativeModal } from '../../imperativeModal';
@@ -14,6 +17,17 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 	const room = await chat.data.getRoom();
 
 	const queue = [...files];
+
+	const uploadFile = (file: File, description?: string, extraData?: Pick<IMessage, 't' | 'e2e'>) => {
+		chat.uploads.send(file, {
+			description,
+			msg,
+			...extraData,
+		});
+		chat.composer?.clear();
+		imperativeModal.close();
+		uploadNextFile();
+	};
 
 	const uploadNextFile = (): void => {
 		const file = queue.pop();
@@ -33,18 +47,30 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					imperativeModal.close();
 					uploadNextFile();
 				},
-				onSubmit: (fileName: string, description?: string): void => {
+				onSubmit: async (fileName: string, description?: string): Promise<void> => {
 					Object.defineProperty(file, 'name', {
 						writable: true,
 						value: fileName,
 					});
-					chat.uploads.send(file, {
-						description,
-						msg,
-					});
-					chat.composer?.clear();
-					imperativeModal.close();
-					uploadNextFile();
+
+					// encrypt attachment description
+					const e2eRoom = await e2e.getInstanceByRoomId(room._id);
+
+					if (!e2eRoom) {
+						uploadFile(file, description);
+						return;
+					}
+
+					const shouldConvertSentMessages = e2eRoom.shouldConvertSentMessages({ msg });
+
+					if (!shouldConvertSentMessages) {
+						uploadFile(file, description);
+						return;
+					}
+
+					const encryptedDescription = await e2eRoom.encryptAttachmentDescription(description, Random.id());
+
+					uploadFile(file, encryptedDescription, { t: 'e2e', e2e: 'pending' });
 				},
 				invalidContentType: !(file.type && fileUploadIsValidContentType(file.type)),
 			},
