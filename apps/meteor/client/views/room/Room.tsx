@@ -24,8 +24,9 @@ const Room = (): ReactElement => {
 	const room = useRoom();
 	const toolbox = useRoomToolbox();
 	const contextualBarView = useAppsContextualBar();
+	const isE2EEnabled = useSetting('E2E_Enable');
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages');
-	const shouldDisplayE2EESetup = room?.encrypted && !unencryptedMessagesAllowed;
+	const shouldDisplayE2EESetup = room?.encrypted && !unencryptedMessagesAllowed && isE2EEnabled;
 
 	return (
 		<ChatProvider>

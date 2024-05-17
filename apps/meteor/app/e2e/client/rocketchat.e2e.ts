@@ -420,7 +420,7 @@ class E2E extends Emitter {
 				onClose: imperativeModal.close,
 				onCancel: () => {
 					failedToDecodeKey = false;
-					dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Not_Enabled') });
+					dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
 					this.closeAlert();
 					imperativeModal.close();
 				},
