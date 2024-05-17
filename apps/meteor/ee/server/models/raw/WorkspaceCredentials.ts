@@ -1,6 +1,6 @@
 import type { RocketChatRecordDeleted, IWorkspaceCredentials } from '@rocket.chat/core-typings';
 import type { IWorkspaceCredentialsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, Filter, IndexDescription } from 'mongodb';
+import type { Collection, Db, Filter, UpdateResult, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 
@@ -35,7 +35,7 @@ export class WorkspaceCredentialsRaw extends BaseRaw<IWorkspaceCredentials> impl
 		await this.deleteOne(query);
 	}
 
-	async updateCredentialByScope(scope: string, accessToken: string, expirationDate: Date): Promise<void> {
+	createOrUpdateCredentialByScope(scope: string, accessToken: string, expirationDate: Date): Promise<UpdateResult> {
 		const record = {
 			$set: {
 				scopes: [scope],
@@ -51,7 +51,7 @@ export class WorkspaceCredentialsRaw extends BaseRaw<IWorkspaceCredentials> impl
 			},
 		};
 
-		await this.updateOne(query, record, { upsert: true });
+		return this.updateOne(query, record, { upsert: true });
 	}
 
 	async removeAllCredentials(): Promise<void> {

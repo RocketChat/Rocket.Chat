@@ -56,7 +56,7 @@ function saveRegistrationDataBase({
 		Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', client_secret_expires_at),
 		Settings.updateValueById('Cloud_Workspace_PublicKey', publicKey),
 		Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', registration_client_uri),
-		WorkspaceCredentials.updateCredentialByScope('', '', new Date(0)),
+		WorkspaceCredentials.createOrUpdateCredentialByScope('', '', new Date(0)),
 	]).then(async (...results) => {
 		// wait until all the settings are updated before syncing the data
 		for await (const retry of Array.from({ length: 10 })) {

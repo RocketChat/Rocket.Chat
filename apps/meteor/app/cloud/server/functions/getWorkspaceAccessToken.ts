@@ -37,7 +37,7 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 	const accessToken = await getWorkspaceAccessTokenWithScope(scope, throwOnError);
 
 	if (save) {
-		await WorkspaceCredentials.updateCredentialByScope(scope, accessToken.token, accessToken.expiresAt);
+		await WorkspaceCredentials.createOrUpdateCredentialByScope(scope, accessToken.token, accessToken.expiresAt);
 	}
 
 	return accessToken.token;
