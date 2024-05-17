@@ -177,6 +177,7 @@ describe('[Roles]', function () {
 		});
 
 		after(async () => {
+			await deleteUser(testUser);
 			if (!isEnterprise) {
 				return;
 			}
@@ -184,7 +185,6 @@ describe('[Roles]', function () {
 			await request.post(api('roles.delete')).set(credentials).send({
 				roleId: testRoleId,
 			});
-			await deleteUser(testUser);
 		});
 
 		it('should successfully get an empty list of users in a role if no user has been assigned to it', async function () {
