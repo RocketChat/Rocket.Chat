@@ -129,7 +129,10 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	getAutoTranslateLanguagesByRoomAndNotUser(rid: string, userId: string): Promise<(string | undefined)[]>;
 
 	findByRidWithoutE2EKey(rid: string, options: FindOptions<ISubscription>): FindCursor<ISubscription>;
-	findUsersWithPublicE2EKeyByRids(rids: IRoom['_id'][], usersLimit?: number): AggregationCursor<{ rid: IRoom['_id'], users: { _id: IUser['_id'], key: string }[] }>;
+	findUsersWithPublicE2EKeyByRids(
+		rids: IRoom['_id'][],
+		usersLimit?: number,
+	): AggregationCursor<{ rid: IRoom['_id']; users: { _id: IUser['_id']; key: string }[] }>;
 	findByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	cachedFindByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	updateAutoTranslateById(_id: string, autoTranslate: boolean): Promise<UpdateResult>;

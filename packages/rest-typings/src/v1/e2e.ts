@@ -132,8 +132,9 @@ const E2EFetchUsersWaitingForGroupKeySchema = {
 	additionalProperties: false,
 };
 
-export const isE2EFetchUsersWaitingForGroupKeyProps = ajv.compile<E2EFetchUsersWaitingForGroupKeyProps>(E2EFetchUsersWaitingForGroupKeySchema);
-
+export const isE2EFetchUsersWaitingForGroupKeyProps = ajv.compile<E2EFetchUsersWaitingForGroupKeyProps>(
+	E2EFetchUsersWaitingForGroupKeySchema,
+);
 
 export type E2eEndpoints = {
 	'/v1/e2e.setUserPublicAndPrivateKeys': {
@@ -160,7 +161,9 @@ export type E2eEndpoints = {
 		GET: () => { public_key: string; private_key: string };
 	};
 	'/v1/e2e.fetchUsersWaitingForGroupKey': {
-		GET: (params: E2EFetchUsersWaitingForGroupKeyProps) => { usersWaitingForE2EKeys: Record<IRoom['_id'], { _id: IUser['_id']; public_key: string }[]>};
+		GET: (params: E2EFetchUsersWaitingForGroupKeyProps) => {
+			usersWaitingForE2EKeys: Record<IRoom['_id'], { _id: IUser['_id']; public_key: string }[]>;
+		};
 	};
 	'/v1/e2e.provideUsersSuggestedGroupKeys': {
 		POST: (params: E2EProvideUsersGroupKeyProps) => void;
