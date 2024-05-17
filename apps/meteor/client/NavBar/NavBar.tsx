@@ -7,7 +7,6 @@ import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
 import { useIsCallEnabled, useIsCallReady } from '../contexts/CallContext';
 import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
 import { useOmnichannelShowQueueLink } from '../hooks/omnichannel/useOmnichannelShowQueueLink';
-import UserMenu from '../sidebar/header/UserMenu';
 import {
 	NavBarItemOmniChannelCallDialPad,
 	NavBarItemOmnichannelContact,
@@ -15,8 +14,9 @@ import {
 	NavBarItemOmnichannelQueue,
 	NavBarItemOmnichannelCallToggle,
 } from './Omnichannel';
+import UserMenu from './UserMenu/UserMenu';
 import {
-	NavBarItemManageMenu,
+	NavBarItemAdministrationMenu,
 	NavBarItemMarketPlaceMenu,
 	NavBarItemAuditMenu,
 	NavBarItemDirectoryPage,
@@ -67,7 +67,7 @@ export const NavBar = () => {
 			</NavBarSection>
 			<NavBarSection>
 				<NavBarGroup>
-					<NavBarItemManageMenu />
+					<NavBarItemAdministrationMenu />
 					{user ? <UserMenu user={user} /> : <NavBarItemLoginPage />}
 				</NavBarGroup>
 			</NavBarSection>

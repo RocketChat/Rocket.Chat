@@ -4,13 +4,13 @@ import type { HTMLAttributes } from 'react';
 import React from 'react';
 
 import GenericMenu from '../../components/GenericMenu/GenericMenu';
-import { useManageMenu } from './hooks/useManageMenu';
+import { useAdministrationMenu } from './hooks/useAdministrationMenu';
 
-export const NavBarItemManageMenu = (props: Omit<HTMLAttributes<HTMLElement>, 'is'>) => {
+export const NavBarItemAdministrationMenu = (props: Omit<HTMLAttributes<HTMLElement>, 'is'>) => {
 	const t = useTranslation();
 	const currentRoute = useCurrentRoutePath();
 
-	const sections = useManageMenu();
+	const sections = useAdministrationMenu();
 
 	if (!sections[0].items.length) {
 		return null;

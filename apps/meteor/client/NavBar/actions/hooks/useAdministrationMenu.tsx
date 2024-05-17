@@ -30,7 +30,7 @@ const ADMIN_PERMISSIONS = [
 	'view-moderation-console',
 ];
 
-export const useManageMenu = () => {
+export const useAdministrationMenu = () => {
 	const router = useRouter();
 	const t = useTranslation();
 

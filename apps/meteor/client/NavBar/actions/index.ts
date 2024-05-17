@@ -1,4 +1,4 @@
-export * from './ManageMenu';
+export * from './AdministrationMenu';
 export * from './AuditMenu';
 export * from './MarketPlaceMenu';
 export * from './HomePage';
