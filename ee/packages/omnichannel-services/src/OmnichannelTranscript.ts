@@ -410,7 +410,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 		// Send the file to the livechat room where this was requested, to keep it in context
 		try {
-			LivechatRooms.setPdfTranscriptFileIdById(details.rid, transcriptFile._id);
+			await LivechatRooms.setPdfTranscriptFileIdById(details.rid, transcriptFile._id);
 
 			this.log.info(`Transcript for room ${details.rid} by user ${details.userId} - Sending success message to user`);
 			const result = await Promise.allSettled([
