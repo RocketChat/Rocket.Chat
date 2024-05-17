@@ -348,7 +348,7 @@ export class HomeContent {
 	}
 
 	get btnAnonymousSignIn(): Locator {
-		return this.page.getByRole('navigation').getByRole('button', { name: 'Sign in to start talking' });
+		return this.page.getByRole('navigation').getByRole('button', { name: 'Login' });
 	}
 
 	get btnAnonymousTalk(): Locator {
