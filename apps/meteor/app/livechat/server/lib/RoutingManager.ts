@@ -11,6 +11,7 @@ import type {
 	InquiryWithAgentInfo,
 	TransferData,
 } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
@@ -18,7 +19,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { notifyListenerOnLivechatInquiryChanges } from '../../../lib/server/lib/notifyListenerOnLivechatInquiryChanges';
+import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import {
 	createLivechatSubscription,
@@ -184,6 +185,12 @@ export const RoutingManager: Routing = {
 
 		if (shouldQueue) {
 			await LivechatInquiry.queueInquiry(inquiry._id);
+
+			void notifyOnLivechatInquiryChanged(inquiry, 'updated', {
+				status: LivechatInquiryStatus.QUEUED,
+				queuedAt: new Date(),
+				takenAt: undefined,
+			});
 		}
 
 		if (servedBy) {
@@ -193,8 +200,6 @@ export const RoutingManager: Routing = {
 		}
 
 		await dispatchInquiryQueued(inquiry);
-
-		void notifyListenerOnLivechatInquiryChanges(inquiry._id);
 
 		return true;
 	},
@@ -260,7 +265,13 @@ export const RoutingManager: Routing = {
 
 		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);
 
-		void notifyListenerOnLivechatInquiryChanges(_id);
+		void notifyOnLivechatInquiryChangedById(rid, 'updated', {
+			status: LivechatInquiryStatus.TAKEN,
+			takenAt: new Date(),
+			defaultAgent: undefined,
+			estimatedInactivityCloseTimeAt: undefined,
+			queuedAt: undefined,
+		});
 
 		return LivechatRooms.findOneById(rid);
 	},
@@ -289,7 +300,7 @@ export const RoutingManager: Routing = {
 		if (defaultAgent) {
 			logger.debug(`Delegating Inquiry ${inquiry._id} to agent ${defaultAgent.username}`);
 			await LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
-			void notifyListenerOnLivechatInquiryChanges(inquiry._id);
+			void notifyOnLivechatInquiryChanged(inquiry, 'updated', { defaultAgent });
 		}
 
 		logger.debug(`Queueing inquiry ${inquiry._id}`);

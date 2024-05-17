@@ -1,7 +1,7 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
-import { notifyListenerOnLivechatInquiryChanges } from '../../../../../app/lib/server/lib/notifyListenerOnLivechatInquiryChanges';
+import { notifyOnLivechatInquiryChanged } from '../../../../../app/lib/server/lib/notifyListener';
 import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
@@ -42,7 +42,7 @@ callbacks.add(
 				const updatedLivechatInquiry = await LivechatInquiry.setDepartmentByInquiryId(inquiry._id, department.fallbackForwardDepartment);
 
 				if (updatedLivechatInquiry) {
-					void notifyListenerOnLivechatInquiryChanges(inquiry._id);
+					void notifyOnLivechatInquiryChanged(updatedLivechatInquiry, 'updated', { department: updatedLivechatInquiry.department });
 				}
 
 				inquiry = updatedLivechatInquiry ?? inquiry;

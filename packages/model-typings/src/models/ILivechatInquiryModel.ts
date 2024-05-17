@@ -4,7 +4,7 @@ import type {
 	LivechatInquiryStatus,
 	OmnichannelSortingMechanismSettingType,
 } from '@rocket.chat/core-typings';
-import type { FindOptions, DistinctOptions, Document, UpdateResult, DeleteResult, FindCursor } from 'mongodb';
+import type { FindOptions, DistinctOptions, Document, UpdateResult, DeleteResult, FindCursor, ModifyResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -12,11 +12,11 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	findOneQueuedByRoomId(rid: string): Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null>;
 	findOneByRoomId<T extends Document = ILivechatInquiryRecord>(
 		rid: string,
-		options: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
+		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
 	): Promise<T | null>;
 	getDistinctQueuedDepartments(options: DistinctOptions): Promise<(string | undefined)[]>;
 	setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null>;
-	setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateResult>;
+	setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ModifyResult<ILivechatInquiryRecord>>;
 	findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null>;
 	unlock(inquiryId: string): Promise<UpdateResult>;
 	unlockAndQueue(inquiryId: string): Promise<UpdateResult>;
@@ -41,5 +41,7 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	findOneByToken(token: string): Promise<ILivechatInquiryRecord | null>;
 	removeDefaultAgentById(inquiryId: string): Promise<UpdateResult | Document>;
 	removeByVisitorToken(token: string): Promise<void>;
-	markInquiryActiveForPeriod(rid: string, period: string): Promise<UpdateResult>;
+	removeByIds(ids: ILivechatInquiryRecord['_id'][]): Promise<void>;
+	markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ModifyResult<ILivechatInquiryRecord>>;
+	findIdsByVisitorToken(token: ILivechatInquiryRecord['v']['token']): FindCursor<ILivechatInquiryRecord>;
 }

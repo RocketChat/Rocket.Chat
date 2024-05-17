@@ -13,8 +13,8 @@ import type {
 	Document,
 	FindOptions,
 	DistinctOptions,
-	UpdateResult,
 	ModifyResult,
+	UpdateResult,
 	Filter,
 	DeleteResult,
 	IndexDescription,
@@ -114,12 +114,16 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 	findOneByRoomId<T extends Document = ILivechatInquiryRecord>(
 		rid: string,
-		options: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
+		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
 	): Promise<T | null> {
 		const query = {
 			rid,
 		};
 		return this.findOne(query, options);
+	}
+
+	findIdsByVisitorToken(token: ILivechatInquiryRecord['v']['token']): FindCursor<ILivechatInquiryRecord> {
+		return this.find({ token }, { projection: { _id: 1 } });
 	}
 
 	getDistinctQueuedDepartments(options: DistinctOptions): Promise<(string | undefined)[]> {
@@ -131,8 +135,8 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return updated?.value;
 	}
 
-	async setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateResult> {
-		return this.updateOne({ rid }, { $set: { lastMessage: message } });
+	async setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ModifyResult<ILivechatInquiryRecord>> {
+		return this.findOneAndUpdate({ rid }, { $set: { lastMessage: message } }, { returnDocument: 'after' });
 	}
 
 	async findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null> {
@@ -416,6 +420,10 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
+	async removeByIds(ids: ILivechatInquiryRecord['_id'][]): Promise<void> {
+		await this.deleteMany({ _id: { $in: ids } });
+	}
+
 	async removeByVisitorToken(token: string): Promise<void> {
 		const query = {
 			'v.token': token,
@@ -424,7 +432,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		await this.deleteMany(query);
 	}
 
-	async markInquiryActiveForPeriod(rid: string, period: string): Promise<UpdateResult> {
-		return this.updateOne({ rid }, { $addToSet: { 'v.activity': period } });
+	async markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ModifyResult<ILivechatInquiryRecord>> {
+		return this.findOneAndUpdate({ rid }, { $addToSet: { 'v.activity': period } });
 	}
 }

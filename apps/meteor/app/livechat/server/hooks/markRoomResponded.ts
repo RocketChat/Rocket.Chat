@@ -4,7 +4,7 @@ import { LivechatRooms, LivechatVisitors, LivechatInquiry } from '@rocket.chat/m
 import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { notifyListenerOnLivechatInquiryChangesByRoomId } from '../../../lib/server/lib/notifyListenerOnLivechatInquiryChanges';
+import { notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 
 callbacks.add(
 	'afterSaveMessage',
@@ -38,12 +38,11 @@ callbacks.add(
 		}
 
 		if (!room.v?.activity?.includes(monthYear)) {
-			await Promise.all([
-				LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear),
-				LivechatInquiry.markInquiryActiveForPeriod(room._id, monthYear),
-			]);
-
-			void notifyListenerOnLivechatInquiryChangesByRoomId(room._id);
+			void LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear);
+			const livechatInquiry = await LivechatInquiry.markInquiryActiveForPeriod(room._id, monthYear);
+			if (livechatInquiry) {
+				void notifyOnLivechatInquiryChanged(livechatInquiry, 'updated', { v: livechatInquiry.v });
+			}
 		}
 
 		if (room.responseBy) {

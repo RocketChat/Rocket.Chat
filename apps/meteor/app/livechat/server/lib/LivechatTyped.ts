@@ -58,10 +58,11 @@ import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import {
-	notifyListenerOnLivechatInquiryChangesByRoomId,
-	notifyListenerOnLivechatInquiryChangesByToken,
-} from '../../../lib/server/lib/notifyListenerOnLivechatInquiryChanges';
-import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
+	notifyOnLivechatInquiryChanged,
+	notifyOnLivechatInquiryChangedByRoom,
+	notifyOnRoomChangedById,
+	notifyOnLivechatInquiryChangedByToken,
+} from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
@@ -301,7 +302,7 @@ class LivechatClass {
 		if (removedInquiry && removedInquiry.deletedCount !== 1) {
 			throw new Error('Error removing inquiry');
 		}
-		void notifyListenerOnLivechatInquiryChangesByRoomId(rid, 'removed');
+		void notifyOnLivechatInquiryChangedByRoom(rid, 'removed');
 
 		const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData);
 		if (!updatedRoom || updatedRoom.modifiedCount !== 1) {
@@ -513,7 +514,7 @@ class LivechatClass {
 			LivechatRooms.removeById(rid),
 		]);
 
-		void notifyListenerOnLivechatInquiryChangesByRoomId(rid, 'removed');
+		void notifyOnLivechatInquiryChangedByRoom(rid, 'removed');
 
 		for (const r of result) {
 			if (r.status === 'rejected') {
@@ -1272,13 +1273,11 @@ class LivechatClass {
 			]);
 		}
 
-		await Promise.all([
-			Subscriptions.removeByVisitorToken(token),
-			LivechatRooms.removeByVisitorToken(token),
-			LivechatInquiry.removeByVisitorToken(token),
-		]);
+		await Promise.all([Subscriptions.removeByVisitorToken(token), LivechatRooms.removeByVisitorToken(token)]);
 
-		void notifyListenerOnLivechatInquiryChangesByToken(token);
+		const livechatInquiries = await LivechatInquiry.findIdsByVisitorToken(token).toArray();
+		await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
+		void notifyOnLivechatInquiryChanged(livechatInquiries, 'removed');
 	}
 
 	async deleteMessage({ guest, message }: { guest: ILivechatVisitor; message: IMessage }) {
@@ -1672,7 +1671,7 @@ class LivechatClass {
 		const inquiryVisitorStatus = await LivechatInquiry.updateVisitorStatus(token, status);
 
 		if (inquiryVisitorStatus.modifiedCount) {
-			void notifyListenerOnLivechatInquiryChangesByToken(token);
+			void notifyOnLivechatInquiryChangedByToken(token, 'updated', { v: { status } });
 		}
 	}
 
@@ -1824,12 +1823,12 @@ class LivechatClass {
 				LivechatInquiry.setNameByRoomId(rid, name),
 				Subscriptions.updateDisplayNameByRoomId(rid, name),
 			]);
-		}
 
-			void notifyListenerOnLivechatInquiryChangesByRoomId(rid);
+			void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
 
 			return true;
 		}
+
 		void notifyOnRoomChangedById(roomData._id);
 	}
 

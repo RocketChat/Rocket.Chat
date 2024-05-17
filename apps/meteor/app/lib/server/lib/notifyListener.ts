@@ -9,6 +9,7 @@ import type {
 	IIntegration,
 	IPbxEvent,
 	LoginServiceConfiguration as LoginServiceConfigurationData,
+	ILivechatInquiryRecord,
 	ILivechatPriority,
 	IEmailInbox,
 	IIntegrationHistory,
@@ -23,6 +24,7 @@ import {
 	Integrations,
 	LoginServiceConfiguration,
 	IntegrationHistory,
+	LivechatInquiry,
 } from '@rocket.chat/models';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
@@ -276,6 +278,76 @@ export async function notifyOnEmailInboxChanged<T extends IEmailInbox>(
 	}
 
 	void api.broadcast('watch.emailInbox', { clientAction, id: data._id, data });
+}
+
+export async function notifyOnLivechatInquiryChanged(
+	data: ILivechatInquiryRecord | ILivechatInquiryRecord[],
+	clientAction: ClientAction = 'updated',
+	diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const items = Array.isArray(data)? data : [data];
+
+	for (const item of items) {
+		void api.broadcast('watch.inquiries', { clientAction, inquiry: item, diff });
+	}
+}
+
+export async function notifyOnLivechatInquiryChangedById(
+	id: ILivechatInquiryRecord['_id'],
+	clientAction: ClientAction = 'updated',
+	diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const inquiry = clientAction === 'removed' ? await LivechatInquiry.trashFindOneById(id) : await LivechatInquiry.findOneById(id);
+
+	if (!inquiry) {
+		return;
+	}
+
+	void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+}
+
+export async function notifyOnLivechatInquiryChangedByRoom(
+	rid: ILivechatInquiryRecord['rid'],
+	clientAction: ClientAction = 'updated',
+	diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const inquiry = await LivechatInquiry.findOneByRoomId(rid, {});
+
+	if (!inquiry) {
+		return;
+	}
+
+	void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+}
+
+export async function notifyOnLivechatInquiryChangedByToken(
+	token: ILivechatInquiryRecord['v']['token'],
+	clientAction: ClientAction = 'updated',
+	diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const inquiry = await LivechatInquiry.findOneByToken(token);
+
+	if (!inquiry) {
+		return;
+	}
+
+	void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
 }
 
 export async function notifyOnIntegrationHistoryChanged<T extends IIntegrationHistory>(
