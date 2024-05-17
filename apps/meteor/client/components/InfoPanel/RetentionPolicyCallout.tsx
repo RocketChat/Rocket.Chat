@@ -5,25 +5,26 @@ import type { FC } from 'react';
 import React from 'react';
 
 import { useFormattedRelativeTime } from '../../hooks/useFormattedRelativeTime';
+import { getMaxAgeInMS } from '../../views/room/hooks/useRetentionPolicy';
 
 type RetentionPolicyCalloutProps = {
-	filesOnlyDefault: boolean;
-	excludePinnedDefault: boolean;
-	maxAgeDefault: number;
+	filesOnly: boolean;
+	excludePinned: boolean;
+	maxAge: number;
 };
 
-const RetentionPolicyCallout: FC<RetentionPolicyCalloutProps> = ({ filesOnlyDefault, excludePinnedDefault, maxAgeDefault }) => {
+const RetentionPolicyCallout: FC<RetentionPolicyCalloutProps> = ({ filesOnly, excludePinned, maxAge }) => {
 	const t = useTranslation();
 	const retentionPolicyContentId = useUniqueId();
-	const time = useFormattedRelativeTime(maxAgeDefault);
+	const time = useFormattedRelativeTime(getMaxAgeInMS(maxAge));
 
 	return (
 		<Callout role='alert' aria-labelledby={retentionPolicyContentId} aria-live='polite' type='warning'>
 			<div id={retentionPolicyContentId}>
-				{filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_FilesOnly', { time })}</p>}
-				{filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time })}</p>}
-				{!filesOnlyDefault && excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning', { time })}</p>}
-				{!filesOnlyDefault && !excludePinnedDefault && <p>{t('RetentionPolicy_RoomWarning_Unpinned', { time })}</p>}
+				{filesOnly && excludePinned && <p>{t('RetentionPolicy_RoomWarning_FilesOnly', { time })}</p>}
+				{filesOnly && !excludePinned && <p>{t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time })}</p>}
+				{!filesOnly && excludePinned && <p>{t('RetentionPolicy_RoomWarning', { time })}</p>}
+				{!filesOnly && !excludePinned && <p>{t('RetentionPolicy_RoomWarning_Unpinned', { time })}</p>}
 			</div>
 		</Callout>
 	);

@@ -1,9 +1,10 @@
 import { Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import React from 'react';
 
-import { useFormatRelativeTime } from '../../../hooks/useFormatRelativeTime';
+import { useFormattedRelativeTime } from '../../../hooks/useFormattedRelativeTime';
+import { getMaxAgeInMS } from '../hooks/useRetentionPolicy';
 
 type RetentionPolicyWarningProps = {
 	filesOnly: boolean;
@@ -13,9 +14,7 @@ type RetentionPolicyWarningProps = {
 
 const RetentionPolicyWarning = ({ filesOnly, excludePinned, maxAge }: RetentionPolicyWarningProps): ReactElement => {
 	const t = useTranslation();
-
-	const formatRelativeTime = useFormatRelativeTime();
-	const time = useMemo(() => formatRelativeTime(maxAge), [formatRelativeTime, maxAge]);
+	const time = useFormattedRelativeTime(getMaxAgeInMS(maxAge));
 
 	if (filesOnly) {
 		return (

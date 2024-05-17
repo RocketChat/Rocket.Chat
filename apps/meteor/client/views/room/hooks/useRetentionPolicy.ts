@@ -16,6 +16,8 @@ type RetentionPolicySettings = {
 	maxAgeDMs: number;
 };
 
+export const getMaxAgeInMS = (maxAge: number) => maxAge * 24 * 60 * 60 * 1000;
+
 const isActive = (room: IRoom, { enabled, appliesToChannels, appliesToGroups, appliesToDMs }: RetentionPolicySettings): boolean => {
 	if (!enabled) {
 		return false;
@@ -99,6 +101,6 @@ export const useRetentionPolicy = (
 	return {
 		filesOnly: extractFilesOnly(room, settings),
 		excludePinned: extractExcludePinned(room, settings),
-		maxAge: getMaxAge(room, settings) * 24 * 60 * 60 * 1000,
+		maxAge: getMaxAge(room, settings),
 	};
 };

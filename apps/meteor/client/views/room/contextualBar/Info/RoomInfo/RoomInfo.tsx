@@ -17,7 +17,7 @@ import RetentionPolicyCallout from '../../../../../components/InfoPanel/Retentio
 import MarkdownText from '../../../../../components/MarkdownText';
 import type { Action } from '../../../../hooks/useActionSpread';
 import { useActionSpread } from '../../../../hooks/useActionSpread';
-import { useRetentionPolicy } from '../../../body/hooks/useRetentionPolicy';
+import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 import { useRoomActions } from '../hooks/useRoomActions';
 
 type RoomInfoProps = {
@@ -137,9 +137,9 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 
 						{retentionPolicy && (
 							<RetentionPolicyCallout
-								filesOnlyDefault={retentionPolicy.filesOnly}
-								excludePinnedDefault={retentionPolicy.excludePinned}
-								maxAgeDefault={retentionPolicy.maxAge}
+								filesOnly={retentionPolicy.filesOnly}
+								excludePinned={retentionPolicy.excludePinned}
+								maxAge={retentionPolicy.maxAge}
 							/>
 						)}
 					</InfoPanel.Section>
