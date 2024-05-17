@@ -4,18 +4,14 @@ import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
-// import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
 import SidebarRoomList from './RoomList';
 import { SearchSection } from './SearchSection/SearchSection';
 import SidebarFooter from './footer';
-// import SidebarHeader from './header';
-// import OmnichannelSection from './sections/OmnichannelSection';
 import StatusDisabledSection from './sections/StatusDisabledSection';
 
 const Sidebar = () => {
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
-	// const { sidebar } = useLayout();
 	const [bannerDismissed, setBannerDismissed] = useSessionStorage('presence_cap_notifier', false);
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
 
@@ -39,10 +35,8 @@ const Sidebar = () => {
 			].filter(Boolean)}
 			aria-label='sidebar'
 		>
-			{/* <SidebarHeader /> */}
 			<SearchSection />
 			{presenceDisabled && !bannerDismissed && <StatusDisabledSection onDismiss={() => setBannerDismissed(true)} />}
-			{/* {showOmnichannel && <OmnichannelSection />} */}
 			<SidebarRoomList />
 			<SidebarFooter />
 		</Box>
