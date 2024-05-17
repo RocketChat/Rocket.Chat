@@ -1,6 +1,7 @@
+import { useToolbar } from '@react-aria/toolbar';
 import { NavBar as NavBarComponent, NavBarSection, NavBarGroup, NavBarDivider } from '@rocket.chat/fuselage';
 import { usePermission, useTranslation, useUser } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import React, { useRef } from 'react';
 
 import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
 import { useIsCallEnabled, useIsCallReady } from '../contexts/CallContext';
@@ -38,10 +39,16 @@ export const NavBar = () => {
 	const isCallEnabled = useIsCallEnabled();
 	const isCallReady = useIsCallReady();
 
+	const pagesToolbarRef = useRef(null);
+	const { toolbarProps: pagesToolbarProps } = useToolbar({ 'aria-label': t('Pages') }, pagesToolbarRef);
+
+	const omnichannelToolbarRef = useRef(null);
+	const { toolbarProps: omnichannelToolbarProps } = useToolbar({ 'aria-label': t('Omnichannel') }, omnichannelToolbarRef);
+
 	return (
 		<NavBarComponent aria-label='header'>
 			<NavBarSection>
-				<NavBarGroup role='toolbar'>
+				<NavBarGroup role='toolbar' ref={pagesToolbarRef} {...pagesToolbarProps}>
 					<NavBarItemHomePage title={t('Home')} />
 					<NavBarItemDirectoryPage title={t('Directory')} />
 					{showMarketplace && <NavBarItemMarketPlaceMenu />}
@@ -49,7 +56,7 @@ export const NavBar = () => {
 				</NavBarGroup>
 				<NavBarDivider />
 				{showOmnichannel && (
-					<NavBarGroup role='toolbar'>
+					<NavBarGroup role='toolbar' ref={omnichannelToolbarRef} {...omnichannelToolbarProps}>
 						{showOmnichannelQueueLink && <NavBarItemOmnichannelQueue title={t('Queue')} />}
 						{isCallReady && <NavBarItemOmniChannelCallDialPad />}
 						<NavBarItemOmnichannelContact title={t('Contacts')} />
