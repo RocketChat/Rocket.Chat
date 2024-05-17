@@ -75,7 +75,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 				<BroadcastMetrics username={messageUser.username} message={normalizedMessage} />
 			)}
 
-			{readReceiptEnabled && <ReadReceiptIndicator unread={normalizedMessage.unread} />}
+			{readReceiptEnabled && <ReadReceiptIndicator mid={normalizedMessage._id} unread={normalizedMessage.unread} />}
 		</>
 	);
 };
