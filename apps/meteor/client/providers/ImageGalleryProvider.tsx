@@ -42,7 +42,9 @@ const ImageGalleryProvider = ({ children }: ImageGalleryProviderProps) => {
 	return (
 		<ImageGalleryContext.Provider value={{ imageId: imageId || '', isOpen: !!imageId, onClose: () => setImageId(undefined) }}>
 			{children}
-			{!!singleImageUrl && <ImageGallery images={[{ _id: singleImageUrl, url: singleImageUrl }]} onClose={() => setSingleImageUrl(undefined)} />}
+			{!!singleImageUrl && (
+				<ImageGallery images={[{ _id: singleImageUrl, url: singleImageUrl }]} onClose={() => setSingleImageUrl(undefined)} />
+			)}
 			{!!imageId && <ImageGalleryData />}
 		</ImageGalleryContext.Provider>
 	);
