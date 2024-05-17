@@ -77,7 +77,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 										control={control}
 										name='rid'
 										render={({ field: { onChange, value } }): ReactElement => (
-											<RoomAutoComplete value={value} onChange={onChange} placeholder={t('User')} />
+											<RoomAutoComplete scope='admin' value={value} onChange={onChange} placeholder={t('Room')} />
 										)}
 									/>
 								</FieldRow>
