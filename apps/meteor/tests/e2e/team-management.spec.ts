@@ -80,6 +80,15 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.tabs.room.btnSave.click();
 	});
 
+	test('expect set "targetTeam" as encrypted', async () => {
+		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.tabs.btnRoomInfo.click();
+		await poHomeTeam.tabs.room.btnEdit.click();
+		await poHomeTeam.tabs.room.checkboxEncrypted.click();
+		await poHomeTeam.tabs.room.btnSave.click();
+		await expect(poHomeTeam.getSystemMessageByText('enabled E2E Encryption for this room')).toBeVisible();
+	});
+
 	test('expect insert a channel inside "targetTeam"', async ({ page }) => {
 		await poHomeTeam.sidenav.openChat(targetTeam);
 		await poHomeTeam.tabs.btnChannels.click();
