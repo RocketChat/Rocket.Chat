@@ -114,12 +114,17 @@ const AdminUsersPage = (): ReactElement => {
 						</ButtonGroup>
 					)}
 				</PageHeader>
+				<Tabs>
+					<TabsItem selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
+						{t('All')}
+					</TabsItem>
+				</Tabs>
 				<PageContent>
 					{isSeatsCapExceeded && (
 						<Callout title={t('Service_disruptions_occurring')} type='danger' mbe={19}>
 							<Trans i18nKey='Your_workspace_exceeded_the_seat_license_limit'>
 								Your workspace exceeded the seat license limit. This limit cannot be exceeded further.
-								<ExternalLink to={talkToSalesUrl}>Talk to sales</ExternalLink>
+								<ExternalLink to={talkToSalesUrl}>Manage your subscription</ExternalLink>
 								to increase limits.
 							</Trans>
 						</Callout>

@@ -1,4 +1,4 @@
-import { Voip } from '@rocket.chat/core-services';
+import { VoipAsterisk } from '@rocket.chat/core-services';
 import { Match, check } from 'meteor/check';
 
 import { API } from '../../api';
@@ -18,7 +18,7 @@ API.v1.addRoute(
 				}),
 			);
 			const { host, port, username, password } = this.queryParams;
-			return API.v1.success(await Voip.checkManagementConnection(host, port, username, password));
+			return API.v1.success(await VoipAsterisk.checkManagementConnection(host, port, username, password));
 		},
 	},
 );
@@ -53,7 +53,7 @@ API.v1.addRoute(
 				}
 			}
 
-			return API.v1.success(await Voip.checkCallserverConnection(socketUrl));
+			return API.v1.success(await VoipAsterisk.checkCallserverConnection(socketUrl));
 		},
 	},
 );

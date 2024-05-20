@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage } from '@rocket.chat/core-typings';
-import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -44,7 +43,6 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 	const t = useTranslation();
 
 	const normalizedMessage = useNormalizedMessage(message);
-	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
 
 	return (
 		<>
@@ -52,14 +50,14 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				<>
 					{(!encrypted || normalizedMessage.e2e === 'done') && (
 						<MessageContentBody
-							id={`${message._id}-content`}
+							id={`${normalizedMessage._id}-content`}
 							md={normalizedMessage.md}
 							mentions={normalizedMessage.mentions}
 							channels={normalizedMessage.channels}
 							searchText={searchText}
 						/>
 					)}
-					{isMessageEncrypted && <MessageBody>{t('E2E_message_encrypted_placeholder')}</MessageBody>}
+					{encrypted && normalizedMessage.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 				</>
 			)}
 
@@ -67,9 +65,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />
 			)}
 
-			{!!normalizedMessage?.attachments?.length && (
-				<Attachments id={message.files?.[0]?._id} attachments={normalizedMessage.attachments} isMessageEncrypted={isMessageEncrypted} />
-			)}
+			{!!normalizedMessage?.attachments?.length && <Attachments id={message.files?.[0]._id} attachments={normalizedMessage.attachments} />}
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}
 
@@ -115,7 +111,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				<BroadcastMetrics username={messageUser.username} message={normalizedMessage} />
 			)}
 
-			{readReceiptEnabled && <ReadReceiptIndicator unread={normalizedMessage.unread} />}
+			{readReceiptEnabled && <ReadReceiptIndicator mid={normalizedMessage._id} unread={normalizedMessage.unread} />}
 		</>
 	);
 };
