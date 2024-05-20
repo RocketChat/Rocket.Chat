@@ -31,7 +31,7 @@ async function job(): Promise<void> {
 		const maxAge = maxTimes[type] || 0;
 		const latest = new Date(now.getTime() - toDays(maxAge));
 
-		const rooms = await Rooms.find(
+		const rooms = Rooms.find(
 			{
 				't': type,
 				'$or': [{ 'retention.enabled': { $eq: true } }, { 'retention.enabled': { $exists: false } }],
@@ -39,7 +39,7 @@ async function job(): Promise<void> {
 				...ignoreDiscussionQuery,
 			},
 			{ projection: { _id: 1 } },
-		).toArray();
+		);
 
 		for await (const { _id: rid } of rooms) {
 			await cleanRoomHistory({
@@ -54,7 +54,7 @@ async function job(): Promise<void> {
 		}
 	}
 
-	const rooms = await Rooms.find<IRoomWithRetentionPolicy>(
+	const rooms = Rooms.find<IRoomWithRetentionPolicy>(
 		{
 			'retention.enabled': { $eq: true },
 			'retention.overrideGlobal': { $eq: true },
@@ -62,7 +62,7 @@ async function job(): Promise<void> {
 			...ignoreDiscussionQuery,
 		},
 		{ projection: { _id: 1, retention: 1 } },
-	).toArray();
+	);
 
 	for await (const { _id: rid, retention } of rooms) {
 		const { maxAge = 30, filesOnly, excludePinned, ignoreThreads } = retention;
