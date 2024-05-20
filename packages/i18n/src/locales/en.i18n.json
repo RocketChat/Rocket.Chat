@@ -6025,6 +6025,7 @@
   "Your_new_email_is_email": "Your new email address is <strong>[email]</strong>.",
   "Your_E2EE_password_is": "Your E2EE password is:",
   "Your_password_is_wrong": "Your password is wrong!",
+  "Your_E2EE_password_is_wrong": "Your E2EE password is wrong!",
   "Your_password_was_changed_by_an_admin": "Your password was changed by an admin.",
   "Your_push_was_sent_to_s_devices": "Your push was sent to %s devices",
   "Your_request_to_join__roomName__has_been_made_it_could_take_up_to_15_minutes_to_be_processed": "Your request to join {{roomName}} has been made, it could take up to 15 minutes to be processed. You'll be notified when it's ready to go.",
