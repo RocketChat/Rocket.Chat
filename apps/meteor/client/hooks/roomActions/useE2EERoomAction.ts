@@ -1,13 +1,15 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { e2e } from '../../../app/e2e/client/rocketchat.e2e';
+import { OtrRoomState } from '../../../app/otr/lib/OtrRoomState';
 import { dispatchToastMessage } from '../../lib/toast';
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
+import { useOTR } from '../useOTR';
 import { useReactiveValue } from '../useReactiveValue';
 
 export const useE2EERoomAction = () => {
@@ -20,10 +22,17 @@ export const useE2EERoomAction = () => {
 	const permitted = (room.t === 'd' || (permittedToEditRoom && permittedToToggleEncryption)) && readyToEncrypt;
 	const federated = isRoomFederated(room);
 	const { t } = useTranslation();
+	const { otrState } = useOTR();
 
 	const toggleE2E = useEndpoint('POST', '/v1/rooms.saveRoomSettings');
 
-	const action = useMutableCallback(async () => {
+	const action = useEffectEvent(async () => {
+		if (otrState === OtrRoomState.ESTABLISHED || otrState === OtrRoomState.ESTABLISHING || otrState === OtrRoomState.REQUESTED) {
+			dispatchToastMessage({ type: 'error', message: t('E2EE_not_available_OTR') });
+
+			return;
+		}
+
 		const { success } = await toggleE2E({ rid: room._id, encrypted: !room.encrypted });
 		if (!success) {
 			return;
