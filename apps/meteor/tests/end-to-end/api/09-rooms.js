@@ -85,15 +85,15 @@ describe('[Rooms]', function () {
 		let testChannel;
 		let user;
 		let userCredentials;
+		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
 		let blockedMediaTypes;
 		let testPrivateChannel;
-
-		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
 
 		before(async () => {
 			user = await createUser({ joinDefaultChannels: false });
 			userCredentials = await login(user.username, password);
 			testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
+			testPrivateChannel = (await createRoom({ type: 'p', name: `channel.test.private.${Date.now()}-${Math.random()}` })).body.group;
 			blockedMediaTypes = await getSettingValueById('FileUpload_MediaTypeBlackList');
 			const newBlockedMediaTypes = blockedMediaTypes
 				.split(',')
@@ -113,20 +113,6 @@ describe('[Rooms]', function () {
 				deleteRoom({ roomId: testPrivateChannel._id, type: 'p' }),
 			]),
 		);
-
-		it('create an channel', (done) => {
-			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
-				testChannel = res.body.channel;
-				done();
-			});
-		});
-		it('create a private channel', async () => {
-			const {
-				body: { group },
-			} = await createRoom({ type: 'p', name: `channel.test.private.${Date.now()}-${Math.random()}` });
-
-			testPrivateChannel = group;
-		});
 
 		it("don't upload a file to room with file field other than file", (done) => {
 			request
