@@ -673,7 +673,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 			ts: { $lte: ts },
 		};
-		return this.deleteMany(query);
+		return this.col.deleteMany(query);
 	}
 
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult> {
