@@ -280,13 +280,14 @@ const saveNewUser = async function (userData: ICreateUserParams, sendPassword: b
 		joinDefaultChannels: userData.joinDefaultChannels,
 		...(userData.email && { email: userData.email }),
 		isGuest,
+		globalRoles: roles,
+		skipNewUserRolesSetting: true,
 	};
 
 	const _id = await Accounts.createUserAsync(createUser);
 
 	const updateUser: DeepWritable<UpdateFilter<IUser>> = {};
 	updateUser.$set = {
-		roles,
 		...(typeof userData.name !== 'undefined' && { name: userData.name }),
 		settings: userData.settings || {},
 	};

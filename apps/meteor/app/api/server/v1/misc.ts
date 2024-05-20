@@ -26,6 +26,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { passwordPolicy } from '../../../lib/server';
 import { settings } from '../../../settings/server';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
+import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
 import { API } from '../api';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
@@ -636,9 +637,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const isMailURLSet = !(process.env.MAIL_URL === 'undefined' || process.env.MAIL_URL === undefined);
-			const isSMTPConfigured = Boolean(settings.get('SMTP_Host')) || isMailURLSet;
-			return API.v1.success({ isSMTPConfigured });
+			return API.v1.success({ isSMTPConfigured: isSMTPConfigured() });
 		},
 	},
 );
