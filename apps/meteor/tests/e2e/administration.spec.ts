@@ -4,6 +4,7 @@ import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { Admin } from './page-objects';
 import { createTargetChannel } from './utils';
+import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -185,6 +186,10 @@ test.describe.parallel('administration', () => {
 		test.describe('General', () => {
 			test.beforeEach(async ({ page }) => {
 				await page.goto('/admin/settings/General');
+			});
+
+			test.afterAll(async ({ api }) => {
+				await setSettingValueById(api, 'Language', 'en')
 			});
 
 			test('expect be able to reset a setting after a change', async () => {
