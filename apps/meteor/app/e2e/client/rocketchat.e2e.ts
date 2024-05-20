@@ -420,7 +420,7 @@ class E2E extends Emitter {
 				onClose: imperativeModal.close,
 				onCancel: () => {
 					failedToDecodeKey = false;
-					dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Not_Enabled') });
+					dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
 					this.closeAlert();
 					imperativeModal.close();
 				},
@@ -485,7 +485,7 @@ class E2E extends Emitter {
 			}
 			dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Enabled') });
 		} catch (error) {
-			this.setState(E2EEState.ERROR);
+			this.setState(E2EEState.ENTER_PASSWORD);
 			throw new Error('E2E -> Error decrypting private key');
 		}
 	}
