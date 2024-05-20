@@ -34,7 +34,7 @@ export class OmnichannelAgents {
 		return this.page.locator('[data-qa-id="agents-table"] tr:first-child td:first-child');
 	}
 
-	get btnDeletefirstRowInTable() {
+	get btnDeleteFirstRowInTable() {
 		return this.page.locator('[data-qa-id="agents-table"] tr:first-child').locator('role=button[name="Remove"]');
 	}
 

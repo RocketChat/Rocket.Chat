@@ -131,7 +131,6 @@ const RoomMenu = ({
 				text={t(warnText as TranslationKey, name)}
 				confirmText={t('Leave_room')}
 				close={closeModal}
-				cancel={closeModal}
 				cancelText={t('Cancel')}
 				confirm={leave}
 			/>,
@@ -251,7 +250,6 @@ const RoomMenu = ({
 			title={t('Options')}
 			mini
 			aria-keyshortcuts='alt'
-			tabIndex={-1}
 			options={menuOptions}
 			maxHeight={300}
 			renderItem={({ label: { label, icon }, ...props }): JSX.Element => <Option label={label} icon={icon} {...props} />}

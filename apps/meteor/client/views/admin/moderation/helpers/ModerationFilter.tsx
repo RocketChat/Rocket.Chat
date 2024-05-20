@@ -15,7 +15,7 @@ const ModerationFilter = ({ setText, setDateRange }: ModerationFilterProps) => {
 	const handleChange = useCallback(({ text }): void => setText(text), [setText]);
 
 	return (
-		<FilterByText placeholder={t('Search')} onChange={handleChange}>
+		<FilterByText shouldAutoFocus placeholder={t('Search')} onChange={handleChange}>
 			<DateRangePicker onChange={setDateRange} />
 		</FilterByText>
 	);
