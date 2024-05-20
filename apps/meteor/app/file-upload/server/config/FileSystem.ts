@@ -4,7 +4,7 @@ import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
-import { getContentDisposition } from '../lib/contentDisposition';
+import { getContentDisposition } from './helper';
 
 const FileSystemUploads = new FileUploadClass({
 	name: 'FileSystem:Uploads',

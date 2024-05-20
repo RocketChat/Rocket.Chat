@@ -7,7 +7,7 @@ import _ from 'underscore';
 import { settings } from '../../../settings/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../../ufs/GoogleStorage/server';
-import { forceDownload } from '../lib/contentDisposition';
+import { forceDownload } from './helper';
 
 const get: FileUploadClass['get'] = async function (this: FileUploadClass, file, req, res) {
 	const forcedDownload = forceDownload(req);

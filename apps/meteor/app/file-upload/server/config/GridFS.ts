@@ -9,7 +9,7 @@ import { Logger } from '@rocket.chat/logger';
 import { UploadFS } from '../../../../server/ufs';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
-import { getContentDisposition } from '../lib/contentDisposition';
+import { getContentDisposition } from './helper';
 
 const logger = new Logger('FileUpload');
 
