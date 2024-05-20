@@ -165,13 +165,14 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 					...((data.systemMessages || !hideSysMes) && {
 						systemMessages: hideSysMes && data.systemMessages,
 					}),
-					...(retentionEnabled && {
-						retentionEnabled,
-						retentionOverrideGlobal,
-						retentionMaxAge,
-						retentionExcludePinned,
-						retentionFilesOnly,
-					}),
+					retentionEnabled,
+					retentionOverrideGlobal,
+					...(retentionEnabled &&
+						retentionOverrideGlobal && {
+							retentionMaxAge,
+							retentionExcludePinned,
+							retentionFilesOnly,
+						}),
 				});
 
 				dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
@@ -464,7 +465,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 							</Field>
 						)}
 					</FieldGroup>
-					{retentionPolicy && (
+					{retentionPolicy?.enabled && (
 						<Accordion>
 							<Accordion.Item title={t('Prune')}>
 								<FieldGroup>

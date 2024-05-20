@@ -135,7 +135,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 							</InfoPanel.Field>
 						)}
 
-						{retentionPolicy && (
+						{retentionPolicy?.isActive && (
 							<RetentionPolicyCallout
 								filesOnly={retentionPolicy.filesOnly}
 								excludePinned={retentionPolicy.excludePinned}

@@ -77,6 +77,8 @@ export const useRetentionPolicy = (
 	room: IRoom | undefined,
 ):
 	| {
+			enabled: boolean;
+			isActive: boolean;
 			filesOnly: boolean;
 			excludePinned: boolean;
 			maxAge: number;
@@ -94,11 +96,13 @@ export const useRetentionPolicy = (
 		maxAgeDMs: useSetting('RetentionPolicy_MaxAge_DMs') as number,
 	} as const;
 
-	if (!room || !isActive(room, settings)) {
+	if (!room) {
 		return undefined;
 	}
 
 	return {
+		enabled: settings.enabled,
+		isActive: isActive(room, settings),
 		filesOnly: extractFilesOnly(room, settings),
 		excludePinned: extractExcludePinned(room, settings),
 		maxAge: getMaxAge(room, settings),

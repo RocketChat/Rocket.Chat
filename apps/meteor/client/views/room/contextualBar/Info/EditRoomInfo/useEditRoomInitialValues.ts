@@ -24,8 +24,8 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
 			systemMessages: Array.isArray(sysMes) ? sysMes : [],
 			hideSysMes: Array.isArray(sysMes) ? !!sysMes?.length : !!sysMes,
 			encrypted,
-			...(retentionPolicy && {
-				retentionEnabled: retention?.enabled ?? Boolean(retentionPolicy),
+			...(retentionPolicy?.enabled && {
+				retentionEnabled: retention?.enabled ?? retentionPolicy.isActive,
 				retentionOverrideGlobal: !!retention?.overrideGlobal,
 				retentionMaxAge: retention?.maxAge ?? retentionPolicy.maxAge,
 				retentionExcludePinned: retention?.excludePinned ?? retentionPolicy.excludePinned,

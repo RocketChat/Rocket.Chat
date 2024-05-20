@@ -291,7 +291,7 @@ const RoomBody = (): ReactElement => {
 															<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 														) : (
 															<li className='start color-info-font-color'>
-																{retentionPolicy ? <RetentionPolicyWarning {...retentionPolicy} /> : null}
+																{retentionPolicy?.isActive ? <RetentionPolicyWarning {...retentionPolicy} /> : null}
 																<RoomForeword user={user} room={room} />
 															</li>
 														)}
