@@ -184,6 +184,27 @@ test.describe.parallel('administration', () => {
 			await poAdmin.btnCreateRole.click();
 			await page.waitForSelector('role=dialog[name="Custom roles"]');
 		});
+
+		test.describe('Users in role', () => {
+			const channelName = faker.string.uuid();
+			test.beforeAll(async ({ api }) => {
+				// TODO: refactor createChannel utility in order to get channel data when creating 
+				const response = await api.post('/channels.create', { name: channelName, members: ['user1'] });
+				const { channel } = await response.json();
+
+				await api.post('/channels.addOwner', { roomId: channel._id, userId: Users.user1.data._id });
+				await api.post('/channels.removeOwner', { roomId: channel._id, userId: Users.admin.data._id });
+			})
+
+			test('admin should be able to get the owners of a room that wasnt created by him', async ({ page }) => {
+				await poAdmin.openRoleByName('Owner').click();
+				await poAdmin.btnUsersInRole.click();
+				await poAdmin.inputRoom.fill(channelName);
+				await page.getByRole('option', { name: channelName }).click();
+				
+				await expect(poAdmin.getUserRowByUsername('user1')).toBeVisible();
+			})
+		})
 	});
 
 	test.describe('Mailer', () => {

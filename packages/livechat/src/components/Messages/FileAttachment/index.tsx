@@ -6,7 +6,13 @@ import { FileAttachmentIcon } from '../FileAttachmentIcon';
 import { MessageBubble } from '../MessageBubble';
 import styles from './styles.scss';
 
-export const FileAttachment = memo(({ url, title, className, ...messageBubbleProps }) => (
+type FileAttachmentProps = {
+	url: string;
+	title: string;
+	className?: string;
+};
+
+export const FileAttachment = memo(({ url, title, className, ...messageBubbleProps }: FileAttachmentProps) => (
 	<MessageBubble className={createClassName(styles, 'file-attachment', {}, [className])} {...messageBubbleProps}>
 		<a href={url} download target='_blank' rel='noopener noreferrer' className={createClassName(styles, 'file-attachment__inner')}>
 			<FileAttachmentIcon url={url} />
