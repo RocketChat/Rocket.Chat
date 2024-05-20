@@ -501,7 +501,7 @@ class E2E extends Emitter {
 			const privKey = await decryptAES(vector, masterKey, cipherText);
 			return toString(privKey);
 		} catch (error) {
-			this.setState(E2EEState.ERROR);
+			this.setState(E2EEState.ENTER_PASSWORD);
 			throw new Error('E2E -> Error decrypting private key');
 		}
 	}
