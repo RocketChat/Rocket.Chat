@@ -55,14 +55,15 @@ const title = {
 	discussion: 'Edit_discussion' as TranslationKey,
 };
 
-const getPolicyRoomType = (roomType: IRoomWithRetentionPolicy['t']) => {
+const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string => {
 	switch (roomType) {
-		case 'c':
-			return 'Channels';
-		case 'p':
-			return 'Groups';
 		case 'd':
-			return 'DMs';
+			return 'RetentionPolicy_MaxAge_DMs';
+		case 'p':
+			return 'RetentionPolicy_MaxAge_Groups';
+		case 'c':
+		default:
+			return 'RetentionPolicy_MaxAge_Channels';
 	}
 };
 
@@ -74,7 +75,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const roomType = 'prid' in room ? 'discussion' : room.teamId ? 'team' : 'channel';
 
 	const retentionPolicy = useRetentionPolicy(room);
-	const retentionMaxAgeDefault = useSetting<number>(`RetentionPolicy_MaxAge_${getPolicyRoomType(room.t)}`) || 30;
+	const retentionMaxAgeDefault = useSetting<number>(getRetentionSetting(room.t)) || 30;
 	const defaultValues = useEditRoomInitialValues(room);
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
