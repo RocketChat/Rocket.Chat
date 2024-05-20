@@ -468,6 +468,29 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 								</FieldRow>
 							</Field>
 						)}
+						{canViewEncrypted && (
+							<Field>
+								<FieldRow>
+									<FieldLabel htmlFor={encryptedField}>{t('Encrypted')}</FieldLabel>
+									<Controller
+										control={control}
+										name='encrypted'
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch
+												id={encryptedField}
+												aria-describedby={`${encryptedField}-hint`}
+												{...field}
+												disabled={!canToggleEncryption || isFederated}
+												checked={value}
+											/>
+										)}
+									/>
+								</FieldRow>
+								<FieldRow>
+									<FieldHint id={`${encryptedField}-hint`}>{t('Encrypted_field_hint')}</FieldHint>
+								</FieldRow>
+							</Field>
+						)}
 					</FieldGroup>
 					{canEditRoomRetentionPolicy && retentionPolicy?.enabled && (
 						<Accordion>
@@ -554,29 +577,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 													/>
 												</FieldRow>
 											</Field>
-											{canViewEncrypted && (
-												<Field>
-													<FieldRow>
-														<FieldLabel htmlFor={encryptedField}>{t('Encrypted')}</FieldLabel>
-														<Controller
-															control={control}
-															name='encrypted'
-															render={({ field: { value, ...field } }) => (
-																<ToggleSwitch
-																	id={encryptedField}
-																	aria-describedby={`${encryptedField}-hint`}
-																	{...field}
-																	disabled={!canToggleEncryption || isFederated}
-																	checked={value}
-																/>
-															)}
-														/>
-													</FieldRow>
-													<FieldRow>
-														<FieldHint id={`${encryptedField}-hint`}>{t('Encrypted_field_hint')}</FieldHint>
-													</FieldRow>
-												</Field>
-											)}
 										</>
 									)}
 								</FieldGroup>
