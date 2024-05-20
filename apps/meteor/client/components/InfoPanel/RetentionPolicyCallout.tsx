@@ -19,7 +19,13 @@ const RetentionPolicyCallout: FC<RetentionPolicyCalloutProps> = ({ filesOnly, ex
 	const time = useFormattedRelativeTime(getMaxAgeInMS(maxAge));
 
 	return (
-		<Callout role='alert' aria-labelledby={retentionPolicyContentId} aria-live='polite' type='warning'>
+		<Callout
+			arial-label={t('Retention_policy_warning_callout')}
+			role='alert'
+			aria-labelledby={retentionPolicyContentId}
+			aria-live='polite'
+			type='warning'
+		>
 			<div id={retentionPolicyContentId}>
 				{filesOnly && excludePinned && <p>{t('RetentionPolicy_RoomWarning_FilesOnly', { time })}</p>}
 				{filesOnly && !excludePinned && <p>{t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time })}</p>}
