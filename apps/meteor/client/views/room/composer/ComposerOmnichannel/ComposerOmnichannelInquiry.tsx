@@ -2,12 +2,13 @@ import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutC
 import { useEndpoint, useMethod, useToastMessageDispatch, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { useOmnichannelAgentAvailable } from '../../../../hooks/omnichannel/useOmnichannelAgentAvailable';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 
 export const ComposerOmnichannelInquiry = (): ReactElement => {
+	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const user = useUser();
 	const agentAvailable = useOmnichannelAgentAvailable();
@@ -18,6 +19,7 @@ export const ComposerOmnichannelInquiry = (): ReactElement => {
 			roomId: room._id,
 		}),
 	);
+
 	const takeInquiry = useMethod('livechat:takeInquiry');
 
 	const handleTakeInquiry = async (): Promise<void> => {
@@ -34,12 +36,21 @@ export const ComposerOmnichannelInquiry = (): ReactElement => {
 		}
 	};
 
-	const t = useTranslation();
+	const title = useMemo(() => {
+		if (user?.status === 'offline') {
+			return t('meteor_status_offline');
+		}
+
+		if (!agentAvailable) {
+			return t('Youre_unavailable');
+		}
+	}, [agentAvailable, t, user?.status]);
+
 	return (
 		<MessageFooterCallout aria-busy={result.isLoading}>
 			<MessageFooterCalloutContent>{t('you_are_in_preview_mode_of_incoming_livechat')}</MessageFooterCalloutContent>
 			<MessageFooterCalloutAction
-				{...((user?.status === 'offline' || !agentAvailable) && { title: t('meteor_status_offline') })}
+				{...(title && { title })}
 				disabled={result.isLoading || user?.status === 'offline' || !agentAvailable}
 				onClick={handleTakeInquiry}
 			>
