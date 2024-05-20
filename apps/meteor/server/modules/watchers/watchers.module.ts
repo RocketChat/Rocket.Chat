@@ -422,20 +422,15 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 		}
 	});
 
-	watcher.on<ILivechatPriority>(LivechatPriority.getCollectionName(), async ({ clientAction, id, data: eventData, diff }) => {
+	watcher.on<ILivechatPriority>(LivechatPriority.getCollectionName(), async ({ clientAction, id, diff }) => {
 		if (clientAction !== 'updated' || !diff || !('name' in diff)) {
 			// For now, we don't support this actions from happening
 			return;
 		}
 
-		const data = eventData ?? (await LivechatPriority.findOne({ _id: id }));
-		if (!data) {
-			return;
-		}
-
 		// This solves the problem of broadcasting, since now, watcher is the one in charge of doing it.
 		// What i don't like is the idea of giving more responsibilities to watcher, even when this works
-		void broadcast('watch.priorities', { clientAction, data, id, diff });
+		void broadcast('watch.priorities', { clientAction, id, diff });
 	});
 
 	watcherStarted = true;
