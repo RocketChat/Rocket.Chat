@@ -1,4 +1,4 @@
-import http from 'http';
+import type http from 'http';
 import URL from 'url';
 
 export const forceDownload = (req: http.IncomingMessage): boolean => {
