@@ -164,7 +164,6 @@ new FileUploadClass({
 		file = FileUpload.addExtensionTo(file);
 		const contentDisposition = query.contentDisposition === 'inline' ? 'inline' : 'attachment';
 
-
 		res.setHeader('Content-Disposition', `${contentDisposition}; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
 		file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 		res.setHeader('Content-Type', file.type || 'application/octet-stream');
