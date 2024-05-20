@@ -1,5 +1,5 @@
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
-import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatRooms, Subscriptions } from '@rocket.chat/models';
 import type { UpdateResult } from 'mongodb';
 
 import { addMigration } from '../../lib/migrations';
@@ -17,6 +17,8 @@ addMigration({
 		// 2. Remove the inquiry
 		// 1. Find all the inquiries that are queued but have any "takenAt" date
 		// 2. Remove the inquiry
+		// 1. Find all closed rooms
+		// 2. Remove subscriptions associated with them
 
 		// Closed rooms with open inquiries
 		const closedRooms = await LivechatRooms.find({ closedAt: { $exists: true } }, { projection: { _id: 1 } }).toArray();
@@ -47,5 +49,9 @@ addMigration({
 		});
 
 		console.log(`[Migration] Removed ${invalidDeletedCount} inquiries from invalid rooms`);
+
+		const { deletedCount: subDeletedCount } = await Subscriptions.deleteMany({ rid: { $in: closedRooms.map((room) => room._id) } });
+
+		console.log(`[Migration] Removed ${subDeletedCount} subscriptions from closed rooms`);
 	},
 });
