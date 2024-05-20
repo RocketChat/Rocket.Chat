@@ -76,7 +76,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const roomType = 'prid' in room ? 'discussion' : room.teamId ? 'team' : 'channel';
 
 	const retentionPolicy = useRetentionPolicy(room);
-	const retentionMaxAgeDefault = useSetting<number>(getRetentionSetting(room.t)) || 30;
+	const retentionMaxAgeDefault = useSetting<number>(getRetentionSetting(room.t)) ?? 30;
 	const defaultValues = useEditRoomInitialValues(room);
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
@@ -142,26 +142,45 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 
 	const handleArchive = useArchiveRoom(room);
 
-	const handleUpdateRoomData = useEffectEvent(async ({ hideSysMes, joinCodeRequired, ...formData }) => {
-		const data = getDirtyFields(formData, dirtyFields);
-		delete data.archived;
+	// TODO: add payload validation
+	const handleUpdateRoomData = useEffectEvent(
+		async ({
+			hideSysMes,
+			joinCodeRequired,
+			retentionEnabled,
+			retentionOverrideGlobal,
+			retentionMaxAge,
+			retentionExcludePinned,
+			retentionFilesOnly,
+			...formData
+		}) => {
+			const data = getDirtyFields(formData, dirtyFields);
+			delete data.archived;
 
-		try {
-			await saveAction({
-				rid: room._id,
-				...data,
-				...((data.joinCode || 'joinCodeRequired' in data) && { joinCode: joinCodeRequired ? data.joinCode : '' }),
-				...((data.systemMessages || !hideSysMes) && {
-					systemMessages: hideSysMes && data.systemMessages,
-				}),
-			});
+			try {
+				await saveAction({
+					rid: room._id,
+					...data,
+					...((data.joinCode || 'joinCodeRequired' in data) && { joinCode: joinCodeRequired ? data.joinCode : '' }),
+					...((data.systemMessages || !hideSysMes) && {
+						systemMessages: hideSysMes && data.systemMessages,
+					}),
+					...(retentionEnabled && {
+						retentionEnabled,
+						retentionOverrideGlobal,
+						retentionMaxAge,
+						retentionExcludePinned,
+						retentionFilesOnly,
+					}),
+				});
 
-			dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
-			onClickClose();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
+				dispatchToastMessage({ type: 'success', message: t('Room_updated_successfully') });
+				onClickClose();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		},
+	);
 
 	const handleSave = useEffectEvent((data) =>
 		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
@@ -493,9 +512,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 															<NumberInput
 																id={retentionMaxAgeField}
 																{...field}
-																onChange={(e: ChangeEvent<HTMLInputElement>) => {
-																	return onChange(Math.max(1, Number(e.currentTarget.value)));
-																}}
+																onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(Math.max(1, Number(e.currentTarget.value)))}
 															/>
 														)}
 													/>

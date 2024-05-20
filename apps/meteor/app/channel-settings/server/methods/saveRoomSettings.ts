@@ -449,7 +449,7 @@ export async function saveRoomSettings(
 			rid,
 		});
 
-		if (setting === 'retentionOverrideGlobal') {
+		if (setting === 'retentionOverrideGlobal' && settings.retentionOverrideGlobal === false) {
 			delete settings.retentionMaxAge;
 			delete settings.retentionExcludePinned;
 			delete settings.retentionFilesOnly;
