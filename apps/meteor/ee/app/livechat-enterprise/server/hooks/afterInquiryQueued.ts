@@ -6,7 +6,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { OmnichannelQueueInactivityMonitor } from '../lib/QueueInactivityMonitor';
 import { cbLogger } from '../lib/logger';
 
-const withTimer = (timer: number) => {
+export const withTimer = (timer: number) => {
 	return async (inquiry: ILivechatInquiryRecord) => {
 		if (!inquiry?._id || !inquiry?._updatedAt) {
 			return;
