@@ -23,6 +23,7 @@ import {
 import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { ChangeEvent } from 'react';
 import React, { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -488,7 +489,15 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 													<Controller
 														control={control}
 														name='retentionMaxAge'
-														render={({ field }) => <NumberInput id={retentionMaxAgeField} {...field} />}
+														render={({ field: { onChange, ...field } }) => (
+															<NumberInput
+																id={retentionMaxAgeField}
+																{...field}
+																onChange={(e: ChangeEvent<HTMLInputElement>) => {
+																	return onChange(Math.max(1, Number(e.currentTarget.value)));
+																}}
+															/>
+														)}
 													/>
 												</FieldRow>
 											</Field>
