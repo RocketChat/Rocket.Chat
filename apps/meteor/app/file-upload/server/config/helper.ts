@@ -18,7 +18,7 @@ export const forceDownload = (req: http.IncomingMessage): boolean => {
 };
 
 export const getContentDisposition = (req: http.IncomingMessage): string => {
-	const { query } = URL.parse(req.url || '', true) as any;
+	const { query } = URL.parse(req.url || '', true);
 	if (query.contentDisposition === 'inline') {
 		return 'inline';
 	}
