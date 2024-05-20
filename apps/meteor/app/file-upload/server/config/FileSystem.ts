@@ -1,10 +1,10 @@
 import fsp from 'fs/promises';
-import URL from 'url';
 
 import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
+import { getContentDisposition } from '../lib/contentDisposition';
 
 const FileSystemUploads = new FileUploadClass({
 	name: 'FileSystem:Uploads',
@@ -26,11 +26,9 @@ const FileSystemUploads = new FileUploadClass({
 				return;
 			}
 
-			const { query } = URL.parse(req.url || '', true);
 			file = FileUpload.addExtensionTo(file);
-			const contentDisposition = query.contentDisposition === 'inline' ? 'inline' : 'attachment';
 
-			res.setHeader('Content-Disposition', `${contentDisposition}; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
+			res.setHeader('Content-Disposition', `${getContentDisposition(req)}; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
 			file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 			res.setHeader('Content-Type', file.type || 'application/octet-stream');
 

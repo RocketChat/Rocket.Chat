@@ -1,7 +1,6 @@
 import type * as http from 'http';
 import type { TransformCallback, TransformOptions } from 'stream';
 import stream from 'stream';
-import URL from 'url';
 import zlib from 'zlib';
 
 import type { IUpload } from '@rocket.chat/core-typings';
@@ -10,6 +9,7 @@ import { Logger } from '@rocket.chat/logger';
 import { UploadFS } from '../../../../server/ufs';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
+import { getContentDisposition } from '../lib/contentDisposition';
 
 const logger = new Logger('FileUpload');
 
@@ -160,11 +160,9 @@ new FileUploadClass({
 	name: 'GridFS:Uploads',
 
 	async get(file, req, res) {
-		const { query } = URL.parse(req.url || '', true);
 		file = FileUpload.addExtensionTo(file);
-		const contentDisposition = query.contentDisposition === 'inline' ? 'inline' : 'attachment';
 
-		res.setHeader('Content-Disposition', `${contentDisposition}; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
+		res.setHeader('Content-Disposition', `${getContentDisposition(req)}; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
 		file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 		res.setHeader('Content-Type', file.type || 'application/octet-stream');
 		res.setHeader('Content-Length', file.size || 0);
