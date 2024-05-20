@@ -3,8 +3,10 @@ import { Match, check } from 'meteor/check';
 import { Mongo } from 'meteor/mongo';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
+import { JWT } from 'google-auth-library';
 
 import { initAPN, sendAPN } from './apn';
+import { sendFCM } from './fcm';
 import { sendGCM } from './gcm';
 import { logger } from './logger';
 import { settings } from '../../settings/server';
@@ -51,18 +53,6 @@ export class PushClass {
 		}
 	}
 
-	sendWorker(task, interval) {
-		logger.debug(`Send worker started, using interval: ${interval}`);
-
-		return Meteor.setInterval(() => {
-			try {
-				task();
-			} catch (error) {
-				logger.debug(`Error while sending: ${error.message}`);
-			}
-		}, interval);
-	}
-
 	_replaceToken(currentToken, newToken) {
 		appTokensCollection.rawCollection().updateMany({ token: currentToken }, { $set: { token: newToken } });
 	}
@@ -75,7 +65,7 @@ export class PushClass {
 		return !!this.options.gateways && settings.get('Register_Server') && settings.get('Cloud_Service_Agree_PrivacyTerms');
 	}
 
-	sendNotificationNative(app, notification, countApn, countGcm) {
+	_sendNotificationNative(app, notification, countApn, countGcm) {
 		logger.debug('send to token', app.token);
 
 		if (app.token.apn) {
@@ -91,7 +81,29 @@ export class PushClass {
 			// Send to GCM
 			// We do support multiple here - so we should construct an array
 			// and send it bulk - Investigate limit count of id's
-			if (this.options.gcm && this.options.gcm.apiKey) {
+			// TODO: Remove this after the legacy provider is removed
+			const useLegacyProvider = settings.get('Push_UseLegacy')
+
+			if (!useLegacyProvider) {
+				// override this.options.gcm.apiKey with the oauth2 token
+				const { projectId, token} = this._getNativeNotificationAuthorizationCredentials();
+				const sendCGMOptions = {
+					...this.options,
+					gcm: {
+						...this.options.gcm,
+						apiKey: token,
+						projectNumber: projectId,
+					},
+				};
+
+				sendFCM({
+					userTokens: app.token.gcm,
+					notification,
+					_replaceToken: this._replaceToken,
+					_removeToken: this._removeToken,
+					options: sendCGMOptions,
+				});
+			} else if (this.options.gcm && this.options.gcm.apiKey) {
 				sendGCM({
 					userTokens: app.token.gcm,
 					notification,
@@ -105,7 +117,35 @@ export class PushClass {
 		}
 	}
 
-	sendGatewayPush(gateway, service, token, notification, tries = 0) {
+	_getNativeNotificationAuthorizationCredentials() {
+		const credentialsString = settings.get('Push_google_api_credentials');
+		if (!credentialsString.trim()) {
+			throw new Error('Push_google_api_credentials is not set');
+		}
+
+		try {
+			const credentials = JSON.parse(credentialsString);
+
+			const client = new JWT({
+				email: credentials.client_email,
+				key: credentials.private_key,
+				keyId: credentials.private_key_id,
+				scopes: 'https://www.googleapis.com/auth/firebase.messaging',
+			});
+
+			client.authorize();
+
+			return {
+				token: client.credentials.access_token,
+				projectId: credentials.project_id,
+			};
+		} catch (error) {
+			logger.error('Error getting FCM token', error);
+			throw new Error('Error getting FCM token');
+		}
+	}
+
+	_sendGatewayPush(gateway, service, token, notification, tries = 0) {
 		notification.uniqueId = this.options.uniqueId;
 
 		const data = {
@@ -158,29 +198,29 @@ export class PushClass {
 
 				logger.log('Trying sending push to gateway again in', ms, 'milliseconds');
 
-				return Meteor.setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, tries + 1), ms);
+				return Meteor.setTimeout(() => this._sendGatewayPush(gateway, service, token, notification, tries + 1), ms);
 			}
 		});
 	}
 
-	sendNotificationGateway(app, notification, countApn, countGcm) {
+	_sendNotificationGateway(app, notification, countApn, countGcm) {
 		for (const gateway of this.options.gateways) {
 			logger.debug('send to token', app.token);
 
 			if (app.token.apn) {
 				countApn.push(app._id);
 				notification.topic = app.appName;
-				return this.sendGatewayPush(gateway, 'apn', app.token.apn, notification);
+				return this._sendGatewayPush(gateway, 'apn', app.token.apn, notification);
 			}
 
 			if (app.token.gcm) {
 				countGcm.push(app._id);
-				return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, notification);
+				return this._sendGatewayPush(gateway, 'gcm', app.token.gcm, notification);
 			}
 		}
 	}
 
-	sendNotification(notification = { badge: 0 }) {
+	_sendNotification(notification = { badge: 0 }) {
 		logger.debug('Sending notification', notification);
 
 		const countApn = [];
@@ -207,10 +247,10 @@ export class PushClass {
 			logger.debug('send to token', app.token);
 
 			if (this._shouldUseGateway()) {
-				return this.sendNotificationGateway(app, notification, countApn, countGcm);
+				return this._sendNotificationGateway(app, notification, countApn, countGcm);
 			}
 
-			return this.sendNotificationNative(app, notification, countApn, countGcm);
+			return this._sendNotificationNative(app, notification, countApn, countGcm);
 		});
 
 		if (settings.get('Log_Level') === '2') {
@@ -344,7 +384,7 @@ export class PushClass {
 		this._validateDocument(notification);
 
 		try {
-			this.sendNotification(notification);
+			this._sendNotification(notification);
 		} catch (error) {
 			logger.debug(`Could not send notification id: "${notification._id}", Error: ${error.message}`);
 			logger.debug(error.stack);

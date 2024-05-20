@@ -1491,6 +1491,11 @@ settingsRegistry.addGroup('Push', function () {
 		},
 	});
 	this.section('Certificates_and_Keys', function () {
+		this.add('Push_UseLegacy', false, {
+			type: 'boolean',
+			alert: 'Push_Setting_Legacy_Warning',
+		});
+
 		this.add('Push_apn_passphrase', '', {
 			type: 'string',
 			enableQuery: [],
@@ -1527,13 +1532,35 @@ settingsRegistry.addGroup('Push', function () {
 		});
 		this.add('Push_gcm_api_key', '', {
 			type: 'string',
-			enableQuery: [],
+			enableQuery: [
+				{
+					_id: 'Push_UseLegacy',
+					value: true,
+				},
+			],
 			secret: true,
 		});
+		this.add('Push_google_api_credentials', '', {
+			type: 'code',
+			multiline: true,
+			enableQuery: [
+				{
+					_id: 'Push_UseLegacy',
+					value: false,
+				},
+			],
+			secret: true,
+		});
+
 		return this.add('Push_gcm_project_number', '', {
 			type: 'string',
 			public: true,
-			enableQuery: [],
+			enableQuery: [
+				{
+					_id: 'Push_UseLegacy',
+					value: true,
+				},
+			],
 			secret: true,
 		});
 	});
