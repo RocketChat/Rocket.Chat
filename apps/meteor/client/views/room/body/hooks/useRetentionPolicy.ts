@@ -55,7 +55,7 @@ const extractExcludePinned = (room: IRoom, { doNotPrunePinned }: RetentionPolicy
 
 const getMaxAge = (room: IRoom, { maxAgeChannels, maxAgeGroups, maxAgeDMs }: RetentionPolicySettings): number => {
 	if (hasRetentionPolicy(room) && room.retention.overrideGlobal) {
-		return room.retention.maxAge;
+		return room.retention.maxAge * 24 * 60 * 60 * 1000;
 	}
 
 	if (room.t === 'c') {
@@ -99,6 +99,6 @@ export const useRetentionPolicy = (
 	return {
 		filesOnly: extractFilesOnly(room, settings),
 		excludePinned: extractExcludePinned(room, settings),
-		maxAge: getMaxAge(room, settings) * 24 * 60 * 60 * 1000,
+		maxAge: getMaxAge(room, settings),
 	};
 };
