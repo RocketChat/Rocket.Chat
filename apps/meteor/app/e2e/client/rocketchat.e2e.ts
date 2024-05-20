@@ -438,14 +438,15 @@ class E2E extends Emitter {
 	}
 
 	async decryptPinnedMessage(message: IMessage) {
-		if (!message?.attachments || !message.attachments[0]?.text) {
+		const pinnedMessage = message?.attachments?.[0]?.text;
+
+		if (!pinnedMessage) {
 			return message;
 		}
 
 		const e2eRoom = await this.getInstanceByRoomId(message.rid);
-		const pinnedMessage = message.attachments[0]?.text;
 
-		if (!e2eRoom || !pinnedMessage) {
+		if (!e2eRoom) {
 			return message;
 		}
 
