@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Decrypt pinned encrypted message
+Decrypt pinned encrypted messages in the chat and pinned messages contextual bar.
