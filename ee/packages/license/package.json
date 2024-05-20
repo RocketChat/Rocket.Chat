@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/license",
-	"version": "0.1.6",
+	"version": "0.1.7",
 	"private": true,
 	"devDependencies": {
 		"@swc/core": "^1.3.95",

@@ -1,5 +1,33 @@
 # @rocket.chat/meteor
 
+## 6.5.7
+
+### Patch Changes
+
+- 216a35da27: Bump @rocket.chat/meteor version.
+- Bump @rocket.chat/meteor version.
+- c6e07dd387: Added a new notification provider in light of the old FCM API deprecation, now you can choose to use the new provider or the old via the `Push_UseLegacy` setting
+  - @rocket.chat/core-typings@6.5.7
+  - @rocket.chat/rest-typings@6.5.7
+  - @rocket.chat/api-client@0.1.25
+  - @rocket.chat/license@0.1.7
+  - @rocket.chat/omnichannel-services@0.1.7
+  - @rocket.chat/pdf-worker@0.0.31
+  - @rocket.chat/presence@0.1.7
+  - @rocket.chat/core-services@0.3.7
+  - @rocket.chat/cron@0.0.27
+  - @rocket.chat/gazzodown@3.0.7
+  - @rocket.chat/model-typings@0.2.7
+  - @rocket.chat/ui-contexts@3.0.7
+  - @rocket.chat/server-cloud-communication@0.0.1
+  - @rocket.chat/fuselage-ui-kit@3.0.7
+  - @rocket.chat/models@0.0.31
+  - @rocket.chat/ui-theming@0.1.1
+  - @rocket.chat/ui-client@3.0.7
+  - @rocket.chat/ui-video-conf@3.0.7
+  - @rocket.chat/web-ui-registration@3.0.7
+  - @rocket.chat/instance-status@0.0.31
+
 ## 6.5.6
 
 ### Patch Changes

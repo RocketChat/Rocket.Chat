@@ -1,5 +1,12 @@
 # @rocket.chat/cron
 
+## 0.0.27
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.7
+- @rocket.chat/models@0.0.31
+
 ## 0.0.26
 
 ### Patch Changes
