@@ -54,6 +54,8 @@ import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
+const ACCOUNTS_DEFAULT_LOGIN_EXPIRATION = 90;
+
 API.v1.addRoute(
 	'users.getAvatar',
 	{ authRequired: false },
@@ -1023,8 +1025,18 @@ API.v1.addRoute(
 
 			const token = me.services?.resume?.loginTokens?.find((token) => token.hashedToken === hashedToken);
 
+			const getLoginExpiration = () => {
+				const loginExp = settings.get<number>('Accounts_LoginExpiration');
+
+				if (typeof loginExp === 'number' && !Number.isNaN(loginExp)) {
+					return loginExp;
+				}
+
+				return ACCOUNTS_DEFAULT_LOGIN_EXPIRATION;
+			};
+
 			const tokenExpires =
-				(token && 'when' in token && new Date(token.when.getTime() + settings.get<number>('Accounts_LoginExpiration') * 1000)) || undefined;
+				(token && 'when' in token && new Date(token.when.getTime() + getLoginExpiration() * 60 * 60 * 24 * 1000)) || undefined;
 
 			return API.v1.success({
 				token: xAuthToken,

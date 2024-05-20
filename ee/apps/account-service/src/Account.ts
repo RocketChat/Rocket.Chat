@@ -6,6 +6,8 @@ import { loginViaResume } from './lib/loginViaResume';
 import { loginViaUsername } from './lib/loginViaUsername';
 import { removeSession } from './lib/removeSession';
 
+const ACCOUNTS_DEFAULT_LOGIN_EXPIRATION = 90;
+
 export class Account extends ServiceClass implements IAccount {
 	protected name = 'accounts';
 
@@ -22,8 +24,10 @@ export class Account extends ServiceClass implements IAccount {
 			if (_id !== 'Accounts_LoginExpiration') {
 				return;
 			}
-			if (typeof value === 'number') {
+			if (typeof value === 'number' && !Number.isNaN(value)) {
 				this.loginExpiration = value;
+			} else {
+				this.loginExpiration = ACCOUNTS_DEFAULT_LOGIN_EXPIRATION;
 			}
 		});
 	}
@@ -46,8 +50,10 @@ export class Account extends ServiceClass implements IAccount {
 
 	async started(): Promise<void> {
 		const expiry = await Settings.findOne({ _id: 'Accounts_LoginExpiration' }, { projection: { value: 1 } });
-		if (expiry?.value) {
-			this.loginExpiration = expiry.value as number;
+		if (expiry?.value && typeof expiry.value === 'number' && !Number.isNaN(expiry.value)) {
+			this.loginExpiration = expiry.value;
+		} else {
+			this.loginExpiration = ACCOUNTS_DEFAULT_LOGIN_EXPIRATION;
 		}
 	}
 }
