@@ -486,7 +486,8 @@ class E2E extends Emitter {
 			dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Enabled') });
 		} catch (error) {
 			this.setState(E2EEState.ENTER_PASSWORD);
-			dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_wrong') });
+			dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_incorrect') });
+			dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
 			throw new Error('E2E -> Error decrypting private key');
 		}
 	}
@@ -503,7 +504,8 @@ class E2E extends Emitter {
 			return toString(privKey);
 		} catch (error) {
 			this.setState(E2EEState.ENTER_PASSWORD);
-			dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_wrong') });
+			dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_incorrect') });
+			dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
 			throw new Error('E2E -> Error decrypting private key');
 		}
 	}
