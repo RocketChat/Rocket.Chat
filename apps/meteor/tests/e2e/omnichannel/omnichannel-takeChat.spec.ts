@@ -31,13 +31,14 @@ test.describe('omnichannel-takeChat', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
+		await agent.poHomeChannel.sidenav.switchOmnichannelStatus('online');
+		await agent.poHomeChannel.sidenav.switchStatus('online');
+
 		await Promise.all([
 			await api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
 			await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
 			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }).then((res) => expect(res.status()).toBe(200)),
 		]);
-
-		await agent.poHomeChannel.sidenav.switchStatus('online');
 
 		await agent.page.close();
 	});
@@ -84,6 +85,11 @@ test.describe('omnichannel-takeChat', () => {
 
 		await agent.poHomeChannel.sidenav.switchStatus('offline');
 		await agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name).click();
+
+		await expect(agent.poHomeChannel.content.btnTakeChat).toBeDisabled();
+
+		await agent.poHomeChannel.sidenav.switchStatus('online');
+		await agent.poHomeChannel.sidenav.switchOmnichannelStatus('offline');
 
 		await expect(agent.poHomeChannel.content.btnTakeChat).toBeDisabled();
 	});
