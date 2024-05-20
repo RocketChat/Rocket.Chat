@@ -8354,7 +8354,7 @@ __metadata:
     vm2: ^3.9.19
   peerDependencies:
     "@rocket.chat/ui-kit": "*"
-  checksum: d7aa23249823e37072b6b7af16a40d9a4e7cb6b8047f2a87e52163dfe516d6c8a09b21cafd4f28dfbe4dd3da9cd0190d71f7623fec8c573a3f215ca4f9529b56
+  checksum: 0951f1a1632d1b8131c5ecdb23ba3ca83d90e219d89176302c8406c2b1ef6b53e8c82a8f3de120e5bdd7ab31df440f5732d13ca95f6243f7678923f21e038b8a
   languageName: node
   linkType: hard
 

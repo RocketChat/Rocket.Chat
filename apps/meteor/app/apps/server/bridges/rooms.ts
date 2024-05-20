@@ -112,11 +112,20 @@ export class AppRoomBridge extends RoomBridge {
 		appId: string,
 	): Promise<IMessage[]> {
 		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}"`);
-		if (!Number.isFinite(options.limit) || options.limit < 1) {
-			options.limit = 100;
+
+		let { limit, skip = 0, sort } = options;
+
+		if (!Number.isFinite(limit) || limit < 1) {
+			limit = 100;
 		}
 
-		const { limit, skip, sort = { ts: -1 } } = options;
+		if (!Number.isFinite(skip) || skip < 0) {
+			skip = 0;
+		}
+
+		if (!sort || typeof sort !== 'object') {
+			sort = { ts: -1 };
+		}
 
 		const messageConverter = this.orch.getConverters()?.get('messages');
 		if (!messageConverter) {
@@ -129,9 +138,20 @@ export class AppRoomBridge extends RoomBridge {
 			sort,
 		};
 
-		const messages = await Messages.findVisibleByRoomId(roomId, messageQueryOptions).toArray();
+		const query = {
+			rid: roomId,
+			_hidden: { $ne: true },
+			t: { $exists: false },
+		};
 
-		return Promise.all(messages.map((message) => messageConverter.convertMessage(message)));
+		const cursor = Messages.find(query, messageQueryOptions);
+
+		const messagePromises: Promise<IMessage>[] = [];
+		await cursor.forEach((message) => {
+			messagePromises.push(messageConverter.convertMessage(message));
+		});
+
+		return Promise.all(messagePromises);
 	}
 
 	protected async getMembers(roomId: string, appId: string): Promise<Array<IUser>> {
