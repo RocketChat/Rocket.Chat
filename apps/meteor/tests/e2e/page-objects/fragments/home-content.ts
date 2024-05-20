@@ -14,7 +14,7 @@ export class HomeContent {
 	}
 
 	get channelRetentionPolicyWarning(): Locator {
-		return this.page.locator('main').getByRole('alert', { name: 'Unpinned messages older than 30 days are automatically pruned here' });
+		return this.page.locator('main').getByRole('alert', { name: 'Retention policy warning banner' });
 	}
 
 	get inputMessage(): Locator {
