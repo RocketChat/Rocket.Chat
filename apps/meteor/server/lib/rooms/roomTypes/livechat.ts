@@ -27,7 +27,7 @@ roomCoordinator.add(LivechatRoomType, {
 	},
 
 	async canAccessUploadedFile({ rc_token: token, rc_rid: rid }) {
-		return token && rid && !!(await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rid, token));
+		return token && rid && !!(await LivechatRooms.findOneByIdAndVisitorToken(rid, token));
 	},
 
 	async getNotificationDetails(room, _sender, notificationMessage, userId) {
