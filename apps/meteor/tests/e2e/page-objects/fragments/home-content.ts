@@ -13,6 +13,10 @@ export class HomeContent {
 		return this.page.locator('main header');
 	}
 
+	get channelRetentionPolicyWarning(): Locator {
+		return this.page.locator('main').getByRole('alert', { name: 'Unpinned messages older than 30 days are automatically pruned here' });
+	}
+
 	get inputMessage(): Locator {
 		return this.page.locator('[name="msg"]');
 	}

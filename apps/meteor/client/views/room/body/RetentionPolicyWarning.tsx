@@ -18,7 +18,7 @@ const RetentionPolicyWarning = ({ filesOnly, excludePinned, maxAge }: RetentionP
 
 	if (filesOnly) {
 		return (
-			<div className='start__purge-warning error-background error-border error-color'>
+			<div role='alert' aria-live='polite' className='start__purge-warning error-background error-border error-color'>
 				<Icon name='warning' size='x20' />{' '}
 				{excludePinned
 					? t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time })
@@ -28,7 +28,7 @@ const RetentionPolicyWarning = ({ filesOnly, excludePinned, maxAge }: RetentionP
 	}
 
 	return (
-		<div className='start__purge-warning error-background error-border error-color'>
+		<div role='alert' aria-live='polite' className='start__purge-warning error-background error-border error-color'>
 			<Icon name='warning' size='x20' />{' '}
 			{excludePinned ? t('RetentionPolicy_RoomWarning_Unpinned', { time }) : t('RetentionPolicy_RoomWarning', { time })}
 		</div>
