@@ -1,5 +1,4 @@
 import { Callout } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React from 'react';
@@ -15,18 +14,11 @@ type RetentionPolicyCalloutProps = {
 
 const RetentionPolicyCallout: FC<RetentionPolicyCalloutProps> = ({ filesOnly, excludePinned, maxAge }) => {
 	const t = useTranslation();
-	const retentionPolicyContentId = useUniqueId();
 	const time = useFormattedRelativeTime(getMaxAgeInMS(maxAge));
 
 	return (
-		<Callout
-			arial-label={t('Retention_policy_warning_callout')}
-			role='alert'
-			aria-labelledby={retentionPolicyContentId}
-			aria-live='polite'
-			type='warning'
-		>
-			<div id={retentionPolicyContentId}>
+		<Callout arial-label={t('Retention_policy_warning_callout')} role='alert' aria-live='polite' type='warning'>
+			<div>
 				{filesOnly && excludePinned && <p>{t('RetentionPolicy_RoomWarning_FilesOnly', { time })}</p>}
 				{filesOnly && !excludePinned && <p>{t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time })}</p>}
 				{!filesOnly && excludePinned && <p>{t('RetentionPolicy_RoomWarning', { time })}</p>}
