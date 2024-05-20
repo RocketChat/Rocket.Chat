@@ -485,7 +485,7 @@ class E2E extends Emitter {
 			}
 			dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Enabled') });
 		} catch (error) {
-			this.setState(E2EEState.ERROR);
+			this.setState(E2EEState.ENTER_PASSWORD);
 			throw new Error('E2E -> Error decrypting private key');
 		}
 	}
