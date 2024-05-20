@@ -1,5 +1,45 @@
 # @rocket.chat/meteor
 
+## 6.7.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#32442](https://github.com/RocketChat/Rocket.Chat/pull/32442) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixed an issue where translations would fallback to english some of the times.
+
+- ([#32438](https://github.com/RocketChat/Rocket.Chat/pull/32438) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixed a language priority issue. It should now respect the following order: User Preference -> Browser Language -> Server Language
+
+- ([#32448](https://github.com/RocketChat/Rocket.Chat/pull/32448) by [@dionisio-bot](https://github.com/dionisio-bot)) Added a new notification provider in light of the old FCM API deprecation, now you can choose to use the new provider or the old via the `Push_UseLegacy` setting
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.3
+  - @rocket.chat/rest-typings@6.7.3
+  - @rocket.chat/api-client@0.1.32
+  - @rocket.chat/license@0.1.14
+  - @rocket.chat/omnichannel-services@0.1.14
+  - @rocket.chat/pdf-worker@0.0.38
+  - @rocket.chat/presence@0.1.14
+  - @rocket.chat/apps@0.0.5
+  - @rocket.chat/core-services@0.3.14
+  - @rocket.chat/cron@0.0.34
+  - @rocket.chat/gazzodown@5.0.3
+  - @rocket.chat/model-typings@0.3.10
+  - @rocket.chat/ui-contexts@5.0.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/fuselage-ui-kit@5.0.3
+  - @rocket.chat/models@0.0.38
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/ui-avatar@1.0.3
+  - @rocket.chat/ui-client@5.0.3
+  - @rocket.chat/ui-video-conf@5.0.3
+  - @rocket.chat/web-ui-registration@5.0.3
+  - @rocket.chat/instance-status@0.0.38
+  </details>
+
 ## 6.7.2
 
 ### Patch Changes
