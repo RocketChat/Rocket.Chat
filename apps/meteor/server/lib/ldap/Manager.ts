@@ -44,6 +44,8 @@ export class LDAPManager {
 			const slugifiedUsername = this.slugifyUsername(ldapUser, username);
 			const user = await this.findExistingUser(ldapUser, slugifiedUsername);
 
+			// Disconnect logged in user before sync so that the admin takes over on the next steps
+			ldap.disconnect();
 			if (user) {
 				return await this.loginExistingUser(ldap, user, ldapUser, password);
 			}
