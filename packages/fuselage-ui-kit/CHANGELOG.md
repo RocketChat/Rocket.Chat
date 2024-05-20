@@ -1,5 +1,16 @@
 # Change Log
 
+## 4.0.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@4.0.8
+  - @rocket.chat/ui-contexts@4.0.8
+  - @rocket.chat/ui-video-conf@4.0.8
+  </details>
+
 ## 4.0.7
 
 ### Patch Changes
