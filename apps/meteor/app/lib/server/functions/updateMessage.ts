@@ -92,19 +92,14 @@ export const updateMessage = async function (
 		void Apps.getBridges()?.getListenerBridge().messageEvent(AppEvents.IPostMessageUpdated, messageData);
 	}
 
-	setImmediate(async () => {
-		const msg = await Messages.findOneById(_id);
-		if (msg) {
-			await callbacks.run('afterSaveMessage', msg, room, user._id);
+	await callbacks.run('afterSaveMessage', messageData, room, user._id);
 
-			void broadcastMessageFromData({
-				id: msg._id,
-				data: msg,
-			});
-
-			if (room?.lastMessage?._id === msg._id) {
-				void notifyOnRoomChangedById(message.rid);
-			}
-		}
+	void broadcastMessageFromData({
+		id: messageData._id,
+		data: messageData,
 	});
+
+	if (room?.lastMessage?._id === messageData._id) {
+		void notifyOnRoomChangedById(message.rid);
+	}
 };
