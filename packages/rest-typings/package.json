@@ -1,6 +1,5 @@
 {
 	"name": "@rocket.chat/rest-typings",
-	"private": true,
 	"version": "6.9.0-rc.0",
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
