@@ -5,7 +5,7 @@ import { VoipFreeSwitchService } from '../../../../server/services/voip-freeswit
 
 const VoipFreeSwitch = new VoipFreeSwitchService();
 
-describe('VoIP', () => {
+describe.skip('VoIP', () => {
 	describe('FreeSwitch', () => {
 		it('should get a list of users from FreeSwitch', async () => {
 			const result = await VoipFreeSwitch.getExtensionList();

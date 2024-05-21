@@ -3,12 +3,8 @@ import type { FreeSwitchExtension } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { wrapExceptions } from '@rocket.chat/tools';
 
+import { settings } from '../../../app/settings/server/cached';
 import { FreeSwitchRCClient } from './lib/client';
-
-const FREESWITCH_HOST = process.env.FREESWITCHIP ?? '';
-const FREESWITCH_PORT = 8021;
-const FREESWITCH_PASSWORD = 'ClueCon';
-const FREESWITCH_TIMEOUT = 3000;
 
 export class VoipFreeSwitchService extends ServiceClassInternal implements IVoipFreeSwitchService {
 	protected name = 'voip-freeswitch';
@@ -21,18 +17,42 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		this.logger = new Logger('VoIPFreeSwitchService');
 	}
 
+	private getConnectionSettings(): { host: string; port: number; password: string; timeout: number } {
+		if (!settings.get('VoIP_TeamCollab_Enabled')) {
+			throw new Error('VoIP is disabled.');
+		}
+
+		const host = settings.get<string>('VoIP_TeamCollab_FreeSwitch_Host');
+		if (!host) {
+			throw new Error('VoIP is not properly configured.');
+		}
+
+		const port = settings.get<number>('VoIP_TeamCollab_FreeSwitch_Port') || 8021;
+		const timeout = settings.get<number>('VoIP_TeamCollab_FreeSwitch_Timeout') || 3000;
+		const password = settings.get<string>('VoIP_TeamCollab_FreeSwitch_Password');
+
+		return {
+			host,
+			port,
+			password,
+			timeout,
+		};
+	}
+
 	private async runCommand(command: string): Promise<Record<string, string | undefined>> {
+		const { host, port, password, timeout } = this.getConnectionSettings();
+
 		const client = new FreeSwitchRCClient({
-			host: FREESWITCH_HOST,
-			port: FREESWITCH_PORT,
-			password: FREESWITCH_PASSWORD,
+			host,
+			port,
+			password,
 			logger: this.logger,
 		});
 
 		try {
 			const call = await client.connect();
 
-			const response = await call.bgapi(command, FREESWITCH_TIMEOUT);
+			const response = await call.bgapi(command, timeout);
 			if (!response?.body) {
 				throw new Error('No response from FreeSwitch server.');
 			}
@@ -132,11 +152,11 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		const users = await this.parseUserList(response);
 
 		if (!users.length) {
-			throw new Error('User not found.');
+			throw new Error('Extension not found.');
 		}
 
 		if (users.length >= 2) {
-			throw new Error('Multiple users returned.');
+			throw new Error('Multiple extensions were found.');
 		}
 
 		return this.mapUserData(users[0]);
