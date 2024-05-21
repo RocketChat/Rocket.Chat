@@ -512,7 +512,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 															<NumberInput
 																id={retentionMaxAgeField}
 																{...field}
-																onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(Math.max(1, Number(e.currentTarget.value)))}
+																onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(Number(e.currentTarget.value))}
 															/>
 														)}
 													/>
