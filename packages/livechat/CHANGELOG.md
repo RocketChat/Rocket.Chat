@@ -1,5 +1,19 @@
 # @rocket.chat/livechat Change Log
 
+## 1.17.0-rc.0
+
+### Minor Changes
+
+- ([#32233](https://github.com/RocketChat/Rocket.Chat/pull/32233)) Makes the triggers fired by the condition `after-guest-registration` persist on the livechat client, it will persist through reloads and pagination, only reseting when a conversation is closed (no changes were done on the agent side of the conversation)
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ee5cdfc367]:</summary>
+
+  - @rocket.chat/ui-kit@0.34.0-rc.0
+  - @rocket.chat/gazzodown@7.0.0-rc.0
+  </details>
+
 ## 1.16.0
 
 ### Patch Changes
