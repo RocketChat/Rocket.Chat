@@ -1824,7 +1824,7 @@ class LivechatClass {
 				Subscriptions.updateDisplayNameByRoomId(rid, name),
 			]);
 
-			void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
+			void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { rid, ...guestData });
 
 			return true;
 		}
