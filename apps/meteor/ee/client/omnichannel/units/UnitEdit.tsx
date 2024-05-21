@@ -85,8 +85,8 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 
 	const currUnitMonitors = useMemo(
 		() =>
-			unitMonitors?.map(({ _id, username }) => ({
-				value: _id,
+			unitMonitors?.map(({ monitorId, username }) => ({
+				value: monitorId,
 				label: username,
 			})) || [],
 		[unitMonitors],
