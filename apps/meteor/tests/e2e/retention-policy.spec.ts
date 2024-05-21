@@ -60,15 +60,15 @@ test.describe.serial('retention-policy', () => {
 			await expect(poHomeChannel.content.channelRetentionPolicyWarning).not.toBeVisible();
 		});
 
-		test('should not show prune section in edit channel even with retention policy setting enabled', async () => {
+		test('should show prune section in edit channel', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.tabs.btnRoomInfo.click();
 			await poHomeChannel.tabs.room.btnEdit.click();
 
-			await expect(poHomeChannel.tabs.room.pruneAccordion).not.toBeVisible();
+			await expect(poHomeChannel.tabs.room.pruneAccordion).toBeVisible();
 		});
 
-		test.describe('retention policy enabled by default', () => {
+		test.describe('retention policy applies enabled by default', () => {
 			test.beforeAll(async ({ api }) => {
 				await setSettingValueById(api, 'RetentionPolicy_AppliesToChannels', true);
 				await setSettingValueById(api, 'RetentionPolicy_AppliesToGroups', true);
