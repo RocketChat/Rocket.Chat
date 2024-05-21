@@ -72,14 +72,6 @@ test.describe.serial('teams-management', () => {
 		await expect(poHomeTeam.tabs.flexTabViewThreadMessage).toHaveText('any-reply-message');
 	});
 
-	test('expect set "targetTeam" as readonly', async () => {
-		await poHomeTeam.sidenav.openChat(targetTeam);
-		await poHomeTeam.tabs.btnRoomInfo.click();
-		await poHomeTeam.tabs.room.btnEdit.click();
-		await poHomeTeam.tabs.room.checkboxReadOnly.click();
-		await poHomeTeam.tabs.room.btnSave.click();
-	});
-
 	test('expect set "targetTeam" as encrypted', async () => {
 		await poHomeTeam.sidenav.openChat(targetTeam);
 		await poHomeTeam.tabs.btnRoomInfo.click();
@@ -87,6 +79,14 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.tabs.room.checkboxEncrypted.click();
 		await poHomeTeam.tabs.room.btnSave.click();
 		await expect(poHomeTeam.getSystemMessageByText('enabled E2E Encryption for this room')).toBeVisible();
+	});
+
+	test('expect set "targetTeam" as readonly', async () => {
+		await poHomeTeam.sidenav.openChat(targetTeam);
+		await poHomeTeam.tabs.btnRoomInfo.click();
+		await poHomeTeam.tabs.room.btnEdit.click();
+		await poHomeTeam.tabs.room.checkboxReadOnly.click();
+		await poHomeTeam.tabs.room.btnSave.click();
 	});
 
 	test('expect insert a channel inside "targetTeam"', async ({ page }) => {

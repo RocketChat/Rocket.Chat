@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel } from './utils';
+import { createTargetChannel, createTargetPrivateChannel } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -11,10 +11,12 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('channel-management', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let targetChannelPrivate: string;
 	let discussionName: string;
 
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);
+		targetChannelPrivate = await createTargetPrivateChannel(api);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -210,8 +212,17 @@ test.describe.serial('channel-management', () => {
 		await expect(poHomeChannel.getSystemMessageByText('changed room announcement to: hello-announcement-edited')).toBeVisible();
 	});
 
-	test('should set channel as encrypted', async () => {
+	test('should set channel as private', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.tabs.btnRoomInfo.click();
+		await poHomeChannel.tabs.room.btnEdit.click();
+		await poHomeChannel.tabs.room.checkboxPrivate.click();
+		await poHomeChannel.tabs.room.btnSave.click();
+		await expect(poHomeChannel.getSystemMessageByText('changed room to private')).toBeVisible();
+	});
+
+	test('should set channel as encrypted', async () => {
+		await poHomeChannel.sidenav.openChat(targetChannelPrivate);
 		await poHomeChannel.tabs.btnRoomInfo.click();
 		await poHomeChannel.tabs.room.btnEdit.click();
 		await poHomeChannel.tabs.room.checkboxEncrypted.click();

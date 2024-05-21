@@ -31,12 +31,16 @@ export class HomeFlextabRoom {
 		return this.page.getByRole('dialog').getByRole('textbox', { name: 'Description' });
 	}
 
+	get checkboxPrivate(): Locator {
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Private' }) });
+	}
+
 	get checkboxReadOnly(): Locator {
 		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Read-only' }) });
 	}
 
 	get checkboxEncrypted(): Locator {
-		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Encrypted$' }) });
+		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Encrypted' }) });
 	}
 
 	get btnSave(): Locator {
