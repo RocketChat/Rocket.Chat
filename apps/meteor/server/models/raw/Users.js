@@ -432,6 +432,17 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	findLDAPUsersExceptIds(userIds, options = {}) {
+		const query = {
+			ldap: true,
+			_id: {
+				$nin: userIds,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
 	findConnectedLDAPUsers(options) {
 		const query = {
 			'ldap': true,
@@ -1036,7 +1047,7 @@ export class UsersRaw extends BaseRaw {
 	updateLivechatStatusBasedOnBusinessHours(userIds = []) {
 		const query = {
 			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
-			roles: 'livechat-agent',
+			$and: [{ roles: 'livechat-agent' }, { roles: { $ne: 'bot' } }],
 			// exclude deactivated users
 			active: true,
 			// Avoid unnecessary updates
@@ -1075,10 +1086,18 @@ export class UsersRaw extends BaseRaw {
 	async isAgentWithinBusinessHours(agentId) {
 		const query = {
 			_id: agentId,
-			openBusinessHours: {
-				$exists: true,
-				$not: { $size: 0 },
-			},
+			$or: [
+				{
+					openBusinessHours: {
+						$exists: true,
+						$not: { $size: 0 },
+					},
+				},
+				{
+					// Bots can ignore Business Hours and be always available
+					roles: 'bot',
+				},
+			],
 		};
 		return (await this.col.countDocuments(query)) > 0;
 	}

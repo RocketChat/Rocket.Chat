@@ -14,7 +14,7 @@ import {
 	ContextualbarInnerContent,
 	ContextualbarFooter,
 } from '../../../../../../client/components/Contextualbar';
-import ScrollableContentWrapper from '../../../../../../client/components/ScrollableContentWrapper';
+import { VirtuosoScrollbars } from '../../../../../../client/components/CustomScrollbars';
 import { useRoomToolbox } from '../../../../../../client/views/room/contexts/RoomToolboxContext';
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
@@ -97,7 +97,7 @@ const CannedResponseList: FC<{
 							overscan={25}
 							data={cannedItems}
 							components={{
-								Scroller: ScrollableContentWrapper,
+								Scroller: VirtuosoScrollbars,
 							}}
 							itemContent={(_index, data): ReactElement => (
 								<Item

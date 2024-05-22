@@ -1,6 +1,9 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Popover } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps, ReactNode } from 'react';
-import React, { Suspense, lazy, useCallback, useMemo, useState } from 'react';
+import React, { Suspense, lazy, useCallback, useMemo, useRef, useState } from 'react';
+import { useOverlayTrigger } from 'react-aria';
+import { useOverlayTriggerState } from 'react-stately';
 
 import { useRoom } from '../contexts/RoomContext';
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
@@ -12,9 +15,14 @@ const UserCardProvider = ({ children }: { children: ReactNode }) => {
 	const room = useRoom();
 	const [userCardData, setUserCardData] = useState<ComponentProps<typeof UserCard> | null>(null);
 
+	const triggerRef = useRef(null);
+	const state = useOverlayTriggerState({});
+	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'dialog' }, state, triggerRef);
+	delete triggerProps.onPress;
+
 	const { openTab } = useRoomToolbox();
 
-	const openUserInfo = useMutableCallback((username?: string) => {
+	const openUserInfo = useEffectEvent((username?: string) => {
 		switch (room.t) {
 			case 'l':
 				openTab('room-info', username);
@@ -36,31 +44,37 @@ const UserCardProvider = ({ children }: { children: ReactNode }) => {
 
 	const handleSetUserCard = useCallback(
 		(e, username) => {
+			triggerRef.current = e.target;
+			state.open();
 			setUserCardData({
 				username,
 				rid: room._id,
-				target: e.target,
 				onOpenUserInfo: () => openUserInfo(username),
 				onClose: () => setUserCardData(null),
 			});
 		},
-		[openUserInfo, room._id],
+		[openUserInfo, room._id, state],
 	);
 
 	const contextValue = useMemo(
 		() => ({
 			openUserCard: handleSetUserCard,
 			closeUserCard: () => setUserCardData(null),
+			triggerProps,
+			triggerRef,
+			state,
 		}),
-		[handleSetUserCard],
+		[handleSetUserCard, state, triggerProps],
 	);
 
 	return (
 		<UserCardContext.Provider value={contextValue}>
 			{children}
-			{userCardData && (
+			{state.isOpen && userCardData && (
 				<Suspense fallback={null}>
-					<UserCard {...userCardData} />
+					<Popover placement='top left' triggerRef={triggerRef} state={state}>
+						<UserCard {...userCardData} {...overlayProps} />
+					</Popover>
 				</Suspense>
 			)}
 		</UserCardContext.Provider>

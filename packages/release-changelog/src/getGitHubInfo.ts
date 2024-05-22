@@ -23,6 +23,7 @@ function makeQuery(repos: ReposWithCommitsAndPRsToFetch) {
 									? `a${data.commit}: object(expression: ${JSON.stringify(data.commit)}) {
 						... on Commit {
 						commitUrl
+						message
 						associatedPullRequests(first: 50) {
 							nodes {
 								number
@@ -44,6 +45,7 @@ function makeQuery(repos: ReposWithCommitsAndPRsToFetch) {
 					}}`
 									: `pr__${data.pull}: pullRequest(number: ${data.pull}) {
 										url
+										authorAssociation
 										author {
 											login
 											url
@@ -123,15 +125,15 @@ const GHDataLoader = new DataLoader(async (requests: RequestData[]) => {
 	return requests.map(({ repo, ...data }) => cleanedData[repo][data.kind][data.kind === 'pull' ? data.pull : data.commit]);
 });
 
-type UserType = { login: string; association: 'CONTRIBUTOR' | 'MEMBER' | 'OWNER' } | null;
-
-export async function getInfo(request: { commit: string; repo: string }): Promise<{
-	user: UserType;
-	pull: number | null;
-	links: {
-		commit: string;
-		pull: string | null;
-		user: string | null;
+export async function getCommitInfo(request: { commit: string; repo: string; pr?: number }): Promise<{
+	pull?: {
+		number: number;
+		url: string;
+	};
+	author: {
+		association: string;
+		login: string;
+		url: string;
 	};
 }> {
 	if (!request.commit) {
@@ -149,84 +151,27 @@ export async function getInfo(request: { commit: string; repo: string }): Promis
 	}
 
 	const data = await GHDataLoader.load({ kind: 'commit', ...request });
-	let user = null;
-	if (data.author?.user) {
-		user = { association: 'MEMBER', ...data.author.user };
-	}
 
-	const associatedPullRequest = data.associatedPullRequests?.nodes?.length
-		? (data.associatedPullRequests.nodes as any[]).sort((a, b) => {
-				if (a.mergedAt === null && b.mergedAt === null) {
-					return 0;
-				}
-				if (a.mergedAt === null) {
-					return 1;
-				}
-				if (b.mergedAt === null) {
-					return -1;
-				}
-				a = new Date(a.mergedAt);
-				b = new Date(b.mergedAt);
-
-				if (a > b) {
-					return 1;
-				}
-
-				return a < b ? -1 : 0;
-		  })[0]
-		: null;
-	if (associatedPullRequest) {
-		user = {
-			association: associatedPullRequest.authorAssociation,
-			...associatedPullRequest.author,
+	const prMatch = data.message.match(/\(#(\d+)\)$/m);
+	if (!prMatch && !request.pr) {
+		return {
+			author: { login: data.author.login, url: data.author.url, association: 'MEMBER' },
 		};
 	}
+
+	const pr = request.pr || Number(prMatch[1]);
+
+	const pullRequest = await GHDataLoader.load({ kind: 'pull', pull: pr, repo: request.repo });
+
 	return {
-		user,
-		pull: associatedPullRequest ? associatedPullRequest.number : null,
-		links: {
-			commit: `[\`${request.commit.slice(0, 7)}\`](${data.commitUrl})`,
-			pull: associatedPullRequest ? `[#${associatedPullRequest.number}](${associatedPullRequest.url})` : null,
-			user: user ? `[@${user.login}](${user.url})` : null,
+		pull: {
+			number: pr,
+			url: pullRequest.url,
 		},
-	};
-}
-
-export async function getInfoFromPullRequest(request: { pull: number; repo: string }): Promise<{
-	user: UserType;
-	commit: string | null;
-	links: {
-		commit: string | null;
-		pull: string;
-		user: string | null;
-	};
-}> {
-	if (request.pull === undefined) {
-		throw new Error('Please pass a pull request number');
-	}
-
-	if (!request.repo) {
-		throw new Error('Please pass a GitHub repository in the form of userOrOrg/repoName to getInfo');
-	}
-
-	if (!validRepoNameRegex.test(request.repo)) {
-		throw new Error(
-			`Please pass a valid GitHub repository in the form of userOrOrg/repoName to getInfo (it has to match the "${validRepoNameRegex.source}" pattern)`,
-		);
-	}
-
-	const data = await GHDataLoader.load({ kind: 'pull', ...request });
-	const user = data?.author;
-
-	const commit = data?.mergeCommit;
-
-	return {
-		user: user ? user.login : null,
-		commit: commit ? commit.abbreviatedOid : null,
-		links: {
-			commit: commit ? `[\`${commit.abbreviatedOid.slice(0, 7)}\`](${commit.commitUrl})` : null,
-			pull: `[#${request.pull}](https://github.com/${request.repo}/pull/${request.pull})`,
-			user: user ? `[@${user.login}](${user.url})` : null,
+		author: {
+			login: pullRequest.author.login,
+			url: pullRequest.author.url,
+			association: pullRequest.authorAssociation,
 		},
 	};
 }

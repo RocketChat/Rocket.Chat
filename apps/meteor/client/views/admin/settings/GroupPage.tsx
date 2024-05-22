@@ -2,15 +2,7 @@ import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import {
-	useToastMessageDispatch,
-	useUser,
-	useSettingsDispatch,
-	useSettings,
-	useTranslation,
-	useLoadLanguage,
-	useRoute,
-} from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSettingsDispatch, useSettings, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { FC, ReactNode, FormEvent, MouseEvent } from 'react';
 import React, { useMemo, memo } from 'react';
 
@@ -39,11 +31,9 @@ const GroupPage: FC<GroupPageProps> = ({
 	isCustom = false,
 }) => {
 	const t = useTranslation();
-	const user = useUser();
 	const router = useRoute('admin-settings');
 	const dispatch = useSettingsDispatch();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const loadLanguage = useLoadLanguage();
 
 	const changedEditableSettings = useEditableSettings(
 		useMemo(
@@ -88,17 +78,6 @@ const GroupPage: FC<GroupPageProps> = ({
 
 		try {
 			await dispatch(changes);
-
-			if (changes.some(({ _id }) => _id === 'Language')) {
-				const lng = user?.language || changes.filter(({ _id }) => _id === 'Language').shift()?.value || 'en';
-				if (typeof lng === 'string') {
-					await loadLanguage(lng);
-					dispatchToastMessage({ type: 'success', message: t('Settings_updated', { lng }) });
-					return;
-				}
-				throw new Error('lng is not a string');
-			}
-
 			dispatchToastMessage({ type: 'success', message: t('Settings_updated') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

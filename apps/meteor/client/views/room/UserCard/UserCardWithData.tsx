@@ -1,12 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { PositionAnimated, AnimatedVisibility } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
-import { Backdrop } from '../../../components/Backdrop';
 import GenericMenu from '../../../components/GenericMenu/GenericMenu';
 import LocalTime from '../../../components/LocalTime';
 import { UserCard, UserCardAction, UserCardRole, UserCardSkeleton } from '../../../components/UserCard';
@@ -16,21 +14,17 @@ import { useUserInfoActions } from '../hooks/useUserInfoActions';
 
 type UserCardWithDataProps = {
 	username: string;
-	target: Element;
 	rid: IRoom['_id'];
 	onOpenUserInfo: () => void;
 	onClose: () => void;
 };
 
-const UserCardWithData = ({ username, target, rid, onOpenUserInfo, onClose }: UserCardWithDataProps) => {
+const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWithDataProps) => {
 	const t = useTranslation();
-	const ref = useRef(target);
 	const getRoles = useRolesDescription();
 	const showRealNames = Boolean(useSetting('UI_Use_Real_Name'));
 
 	const { data, isLoading } = useUserInfoQuery({ username });
-
-	ref.current = target;
 
 	const user = useMemo(() => {
 		const defaultValue = isLoading ? undefined : null;
@@ -60,7 +54,7 @@ const UserCardWithData = ({ username, target, rid, onOpenUserInfo, onClose }: Us
 		};
 	}, [data, username, showRealNames, isLoading, getRoles]);
 
-	const handleOpenUserInfo = useMutableCallback(() => {
+	const handleOpenUserInfo = useEffectEvent(() => {
 		onOpenUserInfo();
 		onClose();
 	});
@@ -86,14 +80,11 @@ const UserCardWithData = ({ username, target, rid, onOpenUserInfo, onClose }: Us
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
 
-	return (
-		<>
-			<Backdrop bg='transparent' onClick={onClose} />
-			<PositionAnimated anchor={ref} placement='top-start' margin={8} visible={AnimatedVisibility.UNHIDING}>
-				{isLoading ? <UserCardSkeleton /> : <UserCard {...user} onClose={onClose} onOpenUserInfo={handleOpenUserInfo} actions={actions} />}
-			</PositionAnimated>
-		</>
-	);
+	if (isLoading) {
+		return <UserCardSkeleton />;
+	}
+
+	return <UserCard {...user} onClose={onClose} onOpenUserInfo={handleOpenUserInfo} actions={actions} />;
 };
 
 export default UserCardWithData;

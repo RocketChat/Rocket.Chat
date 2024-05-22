@@ -6,7 +6,6 @@ import moment from 'moment';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
-import { parseOutboundPhoneNumber } from '../../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import {
 	ContextualbarIcon,
 	ContextualbarHeader,
@@ -18,6 +17,7 @@ import {
 import InfoPanel from '../../../../../components/InfoPanel';
 import { UserStatus } from '../../../../../components/UserStatus';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
+import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import AgentField from '../../components/AgentField';
 import { InfoField } from './InfoField';

@@ -1,4 +1,4 @@
-import { Box, Skeleton, Tile } from '@rocket.chat/fuselage';
+import { Box, Skeleton, Tile, Option } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import type { ForwardedRef } from 'react';
@@ -123,17 +123,19 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 								{item.type === 'image' && <img src={item.value} alt={item._id} />}
 								{item.type === 'audio' && (
 									<audio controls>
+										<track kind='captions' />
 										<source src={item.value} />
 										Your browser does not support the audio element.
 									</audio>
 								)}
 								{item.type === 'video' && (
 									<video controls className='inline-video'>
+										<track kind='captions' />
 										<source src={item.value} />
 										Your browser does not support the video element.
 									</video>
 								)}
-								{item.type === 'text' && <h4>{item.value}</h4>}
+								{item.type === 'text' && <Option>{item.value}</Option>}
 								{item.type === 'other' && <code>{item.value}</code>}
 							</Box>
 						))}

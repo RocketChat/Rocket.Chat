@@ -34,7 +34,7 @@ export class LocalBroker implements IBroker {
 		return this.call(method, data);
 	}
 
-	destroyService(instance: ServiceClass): void {
+	async destroyService(instance: ServiceClass): Promise<void> {
 		const namespace = instance.getName();
 
 		instance.getEvents().forEach((event) => event.listeners.forEach((listener) => this.events.removeListener(event.eventName, listener)));
@@ -51,7 +51,7 @@ export class LocalBroker implements IBroker {
 			this.methods.delete(`${namespace}.${method}`);
 		}
 		instance.removeAllListeners();
-		instance.stopped();
+		await instance.stopped();
 	}
 
 	createService(instance: IServiceClass): void {

@@ -36,11 +36,7 @@ const DeviceInfoWithData = ({ deviceId, onReload }: { deviceId: string; onReload
 	} = useEndpointData('/v1/sessions/info.admin', { params: useMemo(() => ({ sessionId: deviceId }), [deviceId]) });
 
 	if (phase === AsyncStatePhase.LOADING) {
-		return (
-			<Contextualbar>
-				<ContextualbarSkeleton />
-			</Contextualbar>
-		);
+		return <ContextualbarSkeleton />;
 	}
 
 	if (error || !data) {

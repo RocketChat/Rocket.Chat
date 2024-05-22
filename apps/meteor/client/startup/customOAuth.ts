@@ -7,7 +7,7 @@ Meteor.startup(() => {
 	loginServices.onLoad((services) => {
 		for (const service of services) {
 			if (!('custom' in service && service.custom)) {
-				return;
+				continue;
 			}
 
 			new CustomOAuth(service.service, {

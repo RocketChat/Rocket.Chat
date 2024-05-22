@@ -3,7 +3,7 @@ Package.describe({
 	version: '1.8.0',
 });
 
-Package.onUse(function(api) {
+Package.onUse(function (api) {
 	api.use(['webapp', 'check', 'inter-process-messaging'], 'server');
 
 	api.use(['tracker', 'retry'], 'client');

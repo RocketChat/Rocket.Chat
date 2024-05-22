@@ -50,7 +50,7 @@ test.describe.serial('OC - Manage Agents', () => {
 
 		await test.step('expect remove "user1" as agent', async () => {
 			await poOmnichannelAgents.inputSearch.fill('user1');
-			await poOmnichannelAgents.btnDeletefirstRowInTable.click();
+			await poOmnichannelAgents.btnDeleteFirstRowInTable.click();
 			await poOmnichannelAgents.btnModalRemove.click();
 
 			await poOmnichannelAgents.inputSearch.fill('user1');

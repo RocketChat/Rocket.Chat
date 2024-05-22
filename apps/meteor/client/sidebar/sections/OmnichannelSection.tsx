@@ -6,6 +6,7 @@ import React, { memo } from 'react';
 import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
 import { useIsOverMacLimit } from '../../hooks/omnichannel/useIsOverMacLimit';
 import { useOmnichannelShowQueueLink } from '../../hooks/omnichannel/useOmnichannelShowQueueLink';
+import SidebarHeaderToolbar from '../header/SidebarHeaderToolbar';
 import { OverMacLimitSection } from './OverMacLimitSection';
 import { OmniChannelCallDialPad, OmnichannelCallToggle, OmnichannelLivechatToggle } from './actions';
 
@@ -38,9 +39,9 @@ const OmnichannelSection = () => {
 		<>
 			{isWorkspaceOverMacLimit && <OverMacLimitSection />}
 
-			<Sidebar.TopBar.ToolBox className='omnichannel-sidebar'>
+			<Sidebar.TopBar.Section aria-label={t('Omnichannel_actions')} className='omnichannel-sidebar'>
 				<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
-				<Sidebar.TopBar.Actions>
+				<SidebarHeaderToolbar>
 					{showOmnichannelQueueLink && (
 						<Sidebar.TopBar.Action icon='queue' data-tooltip={t('Queue')} onClick={(): void => handleRoute('queue')} />
 					)}
@@ -55,8 +56,8 @@ const OmnichannelSection = () => {
 						/>
 					)}
 					{isCallReady && <OmniChannelCallDialPad />}
-				</Sidebar.TopBar.Actions>
-			</Sidebar.TopBar.ToolBox>
+				</SidebarHeaderToolbar>
+			</Sidebar.TopBar.Section>
 		</>
 	);
 };

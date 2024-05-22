@@ -1,39 +1,51 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { HeaderState } from '@rocket.chat/ui-client';
-import { useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useMethod, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import { useUserIsSubscribed } from '../../contexts/RoomContext';
 
-const Favorite = ({ room: { _id, f: favorite = false, t: type } }: { room: IRoom & { f?: ISubscription['f'] } }) => {
+const Favorite = ({ room: { _id, f: favorite = false, t: type, name } }: { room: IRoom & { f?: ISubscription['f'] } }) => {
 	const t = useTranslation();
 	const subscribed = useUserIsSubscribed();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const isFavoritesEnabled = useSetting('Favorite_Rooms') && ['c', 'p', 'd', 't'].includes(type);
 	const toggleFavorite = useMethod('toggleFavorite');
-	const handleFavoriteClick = useMutableCallback(() => {
+
+	const handleFavoriteClick = useEffectEvent(() => {
 		if (!isFavoritesEnabled) {
 			return;
 		}
-		toggleFavorite(_id, !favorite);
+
+		try {
+			toggleFavorite(_id, !favorite);
+			dispatchToastMessage({
+				type: 'success',
+				message: !favorite
+					? t('__roomName__was_added_to_favorites', { roomName: name })
+					: t('__roomName__was_removed_from_favorites', { roomName: name }),
+			});
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
 	});
-	const favoriteLabel = favorite ? t('Unfavorite') : t('Favorite');
+
+	const favoriteLabel = favorite ? `${t('Unfavorite')} ${name}` : `${t('Favorite')} ${name}`;
 
 	if (!subscribed || !isFavoritesEnabled) {
 		return null;
 	}
 
 	return (
-		isFavoritesEnabled && (
-			<HeaderState
-				title={favoriteLabel}
-				icon={favorite ? 'star-filled' : 'star'}
-				onClick={handleFavoriteClick}
-				color={favorite ? 'status-font-on-warning' : null}
-				tiny
-			/>
-		)
+		<HeaderState
+			title={favoriteLabel}
+			icon={favorite ? 'star-filled' : 'star'}
+			onClick={handleFavoriteClick}
+			color={favorite ? 'status-font-on-warning' : null}
+			tiny
+		/>
 	);
 };
 

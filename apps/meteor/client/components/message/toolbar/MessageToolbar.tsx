@@ -1,16 +1,18 @@
+import { useToolbar } from '@react-aria/toolbar';
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated, isVideoConfMessage } from '@rocket.chat/core-typings';
 import { MessageToolbar as FuselageMessageToolbar, MessageToolbarItem } from '@rocket.chat/fuselage';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useSettings, useTranslation, useMethod, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
-import React, { memo, useMemo } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo, useMemo, useRef } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { useMessageActionAppsActionButtons } from '../../../hooks/useAppActionButtons';
+import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
@@ -45,7 +47,7 @@ type MessageToolbarProps = {
 	room: IRoom;
 	subscription?: ISubscription;
 	onChangeMenuVisibility: (visible: boolean) => void;
-};
+} & ComponentProps<typeof FuselageMessageToolbar>;
 
 const MessageToolbar = ({
 	message,
@@ -53,10 +55,15 @@ const MessageToolbar = ({
 	room,
 	subscription,
 	onChangeMenuVisibility,
+	...props
 }: MessageToolbarProps): ReactElement | null => {
 	const t = useTranslation();
 	const user = useUser() ?? undefined;
 	const settings = useSettings();
+	const isLayoutEmbedded = useEmbeddedLayout();
+
+	const toolbarRef = useRef(null);
+	const { toolbarProps } = useToolbar(props, toolbarRef);
 
 	const quickReactionsEnabled = useFeaturePreview('quickReactions');
 
@@ -84,7 +91,7 @@ const MessageToolbar = ({
 
 		return {
 			message: toolboxItems.filter((action) => !hiddenActions.includes(action.id)),
-			menu: menuItems.filter((action) => !hiddenActions.includes(action.id)),
+			menu: menuItems.filter((action) => !(isLayoutEmbedded && action.id === 'reply-directly') && !hiddenActions.includes(action.id)),
 		};
 	});
 
@@ -106,7 +113,7 @@ const MessageToolbar = ({
 	};
 
 	return (
-		<FuselageMessageToolbar>
+		<FuselageMessageToolbar ref={toolbarRef} {...toolbarProps} aria-label={t('Message_actions')} {...props}>
 			{quickReactionsEnabled &&
 				isReactionAllowed &&
 				quickReactions.slice(0, 3).map(({ emoji, image }) => {
@@ -125,11 +132,11 @@ const MessageToolbar = ({
 				))}
 			{actionsQueryResult.isSuccess && actionsQueryResult.data.menu.length > 0 && (
 				<MessageActionMenu
-					onChangeMenuVisibility={onChangeMenuVisibility}
 					options={[...actionsQueryResult.data?.menu, ...(actionButtonApps.data ?? [])].filter(Boolean).map((action) => ({
 						...action,
-						action: (e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
+						action: (e) => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
 					}))}
+					onChangeMenuVisibility={onChangeMenuVisibility}
 					data-qa-type='message-action-menu-options'
 				/>
 			)}

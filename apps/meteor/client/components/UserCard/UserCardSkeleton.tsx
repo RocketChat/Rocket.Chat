@@ -1,12 +1,12 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
-import React, { forwardRef } from 'react';
+import React from 'react';
 
-import UserCardContainer from './UserCardContainer';
+import UserCardDialog from './UserCardDialog';
 
-const UserCardSkeleton = forwardRef<HTMLElement, ComponentProps<typeof UserCardContainer>>(function UserCardSkeleton(props, ref) {
+const UserCardSkeleton = (props: ComponentProps<typeof UserCardDialog>) => {
 	return (
-		<UserCardContainer ref={ref} {...props}>
+		<UserCardDialog {...props}>
 			<Box>
 				<Skeleton borderRadius='x4' width='x124' height='x124' variant='rect' />
 				<Box flexGrow={0} display='flex' mbs={12} alignItems='center' justifyContent='center'>
@@ -27,8 +27,8 @@ const UserCardSkeleton = forwardRef<HTMLElement, ComponentProps<typeof UserCardC
 					<Skeleton key={i} width='100%' />
 				))}
 			</Box>
-		</UserCardContainer>
+		</UserCardDialog>
 	);
-});
+};
 
 export default UserCardSkeleton;

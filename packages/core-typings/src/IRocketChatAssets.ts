@@ -53,4 +53,5 @@ export interface IRocketChatAssets {
 	tile_310_square: IRocketChatAsset;
 	tile_310_wide: IRocketChatAsset;
 	safari_pinned: IRocketChatAsset;
+	livechat_widget_logo: IRocketChatAsset;
 }

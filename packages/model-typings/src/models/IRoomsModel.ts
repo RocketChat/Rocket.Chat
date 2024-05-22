@@ -233,11 +233,13 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findGroupDMsByUids(uids: string[], options?: FindOptions<IDirectMessageRoom>): FindCursor<IDirectMessageRoom>;
 	find1On1ByUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByCreatedOTR(): FindCursor<IRoom>;
+	findByUsernamesOrUids(uids: IRoom['u']['_id'][], usernames: IRoom['u']['username'][]): FindCursor<IRoom>;
+	findDMsByUids(uids: IRoom['u']['_id'][]): FindCursor<IRoom>;
 	addImportIds(rid: string, importIds: string[]): Promise<UpdateResult>;
 	archiveById(rid: string): Promise<UpdateResult>;
 	unarchiveById(rid: string): Promise<UpdateResult>;
 	setNameById(rid: string, name: string, fname: string): Promise<UpdateResult>;
-	incMsgCountAndSetLastMessageById(rid: string, inc: number, lastMessageTs: Date, lastMessage: IRoom['lastMessage']): Promise<UpdateResult>;
+	incMsgCountAndSetLastMessageById(rid: IRoom['_id'], inc: number, lastMessageTs: Date, lastMessage?: IMessage): Promise<UpdateResult>;
 	incUsersCountById(rid: string, inc: number): Promise<UpdateResult>;
 	incUsersCountNotDMsByIds(rids: string[], inc: number): Promise<Document | UpdateResult>;
 	setLastMessageById(rid: string, lastMessage: IRoom['lastMessage']): Promise<UpdateResult>;

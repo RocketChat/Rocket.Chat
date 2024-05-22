@@ -1460,6 +1460,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find({ createdOTR: true });
 	}
 
+	findByUsernamesOrUids(uids: IRoom['u']['_id'][], usernames: IRoom['u']['username'][]): FindCursor<IRoom> {
+		return this.find({ $or: [{ usernames: { $in: usernames } }, { uids: { $in: uids } }] });
+	}
+
+	findDMsByUids(uids: IRoom['u']['_id'][]): FindCursor<IRoom> {
+		return this.find({ uids: { $size: 2, $in: [uids] }, t: 'd' });
+	}
+
 	// UPDATE
 	addImportIds(_id: IRoom['_id'], importIds: string[]): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
@@ -1516,7 +1524,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		_id: IRoom['_id'],
 		inc = 1,
 		lastMessageTimestamp: NonNullable<IRoom['lm']>,
-		lastMessage: IRoom['lastMessage'],
+		lastMessage?: IMessage,
 	): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 

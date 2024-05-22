@@ -1287,8 +1287,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(
-		roomId: string,
-		userId: string,
+		roomId: IRoom['_id'],
+		userId: IUser['_id'],
 		incGroup = 1,
 		incUnread = 1,
 	): Promise<UpdateResult | Document> {
@@ -1314,8 +1314,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	incUserMentionsAndUnreadForRoomIdAndUserIds(
-		roomId: string,
-		userIds: string[],
+		roomId: IRoom['_id'],
+		userIds: IUser['_id'][],
 		incUser = 1,
 		incUnread = 1,
 	): Promise<UpdateResult | Document> {
@@ -1384,7 +1384,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	setLastReplyForRoomIdAndUserIds(roomId: string, uids: string, lr: Date): Promise<UpdateResult | Document> {
+	setLastReplyForRoomIdAndUserIds(roomId: IRoom['_id'], uids: IUser['_id'][], lr: Date): Promise<UpdateResult | Document> {
 		const query = {
 			'rid': roomId,
 			'u._id': { $in: uids },
@@ -1603,7 +1603,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	// INSERT
-	async createWithRoomAndUser(room: IRoom, user: IUser, extraData: Record<string, any> = {}): Promise<InsertOneResult<ISubscription>> {
+	async createWithRoomAndUser(room: IRoom, user: IUser, extraData: Partial<ISubscription> = {}): Promise<InsertOneResult<ISubscription>> {
 		const subscription = {
 			open: false,
 			alert: false,

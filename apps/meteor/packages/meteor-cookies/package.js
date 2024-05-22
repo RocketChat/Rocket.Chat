@@ -12,4 +12,3 @@ Package.onUse((api) => {
 	api.use('fetch', 'client');
 	api.mainModule('cookies.js', ['client', 'server']);
 });
-

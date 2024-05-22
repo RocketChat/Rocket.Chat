@@ -3,7 +3,7 @@ import type { Locator, Page } from '@playwright/test';
 import { AdminFlextab } from './fragments/admin-flextab';
 
 export class Admin {
-	private readonly page: Page;
+	public readonly page: Page;
 
 	readonly tabs: AdminFlextab;
 
@@ -20,12 +20,32 @@ export class Admin {
 		return this.page.locator('[role="link"]', { hasText: name });
 	}
 
+	getUserRow(username?: string): Locator {
+		return this.page.locator('[role="link"]', { hasText: username });
+	}
+
 	get btnSave(): Locator {
 		return this.page.locator('button >> text="Save"');
 	}
 
+	get btnEdit(): Locator {
+		return this.page.locator('button >> text="Edit"');
+	}
+
 	get privateLabel(): Locator {
 		return this.page.locator(`label >> text=Private`);
+	}
+
+	get privateInput(): Locator {
+		return this.page.locator('input[name="roomType"]');
+	}
+
+	get roomNameInput(): Locator {
+		return this.page.locator('input[name="roomName"]');
+	}
+
+	get roomOwnerInput(): Locator {
+		return this.page.locator('input[name="roomOwner"]');
 	}
 
 	get archivedLabel(): Locator {
@@ -165,11 +185,27 @@ export class Admin {
 		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> role=button[name="Delete"]');
 	}
 
+	get inputAssetsLogo(): Locator {
+		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> input[type="file"]');
+	}
+
 	get btnCreateRole(): Locator {
 		return this.page.locator('button[name="New role"]');
 	}
 
-	get inputAssetsLogo(): Locator {
-		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> input[type="file"]');
+	openRoleByName(name: string): Locator {
+		return this.page.getByRole('table').getByRole('button', { name });
+	}
+
+	get btnUsersInRole(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Users in role' });
+	}
+
+	get inputRoom(): Locator {
+		return this.page.locator('input[placeholder="Room"]');
+	}
+
+	getUserRowByUsername(username: string): Locator {
+		return this.page.locator('tr', { hasText: username })
 	}
 }
