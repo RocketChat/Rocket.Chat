@@ -68,7 +68,7 @@ export const NavBar = () => {
 				)}
 			</NavBarSection>
 			<NavBarSection>
-				<NavBarGroup>
+				<NavBarGroup aria-label={t('Workspace_and_user_settings')}>
 					<NavBarItemAdministrationMenu />
 					{user ? <UserMenu user={user} /> : <NavBarItemLoginPage />}
 				</NavBarGroup>
