@@ -18,11 +18,11 @@ import React, { memo, useMemo } from 'react';
 
 import { LegacyRoomManager } from '../../app/ui-utils/client';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
-import { useOmnichannelPrioritiesMenu } from '../../ee/client/omnichannel/hooks/useOmnichannelPrioritiesMenu';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import WarningModal from '../components/WarningModal';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
+import { useOmnichannelPrioritiesMenu } from '../omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 const fields: Fields = {
 	f: true,
