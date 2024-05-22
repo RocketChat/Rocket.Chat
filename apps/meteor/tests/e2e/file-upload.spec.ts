@@ -1,6 +1,7 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
+import { setSettingValueById } from './utils/setSettingValueById';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -10,6 +11,10 @@ test.describe.serial('file-upload', () => {
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
+		await Promise.all([
+			setSettingValueById(api, 'FileUpload_RejectUnknownMediaTypes', true),
+			setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml'),
+		]);
 		targetChannel = await createTargetChannel(api);
 	});
 
@@ -21,6 +26,10 @@ test.describe.serial('file-upload', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
+		await Promise.all([
+			setSettingValueById(api, 'FileUpload_RejectUnknownMediaTypes', true),
+			setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml'),
+		]);
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 	});
 
@@ -53,5 +62,34 @@ test.describe.serial('file-upload', () => {
 
 		await expect(poHomeChannel.content.getFileDescription).toHaveText('lst_description');
 		await expect(poHomeChannel.content.lastMessageFileName).toContainText('lst-test.lst');
+	});
+
+	test('expect not to send drawio file when the "Reject unknown media types" setting is enabled', async ({ api, page }) => {
+		await setSettingValueById(api, 'FileUpload_RejectUnknownMediaTypes', true);
+
+		await page.reload();
+		await poHomeChannel.content.sendFileMessage('diagram.drawio');
+		await expect(poHomeChannel.content.btnModalConfirm).not.toBeVisible();
+	});
+
+	test('expect send drawio file succesfully when the "Reject unknown media types" setting is disabled', async ({ api, page }) => {
+		await setSettingValueById(api, 'FileUpload_RejectUnknownMediaTypes', false);
+
+		await page.reload();
+		await poHomeChannel.content.sendFileMessage('diagram.drawio');
+		await poHomeChannel.content.descriptionInput.fill('drawio_description');
+		await poHomeChannel.content.btnModalConfirm.click();
+
+		await expect(poHomeChannel.content.getFileDescription).toHaveText('drawio_description');
+		await expect(poHomeChannel.content.lastMessageFileName).toContainText('diagram.drawio');
+	});
+
+	test('expect not to send drawio file when the "Reject unknown media types" setting is disabled, but the default media type is blocked', async ({ api, page }) => {
+		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'application/octet-stream')
+		await setSettingValueById(api, 'FileUpload_RejectUnknownMediaTypes', false);
+
+		await page.reload();
+		await poHomeChannel.content.sendFileMessage('diagram.drawio');
+		await expect(poHomeChannel.content.btnModalConfirm).not.toBeVisible();
 	});
 });
