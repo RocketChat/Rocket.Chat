@@ -54,15 +54,17 @@ export const NavBar = () => {
 					{showMarketplace && <NavBarItemMarketPlaceMenu />}
 					{hasAuditLicense && <NavBarItemAuditMenu />}
 				</NavBarGroup>
-				<NavBarDivider />
 				{showOmnichannel && (
-					<NavBarGroup role='toolbar' ref={omnichannelToolbarRef} {...omnichannelToolbarProps}>
-						{showOmnichannelQueueLink && <NavBarItemOmnichannelQueue title={t('Queue')} />}
-						{isCallReady && <NavBarItemOmniChannelCallDialPad />}
-						<NavBarItemOmnichannelContact title={t('Contacts')} />
-						{isCallEnabled && <NavBarItemOmnichannelCallToggle />}
-						<NavBarItemOmnichannelLivechatToggle />
-					</NavBarGroup>
+					<>
+						<NavBarDivider />
+						<NavBarGroup role='toolbar' ref={omnichannelToolbarRef} {...omnichannelToolbarProps}>
+							{showOmnichannelQueueLink && <NavBarItemOmnichannelQueue title={t('Queue')} />}
+							{isCallReady && <NavBarItemOmniChannelCallDialPad />}
+							<NavBarItemOmnichannelContact title={t('Contacts')} />
+							{isCallEnabled && <NavBarItemOmnichannelCallToggle />}
+							<NavBarItemOmnichannelLivechatToggle />
+						</NavBarGroup>
+					</>
 				)}
 			</NavBarSection>
 			<NavBarSection>
