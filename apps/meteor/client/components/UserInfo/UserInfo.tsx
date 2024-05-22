@@ -10,13 +10,6 @@ import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { ContextualbarScrollableContent } from '../Contextualbar';
 import InfoPanel from '../InfoPanel';
-import InfoPanelActionGroup from '../InfoPanel/InfoPanelActionGroup';
-import InfoPanelAvatar from '../InfoPanel/InfoPanelAvatar';
-import InfoPanelField from '../InfoPanel/InfoPanelField';
-import InfoPanelLabel from '../InfoPanel/InfoPanelLabel';
-import InfoPanelSection from '../InfoPanel/InfoPanelSection';
-import InfoPanelText from '../InfoPanel/InfoPanelText';
-import InfoPanelTitle from '../InfoPanel/InfoPanelTitle';
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
 import { UserCardRoles } from '../UserCard';
@@ -79,119 +72,119 @@ const UserInfo = ({
 		<ContextualbarScrollableContent p={24} {...props}>
 			<InfoPanel>
 				{username && (
-					<InfoPanelAvatar>
+					<InfoPanel.Avatar>
 						<UserInfoAvatar username={username} etag={avatarETag} />
-					</InfoPanelAvatar>
+					</InfoPanel.Avatar>
 				)}
 
-				{actions && <InfoPanelActionGroup>{actions}</InfoPanelActionGroup>}
+				{actions && <InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>}
 
-				<InfoPanelSection>
-					{userDisplayName && <InfoPanelTitle icon={status} title={userDisplayName} />}
+				<InfoPanel.Section>
+					{userDisplayName && <InfoPanel.Title icon={status} title={userDisplayName} />}
 
 					{statusText && (
-						<InfoPanelText>
+						<InfoPanel.Text>
 							<MarkdownText content={statusText} parseEmoji={true} variant='inline' />
-						</InfoPanelText>
+						</InfoPanel.Text>
 					)}
-				</InfoPanelSection>
+				</InfoPanel.Section>
 
-				<InfoPanelSection>
+				<InfoPanel.Section>
 					{reason && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Reason_for_joining')}</InfoPanelLabel>
-							<InfoPanelText>{reason}</InfoPanelText>
-						</InfoPanelField>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Reason_for_joining')}</InfoPanel.Label>
+							<InfoPanel.Text>{reason}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 
 					{nickname && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Nickname')}</InfoPanelLabel>
-							<InfoPanelText>{nickname}</InfoPanelText>
-						</InfoPanelField>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Nickname')}</InfoPanel.Label>
+							<InfoPanel.Text>{nickname}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 
 					{roles.length !== 0 && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Roles')}</InfoPanelLabel>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Roles')}</InfoPanel.Label>
 							<UserCardRoles>{roles}</UserCardRoles>
-						</InfoPanelField>
+						</InfoPanel.Field>
 					)}
 
 					{username && username !== name && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Username')}</InfoPanelLabel>
-							<InfoPanelText data-qa='UserInfoUserName'>{username}</InfoPanelText>
-						</InfoPanelField>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Username')}</InfoPanel.Label>
+							<InfoPanel.Text data-qa='UserInfoUserName'>{username}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 
 					{Number.isInteger(utcOffset) && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Local_Time')}</InfoPanelLabel>
-							<InfoPanelText>{utcOffset && <UTCClock utcOffset={utcOffset} />}</InfoPanelText>
-						</InfoPanelField>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Local_Time')}</InfoPanel.Label>
+							<InfoPanel.Text>{utcOffset && <UTCClock utcOffset={utcOffset} />}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 
 					{bio && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Bio')}</InfoPanelLabel>
-							<InfoPanelText withTruncatedText={false}>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Bio')}</InfoPanel.Label>
+							<InfoPanel.Text withTruncatedText={false}>
 								<MarkdownText variant='inline' content={bio} />
-							</InfoPanelText>
-						</InfoPanelField>
+							</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 
 					{Number.isInteger(utcOffset) && canViewAllInfo && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Last_login')}</InfoPanelLabel>
-							<InfoPanelText>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanelText>
-						</InfoPanelField>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Last_login')}</InfoPanel.Label>
+							<InfoPanel.Text>{lastLogin ? timeAgo(lastLogin) : t('Never')}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 
 					{phone && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Phone')}</InfoPanelLabel>
-							<InfoPanelText display='flex' flexDirection='row' alignItems='center'>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Phone')}</InfoPanel.Label>
+							<InfoPanel.Text display='flex' flexDirection='row' alignItems='center'>
 								<Box is='a' withTruncatedText href={`tel:${phone}`}>
 									{phone}
 								</Box>
-							</InfoPanelText>
-						</InfoPanelField>
+							</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 
 					{email && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Email')}</InfoPanelLabel>
-							<InfoPanelText display='flex' flexDirection='row' alignItems='center'>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Email')}</InfoPanel.Label>
+							<InfoPanel.Text display='flex' flexDirection='row' alignItems='center'>
 								<Box is='a' withTruncatedText href={`mailto:${email}`}>
 									{email}
 								</Box>
 								<Margins inline={4}>
 									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
 								</Margins>
-							</InfoPanelText>
-						</InfoPanelField>
+							</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 
 					{userCustomFields?.map(
 						(customField) =>
 							customField?.value && (
-								<InfoPanelField key={customField.value}>
-									<InfoPanelLabel>{t(customField.label as TranslationKey)}</InfoPanelLabel>
-									<InfoPanelText>
+								<InfoPanel.Field key={customField.value}>
+									<InfoPanel.Label>{t(customField.label as TranslationKey)}</InfoPanel.Label>
+									<InfoPanel.Text>
 										<MarkdownText content={customField.value} variant='inline' />
-									</InfoPanelText>
-								</InfoPanelField>
+									</InfoPanel.Text>
+								</InfoPanel.Field>
 							),
 					)}
 
 					{createdAt && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Created_at')}</InfoPanelLabel>
-							<InfoPanelText>{timeAgo(createdAt)}</InfoPanelText>
-						</InfoPanelField>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Created_at')}</InfoPanel.Label>
+							<InfoPanel.Text>{timeAgo(createdAt)}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
-				</InfoPanelSection>
+				</InfoPanel.Section>
 			</InfoPanel>
 		</ContextualbarScrollableContent>
 	);
