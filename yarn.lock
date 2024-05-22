@@ -8743,7 +8743,7 @@ __metadata:
     "@rocket.chat/apps-engine": ^1.42.2
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ^0.53.6
+    "@rocket.chat/fuselage": ^0.53.7
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/fuselage-polyfills": ~0.31.25
     "@rocket.chat/gazzodown": "workspace:^"
@@ -8805,9 +8805,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/fuselage@npm:^0.53.6":
-  version: 0.53.6
-  resolution: "@rocket.chat/fuselage@npm:0.53.6"
+"@rocket.chat/fuselage@npm:^0.53.7":
+  version: 0.53.7
+  resolution: "@rocket.chat/fuselage@npm:0.53.7"
   dependencies:
     "@rocket.chat/css-in-js": ^0.31.25
     "@rocket.chat/css-supports": ^0.31.25
@@ -8825,7 +8825,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-virtuoso: 1.2.4
-  checksum: cce7623781fd3fc5b1ebce3f7a25411fb2d97fbe8f63728cd5004faf33a718da0f9cd37193b4edb29628f924aca2adb9b675adbf7069dc429695d4bb3b2e2161
+  checksum: 3765c064f9f356b3da3ee147d3700104eebb642ba27807ec25866e8445d8d761c5ad127bafddf171d4913ae92df082ace93fc070f93159fb7d01aba10bd3c2b0
   languageName: node
   linkType: hard
 
@@ -8836,7 +8836,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.53.6
+    "@rocket.chat/fuselage": ^0.53.7
     "@rocket.chat/fuselage-tokens": ^0.33.1
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/styled": ~0.31.25
@@ -9196,7 +9196,7 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.2
     "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.3
-    "@rocket.chat/fuselage": ^0.53.6
+    "@rocket.chat/fuselage": ^0.53.7
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/fuselage-polyfills": ~0.31.25
     "@rocket.chat/fuselage-toastbar": ^0.31.26
@@ -10092,7 +10092,7 @@ __metadata:
   resolution: "@rocket.chat/ui-avatar@workspace:packages/ui-avatar"
   dependencies:
     "@babel/core": ~7.22.20
-    "@rocket.chat/fuselage": ^0.53.6
+    "@rocket.chat/fuselage": ^0.53.7
     "@rocket.chat/ui-contexts": "workspace:^"
     "@types/babel__core": ~7.20.3
     "@types/react": ~17.0.69
@@ -10118,7 +10118,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@react-aria/toolbar": ^3.0.0-beta.1
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.53.6
+    "@rocket.chat/fuselage": ^0.53.7
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/icons": ^0.35.0
     "@rocket.chat/mock-providers": "workspace:^"
@@ -10171,7 +10171,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@react-aria/toolbar": ^3.0.0-beta.1
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ^0.53.6
+    "@rocket.chat/fuselage": ^0.53.7
     "@rocket.chat/icons": ^0.35.0
     "@storybook/addon-actions": ~6.5.16
     "@storybook/addon-docs": ~6.5.16
@@ -10263,7 +10263,7 @@ __metadata:
   resolution: "@rocket.chat/ui-theming@workspace:ee/packages/ui-theming"
   dependencies:
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.53.6
+    "@rocket.chat/fuselage": ^0.53.7
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/icons": ^0.35.0
     "@rocket.chat/ui-contexts": "workspace:~"
@@ -10306,7 +10306,7 @@ __metadata:
     "@rocket.chat/css-in-js": ~0.31.25
     "@rocket.chat/emitter": ~0.31.25
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ^0.53.6
+    "@rocket.chat/fuselage": ^0.53.7
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/icons": ^0.35.0
     "@rocket.chat/styled": ~0.31.25
@@ -10351,7 +10351,7 @@ __metadata:
     "@codemirror/tooltip": ^0.19.16
     "@lezer/highlight": ^1.1.6
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.53.6
+    "@rocket.chat/fuselage": ^0.53.7
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/fuselage-polyfills": ~0.31.25
     "@rocket.chat/fuselage-toastbar": ^0.31.26

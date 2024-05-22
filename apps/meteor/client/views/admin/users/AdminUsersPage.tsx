@@ -98,12 +98,12 @@ const AdminUsersPage = (): ReactElement => {
 						</ButtonGroup>
 					)}
 				</PageHeader>
+				<Tabs>
+					<TabsItem selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
+						{t('All')}
+					</TabsItem>
+				</Tabs>
 				<PageContent>
-					<Tabs>
-						<TabsItem selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
-							{t('All')}
-						</TabsItem>
-					</Tabs>
 					<UsersTable
 						filteredUsersQueryResult={filteredUsersQueryResult}
 						setUserFilters={setUserFilters}
