@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, TextInput, Palette, Sidebar } from '@rocket.chat/fuselage';
 import { useMergedRefs, useOutsideClick } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement } from 'react';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
@@ -32,6 +32,7 @@ const wrapperStyle = css`
 
 export const SearchSection = () => {
 	const t = useTranslation();
+	const user = useUser();
 
 	const {
 		formState: { isDirty },
@@ -127,7 +128,7 @@ export const SearchSection = () => {
 					addon={<Icon name={isDirty ? 'cross' : 'magnifier'} size='x20' onClick={handleEscSearch} />}
 				/>
 
-				{!isDirty && (
+				{user && !isDirty && (
 					<>
 						<Sort />
 						<CreateRoom />
