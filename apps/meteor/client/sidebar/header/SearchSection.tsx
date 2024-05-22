@@ -145,6 +145,7 @@ export const SearchSection = () => {
 					flexShrink={1}
 					h='full'
 					w='full'
+					pbs={8}
 					aria-live='polite'
 					aria-atomic='true'
 					aria-busy={isLoading}
