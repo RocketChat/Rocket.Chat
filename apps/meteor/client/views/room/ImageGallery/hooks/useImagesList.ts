@@ -1,4 +1,4 @@
-import type { ChannelsImagesProps } from '@rocket.chat/rest-typings';
+import type { RoomsImagesProps } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -7,7 +7,7 @@ import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
 import { ImagesList } from '../../../../lib/lists/ImagesList';
 
 export const useImagesList = (
-	options: ChannelsImagesProps,
+	options: RoomsImagesProps,
 ): {
 	filesList: ImagesList;
 	initialItemCount: number;
@@ -27,7 +27,7 @@ export const useImagesList = (
 		}
 	}, [filesList, options]);
 
-	const apiEndPoint = '/v1/channels.images';
+	const apiEndPoint = '/v1/rooms.images';
 
 	const getFiles = useEndpoint('GET', apiEndPoint);
 

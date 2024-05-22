@@ -15,7 +15,7 @@ describe('with window.RocketChatDesktop set', () => {
 						return null;
 					},
 				},
-				currentModal: null,
+				currentModal: { component: null },
 			}}
 		/>
 	);
@@ -60,7 +60,7 @@ describe('with window.RocketChatDesktop unset', () => {
 				modal: {
 					setModal,
 				},
-				currentModal: null,
+				currentModal: { component: null },
 			}}
 		/>
 	);

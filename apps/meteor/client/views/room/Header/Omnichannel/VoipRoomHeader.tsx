@@ -5,8 +5,8 @@ import type { FC } from 'react';
 import React, { useCallback, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
-import BurgerMenu from '../../../../components/BurgerMenu';
+import SidebarToggler from '../../../../components/SidebarToggler';
+import { parseOutboundPhoneNumber } from '../../../../lib/voip/parseOutboundPhoneNumber';
 import type { RoomHeaderProps } from '../RoomHeader';
 import RoomHeader from '../RoomHeader';
 import { BackButton } from './BackButton';
@@ -30,7 +30,7 @@ const VoipRoomHeader: FC<VoipRoomHeaderProps> = ({ slots: parentSlot, room }) =>
 			...parentSlot,
 			start: (!!isMobile || currentRouteName === 'omnichannel-directory') && (
 				<HeaderToolbar>
-					{isMobile && <BurgerMenu />}
+					{isMobile && <SidebarToggler />}
 					{currentRouteName === 'omnichannel-directory' && <BackButton />}
 				</HeaderToolbar>
 			),

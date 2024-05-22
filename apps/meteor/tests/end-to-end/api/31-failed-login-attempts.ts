@@ -17,25 +17,31 @@ describe('[Failed Login Attempts]', function () {
 
 	before((done) => getCredentials(done));
 
-	before(async () => {
-		await updateSetting('Block_Multiple_Failed_Logins_Enabled', true);
-		await updateSetting('Block_Multiple_Failed_Logins_By_Ip', true);
-		await updateSetting('Block_Multiple_Failed_Logins_By_User', true);
-		await updateSetting('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User', maxAttemptsByUser);
-		await updateSetting('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes', userBlockSeconds / 60);
-		await updateSetting('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip', maxAttemptsByIp);
-		await updateSetting('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes', ipBlockSeconds / 60);
+	before(() =>
+		Promise.all([
+			updateSetting('Block_Multiple_Failed_Logins_Enabled', true),
+			updateSetting('Block_Multiple_Failed_Logins_By_Ip', true),
+			updateSetting('Block_Multiple_Failed_Logins_By_User', true),
+			updateSetting('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User', maxAttemptsByUser),
+			updateSetting('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes', userBlockSeconds / 60),
+			updateSetting('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip', maxAttemptsByIp),
+			updateSetting('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes', ipBlockSeconds / 60),
+			updatePermission('logout-other-user', ['admin']),
+		]),
+	);
 
-		await updatePermission('logout-other-user', ['admin']);
-	});
-
-	after(async () => {
-		await updateSetting('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User', 10);
-		await updateSetting('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes', 5);
-		await updateSetting('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip', 50);
-		await updateSetting('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes', 5);
-		await updateSetting('Block_Multiple_Failed_Logins_Enabled', false);
-	});
+	after(() =>
+		Promise.all([
+			updateSetting('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User', 10),
+			updateSetting('Block_Multiple_Failed_Logins_Time_To_Unblock_By_User_In_Minutes', 5),
+			updateSetting('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip', 50),
+			updateSetting('Block_Multiple_Failed_Logins_Time_To_Unblock_By_Ip_In_Minutes', 5),
+			updateSetting('Block_Multiple_Failed_Logins_Enabled', true),
+			updateSetting('Block_Multiple_Failed_Logins_By_Ip', true),
+			updateSetting('Block_Multiple_Failed_Logins_By_User', true),
+			updatePermission('logout-other-user', ['admin']),
+		]),
+	);
 
 	async function shouldFailLoginWithUser(username: string, password: string) {
 		await request
@@ -163,11 +169,7 @@ describe('[Failed Login Attempts]', function () {
 			userLogin = await createUser();
 		});
 
-		afterEach(async () => {
-			await deleteUser(user);
-			await deleteUser(user2);
-			await deleteUser(userLogin);
-		});
+		afterEach(() => Promise.all([deleteUser(user), deleteUser(user2), deleteUser(userLogin)]));
 
 		afterEach(async () => {
 			// reset counter

@@ -77,10 +77,10 @@ const ReactionTooltip = ({ emojiName, usernames, mine, messageId, showRealName, 
 	if (isLoading) {
 		return (
 			<>
-				<Skeleton width='x200' variant='text' backgroundColor='black' />
-				<Skeleton width='x200' variant='text' backgroundColor='black' />
-				{usernames.length > 5 && <Skeleton width='x200' variant='text' backgroundColor='black' />}
-				{usernames.length > 8 && <Skeleton width='x200' variant='text' backgroundColor='black' />}
+				<Skeleton width='x200' variant='text' backgroundColor='surface-light' />
+				<Skeleton width='x200' variant='text' backgroundColor='surface-light' />
+				{usernames.length > 5 && <Skeleton width='x200' variant='text' backgroundColor='surface-light' />}
+				{usernames.length > 8 && <Skeleton width='x200' variant='text' backgroundColor='surface-light' />}
 			</>
 		);
 	}

@@ -2,7 +2,7 @@ import { Box, Table } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import React, { type ForwardedRef, type ReactNode, forwardRef } from 'react';
 
-import ScrollableContentWrapper from '../ScrollableContentWrapper';
+import { CustomScrollbars } from '../CustomScrollbars';
 
 type GenericTableProps = {
 	fixed?: boolean;
@@ -15,11 +15,11 @@ export const GenericTable = forwardRef(function GenericTable(
 ) {
 	return (
 		<Box mi='neg-x24' pi={24} flexShrink={1} flexGrow={1} ref={ref} overflow='hidden'>
-			<ScrollableContentWrapper overflowX>
+			<CustomScrollbars overflowX>
 				<Table fixed={fixed} sticky {...props}>
 					{children}
 				</Table>
-			</ScrollableContentWrapper>
+			</CustomScrollbars>
 		</Box>
 	);
 });

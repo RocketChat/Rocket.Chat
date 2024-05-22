@@ -1,7 +1,6 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, PaletteStyleTag } from '@rocket.chat/fuselage';
 import { useLayout, useSetting, useCurrentModal, useRoute, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
-import { PaletteStyleTag } from '@rocket.chat/ui-theming/src/PaletteStyleTag';
-import { SidebarPaletteStyleTag } from '@rocket.chat/ui-theming/src/SidebarPaletteStyleTag';
+import { useThemeMode } from '@rocket.chat/ui-theming/src/hooks/useThemeMode';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useRef } from 'react';
 
@@ -10,6 +9,7 @@ import AccessibilityShortcut from './AccessibilityShortcut';
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
+	const [, , theme] = useThemeMode();
 
 	const modal = useCurrentModal();
 	const currentRoutePath = useCurrentRoutePath();
@@ -48,8 +48,8 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 			aria-hidden={Boolean(modal)}
 		>
 			<AccessibilityShortcut />
-			<PaletteStyleTag />
-			<SidebarPaletteStyleTag />
+			<PaletteStyleTag theme={theme} selector='.rcx-content--main, .rcx-tile' />
+			<PaletteStyleTag theme='dark' selector='.rcx-sidebar--main' tagId='sidebar-palette' />
 			{!removeSidenav && <Sidebar />}
 			<main
 				id='main-content'

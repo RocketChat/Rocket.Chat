@@ -105,6 +105,7 @@ export const FilesDropTarget = ({
 			onDrop={handleDrop}
 			className={createClassName(styles, 'drop', { overlayed, dragover: dragLevel > 0 }, [className])}
 			style={style}
+			id='files-drop-target'
 		>
 			<input
 				ref={inputRef}

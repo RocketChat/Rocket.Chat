@@ -1,3 +1,4 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { api } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Messages, EmojiCustom, Rooms, Users } from '@rocket.chat/models';
@@ -5,7 +6,6 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { AppEvents, Apps } from '../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../../server/lib/i18n';
 import { broadcastMessageFromData } from '../../../server/modules/watchers/lib/messages';
@@ -13,6 +13,7 @@ import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
+import { notifyOnRoomChangedById } from '../../lib/server/lib/notifyListener';
 
 const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
 	if (!message.reactions) {
@@ -74,6 +75,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 			delete message.reactions;
 			if (isTheLastMessage(room, message)) {
 				await Rooms.unsetReactionsInLastMessage(room._id);
+				void notifyOnRoomChangedById(room._id);
 			}
 			await Messages.unsetReactions(message._id);
 		} else {
@@ -99,6 +101,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		await Messages.setReactions(message._id, message.reactions);
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setReactionsInLastMessage(room._id, message.reactions);
+			void notifyOnRoomChangedById(room._id);
 		}
 		await callbacks.run('setReaction', message._id, reaction);
 		await callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
@@ -106,7 +109,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		isReacted = true;
 	}
 
-	await Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
+	await Apps.self?.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
 
 	void broadcastMessageFromData({
 		id: message._id,

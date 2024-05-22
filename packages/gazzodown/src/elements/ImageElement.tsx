@@ -3,6 +3,7 @@ import { ReactElement, useMemo } from 'react';
 
 const flattenMarkup = (
 	markup:
+		| MessageParser.Timestamp
 		| MessageParser.Markup
 		| MessageParser.InlineCode
 		| MessageParser.Link

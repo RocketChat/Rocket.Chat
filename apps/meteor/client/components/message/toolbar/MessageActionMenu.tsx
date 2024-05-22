@@ -1,14 +1,19 @@
-import { MessageToolbarItem, Option, OptionDivider, OptionTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, MouseEvent, MouseEventHandler, ReactElement } from 'react';
-import React, { Fragment, useCallback, useRef, useState } from 'react';
+import type { MouseEvent, ReactElement } from 'react';
+import React from 'react';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
-import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
-import ToolbarDropdown from './ToolbarDropdown';
+import GenericMenu from '../../GenericMenu/GenericMenu';
+import type { GenericMenuItemProps } from '../../GenericMenu/GenericMenuItem';
 
 type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order' | 'action'> & {
-	action: ((event: MouseEvent<HTMLElement, MouseEvent>) => void) & MouseEventHandler<HTMLElement>;
+	action: (e?: MouseEvent<HTMLElement>) => void;
+};
+
+type MessageActionSection = {
+	id: string;
+	title: string;
+	items: GenericMenuItemProps[];
 };
 
 type MessageActionMenuProps = {
@@ -16,104 +21,41 @@ type MessageActionMenuProps = {
 	options: MessageActionConfigOption[];
 };
 
-const getSectionOrder = (section: string): number => {
-	switch (section) {
-		case 'communication':
-			return 0;
-		case 'interaction':
-			return 1;
-		case 'duplication':
-			return 2;
-		case 'apps':
-			return 3;
-		case 'management':
-			return 4;
-		default:
-			return 5;
-	}
-};
-
-const MessageActionMenu = ({ options, onChangeMenuVisibility, ...props }: MessageActionMenuProps): ReactElement => {
-	const buttonRef = useRef<HTMLButtonElement | null>(null);
+const MessageActionMenu = ({ options, onChangeMenuVisibility }: MessageActionMenuProps): ReactElement => {
 	const t = useTranslation();
-	const [visible, setVisible] = useState(false);
-	const isLayoutEmbedded = useEmbeddedLayout();
 
-	const handleChangeMenuVisibility = useCallback(
-		(visible: boolean): void => {
-			setVisible(visible);
-			onChangeMenuVisibility(visible);
-		},
-		[onChangeMenuVisibility],
-	);
+	const groupOptions = options
+		.map((option) => ({
+			variant: option.color === 'alert' ? 'danger' : '',
+			id: option.id,
+			icon: option.icon,
+			content: t(option.label),
+			onClick: option.action,
+			type: option.type,
+		}))
+		.reduce((acc, option) => {
+			const group = option.type ? option.type : '';
+			const section = acc.find((section: { id: string }) => section.id === group);
+			if (section) {
+				section.items.push(option);
+				return acc;
+			}
+			const newSection = { id: group, title: group === 'apps' ? t('Apps') : '', items: [option] };
+			acc.push(newSection);
 
-	const groupOptions = options.reduce((acc, option) => {
-		const { type = '' } = option;
-
-		if (option.color === 'alert') {
-			option.variant = 'danger' as const;
-		}
-
-		const order = getSectionOrder(type);
-
-		const [sectionType, options] = acc[getSectionOrder(type)] ?? [type, []];
-
-		if (!(isLayoutEmbedded && option.id === 'reply-directly')) {
-			options.push(option);
-		}
-
-		if (options.length === 0) {
 			return acc;
-		}
+		}, [] as unknown as MessageActionSection[]);
 
-		acc[order] = [sectionType, options];
-
-		return acc;
-	}, [] as unknown as [section: string, options: Array<MessageActionConfigOption>][]);
-
-	const handleClose = useCallback(() => {
-		handleChangeMenuVisibility(false);
-	}, [handleChangeMenuVisibility]);
 	return (
-		<>
-			<MessageToolbarItem
-				ref={buttonRef}
-				icon='kebab'
-				onClick={(): void => handleChangeMenuVisibility(!visible)}
-				data-qa-id='menu'
-				data-qa-type='message-action-menu'
-				title={t('More')}
-			/>
-			{visible && (
-				<>
-					<ToolbarDropdown handleClose={handleClose} reference={buttonRef} {...props}>
-						{groupOptions.map(([section, options], index, arr) => (
-							<Fragment key={index}>
-								{section === 'apps' && <OptionTitle>Apps</OptionTitle>}
-								{options.map((option) => (
-									<Option
-										variant={option.variant}
-										key={option.id}
-										id={option.id}
-										icon={option.icon as ComponentProps<typeof Option>['icon']}
-										label={t(option.label)}
-										onClick={(e) => {
-											handleClose();
-											option.action(e);
-										}}
-										data-qa-type='message-action'
-										data-qa-id={option.id}
-										role={option.role ? option.role : 'button'}
-										gap={!option.icon && option.type === 'apps'}
-									/>
-								))}
-								{index !== arr.length - 1 && <OptionDivider />}
-							</Fragment>
-						))}
-					</ToolbarDropdown>
-				</>
-			)}
-		</>
+		<GenericMenu
+			onOpenChange={onChangeMenuVisibility}
+			detached
+			title={t('More')}
+			data-qa-id='menu'
+			data-qa-type='message-action-menu'
+			sections={groupOptions}
+			placement='bottom-end'
+		/>
 	);
 };
 

@@ -12,6 +12,81 @@ import { settings } from '../../app/settings/server';
 import { validateEmail } from '../../lib/emailValidator';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 
+export async function insertAdminUserFromEnv() {
+	if (process.env.ADMIN_PASS) {
+		if ((await (await getUsersInRole('admin')).count()) === 0) {
+			const adminUser = {
+				name: 'Administrator',
+				username: 'admin',
+				status: 'offline',
+				statusDefault: 'online',
+				utcOffset: 0,
+				active: true,
+			};
+
+			if (process.env.ADMIN_NAME) {
+				adminUser.name = process.env.ADMIN_NAME;
+			}
+
+			console.log(colors.green(`Name: ${adminUser.name}`));
+
+			if (process.env.ADMIN_EMAIL) {
+				if (validateEmail(process.env.ADMIN_EMAIL)) {
+					if (!(await Users.findOneByEmailAddress(process.env.ADMIN_EMAIL))) {
+						adminUser.emails = [
+							{
+								address: process.env.ADMIN_EMAIL,
+								verified: process.env.ADMIN_EMAIL_VERIFIED === 'true',
+							},
+						];
+
+						console.log(colors.green(`Email: ${process.env.ADMIN_EMAIL}`));
+					} else {
+						console.log(colors.red('Email provided already exists; Ignoring environment variables ADMIN_EMAIL'));
+					}
+				} else {
+					console.log(colors.red('Email provided is invalid; Ignoring environment variables ADMIN_EMAIL'));
+				}
+			}
+
+			if (process.env.ADMIN_USERNAME) {
+				let nameValidation;
+
+				try {
+					nameValidation = new RegExp(`^${settings.get('UTF8_User_Names_Validation')}$`);
+				} catch (error) {
+					nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
+				}
+
+				if (nameValidation.test(process.env.ADMIN_USERNAME)) {
+					try {
+						await checkUsernameAvailability(process.env.ADMIN_USERNAME);
+						adminUser.username = process.env.ADMIN_USERNAME;
+					} catch (error) {
+						console.log(
+							colors.red('Username provided already exists or is blocked from usage; Ignoring environment variables ADMIN_USERNAME'),
+						);
+					}
+				} else {
+					console.log(colors.red('Username provided is invalid; Ignoring environment variables ADMIN_USERNAME'));
+				}
+			}
+
+			console.log(colors.green(`Username: ${adminUser.username}`));
+
+			adminUser.type = 'user';
+
+			const { insertedId: userId } = await Users.create(adminUser);
+
+			await Accounts.setPasswordAsync(userId, process.env.ADMIN_PASS);
+
+			await addUserRolesAsync(userId, ['admin']);
+		} else {
+			console.log(colors.red('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'));
+		}
+	}
+}
+
 Meteor.startup(async () => {
 	const dynamicImport = {
 		'dynamic-import': {
@@ -91,76 +166,7 @@ Meteor.startup(async () => {
 		throw error;
 	}
 
-	if (process.env.ADMIN_PASS) {
-		if ((await (await getUsersInRole('admin')).count()) === 0) {
-			console.log(colors.green('Inserting admin user:'));
-			const adminUser = {
-				name: 'Administrator',
-				username: 'admin',
-				status: 'offline',
-				statusDefault: 'online',
-				utcOffset: 0,
-				active: true,
-			};
-
-			if (process.env.ADMIN_NAME) {
-				adminUser.name = process.env.ADMIN_NAME;
-			}
-
-			console.log(colors.green(`Name: ${adminUser.name}`));
-
-			if (process.env.ADMIN_EMAIL) {
-				if (validateEmail(process.env.ADMIN_EMAIL)) {
-					if (!(await Users.findOneByEmailAddress(process.env.ADMIN_EMAIL))) {
-						adminUser.emails = [
-							{
-								address: process.env.ADMIN_EMAIL,
-								verified: process.env.ADMIN_EMAIL_VERIFIED === 'true',
-							},
-						];
-
-						console.log(colors.green(`Email: ${process.env.ADMIN_EMAIL}`));
-					} else {
-						console.log(colors.red('Email provided already exists; Ignoring environment variables ADMIN_EMAIL'));
-					}
-				} else {
-					console.log(colors.red('Email provided is invalid; Ignoring environment variables ADMIN_EMAIL'));
-				}
-			}
-
-			if (process.env.ADMIN_USERNAME) {
-				let nameValidation;
-
-				try {
-					nameValidation = new RegExp(`^${settings.get('UTF8_User_Names_Validation')}$`);
-				} catch (error) {
-					nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
-				}
-
-				if (nameValidation.test(process.env.ADMIN_USERNAME)) {
-					if (await checkUsernameAvailability(process.env.ADMIN_USERNAME)) {
-						adminUser.username = process.env.ADMIN_USERNAME;
-					} else {
-						console.log(colors.red('Username provided already exists; Ignoring environment variables ADMIN_USERNAME'));
-					}
-				} else {
-					console.log(colors.red('Username provided is invalid; Ignoring environment variables ADMIN_USERNAME'));
-				}
-			}
-
-			console.log(colors.green(`Username: ${adminUser.username}`));
-
-			adminUser.type = 'user';
-
-			const { insertedId: userId } = await Users.create(adminUser);
-
-			await Accounts.setPasswordAsync(userId, process.env.ADMIN_PASS);
-
-			await addUserRolesAsync(userId, ['admin']);
-		} else {
-			console.log(colors.red('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'));
-		}
-	}
+	await insertAdminUserFromEnv();
 
 	if (typeof process.env.INITIAL_USER === 'string' && process.env.INITIAL_USER.length > 0) {
 		try {

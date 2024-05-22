@@ -219,7 +219,6 @@ jobs:
       RC_DOCKER_TAG: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
-      SERVICES_PUBLISH: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
 
     strategy:
       fail-fast: false
@@ -237,6 +236,7 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
           platform: ${{ matrix.platform }}
+          build-containers: ${{ matrix.platform == 'alpine' && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
 
   build-gh-docker:
     name: 🚢 Build Docker Images for Production
@@ -248,7 +248,6 @@ jobs:
       RC_DOCKER_TAG: ${{ matrix.platform == 'alpine' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
-      SERVICES_PUBLISH: 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service'
 
     strategy:
       fail-fast: false
@@ -264,6 +263,7 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
           platform: ${{ matrix.platform }}
+          build-containers: ${{ matrix.platform == 'alpine' && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
 
       - name: Rename official Docker tag to GitHub Container Registry
         if: matrix.platform == 'official'
@@ -330,6 +330,7 @@ jobs:
       rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
       rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
@@ -379,6 +380,37 @@ jobs:
       rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
       rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+      REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
+      REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  test-ui-ee-no-watcher:
+    name: 🔨 Test UI (EE)
+    needs: [checks, build-gh-docker-coverage, release-versions]
+
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: ui
+      release: ee
+      transporter: 'nats://nats:4222'
+      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+      shard: '[1, 2, 3, 4, 5]'
+      total-shard: 5
+      mongodb-version: "['6.0']"
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
+      rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
+      rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
+      rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+      db-watcher-disabled: 'true'
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
@@ -390,7 +422,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-20.04
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee]
+    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-no-watcher]
 
     steps:
       - name: Test finish aggregation

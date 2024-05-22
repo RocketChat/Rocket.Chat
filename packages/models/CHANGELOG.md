@@ -1,5 +1,174 @@
 # @rocket.chat/models
 
+## 0.0.38
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [da45cb6998]:</summary>
+
+  - @rocket.chat/model-typings@0.4.0
+  </details>
+
+## 0.0.38-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.4.0-rc.2
+  </details>
+
+## 0.0.38-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.4.0-rc.1
+  </details>
+
+## 0.0.38-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [da45cb6998]:</summary>
+
+  - @rocket.chat/model-typings@0.4.0-rc.0
+
+## 0.0.37
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.3.9
+  </details>
+
+> > > > > > > origin/master
+
+## 0.0.36
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.3.8
+  </details>
+
+## 0.0.35
+
+### Patch Changes
+
+- ([#32056](https://github.com/RocketChat/Rocket.Chat/pull/32056)) Fix proxified model props were missing context before attribution
+
+- <details><summary>Updated dependencies [0570f6740a]:</summary>
+
+  - @rocket.chat/model-typings@0.3.7
+  </details>
+
+## 0.0.35-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.3.7-rc.4
+  </details>
+
+## 0.0.35-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.3.7-rc.3
+  </details>
+
+## 0.0.35-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.3.7-rc.2
+  </details>
+
+## 0.0.35-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.3.7-rc.1
+  </details>
+
+## 0.0.35-rc.0
+
+### Patch Changes
+
+- ([#32056](https://github.com/RocketChat/Rocket.Chat/pull/32056)) Fix proxified model props were missing context before attribution
+
+- <details><summary>Updated dependencies [0570f6740a]:</summary>
+
+  - @rocket.chat/model-typings@0.3.7-rc.0
+  </details>
+
+## 0.0.34
+
+### Patch Changes
+
+- ([#32056](https://github.com/RocketChat/Rocket.Chat/pull/32056)) Fix proxified model props were missing context before attribution
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.3.6
+  </details>
+
+## 0.0.33
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.3.5
+  </details>
+
+## 0.0.32
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.3.4
+  </details>
+
+## 0.0.31
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.3.3
+  </details>
+
+## 0.0.30
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.3.2
+  </details>
+
+## 0.0.29
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.3.1
+  </details>
+
 ## 0.0.28
 
 ### Patch Changes
