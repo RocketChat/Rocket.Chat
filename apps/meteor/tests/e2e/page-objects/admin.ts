@@ -20,8 +20,16 @@ export class Admin {
 		return this.page.locator('[role="link"]', { hasText: name });
 	}
 
+	getUserRow(username?: string): Locator {
+		return this.page.locator('[role="link"]', { hasText: username });
+	}
+
 	get btnSave(): Locator {
 		return this.page.locator('button >> text="Save"');
+	}
+
+	get btnEdit(): Locator {
+		return this.page.locator('button >> text="Edit"');
 	}
 
 	get privateLabel(): Locator {
