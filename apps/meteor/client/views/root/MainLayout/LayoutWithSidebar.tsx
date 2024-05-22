@@ -52,7 +52,7 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 				aria-hidden={Boolean(modal)}
 			>
 				<PaletteStyleTag theme={theme} selector='.rcx-content--main, .rcx-tile' />
-				<PaletteStyleTag theme='dark' selector='.rcx-sidebar--main' tagId='sidebar-palette' />
+				<PaletteStyleTag theme='dark' selector='.rcx-sidebar--main, .rcx-navbar' tagId='sidebar-palette' />
 
 				{!removeSidenav && <Sidebar />}
 				<main
