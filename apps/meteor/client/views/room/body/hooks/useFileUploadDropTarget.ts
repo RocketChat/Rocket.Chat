@@ -29,7 +29,8 @@ export const useFileUploadDropTarget = (): readonly [
 
 	const t = useTranslation();
 
-	const fileUploadEnabled = useSetting('FileUpload_Enabled') as boolean;
+	const fileUploadEnabled = useSetting<boolean>('FileUpload_Enabled');
+	const rejectUnknownMediaTypes = useSetting<boolean>('FileUpload_RejectUnknownMediaTypes');
 	const user = useUser();
 	const fileUploadAllowedForUser = useReactiveValue(
 		useCallback(() => !roomCoordinator.readOnly(room._id, { username: user?.username }), [room._id, user?.username]),
@@ -55,7 +56,8 @@ export const useFileUploadDropTarget = (): readonly [
 		const uniqueFiles = getUniqueFiles();
 
 		const uploads = Array.from(uniqueFiles).map((file) => {
-			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
+			const fileMimeType = mime.lookup(file.name);
+			Object.defineProperty(file, 'type', { value: fileMimeType ?? (rejectUnknownMediaTypes ? undefined : 'application/octet-stream') });
 			return file;
 		});
 
