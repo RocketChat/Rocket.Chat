@@ -94,17 +94,18 @@ export const updateMessage = async function (
 
 	setImmediate(async () => {
 		const msg = await Messages.findOneById(_id);
-		if (msg) {
-			await callbacks.run('afterSaveMessage', msg, room, user._id);
+		if (!msg) {
+			return;
+		}
 
-			void broadcastMessageFromData({
-				id: msg._id,
-				data: msg,
-			});
+		await callbacks.run('afterSaveMessage', msg, room, user._id);
 
-			if (room?.lastMessage?._id === msg._id) {
-				void notifyOnRoomChangedById(message.rid);
-			}
+		void broadcastMessageFromData({
+			id: msg._id,
+		});
+
+		if (room?.lastMessage?._id === msg._id) {
+			void notifyOnRoomChangedById(message.rid);
 		}
 	});
 };
