@@ -107,7 +107,7 @@ export const updateMessage = async function (
 
 		void broadcastMessageFromData({
 			id: msg._id,
-			data,
+			data: data as any,
 		});
 
 		if (room?.lastMessage?._id === msg._id) {
