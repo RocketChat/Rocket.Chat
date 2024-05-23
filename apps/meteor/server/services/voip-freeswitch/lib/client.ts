@@ -7,8 +7,8 @@ export class FreeSwitchRCClient {
 	constructor({ host, port, password, logger }: { host: string; port: number; password: string; logger: Logger }) {
 		this.client = new FreeSwitchClient({
 			host,
-			port,
-			password,
+			port: port || 8021,
+			...(password ? { password } : {}),
 			logger: Object.fromEntries(
 				(['debug', 'info', 'error'] as const).map((fn) => {
 					return [
