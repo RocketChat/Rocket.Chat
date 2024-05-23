@@ -14,6 +14,59 @@ export class AppMessagesConverter {
 		return this.convertMessage(msg);
 	}
 
+	async convertMessageRaw(msgObj) {
+		if (!msgObj) {
+			return undefined;
+		}
+
+		const { rid, editedBy, attachments, u, ...message } = msgObj;
+
+		const getRoom = () => ({ id: rid });
+
+		const getEditor = () => (editedBy ? { id: editedBy.id, username: editedBy.username } : undefined);
+
+		const getAttachments = async () => this._convertAttachmentsToApp(attachments);
+
+		const getSender = () => {
+			if (!u || !u._id) {
+				return undefined;
+			}
+
+			const user = {
+				id: u._id,
+				username: u.username,
+				name: u.name,
+			};
+
+			return user;
+		};
+
+		const map = {
+			id: '_id',
+			threadId: 'tmid',
+			reactions: 'reactions',
+			parseUrls: 'parseUrls',
+			text: 'msg',
+			createdAt: 'ts',
+			updatedAt: '_updatedAt',
+			editedAt: 'editedAt',
+			emoji: 'emoji',
+			avatarUrl: 'avatar',
+			alias: 'alias',
+			file: 'file',
+			customFields: 'customFields',
+			groupable: 'groupable',
+			token: 'token',
+			blocks: 'blocks',
+			room: getRoom,
+			editor: getEditor,
+			attachments: getAttachments,
+			sender: getSender,
+		};
+
+		return transformMappedData(message, map);
+	}
+
 	async convertMessage(msgObj) {
 		if (!msgObj) {
 			return undefined;
