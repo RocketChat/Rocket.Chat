@@ -8,6 +8,7 @@ type RetentionPolicySettings = {
 	enabled: boolean;
 	filesOnly: boolean;
 	doNotPrunePinned: boolean;
+	ignoreThreads: boolean;
 	appliesToChannels: boolean;
 	maxAgeChannels: number;
 	appliesToGroups: boolean;
@@ -55,6 +56,14 @@ const extractExcludePinned = (room: IRoom, { doNotPrunePinned }: RetentionPolicy
 	return doNotPrunePinned;
 };
 
+const extractIgnoreThreads = (room: IRoom, { ignoreThreads }: RetentionPolicySettings): boolean => {
+	if (hasRetentionPolicy(room) && room.retention.overrideGlobal) {
+		return room.retention.ignoreThreads;
+	}
+
+	return ignoreThreads;
+};
+
 const getMaxAge = (room: IRoom, { maxAgeChannels, maxAgeGroups, maxAgeDMs }: RetentionPolicySettings): number => {
 	if (hasRetentionPolicy(room) && room.retention.overrideGlobal) {
 		return room.retention.maxAge;
@@ -81,6 +90,7 @@ export const useRetentionPolicy = (
 			isActive: boolean;
 			filesOnly: boolean;
 			excludePinned: boolean;
+			ignoreThreads: boolean;
 			maxAge: number;
 	  }
 	| undefined => {
@@ -88,6 +98,7 @@ export const useRetentionPolicy = (
 		enabled: useSetting('RetentionPolicy_Enabled') as boolean,
 		filesOnly: useSetting('RetentionPolicy_FilesOnly') as boolean,
 		doNotPrunePinned: useSetting('RetentionPolicy_DoNotPrunePinned') as boolean,
+		ignoreThreads: useSetting('RetentionPolicy_DoNotPruneThreads') as boolean,
 		appliesToChannels: useSetting('RetentionPolicy_AppliesToChannels') as boolean,
 		maxAgeChannels: useSetting('RetentionPolicy_MaxAge_Channels') as number,
 		appliesToGroups: useSetting('RetentionPolicy_AppliesToGroups') as boolean,
@@ -105,6 +116,7 @@ export const useRetentionPolicy = (
 		isActive: isActive(room, settings),
 		filesOnly: extractFilesOnly(room, settings),
 		excludePinned: extractExcludePinned(room, settings),
+		ignoreThreads: extractIgnoreThreads(room, settings),
 		maxAge: getMaxAge(room, settings),
 	};
 };

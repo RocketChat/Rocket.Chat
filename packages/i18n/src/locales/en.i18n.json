@@ -4496,6 +4496,7 @@
   "RetentionPolicy_RoomWarning_UnpinnedFilesOnly": "Unpinned files older than {{time}} are automatically pruned here (messages stay intact)",
   "RetentionPolicyRoom_Enabled": "Automatically prune old messages",
   "RetentionPolicyRoom_ExcludePinned": "Exclude pinned messages",
+  "RetentionPolicyRoom_IgnoreThreads": "Ignore threads",
   "RetentionPolicyRoom_FilesOnly": "Prune files only, keep messages",
   "RetentionPolicyRoom_MaxAge": "Maximum message age in days (default: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Override global retention policy",
