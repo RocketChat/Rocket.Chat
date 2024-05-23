@@ -401,6 +401,7 @@ export const saveUser = async function (userId, userData) {
 
 	const updateUser = {
 		$set: {},
+		$unset: {},
 	};
 
 	handleBio(updateUser, userData.bio);
