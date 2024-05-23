@@ -11,5 +11,5 @@ export interface IAppMessagesConverter {
 	convertAppMessage(message: IAppsMessage): Promise<IMessage | undefined>;
 	convertAppMessage(message: IAppsMessage | undefined | null): Promise<IMessage | undefined>;
 	convertMessageRaw(message: IMessage): Promise<IAppsMessage>;
-	converMessageRaw(message: IMessage | undefined | null): Promise<IAppsMessage | undefined>;
+	convertMessageRaw(message: IMessage | undefined | null): Promise<IAppsMessage | undefined>;
 }
