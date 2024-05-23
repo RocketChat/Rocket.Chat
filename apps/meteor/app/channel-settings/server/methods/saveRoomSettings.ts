@@ -117,14 +117,10 @@ const validators: RoomSettingsValidators = {
 		}
 	},
 	async retentionEnabled({ userId, value, room, rid }) {
-		if (!hasRetentionPolicy(room)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
-
-		if (!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) && value !== room.retention.enabled) {
+		if (
+			!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) &&
+			(!hasRetentionPolicy(room) || value !== room.retention.enabled)
+		) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
@@ -132,14 +128,10 @@ const validators: RoomSettingsValidators = {
 		}
 	},
 	async retentionMaxAge({ userId, value, room, rid }) {
-		if (!hasRetentionPolicy(room)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
-
-		if (!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) && value !== room.retention.maxAge) {
+		if (
+			!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) &&
+			(!hasRetentionPolicy(room) || value !== room.retention.maxAge)
+		) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
@@ -147,14 +139,10 @@ const validators: RoomSettingsValidators = {
 		}
 	},
 	async retentionExcludePinned({ userId, value, room, rid }) {
-		if (!hasRetentionPolicy(room)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
-
-		if (!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) && value !== room.retention.excludePinned) {
+		if (
+			!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) &&
+			(!hasRetentionPolicy(room) || value !== room.retention.excludePinned)
+		) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
@@ -162,14 +150,10 @@ const validators: RoomSettingsValidators = {
 		}
 	},
 	async retentionFilesOnly({ userId, value, room, rid }) {
-		if (!hasRetentionPolicy(room)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
-
-		if (!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) && value !== room.retention.filesOnly) {
+		if (
+			!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) &&
+			(!hasRetentionPolicy(room) || value !== room.retention.filesOnly)
+		) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
@@ -177,14 +161,10 @@ const validators: RoomSettingsValidators = {
 		}
 	},
 	async retentionIgnoreThreads({ userId, value, room, rid }) {
-		if (!hasRetentionPolicy(room)) {
-			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
-				method: 'saveRoomSettings',
-				action: 'Editing_room',
-			});
-		}
-
-		if (!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) && value !== room.retention.ignoreThreads) {
+		if (
+			!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) &&
+			(!hasRetentionPolicy(room) || value !== room.retention.ignoreThreads)
+		) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
@@ -469,7 +449,7 @@ export async function saveRoomSettings(
 			rid,
 		});
 
-		if (setting === 'retentionOverrideGlobal') {
+		if (setting === 'retentionOverrideGlobal' && settings.retentionOverrideGlobal === false) {
 			delete settings.retentionMaxAge;
 			delete settings.retentionExcludePinned;
 			delete settings.retentionFilesOnly;
