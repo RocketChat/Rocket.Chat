@@ -23,7 +23,7 @@ export class AppMessagesConverter {
 
 		const getRoom = () => ({ id: rid });
 
-		const getEditor = () => (editedBy ? { id: editedBy.id, username: editedBy.username } : undefined);
+		const getEditor = () => (editedBy ? { id: editedBy._id, username: editedBy.username } : undefined);
 
 		const getAttachments = async () => this._convertAttachmentsToApp(attachments);
 
