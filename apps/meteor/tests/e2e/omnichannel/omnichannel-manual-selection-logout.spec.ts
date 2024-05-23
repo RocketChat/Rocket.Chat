@@ -1,12 +1,12 @@
 import { Page } from '@playwright/test';
 
 import { DEFAULT_USER_CREDENTIALS } from '../config/constants';
+import injectInitialData from '../fixtures/inject-initial-data';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { createConversation } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
-import injectInitialData from '../fixtures/inject-initial-data';
 
 test.use({ storageState: Users.user1.state });
 
