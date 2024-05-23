@@ -677,16 +677,20 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 	findUsersWithPublicE2EKeyByRids(
 		rids: IRoom['_id'][],
+		excludeUserId: IUser['_id'],
 		usersLimit = 50,
 	): AggregationCursor<{ rid: IRoom['_id']; users: { _id: IUser['_id']; key: string }[] }> {
 		return this.col.aggregate([
 			{
 				$match: {
-					rid: {
+					'rid': {
 						$in: rids,
 					},
-					E2EKey: {
+					'E2EKey': {
 						$exists: false,
+					},
+					'u._id': {
+						$ne: excludeUserId,
 					},
 				},
 			},

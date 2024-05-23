@@ -1,8 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
-import { isTruthy } from '../../../../lib/isTruthy';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 
 export const provideUsersSuggestedGroupKeys = async (
@@ -15,33 +13,23 @@ export const provideUsersSuggestedGroupKeys = async (
 		return;
 	}
 
-	await Promise.all(
-		roomIds.map(async (roomId) => {
-			if (!(await canAccessRoomIdAsync(roomId, userId))) {
-				throw new Meteor.Error('error-invalid-room', 'Invalid room');
+	// Process should try to process all rooms i have access instead of dying if one is not
+	for await (const roomId of roomIds) {
+		if (!(await canAccessRoomIdAsync(roomId, userId))) {
+			continue;
+		}
+
+		const usersWithSuggestedKeys = [];
+		for await (const user of usersSuggestedGroupKeys[roomId]) {
+			const sub = await Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { projection: { _id: 1 } });
+			if (!sub) {
+				continue;
 			}
-		}),
-	);
 
-	await Promise.all(
-		roomIds.map(async (roomId) => {
-			const userIds = (
-				await Promise.all(
-					usersSuggestedGroupKeys[roomId].map(async (user) => {
-						const sub = await Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { projection: { _id: 1 } });
+			await Subscriptions.setGroupE2ESuggestedKey(sub._id, user.key);
+			usersWithSuggestedKeys.push(user._id);
+		}
 
-						if (!sub) {
-							return;
-						}
-
-						await Subscriptions.setGroupE2ESuggestedKey(sub._id, user.key);
-
-						return user._id;
-					}),
-				)
-			).filter(isTruthy);
-
-			await Rooms.removeUsersFromE2EEQueueByRoomId(roomId, userIds);
-		}),
-	);
+		await Rooms.removeUsersFromE2EEQueueByRoomId(roomId, usersWithSuggestedKeys);
+	}
 };
