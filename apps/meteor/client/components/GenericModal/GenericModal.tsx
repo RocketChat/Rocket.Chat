@@ -1,9 +1,9 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, ComponentProps, ReactElement, ReactNode } from 'react';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import type { RequiredModalProps } from './withDoNotAskAgain';
 import { withDoNotAskAgain } from './withDoNotAskAgain';
@@ -77,6 +77,13 @@ const GenericModal: FC<GenericModalProps> = ({
 }) => {
 	const t = useTranslation();
 	const genericModalId = useUniqueId();
+	const { onCloseModal } = useModal();
+
+	useEffect(() => {
+		if (onClose) {
+			return onCloseModal(onClose);
+		}
+	}, [onClose, onCloseModal]);
 
 	return (
 		<Modal aria-labelledby={`${genericModalId}-title`} wrapperFunction={wrapperFunction} {...props}>

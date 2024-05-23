@@ -56,5 +56,8 @@
 		"react": "*",
 		"react-hook-form": "*",
 		"react-i18next": "*"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }
