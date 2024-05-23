@@ -9,7 +9,7 @@ export const provideUsersSuggestedGroupKeys = async (
 ) => {
 	const roomIds = Object.keys(usersSuggestedGroupKeys);
 
-	if (!roomIds) {
+	if (!roomIds.length) {
 		return;
 	}
 
