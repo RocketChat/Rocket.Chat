@@ -4500,6 +4500,8 @@
   "RetentionPolicyRoom_MaxAge": "Maximum message age in days (default: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Override global retention policy",
   "RetentionPolicyRoom_ReadTheDocs": "Watch out! Tweaking these settings without utmost care can destroy all message history. Please read the documentation before turning the feature on <a href='https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies'>here</a>.",
+  "Retention_policy_warning_banner": "Retention policy warning banner",
+  "Retention_policy_warning_callout": "Retention policy warning callout",
   "Retry": "Retry",
   "Return_to_home": "Return to home",
   "Return_to_previous_page": "Return to previous page",
