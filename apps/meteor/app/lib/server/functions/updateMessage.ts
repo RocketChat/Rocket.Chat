@@ -98,16 +98,13 @@ export const updateMessage = async function (
 			return;
 		}
 
-		console.log('before ->', msg);
-
+		// although this is an "afterSave" kind callback, we know they can extend message's properties
+		// so we wait for it to run before broadcasting
 		const data = await callbacks.run('afterSaveMessage', msg, room, user._id);
-
-		console.log('after[msg] ->', msg);
-		console.log('after[data] ->', data);
 
 		void broadcastMessageFromData({
 			id: msg._id,
-			data: data as any,
+			data: data as any, // TODO move "afterSaveMessage" type definition to specify a return value
 		});
 
 		if (room?.lastMessage?._id === msg._id) {
