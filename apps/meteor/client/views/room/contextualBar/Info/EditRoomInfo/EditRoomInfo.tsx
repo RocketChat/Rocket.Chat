@@ -548,7 +548,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 											</Field>
 											<Field>
 												<FieldRow>
-													<FieldLabel htmlFor={retentionIgnoreThreads}>{t('RetentionPolicyRoom_IgnoreThreads')}</FieldLabel>
+													<FieldLabel htmlFor={retentionIgnoreThreads}>{t('RetentionPolicy_DoNotPruneThreads')}</FieldLabel>
 													<Controller
 														control={control}
 														name='retentionIgnoreThreads'
