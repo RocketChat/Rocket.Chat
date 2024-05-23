@@ -98,10 +98,16 @@ export const updateMessage = async function (
 			return;
 		}
 
-		await callbacks.run('afterSaveMessage', msg, room, user._id);
+		console.log('before ->', msg);
+
+		const data = await callbacks.run('afterSaveMessage', msg, room, user._id);
+
+		console.log('after[msg] ->', msg);
+		console.log('after[data] ->', data);
 
 		void broadcastMessageFromData({
 			id: msg._id,
+			data,
 		});
 
 		if (room?.lastMessage?._id === msg._id) {
