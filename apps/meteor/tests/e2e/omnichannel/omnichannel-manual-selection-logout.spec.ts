@@ -6,6 +6,7 @@ import { HomeOmnichannel } from '../page-objects';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { createConversation } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
+import injectInitialData from '../fixtures/inject-initial-data';
 
 test.use({ storageState: Users.user1.state });
 
@@ -43,6 +44,7 @@ test.describe('OC - Manual Selection', () => {
 	test.afterAll(async ({ api }) => {
 		await agent.delete()
 		await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' });
+		await injectInitialData();
 	});
 
 	test('OC - Manual Selection - Logout & Login', async ({ api }) => {
