@@ -51,11 +51,12 @@ const UsersInRoleTable = ({ rid, roleId, roleName, description }: UsersInRoleTab
 		getUsersInRoleEndpoint(query),
 	);
 
-	const users = data?.users?.map((user) => ({
-		...user,
-		createdAt: new Date(user.createdAt),
-		_updatedAt: new Date(user._updatedAt),
-	}));
+	const users =
+		data?.users?.map((user) => ({
+			...user,
+			createdAt: new Date(user.createdAt),
+			_updatedAt: new Date(user._updatedAt),
+		})) || [];
 
 	const handleRemove = useEffectEvent((username) => {
 		const remove = async () => {
@@ -95,7 +96,7 @@ const UsersInRoleTable = ({ rid, roleId, roleName, description }: UsersInRoleTab
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && users && users.length > 0 && (
+			{isSuccess && users?.length > 0 && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
@@ -116,7 +117,7 @@ const UsersInRoleTable = ({ rid, roleId, roleName, description }: UsersInRoleTab
 					/>
 				</>
 			)}
-			{users && users.length === 0 && <GenericNoResults />}
+			{users?.length === 0 && <GenericNoResults />}
 			{isError && <GenericError buttonAction={refetch} />}
 		</>
 	);
