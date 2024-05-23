@@ -51,6 +51,7 @@ type EventMap<N extends StreamNames = StreamNames, K extends StreamKeys<N> = Str
 
 type StreamMapValue = {
 	stop: () => void;
+	error: (cb: (...args: any[]) => void) => void;
 	onChange: ReturnType<ClientStream['subscribe']>['onChange'];
 	ready: () => Promise<void>;
 	isReady: boolean;
@@ -62,6 +63,7 @@ const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNa
 	const meta = {
 		ready: false,
 	};
+
 	const sub = Meteor.connection.subscribe(
 		`stream-${streamName}`,
 		key,
@@ -72,8 +74,8 @@ const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNa
 				ee.emit('ready', [undefined, args]);
 			},
 			onError: (err: any) => {
-				console.error(err);
 				ee.emit('ready', [err]);
+				ee.emit('error', err);
 			},
 		},
 	);
@@ -115,6 +117,11 @@ const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNa
 		stop: sub.stop,
 		onChange,
 		ready,
+		error: (cb: (...args: any[]) => void) =>
+			ee.once('error', (error) => {
+				cb(error);
+			}),
+
 		get isReady() {
 			return meta.ready;
 		},
@@ -179,6 +186,7 @@ const createStreamManager = () => {
 		if (!streams.has(eventLiteral)) {
 			streams.set(eventLiteral, stream);
 		}
+		stream.error(() => stop());
 
 		return {
 			id: '',
