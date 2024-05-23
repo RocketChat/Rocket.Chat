@@ -33,15 +33,23 @@ const isTypeOnList = function (type: string, list: string[]): boolean | undefine
 	}
 };
 
-export const fileUploadIsValidContentTypeFromSettings = function (type: string, customWhiteList: string, customBlackList: string): boolean {
+export const fileUploadIsValidContentTypeFromSettings = function (
+	type: string | undefined,
+	customWhiteList: string,
+	customBlackList: string,
+): boolean {
 	const blackList = fileUploadMediaBlackList(customBlackList);
 	const whiteList = fileUploadMediaWhiteList(customWhiteList);
 
-	if (!type && blackList) {
+	if (blackList && type && isTypeOnList(type, blackList)) {
 		return false;
 	}
 
-	if (blackList && isTypeOnList(type, blackList)) {
+	if (whiteList && type && isTypeOnList(type, whiteList)) {
+		return true;
+	}
+
+	if (!type && whiteList) {
 		return false;
 	}
 
@@ -49,5 +57,5 @@ export const fileUploadIsValidContentTypeFromSettings = function (type: string, 
 		return true;
 	}
 
-	return !!isTypeOnList(type, whiteList);
+	return false;
 };
