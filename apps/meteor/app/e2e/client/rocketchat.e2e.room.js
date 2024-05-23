@@ -92,6 +92,10 @@ export class E2ERoom extends Emitter {
 		logError(`E2E ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
 	}
 
+	hasSessionKey() {
+		return !!this.groupSessionKey;
+	}
+
 	setState(requestedState) {
 		const currentState = this.state;
 		const nextState = filterMutation(currentState, requestedState);
@@ -308,6 +312,10 @@ export class E2ERoom extends Emitter {
 		// Encrypt generated session key for every user in room and publish to subscription model.
 		try {
 			const users = (await sdk.call('e2e.getUsersOfRoomWithoutKey', this.roomId)).users.filter((user) => user?.e2e?.public_key);
+
+			if (!users.length) {
+				return;
+			}
 
 			const usersSuggestedGroupKeys = { [this.roomId]: [] };
 			for await (const user of users) {

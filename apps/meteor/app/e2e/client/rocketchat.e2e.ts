@@ -501,6 +501,9 @@ class E2E extends Emitter {
 	}
 
 	async parseQuoteAttachment(message: IE2EEMessage): Promise<IE2EEMessage> {
+		if (!message?.msg) {
+			return message;
+		}
 		const urls = message.msg.match(getMessageUrlRegex()) || [];
 
 		await Promise.all(
@@ -577,18 +580,37 @@ class E2E extends Emitter {
 		}
 
 		this.timeout = setInterval(async () => {
-			const roomIds = ChatRoom.find({ usersWaitingForE2EKeys: { $exists: true } }).map(({ _id }) => _id);
-			if (roomIds.length === 0) {
+			const roomIds = ChatRoom.find({
+				'usersWaitingForE2EKeys': { $exists: true },
+				'usersWaitingForE2EKeys.userId': { $ne: Meteor.userId() },
+			}).map((room) => room._id);
+			if (!roomIds.length) {
 				return;
 			}
-			const randomRoomIds = _.sampleSize(roomIds, ROOM_KEY_EXCHANGE_SIZE);
-			const { usersWaitingForE2EKeys = {} } = await sdk.rest.get('/v1/e2e.fetchUsersWaitingForGroupKey', { roomIds: randomRoomIds });
 
-			if (Object.keys(usersWaitingForE2EKeys).length === 0) {
+			const randomRoomIds = _.sampleSize(roomIds, ROOM_KEY_EXCHANGE_SIZE);
+
+			const sampleIds: string[] = [];
+			for await (const roomId of randomRoomIds) {
+				const e2eroom = await this.getInstanceByRoomId(roomId);
+				if (!e2eroom?.hasSessionKey()) {
+					continue;
+				}
+
+				sampleIds.push(roomId);
+			}
+
+			const { usersWaitingForE2EKeys = {} } = await sdk.rest.get('/v1/e2e.fetchUsersWaitingForGroupKey', { roomIds: sampleIds });
+
+			if (!Object.keys(usersWaitingForE2EKeys).length) {
 				return;
 			}
 
 			const userKeysWithRooms = await this.getSuggestedE2EEKeys(usersWaitingForE2EKeys);
+
+			if (!Object.keys(userKeysWithRooms).length) {
+				return;
+			}
 
 			try {
 				await sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', { usersSuggestedGroupKeys: userKeysWithRooms });
