@@ -18,11 +18,11 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 	}
 
 	private getConnectionSettings(): { host: string; port: number; password: string; timeout: number } {
-		if (!settings.get('VoIP_TeamCollab_Enabled')) {
+		if (!settings.get('VoIP_TeamCollab_Enabled') && !process.env.FREESWITCHIP) {
 			throw new Error('VoIP is disabled.');
 		}
 
-		const host = settings.get<string>('VoIP_TeamCollab_FreeSwitch_Host');
+		const host = process.env.FREESWITCHIP || settings.get<string>('VoIP_TeamCollab_FreeSwitch_Host');
 		if (!host) {
 			throw new Error('VoIP is not properly configured.');
 		}
@@ -78,19 +78,42 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 
 		const columns = columnsLine.split('|');
 
-		const items: (Record<string, string> | undefined)[] = lines.map((line) => {
+		const users = new Map<string, Record<string, string | string[]>>();
+
+		for (const line of lines) {
 			const values = line.split('|');
 			if (!values.length || !values[0]) {
-				return undefined;
+				continue;
 			}
-			return Object.fromEntries(
+			const user = Object.fromEntries(
 				values.map((value, index) => {
 					return [(columns.length > index && columns[index]) || `column${index}`, value];
 				}),
 			);
-		});
 
-		return items.filter((user) => user?.userid && user.userid !== '+OK') as Record<string, string>[];
+			if (!user.userid || user.userid === '+OK') {
+				continue;
+			}
+
+			const { group, ...newUserData } = user;
+
+			const existingUser = users.get(user.userid);
+			const groups = (existingUser?.groups || []) as string[];
+
+			if (group && !groups.includes(group)) {
+				groups.push(group);
+			}
+
+			users.set(user.userid, {
+				...(users.get(user.userid) || newUserData),
+				groups,
+			});
+		}
+
+		return [...users.values()].map((user) => ({
+			...user,
+			groups: (user.groups as string[]).join('|'),
+		}));
 	}
 
 	private parseUserStatus(status: string | undefined): FreeSwitchExtension['status'] {
@@ -114,7 +137,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			userid: extension,
 			context,
 			domain,
-			group,
+			groups,
 			contact,
 			callgroup: callGroup,
 			effective_caller_id_name: callerName,
@@ -129,7 +152,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 			extension,
 			context,
 			domain,
-			group,
+			groups: groups?.split('|') || [],
 			status: this.parseUserStatus(contact),
 			contact,
 			callGroup,
