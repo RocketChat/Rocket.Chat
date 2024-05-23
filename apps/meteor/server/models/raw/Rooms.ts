@@ -1838,13 +1838,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	// 5
 	saveRetentionIgnoreThreadsById(_id: IRoom['_id'], value: boolean): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 
 		const update: UpdateFilter<IRoom> = {
-			[value === true ? '$set' : '$unset']: {
-				'retention.ignoreThreads': true,
+			$set: {
+				'retention.ignoreThreads': value === true,
 			},
 		};
 
