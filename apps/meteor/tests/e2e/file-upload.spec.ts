@@ -12,7 +12,7 @@ test.describe.serial('file-upload', () => {
 
 	test.beforeAll(async ({ api }) => {
 		await Promise.all([
-			setSettingValueById(api, 'FileUpload_RejectUnknownMediaTypes', true),
+			setSettingValueById(api, 'FileUpload_UnknownMediaTypeProtection', true),
 			setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml'),
 		]);
 		targetChannel = await createTargetChannel(api);
@@ -27,7 +27,7 @@ test.describe.serial('file-upload', () => {
 
 	test.afterAll(async ({ api }) => {
 		await Promise.all([
-			setSettingValueById(api, 'FileUpload_RejectUnknownMediaTypes', true),
+			setSettingValueById(api, 'FileUpload_UnknownMediaTypeProtection', true),
 			setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml'),
 		]);
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
@@ -65,7 +65,7 @@ test.describe.serial('file-upload', () => {
 	});
 
 	test('expect not to send drawio file when the "Reject unknown media types" setting is enabled', async ({ api, page }) => {
-		await setSettingValueById(api, 'FileUpload_RejectUnknownMediaTypes', true);
+		await setSettingValueById(api, 'FileUpload_UnknownMediaTypeProtection', true);
 
 		await page.reload();
 		await poHomeChannel.content.sendFileMessage('diagram.drawio');
@@ -73,7 +73,7 @@ test.describe.serial('file-upload', () => {
 	});
 
 	test('expect send drawio file succesfully when the "Reject unknown media types" setting is disabled', async ({ api, page }) => {
-		await setSettingValueById(api, 'FileUpload_RejectUnknownMediaTypes', false);
+		await setSettingValueById(api, 'FileUpload_UnknownMediaTypeProtection', false);
 
 		await page.reload();
 		await poHomeChannel.content.sendFileMessage('diagram.drawio');
@@ -86,7 +86,7 @@ test.describe.serial('file-upload', () => {
 
 	test('expect not to send drawio file when the "Reject unknown media types" setting is disabled, but the default media type is blocked', async ({ api, page }) => {
 		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'application/octet-stream')
-		await setSettingValueById(api, 'FileUpload_RejectUnknownMediaTypes', false);
+		await setSettingValueById(api, 'FileUpload_UnknownMediaTypeProtection', false);
 
 		await page.reload();
 		await poHomeChannel.content.sendFileMessage('diagram.drawio');

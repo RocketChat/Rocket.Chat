@@ -25,7 +25,7 @@ export const createFileUploadSettings = () =>
 			i18nDescription: 'FileUpload_MediaTypeBlackListDescription',
 		});
 
-		await this.add('FileUpload_RejectUnknownMediaTypes', true, {
+		await this.add('FileUpload_UnknownMediaTypeProtection', true, {
 			type: 'boolean',
 			public: true,
 		});
