@@ -283,6 +283,7 @@ class E2E extends Emitter {
 		this._ready.set(false);
 		this.started = false;
 		this.timeout && clearTimeout(this.timeout);
+		this.timeout = null;
 	}
 
 	async changePassword(newPassword: string): Promise<void> {
