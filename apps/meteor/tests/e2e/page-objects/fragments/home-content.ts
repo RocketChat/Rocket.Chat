@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import type { Locator, Page } from '@playwright/test';
 
 export class HomeContent {
-	protected readonly page: Page;
+	readonly page: Page;
 
 	constructor(page: Page) {
 		this.page = page;
