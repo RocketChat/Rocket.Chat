@@ -290,13 +290,8 @@ export abstract class AutoTranslate {
 	 * @param {object} targetLanguage
 	 * @returns {object} unmodified message object.
 	 */
-	async translateMessage(message: IMessage, room: IRoom, targetLanguage?: string): Promise<IMessage | null> {
-		let targetLanguages: string[];
-		if (targetLanguage) {
-			targetLanguages = [targetLanguage];
-		} else {
-			targetLanguages = (await Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u?._id)).filter(isTruthy);
-		}
+	async translateMessage(message: IMessage, room: IRoom): Promise<IMessage> {
+		const targetLanguages = (await Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u?._id)).filter(isTruthy);
 		if (message.msg) {
 			setImmediate(async () => {
 				let targetMessage = Object.assign({}, message);
@@ -328,7 +323,7 @@ export abstract class AutoTranslate {
 				}
 			});
 		}
-		return Messages.findOneById(message._id);
+		return message;
 	}
 
 	private notifyTranslatedMessage(messageId: string): void {

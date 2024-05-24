@@ -48,7 +48,6 @@ interface EventLikeCallbackSignatures {
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
 	'afterRoomNameChange': (params: { rid: string; name: string; oldName: string }) => void;
-	'afterSaveMessage': (message: IMessage, room: IRoom, uid?: string) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.closeRoom': (params: { room: IOmnichannelRoom; options: CloseRoomParams['options'] }) => void;
@@ -174,6 +173,7 @@ type ChainedCallbackSignatures = {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
 	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
+	'afterSaveMessage': (message: IMessage, room: IRoom, uid?: string) => IMessage;
 	'oembed:beforeGetUrlContent': (data: { urlObj: URL }) => {
 		urlObj: URL;
 	};
