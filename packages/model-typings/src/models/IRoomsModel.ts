@@ -270,5 +270,4 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	removeDirectRoomContainingUsername(username: string): Promise<DeleteResult>;
 	countDiscussions(): Promise<number>;
 	setOTRForDMByRoomID(rid: string): Promise<UpdateResult>;
-	countTotal(): Promise<number>;
 }

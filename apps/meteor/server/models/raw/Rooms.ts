@@ -1963,8 +1963,4 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 		return this.updateOne(query, update);
 	}
-
-	countTotal(): Promise<number> {
-		return this.col.countDocuments();
-	}
 }

@@ -43,7 +43,7 @@ export const findAllChannelsWithNumberOfMessages = async ({
 		options,
 	}).toArray();
 
-	const total = await Rooms.countTotal();
+	const total = await Rooms.countDocuments();
 
 	return {
 		channels,
