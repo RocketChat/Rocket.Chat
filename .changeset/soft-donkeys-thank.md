@@ -5,4 +5,4 @@
 "@rocket.chat/web-ui-registration": patch
 ---
 
-fix blocked login when dismissed 2FA modal by clicking outside of it or pressing escape key
+Fixed an issue with blocked login when dismissed 2FA modal by clicking outside of it or pressing the escape key
