@@ -5,6 +5,7 @@ import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useRef } from 'react';
 
 import Sidebar from '../../../sidebar';
+import { codeBlock } from '../lib/codeBlockStyles';
 import AccessibilityShortcut from './AccessibilityShortcut';
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
@@ -50,6 +51,7 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 			<AccessibilityShortcut />
 			<PaletteStyleTag theme={theme} selector='.rcx-content--main, .rcx-tile' />
 			<PaletteStyleTag theme='dark' selector='.rcx-sidebar--main' tagId='sidebar-palette' />
+			{theme === 'dark' && <PaletteStyleTag selector='.rcx-content--main' palette={codeBlock} tagId='codeBlock-palette' />}
 			{!removeSidenav && <Sidebar />}
 			<main
 				id='main-content'
