@@ -6420,5 +6420,6 @@
   "Next_image": "Next Image",
   "Previous_image": "Previous image",
   "Image_gallery": "Image gallery",
-  "Youre_unavailable": "You’re unavailable"
+  "You_cant_take_chats_unavailable": "You cannot take new conversations because you're unavailable",
+  "You_cant_take_chats_offline": "You cannot take new conversations because you're offline"
 }

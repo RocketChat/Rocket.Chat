@@ -38,11 +38,11 @@ export const ComposerOmnichannelInquiry = (): ReactElement => {
 
 	const title = useMemo(() => {
 		if (user?.status === 'offline') {
-			return t('meteor_status_offline');
+			return t('You_cant_take_chats_offline');
 		}
 
 		if (!agentAvailable) {
-			return t('Youre_unavailable');
+			return t('You_cant_take_chats_unavailable');
 		}
 	}, [agentAvailable, t, user?.status]);
 
