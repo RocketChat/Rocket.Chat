@@ -122,7 +122,7 @@ class E2E extends Emitter {
 		this.log('decryptSubscriptions -> Done');
 		await this.initiateDecryptingPendingMessages();
 		this.log('DecryptingPendingMessages -> Done');
-    await this.initiateKeyDistribution();
+		await this.initiateKeyDistribution();
 		await this.handleAsyncE2EESuggestedKey();
 	}
 

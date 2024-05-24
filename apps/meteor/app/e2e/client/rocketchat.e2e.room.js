@@ -95,7 +95,7 @@ export class E2ERoom extends Emitter {
 
 	hasSessionKey() {
 		return !!this.groupSessionKey;
-  }
+	}
 
 	getState() {
 		return this.state;
