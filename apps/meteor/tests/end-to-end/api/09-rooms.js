@@ -201,7 +201,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should not allow uploading a blocked media type to a room', async () => {
-			await updateSetting('FileUpload_MediaTypeBlackList', 'application/octet-stream');
+			await updateSetting('FileUpload_MediaTypeBlackList', 'text/plain');
 			await request
 				.post(api(`rooms.upload/${testChannel._id}`))
 				.set(credentials)
