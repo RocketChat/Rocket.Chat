@@ -19,27 +19,8 @@ export class AppMessagesConverter {
 			return undefined;
 		}
 
-		const { rid, editedBy, attachments, u, ...message } = msgObj;
-
-		const getRoom = () => ({ id: rid });
-
-		const getEditor = () => (editedBy ? { id: editedBy._id, username: editedBy.username } : undefined);
-
+		const { attachments, ...message } = msgObj;
 		const getAttachments = async () => this._convertAttachmentsToApp(attachments);
-
-		const getSender = () => {
-			if (!u || !u._id) {
-				return undefined;
-			}
-
-			const user = {
-				id: u._id,
-				username: u.username,
-				name: u.name,
-			};
-
-			return user;
-		};
 
 		const map = {
 			id: '_id',
@@ -58,10 +39,10 @@ export class AppMessagesConverter {
 			groupable: 'groupable',
 			token: 'token',
 			blocks: 'blocks',
-			room: getRoom,
-			editor: getEditor,
+			room: 'rid',
+			editor: 'editedBy',
 			attachments: getAttachments,
-			sender: getSender,
+			sender: 'u',
 		};
 
 		return transformMappedData(message, map);

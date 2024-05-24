@@ -1,5 +1,5 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
@@ -110,7 +110,7 @@ export class AppRoomBridge extends RoomBridge {
 			sort?: Record<string, 1 | -1>;
 		},
 		appId: string,
-	): Promise<IMessage[]> {
+	): Promise<IMessageRaw[]> {
 		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}"`);
 
 		let { limit, skip = 0, sort } = options;
@@ -146,7 +146,7 @@ export class AppRoomBridge extends RoomBridge {
 
 		const cursor = Messages.find(query, messageQueryOptions);
 
-		const messagePromises: Promise<IMessage>[] = [];
+		const messagePromises: Promise<IMessageRaw>[] = [];
 		await cursor.forEach((message) => {
 			messagePromises.push(messageConverter.convertMessageRaw(message));
 		});
