@@ -18,8 +18,8 @@ import type { ChangeEvent } from 'react';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
-import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import MarkdownText from '../../../components/MarkdownText';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import FieldLabel from './AppearanceFieldLabel';
 
 const AppearanceForm = () => {
