@@ -94,14 +94,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		options?: any;
 	}): AggregationCursor<IChannelsWithNumberOfMessagesBetweenDate>;
 
-	countChannelsWithNumberOfMessagesBetweenDate(params: {
-		start: number;
-		end: number;
-		startOfLastWeek: number;
-		endOfLastWeek: number;
-		options?: any;
-	}): AggregationCursor<{ total: number }>;
-
 	findOneByName(name: NonNullable<IRoom['name']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	findDefaultRoomsForTeam(teamId: any): FindCursor<IRoom>;
@@ -278,4 +270,5 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	removeDirectRoomContainingUsername(username: string): Promise<DeleteResult>;
 	countDiscussions(): Promise<number>;
 	setOTRForDMByRoomID(rid: string): Promise<UpdateResult>;
+	countTotal(): Promise<number>;
 }
