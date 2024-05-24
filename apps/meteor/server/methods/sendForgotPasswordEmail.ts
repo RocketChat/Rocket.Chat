@@ -20,7 +20,7 @@ Meteor.methods<ServerMethods>({
 
 		const email = to.trim().toLowerCase();
 
-		const user = await Users.findOneByEmailAddress(email, { projection: { _id: 1 } });
+		const user = await Users.findOneByEmailAddress(email, { projection: { _id: 1, services: 1 } });
 
 		if (!user) {
 			return true;
