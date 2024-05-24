@@ -2068,9 +2068,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	async removeUserFromE2EEQueue(uid: IUser['_id']): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
-			'_id': {
-				$in: roomIds,
-			},
 			'usersWaitingForE2EKeys.userId': uid,
 			'encrypted': true,
 		};
