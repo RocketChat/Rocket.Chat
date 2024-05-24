@@ -2066,6 +2066,24 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
+	async removeUserFromE2EEQueue(uid: IUser['_id']): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
+			'_id': {
+				$in: roomIds,
+			},
+			'usersWaitingForE2EKeys.userId': uid,
+			'encrypted': true,
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				usersWaitingForE2EKeys: { userId: uid },
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
 	findRoomsByRoomIdsWithE2EEQueue(roomIds: IRoom['_id'][], options?: FindOptions<IRoom>): FindCursor<IRoom> {
 		const query: Filter<IRoom> = {
 			'_id': {
