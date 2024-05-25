@@ -1,7 +1,7 @@
 import { ILivechatTag } from '@rocket.chat/core-typings';
 
+import { parseMeteorResponse } from '../parseMeteorResponse';
 import { BaseTest } from '../test';
-import { parseMeteorResponse } from './utils';
 
 type CreateTagParams = {
 	id?: string | null;
