@@ -49,6 +49,7 @@ export function getWatchCollections(): string[] {
 		collections.push(Permissions.getCollectionName());
 		collections.push(LivechatPriority.getCollectionName());
 		collections.push(LoginServiceConfiguration.getCollectionName());
+		collections.push(EmailInbox.getCollectionName());
 		collections.push(IntegrationHistory.getCollectionName());
 	}
 

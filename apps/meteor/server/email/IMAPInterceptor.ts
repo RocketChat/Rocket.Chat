@@ -6,6 +6,7 @@ import IMAP from 'imap';
 import type { ParsedMail } from 'mailparser';
 import { simpleParser } from 'mailparser';
 
+import { notifyOnEmailInboxChanged } from '../../app/lib/server/lib/notifyListener';
 import { logger } from '../features/EmailInbox/logger';
 
 type IMAPOptions = {
@@ -223,7 +224,16 @@ export class IMAPInterceptor extends EventEmitter {
 		logger.info(`Disabling inbox ${this.inboxId}`);
 		// Again, if there's 2 inboxes with the same email, this will prevent looping over the already disabled one
 		// Active filter is just in case :)
-		await EmailInbox.findOneAndUpdate({ _id: this.inboxId, active: true }, { $set: { active: false } });
+		const { value: emailInbox } = await EmailInbox.findOneAndUpdate(
+			{ _id: this.inboxId, active: true },
+			{ $set: { active: false } },
+			{ returnDocument: 'after' },
+		);
+
+		if (emailInbox) {
+			void notifyOnEmailInboxChanged(emailInbox, 'updated');
+		}
+
 		logger.info(`IMAP inbox ${this.inboxId} automatically disabled`);
 	}
 }
