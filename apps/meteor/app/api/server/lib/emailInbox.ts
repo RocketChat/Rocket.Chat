@@ -36,9 +36,6 @@ export const findEmailInboxes = async ({
 	};
 };
 
-export const findOneEmailInbox = async ({ _id }: { _id: string }): Promise<IEmailInbox | null> => {
-	return EmailInbox.findOneById(_id);
-};
 export const insertOneEmailInbox = async (
 	userId: string,
 	emailInboxParams: Pick<IEmailInbox, 'active' | 'name' | 'email' | 'description' | 'senderInfo' | 'department' | 'smtp' | 'imap'>,
@@ -50,7 +47,7 @@ export const insertOneEmailInbox = async (
 		_createdBy: await Users.findOneById(userId, { projection: { username: 1 } }),
 	};
 
-	const response = await EmailInbox.insertOne(obj);
+	const response = await EmailInbox.create(obj);
 
 	if (response.insertedId) {
 		void notifyOnEmailInboxChanged({ _id: response.insertedId, ...obj }, 'inserted');
@@ -79,12 +76,12 @@ export const updateEmailInbox = async (
 		...(department === 'All' && { $unset: { department: 1 as const } }),
 	};
 
-	const updateResponse = await EmailInbox.findOneAndUpdate({ _id }, updateEmailInbox, { returnDocument: 'after', projection: { _id: 1 } });
+	const updatedResponse = await EmailInbox.updateById(_id, updateEmailInbox);
 
-	if (updateResponse.value) {
+	if (updatedResponse.value) {
 		void notifyOnEmailInboxChanged(
 			{
-				...updateResponse.value,
+				...updatedResponse.value,
 				...(department === 'All' && { department: undefined }),
 			},
 			'updated',
@@ -92,11 +89,11 @@ export const updateEmailInbox = async (
 	}
 
 	// Maintained to preserve the same behavior as the previous version
-	if (!updateResponse.value) {
+	if (!updatedResponse.value) {
 		throw new Error('error-invalid-email-inbox');
 	}
 
-	return updateResponse.value;
+	return updatedResponse.value;
 };
 
 export const removeEmailInbox = async (emailInboxId: IEmailInbox['_id']): Promise<DeleteResult> => {

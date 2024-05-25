@@ -222,16 +222,13 @@ export class IMAPInterceptor extends EventEmitter {
 
 	async selfDisable(): Promise<void> {
 		logger.info(`Disabling inbox ${this.inboxId}`);
+
 		// Again, if there's 2 inboxes with the same email, this will prevent looping over the already disabled one
 		// Active filter is just in case :)
-		const { value: emailInbox } = await EmailInbox.findOneAndUpdate(
-			{ _id: this.inboxId, active: true },
-			{ $set: { active: false } },
-			{ returnDocument: 'after' },
-		);
+		const { value } = await EmailInbox.setDisabledById(this.inboxId);
 
-		if (emailInbox) {
-			void notifyOnEmailInboxChanged(emailInbox, 'updated');
+		if (value) {
+			void notifyOnEmailInboxChanged(value, 'updated');
 		}
 
 		logger.info(`IMAP inbox ${this.inboxId} automatically disabled`);
