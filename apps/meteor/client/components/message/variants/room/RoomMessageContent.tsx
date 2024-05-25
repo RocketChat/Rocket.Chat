@@ -54,7 +54,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				<>
 					{(!encrypted || normalizedMessage.e2e === 'done') && (
 						<MessageContentBody
-							id={`${message._id}-content`}
+							id={`${normalizedMessage._id}-content`}
 							md={normalizedMessage.md}
 							mentions={normalizedMessage.mentions}
 							channels={normalizedMessage.channels}
@@ -114,7 +114,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				<BroadcastMetrics username={messageUser.username} message={normalizedMessage} />
 			)}
 
-			{readReceiptEnabled && <ReadReceiptIndicator unread={normalizedMessage.unread} />}
+			{readReceiptEnabled && <ReadReceiptIndicator mid={normalizedMessage._id} unread={normalizedMessage.unread} />}
 		</>
 	);
 };
