@@ -47,11 +47,11 @@ import { Logger } from '@rocket.chat/logger';
 import { Users, PbxEvents } from '@rocket.chat/models';
 import type { Db } from 'mongodb';
 
+import { notifyOnPbxEventChangedById } from '../../../../../../app/lib/server/lib/notifyListener';
 import { Command, CommandType } from '../Command';
 import { Commands } from '../Commands';
 import { ACDQueue } from './ACDQueue';
 import { CallbackContext } from './CallbackContext';
-// import { sendMessage } from '../../../../../../app/lib/server/functions/sendMessage';
 
 export class ContinuousMonitor extends Command {
 	private logger: Logger;
@@ -140,12 +140,14 @@ export class ContinuousMonitor extends Command {
 				// This event represents when an agent drops a call because of disconnection
 				// May happen for any reason outside of our control, like closing the browswer
 				// Or network/power issues
-				await PbxEvents.insertOne({
+				const { insertedId } = await PbxEvents.insertOne({
 					event: eventName,
 					uniqueId: `${eventName}-${event.contactstatus}-${now.getTime()}`,
 					ts: now,
 					agentExtension: event.aor,
 				});
+
+				void notifyOnPbxEventChangedById(insertedId, 'inserted');
 
 				return;
 			}
@@ -159,7 +161,7 @@ export class ContinuousMonitor extends Command {
 			// NOTE: using the uniqueId prop of event is not the recommented approach, since it's an opaque ID
 			// However, since we're not using it for anything special, it's a "fair use"
 			// uniqueId => {server}/{epoch}.{id of channel associated with this call}
-			await PbxEvents.insertOne({
+			const { insertedId } = await PbxEvents.insertOne({
 				uniqueId,
 				event: eventName,
 				ts: now,
@@ -170,6 +172,8 @@ export class ContinuousMonitor extends Command {
 				callUniqueIdFallback: event.linkedid,
 				agentExtension: event?.connectedlinenum,
 			});
+
+			void notifyOnPbxEventChangedById(insertedId, 'inserted');
 		} catch (e) {
 			this.logger.debug('Event was handled by other instance');
 		}
@@ -282,7 +286,7 @@ export class ContinuousMonitor extends Command {
 		 * and event.calleridnum is the extension that is initiating a call.
 		 */
 		try {
-			await PbxEvents.insertOne({
+			const { insertedId } = await PbxEvents.insertOne({
 				uniqueId: `${event.event}-${event.calleridnum}-${event.channel}-${event.destchannel}-${event.uniqueid}`,
 				event: event.event,
 				ts: new Date(),
@@ -291,6 +295,8 @@ export class ContinuousMonitor extends Command {
 				callUniqueIdFallback: event.linkedid,
 				agentExtension: event.calleridnum,
 			});
+
+			void notifyOnPbxEventChangedById(insertedId, 'inserted');
 		} catch (e) {
 			// This could mean we received a duplicate event
 			// This is quite common since DialEnd event happens "multiple times" at the end of the call

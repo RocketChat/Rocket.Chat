@@ -122,6 +122,16 @@ describe('[Groups]', function () {
 		});
 
 		describe('validate E2E rooms', () => {
+			before(async () => {
+				await Promise.all([updateSetting('E2E_Enable', true), updateSetting('E2E_Allow_Unencrypted_Messages', false)]);
+			});
+
+			after(async () => {
+				await Promise.all([updateSetting('E2E_Enable', false), updateSetting('E2E_Allow_Unencrypted_Messages', true)]);
+			});
+
+			let rid;
+
 			it('should create a new encrypted group', async () => {
 				await request
 					.post(api('groups.create'))
@@ -140,6 +150,68 @@ describe('[Groups]', function () {
 						expect(res.body).to.have.nested.property('group.t', 'p');
 						expect(res.body).to.have.nested.property('group.msgs', 0);
 						expect(res.body).to.have.nested.property('group.encrypted', true);
+						rid = res.body.group._id;
+					});
+			});
+
+			it('should send an encrypted message in encrypted group', async () => {
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							text: 'Encrypted Message',
+							t: 'e2e',
+							e2e: 'pending',
+							rid,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message');
+						expect(res.body).to.have.nested.property('message.text', 'Encrypted Message');
+						expect(res.body).to.have.nested.property('message.t', 'e2e');
+						expect(res.body).to.have.nested.property('message.e2e', 'pending');
+					});
+			});
+
+			it('should give an error on sending un-encrypted message in encrypted room', async () => {
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							text: 'Unencrypted Message',
+							rid,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error').that.is.a('string');
+					});
+			});
+
+			it('should allow sending un-encrypted messages in encrypted room when setting is enabled', async () => {
+				await updateSetting('E2E_Allow_Unencrypted_Messages', true);
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							text: 'Unencrypted Message',
+							rid,
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message');
+						expect(res.body).to.have.nested.property('message.text', 'Unencrypted Message');
 					});
 			});
 		});

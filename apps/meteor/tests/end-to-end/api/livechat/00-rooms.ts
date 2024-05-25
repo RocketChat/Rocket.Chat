@@ -1111,6 +1111,67 @@ describe('LIVECHAT - rooms', function () {
 				.expect(200);
 			await deleteVisitor(visitor.token);
 		});
+
+		it('should allow visitor to download file', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+
+			const { body } = await request
+				.post(api(`livechat/upload/${room._id}`))
+				.set('x-visitor-token', visitor.token)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const {
+				files: [{ _id, name }],
+			} = body;
+			const imageUrl = `/file-upload/${_id}/${name}`;
+			await request.get(imageUrl).query({ rc_token: visitor.token, rc_room_type: 'l', rc_rid: room._id }).expect(200);
+			await deleteVisitor(visitor.token);
+			await closeOmnichannelRoom(room._id);
+		});
+
+		it('should allow visitor to download file even after room is closed', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			const { body } = await request
+				.post(api(`livechat/upload/${room._id}`))
+				.set('x-visitor-token', visitor.token)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await closeOmnichannelRoom(room._id);
+			const {
+				files: [{ _id, name }],
+			} = body;
+			const imageUrl = `/file-upload/${_id}/${name}`;
+			await request.get(imageUrl).query({ rc_token: visitor.token, rc_room_type: 'l', rc_rid: room._id }).expect(200);
+			await deleteVisitor(visitor.token);
+		});
+
+		it('should not allow visitor to download a file from a room he didnt create', async () => {
+			const visitor = await createVisitor();
+			const visitor2 = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			const { body } = await request
+				.post(api(`livechat/upload/${room._id}`))
+				.set(credentials)
+				.set('x-visitor-token', visitor.token)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await closeOmnichannelRoom(room._id);
+			const {
+				files: [{ _id, name }],
+			} = body;
+			const imageUrl = `/file-upload/${_id}/${name}`;
+			await request.get(imageUrl).query({ rc_token: visitor2.token, rc_room_type: 'l', rc_rid: room._id }).expect(403);
+			await deleteVisitor(visitor.token);
+			await deleteVisitor(visitor2.token);
+		});
 	});
 
 	describe('livechat/:rid/messages', () => {
