@@ -250,8 +250,8 @@ API.v1.addRoute(
 
 			const { roomIds = [] } = this.queryParams;
 			const usersWaitingForE2EKeys = (await Subscriptions.findUsersWithPublicE2EKeyByRids(roomIds, this.userId).toArray()).reduce<
-				Record<string, any>
-			>((acc, { rid, users }) => ({ [rid]: users, ...acc }), {} as Record<string, any>);
+				Record<string, { _id: string; public_key: string }[]>
+			>((acc, { rid, users }) => ({ [rid]: users, ...acc }), {});
 
 			return API.v1.success({
 				usersWaitingForE2EKeys,

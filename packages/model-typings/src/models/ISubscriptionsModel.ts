@@ -133,7 +133,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		rids: IRoom['_id'][],
 		excludeUserId: IUser['_id'],
 		usersLimit?: number,
-	): AggregationCursor<{ rid: IRoom['_id']; users: { _id: IUser['_id']; key: string }[] }>;
+	): AggregationCursor<{ rid: IRoom['_id']; users: { _id: IUser['_id']; public_key: string }[] }>;
 	findByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	cachedFindByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	updateAutoTranslateById(_id: string, autoTranslate: boolean): Promise<UpdateResult>;

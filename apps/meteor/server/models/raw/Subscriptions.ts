@@ -679,7 +679,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		rids: IRoom['_id'][],
 		excludeUserId: IUser['_id'],
 		usersLimit = 50,
-	): AggregationCursor<{ rid: IRoom['_id']; users: { _id: IUser['_id']; key: string }[] }> {
+	): AggregationCursor<{ rid: IRoom['_id']; users: { _id: IUser['_id']; public_key: string }[] }> {
 		return this.col.aggregate([
 			{
 				$match: {
