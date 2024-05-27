@@ -6,6 +6,7 @@ import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
+import { deleteTeam } from '../../data/teams.helper';
 import { testFileUploads } from '../../data/uploads.helper';
 import { adminUsername, password } from '../../data/user';
 import { createUser, login, deleteUser } from '../../data/users.helper';
@@ -1952,16 +1953,7 @@ describe('[Groups]', function () {
 				});
 		});
 
-		after(async () => {
-			await request
-				.post(api('groups.delete'))
-				.set(credentials)
-				.send({
-					roomName: newGroup.name,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-		});
+		after(() => Promise.all([deleteTeam(credentials, newGroup.name), updatePermission('create-team', ['admin', 'user'])]));
 
 		it('should fail to convert group if lacking edit-room permission', (done) => {
 			updatePermission('create-team', []).then(() => {

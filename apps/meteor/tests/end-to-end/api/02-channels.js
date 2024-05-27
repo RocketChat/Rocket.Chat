@@ -6,6 +6,7 @@ import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { deleteTeam } from '../../data/teams.helper';
 import { testFileUploads } from '../../data/uploads.helper';
 import { adminUsername, password } from '../../data/user';
 import { createUser, login, deleteUser } from '../../data/users.helper';
@@ -2036,7 +2037,7 @@ describe('[Channels]', function () {
 			await Promise.all([
 				updatePermission('create-team', ['admin', 'user']),
 				updatePermission('edit-room', ['admin', 'owner', 'moderator']),
-				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				deleteTeam(credentials, testChannel.name),
 			]);
 		});
 
