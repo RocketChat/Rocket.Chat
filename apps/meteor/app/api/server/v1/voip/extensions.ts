@@ -12,8 +12,8 @@ import { logger } from './logger';
 API.v1.addRoute(
 	'connector.getVersion',
 	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'] },
-	{et() {';
-import { API } from '../api
+	{
+		async get() {
 			const version = await VoipAsterisk.getConnectorVersion();
 			return API.v1.success(version);
 		},
