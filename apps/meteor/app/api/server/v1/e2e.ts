@@ -268,6 +268,10 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			if (!settings.get('E2E_Enabled')) {
+				return API.v1.success();
+			}
+
 			await provideUsersSuggestedGroupKeys(this.userId, this.bodyParams.usersSuggestedGroupKeys);
 
 			return API.v1.success();
