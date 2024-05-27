@@ -674,7 +674,7 @@ class E2E extends Emitter {
 		);
 	}
 
-	async getSample(roomIds: string[], limit = 3): string[] {
+	async getSample(roomIds: string[], limit = 3): Promise<string[]> {
 		if (limit === 0) {
 			return [];
 		}
@@ -712,7 +712,7 @@ class E2E extends Emitter {
 				return;
 			}
 
-			// Prevent function from
+			// Prevent function from running and doing nothing when theres something to do
 			const sampleIds = await this.getSample(roomIds);
 
 			const { usersWaitingForE2EKeys = {} } = await sdk.rest.get('/v1/e2e.fetchUsersWaitingForGroupKey', { roomIds: sampleIds });
