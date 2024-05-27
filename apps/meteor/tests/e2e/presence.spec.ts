@@ -12,15 +12,15 @@ test.describe.serial('Presence', () => {
 		await page.goto('/home');
 	});
 
+	test.beforeAll(async ({ api }) => {
+		await expect((await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', true)).status()).toBe(200);
+	});
+
+	test.afterAll(async ({ api }) => {
+		await expect((await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', true)).status()).toBe(200);
+	});
+
 	test.describe('Login using default settings', () => {
-		test.beforeAll(async ({ api }) => {
-			await expect((await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', true)).status()).toBe(200);
-		});
-
-		test.afterAll(async ({ api }) => {
-			await expect((await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', false)).status()).toBe(200);
-		});
-
 		test('expect user to be online after log in', async ({ page }) => {
 			await poRegistration.username.type('user1');
 			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
@@ -33,10 +33,6 @@ test.describe.serial('Presence', () => {
 	test.describe('Login using with "Methods by REST" disabled', () => {
 		test.beforeAll(async ({ api }) => {
 			await expect((await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', false)).status()).toBe(200);
-		});
-
-		test.afterAll(async ({ api }) => {
-			await expect((await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', true)).status()).toBe(200);
 		});
 
 		test('expect user to be online after log in', async ({ page }) => {
