@@ -2,15 +2,15 @@ import { resolve } from 'path';
 import { api, credentials, request } from './api-data';
 
 export const createRoom = ({
-	name,
+	name = '',
 	type,
-	username = undefined,
-	token = undefined,
-	agentId = undefined,
-	members = undefined,
+	username = '',
+	token = '',
+	agentId = '',
+	members = [],
 	credentials: customCredentials = undefined,
 	extraData = undefined,
-	voipCallDirection = 'inbound',
+	voipCallDirection = '',
 }) => {
 	if (!type) {
 		throw new Error('"type" is required in "createRoom.ts" test helper');
@@ -41,7 +41,7 @@ export const createRoom = ({
 		.set(customCredentials || credentials)
 		.send({
 			...params,
-			...(members && { members }),
+			...(members && members.length && { members }),
 			...(extraData && { extraData }),
 		});
 };

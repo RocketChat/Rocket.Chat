@@ -42,10 +42,6 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			type: 'v',
 			agentId: testUser._id,
 			credentials: testUserCredentials,
-			name: null,
-			username: null,
-			members: null,
-			extraData: null,
 		});
 
 		return roomResponse.body.room;
