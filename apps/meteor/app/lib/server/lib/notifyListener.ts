@@ -10,8 +10,18 @@ import type {
 	IPbxEvent,
 	LoginServiceConfiguration as LoginServiceConfigurationData,
 	ILivechatPriority,
+	ILivechatDepartmentAgents,
 } from '@rocket.chat/core-typings';
-import { Rooms, Permissions, Settings, PbxEvents, Roles, Integrations, LoginServiceConfiguration } from '@rocket.chat/models';
+import {
+	Rooms,
+	Permissions,
+	Settings,
+	PbxEvents,
+	Roles,
+	Integrations,
+	LoginServiceConfiguration,
+	LivechatDepartmentAgents,
+} from '@rocket.chat/models';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
 
@@ -252,5 +262,89 @@ export async function notifyOnIntegrationChangedByChannels<T extends IIntegratio
 
 	for await (const item of items) {
 		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
+	}
+}
+
+export async function notifyOnLivechatDepartmentAgentChanged<T extends ILivechatDepartmentAgents>(
+	data: Partial<T> & Pick<T, '_id' | 'agentId' | 'departmentId'>,
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	void api.broadcast('watch.livechatDepartmentAgents', { clientAction, id: data._id, data });
+}
+
+export async function notifyOnLivechatDepartmentAgentChangedByAgentId<T extends ILivechatDepartmentAgents>(
+	agentId: T['agentId'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const options = { projection: { _id: 1, agentId: 1, departmentId: 1 } };
+
+	const items =
+		clientAction === 'removed'
+			? LivechatDepartmentAgents.trashFind({ agentId }, options) // TODO: Move to model specific function
+			: LivechatDepartmentAgents.findByAgentId(agentId, options);
+
+	if (!items) {
+		return;
+	}
+
+	for await (const item of items) {
+		void api.broadcast('watch.livechatDepartmentAgents', { clientAction, id: item._id, data: item });
+	}
+}
+
+export async function notifyOnLivechatDepartmentAgentChangedByDepartmentId<T extends ILivechatDepartmentAgents>(
+	departmentId: T['departmentId'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const options = { projection: { _id: 1, agentId: 1, departmentId: 1 } };
+
+	const items =
+		clientAction === 'removed'
+			? LivechatDepartmentAgents.trashFind({ departmentId }, options) // TODO: Move to model specific function
+			: LivechatDepartmentAgents.findByDepartmentId(departmentId, options);
+
+	if (!items) {
+		return;
+	}
+
+	for await (const item of items) {
+		void api.broadcast('watch.livechatDepartmentAgents', { clientAction, id: item._id, data: item });
+	}
+}
+
+export async function notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId<T extends ILivechatDepartmentAgents>(
+	agentsIds: T['agentId'][],
+	departmentId: T['departmentId'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const options = { projection: { _id: 1, agentId: 1, departmentId: 1 } };
+
+	const items =
+		clientAction === 'removed'
+			? LivechatDepartmentAgents.trashFind({ agentId: { $in: agentsIds }, departmentId }, options) // TODO: Move to model specific function
+			: LivechatDepartmentAgents.findAgentsByAgentsAndDepartmentId(agentsIds, departmentId, options);
+
+	if (!items) {
+		return;
+	}
+
+	for await (const item of items) {
+		void api.broadcast('watch.livechatDepartmentAgents', { clientAction, id: item._id, data: item });
 	}
 }

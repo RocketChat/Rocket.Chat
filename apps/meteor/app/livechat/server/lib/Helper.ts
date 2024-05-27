@@ -37,6 +37,10 @@ import { i18n } from '../../../../server/lib/i18n';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import {
+	notifyOnLivechatDepartmentAgentChanged,
+	notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId,
+} from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
@@ -706,6 +710,7 @@ export const updateDepartmentAgents = async (
 
 	if (agentsRemoved.length > 0) {
 		callbacks.runAsync('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
+		void notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId(agentsRemoved, departmentId, 'removed');
 	}
 
 	for await (const agent of upsert) {
@@ -714,7 +719,7 @@ export const updateDepartmentAgents = async (
 			continue;
 		}
 
-		await LivechatDepartmentAgents.saveAgent({
+		const livechatDepartmentAgent = await LivechatDepartmentAgents.saveAgent({
 			agentId: agent.agentId,
 			departmentId,
 			username: agentFromDb.username || '',
@@ -722,6 +727,15 @@ export const updateDepartmentAgents = async (
 			order: agent.order ? parseFromIntOrStr(agent.order) : 0,
 			departmentEnabled,
 		});
+
+		if (livechatDepartmentAgent.value?._id) {
+			void notifyOnLivechatDepartmentAgentChanged({
+				_id: livechatDepartmentAgent.value._id,
+				agentId: agent.agentId,
+				departmentId,
+			});
+		}
+
 		agentsAdded.push(agent.agentId);
 	}
 

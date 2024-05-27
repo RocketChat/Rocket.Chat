@@ -19,7 +19,11 @@ import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { notifyOnRoomChangedById, notifyOnIntegrationChangedByUserId } from '../lib/notifyListener';
+import {
+	notifyOnRoomChangedById,
+	notifyOnIntegrationChangedByUserId,
+	notifyOnLivechatDepartmentAgentChangedByAgentId,
+} from '../lib/notifyListener';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
@@ -98,6 +102,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		if (user.roles.includes('livechat-agent')) {
 			// Remove user as livechat agent
 			await LivechatDepartmentAgents.removeByAgentId(userId);
+			void notifyOnLivechatDepartmentAgentChangedByAgentId(userId, 'removed');
 		}
 
 		if (user.roles.includes('livechat-monitor')) {

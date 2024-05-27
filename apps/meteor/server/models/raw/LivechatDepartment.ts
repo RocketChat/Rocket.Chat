@@ -251,6 +251,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 
 		if (current?.enabled !== data.enabled) {
 			await LivechatDepartmentAgents.setDepartmentEnabledByDepartmentId(_id, data.enabled);
+			// TODO: notifyOn
 		}
 
 		const latestDept = await this.findOneById(_id);

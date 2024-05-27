@@ -3,6 +3,7 @@ import { Logger } from '@rocket.chat/logger';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { notifyOnLivechatDepartmentAgentChangedByDepartmentId } from '../../../lib/server/lib/notifyListener';
 
 class DepartmentHelperClass {
 	logger = new Logger('Omnichannel:DepartmentHelper');
@@ -37,6 +38,7 @@ class DepartmentHelperClass {
 
 		const promiseResponses = await Promise.allSettled([
 			LivechatDepartmentAgents.removeByDepartmentId(_id),
+			notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id),
 			LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id),
 			LivechatRooms.bulkRemoveDepartmentAndUnitsFromRooms(_id),
 		]);

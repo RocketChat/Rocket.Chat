@@ -2,6 +2,7 @@ import type { IRoutingMethod, RoutingMethodConfig, SelectedAgent } from '@rocket
 import { LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
+import { notifyOnLivechatDepartmentAgentChanged } from '../../../../lib/server/lib/notifyListener';
 import { settings } from '../../../../settings/server';
 import { RoutingManager } from '../RoutingManager';
 
@@ -30,12 +31,18 @@ class AutoSelection implements IRoutingMethod {
 			...(department ? { departmentId: department } : {}),
 		});
 		if (department) {
-			return LivechatDepartmentAgents.getNextAgentForDepartment(
+			const departmentAgent = await LivechatDepartmentAgents.getNextAgentForDepartment(
 				department,
 				settings.get<boolean>('Livechat_enabled_when_agent_idle'),
 				ignoreAgentId,
 				extraQuery,
 			);
+
+			if (departmentAgent) {
+				void notifyOnLivechatDepartmentAgentChanged(departmentAgent);
+			}
+
+			return departmentAgent;
 		}
 
 		return Users.getNextAgent(ignoreAgentId, extraQuery);
