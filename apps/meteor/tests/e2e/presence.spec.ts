@@ -1,4 +1,4 @@
-import { DEFAULT_USER_CREDENTIALS } from './config/constants';
+import { DEFAULT_USER_CREDENTIALS, IS_EE } from './config/constants';
 import { Registration } from './page-objects';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
@@ -31,6 +31,8 @@ test.describe.serial('Presence', () => {
 	});
 
 	test.describe('Login using with "Methods by REST" disabled', () => {
+		test.skip(IS_EE, `Micro services don't support turning this setting off`);
+
 		test.beforeAll(async ({ api }) => {
 			await expect((await setSettingValueById(api, 'API_Use_REST_For_DDP_Calls', false)).status()).toBe(200);
 		});
