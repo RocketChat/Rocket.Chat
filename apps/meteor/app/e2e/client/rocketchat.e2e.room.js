@@ -249,9 +249,10 @@ export class E2ERoom extends Emitter {
 				this.setState(E2ERoomState.READY);
 				return;
 			}
+
+			this.setState(E2ERoomState.WAITING_KEYS);
 			this.log('Requesting room key');
 			sdk.publish('notify-room-users', [`${this.roomId}/e2ekeyRequest`, this.roomId, room.e2eKeyId]);
-			this.setState(E2ERoomState.WAITING_KEYS);
 		} catch (error) {
 			// this.error = error;
 			this.setState(E2ERoomState.ERROR);
