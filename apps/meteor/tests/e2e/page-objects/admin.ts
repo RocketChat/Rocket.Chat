@@ -24,6 +24,10 @@ export class Admin {
 		return this.page.locator('button >> text="Save"');
 	}
 
+	get btnSaveSettings(): Locator {
+		return this.page.getByRole('button', { name: 'Save changes' });
+	}
+
 	get privateLabel(): Locator {
 		return this.page.locator(`label >> text=Private`);
 	}
