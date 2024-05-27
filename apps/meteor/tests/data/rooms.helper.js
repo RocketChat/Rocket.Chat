@@ -10,7 +10,7 @@ export const createRoom = ({
 	members = [],
 	credentials: customCredentials = undefined,
 	extraData = undefined,
-	voipCallDirection = '',
+	voipCallDirection = 'inbound',
 }) => {
 	if (!type) {
 		throw new Error('"type" is required in "createRoom.ts" test helper');
