@@ -88,6 +88,26 @@ test.describe.parallel('administration', () => {
 			await poAdmin.tabs.users.setupSmtpLink.click();
 			await expect(page).toHaveURL('/admin/settings/Email');
 		});
+
+		test('expect to show join default channels option only when creating new users, not when editing users', async () => {
+			const username = faker.internet.userName();
+
+			await poAdmin.tabs.users.btnNewUser.click();
+			await poAdmin.tabs.users.inputName.type(faker.person.firstName());
+			await poAdmin.tabs.users.inputUserName.type(username);
+			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());
+			await poAdmin.tabs.users.checkboxVerified.click();
+			await poAdmin.tabs.users.inputPassword.type('any_password');
+			await expect(poAdmin.tabs.users.userRole).toBeVisible();
+			await expect(poAdmin.tabs.users.joinDefaultChannels).toBeVisible();
+			await poAdmin.tabs.users.btnSave.click();
+
+			await poAdmin.inputSearchUsers.fill(username);
+			await poAdmin.getUserRow(username).click();
+			await poAdmin.btnEdit.click();
+			await expect(poAdmin.tabs.users.inputUserName).toHaveValue(username);
+			await expect(poAdmin.tabs.users.joinDefaultChannels).not.toBeVisible();
+		});
 	});
 
 	test.describe('Rooms', () => {
@@ -184,6 +204,27 @@ test.describe.parallel('administration', () => {
 			await poAdmin.btnCreateRole.click();
 			await page.waitForSelector('role=dialog[name="Custom roles"]');
 		});
+
+		test.describe('Users in role', () => {
+			const channelName = faker.string.uuid();
+			test.beforeAll(async ({ api }) => {
+				// TODO: refactor createChannel utility in order to get channel data when creating 
+				const response = await api.post('/channels.create', { name: channelName, members: ['user1'] });
+				const { channel } = await response.json();
+
+				await api.post('/channels.addOwner', { roomId: channel._id, userId: Users.user1.data._id });
+				await api.post('/channels.removeOwner', { roomId: channel._id, userId: Users.admin.data._id });
+			})
+
+			test('admin should be able to get the owners of a room that wasnt created by him', async ({ page }) => {
+				await poAdmin.openRoleByName('Owner').click();
+				await poAdmin.btnUsersInRole.click();
+				await poAdmin.inputRoom.fill(channelName);
+				await page.getByRole('option', { name: channelName }).click();
+				
+				await expect(poAdmin.getUserRowByUsername('user1')).toBeVisible();
+			})
+		})
 	});
 
 	test.describe('Mailer', () => {
