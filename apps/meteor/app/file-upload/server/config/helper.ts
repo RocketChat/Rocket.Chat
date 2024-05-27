@@ -3,18 +3,13 @@ import URL from 'url';
 
 export const forceDownload = (req: http.IncomingMessage): boolean => {
 	const { query } = URL.parse(req.url || '', true);
-	let forceDownload = typeof query.download !== 'undefined';
-	if (!forceDownload) {
-		switch (query.contentDisposition) {
-			case 'inline':
-				forceDownload = false;
-				break;
-			case 'attachment':
-				forceDownload = true;
-				break;
-		}
+	
+	const forceDownload = typeof query.download !== 'undefined';
+	if (forceDownload) {
+		return true;
 	}
-	return forceDownload;
+
+	return query.contentDisposition === 'attachment';
 };
 
 export const getContentDisposition = (req: http.IncomingMessage): string => {
