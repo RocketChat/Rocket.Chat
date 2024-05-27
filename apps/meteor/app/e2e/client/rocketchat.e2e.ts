@@ -159,7 +159,7 @@ class E2E extends Emitter {
 						await e2e.acceptSuggestedKey(sub.rid);
 						e2eRoom.keyReceived();
 					} else {
-						console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+						this.error('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
 						await e2e.rejectSuggestedKey(sub.rid);
 					}
 
@@ -684,6 +684,7 @@ class E2E extends Emitter {
 				'usersWaitingForE2EKeys': { $exists: true },
 				'usersWaitingForE2EKeys.userId': { $ne: Meteor.userId() },
 			}).map((room) => room._id);
+			console.log('initiateKeyDistribution ->', roomIds.length);
 			if (!roomIds.length) {
 				return;
 			}
@@ -698,6 +699,10 @@ class E2E extends Emitter {
 				}
 
 				sampleIds.push(roomId);
+			}
+
+			if (!sampleIds.length) {
+				return;
 			}
 
 			const { usersWaitingForE2EKeys = {} } = await sdk.rest.get('/v1/e2e.fetchUsersWaitingForGroupKey', { roomIds: sampleIds });

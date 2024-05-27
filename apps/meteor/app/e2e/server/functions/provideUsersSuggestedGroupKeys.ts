@@ -21,12 +21,10 @@ export const provideUsersSuggestedGroupKeys = async (
 
 		const usersWithSuggestedKeys = [];
 		for await (const user of usersSuggestedGroupKeys[roomId]) {
-			const sub = await Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { projection: { _id: 1 } });
-			if (!sub) {
+			const { modifiedCount } = await Subscriptions.setGroupE2ESuggestedKey(userId, roomId, user.key);
+			if (!modifiedCount) {
 				continue;
 			}
-
-			await Subscriptions.setGroupE2ESuggestedKey(sub._id, user.key);
 			usersWithSuggestedKeys.push(user._id);
 		}
 

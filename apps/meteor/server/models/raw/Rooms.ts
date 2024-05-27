@@ -2080,38 +2080,4 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 		return this.updateMany(query, update);
 	}
-
-	findRoomsByRoomIdsWithE2EEQueue(roomIds: IRoom['_id'][], options?: FindOptions<IRoom>): FindCursor<IRoom> {
-		const query: Filter<IRoom> = {
-			'_id': {
-				$in: roomIds,
-			},
-			'usersWaitingForE2EKeys.0': {
-				$exists: true,
-			},
-			'encrypted': true,
-		};
-
-		return this.find(query, options);
-	}
-
-	async fetchRandomUsersFromE2EEQueue(roomIds: IRoom['_id'][], numberOfRooms: number, queueSize: number): Promise<IRoom[]> {
-		const aggregate = [
-			{
-				$match: {
-					_id: {
-						$in: roomIds,
-					},
-					usersWaitingForE2EKeys: {
-						$exists: true,
-					},
-					encrypted: true,
-				},
-			},
-			{ $sample: { size: queueSize } },
-			{ $limit: numberOfRooms },
-		];
-
-		return this.col.aggregate<IRoom>(aggregate).toArray();
-	}
 }

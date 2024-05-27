@@ -12,6 +12,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { handleSuggestedGroupKey } from '../../../e2e/server/functions/handleSuggestedGroupKey';
 import { provideUsersSuggestedGroupKeys } from '../../../e2e/server/functions/provideUsersSuggestedGroupKeys';
+import { settings } from '../../../settings/server';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -243,6 +244,10 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			if (!settings.get('E2E_Enabled')) {
+				return API.v1.success({ usersWaitingForE2EKeys: {} });
+			}
+
 			const { roomIds = [] } = this.queryParams;
 			const usersWaitingForE2EKeys = (await Subscriptions.findUsersWithPublicE2EKeyByRids(roomIds, this.userId).toArray()).reduce<
 				Record<string, any>
