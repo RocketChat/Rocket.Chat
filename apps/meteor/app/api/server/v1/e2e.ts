@@ -244,7 +244,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			if (!settings.get('E2E_Enabled')) {
+			if (!settings.get('E2E_Enable')) {
 				return API.v1.success({ usersWaitingForE2EKeys: {} });
 			}
 
@@ -268,7 +268,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (!settings.get('E2E_Enabled')) {
+			if (!settings.get('E2E_Enable')) {
 				return API.v1.success();
 			}
 
