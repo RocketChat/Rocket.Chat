@@ -93,6 +93,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				sparse: true,
 			},
 			{ key: { t: 1, ts: 1 } },
+			{
+				key: {
+					'usersWaitingForE2EKeys.userId': 1,
+				},
+				partialFilterExpression: {
+					'usersWaitingForE2EKeys.userId': {
+						$exists: true,
+					},
+				},
+			},
 		];
 	}
 
