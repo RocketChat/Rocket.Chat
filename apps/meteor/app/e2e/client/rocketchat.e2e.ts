@@ -123,6 +123,7 @@ class E2E extends Emitter {
 		await this.initiateDecryptingPendingMessages();
 		this.log('DecryptingPendingMessages -> Done');
 		await this.initiateKeyDistribution();
+		this.log('initiateKeyDistribution -> Done');
 		await this.handleAsyncE2EESuggestedKey();
 	}
 
@@ -144,27 +145,26 @@ class E2E extends Emitter {
 	}
 
 	async handleAsyncE2EESuggestedKey() {
-		const subs = Subscriptions.find({ E2ESuggestedKey: { $exists: true } }).fetch();
+		const subs = Subscriptions.find({ E2ESuggestedKey: { $exists: true }, E2EKey: { $exists: false } }).fetch();
 		await Promise.all(
-			subs
-				.filter((sub) => sub.E2ESuggestedKey && !sub.E2EKey)
-				.map(async (sub) => {
-					const e2eRoom = await e2e.getInstanceByRoomId(sub.rid);
+			subs.map(async (sub) => {
+				const e2eRoom = await e2e.getInstanceByRoomId(sub.rid);
 
-					if (!e2eRoom) {
-						return;
-					}
+				if (!e2eRoom) {
+					return;
+				}
 
-					if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
-						await e2e.acceptSuggestedKey(sub.rid);
-						e2eRoom.keyReceived();
-					} else {
-						this.error('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
-						await e2e.rejectSuggestedKey(sub.rid);
-					}
+				if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
+					this.log('Imported valid E2E suggested key');
+					await e2e.acceptSuggestedKey(sub.rid);
+					e2eRoom.keyReceived();
+				} else {
+					this.error('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+					await e2e.rejectSuggestedKey(sub.rid);
+				}
 
-					sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
-				}),
+				sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+			}),
 		);
 	}
 
@@ -674,6 +674,30 @@ class E2E extends Emitter {
 		);
 	}
 
+	async getSample(roomIds: string[], limit = 3): string[] {
+		if (limit === 0) {
+			return [];
+		}
+
+		const randomRoomIds = _.sampleSize(roomIds, ROOM_KEY_EXCHANGE_SIZE);
+
+		const sampleIds: string[] = [];
+		for await (const roomId of randomRoomIds) {
+			const e2eroom = await this.getInstanceByRoomId(roomId);
+			if (!e2eroom?.hasSessionKey()) {
+				continue;
+			}
+
+			sampleIds.push(roomId);
+		}
+
+		if (!sampleIds.length) {
+			return this.getSample(roomIds, limit - 1);
+		}
+
+		return sampleIds;
+	}
+
 	async initiateKeyDistribution() {
 		if (this.timeout) {
 			return;
@@ -684,26 +708,12 @@ class E2E extends Emitter {
 				'usersWaitingForE2EKeys': { $exists: true },
 				'usersWaitingForE2EKeys.userId': { $ne: Meteor.userId() },
 			}).map((room) => room._id);
-			console.log('initiateKeyDistribution ->', roomIds.length);
 			if (!roomIds.length) {
 				return;
 			}
 
-			const randomRoomIds = _.sampleSize(roomIds, ROOM_KEY_EXCHANGE_SIZE);
-
-			const sampleIds: string[] = [];
-			for await (const roomId of randomRoomIds) {
-				const e2eroom = await this.getInstanceByRoomId(roomId);
-				if (!e2eroom?.hasSessionKey()) {
-					continue;
-				}
-
-				sampleIds.push(roomId);
-			}
-
-			if (!sampleIds.length) {
-				return;
-			}
+			// Prevent function from
+			const sampleIds = await this.getSample(roomIds);
 
 			const { usersWaitingForE2EKeys = {} } = await sdk.rest.get('/v1/e2e.fetchUsersWaitingForGroupKey', { roomIds: sampleIds });
 
