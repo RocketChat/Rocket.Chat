@@ -48,10 +48,11 @@ export class HomeSidenav {
 	get sidebarToolbar(): Locator {
 		return this.page.getByRole('toolbar', { name: 'Sidebar actions' });
 	}
-  
+
 	// Note: this is different from openChat because queued chats are not searchable
 	getQueuedChat(name: string): Locator {
 		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first();
+	}
 
 	get accountProfileOption(): Locator {
 		return this.page.locator('role=menuitemcheckbox[name="Profile"]');
