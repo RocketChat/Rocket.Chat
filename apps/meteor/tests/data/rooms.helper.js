@@ -4,12 +4,12 @@ import { api, credentials, request } from './api-data';
 export const createRoom = ({
 	name,
 	type,
-	username,
-	token,
-	agentId,
-	members,
-	credentials: customCredentials,
-	extraData,
+	username = undefined,
+	token = undefined,
+	agentId = undefined,
+	members = undefined,
+	credentials: customCredentials = undefined,
+	extraData = undefined,
 	voipCallDirection = 'inbound',
 }) => {
 	if (!type) {
