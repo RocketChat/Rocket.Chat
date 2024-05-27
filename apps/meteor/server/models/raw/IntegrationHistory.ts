@@ -25,7 +25,7 @@ export class IntegrationHistoryRaw extends BaseRaw<IIntegrationHistory> implemen
 	}
 
 	async create(integrationHistory: IIntegrationHistory): Promise<InsertOneResult<IIntegrationHistory>> {
-		return this.insertOne(integrationHistory);
+		return this.insertOne({ ...integrationHistory, _createdAt: new Date() });
 	}
 
 	async updateById(
