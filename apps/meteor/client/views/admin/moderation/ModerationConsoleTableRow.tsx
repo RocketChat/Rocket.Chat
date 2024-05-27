@@ -23,7 +23,8 @@ const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: Moder
 	});
 
 	const normalizeMessage = () => {
-		if (message.startsWith('[ ](') && message.includes('\n')) {
+		const isQuotedMessage = /^\[ \]\([\s\S]*\n/;
+		if (isQuotedMessage.test(message)) {
 			return message.split('\n')[1];
 		}
 		return message;
