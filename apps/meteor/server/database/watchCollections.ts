@@ -34,7 +34,6 @@ export function getWatchCollections(): string[] {
 		LivechatInquiry.getCollectionName(),
 		LivechatDepartmentAgents.getCollectionName(),
 		InstanceStatus.getCollectionName(),
-		EmailInbox.getCollectionName(),
 		Settings.getCollectionName(),
 		Subscriptions.getCollectionName(),
 	];

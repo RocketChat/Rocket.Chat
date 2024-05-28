@@ -78,20 +78,17 @@ export const updateEmailInbox = async (
 
 	const updatedResponse = await EmailInbox.updateById(_id, updateEmailInbox);
 
-	if (updatedResponse.value) {
-		void notifyOnEmailInboxChanged(
-			{
-				...updatedResponse.value,
-				...(department === 'All' && { department: undefined }),
-			},
-			'updated',
-		);
-	}
-
-	// Maintained to preserve the same behavior as the previous version
 	if (!updatedResponse.value) {
 		throw new Error('error-invalid-email-inbox');
 	}
+
+	void notifyOnEmailInboxChanged(
+		{
+			...updatedResponse.value,
+			...(department === 'All' && { department: undefined }),
+		},
+		'updated',
+	);
 
 	return updatedResponse.value;
 };
