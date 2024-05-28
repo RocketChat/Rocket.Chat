@@ -1,6 +1,6 @@
 import type { Config } from 'jest';
 
-const config: Config = {
+export default {
 	projects: [
 		{
 			displayName: 'client',
@@ -22,7 +22,7 @@ const config: Config = {
 				'\\.css$': 'identity-obj-proxy',
 				'^react($|/.+)': '<rootDir>/node_modules/react$1',
 				'^@tanstack/(.+)': '<rootDir>/node_modules/@tanstack/$1',
-				'^meteor/(.*)': '<rootDir>/.meteorMocks/index.ts',
+				'^meteor/(.*)': '<rootDir>/tests/mocks/client/meteor.ts',
 			},
 		},
 		{
@@ -52,6 +52,4 @@ const config: Config = {
 		},
 	],
 	collectCoverage: true,
-};
-
-export default config;
+} satisfies Config;
