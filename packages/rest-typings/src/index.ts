@@ -268,3 +268,4 @@ export * from './v1/groups';
 export * from './v1/chat';
 export * from './v1/auth';
 export * from './v1/cloud';
+export * from './v1/banners';
