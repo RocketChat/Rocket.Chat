@@ -200,11 +200,7 @@ const TeamsInfo = ({
 						)}
 
 						{retentionPolicyEnabled && (
-							<RetentionPolicyCallout
-								filesOnlyDefault={filesOnlyDefault}
-								excludePinnedDefault={excludePinnedDefault}
-								maxAgeDefault={maxAgeDefault}
-							/>
+							<RetentionPolicyCallout filesOnly={filesOnlyDefault} excludePinned={excludePinnedDefault} maxAge={maxAgeDefault} />
 						)}
 					</InfoPanel.Section>
 				</InfoPanel>
