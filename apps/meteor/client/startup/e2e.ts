@@ -147,25 +147,32 @@ Meteor.startup(() => {
 				return message;
 			}
 
-			const me = (message.u?._id && Users.findOne(message.u?._id, { fields: { username: 1 } })?.username) || '';
-			const pattern = settings.get('UTF8_User_Names_Validation');
-			const useRealName = settings.get('UI_Use_Real_Name');
+			const mentionsEnabled = settings.get<boolean>('E2E_Enabled_Mentions');
 
-			const mentions = new MentionsParser({
-				pattern: () => pattern,
-				useRealName: () => useRealName,
-				me: () => me,
-			});
+			if (mentionsEnabled) {
+				const me = (message.u?._id && Users.findOne(message.u?._id, { fields: { username: 1 } })?.username) || '';
+				const pattern = settings.get('UTF8_User_Names_Validation');
+				const useRealName = settings.get('UI_Use_Real_Name');
 
-			const e2eUserMentions: string[] = mentions.getUserMentions(message.msg);
-			const e2eChannelMentions: string[] = mentions.getChannelMentions(message.msg);
+				const mentions = new MentionsParser({
+					pattern: () => pattern,
+					useRealName: () => useRealName,
+					me: () => me,
+				});
+
+				const e2eMentions: IMessage['e2eMentions'] = {
+					e2eUserMentions: mentions.getUserMentions(message.msg),
+					e2eChannelMentions: mentions.getChannelMentions(message.msg),
+				};
+
+				message.e2eMentions = e2eMentions;
+			}
 
 			// Should encrypt this message.
 			const msg = await e2eRoom.encrypt(message);
 			message.msg = msg;
 			message.t = 'e2e';
 			message.e2e = 'pending';
-			message.e2eMentions = { e2eUserMentions, e2eChannelMentions };
 
 			return message;
 		});
