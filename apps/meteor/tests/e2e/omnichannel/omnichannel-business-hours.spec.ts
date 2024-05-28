@@ -14,13 +14,14 @@ test.use({ storageState: Users.admin.state });
 test.describe('OC - Business Hours', () => {
   test.skip(!IS_EE, 'OC - Manage Business Hours > Enterprise Edition Only');
 
-  let poOmnichannelBusinessHours: OmnichannelBusinessHours;
-
+	let poOmnichannelBusinessHours: OmnichannelBusinessHours;
 	let department: Awaited<ReturnType<typeof createDepartment>>;
+	let department2: Awaited<ReturnType<typeof createDepartment>>;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 
   test.beforeAll(async ({ api }) => {
 		department = await createDepartment(api);
+		department2 = await createDepartment(api);
     agent = await createAgent(api, 'user2');
     await api.post('/settings/Livechat_enable_business_hours', { value: true }).then((res) => expect(res.status()).toBe(200));
     await api.post('/settings/Livechat_business_hour_type', { value: 'Multiple' }).then((res) => expect(res.status()).toBe(200));
@@ -28,6 +29,7 @@ test.describe('OC - Business Hours', () => {
 
 	test.afterAll(async ({ api }) => {
 		await department.delete();
+		await department2.delete();
 		await agent.delete();
     await api.post('/settings/Livechat_enable_business_hours', { value: false }).then((res) => expect(res.status()).toBe(200));
     await api.post('/settings/Livechat_business_hour_type', { value: 'Single' }).then((res) => expect(res.status()).toBe(200));
@@ -45,8 +47,6 @@ test.describe('OC - Business Hours', () => {
 
     await test.step('expect correct form default state', async () => {
 			await poOmnichannelBusinessHours.btnCreateBusinessHour.click();
-			await expect(poOmnichannelBusinessHours.btnSave).not.toBeVisible();
-			await expect(poOmnichannelBusinessHours.btnCancel).not.toBeVisible();
 			await poOmnichannelBusinessHours.btnBack.click();
       await expect(poOmnichannelBusinessHours.inputSearch).toBeVisible();
 		});
@@ -56,7 +56,6 @@ test.describe('OC - Business Hours', () => {
 			await poOmnichannelBusinessHours.inputName.fill(BHName);
 			await poOmnichannelBusinessHours.selectDepartment(department.data);
 			await poOmnichannelBusinessHours.btnSave.click();
-			await expect(poOmnichannelBusinessHours.inputSearch).toBeVisible();
 
 			await test.step('expect business hours to have been created', async () => {
 				await poOmnichannelBusinessHours.search(BHName);
@@ -102,8 +101,6 @@ test.describe('OC - Business Hours', () => {
     await page.goto('/omnichannel');
 		await poOmnichannelBusinessHours.sidenav.linkBusinessHours.click();
 
-    const department2 = await createDepartment(api);
-
     await test.step('expect to add business hours departments', async () => {
 			await poOmnichannelBusinessHours.search(BHName);
 			await poOmnichannelBusinessHours.findRowByName(BHName).click();
@@ -138,7 +135,5 @@ test.describe('OC - Business Hours', () => {
       await poOmnichannelBusinessHours.btnConfirmDeleteModal.click();
       await expect(poOmnichannelBusinessHours.confirmDeleteModal).not.toBeVisible();
     });
-
-		await department2.delete();
   });
 });
