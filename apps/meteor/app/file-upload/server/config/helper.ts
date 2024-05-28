@@ -3,7 +3,7 @@ import URL from 'url';
 
 export const forceDownload = (req: http.IncomingMessage): boolean => {
 	const { query } = URL.parse(req.url || '', true);
-	
+
 	const forceDownload = typeof query.download !== 'undefined';
 	if (forceDownload) {
 		return true;
