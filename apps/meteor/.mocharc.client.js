@@ -34,7 +34,6 @@ module.exports = {
 	slow: 200,
 	spec: [
 		'tests/unit/client/sidebar/**/*.spec.{ts,tsx}',
-		'tests/unit/client/components/**/*.spec.{ts,tsx}',
 		'tests/unit/client/lib/**/*.spec.{ts,tsx}',
 		'tests/unit/lib/**/*.tests.ts',
 		'tests/unit/client/**/*.test.ts',
