@@ -356,12 +356,6 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 			this.trySync();
 		});
 
-		if (!this.userRelated) {
-			return this.setupListener();
-		}
-
-		CachedCollectionManager.onLogin(async () => {
-			await this.setupListener();
-		});
+		return this.setupListener();
 	}
 }

@@ -2,10 +2,10 @@ import type { AtLeast, IMessage, ISubscription } from '@rocket.chat/core-typings
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { E2EEState } from '../../app/e2e/client/E2EEState';
 import { e2e } from '../../app/e2e/client/rocketchat.e2e';
 import { Subscriptions, ChatRoom } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
 import { isLayoutEmbedded } from '../lib/utils/isLayoutEmbedded';
@@ -28,9 +28,8 @@ Meteor.startup(() => {
 
 		if (enabled && !adminEmbedded) {
 			e2e.startClient();
-			e2e.enabled.set(true);
 		} else {
-			e2e.enabled.set(false);
+			e2e.setState(E2EEState.DISABLED);
 			e2e.closeAlert();
 		}
 	});
@@ -38,25 +37,20 @@ Meteor.startup(() => {
 	let observable: Meteor.LiveQueryHandle | null = null;
 	let offClientMessageReceived: undefined | (() => void);
 	let offClientBeforeSendMessage: undefined | (() => void);
-	let unsubNotifyUser: undefined | (() => void);
+	let listenersAttached = false;
+
 	Tracker.autorun(() => {
 		if (!e2e.isReady()) {
 			offClientMessageReceived?.();
-			unsubNotifyUser?.();
-			unsubNotifyUser = undefined;
 			observable?.stop();
 			offClientBeforeSendMessage?.();
+			listenersAttached = false;
 			return;
 		}
 
-		unsubNotifyUser = sdk.stream('notify-user', [`${Meteor.userId()}/e2ekeyRequest`], async (roomId, keyId): Promise<void> => {
-			const e2eRoom = await e2e.getInstanceByRoomId(roomId);
-			if (!e2eRoom) {
-				return;
-			}
-
-			e2eRoom.provideKeyToUser(keyId);
-		}).stop;
+		if (listenersAttached) {
+			return;
+		}
 
 		observable = Subscriptions.find().observe({
 			changed: async (sub: ISubscription) => {
@@ -141,11 +135,12 @@ Meteor.startup(() => {
 
 			// Should encrypt this message.
 			const msg = await e2eRoom.encrypt(message);
-
 			message.msg = msg;
 			message.t = 'e2e';
 			message.e2e = 'pending';
 			return message;
 		});
+
+		listenersAttached = true;
 	});
 });

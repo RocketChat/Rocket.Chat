@@ -1,13 +1,13 @@
 import QueryString from 'querystring';
 import URL from 'url';
 
-import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import EJSON from 'ejson';
+import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
-import type { ReactiveVar as ReactiveVarType } from 'meteor/reactive-var';
-import { ReactiveVar } from 'meteor/reactive-var';
+import { Tracker } from 'meteor/tracker';
 
 import * as banners from '../../../client/lib/banners';
 import type { LegacyBannerPayload } from '../../../client/lib/banners';
@@ -19,11 +19,13 @@ import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordMod
 import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
+import { isTruthy } from '../../../lib/isTruthy';
 import { ChatRoom, Subscriptions, Messages } from '../../models/client';
 import { settings } from '../../settings/client';
 import { getUserAvatarURL } from '../../utils/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
+import { E2EEState } from './E2EEState';
 import {
 	toString,
 	toArrayBuffer,
@@ -40,6 +42,7 @@ import {
 } from './helper';
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
+
 import './events.js';
 
 let failedToDecodeKey = false;
@@ -49,36 +52,43 @@ type KeyPair = {
 	private_key: string | null;
 };
 
+const ROOM_KEY_EXCHANGE_SIZE = 10;
+const E2EEStateDependency = new Tracker.Dependency();
+
 class E2E extends Emitter {
 	private started: boolean;
 
-	public enabled: ReactiveVarType<boolean>;
-
-	private _ready: ReactiveVarType<boolean>;
-
 	private instancesByRoomId: Record<IRoom['_id'], E2ERoom>;
 
-	private db_public_key: string | null;
+	private db_public_key: string | null | undefined;
 
-	private db_private_key: string | null;
+	private db_private_key: string | null | undefined;
 
 	public privateKey: CryptoKey | undefined;
+
+	private timeout: ReturnType<typeof setInterval> | null;
+
+	private state: E2EEState;
 
 	constructor() {
 		super();
 		this.started = false;
-		this.enabled = new ReactiveVar(false);
-		this._ready = new ReactiveVar(false);
 		this.instancesByRoomId = {};
+		this.timeout = null;
 
-		this.on('ready', async () => {
-			this._ready.set(true);
-			this.log('startClient -> Done');
-			this.log('decryptSubscriptions');
-
-			await this.decryptSubscriptions();
-			this.log('decryptSubscriptions -> Done');
+		this.on('E2E_STATE_CHANGED', ({ prevState, nextState }) => {
+			this.log(`${prevState} -> ${nextState}`);
 		});
+
+		this.on(E2EEState.READY, async () => {
+			await this.onE2EEReady();
+		});
+
+		this.on(E2EEState.SAVE_PASSWORD, async () => {
+			await this.onE2EEReady();
+		});
+
+		this.setState(E2EEState.NOT_STARTED);
 	}
 
 	log(...msg: unknown[]) {
@@ -89,12 +99,73 @@ class E2E extends Emitter {
 		logError('E2E', ...msg);
 	}
 
+	getState() {
+		return this.state;
+	}
+
 	isEnabled(): boolean {
-		return this.enabled.get();
+		return this.state !== E2EEState.DISABLED;
 	}
 
 	isReady(): boolean {
-		return this.enabled.get() && this._ready.get();
+		E2EEStateDependency.depend();
+
+		// Save_Password state is also a ready state for E2EE
+		return this.state === E2EEState.READY || this.state === E2EEState.SAVE_PASSWORD;
+	}
+
+	async onE2EEReady() {
+		this.log('startClient -> Done');
+		this.log('decryptSubscriptions');
+		this.initiateHandshake();
+		await this.decryptSubscriptions();
+		this.log('decryptSubscriptions -> Done');
+		await this.initiateDecryptingPendingMessages();
+		this.log('DecryptingPendingMessages -> Done');
+		await this.initiateKeyDistribution();
+		this.log('initiateKeyDistribution -> Done');
+		await this.handleAsyncE2EESuggestedKey();
+	}
+
+	shouldAskForE2EEPassword() {
+		const { private_key } = this.getKeysFromLocalStorage();
+		return this.db_private_key && !private_key;
+	}
+
+	setState(nextState: E2EEState) {
+		const prevState = this.state;
+
+		this.state = nextState;
+
+		E2EEStateDependency.changed();
+
+		this.emit('E2E_STATE_CHANGED', { prevState, nextState });
+
+		this.emit(nextState);
+	}
+
+	async handleAsyncE2EESuggestedKey() {
+		const subs = Subscriptions.find({ E2ESuggestedKey: { $exists: true }, E2EKey: { $exists: false } }).fetch();
+		await Promise.all(
+			subs.map(async (sub) => {
+				const e2eRoom = await e2e.getInstanceByRoomId(sub.rid);
+
+				if (!e2eRoom) {
+					return;
+				}
+
+				if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
+					this.log('Imported valid E2E suggested key');
+					await e2e.acceptSuggestedKey(sub.rid);
+					e2eRoom.keyReceived();
+				} else {
+					this.error('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+					await e2e.rejectSuggestedKey(sub.rid);
+				}
+
+				sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+			}),
+		);
 	}
 
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
@@ -155,6 +226,35 @@ class E2E extends Emitter {
 		};
 	}
 
+	initiateHandshake() {
+		Object.keys(this.instancesByRoomId).map((key) => this.instancesByRoomId[key].handshake());
+	}
+
+	async initiateDecryptingPendingMessages() {
+		await Promise.all(Object.keys(this.instancesByRoomId).map((key) => this.instancesByRoomId[key].decryptPendingMessages()));
+	}
+
+	openSaveE2EEPasswordModal(randomPassword: string) {
+		imperativeModal.open({
+			component: SaveE2EPasswordModal,
+			props: {
+				randomPassword,
+				onClose: imperativeModal.close,
+				onCancel: () => {
+					this.closeAlert();
+					imperativeModal.close();
+				},
+				onConfirm: () => {
+					Meteor._localStorage.removeItem('e2e.randomPassword');
+					this.setState(E2EEState.READY);
+					dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Enabled') });
+					this.closeAlert();
+					imperativeModal.close();
+				},
+			},
+		});
+	}
+
 	async startClient(): Promise<void> {
 		if (this.started) {
 			return;
@@ -172,9 +272,10 @@ class E2E extends Emitter {
 			public_key = this.db_public_key;
 		}
 
-		if (!private_key && this.db_private_key) {
+		if (this.shouldAskForE2EEPassword()) {
 			try {
-				private_key = await this.decodePrivateKey(this.db_private_key);
+				this.setState(E2EEState.ENTER_PASSWORD);
+				private_key = await this.decodePrivateKey(this.db_private_key as string);
 			} catch (error) {
 				this.started = false;
 				failedToDecodeKey = true;
@@ -195,44 +296,29 @@ class E2E extends Emitter {
 
 		if (public_key && private_key) {
 			await this.loadKeys({ public_key, private_key });
+			this.setState(E2EEState.READY);
 		} else {
 			await this.createAndLoadKeys();
+			this.setState(E2EEState.READY);
 		}
 
 		if (!this.db_public_key || !this.db_private_key) {
+			this.setState(E2EEState.LOADING_KEYS);
 			await this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
 		}
 
 		const randomPassword = Meteor._localStorage.getItem('e2e.randomPassword');
 		if (randomPassword) {
+			this.setState(E2EEState.SAVE_PASSWORD);
 			this.openAlert({
 				title: () => t('Save_your_encryption_password'),
 				html: () => t('Click_here_to_view_and_copy_your_password'),
 				modifiers: ['large'],
 				closable: false,
 				icon: 'key',
-				action: () => {
-					imperativeModal.open({
-						component: SaveE2EPasswordModal,
-						props: {
-							randomPassword,
-							onClose: imperativeModal.close,
-							onCancel: () => {
-								this.closeAlert();
-								imperativeModal.close();
-							},
-							onConfirm: () => {
-								Meteor._localStorage.removeItem('e2e.randomPassword');
-								this.closeAlert();
-								dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Set') });
-								imperativeModal.close();
-							},
-						},
-					});
-				},
+				action: () => this.openSaveE2EEPasswordModal(randomPassword),
 			});
 		}
-		this.emit('ready');
 	}
 
 	async stopClient(): Promise<void> {
@@ -243,9 +329,10 @@ class E2E extends Emitter {
 		Meteor._localStorage.removeItem('private_key');
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
-		this.enabled.set(false);
-		this._ready.set(false);
 		this.started = false;
+		this.timeout && clearTimeout(this.timeout);
+		this.timeout = null;
+		this.setState(E2EEState.DISABLED);
 	}
 
 	async changePassword(newPassword: string): Promise<void> {
@@ -258,11 +345,13 @@ class E2E extends Emitter {
 
 	async loadKeysFromDB(): Promise<void> {
 		try {
+			this.setState(E2EEState.LOADING_KEYS);
 			const { public_key, private_key } = await sdk.rest.get('/v1/e2e.fetchMyKeys');
 
 			this.db_public_key = public_key;
 			this.db_private_key = private_key;
 		} catch (error) {
+			this.setState(E2EEState.ERROR);
 			return this.error('Error fetching RSA keys: ', error);
 		}
 	}
@@ -275,17 +364,20 @@ class E2E extends Emitter {
 
 			Meteor._localStorage.setItem('private_key', private_key);
 		} catch (error) {
+			this.setState(E2EEState.ERROR);
 			return this.error('Error importing private key: ', error);
 		}
 	}
 
 	async createAndLoadKeys(): Promise<void> {
 		// Could not obtain public-private keypair from server.
+		this.setState(E2EEState.LOADING_KEYS);
 		let key;
 		try {
 			key = await generateRSAKey();
 			this.privateKey = key.privateKey;
 		} catch (error) {
+			this.setState(E2EEState.ERROR);
 			return this.error('Error generating key: ', error);
 		}
 
@@ -294,6 +386,7 @@ class E2E extends Emitter {
 
 			Meteor._localStorage.setItem('public_key', JSON.stringify(publicKey));
 		} catch (error) {
+			this.setState(E2EEState.ERROR);
 			return this.error('Error exporting public key: ', error);
 		}
 
@@ -302,6 +395,7 @@ class E2E extends Emitter {
 
 			Meteor._localStorage.setItem('private_key', JSON.stringify(privateKey));
 		} catch (error) {
+			this.setState(E2EEState.ERROR);
 			return this.error('Error exporting private key: ', error);
 		}
 
@@ -327,6 +421,7 @@ class E2E extends Emitter {
 
 			return EJSON.stringify(joinVectorAndEcryptedData(vector, encodedPrivateKey));
 		} catch (error) {
+			this.setState(E2EEState.ERROR);
 			return this.error('Error encrypting encodedPrivateKey: ', error);
 		}
 	}
@@ -341,6 +436,7 @@ class E2E extends Emitter {
 		try {
 			baseKey = await importRawKey(toArrayBuffer(password));
 		} catch (error) {
+			this.setState(E2EEState.ERROR);
 			return this.error('Error creating a key based on user password: ', error);
 		}
 
@@ -348,30 +444,34 @@ class E2E extends Emitter {
 		try {
 			return await deriveKey(toArrayBuffer(Meteor.userId()), baseKey);
 		} catch (error) {
+			this.setState(E2EEState.ERROR);
 			return this.error('Error deriving baseKey: ', error);
 		}
 	}
 
-	async requestPassword(): Promise<string> {
+	openEnterE2EEPasswordModal(onEnterE2EEPassword?: (password: string) => void) {
+		imperativeModal.open({
+			component: EnterE2EPasswordModal,
+			props: {
+				onClose: imperativeModal.close,
+				onCancel: () => {
+					failedToDecodeKey = false;
+					dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
+					this.closeAlert();
+					imperativeModal.close();
+				},
+				onConfirm: (password) => {
+					onEnterE2EEPassword?.(password);
+					this.closeAlert();
+					imperativeModal.close();
+				},
+			},
+		});
+	}
+
+	async requestPasswordAlert(): Promise<string> {
 		return new Promise((resolve) => {
-			const showModal = () => {
-				imperativeModal.open({
-					component: EnterE2EPasswordModal,
-					props: {
-						onClose: imperativeModal.close,
-						onCancel: () => {
-							failedToDecodeKey = false;
-							this.closeAlert();
-							imperativeModal.close();
-						},
-						onConfirm: (password) => {
-							resolve(password);
-							this.closeAlert();
-							imperativeModal.close();
-						},
-					},
-				});
-			};
+			const showModal = () => this.openEnterE2EEPasswordModal((password) => resolve(password));
 
 			const showAlert = () => {
 				this.openAlert({
@@ -394,8 +494,42 @@ class E2E extends Emitter {
 		});
 	}
 
+	async requestPasswordModal(): Promise<string> {
+		return new Promise((resolve) => this.openEnterE2EEPasswordModal((password) => resolve(password)));
+	}
+
+	async decodePrivateKeyFlow() {
+		const password = await this.requestPasswordModal();
+		const masterKey = await this.getMasterKey(password);
+
+		if (!this.db_private_key) {
+			return;
+		}
+
+		const [vector, cipherText] = splitVectorAndEcryptedData(EJSON.parse(this.db_private_key));
+
+		try {
+			const privKey = await decryptAES(vector, masterKey, cipherText);
+			const privateKey = toString(privKey) as string;
+
+			if (this.db_public_key && privateKey) {
+				await this.loadKeys({ public_key: this.db_public_key, private_key: privateKey });
+				this.setState(E2EEState.READY);
+			} else {
+				await this.createAndLoadKeys();
+				this.setState(E2EEState.READY);
+			}
+			dispatchToastMessage({ type: 'success', message: t('End_To_End_Encryption_Enabled') });
+		} catch (error) {
+			this.setState(E2EEState.ENTER_PASSWORD);
+			dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_incorrect') });
+			dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
+			throw new Error('E2E -> Error decrypting private key');
+		}
+	}
+
 	async decodePrivateKey(privateKey: string): Promise<string> {
-		const password = await this.requestPassword();
+		const password = await this.requestPasswordAlert();
 
 		const masterKey = await this.getMasterKey(password);
 
@@ -405,6 +539,9 @@ class E2E extends Emitter {
 			const privKey = await decryptAES(vector, masterKey, cipherText);
 			return toString(privKey);
 		} catch (error) {
+			this.setState(E2EEState.ENTER_PASSWORD);
+			dispatchToastMessage({ type: 'error', message: t('Your_E2EE_password_is_incorrect') });
+			dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
 			throw new Error('E2E -> Error decrypting private key');
 		}
 	}
@@ -464,6 +601,9 @@ class E2E extends Emitter {
 	}
 
 	async parseQuoteAttachment(message: IE2EEMessage): Promise<IE2EEMessage> {
+		if (!message?.msg) {
+			return message;
+		}
 		const urls = message.msg.match(getMessageUrlRegex()) || [];
 
 		await Promise.all(
@@ -508,6 +648,95 @@ class E2E extends Emitter {
 		);
 
 		return message;
+	}
+
+	async getSuggestedE2EEKeys(usersWaitingForE2EKeys: Record<IRoom['_id'], { _id: IUser['_id']; public_key: string }[]>) {
+		const roomIds = Object.keys(usersWaitingForE2EKeys);
+		return Object.fromEntries(
+			(
+				await Promise.all(
+					roomIds.map(async (room) => {
+						const e2eRoom = await this.getInstanceByRoomId(room);
+
+						if (!e2eRoom) {
+							return;
+						}
+						const usersWithKeys = await e2eRoom.encryptGroupKeyForParticipantsWaitingForTheKeys(usersWaitingForE2EKeys[room]);
+
+						if (!usersWithKeys) {
+							return;
+						}
+
+						return [room, usersWithKeys];
+					}),
+				)
+			).filter(isTruthy),
+		);
+	}
+
+	async getSample(roomIds: string[], limit = 3): Promise<string[]> {
+		if (limit === 0) {
+			return [];
+		}
+
+		const randomRoomIds = _.sampleSize(roomIds, ROOM_KEY_EXCHANGE_SIZE);
+
+		const sampleIds: string[] = [];
+		for await (const roomId of randomRoomIds) {
+			const e2eroom = await this.getInstanceByRoomId(roomId);
+			if (!e2eroom?.hasSessionKey()) {
+				continue;
+			}
+
+			sampleIds.push(roomId);
+		}
+
+		if (!sampleIds.length) {
+			return this.getSample(roomIds, limit - 1);
+		}
+
+		return sampleIds;
+	}
+
+	async initiateKeyDistribution() {
+		if (this.timeout) {
+			return;
+		}
+
+		const keyDistribution = async () => {
+			const roomIds = ChatRoom.find({
+				'usersWaitingForE2EKeys': { $exists: true },
+				'usersWaitingForE2EKeys.userId': { $ne: Meteor.userId() },
+			}).map((room) => room._id);
+			if (!roomIds.length) {
+				return;
+			}
+
+			// Prevent function from running and doing nothing when theres something to do
+			const sampleIds = await this.getSample(roomIds);
+
+			const { usersWaitingForE2EKeys = {} } = await sdk.rest.get('/v1/e2e.fetchUsersWaitingForGroupKey', { roomIds: sampleIds });
+
+			if (!Object.keys(usersWaitingForE2EKeys).length) {
+				return;
+			}
+
+			const userKeysWithRooms = await this.getSuggestedE2EEKeys(usersWaitingForE2EKeys);
+
+			if (!Object.keys(userKeysWithRooms).length) {
+				return;
+			}
+
+			try {
+				await sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', { usersSuggestedGroupKeys: userKeysWithRooms });
+			} catch (error) {
+				return this.error('Error providing group key to users: ', error);
+			}
+		};
+
+		// Run first call right away, then schedule for 10s in the future
+		await keyDistribution();
+		this.timeout = setInterval(keyDistribution, 10000);
 	}
 }
 
