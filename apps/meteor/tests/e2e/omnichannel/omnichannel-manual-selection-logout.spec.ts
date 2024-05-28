@@ -10,7 +10,7 @@ import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });
 
-test.describe('OC - Manual Selection', () => {
+test.describe('OC - Manual Selection After Relogin', () => {
 	let poOmnichannel: HomeOmnichannel;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 
