@@ -330,7 +330,7 @@ class E2E extends Emitter {
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
 		this.started = false;
-		this.timeout && clearTimeout(this.timeout);
+		this.timeout && clearInterval(this.timeout);
 		this.timeout = null;
 		this.setState(E2EEState.DISABLED);
 	}
