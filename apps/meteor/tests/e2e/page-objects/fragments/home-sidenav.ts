@@ -49,6 +49,12 @@ export class HomeSidenav {
 		return this.page.getByRole('toolbar', { name: 'Sidebar actions' });
 	}
 
+	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
+		await this.sidebarToolbar.getByRole('button', { name: 'Display' }).click();
+		await this.sidebarToolbar.getByRole('menuitemcheckbox', { name: mode }).click();
+		await this.sidebarToolbar.click();
+	}
+	
 	get accountProfileOption(): Locator {
 		return this.page.locator('role=menuitemcheckbox[name="Profile"]');
 	}

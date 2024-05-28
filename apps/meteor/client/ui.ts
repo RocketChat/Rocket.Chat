@@ -1,12 +1,11 @@
-import { useOnHoldChatQuickAction } from '../ee/client/hooks/quickActions/useOnHoldChatQuickAction';
-import { useCallsRoomAction } from '../ee/client/hooks/roomActions/useCallsRoomAction';
-import { useCannedResponsesRoomAction } from '../ee/client/hooks/roomActions/useCannedResponsesRoomAction';
-import { useGameCenterRoomAction } from '../ee/client/hooks/roomActions/useGameCenterRoomAction';
 import { useChatForwardQuickAction } from './hooks/quickActions/useChatForwardQuickAction';
 import { useCloseChatQuickAction } from './hooks/quickActions/useCloseChatQuickAction';
 import { useMoveQueueQuickAction } from './hooks/quickActions/useMoveQueueQuickAction';
+import { useOnHoldChatQuickAction } from './hooks/quickActions/useOnHoldChatQuickAction';
 import { useTranscriptQuickAction } from './hooks/quickActions/useTranscriptQuickAction';
 import { useAutotranslateRoomAction } from './hooks/roomActions/useAutotranslateRoomAction';
+import { useCallsRoomAction } from './hooks/roomActions/useCallsRoomAction';
+import { useCannedResponsesRoomAction } from './hooks/roomActions/useCannedResponsesRoomAction';
 import { useChannelSettingsRoomAction } from './hooks/roomActions/useChannelSettingsRoomAction';
 import { useCleanHistoryRoomAction } from './hooks/roomActions/useCleanHistoryRoomAction';
 import { useContactChatHistoryRoomAction } from './hooks/roomActions/useContactChatHistoryRoomAction';
@@ -14,6 +13,7 @@ import { useContactProfileRoomAction } from './hooks/roomActions/useContactProfi
 import { useDiscussionsRoomAction } from './hooks/roomActions/useDiscussionsRoomAction';
 import { useE2EERoomAction } from './hooks/roomActions/useE2EERoomAction';
 import { useExportMessagesRoomAction } from './hooks/roomActions/useExportMessagesRoomAction';
+import { useGameCenterRoomAction } from './hooks/roomActions/useGameCenterRoomAction';
 import { useKeyboardShortcutListRoomAction } from './hooks/roomActions/useKeyboardShortcutListRoomAction';
 import { useMembersListRoomAction } from './hooks/roomActions/useMembersListRoomAction';
 import { useMentionsRoomAction } from './hooks/roomActions/useMentionsRoomAction';

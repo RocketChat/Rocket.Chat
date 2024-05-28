@@ -1,4 +1,5 @@
 import type { AtLeast, IMessage, ISubscription } from '@rocket.chat/core-typings';
+import { isE2EEPinnedMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -6,7 +7,6 @@ import { E2EEState } from '../../app/e2e/client/E2EEState';
 import { e2e } from '../../app/e2e/client/rocketchat.e2e';
 import { Subscriptions, ChatRoom } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
-import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
 import { isLayoutEmbedded } from '../lib/utils/isLayoutEmbedded';
@@ -38,14 +38,11 @@ Meteor.startup(() => {
 	let observable: Meteor.LiveQueryHandle | null = null;
 	let offClientMessageReceived: undefined | (() => void);
 	let offClientBeforeSendMessage: undefined | (() => void);
-	let unsubNotifyUser: undefined | (() => void);
 	let listenersAttached = false;
 
 	Tracker.autorun(() => {
 		if (!e2e.isReady()) {
 			offClientMessageReceived?.();
-			unsubNotifyUser?.();
-			unsubNotifyUser = undefined;
 			observable?.stop();
 			offClientBeforeSendMessage?.();
 			listenersAttached = false;
@@ -55,15 +52,6 @@ Meteor.startup(() => {
 		if (listenersAttached) {
 			return;
 		}
-
-		unsubNotifyUser = sdk.stream('notify-user', [`${Meteor.userId()}/e2ekeyRequest`], async (roomId, keyId): Promise<void> => {
-			const e2eRoom = await e2e.getInstanceByRoomId(roomId);
-			if (!e2eRoom) {
-				return;
-			}
-
-			e2eRoom.provideKeyToUser(keyId);
-		}).stop;
 
 		observable = Subscriptions.find().observe({
 			changed: async (sub: ISubscription) => {
@@ -125,6 +113,11 @@ Meteor.startup(() => {
 			if (!e2eRoom?.shouldConvertReceivedMessages()) {
 				return msg;
 			}
+
+			if (isE2EEPinnedMessage(msg)) {
+				return e2e.decryptPinnedMessage(msg);
+			}
+
 			return e2e.decryptMessage(msg);
 		});
 
