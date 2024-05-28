@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import { onClientMessageReceived } from '../../../lib/onClientMessageReceived';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { useRoom } from '../contexts/RoomContext';
 import MessageListTab from './MessageListTab';
@@ -25,7 +26,7 @@ const PinnedMessagesTab = (): ReactElement => {
 			messages.push(...result.messages.map(mapMessageFromApi));
 		}
 
-		return messages;
+		return Promise.all(messages.map(onClientMessageReceived));
 	});
 
 	const t = useTranslation();
