@@ -1,6 +1,6 @@
 import type { IEmailInbox, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IEmailInboxModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, DeleteResult, FindCursor, IndexDescription, InsertOneResult, ModifyResult, UpdateFilter } from 'mongodb';
+import type { Collection, Db, FindCursor, IndexDescription, InsertOneResult, ModifyResult, UpdateFilter } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -17,10 +17,6 @@ export class EmailInboxRaw extends BaseRaw<IEmailInbox> implements IEmailInboxMo
 		return this.findOneAndUpdate({ _id: id, active: true }, { $set: { active: false } }, { returnDocument: 'after' });
 	}
 
-	async removeById(id: IEmailInbox['_id']): Promise<DeleteResult> {
-		return this.deleteOne({ _id: id });
-	}
-
 	async create(emailInbox: IEmailInbox): Promise<InsertOneResult<IEmailInbox>> {
 		return this.insertOne(emailInbox);
 	}
@@ -29,7 +25,7 @@ export class EmailInboxRaw extends BaseRaw<IEmailInbox> implements IEmailInboxMo
 		return this.findOneAndUpdate({ _id: id }, data, { returnDocument: 'after', projection: { _id: 1 } });
 	}
 
-	findActiveEmailInboxes(): FindCursor<IEmailInbox> {
+	findActive(): FindCursor<IEmailInbox> {
 		return this.find({ active: true });
 	}
 
