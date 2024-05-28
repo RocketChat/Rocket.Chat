@@ -1,13 +1,18 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { Subscriptions } from '@rocket.chat/models';
 import {
 	ise2eGetUsersOfRoomWithoutKeyParamsGET,
 	ise2eSetRoomKeyIDParamsPOST,
 	ise2eSetUserPublicAndPrivateKeysParamsPOST,
 	ise2eUpdateGroupKeyParamsPOST,
+	isE2EProvideUsersGroupKeyProps,
+	isE2EFetchUsersWaitingForGroupKeyProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { handleSuggestedGroupKey } from '../../../e2e/server/functions/handleSuggestedGroupKey';
+import { provideUsersSuggestedGroupKeys } from '../../../e2e/server/functions/provideUsersSuggestedGroupKeys';
+import { settings } from '../../../settings/server';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -225,6 +230,49 @@ API.v1.addRoute(
 			const { rid } = this.bodyParams;
 
 			await handleSuggestedGroupKey('reject', rid, this.userId, 'e2e.rejectSuggestedGroupKey');
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'e2e.fetchUsersWaitingForGroupKey',
+	{
+		authRequired: true,
+		validateParams: isE2EFetchUsersWaitingForGroupKeyProps,
+	},
+	{
+		async get() {
+			if (!settings.get('E2E_Enable')) {
+				return API.v1.success({ usersWaitingForE2EKeys: {} });
+			}
+
+			const { roomIds = [] } = this.queryParams;
+			const usersWaitingForE2EKeys = (await Subscriptions.findUsersWithPublicE2EKeyByRids(roomIds, this.userId).toArray()).reduce<
+				Record<string, { _id: string; public_key: string }[]>
+			>((acc, { rid, users }) => ({ [rid]: users, ...acc }), {});
+
+			return API.v1.success({
+				usersWaitingForE2EKeys,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'e2e.provideUsersSuggestedGroupKeys',
+	{
+		authRequired: true,
+		validateParams: isE2EProvideUsersGroupKeyProps,
+	},
+	{
+		async post() {
+			if (!settings.get('E2E_Enable')) {
+				return API.v1.success();
+			}
+
+			await provideUsersSuggestedGroupKeys(this.userId, this.bodyParams.usersSuggestedGroupKeys);
 
 			return API.v1.success();
 		},

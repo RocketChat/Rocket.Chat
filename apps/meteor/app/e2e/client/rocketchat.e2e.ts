@@ -1,10 +1,11 @@
 import QueryString from 'querystring';
 import URL from 'url';
 
-import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import EJSON from 'ejson';
+import _ from 'lodash';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -18,6 +19,7 @@ import EnterE2EPasswordModal from '../../../client/views/e2e/EnterE2EPasswordMod
 import SaveE2EPasswordModal from '../../../client/views/e2e/SaveE2EPasswordModal';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
+import { isTruthy } from '../../../lib/isTruthy';
 import { ChatRoom, Subscriptions, Messages } from '../../models/client';
 import { settings } from '../../settings/client';
 import { getUserAvatarURL } from '../../utils/client';
@@ -40,6 +42,7 @@ import {
 } from './helper';
 import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
+
 import './events.js';
 
 let failedToDecodeKey = false;
@@ -49,6 +52,7 @@ type KeyPair = {
 	private_key: string | null;
 };
 
+const ROOM_KEY_EXCHANGE_SIZE = 10;
 const E2EEStateDependency = new Tracker.Dependency();
 
 class E2E extends Emitter {
@@ -62,12 +66,15 @@ class E2E extends Emitter {
 
 	public privateKey: CryptoKey | undefined;
 
+	private timeout: ReturnType<typeof setInterval> | null;
+
 	private state: E2EEState;
 
 	constructor() {
 		super();
 		this.started = false;
 		this.instancesByRoomId = {};
+		this.timeout = null;
 
 		this.on('E2E_STATE_CHANGED', ({ prevState, nextState }) => {
 			this.log(`${prevState} -> ${nextState}`);
@@ -115,6 +122,9 @@ class E2E extends Emitter {
 		this.log('decryptSubscriptions -> Done');
 		await this.initiateDecryptingPendingMessages();
 		this.log('DecryptingPendingMessages -> Done');
+		await this.initiateKeyDistribution();
+		this.log('initiateKeyDistribution -> Done');
+		await this.handleAsyncE2EESuggestedKey();
 	}
 
 	shouldAskForE2EEPassword() {
@@ -132,6 +142,30 @@ class E2E extends Emitter {
 		this.emit('E2E_STATE_CHANGED', { prevState, nextState });
 
 		this.emit(nextState);
+	}
+
+	async handleAsyncE2EESuggestedKey() {
+		const subs = Subscriptions.find({ E2ESuggestedKey: { $exists: true }, E2EKey: { $exists: false } }).fetch();
+		await Promise.all(
+			subs.map(async (sub) => {
+				const e2eRoom = await e2e.getInstanceByRoomId(sub.rid);
+
+				if (!e2eRoom) {
+					return;
+				}
+
+				if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
+					this.log('Imported valid E2E suggested key');
+					await e2e.acceptSuggestedKey(sub.rid);
+					e2eRoom.keyReceived();
+				} else {
+					this.error('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+					await e2e.rejectSuggestedKey(sub.rid);
+				}
+
+				sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+			}),
+		);
 	}
 
 	async getInstanceByRoomId(rid: IRoom['_id']): Promise<E2ERoom | null> {
@@ -296,6 +330,8 @@ class E2E extends Emitter {
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
 		this.started = false;
+		this.timeout && clearTimeout(this.timeout);
+		this.timeout = null;
 		this.setState(E2EEState.DISABLED);
 	}
 
@@ -565,6 +601,9 @@ class E2E extends Emitter {
 	}
 
 	async parseQuoteAttachment(message: IE2EEMessage): Promise<IE2EEMessage> {
+		if (!message?.msg) {
+			return message;
+		}
 		const urls = message.msg.match(getMessageUrlRegex()) || [];
 
 		await Promise.all(
@@ -609,6 +648,95 @@ class E2E extends Emitter {
 		);
 
 		return message;
+	}
+
+	async getSuggestedE2EEKeys(usersWaitingForE2EKeys: Record<IRoom['_id'], { _id: IUser['_id']; public_key: string }[]>) {
+		const roomIds = Object.keys(usersWaitingForE2EKeys);
+		return Object.fromEntries(
+			(
+				await Promise.all(
+					roomIds.map(async (room) => {
+						const e2eRoom = await this.getInstanceByRoomId(room);
+
+						if (!e2eRoom) {
+							return;
+						}
+						const usersWithKeys = await e2eRoom.encryptGroupKeyForParticipantsWaitingForTheKeys(usersWaitingForE2EKeys[room]);
+
+						if (!usersWithKeys) {
+							return;
+						}
+
+						return [room, usersWithKeys];
+					}),
+				)
+			).filter(isTruthy),
+		);
+	}
+
+	async getSample(roomIds: string[], limit = 3): Promise<string[]> {
+		if (limit === 0) {
+			return [];
+		}
+
+		const randomRoomIds = _.sampleSize(roomIds, ROOM_KEY_EXCHANGE_SIZE);
+
+		const sampleIds: string[] = [];
+		for await (const roomId of randomRoomIds) {
+			const e2eroom = await this.getInstanceByRoomId(roomId);
+			if (!e2eroom?.hasSessionKey()) {
+				continue;
+			}
+
+			sampleIds.push(roomId);
+		}
+
+		if (!sampleIds.length) {
+			return this.getSample(roomIds, limit - 1);
+		}
+
+		return sampleIds;
+	}
+
+	async initiateKeyDistribution() {
+		if (this.timeout) {
+			return;
+		}
+
+		const keyDistribution = async () => {
+			const roomIds = ChatRoom.find({
+				'usersWaitingForE2EKeys': { $exists: true },
+				'usersWaitingForE2EKeys.userId': { $ne: Meteor.userId() },
+			}).map((room) => room._id);
+			if (!roomIds.length) {
+				return;
+			}
+
+			// Prevent function from running and doing nothing when theres something to do
+			const sampleIds = await this.getSample(roomIds);
+
+			const { usersWaitingForE2EKeys = {} } = await sdk.rest.get('/v1/e2e.fetchUsersWaitingForGroupKey', { roomIds: sampleIds });
+
+			if (!Object.keys(usersWaitingForE2EKeys).length) {
+				return;
+			}
+
+			const userKeysWithRooms = await this.getSuggestedE2EEKeys(usersWaitingForE2EKeys);
+
+			if (!Object.keys(userKeysWithRooms).length) {
+				return;
+			}
+
+			try {
+				await sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', { usersSuggestedGroupKeys: userKeysWithRooms });
+			} catch (error) {
+				return this.error('Error providing group key to users: ', error);
+			}
+		};
+
+		// Run first call right away, then schedule for 10s in the future
+		await keyDistribution();
+		this.timeout = setInterval(keyDistribution, 10000);
 	}
 }
 
