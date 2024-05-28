@@ -1,4 +1,4 @@
-import { Callout, ContextualbarSection } from '@rocket.chat/fuselage';
+import { Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
@@ -8,6 +8,7 @@ import {
 	ContextualbarHeader,
 	ContextualbarTitle,
 	ContextualbarIcon,
+	ContextualbarSection,
 } from '../../../../components/Contextualbar';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import MessageSearch from './components/MessageSearch';

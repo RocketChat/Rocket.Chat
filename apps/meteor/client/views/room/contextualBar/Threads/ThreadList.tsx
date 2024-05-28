@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Box, Icon, TextInput, Select, Callout, Throbber, ContextualbarSection } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { FormEvent, ReactElement, VFC } from 'react';
@@ -13,6 +13,7 @@ import {
 	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarEmptyContent,
+	ContextualbarSection,
 } from '../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';

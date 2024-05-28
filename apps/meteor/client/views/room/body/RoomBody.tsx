@@ -181,7 +181,7 @@ const RoomBody = (): ReactElement => {
 	const wrapperStyle = css`
 		position: absolute;
 		width: 100%;
-		z-index: 10;
+		z-index: 5;
 		top: 0px;
 
 		&.animated-hidden {
