@@ -1,4 +1,4 @@
-import { Users } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
@@ -23,5 +23,8 @@ Meteor.methods<ServerMethods>({
 			private_key: keyPair.private_key,
 			public_key: keyPair.public_key,
 		});
+
+		const subscribedRoomIds = await Rooms.getSubscribedRoomIdsWithoutE2EKeys(userId);
+		await Rooms.addUserIdToE2EEQueueByRoomIds(subscribedRoomIds, userId);
 	},
 });
