@@ -27,10 +27,7 @@ Meteor.methods<ServerMethods>({
 			}
 
 			// uid also has subscription to this room
-			const userSub = await Subscriptions.findOneByRoomIdAndUserId(rid, uid);
-			if (userSub) {
-				await Subscriptions.setGroupE2ESuggestedKey(userSub._id, key);
-			}
+			await Subscriptions.setGroupE2ESuggestedKey(uid, rid, key);
 		}
 	},
 });

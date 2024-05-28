@@ -232,8 +232,21 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					continue;
 				}
 
-				const fileBuffer = await uploadService.getFileBuffer({ file: uploadedFile });
-				files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.extension });
+				try {
+					const fileBuffer = await uploadService.getFileBuffer({ file: uploadedFile });
+					files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.extension });
+				} catch (e: unknown) {
+					this.log.error(`Failed to get file ${file._id}`, e);
+					// Push empty buffer so parser processes this as "unsupported file"
+					files.push({ name: file.name, buffer: null });
+
+					// TODO: this is a NATS error message, even when we shouldn't tie it, since it's the only way we have right now we'll live with it for a while
+					if ((e as Error).message === 'MAX_PAYLOAD_EXCEEDED') {
+						this.log.error(
+							`File is too big to be processed by NATS. See NATS config for allowing bigger messages to be sent between services`,
+						);
+					}
+				}
 			}
 
 			// When you send a file message, the things you type in the modal are not "msg", they're in "description" of the attachment
