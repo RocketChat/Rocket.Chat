@@ -17,6 +17,7 @@ export default {
 			transform: {
 				'^.+\\.(t|j)sx?$': '@swc/jest',
 			},
+			transformIgnorePatterns: ['!/node_modules/uuid'],
 
 			moduleNameMapper: {
 				'\\.css$': 'identity-obj-proxy',
@@ -24,6 +25,9 @@ export default {
 				'^@tanstack/(.+)': '<rootDir>/node_modules/@tanstack/$1',
 				'^meteor/(.*)': '<rootDir>/tests/mocks/client/meteor.ts',
 			},
+
+			setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.ts'],
+			coveragePathIgnorePatterns: ['<rootDir>/tests/'],
 		},
 		{
 			displayName: 'server',

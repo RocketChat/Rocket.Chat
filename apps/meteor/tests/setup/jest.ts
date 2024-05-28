@@ -1,0 +1,26 @@
+import * as uuid from 'uuid';
+import '@testing-library/jest-dom';
+
+export const enableBlobUrlsMock = (): void => {
+	const urlByBlob = new WeakMap<Blob, string>();
+	const blobByUrl = new Map<string, Blob>();
+
+	window.URL.createObjectURL = (blob: Blob): string => {
+		const url = urlByBlob.get(blob) ?? `blob://${uuid.v4()}`;
+		urlByBlob.set(blob, url);
+		blobByUrl.set(url, blob);
+		return url;
+	};
+
+	window.URL.revokeObjectURL = (url: string): void => {
+		const blob = blobByUrl.get(url);
+		if (!blob) {
+			return;
+		}
+
+		urlByBlob.delete(blob);
+		blobByUrl.delete(url);
+	};
+};
+
+enableBlobUrlsMock();
