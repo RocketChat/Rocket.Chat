@@ -43,8 +43,17 @@ export class MentionsServer extends MentionsParser {
 			});
 	}
 
-	async getUsersByMentions({ msg, rid, u: sender }: Pick<IMessage, 'msg' | 'rid' | 'u'>): Promise<IMessage['mentions']> {
-		const mentions = this.getUserMentions(msg);
+	async getUsersByMentions({
+		msg,
+		rid,
+		u: sender,
+		t,
+		e2eMentions,
+	}: Pick<IMessage, 'msg' | 'rid' | 'u' | 't' | 'e2eMentions'>): Promise<IMessage['mentions']> {
+		const mentions =
+			t === 'e2e' && e2eMentions?.e2eUserMentions && e2eMentions?.e2eUserMentions.length > 0
+				? e2eMentions?.e2eUserMentions
+				: this.getUserMentions(msg);
 		const mentionsAll: { _id: string; username: string }[] = [];
 		const userMentions = [];
 
@@ -67,8 +76,11 @@ export class MentionsServer extends MentionsParser {
 		return [...mentionsAll, ...(userMentions.length ? await this.getUsers(userMentions) : [])];
 	}
 
-	async getChannelbyMentions({ msg }: Pick<IMessage, 'msg'>) {
-		const channels = this.getChannelMentions(msg);
+	async getChannelbyMentions({ msg, t, e2eMentions }: Pick<IMessage, 'msg' | 't' | 'e2eMentions'>) {
+		const channels =
+			t === 'e2e' && e2eMentions?.e2eChannelMentions && e2eMentions?.e2eChannelMentions.length > 0
+				? e2eMentions?.e2eChannelMentions
+				: this.getChannelMentions(msg);
 		return this.getChannels(channels.map((c) => c.trim().substr(1)));
 	}
 

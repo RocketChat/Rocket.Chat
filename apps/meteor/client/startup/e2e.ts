@@ -3,7 +3,8 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { e2e } from '../../app/e2e/client/rocketchat.e2e';
-import { Subscriptions, ChatRoom } from '../../app/models/client';
+import { MentionsParser } from '../../app/mentions/lib/MentionsParser';
+import { Subscriptions, ChatRoom, Users } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
@@ -139,12 +140,27 @@ Meteor.startup(() => {
 				return message;
 			}
 
+			const me = (message.u?._id && Users.findOne(message.u?._id, { fields: { username: 1 } })?.username) || '';
+			const pattern = settings.get('UTF8_User_Names_Validation');
+			const useRealName = settings.get('UI_Use_Real_Name');
+
+			const mentions = new MentionsParser({
+				pattern: () => pattern,
+				useRealName: () => useRealName,
+				me: () => me,
+			});
+
+			const e2eUserMentions: string[] = mentions.getUserMentions(message.msg);
+			const e2eChannelMentions: string[] = mentions.getChannelMentions(message.msg);
+
 			// Should encrypt this message.
 			const msg = await e2eRoom.encrypt(message);
 
 			message.msg = msg;
 			message.t = 'e2e';
 			message.e2e = 'pending';
+			message.e2eMentions = { e2eUserMentions, e2eChannelMentions };
+
 			return message;
 		});
 	});
