@@ -2,19 +2,21 @@ import { faker } from '@faker-js/faker';
 
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { Admin } from './page-objects';
-import { createTargetChannel } from './utils';
-import { setSettingValueById } from './utils/setSettingValueById';
+import { Admin, Utils } from './page-objects';
+import { createTargetChannel, setSettingValueById, getSettingValueById } from './utils';
+import {  } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
 test.describe.parallel('administration', () => {
 	let poAdmin: Admin;
+	let poUtils: Utils;
 	let targetChannel: string;
 
 	test.beforeEach(async ({ page }) => {
 		poAdmin = new Admin(page);
+		poUtils = new Utils(page);
 	});
 
 	test.describe('Workspace', () => {
@@ -235,6 +237,52 @@ test.describe.parallel('administration', () => {
 		test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
 			const results = await makeAxeBuilder().analyze();
 			expect(results.violations).toEqual([]);
+		});
+	});
+
+	test.describe('Integrations', () => {
+		let messageCodeHighlightDefault: unknown;
+		const incomingIntegrationName = faker.string.uuid();
+
+		test.beforeAll(async ({ api }) => {
+			messageCodeHighlightDefault = await getSettingValueById(api, 'Message_Code_highlight');
+			await setSettingValueById(api, 'Message_Code_highlight', '')
+		});
+
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/admin/integrations');
+		});
+
+		test.afterAll(async ({ api }) => {
+			await setSettingValueById(api, 'Message_Code_highlight', messageCodeHighlightDefault)
+		})
+
+		test('should display the example payload correctly', async () => {
+			await poAdmin.btnNew.click();
+			await poAdmin.btnInstructions.click();
+
+			await expect(poAdmin.codeExamplePayload('Loading')).not.toBeVisible();
+		});
+
+		test('should be able to create new incoming integration', async () => {
+			await poAdmin.btnNew.click();
+			await poAdmin.inputName.fill(incomingIntegrationName);
+			await poAdmin.inputPostToChannel.fill('#general');
+			await poAdmin.inputPostAs.fill(Users.admin.data.username);
+			await poAdmin.btnSave.click();
+
+			await expect(poAdmin.inputWebhookUrl).not.toHaveValue('Will be available here after saving.');
+	
+			await poAdmin.btnBack.click();
+			await expect(poAdmin.getIntegrationByName(incomingIntegrationName)).toBeVisible();
+		});
+
+		test('should be able to delete an incoming integration', async () => {
+			await poAdmin.getIntegrationByName(incomingIntegrationName).click();
+			await poAdmin.btnDelete.click();
+			await poUtils.btnModalConfirmDelete.click();
+
+			await expect(poAdmin.getIntegrationByName(incomingIntegrationName)).not.toBeVisible();
 		});
 	});
 

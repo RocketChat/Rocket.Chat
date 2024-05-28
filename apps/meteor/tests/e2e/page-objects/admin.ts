@@ -206,6 +206,46 @@ export class Admin {
 	}
 
 	getUserRowByUsername(username: string): Locator {
-		return this.page.locator('tr', { hasText: username })
+		return this.page.locator('tr', { hasText: username });
+	}
+
+	get btnBack(): Locator {
+		return this.page.getByRole('button', { name: 'Back' });
+	}
+
+	get btnNew(): Locator {
+		return this.page.getByRole('button', { name: 'New' });
+	}
+
+	get btnDelete(): Locator {
+		return this.page.getByRole('button', { name: 'Delete' });
+	}
+
+	get btnInstructions(): Locator {
+		return this.page.getByRole('button', { name: 'Instructions' });
+	}
+	
+	get inputName(): Locator {
+		return this.page.getByRole('textbox', { name: 'Name' });
+	}
+
+	get inputPostToChannel(): Locator {
+		return this.page.getByRole('textbox', { name: 'Post to Channel' });
+	}
+
+	get inputPostAs(): Locator {
+		return this.page.getByRole('textbox', { name: 'Post as' });
+	}
+
+	codeExamplePayload(text: string): Locator {
+		return this.page.locator('code', { hasText: text });
+	}
+
+	getIntegrationByName(name: string): Locator {
+		return this.page.getByRole('table', { name: 'Integrations table' }).locator('tr', { hasText: name });
+	}
+
+	get inputWebhookUrl(): Locator {
+		return this.page.getByRole('textbox', { name: 'Webhook URL' })
 	}
 }
