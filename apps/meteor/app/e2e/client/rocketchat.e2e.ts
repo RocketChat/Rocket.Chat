@@ -703,8 +703,8 @@ class E2E extends Emitter {
 			return;
 		}
 
-		this.timeout = setInterval(async () => {
-			const roomIds = ChatRoom.find({
+		const keyDistribution = async () => {
+const roomIds = ChatRoom.find({
 				'usersWaitingForE2EKeys': { $exists: true },
 				'usersWaitingForE2EKeys.userId': { $ne: Meteor.userId() },
 			}).map((room) => room._id);
@@ -732,7 +732,12 @@ class E2E extends Emitter {
 			} catch (error) {
 				return this.error('Error providing group key to users: ', error);
 			}
-		}, 10000);
+
+		}
+
+		// Run first call right away, then schedule for 10s in the future
+		await keyDistribution();
+		this.timeout = setInterval(keyDistribution, 10000);
 	}
 }
 
