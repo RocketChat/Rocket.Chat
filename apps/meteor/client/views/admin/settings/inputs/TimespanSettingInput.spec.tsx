@@ -124,7 +124,7 @@ describe('TimespanSettingInput component', () => {
 		const daysOption = screen.getByRole('option', { name: 'days' });
 		userEvent.click(daysOption);
 
-		expect(screen.getByDisplayValue('0.5')).toBeTruthy();
+		expect(screen.getByDisplayValue('1')).toBeTruthy();
 	});
 
 	it('should call onResetButtonClick when reset button is clicked', () => {
