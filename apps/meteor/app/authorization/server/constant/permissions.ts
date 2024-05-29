@@ -56,7 +56,7 @@ export const permissions = [
 	{ _id: 'manage-own-outgoing-integrations', roles: ['admin'] },
 	{ _id: 'manage-own-incoming-integrations', roles: ['admin'] },
 	{ _id: 'manage-oauth-apps', roles: ['admin'] },
-	{ _id: 'view-oauth-apps', roles: ['admin', 'owner', 'moderator', 'user'] },
+	{ _id: 'view-oauth-apps', roles: ['admin', 'user'] },
 	{ _id: 'manage-selected-settings', roles: ['admin'] },
 	{ _id: 'mention-all', roles: ['admin', 'owner', 'moderator', 'user'] },
 	{ _id: 'mention-here', roles: ['admin', 'owner', 'moderator', 'user'] },
