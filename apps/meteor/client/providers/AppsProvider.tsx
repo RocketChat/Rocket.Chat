@@ -1,10 +1,10 @@
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React, { useEffect } from 'react';
 
-import { AppClientOrchestratorInstance } from '../../ee/client/apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../apps/orchestrator';
 import { AppsContext } from '../contexts/AppsContext';
 import { useIsEnterprise } from '../hooks/useIsEnterprise';
 import { useInvalidateLicense } from '../hooks/useLicense';
@@ -28,7 +28,11 @@ const getAppState = (
 	value: { apps: apps || [] },
 });
 
-const AppsProvider: FC = ({ children }) => {
+type AppsProviderProps = {
+	children: ReactNode;
+};
+
+const AppsProvider = ({ children }: AppsProviderProps) => {
 	const isAdminUser = usePermission('manage-apps');
 
 	const queryClient = useQueryClient();
@@ -160,8 +164,10 @@ const AppsProvider: FC = ({ children }) => {
 				reload: async () => {
 					await Promise.all([queryClient.invalidateQueries(['marketplace'])]);
 				},
+				orchestrator: AppClientOrchestratorInstance,
 			}}
 		/>
 	);
 };
+
 export default AppsProvider;

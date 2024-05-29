@@ -1,8 +1,8 @@
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import type { MouseEvent } from 'react';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import type { UIEvent } from 'react';
 
-export const usePreventPropagation = (fn?: (e: MouseEvent) => void): ((e: MouseEvent) => void) => {
-	const preventClickPropagation = useMutableCallback((e): void => {
+export const usePreventPropagation = (fn?: (e: UIEvent) => void): ((e: UIEvent) => void) => {
+	const preventClickPropagation = useEffectEvent((e): void => {
 		e.stopPropagation();
 		fn?.(e);
 	});

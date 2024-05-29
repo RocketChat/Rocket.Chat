@@ -15,7 +15,7 @@ export class OmnichannelLiveChat {
 		return this.page.locator(`role=button[name="${label}"]`);
 	}
 
-	btnOpenLiveChat(): Locator {
+	get btnOpenLiveChat(): Locator {
 		return this.page.locator(`[data-qa-id="chat-button"]`);
 	}
 
@@ -46,9 +46,17 @@ export class OmnichannelLiveChat {
 	get btnChatNow(): Locator {
 		return this.page.locator('[type="button"] >> text="Chat now"');
 	}
-	
+
 	get headerTitle(): Locator {
 		return this.page.locator('[data-qa="header-title"]');
+	}
+
+	get txtWatermark(): Locator {
+		return this.page.locator('[data-qa="livechat-watermark"]');
+	}
+
+	get imgLogo(): Locator {
+		return this.btnOpenLiveChat.locator('img[alt="Livechat"]');
 	}
 
 	alertMessage(message: string): Locator {
@@ -73,7 +81,7 @@ export class OmnichannelLiveChat {
 	// TODO: replace openLivechat with this method and create a new method for openOnlineLivechat
 	// as openLivechat only opens a chat that is in the 'online' state
 	async openAnyLiveChat(): Promise<void> {
-		await this.btnOpenLiveChat().click();
+		await this.btnOpenLiveChat.click();
 	}
 
 	async startNewChat(): Promise<void> {
@@ -134,7 +142,7 @@ export class OmnichannelLiveChat {
 		return this.page.locator('#files-drop-target');
 	}
 
-	findUploadedFileLink (fileName: string): Locator {
+	findUploadedFileLink(fileName: string): Locator {
 		return this.page.getByRole('link', { name: fileName });
 	}
 

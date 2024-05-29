@@ -51,13 +51,7 @@ const EnterE2EPasswordModal = ({
 			<FieldGroup mbs={24} w='full'>
 				<Field>
 					<FieldRow>
-						<PasswordInput
-							autoFocus
-							error={passwordError}
-							value={password}
-							onChange={handleChange}
-							placeholder={t('New_Password_Placeholder')}
-						/>
+						<PasswordInput error={passwordError} value={password} onChange={handleChange} placeholder={t('New_Password_Placeholder')} />
 					</FieldRow>
 					<FieldError>{passwordError}</FieldError>
 				</Field>

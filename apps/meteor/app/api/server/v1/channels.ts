@@ -18,7 +18,7 @@ import {
 	isChannelsConvertToTeamProps,
 	isChannelsSetReadOnlyProps,
 	isChannelsDeleteProps,
-	isChannelsImagesProps,
+	isRoomsImagesProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -806,7 +806,14 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'channels.images',
-	{ authRequired: true, validateParams: isChannelsImagesProps },
+	{
+		authRequired: true,
+		validateParams: isRoomsImagesProps,
+		deprecation: {
+			version: '7.0.0',
+			alternatives: ['rooms.images'],
+		},
+	},
 	{
 		async get() {
 			const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>>(this.queryParams.roomId, {

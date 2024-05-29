@@ -72,6 +72,7 @@ Meteor.startup(() => {
 	Tracker.autorun(() => {
 		if (!Meteor.userId() || !settings.get('Outlook_Calendar_Enabled')) {
 			sdk.stop('notify-user', `${Meteor.userId()}/calendar`);
+			return;
 		}
 
 		sdk.stream('notify-user', [`${Meteor.userId()}/calendar`], notifyUserCalendar);

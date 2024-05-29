@@ -15,6 +15,7 @@ import {
 	Button,
 	PaginatedSelectFiltered,
 	FieldHint,
+	Option,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useEndpoint, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
@@ -22,11 +23,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useRoomsList } from '../../../hooks/useRoomsList';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentForwarding, DepartmentBusinessHours } from '../additionalForms';
@@ -417,6 +418,10 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 												onChange={onChange}
 												onlyMyDepartments
 												showArchived
+												withTitle={false}
+												renderItem={({ label, ...props }) => (
+													<Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />
+												)}
 											/>
 										)}
 									/>
@@ -427,15 +432,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							<FieldRow>
 								<FieldLabel htmlFor={requestTagBeforeClosingChatField}>{t('Request_tag_before_closing_chat')}</FieldLabel>
 								<ToggleSwitch id={requestTagBeforeClosingChatField} {...register('requestTagBeforeClosingChat')} />
-							</FieldRow>
-						</Field>
-						<Field>
-							<FieldRow>
-								<FieldLabel htmlFor={allowReceiveForwardOffline}>{t('Accept_receive_inquiry_no_online_agents')}</FieldLabel>
-								<ToggleSwitch id={allowReceiveForwardOffline} {...register('allowReceiveForwardOffline')} />
-							</FieldRow>
-							<FieldRow>
-								<FieldHint id={`${allowReceiveForwardOffline}-hint`}>{t('Accept_receive_inquiry_no_online_agents_Hint')}</FieldHint>
 							</FieldRow>
 						</Field>
 						{requestTagBeforeClosingChat && (
@@ -465,6 +461,15 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								)}
 							</Field>
 						)}
+						<Field>
+							<FieldRow>
+								<FieldLabel htmlFor={allowReceiveForwardOffline}>{t('Accept_receive_inquiry_no_online_agents')}</FieldLabel>
+								<ToggleSwitch id={allowReceiveForwardOffline} {...register('allowReceiveForwardOffline')} />
+							</FieldRow>
+							<FieldRow>
+								<FieldHint id={`${allowReceiveForwardOffline}-hint`}>{t('Accept_receive_inquiry_no_online_agents_Hint')}</FieldHint>
+							</FieldRow>
+						</Field>
 						<Field>
 							<DepartmentBusinessHours bhId={department?.businessHourId} />
 						</Field>
