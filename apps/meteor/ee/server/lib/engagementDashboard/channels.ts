@@ -2,6 +2,7 @@ import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 import moment from 'moment';
 
+import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { convertDateToInt, diffBetweenDaysInclusive } from './date';
 
 export const findAllChannelsWithNumberOfMessages = async ({
@@ -34,8 +35,10 @@ export const findAllChannelsWithNumberOfMessages = async ({
 	const daysBetweenDates = diffBetweenDaysInclusive(end, start);
 	const endOfLastWeek = moment(start).subtract(1, 'days').toDate();
 	const startOfLastWeek = moment(endOfLastWeek).subtract(daysBetweenDates, 'days').toDate();
+	const roomTypes = roomCoordinator.getTypesToShowOnDashboard() as Array<IRoom['t']>;
 
-	const channels = await Rooms.findChannelsWithNumberOfMessagesBetweenDate({
+	const channels = await Rooms.findChannelsByTypesWithNumberOfMessagesBetweenDate({
+		types: roomTypes,
 		start: convertDateToInt(start),
 		end: convertDateToInt(end),
 		startOfLastWeek: convertDateToInt(startOfLastWeek),
@@ -43,7 +46,7 @@ export const findAllChannelsWithNumberOfMessages = async ({
 		options,
 	}).toArray();
 
-	const total = await Rooms.countDocuments({});
+	const total = await Rooms.countDocuments({ t: { $in: roomTypes } });
 
 	return {
 		channels,

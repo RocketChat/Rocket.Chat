@@ -86,7 +86,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	setTeamDefaultById(rid: IRoom['_id'], teamDefault: NonNullable<IRoom['teamDefault']>, options?: UpdateOptions): Promise<UpdateResult>;
 
-	findChannelsWithNumberOfMessagesBetweenDate(params: {
+	findChannelsByTypesWithNumberOfMessagesBetweenDate(params: {
+		types: Array<IRoom['t']>;
 		start: number;
 		end: number;
 		startOfLastWeek: number;

@@ -403,18 +403,25 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	getChannelsWithNumberOfMessagesBetweenDateQuery({
+		types,
 		start,
 		end,
 		startOfLastWeek,
 		endOfLastWeek,
 		options,
 	}: {
+		types: Array<IRoom['t']>;
 		start: number;
 		end: number;
 		startOfLastWeek: number;
 		endOfLastWeek: number;
 		options?: any;
 	}) {
+		const typeMatch = {
+			$match: {
+				t: { $in: types },
+			},
+		};
 		const lookup = {
 			$lookup: {
 				from: 'rocketchat_analytics',
@@ -494,7 +501,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				diffFromLastWeek: { $subtract: ['$messages', '$lastWeekMessages'] },
 			},
 		};
-		const firstParams = [lookup, messagesProject, messagesUnwind, messagesGroup];
+		const firstParams = [typeMatch, lookup, messagesProject, messagesUnwind, messagesGroup];
 		const lastParams = [lastWeekMessagesUnwind, lastWeekMessagesGroup, presentationProject];
 
 		const sort = { $sort: options?.sort || { messages: -1 } };
@@ -518,7 +525,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return params;
 	}
 
-	findChannelsWithNumberOfMessagesBetweenDate(params: {
+	findChannelsByTypesWithNumberOfMessagesBetweenDate(params: {
+		types: Array<IRoom['t']>;
 		start: number;
 		end: number;
 		startOfLastWeek: number;
