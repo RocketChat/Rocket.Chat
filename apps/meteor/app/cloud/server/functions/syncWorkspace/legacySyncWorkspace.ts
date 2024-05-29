@@ -12,6 +12,7 @@ import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from '..
 import { getWorkspaceLicense } from '../getWorkspaceLicense';
 import { retrieveRegistrationStatus } from '../retrieveRegistrationStatus';
 import { handleBannerOnWorkspaceSync, handleNpsOnWorkspaceSync } from './handleCommsSync';
+import { notifyOnSettingChangedById } from '../../../../lib/server/lib/notifyListener';
 
 const workspaceClientPayloadSchema = v.object({
 	workspaceId: v.string().required(),
@@ -126,11 +127,13 @@ const fetchWorkspaceClientPayload = async ({
 /** @deprecated */
 const consumeWorkspaceSyncPayload = async (result: Serialized<Cloud.WorkspaceSyncPayload>) => {
 	if (result.publicKey) {
-		await Settings.updateValueById('Cloud_Workspace_PublicKey', result.publicKey);
+		(await Settings.updateValueById('Cloud_Workspace_PublicKey', result.publicKey)).modifiedCount
+			&& void notifyOnSettingChangedById('Cloud_Workspace_PublicKey');
 	}
 
 	if (result.trial?.trialID) {
-		await Settings.updateValueById('Cloud_Workspace_Had_Trial', true);
+		(await Settings.updateValueById('Cloud_Workspace_Had_Trial', true)).modifiedCount
+			&& void notifyOnSettingChangedById('Cloud_Workspace_Had_Trial');
 	}
 
 	// add banners

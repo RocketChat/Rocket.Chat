@@ -34,7 +34,6 @@ export function getWatchCollections(): string[] {
 		LivechatInquiry.getCollectionName(),
 		LivechatDepartmentAgents.getCollectionName(),
 		InstanceStatus.getCollectionName(),
-		Settings.getCollectionName(),
 		Subscriptions.getCollectionName(),
 	];
 
@@ -50,6 +49,7 @@ export function getWatchCollections(): string[] {
 		collections.push(LoginServiceConfiguration.getCollectionName());
 		collections.push(EmailInbox.getCollectionName());
 		collections.push(IntegrationHistory.getCollectionName());
+		collections.push(Settings.getCollectionName());
 	}
 
 	if (onlyCollections.length > 0) {

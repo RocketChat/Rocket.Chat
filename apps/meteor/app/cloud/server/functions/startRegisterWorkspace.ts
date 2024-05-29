@@ -6,6 +6,7 @@ import { settings } from '../../../settings/server';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
 export async function startRegisterWorkspace(resend = false) {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
@@ -15,7 +16,8 @@ export async function startRegisterWorkspace(resend = false) {
 		return true;
 	}
 
-	await Settings.updateValueById('Register_Server', true);
+	(await Settings.updateValueById('Register_Server', true)).modifiedCount
+		&& void notifyOnSettingChangedById('Register_Server');
 
 	const regInfo = await buildWorkspaceRegistrationData(undefined);
 

@@ -9,6 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { RoutingManager } from './RoutingManager';
+import { notifyOnSettingChanged } from '../../../lib/server/lib/notifyListener';
 
 const logger = new Logger('QueueManager');
 
@@ -106,7 +107,11 @@ export const QueueManager: queueManager = {
 		}
 
 		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
-		await LivechatRooms.updateRoomCount();
+
+		const livechatSetting = await LivechatRooms.updateRoomCount();
+		if (livechatSetting) {
+			void notifyOnSettingChanged(livechatSetting);
+		}
 
 		await queueInquiry(inquiry, agent);
 		logger.debug(`Inquiry ${inquiry._id} queued`);

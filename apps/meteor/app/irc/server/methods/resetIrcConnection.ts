@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
 import Bridge from '../irc-bridge';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -16,29 +17,11 @@ Meteor.methods<ServerMethods>({
 	async resetIrcConnection() {
 		const ircEnabled = Boolean(settings.get('IRC_Enabled'));
 
-		await Settings.updateOne(
-			{ _id: 'IRC_Bridge_Last_Ping' },
-			{
-				$set: {
-					value: new Date(0),
-				},
-			},
-			{
-				upsert: true,
-			},
-		);
+		(await Settings.updateValueById('IRC_Bridge_Last_Ping', new Date(0), { upsert: true })).modifiedCount
+			&& void notifyOnSettingChangedById('IRC_Bridge_Last_Ping');
 
-		await Settings.updateOne(
-			{ _id: 'IRC_Bridge_Reset_Time' },
-			{
-				$set: {
-					value: new Date(),
-				},
-			},
-			{
-				upsert: true,
-			},
-		);
+			(await Settings.updateValueById('IRC_Bridge_Reset_Time', new Date(), { upsert: true })).modifiedCount
+			&& void notifyOnSettingChangedById('IRC_Bridge_Last_Ping');
 
 		if (!ircEnabled) {
 			return {

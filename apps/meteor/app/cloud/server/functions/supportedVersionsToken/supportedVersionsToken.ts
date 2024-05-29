@@ -11,6 +11,7 @@ import { supportedVersions as supportedVersionsFromBuild } from '../../../../uti
 import { buildVersionUpdateMessage } from '../../../../version-check/server/functions/buildVersionUpdateMessage';
 import { generateWorkspaceBearerHttpHeader } from '../getWorkspaceAccessToken';
 import { supportedVersionsChooseLatest } from './supportedVersionsChooseLatest';
+import { notifyOnSettingChangedById } from '../../../../lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/core-typings' {
 	interface ILicenseV3 {
@@ -64,7 +65,8 @@ const cacheValueInSettings = <T extends SettingValue>(
 	const reset = async () => {
 		const value = await fn();
 
-		await Settings.updateValueById(key, value);
+		(await Settings.updateValueById(key, value)).modifiedCount
+			&& void notifyOnSettingChangedById(key);
 
 		return value;
 	};

@@ -14,6 +14,7 @@ import { ImportDataConverter } from './ImportDataConverter';
 import type { IConverterOptions } from './ImportDataConverter';
 import { ImporterProgress } from './ImporterProgress';
 import { ImporterWebsocket } from './ImporterWebsocket';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
 type OldSettings = {
 	allowedDomainList?: string | null;
@@ -245,10 +246,20 @@ export class Importer {
 	}
 
 	async applySettingValues(settingValues: OldSettings) {
-		await Settings.updateValueById('Accounts_AllowUsernameChange', settingValues.allowUsernameChange ?? true);
-		await Settings.updateValueById('FileUpload_MaxFileSize', settingValues.maxFileSize ?? -1);
-		await Settings.updateValueById('FileUpload_MediaTypeWhiteList', settingValues.mediaTypeWhiteList ?? '*');
-		await Settings.updateValueById('FileUpload_MediaTypeBlackList', settingValues.mediaTypeBlackList ?? '');
+		const settingsIds = [
+			{ _id: 'Accounts_AllowUsernameChange', value: settingValues.allowUsernameChange ?? true },
+			{ _id: 'FileUpload_MaxFileSize', value: settingValues.maxFileSize ?? -1 },
+			{ _id: 'FileUpload_MediaTypeWhiteList', value: settingValues.mediaTypeWhiteList ?? '*' },
+			{ _id: 'FileUpload_MediaTypeBlackList', value: settingValues.mediaTypeBlackList ?? '' },
+		];
+
+		const promises = settingsIds.map((setting) => Settings.updateValueById(setting._id, setting.value));
+
+		(await Promise.all(promises)).forEach((value, index) => {
+			if (value?.modifiedCount) {
+				void notifyOnSettingChangedById(settingsIds[index]._id);
+			}
+		});
 	}
 
 	getProgress(): ImporterProgress {

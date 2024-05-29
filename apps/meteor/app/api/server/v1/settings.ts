@@ -18,6 +18,7 @@ import { setValue } from '../../../settings/server/raw';
 import { API } from '../api';
 import type { ResultFor } from '../definition';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
 async function fetchSettings(
 	query: Parameters<typeof Settings.find>[0],
@@ -186,23 +187,34 @@ API.v1.addRoute(
 				}
 
 				if (isSettingColor(setting) && isSettingsUpdatePropsColor(this.bodyParams)) {
-					await Settings.updateOptionsById<ISettingColor>(this.urlParams._id, {
-						editor: this.bodyParams.editor,
-					});
-					await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+					const updateOptionsPromise = Settings.updateOptionsById<ISettingColor>(this.urlParams._id, { editor: this.bodyParams.editor });
+					const updateValuePromise = Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+
+					const [updateOptionsResult, updateValueResult] = await Promise.all([updateOptionsPromise, updateValuePromise]);
+
+					if (updateOptionsResult.modifiedCount || updateValueResult.modifiedCount) {
+						await notifyOnSettingChangedById(this.urlParams._id);
+					}
+
 					return API.v1.success();
 				}
 
-				if (
-					isSettingsUpdatePropDefault(this.bodyParams) &&
-					(await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value))
-				) {
+				if (isSettingsUpdatePropDefault(this.bodyParams)) {
+					const { matchedCount } = await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+					if (!matchedCount) {
+						return API.v1.failure();
+					}
+
 					const s = await Settings.findOneNotHiddenById(this.urlParams._id);
 					if (!s) {
 						return API.v1.failure();
 					}
+
 					settings.set(s);
 					setValue(this.urlParams._id, this.bodyParams.value);
+
+					await notifyOnSettingChanged(s);
+
 					return API.v1.success();
 				}
 

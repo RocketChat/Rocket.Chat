@@ -23,6 +23,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -323,7 +324,8 @@ const insertUserDocAsync = async function (options, user) {
 		if (!roles.includes('admin') && !hasAdmin) {
 			roles.push('admin');
 			if (settings.get('Show_Setup_Wizard') === 'pending') {
-				await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+				(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount
+					&& void notifyOnSettingChangedById('Show_Setup_Wizard');
 			}
 		}
 	}

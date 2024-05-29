@@ -9,6 +9,7 @@ import { Importer, ProgressStep } from '../../importer/server';
 import type { IConverterOptions } from '../../importer/server/classes/ImportDataConverter';
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
+import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
 
 export class SlackUsersImporter extends Importer {
 	private csvParser: (csv: string) => string[];
@@ -93,7 +94,12 @@ export class SlackUsersImporter extends Importer {
 
 		await super.updateProgress(ProgressStep.USER_SELECTION);
 		await super.addCountToTotal(userCount);
-		await Settings.incrementValueById('Slack_Users_Importer_Count', userCount);
+
+		const { value } = await Settings.incrementValueById('Slack_Users_Importer_Count', userCount, { returnDocument: 'after' });
+		if (value) {
+			void notifyOnSettingChanged(value);
+		}
+
 		await super.updateRecord({ 'count.users': userCount });
 		return super.getProgress();
 	}

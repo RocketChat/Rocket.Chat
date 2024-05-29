@@ -9,6 +9,7 @@ export async function getOAuthAuthorizationUrl() {
 	const state = Random.id();
 
 	await Settings.updateValueById('Cloud_Workspace_Registration_State', state);
+	// TODO: notifyOn
 
 	const cloudUrl = settings.get('Cloud_Url');
 	const clientId = settings.get('Cloud_Workspace_Client_Id');

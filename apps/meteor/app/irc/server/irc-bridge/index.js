@@ -19,15 +19,11 @@ const updateLastPing = withThrottling({ wait: 10_000 })(() => {
 	if (removed) {
 		return;
 	}
-	void Settings.updateOne(
-		{ _id: 'IRC_Bridge_Last_Ping' },
-		{
-			$set: {
-				value: new Date(),
-			},
-		},
-		{ upsert: true },
-	);
+
+	void (async () => {
+		(await Settings.updateValueById('IRC_Bridge_Last_Ping', new Date(), { upsert: true })).modifiedCount
+			&& void notifyOnSettingChangedById('IRC_Bridge_Last_Ping');
+	})();
 });
 
 class Bridge {

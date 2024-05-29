@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
+import { notifyOnSettingChanged } from '../../../lib/server/lib/notifyListener';
 
 let html = '';
 Meteor.startup(() => {
@@ -53,7 +54,11 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 				},
 			});
 
-			await Settings.incrementValueById('Invitation_Email_Count');
+			const { value } = await Settings.incrementValueById('Invitation_Email_Count', 1, { returnDocument: 'after' });
+			if (value) {
+				void notifyOnSettingChanged(value);
+			}
+
 			continue;
 		} catch ({ message }: any) {
 			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
