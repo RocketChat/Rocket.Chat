@@ -15,7 +15,11 @@ export async function isRegisteringOrEnabled(): Promise<boolean> {
 }
 
 export async function updateStatus(status: string): Promise<void> {
-	(await Settings.updateValueById('FEDERATION_Status', status)).modifiedCount && void notifyOnSettingChangedById('FEDERATION_Status');
+	// No need to call ws listener because current function is called on startup
+	await Settings.updateValueById('FEDERATION_Status', status);
+
+	// (await Settings.updateValueById('FEDERATION_Status', status)).modifiedCount
+	// 	&& void notifyOnSettingChangedById('FEDERATION_Status');
 }
 
 export async function updateEnabled(enabled: boolean): Promise<void> {
