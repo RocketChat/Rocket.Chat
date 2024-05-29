@@ -1,5 +1,5 @@
 import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
-import type { IMessage, SettingValue, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, SettingValue, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Messages, Settings, Users } from '@rocket.chat/models';
 import mem from 'mem';
 
@@ -17,6 +17,19 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 	const message = data ?? (await Messages.findOneById(id));
 	if (!message) {
 		return;
+	}
+
+	if (message.t) {
+		const hideSystemMessage = (await getSettingCached('Hide_System_Messages')) as MessageTypesValues[];
+
+		if (hideSystemMessage) {
+			const isMutedUnmuted = (messageType: string): boolean => {
+				return messageType === 'user-muted' || messageType === 'user-unmuted';
+			};
+			if (hideSystemMessage.includes(message.t) || (isMutedUnmuted(message.t) && hideSystemMessage.includes('mute_unmute'))) {
+				return;
+			}
+		}
 	}
 
 	if (message._hidden || message.imported != null) {
