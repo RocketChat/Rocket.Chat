@@ -7,9 +7,9 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { notifyOnSettingChanged } from '../../../lib/server/lib/notifyListener';
 import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { RoutingManager } from './RoutingManager';
-import { notifyOnSettingChanged } from '../../../lib/server/lib/notifyListener';
 
 const logger = new Logger('QueueManager');
 

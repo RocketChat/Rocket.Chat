@@ -13,10 +13,10 @@ import sharp from 'sharp';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { RocketChatFile } from '../../file/server';
 import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
+import { notifyOnSettingChangedById } from '../../lib/server/lib/notifyListener';
 import { settings, settingsRegistry } from '../../settings/server';
 import { getExtension } from '../../utils/lib/mimeTypes';
 import { getURL } from '../../utils/server/getURL';
-import { notifyOnSettingChangedById } from '../../lib/server/lib/notifyListener';
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
 	name: 'assets',

@@ -1,9 +1,9 @@
 import { Settings } from '@rocket.chat/models';
 
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithScope';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
-import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
 /**
  * @param {boolean} forceNew
@@ -33,11 +33,11 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 	const accessToken = await getWorkspaceAccessTokenWithScope(scope, throwOnError);
 
 	if (save) {
-		(await Settings.updateValueById('Cloud_Workspace_Access_Token', accessToken.token)).modifiedCount
-			&& void notifyOnSettingChangedById('Cloud_Workspace_Access_Token');
+		(await Settings.updateValueById('Cloud_Workspace_Access_Token', accessToken.token)).modifiedCount &&
+			void notifyOnSettingChangedById('Cloud_Workspace_Access_Token');
 
-		(await Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', accessToken.expiresAt)).modifiedCount
-			&& void notifyOnSettingChangedById('Cloud_Workspace_Access_Token_Expires_At');
+		(await Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', accessToken.expiresAt)).modifiedCount &&
+			void notifyOnSettingChangedById('Cloud_Workspace_Access_Token_Expires_At');
 	}
 
 	return accessToken.token;

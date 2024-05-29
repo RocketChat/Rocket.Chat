@@ -7,6 +7,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterLogoutCleanUpCallback } from '../../../../lib/callbacks/afterLogoutCleanUpCallback';
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import * as servers from '../servers';
 import * as localCommandHandlers from './localHandlers';
 import * as peerCommandHandlers from './peerHandlers';
@@ -21,8 +22,8 @@ const updateLastPing = withThrottling({ wait: 10_000 })(() => {
 	}
 
 	void (async () => {
-		(await Settings.updateValueById('IRC_Bridge_Last_Ping', new Date(), { upsert: true })).modifiedCount
-			&& void notifyOnSettingChangedById('IRC_Bridge_Last_Ping');
+		(await Settings.updateValueById('IRC_Bridge_Last_Ping', new Date(), { upsert: true })).modifiedCount &&
+			void notifyOnSettingChangedById('IRC_Bridge_Last_Ping');
 	})();
 });
 

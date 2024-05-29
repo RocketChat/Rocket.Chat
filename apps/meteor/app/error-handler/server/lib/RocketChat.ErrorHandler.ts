@@ -3,8 +3,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { throttledCounter } from '../../../../lib/utils/throttledCounter';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { settings } from '../../../settings/server';
 import { notifyOnSettingChanged } from '../../../lib/server/lib/notifyListener';
+import { settings } from '../../../settings/server';
 
 const incException = throttledCounter((counter) => {
 	Settings.incrementValueById('Uncaught_Exceptions_Count', counter, { returnDocument: 'after' })

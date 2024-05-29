@@ -4,8 +4,8 @@ import { isPOSTLivechatAppearanceParams } from '@rocket.chat/rest-typings';
 
 import { isTruthy } from '../../../../../lib/isTruthy';
 import { API } from '../../../../api/server';
-import { findAppearance } from '../../../server/api/lib/appearance';
 import { notifyOnSettingChangedById } from '../../../../lib/server/lib/notifyListener';
+import { findAppearance } from '../../../server/api/lib/appearance';
 
 API.v1.addRoute(
 	'livechat/appearance',

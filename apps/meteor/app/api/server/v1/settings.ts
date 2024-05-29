@@ -13,12 +13,12 @@ import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
 import { API } from '../api';
 import type { ResultFor } from '../definition';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
 async function fetchSettings(
 	query: Parameters<typeof Settings.find>[0],

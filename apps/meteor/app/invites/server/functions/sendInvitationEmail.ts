@@ -3,9 +3,9 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { notifyOnSettingChanged } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { notifyOnSettingChanged } from '../../../lib/server/lib/notifyListener';
 
 let html = '';
 Meteor.startup(() => {

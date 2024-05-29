@@ -7,6 +7,7 @@ import type { MatchKeysAndValues, MongoServerError } from 'mongodb';
 
 import { Selection, SelectionChannel, SelectionUser } from '..';
 import { callbacks } from '../../../../lib/callbacks';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { t } from '../../../utils/lib/i18n';
 import { ProgressStep, ImportPreparingStartedStates } from '../../lib/ImporterProgressStep';
 import type { ImporterInfo } from '../definitions/ImporterInfo';
@@ -14,7 +15,6 @@ import { ImportDataConverter } from './ImportDataConverter';
 import type { IConverterOptions } from './ImportDataConverter';
 import { ImporterProgress } from './ImporterProgress';
 import { ImporterWebsocket } from './ImporterWebsocket';
-import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
 type OldSettings = {
 	allowedDomainList?: string | null;

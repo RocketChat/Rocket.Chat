@@ -127,8 +127,8 @@ Meteor.startup(async () => {
 			});
 		}
 
-		(await Settings.updateValueById('Initial_Channel_Created', true)).modifiedCount
-			&& void notifyOnSettingChangedById('Initial_Channel_Created');
+		(await Settings.updateValueById('Initial_Channel_Created', true)).modifiedCount &&
+			void notifyOnSettingChangedById('Initial_Channel_Created');
 	}
 
 	try {
@@ -248,8 +248,8 @@ Meteor.startup(async () => {
 		await addUserRolesAsync(adminUser._id, ['admin']);
 
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount
-				&& void notifyOnSettingChangedById('Show_Setup_Wizard');
+			(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount &&
+				void notifyOnSettingChangedById('Show_Setup_Wizard');
 		}
 
 		return addUserToDefaultChannels(adminUser, true);

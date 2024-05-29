@@ -1,9 +1,9 @@
 import { applyLicense } from '@rocket.chat/license';
 import { Settings } from '@rocket.chat/models';
 
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { syncCloudData } from './syncWorkspace/syncCloudData';
-import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
 export async function saveRegistrationData({
 	workspaceId,
@@ -72,7 +72,7 @@ async function saveRegistrationDataBase({
 	});
 
 	// TODO: Why is this taking so long that needs a timeout?
-	for (let retry = 0; retry < 10; retry++) {
+	for await (const retry of Array.from({ length: 10 })) {
 		const isSettingsUpdated =
 			settings.get('Register_Server') === true &&
 			settings.get('Cloud_Workspace_Id') === workspaceId &&
@@ -90,6 +90,7 @@ async function saveRegistrationDataBase({
 		if (retry === 9) {
 			throw new Error('Failed to save registration data');
 		}
+
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 	}
 }

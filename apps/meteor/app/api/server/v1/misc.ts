@@ -24,6 +24,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { getLogs } from '../../../../server/stream/stdout';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { passwordPolicy } from '../../../lib/server';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
@@ -33,7 +34,6 @@ import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getUserInfo } from '../helpers/getUserInfo';
-import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
 /**
  * @openapi

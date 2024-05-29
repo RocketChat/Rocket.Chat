@@ -301,7 +301,10 @@ export async function notifyOnIntegrationHistoryChangedById<T extends IIntegrati
 	void api.broadcast('watch.integrationHistory', { clientAction, id: item._id, data: item, diff });
 }
 
-export async function notifyOnSettingChanged(setting: ISetting & { editor?: ISettingColor['editor'] }, clientAction: ClientAction = 'updated'): Promise<void> {
+export async function notifyOnSettingChanged(
+	setting: ISetting & { editor?: ISettingColor['editor'] },
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
 	}
@@ -314,9 +317,7 @@ export async function notifyOnSettingChangedById(id: ISetting['_id'], clientActi
 		return;
 	}
 
-	const item = (clientAction === 'removed')
-		? await Settings.trashFindOneById(id)
-		: await Settings.findOneById(id);
+	const item = clientAction === 'removed' ? await Settings.trashFindOneById(id) : await Settings.findOneById(id);
 
 	if (!item) {
 		return;
