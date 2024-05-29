@@ -3407,6 +3407,8 @@
   "manage-livechat-units_description": "Permission to manage omnichannel units",
   "manage-oauth-apps": "Manage OAuth Apps",
   "manage-oauth-apps_description": "Permission to manage the server OAuth apps",
+  "view-oauth-apps_description": "Permission to view the server OAuth apps",
+  "view-oauth-apps": "View OAuth Apps",
   "manage-outgoing-integrations": "Manage Outgoing Integrations",
   "manage-outgoing-integrations_description": "Permission to manage the server outgoing integrations",
   "manage-own-incoming-integrations": "Manage Own Incoming Integrations",
