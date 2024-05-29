@@ -9,9 +9,24 @@ import { password, adminUsername } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Direct Messages]', function () {
+	let testDM = {};
 	this.retries(0);
 
 	before((done) => getCredentials(done));
+
+	before(async () => {
+		await request
+			.post(api('im.create'))
+			.set(credentials)
+			.send({
+				username: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				testDM = res.body.room;
+			});
+	});
 
 	before('/chat.postMessage', (done) => {
 		request
@@ -68,22 +83,8 @@ describe('[Direct Messages]', function () {
 	});
 
 	describe('Testing DM info', () => {
-		let testDM = {};
 		let dmMessage = {};
-		it('creating new DM...', (done) => {
-			request
-				.post(api('im.create'))
-				.set(credentials)
-				.send({
-					username: 'rocket.cat',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					testDM = res.body.room;
-				})
-				.end(done);
-		});
+
 		it('sending a message...', (done) => {
 			request
 				.post(api('chat.sendMessage'))
@@ -190,10 +191,10 @@ describe('[Direct Messages]', function () {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count', 1);
-				expect(res.body).to.have.property('total', 1);
+				expect(res.body).to.have.property('count');
+				expect(res.body).to.have.property('total');
 				expect(res.body).to.have.property('ims').and.to.be.an('array');
-				const im = res.body.ims[0];
+				const im = res.body.ims.find((dm) => dm._id === testDM._id);
 				expect(im).to.have.property('_id');
 				expect(im).to.have.property('t').and.to.be.eq('d');
 				expect(im).to.have.property('msgs').and.to.be.a('number');
@@ -214,10 +215,10 @@ describe('[Direct Messages]', function () {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count', 1);
-				expect(res.body).to.have.property('total', 1);
+				expect(res.body).to.have.property('count');
+				expect(res.body).to.have.property('total');
 				expect(res.body).to.have.property('ims').and.to.be.an('array');
-				const im = res.body.ims[0];
+				const im = res.body.ims.find((dm) => dm._id === testDM._id);
 				expect(im).to.have.property('_id');
 				expect(im).to.have.property('t').and.to.be.eq('d');
 				expect(im).to.have.property('msgs').and.to.be.a('number');
@@ -243,11 +244,11 @@ describe('[Direct Messages]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count', 1);
-					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('ims').and.to.be.an('array');
 
-					const im = res.body.ims[0];
+					const im = res.body.ims.find((dm) => dm._id === testDM._id);
 
 					expect(im).to.have.property('_id');
 					expect(im).to.have.property('t').and.to.be.eq('d');
@@ -273,10 +274,10 @@ describe('[Direct Messages]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count', 1);
-					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('ims').and.to.be.an('array');
-					const im = res.body.ims[0];
+					const im = res.body.ims.find((dm) => dm._id === testDM._id);
 					expect(im).to.have.property('_id');
 					expect(im).to.have.property('t').and.to.be.eq('d');
 					expect(im).to.have.property('msgs').and.to.be.a('number');

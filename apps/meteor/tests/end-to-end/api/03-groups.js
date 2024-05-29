@@ -636,7 +636,7 @@ describe('[Groups]', function () {
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200),
-				// updatePermission('kick-user-from-any-p-room', []),
+				updatePermission('kick-user-from-any-p-room', []),
 				updatePermission('remove-user', ['admin', 'owner', 'moderator']),
 				deleteUser(testUserModerator),
 				deleteUser(testUserOwner),
@@ -645,6 +645,7 @@ describe('[Groups]', function () {
 		});
 
 		it("should return an error when user is not a member of the group and doesn't have permission", async () => {
+			await updatePermission('kick-user-from-any-p-room', []);
 			await request
 				.post(api('groups.kick'))
 				.set(credentials)
@@ -688,7 +689,7 @@ describe('[Groups]', function () {
 				.expect(200);
 		});
 
-		it.skip('should kick user from group if not a member of the room but has the required permission', async () => {
+		it('should kick user from group if not a member of the room but has the required permission', async () => {
 			await updatePermission('kick-user-from-any-p-room', ['admin']);
 			await inviteUser(testUserMember._id);
 
@@ -2066,40 +2067,21 @@ describe('[Groups]', function () {
 				});
 		});
 
-		it('/groups.list', (done) => {
+		it('should return the last message user real name', (done) => {
 			request
-				.get(api('groups.list'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('groups').and.to.be.an('array');
-
-					const retGroup = res.body.groups.find(({ _id }) => _id === realNameGroup._id);
-
-					expect(retGroup).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
+				.get(api('groups.info'))
+				.query({
+					roomId: realNameGroup._id,
 				})
-				.end(done);
-		});
-
-		it('/groups.listAll', (done) => {
-			request
-				.get(api('groups.listAll'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('groups').and.to.be.an('array');
+					const { group } = res.body;
 
-					const retGroup = res.body.groups.find(({ _id }) => _id === realNameGroup._id);
-
-					expect(retGroup).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
+					expect(group._id).to.be.equal(realNameGroup._id);
+					expect(group).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})
 				.end(done);
 		});

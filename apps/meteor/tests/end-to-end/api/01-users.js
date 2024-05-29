@@ -4,7 +4,7 @@ import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials, apiEmail, apiUsername, log, wait, reservedWords } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data.js';
 import { MAX_BIO_LENGTH, MAX_NICKNAME_LENGTH } from '../../data/constants.ts';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
 import { imgURL } from '../../data/interactions';
@@ -922,17 +922,18 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
-		it.skip('should query all users in the system by name', (done) => {
+		it('should query all users in the system by name', (done) => {
 			// filtering user list
 			request
 				.get(api('users.list'))
 				.set(credentials)
 				.query({
 					name: { $regex: 'g' },
+					sort: JSON.stringify({
+						createdAt: -1,
+					}),
 				})
 				.field('username', 1)
-				.sort('createdAt', -1)
-				.expect(log)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -3942,6 +3943,7 @@ describe('[Users]', function () {
 		it('should list all users', async () => {
 			await request
 				.get(api('users.listByStatus'))
+				.query({ searchTerm: user.name })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -3959,7 +3961,7 @@ describe('[Users]', function () {
 			await request
 				.get(api('users.listByStatus'))
 				.set(credentials)
-				.query({ hasLoggedIn: true, status: 'active' })
+				.query({ hasLoggedIn: true, status: 'active', searchTerm: user.name })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
