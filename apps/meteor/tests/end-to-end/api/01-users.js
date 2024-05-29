@@ -3837,21 +3837,7 @@ describe('[Users]', function () {
 				.then(() => done());
 		});
 
-		after(() =>
-			Promise.all([
-				[teamName1, teamName2].map((team) =>
-					request
-						.post(api('teams.delete'))
-						.set(credentials)
-						.send({
-							teamName: team,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200),
-				),
-				deleteUser(testUser),
-			]),
-		);
+		after(() => Promise.all([...[teamName1, teamName2].map((team) => deleteTeam(credentials, team)), deleteUser(testUser)]));
 
 		it('should list both channels', (done) => {
 			request

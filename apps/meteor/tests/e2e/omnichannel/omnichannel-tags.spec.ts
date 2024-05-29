@@ -79,7 +79,7 @@ test.describe('OC - Manage Tags', () => {
 				await expect(poOmnichannelTags.confirmDeleteModal).toBeVisible();
 				await poOmnichannelTags.btnConfirmDeleteModal.click();
 				await expect(poOmnichannelTags.confirmDeleteModal).not.toBeVisible();
-				await expect(page.locator('h3 >> text="No tags yet"')).toBeVisible();
+				await expect(page.locator('h3 >> text="No results found"')).toBeVisible();
 			});
 		});
   });
