@@ -65,7 +65,8 @@
 		"mongodb@^4.17.1": "patch:mongodb@npm:4.17.1#.yarn/patches/mongodb-npm-4.17.1-a2fe811ff1.patch",
 		"@rocket.chat/forked-matrix-sdk-crypto-nodejs": "0.1.0-beta.13",
 		"typia@5.3.3": "patch:typia@npm:5.3.3#.yarn/patches/typia-npm-5.3.3-21d3e18463.patch",
-		"typia@~5.3.3": "patch:typia@npm%3A5.3.3#./.yarn/patches/typia-npm-5.3.3-21d3e18463.patch"
+		"typia@~5.3.3": "patch:typia@npm%3A5.3.3#./.yarn/patches/typia-npm-5.3.3-21d3e18463.patch",
+		"emojione@^4.5.0": "patch:emojione@npm%3A4.5.0#./.yarn/patches/emojione-npm-4.5.0-e7373e91e7.patch"
 	},
 	"dependencies": {
 		"node-gyp": "^9.4.1"
