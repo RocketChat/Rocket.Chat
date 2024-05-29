@@ -1,4 +1,4 @@
 ---
 '@rocket.chat/meteor': patch
 ---
-This change ensures that system messages are not broadcasted when the specific setting to hide system messages is enabled.
+Changed streaming logic to prevent hidden system messages from being broadcasted through `stream-room-messages`.

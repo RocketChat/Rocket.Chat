@@ -63,33 +63,100 @@ describe('Message Broadcast Tests', () => {
 	});
 
 	describe('getMessageToBroadcast', () => {
-		it('should return undefined if message is hidden or imported', async () => {
-			messagesFindOneStub.resolves({ ...sampleMessage, _hidden: true });
+		const testCases = [
+			{
+				description: 'should return undefined if message is hidden or imported',
+				message: { ...sampleMessage, _hidden: true },
+				hideSystemMessages: [],
+				useRealName: false,
+				expectedResult: undefined,
+			},
+			{
+				description: 'should hide message if type is in hideSystemMessage settings',
+				message: sampleMessage,
+				hideSystemMessages: ['user-muted', 'mute_unmute'],
+				useRealName: false,
+				expectedResult: undefined,
+			},
+			{
+				description: 'should return the message with real name if useRealName is true',
+				message: sampleMessage,
+				hideSystemMessages: [],
+				useRealName: true,
+				expectedResult: { ...sampleMessage, u: { ...sampleMessage.u, name: 'Real User' } },
+			},
+			{
+				description: 'should return the message if Hide_System_Messages is undefined',
+				message: sampleMessage,
+				hideSystemMessages: undefined,
+				useRealName: false,
+				expectedResult: sampleMessage,
+			},
+			{
+				description: 'should return undefined if the message type is muted and a mute_unmute is received',
+				message: { ...sampleMessage, t: 'mute_unmute' },
+				hideSystemMessages: ['user-muted', 'mute_unmute'],
+				useRealName: false,
+				expectedResult: undefined,
+			},
+			{
+				description: 'should return the message if no system messages are muted',
+				message: sampleMessage,
+				hideSystemMessages: [],
+				useRealName: false,
+				expectedResult: sampleMessage,
+			},
+			{
+				description: 'should hide message if type is room-archived',
+				message: { ...sampleMessage, t: 'room-archived' },
+				hideSystemMessages: ['room-archived'],
+				useRealName: false,
+				expectedResult: undefined,
+			},
+			{
+				description: 'should hide message if type is user-unmuted',
+				message: { ...sampleMessage, t: 'user-unmuted' },
+				hideSystemMessages: ['user-unmuted'],
+				useRealName: false,
+				expectedResult: undefined,
+			},
+			{
+				description: 'should hide message if type is subscription-role-added',
+				message: { ...sampleMessage, t: 'subscription-role-added' },
+				hideSystemMessages: ['subscription-role-added'],
+				useRealName: false,
+				expectedResult: undefined,
+			},
+			{
+				description: 'should hide message if type is message_pinned',
+				message: { ...sampleMessage, t: 'message_pinned' },
+				hideSystemMessages: ['message_pinned'],
+				useRealName: false,
+				expectedResult: undefined,
+			},
+			{
+				description: 'should hide message if type is new-owner',
+				message: { ...sampleMessage, t: 'new-owner' },
+				hideSystemMessages: ['new-owner'],
+				useRealName: false,
+				expectedResult: undefined,
+			},
+		];
 
-			const result = await getMessageToBroadcast({ id: '123' });
+		testCases.forEach(({ description, message, hideSystemMessages, useRealName, expectedResult }) => {
+			it(description, async () => {
+				messagesFindOneStub.resolves(message);
+				getValueByIdStub.withArgs('Hide_System_Messages').resolves(hideSystemMessages);
+				getValueByIdStub.withArgs('UI_Use_Real_Name').resolves(useRealName);
 
-			expect(result).to.be.undefined;
-		});
+				if (useRealName) {
+					usersFindOneStub.resolves({ name: 'Real User' });
+				}
 
-		it('should hide message if type is in hideSystemMessage settings', async () => {
-			messagesFindOneStub.resolves(sampleMessage);
-			getValueByIdStub.withArgs('Hide_System_Messages').resolves(['user-muted', 'mute_unmute']);
+				const result = await getMessageToBroadcast({ id: '123' });
 
-			const result = await getMessageToBroadcast({ id: '123' });
-
-			expect(result).to.be.undefined;
-		});
-
-		it('should return the message with real name if useRealName is true', async () => {
-			getValueByIdStub.withArgs('Hide_System_Messages').resolves([]);
-			getValueByIdStub.withArgs('UI_Use_Real_Name').resolves(true);
-			messagesFindOneStub.resolves(sampleMessage);
-			usersFindOneStub.resolves({ name: 'Real User' });
-
-			const result = await getMessageToBroadcast({ id: '123' });
-
-			expect(result).to.have.property('u');
-			expect(result?.u).to.have.property('name', 'Real User');
+				expect(result).to.deep.equal(expectedResult);
+			});
 		});
 	});
 

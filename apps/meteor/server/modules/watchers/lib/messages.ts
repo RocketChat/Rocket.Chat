@@ -13,6 +13,10 @@ const getUserNameCached = mem(
 	{ maxAge: 10000 },
 );
 
+const isMutedUnmuted = (messageType: string): boolean => {
+	return messageType === 'user-muted' || messageType === 'user-unmuted';
+};
+
 export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<IMessage | void> {
 	const message = data ?? (await Messages.findOneById(id));
 	if (!message) {
@@ -23,9 +27,6 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 		const hideSystemMessage = (await getSettingCached('Hide_System_Messages')) as MessageTypesValues[];
 
 		if (hideSystemMessage) {
-			const isMutedUnmuted = (messageType: string): boolean => {
-				return messageType === 'user-muted' || messageType === 'user-unmuted';
-			};
 			if (hideSystemMessage.includes(message.t) || (isMutedUnmuted(message.t) && hideSystemMessage.includes('mute_unmute'))) {
 				return;
 			}
