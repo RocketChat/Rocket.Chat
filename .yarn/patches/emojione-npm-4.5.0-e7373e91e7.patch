@@ -1,0 +1,13 @@
+diff --git a/lib/js/emojione.js b/lib/js/emojione.js
+index 7fcb24d1b3736de099fc20d2c0221691c44fd546..af647006dce7bdc9461009faa8a75ea4f0b68b20 100644
+--- a/lib/js/emojione.js
++++ b/lib/js/emojione.js
+@@ -495,5 +495,5 @@
+         return string.replace(search, replace);
+     };
+ 
+-}(this.emojione = this.emojione || {}));
+-if(typeof module === "object") module.exports = this.emojione;
+\ No newline at end of file
++}((globalThis || window).emojione = (globalThis || window).emojione || {}));
++if(typeof module === "object") module.exports = (globalThis || window).emojione;
