@@ -52,7 +52,7 @@ import { API } from '../api';
  */
 API.v1.addRoute(
 	'banners.getNew',
-	{ authRequired: true, deprecation: { version: '8.0.0', alternatives: ['banners/:id'] } },
+	{ authRequired: true, deprecation: { version: '8.0.0', alternatives: ['banners/:id', 'banners'] } },
 	{
 		async get() {
 			check(
