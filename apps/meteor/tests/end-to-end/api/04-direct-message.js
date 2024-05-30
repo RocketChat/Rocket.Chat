@@ -6,20 +6,24 @@ import { updateSetting, updatePermission } from '../../data/permissions.helper';
 import { deleteRoom } from '../../data/rooms.helper';
 import { testFileUploads } from '../../data/uploads.helper';
 import { password, adminUsername } from '../../data/user';
-import { createUser, deleteUser, login } from '../../data/users.helper';
+import { createUser, deleteUser, login, setUserStatus } from '../../data/users.helper';
 
 describe('[Direct Messages]', function () {
 	let testDM = {};
+	let user;
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 
 	before(async () => {
+		user = await createUser();
+		const cred = await login(user.username, password);
+		await setUserStatus(cred);
 		await request
 			.post(api('im.create'))
 			.set(credentials)
 			.send({
-				username: 'rocket.cat',
+				username: user.username,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -33,7 +37,7 @@ describe('[Direct Messages]', function () {
 			.post(api('chat.postMessage'))
 			.set(credentials)
 			.send({
-				channel: 'rocket.cat',
+				roomId: testDM.rid,
 				text: 'This message was sent using the API',
 			})
 			.expect('Content-Type', 'application/json')
@@ -47,6 +51,8 @@ describe('[Direct Messages]', function () {
 			.end(done);
 	});
 
+	after(() => deleteUser(user));
+
 	describe('/im.setTopic', () => {
 		it('should set the topic of the DM with a string', (done) => {
 			request
@@ -54,13 +60,13 @@ describe('[Direct Messages]', function () {
 				.set(credentials)
 				.send({
 					roomId: directMessage._id,
-					topic: 'a direct message with rocket.cat',
+					topic: `a direct message with ${user.username}`,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('topic', 'a direct message with rocket.cat');
+					expect(res.body).to.have.nested.property('topic', `a direct message with ${user.username}`);
 				})
 				.end(done);
 		});
@@ -422,7 +428,7 @@ describe('[Direct Messages]', function () {
 			.set(credentials)
 			.send({
 				roomId: directMessage._id,
-				userId: 'rocket.cat',
+				userId: user._id,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -558,7 +564,7 @@ describe('[Direct Messages]', function () {
 				.get(api('im.members'))
 				.set(credentials)
 				.query({
-					username: 'rocket.cat',
+					username: user.username,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -793,7 +799,7 @@ describe('[Direct Messages]', function () {
 				.post(api('im.create'))
 				.set(credentials)
 				.send({
-					username: 'rocket.cat',
+					username: user.username,
 				})
 				.expect(200)
 				.expect('Content-Type', 'application/json')
@@ -808,7 +814,7 @@ describe('[Direct Messages]', function () {
 				.post(api('im.delete'))
 				.set(credentials)
 				.send({
-					username: 'rocket.cat',
+					username: user.username,
 				})
 				.expect(200)
 				.expect('Content-Type', 'application/json')

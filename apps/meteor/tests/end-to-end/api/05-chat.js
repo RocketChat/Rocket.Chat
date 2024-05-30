@@ -2183,7 +2183,25 @@ describe('[Chat]', function () {
 	});
 
 	describe('[/chat.ignoreUser]', () => {
-		after(() => deleteRoom({ type: 'd', roomId: 'rocket.catrocketchat.internal.admin.test' }));
+		let user;
+		let testDM;
+
+		before(async () => {
+			user = await createUser();
+			await request
+				.post(api('im.create'))
+				.set(credentials)
+				.send({
+					username: user.username,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					testDM = res.body.room;
+				});
+		});
+
+		after(() => Promise.all([deleteRoom({ type: 'd', roomId: testDM.rid }), deleteUser(user)]));
 
 		it('should fail if invalid roomId', (done) => {
 			request
@@ -2208,7 +2226,7 @@ describe('[Chat]', function () {
 				.get(api('chat.ignoreUser'))
 				.set(credentials)
 				.query({
-					rid: 'rocket.catrocketchat.internal.admin.test',
+					rid: testDM.rid,
 					userId: 'invalid',
 				})
 				.expect('Content-Type', 'application/json')
@@ -2226,8 +2244,8 @@ describe('[Chat]', function () {
 				.get(api('chat.ignoreUser'))
 				.set(credentials)
 				.query({
-					rid: 'rocket.catrocketchat.internal.admin.test',
-					userId: 'rocket.cat',
+					rid: testDM.rid,
+					userId: user._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2243,8 +2261,8 @@ describe('[Chat]', function () {
 				.get(api('chat.ignoreUser'))
 				.set(credentials)
 				.query({
-					rid: 'rocket.catrocketchat.internal.admin.test',
-					userId: 'rocket.cat',
+					rid: testDM.rid,
+					userId: user._id,
 					ignore: false,
 				})
 				.expect('Content-Type', 'application/json')

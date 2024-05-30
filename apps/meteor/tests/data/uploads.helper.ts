@@ -4,7 +4,7 @@ import { after, before, it } from 'mocha';
 
 import { api, request, credentials } from './api-data.js';
 import { password } from './user';
-import { createUser, login } from './users.helper';
+import { createUser, deleteUser, login } from './users.helper';
 import { imgURL } from './interactions';
 import { updateSetting } from './permissions.helper';
 import { createRoom, deleteRoom } from './rooms.helper';
@@ -17,17 +17,20 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 		'p': 'group',
 		'd': 'room',
 	};
+	let user: any;
 
 	before(async function () {
 		await updateSetting('VoIP_Enabled', true);
 		await updateSetting('Message_KeepHistory', true);
+		user = await createUser();
 
-		testRoom = (await createRoom({ type: roomType, ...(roomType === 'd' ? { username: 'rocket.cat' } : { name: `channel-files-${Date.now()}` }) } as any)).body[propertyMap[roomType]];
+		testRoom = (await createRoom({ type: roomType, ...(roomType === 'd' ? { username: user.username } : { name: `channel-files-${Date.now()}` }) } as any)).body[propertyMap[roomType]];
 	});
 
 	after(async function () {
 		await Promise.all([
 			deleteRoom({ type: 'c', roomId: testRoom._id }),
+			deleteUser(user),
 			updateSetting('VoIP_Enabled', false),
 			updateSetting('Message_KeepHistory', false),
 		]);

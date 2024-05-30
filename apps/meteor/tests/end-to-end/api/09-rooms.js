@@ -452,7 +452,7 @@ describe('[Rooms]', function () {
 
 			publicChannel = (await createRoom({ type: 'c', name: `testeChannel${+new Date()}` })).body.channel;
 			privateChannel = (await createRoom({ type: 'p', name: `testPrivateChannel${+new Date()}` })).body.group;
-			directMessageChannelId = (await createRoom({ type: 'd', username: 'rocket.cat' })).body.room.rid;
+			directMessageChannelId = (await createRoom({ type: 'd', username: user.username })).body.room.rid;
 		});
 
 		afterEach(() =>
@@ -636,11 +636,13 @@ describe('[Rooms]', function () {
 		];
 		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
 		const testGroupName = `group.test.${Date.now()}-${Math.random()}`;
+		let user;
 
 		before(async () => {
+			user = await createUser();
 			testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
 			testGroup = (await createRoom({ type: 'p', name: testGroupName })).body.group;
-			testDM = (await createRoom({ type: 'd', username: 'rocket.cat' })).body.room;
+			testDM = (await createRoom({ type: 'd', username: user.username })).body.room;
 		});
 
 		after(() =>
@@ -648,6 +650,7 @@ describe('[Rooms]', function () {
 				deleteRoom({ type: 'd', roomId: testDM._id }),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
 				deleteRoom({ type: 'p', roomId: testGroup._id }),
+				deleteUser(user),
 			]),
 		);
 
@@ -759,6 +762,7 @@ describe('[Rooms]', function () {
 			testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
 			testGroup = (await createRoom({ type: 'p', name: testGroupName })).body.group;
 			testDM = (await createRoom({ type: 'd', username: user2.username })).body.room;
+			await updateSetting('API_User_Limit', 1000000);
 		});
 
 		after(() =>
@@ -769,6 +773,7 @@ describe('[Rooms]', function () {
 				updatePermission('leave-c', ['admin', 'user', 'bot', 'anonymous', 'app']),
 				updatePermission('leave-p', ['admin', 'user', 'bot', 'anonymous', 'app']),
 				deleteUser(user2),
+				updateSetting('API_User_Limit', 10000),
 			]),
 		);
 
@@ -1580,12 +1585,13 @@ describe('[Rooms]', function () {
 	describe('update group dms name', () => {
 		let testUser;
 		let roomId;
+		let testUser2;
 
 		before(async () => {
 			testUser = await createUser();
+			testUser2 = await createUser();
 
-			const rocketcat = 'rocket.cat';
-			const usernames = [testUser.username, rocketcat].join(',');
+			const usernames = [testUser.username, testUser2.username].join(',');
 
 			const result = await request.post(api('dm.create')).set(credentials).send({
 				usernames,
@@ -1594,7 +1600,14 @@ describe('[Rooms]', function () {
 			roomId = result.body.room.rid;
 		});
 
-		after(async () => Promise.all([updateSetting('UI_Use_Real_Name', false), deleteRoom({ type: 'd', roomId }), deleteUser(testUser)]));
+		after(async () =>
+			Promise.all([
+				updateSetting('UI_Use_Real_Name', false),
+				deleteRoom({ type: 'd', roomId }),
+				deleteUser(testUser),
+				deleteUser(testUser2),
+			]),
+		);
 
 		it('should update group name if user changes username', async () => {
 			await updateSetting('UI_Use_Real_Name', false);
@@ -1618,7 +1631,7 @@ describe('[Rooms]', function () {
 				.send()
 				.expect((res) => {
 					const { subscription } = res.body;
-					expect(subscription.name).to.equal(`rocket.cat,changed.username.${testUser.username}`);
+					expect(subscription.name).to.equal(`changed.username.${testUser.username},${testUser2.username}`);
 				});
 		});
 
@@ -1644,7 +1657,7 @@ describe('[Rooms]', function () {
 				.send()
 				.expect((res) => {
 					const { subscription } = res.body;
-					expect(subscription.fname).to.equal(`changed.name.${testUser.username}, Rocket.Cat`);
+					expect(subscription.fname).to.equal(`changed.name.${testUser.username}, ${testUser2.name}`);
 				});
 		});
 	});
