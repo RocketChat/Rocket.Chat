@@ -6,7 +6,7 @@ import { updateSetting, updatePermission } from '../../data/permissions.helper';
 import { deleteRoom } from '../../data/rooms.helper';
 import { testFileUploads } from '../../data/uploads.helper';
 import { password, adminUsername } from '../../data/user';
-import { createUser, deleteUser, login } from '../../data/users.helper';
+import { createUser, deleteUser, login, setUserStatus } from '../../data/users.helper';
 
 describe('[Direct Messages]', function () {
 	let testDM = {};
@@ -17,6 +17,8 @@ describe('[Direct Messages]', function () {
 
 	before(async () => {
 		user = await createUser();
+		const cred = await login(user.username, password);
+		await setUserStatus(cred);
 		await request
 			.post(api('im.create'))
 			.set(credentials)
