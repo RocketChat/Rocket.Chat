@@ -5,7 +5,7 @@ import { getCredentials, request, credentials, api } from '../../data/api-data.j
 import { APP_URL, apps, APP_USERNAME } from '../../data/apps/apps-data.js';
 import { cleanupApps } from '../../data/apps/helper.js';
 import { updatePermission } from '../../data/permissions.helper';
-import { getUserByUsername } from '../../data/users.helper.js';
+import { getUserByUsername } from '../../data/users.helper';
 
 describe('Apps - Installation', function () {
 	this.retries(0);

@@ -5,7 +5,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data.j
 import { sendSimpleMessage } from '../../data/chat.helper.js';
 import { createRoom, deleteRoom } from '../../data/rooms.helper.js';
 import { password } from '../../data/user';
-import { createUser, deleteUser, login } from '../../data/users.helper.js';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Commands]', function () {
 	this.retries(0);

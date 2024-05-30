@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { getUsersReports, reportUser } from '../../data/moderation.helper';
 import { createUser, deleteUser } from '../../data/users.helper.js';
 

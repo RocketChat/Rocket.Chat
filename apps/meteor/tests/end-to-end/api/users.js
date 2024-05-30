@@ -7,10 +7,10 @@ import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data.js';
 import { MAX_BIO_LENGTH, MAX_NICKNAME_LENGTH } from '../../data/constants.ts';
 import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
-import { imgURL } from '../../data/interactions';
-import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
-import { removeAgent, getAgent } from '../../data/livechat/users';
-import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { imgURL } from '../../data/interactions.ts';
+import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms.ts';
+import { removeAgent, getAgent } from '../../data/livechat/users.ts';
+import { updatePermission, updateSetting } from '../../data/permissions.helper.ts';
 import {
 	addRoomOwner,
 	createRoom,
@@ -21,9 +21,9 @@ import {
 	removeRoomOwner,
 	setRoomConfig,
 } from '../../data/rooms.helper';
-import { createTeam, deleteTeam } from '../../data/teams.helper';
-import { adminEmail, preferences, password, adminUsername } from '../../data/user';
-import { createUser, login, deleteUser, getUserStatus, getUserByUsername, registerUser } from '../../data/users.helper.js';
+import { createTeam, deleteTeam } from '../../data/teams.helper.ts';
+import { adminEmail, preferences, password, adminUsername } from '../../data/user.ts';
+import { createUser, login, deleteUser, getUserStatus, getUserByUsername, registerUser } from '../../data/users.helper';
 
 const targetUser = {};
 

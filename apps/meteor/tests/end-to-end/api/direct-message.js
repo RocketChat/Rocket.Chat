@@ -3,7 +3,7 @@ import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, directMessage, apiUsername, apiEmail, methodCall } from '../../data/api-data.js';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
-import { deleteRoom } from '../../data/rooms.helper';
+import { deleteRoom } from '../../data/rooms.helper.js';
 import { testFileUploads } from '../../data/uploads.helper';
 import { password, adminUsername } from '../../data/user';
 import { createUser, deleteUser, login, setUserStatus } from '../../data/users.helper';

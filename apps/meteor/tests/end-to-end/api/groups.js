@@ -1357,11 +1357,39 @@ describe('[Groups]', function () {
 		});
 	});
 
-	describe.skip('/groups.leave', () => {
-		it('should allow the user to leave the group', (done) => {
-			request
-				.post(api('groups.leave'))
+	describe('/groups.leave', () => {
+		let user;
+
+		before(async () => {
+			user = await createUser();
+		})
+
+		after(() => deleteUser(user));
+			
+		it('should allow the user to leave the group', async() => {
+			const cred = await login(user.username, password);
+			await request
+			.post(api('groups.invite'))
+			.set(credentials)
+			.send({
+				roomId: group._id,
+				userId: user._id,
+			})
+			await request
+				.post(api('groups.addOwner'))
 				.set(credentials)
+				.send({
+					roomId: group._id,
+					userId: user._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+			await request
+				.post(api('groups.leave'))
+				.set(cred)
 				.send({
 					roomId: group._id,
 				})
@@ -1370,7 +1398,6 @@ describe('[Groups]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				})
-				.end(done);
 		});
 	});
 

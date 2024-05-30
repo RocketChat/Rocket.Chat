@@ -5,11 +5,9 @@ import { getCredentials, request, credentials } from '../../data/api-data.js';
 import { apps } from '../../data/apps/apps-data.js';
 import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
 import { getMessageById } from '../../data/chat.helper.js';
-import { createRoom, deleteRoom } from '../../data/rooms.helper';
-import { adminUsername, password } from '../../data/user';
-import { createUser, deleteUser, login } from '../../data/users.helper.js';
+import { createRoom, deleteRoom } from '../../data/rooms.helper.js';
 
-describe('Apps - Send Messages As User', function () {
+describe('Apps - Send Messages As APP User', function () {
 	this.retries(0);
 	let app;
 
@@ -21,10 +19,10 @@ describe('Apps - Send Messages As User', function () {
 
 	after(() => cleanupApps());
 
-	describe('[Send Message as user]', () => {
+	describe('[Send Message as app user]', () => {
 		it('should return an error when the room is not found', (done) => {
 			request
-				.post(apps(`/public/${app.id}/send-message-as-user`))
+				.post(apps(`/public/${app.id}/send-message-as-app-user`))
 				.send({
 					roomId: 'invalid-room',
 				})
@@ -38,27 +36,11 @@ describe('Apps - Send Messages As User', function () {
 				})
 				.end(done);
 		});
-		it('should return an error when the user is not found', (done) => {
-			request
-				.post(apps(`/public/${app.id}/send-message-as-user?userId=invalid-user`))
-				.send({
-					roomId: 'GENERAL',
-				})
-				.set(credentials)
-				.expect(404)
-				.expect((err, res) => {
-					expect(err).to.have.a.property('error');
-					expect(res).to.be.equal(undefined);
-					expect(err.error).to.have.a.property('text');
-					expect(err.error.text).to.be.equal('User with id "invalid-user" could not be found');
-				})
-				.end(done);
-		});
 		describe('Send to a Public Channel', () => {
 			let publicMessageId;
 			it('should send a message as app user', (done) => {
 				request
-					.post(apps(`/public/${app.id}/send-message-as-user?userId=${adminUsername}`))
+					.post(apps(`/public/${app.id}/send-message-as-app-user`))
 					.set(credentials)
 					.send({
 						roomId: 'GENERAL',
@@ -73,14 +55,12 @@ describe('Apps - Send Messages As User', function () {
 			});
 			it('should be a valid message', async () => {
 				const message = await getMessageById({ msgId: publicMessageId });
-				expect(message.msg).to.be.equal('Executing send-message-as-user test endpoint');
+				expect(message.msg).to.be.equal('Executing send-message-as-app-user test endpoint');
 			});
 		});
 		describe('Send to a Private Channel', () => {
 			let privateMessageId;
 			let group;
-			let user;
-			let userCredentials;
 
 			before(async () => {
 				group = (
@@ -89,25 +69,13 @@ describe('Apps - Send Messages As User', function () {
 						name: `apps-e2etest-room-${Date.now()}`,
 					})
 				).body.group;
-				user = await createUser();
-				userCredentials = await login(user.username, password);
 			});
 
-			after(() => Promise.all([deleteRoom({ type: 'p', roomId: group._id }), deleteUser(user)]));
+			after(() => deleteRoom({ type: 'p', roomId: group._id }));
 
 			it('should send a message as app user', (done) => {
 				request
-					.post(apps(`/public/${app.id}/send-message-as-user?userId=${user._id}`))
-					.set(userCredentials)
-					.send({
-						roomId: group._id,
-					})
-					.expect(500)
-					.end(done);
-			});
-			it('should send a message as app user', (done) => {
-				request
-					.post(apps(`/public/${app.id}/send-message-as-user?userId=${adminUsername}`))
+					.post(apps(`/public/${app.id}/send-message-as-app-user`))
 					.set(credentials)
 					.send({
 						roomId: group._id,
@@ -122,7 +90,7 @@ describe('Apps - Send Messages As User', function () {
 			});
 			it('should be a valid message', async () => {
 				const message = await getMessageById({ msgId: privateMessageId });
-				expect(message.msg).to.be.equal('Executing send-message-as-user test endpoint');
+				expect(message.msg).to.be.equal('Executing send-message-as-app-user test endpoint');
 			});
 		});
 		describe('Send to a DM Channel', () => {
@@ -142,7 +110,7 @@ describe('Apps - Send Messages As User', function () {
 
 			it('should send a message as app user', (done) => {
 				request
-					.post(apps(`/public/${app.id}/send-message-as-user?userId=${adminUsername}`))
+					.post(apps(`/public/${app.id}/send-message-as-app-user`))
 					.set(credentials)
 					.send({
 						roomId: dmRoom._id,
@@ -157,7 +125,7 @@ describe('Apps - Send Messages As User', function () {
 			});
 			it('should be a valid message', async () => {
 				const message = await getMessageById({ msgId: DMMessageId });
-				expect(message.msg).to.be.equal('Executing send-message-as-user test endpoint');
+				expect(message.msg).to.be.equal('Executing send-message-as-app-user test endpoint');
 			});
 		});
 	});
