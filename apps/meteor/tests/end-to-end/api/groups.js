@@ -1362,19 +1362,16 @@ describe('[Groups]', function () {
 
 		before(async () => {
 			user = await createUser();
-		})
+		});
 
 		after(() => deleteUser(user));
-			
-		it('should allow the user to leave the group', async() => {
+
+		it('should allow the user to leave the group', async () => {
 			const cred = await login(user.username, password);
-			await request
-			.post(api('groups.invite'))
-			.set(credentials)
-			.send({
+			await request.post(api('groups.invite')).set(credentials).send({
 				roomId: group._id,
 				userId: user._id,
-			})
+			});
 			await request
 				.post(api('groups.addOwner'))
 				.set(credentials)
@@ -1386,7 +1383,7 @@ describe('[Groups]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-				})
+				});
 			await request
 				.post(api('groups.leave'))
 				.set(cred)
@@ -1397,7 +1394,7 @@ describe('[Groups]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-				})
+				});
 		});
 	});
 
