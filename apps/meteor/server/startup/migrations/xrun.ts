@@ -17,24 +17,32 @@ const maxAgeSettingMap = new Map([
 const moveRetentionSetting = async () => {
 	const convertDaysToMs = (days: number) => days * 24 * 60 * 60 * 1000;
 
+	const promises: Array<Promise<any>> = [];
 	await Settings.find({ _id: { $in: Array.from(maxAgeSettingMap.keys()) } }, { projection: { _id: 1, value: 1 } }).forEach(
 		({ _id, value }) => {
 			if (!maxAgeSettingMap.has(_id)) {
 				throw new Error(`moveRetentionSetting - Setting ${_id} equivalent does not exist`);
 			}
 
-			void Settings.update(
-				{
-					_id: maxAgeSettingMap.get(_id),
-				},
-				{
-					$set: {
-						value: convertDaysToMs(Number(value)),
+			if (Number(value) === -1) return;
+
+			promises.push(
+				Settings.update(
+					{
+						_id: maxAgeSettingMap.get(_id),
 					},
-				},
+					{
+						$set: {
+							value: convertDaysToMs(Number(value)),
+						},
+					},
+				),
 			);
 		},
 	);
+
+	await Promise.all(promises);
+	await Settings.updateMany({ _id: { $in: Array.from(maxAgeSettingMap.keys()) } }, { $set: { value: -1 } });
 };
 
 export const performMigrationProcedure = async (): Promise<void> => {
