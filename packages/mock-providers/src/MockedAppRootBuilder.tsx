@@ -1,6 +1,8 @@
 import { type ISetting, type Serialized, type SettingValue } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
 import { type Method, type OperationParams, type OperationResult, type PathPattern, type UrlParams } from '@rocket.chat/rest-typings';
+import type { ModalContextValue } from '@rocket.chat/ui-contexts';
 import {
 	type ServerMethodName,
 	type ServerMethodParameters,
@@ -23,10 +25,16 @@ import { createInstance } from 'i18next';
 import { type ObjectId } from 'mongodb';
 import React, { type ContextType, type ReactNode, useEffect, useReducer } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 type Mutable<T> = {
 	-readonly [P in keyof T]: T[P];
 };
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+interface MockedAppRootEvents {
+	'update-modal': void;
+}
 
 export class MockedAppRootBuilder {
 	private wrappers: Array<(children: ReactNode) => ReactNode> = [];
@@ -89,10 +97,16 @@ export class MockedAppRootBuilder {
 		userId: null,
 	};
 
-	private modal: ContextType<typeof ModalContext> = {
+	private modal: ModalContextValue = {
 		currentModal: { component: null },
 		modal: {
-			setModal: () => undefined,
+			setModal: (modal) => {
+				this.modal = {
+					...this.modal,
+					currentModal: { component: modal },
+				};
+				this.events.emit('update-modal');
+			},
 		},
 	};
 
@@ -111,6 +125,8 @@ export class MockedAppRootBuilder {
 			once: () => () => undefined,
 		},
 	};
+
+	private events = new Emitter<MockedAppRootEvents>();
 
 	wrap(wrapper: (children: ReactNode) => ReactNode): this {
 		this.wrappers.push(wrapper);
@@ -311,6 +327,12 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	withOpenModal(modal: ReactNode) {
+		this.modal.currentModal = { component: modal };
+
+		return this;
+	}
+
 	private i18n = createInstance(
 		{
 			// debug: true,
@@ -353,7 +375,7 @@ export class MockedAppRootBuilder {
 			},
 		});
 
-		const { connectionStatus, server, router, settings, user, modal, i18n, authorization, wrappers } = this;
+		const { connectionStatus, server, router, settings, user, i18n, authorization, wrappers } = this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
 			return {
@@ -392,6 +414,10 @@ export class MockedAppRootBuilder {
 			};
 		};
 
+		const subscribeToModal = (onStoreChange: () => void) => this.events.on('update-modal', onStoreChange);
+
+		const getModalSnapshot = () => this.modal;
+
 		return function MockedAppRoot({ children }) {
 			const [translation, updateTranslation] = useReducer(reduceTranslation, undefined, () => reduceTranslation());
 
@@ -404,6 +430,8 @@ export class MockedAppRootBuilder {
 					i18n.off('languageChanged', updateTranslation);
 				};
 			}, []);
+
+			const modal = useSyncExternalStore(subscribeToModal, getModalSnapshot);
 
 			return (
 				<QueryClientProvider client={queryClient}>
@@ -443,7 +471,13 @@ export class MockedAppRootBuilder {
 															{/* <VideoConfProvider>
 																	<CallProvider>
 																		<OmnichannelProvider> */}
-															{wrappers.reduce((children, wrapper) => wrapper(children), children)}
+															{wrappers.reduce<ReactNode>(
+																(children, wrapper) => wrapper(children),
+																<>
+																	{children}
+																	{modal.currentModal.component}
+																</>,
+															)}
 															{/* 		</OmnichannelProvider>
 																	</CallProvider>
 																</VideoConfProvider>*/}
