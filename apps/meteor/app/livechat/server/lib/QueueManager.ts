@@ -150,7 +150,7 @@ export const QueueManager: queueManager = {
 		if (oldInquiry) {
 			logger.debug(`Removing old inquiry (${oldInquiry._id}) for room ${rid}`);
 			await LivechatInquiry.removeByRoomId(rid);
-			void notifyOnLivechatInquiryChangedById(rid, 'removed');
+			void notifyOnLivechatInquiryChangedById(oldInquiry._id, 'removed');
 		}
 
 		const guest = {

@@ -265,7 +265,7 @@ export const RoutingManager: Routing = {
 
 		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);
 
-		void notifyOnLivechatInquiryChangedById(rid, 'updated', {
+		void notifyOnLivechatInquiryChangedById(inquiry._id, 'updated', {
 			status: LivechatInquiryStatus.TAKEN,
 			takenAt: new Date(),
 			defaultAgent: undefined,
