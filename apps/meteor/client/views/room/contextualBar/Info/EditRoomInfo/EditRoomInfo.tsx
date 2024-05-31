@@ -59,12 +59,12 @@ const title = {
 const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string => {
 	switch (roomType) {
 		case 'd':
-			return 'RetentionPolicy_MaxAge_DMs';
+			return 'RetentionPolicy_TTL_DMs';
 		case 'p':
-			return 'RetentionPolicy_MaxAge_Groups';
+			return 'RetentionPolicy_TTL_Groups';
 		case 'c':
 		default:
-			return 'RetentionPolicy_MaxAge_Channels';
+			return 'RetentionPolicy_TTL_Channels';
 	}
 };
 

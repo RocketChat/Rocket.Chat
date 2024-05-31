@@ -89,11 +89,11 @@ export const useRetentionPolicy = (
 		filesOnly: useSetting('RetentionPolicy_FilesOnly') as boolean,
 		doNotPrunePinned: useSetting('RetentionPolicy_DoNotPrunePinned') as boolean,
 		appliesToChannels: useSetting('RetentionPolicy_AppliesToChannels') as boolean,
-		maxAgeChannels: useSetting('RetentionPolicy_MaxAge_Channels') as number,
+		maxAgeChannels: useSetting('RetentionPolicy_TTL_Channels') as number,
 		appliesToGroups: useSetting('RetentionPolicy_AppliesToGroups') as boolean,
-		maxAgeGroups: useSetting('RetentionPolicy_MaxAge_Groups') as number,
+		maxAgeGroups: useSetting('RetentionPolicy_TTL_Groups') as number,
 		appliesToDMs: useSetting('RetentionPolicy_AppliesToDMs') as boolean,
-		maxAgeDMs: useSetting('RetentionPolicy_MaxAge_DMs') as number,
+		maxAgeDMs: useSetting('RetentionPolicy_TTL_DMs') as number,
 	} as const;
 
 	if (!room) {

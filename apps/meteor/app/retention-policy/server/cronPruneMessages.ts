@@ -107,9 +107,9 @@ settings.watchMultiple(
 		'RetentionPolicy_AppliesToChannels',
 		'RetentionPolicy_AppliesToGroups',
 		'RetentionPolicy_AppliesToDMs',
-		'RetentionPolicy_MaxAge_Channels',
-		'RetentionPolicy_MaxAge_Groups',
-		'RetentionPolicy_MaxAge_DMs',
+		'RetentionPolicy_TTL_Channels',
+		'RetentionPolicy_TTL_Groups',
+		'RetentionPolicy_TTL_DMs',
 		'RetentionPolicy_Advanced_Precision',
 		'RetentionPolicy_Advanced_Precision_Cron',
 		'RetentionPolicy_Precision',
@@ -132,9 +132,9 @@ settings.watchMultiple(
 			types.push('d');
 		}
 
-		maxTimes.c = settings.get('RetentionPolicy_MaxAge_Channels');
-		maxTimes.p = settings.get('RetentionPolicy_MaxAge_Groups');
-		maxTimes.d = settings.get('RetentionPolicy_MaxAge_DMs');
+		maxTimes.c = settings.get('RetentionPolicy_TTL_Channels');
+		maxTimes.p = settings.get('RetentionPolicy_TTL_Groups');
+		maxTimes.d = settings.get('RetentionPolicy_TTL_DMs');
 
 		const precision =
 			(settings.get<boolean>('RetentionPolicy_Advanced_Precision') && settings.get<string>('RetentionPolicy_Advanced_Precision_Cron')) ||

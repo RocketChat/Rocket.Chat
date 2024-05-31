@@ -24,9 +24,9 @@ import LeaveTeam from './LeaveTeam';
 import TeamsInfo from './TeamsInfo';
 
 const retentionPolicyMaxAge = {
-	c: 'RetentionPolicy_MaxAge_Channels',
-	p: 'RetentionPolicy_MaxAge_Groups',
-	d: 'RetentionPolicy_MaxAge_DMs',
+	c: 'RetentionPolicy_TTL_Channels',
+	p: 'RetentionPolicy_TTL_Groups',
+	d: 'RetentionPolicy_TTL_DMs',
 };
 
 const retentionPolicyAppliesTo = {
