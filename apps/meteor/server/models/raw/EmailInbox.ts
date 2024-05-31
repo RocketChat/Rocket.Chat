@@ -22,7 +22,10 @@ export class EmailInboxRaw extends BaseRaw<IEmailInbox> implements IEmailInboxMo
 	}
 
 	async updateById(id: IEmailInbox['_id'], data: UpdateFilter<IEmailInbox>): Promise<ModifyResult<Pick<IEmailInbox, '_id'>>> {
-		return this.findOneAndUpdate({ _id: id }, data, { returnDocument: 'after', projection: { _id: 1 } });
+		// findOneAndUpdate doesn't accept generics, so we had to type cast
+		return this.findOneAndUpdate({ _id: id }, data, { returnDocument: 'after', projection: { _id: 1 } }) as unknown as Promise<
+			ModifyResult<Pick<IEmailInbox, '_id'>>
+		>;
 	}
 
 	findActive(): FindCursor<IEmailInbox> {
