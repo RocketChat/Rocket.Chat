@@ -11,6 +11,9 @@ import type {
 	LoginServiceConfiguration as LoginServiceConfigurationData,
 	ILivechatPriority,
 	ILivechatDepartmentAgents,
+	IEmailInbox,
+	IIntegrationHistory,
+	AtLeast,
 } from '@rocket.chat/core-typings';
 import {
 	Rooms,
@@ -20,6 +23,7 @@ import {
 	Roles,
 	Integrations,
 	LoginServiceConfiguration,
+	IntegrationHistory,
 	LivechatDepartmentAgents,
 } from '@rocket.chat/models';
 
@@ -263,6 +267,47 @@ export async function notifyOnIntegrationChangedByChannels<T extends IIntegratio
 	for await (const item of items) {
 		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
 	}
+}
+
+export async function notifyOnEmailInboxChanged<T extends IEmailInbox>(
+	data: Pick<T, '_id'> | T, // TODO: improve typing
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	void api.broadcast('watch.emailInbox', { clientAction, id: data._id, data });
+}
+
+export async function notifyOnIntegrationHistoryChanged<T extends IIntegrationHistory>(
+	data: AtLeast<T, '_id'>,
+	clientAction: ClientAction = 'updated',
+	diff: Partial<T> = {},
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	void api.broadcast('watch.integrationHistory', { clientAction, id: data._id, data, diff });
+}
+
+export async function notifyOnIntegrationHistoryChangedById<T extends IIntegrationHistory>(
+	id: T['_id'],
+	clientAction: ClientAction = 'updated',
+	diff: Partial<T> = {},
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const item = await IntegrationHistory.findOneById(id);
+
+	if (!item) {
+		return;
+	}
+
+	void api.broadcast('watch.integrationHistory', { clientAction, id: item._id, data: item, diff });
 }
 
 export async function notifyOnLivechatDepartmentAgentChanged<T extends ILivechatDepartmentAgents>(

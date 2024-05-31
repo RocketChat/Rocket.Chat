@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { Admin } from './page-objects';
+import { Admin, Utils } from './page-objects';
 import { createTargetChannel } from './utils';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
@@ -11,10 +11,12 @@ test.use({ storageState: Users.admin.state });
 
 test.describe.parallel('administration', () => {
 	let poAdmin: Admin;
+	let poUtils: Utils;
 	let targetChannel: string;
 
 	test.beforeEach(async ({ page }) => {
 		poAdmin = new Admin(page);
+		poUtils = new Utils(page);
 	});
 
 	test.describe('Workspace', () => {
@@ -202,7 +204,7 @@ test.describe.parallel('administration', () => {
 		test('expect open upsell modal if not enterprise', async ({ page }) => {
 			test.skip(IS_EE);
 			await poAdmin.btnCreateRole.click();
-			await page.waitForSelector('role=dialog[name="Custom roles"]');
+			await expect(page.getByRole('dialog', { name: 'Custom roles' })).toBeVisible();
 		});
 
 		test.describe('Users in role', () => {
@@ -214,7 +216,7 @@ test.describe.parallel('administration', () => {
 
 				await api.post('/channels.addOwner', { roomId: channel._id, userId: Users.user1.data._id });
 				await api.post('/channels.removeOwner', { roomId: channel._id, userId: Users.admin.data._id });
-			})
+			});
 
 			test('admin should be able to get the owners of a room that wasnt created by him', async ({ page }) => {
 				await poAdmin.openRoleByName('Owner').click();
@@ -223,7 +225,42 @@ test.describe.parallel('administration', () => {
 				await page.getByRole('option', { name: channelName }).click();
 				
 				await expect(poAdmin.getUserRowByUsername('user1')).toBeVisible();
-			})
+			});
+
+			test('should add user1 as moderator of target channel', async ({ page }) => {
+				await poAdmin.openRoleByName('Moderator').click();
+				await poAdmin.btnUsersInRole.click();
+
+				await poAdmin.inputRoom.fill(channelName);
+				await page.getByRole('option', { name: channelName }).click();
+
+				await poAdmin.inputUsers.fill('user1');
+				await page.getByRole('option', { name: 'user1' }).click();
+				await poAdmin.btnAdd.click();
+				
+				await expect(poAdmin.getUserRowByUsername('user1')).toBeVisible();
+			});
+
+			test('should remove user1 as moderator of target channel', async ({ page }) => {
+				await poAdmin.openRoleByName('Moderator').click();
+				await poAdmin.btnUsersInRole.click();
+
+				await poAdmin.inputRoom.fill(channelName);
+				await page.getByRole('option', { name: channelName }).click();
+
+				await poAdmin.getUserRowByUsername('user1').getByRole('button', { name: 'Remove' }).click();
+				await poUtils.btnModalConfirmDelete.click();
+
+				await expect(page.locator('h3 >> text="No results found"')).toBeVisible();
+			});
+
+			test('should back to the permissions page', async ({ page }) => {
+				await poAdmin.openRoleByName('Moderator').click();
+				await poAdmin.btnUsersInRole.click();
+				await poAdmin.btnBack.click();			
+					
+				await expect(page.locator('h1 >> text="Permissions"')).toBeVisible();
+			});
 		})
 	});
 
