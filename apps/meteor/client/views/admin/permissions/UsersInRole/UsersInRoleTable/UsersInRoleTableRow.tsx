@@ -1,7 +1,8 @@
 import type { IUserInRole } from '@rocket.chat/core-typings';
-import { Box, Button, Icon } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Box, IconButton } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
@@ -14,10 +15,11 @@ type UsersInRoleTableRowProps = {
 };
 
 const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps): ReactElement => {
+	const t = useTranslation();
 	const { _id, name, username, avatarETag } = user;
 	const email = getUserEmailAddress(user);
 
-	const handleRemove = useMutableCallback(() => {
+	const handleRemove = useEffectEvent(() => {
 		onRemove(username);
 	});
 
@@ -27,26 +29,20 @@ const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps): Reac
 				<Box display='flex' alignItems='center'>
 					<UserAvatar size='x40' username={username ?? ''} etag={avatarETag} />
 					<Box display='flex' withTruncatedText mi={8}>
-						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-							<Box fontScale='p2m' withTruncatedText color='default'>
-								{name || username}
-							</Box>
-							{name && (
-								<Box fontScale='p2' color='hint' withTruncatedText>
-									{' '}
-									{`@${username}`}{' '}
-								</Box>
-							)}
+						<Box fontScale='p2m' withTruncatedText color='default'>
+							{name || username}
 						</Box>
+						{name && (
+							<Box mis={4} fontScale='p2' color='hint' withTruncatedText>
+								{`@${username}`}
+							</Box>
+						)}
 					</Box>
 				</Box>
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>{email}</GenericTableCell>
-			<GenericTableCell withTruncatedText>
-				{/* FIXME: Replace to IconButton */}
-				<Button small square secondary danger onClick={handleRemove}>
-					<Icon name='trash' size='x20' />
-				</Button>
+			<GenericTableCell>
+				<IconButton small icon='trash' title={t('Remove')} danger onClick={handleRemove} />
 			</GenericTableCell>
 		</GenericTableRow>
 	);
