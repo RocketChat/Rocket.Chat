@@ -9,8 +9,9 @@ callbacks.add('livechat.afterAgentRemoved', async ({ agent }) => {
 	await Promise.all([
 		Users.removeAgent(agent._id),
 		LivechatDepartmentAgents.removeByAgentId(agent._id),
-		notifyOnLivechatDepartmentAgentChangedByAgentId(agent._id),
 		agent.username && LivechatVisitors.removeContactManagerByUsername(agent.username),
 		departmentIds.length && LivechatDepartment.decreaseNumberOfAgentsByIds(departmentIds),
 	]);
+
+	void notifyOnLivechatDepartmentAgentChangedByAgentId(agent._id);
 });
