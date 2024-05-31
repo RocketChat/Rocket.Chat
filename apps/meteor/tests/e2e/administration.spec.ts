@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { Admin, Utils } from './page-objects';
-import { createTargetChannel, setSettingValueById, getSettingValueById } from './utils';
+import { createTargetChannel, setSettingValueById } from './utils';
 import {  } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
@@ -241,11 +241,10 @@ test.describe.parallel('administration', () => {
 	});
 
 	test.describe('Integrations', () => {
-		let messageCodeHighlightDefault: unknown;
+		const messageCodeHighlightDefault = 'javascript,css,markdown,dockerfile,json,go,rust,clean,bash,plaintext,powershell,scss,shell,yaml,vim';
 		const incomingIntegrationName = faker.string.uuid();
 
 		test.beforeAll(async ({ api }) => {
-			messageCodeHighlightDefault = await getSettingValueById(api, 'Message_Code_highlight');
 			await setSettingValueById(api, 'Message_Code_highlight', '')
 		});
 
