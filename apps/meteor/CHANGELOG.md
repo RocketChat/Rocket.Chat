@@ -1,5 +1,39 @@
 # @rocket.chat/meteor
 
+## 6.9.0-rc.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#32500](https://github.com/RocketChat/Rocket.Chat/pull/32500)) Fix user not being set as online when setting "Use REST instead of websocket for Meteor calls" is disabled
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.2
+  - @rocket.chat/rest-typings@6.9.0-rc.2
+  - @rocket.chat/api-client@0.1.33-rc.2
+  - @rocket.chat/license@0.1.15-rc.2
+  - @rocket.chat/omnichannel-services@0.1.15-rc.2
+  - @rocket.chat/pdf-worker@0.0.39-rc.2
+  - @rocket.chat/presence@0.1.15-rc.2
+  - @rocket.chat/apps@0.0.6-rc.2
+  - @rocket.chat/core-services@0.3.15-rc.2
+  - @rocket.chat/cron@0.0.35-rc.2
+  - @rocket.chat/fuselage-ui-kit@7.0.0-rc.2
+  - @rocket.chat/gazzodown@7.0.0-rc.2
+  - @rocket.chat/model-typings@0.4.1-rc.2
+  - @rocket.chat/ui-contexts@7.0.0-rc.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.0.39-rc.2
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/ui-avatar@3.0.0-rc.2
+  - @rocket.chat/ui-client@7.0.0-rc.2
+  - @rocket.chat/ui-video-conf@7.0.0-rc.2
+  - @rocket.chat/web-ui-registration@7.0.0-rc.2
+  - @rocket.chat/instance-status@0.0.39-rc.2
+  </details>
+
 ## 6.9.0-rc.1
 
 ### Patch Changes
