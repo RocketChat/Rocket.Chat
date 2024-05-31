@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Option, Icon } from '@rocket.chat/fuselage';
+import { Box, Option, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
@@ -44,11 +44,13 @@ const MatrixFederationRemoveServerList = ({ servers }: MatrixFederationRemoveSer
 			{servers.map(({ name, default: isDefault }) => (
 				<Option key={name} title={name} label={name}>
 					{!isDefault && (
-						<Icon
-							size='x16'
-							color={isRemovingServer ? 'annotation' : 'danger'}
-							name='cross'
-							onClick={() => (isRemovingServer ? null : removeServer(name))}
+						<IconButton
+							icon='cross'
+							tiny
+							danger={!isRemovingServer}
+							disabled={isRemovingServer}
+							aria-label={t('Remove')}
+							onClick={() => removeServer(name)}
 						/>
 					)}
 				</Option>
