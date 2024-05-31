@@ -21,7 +21,7 @@ export class EmailInboxRaw extends BaseRaw<IEmailInbox> implements IEmailInboxMo
 		return this.insertOne(emailInbox);
 	}
 
-	async updateById(id: IEmailInbox['_id'], data: UpdateFilter<IEmailInbox>): Promise<ModifyResult<IEmailInbox>> {
+	async updateById(id: IEmailInbox['_id'], data: UpdateFilter<IEmailInbox>): Promise<ModifyResult<Pick<IEmailInbox, '_id'>>> {
 		return this.findOneAndUpdate({ _id: id }, data, { returnDocument: 'after', projection: { _id: 1 } });
 	}
 
@@ -31,9 +31,5 @@ export class EmailInboxRaw extends BaseRaw<IEmailInbox> implements IEmailInboxMo
 
 	async findByEmail(email: IEmailInbox['email']): Promise<IEmailInbox | null> {
 		return this.findOne({ email });
-	}
-
-	async findById(id: IEmailInbox['_id']): Promise<IEmailInbox | null> {
-		return this.findOne({ _id: id });
 	}
 }

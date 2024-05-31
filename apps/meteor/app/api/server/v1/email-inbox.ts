@@ -90,7 +90,7 @@ API.v1.addRoute(
 			if (!_id) {
 				throw new Error('error-invalid-param');
 			}
-			const emailInbox = await EmailInbox.findById(_id);
+			const emailInbox = await EmailInbox.findOneById(_id);
 
 			if (!emailInbox) {
 				return API.v1.notFound();
@@ -152,7 +152,7 @@ API.v1.addRoute(
 			if (!_id) {
 				throw new Error('error-invalid-param');
 			}
-			const emailInbox = await EmailInbox.findById(_id);
+			const emailInbox = await EmailInbox.findOneById(_id);
 
 			if (!emailInbox) {
 				return API.v1.notFound();
