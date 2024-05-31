@@ -139,8 +139,10 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 
 			sortByName(clonedData).forEach((app) => {
 				if (app.private) {
-					privateApps.push(app);
+					return privateApps.push(app);
 				}
+
+				installedApps.push(app);
 			});
 
 			return [marketplaceApps, installedApps, privateApps];
