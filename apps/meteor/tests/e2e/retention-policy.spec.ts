@@ -1,18 +1,24 @@
+import { faker } from '@faker-js/faker';
+
+import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, createTargetPrivateChannel, createTargetTeam, setSettingValueById } from './utils';
+import { createTargetPrivateChannel, createTargetTeam, setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
 test.describe.serial('retention-policy', () => {
 	let poHomeChannel: HomeChannel;
-	let targetChannel: string;
+	const targetChannel = faker.string.uuid();
 	let targetTeam: string;
 	let targetGroup: string;
 
 	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api);
+		const response = await api.post('/channels.create', { name: targetChannel, members: ['user1'] });
+		const { channel } = await response.json();
+		await api.post('/channels.addOwner', { roomId: channel._id, userId: Users.user1.data._id });
+
 		targetGroup = await createTargetPrivateChannel(api);
 		targetTeam = await createTargetTeam(api);
 	})
@@ -48,7 +54,7 @@ test.describe.serial('retention-policy', () => {
 	test.describe('retention policy enabled', () => {	
 		test.beforeAll(async ({ api }) => {
 			await setSettingValueById(api, 'RetentionPolicy_Enabled', true);
-		})
+		});
 		test.afterAll(async ({ api }) => {
 			await setSettingValueById(api, 'RetentionPolicy_Enabled', false);
 			await setSettingValueById(api, 'RetentionPolicy_AppliesToChannels', false);
@@ -78,6 +84,17 @@ test.describe.serial('retention-policy', () => {
 
 			await expect(poHomeChannel.tabs.room.pruneAccordion).toBeVisible();
 		});
+
+		test('should not show prune section in edit channel for users without permission', async ({ browser }) => {
+			const { page } = await createAuxContext(browser, Users.user1);
+			const auxContext = { page, poHomeChannel: new HomeChannel(page) };
+			await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
+			await auxContext.poHomeChannel.tabs.btnRoomInfo.click();
+			await auxContext.poHomeChannel.tabs.room.btnEdit.click();
+
+			await expect(poHomeChannel.tabs.room.pruneAccordion).not.toBeVisible();
+			await auxContext.page.close();
+		})
 
 		test.describe('retention policy applies enabled by default', () => {
 			test.beforeAll(async ({ api }) => {
