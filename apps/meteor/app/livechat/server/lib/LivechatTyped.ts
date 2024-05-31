@@ -1824,12 +1824,12 @@ class LivechatClass {
 				Subscriptions.updateDisplayNameByRoomId(rid, name),
 			]);
 
-			void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { rid, ...guestData });
-
-			return true;
+			void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
 		}
 
 		void notifyOnRoomChangedById(roomData._id);
+
+		return true;
 	}
 
 	/**
