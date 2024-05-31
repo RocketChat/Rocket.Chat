@@ -1,7 +1,4 @@
-import {
-	parseStringToIceServers,
-	parseStringToIceServer,
-} from '../../../../../../client/providers/CallProvider/lib/parseStringToIceServers';
+import { parseStringToIceServers, parseStringToIceServer } from './parseStringToIceServers';
 
 describe('parseStringToIceServers', () => {
 	describe('parseStringToIceServers', () => {
