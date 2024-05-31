@@ -66,7 +66,7 @@ class E2E extends Emitter {
 
 	public privateKey: CryptoKey | undefined;
 
-	private timeout: ReturnType<typeof setInterval> | null;
+	private keyDistributionInterval: ReturnType<typeof setInterval> | null;
 
 	private state: E2EEState;
 
@@ -74,7 +74,7 @@ class E2E extends Emitter {
 		super();
 		this.started = false;
 		this.instancesByRoomId = {};
-		this.timeout = null;
+		this.keyDistributionInterval = null;
 
 		this.on('E2E_STATE_CHANGED', ({ prevState, nextState }) => {
 			this.log(`${prevState} -> ${nextState}`);
@@ -330,8 +330,8 @@ class E2E extends Emitter {
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
 		this.started = false;
-		this.timeout && clearInterval(this.timeout);
-		this.timeout = null;
+		this.keyDistributionInterval && clearInterval(this.keyDistributionInterval);
+		this.keyDistributionInterval = null;
 		this.setState(E2EEState.DISABLED);
 	}
 
@@ -699,7 +699,7 @@ class E2E extends Emitter {
 	}
 
 	async initiateKeyDistribution() {
-		if (this.timeout) {
+		if (this.keyDistributionInterval) {
 			return;
 		}
 
@@ -736,7 +736,7 @@ class E2E extends Emitter {
 
 		// Run first call right away, then schedule for 10s in the future
 		await keyDistribution();
-		this.timeout = setInterval(keyDistribution, 10000);
+		this.keyDistributionInterval = setInterval(keyDistribution, 10000);
 	}
 }
 

@@ -13,7 +13,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'e2e.updateGroupKey'(rid, uid, key) {
-		methodDeprecationLogger.method('e2e.updateGroupKey', '7.0.0');
+		methodDeprecationLogger.method('e2e.updateGroupKey', '8.0.0');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'e2e.acceptSuggestedGroupKey' });
