@@ -12,7 +12,6 @@ import type {
 	DeleteResult,
 	IndexDescription,
 	SortDirection,
-	ModifyResult,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -153,7 +152,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 	}
 
 	removeByDepartmentId(departmentId: string): Promise<DeleteResult> {
-		return this.deleteOne({ departmentId });
+		return this.deleteMany({ departmentId });
 	}
 
 	findByDepartmentId(departmentId: string, options?: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents> {
@@ -168,20 +167,28 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.findOne({ agentId, departmentId }, options);
 	}
 
-	saveAgent(agent: Omit<ILivechatDepartmentAgents, '_id'>): Promise<ModifyResult<ILivechatDepartmentAgents>> {
-		const { agentId, departmentId, username, departmentEnabled, count, order } = agent;
-
-		return this.findOneAndUpdate(
-			{ agentId, departmentId },
+	saveAgent(agent: {
+		agentId: string;
+		departmentId: string;
+		username: string;
+		departmentEnabled: boolean;
+		count: number;
+		order: number;
+	}): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				agentId: agent.agentId,
+				departmentId: agent.departmentId,
+			},
 			{
 				$set: {
-					username,
-					departmentEnabled,
-					count: parseInt(`${count}`),
-					order: parseInt(`${order}`),
+					username: agent.username,
+					departmentEnabled: agent.departmentEnabled,
+					count: parseInt(`${agent.count}`),
+					order: parseInt(`${agent.order}`),
 				},
 			},
-			{ upsert: true, returnDocument: 'after', projection: { _id: 1 } },
+			{ upsert: true },
 		);
 	}
 

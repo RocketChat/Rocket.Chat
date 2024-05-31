@@ -1000,11 +1000,9 @@ class LivechatClass {
 			throw new Error('department-not-found');
 		}
 
-		await Promise.all([
-			LivechatDepartmentAgents.disableAgentsByDepartmentId(_id),
-			LivechatDepartment.archiveDepartment(_id),
-			notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id),
-		]);
+		await Promise.all([LivechatDepartmentAgents.disableAgentsByDepartmentId(_id), LivechatDepartment.archiveDepartment(_id)]);
+
+		void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id);
 
 		await callbacks.run('livechat.afterDepartmentArchived', department);
 	}
@@ -1017,11 +1015,9 @@ class LivechatClass {
 		}
 
 		// TODO: these kind of actions should be on events instead of here
-		await Promise.all([
-			LivechatDepartmentAgents.enableAgentsByDepartmentId(_id),
-			LivechatDepartment.unarchiveDepartment(_id),
-			notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id),
-		]);
+		await Promise.all([LivechatDepartmentAgents.enableAgentsByDepartmentId(_id), LivechatDepartment.unarchiveDepartment(_id)]);
+
+		void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id);
 
 		return true;
 	}

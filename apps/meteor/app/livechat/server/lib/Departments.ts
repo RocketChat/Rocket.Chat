@@ -38,15 +38,18 @@ class DepartmentHelperClass {
 
 		const promiseResponses = await Promise.allSettled([
 			LivechatDepartmentAgents.removeByDepartmentId(_id),
-			notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id),
 			LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id),
 			LivechatRooms.bulkRemoveDepartmentAndUnitsFromRooms(_id),
 		]);
+
 		promiseResponses.forEach((response, index) => {
 			if (response.status === 'rejected') {
 				this.logger.error(`Error while performing post-department-removal actions: ${_id}. Action No: ${index}. Error:`, response.reason);
 			}
 		});
+
+		// TODO can't use trash here because it can notify old data (that was removed while ago for example)
+		void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id, 'removed');
 
 		await callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
 

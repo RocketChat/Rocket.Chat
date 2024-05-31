@@ -1,5 +1,5 @@
 import type { ILivechatDepartmentAgents, IUser } from '@rocket.chat/core-typings';
-import type { DeleteResult, FindCursor, FindOptions, Document, UpdateResult, Filter, ModifyResult } from 'mongodb';
+import type { DeleteResult, FindCursor, FindOptions, Document, UpdateResult, Filter } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -67,7 +67,7 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 		options?: FindOptions<ILivechatDepartmentAgents>,
 	): Promise<ILivechatDepartmentAgents | null>;
 	findOneByAgentIdAndDepartmentId(agentId: string, departmentId: string): Promise<ILivechatDepartmentAgents | null>;
-	saveAgent(agent: Omit<ILivechatDepartmentAgents, '_id'>): Promise<ModifyResult<ILivechatDepartmentAgents>>;
+	saveAgent(agent: Omit<ILivechatDepartmentAgents, '_id'>): Promise<UpdateResult>;
 	removeByAgentId(agentId: string): Promise<void>;
 	removeByDepartmentIdAndAgentId(departmentId: string, agentId: string): Promise<void>;
 	getNextAgentForDepartment(

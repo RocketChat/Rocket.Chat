@@ -701,8 +701,11 @@ export const updateDepartmentAgents = async (
 	});
 
 	const { upsert = [], remove = [] } = agents;
+
+	const agentsUpdated = [];
 	const agentsRemoved = [];
 	const agentsAdded = [];
+
 	for await (const { agentId } of remove) {
 		await LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId);
 		agentsRemoved.push(agentId);
@@ -710,6 +713,8 @@ export const updateDepartmentAgents = async (
 
 	if (agentsRemoved.length > 0) {
 		callbacks.runAsync('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
+
+		// TODO can't use trash here since same agent might have been removed many times from same department, thus causing multiple (wrong) notified data
 		void notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId(agentsRemoved, departmentId, 'removed');
 	}
 
@@ -728,12 +733,17 @@ export const updateDepartmentAgents = async (
 			departmentEnabled,
 		});
 
-		if (livechatDepartmentAgent.value?._id) {
-			void notifyOnLivechatDepartmentAgentChanged({
-				_id: livechatDepartmentAgent.value._id,
-				agentId: agent.agentId,
-				departmentId,
-			});
+		if (livechatDepartmentAgent.upsertedId) {
+			void notifyOnLivechatDepartmentAgentChanged(
+				{
+					_id: livechatDepartmentAgent.upsertedId as any,
+					agentId: agent.agentId,
+					departmentId,
+				},
+				'inserted',
+			);
+		} else {
+			agentsUpdated.push(agent.agentId);
 		}
 
 		agentsAdded.push(agent.agentId);
@@ -744,6 +754,10 @@ export const updateDepartmentAgents = async (
 			departmentId,
 			agentsId: agentsAdded,
 		});
+	}
+
+	if (agentsUpdated.length > 0) {
+		void notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId(agentsUpdated, departmentId);
 	}
 
 	if (agentsRemoved.length > 0 || agentsAdded.length > 0) {
