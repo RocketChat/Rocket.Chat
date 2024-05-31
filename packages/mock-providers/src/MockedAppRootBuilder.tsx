@@ -93,10 +93,10 @@ export class MockedAppRootBuilder {
 		currentModal: { component: null },
 		modal: {
 			setModal: () => undefined,
-			onCloseModal(cb) {
+			onDismissModal(cb) {
 				cb();
 			},
-			closeModal: () => undefined,
+			dismissAction: () => undefined,
 		},
 	};
 

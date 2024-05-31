@@ -12,7 +12,7 @@ type ModalProviderProps = {
 };
 
 const ModalProvider = ({ children, region }: ModalProviderProps) => {
-	const [closeModal, setCloseModal] = useState<() => void>();
+	const [dismissAction, setDismissAction] = useState<() => void>();
 	const currentModal = useSyncExternalStore(modalStore.subscribe, modalStore.getSnapshot);
 
 	const setModal = useEffectEvent((modal: ReactNode | (() => ReactNode)) => {
@@ -27,10 +27,10 @@ const ModalProvider = ({ children, region }: ModalProviderProps) => {
 		() => ({
 			modal: {
 				setModal,
-				closeModal,
-				onCloseModal: (cb: () => undefined) => {
-					setCloseModal(() => cb);
-					return () => setCloseModal(undefined);
+				dismissAction,
+				onDismissModal: (cb: () => undefined) => {
+					setDismissAction(() => cb);
+					return () => setDismissAction(undefined);
 				},
 			},
 			currentModal: {
@@ -39,7 +39,7 @@ const ModalProvider = ({ children, region }: ModalProviderProps) => {
 			},
 			region,
 		}),
-		[closeModal, currentModal?.node, currentModal?.region, region, setModal],
+		[currentModal?.node, currentModal?.region, dismissAction, region, setModal],
 	);
 
 	return <ModalContext.Provider value={contextValue} children={children} />;

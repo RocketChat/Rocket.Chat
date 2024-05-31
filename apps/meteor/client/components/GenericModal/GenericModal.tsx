@@ -77,13 +77,13 @@ const GenericModal: FC<GenericModalProps> = ({
 }) => {
 	const t = useTranslation();
 	const genericModalId = useUniqueId();
-	const { onCloseModal } = useModal();
+	const { onDismissModal } = useModal();
 
 	useEffect(() => {
 		if (onClose) {
-			return onCloseModal(onClose);
+			return onDismissModal(onClose);
 		}
-	}, [onClose, onCloseModal]);
+	}, [onClose, onDismissModal]);
 
 	return (
 		<Modal aria-labelledby={`${genericModalId}-title`} wrapperFunction={wrapperFunction} {...props}>

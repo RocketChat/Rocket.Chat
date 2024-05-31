@@ -12,7 +12,7 @@ describe('with window.RocketChatDesktop set', () => {
 			value={{
 				modal: {
 					setModal: () => null,
-					onCloseModal: () => null,
+					onDismissModal: () => null,
 				},
 				currentModal: { component: null },
 			}}
@@ -52,14 +52,14 @@ describe('with window.RocketChatDesktop set', () => {
 
 describe('with window.RocketChatDesktop unset', () => {
 	const setModal = jest.fn();
-	const onCloseModal = jest.fn();
+	const onDismissModal = jest.fn();
 	const wrapper: React.FC = ({ children }) => (
 		<ModalContext.Provider
 			children={children}
 			value={{
 				modal: {
 					setModal,
-					onCloseModal,
+					onDismissModal,
 				},
 				currentModal: { component: null },
 			}}

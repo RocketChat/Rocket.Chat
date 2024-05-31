@@ -9,8 +9,8 @@ const FocusScope = lazy(() => import('react-aria').then((module) => ({ default: 
 
 const ModalRegion = (): ReactElement | null => {
 	const currentModal = useCurrentModal();
-	const { setModal, closeModal } = useModal();
-	const handleDismiss = useCallback(() => (closeModal ? closeModal() : setModal(null)), [closeModal, setModal]);
+	const { setModal, dismissAction } = useModal();
+	const handleDismiss = useCallback(() => (dismissAction ? dismissAction() : setModal(null)), [dismissAction, setModal]);
 
 	if (!currentModal) {
 		return null;
