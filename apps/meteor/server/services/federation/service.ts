@@ -238,6 +238,10 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	protected async verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>> {
 		return this.bridge.verifyInviteeIds(matrixIds);
 	}
+
+	public async verifyConfiguration() {
+		await this.bridge.ping()
+	}
 }
 
 abstract class AbstractBaseFederationService extends AbstractFederationService {
@@ -341,5 +345,9 @@ export class FederationService extends AbstractBaseFederationService implements 
 
 	public async created(): Promise<void> {
 		return super.created();
+	}
+
+	public async verifyConfiguration() {
+		return this.verifyConfiguration()
 	}
 }

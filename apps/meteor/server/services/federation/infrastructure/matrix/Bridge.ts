@@ -752,4 +752,16 @@ export class MatrixBridge implements IFederationBridge {
 			'de.sorunome.msc2409.push_ephemeral': registrationFile.enableEphemeralEvents,
 		};
 	}
+
+	public async ping() {
+		if (!this.isRunning || !this.bridgeInstance) {
+			throw new Error('matrix bridge isn\'t yet running');
+		}
+
+		console.log('trying to do this')
+
+		const bridge = this.bridgeInstance;
+
+		console.log(await bridge.pingAppserviceRoute('', 3000))
+	}
 }

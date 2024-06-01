@@ -22,3 +22,12 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute('federation.verifyConfiguration', { authRequired: false }, {
+	async get() {
+		const federationService = License.hasValidLicense() ? FederationEE : Federation;
+		const response = await federationService.verifyConfiguration()
+
+		return API.v1.success({ status: '' })
+	}
+})
