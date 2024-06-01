@@ -776,7 +776,7 @@ export class MatrixBridge implements IFederationBridge {
 
 		const bridge = this.bridgeInstance;
 
-		const r = await bridge.getIntent().matrixClient.doRequest('POST', '/_matrix/client/v1/appservice/rocketchat/ping',
+		const r = await bridge.getIntent().matrixClient.doRequest('POST', `/_matrix/client/v1/appservice/${this.internalSettings.getApplicationServiceId()}/ping`,
 			{},
 			{ transaction_id: 'meow' },
 			DEFAULT_TIMEOUT_IN_MS_FOR_JOINING_ROOMS,
