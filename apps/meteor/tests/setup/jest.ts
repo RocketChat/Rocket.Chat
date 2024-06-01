@@ -1,4 +1,7 @@
+import { TextEncoder, TextDecoder } from 'node:util';
+
 import * as uuid from 'uuid';
+
 import '@testing-library/jest-dom';
 
 const urlByBlob = new WeakMap<Blob, string>();
@@ -26,3 +29,30 @@ globalThis.ResizeObserver = jest.fn().mockImplementation(() => ({
 	unobserve: jest.fn(),
 	disconnect: jest.fn(),
 }));
+
+globalThis.IntersectionObserver = class IntersectionObserver {
+	root = null;
+
+	rootMargin = '';
+
+	thresholds = [];
+
+	disconnect() {
+		return null;
+	}
+
+	observe() {
+		return null;
+	}
+
+	takeRecords() {
+		return [];
+	}
+
+	unobserve() {
+		return null;
+	}
+};
+
+globalThis.TextEncoder = TextEncoder;
+globalThis.TextDecoder = TextDecoder as any;
