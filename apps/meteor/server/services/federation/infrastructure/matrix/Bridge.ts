@@ -31,7 +31,7 @@ export class MatrixBridge implements IFederationBridge {
 
 	protected isUpdatingBridgeStatus = false;
 
-	constructor(protected internalSettings: RocketChatSettingsAdapter, protected eventHandler: (event: AbstractMatrixEvent) => void) {} // eslint-disable-line no-empty-function
+	constructor(protected internalSettings: RocketChatSettingsAdapter, protected eventHandler: (event: AbstractMatrixEvent) => void) { } // eslint-disable-line no-empty-function
 
 	public async start(): Promise<void> {
 		if (this.isUpdatingBridgeStatus) {
@@ -43,7 +43,23 @@ export class MatrixBridge implements IFederationBridge {
 			await this.createInstance();
 
 			if (!this.isRunning) {
-				await this.bridgeInstance.run(this.internalSettings.getBridgePort());
+				const { AppService } = await import('@rocket.chat/forked-matrix-appservice-bridge');
+
+				const appservice = new AppService({ homeserverToken: this.internalSettings.getAppServiceRegistrationObject().homeserverToken })
+
+				const handler = function(req, res) {
+					if (req.headers.authorization.split(/\s+/)[1] !== this.config.homeserverToken) {
+						res.status(401)
+						res.end()
+						return
+					}
+					res.status(200);
+					res.json(req.body)
+				}
+
+				appservice.app.post('/_matrix/app/v1/ping', handler.bind(appservice))
+
+				await this.bridgeInstance.run(this.internalSettings.getBridgePort(), appservice);
 				this.isRunning = true;
 			}
 		} catch (err) {
@@ -73,8 +89,8 @@ export class MatrixBridge implements IFederationBridge {
 				displayName: externalInformation.displayname || '',
 				...(externalInformation.avatar_url
 					? {
-							avatarUrl: externalInformation.avatar_url,
-					  }
+						avatarUrl: externalInformation.avatar_url,
+					}
 					: {}),
 			};
 		} catch (err) {
@@ -758,10 +774,14 @@ export class MatrixBridge implements IFederationBridge {
 			throw new Error('matrix bridge isn\'t yet running');
 		}
 
-		console.log('trying to do this')
-
 		const bridge = this.bridgeInstance;
 
-		console.log(await bridge.pingAppserviceRoute('', 3000))
+		const r = await bridge.getIntent().matrixClient.doRequest('POST', '/_matrix/client/v1/appservice/rocketchat/ping',
+			{},
+			{ transaction_id: 'meow' },
+			DEFAULT_TIMEOUT_IN_MS_FOR_JOINING_ROOMS,
+		)
+
+		console.log(r)
 	}
 }

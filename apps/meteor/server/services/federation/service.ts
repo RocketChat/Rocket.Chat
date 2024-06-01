@@ -348,6 +348,6 @@ export class FederationService extends AbstractBaseFederationService implements 
 	}
 
 	public async verifyConfiguration() {
-		return this.verifyConfiguration()
+		return super.verifyConfiguration()
 	}
 }
