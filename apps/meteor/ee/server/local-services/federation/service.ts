@@ -215,4 +215,8 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 	async stopped(): Promise<void> {
 		return super.stopped();
 	}
+
+	public async verifyConfiguration() {
+		return super.verifyConfiguration()
+	}
 }

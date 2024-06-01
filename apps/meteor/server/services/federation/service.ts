@@ -240,7 +240,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	}
 
 	public async verifyConfiguration() {
-		await this.bridge.ping()
+		return this.bridge.ping()
 	}
 }
 

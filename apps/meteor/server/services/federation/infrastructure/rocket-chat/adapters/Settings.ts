@@ -285,5 +285,16 @@ export class RocketChatSettingsAdapter {
 			group: 'Federation',
 			section: 'Matrix Bridge',
 		});
+
+
+		await settingsRegistry.add('Federation_Matrix_check_configuration_button', 'checkFederationConfiguration', {
+			type: 'action',
+			actionText: 'Federation_Matrix_check_configuration',
+			public: false,
+			enterprise: false,
+			invalidValue: '',
+			group: 'Federation',
+			section: 'Matrix Bridge',
+		});
 	}
 }
