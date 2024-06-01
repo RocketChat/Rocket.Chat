@@ -1,6 +1,4 @@
-import { expect } from 'chai';
-
-import { isValidLink } from '../../../../../../../client/views/room/MessageList/lib/isValidLink';
+import { isValidLink } from './isValidLink';
 
 describe('isValidLink', () => {
 	const testCases = [
@@ -17,7 +15,7 @@ describe('isValidLink', () => {
 	testCases.forEach(([parameter, expectedResult]) => {
 		it(`should return ${JSON.stringify(expectedResult)} for ${JSON.stringify(parameter)}`, () => {
 			const result = isValidLink(parameter);
-			expect(result).to.be.equal(expectedResult);
+			expect(result).toBe(expectedResult);
 		});
 	});
 });
