@@ -1,11 +1,10 @@
-import { type ISetting, type Serialized, type SettingValue } from '@rocket.chat/core-typings';
+import type { ISetting, Serialized, SettingValue } from '@rocket.chat/core-typings';
 import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
 import languages from '@rocket.chat/i18n/dist/languages';
-import { type Method, type OperationParams, type OperationResult, type PathPattern, type UrlParams } from '@rocket.chat/rest-typings';
-import type { ModalContextValue } from '@rocket.chat/ui-contexts';
+import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
+import type { ModalContextValue, TranslationKey } from '@rocket.chat/ui-contexts';
 import {
-	type TranslationKey,
 	AuthorizationContext,
 	ConnectionStatusContext,
 	RouterContext,
@@ -16,12 +15,13 @@ import {
 	ActionManagerContext,
 	ModalContext,
 } from '@rocket.chat/ui-contexts';
-import { type DecoratorFn } from '@storybook/react';
+import type { DecoratorFn } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { type WrapperComponent } from '@testing-library/react-hooks';
+import type { WrapperComponent } from '@testing-library/react-hooks';
 import { createInstance } from 'i18next';
-import { type ObjectId } from 'mongodb';
-import React, { type ContextType, type ReactNode, useEffect, useReducer } from 'react';
+import type { ObjectId } from 'mongodb';
+import type { ContextType, ReactNode } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
@@ -332,22 +332,19 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	private i18n = createInstance(
-		{
-			// debug: true,
-			lng: 'en',
-			fallbackLng: 'en',
-			ns: ['core'],
-			nsSeparator: '.',
-			partialBundledLanguages: true,
-			defaultNS: 'core',
-			interpolation: {
-				escapeValue: false,
-			},
-			initImmediate: false,
+	private i18n = createInstance({
+		// debug: true,
+		lng: 'en',
+		fallbackLng: 'en',
+		ns: ['core'],
+		nsSeparator: '.',
+		partialBundledLanguages: true,
+		defaultNS: 'core',
+		interpolation: {
+			escapeValue: false,
 		},
-		() => undefined,
-	).use(initReactI18next);
+		initImmediate: false,
+	}).use(initReactI18next);
 
 	withTranslations(lng: string, ns: string, resources: Record<string, string>): this {
 		const addResources = () => {
@@ -371,6 +368,11 @@ export class MockedAppRootBuilder {
 			defaultOptions: {
 				queries: { retry: false },
 				mutations: { retry: false },
+			},
+			logger: {
+				log: console.log,
+				warn: console.warn,
+				error: () => undefined,
 			},
 		});
 
@@ -416,6 +418,8 @@ export class MockedAppRootBuilder {
 		const subscribeToModal = (onStoreChange: () => void) => this.events.on('update-modal', onStoreChange);
 
 		const getModalSnapshot = () => this.modal;
+
+		i18n.init();
 
 		return function MockedAppRoot({ children }) {
 			const [translation, updateTranslation] = useReducer(reduceTranslation, undefined, () => reduceTranslation());

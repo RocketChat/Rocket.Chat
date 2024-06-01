@@ -1,23 +1,13 @@
 import { faker } from '@faker-js/faker';
-import { ModalContext } from '@rocket.chat/ui-contexts';
-import { renderHook } from '@testing-library/react-hooks';
-import type { ReactNode } from 'react';
-import React from 'react';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { render, screen } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react-hooks';
+import type { Ref } from 'react';
+import React, { createRef, forwardRef, useImperativeHandle } from 'react';
 
 import { useVideoConfOpenCall } from './useVideoConfOpenCall';
 
 describe('with window.RocketChatDesktop set', () => {
-	const wrapper = ({ children }: { children: ReactNode }) => (
-		<ModalContext.Provider
-			children={children}
-			value={{
-				modal: {
-					setModal: () => null,
-				},
-				currentModal: { component: null },
-			}}
-		/>
-	);
 	beforeEach(() => {
 		window.RocketChatDesktop = {
 			openInternalVideoChatWindow: jest.fn(),
@@ -29,20 +19,26 @@ describe('with window.RocketChatDesktop set', () => {
 	});
 
 	it('should pass to videoConfOpenCall the url', async () => {
-		const { result } = renderHook(() => useVideoConfOpenCall(), { wrapper });
+		const { result } = renderHook(() => useVideoConfOpenCall(), { wrapper: mockAppRoot().build() });
+
 		const url = faker.internet.url();
 
-		result.current(url);
+		act(() => {
+			result.current(url);
+		});
 
 		expect(window.RocketChatDesktop?.openInternalVideoChatWindow).toHaveBeenCalledWith(url, { providerName: undefined });
 	});
 
 	it('should pass to videoConfOpenCall the url and the providerName', async () => {
-		const { result } = renderHook(() => useVideoConfOpenCall(), { wrapper });
+		const { result } = renderHook(() => useVideoConfOpenCall(), { wrapper: mockAppRoot().build() });
+
 		const url = faker.internet.url();
 		const providerName = faker.lorem.word();
 
-		result.current(url, providerName);
+		act(() => {
+			result.current(url, providerName);
+		});
 
 		expect(window.RocketChatDesktop?.openInternalVideoChatWindow).toHaveBeenCalledWith(url, {
 			providerName,
@@ -50,43 +46,55 @@ describe('with window.RocketChatDesktop set', () => {
 	});
 });
 
-describe('with window.RocketChatDesktop unset', () => {
-	const setModal = jest.fn();
+describe('without window.RocketChatDesktop set', () => {
+	const renderHookWithScreen = () => {
+		// TODO: replace this workaround with the future `renderHook` from `@testing-library/react`
+		const CallOpener = forwardRef(function CallOpener(_: unknown, ref: Ref<ReturnType<typeof useVideoConfOpenCall>>) {
+			const result = useVideoConfOpenCall();
+			useImperativeHandle(ref, () => result);
 
-	const wrapper = ({ children }: { children: ReactNode }) => (
-		<ModalContext.Provider
-			children={children}
-			value={{
-				modal: {
-					setModal,
-				},
-				currentModal: { component: null },
-			}}
-		/>
-	);
+			return null;
+		});
 
-	it('should open window', async () => {
-		const { result } = renderHook(() => useVideoConfOpenCall(), { wrapper });
-		const url = faker.internet.url();
+		const result = createRef<ReturnType<typeof useVideoConfOpenCall>>();
 
-		window.open = jest.fn();
+		render(<CallOpener ref={result} />, { wrapper: mockAppRoot().build() });
 
-		result.current(url);
+		return { result: result as { current: ReturnType<typeof useVideoConfOpenCall> } };
+	};
 
-		expect(window.open).toHaveBeenCalledWith(url);
-		expect(setModal).not.toBeCalled();
+	const previousWindowOpen = window.open;
+
+	afterAll(() => {
+		window.open = previousWindowOpen;
 	});
 
-	it('should NOT open window AND open modal', async () => {
-		const { result } = renderHook(() => useVideoConfOpenCall(), { wrapper });
+	it('should open window', async () => {
+		window.open = jest.fn(() => ({} as Window));
+
+		const { result } = renderHookWithScreen();
+
 		const url = faker.internet.url();
-
-		window.open = jest.fn(() => null);
-
-		result.current(url);
+		act(() => {
+			result.current(url);
+		});
 
 		expect(window.open).toHaveBeenCalledWith(url);
-		expect(window.open).toReturnWith(null);
-		expect(setModal).toBeCalled();
+		expect(screen.queryByRole('dialog', { name: 'Open_call_in_new_tab' })).not.toBeInTheDocument();
+	});
+
+	it('should NOT open window, AND open modal instead', async () => {
+		window.open = jest.fn(() => null);
+
+		const { result } = renderHookWithScreen();
+
+		const url = faker.internet.url();
+		act(() => {
+			result.current(url);
+		});
+
+		expect(window.open).toHaveBeenCalledWith(url);
+		expect(window.open).toHaveReturnedWith(null);
+		expect(await screen.findByRole('dialog', { name: 'Open_call_in_new_tab' })).toBeInTheDocument();
 	});
 });
