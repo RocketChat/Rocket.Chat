@@ -16,13 +16,15 @@ function checkFederation(): Promise<boolean> {
 	let domain = url.hostname;
 
 	if (url.port) {
-		domain += ":" + url.port;
+		domain += ':' + url.port;
 	}
 
 	return new Promise((resolve, reject) =>
-		fetch(`${federationTesterHost}/api/federation-ok?server_name=${domain}`).then(response =>
-			response.text()).then(text =>
-				resolve(text === 'GOOD')).catch(reject));
+		fetch(`${federationTesterHost}/api/federation-ok?server_name=${domain}`)
+			.then((response) => response.text())
+			.then((text) => resolve(text === 'GOOD'))
+			.catch(reject),
+	);
 }
 
 declare module '@rocket.chat/ui-contexts' {
@@ -42,10 +44,10 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!await Authorization.hasPermission(uid, 'view-privileged-setting')) {
+		if (!(await Authorization.hasPermission(uid, 'view-privileged-setting'))) {
 			throw new Meteor.Error('error-not-allowed', 'Action not allowed', {
 				method: 'checkFederationConfiguration',
-			})
+			});
 		}
 
 		const errors: string[] = [];
@@ -55,7 +57,7 @@ Meteor.methods<ServerMethods>({
 		const service = License.hasValidLicense() ? FederationEE : Federation;
 
 		try {
-			if (!await checkFederation()) {
+			if (!(await checkFederation())) {
 				errors.push('external reachability could not be verified');
 				// throw new Meteor.Error('error-invalid-configuration',, { method: 'checkFederationConfiguration' });
 			} else {
@@ -79,12 +81,13 @@ Meteor.methods<ServerMethods>({
 				throw new Meteor.Error('error-invalid-configuration', message, { method: 'checkFederationConfiguration' });
 			}
 
-			throw new Meteor.Error('error-invalid-configuration', ['Invalid configuration'].concat(errors).join(', '), { method: 'checkFederationConfiguration' });
+			throw new Meteor.Error('error-invalid-configuration', ['Invalid configuration'].concat(errors).join(', '), {
+				method: 'checkFederationConfiguration',
+			});
 		}
-
 
 		return {
 			message: ['All configuration looks good'].concat(successes).join(', '),
-		}
-	}
-})
+		};
+	},
+});

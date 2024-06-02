@@ -32,7 +32,7 @@ export class MatrixBridge implements IFederationBridge {
 
 	protected isUpdatingBridgeStatus = false;
 
-	constructor(protected internalSettings: RocketChatSettingsAdapter, protected eventHandler: (event: AbstractMatrixEvent) => void) { } // eslint-disable-line no-empty-function
+	constructor(protected internalSettings: RocketChatSettingsAdapter, protected eventHandler: (event: AbstractMatrixEvent) => void) {} // eslint-disable-line no-empty-function
 
 	public async start(): Promise<void> {
 		if (this.isUpdatingBridgeStatus) {
@@ -46,9 +46,9 @@ export class MatrixBridge implements IFederationBridge {
 			if (!this.isRunning) {
 				const { AppService } = await import('@rocket.chat/forked-matrix-appservice-bridge');
 
-				const appservice = new AppService({ homeserverToken: this.internalSettings.getAppServiceRegistrationObject().homeserverToken })
+				const appservice = new AppService({ homeserverToken: this.internalSettings.getAppServiceRegistrationObject().homeserverToken });
 
-				const pinghandler = function(req: Request, res: Response) {
+				const pinghandler = function (req: Request, res: Response) {
 					if (req.headers.authorization?.split(/\s+/)[1] !== (this as any).config.homeserverToken) {
 						res.status(401);
 						res.end();
@@ -57,9 +57,9 @@ export class MatrixBridge implements IFederationBridge {
 
 					res.status(200);
 					res.json(req.body);
-				}
+				};
 
-				appservice.expressApp.post('/_matrix/app/v1/ping', pinghandler.bind(appservice))
+				appservice.expressApp.post('/_matrix/app/v1/ping', pinghandler.bind(appservice));
 
 				await this.bridgeInstance.run(this.internalSettings.getBridgePort(), appservice);
 
@@ -92,8 +92,8 @@ export class MatrixBridge implements IFederationBridge {
 				displayName: externalInformation.displayname || '',
 				...(externalInformation.avatar_url
 					? {
-						avatarUrl: externalInformation.avatar_url,
-					}
+							avatarUrl: externalInformation.avatar_url,
+					  }
 					: {}),
 			};
 		} catch (err) {
@@ -774,15 +774,17 @@ export class MatrixBridge implements IFederationBridge {
 
 	public async ping(): Promise<{ duration_ms: number }> {
 		if (!this.isRunning || !this.bridgeInstance) {
-			throw new Error('matrix bridge isn\'t yet running');
+			throw new Error("matrix bridge isn't yet running");
 		}
 
-		return this.bridgeInstance.getIntent().matrixClient.doRequest(
-			'POST',
-			`/_matrix/client/v1/appservice/${this.internalSettings.getApplicationServiceId()}/ping`,
-			{},
-			{ transaction_id: 'meow' },
-			DEFAULT_TIMEOUT_IN_MS_FOR_JOINING_ROOMS,
-		);
+		return this.bridgeInstance
+			.getIntent()
+			.matrixClient.doRequest(
+				'POST',
+				`/_matrix/client/v1/appservice/${this.internalSettings.getApplicationServiceId()}/ping`,
+				{},
+				{ transaction_id: 'meow' },
+				DEFAULT_TIMEOUT_IN_MS_FOR_JOINING_ROOMS,
+			);
 	}
 }

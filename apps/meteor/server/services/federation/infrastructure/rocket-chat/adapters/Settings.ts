@@ -286,7 +286,6 @@ export class RocketChatSettingsAdapter {
 			section: 'Matrix Bridge',
 		});
 
-
 		await settingsRegistry.add('Federation_Matrix_check_configuration_button', 'checkFederationConfiguration', {
 			type: 'action',
 			actionText: 'Federation_Matrix_check_configuration',
