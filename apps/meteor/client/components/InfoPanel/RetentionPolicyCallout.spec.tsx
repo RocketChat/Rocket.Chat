@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import React from 'react';
-import '@testing-library/jest-dom/extend-expect';
 
 import { createRenteionPolicySettingsMock as createMock } from '../../../tests/mocks/client/mockRetentionPolicySettings';
 import { createFakeRoom } from '../../../tests/mocks/data';

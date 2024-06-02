@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen, waitForElementToBeRemoved, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { VirtuosoMockContext } from 'react-virtuoso';
@@ -149,6 +149,6 @@ describe('server management', () => {
 		const removeButton = await within(lastItem).findByRole('button', { name: 'Remove' });
 		await userEvent.click(removeButton);
 
-		await waitForElementToBeRemoved(() => screen.queryByRole('listitem', { name: 'server-4' }));
+		expect(screen.queryByRole('listitem', { name: 'server-4' })).not.toBeInTheDocument();
 	});
 });

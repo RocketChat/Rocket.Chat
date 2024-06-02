@@ -1,6 +1,5 @@
 import { render } from '@testing-library/react';
 
-import '@testing-library/jest-dom';
 import { invalidFile, validFile, validMessage, validSystemMessage } from '../ChatTranscript.fixtures';
 import { MessageList } from './MessageList';
 

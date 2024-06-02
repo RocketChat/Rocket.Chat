@@ -1,3 +1,5 @@
+import type { Config } from 'jest';
+
 export default {
 	errorOnDeprecated: true,
 	testEnvironment: 'jsdom',
@@ -20,8 +22,10 @@ export default {
 	moduleNameMapper: {
 		'\\.css$': 'identity-obj-proxy',
 		'^react($|/.+)': '<rootDir>/../../node_modules/react$1',
+		'^react-dom/client$': '<rootDir>/../../node_modules/react-dom$1',
+		'^react-dom($|/.+)': '<rootDir>/../../node_modules/react-dom$1',
 	},
 	collectCoverage: true,
 	collectCoverageFrom: ['src/**/*.{ts,tsx}'],
-	setupFilesAfterEnv: ['@testing-library/jest-dom/extend-expect'],
-};
+	setupFilesAfterEnv: ['<rootDir>/src/jest.setup.ts'],
+} satisfies Config;
