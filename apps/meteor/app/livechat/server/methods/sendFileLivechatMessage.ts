@@ -1,5 +1,5 @@
 import type {
-	MessageAttachment,
+	FileAttachmentProps,
 	ImageAttachmentProps,
 	AudioAttachmentProps,
 	VideoAttachmentProps,
@@ -56,7 +56,7 @@ export const sendFileLivechatMessage = async ({ roomId, visitorToken, file, msgD
 
 	const fileUrl = file.name && FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
 
-	const attachment: MessageAttachment = {
+	const attachment: Partial<FileAttachmentProps> = {
 		title: file.name,
 		type: 'file',
 		description: file.description,

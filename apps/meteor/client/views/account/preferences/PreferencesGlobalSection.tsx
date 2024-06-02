@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, FieldGroup, MultiSelect } from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldGroup, FieldLabel, FieldRow, MultiSelect } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -18,8 +18,8 @@ const PreferencesGlobalSection = () => {
 		<Accordion.Item title={t('Global')}>
 			<FieldGroup>
 				<Field>
-					<Field.Label htmlFor={dontAskAgainListId}>{t('Dont_ask_me_again_list')}</Field.Label>
-					<Field.Row>
+					<FieldLabel htmlFor={dontAskAgainListId}>{t('Dont_ask_me_again_list')}</FieldLabel>
+					<FieldRow>
 						<Controller
 							name='dontAskAgainList'
 							control={control}
@@ -27,7 +27,7 @@ const PreferencesGlobalSection = () => {
 								<MultiSelect id={dontAskAgainListId} placeholder={t('Nothing_found')} value={value} onChange={onChange} options={options} />
 							)}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 			</FieldGroup>
 		</Accordion.Item>

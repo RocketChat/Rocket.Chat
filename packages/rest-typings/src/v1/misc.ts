@@ -164,6 +164,22 @@ const MethodCallAnonSchema = {
 
 export const isMethodCallAnonProps = ajv.compile<MethodCallAnon>(MethodCallAnonSchema);
 
+type Fingerprint = { setDeploymentAs: 'new-workspace' | 'updated-configuration' };
+
+const FingerprintSchema = {
+	type: 'object',
+	properties: {
+		setDeploymentAs: {
+			type: 'string',
+			enum: ['new-workspace', 'updated-configuration'],
+		},
+	},
+	required: ['setDeploymentAs'],
+	additionalProperties: false,
+};
+
+export const isFingerprintProps = ajv.compile<Fingerprint>(FingerprintSchema);
+
 type PwGetPolicyReset = { token: string };
 
 const PwGetPolicyResetSchema = {
@@ -219,13 +235,19 @@ export type MiscEndpoints = {
 
 	'/v1/method.call/:method': {
 		POST: (params: { message: string }) => {
-			message: unknown;
+			message: string;
 		};
 	};
 
 	'/v1/method.callAnon/:method': {
 		POST: (params: { message: string }) => {
-			message: unknown;
+			message: string;
+		};
+	};
+
+	'/v1/fingerprint': {
+		POST: (params: Fingerprint) => {
+			success: boolean;
 		};
 	};
 

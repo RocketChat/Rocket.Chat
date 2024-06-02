@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { Livechat } from '../lib/Livechat';
+import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -77,7 +77,9 @@ Meteor.methods<ServerMethods>({
 			delete guestData.phone;
 		}
 
-		await Promise.allSettled([Livechat.saveGuest(guestData), Livechat.saveRoomInfo(roomData)]);
+		// Since the endpoint is going to be deprecated, we can live with this for a while
+		// @ts-expect-error - type is right, but `check` converts it to something else
+		await Promise.allSettled([LivechatTyped.saveGuest(guestData as any, userId), LivechatTyped.saveRoomInfo(roomData)]);
 
 		const user = await Users.findOne({ _id: userId }, { projection: { _id: 1, username: 1 } });
 

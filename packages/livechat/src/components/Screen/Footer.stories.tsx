@@ -4,7 +4,7 @@ import i18next from 'i18next';
 import type { ComponentProps } from 'preact';
 
 import { Screen } from '.';
-import { screenDecorator } from '../../helpers.stories';
+import { screenDecorator } from '../../../.storybook/helpers';
 import { FooterOptions } from '../Footer';
 import Menu from '../Menu';
 

@@ -4,8 +4,9 @@ import type { ReactElement } from 'react';
 import React from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 import PreferencesConversationTranscript from './PreferencesConversationTranscript';
+import { PreferencesGeneral } from './PreferencesGeneral';
 
 type FormData = {
 	omnichannelTranscriptPDF: boolean;
@@ -18,9 +19,10 @@ const OmnichannelPreferencesPage = (): ReactElement => {
 
 	const omnichannelTranscriptPDF = useUserPreference<boolean>('omnichannelTranscriptPDF') ?? false;
 	const omnichannelTranscriptEmail = useUserPreference<boolean>('omnichannelTranscriptEmail') ?? false;
+	const omnichannelHideConversationAfterClosing = useUserPreference<boolean>('omnichannelHideConversationAfterClosing') ?? true;
 
 	const methods = useForm({
-		defaultValues: { omnichannelTranscriptPDF, omnichannelTranscriptEmail },
+		defaultValues: { omnichannelTranscriptPDF, omnichannelTranscriptEmail, omnichannelHideConversationAfterClosing },
 	});
 
 	const {
@@ -43,24 +45,25 @@ const OmnichannelPreferencesPage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Omnichannel')} />
-			<Page.ScrollableContentWithShadow is='form' onSubmit={handleSubmit(handleSave)}>
+			<PageHeader title={t('Omnichannel')} />
+			<PageScrollableContentWithShadow is='form' onSubmit={handleSubmit(handleSave)}>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
 					<Accordion>
 						<FormProvider {...methods}>
+							<PreferencesGeneral />
 							<PreferencesConversationTranscript />
 						</FormProvider>
 					</Accordion>
 				</Box>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={isDirty}>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset({ omnichannelTranscriptPDF, omnichannelTranscriptEmail })}>{t('Cancel')}</Button>
 					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

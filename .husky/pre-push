@@ -1,4 +1,0 @@
-[ "$HUSKY" = "0" ] && echo "skipping push hook" && exit 0
-
-yarn lint && \
-yarn testunit

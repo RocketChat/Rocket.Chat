@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, Select, FieldGroup } from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldGroup, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useLanguages, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
@@ -23,8 +23,8 @@ const PreferencesLocalizationSection = () => {
 		<Accordion.Item title={t('Localization')} defaultExpanded>
 			<FieldGroup>
 				<Field>
-					<Field.Label htmlFor={languageId}>{t('Language')}</Field.Label>
-					<Field.Row>
+					<FieldLabel htmlFor={languageId}>{t('Language')}</FieldLabel>
+					<FieldRow>
 						<Controller
 							control={control}
 							name='language'
@@ -32,7 +32,7 @@ const PreferencesLocalizationSection = () => {
 								<Select id={languageId} value={value} onChange={onChange} options={languageOptions} />
 							)}
 						/>
-					</Field.Row>
+					</FieldRow>
 				</Field>
 			</FieldGroup>
 		</Accordion.Item>

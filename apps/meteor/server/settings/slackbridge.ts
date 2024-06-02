@@ -8,15 +8,87 @@ export const createSlackBridgeSettings = () =>
 			public: true,
 		});
 
-		await this.add('SlackBridge_APIToken', '', {
-			type: 'string',
-			multiline: true,
+		await this.add('SlackBridge_UseLegacy', true, {
+			type: 'boolean',
 			enableQuery: {
 				_id: 'SlackBridge_Enabled',
 				value: true,
 			},
+			i18nLabel: 'SlackBridge_UseLegacy',
+			i18nDescription: 'SlackBridge_UseLegacy_Description',
+			public: true,
+			packageValue: true,
+		});
+
+		await this.add('SlackBridge_APIToken', '', {
+			type: 'string',
+			multiline: true,
+			enableQuery: [
+				{
+					_id: 'SlackBridge_UseLegacy',
+					value: true,
+				},
+				{
+					_id: 'SlackBridge_Enabled',
+					value: true,
+				},
+			],
 			i18nLabel: 'SlackBridge_APIToken',
 			i18nDescription: 'SlackBridge_APIToken_Description',
+			secret: true,
+		});
+
+		await this.add('SlackBridge_BotToken', '', {
+			type: 'string',
+			multiline: true,
+			enableQuery: [
+				{
+					_id: 'SlackBridge_UseLegacy',
+					value: false,
+				},
+				{
+					_id: 'SlackBridge_Enabled',
+					value: true,
+				},
+			],
+			i18nLabel: 'SlackBridge_BotToken',
+			i18nDescription: 'SlackBridge_BotToken_Description',
+			secret: true,
+		});
+
+		await this.add('SlackBridge_SigningSecret', '', {
+			type: 'string',
+			multiline: true,
+			enableQuery: [
+				{
+					_id: 'SlackBridge_UseLegacy',
+					value: false,
+				},
+				{
+					_id: 'SlackBridge_Enabled',
+					value: true,
+				},
+			],
+			i18nLabel: 'SlackBridge_SigningSecret',
+			i18nDescription: 'SlackBridge_SigningSecret_Description',
+			secret: true,
+		});
+
+		await this.add('SlackBridge_AppToken', '', {
+			type: 'string',
+			multiline: true,
+			enableQuery: [
+				{
+					_id: 'SlackBridge_UseLegacy',
+					value: false,
+				},
+				{
+					_id: 'SlackBridge_Enabled',
+					value: true,
+				},
+			],
+			i18nLabel: 'SlackBridge_AppToken',
+			i18nDescription: 'SlackBridge_AppToken_Description',
 			secret: true,
 		});
 

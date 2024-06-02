@@ -1,8 +1,23 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { Modal, Field, FieldGroup, ToggleSwitch, TextInput, TextAreaInput, Button, Icon, Box } from '@rocket.chat/fuselage';
+import {
+	Modal,
+	Field,
+	FieldGroup,
+	ToggleSwitch,
+	TextInput,
+	TextAreaInput,
+	Button,
+	Icon,
+	Box,
+	FieldHint,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+} from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -17,6 +32,7 @@ type CreateDiscussionFormValues = {
 	encrypted: boolean;
 	usernames: Array<IUser['username']>;
 	firstMessage: string;
+	topic: string;
 };
 
 type CreateDiscussionProps = {
@@ -30,18 +46,20 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 	const t = useTranslation();
 
 	const {
-		register,
-		formState: { isDirty, errors },
+		formState: { isDirty, isSubmitting, isValidating, errors },
 		handleSubmit,
 		control,
 		watch,
+		register,
 	} = useForm({
+		mode: 'onBlur',
 		defaultValues: {
 			name: nameSuggestion || '',
 			parentRoom: '',
 			encrypted: false,
 			usernames: [],
 			firstMessage: '',
+			topic: '',
 		},
 	});
 
@@ -57,33 +75,41 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 		},
 	});
 
-	const handleCreate = async ({ name, parentRoom, encrypted, usernames, firstMessage }: CreateDiscussionFormValues) => {
+	const handleCreate = async ({ name, parentRoom, encrypted, usernames, firstMessage, topic }: CreateDiscussionFormValues) => {
 		createDiscussionMutation.mutate({
 			prid: defaultParentRoom || parentRoom,
 			t_name: name,
 			users: usernames,
 			reply: encrypted ? undefined : firstMessage,
+			topic,
 			...(parentMessageId && { pmid: parentMessageId }),
 		});
 	};
 
+	const parentRoomId = useUniqueId();
+	const encryptedId = useUniqueId();
+	const discussionNameId = useUniqueId();
+	const membersId = useUniqueId();
+	const firstMessageId = useUniqueId();
+	const topicId = useUniqueId();
+
 	return (
 		<Modal
 			data-qa='create-discussion-modal'
-			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
 		>
 			<Modal.Header>
 				<Modal.Title>{t('Discussion_title')}</Modal.Title>
-				<Modal.Close onClick={onClose} />
+				<Modal.Close tabIndex={-1} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>
+				<Box mbe={24}>{t('Discussion_description')}</Box>
 				<FieldGroup>
 					<Field>
-						<Field.Description>{t('Discussion_description')}</Field.Description>
-					</Field>
-					<Field>
-						<Field.Label>{t('Discussion_target_channel')}</Field.Label>
-						<Field.Row>
+						<FieldLabel htmlFor={parentRoomId} required>
+							{t('Discussion_target_channel')}
+						</FieldLabel>
+						<FieldRow>
 							{defaultParentRoom && (
 								<Controller
 									control={control}
@@ -91,78 +117,133 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 									render={() => <DefaultParentRoomField defaultParentRoom={defaultParentRoom} />}
 								/>
 							)}
-
 							{!defaultParentRoom && (
 								<Controller
 									control={control}
 									name='parentRoom'
-									rules={{ required: t('Field_required') }}
-									render={({ field: { onChange, value } }) => (
+									rules={{ required: t('error-the-field-is-required', { field: t('Discussion_target_channel') }) }}
+									render={({ field: { name, onBlur, onChange, value } }) => (
 										<RoomAutoComplete
-											value={value}
+											name={name}
+											onBlur={onBlur}
 											onChange={onChange}
-											placeholder={t('Discussion_target_channel_description')}
+											value={value}
+											id={parentRoomId}
+											placeholder={t('Search_options')}
 											disabled={Boolean(defaultParentRoom)}
+											aria-invalid={Boolean(errors.parentRoom)}
+											aria-required='true'
+											aria-describedby={`${parentRoomId}-error`}
 										/>
 									)}
 								/>
 							)}
-						</Field.Row>
-						{errors.parentRoom && <Field.Error>{errors.parentRoom.message}</Field.Error>}
-					</Field>
-					<Field display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-						<Box display='flex' flexDirection='column' width='full'>
-							<Field.Label>{t('Encrypted')}</Field.Label>
-						</Box>
-						<Controller
-							control={control}
-							name='encrypted'
-							render={({ field: { onChange, value } }) => (
-								<ToggleSwitch
-									checked={value}
-									onChange={onChange}
-									aria-describedby='Encrypted_discussion_Description'
-									aria-labelledby='Encrypted_discussion_Label'
-								/>
-							)}
-						/>
+						</FieldRow>
+						{errors.parentRoom && (
+							<FieldError aria-live='assertive' id={`${parentRoomId}-error`}>
+								{errors.parentRoom.message}
+							</FieldError>
+						)}
 					</Field>
 					<Field>
-						<Field.Label>{t('Discussion_name')}</Field.Label>
-						<Field.Row>
-							<TextInput
-								{...register('name', { required: t('Field_required') })}
-								placeholder={t('New_discussion_name')}
-								addon={<Icon name='baloons' size='x20' />}
+						<FieldLabel htmlFor={discussionNameId} required>
+							{t('Name')}
+						</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='name'
+								control={control}
+								rules={{ required: t('Field_required') }}
+								render={({ field }) => (
+									<TextInput
+										id={discussionNameId}
+										{...field}
+										aria-invalid={Boolean(errors.name)}
+										aria-required='true'
+										aria-describedby={`${discussionNameId}-error ${discussionNameId}-hint`}
+										addon={<Icon name='baloons' size='x20' />}
+									/>
+								)}
 							/>
-						</Field.Row>
-						{errors.name && <Field.Error>{errors.name.message}</Field.Error>}
+						</FieldRow>
+						{errors.name && (
+							<FieldError aria-live='assertive' id={`${discussionNameId}-error`}>
+								{errors.name.message}
+							</FieldError>
+						)}
 					</Field>
 					<Field>
-						<Field.Label>{t('Invite_Users')}</Field.Label>
-						<Field.Row w='full' display='flex' flexDirection='column' alignItems='stretch'>
+						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
+						<FieldRow>
+							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} />
+						</FieldRow>
+						<FieldRow>
+							<FieldHint id={`${topicId}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
+						</FieldRow>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={membersId}>{t('Members')}</FieldLabel>
+						<FieldRow>
 							<Controller
 								control={control}
 								name='usernames'
-								render={({ field: { onChange, value } }) => (
-									<UserAutoCompleteMultiple value={value} onChange={onChange} placeholder={t('Username_Placeholder')} />
+								render={({ field: { name, onChange, value, onBlur } }) => (
+									<UserAutoCompleteMultiple
+										id={membersId}
+										name={name}
+										onChange={onChange}
+										value={value}
+										onBlur={onBlur}
+										placeholder={t('Add_people')}
+									/>
 								)}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Field.Label>{t('Discussion_first_message_title')}</Field.Label>
-						<Field.Row>
-							<TextAreaInput {...register('firstMessage')} placeholder={t('New_discussion_first_message')} rows={5} disabled={encrypted} />
-						</Field.Row>
-						{encrypted && <Field.Description>{t('Discussion_first_message_disabled_due_to_e2e')}</Field.Description>}
+						<FieldLabel htmlFor={firstMessageId}>{t('Discussion_first_message_title')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								control={control}
+								name='firstMessage'
+								render={({ field }) => (
+									<TextAreaInput
+										id={firstMessageId}
+										{...field}
+										rows={5}
+										disabled={encrypted}
+										aria-describedby={`${firstMessageId}-hint ${firstMessageId}-encrypted-hint`}
+									/>
+								)}
+							/>
+						</FieldRow>
+						{encrypted ? (
+							<FieldHint id={`${firstMessageId}-encrypted-hint`}>{t('Discussion_first_message_disabled_due_to_e2e')}</FieldHint>
+						) : (
+							<FieldHint id={`${firstMessageId}-hint`}>{t('First_message_hint')}</FieldHint>
+						)}
+					</Field>
+					<Field>
+						<FieldRow>
+							<FieldLabel htmlFor={encryptedId}>{t('Encrypted')}</FieldLabel>
+							<Controller
+								control={control}
+								name='encrypted'
+								render={({ field: { value, ...field } }) => <ToggleSwitch id={encryptedId} {...field} checked={value} />}
+							/>
+						</FieldRow>
+						{encrypted ? (
+							<FieldHint id={`${encryptedId}-hint`}>{t('Encrypted_messages', { roomType: 'discussion' })}</FieldHint>
+						) : (
+							<FieldHint id={`${encryptedId}-hint`}>{t('Encrypted_messages_false')}</FieldHint>
+						)}
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button type='submit' primary disabled={!isDirty || createDiscussionMutation.isLoading}>
+					<Button type='submit' primary disabled={!isDirty} loading={isSubmitting || isValidating}>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

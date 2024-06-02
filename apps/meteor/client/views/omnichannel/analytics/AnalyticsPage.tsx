@@ -1,10 +1,10 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Select, Margins, Field, Label } from '@rocket.chat/fuselage';
+import { Box, Select, Margins, Field, FieldLabel, FieldRow, Label, Option } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useEffect } from 'react';
 
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import AgentOverview from './AgentOverview';
 import DateRangePicker from './DateRangePicker';
 import InterchangeableChart from './InterchangeableChart';
@@ -52,8 +52,8 @@ const AnalyticsPage = () => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Analytics')} />
-			<Page.ScrollableContentWithShadow display='flex' flexDirection='column'>
+			<PageHeader title={t('Analytics')} />
+			<PageScrollableContentWithShadow display='flex' flexDirection='column'>
 				<Margins block={4}>
 					<Box display='flex' mi='neg-x4' flexWrap='wrap' flexGrow={1}>
 						<Box display='flex' flexWrap='wrap' flexGrow={1}>
@@ -63,7 +63,13 @@ const AnalyticsPage = () => {
 							</Box>
 							<Box display='flex' mi={4} flexDirection='column' flexGrow={1}>
 								<Label mb={4}>{t('Departments')}</Label>
-								<AutoCompleteDepartment value={department || undefined} onChange={setDepartment} onlyMyDepartments />
+								<AutoCompleteDepartment
+									value={department || undefined}
+									onChange={setDepartment}
+									onlyMyDepartments
+									withTitle={false}
+									renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
+								/>
 							</Box>
 						</Box>
 						<DateRangePicker flexGrow={1} mi={4} onChange={setDateRange} />
@@ -74,10 +80,10 @@ const AnalyticsPage = () => {
 					<Box display='flex'>
 						<Margins inline={2}>
 							<Field>
-								<Field.Label>{t('Chart')}</Field.Label>
-								<Field.Row>
+								<FieldLabel>{t('Chart')}</FieldLabel>
+								<FieldRow>
 									<Select options={graphOptions} value={chartName} onChange={(value) => setChartName(String(value))} />
-								</Field.Row>
+								</FieldRow>
 							</Field>
 						</Margins>
 					</Box>
@@ -96,7 +102,7 @@ const AnalyticsPage = () => {
 						</Box>
 					</Box>
 				</Margins>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

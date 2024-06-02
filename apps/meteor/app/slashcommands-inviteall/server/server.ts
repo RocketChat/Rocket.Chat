@@ -37,6 +37,9 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 		}
 
 		const user = await Users.findOneById(userId);
+		if (!user) {
+			return;
+		}
 		const lng = user?.language || settings.get('Language') || 'en';
 
 		const baseChannel = type === 'to' ? await Rooms.findOneById(message.rid) : await Rooms.findOneByName(channel);
@@ -69,7 +72,7 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			const users = (await cursor.toArray()).map((s: ISubscription) => s.u.username).filter(isTruthy);
 
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
-				baseChannel.t === 'c' ? await createChannelMethod(userId, channel, users) : await createPrivateGroupMethod(userId, channel, users);
+				baseChannel.t === 'c' ? await createChannelMethod(userId, channel, users) : await createPrivateGroupMethod(user, channel, users);
 				void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 					msg: i18n.t('Channel_created', {
 						postProcess: 'sprintf',

@@ -18,6 +18,9 @@ import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
 import { TranslationProviderRegistry, AutoTranslate } from './autotranslate';
 
+const proApiEndpoint = 'https://api.deepl.com/v2/translate';
+const freeApiEndpoint = 'https://api-free.deepl.com/v2/translate';
+
 /**
  * DeepL translation service provider class representation.
  * Encapsulates the service provider settings and information.
@@ -38,10 +41,18 @@ class DeeplAutoTranslate extends AutoTranslate {
 	constructor() {
 		super();
 		this.name = 'deepl-translate';
-		this.apiEndPointUrl = 'https://api.deepl.com/v2/translate';
+		this.apiEndPointUrl = proApiEndpoint;
+
 		// Get the service provide API key.
 		settings.watch<string>('AutoTranslate_DeepLAPIKey', (value) => {
 			this.apiKey = value;
+
+			// if the api key ends with `:fx` it is a free api key
+			if (/:fx$/.test(value)) {
+				this.apiEndPointUrl = freeApiEndpoint;
+				return;
+			}
+			this.apiEndPointUrl = proApiEndpoint;
 		});
 	}
 
@@ -205,7 +216,13 @@ class DeeplAutoTranslate extends AutoTranslate {
 				language = language.substr(0, 2);
 			}
 			try {
-				const result = await fetch(this.apiEndPointUrl, { params: { auth_key: this.apiKey, target_lang: language, text: msgs } });
+				const result = await fetch(this.apiEndPointUrl, {
+					params: { target_lang: language, text: msgs },
+					headers: {
+						Authorization: `DeepL-Auth-Key ${this.apiKey}`,
+					},
+					method: 'POST',
+				});
 
 				if (!result.ok) {
 					throw new Error(result.statusText);

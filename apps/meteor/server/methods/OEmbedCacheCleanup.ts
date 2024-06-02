@@ -12,6 +12,13 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
+export const executeClearOEmbedCache = async () => {
+	const date = new Date();
+	const expirationDays = settings.get<number>('API_EmbedCacheExpirationDays');
+	date.setDate(date.getDate() - expirationDays);
+	return OEmbedCache.removeBeforeDate(date);
+};
+
 Meteor.methods<ServerMethods>({
 	async OEmbedCacheCleanup() {
 		const uid = Meteor.userId();
@@ -21,10 +28,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const date = new Date();
-		const expirationDays = settings.get<number>('API_EmbedCacheExpirationDays');
-		date.setDate(date.getDate() - expirationDays);
-		await OEmbedCache.removeAfterDate(date);
+		await executeClearOEmbedCache();
 		return {
 			message: 'cache_cleared',
 		};

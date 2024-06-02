@@ -2,7 +2,7 @@ import { isPOSTLivechatOfflineMessageParams } from '@rocket.chat/rest-typings';
 
 import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
-import { Livechat } from '../../lib/Livechat';
+import { Livechat } from '../../lib/LivechatTyped';
 
 API.v1.addRoute(
 	'livechat/offline.message',

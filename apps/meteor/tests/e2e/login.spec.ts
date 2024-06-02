@@ -1,13 +1,16 @@
 import { faker } from '@faker-js/faker';
 
-import { Registration } from './page-objects';
+import { DEFAULT_USER_CREDENTIALS } from './config/constants';
+import { Utils, Registration } from './page-objects';
 import { test, expect } from './utils/test';
 
 test.describe.parallel('Login', () => {
 	let poRegistration: Registration;
+	let poUtils: Utils;
 
 	test.beforeEach(async ({ page }) => {
 		poRegistration = new Registration(page);
+		poUtils = new Utils(page);
 
 		await page.goto('/home');
 	});
@@ -25,6 +28,26 @@ test.describe.parallel('Login', () => {
 
 			await expect(poRegistration.username).toBeInvalid();
 			await expect(poRegistration.inputPassword).toBeInvalid();
+		});
+	});
+
+	test('Login with valid username and password', async () => {
+		await test.step('expect successful login', async () => {
+			await poRegistration.username.type('user1');
+			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
+			await poRegistration.btnLogin.click();
+
+			await expect(poUtils.mainContent).toBeVisible();
+		});
+	});
+
+	test('Login with valid email and password', async () => {
+		await test.step('expect successful login', async () => {
+			await poRegistration.username.type('user1@email.com');
+			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
+			await poRegistration.btnLogin.click();
+
+			await expect(poUtils.mainContent).toBeVisible();
 		});
 	});
 });

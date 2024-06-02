@@ -1,13 +1,19 @@
-import type { InputElementDispatchAction } from '@rocket.chat/ui-kit';
+import type {
+  ActionableElement,
+  InputElementDispatchAction,
+} from '@rocket.chat/ui-kit';
 import { createContext } from 'react';
+
+type ActionId = ActionableElement['actionId'];
 
 type ActionParams = {
   blockId: string;
   appId: string;
-  actionId: string;
+  actionId: ActionId;
   value: unknown;
   viewId?: string;
   dispatchActionConfig?: InputElementDispatchAction[];
+  mid?: string;
 };
 
 type UiKitContextValue = {
@@ -15,21 +21,20 @@ type UiKitContextValue = {
     state: ActionParams,
     event: Parameters<React.MouseEventHandler<HTMLElement>>[0]
   ) => Promise<void> | void;
-  state: (
+  updateState?: (
     state: ActionParams,
     event: Parameters<React.MouseEventHandler<HTMLElement>>[0]
   ) => Promise<void> | void;
-  appId: string;
+  appId?: string;
   errors?: Record<string, string>;
-  values: Record<string, { value: string } | undefined>;
+  values: Record<ActionId, { value: unknown } | undefined>;
   viewId?: string;
   rid?: string;
 };
 
 export const UiKitContext = createContext<UiKitContextValue>({
   action: () => undefined,
-  state: () => undefined,
+  updateState: () => undefined,
   appId: 'core',
-  errors: {},
   values: {},
 });

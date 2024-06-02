@@ -29,10 +29,6 @@ class BusinessHoursManager {
 	showBackButton(): boolean {
 		return this.behavior.showBackButton();
 	}
-
-	showTimezoneTemplate(): boolean {
-		return this.behavior.showTimezoneTemplate();
-	}
 }
 
 export const businessHourManager = new BusinessHoursManager(new SingleBusinessHourBehavior());

@@ -15,7 +15,7 @@ export function normalizeThreadTitle({ ...message }: Readonly<IMessage>) {
 			return filteredMessage;
 		}
 		const uid = Meteor.userId();
-		const me = uid && Users.findOne(uid, { fields: { username: 1 } })?.username;
+		const me = (uid && Users.findOne(uid, { fields: { username: 1 } })?.username) || '';
 		const pattern = settings.get('UTF8_User_Names_Validation');
 		const useRealName = settings.get('UI_Use_Real_Name');
 

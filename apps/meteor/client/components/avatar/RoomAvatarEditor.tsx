@@ -3,14 +3,14 @@ import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
 import { getAvatarURL } from '../../../app/utils/client/getAvatarURL';
-import { useFileInput } from '../../hooks/useFileInput';
+import { useSingleFileInput } from '../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../lib/utils/isValidImageFormat';
-import RoomAvatar from './RoomAvatar';
 
 type RoomAvatarEditorProps = {
 	room: Pick<IRoom, RoomAdminFieldsType>;
@@ -36,7 +36,7 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 		};
 	});
 
-	const [clickUpload, reset] = useFileInput(handleChangeAvatar);
+	const [clickUpload, reset] = useSingleFileInput(handleChangeAvatar);
 	const clickReset = useMutableCallback(() => {
 		reset();
 		onChangeAvatar(null);
@@ -71,7 +71,7 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 						danger
 						icon='trash'
 						title={t('Accounts_SetDefaultAvatar')}
-						disabled={roomAvatar === null || isRoomFederated(room) || disabled}
+						disabled={!roomAvatar || isRoomFederated(room) || disabled}
 						onClick={clickReset}
 					/>
 				</ButtonGroup>

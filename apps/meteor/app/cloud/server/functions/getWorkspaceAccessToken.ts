@@ -10,7 +10,7 @@ import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
  * @param {boolean} save
  * @returns string
  */
-export async function getWorkspaceAccessToken(forceNew = false, scope = '', save = true): Promise<string> {
+export async function getWorkspaceAccessToken(forceNew = false, scope = '', save = true, throwOnError = false): Promise<string> {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
 	if (!workspaceRegistered) {
@@ -29,7 +29,7 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 		return settings.get<string>('Cloud_Workspace_Access_Token');
 	}
 
-	const accessToken = await getWorkspaceAccessTokenWithScope(scope);
+	const accessToken = await getWorkspaceAccessTokenWithScope(scope, throwOnError);
 
 	if (save) {
 		await Promise.all([
@@ -37,7 +37,6 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 			Settings.updateValueById('Cloud_Workspace_Access_Token_Expires_At', accessToken.expiresAt),
 		]);
 	}
-
 	return accessToken.token;
 }
 
@@ -47,11 +46,25 @@ export class CloudWorkspaceAccessTokenError extends Error {
 	}
 }
 
+export const isAbortError = (error: unknown): error is { type: 'AbortError' } => {
+	if (typeof error !== 'object' || error === null) {
+		return false;
+	}
+
+	return 'type' in error && error.type === 'AbortError';
+};
+
+export class CloudWorkspaceAccessTokenEmptyError extends Error {
+	constructor() {
+		super('Workspace access token is empty');
+	}
+}
+
 export async function getWorkspaceAccessTokenOrThrow(forceNew = false, scope = '', save = true): Promise<string> {
-	const token = await getWorkspaceAccessToken(forceNew, scope, save);
+	const token = await getWorkspaceAccessToken(forceNew, scope, save, true);
 
 	if (!token) {
-		throw new CloudWorkspaceAccessTokenError();
+		throw new CloudWorkspaceAccessTokenEmptyError();
 	}
 
 	return token;

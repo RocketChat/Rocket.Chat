@@ -28,7 +28,7 @@ function getSamlServiceProviderOptions(provider: string): IServiceProviderOption
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		samlLogout(provider: string): Promise<string | undefined>;
+		samlLogout(provider: string): string | undefined;
 	}
 }
 

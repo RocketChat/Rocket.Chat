@@ -12,7 +12,7 @@ const resumeOnHoldCommentAndUser = async (room: IOmnichannelRoom): Promise<{ com
 		v: { _id: visitorId },
 		_id: rid,
 	} = room;
-	const visitor = await LivechatVisitors.findOneById<Pick<ILivechatVisitor, 'name' | 'username'>>(visitorId, {
+	const visitor = await LivechatVisitors.findOneEnabledById<Pick<ILivechatVisitor, 'name' | 'username'>>(visitorId, {
 		projection: { name: 1, username: 1 },
 	});
 	if (!visitor) {

@@ -7,6 +7,7 @@ const BannerRegion = lazy(() => import('../views/banners/BannerRegion'));
 const PortalsWrapper = lazy(() => import('../views/root/PortalsWrapper'));
 const ModalRegion = lazy(() => import('../views/modal/ModalRegion'));
 const ActionManagerBusyState = lazy(() => import('../components/ActionManagerBusyState'));
+const CloudAnnouncementsRegion = lazy(() => import('../views/cloud/CloudAnnouncementsRegion'));
 
 type AppLayoutDescriptor = ReactElement | null;
 
@@ -23,10 +24,6 @@ class AppLayoutSubscription extends Emitter<{ update: void }> {
 	}
 
 	render(element: ReactElement): void {
-		this.setCurrentValue(this.wrap(element));
-	}
-
-	renderStandalone(element: ReactElement): void {
 		this.setCurrentValue(element);
 	}
 
@@ -35,6 +32,7 @@ class AppLayoutSubscription extends Emitter<{ update: void }> {
 			<>
 				<ConnectionStatusBar />
 				<ActionManagerBusyState />
+				<CloudAnnouncementsRegion />
 				<BannerRegion />
 				{element}
 				<PortalsWrapper />

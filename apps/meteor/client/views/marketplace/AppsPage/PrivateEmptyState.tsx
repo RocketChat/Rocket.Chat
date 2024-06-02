@@ -8,7 +8,7 @@ const PrivateEmptyState = () => {
 	return (
 		<Box mbs='24px'>
 			<States>
-				<StatesIcon name='cube' />
+				<StatesIcon name='lock' />
 				<StatesTitle>{t('No_private_apps_installed')}</StatesTitle>
 				<StatesSubtitle>{t('Private_apps_are_side-loaded')}</StatesSubtitle>
 			</States>

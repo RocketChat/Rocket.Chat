@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Button, Throbber, Tag, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, Tag, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouteParameter, usePermission, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
@@ -10,9 +10,9 @@ import semver from 'semver';
 import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
 import type { appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../../helpers';
-import { marketplaceActions } from '../../../helpers/marketplaceActions';
 import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstallationHandler';
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
+import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 
 type AppStatusProps = {
@@ -48,18 +48,22 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const action = button?.action;
 
+	const marketplaceActions = useMarketplaceActions();
+
 	const confirmAction = useCallback<AppInstallationHandlerParams['onSuccess']>(
 		async (action, permissionsGranted) => {
-			if (action !== 'request') {
-				setPurchased(true);
-				await marketplaceActions[action]({ ...app, permissionsGranted });
-			} else {
-				setEndUserRequested(true);
+			if (action) {
+				if (action !== 'request') {
+					setPurchased(true);
+					await marketplaceActions[action]({ ...app, permissionsGranted });
+				} else {
+					setEndUserRequested(true);
+				}
 			}
 
 			setLoading(false);
 		},
-		[app, setLoading, setPurchased],
+		[app, marketplaceActions, setLoading, setPurchased],
 	);
 
 	const cancelAction = useCallback(() => {
@@ -128,15 +132,15 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					invisible={!showStatus && !loading}
 				>
 					<Button
-						icon={!loading && button.icon ? button.icon : undefined}
+						icon={button.icon}
 						primary
 						small
-						disabled={loading || (action === 'request' && (app?.requestedEndUser || endUserRequested))}
+						loading={loading}
+						disabled={action === 'request' && (app?.requestedEndUser || endUserRequested)}
 						onClick={handleAcquireApp}
 						mie={8}
 					>
-						{loading && <Throbber inheritColor />}
-						{!loading && t(button.label.replace(' ', '_') as TranslationKey)}
+						{t(button.label.replace(' ', '_') as TranslationKey)}
 					</Button>
 
 					{shouldShowPriceDisplay && !installed && (
@@ -146,7 +150,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			)}
 
 			{statuses?.map((status, index) => (
-				<Margins inlineEnd={8} key={index}>
+				<Margins inlineEnd={index !== statuses.length - 1 ? 8 : undefined} key={index}>
 					<Tag variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
 						{handleAppRequestsNumber(status)} {t(`${status.label}` as TranslationKey)}
 					</Tag>

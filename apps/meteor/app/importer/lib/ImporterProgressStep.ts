@@ -1,3 +1,5 @@
+import type { IImportProgress } from '@rocket.chat/core-typings';
+
 /** The progress step that an importer is at. */
 export const ProgressStep = Object.freeze({
 	NEW: 'importer_new',
@@ -22,20 +24,20 @@ export const ProgressStep = Object.freeze({
 	DONE: 'importer_done',
 	ERROR: 'importer_import_failed',
 	CANCELLED: 'importer_import_cancelled',
-});
+} satisfies Record<string, IImportProgress['step']>);
 
-export const ImportWaitingStates = [ProgressStep.NEW, ProgressStep.UPLOADING, ProgressStep.DOWNLOADING_FILE];
+export const ImportWaitingStates: IImportProgress['step'][] = [ProgressStep.NEW, ProgressStep.UPLOADING, ProgressStep.DOWNLOADING_FILE];
 
-export const ImportFileReadyStates = [ProgressStep.FILE_LOADED];
+export const ImportFileReadyStates: IImportProgress['step'][] = [ProgressStep.FILE_LOADED];
 
-export const ImportPreparingStartedStates = [
+export const ImportPreparingStartedStates: IImportProgress['step'][] = [
 	ProgressStep.PREPARING_STARTED,
 	ProgressStep.PREPARING_USERS,
 	ProgressStep.PREPARING_CHANNELS,
 	ProgressStep.PREPARING_MESSAGES,
 ];
 
-export const ImportingStartedStates = [
+export const ImportingStartedStates: IImportProgress['step'][] = [
 	ProgressStep.IMPORTING_STARTED,
 	ProgressStep.IMPORTING_USERS,
 	ProgressStep.IMPORTING_CHANNELS,
@@ -44,4 +46,4 @@ export const ImportingStartedStates = [
 	ProgressStep.FINISHING,
 ];
 
-export const ImportingErrorStates = [ProgressStep.ERROR, ProgressStep.CANCELLED];
+export const ImportingErrorStates: IImportProgress['step'][] = [ProgressStep.ERROR, ProgressStep.CANCELLED];

@@ -38,7 +38,7 @@ Meteor.methods<ServerMethods>({
 			await crowd.checkConnection();
 
 			return {
-				message: 'Connection_success' as const,
+				message: 'Crowd_Connection_successful' as const,
 				params: [],
 			};
 		} catch (err) {

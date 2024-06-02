@@ -32,7 +32,7 @@ const callback: NextHandleFunction = (req, res, next) => {
 			return;
 		}
 
-		const injection = headInjections.get(pathname.replace(/^\//, '')) as Injection | undefined;
+		const injection = headInjections.get(pathname.replace(/^\//, '').split('_')[0]) as Injection | undefined;
 
 		if (!injection || typeof injection === 'string') {
 			next();
@@ -76,27 +76,37 @@ export const injectIntoHead = (key: string, value: Injection): void => {
 };
 
 export const addScript = (key: string, content: string): void => {
+	if (/_/.test(key)) {
+		throw new Error('inject.js > addScript - key cannot contain "_" (underscore)');
+	}
+
 	if (!content.trim()) {
-		injectIntoHead(`${key}.js`, '');
+		injectIntoHead(key, '');
 		return;
 	}
 	const currentHash = crypto.createHash('sha1').update(content).digest('hex');
-	injectIntoHead(`${key}.js`, {
+
+	injectIntoHead(key, {
 		type: 'JS',
-		tag: `<script id="${key}" type="text/javascript" src="${`${getURL(key)}.js?${currentHash}`}"></script>`,
+		tag: `<script id="${key}" type="text/javascript" src="${`${getURL(key)}_${currentHash}.js`}"></script>`,
 		content,
 	});
 };
 
 export const addStyle = (key: string, content: string): void => {
+	if (/_/.test(key)) {
+		throw new Error('inject.js > addStyle - key cannot contain "_" (underscore)');
+	}
+
 	if (!content.trim()) {
-		injectIntoHead(`${key}.css`, '');
+		injectIntoHead(key, '');
 		return;
 	}
 	const currentHash = crypto.createHash('sha1').update(content).digest('hex');
-	injectIntoHead(`${key}.css`, {
+
+	injectIntoHead(key, {
 		type: 'CSS',
-		tag: `<link id="${key}" rel="stylesheet" type="text/css" href="${`${getURL(key)}.css?${currentHash}`}">`,
+		tag: `<link id="${key}" rel="stylesheet" type="text/css" href="${`${getURL(key)}_${currentHash}.css`}">`,
 		content,
 	});
 };

@@ -27,7 +27,7 @@ roomCoordinator.add(LivechatRoomType, {
 	},
 
 	async canAccessUploadedFile({ rc_token: token, rc_rid: rid }) {
-		return token && rid && !!(await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rid, token));
+		return token && rid && !!(await LivechatRooms.findOneByIdAndVisitorToken(rid, token));
 	},
 
 	async getNotificationDetails(room, _sender, notificationMessage, userId) {
@@ -35,11 +35,11 @@ roomCoordinator.add(LivechatRoomType, {
 		const title = `[Omnichannel] ${roomName}`;
 		const text = notificationMessage;
 
-		return { title, text };
+		return { title, text, name: roomName };
 	},
 
 	async getMsgSender(senderId) {
-		return LivechatVisitors.findOneById(senderId);
+		return LivechatVisitors.findOneEnabledById(senderId);
 	},
 
 	getReadReceiptsExtraData(message) {

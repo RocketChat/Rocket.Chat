@@ -3,7 +3,6 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { actionLinks } from '../../../client/lib/actionLinks';
 import { dispatchToastMessage } from '../../../client/lib/toast';
 import { ChatRoom } from '../../models/client';
-import { Notifications } from '../../notifications/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 
@@ -31,5 +30,5 @@ actionLinks.register('endLivechatWebRTCCall', async (message: IMessage) => {
 		return;
 	}
 	await sdk.rest.put(`/v1/livechat/webrtc.call/${message._id}`, { rid: _id, status: 'ended' });
-	Notifications.notifyRoom(_id, 'webrtc' as any, 'callStatus', { callStatus: 'ended' });
+	sdk.publish('notify-room', [`${_id}/webrtc`, 'callStatus', { callStatus: 'ended' }]);
 });

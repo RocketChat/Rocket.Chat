@@ -1,10 +1,10 @@
-import { Box, Select, Margins } from '@rocket.chat/fuselage';
+import { Box, Select, Margins, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useState, useMemo, useEffect, Fragment } from 'react';
 
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
-import Page from '../../../components/Page';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { getDateRange } from '../../../lib/utils/getDateRange';
 import Label from '../components/Label';
 import AgentStatusChart from './charts/AgentStatusChart';
@@ -68,8 +68,8 @@ const RealTimeMonitoringPage = () => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Real_Time_Monitoring')}></Page.Header>
-			<Page.ScrollableContentWithShadow>
+			<PageHeader title={t('Real_Time_Monitoring')} />
+			<PageScrollableContentWithShadow>
 				<Margins block='x4'>
 					<Box flexDirection='row' display='flex' justifyContent='space-between' alignSelf='center' w='full'>
 						<Box maxWidth='50%' display='flex' mi={4} flexGrow={1} flexDirection='column'>
@@ -80,6 +80,8 @@ const RealTimeMonitoringPage = () => {
 								placeholder={t('All')}
 								label={t('All')}
 								onlyMyDepartments
+								withTitle={false}
+								renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
 							/>
 						</Box>
 						<Box maxWidth='50%' display='flex' mi={4} flexGrow={1} flexDirection='column'>
@@ -114,7 +116,7 @@ const RealTimeMonitoringPage = () => {
 						<ResponseTimesChart flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams} />
 					</Box>
 				</Margins>
-			</Page.ScrollableContentWithShadow>
+			</PageScrollableContentWithShadow>
 		</Page>
 	);
 };

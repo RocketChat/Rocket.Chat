@@ -1,10 +1,9 @@
-import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
+import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 import { useRoomConvertToTeam } from './actions/useRoomConvertToTeam';
-import { useRoomDelete } from './actions/useRoomDelete';
 import { useRoomHide } from './actions/useRoomHide';
 import { useRoomLeave } from './actions/useRoomLeave';
 import { useRoomMoveToTeam } from './actions/useRoomMoveToTeam';
@@ -16,11 +15,10 @@ type RoomActions = {
 
 export const useRoomActions = (room: IRoom, { onClickEnterRoom, onClickEdit }: RoomActions, resetState?: () => void) => {
 	const t = useTranslation();
-	const isFederated = isRoomFederated(room);
 
 	const handleHide = useRoomHide(room);
 	const handleLeave = useRoomLeave(room);
-	const handleDelete = useRoomDelete(room, resetState);
+	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload: resetState });
 	const handleMoveToTeam = useRoomMoveToTeam(room);
 	const handleConvertToTeam = useRoomConvertToTeam(room);
 
@@ -40,7 +38,7 @@ export const useRoomActions = (room: IRoom, { onClickEnterRoom, onClickEdit }: R
 					action: onClickEdit,
 				},
 			}),
-			...(!isFederated &&
+			...(canDeleteRoom &&
 				handleDelete && {
 					delete: {
 						label: t('Delete'),
@@ -77,7 +75,7 @@ export const useRoomActions = (room: IRoom, { onClickEnterRoom, onClickEdit }: R
 				},
 			}),
 		}),
-		[onClickEdit, t, handleDelete, handleMoveToTeam, handleConvertToTeam, handleHide, handleLeave, onClickEnterRoom, isFederated],
+		[onClickEdit, t, handleDelete, handleMoveToTeam, handleConvertToTeam, handleHide, handleLeave, onClickEnterRoom, canDeleteRoom],
 	);
 
 	return memoizedActions;

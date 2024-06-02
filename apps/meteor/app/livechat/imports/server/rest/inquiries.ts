@@ -23,7 +23,7 @@ API.v1.addRoute(
 			const { department } = this.queryParams;
 			const ourQuery: { status: string; department?: string } = { status: 'queued' };
 			if (department) {
-				const departmentFromDB = await LivechatDepartment.findOneByIdOrName(department);
+				const departmentFromDB = await LivechatDepartment.findOneByIdOrName(department, { projection: { _id: 1 } });
 				if (departmentFromDB) {
 					ourQuery.department = departmentFromDB._id;
 				}
@@ -75,7 +75,10 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: ['view-l-room'],
 		validateParams: isGETLivechatInquiriesQueuedParams,
-		deprecationVersion: '7.0.0',
+		deprecation: {
+			version: '7.0.0',
+			alternatives: ['livechat/inquiries.queuedForUser'],
+		},
 	},
 	{
 		async get() {

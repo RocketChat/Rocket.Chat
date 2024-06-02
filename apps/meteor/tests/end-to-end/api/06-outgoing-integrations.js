@@ -5,7 +5,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data.j
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission } from '../../data/permissions.helper';
 import { password } from '../../data/user';
-import { createUser, login } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Outgoing Integrations]', function () {
 	this.retries(0);
@@ -17,21 +17,47 @@ describe('[Outgoing Integrations]', function () {
 
 	before((done) => getCredentials(done));
 
-	before((done) => {
-		updatePermission('manage-incoming-integrations', [])
-			.then(() => updatePermission('manage-own-incoming-integrations', []))
-			.then(() => updatePermission('manage-own-outgoing-integrations', []))
-			.then(() => updatePermission('manage-outgoing-integrations', []))
-			.then(done);
+	before(async () => {
+		user = await createUser();
+		userCredentials = await login(user.username, password);
+		await updatePermission('manage-outgoing-integrations', ['user']);
+		integrationCreatedByAnUser = await createIntegration(
+			{
+				type: 'webhook-outgoing',
+				name: 'Guggy',
+				enabled: true,
+				username: 'rocket.cat',
+				urls: ['http://text2gif.guggy.com/guggify'],
+				scriptEnabled: false,
+				channel: '#general',
+				triggerWords: ['!guggy'],
+				alias: 'guggy',
+				avatar: 'http://res.guggy.com/logo_128.png',
+				emoji: ':ghost:',
+				event: 'sendMessage',
+			},
+			userCredentials,
+		);
 	});
 
-	after((done) => {
-		updatePermission('manage-incoming-integrations', ['admin'])
-			.then(() => updatePermission('manage-own-incoming-integrations', ['admin']))
-			.then(() => updatePermission('manage-own-outgoing-integrations', ['admin']))
-			.then(() => updatePermission('manage-outgoing-integrations', ['admin']))
-			.then(done);
+	before(async () => {
+		await Promise.all([
+			updatePermission('manage-incoming-integrations', []),
+			updatePermission('manage-own-incoming-integrations', []),
+			updatePermission('manage-own-outgoing-integrations', []),
+			updatePermission('manage-outgoing-integrations', []),
+		]);
 	});
+
+	after(async () =>
+		Promise.all([
+			updatePermission('manage-incoming-integrations', ['admin']),
+			updatePermission('manage-own-incoming-integrations', ['admin']),
+			updatePermission('manage-own-outgoing-integrations', ['admin']),
+			updatePermission('manage-outgoing-integrations', ['admin']),
+			deleteUser(user),
+		]),
+	);
 
 	describe('[/integrations.create]', () => {
 		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to add an outgoing integration', (done) => {
@@ -183,6 +209,7 @@ describe('[Outgoing Integrations]', function () {
 		});
 
 		it('should create an outgoing integration successfully', (done) => {
+			let integrationId;
 			request
 				.post(api('integrations.create'))
 				.set(credentials)
@@ -204,49 +231,18 @@ describe('[Outgoing Integrations]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					integration._id = res.body.integration._id;
 					expect(res.body).to.have.nested.property('integration.name', 'Guggy');
 					expect(res.body).to.have.nested.property('integration.type', 'webhook-outgoing');
 					expect(res.body).to.have.nested.property('integration.enabled', true);
 					expect(res.body).to.have.nested.property('integration.username', 'rocket.cat');
 					expect(res.body).to.have.nested.property('integration.event', 'sendMessage');
+					integrationId = res.body.integration._id;
 				})
-				.end(done);
+				.end(() => removeIntegration(integrationId, 'outgoing').then(done));
 		});
 	});
 
 	describe('[/integrations.list]', () => {
-		before((done) => {
-			createUser().then((createdUser) => {
-				user = createdUser;
-				login(user.username, password).then((credentials) => {
-					userCredentials = credentials;
-					updatePermission('manage-outgoing-integrations', ['user']).then(() => {
-						createIntegration(
-							{
-								type: 'webhook-outgoing',
-								name: 'Guggy',
-								enabled: true,
-								username: 'rocket.cat',
-								urls: ['http://text2gif.guggy.com/guggify'],
-								scriptEnabled: false,
-								channel: '#general',
-								triggerWords: ['!guggy'],
-								alias: 'guggy',
-								avatar: 'http://res.guggy.com/logo_128.png',
-								emoji: ':ghost:',
-								event: 'sendMessage',
-							},
-							userCredentials,
-						).then((integration) => {
-							integrationCreatedByAnUser = integration;
-							done();
-						});
-					});
-				});
-			});
-		});
-
 		it('should return the list of outgoing integrations', (done) => {
 			request
 				.get(api('integrations.list'))

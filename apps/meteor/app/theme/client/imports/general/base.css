@@ -34,7 +34,7 @@ body {
 }
 
 :focus {
-	outline: 0 !important;
+	outline: 0;
 	outline-style: none;
 	outline-color: transparent;
 }
@@ -47,16 +47,6 @@ body {
 		clear: both;
 
 		content: '';
-	}
-}
-
-a {
-	cursor: pointer;
-	text-decoration: none;
-
-	&:hover,
-	&:active {
-		text-decoration: none;
 	}
 }
 

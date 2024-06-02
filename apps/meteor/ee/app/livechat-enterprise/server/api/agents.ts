@@ -94,17 +94,15 @@ API.v1.addRoute(
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
 			}
-			const startDate = new Date(start);
 
 			if (isNaN(Date.parse(end))) {
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
-			const endDate = new Date(end);
 
 			const { agents, total } = await findAvailableServiceTimeHistoryAsync({
-				start: startDate,
-				end: endDate,
-				fullReport: fullReport && fullReport === 'true',
+				start,
+				end,
+				fullReport: fullReport === 'true',
 				options: { offset, count },
 			});
 			return API.v1.success({

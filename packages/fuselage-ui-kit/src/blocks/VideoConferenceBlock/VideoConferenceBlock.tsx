@@ -34,7 +34,7 @@ const VideoConferenceBlock = ({
   const surfaceType = useSurfaceType();
   const userId = useUserId();
 
-  const { action, viewId, rid } = useContext(UiKitContext);
+  const { action, viewId = undefined, rid } = useContext(UiKitContext);
 
   if (surfaceType !== 'message') {
     throw new Error('VideoConferenceBlock cannot be rendered outside message');
@@ -180,7 +180,7 @@ const VideoConferenceBlock = ({
             <VideoConfMessageFooterText>
               {data.users.length > MAX_USERS
                 ? t('__usersCount__member_joined', {
-                    usersCount: data.users.length - MAX_USERS,
+                    count: data.users.length - MAX_USERS,
                   })
                 : t('joined')}
             </VideoConfMessageFooterText>

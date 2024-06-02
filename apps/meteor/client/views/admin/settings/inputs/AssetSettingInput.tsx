@@ -1,20 +1,18 @@
-import { Button, Field, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, Field, FieldLabel, FieldRow, Icon } from '@rocket.chat/fuselage';
 import { Random } from '@rocket.chat/random';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useUpload } from '@rocket.chat/ui-contexts';
 import type { ChangeEventHandler, DragEvent, ReactElement, SyntheticEvent } from 'react';
 import React from 'react';
 
 import './AssetSettingInput.styles.css';
+import type { SettingInputProps } from './types';
 
-type AssetSettingInputProps = {
-	_id: string;
-	label: string;
-	value?: { url: string };
+type AssetSettingInputProps = Omit<SettingInputProps<{ url: string }>, 'onChangeValue'> & {
 	asset?: any;
 	fileConstraints?: { extensions: string[] };
 };
 
-function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetSettingInputProps): ReactElement {
+function AssetSettingInput({ _id, label, value, asset, required, disabled, fileConstraints }: AssetSettingInputProps): ReactElement {
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -57,11 +55,11 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 	};
 
 	return (
-		<>
-			<Field.Label htmlFor={_id} title={_id}>
+		<Field>
+			<FieldLabel htmlFor={_id} title={_id} required={required}>
 				{label}
-			</Field.Label>
-			<Field.Row>
+			</FieldLabel>
+			<FieldRow>
 				<div className='settings-file-preview'>
 					{value?.url ? (
 						<div
@@ -77,24 +75,25 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 					)}
 					<div className='action'>
 						{value?.url ? (
-							<Button icon='trash' onClick={handleDeleteButtonClick}>
+							<Button icon='trash' disabled={disabled} onClick={handleDeleteButtonClick}>
 								{t('Delete')}
 							</Button>
 						) : (
-							<div className='rc-button rc-button--primary'>
+							<Box position='relative' className={`rcx-button rcx-button--primary ${disabled ? 'is-disabled' : ''}`}>
 								{t('Select_file')}
 								<input
 									className='AssetSettingInput__input'
 									type='file'
 									accept={`.${fileConstraints?.extensions?.join(', .')}`}
 									onChange={handleUpload}
+									disabled={disabled}
 								/>
-							</div>
+							</Box>
 						)}
 					</div>
 				</div>
-			</Field.Row>
-		</>
+			</FieldRow>
+		</Field>
 	);
 }
 

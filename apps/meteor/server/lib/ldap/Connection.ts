@@ -465,9 +465,9 @@ export class LDAPConnection {
 
 		searchLogger.debug({ msg: 'Group filter LDAP:', filter: searchOptions.filter });
 
-		const result = await this.searchRaw(this.options.baseDN, searchOptions);
+		const result = await this.searchAndCount(this.options.baseDN, searchOptions);
 
-		if (!Array.isArray(result) || result.length === 0) {
+		if (result === 0) {
 			return false;
 		}
 		return true;

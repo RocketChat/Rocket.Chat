@@ -28,4 +28,8 @@ declare module '*.info' {
 		desktop: string;
 		mobile: string;
 	};
+
+	import type { SignedSupportedVersions } from '@rocket.chat/server-cloud-communication';
+
+	export const supportedVersions: SignedSupportedVersions;
 }

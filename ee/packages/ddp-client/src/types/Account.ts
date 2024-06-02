@@ -2,13 +2,20 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import type { ClientStream } from './ClientStream';
 
+type User = {
+	id: string;
+	username?: string;
+	token?: string;
+	tokenExpires?: Date;
+} & Record<string, unknown>;
+
 export interface Account
 	extends Emitter<{
 		uid: string | undefined;
-		user: Record<string, unknown> | undefined;
+		user?: User;
 	}> {
 	uid?: string;
-	user?: Record<string, unknown>;
+	user?: User;
 	loginWithPassword(username: string, password: string): Promise<void>;
 	loginWithToken(token: string): Promise<{
 		id: string;
@@ -21,26 +28,16 @@ export interface Account
 export class AccountImpl
 	extends Emitter<{
 		uid: string | undefined;
-		user: {
-			id: string;
-			username: string;
-			token?: string;
-			tokenExpires?: Date;
-		};
+		user: User;
 	}>
 	implements Account
 {
 	uid?: string;
 
-	user?: { id: string; username: string; token?: string; tokenExpires?: Date };
+	user?: { id: string; username?: string; token?: string; tokenExpires?: Date };
 
 	constructor(private readonly client: ClientStream) {
 		super();
-		this.client.on('connected', () => {
-			if (this.user?.token) {
-				this.loginWithToken(this.user.token);
-			}
-		});
 
 		client.onCollection('users', (data) => {
 			if (data.collection !== 'users') {
@@ -60,8 +57,24 @@ export class AccountImpl
 		});
 	}
 
+	private saveCredentials(id: string, token: string, tokenExpires: string) {
+		this.user = {
+			...this.user,
+			token,
+			tokenExpires: new Date(tokenExpires),
+			id,
+		};
+		this.uid = id;
+		this.emit('uid', this.uid);
+		this.emit('user', this.user);
+	}
+
 	async loginWithPassword(username: string, password: string): Promise<void> {
-		const { uid } = await this.client.callAsyncWithOptions(
+		const {
+			id,
+			token: resultToken,
+			tokenExpires: { $date },
+		} = await this.client.callAsyncWithOptions(
 			'login',
 			{
 				wait: true,
@@ -71,8 +84,8 @@ export class AccountImpl
 				password: { digest: password, algorithm: 'sha-256' },
 			},
 		);
-		this.uid = uid;
-		this.emit('uid', this.uid);
+
+		this.saveCredentials(id, resultToken, $date);
 	}
 
 	async loginWithToken(token: string) {
@@ -86,8 +99,12 @@ export class AccountImpl
 			},
 		);
 
-		this.uid = result.id;
-		this.emit('uid', this.uid);
+		const {
+			id,
+			token: resultToken,
+			tokenExpires: { $date },
+		} = result;
+		this.saveCredentials(id, resultToken, $date);
 
 		return result;
 	}
@@ -97,6 +114,7 @@ export class AccountImpl
 			wait: true,
 		});
 		this.uid = undefined;
+		this.user = undefined;
 		this.emit('uid', this.uid);
 	}
 }

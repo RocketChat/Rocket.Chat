@@ -49,10 +49,10 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 			)}
 
 			{normalizedMessage.blocks && (
-				<UiKitMessageBlock mid={normalizedMessage._id} blocks={normalizedMessage.blocks} appId rid={normalizedMessage.rid} />
+				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />
 			)}
 
-			{normalizedMessage.attachments && <Attachments attachments={normalizedMessage.attachments} />}
+			{normalizedMessage.attachments && <Attachments attachments={normalizedMessage.attachments} id={normalizedMessage.files?.[0]._id} />}
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}
 
@@ -75,7 +75,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 				<BroadcastMetrics username={messageUser.username} message={normalizedMessage} />
 			)}
 
-			{readReceiptEnabled && <ReadReceiptIndicator unread={normalizedMessage.unread} />}
+			{readReceiptEnabled && <ReadReceiptIndicator mid={normalizedMessage._id} unread={normalizedMessage.unread} />}
 		</>
 	);
 };

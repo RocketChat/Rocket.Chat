@@ -6,7 +6,7 @@ class PublicSettingsCachedCollection extends CachedCollection<ISetting> {
 	constructor() {
 		super({
 			name: 'public-settings',
-			eventType: 'onAll',
+			eventType: 'notify-all',
 			userRelated: false,
 		});
 	}

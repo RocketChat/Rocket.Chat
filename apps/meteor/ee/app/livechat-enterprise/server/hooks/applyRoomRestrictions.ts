@@ -3,6 +3,7 @@ import { LivechatDepartment } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
 
 import { callbacks } from '../../../../../lib/callbacks';
+import { cbLogger } from '../lib/logger';
 import { getUnitsFromUser } from '../lib/units';
 
 export const restrictQuery = async (originalQuery: FilterOperators<IOmnichannelRoom> = {}) => {
@@ -20,6 +21,7 @@ export const restrictQuery = async (originalQuery: FilterOperators<IOmnichannelR
 	};
 	query.$and = [condition, ...expressions];
 
+	cbLogger.debug({ msg: 'Applying room query restrictions', units });
 	return query;
 };
 

@@ -7,7 +7,7 @@ export interface IVisitorPhone {
 
 export interface IVisitorLastChat {
 	_id: string;
-	ts: string;
+	ts: Date;
 }
 
 export interface ILivechatVisitorConnectionData {
@@ -47,6 +47,8 @@ export interface ILivechatVisitor extends IRocketChatRecord {
 	contactManager?: {
 		username: string;
 	};
+	activity?: string[];
+	disabled?: boolean;
 }
 
 export interface ILivechatVisitorDTO {

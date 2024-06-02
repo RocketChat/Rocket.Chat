@@ -24,9 +24,11 @@ const UserMenu = ({ user }: { user: IUser }) => {
 			<FeaturePreviewOff>
 				<GenericMenu
 					icon={<UserAvatarWithStatus />}
+					placement='bottom-end'
 					selectionMode='multiple'
 					sections={sections}
 					title={t('User_menu')}
+					aria-label={t('User_menu')}
 					onAction={handleAction}
 					isOpen={isOpen}
 					onOpenChange={setIsOpen}
@@ -36,9 +38,11 @@ const UserMenu = ({ user }: { user: IUser }) => {
 				<GenericMenu
 					icon={<UserAvatarWithStatusUnstable />}
 					medium
+					placement='bottom-end'
 					selectionMode='multiple'
 					sections={sections}
 					title={t('User_menu')}
+					aria-label={t('User_menu')}
 					onAction={handleAction}
 					isOpen={isOpen}
 					onOpenChange={setIsOpen}

@@ -41,4 +41,8 @@ export class PasswordCheckFallback implements ICodeCheck {
 			codeGenerated: false,
 		};
 	}
+
+	public async maxFaildedAttemtpsReached(_user: IUser): Promise<boolean> {
+		return false;
+	}
 }

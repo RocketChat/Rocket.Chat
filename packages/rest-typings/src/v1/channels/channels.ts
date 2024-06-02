@@ -1,7 +1,8 @@
-import type { IUpload, IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IIntegration } from '@rocket.chat/core-typings';
+import type { IUpload, IUploadWithUser, IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IIntegration } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
+import type { RoomsImagesProps } from '../rooms';
 import type { ChannelsAddAllProps } from './ChannelsAddAllProps';
 import type { ChannelsArchiveProps } from './ChannelsArchiveProps';
 import type { ChannelsConvertToTeamProps } from './ChannelsConvertToTeamProps';
@@ -35,6 +36,11 @@ import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
 export type ChannelsEndpoints = {
 	'/v1/channels.files': {
 		GET: (params: PaginatedRequest<{ roomId: string } | { roomName: string }>) => PaginatedResult<{
+			files: IUploadWithUser[];
+		}>;
+	};
+	'/v1/channels.images': {
+		GET: (params: RoomsImagesProps) => PaginatedResult<{
 			files: IUpload[];
 		}>;
 	};

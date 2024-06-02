@@ -1,18 +1,22 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { e2e } from '../../../app/e2e/client/rocketchat.e2e';
-import { useRoom } from '../../views/room/contexts/RoomContext';
+import { E2EEState } from '../../../app/e2e/client/E2EEState';
+import { dispatchToastMessage } from '../../lib/toast';
+import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
-import { useReactiveValue } from '../useReactiveValue';
+import { useE2EEState } from '../../views/room/hooks/useE2EEState';
 
 export const useE2EERoomAction = () => {
 	const enabled = useSetting('E2E_Enable', false);
 	const room = useRoom();
-	const readyToEncrypt = useReactiveValue(useCallback(() => e2e.isReady(), [])) || room.encrypted;
+	const subscription = useRoomSubscription();
+	const e2eeState = useE2EEState();
+	const isE2EEReady = e2eeState === E2EEState.READY || e2eeState === E2EEState.SAVE_PASSWORD;
+	const readyToEncrypt = isE2EEReady || room.encrypted;
 	const permittedToToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id);
 	const permittedToEditRoom = usePermission('edit-room', room._id);
 	const permitted = (room.t === 'd' || (permittedToEditRoom && permittedToToggleEncryption)) && readyToEncrypt;
@@ -21,8 +25,22 @@ export const useE2EERoomAction = () => {
 
 	const toggleE2E = useEndpoint('POST', '/v1/rooms.saveRoomSettings');
 
-	const action = useMutableCallback(() => {
-		void toggleE2E({ rid: room._id, encrypted: !room.encrypted });
+	const action = useMutableCallback(async () => {
+		const { success } = await toggleE2E({ rid: room._id, encrypted: !room.encrypted });
+		if (!success) {
+			return;
+		}
+
+		dispatchToastMessage({
+			type: 'success',
+			message: room.encrypted
+				? t('E2E_Encryption_disabled_for_room', { roomName: room.name })
+				: t('E2E_Encryption_enabled_for_room', { roomName: room.name }),
+		});
+
+		if (subscription?.autoTranslate) {
+			dispatchToastMessage({ type: 'success', message: t('AutoTranslate_Disabled_for_room', { roomName: room.name }) });
+		}
 	});
 
 	const enabledOnRoom = !!room.encrypted;

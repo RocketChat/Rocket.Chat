@@ -64,9 +64,11 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 
 	await exportMessages();
 
+	const promises: Promise<void>[] = [];
 	for await (const attachmentData of fullFileList) {
-		await copyFileUpload(attachmentData, assetsPath);
+		promises.push(copyFileUpload(attachmentData, assetsPath));
 	}
+	await Promise.all(promises);
 
 	const exportFile = `${baseDir}-export.zip`;
 	await makeZipFile(exportPath, exportFile);

@@ -5,8 +5,8 @@ import { LivechatRooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
-import { Livechat } from '../../../../../app/livechat/server';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
+import { Livechat as LivechatTyped } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 import { schedulerLogger } from './logger';
@@ -35,6 +35,7 @@ class AutoTransferChatSchedulerClass {
 			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
 			db: { collection: SCHEDULER_NAME },
 			defaultConcurrency: 1,
+			processEvery: '1 minute',
 		});
 
 		await this.scheduler.start();
@@ -90,7 +91,7 @@ class AutoTransferChatSchedulerClass {
 		if (!RoutingManager.getConfig()?.autoAssignAgent) {
 			this.logger.debug(`Auto-assign agent is disabled, returning room ${roomId} as inquiry`);
 
-			await Livechat.returnRoomAsInquiry(room._id, departmentId, {
+			await LivechatTyped.returnRoomAsInquiry(room, departmentId, {
 				scope: 'autoTransferUnansweredChatsToQueue',
 				comment: timeoutDuration,
 				transferredBy: await this.getSchedulerUser(),

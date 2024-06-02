@@ -2,14 +2,14 @@ import { Margins } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import React, { forwardRef, memo } from 'react';
 
-import Page from '../Page';
+import { PageScrollableContent } from '../Page';
 
-const ContextualbarScrollableContent = forwardRef<HTMLElement, ComponentProps<typeof Page.ScrollableContent>>(
+const ContextualbarScrollableContent = forwardRef<HTMLElement, ComponentProps<typeof PageScrollableContent>>(
 	function ContextualbarScrollableContent({ children, ...props }, ref) {
 		return (
-			<Page.ScrollableContent p={24} {...props} ref={ref}>
+			<PageScrollableContent p={24} {...props} ref={ref}>
 				<Margins blockEnd={16}>{children}</Margins>
-			</Page.ScrollableContent>
+			</PageScrollableContent>
 		);
 	},
 );

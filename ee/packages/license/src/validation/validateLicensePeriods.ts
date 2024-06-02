@@ -1,6 +1,6 @@
-import type { ILicenseV3 } from '../definition/ILicenseV3';
-import type { BehaviorWithContext, LicenseBehavior } from '../definition/LicenseBehavior';
-import type { Timestamp } from '../definition/LicensePeriod';
+import type { ILicenseV3, BehaviorWithContext, Timestamp, LicenseValidationOptions } from '@rocket.chat/core-typings';
+
+import { isBehaviorAllowed } from '../isItemAllowed';
 import { logger } from '../logger';
 import { getResultingBehavior } from './getResultingBehavior';
 
@@ -18,21 +18,23 @@ export const isPeriodInvalid = (from: Timestamp | undefined, until: Timestamp | 
 	return false;
 };
 
-export const validateLicensePeriods = (
-	license: ILicenseV3,
-	behaviorFilter: (behavior: LicenseBehavior) => boolean,
-): BehaviorWithContext[] => {
+export const validateLicensePeriods = (license: ILicenseV3, options: LicenseValidationOptions): BehaviorWithContext[] => {
 	const {
 		validation: { validPeriods },
 	} = license;
 
 	return validPeriods
-		.filter(({ validFrom, validUntil, invalidBehavior }) => behaviorFilter(invalidBehavior) && isPeriodInvalid(validFrom, validUntil))
+		.filter(
+			({ validFrom, validUntil, invalidBehavior }) => isBehaviorAllowed(invalidBehavior, options) && isPeriodInvalid(validFrom, validUntil),
+		)
 		.map((period) => {
-			logger.error({
-				msg: 'Period validation failed',
-				period,
-			});
-			return getResultingBehavior(period);
+			if (!options.suppressLog) {
+				logger.error({
+					msg: 'Period validation failed',
+					period,
+				});
+			}
+
+			return getResultingBehavior(period, { reason: 'period' });
 		});
 };

@@ -8,10 +8,10 @@ export function setPendingLicense(this: LicenseManager, encryptedLicense: string
 	}
 }
 
-export function applyPendingLicense(this: LicenseManager) {
+export async function applyPendingLicense(this: LicenseManager) {
 	if (this.pendingLicense) {
 		logger.info('Applying pending license.');
-		this.setLicense(this.pendingLicense);
+		return this.setLicense(this.pendingLicense);
 	}
 }
 

@@ -1,10 +1,10 @@
-import { Field, TextInput, Chip, Button } from '@rocket.chat/fuselage';
+import { TextInput, Chip, Button, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 
-import { useFormsSubscription } from '../../views/omnichannel/additionalForms';
+import { CurrentChatTags } from '../../views/omnichannel/additionalForms';
 import { FormSkeleton } from './Skeleton';
 import { useLivechatTags } from './hooks/useLivechatTags';
 
@@ -18,12 +18,6 @@ type TagsProps = {
 
 const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps): ReactElement => {
 	const t = useTranslation();
-	const forms = useFormsSubscription() as any;
-
-	// TODO: Refactor the formsSubscription to use components instead of hooks (since the only thing the hook does is return a component)
-	const { useCurrentChatTags } = forms;
-	// Conditional hook was required since the whole formSubscription uses hooks in an incorrect manner
-	const EETagsComponent = useCurrentChatTags?.();
 
 	const { data: tagsResult, isInitialLoading } = useLivechatTags({
 		department,
@@ -71,13 +65,13 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 
 	return (
 		<>
-			<Field.Label required={tagRequired} mb={4}>
+			<FieldLabel required={tagRequired} mb={4}>
 				{t('Tags')}
-			</Field.Label>
+			</FieldLabel>
 
-			{EETagsComponent && tagsResult?.tags && tagsResult?.tags.length ? (
-				<Field.Row>
-					<EETagsComponent
+			{tagsResult?.tags && tagsResult?.tags.length ? (
+				<FieldRow>
+					<CurrentChatTags
 						value={paginatedTagValue}
 						handler={(tags: { label: string; value: string }[]): void => {
 							handler(tags.map((tag) => tag.label));
@@ -85,10 +79,10 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 						department={department}
 						viewAll={!department}
 					/>
-				</Field.Row>
+				</FieldRow>
 			) : (
 				<>
-					<Field.Row>
+					<FieldRow>
 						<TextInput
 							error={error}
 							value={tagValue}
@@ -99,18 +93,18 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 						<Button disabled={!tagValue} mis={8} title={t('Add')} onClick={handleTagTextSubmit}>
 							{t('Add')}
 						</Button>
-					</Field.Row>
+					</FieldRow>
 				</>
 			)}
 
 			{customTags.length > 0 && (
-				<Field.Row justifyContent='flex-start'>
+				<FieldRow justifyContent='flex-start'>
 					{customTags?.map((tag, i) => (
 						<Chip key={i} onClick={(): void => removeTag(tag)} mie={8}>
 							{tag}
 						</Chip>
 					))}
-				</Field.Row>
+				</FieldRow>
 			)}
 		</>
 	);

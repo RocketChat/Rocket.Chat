@@ -1,3 +1,4 @@
+import { Omnichannel } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
@@ -7,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { normalizeTransferredByData } from '../lib/Helper';
-import { Livechat } from '../lib/Livechat';
+import { Livechat } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -49,6 +50,10 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:transfer' });
 		}
 
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			throw new Meteor.Error('error-mac-limit-reached', 'MAC limit reached', { method: 'livechat:transfer' });
+		}
+
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, uid, {
 			projection: { _id: 1 },
 		});
@@ -58,7 +63,11 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const guest = await LivechatVisitors.findOneById(room.v?._id);
+		const guest = await LivechatVisitors.findOneEnabledById(room.v?._id);
+
+		if (!guest) {
+			throw new Meteor.Error('error-invalid-visitor', 'Invalid visitor', { method: 'livechat:transfer' });
+		}
 
 		const user = await Meteor.userAsync();
 

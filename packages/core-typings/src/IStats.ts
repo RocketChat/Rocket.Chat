@@ -1,8 +1,10 @@
 import type { CpuInfo } from 'os';
 
+import type { IMatrixFederationStatistics } from './IMatrixFederationStatistics';
 import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
 import type { ISettingStatisticsObject } from './ISetting';
 import type { ITeamStats } from './ITeam';
+import type { MACStats } from './omnichannel';
 
 export interface IStats {
 	_id: string;
@@ -16,6 +18,8 @@ export interface IStats {
 		registerServer?: boolean;
 	};
 	uniqueId: string;
+	deploymentFingerprintHash: string;
+	deploymentFingerprintVerified: boolean;
 	installedAt?: string;
 	version?: string;
 	tag?: string;
@@ -43,11 +47,14 @@ export interface IStats {
 	totalLivechatAgents: number;
 	totalLivechatManagers: number;
 	totalCustomFields: number;
+	totalLivechatPublicCustomFields: number;
+	livechatAutomaticForwardingUnansweredChats: boolean;
 	livechatEnabled: boolean;
 	isDepartmentRemovalEnabled: boolean;
 	totalChannelMessages: number;
 	totalPrivateGroupMessages: number;
 	totalDirectMessages: number;
+	totalDiscussionsMessages: number;
 	totalLivechatMessages: number;
 	totalTriggers: number;
 	totalMessages: number;
@@ -93,6 +100,10 @@ export interface IStats {
 	mongoStorageEngine: string;
 	pushQueue: number;
 	omnichannelSources: { [key: string]: number | string }[];
+	omnichannelContactsBySource: MACStats;
+	uniqueContactsOfLastMonth: MACStats;
+	uniqueContactsOfLastWeek: MACStats;
+	uniqueContactsOfYesterday: MACStats;
 	departments: number;
 	archivedDepartments: number;
 	routingAlgorithm: string;
@@ -151,6 +162,11 @@ export interface IStats {
 		priorities?: number;
 		slas?: number;
 		businessUnits?: number;
+		omnichannelPdfTranscriptRequested?: number;
+		omnichannelPdfTranscriptSucceeded?: number;
+		omnichannelRoomsWithSlas?: number;
+		omnichannelRoomsWithPriorities?: number;
+		livechatMonitors?: number;
 	};
 	createdAt: Date | string;
 	totalOTR: number;
@@ -211,10 +227,13 @@ export interface IStats {
 	totalCustomRoles: number;
 	totalWebRTCCalls: number;
 	uncaughtExceptionsCount: number;
-	matrixFederation: {
-		enabled: boolean;
-	};
+	push: number;
+	pushSecured: boolean;
+	dailyPeakConnections: number;
+	maxMonthlyPeakConnections: number;
+	matrixFederation: IMatrixFederationStatistics;
 	webRTCEnabled: boolean;
 	webRTCEnabledForOmnichannel: boolean;
 	omnichannelWebRTCCalls: number;
+	statsToken?: string;
 }

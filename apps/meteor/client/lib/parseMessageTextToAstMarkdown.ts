@@ -3,6 +3,7 @@ import {
 	isFileAttachment,
 	isE2EEMessage,
 	isOTRMessage,
+	isOTRAckMessage,
 	isQuoteAttachment,
 	isTranslatedAttachment,
 	isTranslatedMessage,
@@ -46,7 +47,7 @@ export const parseMessageTextToAstMarkdown = <
 	return {
 		...msg,
 		md:
-			isE2EEMessage(message) || isOTRMessage(message) || translated
+			isE2EEMessage(message) || isOTRMessage(message) || isOTRAckMessage(message) || translated
 				? textToMessageToken(text, parseOptions)
 				: msg.md ?? textToMessageToken(text, parseOptions),
 		...(msg.attachments && {

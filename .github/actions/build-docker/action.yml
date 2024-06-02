@@ -13,12 +13,17 @@ inputs:
     required: false
     description: 'Platform'
     type: string
+  build-containers:
+    required: false
+    description: 'Containers to build along with Rocket.Chat'
+    type: string
 
 runs:
   using: composite
 
   steps:
     - name: Login to GitHub Container Registry
+      if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
       uses: docker/login-action@v2
       with:
         registry: ghcr.io
@@ -53,21 +58,14 @@ runs:
     - name: Build Docker images
       shell: bash
       run: |
-        args=(rocketchat)
-
-        if [[ '${{ inputs.platform }}' = 'alpine' ]]; then
-          args+=($SERVICES_PUBLISH)
-        fi;
+        args=(rocketchat ${{ inputs.build-containers }})
 
         docker compose -f docker-compose-ci.yml build "${args[@]}"
 
     - name: Publish Docker images to GitHub Container Registry
+      if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
       shell: bash
       run: |
-        args=(rocketchat)
-
-        if [[ '${{ inputs.platform }}' = 'alpine' ]]; then
-          args+=($SERVICES_PUBLISH)
-        fi;
+        args=(rocketchat ${{ inputs.build-containers }})
 
         docker compose -f docker-compose-ci.yml push "${args[@]}"

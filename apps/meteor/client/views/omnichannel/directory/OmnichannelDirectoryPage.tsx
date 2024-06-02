@@ -3,7 +3,8 @@ import { useRouteParameter, usePermission, useTranslation, useRouter } from '@ro
 import type { ReactElement } from 'react';
 import React, { useEffect, useCallback } from 'react';
 
-import Page from '../../../components/Page';
+import { ContextualbarDialog } from '../../../components/Contextualbar';
+import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { queryClient } from '../../../lib/queryClient';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import ContextualBar from './ContextualBar';
@@ -14,8 +15,10 @@ import ContactTab from './contacts/ContactTab';
 const DEFAULT_TAB = 'contacts';
 
 const OmnichannelDirectoryPage = (): ReactElement => {
+	const t = useTranslation();
 	const router = useRouter();
 	const page = useRouteParameter('page');
+	const bar = useRouteParameter('bar');
 	const canViewDirectory = usePermission('view-omnichannel-contact-center');
 
 	useEffect(
@@ -37,8 +40,6 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 
 	const chatReload = () => queryClient.invalidateQueries({ queryKey: ['current-chats'] });
 
-	const t = useTranslation();
-
 	if (!canViewDirectory) {
 		return <NotAuthorizedPage />;
 	}
@@ -46,7 +47,7 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Omnichannel_Contact_Center')} />
+				<PageHeader title={t('Omnichannel_Contact_Center')} />
 				<Tabs flexShrink={0}>
 					<Tabs.Item selected={page === 'contacts'} onClick={handleTabClick('contacts')}>
 						{t('Contacts')}
@@ -58,11 +59,15 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 						{t('Calls' as 'color')}
 					</Tabs.Item>
 				</Tabs>
-				<Page.Content>
+				<PageContent>
 					{(page === 'contacts' && <ContactTab />) || (page === 'chats' && <ChatTab />) || (page === 'calls' && <CallTab />)}
-				</Page.Content>
+				</PageContent>
 			</Page>
-			<ContextualBar chatReload={chatReload} />
+			{bar && (
+				<ContextualbarDialog>
+					<ContextualBar chatReload={chatReload} />
+				</ContextualbarDialog>
+			)}
 		</Page>
 	);
 };

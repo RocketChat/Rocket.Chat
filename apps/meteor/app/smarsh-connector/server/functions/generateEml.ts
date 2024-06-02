@@ -90,7 +90,12 @@ export const generateEml = async (): Promise<void> => {
 				if (message.t) {
 					const messageType = MessageTypes.getType(message);
 					if (messageType) {
-						rows.push(i18n.t(messageType.message, messageType.data ? messageType.data(message) : {}, 'en'));
+						rows.push(
+							i18n.t(messageType.message, {
+								lng: 'en',
+								replace: messageType.data ? messageType.data(message) : {},
+							}),
+						);
 					} else {
 						rows.push(`${message.msg} (${message.t})`);
 					}

@@ -1,4 +1,4 @@
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
@@ -7,7 +7,7 @@ import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
 import { RecordList } from '../../lib/lists/RecordList';
 
 type DepartmentsListOptions = {
-	unitId: string;
+	unitId?: IOmnichannelBusinessUnit['_id'];
 	filter: string;
 };
 

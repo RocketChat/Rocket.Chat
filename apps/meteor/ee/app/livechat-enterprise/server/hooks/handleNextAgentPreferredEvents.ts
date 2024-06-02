@@ -90,7 +90,7 @@ callbacks.add(
 		}
 
 		const { _id: guestId } = defaultGuest;
-		const guest = await LivechatVisitors.findOneById(guestId, {
+		const guest = await LivechatVisitors.findOneEnabledById(guestId, {
 			projection: { lastAgent: 1, token: 1, contactManager: 1 },
 		});
 		if (!guest) {

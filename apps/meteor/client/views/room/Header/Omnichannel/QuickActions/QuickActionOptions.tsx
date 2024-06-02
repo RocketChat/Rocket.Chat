@@ -1,6 +1,6 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Box, Dropdown, Option } from '@rocket.chat/fuselage';
-import { HeaderToolboxAction } from '@rocket.chat/ui-client';
+import { HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, useRef } from 'react';
 
@@ -26,7 +26,7 @@ const QuickActionOptions = ({ options, room, action, ...props }: QuickActionOpti
 
 	return (
 		<>
-			<HeaderToolboxAction ref={reference} onClick={(): void => toggle()} secondary={isVisible} {...props} />
+			<HeaderToolbarAction ref={reference} onClick={(): void => toggle()} secondary={isVisible} {...props} />
 			{isVisible && (
 				<Dropdown reference={reference} ref={target}>
 					{options.map(({ id, label, validate }) => {

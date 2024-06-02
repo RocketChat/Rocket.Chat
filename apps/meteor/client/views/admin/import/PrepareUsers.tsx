@@ -3,13 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, Dispatch, SetStateAction, ChangeEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
-type UserDescriptor = {
-	user_id: string;
-	username: string;
-	email: string;
-	is_deleted: boolean;
-	do_import: boolean;
-};
+import type { UserDescriptor } from './UserDescriptor';
 
 type PrepareUsersProps = {
 	usersCount: number;
@@ -17,6 +11,7 @@ type PrepareUsersProps = {
 	setUsers: Dispatch<SetStateAction<UserDescriptor[]>>;
 };
 
+// TODO: review inner logic
 const PrepareUsers: FC<PrepareUsersProps> = ({ usersCount, users, setUsers }) => {
 	const t = useTranslation();
 	const [current, setCurrent] = useState(0);

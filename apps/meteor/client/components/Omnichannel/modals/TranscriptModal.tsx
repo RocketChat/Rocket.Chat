@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Field, Button, TextInput, Modal, Box, FieldGroup } from '@rocket.chat/fuselage';
+import { Field, Button, TextInput, Modal, Box, FieldGroup, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useCallback, useEffect } from 'react';
@@ -31,7 +31,7 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 		setValue,
 		setFocus,
 		watch,
-		formState: { errors, isValid },
+		formState: { errors, isValid, isSubmitting },
 	} = useForm({
 		defaultValues: { email: emailDefault || '', subject: t('Transcript_of_your_livechat_conversation') },
 	});
@@ -78,28 +78,28 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 				{!!transcriptRequest && <p>{t('Livechat_transcript_already_requested_warning')}</p>}
 				<FieldGroup>
 					<Field>
-						<Field.Label>{t('Email')}*</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Email')}*</FieldLabel>
+						<FieldRow>
 							<TextInput
 								disabled={!!emailDefault || !!transcriptRequest}
 								error={errors.email?.message}
 								flexGrow={1}
 								{...register('email', { required: t('The_field_is_required', t('Email')) })}
 							/>
-						</Field.Row>
-						<Field.Error>{errors.email?.message}</Field.Error>
+						</FieldRow>
+						<FieldError>{errors.email?.message}</FieldError>
 					</Field>
 					<Field>
-						<Field.Label>{t('Subject')}*</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Subject')}*</FieldLabel>
+						<FieldRow>
 							<TextInput
 								disabled={!!transcriptRequest}
 								error={errors.subject?.message}
 								flexGrow={1}
 								{...register('subject', { required: t('The_field_is_required', t('Subject')) })}
 							/>
-						</Field.Row>
-						<Field.Error>{errors.subject?.message}</Field.Error>
+						</FieldRow>
+						<FieldError>{errors.subject?.message}</FieldError>
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
@@ -112,12 +112,12 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 						</Button>
 					)}
 					{roomOpen && !transcriptRequest && (
-						<Button aria-label='request-button' disabled={!canSubmit} primary type='submit'>
+						<Button aria-label='request-button' disabled={!canSubmit} loading={isSubmitting} primary type='submit'>
 							{t('Request')}
 						</Button>
 					)}
 					{!roomOpen && (
-						<Button aria-label='send-button' disabled={!canSubmit} primary type='submit'>
+						<Button aria-label='send-button' disabled={!canSubmit} loading={isSubmitting} primary type='submit'>
 							{t('Send')}
 						</Button>
 					)}

@@ -5,7 +5,6 @@ import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.cha
 
 import { API } from '../../../../api/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { Livechat } from '../../lib/Livechat';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 
@@ -95,7 +94,7 @@ API.v1.addRoute(
 				return API.v1.success({ status: agent.statusLivechat });
 			}
 
-			const canChangeStatus = await Livechat.allowAgentChangeServiceStatus(newStatus, agentId);
+			const canChangeStatus = await LivechatTyped.allowAgentChangeServiceStatus(newStatus, agentId);
 
 			if (agentId !== this.userId) {
 				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-agents'))) {
@@ -106,7 +105,7 @@ API.v1.addRoute(
 				// Next version we'll update this to return an error
 				// And update the FE accordingly
 				if (canChangeStatus) {
-					await Livechat.setUserStatusLivechat(agentId, newStatus);
+					await LivechatTyped.setUserStatusLivechat(agentId, newStatus);
 					return API.v1.success({ status: newStatus });
 				}
 
@@ -117,7 +116,7 @@ API.v1.addRoute(
 				return API.v1.failure('error-business-hours-are-closed');
 			}
 
-			await Livechat.setUserStatusLivechat(agentId, newStatus);
+			await LivechatTyped.setUserStatusLivechat(agentId, newStatus);
 
 			return API.v1.success({ status: newStatus });
 		},

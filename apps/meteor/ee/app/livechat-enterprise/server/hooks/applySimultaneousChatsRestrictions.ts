@@ -11,7 +11,7 @@ callbacks.add(
 			const departmentLimit =
 				(
 					await LivechatDepartment.findOneById<Pick<ILivechatDepartment, 'maxNumberSimultaneousChat'>>(departmentId, {
-						projection: { maxNumberSimultaneousChats: 1 },
+						projection: { maxNumberSimultaneousChat: 1 },
 					})
 				)?.maxNumberSimultaneousChat || 0;
 			if (departmentLimit > 0) {

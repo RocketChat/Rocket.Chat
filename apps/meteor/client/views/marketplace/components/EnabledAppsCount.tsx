@@ -15,16 +15,13 @@ const EnabledAppsCount = ({
 	percentage: number;
 	limit: number;
 	enabled: number;
-	context: 'private' | 'explore' | 'installed' | 'enterprise' | 'requested';
+	context: 'private' | 'explore' | 'installed' | 'premium' | 'requested';
 }): ReactElement | null => {
 	const t = useTranslation();
 
-	const privateAppsCountText: string = t('Private_Apps_Count_Enabled', { count: enabled });
-	const marketplaceAppsCountText: string = t('Apps_Count_Enabled', { count: enabled });
-
 	return (
 		<GenericResourceUsage
-			title={context === 'private' ? privateAppsCountText : marketplaceAppsCountText}
+			title={context === 'private' ? t('Private_Apps_Count_Enabled', { count: enabled }) : t('Apps_Count_Enabled', { count: enabled })}
 			value={enabled}
 			max={limit}
 			percentage={percentage}

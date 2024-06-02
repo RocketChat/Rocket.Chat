@@ -1,10 +1,10 @@
 import { Button, Box, Flex } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useRouteParameter, useSearchParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useState, useCallback } from 'react';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import UserAvatar from '../../components/avatar/UserAvatar';
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
 import NotFoundPage from '../notFound/NotFoundPage';
 import PageLoading from '../root/PageLoading';
@@ -90,15 +90,14 @@ const MeetPage = () => {
 						backgroundColor='dark'
 						alignItems='center'
 					>
-						<UserAvatar
+						<Box
 							style={{
 								display: 'block',
 								margin: 'auto',
 							}}
-							username={visitorToken ? visitorName : agentName}
-							className='rcx-message__avatar'
-							size={isMobileDevice() ? 'x32' : 'x48'}
-						/>
+						>
+							<UserAvatar username={visitorToken ? visitorName : agentName} size={isMobileDevice() ? 'x32' : 'x48'} />
+						</Box>
 					</Box>
 					<Box
 						position='absolute'
@@ -111,15 +110,14 @@ const MeetPage = () => {
 						}}
 						alignItems='center'
 					>
-						<UserAvatar
+						<Box
 							style={{
 								display: 'block',
 								margin: 'auto',
 							}}
-							username={visitorToken ? agentName : visitorName}
-							className='rcx-message__avatar'
-							size='x124'
-						/>
+						>
+							<UserAvatar username={visitorToken ? agentName : visitorName} size='x124' />
+						</Box>
 						<p style={{ color: 'white', fontSize: 16, margin: 15 }}>Call Ended!</p>
 						<p
 							style={{

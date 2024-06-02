@@ -1,5 +1,17 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Field, FieldGroup, Button, TextAreaInput, Modal, Box, PaginatedSelectFiltered, Divider } from '@rocket.chat/fuselage';
+import {
+	Field,
+	FieldGroup,
+	Button,
+	TextAreaInput,
+	Modal,
+	Box,
+	PaginatedSelectFiltered,
+	Divider,
+	FieldLabel,
+	FieldRow,
+	Option,
+} from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -8,7 +20,7 @@ import { useForm } from 'react-hook-form';
 
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import UserAutoComplete from '../../UserAutoComplete';
+import AutoCompleteAgent from '../../AutoCompleteAgent';
 import { useDepartmentsList } from '../hooks/useDepartmentsList';
 
 const ForwardChatModal = ({
@@ -25,7 +37,15 @@ const ForwardChatModal = ({
 	const getUserData = useEndpoint('GET', '/v1/users.info');
 	const idleAgentsAllowedForForwarding = useSetting('Livechat_enabled_when_agent_idle') as boolean;
 
-	const { getValues, handleSubmit, register, setFocus, setValue, watch } = useForm();
+	const {
+		getValues,
+		handleSubmit,
+		register,
+		setFocus,
+		setValue,
+		watch,
+		formState: { isSubmitting },
+	} = useForm();
 
 	useEffect(() => {
 		setFocus('comment');
@@ -42,31 +62,9 @@ const ForwardChatModal = ({
 	);
 	const { phase: departmentsPhase, items: departments, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
-	const _id = { $ne: room.servedBy?._id };
-	const conditions = {
-		_id,
-		...(!idleAgentsAllowedForForwarding && {
-			$or: [
-				{
-					status: {
-						$exists: true,
-						$ne: 'offline',
-					},
-					roles: {
-						$ne: 'bot',
-					},
-				},
-				{
-					roles: 'bot',
-				},
-			],
-		}),
-		statusLivechat: 'available',
-	};
-
 	const endReached = useCallback(
 		(start) => {
-			if (departmentsPhase === AsyncStatePhase.LOADING) {
+			if (departmentsPhase !== AsyncStatePhase.LOADING) {
 				loadMoreDepartments(start, Math.min(50, departmentsTotal));
 			}
 		},
@@ -82,7 +80,7 @@ const ForwardChatModal = ({
 				uid = user?._id;
 			}
 
-			onForward(departmentId, uid, comment);
+			await onForward(departmentId, uid, comment);
 		},
 		[getUserData, onForward],
 	);
@@ -93,7 +91,11 @@ const ForwardChatModal = ({
 	}, [register]);
 
 	return (
-		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />} {...props}>
+		<Modal
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(onSubmit)} {...props} />}
+			{...props}
+			data-qa-id='forward-chat-modal'
+		>
 			<Modal.Header>
 				<Modal.Icon name='baloon-arrow-top-right' />
 				<Modal.Title>{t('Forward_chat')}</Modal.Title>
@@ -102,54 +104,59 @@ const ForwardChatModal = ({
 			<Modal.Content fontScale='p2'>
 				<FieldGroup>
 					<Field>
-						<Field.Label>{t('Forward_to_department')}</Field.Label>
-						<Field.Row>
+						<FieldLabel>{t('Forward_to_department')}</FieldLabel>
+						<FieldRow>
 							<PaginatedSelectFiltered
-								withTitle
+								withTitle={false}
 								filter={departmentsFilter as string}
 								setFilter={setDepartmentsFilter}
 								options={departments}
 								maxWidth='100%'
 								placeholder={t('Select_an_option')}
+								data-qa-id='forward-to-department'
 								onChange={(value: string): void => {
 									setValue('department', value);
 								}}
 								flexGrow={1}
 								endReached={endReached}
+								renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Divider p={0} children={t('or')} />
 					<Field>
-						<Field.Label>{t('Forward_to_user')}</Field.Label>
-						<Field.Row>
-							<UserAutoComplete
-								conditions={conditions}
-								placeholder={t('Username')}
+						<FieldLabel>{t('Forward_to_user')}</FieldLabel>
+						<FieldRow>
+							<AutoCompleteAgent
+								withTitle
+								onlyAvailable
+								value={getValues().username}
+								excludeId={room.servedBy?._id}
+								showIdleAgents={idleAgentsAllowedForForwarding}
+								placeholder={t('Username_name_email')}
 								onChange={(value) => {
 									setValue('username', value);
 								}}
-								value={getValues().username}
 							/>
-						</Field.Row>
+						</FieldRow>
 					</Field>
 					<Field marginBlock={15}>
-						<Field.Label>
+						<FieldLabel>
 							{t('Leave_a_comment')}{' '}
 							<Box is='span' color='annotation'>
 								({t('Optional')})
 							</Box>
-						</Field.Label>
-						<Field.Row>
+						</FieldLabel>
+						<FieldRow>
 							<TextAreaInput data-qa-id='ForwardChatModalTextAreaInputComment' {...register('comment')} rows={8} flexGrow={1} />
-						</Field.Row>
+						</FieldRow>
 					</Field>
 				</FieldGroup>
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button type='submit' disabled={!username && !department} primary>
+					<Button type='submit' disabled={!username && !department} primary loading={isSubmitting}>
 						{t('Forward')}
 					</Button>
 				</Modal.FooterControllers>

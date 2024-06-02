@@ -39,8 +39,9 @@ export const useFilteredApps = ({
 	sortingMethod: string;
 	status: string;
 	context?: string;
-}): AsyncState<
-	{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult & { allApps: App[] } & { totalAppsLength: number }
+}): Omit<
+	AsyncState<{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult & { allApps: App[] } & { totalAppsLength: number }>,
+	'error'
 > => {
 	const value = useMemo(() => {
 		if (appsData.value === undefined) {
@@ -66,7 +67,7 @@ export const useFilteredApps = ({
 		const filterByPurchaseType: Record<string, (apps: App[]) => App[]> = {
 			all: fallback,
 			paid: (apps: App[]) => apps.filter(filterAppsByPaid),
-			enterprise: (apps: App[]) => apps.filter(filterAppsByEnterprise),
+			premium: (apps: App[]) => apps.filter(filterAppsByEnterprise),
 			free: (apps: App[]) => apps.filter(filterAppsByFree),
 		};
 
@@ -80,7 +81,7 @@ export const useFilteredApps = ({
 			explore: fallback,
 			installed: fallback,
 			private: fallback,
-			enterprise: (apps: App[]) => apps.filter(({ categories }) => categories.includes('Enterprise')),
+			premium: (apps: App[]) => apps.filter(({ categories }) => categories.includes('Premium')),
 			requested: (apps: App[]) => apps.filter(({ appRequestStats, installed }) => Boolean(appRequestStats) && !installed),
 		};
 

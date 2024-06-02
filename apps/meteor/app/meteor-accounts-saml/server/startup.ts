@@ -1,4 +1,5 @@
 import { Logger } from '@rocket.chat/logger';
+import debounce from 'lodash.debounce';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings/server';
@@ -10,5 +11,6 @@ SAMLUtils.setLoggerInstance(logger);
 
 Meteor.startup(async () => {
 	await addSettings('Default');
-	settings.watchByRegex(/^SAML_.+/, loadSamlServiceProviders);
 });
+
+settings.watchByRegex(/^SAML_.+/, debounce(loadSamlServiceProviders, 2000));

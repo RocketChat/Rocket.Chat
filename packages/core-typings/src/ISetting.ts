@@ -72,7 +72,7 @@ export interface ISettingBase {
 	hidden?: boolean;
 	modules?: Array<string>;
 	invalidValue?: SettingValue;
-	valueSource?: string;
+	valueSource?: 'packageValue' | 'processEnvValue';
 	secret?: boolean;
 	i18nDescription?: string;
 	autocomplete?: boolean;

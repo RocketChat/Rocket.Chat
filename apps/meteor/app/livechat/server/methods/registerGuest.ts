@@ -5,7 +5,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { Livechat } from '../lib/Livechat';
 import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -58,10 +57,23 @@ Meteor.methods<ServerMethods>({
 			},
 		});
 
+		if (!visitor) {
+			throw new Meteor.Error('error-invalid-visitor', 'Invalid visitor', { method: 'livechat:registerGuest' });
+		}
+
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 		// If it's updating an existing visitor, it must also update the roomInfo
 		const rooms: IRoom[] = await LivechatRooms.findOpenByVisitorToken(token, {}, extraQuery).toArray();
-		await Promise.all(rooms.map((room) => Livechat.saveRoomInfo(room, visitor)));
+		await Promise.all(
+			rooms.map((room) =>
+				LivechatTyped.saveRoomInfo(room, {
+					_id: visitor._id,
+					name: visitor.name,
+					phone: visitor.phone?.[0]?.phoneNumber,
+					livechatData: visitor.livechatData as { [k: string]: string },
+				}),
+			),
+		);
 
 		if (customFields && customFields instanceof Array) {
 			for await (const customField of customFields) {

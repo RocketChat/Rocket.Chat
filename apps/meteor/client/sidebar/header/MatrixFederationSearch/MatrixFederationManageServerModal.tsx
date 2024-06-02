@@ -1,4 +1,4 @@
-import { Divider, Modal, ButtonGroup, Button, Field, TextInput, Throbber } from '@rocket.chat/fuselage';
+import { Divider, Modal, ButtonGroup, Button, Field, TextInput, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -63,8 +63,8 @@ const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> =
 			</Modal.Header>
 			<Modal.Content>
 				<Field>
-					<Field.Label>{t('Server_name')}</Field.Label>
-					<Field.Row>
+					<FieldLabel>{t('Server_name')}</FieldLabel>
+					<FieldRow>
 						<TextInput
 							disabled={isLoading}
 							value={serverName}
@@ -76,13 +76,12 @@ const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> =
 							}}
 							mie={4}
 						/>
-						<Button onClick={() => addServer()} primary disabled={isLoading}>
-							{!isLoading && t('Add')}
-							{isLoading && <Throbber inheritColor />}
+						<Button onClick={() => addServer()} primary loading={isLoading}>
+							{t('Add')}
 						</Button>
-					</Field.Row>
-					{isError && errorKey && <Field.Error>{t(errorKey)}</Field.Error>}
-					<Field.Hint>{t('Federation_Example_matrix_server')}</Field.Hint>
+					</FieldRow>
+					{isError && errorKey && <FieldError>{t(errorKey)}</FieldError>}
+					<FieldHint>{t('Federation_Example_matrix_server')}</FieldHint>
 				</Field>
 				<Divider mb={16} />
 				{!isLoadingServerList && data?.servers && <MatrixFederationRemoveServerList servers={data.servers} />}

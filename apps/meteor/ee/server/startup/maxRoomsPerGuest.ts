@@ -8,7 +8,7 @@ callbacks.add(
 	'beforeAddedToRoom',
 	async ({ user }) => {
 		if (user.roles?.includes('guest')) {
-			if (await License.shouldPreventAction('roomsPerGuest', { userId: user._id })) {
+			if (await License.shouldPreventAction('roomsPerGuest', 0, { userId: user._id })) {
 				throw new Meteor.Error('error-max-rooms-per-guest-reached', i18n.t('error-max-rooms-per-guest-reached'));
 			}
 		}

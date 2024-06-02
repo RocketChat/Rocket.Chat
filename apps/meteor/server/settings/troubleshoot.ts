@@ -58,4 +58,9 @@ export const createTroubleshootSettings = () =>
 			hidden: true,
 			readonly: true,
 		});
+
+		await this.add('Troubleshoot_Force_Caching_Version', '', {
+			type: 'string',
+			i18nDescription: 'Troubleshoot_Force_Caching_Version_Alert',
+		});
 	});

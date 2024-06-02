@@ -1,9 +1,9 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { IUiKitCoreApp, IUiKitCoreAppService } from '@rocket.chat/core-services';
+import type { IUiKitCoreApp, IUiKitCoreAppService, UiKitCoreAppPayload } from '@rocket.chat/core-services';
 
-const registeredApps = new Map();
+const registeredApps = new Map<string, IUiKitCoreApp>();
 
-const getAppModule = (appId: string): any => {
+const getAppModule = (appId: string) => {
 	const module = registeredApps.get(appId);
 
 	if (typeof module === 'undefined') {
@@ -17,14 +17,14 @@ export const registerCoreApp = (module: IUiKitCoreApp): void => {
 	registeredApps.set(module.appId, module);
 };
 
-export class UiKitCoreApp extends ServiceClassInternal implements IUiKitCoreAppService {
+export class UiKitCoreAppService extends ServiceClassInternal implements IUiKitCoreAppService {
 	protected name = 'uikit-core-app';
 
 	async isRegistered(appId: string): Promise<boolean> {
 		return registeredApps.has(appId);
 	}
 
-	async blockAction(payload: any): Promise<any> {
+	async blockAction(payload: UiKitCoreAppPayload) {
 		const { appId } = payload;
 
 		const service = getAppModule(appId);
@@ -35,7 +35,7 @@ export class UiKitCoreApp extends ServiceClassInternal implements IUiKitCoreAppS
 		return service.blockAction?.(payload);
 	}
 
-	async viewClosed(payload: any): Promise<any> {
+	async viewClosed(payload: UiKitCoreAppPayload) {
 		const { appId } = payload;
 
 		const service = getAppModule(appId);
@@ -46,7 +46,7 @@ export class UiKitCoreApp extends ServiceClassInternal implements IUiKitCoreAppS
 		return service.viewClosed?.(payload);
 	}
 
-	async viewSubmit(payload: any): Promise<any> {
+	async viewSubmit(payload: UiKitCoreAppPayload) {
 		const { appId } = payload;
 
 		const service = getAppModule(appId);

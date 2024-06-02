@@ -4,16 +4,17 @@ import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import DefaultAttachment from './DefaultAttachment';
-import { FileAttachment } from './FileAttachment';
+import FileAttachment from './FileAttachment';
 import { QuoteAttachment } from './QuoteAttachment';
 
 type AttachmentsItemProps = {
 	attachment: MessageAttachmentBase;
+	id: string | undefined;
 };
 
-const AttachmentsItem = ({ attachment }: AttachmentsItemProps): ReactElement => {
+const AttachmentsItem = ({ attachment, id }: AttachmentsItemProps): ReactElement => {
 	if (isFileAttachment(attachment)) {
-		return <FileAttachment {...attachment} />;
+		return <FileAttachment id={id} {...attachment} />;
 	}
 
 	if (isQuoteAttachment(attachment)) {

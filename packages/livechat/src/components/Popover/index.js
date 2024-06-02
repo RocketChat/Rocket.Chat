@@ -84,7 +84,7 @@ export class PopoverContainer extends Component {
 	);
 }
 
-/** @type {function({ children: [function({ pop: function() }), function({ dismiss: any, triggerBounds?: any })], overlayProps?: any }): any} */
+/** @type {function({ children: [function({ pop: function() }), function({ dismiss: any, triggerBounds?: any, overlayBounds?: any })], overlayProps?: any }): any} */
 export const PopoverTrigger = ({ children, ...props }) => (
 	<PopoverContext.Consumer>{({ open }) => children[0]({ pop: open.bind(null, children[1], props) })}</PopoverContext.Consumer>
 );

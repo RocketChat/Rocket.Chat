@@ -8,4 +8,5 @@ export { default as HeaderState } from './HeaderState';
 export { default as HeaderSubtitle } from './HeaderSubtitle';
 export * from './HeaderTag';
 export { default as HeaderTitle } from './HeaderTitle';
-export * from './HeaderToolbox';
+export { default as HeaderTitleButton } from './HeaderTitleButton';
+export * from './HeaderToolbar';

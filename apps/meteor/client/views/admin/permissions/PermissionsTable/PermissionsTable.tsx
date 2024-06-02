@@ -1,4 +1,5 @@
-import { Margins, Tabs, Button, Pagination } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Margins, Tabs, Button, Pagination, Palette } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, usePermission, useMethod, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -7,7 +8,7 @@ import React, { useState } from 'react';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import Page from '../../../../components/Page';
+import { Page, PageHeader, PageContent } from '../../../../components/Page';
 import CustomRoleUpsellModal from '../CustomRoleUpsellModal';
 import PermissionsContextBar from '../PermissionsContextBar';
 import { usePermissionsAndRoles } from '../hooks/usePermissionsAndRoles';
@@ -55,14 +56,34 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 		});
 	});
 
+	const fixedColumnStyle = css`
+		tr > th {
+			&:first-child {
+				position: sticky;
+				left: 0;
+				background-color: ${Palette.surface['surface-light']};
+				z-index: 12;
+			}
+		}
+		tr > td {
+			&:first-child {
+				position: sticky;
+				left: 0;
+				box-shadow: -1px 0 0 ${Palette.stroke['stroke-light']} inset;
+				background-color: ${Palette.surface['surface-light']};
+				z-index: 11;
+			}
+		}
+	`;
+
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<Page.Header title={t('Permissions')}>
+				<PageHeader title={t('Permissions')}>
 					<Button primary onClick={handleAdd} aria-label={t('New')} name={t('New_role')}>
 						{t('New_role')}
 					</Button>
-				</Page.Header>
+				</PageHeader>
 				<Margins blockEnd={16}>
 					<Tabs>
 						<Tabs.Item
@@ -83,13 +104,13 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 						</Tabs.Item>
 					</Tabs>
 				</Margins>
-				<Page.Content mb='neg-x8'>
+				<PageContent mb='neg-x8'>
 					<Margins block={8}>
 						<PermissionsTableFilter onChange={setFilter} />
 						{permissions?.length === 0 && <GenericNoResults />}
 						{permissions?.length > 0 && (
 							<>
-								<GenericTable fixed={false}>
+								<GenericTable className={[fixedColumnStyle]} fixed={false}>
 									<GenericTableHeader>
 										<GenericTableHeaderCell width='x120'>{t('Name')}</GenericTableHeaderCell>
 										{roleList?.map(({ _id, name, description }) => (
@@ -120,7 +141,7 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 							</>
 						)}
 					</Margins>
-				</Page.Content>
+				</PageContent>
 			</Page>
 			<PermissionsContextBar />
 		</Page>

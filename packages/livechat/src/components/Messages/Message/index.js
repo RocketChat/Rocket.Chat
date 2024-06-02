@@ -92,9 +92,20 @@ const getMessageUsernames = (compact, message) => {
 	return [username];
 };
 
-const Message = ({ avatarResolver, attachmentResolver = getAttachmentUrl, use, me, compact, className, style = {}, t, ...message }) => (
+const Message = ({
+	avatarResolver,
+	attachmentResolver = getAttachmentUrl,
+	use,
+	me,
+	compact,
+	className,
+	style = {},
+	t,
+	hideAvatar,
+	...message
+}) => (
 	<MessageContainer id={message._id} compact={compact} reverse={me} use={use} className={className} style={style} system={!!message.type}>
-		{!message.type && <MessageAvatars avatarResolver={avatarResolver} usernames={getMessageUsernames(compact, message)} />}
+		{!message.type && !hideAvatar && <MessageAvatars avatarResolver={avatarResolver} usernames={getMessageUsernames(compact, message)} />}
 		<MessageContent reverse={me}>
 			{renderContent({
 				text: message.type ? getSystemMessageText(message, t) : message.msg,

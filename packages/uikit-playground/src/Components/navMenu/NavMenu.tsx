@@ -3,8 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
 import { useEffect, useState, useContext } from 'react';
 
-import { context } from '../../Context';
-import { navMenuToggleAction } from '../../Context/action';
+import { context, navMenuToggleAction } from '../../Context';
 import Menu from './Menu';
 
 const NavMenu: FC = () => {
@@ -28,16 +27,16 @@ const NavMenu: FC = () => {
 
   return (
     <Box
-      position='absolute'
-      width='100%'
-      height='100%'
+      position="absolute"
+      width="100%"
+      height="100%"
       zIndex={3}
       bg={isOpen ? '#000000cc' : 'transparent'}
       className={css`
         user-select: none;
         transition: var(--animation-fast);
       `}
-      overflow='hidden'
+      overflow="hidden"
       onClick={toggleHandler}
     >
       <Menu isOpen={isOpen} />

@@ -1,7 +1,7 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { LivechatVisitors, Rooms, LivechatDepartment, Users } from '@rocket.chat/models';
 
-import { transformMappedData } from '../../../../ee/lib/misc/transformMappedData';
+import { transformMappedData } from './transformMappedData';
 
 export class AppRoomsConverter {
 	constructor(orch) {
@@ -37,7 +37,7 @@ export class AppRoomsConverter {
 
 		let v;
 		if (room.visitor) {
-			const visitor = await LivechatVisitors.findOneById(room.visitor.id);
+			const visitor = await LivechatVisitors.findOneEnabledById(room.visitor.id);
 
 			const { lastMessageTs, phone } = room.visitorChannelInfo;
 

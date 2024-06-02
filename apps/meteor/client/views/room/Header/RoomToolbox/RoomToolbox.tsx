@@ -1,6 +1,6 @@
 import type { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { HeaderToolboxAction, HeaderToolboxDivider } from '@rocket.chat/ui-client';
+import { HeaderToolbarAction, HeaderToolbarDivider } from '@rocket.chat/ui-client';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
@@ -60,7 +60,7 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	const renderDefaultToolboxItem: RoomToolboxActionConfig['renderToolboxItem'] = useMutableCallback(
 		({ id, className, index, icon, title, toolbox: { tab }, action, disabled, tooltip }) => {
 			return (
-				<HeaderToolboxAction
+				<HeaderToolbarAction
 					key={id}
 					className={className}
 					index={index}
@@ -89,9 +89,9 @@ const RoomToolbox = ({ className }: RoomToolboxProps) => {
 	return (
 		<>
 			{featuredActions.map(mapToToolboxItem)}
-			{featuredActions.length > 0 && <HeaderToolboxDivider />}
+			{featuredActions.length > 0 && <HeaderToolbarDivider />}
 			{visibleActions.map(mapToToolboxItem)}
-			{(normalActions.length > 6 || roomToolboxExpanded) && (
+			{(normalActions.length > 6 || !roomToolboxExpanded) && !!hiddenActions.length && (
 				<GenericMenu title={t('Options')} data-qa-id='ToolBox-Menu' sections={hiddenActions} placement='bottom-end' />
 			)}
 		</>

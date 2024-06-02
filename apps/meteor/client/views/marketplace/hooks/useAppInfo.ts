@@ -2,8 +2,8 @@ import type { App } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useState, useEffect, useContext } from 'react';
 
-import type { ISettings } from '../../../../ee/client/apps/@types/IOrchestrator';
-import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
+import type { ISettings } from '../../../apps/@types/IOrchestrator';
+import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import { AppsContext } from '../../../contexts/AppsContext';
 import type { AppInfo } from '../definitions/AppInfo';
 
@@ -36,7 +36,7 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 			}
 
 			let appResult: App | undefined;
-			const marketplaceAppsContexts = ['explore', 'enterprise', 'requested'];
+			const marketplaceAppsContexts = ['explore', 'premium', 'requested'];
 
 			if (marketplaceAppsContexts.includes(context)) appResult = marketplaceApps.value?.apps.find((app) => app.id === appId);
 

@@ -1,21 +1,22 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { updateThreadUsersSubscriptions, getMentions } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 import { settings } from '../../../settings/server';
 import { reply } from '../functions';
 
-async function notifyUsersOnReply(message: IMessage, replies: string[], room: IRoom) {
+async function notifyUsersOnReply(message: IMessage, replies: IUser['_id'][]) {
 	// skips this callback if the message was edited
 	if (isEditedMessage(message)) {
 		return message;
 	}
 
-	await updateThreadUsersSubscriptions(message, room, replies);
+	await updateThreadUsersSubscriptions(message, replies);
 
 	return message;
 }
@@ -58,9 +59,12 @@ export async function processThreads(message: IMessage, room: IRoom) {
 		]),
 	].filter((userId) => userId !== message.u._id);
 
-	await notifyUsersOnReply(message, replies, room);
+	await notifyUsersOnReply(message, replies);
 	await metaData(message, parentMessage, replies);
 	await notification(message, room, replies);
+	void broadcastMessageFromData({
+		id: message.tmid,
+	});
 
 	return message;
 }

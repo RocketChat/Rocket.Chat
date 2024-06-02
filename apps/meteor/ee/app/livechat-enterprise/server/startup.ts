@@ -3,7 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import { businessHourManager } from '../../../../app/livechat/server/business-hour';
 import { SingleBusinessHourBehavior } from '../../../../app/livechat/server/business-hour/Single';
 import { settings } from '../../../../app/settings/server';
-import { resetDefaultBusinessHourIfNeeded } from './business-hour/Helper';
 import { MultipleBusinessHoursBehavior } from './business-hour/Multiple';
 import { updatePredictedVisitorAbandonment, updateQueueInactivityTimeout } from './lib/Helper';
 import { VisitorInactivityMonitor } from './lib/VisitorInactivityMonitor';
@@ -43,6 +42,4 @@ Meteor.startup(async () => {
 			logger.debug(`Business hour manager started`);
 		}
 	});
-
-	await resetDefaultBusinessHourIfNeeded();
 });

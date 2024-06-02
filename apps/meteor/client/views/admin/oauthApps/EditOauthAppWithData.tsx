@@ -1,9 +1,10 @@
-import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
+import { FormSkeleton } from '../../../components/Skeleton';
 import EditOauthApp from './EditOauthApp';
 
 const EditOauthAppWithData = ({ _id, ...props }: { _id: string }): ReactElement => {
@@ -29,27 +30,7 @@ const EditOauthAppWithData = ({ _id, ...props }: { _id: string }): ReactElement 
 	}, [refetch]);
 
 	if (isLoading) {
-		return (
-			<Box pb={20} maxWidth='x600' w='full' alignSelf='center'>
-				<Skeleton mbs={8} />
-				<InputBox.Skeleton w='full' />
-				<Skeleton mbs={8} />
-				<InputBox.Skeleton w='full' />
-				<ButtonGroup stretch w='full' mbs={8}>
-					<Button disabled>
-						<Throbber inheritColor />
-					</Button>
-					<Button primary disabled>
-						<Throbber inheritColor />
-					</Button>
-				</ButtonGroup>
-				<ButtonGroup stretch w='full' mbs={8}>
-					<Button danger disabled>
-						<Throbber inheritColor />
-					</Button>
-				</ButtonGroup>
-			</Box>
-		);
+		return <FormSkeleton pi={20} />;
 	}
 
 	if (error || !data || !_id) {

@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isVideoConfMessage } from '@rocket.chat/core-typings';
-import type { UIEvent } from 'react';
+import type { IActionManager } from '@rocket.chat/ui-contexts';
 
 import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
 import { createDataAPI } from '../../../../client/lib/chats/data';
@@ -18,7 +18,6 @@ import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
-import * as ActionManager from '../../../ui-message/client/ActionManager';
 import { UserAction } from './UserAction';
 
 type DeepWritable<T> = T extends (...args: any) => any
@@ -44,8 +43,6 @@ export class ChatMessages implements ChatAPI {
 	public uploads: UploadsAPI;
 
 	public ActionManager: any;
-
-	public userCard: { open(username: string): (event: UIEvent) => void; close(): void };
 
 	public emojiPicker: {
 		open(el: Element, cb: (emoji: string) => void): void;
@@ -144,24 +141,20 @@ export class ChatMessages implements ChatAPI {
 			rid: IRoom['_id'];
 			tmid?: IMessage['_id'];
 			uid: IUser['_id'] | null;
+			actionManager: IActionManager;
 		},
 	) {
 		const { rid, tmid } = params;
 		this.uid = params.uid;
 		this.data = createDataAPI({ rid, tmid });
 		this.uploads = createUploadsAPI({ rid, tmid });
-		this.ActionManager = ActionManager;
+		this.ActionManager = params.actionManager;
 
 		const unimplemented = () => {
 			throw new Error('Flow is not implemented');
 		};
 
 		this.readStateManager = new ReadStateManager(rid);
-
-		this.userCard = {
-			open: unimplemented,
-			close: unimplemented,
-		};
 
 		this.emojiPicker = {
 			open: unimplemented,
