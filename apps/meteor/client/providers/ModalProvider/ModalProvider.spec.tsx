@@ -12,6 +12,7 @@ import ModalProviderWithRegion from './ModalProviderWithRegion';
 
 const renderWithSuspense = (ui: ReactElement) =>
 	render(ui, {
+		legacyRoot: true,
 		wrapper: ({ children }) => <Suspense fallback={null}>{children}</Suspense>,
 	});
 

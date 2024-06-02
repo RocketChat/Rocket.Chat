@@ -6,6 +6,7 @@ import WarningModal from './WarningModal';
 
 it('should look good', async () => {
 	render(<WarningModal text='text' confirmText='confirm' cancelText='cancel' confirm={() => undefined} close={() => undefined} />, {
+		legacyRoot: true,
 		wrapper: mockAppRoot().build(),
 	});
 

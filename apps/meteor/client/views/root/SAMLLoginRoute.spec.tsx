@@ -23,6 +23,7 @@ it('should redirect to /home when userId is not null', async () => {
 				</RouterContextMock>
 			</MockedUserContext>
 		</MockedServerContext>,
+		{ legacyRoot: true },
 	);
 
 	expect(navigateStub).toHaveBeenCalledTimes(2);
@@ -36,6 +37,7 @@ it('should redirect to /home when userId is null and redirectUrl is not within t
 				<SAMLLoginRoute />
 			</RouterContextMock>
 		</MockedServerContext>,
+		{ legacyRoot: true },
 	);
 
 	expect(navigateStub).toHaveBeenCalledTimes(1);
@@ -49,6 +51,7 @@ it('should redirect to the provided redirectUrl when userId is null and redirect
 				<SAMLLoginRoute />
 			</RouterContextMock>
 		</MockedServerContext>,
+		{ legacyRoot: true },
 	);
 
 	expect(navigateStub).toHaveBeenCalledTimes(1);
@@ -62,6 +65,7 @@ it('should call loginWithSamlToken when component is mounted', async () => {
 				<SAMLLoginRoute />
 			</RouterContextMock>
 		</MockedServerContext>,
+		{ legacyRoot: true },
 	);
 
 	expect(Meteor.loginWithSamlToken).toHaveBeenCalledTimes(1);
@@ -79,6 +83,7 @@ it('should call loginWithSamlToken with the token when it is present', async () 
 				<SAMLLoginRoute />
 			</RouterContextMock>
 		</MockedUserContext>,
+		{ legacyRoot: true },
 	);
 
 	expect(Meteor.loginWithSamlToken).toHaveBeenCalledTimes(1);

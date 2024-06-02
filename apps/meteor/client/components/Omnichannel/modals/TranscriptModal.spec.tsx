@@ -25,23 +25,23 @@ const defaultProps = {
 
 it('should show Undo request button when roomOpen is true and transcriptRequest exist', async () => {
 	const onDiscardMock = jest.fn();
-	render(<TranscriptModal {...defaultProps} onDiscard={onDiscardMock} />);
-	const undoRequestButton = await screen.findByText('Undo_request');
+	render(<TranscriptModal {...defaultProps} onDiscard={onDiscardMock} />, { legacyRoot: true });
 
-	userEvent.click(undoRequestButton);
+	const undoRequestButton = await screen.findByText('Undo_request');
+	await userEvent.click(undoRequestButton);
 
 	expect(onDiscardMock).toHaveBeenCalled();
 });
 
 it('should show Request button when roomOpen is true and transcriptRequest not exist', async () => {
-	render(<TranscriptModal {...{ ...defaultProps, room: { ...room, transcriptRequest: undefined } }} />);
+	render(<TranscriptModal {...{ ...defaultProps, room: { ...room, transcriptRequest: undefined } }} />, { legacyRoot: true });
 
 	const requestBtn = await screen.findByRole('button', { name: 'request-button' });
 	expect(requestBtn).toBeInTheDocument();
 });
 
 it('should show Send button when roomOpen is false', async () => {
-	render(<TranscriptModal {...{ ...defaultProps, room: { ...room, open: false } }} />);
+	render(<TranscriptModal {...{ ...defaultProps, room: { ...room, open: false } }} />, { legacyRoot: true });
 
 	const sendBtn = await screen.findByRole('button', { name: 'send-button' });
 	expect(sendBtn).toBeInTheDocument();

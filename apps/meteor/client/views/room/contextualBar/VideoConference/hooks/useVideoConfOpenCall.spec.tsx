@@ -1,9 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen } from '@testing-library/react';
-import { act, renderHook } from '@testing-library/react-hooks';
-import type { Ref } from 'react';
-import React, { createRef, forwardRef, useImperativeHandle } from 'react';
+import { screen, act, renderHook } from '@testing-library/react';
 
 import { useVideoConfOpenCall } from './useVideoConfOpenCall';
 
@@ -19,7 +16,7 @@ describe('with window.RocketChatDesktop set', () => {
 	});
 
 	it('should pass to videoConfOpenCall the url', async () => {
-		const { result } = renderHook(() => useVideoConfOpenCall(), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useVideoConfOpenCall(), { legacyRoot: true, wrapper: mockAppRoot().build() });
 
 		const url = faker.internet.url();
 
@@ -31,7 +28,7 @@ describe('with window.RocketChatDesktop set', () => {
 	});
 
 	it('should pass to videoConfOpenCall the url and the providerName', async () => {
-		const { result } = renderHook(() => useVideoConfOpenCall(), { wrapper: mockAppRoot().build() });
+		const { result } = renderHook(() => useVideoConfOpenCall(), { legacyRoot: true, wrapper: mockAppRoot().build() });
 
 		const url = faker.internet.url();
 		const providerName = faker.lorem.word();
@@ -47,22 +44,6 @@ describe('with window.RocketChatDesktop set', () => {
 });
 
 describe('without window.RocketChatDesktop set', () => {
-	const renderHookWithScreen = () => {
-		// TODO: replace this workaround with the future `renderHook` from `@testing-library/react`
-		const CallOpener = forwardRef(function CallOpener(_: unknown, ref: Ref<ReturnType<typeof useVideoConfOpenCall>>) {
-			const result = useVideoConfOpenCall();
-			useImperativeHandle(ref, () => result);
-
-			return null;
-		});
-
-		const result = createRef<ReturnType<typeof useVideoConfOpenCall>>();
-
-		render(<CallOpener ref={result} />, { wrapper: mockAppRoot().build() });
-
-		return { result: result as { current: ReturnType<typeof useVideoConfOpenCall> } };
-	};
-
 	const previousWindowOpen = window.open;
 
 	afterAll(() => {
@@ -72,7 +53,10 @@ describe('without window.RocketChatDesktop set', () => {
 	it('should open window', async () => {
 		window.open = jest.fn(() => ({} as Window));
 
-		const { result } = renderHookWithScreen();
+		const { result } = renderHook(() => useVideoConfOpenCall(), {
+			legacyRoot: true,
+			wrapper: mockAppRoot().build(),
+		});
 
 		const url = faker.internet.url();
 		act(() => {
@@ -86,7 +70,10 @@ describe('without window.RocketChatDesktop set', () => {
 	it('should NOT open window, AND open modal instead', async () => {
 		window.open = jest.fn(() => null);
 
-		const { result } = renderHookWithScreen();
+		const { result } = renderHook(() => useVideoConfOpenCall(), {
+			legacyRoot: true,
+			wrapper: mockAppRoot().build(),
+		});
 
 		const url = faker.internet.url();
 		act(() => {

@@ -12,6 +12,7 @@ it('should look good', async () => {
 	const app = createFakeApp();
 
 	render(<AppStatus app={app} showStatus isAppDetailsPage />, {
+		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withJohnDoe()
 			.withEndpoint('GET', '/apps/count', async () => ({
