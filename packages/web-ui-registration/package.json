@@ -35,7 +35,7 @@
 		"@storybook/react": "~6.5.16",
 		"@storybook/testing-library": "^0.2.2",
 		"@tanstack/react-query": "^4.16.1",
-		"@testing-library/react": "^13.3.0",
+		"@testing-library/react": "~16.0.0",
 		"@types/jest": "~29.5.12",
 		"@types/react": "~17.0.69",
 		"babel-loader": "~8.3.0",
