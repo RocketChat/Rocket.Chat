@@ -18,6 +18,7 @@ const renderMatrixFederationSearch = (
 	],
 ) => {
 	return render(<></>, {
+		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/federation/listServersByUser', () => ({
 				servers: serverList,
@@ -55,7 +56,7 @@ const renderMatrixFederationSearch = (
 
 const openManageServers = async () => {
 	const manageServerLink = await screen.findByRole('button', { name: 'Manage_server_list' });
-	userEvent.click(manageServerLink);
+	await userEvent.click(manageServerLink);
 };
 
 it('should render Federated Room search modal', async () => {
@@ -72,7 +73,7 @@ it('should search for rooms', async () => {
 
 	const input = await screen.findByRole('searchbox', { name: 'Search_rooms' });
 	expect(input).toBeInTheDocument();
-	userEvent.type(input, 'NotMatrix');
+	await userEvent.type(input, 'NotMatrix');
 
 	expect(await screen.findByRole('listitem', { name: 'NotMatrix1' })).toBeInTheDocument();
 	expect(await screen.findByRole('listitem', { name: 'NotMatrix2' })).toBeInTheDocument();
@@ -84,9 +85,9 @@ it('should close the modal when joining a room', async () => {
 	const firstListItem = await screen.findByRole('listitem', { name: 'Matrix1' });
 	const joinButton = await within(firstListItem).findByRole('button', { name: 'Join' });
 
-	userEvent.click(joinButton);
+	await userEvent.click(joinButton);
 
-	await waitForElementToBeRemoved(() => screen.queryByRole('dialog'));
+	expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });
 
 // TODO: should be a unit test for `MatrixFederationAddServerModal`
@@ -109,7 +110,7 @@ describe('server management', () => {
 		await openManageServers();
 
 		const cancelButton = await screen.findByRole('button', { name: 'Cancel' });
-		userEvent.click(cancelButton);
+		await userEvent.click(cancelButton);
 
 		expect(await screen.findByRole('dialog', { name: 'Federation_Federated_room_search' })).toBeInTheDocument();
 	});
@@ -120,10 +121,10 @@ describe('server management', () => {
 		await openManageServers();
 
 		const input = await screen.findByRole('textbox', { name: 'Server_name' });
-		userEvent.type(input, 'server-4');
+		await userEvent.type(input, 'server-4');
 
 		const addButton = await screen.findByRole('button', { name: 'Add' });
-		userEvent.click(addButton);
+		await userEvent.click(addButton);
 
 		expect(await screen.findByRole('dialog', { name: 'Federation_Federated_room_search' })).toBeInTheDocument();
 		expect(await screen.findByRole('button', { name: 'server-4' })).toBeInTheDocument();
@@ -140,13 +141,13 @@ describe('server management', () => {
 		await openManageServers();
 
 		const defaultItem = await screen.findByRole('listitem', { name: 'server-1' });
-		userEvent.hover(defaultItem);
+		await userEvent.hover(defaultItem);
 		expect(within(defaultItem).queryByRole('button', { name: 'Remove' })).not.toBeInTheDocument();
 
 		const lastItem = await screen.findByRole('listitem', { name: 'server-4' });
-		userEvent.hover(lastItem);
+		await userEvent.hover(lastItem);
 		const removeButton = await within(lastItem).findByRole('button', { name: 'Remove' });
-		userEvent.click(removeButton);
+		await userEvent.click(removeButton);
 
 		await waitForElementToBeRemoved(() => screen.queryByRole('listitem', { name: 'server-4' }));
 	});

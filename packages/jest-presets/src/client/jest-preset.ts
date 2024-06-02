@@ -27,6 +27,8 @@ export default {
 		],
 	},
 
+	transformIgnorePatterns: ['/node_modules/(?!@testing-library/)'],
+
 	moduleNameMapper: {
 		'\\.css$': 'identity-obj-proxy',
 	},

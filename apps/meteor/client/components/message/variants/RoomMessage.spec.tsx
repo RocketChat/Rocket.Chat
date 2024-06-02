@@ -57,6 +57,7 @@ it('should show normal message', () => {
 			showUserAvatar={true}
 		/>,
 		{
+			legacyRoot: true,
 			wrapper: mockAppRoot().build(),
 		},
 	);
@@ -78,6 +79,7 @@ it('should show fallback content for ignored user', () => {
 			showUserAvatar={true}
 		/>,
 		{
+			legacyRoot: true,
 			wrapper: mockAppRoot().build(),
 		},
 	);
@@ -99,6 +101,7 @@ it('should show ignored message', () => {
 			showUserAvatar={true}
 		/>,
 		{
+			legacyRoot: true,
 			wrapper: mockAppRoot().build(),
 		},
 	);

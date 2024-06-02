@@ -7,23 +7,25 @@ import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
 import NotFoundPage from './NotFoundPage';
 
 it('should look good', async () => {
-	render(<NotFoundPage />);
+	render(<NotFoundPage />, { legacyRoot: true });
 
 	await expect(screen.findByRole('heading')).resolves.toHaveTextContent('Page_not_found');
 
 	expect(screen.getByRole('button', { name: 'Homepage' })).not.toBeDisabled();
 });
 
-it('should have correct tab order', () => {
-	render(<NotFoundPage />);
-	// eslint-disable-next-line testing-library/no-node-access
-	expect(document.activeElement).toBe(document.body);
-	userEvent.tab();
-	// eslint-disable-next-line testing-library/no-node-access
-	expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Homepage' }));
-	userEvent.tab();
-	// eslint-disable-next-line testing-library/no-node-access
-	expect(document.activeElement).toBe(document.body);
+it('should have correct tab order', async () => {
+	render(<NotFoundPage />, { legacyRoot: true });
+
+	expect(document.body).toHaveFocus();
+
+	await userEvent.tab();
+
+	expect(screen.getByRole('button', { name: 'Homepage' })).toHaveFocus();
+
+	await userEvent.tab();
+
+	expect(document.body).toHaveFocus();
 });
 
 describe('"Return to home" button', () => {
@@ -35,10 +37,11 @@ describe('"Return to home" button', () => {
 				<RouterContextMock currentPath={currentPath}>
 					<NotFoundPage />
 				</RouterContextMock>,
+				{ legacyRoot: true },
 			);
 			const button = screen.getByRole('button', { name: 'Homepage' });
 
-			userEvent.click(button);
+			await userEvent.click(button);
 
 			await waitFor(() => expect(currentPath.current).toBe('/home'));
 		});
