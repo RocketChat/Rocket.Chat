@@ -12,6 +12,7 @@ describe('without app details', () => {
 		const app = createFakeApp();
 
 		render(<AppMenu app={app} isAppDetailsPage={false} />, {
+			legacyRoot: true,
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/apps/count', async () => ({
 					maxMarketplaceApps: faker.number.int({ min: 0 }),

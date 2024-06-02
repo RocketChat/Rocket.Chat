@@ -34,11 +34,11 @@ describe('callbacks', () => {
 
 		renderModal(<GenericModal title='Modal' onClose={handleClose} />);
 
-		expect(await screen.findByRole('heading', { name: 'Modal', exact: true })).toBeInTheDocument();
+		expect(await screen.findByRole('heading', { name: 'Modal' })).toBeInTheDocument();
 
-		userEvent.keyboard('{Escape}');
+		await userEvent.keyboard('{Escape}');
 
-		expect(screen.queryByRole('heading', { name: 'Modal', exact: true })).not.toBeInTheDocument();
+		expect(screen.queryByRole('heading', { name: 'Modal' })).not.toBeInTheDocument();
 
 		expect(handleClose).toHaveBeenCalled();
 	});
@@ -49,9 +49,9 @@ describe('callbacks', () => {
 
 		const { setModal } = renderModal(<GenericModal title='Modal' onConfirm={handleConfirm} onClose={handleClose} />);
 
-		expect(await screen.findByRole('heading', { name: 'Modal', exact: true })).toBeInTheDocument();
+		expect(await screen.findByRole('heading', { name: 'Modal' })).toBeInTheDocument();
 
-		userEvent.click(screen.getByRole('button', { name: 'Ok', exact: true }));
+		await userEvent.click(screen.getByRole('button', { name: 'Ok' }));
 
 		expect(handleConfirm).toHaveBeenCalled();
 
@@ -59,7 +59,7 @@ describe('callbacks', () => {
 			setModal(null);
 		});
 
-		expect(screen.queryByRole('heading', { name: 'Modal', exact: true })).not.toBeInTheDocument();
+		expect(screen.queryByRole('heading', { name: 'Modal' })).not.toBeInTheDocument();
 
 		expect(handleClose).not.toHaveBeenCalled();
 	});
@@ -70,9 +70,9 @@ describe('callbacks', () => {
 
 		const { setModal } = renderModal(<GenericModal title='Modal' onCancel={handleCancel} onClose={handleClose} />);
 
-		expect(await screen.findByRole('heading', { name: 'Modal', exact: true })).toBeInTheDocument();
+		expect(await screen.findByRole('heading', { name: 'Modal' })).toBeInTheDocument();
 
-		userEvent.click(screen.getByRole('button', { name: 'Cancel', exact: true }));
+		await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
 		expect(handleCancel).toHaveBeenCalled();
 
@@ -80,7 +80,7 @@ describe('callbacks', () => {
 			setModal(null);
 		});
 
-		expect(screen.queryByRole('heading', { name: 'Modal', exact: true })).not.toBeInTheDocument();
+		expect(screen.queryByRole('heading', { name: 'Modal' })).not.toBeInTheDocument();
 
 		expect(handleClose).not.toHaveBeenCalled();
 	});

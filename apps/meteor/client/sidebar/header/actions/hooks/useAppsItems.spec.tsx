@@ -1,11 +1,12 @@
 import { UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { useAppsItems } from './useAppsItems';
 
 it('should return and empty array if the user does not have `manage-apps` and `access-marketplace` permission', () => {
 	const { result } = renderHook(() => useAppsItems(), {
+		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/apps/actionButtons', () => [])
 			.build(),
@@ -16,6 +17,7 @@ it('should return and empty array if the user does not have `manage-apps` and `a
 
 it('should return `marketplace` and `installed` items if the user has `access-marketplace` permission', () => {
 	const { result } = renderHook(() => useAppsItems(), {
+		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/apps/actionButtons', () => [])
 			.withPermission('access-marketplace')
@@ -37,6 +39,7 @@ it('should return `marketplace` and `installed` items if the user has `access-ma
 
 it('should return `marketplace` and `installed` items if the user has `manage-apps` permission', () => {
 	const { result } = renderHook(() => useAppsItems(), {
+		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/apps/actionButtons', () => [])
 			.withEndpoint('GET', '/apps/app-request/stats', () => ({
@@ -69,7 +72,8 @@ it('should return `marketplace` and `installed` items if the user has `manage-ap
 });
 
 it('should return one action from the server with no conditions', async () => {
-	const { result, waitFor } = renderHook(() => useAppsItems(), {
+	const { result } = renderHook(() => useAppsItems(), {
+		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/apps/actionButtons', () => [
 				{
@@ -112,7 +116,8 @@ it('should return one action from the server with no conditions', async () => {
 
 describe('User Dropdown actions with role conditions', () => {
 	it('should return the action if the user has admin role', async () => {
-		const { result, waitFor } = renderHook(() => useAppsItems(), {
+		const { result } = renderHook(() => useAppsItems(), {
+			legacyRoot: true,
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/apps/actionButtons', () => [
 					{
@@ -160,6 +165,7 @@ describe('User Dropdown actions with role conditions', () => {
 
 	it('should return filter the action if the user doesn`t have admin role', async () => {
 		const { result } = renderHook(() => useAppsItems(), {
+			legacyRoot: true,
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/apps/actionButtons', () => [
 					{
@@ -206,7 +212,8 @@ describe('User Dropdown actions with role conditions', () => {
 
 describe('User Dropdown actions with permission conditions', () => {
 	it('should return the action if the user has manage-apps permission', async () => {
-		const { result, waitFor } = renderHook(() => useAppsItems(), {
+		const { result } = renderHook(() => useAppsItems(), {
+			legacyRoot: true,
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/apps/actionButtons', () => [
 					{
@@ -252,6 +259,7 @@ describe('User Dropdown actions with permission conditions', () => {
 
 	it('should return filter the action if the user doesn`t have `any` permission', async () => {
 		const { result } = renderHook(() => useAppsItems(), {
+			legacyRoot: true,
 			wrapper: mockAppRoot()
 				.withEndpoint('GET', '/apps/actionButtons', () => [
 					{
