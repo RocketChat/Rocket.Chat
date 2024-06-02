@@ -1,3 +1,5 @@
+import type { Config } from 'jest';
+
 export default {
 	preset: 'ts-jest',
 	errorOnDeprecated: true,
@@ -6,4 +8,5 @@ export default {
 	moduleNameMapper: {
 		'\\.css$': 'identity-obj-proxy',
 	},
-};
+	setupFilesAfterEnv: ['<rootDir>/src/jest.setup.ts'],
+} satisfies Config;

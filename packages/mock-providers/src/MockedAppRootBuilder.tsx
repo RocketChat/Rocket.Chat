@@ -22,10 +22,9 @@ import {
 } from '@rocket.chat/ui-contexts';
 import type { DecoratorFn } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import type { WrapperComponent } from '@testing-library/react-hooks';
 import { createInstance } from 'i18next';
 import type { ObjectId } from 'mongodb';
-import type { ContextType, ReactNode } from 'react';
+import type { ContextType, JSXElementConstructor, ReactNode } from 'react';
 import React, { useEffect, useReducer } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
@@ -367,7 +366,7 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	build(): WrapperComponent<{ children: ReactNode }> {
+	build(): JSXElementConstructor<{ children: ReactNode }> {
 		const queryClient = new QueryClient({
 			defaultOptions: {
 				queries: { retry: false },

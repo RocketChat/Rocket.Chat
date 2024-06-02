@@ -29,7 +29,7 @@ export default {
 				'^meteor/(.*)': '<rootDir>/tests/mocks/client/meteor.ts',
 			},
 
-			setupFilesAfterEnv: ['<rootDir>/tests/setup/jest.ts'],
+			setupFilesAfterEnv: ['<rootDir>/client/jest.setup.ts'],
 			coveragePathIgnorePatterns: ['<rootDir>/tests/'],
 		},
 		{
