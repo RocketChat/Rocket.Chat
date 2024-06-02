@@ -105,7 +105,7 @@ test.describe.serial('Messaging', () => {
 		await expect(page.locator('[data-qa-type="message"]').last()).not.toBeFocused();
 	});
 
-	test('should focus on the recent message when moving the focus on the list and theres no previous focus', async ({ page }) => {
+	test('should focus the latest message when moving the focus on the list and theres no previous focus', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await page.getByRole('button', { name: targetChannel }).first().focus();
 
@@ -115,7 +115,7 @@ test.describe.serial('Messaging', () => {
 		await page.keyboard.press('Tab');
 		await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
 
-		await page.getByRole('button', { name: targetChannel }).first().click();
+		await page.getByRole('button', { name: targetChannel }).first().focus();
 
 		// move focus to the list again
 		await page.keyboard.press('Tab');

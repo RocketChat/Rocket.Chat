@@ -12,7 +12,7 @@ import {
 	Box,
 	FieldLabel,
 	FieldRow,
-	Option,
+	CheckOption,
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
@@ -85,8 +85,8 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 
 	const currUnitMonitors = useMemo(
 		() =>
-			unitMonitors?.map(({ _id, username }) => ({
-				value: _id,
+			unitMonitors?.map(({ monitorId, username }) => ({
+				value: monitorId,
 				label: username,
 			})) || [],
 		[unitMonitors],
@@ -243,7 +243,11 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 											aria-required={true}
 											aria-invalid={Boolean(errors?.departments)}
 											renderItem={({ label, ...props }) => (
-												<Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />
+												<CheckOption
+													{...props}
+													label={<span style={{ whiteSpace: 'normal' }}>{label}</span>}
+													selected={value.some((item) => item.value === props.value)}
+												/>
 											)}
 										/>
 									)}
@@ -285,6 +289,9 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 											aria-describedby={`${monitorsField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.monitors)}
+											renderItem={({ label, ...props }) => (
+												<CheckOption {...props} label={label} selected={value.some((item) => item.value === props.value)} />
+											)}
 										/>
 									)}
 								/>

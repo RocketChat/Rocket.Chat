@@ -1,4 +1,4 @@
-import { Voip } from '@rocket.chat/core-services';
+import { VoipAsterisk } from '@rocket.chat/core-services';
 import type { IVoipExtensionBase } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
@@ -14,7 +14,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'] },
 	{
 		async get() {
-			const version = await Voip.getConnectorVersion();
+			const version = await VoipAsterisk.getConnectorVersion();
 			return API.v1.success(version);
 		},
 	},
@@ -26,7 +26,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'] },
 	{
 		async get() {
-			const list = await Voip.getExtensionList();
+			const list = await VoipAsterisk.getExtensionList();
 			const result = list.result as IVoipExtensionBase[];
 			return API.v1.success({ extensions: result });
 		},
@@ -48,7 +48,7 @@ API.v1.addRoute(
 					extension: String,
 				}),
 			);
-			const endpointDetails = await Voip.getExtensionDetails(this.queryParams);
+			const endpointDetails = await VoipAsterisk.getExtensionDetails(this.queryParams);
 			return API.v1.success({ ...endpointDetails.result });
 		},
 	},
@@ -68,7 +68,7 @@ API.v1.addRoute(
 					extension: String,
 				}),
 			);
-			const endpointDetails = await Voip.getRegistrationInfo(this.queryParams);
+			const endpointDetails = await VoipAsterisk.getRegistrationInfo(this.queryParams);
 			const encKey = settings.get<string>('VoIP_JWT_Secret');
 			if (!encKey) {
 				logger.warn('No JWT keys set. Sending registration info as plain text');
@@ -111,7 +111,7 @@ API.v1.addRoute(
 				return API.v1.notFound('Extension not found');
 			}
 
-			const endpointDetails = await Voip.getRegistrationInfo({ extension });
+			const endpointDetails = await VoipAsterisk.getRegistrationInfo({ extension });
 			const encKey = settings.get<string>('VoIP_JWT_Secret');
 			if (!encKey) {
 				logger.warn('No JWT keys set. Sending registration info as plain text');

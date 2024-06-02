@@ -30,7 +30,7 @@ Meteor.startup(() => {
 	});
 
 	Accounts.onLogin((login: any): void => {
-		if (login.type !== 'resume' || !login.connection.id) {
+		if (!login.connection.id) {
 			return;
 		}
 
