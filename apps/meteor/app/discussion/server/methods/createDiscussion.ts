@@ -62,6 +62,7 @@ type CreateDiscussionProperties = {
 	users: Array<Exclude<IUser['username'], undefined>>;
 	user: IUser;
 	encrypted?: boolean;
+	topic?: string;
 };
 
 const create = async ({
@@ -72,6 +73,7 @@ const create = async ({
 	users,
 	user,
 	encrypted,
+	topic,
 }: CreateDiscussionProperties): Promise<IRoom & { rid: string }> => {
 	// if you set both, prid and pmid, and the rooms dont match... should throw an error)
 	let message: null | IMessage = null;
@@ -145,7 +147,7 @@ const create = async ({
 
 	const type = await roomCoordinator.getRoomDirectives(parentRoom.t).getDiscussionType(parentRoom);
 	const description = parentRoom.encrypted ? '' : message?.msg;
-	const topic = parentRoom.name;
+	const discussionTopic = topic || parentRoom.name;
 
 	if (!type) {
 		throw new Meteor.Error('error-invalid-type', 'Cannot define discussion room type', {
@@ -163,13 +165,11 @@ const create = async ({
 		{
 			fname: discussionName,
 			description, // TODO discussions remove
-			topic, // TODO discussions remove
+			topic: discussionTopic,
 			prid,
 			encrypted,
 		},
 		{
-			// overrides name validation to allow anything, because discussion's name is randomly generated
-			nameValidationRegex: '.*',
 			creator: user._id,
 		},
 	);
@@ -186,12 +186,12 @@ const create = async ({
 		discussionMsg = await createDiscussionMessage(prid, user, discussion._id, discussionName);
 	}
 
-	if (discussionMsg) {
-		callbacks.runAsync('afterSaveMessage', discussionMsg, parentRoom);
-	}
-
 	if (reply) {
 		await sendMessage(user, { msg: reply }, discussion);
+	}
+
+	if (discussionMsg) {
+		callbacks.runAsync('afterSaveMessage', discussionMsg, parentRoom);
 	}
 	return discussion;
 };
@@ -205,7 +205,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 export const createDiscussion = async (
 	userId: string,
-	{ prid, pmid, t_name: discussionName, reply, users, encrypted }: Omit<CreateDiscussionProperties, 'user'>,
+	{ prid, pmid, t_name: discussionName, reply, users, encrypted, topic }: Omit<CreateDiscussionProperties, 'user'>,
 ): Promise<
 	IRoom & {
 		rid: string;
@@ -231,7 +231,7 @@ export const createDiscussion = async (
 		});
 	}
 
-	return create({ prid, pmid, t_name: discussionName, reply, users, user, encrypted });
+	return create({ prid, pmid, t_name: discussionName, reply, users, user, encrypted, topic });
 };
 
 Meteor.methods<ServerMethods>({

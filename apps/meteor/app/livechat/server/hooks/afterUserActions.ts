@@ -2,7 +2,7 @@ import { type IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { Livechat } from '../lib/Livechat';
+import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
 
 type IAfterSaveUserProps = {
 	user: IUser;
@@ -16,18 +16,18 @@ const handleAgentUpdated = async (userData: IAfterSaveUserProps) => {
 	const { user: newUser, oldUser } = userData;
 
 	if (wasAgent(oldUser) && !isAgent(newUser)) {
-		await Livechat.afterRemoveAgent(newUser);
+		await LivechatTyped.afterRemoveAgent(newUser);
 	}
 
 	if (!wasAgent(oldUser) && isAgent(newUser)) {
-		await Livechat.afterAgentAdded(newUser);
+		await LivechatTyped.afterAgentAdded(newUser);
 	}
 };
 
 const handleAgentCreated = async (user: IUser) => {
 	// created === no prev roles :)
 	if (isAgent(user)) {
-		await Livechat.afterAgentAdded(user);
+		await LivechatTyped.afterAgentAdded(user);
 	}
 };
 
@@ -38,8 +38,8 @@ const handleDeactivateUser = async (user: IUser) => {
 };
 
 const handleActivateUser = async (user: IUser) => {
-	if (isAgent(user)) {
-		await Livechat.addAgent(user.username);
+	if (isAgent(user) && user.username) {
+		await LivechatTyped.afterAgentUserActivated(user);
 	}
 };
 

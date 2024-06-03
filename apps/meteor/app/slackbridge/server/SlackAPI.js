@@ -1,15 +1,17 @@
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 export class SlackAPI {
-	constructor(apiToken) {
-		this.apiToken = apiToken;
+	constructor(apiOrBotToken) {
+		this.token = apiOrBotToken;
 	}
 
 	async getChannels(cursor = null) {
 		let channels = [];
 		const request = await fetch('https://slack.com/api/conversations.list', {
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
 			params: {
-				token: this.apiToken,
 				types: 'public_channel',
 				exclude_archived: true,
 				limit: 1000,
@@ -32,8 +34,10 @@ export class SlackAPI {
 	async getGroups(cursor = null) {
 		let groups = [];
 		const request = await fetch('https://slack.com/api/conversations.list', {
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
 			params: {
-				token: this.apiToken,
 				types: 'private_channel',
 				exclude_archived: true,
 				limit: 1000,
@@ -55,8 +59,10 @@ export class SlackAPI {
 
 	async getRoomInfo(roomId) {
 		const request = await fetch(`https://slack.com/api/conversations.info`, {
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
 			params: {
-				token: this.apiToken,
 				channel: roomId,
 				include_num_members: true,
 			},
@@ -73,8 +79,10 @@ export class SlackAPI {
 		for (let index = 0; index < num_members; index += MAX_MEMBERS_PER_CALL) {
 			// eslint-disable-next-line no-await-in-loop
 			const request = await fetch('https://slack.com/api/conversations.members', {
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
 				params: {
-					token: this.apiToken,
 					channel: channelId,
 					limit: MAX_MEMBERS_PER_CALL,
 					...(currentCursor && { cursor: currentCursor }),
@@ -95,6 +103,9 @@ export class SlackAPI {
 
 	async react(data) {
 		const request = await fetch('https://slack.com/api/reactions.add', {
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
 			method: 'POST',
 			params: data,
 		});
@@ -104,6 +115,9 @@ export class SlackAPI {
 
 	async removeReaction(data) {
 		const request = await fetch('https://slack.com/api/reactions.remove', {
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
 			method: 'POST',
 			params: data,
 		});
@@ -113,6 +127,9 @@ export class SlackAPI {
 
 	async removeMessage(data) {
 		const request = await fetch('https://slack.com/api/chat.delete', {
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
 			method: 'POST',
 			params: data,
 		});
@@ -122,6 +139,9 @@ export class SlackAPI {
 
 	async sendMessage(data) {
 		const request = await fetch('https://slack.com/api/chat.postMessage', {
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
 			method: 'POST',
 			params: data,
 		});
@@ -130,6 +150,9 @@ export class SlackAPI {
 
 	async updateMessage(data) {
 		const request = await fetch('https://slack.com/api/chat.update', {
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
 			method: 'POST',
 			params: data,
 		});
@@ -137,12 +160,12 @@ export class SlackAPI {
 		return response && request.status === 200 && response && request.ok;
 	}
 
-	async getHistory(family, options) {
-		const request = await fetch(`https://slack.com/api/${family}.history`, {
-			params: {
-				token: this.apiToken,
-				...options,
+	async getHistory(options) {
+		const request = await fetch(`https://slack.com/api/conversations.history`, {
+			headers: {
+				Authorization: `Bearer ${this.token}`,
 			},
+			params: options,
 		});
 		const response = await request.json();
 		return response;
@@ -150,8 +173,10 @@ export class SlackAPI {
 
 	async getPins(channelId) {
 		const request = await fetch('https://slack.com/api/pins.list', {
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
 			params: {
-				token: this.apiToken,
 				channel: channelId,
 			},
 		});
@@ -161,12 +186,38 @@ export class SlackAPI {
 
 	async getUser(userId) {
 		const request = await fetch('https://slack.com/api/users.info', {
+			headers: {
+				Authorization: `Bearer ${this.token}`,
+			},
 			params: {
-				token: this.apiToken,
 				user: userId,
 			},
 		});
 		const response = await request.json();
 		return response && response && request.status === 200 && request.ok && response.user;
+	}
+
+	static async verifyToken(token) {
+		const request = await fetch('https://slack.com/api/auth.test', {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+			method: 'POST',
+		});
+		const response = await request.json();
+		return response && response && request.status === 200 && request.ok && response.ok;
+	}
+
+	static async verifyAppCredentials({ botToken, appToken }) {
+		const request = await fetch('https://slack.com/api/apps.connections.open', {
+			headers: {
+				Authorization: `Bearer ${appToken}`,
+			},
+			method: 'POST',
+		});
+		const response = await request.json();
+		const isAppTokenOk = response && response && request.status === 200 && request.ok && response.ok;
+		const isBotTokenOk = await this.verifyToken(botToken);
+		return isAppTokenOk && isBotTokenOk;
 	}
 }

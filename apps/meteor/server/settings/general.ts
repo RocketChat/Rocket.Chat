@@ -90,6 +90,7 @@ export const createGeneralSettings = () =>
 				step: 3,
 				order: 1,
 			},
+			alert: 'Language_setting_warning',
 		});
 		await this.add('Allow_Invalid_SelfSigned_Certs', false, {
 			type: 'boolean',
@@ -287,6 +288,7 @@ export const createGeneralSettings = () =>
 		await this.section('Reporting', async function () {
 			return this.add('Statistics_reporting', true, {
 				type: 'boolean',
+				hidden: true,
 			});
 		});
 		await this.section('Notifications', async function () {

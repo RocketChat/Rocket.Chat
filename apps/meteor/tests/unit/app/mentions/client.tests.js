@@ -5,73 +5,12 @@ import { MentionsParser } from '../../../../app/mentions/lib/MentionsParser';
 let mentionsParser;
 beforeEach(() => {
 	mentionsParser = new MentionsParser({
-		pattern: '[0-9a-zA-Z-_.]+',
+		pattern: () => '[0-9a-zA-Z-_.]+',
 		me: () => 'me',
 	});
 });
 
 describe('Mention', () => {
-	describe('get pattern', () => {
-		const regexp = '[0-9a-zA-Z-_.]+';
-		beforeEach(() => {
-			mentionsParser.pattern = () => regexp;
-		});
-
-		describe('by function', () => {
-			it(`should be equal to ${regexp}`, () => {
-				expect(regexp).to.be.equal(mentionsParser.pattern);
-			});
-		});
-
-		describe('by const', () => {
-			it(`should be equal to ${regexp}`, () => {
-				expect(regexp).to.be.equal(mentionsParser.pattern);
-			});
-		});
-	});
-
-	describe('get useRealName', () => {
-		beforeEach(() => {
-			mentionsParser.useRealName = () => true;
-		});
-
-		describe('by function', () => {
-			it('should be true', () => {
-				expect(true).to.be.equal(mentionsParser.useRealName);
-			});
-		});
-
-		describe('by const', () => {
-			it('should be true', () => {
-				expect(true).to.be.equal(mentionsParser.useRealName);
-			});
-		});
-	});
-
-	describe('get me', () => {
-		const me = 'me';
-
-		describe('by function', () => {
-			beforeEach(() => {
-				mentionsParser.me = () => me;
-			});
-
-			it(`should be equal to ${me}`, () => {
-				expect(me).to.be.equal(mentionsParser.me);
-			});
-		});
-
-		describe('by const', () => {
-			beforeEach(() => {
-				mentionsParser.me = me;
-			});
-
-			it(`should be equal to ${me}`, () => {
-				expect(me).to.be.equal(mentionsParser.me);
-			});
-		});
-	});
-
 	describe('getUserMentions', () => {
 		describe('for simple text, no mentions', () => {
 			const result = [];

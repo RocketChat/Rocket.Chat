@@ -1,7 +1,7 @@
-import type { Method, OperationParams, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
+import type { Method, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { EndpointFunction } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
+import { useMutation } from '@tanstack/react-query';
 
 type UseEndpointActionOptions<TPathPattern extends PathPattern> = (undefined extends UrlParams<TPathPattern>
 	? {
@@ -16,26 +16,21 @@ export function useEndpointAction<TMethod extends Method, TPathPattern extends P
 	method: TMethod,
 	pathPattern: TPathPattern,
 	options: UseEndpointActionOptions<TPathPattern> = { keys: {} as UrlParams<TPathPattern> },
-): EndpointFunction<TMethod, TPathPattern> {
+) {
 	const sendData = useEndpoint(method, pathPattern, options.keys as UrlParams<TPathPattern>);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	return useCallback(
-		async (params: OperationParams<TMethod, TPathPattern> | undefined) => {
-			try {
-				const data = await sendData(params as OperationParams<TMethod, TPathPattern>);
-
-				if (options.successMessage) {
-					dispatchToastMessage({ type: 'success', message: options.successMessage });
-				}
-
-				return data;
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-				throw error;
+	const mutation = useMutation(sendData, {
+		onSuccess: () => {
+			if (options.successMessage) {
+				dispatchToastMessage({ type: 'success', message: options.successMessage });
 			}
 		},
-		[dispatchToastMessage, sendData, options.successMessage],
-	);
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
+		},
+	});
+
+	return mutation.mutateAsync as EndpointFunction<TMethod, TPathPattern>;
 }

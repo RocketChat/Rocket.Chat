@@ -1,10 +1,11 @@
+import { UserStatus } from '@rocket.chat/core-typings';
 import { api, credentials, request } from './api-data';
 import { password } from './user';
 
 export const createUser = (userData = {}) =>
 	new Promise((resolve) => {
-		const username = `user.test.${Date.now()}`;
-		const email = `${username}@rocket.chat`;
+		const username = userData.username || `user.test.${Date.now()}`;
+		const email = userData.email || `${username}@rocket.chat`;
 		request
 			.post(api('users.create'))
 			.set(credentials)
@@ -33,16 +34,14 @@ export const login = (username, password) =>
 			});
 	});
 
-export const deleteUser = (user) =>
-	new Promise((resolve) => {
-		request
-			.post(api('users.delete'))
-			.set(credentials)
-			.send({
-				userId: user._id,
-			})
-			.end(resolve);
-	});
+export const deleteUser = async (user, extraData = {}) =>
+	request
+		.post(api('users.delete'))
+		.set(credentials)
+		.send({
+			userId: user._id,
+			...extraData,
+		});
 
 export const getUserByUsername = (username) =>
 	new Promise((resolve) => {
@@ -89,3 +88,20 @@ export const setUserActiveStatus = (userId, activeStatus = true) =>
 			})
 			.end(resolve);
 	});
+
+export const setUserStatus = (overrideCredentials = credentials, status = UserStatus.ONLINE) =>
+	request.post(api('users.setStatus')).set(overrideCredentials).send({
+		message: '',
+		status,
+	});
+
+export const registerUser = async (userData = {}, overrideCredentials = credentials) => {
+	const username = userData.username || `user.test.${Date.now()}`;
+	const email = userData.email || `${username}@rocket.chat`;
+	const result = await request
+		.post(api('users.register'))
+		.set(overrideCredentials)
+		.send({ email, name: username, username, pass: password, ...userData });
+
+	return result.body.user;
+};

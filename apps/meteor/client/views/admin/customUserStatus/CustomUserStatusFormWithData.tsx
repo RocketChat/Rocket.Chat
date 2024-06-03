@@ -1,10 +1,11 @@
 import type { IUserStatus } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox, Callout } from '@rocket.chat/fuselage';
+import { Box, Callout } from '@rocket.chat/fuselage';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
+import { FormSkeleton } from '../../../components/Skeleton';
 import CustomUserStatusForm from './CustomUserStatusForm';
 
 type CustomUserStatusFormWithDataProps = {
@@ -34,27 +35,7 @@ const CustomUserStatusFormWithData = ({ _id, onReload, onClose }: CustomUserStat
 	}
 
 	if (isLoading) {
-		return (
-			<Box p={20}>
-				<Skeleton mbs={8} />
-				<InputBox.Skeleton w='full' />
-				<Skeleton mbs={8} />
-				<InputBox.Skeleton w='full' />
-				<ButtonGroup stretch w='full' mbs={8}>
-					<Button disabled>
-						<Throbber inheritColor />
-					</Button>
-					<Button primary disabled>
-						<Throbber inheritColor />
-					</Button>
-				</ButtonGroup>
-				<ButtonGroup stretch w='full' mbs={8}>
-					<Button danger disabled>
-						<Throbber inheritColor />
-					</Button>
-				</ButtonGroup>
-			</Box>
-		);
+		return <FormSkeleton pi={20} />;
 	}
 
 	if (error || !data || data.count < 1) {

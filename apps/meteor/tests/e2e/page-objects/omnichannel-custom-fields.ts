@@ -17,31 +17,31 @@ export class OmnichannelCustomFields {
 	}
 
 	get inputField(): Locator {
-		return this.page.locator('[placeholder="Field"]');
+		return this.page.locator('input[name="field"]');
 	}
 
 	get inputLabel(): Locator {
-		return this.page.locator('[placeholder="Label"]');
+		return this.page.locator('input[name="label"]');
+	}
+
+	get visibleLabel(): Locator {
+		return this.page.locator('label >> text="Visible"');
 	}
 
 	get btnSave(): Locator {
-		return this.page.locator('[data-qa-id="NewCustomFieldsPageButtonSave"]');
+		return this.page.locator('button >> text=Save');
 	}
 
 	get inputSearch(): Locator {
 		return this.page.locator('[placeholder="Search"]');
 	}
 
-	get btnEditSave(): Locator {
-		return this.page.locator('[data-qa-id="BtnSaveEditCustomFieldsPage"]');
-	}
-
 	firstRowInTable(filedName: string) {
 		return this.page.locator(`[qa-user-id="${filedName}"]`);
 	}
 
-	get btnDeletefirstRowInTable() {
-		return this.page.locator('button[title="Remove"]');
+	get btnDeleteCustomField() {
+		return this.page.locator('button >> text=Delete');
 	}
 
 	get btnModalRemove(): Locator {

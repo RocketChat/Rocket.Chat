@@ -71,7 +71,7 @@ export class NotificationQueueRaw extends BaseRaw<INotification> implements INot
 	async findNextInQueueOrExpired(expired: Date): Promise<INotification | null> {
 		const now = new Date();
 
-		const result = await this.col.findOneAndUpdate(
+		const result = await this.findOneAndUpdate(
 			{
 				$and: [
 					{

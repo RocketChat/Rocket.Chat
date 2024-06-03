@@ -27,6 +27,7 @@ type ButtonProps = {
 	style?: CSSProperties;
 	img?: string;
 	onClick?: JSXInternal.MouseEventHandler<HTMLButtonElement>;
+	onMouseUp?: JSXInternal.MouseEventHandler<HTMLButtonElement>;
 	full?: boolean;
 };
 
@@ -49,6 +50,7 @@ export const Button = ({
 	children,
 	img,
 	full,
+	...props
 }: ButtonProps) => {
 	const { t } = useTranslation();
 	return (
@@ -84,6 +86,7 @@ export const Button = ({
 					backgroundImage: `url(${img})`,
 				},
 			)}
+			{...props}
 		>
 			{badge ? (
 				<span role='status' aria-label={t('unread_messages_count', { count: badge })} className={createClassName(styles, 'button__badge')}>

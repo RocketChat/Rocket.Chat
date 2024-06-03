@@ -24,7 +24,7 @@ export const useDismissMessageAction = (msgId: string): { action: () => void } =
 
 	const onDismissMessage = async () => {
 		await handleDismissMessage.mutateAsync({ msgId });
-		queryClient.invalidateQueries({ queryKey: ['moderation.userMessages'] });
+		queryClient.invalidateQueries({ queryKey: ['moderation', 'msgReports'] });
 		setModal();
 	};
 

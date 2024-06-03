@@ -14,7 +14,7 @@ const shadowStyleBase: CSSProperties = {
 
 export const useAutoGrow = (
 	ref: RefObject<HTMLTextAreaElement>,
-	shadowRef: RefObject<HTMLTextAreaElement>,
+	shadowRef: RefObject<HTMLDivElement>,
 	hideTextArea?: boolean,
 ): {
 	textAreaStyle: CSSProperties;
@@ -37,8 +37,7 @@ export const useAutoGrow = (
 		if (!textarea) {
 			return;
 		}
-
-		const handleInput = () => {
+		const updateTextareaSize = () => {
 			const { value } = textarea;
 			const { current: shadow } = shadowRef;
 			if (!shadow) {
@@ -51,10 +50,10 @@ export const useAutoGrow = (
 				.replace(/\n$/, '<br/>&nbsp;')
 				.replace(/\n/g, '<br/>');
 		};
-
-		textarea.addEventListener('input', handleInput);
+		updateTextareaSize();
+		textarea.addEventListener('input', updateTextareaSize);
 		return () => {
-			textarea.removeEventListener('input', handleInput);
+			textarea.removeEventListener('input', updateTextareaSize);
 		};
 	}, [ref, shadowRef]);
 

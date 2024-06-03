@@ -7,6 +7,7 @@ import { bumpNextVersion } from './bumpNextVersion';
 import { setupGitUser } from './gitUtils';
 import { publishRelease } from './publishRelease';
 import { startPatchRelease } from './startPatchRelease';
+import { updatePRDescription } from './updatePRDescription';
 
 // const getOptionalInput = (name: string) => core.getInput(name) || undefined;
 
@@ -45,6 +46,8 @@ import { startPatchRelease } from './startPatchRelease';
 		await bumpNextVersion({ githubToken, mainPackagePath });
 	} else if (action === 'patch') {
 		await startPatchRelease({ baseRef, githubToken, mainPackagePath });
+	} else if (action === 'update-pr-description') {
+		await updatePRDescription({ githubToken, mainPackagePath });
 	}
 })().catch((err) => {
 	core.error(err);

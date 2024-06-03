@@ -4,6 +4,7 @@ import { getMessageUrlRegex } from '../../../../lib/getMessageUrlRegex';
 import { Markdown } from '../../../markdown/server';
 import { settings } from '../../../settings/server';
 
+// TODO move this function to message service to be used like a "beforeSaveMessage" hook
 export const parseUrlsInMessage = (message: AtLeast<IMessage, 'msg'> & { parseUrls?: boolean }, previewUrls?: string[]) => {
 	if (message.parseUrls === false) {
 		return message;

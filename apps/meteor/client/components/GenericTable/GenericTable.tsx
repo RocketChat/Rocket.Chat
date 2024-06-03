@@ -1,23 +1,25 @@
 import { Box, Table } from '@rocket.chat/fuselage';
-import type { ReactNode, TableHTMLAttributes } from 'react';
-import React, { forwardRef } from 'react';
+import type { ComponentProps } from 'react';
+import React, { type ForwardedRef, type ReactNode, forwardRef } from 'react';
 
-import ScrollableContentWrapper from '../ScrollableContentWrapper';
+import { CustomScrollbars } from '../CustomScrollbars';
 
 type GenericTableProps = {
 	fixed?: boolean;
 	children: ReactNode;
-} & TableHTMLAttributes<HTMLTableElement>;
+} & ComponentProps<typeof Table>;
 
-export const GenericTable = forwardRef<HTMLElement, GenericTableProps>(function GenericTable({ fixed = true, children, ...props }, ref) {
+export const GenericTable = forwardRef(function GenericTable(
+	{ fixed = true, children, ...props }: GenericTableProps,
+	ref: ForwardedRef<HTMLElement>,
+) {
 	return (
 		<Box mi='neg-x24' pi={24} flexShrink={1} flexGrow={1} ref={ref} overflow='hidden'>
-			<ScrollableContentWrapper overflowX>
-				{/* TODO: Fix fuselage */}
-				<Table fixed={fixed} sticky {...(props as any)}>
+			<CustomScrollbars overflowX>
+				<Table fixed={fixed} sticky {...props}>
 					{children}
 				</Table>
-			</ScrollableContentWrapper>
+			</CustomScrollbars>
 		</Box>
 	);
 });

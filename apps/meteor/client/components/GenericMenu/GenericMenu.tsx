@@ -8,8 +8,9 @@ import GenericMenuItem from './GenericMenuItem';
 import { useHandleMenuAction } from './hooks/useHandleMenuAction';
 
 type GenericMenuCommonProps = {
-	icon?: ComponentProps<typeof IconButton>['icon'];
 	title: string;
+	icon?: ComponentProps<typeof IconButton>['icon'];
+	disabled?: boolean;
 };
 type GenericMenuConditionalProps =
 	| {
@@ -27,7 +28,7 @@ type GenericMenuConditionalProps =
 
 type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof MenuV2>, 'children'>;
 
-const GenericMenu = ({ title, icon = 'menu', onAction, ...props }: GenericMenuProps) => {
+const GenericMenu = ({ title, icon = 'menu', disabled, onAction, ...props }: GenericMenuProps) => {
 	const t = useTranslation();
 
 	const sections = 'sections' in props && props.sections;
@@ -44,8 +45,8 @@ const GenericMenu = ({ title, icon = 'menu', onAction, ...props }: GenericMenuPr
 
 	const isMenuEmpty = !(sections && sections.length > 0) && !(items && items.length > 0);
 
-	if (isMenuEmpty) {
-		return <IconButton icon={icon} disabled />;
+	if (isMenuEmpty || disabled) {
+		return <IconButton small icon={icon} disabled />;
 	}
 
 	return (

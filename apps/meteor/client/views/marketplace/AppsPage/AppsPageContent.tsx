@@ -32,6 +32,7 @@ const AppsPageContent = (): ReactElement => {
 	const context = useRouteParameter('context');
 
 	const isMarketplace = context === 'explore';
+	const isPremium = context === 'premium';
 	const isRequested = context === 'requested';
 
 	const [freePaidFilterStructure, setFreePaidFilterStructure] = useState({
@@ -131,17 +132,18 @@ const AppsPageContent = (): ReactElement => {
 		context,
 	});
 
-	const noInstalledApps = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value.totalAppsLength === 0;
+	const noInstalledApps = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value?.totalAppsLength === 0;
 
-	const noMarketplaceOrInstalledAppMatches = appsResult.phase === AsyncStatePhase.RESOLVED && isMarketplace && appsResult.value.count === 0;
+	const noMarketplaceOrInstalledAppMatches =
+		appsResult.phase === AsyncStatePhase.RESOLVED && (isMarketplace || isPremium) && appsResult.value?.count === 0;
 
 	const noInstalledAppMatches =
 		appsResult.phase === AsyncStatePhase.RESOLVED &&
 		context === 'installed' &&
-		appsResult.value.totalAppsLength !== 0 &&
-		appsResult.value.count === 0;
+		appsResult.value?.totalAppsLength !== 0 &&
+		appsResult.value?.count === 0;
 
-	const noAppRequests = context === 'requested' && appsResult?.value?.totalAppsLength !== 0 && appsResult?.value?.count === 0;
+	const noAppRequests = context === 'requested' && appsResult?.value?.count === 0;
 
 	const noErrorsOcurred = !noMarketplaceOrInstalledAppMatches && !noInstalledAppMatches && !noInstalledApps && !noAppRequests;
 
@@ -186,6 +188,30 @@ const AppsPageContent = (): ReactElement => {
 		toggleInitialSortOption(isRequested);
 	}, [isMarketplace, isRequested, sortFilterOnSelected, t, toggleInitialSortOption]);
 
+	const getEmptyState = () => {
+		if (noAppRequests) {
+			return <NoAppRequestsEmptyState />;
+		}
+
+		if (noMarketplaceOrInstalledAppMatches) {
+			return <NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={!!appsResult.value?.shouldShowSearchText} text={text} />;
+		}
+
+		if (noInstalledAppMatches) {
+			return (
+				<NoInstalledAppMatchesEmptyState
+					shouldShowSearchText={!!appsResult.value?.shouldShowSearchText}
+					text={text}
+					onButtonClick={handleReturn}
+				/>
+			);
+		}
+
+		if (noInstalledApps) {
+			return context === 'private' ? <PrivateEmptyState /> : <NoInstalledAppsEmptyState onButtonClick={handleReturn} />;
+		}
+	};
+
 	return (
 		<>
 			<AppsFilters
@@ -216,18 +242,7 @@ const AppsPageContent = (): ReactElement => {
 					noErrorsOcurred={noErrorsOcurred}
 				/>
 			)}
-			{noAppRequests && <NoAppRequestsEmptyState />}
-			{noMarketplaceOrInstalledAppMatches && (
-				<NoMarketplaceOrInstalledAppMatchesEmptyState shouldShowSearchText={appsResult.value.shouldShowSearchText} text={text} />
-			)}
-			{noInstalledAppMatches && (
-				<NoInstalledAppMatchesEmptyState
-					shouldShowSearchText={appsResult.value.shouldShowSearchText}
-					text={text}
-					onButtonClick={handleReturn}
-				/>
-			)}
-			{noInstalledApps && <>{context === 'private' ? <PrivateEmptyState /> : <NoInstalledAppsEmptyState onButtonClick={handleReturn} />}</>}
+			{getEmptyState()}
 			{appsResult.phase === AsyncStatePhase.REJECTED && <AppsPageConnectionError onButtonClick={reload} />}
 		</>
 	);

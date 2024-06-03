@@ -16,7 +16,7 @@ import React, { useState, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';
-import Page from '../../../components/Page';
+import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
 import AccountProfileForm from './AccountProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
@@ -43,7 +43,7 @@ const AccountProfilePage = (): ReactElement => {
 
 	const {
 		reset,
-		formState: { isDirty },
+		formState: { isDirty, isSubmitting },
 	} = methods;
 
 	const logoutOtherClients = useEndpoint('POST', '/v1/users.logoutOtherClients');
@@ -113,34 +113,43 @@ const AccountProfilePage = (): ReactElement => {
 
 	return (
 		<Page>
-			<Page.Header title={t('Profile')} />
-			<Page.ScrollableContentWithShadow>
+			<PageHeader title={t('Profile')} />
+			<PageScrollableContentWithShadow>
 				<Box maxWidth='600px' w='full' alignSelf='center'>
 					<FormProvider {...methods}>
 						<AccountProfileForm id={profileFormId} />
 					</FormProvider>
-					<ButtonGroup stretch mb={12}>
-						<Button onClick={handleLogoutOtherLocations} flexGrow={0} disabled={loggingOut}>
-							{t('Logout_Others')}
-						</Button>
-						{allowDeleteOwnAccount && (
-							<Button icon='trash' danger onClick={handleDeleteOwnAccount}>
-								{t('Delete_my_account')}
+					<Box mb={12}>
+						<ButtonGroup stretch>
+							<Button onClick={handleLogoutOtherLocations} flexGrow={0} loading={loggingOut}>
+								{t('Logout_Others')}
 							</Button>
-						)}
-					</ButtonGroup>
+							{allowDeleteOwnAccount && (
+								<Button icon='trash' danger onClick={handleDeleteOwnAccount}>
+									{t('Delete_my_account')}
+								</Button>
+							)}
+						</ButtonGroup>
+					</Box>
 				</Box>
-			</Page.ScrollableContentWithShadow>
-			<Page.Footer isDirty={isDirty}>
+			</PageScrollableContentWithShadow>
+			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button disabled={!isDirty} onClick={() => reset(getProfileInitialValues(user))}>
 						{t('Cancel')}
 					</Button>
-					<Button form={profileFormId} data-qa='AccountProfilePageSaveButton' primary disabled={!isDirty || loggingOut} type='submit'>
+					<Button
+						form={profileFormId}
+						data-qa='AccountProfilePageSaveButton'
+						primary
+						disabled={!isDirty || loggingOut}
+						loading={isSubmitting}
+						type='submit'
+					>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
-			</Page.Footer>
+			</PageFooter>
 		</Page>
 	);
 };

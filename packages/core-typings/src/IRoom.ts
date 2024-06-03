@@ -151,10 +151,9 @@ export enum OmnichannelSourceType {
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
 	t: 'l' | 'v';
-	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token'> & {
+	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity'> & {
 		lastMessageTs?: Date;
 		phone?: string;
-		activity?: string[];
 	};
 	email?: {
 		// Data used when the room is created from an email, via email Integration.
@@ -273,6 +272,11 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 		response?: {
 			tt: number;
 			total: number;
+			avg: number;
+			ft: number;
+		};
+		reaction?: {
+			ft: number;
 		};
 	};
 

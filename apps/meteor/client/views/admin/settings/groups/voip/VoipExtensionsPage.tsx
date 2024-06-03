@@ -1,4 +1,5 @@
 import { Box, Chip, Button, Pagination } from '@rocket.chat/fuselage';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetModal, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
@@ -14,8 +15,7 @@ import {
 	GenericTableLoadingRow,
 } from '../../../../../components/GenericTable';
 import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
-import Page from '../../../../../components/Page';
-import UserAvatar from '../../../../../components/avatar/UserAvatar';
+import { PageContent } from '../../../../../components/Page';
 import AssignAgentButton from './AssignAgentButton';
 import AssignAgentModal from './AssignAgentModal';
 import RemoveAgentButton from './RemoveAgentButton';
@@ -56,7 +56,7 @@ const VoipExtensionsPage = () => {
 	);
 
 	return (
-		<Page.Content>
+		<PageContent>
 			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' mb={14}>
 				<Box fontScale='p2' color='hint'>
 					{data?.total} {t('Extensions')}
@@ -134,7 +134,7 @@ const VoipExtensionsPage = () => {
 					/>
 				</>
 			)}
-		</Page.Content>
+		</PageContent>
 	);
 };
 

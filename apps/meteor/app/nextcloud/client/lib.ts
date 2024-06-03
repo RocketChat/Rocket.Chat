@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import _ from 'underscore';
 
-import { CustomOAuth } from '../../custom-oauth/client/custom_oauth_client';
+import { CustomOAuth } from '../../custom-oauth/client/CustomOAuth';
 import { settings } from '../../settings/client';
 
 const config: OauthConfig = {

@@ -16,7 +16,7 @@ export default async function handleJoinedChannel(args) {
 	let room = await Rooms.findOneByName(args.roomName);
 
 	if (!room) {
-		const createdRoom = await createRoom('c', args.roomName, user.username, []);
+		const createdRoom = await createRoom('c', args.roomName, user, []);
 		room = await Rooms.findOne({ _id: createdRoom.rid });
 
 		this.log(`${user.username} created room ${args.roomName}`);

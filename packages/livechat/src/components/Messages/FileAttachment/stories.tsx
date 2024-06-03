@@ -2,7 +2,7 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { FileAttachment } from '.';
-import { loremIpsum } from '../../../helpers.stories';
+import { loremIpsum } from '../../../../.storybook/helpers';
 
 export default {
 	title: 'Messages/FileAttachment',

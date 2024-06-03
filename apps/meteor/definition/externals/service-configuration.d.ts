@@ -9,15 +9,6 @@ declare module 'meteor/service-configuration' {
 		buttonColor?: string;
 
 		clientConfig: unknown;
+		clientId?: string;
 	}
-}
-
-declare module 'meteor' {
-	interface Configuration {
-		appId: string;
-		secret: string;
-	}
-	const ServiceConfiguration: {
-		configurations: Mongo.Collection<Configuration>;
-	};
 }

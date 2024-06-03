@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Field, FieldLabel, FieldRow, FieldError, FieldHint, TextInput, Select, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError, FieldHint, TextInput, Select, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -57,16 +57,14 @@ const RoleForm = ({ className, editing = false, isProtected = false, isDisabled 
 				</FieldRow>
 			</Field>
 			<Field className={className}>
-				<Box display='flex' flexDirection='row'>
+				<FieldRow>
 					<FieldLabel>{t('Users must use Two Factor Authentication')}</FieldLabel>
-					<FieldRow>
-						<Controller
-							name='mandatory2fa'
-							control={control}
-							render={({ field }): ReactElement => <ToggleSwitch {...field} checked={field.value} disabled={isDisabled} />}
-						/>
-					</FieldRow>
-				</Box>
+					<Controller
+						name='mandatory2fa'
+						control={control}
+						render={({ field }): ReactElement => <ToggleSwitch {...field} checked={field.value} disabled={isDisabled} />}
+					/>
+				</FieldRow>
 			</Field>
 		</>
 	);

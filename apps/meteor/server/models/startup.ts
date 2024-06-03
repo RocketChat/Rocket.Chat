@@ -68,4 +68,4 @@ import './Imports';
 import './AppsTokens';
 import './CronHistory';
 import './Migrations';
-import './CloudAnnouncements';
+import './ReadReceipts';

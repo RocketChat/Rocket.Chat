@@ -46,7 +46,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					imperativeModal.close();
 					uploadNextFile();
 				},
-				invalidContentType: Boolean(file.type && !fileUploadIsValidContentType(file.type)),
+				invalidContentType: !(file.type && fileUploadIsValidContentType(file.type)),
 			},
 		});
 	};

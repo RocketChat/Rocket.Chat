@@ -1,21 +1,23 @@
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 import type { AppVideoConference, VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
 import { VideoConferenceBridge } from '@rocket.chat/apps-engine/server/bridges/VideoConferenceBridge';
 import { VideoConf } from '@rocket.chat/core-services';
 
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
 import type { AppVideoConferencesConverter } from '../converters/videoConferences';
 
 export class AppVideoConferenceBridge extends VideoConferenceBridge {
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 	}
 
 	protected async getById(callId: string, appId: string): Promise<VideoConference> {
 		this.orch.debugLog(`The App ${appId} is getting the video conference byId: "${callId}"`);
 
-		return this.orch.getConverters()?.get('videoConferences').convertById(callId);
+		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
+		const promise: Promise<VideoConference | undefined> = this.orch.getConverters()?.get('videoConferences').convertById(callId);
+		return promise as Promise<VideoConference>;
 	}
 
 	protected async create(call: AppVideoConference, appId: string): Promise<string> {

@@ -1,8 +1,9 @@
 import type { OutgoingIntegrationEvent } from '@rocket.chat/core-typings';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 export const outgoingEvents: Record<
 	OutgoingIntegrationEvent,
-	{ label: string; value: OutgoingIntegrationEvent; use: { channel: boolean; triggerWords: boolean; targetRoom: boolean } }
+	{ label: TranslationKey; value: OutgoingIntegrationEvent; use: { channel: boolean; triggerWords: boolean; targetRoom: boolean } }
 > = {
 	sendMessage: {
 		label: 'Integrations_Outgoing_Type_SendMessage',

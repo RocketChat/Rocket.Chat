@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { connectWorkspace } from './functions/connectWorkspace';
-import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
+import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
 import { getWorkspaceAccessTokenWithScope } from './functions/getWorkspaceAccessTokenWithScope';
 import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
 import { syncWorkspace } from './functions/syncWorkspace';
@@ -28,9 +28,31 @@ Meteor.startup(async () => {
 		}
 	}
 
-	setImmediate(() => syncWorkspace());
+	setImmediate(async () => {
+		try {
+			await syncWorkspace();
+		} catch (e: any) {
+			if (e instanceof CloudWorkspaceAccessTokenEmptyError) {
+				return;
+			}
+			if (e.type && e.type === 'AbortError') {
+				return;
+			}
+			SystemLogger.error('An error occurred syncing workspace.', e.message);
+		}
+	});
 	await cronJobs.add(licenseCronName, '0 */12 * * *', async () => {
-		await syncWorkspace();
+		try {
+			await syncWorkspace();
+		} catch (e: any) {
+			if (e instanceof CloudWorkspaceAccessTokenEmptyError) {
+				return;
+			}
+			if (e.type && e.type === 'AbortError') {
+				return;
+			}
+			SystemLogger.error('An error occurred syncing workspace.', e.message);
+		}
 	});
 });
 

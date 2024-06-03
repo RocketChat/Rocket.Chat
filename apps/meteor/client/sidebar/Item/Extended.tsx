@@ -54,7 +54,7 @@ const Extended: VFC<ExtendedProps> = ({
 	};
 
 	return (
-		<Sidebar.Item aria-selected={selected} selected={selected} highlighted={unread} {...props} {...({ href } as any)} clickable={!!href}>
+		<Sidebar.Item selected={selected} highlighted={unread} {...props} {...({ href } as any)} clickable={!!href}>
 			{avatar && <Sidebar.Item.Avatar>{avatar}</Sidebar.Item.Avatar>}
 			<Sidebar.Item.Content>
 				<Sidebar.Item.Content>
@@ -72,7 +72,7 @@ const Extended: VFC<ExtendedProps> = ({
 						<Sidebar.Item.Badge>{badges}</Sidebar.Item.Badge>
 						{menu && (
 							<Sidebar.Item.Menu {...handleMenuEvent}>
-								{menuVisibility ? menu() : <IconButton mini rcx-sidebar-item__menu icon='kebab' />}
+								{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' />}
 							</Sidebar.Item.Menu>
 						)}
 					</Sidebar.Item.Wrapper>

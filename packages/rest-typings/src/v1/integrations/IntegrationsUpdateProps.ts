@@ -9,6 +9,7 @@ export type IntegrationsUpdateProps =
 			integrationId: string;
 			channel: string;
 			scriptEnabled: boolean;
+			scriptEngine: 'isolated-vm' | 'vm2';
 			overrideDestinationChannelEnabled?: boolean;
 			script?: string;
 			name: string;
@@ -32,6 +33,7 @@ export type IntegrationsUpdateProps =
 			token?: string;
 
 			scriptEnabled: boolean;
+			scriptEngine: 'isolated-vm' | 'vm2';
 			script?: string;
 			runOnEdits?: boolean;
 
@@ -68,6 +70,10 @@ const integrationsUpdateSchema = {
 				},
 				scriptEnabled: {
 					type: 'boolean',
+					nullable: false,
+				},
+				scriptEngine: {
+					type: 'string',
 					nullable: false,
 				},
 				overrideDestinationChannelEnabled: {
@@ -160,6 +166,10 @@ const integrationsUpdateSchema = {
 				},
 				scriptEnabled: {
 					type: 'boolean',
+					nullable: false,
+				},
+				scriptEngine: {
+					type: 'string',
 					nullable: false,
 				},
 				script: {

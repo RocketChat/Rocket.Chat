@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		listCustomUserStatus(): Promise<ICustomUserStatus[]>;
+		listCustomUserStatus(): ICustomUserStatus[];
 	}
 }
 

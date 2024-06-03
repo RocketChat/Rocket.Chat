@@ -3,7 +3,7 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { Button } from '.';
-import { gazzoAvatar } from '../../helpers.stories';
+import { gazzoAvatar } from '../../../.storybook/helpers';
 import ChatIcon from '../../icons/chat.svg';
 
 const iconElement = <ChatIcon />;

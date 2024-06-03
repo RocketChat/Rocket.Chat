@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, CardGroup } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -13,18 +13,18 @@ type AppsListProps = {
 
 const AppsList = ({ apps, title, appsListId }: AppsListProps): ReactElement => {
 	return (
-		<>
+		<Box mbe={16}>
 			{title && (
 				<Box is='h2' id={appsListId} fontScale='h3' color='default' mbe={20}>
 					{title}
 				</Box>
 			)}
-			<Box aria-labelledby={appsListId} mbe={24} role='list'>
+			<CardGroup vertical stretch aria-labelledby={appsListId} role='list'>
 				{apps.map((app) => (
 					<AppRow key={app.id} {...app} />
 				))}
-			</Box>
-		</>
+			</CardGroup>
+		</Box>
 	);
 };
 

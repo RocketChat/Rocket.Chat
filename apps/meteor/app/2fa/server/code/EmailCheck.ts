@@ -69,25 +69,25 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 			return false;
 		}
 
-		if (!user.services || !Array.isArray(user.services?.emailCode)) {
+		if (!user.services?.emailCode) {
 			return false;
 		}
 
 		// Remove non digits
 		codeFromEmail = codeFromEmail.replace(/([^\d])/g, '');
 
-		await Users.removeExpiredEmailCodesOfUserId(user._id);
+		const { code, expire } = user.services.emailCode;
 
-		for await (const { code, expire } of user.services.emailCode) {
-			if (expire < new Date()) {
-				continue;
-			}
-
-			if (await bcrypt.compare(codeFromEmail, code)) {
-				await Users.removeEmailCodeByUserIdAndCode(user._id, code);
-				return true;
-			}
+		if (expire < new Date()) {
+			return false;
 		}
+
+		if (await bcrypt.compare(codeFromEmail, code)) {
+			await Users.removeEmailCodeOfUserId(user._id);
+			return true;
+		}
+
+		await Users.incrementInvalidEmailCodeAttempt(user._id);
 
 		return false;
 	}
@@ -109,7 +109,7 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 	}
 
 	public async processInvalidCode(user: IUser): Promise<IProcessInvalidCodeResult> {
-		await Users.removeExpiredEmailCodesOfUserId(user._id);
+		await Users.removeExpiredEmailCodeOfUserId(user._id);
 
 		// Generate new code if the there isn't any code with more than 5 minutes to expire
 		const expireWithDelta = new Date();
@@ -119,13 +119,15 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 
 		const emailOrUsername = user.username || emails[0];
 
-		const hasValidCode = user.services?.emailCode?.filter(({ expire }) => expire > expireWithDelta);
-		if (hasValidCode?.length) {
+		const hasValidCode =
+			user.services?.emailCode?.expire &&
+			user.services?.emailCode?.expire > expireWithDelta &&
+			!(await this.maxFaildedAttemtpsReached(user));
+		if (hasValidCode) {
 			return {
 				emailOrUsername,
 				codeGenerated: false,
-				codeCount: hasValidCode.length,
-				codeExpires: hasValidCode.map((i) => i.expire),
+				codeExpires: user.services?.emailCode?.expire,
 			};
 		}
 
@@ -135,5 +137,10 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 			codeGenerated: true,
 			emailOrUsername,
 		};
+	}
+
+	public async maxFaildedAttemtpsReached(user: IUser) {
+		const maxAttempts = settings.get<number>('Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts');
+		return (await Users.maxInvalidEmailCodeAttemptsReached(user._id, maxAttempts)) as boolean;
 	}
 }

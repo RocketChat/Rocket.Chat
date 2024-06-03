@@ -3,7 +3,7 @@ import type { Locator, Page } from '@playwright/test';
 import { AdminFlextab } from './fragments/admin-flextab';
 
 export class Admin {
-	private readonly page: Page;
+	public readonly page: Page;
 
 	readonly tabs: AdminFlextab;
 
@@ -14,6 +14,62 @@ export class Admin {
 
 	get inputSearchRooms(): Locator {
 		return this.page.locator('input[placeholder ="Search rooms"]');
+	}
+
+	getRoomRow(name?: string): Locator {
+		return this.page.locator('[role="link"]', { hasText: name });
+	}
+
+	getUserRow(username?: string): Locator {
+		return this.page.locator('[role="link"]', { hasText: username });
+	}
+
+	get btnSave(): Locator {
+		return this.page.locator('button >> text="Save"');
+	}
+
+	get btnEdit(): Locator {
+		return this.page.locator('button >> text="Edit"');
+	}
+
+	get privateLabel(): Locator {
+		return this.page.locator(`label >> text=Private`);
+	}
+
+	get privateInput(): Locator {
+		return this.page.locator('input[name="roomType"]');
+	}
+
+	get roomNameInput(): Locator {
+		return this.page.locator('input[name="roomName"]');
+	}
+
+	get roomOwnerInput(): Locator {
+		return this.page.locator('input[name="roomOwner"]');
+	}
+
+	get archivedLabel(): Locator {
+		return this.page.locator('label >> text=Archived');
+	}
+
+	get archivedInput(): Locator {
+		return this.page.locator('input[name="archived"]');
+	}
+
+	get favoriteLabel(): Locator {
+		return this.page.locator('label >> text=Favorite');
+	}
+
+	get favoriteInput(): Locator {
+		return this.page.locator('input[name="favorite"]');
+	}
+
+	get defaultLabel(): Locator {
+		return this.page.locator('label >> text=Default');
+	}
+
+	get defaultInput(): Locator {
+		return this.page.locator('input[name="isDefault"]');
 	}
 
 	get inputSearchUsers(): Locator {
@@ -122,18 +178,46 @@ export class Admin {
 	}
 
 	get btnAssetsSettings(): Locator {
-		return this.page.locator('[data-qa-id="Assets"] >> role=button[name="Open"]');
+		return this.page.locator('[data-qa-id="Assets"] >> role=link[name="Open"]');
 	}
 
 	get btnDeleteAssetsLogo(): Locator {
 		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> role=button[name="Delete"]');
 	}
 
+	get inputAssetsLogo(): Locator {
+		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> input[type="file"]');
+	}
+
 	get btnCreateRole(): Locator {
 		return this.page.locator('button[name="New role"]');
 	}
 
-	get inputAssetsLogo(): Locator {
-		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> input[type="file"]');
+	openRoleByName(name: string): Locator {
+		return this.page.getByRole('table').getByRole('button', { name });
+	}
+
+	get btnUsersInRole(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Users in role' });
+	}
+
+	get inputRoom(): Locator {
+		return this.page.locator('input[placeholder="Room"]');
+	}
+
+	get inputUsers(): Locator {
+		return this.page.locator('input[placeholder="Users"]');
+	}
+
+	get btnAdd(): Locator {
+		return this.page.getByRole('button', { name: 'Add' });
+	}
+
+	get btnBack(): Locator {
+		return this.page.getByRole('button', { name: 'Back' });
+	}
+
+	getUserRowByUsername(username: string): Locator {
+		return this.page.locator('tr', { hasText: username });
 	}
 }

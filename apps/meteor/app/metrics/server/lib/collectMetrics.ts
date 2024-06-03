@@ -175,17 +175,10 @@ const updatePrometheusConfig = async (): Promise<void> => {
 	clearInterval(resetTimer);
 	if (is.resetInterval) {
 		resetTimer = setInterval(() => {
-			client.register
-				.getMetricsAsArray()
-				.then((metrics) => {
-					metrics.forEach((metric) => {
-						// @ts-expect-error Property 'hashMap' does not exist on type 'metric'.
-						metric.hashMap = {};
-					});
-				})
-				.catch((err) => {
-					SystemLogger.error({ msg: 'Error while collecting metrics', err });
-				});
+			client.register.getMetricsAsArray().forEach((metric) => {
+				// @ts-expect-error Property 'hashMap' does not exist on type 'metric'.
+				metric.hashMap = {};
+			});
 		}, is.resetInterval);
 	}
 

@@ -12,7 +12,7 @@ import { i18n } from '../../../../../server/lib/i18n';
 
 async function resolveOnHoldCommentInfo(options: { clientAction: boolean }, room: any, onHoldChatResumedBy: any): Promise<string> {
 	if (options.clientAction) {
-		return i18n.t('Omnichannel_on_hold_chat_manually', {
+		return i18n.t('Omnichannel_on_hold_chat_resumed_manually', {
 			user: onHoldChatResumedBy.name || onHoldChatResumedBy.username,
 		});
 	}

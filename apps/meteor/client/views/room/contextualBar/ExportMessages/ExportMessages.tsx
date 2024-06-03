@@ -1,26 +1,48 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Field, Select, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 
-import {
-	ContextualbarHeader,
-	ContextualbarIcon,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarScrollableContent,
-} from '../../../../components/Contextualbar';
+import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../../components/Contextualbar';
+import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useRoom } from '../../contexts/RoomContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import FileExport from './FileExport';
 import MailExportForm from './MailExportForm';
 
+export type MailExportFormValues = {
+	type: 'email' | 'file';
+	dateFrom: string;
+	dateTo: string;
+	format: 'html' | 'json';
+	toUsers: string[];
+	additionalEmails: string;
+	messagesCount: number;
+	subject: string;
+};
+
 const ExportMessages = () => {
 	const t = useTranslation();
 	const room = useRoom();
+
 	const { closeTab } = useRoomToolbox();
 
-	const [type, setType] = useState('email');
+	const roomName = room?.t && roomCoordinator.getRoomName(room.t, room);
+
+	const methods = useForm<MailExportFormValues>({
+		mode: 'onBlur',
+		defaultValues: {
+			type: 'email',
+			dateFrom: '',
+			dateTo: '',
+			toUsers: [],
+			additionalEmails: '',
+			messagesCount: 0,
+			subject: t('Mail_Messages_Subject', roomName),
+			format: 'html',
+		},
+	});
 
 	const exportOptions = useMemo<SelectOption[]>(
 		() => [
@@ -30,25 +52,23 @@ const ExportMessages = () => {
 		[t],
 	);
 
+	const formId = useUniqueId();
+
 	return (
 		<>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='mail' />
-				<ContextualbarTitle>{t('Export_Messages')}</ContextualbarTitle>
+				<ContextualbarTitle id={`${formId}-title`}>{t('Export_Messages')}</ContextualbarTitle>
 				<ContextualbarClose onClick={closeTab} />
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent>
-				<FieldGroup>
-					<Field>
-						<FieldLabel>{t('Method')}</FieldLabel>
-						<FieldRow>
-							<Select value={type} onChange={(value) => setType(String(value))} placeholder={t('Type')} options={exportOptions} />
-						</FieldRow>
-					</Field>
-				</FieldGroup>
-				{type && type === 'file' && <FileExport rid={room._id} onCancel={closeTab} />}
-				{type && type === 'email' && <MailExportForm rid={room._id} onCancel={closeTab} />}
-			</ContextualbarScrollableContent>
+			<FormProvider {...methods}>
+				{methods.watch('type') === 'email' && (
+					<MailExportForm formId={formId} rid={room._id} exportOptions={exportOptions} onCancel={closeTab} />
+				)}
+				{methods.watch('type') === 'file' && (
+					<FileExport formId={formId} rid={room._id} exportOptions={exportOptions} onCancel={closeTab} />
+				)}
+			</FormProvider>
 		</>
 	);
 };

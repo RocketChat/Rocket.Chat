@@ -18,6 +18,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
+import MarkdownText from '../../../components/MarkdownText';
 import { queryClient } from '../../../lib/queryClient';
 
 type RegisterUsernamePayload = {
@@ -106,7 +107,11 @@ const RegisterUsername = () => {
 								<FieldRow>
 									<TextInput aria-labelledby='username-label' {...register('username', { required: t('Username_cant_be_empty') })} />
 								</FieldRow>
-								{errors.username && <FieldError>{errors.username.message}</FieldError>}
+								{errors.username && (
+									<FieldError>
+										<MarkdownText content={errors.username.message} />
+									</FieldError>
+								)}
 							</Field>
 						</FieldGroup>
 					)}
@@ -114,7 +119,7 @@ const RegisterUsername = () => {
 					<CustomFieldsForm formName='customFields' formControl={control} metadata={customFields} />
 				</Form.Container>
 				<Form.Footer>
-					<ButtonGroup stretch vertical flexGrow={1}>
+					<ButtonGroup stretch vertical>
 						<Button disabled={isLoading} type='submit' primary>
 							{t('Use_this_username')}
 						</Button>

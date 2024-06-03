@@ -10,7 +10,7 @@ const SidebarPortal: FC = ({ children }) => {
 		return null;
 	}
 
-	return createPortal(<Box className='rcx-sidebar flex-nav'>{children}</Box>, sidebarRoot);
+	return <>{createPortal(<Box className='rcx-sidebar flex-nav'>{children}</Box>, sidebarRoot)}</>;
 };
 
 export default memo<typeof SidebarPortal>(SidebarPortal);

@@ -7,7 +7,6 @@ import { RoomManager } from '../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 import { ChatRoom, Subscriptions, Messages } from '../../models/client';
-import { Notifications } from '../../notifications/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { E2ERoomState } from './E2ERoomState';
 import {
@@ -42,6 +41,7 @@ const permitedMutations = {
 		E2ERoomState.ERROR,
 		E2ERoomState.DISABLED,
 		E2ERoomState.WAITING_KEYS,
+		E2ERoomState.CREATING_KEYS,
 	],
 };
 
@@ -91,6 +91,10 @@ export class E2ERoom extends Emitter {
 
 	error(...msg) {
 		logError(`E2E ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
+	}
+
+	getState() {
+		return this.state;
 	}
 
 	setState(requestedState) {
@@ -209,6 +213,10 @@ export class E2ERoom extends Emitter {
 
 	// Initiates E2E Encryption
 	async handshake() {
+		if (!e2e.isReady()) {
+			return;
+		}
+
 		if (this.state !== E2ERoomState.KEYS_RECEIVED && this.state !== E2ERoomState.NOT_STARTED) {
 			return;
 		}
@@ -240,7 +248,7 @@ export class E2ERoom extends Emitter {
 
 			this.setState(E2ERoomState.WAITING_KEYS);
 			this.log('Requesting room key');
-			Notifications.notifyUsersOfRoom(this.roomId, 'e2ekeyRequest', this.roomId, room.e2eKeyId);
+			sdk.publish('notify-room-users', [`${this.roomId}/e2ekeyRequest`, this.roomId, room.e2eKeyId]);
 		} catch (error) {
 			// this.error = error;
 			this.setState(E2ERoomState.ERROR);
@@ -460,5 +468,11 @@ export class E2ERoom extends Emitter {
 		}
 
 		this.encryptKeyForOtherParticipants();
+		this.setState(E2ERoomState.READY);
+	}
+
+	onStateChange(cb) {
+		this.on('STATE_CHANGED', cb);
+		return () => this.off('STATE_CHANGED', cb);
 	}
 }

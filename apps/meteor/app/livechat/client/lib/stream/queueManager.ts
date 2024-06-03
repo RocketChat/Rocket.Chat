@@ -2,28 +2,46 @@ import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent } f
 
 import { queryClient } from '../../../../../client/lib/queryClient';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
+import { settings } from '../../../../settings/client';
 import { sdk } from '../../../../utils/client/lib/SDKClient';
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
 
 const departments = new Set();
 
 const events = {
-	added: (inquiry: ILivechatInquiryRecord) => {
-		departments.has(inquiry.department) && LivechatInquiry.insert({ ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+	added: async (inquiry: ILivechatInquiryRecord) => {
+		if (!departments.has(inquiry.department)) {
+			return;
+		}
+
+		LivechatInquiry.insert({ ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+		await invalidateRoomQueries(inquiry.rid);
 	},
 	changed: async (inquiry: ILivechatInquiryRecord) => {
 		if (inquiry.status !== 'queued' || (inquiry.department && !departments.has(inquiry.department))) {
-			return LivechatInquiry.remove(inquiry._id);
+			return removeInquiry(inquiry);
 		}
 
 		LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
-		await queryClient.invalidateQueries(['/v1/rooms.info', inquiry.rid]);
+		await invalidateRoomQueries(inquiry.rid);
 	},
-	removed: (inquiry: ILivechatInquiryRecord) => LivechatInquiry.remove(inquiry._id),
+	removed: (inquiry: ILivechatInquiryRecord) => removeInquiry(inquiry),
+};
+
+const invalidateRoomQueries = async (rid: string) => {
+	await queryClient.invalidateQueries(['rooms', { reference: rid, type: 'l' }]);
+	await queryClient.removeQueries(['rooms', rid]);
+	await queryClient.removeQueries(['/v1/rooms.info', rid]);
+};
+
+const removeInquiry = async (inquiry: ILivechatInquiryRecord) => {
+	await LivechatInquiry.remove(inquiry._id);
+	return queryClient.invalidateQueries(['rooms', { reference: inquiry.rid, type: 'l' }]);
 };
 
 const getInquiriesFromAPI = async () => {
-	const { inquiries } = await sdk.rest.get('/v1/livechat/inquiries.queuedForUser', {});
+	const count = settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed') ?? 0;
+	const { inquiries } = await sdk.rest.get('/v1/livechat/inquiries.queuedForUser', { count });
 	return inquiries;
 };
 
@@ -80,9 +98,12 @@ const subscribe = async (userId: IOmnichannelAgent['_id']) => {
 	// Register to all depts + public queue always to match the inquiry list returned by backend
 	const cleanDepartmentListeners = addListenerForeachDepartment(agentDepartments);
 	const globalCleanup = addGlobalListener();
-	const inquiriesFromAPI = (await getInquiriesFromAPI()) as unknown as ILivechatInquiryRecord[];
 
-	await updateInquiries(inquiriesFromAPI);
+	const computation = Tracker.autorun(async () => {
+		const inquiriesFromAPI = (await getInquiriesFromAPI()) as unknown as ILivechatInquiryRecord[];
+
+		await updateInquiries(inquiriesFromAPI);
+	});
 
 	return () => {
 		LivechatInquiry.remove({});
@@ -90,14 +111,15 @@ const subscribe = async (userId: IOmnichannelAgent['_id']) => {
 		cleanDepartmentListeners?.();
 		globalCleanup?.();
 		departments.clear();
+		computation.stop();
 	};
 };
 
 export const initializeLivechatInquiryStream = (() => {
 	let cleanUp: (() => void) | undefined;
 
-	return async (...args: any[]) => {
+	return async (...args: Parameters<typeof subscribe>) => {
 		cleanUp?.();
-		cleanUp = await subscribe(...(args as [IOmnichannelAgent['_id']]));
+		cleanUp = await subscribe(...args);
 	};
 })();

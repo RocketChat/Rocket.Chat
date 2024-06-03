@@ -12,11 +12,11 @@ import type { ParsedMail, Attachment } from 'mailparser';
 import stripHtml from 'string-strip-html';
 
 import { FileUpload } from '../../../app/file-upload/server';
-import { Livechat } from '../../../app/livechat/server/lib/Livechat';
 import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../app/settings/server';
 import { i18n } from '../../lib/i18n';
+import { broadcastMessageFromData } from '../../modules/watchers/lib/messages';
 import { logger } from './logger';
 
 type FileAttachment = VideoAttachmentProps & ImageAttachmentProps & AudioAttachmentProps;
@@ -148,7 +148,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	const rid = room?._id ?? Random.id();
 	const msgId = Random.id();
 
-	Livechat.sendMessage({
+	LivechatTyped.sendMessage({
 		guest,
 		message: {
 			_id: msgId,
@@ -237,6 +237,9 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 				},
 			);
 			room && (await LivechatRooms.updateEmailThreadByRoomId(room._id, thread));
+			void broadcastMessageFromData({
+				id: msgId,
+			});
 		})
 		.catch((err) => {
 			logger.error({

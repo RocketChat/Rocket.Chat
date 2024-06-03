@@ -7,8 +7,8 @@ export class AdminFlextabUsers {
 		this.page = page;
 	}
 
-	get btnNew(): Locator {
-		return this.page.locator('role=button[name="New"]');
+	get btnNewUser(): Locator {
+		return this.page.locator('role=button[name="New user"]');
 	}
 
 	get btnSave(): Locator {
@@ -37,6 +37,10 @@ export class AdminFlextabUsers {
 
 	get checkboxVerified(): Locator {
 		return this.page.locator('//label[text()="Verified"]');
+	}
+
+	get joinDefaultChannels(): Locator {
+		return this.page.locator('//label[text()="Join default channels"]');
 	}
 
 	get userRole(): Locator {

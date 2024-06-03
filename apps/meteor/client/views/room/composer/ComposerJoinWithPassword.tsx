@@ -1,53 +1,50 @@
-import { TextInput } from '@rocket.chat/fuselage';
+import { PasswordInput } from '@rocket.chat/fuselage';
 import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ReactElement, FormEventHandler } from 'react';
-import React, { useCallback, useState } from 'react';
+import { useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
 import { useRoom } from '../contexts/RoomContext';
 
 const ComposerJoinWithPassword = (): ReactElement => {
-	const room = useRoom();
-	const [joinCode, setJoinPassword] = useState<string>('');
-
-	const [error, setError] = useState<string>('');
-
 	const t = useTranslation();
+	const room = useRoom();
+	const dispatchToastMessage = useToastMessageDispatch();
 
-	const joinEndpoint = useEndpoint('POST', '/v1/channels.join');
+	const joinChannelEndpoint = useEndpoint('POST', '/v1/channels.join');
+	const {
+		control,
+		handleSubmit,
+		setError,
+		formState: { errors, isDirty },
+	} = useForm({ defaultValues: { joinCode: '' } });
 
-	const join = useCallback<FormEventHandler<HTMLElement>>(
-		async (e) => {
-			e.preventDefault();
-			try {
-				await joinEndpoint({
-					roomId: room._id,
-					joinCode,
-				});
-			} catch (error: any) {
-				setError(error.error);
-			}
-		},
-		[joinEndpoint, room._id, joinCode],
-	);
-
-	const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-		setJoinPassword(e.target.value);
-		setError('');
-	}, []);
+	const handleJoinChannel = async ({ joinCode }: { joinCode: string }) => {
+		try {
+			await joinChannelEndpoint({
+				roomId: room._id,
+				joinCode,
+			});
+		} catch (error: any) {
+			setError('joinCode', { type: error.errorType, message: error.error });
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	};
 
 	return (
-		<MessageFooterCallout is='form' aria-label={t('Join_with_password')} onSubmit={join}>
+		<MessageFooterCallout is='form' aria-label={t('Join_with_password')} onSubmit={handleSubmit(handleJoinChannel)}>
 			<MessageFooterCalloutContent>{t('you_are_in_preview')}</MessageFooterCalloutContent>
 			<MessageFooterCalloutContent>
-				<TextInput
-					error={error}
-					value={joinCode}
-					onChange={handleChange}
-					placeholder={t('you_are_in_preview_please_insert_the_password')}
+				<Controller
+					name='joinCode'
+					control={control}
+					render={({ field }) => (
+						<PasswordInput error={errors.joinCode?.message} {...field} placeholder={t('you_are_in_preview_please_insert_the_password')} />
+					)}
 				/>
 			</MessageFooterCalloutContent>
-			<MessageFooterCalloutAction type='submit' disabled={Boolean(!joinCode)}>
+			<MessageFooterCalloutAction type='submit' disabled={!isDirty}>
 				{t('Join_with_password')}
 			</MessageFooterCalloutAction>
 		</MessageFooterCallout>

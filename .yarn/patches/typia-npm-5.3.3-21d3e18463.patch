@@ -1,0 +1,320 @@
+diff --git a/lib/factories/internal/metadata/iterate_metadata_intersection.js b/lib/factories/internal/metadata/iterate_metadata_intersection.js
+index 260670b8ea37b63dcacadeffa26450f81087c90e..f07b44b16099d896ab40c46f03df86ee2f2c1a90 100644
+--- a/lib/factories/internal/metadata/iterate_metadata_intersection.js
++++ b/lib/factories/internal/metadata/iterate_metadata_intersection.js
+@@ -247,7 +247,7 @@ var iterate_metadata_intersection = function (checker) {
+                         var tags = MetadataTypeTagFactory_1.MetadataTypeTagFactory.analyze(errors)(target)(objects.map(function (om) { return om.objects; }).flat(), explore);
+                         if (tags.length)
+                             if (target === "array")
+-                                meta.arrays.at(-1).tags.push(tags);
++                                meta.arrays.slice(-1)[0].tags.push(tags);
+                             else if (booleanLiteral === null)
+                                 meta.atomics.find(function (a) { return a.type === target; }).tags.push(tags);
+                             else {
+diff --git a/lib/programmers/CheckerProgrammer.js b/lib/programmers/CheckerProgrammer.js
+index bbec09f22798d144b96f59bb946e7e32e3438c05..dc13cb47b72358b8e6165b768cff2360db2bd617 100644
+--- a/lib/programmers/CheckerProgrammer.js
++++ b/lib/programmers/CheckerProgrammer.js
+@@ -458,8 +458,8 @@ var CheckerProgrammer;
+                                 ? "".concat(explore.postfix.slice(0, -1), "[").concat(index, "]\"")
+                                 : "\"[".concat(index, "]\"") }));
+                     });
+-                    var rest = tuple.elements.length && tuple.elements.at(-1).rest !== null
+-                        ? CheckerProgrammer.decode(project)(config)(importer)(typescript_1.default.factory.createCallExpression(IdentifierFactory_1.IdentifierFactory.access(input)("slice"), undefined, [ExpressionFactory_1.ExpressionFactory.number(tuple.elements.length - 1)]), (0, wrap_metadata_rest_tuple_1.wrap_metadata_rest_tuple)(tuple.elements.at(-1).rest), __assign(__assign({}, explore), { start: tuple.elements.length - 1 }))
++                    var rest = tuple.elements.length && tuple.elements.slice(-1)[0].rest !== null
++                        ? CheckerProgrammer.decode(project)(config)(importer)(typescript_1.default.factory.createCallExpression(IdentifierFactory_1.IdentifierFactory.access(input)("slice"), undefined, [ExpressionFactory_1.ExpressionFactory.number(tuple.elements.length - 1)]), (0, wrap_metadata_rest_tuple_1.wrap_metadata_rest_tuple)(tuple.elements.slice(-1)[0].rest), __assign(__assign({}, explore), { start: tuple.elements.length - 1 }))
+                         : null;
+                     var arrayLength = typescript_1.default.factory.createPropertyAccessExpression(input, "length");
+                     return config.combiner(explore)("and")(input, __spreadArray(__spreadArray(__spreadArray([], __read((rest === null
+diff --git a/lib/programmers/TypiaProgrammer.js b/lib/programmers/TypiaProgrammer.js
+index c75ab1bc077b788e36c32834ea4916c22df34500..99452220e2dd090d4d562296e26fb266faa617f9 100644
+--- a/lib/programmers/TypiaProgrammer.js
++++ b/lib/programmers/TypiaProgrammer.js
+@@ -165,7 +165,7 @@ var TypiaProgrammer;
+                                     .split("\n");
+                                 if (lines.length === 0)
+                                     return [0, 0];
+-                                return [lines.length, lines.at(-1).length + 1];
++                                return [lines.length, lines.slice(-1)[0].length + 1];
+                             })()
+                             : [0, 0], 2), line = _k[0], pos = _k[1];
+                         console.error("".concat(file, ":").concat(line, ":").concat(pos, " - ").concat(category, " TS").concat(diag.code, ": ").concat(diag.messageText));
+diff --git a/lib/programmers/internal/application_tuple.js b/lib/programmers/internal/application_tuple.js
+index 5c1853a3a1692f95fe702bdae9813e958f54ac4c..04ca996c2ffe72d1cd5969e45a38e91937b975b1 100644
+--- a/lib/programmers/internal/application_tuple.js
++++ b/lib/programmers/internal/application_tuple.js
+@@ -22,15 +22,15 @@ var application_tuple = function (options) {
+                 var schema = __assign(__assign({ type: "array", items: tuple.type.elements.map(function (meta, i) {
+                         var _a;
+                         return (0, application_schema_1.application_schema)(options)(false)(components)((_a = meta.rest) !== null && _a !== void 0 ? _a : meta)(__assign(__assign({}, attribute), { "x-typia-rest": i === tuple.type.elements.length - 1 && meta.rest !== null, "x-typia-required": meta.required, "x-typia-optional": meta.optional }));
+-                    }) }, attribute), { minItems: !!((_a = tuple.type.elements.at(-1)) === null || _a === void 0 ? void 0 : _a.rest)
++                    }) }, attribute), { minItems: !!((_a = tuple.type.elements.slice(-1)[0]) === null || _a === void 0 ? void 0 : _a.rest)
+                         ? tuple.type.elements.length - 1
+-                        : tuple.type.elements.filter(function (x) { return !x.optional; }).length, maxItems: !!((_b = tuple.type.elements.at(-1)) === null || _b === void 0 ? void 0 : _b.rest)
++                        : tuple.type.elements.filter(function (x) { return !x.optional; }).length, maxItems: !!((_b = tuple.type.elements.slice(-1)[0]) === null || _b === void 0 ? void 0 : _b.rest)
+                         ? undefined
+                         : tuple.type.elements.length });
+                 if (options.purpose === "ajv")
+                     if (tuple.type.elements.length === 0)
+                         return schema;
+-                    else if (!((_c = tuple.type.elements.at(-1)) === null || _c === void 0 ? void 0 : _c.rest))
++                    else if (!((_c = tuple.type.elements.slice(-1)[0]) === null || _c === void 0 ? void 0 : _c.rest))
+                         return schema;
+                 var wrapper = __assign(__assign({}, schema), { items: (0, application_schema_1.application_schema)(options)(false)(components)(tuple.type.elements.reduce(function (x, y) { var _a, _b; return Metadata_1.Metadata.merge((_a = x.rest) !== null && _a !== void 0 ? _a : x, (_b = y.rest) !== null && _b !== void 0 ? _b : y); }, Metadata_1.Metadata.initialize()))(tuple.type.recursive ? {} : attribute), "x-typia-tuple": schema, minItems: schema.minItems, maxItems: schema.maxItems });
+                 return wrapper;
+diff --git a/lib/programmers/json/JsonStringifyProgrammer.js b/lib/programmers/json/JsonStringifyProgrammer.js
+index ce0ae787164f7eba68ef35b05232b4b94ad8e7d7..8f70cfc8c8e9d82cd1ec5004ca5637487f57b3bc 100644
+--- a/lib/programmers/json/JsonStringifyProgrammer.js
++++ b/lib/programmers/json/JsonStringifyProgrammer.js
+@@ -424,10 +424,10 @@ var JsonStringifyProgrammer;
+                     var rest = (function () {
+                         if (tuple.elements.length === 0)
+                             return null;
+-                        var last = tuple.elements.at(-1);
++                        var last = tuple.elements.slice(-1)[0];
+                         if (last.rest === null)
+                             return null;
+-                        var code = decode(project)(config)(importer)(typescript_1.default.factory.createCallExpression(IdentifierFactory_1.IdentifierFactory.access(input)("slice"), undefined, [ExpressionFactory_1.ExpressionFactory.number(tuple.elements.length - 1)]), (0, wrap_metadata_rest_tuple_1.wrap_metadata_rest_tuple)(tuple.elements.at(-1).rest), __assign(__assign({}, explore), { start: tuple.elements.length - 1 }));
++                        var code = decode(project)(config)(importer)(typescript_1.default.factory.createCallExpression(IdentifierFactory_1.IdentifierFactory.access(input)("slice"), undefined, [ExpressionFactory_1.ExpressionFactory.number(tuple.elements.length - 1)]), (0, wrap_metadata_rest_tuple_1.wrap_metadata_rest_tuple)(tuple.elements.slice(-1)[0].rest), __assign(__assign({}, explore), { start: tuple.elements.length - 1 }));
+                         return typescript_1.default.factory.createCallExpression(importer.use("rest"), undefined, [code]);
+                     })();
+                     return StringifyJoinder_1.StringifyJoiner.tuple(children, rest);
+diff --git a/lib/programmers/misc/MiscCloneProgrammer.js b/lib/programmers/misc/MiscCloneProgrammer.js
+index 3db6bc92637284468c5fe47ef59f51a9b41d06eb..0b3fa9deaaadf28d4f348225c0d44f49700c1bca 100644
+--- a/lib/programmers/misc/MiscCloneProgrammer.js
++++ b/lib/programmers/misc/MiscCloneProgrammer.js
+@@ -291,11 +291,11 @@ var MiscCloneProgrammer;
+                     var rest = (function () {
+                         if (tuple.elements.length === 0)
+                             return null;
+-                        var last = tuple.elements.at(-1);
++                        var last = tuple.elements.slice(-1)[0];
+                         var rest = last.rest;
+                         if (rest === null)
+                             return null;
+-                        return decode(project)(config)(importer)(typescript_1.default.factory.createCallExpression(IdentifierFactory_1.IdentifierFactory.access(input)("slice"), undefined, [ExpressionFactory_1.ExpressionFactory.number(tuple.elements.length - 1)]), (0, wrap_metadata_rest_tuple_1.wrap_metadata_rest_tuple)(tuple.elements.at(-1).rest), __assign(__assign({}, explore), { start: tuple.elements.length - 1 }));
++                        return decode(project)(config)(importer)(typescript_1.default.factory.createCallExpression(IdentifierFactory_1.IdentifierFactory.access(input)("slice"), undefined, [ExpressionFactory_1.ExpressionFactory.number(tuple.elements.length - 1)]), (0, wrap_metadata_rest_tuple_1.wrap_metadata_rest_tuple)(tuple.elements.slice(-1)[0].rest), __assign(__assign({}, explore), { start: tuple.elements.length - 1 }));
+                     })();
+                     return CloneJoiner_1.CloneJoiner.tuple(children, rest);
+                 };
+diff --git a/lib/programmers/misc/MiscPruneProgrammer.js b/lib/programmers/misc/MiscPruneProgrammer.js
+index 8440aaba9e449dae2468e96dfd7035ac7e170cfc..e97ceec78427b7eed08db23cc4775fdb10c6b2ff 100644
+--- a/lib/programmers/misc/MiscPruneProgrammer.js
++++ b/lib/programmers/misc/MiscPruneProgrammer.js
+@@ -272,11 +272,11 @@ var MiscPruneProgrammer;
+                     var rest = (function () {
+                         if (tuple.elements.length === 0)
+                             return null;
+-                        var last = tuple.elements.at(-1);
++                        var last = tuple.elements.slice(-1)[0];
+                         var rest = last.rest;
+                         if (rest === null || filter(rest) === false)
+                             return null;
+-                        return decode(project)(config)(importer)(typescript_1.default.factory.createCallExpression(IdentifierFactory_1.IdentifierFactory.access(input)("slice"), undefined, [ExpressionFactory_1.ExpressionFactory.number(tuple.elements.length - 1)]), (0, wrap_metadata_rest_tuple_1.wrap_metadata_rest_tuple)(tuple.elements.at(-1).rest), __assign(__assign({}, explore), { start: tuple.elements.length - 1 }));
++                        return decode(project)(config)(importer)(typescript_1.default.factory.createCallExpression(IdentifierFactory_1.IdentifierFactory.access(input)("slice"), undefined, [ExpressionFactory_1.ExpressionFactory.number(tuple.elements.length - 1)]), (0, wrap_metadata_rest_tuple_1.wrap_metadata_rest_tuple)(tuple.elements.slice(-1)[0].rest), __assign(__assign({}, explore), { start: tuple.elements.length - 1 }));
+                     })();
+                     return PruneJoiner_1.PruneJoiner.tuple(children, rest);
+                 };
+diff --git a/lib/programmers/notations/NotationGeneralProgrammer.js b/lib/programmers/notations/NotationGeneralProgrammer.js
+index 6e0b582a802180d7671c00b999469e7e59193b30..f11cc1d523875a040d3e27ce9a850b083c5d0275 100644
+--- a/lib/programmers/notations/NotationGeneralProgrammer.js
++++ b/lib/programmers/notations/NotationGeneralProgrammer.js
+@@ -301,11 +301,11 @@ var NotationGeneralProgrammer;
+                     var rest = (function () {
+                         if (tuple.elements.length === 0)
+                             return null;
+-                        var last = tuple.elements.at(-1);
++                        var last = tuple.elements.slice(-1)[0];
+                         var rest = last.rest;
+                         if (rest === null)
+                             return null;
+-                        return decode(project)(config)(importer)(typescript_1.default.factory.createCallExpression(IdentifierFactory_1.IdentifierFactory.access(input)("slice"), undefined, [ExpressionFactory_1.ExpressionFactory.number(tuple.elements.length - 1)]), (0, wrap_metadata_rest_tuple_1.wrap_metadata_rest_tuple)(tuple.elements.at(-1).rest), __assign(__assign({}, explore), { start: tuple.elements.length - 1 }));
++                        return decode(project)(config)(importer)(typescript_1.default.factory.createCallExpression(IdentifierFactory_1.IdentifierFactory.access(input)("slice"), undefined, [ExpressionFactory_1.ExpressionFactory.number(tuple.elements.length - 1)]), (0, wrap_metadata_rest_tuple_1.wrap_metadata_rest_tuple)(tuple.elements.slice(-1)[0].rest), __assign(__assign({}, explore), { start: tuple.elements.length - 1 }));
+                     })();
+                     return NotationJoiner_1.NotationJoiner.tuple(children, rest);
+                 };
+diff --git a/lib/transformers/CallExpressionTransformer.js b/lib/transformers/CallExpressionTransformer.js
+index 2c5a23879d171ee271ebf6857dc9c65ec29c0ea7..96a40845614f6c54fe8e4ebc48a7d8efeba52a41 100644
+--- a/lib/transformers/CallExpressionTransformer.js
++++ b/lib/transformers/CallExpressionTransformer.js
+@@ -101,7 +101,7 @@ var CallExpressionTransformer;
+             var location = path_1.default.resolve(declaration.getSourceFile().fileName);
+             if (isTarget(location) === false)
+                 return expression;
+-            var module = location.split(path_1.default.sep).at(-1).split(".")[0];
++            var module = location.split(path_1.default.sep).slice(-1)[0].split(".")[0];
+             var name = project.checker.getTypeAtLocation(declaration).symbol.name;
+             var functor = (_b = FUNCTORS[module]) === null || _b === void 0 ? void 0 : _b[name];
+             if (functor === undefined)
+diff --git a/src/factories/internal/metadata/iterate_metadata_intersection.ts b/src/factories/internal/metadata/iterate_metadata_intersection.ts
+index f46caa25c987092597073e046ae3b9e8130bd994..1eedd727c74f173a5b98a9572b865e058885811d 100644
+--- a/src/factories/internal/metadata/iterate_metadata_intersection.ts
++++ b/src/factories/internal/metadata/iterate_metadata_intersection.ts
+@@ -214,7 +214,7 @@ export const iterate_metadata_intersection =
+         target,
+       )(objects.map((om) => om.objects).flat(), explore);
+       if (tags.length)
+-        if (target === "array") meta.arrays.at(-1)!.tags.push(tags);
++        if (target === "array") meta.arrays.slice(-1)[0]!.tags.push(tags);
+         else if (booleanLiteral === null)
+           meta.atomics.find((a) => a.type === target)!.tags.push(tags);
+         else {
+diff --git a/src/programmers/CheckerProgrammer.ts b/src/programmers/CheckerProgrammer.ts
+index 892748b80755b89d1449f4d515aa3166534c6b19..8cb5ce35fe6f918545c82066f0583dead2661c89 100644
+--- a/src/programmers/CheckerProgrammer.ts
++++ b/src/programmers/CheckerProgrammer.ts
+@@ -702,14 +702,14 @@ export namespace CheckerProgrammer {
+           ),
+         );
+       const rest: ts.Expression | null =
+-        tuple.elements.length && tuple.elements.at(-1)!.rest !== null
++        tuple.elements.length && tuple.elements.slice(-1)[0]!.rest !== null
+           ? decode(project)(config)(importer)(
+               ts.factory.createCallExpression(
+                 IdentifierFactory.access(input)("slice"),
+                 undefined,
+                 [ExpressionFactory.number(tuple.elements.length - 1)],
+               ),
+-              wrap_metadata_rest_tuple(tuple.elements.at(-1)!.rest!),
++              wrap_metadata_rest_tuple(tuple.elements.slice(-1)[0]!.rest!),
+               {
+                 ...explore,
+                 start: tuple.elements.length - 1,
+diff --git a/src/programmers/TypiaProgrammer.ts b/src/programmers/TypiaProgrammer.ts
+index e01eccf62eccd73e1f0720db897f539256a6bbc1..cae5eb6fc702d359d4886acefdb68d42691edf97 100644
+--- a/src/programmers/TypiaProgrammer.ts
++++ b/src/programmers/TypiaProgrammer.ts
+@@ -101,7 +101,7 @@ export namespace TypiaProgrammer {
+               .file!.text.substring(0, diag.start)
+               .split("\n");
+             if (lines.length === 0) return [0, 0];
+-            return [lines.length, lines.at(-1)!.length + 1];
++            return [lines.length, lines.slice(-1)[0]!.length + 1];
+           })()
+         : [0, 0];
+       console.error(
+diff --git a/src/programmers/internal/application_tuple.ts b/src/programmers/internal/application_tuple.ts
+index 5e10b9051e4a846f298aa8f086109e8d6bb38bf9..a8e24d5c2a2a4a4d5d1dc49eb45b4784654a4b66 100644
+--- a/src/programmers/internal/application_tuple.ts
++++ b/src/programmers/internal/application_tuple.ts
+@@ -28,16 +28,16 @@ export const application_tuple =
+         }),
+       ),
+       ...attribute,
+-      minItems: !!tuple.type.elements.at(-1)?.rest
++      minItems: !!tuple.type.elements.slice(-1)[0]?.rest
+         ? tuple.type.elements.length - 1
+         : tuple.type.elements.filter((x) => !x.optional).length,
+-      maxItems: !!tuple.type.elements.at(-1)?.rest
++      maxItems: !!tuple.type.elements.slice(-1)[0]?.rest
+         ? undefined
+         : tuple.type.elements.length,
+     };
+     if (options.purpose === "ajv")
+       if (tuple.type.elements.length === 0) return schema;
+-      else if (!tuple.type.elements.at(-1)?.rest) return schema;
++      else if (!tuple.type.elements.slice(-1)[0]?.rest) return schema;
+ 
+     const wrapper: IJsonSchema.IArray = {
+       ...schema,
+diff --git a/src/programmers/json/JsonStringifyProgrammer.ts b/src/programmers/json/JsonStringifyProgrammer.ts
+index c317cec2c78e984a6e64c7bf287d0c67e530e309..5974830c62dbd2b865aa2e64e2e757283258d872 100644
+--- a/src/programmers/json/JsonStringifyProgrammer.ts
++++ b/src/programmers/json/JsonStringifyProgrammer.ts
+@@ -543,7 +543,7 @@ export namespace JsonStringifyProgrammer {
+         );
+       const rest = (() => {
+         if (tuple.elements.length === 0) return null;
+-        const last = tuple.elements.at(-1)!;
++        const last = tuple.elements.slice(-1)[0]!;
+         if (last.rest === null) return null;
+ 
+         const code = decode(project)(config)(importer)(
+@@ -552,7 +552,7 @@ export namespace JsonStringifyProgrammer {
+             undefined,
+             [ExpressionFactory.number(tuple.elements.length - 1)],
+           ),
+-          wrap_metadata_rest_tuple(tuple.elements.at(-1)!.rest!),
++          wrap_metadata_rest_tuple(tuple.elements.slice(-1)[0]!.rest!),
+           {
+             ...explore,
+             start: tuple.elements.length - 1,
+diff --git a/src/programmers/misc/MiscCloneProgrammer.ts b/src/programmers/misc/MiscCloneProgrammer.ts
+index 94d768b0a0738c0caccd711671351d1f22fa3848..739fd5f2baf4d2eb8e9dd65d73179242a0244707 100644
+--- a/src/programmers/misc/MiscCloneProgrammer.ts
++++ b/src/programmers/misc/MiscCloneProgrammer.ts
+@@ -343,7 +343,7 @@ export namespace MiscCloneProgrammer {
+       const rest = (() => {
+         if (tuple.elements.length === 0) return null;
+ 
+-        const last: Metadata = tuple.elements.at(-1)!;
++        const last: Metadata = tuple.elements.slice(-1)[0]!;
+         const rest: Metadata | null = last.rest;
+         if (rest === null) return null;
+ 
+@@ -353,7 +353,7 @@ export namespace MiscCloneProgrammer {
+             undefined,
+             [ExpressionFactory.number(tuple.elements.length - 1)],
+           ),
+-          wrap_metadata_rest_tuple(tuple.elements.at(-1)!.rest!),
++          wrap_metadata_rest_tuple(tuple.elements.slice(-1)[0]!.rest!),
+           {
+             ...explore,
+             start: tuple.elements.length - 1,
+diff --git a/src/programmers/misc/MiscPruneProgrammer.ts b/src/programmers/misc/MiscPruneProgrammer.ts
+index ed1465267066e382ae6696a25a806c2489597593..661f3cd93ae66070c978bd3e8d2b8db07189fe47 100644
+--- a/src/programmers/misc/MiscPruneProgrammer.ts
++++ b/src/programmers/misc/MiscPruneProgrammer.ts
+@@ -310,7 +310,7 @@ export namespace MiscPruneProgrammer {
+       const rest = (() => {
+         if (tuple.elements.length === 0) return null;
+ 
+-        const last: Metadata = tuple.elements.at(-1)!;
++        const last: Metadata = tuple.elements.slice(-1)[0]!;
+         const rest: Metadata | null = last.rest;
+         if (rest === null || filter(rest) === false) return null;
+ 
+@@ -320,7 +320,7 @@ export namespace MiscPruneProgrammer {
+             undefined,
+             [ExpressionFactory.number(tuple.elements.length - 1)],
+           ),
+-          wrap_metadata_rest_tuple(tuple.elements.at(-1)!.rest!),
++          wrap_metadata_rest_tuple(tuple.elements.slice(-1)[0]!.rest!),
+           {
+             ...explore,
+             start: tuple.elements.length - 1,
+diff --git a/src/programmers/notations/NotationGeneralProgrammer.ts b/src/programmers/notations/NotationGeneralProgrammer.ts
+index bd49b1e34002b1a1ec4f5444a8f91fa0ab794360..71d676de290986045910602ab10c6ef09a19c07d 100644
+--- a/src/programmers/notations/NotationGeneralProgrammer.ts
++++ b/src/programmers/notations/NotationGeneralProgrammer.ts
+@@ -353,7 +353,7 @@ export namespace NotationGeneralProgrammer {
+       const rest = (() => {
+         if (tuple.elements.length === 0) return null;
+ 
+-        const last: Metadata = tuple.elements.at(-1)!;
++        const last: Metadata = tuple.elements.slice(-1)[0]!;
+         const rest: Metadata | null = last.rest;
+         if (rest === null) return null;
+ 
+@@ -363,7 +363,7 @@ export namespace NotationGeneralProgrammer {
+             undefined,
+             [ExpressionFactory.number(tuple.elements.length - 1)],
+           ),
+-          wrap_metadata_rest_tuple(tuple.elements.at(-1)!.rest!),
++          wrap_metadata_rest_tuple(tuple.elements.slice(-1)[0]!.rest!),
+           {
+             ...explore,
+             start: tuple.elements.length - 1,
+diff --git a/src/transformers/CallExpressionTransformer.ts b/src/transformers/CallExpressionTransformer.ts
+index c58a1b143ce4f204bb249a4858c9d16a26f97408..9e9ffcf73e4c01aa6ac8c213669fdcd50e0181b9 100644
+--- a/src/transformers/CallExpressionTransformer.ts
++++ b/src/transformers/CallExpressionTransformer.ts
+@@ -111,7 +111,7 @@ export namespace CallExpressionTransformer {
+       // TRANSFORMATION
+       //----
+       // FUNCTION NAME
+-      const module: string = location.split(path.sep).at(-1)!.split(".")[0]!;
++      const module: string = location.split(path.sep).slice(-1)[0]!.split(".")[0]!;
+       const { name } = project.checker.getTypeAtLocation(declaration).symbol;
+ 
+       // FIND TRANSFORMER

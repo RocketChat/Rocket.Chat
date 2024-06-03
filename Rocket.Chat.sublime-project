@@ -1,0 +1,55 @@
+{
+	"folders":
+	[
+		{
+			"name": "Monorepo Root",
+			"path": ".",
+			"folder_exclude_patterns": [
+				"//apps/meteor",
+				"//packages",
+				"//ee/apps",
+				"//ee/packages"
+			],
+		},
+		{
+			"name": "Rocket.Chat",
+			"path": "./apps/meteor",
+		},
+		{
+			"name": "Packages",
+			"path": "./packages",
+		},
+		{
+			"name": "Enterprise Apps",
+			"path": "./ee/apps",
+		},
+		{
+			"name": "Enterprise Packages",
+			"path": "./ee/packages",
+		}
+	],
+	"settings": {
+		"LSP": {
+			"LSP-typescript": {
+				"enabled": true,
+				"disabled_capabilities": {
+					// Uncomment the line below to load auto complete suggestions from sublime's index instead of typescript.
+					// The index is much faster, but doesn't filter out results based on the current context.
+
+					// "completionProvider": true,
+				},
+			},
+			"LSP-eslint": {
+				"settings": {
+					// If node path is not automatically detected, you can specify it here (use the global eslint settings if you have a global node)
+					// "nodePath": null
+					"workingDirectories": [
+						{
+							"mode": "auto",
+						}
+					],
+				},
+			},
+		},
+	},
+}

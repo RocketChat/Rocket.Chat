@@ -45,6 +45,8 @@ export interface IBaseModel<
 > {
 	col: Collection<T>;
 
+	createIndexes(): Promise<string[] | void>;
+
 	getCollectionName(): string;
 
 	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>>;

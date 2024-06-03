@@ -70,7 +70,7 @@ settings.watchMultiple(
 					secret,
 					enabled: settings.get('Accounts_OAuth_Apple'),
 					loginStyle: 'popup',
-					clientId,
+					clientId: clientId as string,
 					buttonColor: '#000',
 					buttonLabelColor: '#FFF',
 				},

@@ -1,9 +1,9 @@
 import type webpack from 'webpack';
 
-const SvgComponentLoader: webpack.loader.Loader = (content) => `
+const SvgComponentLoader: webpack.LoaderDefinition = (content) => `
 var preact = require('preact');
 var hooks = require('preact/hooks');
-${typeof content === 'string' ? content : content.toString('utf-8')}
+${content}
 var attributes = module.exports.attributes;
 var content = module.exports.content;
 

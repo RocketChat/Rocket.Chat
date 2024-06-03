@@ -1,4 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
+import { isExternal, getBaseURI } from '@rocket.chat/ui-client';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import dompurify from 'dompurify';
 import { marked } from 'marked';
 import type { ComponentProps, FC } from 'react';
@@ -25,7 +27,7 @@ marked.Lexer.rules.gfm = {
 };
 
 const linkMarked = (href: string | null, _title: string | null, text: string): string =>
-	`<a href="${href}" target="_blank" rel="nofollow noopener noreferrer">${text}</a> `;
+	`<a href="${href}" rel="nofollow noopener noreferrer">${text}</a> `;
 const paragraphMarked = (text: string): string => text;
 const brMarked = (): string => ' ';
 const listItemMarked = (text: string): string => {
@@ -85,10 +87,10 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 	...props
 }) => {
 	const sanitizer = dompurify.sanitize;
-
+	const t = useTranslation();
 	let markedOptions: marked.MarkedOptions;
 
-	const schemes = 'http,https';
+	const schemes = 'http,https,notes,ftp,ftps,tel,mailto,sms,cid';
 
 	switch (variant) {
 		case 'inline':
@@ -120,17 +122,22 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 			}
 		})();
 
-		// Add a hook to make all links open a new window
+		// Add a hook to make all external links open a new window
 		dompurify.addHook('afterSanitizeAttributes', (node) => {
-			// set all elements owning target to target=_blank
 			if ('target' in node) {
-				node.setAttribute('target', '_blank');
+				const href = node.getAttribute('href') || '';
+
+				node.setAttribute('title', `${t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
 				node.setAttribute('rel', 'nofollow noopener noreferrer');
+				if (isExternal(node.getAttribute('href') || '')) {
+					node.setAttribute('target', '_blank');
+					node.setAttribute('title', href);
+				}
 			}
 		});
 
 		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: getRegexp(schemes) });
-	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji, schemes]);
+	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji, t]);
 
 	return __html ? (
 		<Box

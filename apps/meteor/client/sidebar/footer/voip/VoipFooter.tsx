@@ -6,8 +6,8 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, MouseEvent, ReactNode } from 'react';
 import React from 'react';
 
-import type { VoipFooterMenuOptions } from '../../../../ee/client/hooks/useVoipFooterMenu';
 import type { CallActionsType } from '../../../contexts/CallContext';
+import type { VoipFooterMenuOptions } from '../../../hooks/useVoipFooterMenu';
 import { useOmnichannelContactLabel } from './hooks/useOmnichannelContactLabel';
 
 type VoipFooterPropsType = {
@@ -68,7 +68,7 @@ export const VoipFooter = ({
 
 	const holdTitle = ((): string => {
 		if (!isEnterprise) {
-			return t('Hold_EE_only');
+			return t('Hold_Premium_only');
 		}
 		return paused ? t('Resume') : t('Hold');
 	})();

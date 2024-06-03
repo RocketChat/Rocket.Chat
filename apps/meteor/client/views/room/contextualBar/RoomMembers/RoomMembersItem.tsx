@@ -11,12 +11,12 @@ import {
 	OptionSkeleton,
 } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement, MouseEvent } from 'react';
 import React, { useState } from 'react';
 
 import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
-import UserAvatar from '../../../../components/avatar/UserAvatar';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import UserActions from './RoomMembersActions';
 

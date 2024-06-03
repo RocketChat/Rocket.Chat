@@ -69,8 +69,8 @@ const MessageSearchForm = ({ provider, onSearch }: MessageSearchFormProps) => {
 				{globalSearchEnabled && (
 					<Field>
 						<FieldRow>
-							<ToggleSwitch id={globalSearchToggleId} {...register('globalSearch')} />
 							<FieldLabel htmlFor={globalSearchToggleId}>{t('Global_Search')}</FieldLabel>
+							<ToggleSwitch id={globalSearchToggleId} {...register('globalSearch')} />
 						</FieldRow>
 					</Field>
 				)}

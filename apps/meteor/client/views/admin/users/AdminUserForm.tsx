@@ -52,10 +52,12 @@ const getInitialValue = ({
 	data,
 	defaultUserRoles,
 	isSmtpEnabled,
+	isEditingExistingUser,
 }: {
 	data?: Serialized<IUser>;
 	defaultUserRoles?: IUser['roles'];
 	isSmtpEnabled?: boolean;
+	isEditingExistingUser?: boolean;
 }) => ({
 	roles: data?.roles ?? defaultUserRoles,
 	name: data?.name ?? '',
@@ -69,7 +71,7 @@ const getInitialValue = ({
 	requirePasswordChange: data?.requirePasswordChange || false,
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
-	joinDefaultChannels: true,
+	...(!isEditingExistingUser && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
 });
@@ -97,6 +99,8 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 
 	const goToUser = useCallback((id) => router.navigate(`/admin/users/info/${id}`), [router]);
 
+	const isEditingExistingUser = Boolean(userData?._id);
+
 	const {
 		control,
 		watch,
@@ -104,7 +108,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 		reset,
 		formState: { errors, isDirty },
 	} = useForm({
-		defaultValues: getInitialValue({ data: userData, defaultUserRoles, isSmtpEnabled }),
+		defaultValues: getInitialValue({ data: userData, defaultUserRoles, isSmtpEnabled, isEditingExistingUser }),
 		mode: 'onBlur',
 	});
 
@@ -166,7 +170,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 		<>
 			<ContextualbarScrollableContent {...props}>
 				<FieldGroup>
-					{userData?._id && (
+					{isEditingExistingUser && (
 						<Field>
 							<Controller
 								name='avatar'
@@ -263,16 +267,14 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 						)}
 					</Field>
 					<Field>
-						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
+						<FieldRow>
 							<FieldLabel htmlFor={verifiedId}>{t('Verified')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									control={control}
-									name='verified'
-									render={({ field: { onChange, value } }) => <ToggleSwitch id={verifiedId} checked={value} onChange={onChange} />}
-								/>
-							</FieldRow>
-						</Box>
+							<Controller
+								control={control}
+								name='verified'
+								render={({ field: { onChange, value } }) => <ToggleSwitch id={verifiedId} checked={value} onChange={onChange} />}
+							/>
+						</FieldRow>
 					</Field>
 					<Field>
 						<FieldLabel htmlFor={statusTextId}>{t('StatusMessage')}</FieldLabel>
@@ -348,7 +350,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 								<Controller
 									control={control}
 									name='password'
-									rules={{ required: !userData?._id && t('The_field_is_required', t('Password')) }}
+									rules={{ required: !isEditingExistingUser && t('The_field_is_required', t('Password')) }}
 									render={({ field }) => (
 										<PasswordInput
 											{...field}
@@ -370,45 +372,41 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 						</Field>
 					)}
 					<Field>
-						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
+						<FieldRow>
 							<FieldLabel htmlFor={requirePasswordChangeId}>{t('Require_password_change')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									control={control}
-									name='requirePasswordChange'
-									render={({ field: { ref, onChange, value } }) => (
-										<ToggleSwitch
-											ref={ref}
-											id={requirePasswordChangeId}
-											disabled={setRandomPassword}
-											checked={setRandomPassword || value}
-											onChange={onChange}
-										/>
-									)}
-								/>
-							</FieldRow>
-						</Box>
+							<Controller
+								control={control}
+								name='requirePasswordChange'
+								render={({ field: { ref, onChange, value } }) => (
+									<ToggleSwitch
+										ref={ref}
+										id={requirePasswordChangeId}
+										disabled={setRandomPassword}
+										checked={setRandomPassword || value}
+										onChange={onChange}
+									/>
+								)}
+							/>
+						</FieldRow>
 					</Field>
 					<Field>
-						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
+						<FieldRow>
 							<FieldLabel htmlFor={setRandomPasswordId}>{t('Set_random_password_and_send_by_email')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									control={control}
-									name='setRandomPassword'
-									render={({ field: { ref, onChange, value } }) => (
-										<ToggleSwitch
-											ref={ref}
-											id={setRandomPasswordId}
-											aria-describedby={`${setRandomPasswordId}-hint`}
-											checked={value}
-											onChange={onChange}
-											disabled={!isSmtpEnabled}
-										/>
-									)}
-								/>
-							</FieldRow>
-						</Box>
+							<Controller
+								control={control}
+								name='setRandomPassword'
+								render={({ field: { ref, onChange, value } }) => (
+									<ToggleSwitch
+										ref={ref}
+										id={setRandomPasswordId}
+										aria-describedby={`${setRandomPasswordId}-hint`}
+										checked={value}
+										onChange={onChange}
+										disabled={!isSmtpEnabled}
+									/>
+								)}
+							/>
+						</FieldRow>
 						{!isSmtpEnabled && (
 							<FieldHint
 								id={`${setRandomPasswordId}-hint`}
@@ -440,10 +438,10 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 						</FieldRow>
 						{errors?.roles && <FieldError>{errors.roles.message}</FieldError>}
 					</Field>
-					<Field>
-						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
-							<FieldLabel htmlFor={joinDefaultChannelsId}>{t('Join_default_channels')}</FieldLabel>
+					{!isEditingExistingUser && (
+						<Field>
 							<FieldRow>
+								<FieldLabel htmlFor={joinDefaultChannelsId}>{t('Join_default_channels')}</FieldLabel>
 								<Controller
 									control={control}
 									name='joinDefaultChannels'
@@ -452,27 +450,25 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 									)}
 								/>
 							</FieldRow>
-						</Box>
-					</Field>
+						</Field>
+					)}
 					<Field>
-						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
+						<FieldRow>
 							<FieldLabel htmlFor={sendWelcomeEmailId}>{t('Send_welcome_email')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									control={control}
-									name='sendWelcomeEmail'
-									render={({ field: { onChange, value } }) => (
-										<ToggleSwitch
-											id={sendWelcomeEmailId}
-											aria-describedby={`${sendWelcomeEmailId}-hint`}
-											onChange={onChange}
-											checked={value}
-											disabled={!isSmtpEnabled}
-										/>
-									)}
-								/>
-							</FieldRow>
-						</Box>
+							<Controller
+								control={control}
+								name='sendWelcomeEmail'
+								render={({ field: { onChange, value } }) => (
+									<ToggleSwitch
+										id={sendWelcomeEmailId}
+										aria-describedby={`${sendWelcomeEmailId}-hint`}
+										onChange={onChange}
+										checked={value}
+										disabled={!isSmtpEnabled}
+									/>
+								)}
+							/>
+						</FieldRow>
 						{!isSmtpEnabled && (
 							<FieldHint
 								id={`${sendWelcomeEmailId}-hint`}

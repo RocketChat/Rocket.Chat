@@ -224,6 +224,6 @@ export function shouldNotifyEmail({
 			emailNotifications === 'all' ||
 			hasMentionToUser ||
 			(!disableAllMessageNotifications && hasMentionToAll)) &&
-		(!isThread || hasReplyToThread)
+		(isHighlighted || !isThread || hasReplyToThread)
 	);
 }

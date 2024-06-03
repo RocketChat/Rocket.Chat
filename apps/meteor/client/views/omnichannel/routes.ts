@@ -118,17 +118,17 @@ registerOmnichannelRoute('/businessHours/:context?/:type?/:id?', {
 
 registerOmnichannelRoute('/units/:context?/:id?', {
 	name: 'omnichannel-units',
-	component: lazy(() => import('../../../ee/client/omnichannel/units/UnitsRoute')),
+	component: lazy(() => import('../../omnichannel/units/UnitsRoute')),
 });
 
 registerOmnichannelRoute('/tags/:context?/:id?', {
 	name: 'omnichannel-tags',
-	component: lazy(() => import('../../../ee/client/omnichannel/tags/TagsRoute')),
+	component: lazy(() => import('../../omnichannel/tags/TagsRoute')),
 });
 
 registerOmnichannelRoute('/triggers/:context?/:id?', {
 	name: 'omnichannel-triggers',
-	component: lazy(() => import('./triggers/TriggersPage')),
+	component: lazy(() => import('./triggers/TriggersRoute')),
 });
 
 registerOmnichannelRoute('/current/:id?/:tab?/:context?', {

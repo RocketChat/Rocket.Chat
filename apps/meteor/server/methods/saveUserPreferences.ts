@@ -5,6 +5,8 @@ import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { settings as rcSettings } from '../../app/settings/server';
+
 type UserPreferences = {
 	language: string;
 	newRoomNotification: string;
@@ -86,6 +88,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		fontSize: Match.Optional(String),
 		omnichannelTranscriptEmail: Match.Optional(Boolean),
 		omnichannelTranscriptPDF: Match.Optional(Boolean),
+		omnichannelHideConversationAfterClosing: Match.Optional(Boolean),
 		notifyCalendarEvents: Match.Optional(Boolean),
 		enableMobileRinging: Match.Optional(Boolean),
 		mentionsWithSymbol: Match.Optional(Boolean),
@@ -101,6 +104,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		desktopNotifications: oldDesktopNotifications,
 		pushNotifications: oldMobileNotifications,
 		emailNotificationMode: oldEmailNotifications,
+		language: oldLanguage,
 	} = user.settings?.preferences || {};
 
 	if (user.settings == null) {
@@ -167,6 +171,10 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 
 		if (Array.isArray(settings.highlights)) {
 			await Subscriptions.updateUserHighlights(user._id, settings.highlights);
+		}
+
+		if (settings.language && oldLanguage !== settings.language && rcSettings.get('AutoTranslate_AutoEnableOnJoinRoom')) {
+			await Subscriptions.updateAllAutoTranslateLanguagesByUserId(user._id, settings.language);
 		}
 	});
 };

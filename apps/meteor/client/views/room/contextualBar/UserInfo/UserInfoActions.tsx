@@ -51,11 +51,7 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
 
-	return (
-		<ButtonGroup mi='neg-x4' flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center'>
-			{actions}
-		</ButtonGroup>
-	);
+	return <ButtonGroup align='center'>{actions}</ButtonGroup>;
 };
 
 export default UserInfoActions;

@@ -1,8 +1,9 @@
 import { createReadStream } from 'fs';
-import { open, stat } from 'fs/promises';
+import { stat } from 'fs/promises';
 
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 
 import { FileUpload } from '../../../app/file-upload/server';
 
@@ -18,19 +19,19 @@ export const uploadZipFile = async (filePath: string, userId: IUser['_id'], expo
 
 	const utcDate = new Date().toISOString().split('T')[0];
 	const fileSuffix = exportType === 'json' ? '-data' : '';
+	const fileId = Random.id();
 
-	const newFileName = encodeURIComponent(`${utcDate}-${userDisplayName}${fileSuffix}.zip`);
+	const newFileName = encodeURIComponent(`${utcDate}-${userDisplayName}${fileSuffix}-${fileId}.zip`);
 
 	const details = {
+		_id: fileId,
 		userId,
 		type: contentType,
 		size,
 		name: newFileName,
 	};
 
-	const { fd } = await open(filePath);
-
-	const stream = createReadStream('', { fd }); // @todo once upgrades to Node.js v16.x, use createReadStream from fs.promises.open
+	const stream = createReadStream(filePath);
 
 	const userDataStore = FileUpload.getStore('UserDataFiles');
 

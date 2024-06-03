@@ -1,11 +1,10 @@
 import type { IModerationAudit, IUser } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
-import UserAvatar from '../../../components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import ModerationConsoleActions from './ModerationConsoleActions';
+import UserColumn from './helpers/UserColumn';
 
 export type ModerationConsoleRowProps = {
 	report: IModerationAudit;
@@ -30,34 +29,8 @@ const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: Moder
 	return (
 		<GenericTableRow key={_id} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
 			<GenericTableCell withTruncatedText>
-				<Box display='flex' alignItems='center'>
-					{username && (
-						<Box>
-							<UserAvatar size={isDesktopOrLarger ? 'x20' : 'x40'} username={username} />
-						</Box>
-					)}
-					<Box display='flex' mi={8} withTruncatedText>
-						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-							<Box fontScale='p2m' color='default' withTruncatedText>
-								{name || username}
-							</Box>
-							{!isDesktopOrLarger && name && (
-								<Box fontScale='p2' color='hint' withTruncatedText>
-									{' '}
-									{`@${username}`}{' '}
-								</Box>
-							)}
-						</Box>
-					</Box>
-				</Box>
+				<UserColumn username={username} name={name} fontSize='micro' size={isDesktopOrLarger ? 'x20' : 'x40'} />
 			</GenericTableCell>
-			{isDesktopOrLarger && (
-				<GenericTableCell>
-					<Box fontScale='p2m' color='hint' withTruncatedText>
-						{username}
-					</Box>
-				</GenericTableCell>
-			)}
 			<GenericTableCell withTruncatedText>{message}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{concatenatedRoomNames}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{formatDateAndTime(ts)}</GenericTableCell>

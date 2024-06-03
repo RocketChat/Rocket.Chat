@@ -1,24 +1,15 @@
-import { FieldLabel, Flex, Box, MultiSelectFiltered, MultiSelect } from '@rocket.chat/fuselage';
+import { FieldLabel, MultiSelectFiltered, MultiSelect, Field, FieldRow } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
 export type valuesOption = { key: string; i18nLabel: TranslationKey };
-type MultiSelectSettingInputProps = {
-	_id: string;
-	label: string;
-	value?: [string, string];
+type MultiSelectSettingInputProps = SettingInputProps<[string, string], string[]> & {
 	values: valuesOption[];
-	placeholder?: string;
-	readonly?: boolean;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string[]) => void;
-	onResetButtonClick?: () => void;
 };
 
 function MultiSelectSettingInput({
@@ -28,6 +19,7 @@ function MultiSelectSettingInput({
 	placeholder,
 	readonly,
 	disabled,
+	required,
 	values = [],
 	hasResetButton,
 	onChangeValue,
@@ -42,27 +34,28 @@ function MultiSelectSettingInput({
 	};
 	const Component = autocomplete ? MultiSelectFiltered : MultiSelect;
 	return (
-		<>
-			<Flex.Container>
-				<Box>
-					<FieldLabel htmlFor={_id} title={_id}>
-						{label}
-					</FieldLabel>
-					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
-				</Box>
-			</Flex.Container>
-			<Component
-				data-qa-setting-id={_id}
-				id={_id}
-				value={value}
-				placeholder={placeholder}
-				disabled={disabled}
-				readOnly={readonly}
-				// autoComplete={autocomplete === false ? 'off' : undefined}
-				onChange={handleChange}
-				options={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)])}
-			/>
-		</>
+		<Field>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
+			</FieldRow>
+			<FieldRow>
+				<Component
+					max-width='full'
+					data-qa-setting-id={_id}
+					id={_id}
+					value={value}
+					placeholder={placeholder}
+					disabled={disabled}
+					readOnly={readonly}
+					// autoComplete={autocomplete === false ? 'off' : undefined}
+					onChange={handleChange}
+					options={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)])}
+				/>
+			</FieldRow>
+		</Field>
 	);
 }
 
