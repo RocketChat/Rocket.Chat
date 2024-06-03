@@ -52,9 +52,8 @@ import { API } from '../api';
  */
 API.v1.addRoute(
 	'banners.getNew',
-	{ authRequired: true },
+	{ authRequired: true, deprecation: { version: '8.0.0', alternatives: ['banners/:id', 'banners'] } },
 	{
-		// deprecated
 		async get() {
 			check(
 				this.queryParams,
