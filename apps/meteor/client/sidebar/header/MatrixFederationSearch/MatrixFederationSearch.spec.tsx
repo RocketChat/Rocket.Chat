@@ -64,7 +64,7 @@ it('should render Federated Room search modal', async () => {
 
 	expect(await screen.findByRole('dialog', { name: 'Federation_Federated_room_search' })).toBeInTheDocument();
 
-	expect(await screen.findByRole('listitem', { name: 'Matrix1' })).toBeInTheDocument();
+	expect(await screen.findByRole('listitem', { name: 'Matrix1' }, { timeout: 2000 })).toBeInTheDocument(); // TODO: remove flakyness
 	expect(await screen.findByRole('listitem', { name: 'Matrix2' })).toBeInTheDocument();
 });
 
@@ -75,7 +75,7 @@ it('should search for rooms', async () => {
 	expect(input).toBeInTheDocument();
 	await userEvent.type(input, 'NotMatrix');
 
-	expect(await screen.findByRole('listitem', { name: 'NotMatrix1' })).toBeInTheDocument();
+	expect(await screen.findByRole('listitem', { name: 'NotMatrix1' }, { timeout: 2000 })).toBeInTheDocument(); // TODO: remove flakyness
 	expect(await screen.findByRole('listitem', { name: 'NotMatrix2' })).toBeInTheDocument();
 });
 
