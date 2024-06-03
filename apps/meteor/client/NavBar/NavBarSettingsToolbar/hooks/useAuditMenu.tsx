@@ -1,7 +1,7 @@
 import { usePermission, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 
-import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 export const useAuditMenu = () => {
 	const router = useRouter();
