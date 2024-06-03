@@ -1,5 +1,6 @@
 {
   "500": "ਅੰਦਰੂਨੀ ਸਰਵਰ ਗੜਬੜ",
+  "set__username__as__role_": "set {{username}} ਨੂੰ {{role}}",
   "away": "ਦੂਰ",
   "Away": "ਦੂਰ",
   "busy": "ਰੁਝੇਵਾਂ",
