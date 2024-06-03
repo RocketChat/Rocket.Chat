@@ -1,11 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, memo } from 'react';
+import React, { memo, useState } from 'react';
 
-import GenericMenu from '../../components/GenericMenu/GenericMenu';
-import type { GenericMenuItemProps } from '../../components/GenericMenu/GenericMenuItem';
-import { useHandleMenuAction } from '../../components/GenericMenu/hooks/useHandleMenuAction';
+import GenericMenu from '../../../components/GenericMenu/GenericMenu';
+import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
+import { useHandleMenuAction } from '../../../components/GenericMenu/hooks/useHandleMenuAction';
 import UserAvatarStatus from './UserAvatarStatus';
 import { useUserMenu } from './hooks/useUserMenu';
 
@@ -16,7 +16,7 @@ const anon = {
 	avatarETag: undefined,
 } as const;
 
-const UserMenu = ({ user, className }: { user: IUser; className?: string }) => {
+export const UserMenu = memo(function UserMenu({ user, className }: { user: IUser; className?: string }) {
 	const t = useTranslation();
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -44,6 +44,4 @@ const UserMenu = ({ user, className }: { user: IUser; className?: string }) => {
 			<UserAvatarStatus status={status} />
 		</>
 	);
-};
-
-export default memo(UserMenu);
+});

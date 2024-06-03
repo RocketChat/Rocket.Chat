@@ -5,19 +5,15 @@ import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from
 import type { ReactElement, ChangeEvent, ComponentProps, FormEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
-import UserStatusMenu from '../../components/UserStatusMenu';
-import { USER_STATUS_TEXT_MAX_LENGTH } from '../../lib/constants';
+import UserStatusMenu from '../../../components/UserStatusMenu';
+import { USER_STATUS_TEXT_MAX_LENGTH } from '../../../lib/constants';
 
 type EditStatusModalProps = {
 	onClose: () => void;
 	userStatus: IUser['status'];
 	userStatusText: IUser['statusText'];
 };
-/**
- * @deprecated Moved to NavBar
- * @description duplicated in apps/meteor/client/NavBar/UserMenu/EditStatusModal.tsx until feature is ready
- * @memberof newNavigation
- */
+
 const EditStatusModal = ({ onClose, userStatus, userStatusText }: EditStatusModalProps): ReactElement => {
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange');
 	const dispatchToastMessage = useToastMessageDispatch();

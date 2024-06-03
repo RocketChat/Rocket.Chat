@@ -1,10 +1,10 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouter, useLayout, useSetting, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
-import type { HTMLAttributes, VFC } from 'react';
+import type { HTMLAttributes } from 'react';
 import React from 'react';
 
-export const NavBarItemHomePage: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
+export const NavBarItemHomePage = (props: Omit<HTMLAttributes<HTMLElement>, 'is'>) => {
 	const router = useRouter();
 	const { sidebar } = useLayout();
 	const showHome = useSetting('Layout_Show_Home_Button');

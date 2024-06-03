@@ -4,7 +4,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { UserStatus } from '../../components/UserStatus';
+import { UserStatus } from '../../../components/UserStatus';
 
 const UserAvatarStatus = ({ status }: { status: UserStatusType | 'online' | 'offline' }) => {
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');

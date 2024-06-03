@@ -4,7 +4,7 @@ import type { HTMLAttributes } from 'react';
 import React from 'react';
 
 import GenericMenu from '../../components/GenericMenu/GenericMenu';
-import { useAuditMenu } from './hooks/useAuditMenu';
+import { useAuditMenu } from '../NavBarSettingsToolbar/hooks/useAuditMenu';
 
 export const NavBarItemAuditMenu = (props: Omit<HTMLAttributes<HTMLElement>, 'is'>) => {
 	const t = useTranslation();

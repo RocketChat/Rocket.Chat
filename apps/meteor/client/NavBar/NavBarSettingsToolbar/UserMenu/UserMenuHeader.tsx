@@ -4,9 +4,9 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import MarkdownText from '../../components/MarkdownText';
-import { UserStatus } from '../../components/UserStatus';
-import { useUserDisplayName } from '../../hooks/useUserDisplayName';
+import MarkdownText from '../../../components/MarkdownText';
+import { UserStatus } from '../../../components/UserStatus';
+import { useUserDisplayName } from '../../../hooks/useUserDisplayName';
 
 const UserMenuHeader = ({ user }: { user: IUser }) => {
 	const t = useTranslation();

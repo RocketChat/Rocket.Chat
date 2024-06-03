@@ -140,7 +140,6 @@ export const SearchSection = () => {
 				<Box
 					ref={boxRef}
 					role='listbox'
-					// id={listId}
 					tabIndex={-1}
 					flexShrink={1}
 					h='full'

@@ -13,16 +13,9 @@ import {
 	NavBarItemOmnichannelLivechatToggle,
 	NavBarItemOmnichannelQueue,
 	NavBarItemOmnichannelCallToggle,
-} from './Omnichannel';
-import UserMenu from './UserMenu/UserMenu';
-import {
-	NavBarItemAdministrationMenu,
-	NavBarItemMarketPlaceMenu,
-	NavBarItemAuditMenu,
-	NavBarItemDirectoryPage,
-	NavBarItemHomePage,
-	NavBarItemLoginPage,
-} from './actions';
+} from './NavBarOmnichannelToolbar';
+import { NavBarItemMarketPlaceMenu, NavBarItemAuditMenu, NavBarItemDirectoryPage, NavBarItemHomePage } from './NavBarPagesToolbar';
+import { NavBarItemLoginPage, NavBarItemAdministrationMenu, UserMenu } from './NavBarSettingsToolbar';
 
 export const NavBar = () => {
 	const t = useTranslation();
