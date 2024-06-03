@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": patch
 ---
 
-Stops the backend from saving invalid values for int settings (NaN for example)
+Fixed an issue that allowed saveSettings method to save NaN values on numeric settings.
