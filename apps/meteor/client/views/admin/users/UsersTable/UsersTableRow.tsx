@@ -1,10 +1,9 @@
-import { UserStatus as Status, isUserFederated } from '@rocket.chat/core-typings';
+import { UserStatus as Status } from '@rocket.chat/core-typings';
 import type { IAdminUserTabs, IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, Menu, Option } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
@@ -30,7 +29,6 @@ type UsersTableRowProps = {
 
 const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSeatsCapExceeded }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { _id, emails, username, name, roles, status, active, avatarETag, lastLogin, type } = user;
 	const registrationStatusText = useMemo(() => {
@@ -57,15 +55,11 @@ const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSea
 	const userId = user._id;
 	const isAdmin = user.roles?.includes('admin');
 	const isActive = user.active;
-	const isFederatedUser = isUserFederated(user);
+	const isFederatedUser = !!user.federated;
 
-	const onChange = useEffectEvent(() => {
-		onReload();
-	});
-
-	const changeAdminStatusAction = useChangeAdminStatusAction(userId, isAdmin, onChange);
-	const changeUserStatusAction = useChangeUserStatusAction(userId, isActive, onChange);
-	const deleteUserAction = useDeleteUserAction(userId, onChange, onReload);
+	const changeAdminStatusAction = useChangeAdminStatusAction(userId, isAdmin, onReload);
+	const changeUserStatusAction = useChangeUserStatusAction(userId, isActive, onReload);
+	const deleteUserAction = useDeleteUserAction(userId, onReload, onReload);
 	const resetTOTPAction = useResetTOTPAction(userId);
 	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
 	const resendWelcomeEmail = useSendWelcomeEmailMutation();
@@ -99,25 +93,7 @@ const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSea
 		}),
 	};
 
-	const handleResendWelcomeEmail = () => {
-		if (!emails?.length) {
-			dispatchToastMessage({ type: 'error', message: t('Welcome_email_failed') });
-			return;
-		}
-
-		resendWelcomeEmail.mutateAsync({ email: emails[0].address });
-	};
-
-	const renderPendingButton = (): ReactElement =>
-		active ? (
-			<Button small secondary mie={8} onClick={handleResendWelcomeEmail}>
-				{t('Resend_welcome_email')}
-			</Button>
-		) : (
-			<Button small primary mie={8} onClick={changeUserStatusAction?.action} disabled={isSeatsCapExceeded}>
-				{t('Activate')}
-			</Button>
-		);
+	const handleResendWelcomeEmail = () => resendWelcomeEmail.mutateAsync({ email: emails?.[0].address });
 
 	return (
 		<GenericTableRow
@@ -142,13 +118,11 @@ const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSea
 				</Box>
 			</GenericTableCell>
 
-			{!isMobile && (
-				<GenericTableCell>
-					<Box fontScale='p2m' color='hint' withTruncatedText>
-						{username}
-					</Box>
-				</GenericTableCell>
-			)}
+			<GenericTableCell>
+				<Box fontScale='p2m' color='hint' withTruncatedText>
+					{username}
+				</Box>
+			</GenericTableCell>
 
 			{!isLaptop && <GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>}
 
@@ -175,7 +149,19 @@ const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSea
 					e.stopPropagation();
 				}}
 			>
-				{tab === 'pending' && renderPendingButton()}
+				{tab === 'pending' && (
+					<>
+						{active ? (
+							<Button small secondary mie={8} onClick={handleResendWelcomeEmail}>
+								{t('Resend_welcome_email')}
+							</Button>
+						) : (
+							<Button small primary mie={8} onClick={changeUserStatusAction?.action} disabled={isSeatsCapExceeded}>
+								{t('Activate')}
+							</Button>
+						)}
+					</>
+				)}
 
 				<Menu
 					mi={4}

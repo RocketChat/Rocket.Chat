@@ -4,7 +4,6 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import { useExternalLink } from '../../../../../client/hooks/useExternalLink';
-import { useShouldPreventAction } from '../../../../../client/hooks/useShouldPreventAction';
 import { useCheckoutUrl } from '../../../../../client/views/admin/subscription/hooks/useCheckoutUrl';
 import SeatsCapUsage from './SeatsCapUsage';
 
@@ -19,8 +18,6 @@ const UserPageHeaderContentWithSeatsCap = ({
 	activeUsers,
 	maxActiveUsers,
 }: UserPageHeaderContentWithSeatsCapProps): ReactElement => {
-	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
-
 	const t = useTranslation();
 	const router = useRouter();
 
@@ -47,7 +44,7 @@ const UserPageHeaderContentWithSeatsCap = ({
 				<Button icon='user-plus' onClick={handleNewButtonClick} disabled={isSeatsCapExceeded}>
 					{t('New_user')}
 				</Button>
-				{isCreateUserDisabled && (
+				{isSeatsCapExceeded && (
 					<Button primary role='link' onClick={() => openExternalLink(manageSubscriptionUrl)}>
 						{t('Buy_more_seats')}
 					</Button>

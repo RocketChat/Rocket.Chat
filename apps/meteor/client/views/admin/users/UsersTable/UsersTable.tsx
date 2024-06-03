@@ -80,24 +80,14 @@ const UsersTable = ({
 
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell w='x186' key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>,
-			!isMobile && (
-				<GenericTableHeaderCell
-					w='x186'
-					key='username'
-					direction={sortDirection}
-					active={sortBy === 'username'}
-					onClick={setSort}
-					sort='username'
-				>
-					{t('Username')}
-				</GenericTableHeaderCell>
-			),
+			<GenericTableHeaderCell key='username' direction={sortDirection} active={sortBy === 'username'} onClick={setSort} sort='username'>
+				{t('Username')}
+			</GenericTableHeaderCell>,
 			!isLaptop && (
 				<GenericTableHeaderCell
-					w='x186'
 					key='email'
 					direction={sortDirection}
 					active={sortBy === 'emails.address'}
@@ -108,35 +98,21 @@ const UsersTable = ({
 				</GenericTableHeaderCell>
 			),
 			!isLaptop && (
-				<GenericTableHeaderCell w='x186' key='roles' onClick={setSort}>
+				<GenericTableHeaderCell key='roles' onClick={setSort}>
 					{t('Roles')}
 				</GenericTableHeaderCell>
 			),
 			tab === 'all' && !isMobile && (
-				<GenericTableHeaderCell
-					w='x186'
-					key='status'
-					direction={sortDirection}
-					active={sortBy === 'status'}
-					onClick={setSort}
-					sort='status'
-				>
+				<GenericTableHeaderCell key='status' direction={sortDirection} active={sortBy === 'status'} onClick={setSort} sort='status'>
 					{t('Registration_status')}
 				</GenericTableHeaderCell>
 			),
 			tab === 'pending' && !isMobile && (
-				<GenericTableHeaderCell
-					w='x186'
-					key='action'
-					direction={sortDirection}
-					active={sortBy === 'active'}
-					onClick={setSort}
-					sort='active'
-				>
+				<GenericTableHeaderCell key='action' direction={sortDirection} active={sortBy === 'active'} onClick={setSort} sort='active'>
 					{t('Pending_action')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell key='actions' w='x186' />,
+			<GenericTableHeaderCell key='actions' w={tab === 'pending' ? 'x204' : ''} />,
 		],
 		[isLaptop, isMobile, setSort, sortBy, sortDirection, t, tab],
 	);

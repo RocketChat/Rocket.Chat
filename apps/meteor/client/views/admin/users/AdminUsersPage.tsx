@@ -1,11 +1,9 @@
 import type { IAdminUserTabs } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, Callout, ContextualbarIcon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, ContextualbarIcon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { ExternalLink } from '@rocket.chat/ui-client';
 import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Trans } from 'react-i18next';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
@@ -20,7 +18,7 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
-import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
+import { SubscriptionCalloutLimits } from '../subscription/SubscriptionCalloutLimits';
 import AdminInviteUsers from './AdminInviteUsers';
 import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
@@ -41,7 +39,7 @@ const AdminUsersPage = (): ReactElement => {
 
 	const seatsCap = useSeatsCap();
 
-	const isSeatsCapExceeded = useMemo(() => !!seatsCap && seatsCap.activeUsers >= seatsCap.maxActiveUsers, [seatsCap]);
+	const isSeatsCapExceeded = useShouldPreventAction('activeUsers');
 
 	const router = useRouter();
 	const context = useRouteParameter('context');
@@ -54,8 +52,6 @@ const AdminUsersPage = (): ReactElement => {
 
 	const paginationData = usePagination();
 	const sortData = useSort<UsersTableSortingOptions>('name');
-
-	const talkToSalesUrl = useCheckoutUrl()();
 
 	const [tab, setTab] = useState<IAdminUserTabs>('all');
 	const [userFilters, setUserFilters] = useState<UsersFilters>({ text: '' });
@@ -114,31 +110,29 @@ const AdminUsersPage = (): ReactElement => {
 						</ButtonGroup>
 					)}
 				</PageHeader>
+				{/* {isSeatsCapExceeded && (
+					<Callout title={t('Service_disruptions_occurring')} type='danger' mbe={19} mi={24}>
+						<Trans i18nKey='Your_workspace_exceeded_the_seat_license_limit'>
+							Your workspace exceeded the seat license limit. This limit cannot be exceeded further.
+							<ExternalLink to={talkToSalesUrl}>Manage your subscription</ExternalLink>
+							to increase limits.
+						</Trans>
+					</Callout>
+				)} */}
+				<Box mi={16} mbe={11}>
+					<SubscriptionCalloutLimits />
+				</Box>
 				<Tabs>
-					<TabsItem selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
+					<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChangeAndSort('all')}>
 						{t('All')}
+					</TabsItem>
+					<TabsItem selected={tab === 'pending'} onClick={() => handleTabChangeAndSort('pending')} display='flex' flexDirection='row'>
+						{`${t('Pending')} `}
+						{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' mis={8} />}
+						{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
 					</TabsItem>
 				</Tabs>
 				<PageContent>
-					{isSeatsCapExceeded && (
-						<Callout title={t('Service_disruptions_occurring')} type='danger' mbe={19}>
-							<Trans i18nKey='Your_workspace_exceeded_the_seat_license_limit'>
-								Your workspace exceeded the seat license limit. This limit cannot be exceeded further.
-								<ExternalLink to={talkToSalesUrl}>Manage your subscription</ExternalLink>
-								to increase limits.
-							</Trans>
-						</Callout>
-					)}
-					<Tabs>
-						<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChangeAndSort('all')}>
-							{t('All')}
-						</TabsItem>
-						<TabsItem selected={tab === 'pending'} onClick={() => handleTabChangeAndSort('pending')} display='flex' flexDirection='row'>
-							{`${t('Pending')} `}
-							{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' mis={8} />}
-							{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
-						</TabsItem>
-					</Tabs>
 					<UsersTable
 						filteredUsersQueryResult={filteredUsersQueryResult}
 						setUserFilters={setUserFilters}

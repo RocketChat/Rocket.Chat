@@ -1,4 +1,3 @@
-import { isUserFederated } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -121,7 +120,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 					isAdmin={data?.user.roles?.includes('admin')}
 					userId={data?.user._id}
 					username={user.username}
-					isFederatedUser={isUserFederated(data?.user as unknown as IUser)}
+					isFederatedUser={!!data.user.federated}
 					onChange={onChange}
 					onReload={onReload}
 				/>
