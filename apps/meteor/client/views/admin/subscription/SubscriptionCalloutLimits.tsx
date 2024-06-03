@@ -27,12 +27,14 @@ export const SubscriptionCalloutLimits = () => {
 	const keyLimits = Object.keys(limits) as Array<keyof typeof limits>;
 
 	// Get the rule with the highest limit that applies to this key
-
 	const rules = keyLimits
 		.map((key) => {
 			const rule = license.limits[key]
 				?.filter((limit) => validateWarnLimit(limit.max, limits[key].value ?? 0, limit.behavior))
-				.sort((a, b) => b.max - a.max)[0];
+				.reduce<{ max: number; behavior: LicenseBehavior } | null>(
+					(maxLimit, currentLimit) => (!maxLimit || currentLimit.max > maxLimit.max ? currentLimit : maxLimit),
+					null,
+				);
 
 			if (!rule) {
 				return undefined;
@@ -88,6 +90,7 @@ export const SubscriptionCalloutLimits = () => {
 					</Trans>
 				</Callout>
 			)}
+
 			{prevent_action && (
 				<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} m={8}>
 					<Trans i18nKey='subscription.callout.description.limitsExceeded' count={prevent_action.length}>
