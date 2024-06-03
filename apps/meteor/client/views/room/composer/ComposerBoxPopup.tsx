@@ -42,7 +42,6 @@ function ComposerBoxPopup<
 	const getOptionTitle = <T extends { _id: string; sort?: number; outside?: boolean; suggestion?: boolean; disabled?: boolean }>(
 		item: T,
 	) => {
-		console.log({ item });
 		if (variant !== 'small') {
 			return undefined;
 		}
