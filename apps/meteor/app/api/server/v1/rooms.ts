@@ -84,11 +84,7 @@ API.v1.addRoute(
 
 			const room = await Rooms.findOneByName(roomName, { projection: { _id: 1 } });
 
-			if (room === undefined || room === null) {
-				return API.v1.success({ exists: false });
-			}
-
-			return API.v1.success({ exists: true });
+			return API.v1.success({ exists: !!room });
 		},
 	},
 );
