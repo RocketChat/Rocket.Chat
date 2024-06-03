@@ -5464,6 +5464,7 @@
   "Unassigned": "Unassigned",
   "unauthorized": "Not authorized",
   "Unavailable": "Unavailable",
+  "Unavailable_in_encrypted_channels": "Unavailable in encrypted channels",
   "Unblock": "Unblock",
   "Unblock_User": "Unblock User",
   "Uncheck_All": "Uncheck All",
