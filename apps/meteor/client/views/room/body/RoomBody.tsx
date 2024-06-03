@@ -8,10 +8,10 @@ import React, { memo, useCallback, useMemo, useRef } from 'react';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { CustomScrollbars } from '../../../components/CustomScrollbars';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
-import Announcement from '../Announcement';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
+import { RoomAnnouncement } from '../RoomAnnouncement';
 import ComposerContainer from '../composer/ComposerContainer';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
@@ -194,7 +194,7 @@ const RoomBody = (): ReactElement => {
 			<Box position='relative' w='full'>
 				<Box animated className={[wrapperStyle, hideSection && 'animated-hidden'].filter(isTruthy)} ref={sectionWrapperRef}>
 					<RoomTopic room={room} user={user} />
-					{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
+					{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} announcementDetails={undefined} />}
 				</Box>
 			</Box>
 
@@ -208,7 +208,7 @@ const RoomBody = (): ReactElement => {
 					<div className='messages-container-wrapper'>
 						<div className='messages-container-main' ref={wrapperBoxRefs} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
-							<Box position='absolute' w='full' zIndex={12}>
+							<Box position='absolute' w='full'>
 								<div className={['container-bars', uploads.length && 'show'].filter(isTruthy).join(' ')}>
 									{uploads.map((upload) => (
 										<UploadProgressIndicator

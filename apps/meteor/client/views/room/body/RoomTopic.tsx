@@ -2,7 +2,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isTeamRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { RoomBanner, RoomBannerContent } from '@rocket.chat/ui-client';
-import { useSetting, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useUserId, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { RoomRoles } from '../../../../app/models/client';
@@ -10,7 +10,6 @@ import MarkdownText from '../../../components/MarkdownText';
 import { usePresence } from '../../../hooks/usePresence';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { RoomLeader } from '../Header/RoomLeader';
-import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 import { useCanEditRoom } from '../contextualBar/Info/hooks/useCanEditRoom';
 
 type RoomTopicProps = {
@@ -25,14 +24,10 @@ export const RoomTopic = ({ room, user }: RoomTopicProps) => {
 	const directUserId = room.uids?.filter((uid) => uid !== userId).shift();
 	const directUserData = usePresence(directUserId);
 	const useRealName = useSetting('UI_Use_Real_Name') as boolean;
-	const { openTab } = useRoomToolbox();
+	const router = useRouter();
 
-	const handleAddTopic = () => {
-		if (isTeamRoom(room)) {
-			return openTab('team-info');
-		}
-		return openTab('channel-settings');
-	};
+	const currentRoute = router.getLocationPathname();
+	const href = isTeamRoom(room) ? `${currentRoute}/team-info` : `${currentRoute}/channel-settings`;
 
 	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], () => {
 		const leaderRoomRole = RoomRoles.findOne({
@@ -59,7 +54,7 @@ export const RoomTopic = ({ room, user }: RoomTopicProps) => {
 		<RoomBanner className='rcx-header-section' role='note'>
 			<RoomBannerContent>
 				{roomLeader && !topic && canEdit ? (
-					<Box is='a' onClick={handleAddTopic} style={{ cursor: 'pointer' }}>
+					<Box is='a' href={href} style={{ cursor: 'pointer' }}>
 						{t('Add_topic')}
 					</Box>
 				) : (

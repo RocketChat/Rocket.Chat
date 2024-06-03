@@ -42,8 +42,10 @@ export const TopicAndAnnouncement = () => (
 				<IconButton icon='message' small />
 			</Box>
 		</RoomBanner>
-		<RoomBanner onClick={() => undefined}>
-			<RoomBannerContent>Announcement banner</RoomBannerContent>
+		<RoomBanner>
+			<RoomBannerContent>
+				Announcement banner <a href='google.com'>google.com</a>
+			</RoomBannerContent>
 		</RoomBanner>
 	</div>
 );

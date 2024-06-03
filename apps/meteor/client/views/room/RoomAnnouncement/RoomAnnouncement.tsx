@@ -8,12 +8,12 @@ import GenericModal from '../../../components/GenericModal';
 import MarkdownText from '../../../components/MarkdownText';
 import AnnouncementComponent from './AnnouncementComponent';
 
-type AnnouncementParams = {
+type RoomAnnouncementParams = {
 	announcement: string;
 	announcementDetails?: () => void;
 };
 
-const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetails }) => {
+export const RoomAnnouncement: FC<RoomAnnouncementParams> = ({ announcement, announcementDetails }) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal(null));
@@ -38,10 +38,8 @@ const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetail
 	};
 
 	return announcement ? (
-		<AnnouncementComponent onClickOpen={(e: MouseEvent<HTMLAnchorElement>): void => handleClick(e)}>
+		<AnnouncementComponent onClickOpen={handleClick}>
 			<MarkdownText variant='inlineWithoutBreaks' content={announcement} withTruncatedText parseEmoji />
 		</AnnouncementComponent>
 	) : null;
 };
-
-export default Announcement;

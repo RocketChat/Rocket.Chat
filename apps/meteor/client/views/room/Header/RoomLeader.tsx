@@ -35,13 +35,6 @@ export const RoomLeader = ({ _id, name, username }: RoomLeaderProps): ReactEleme
 
 	const chatNowLink = useMemo(() => roomCoordinator.getRouteLink('d', { name: username }) || undefined, [username]);
 
-	const handleAvatarClick = useCallback(
-		(event: UIEvent) => {
-			onAvatarClick?.(event, username);
-		},
-		[onAvatarClick, username],
-	);
-
 	if (!username) {
 		throw new Error('username is required');
 	}
@@ -60,7 +53,7 @@ export const RoomLeader = ({ _id, name, username }: RoomLeaderProps): ReactEleme
 
 	return (
 		<Box className={roomLeaderStyle} mis='x24'>
-			<UserAvatar role='button' username={username} size='x18' onClick={handleAvatarClick} {...triggerProps} />
+			<UserAvatar role='button' username={username} size='x18' onClick={(event) => onAvatarClick(event, username)} {...triggerProps} />
 			<ReactiveUserStatus uid={_id} />
 			<HeaderSubtitle>{name}</HeaderSubtitle>
 			<IconButton role='link' is='a' title={t('Chat_Now')} icon='message' small href={chatNowLink} />
