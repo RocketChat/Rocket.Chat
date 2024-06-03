@@ -717,6 +717,10 @@ class E2E extends Emitter {
 			// Prevent function from running and doing nothing when theres something to do
 			const sampleIds = await this.getSample(roomIds);
 
+			if (!sampleIds.length) {
+				return;
+			}
+
 			const { usersWaitingForE2EKeys = {} } = await sdk.rest.get('/v1/e2e.fetchUsersWaitingForGroupKey', { roomIds: sampleIds });
 
 			if (!Object.keys(usersWaitingForE2EKeys).length) {
