@@ -10,6 +10,7 @@ import type {
 	IPbxEvent,
 	LoginServiceConfiguration as LoginServiceConfigurationData,
 	ILivechatPriority,
+	IEmailInbox,
 	IIntegrationHistory,
 	AtLeast,
 } from '@rocket.chat/core-typings';
@@ -264,6 +265,17 @@ export async function notifyOnIntegrationChangedByChannels<T extends IIntegratio
 	for await (const item of items) {
 		void api.broadcast('watch.integrations', { clientAction, id: item._id, data: item });
 	}
+}
+
+export async function notifyOnEmailInboxChanged<T extends IEmailInbox>(
+	data: Pick<T, '_id'> | T, // TODO: improve typing
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	void api.broadcast('watch.emailInbox', { clientAction, id: data._id, data });
 }
 
 export async function notifyOnIntegrationHistoryChanged<T extends IIntegrationHistory>(

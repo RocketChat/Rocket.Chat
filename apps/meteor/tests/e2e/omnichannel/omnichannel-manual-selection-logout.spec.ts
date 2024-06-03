@@ -42,16 +42,18 @@ test.describe('OC - Manual Selection After Relogin', () => {
 
 	// Delete all data
 	test.afterAll(async ({ api }) => {
-		await agent.delete()
+		await agent.delete();
 		await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' });
 		await injectInitialData();
 	});
 
 	test('OC - Manual Selection - Logout & Login', async ({ api }) => {
 		expect(await poOmnichannel.page.locator('#omnichannel-status-toggle').getAttribute('title')).toEqual('Turn off answer chats');
-		
-		const { data: { room } } = await createConversation(api);
-		
+
+		const {
+			data: { room },
+		} = await createConversation(api);
+
 		await test.step('expect login and see the chat in queue after login', async () => {
 			await poOmnichannel.sidenav.getSidebarItemByName(room.fname).click();
 			await expect(poOmnichannel.content.inputMessage).not.toBeVisible();
