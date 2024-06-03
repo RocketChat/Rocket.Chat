@@ -310,41 +310,11 @@ export async function notifyOnIntegrationHistoryChangedById<T extends IIntegrati
 	void api.broadcast('watch.integrationHistory', { clientAction, id: item._id, data: item, diff });
 }
 
-// export async function notifyOnSubscriptionChanged(
-// 	subscription: ISubscription,
-// 	clientAction: ClientAction = 'updated',
-// ): Promise<void> {
-// 	if (!dbWatchersDisabled) {
-// 		return;
-// 	}
-
-// 	void api.broadcast('watch.subscriptions', { clientAction, subscription });
-// }
-
-// export async function notifyOnSubscriptionChangedById(
-// 	_id: ISubscription['_id'],
-// 	clientAction: ClientAction = 'updated',
-// ): Promise<void> {
-// 	if (!dbWatchersDisabled) {
-// 		return;
-// 	}
-
-// 	const subscription = clientAction === 'removed' ? await Subscriptions.trashFindOneById(_id) : await Subscriptions.findOneById(_id);
-
-// 	if (!subscription) {
-// 		return;
-// 	}
-
-// 	void api.broadcast('watch.subscriptions', { clientAction, subscription });
-// }
-
 export async function notifyOnSubscriptionChangedByUserAndRoomId(
 	uid: ISubscription['u']['_id'],
 	rid: ISubscription['rid'],
 	clientAction: ClientAction = 'updated',
-	// diff?: Partial<ISubscription>,
 ): Promise<void> {
-	// || !hasSubscriptionFields(diff)
 	if (!dbWatchersDisabled) {
 		return;
 	}

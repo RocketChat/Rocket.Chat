@@ -153,8 +153,15 @@ async function updateUsernameReferences({
 	// update other references if either the name or username has changed
 	if (usernameChanged || nameChanged) {
 		// update name and fname of 1-on-1 direct messages
-		(await Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name)).modifiedCount &&
+		const updateDirectNameResponse = await Subscriptions.updateDirectNameAndFnameByName(
+			previousUsername,
+			rawUsername && username,
+			rawName && name,
+		);
+
+		if (updateDirectNameResponse?.modifiedCount) {
 			void notifyOnSubscriptionChangedByNameAndRoomType(rawUsername && username, rawName && name, 'd');
+		}
 
 		// update name and fname of group direct messages
 		await updateGroupDMsName(user);
