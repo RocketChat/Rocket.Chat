@@ -2,8 +2,8 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"rootDir": "./src",
-		"outDir": "./dist/esm"
+		"outDir": "./dist",
 	},
 	"include": ["./src/**/*"],
-	"exclude": ["./src/**/*.spec.ts"]
+	"exclude": ["./src/**/*.spec.ts", "./src/**/*.spec.tsx"],
 }

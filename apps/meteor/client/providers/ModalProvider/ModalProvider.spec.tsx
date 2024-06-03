@@ -8,7 +8,6 @@ import { imperativeModal } from '../../lib/imperativeModal';
 import ModalRegion from '../../views/modal/ModalRegion';
 import ModalProvider from './ModalProvider';
 import ModalProviderWithRegion from './ModalProviderWithRegion';
-import '@testing-library/jest-dom';
 
 const renderWithSuspense = (ui: ReactElement) =>
 	render(ui, {

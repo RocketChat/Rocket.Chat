@@ -7,5 +7,5 @@
     "plugins": [{ "transform": "typia/lib/transform" }]
   },
 	"include": ["./src/**/*"],
-	"exclude": ["./src/**/*.spec.ts", "./src/jest-setup.ts"],
+	"exclude": ["./src/**/*.spec.ts"],
 }

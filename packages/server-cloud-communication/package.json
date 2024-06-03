@@ -4,10 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/license": "workspace:^",
-		"@types/jest": "~29.5.12",
 		"eslint": "~8.45.0",
-		"jest": "~29.7.0",
-		"ts-jest": "~29.1.1",
 		"typescript": "~5.3.3"
 	},
 	"volta": {
@@ -16,7 +13,6 @@
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"test": "jest",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},
 	"main": "./src/index.ts",
