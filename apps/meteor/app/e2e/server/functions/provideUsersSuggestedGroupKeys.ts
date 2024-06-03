@@ -21,7 +21,7 @@ export const provideUsersSuggestedGroupKeys = async (
 
 		const usersWithSuggestedKeys = [];
 		for await (const user of usersSuggestedGroupKeys[roomId]) {
-			const { modifiedCount } = await Subscriptions.setGroupE2ESuggestedKey(userId, roomId, user.key);
+			const { modifiedCount } = await Subscriptions.setGroupE2ESuggestedKey(user._id, roomId, user.key);
 			if (!modifiedCount) {
 				continue;
 			}
