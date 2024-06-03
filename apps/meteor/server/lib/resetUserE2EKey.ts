@@ -2,6 +2,7 @@ import { api } from '@rocket.chat/core-services';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { notifyOnSubscriptionChangedByUserId } from '../../app/lib/server/lib/notifyListener';
 import * as Mailer from '../../app/mailer/server/api';
 import { settings } from '../../app/settings/server';
 import { i18n } from './i18n';
@@ -66,11 +67,13 @@ export async function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean
 	}
 
 	// force logout the live sessions
-
 	await api.broadcast('user.forceLogout', uid);
 
-	await Users.resetE2EKey(uid);
-	await Subscriptions.resetUserE2EKey(uid);
+	const responses = await Promise.all([Users.resetE2EKey(uid), Subscriptions.resetUserE2EKey(uid)]);
+
+	if (responses[1]?.modifiedCount) {
+		void notifyOnSubscriptionChangedByUserId(uid);
+	}
 
 	// Force the user to logout, so that the keys can be generated again
 	await Users.unsetLoginTokens(uid);

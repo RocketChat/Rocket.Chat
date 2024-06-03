@@ -2,6 +2,8 @@ import { Subscriptions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
+import { notifyOnSubscriptionChangedById } from '../../../lib/server/lib/notifyListener';
+
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
@@ -22,14 +24,14 @@ Meteor.methods<ServerMethods>({
 		if (mySub) {
 			// Setting the key to myself, can set directly to the final field
 			if (userId === uid) {
-				await Subscriptions.setGroupE2EKey(mySub._id, key);
+				(await Subscriptions.setGroupE2EKey(mySub._id, key)).modifiedCount && void notifyOnSubscriptionChangedById(mySub._id);
 				return;
 			}
 
 			// uid also has subscription to this room
 			const userSub = await Subscriptions.findOneByRoomIdAndUserId(rid, uid);
 			if (userSub) {
-				await Subscriptions.setGroupE2ESuggestedKey(userSub._id, key);
+				(await Subscriptions.setGroupE2ESuggestedKey(userSub._id, key)).modifiedCount && void notifyOnSubscriptionChangedById(userSub._id);
 			}
 		}
 	},

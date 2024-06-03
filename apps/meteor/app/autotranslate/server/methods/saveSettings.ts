@@ -4,6 +4,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { notifyOnSubscriptionChangedById } from '../../../lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -53,13 +54,17 @@ Meteor.methods<ServerMethods>({
 					});
 				}
 
-				await Subscriptions.updateAutoTranslateById(subscription._id, value === '1');
+				(await Subscriptions.updateAutoTranslateById(subscription._id, value === '1')).modifiedCount &&
+					void notifyOnSubscriptionChangedById(subscription._id);
+
 				if (!subscription.autoTranslateLanguage && options.defaultLanguage) {
-					await Subscriptions.updateAutoTranslateLanguageById(subscription._id, options.defaultLanguage);
+					(await Subscriptions.updateAutoTranslateLanguageById(subscription._id, options.defaultLanguage)).modifiedCount &&
+						void notifyOnSubscriptionChangedById(subscription._id);
 				}
 				break;
 			case 'autoTranslateLanguage':
-				await Subscriptions.updateAutoTranslateLanguageById(subscription._id, value);
+				(await Subscriptions.updateAutoTranslateLanguageById(subscription._id, value)).modifiedCount &&
+					void notifyOnSubscriptionChangedById(subscription._id);
 				break;
 		}
 

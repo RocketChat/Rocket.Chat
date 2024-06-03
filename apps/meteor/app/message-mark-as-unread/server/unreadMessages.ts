@@ -5,6 +5,8 @@ import { Meteor } from 'meteor/meteor';
 
 import logger from './logger';
 
+import { notifyOnSubscriptionChangedByUserAndRoomId } from '../../lib/server/lib/notifyListener';
+
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
@@ -36,7 +38,9 @@ Meteor.methods<ServerMethods>({
 				});
 			}
 
-			await Subscriptions.setAsUnreadByRoomIdAndUserId(lastMessage.rid, userId, lastMessage.ts);
+			(await Subscriptions.setAsUnreadByRoomIdAndUserId(lastMessage.rid, userId, lastMessage.ts)).modifiedCount &&
+				void notifyOnSubscriptionChangedByUserAndRoomId(userId, lastMessage.rid);
+
 			return;
 		}
 
@@ -72,7 +76,9 @@ Meteor.methods<ServerMethods>({
 		if (firstUnreadMessage.ts >= lastSeen) {
 			return logger.debug('Provided message is already marked as unread');
 		}
-		logger.debug(`Updating unread  message of ${originalMessage.ts} as the first unread`);
-		await Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, userId, originalMessage.ts);
+
+		logger.debug(`Updating unread message of ${originalMessage.ts} as the first unread`);
+		(await Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, userId, originalMessage.ts)).modifiedCount &&
+			void notifyOnSubscriptionChangedByUserAndRoomId(userId, originalMessage.rid);
 	},
 });

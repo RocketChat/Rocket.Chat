@@ -37,6 +37,7 @@ import { i18n } from '../../../../server/lib/i18n';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { notifyOnSubscriptionChangedByRoomId, notifyOnSubscriptionChangedByUserAndRoomId } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
@@ -269,7 +270,12 @@ export const removeAgentFromSubscription = async (rid: string, { _id, username }
 		return;
 	}
 
-	await Subscriptions.removeByRoomIdAndUserId(rid, _id);
+	const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(rid, _id);
+
+	if (deletedSubscription) {
+		void notifyOnSubscriptionChangedByUserAndRoomId(_id, rid, 'removed');
+	}
+
 	await Message.saveSystemMessage('ul', rid, username || '', { _id: user._id, username: user.username, name: user.name });
 
 	setImmediate(() => {
@@ -479,7 +485,11 @@ export const updateChatDepartment = async ({
 		LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId),
 		LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId),
 		Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId),
-	]);
+	]).then((data) => {
+		if (data[2].modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomId(rid);
+		}
+	});
 
 	setImmediate(() => {
 		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {

@@ -4,6 +4,8 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { notifyOnSubscriptionChangedByUserAndRoomId } from '../../app/lib/server/lib/notifyListener';
+
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
@@ -28,6 +30,12 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-subscription', 'You must be part of a room to favorite it', { method: 'toggleFavorite' });
 		}
 
-		return (await Subscriptions.setFavoriteByRoomIdAndUserId(rid, userId, f)).modifiedCount;
+		const { modifiedCount } = await Subscriptions.setFavoriteByRoomIdAndUserId(rid, userId, f);
+
+		if (modifiedCount) {
+			void notifyOnSubscriptionChangedByUserAndRoomId(userId, rid);
+		}
+
+		return modifiedCount;
 	},
 });

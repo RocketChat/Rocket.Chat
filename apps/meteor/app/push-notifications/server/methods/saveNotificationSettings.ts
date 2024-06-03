@@ -4,6 +4,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { notifyOnSubscriptionChangedById } from '../../../lib/server/lib/notifyListener';
 import { getUserNotificationPreference } from '../../../utils/server/getUserNotificationPreference';
 
 const saveAudioNotificationValue = (subId: ISubscription['_id'], value: string) =>
@@ -132,7 +133,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await notifications[field].updateMethod(subscription, value);
+		(await notifications[field].updateMethod(subscription, value)).modifiedCount && void notifyOnSubscriptionChangedById(subscription._id);
 
 		return true;
 	},
@@ -144,13 +145,16 @@ Meteor.methods<ServerMethods>({
 				method: 'saveAudioNotificationValue',
 			});
 		}
+
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userId);
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
 				method: 'saveAudioNotificationValue',
 			});
 		}
-		await saveAudioNotificationValue(subscription._id, value);
+
+		(await saveAudioNotificationValue(subscription._id, value)).modifiedCount && void notifyOnSubscriptionChangedById(subscription._id);
+
 		return true;
 	},
 });

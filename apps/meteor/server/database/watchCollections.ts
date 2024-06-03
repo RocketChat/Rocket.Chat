@@ -35,7 +35,6 @@ export function getWatchCollections(): string[] {
 		LivechatDepartmentAgents.getCollectionName(),
 		InstanceStatus.getCollectionName(),
 		Settings.getCollectionName(),
-		Subscriptions.getCollectionName(),
 	];
 
 	// add back to the list of collections in case db watchers are enabled
@@ -50,6 +49,7 @@ export function getWatchCollections(): string[] {
 		collections.push(LoginServiceConfiguration.getCollectionName());
 		collections.push(EmailInbox.getCollectionName());
 		collections.push(IntegrationHistory.getCollectionName());
+		collections.push(Subscriptions.getCollectionName());
 	}
 
 	if (onlyCollections.length > 0) {

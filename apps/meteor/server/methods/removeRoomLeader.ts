@@ -6,6 +6,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -56,7 +57,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await Subscriptions.removeRoleById(subscription._id, 'leader');
+		(await Subscriptions.removeRoleById(subscription._id, 'leader')).modifiedCount &&
+			void notifyOnSubscriptionChangedById(subscription._id);
 
 		const fromUser = await Users.findOneById(uid);
 		if (!fromUser) {

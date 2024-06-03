@@ -1,6 +1,8 @@
 import { Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { notifyOnSubscriptionChangedById } from '../../../lib/server/lib/notifyListener';
+
 export async function handleSuggestedGroupKey(
 	handle: 'accept' | 'reject',
 	rid: string,
@@ -21,9 +23,12 @@ export async function handleSuggestedGroupKey(
 		throw new Meteor.Error('error-no-suggested-key-available', 'No suggested key available', { method });
 	}
 
-	if (handle === 'accept') {
-		await Subscriptions.setGroupE2EKey(sub._id, suggestedKey);
-	}
+	const e2eKeyUpdateResult =
+		handle === 'accept'
+			? await Subscriptions.setGroupE2EKey(sub._id, suggestedKey)
+			: await Subscriptions.unsetGroupE2ESuggestedKey(sub._id);
 
-	await Subscriptions.unsetGroupE2ESuggestedKey(sub._id);
+	if (e2eKeyUpdateResult?.modifiedCount) {
+		void notifyOnSubscriptionChangedById(sub._id);
+	}
 }

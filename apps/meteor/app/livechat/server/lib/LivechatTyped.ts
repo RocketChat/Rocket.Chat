@@ -57,7 +57,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
-import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomId } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
@@ -303,7 +303,7 @@ class LivechatClass {
 			throw new Error('Error closing room');
 		}
 
-		await Subscriptions.removeByRoomId(rid);
+		(await Subscriptions.removeByRoomId(rid)).deletedCount && void notifyOnSubscriptionChangedByRoomId(rid, 'removed');
 
 		this.logger.debug(`DB updated for room ${room._id}`);
 
@@ -507,6 +507,10 @@ class LivechatClass {
 			LivechatInquiry.removeByRoomId(rid),
 			LivechatRooms.removeById(rid),
 		]);
+
+		if (result[2]?.status === 'fulfilled' && result[2].value?.deletedCount) {
+			void notifyOnSubscriptionChangedByRoomId(rid, 'removed');
+		}
 
 		for (const r of result) {
 			if (r.status === 'rejected') {
@@ -1269,7 +1273,11 @@ class LivechatClass {
 			Subscriptions.removeByVisitorToken(token),
 			LivechatRooms.removeByVisitorToken(token),
 			LivechatInquiry.removeByVisitorToken(token),
-		]);
+		]).then((data) => {
+			if (data[0]?.deletedCount) {
+				void notifyOnSubscriptionChangedByToken(token, 'removed');
+			}
+		});
 	}
 
 	async deleteMessage({ guest, message }: { guest: ILivechatVisitor; message: IMessage }) {
@@ -1804,11 +1812,16 @@ class LivechatClass {
 		if (guestData?.name?.trim().length) {
 			const { _id: rid } = roomData;
 			const { name } = guestData;
-			await Promise.all([
+
+			const responses = await Promise.all([
 				Rooms.setFnameById(rid, name),
 				LivechatInquiry.setNameByRoomId(rid, name),
 				Subscriptions.updateDisplayNameByRoomId(rid, name),
 			]);
+
+			if (responses[2]?.modifiedCount) {
+				await notifyOnSubscriptionChangedByRoomId(rid);
+			}
 		}
 
 		void notifyOnRoomChangedById(roomData._id);

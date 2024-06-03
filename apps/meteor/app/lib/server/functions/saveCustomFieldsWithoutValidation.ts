@@ -5,6 +5,7 @@ import type { UpdateFilter } from 'mongodb';
 
 import { trim } from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings/server';
+import { notifyOnSubscriptionChangedByUserIdAndRoomType } from '../lib/notifyListener';
 
 export const saveCustomFieldsWithoutValidation = async function (userId: string, formData: Record<string, any>): Promise<void> {
 	if (trim(settings.get('Accounts_CustomFields')) !== '') {
@@ -22,7 +23,8 @@ export const saveCustomFieldsWithoutValidation = async function (userId: string,
 		await Users.setCustomFields(userId, customFields);
 
 		// Update customFields of all Direct Messages' Rooms for userId
-		await Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields);
+		(await Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields)).modifiedCount &&
+			void notifyOnSubscriptionChangedByUserIdAndRoomType(userId, 'd');
 
 		for await (const fieldName of Object.keys(customFields)) {
 			if (!customFieldsMeta[fieldName].modifyRecordField) {

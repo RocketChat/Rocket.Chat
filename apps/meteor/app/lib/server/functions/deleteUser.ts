@@ -19,7 +19,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { notifyOnRoomChangedById, notifyOnIntegrationChangedByUserId } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnIntegrationChangedByUserId, notifyOnSubscriptionChangedByUserId } from '../lib/notifyListener';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
@@ -93,7 +93,9 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		const rids = subscribedRooms.map((room) => room.rid);
 		void notifyOnRoomChangedById(rids);
 
-		await Subscriptions.removeByUserId(userId); // Remove user subscriptions
+		// TODO: handle modifiedCount and/or return validity to call listener
+		await Subscriptions.removeByUserId(userId);
+		void notifyOnSubscriptionChangedByUserId(userId);
 
 		if (user.roles.includes('livechat-agent')) {
 			// Remove user as livechat agent

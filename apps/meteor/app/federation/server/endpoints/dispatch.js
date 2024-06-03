@@ -177,7 +177,11 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the user's subscription
-			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+
+			if (deletedSubscription) {
+				void notifyOnSubscriptionChangedByUserAndRoomId(user._id, roomId, 'removed');
+			}
 
 			// Refresh the servers list
 			await FederationServers.refreshServers();
@@ -205,7 +209,11 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the user's subscription
-			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+
+			if (deletedSubscription) {
+				void notifyOnSubscriptionChangedByUserAndRoomId(user._id, roomId, 'removed');
+			}
 
 			// Refresh the servers list
 			await FederationServers.refreshServers();
