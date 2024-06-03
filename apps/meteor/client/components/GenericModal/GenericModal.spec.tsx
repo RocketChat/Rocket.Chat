@@ -7,8 +7,6 @@ import React, { Suspense } from 'react';
 import ModalProviderWithRegion from '../../providers/ModalProvider/ModalProviderWithRegion';
 import GenericModal from './GenericModal';
 
-import '@testing-library/jest-dom';
-
 const renderModal = (modalElement: ReactElement) => {
 	const {
 		result: { current: setModal },

@@ -5,16 +5,22 @@ export default {
 	errorOnDeprecated: true,
 
 	transform: {
-		'^.+\\.(t|j)sx?$': [
+		'^.+\\.m?(t|j)sx?$': [
 			'@swc/jest',
 			{
 				sourceMaps: true,
 				jsc: {
 					target: 'es2015',
+					parser: {
+						syntax: 'typescript',
+						decorators: false,
+						dynamicImport: true,
+					},
 				},
 			},
 		],
 	},
+	moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node', 'mjs'],
 
 	collectCoverage: true,
 } satisfies Config;

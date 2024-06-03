@@ -7,6 +7,7 @@
 		"@babel/preset-env": "~7.22.20",
 		"@babel/preset-typescript": "~7.22.15",
 		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/jest-presets": "workspace:~",
 		"@types/babel__core": "^7.20.3",
 		"@types/babel__preset-env": "^7.9.4",
 		"@types/jest": "~29.5.12",
@@ -20,10 +21,9 @@
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"jest": "jest",
-		"testunit": "jest --verbose tests/**/*.test.ts",
-		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
-		"build": "rm -rf dist && tsc -p tsconfig.json"
+		"testunit": "jest",
+		"dev": "tsc --watch --preserveWatchOutput",
+		"build": "rm -rf dist && tsc"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
