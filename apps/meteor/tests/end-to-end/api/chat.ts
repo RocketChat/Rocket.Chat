@@ -1457,13 +1457,13 @@ describe('[Chat]', () => {
 				});
 		});
 
-		it('should fail updating a message if no room id is provided', () => {
+		it('should fail updating a message if no  text is provided', () => {
 			return request
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
+					roomId: testChannel._id,
 					msgId: message._id,
-					text: 'This message was edited via API',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
