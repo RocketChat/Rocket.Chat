@@ -9,6 +9,7 @@
 		"@rocket.chat/fuselage": "^0.54.3",
 		"@rocket.chat/fuselage-hooks": "^0.33.1",
 		"@rocket.chat/icons": "^0.36.0",
+		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/mock-providers": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:~",
 		"@storybook/addon-actions": "~6.5.16",
@@ -38,18 +39,17 @@
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
 		"react-hook-form": "~7.45.4",
-		"ts-jest": "~29.1.1",
 		"typescript": "~5.3.3"
 	},
 	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"typecheck": "tsc --noEmit",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",
 		"testunit": "jest",
-		"build": "rm -rf dist && tsc -p tsconfig-build.json",
-		"typecheck": "tsc -p tsconfig.json --noEmit",
-		"storybook": "start-storybook -p 6006",
-		"dev": "tsc -p tsconfig-build.json --watch --preserveWatchOutput"
+		"storybook": "start-storybook -p 6006"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

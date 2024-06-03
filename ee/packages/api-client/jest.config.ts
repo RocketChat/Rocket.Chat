@@ -1,13 +1,7 @@
+import client from '@rocket.chat/jest-presets/client';
+import type { Config } from 'jest';
+
 export default {
-	preset: 'ts-jest',
-	errorOnDeprecated: true,
-	testEnvironment: 'jsdom',
-	modulePathIgnorePatterns: ['<rootDir>/dist/'],
-	transform: {
-		'^.+\\.(t|j)sx?$': '@swc/jest',
-	},
-	moduleNameMapper: {
-		'\\.css$': 'identity-obj-proxy',
-	},
-	collectCoverage: true,
-};
+	preset: client.preset,
+	setupFilesAfterEnv: [...client.setupFilesAfterEnv],
+} satisfies Config;

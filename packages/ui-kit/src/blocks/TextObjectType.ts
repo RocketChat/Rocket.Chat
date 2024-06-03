@@ -9,6 +9,7 @@ export enum TextObjectType {
 	MRKDWN = 'mrkdwn',
 }
 
+// @ts-expect-error is declared but never used
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type AssertEnumKeysFromBlockUnionTypes = {
 	[B in TextObject as Uppercase<B['type']>]: (typeof TextObjectType)[Uppercase<B['type']>];

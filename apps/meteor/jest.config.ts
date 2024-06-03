@@ -1,26 +1,21 @@
+import client from '@rocket.chat/jest-presets/client';
+import server from '@rocket.chat/jest-presets/server';
 import type { Config } from 'jest';
 
 export default {
 	projects: [
 		{
 			displayName: 'client',
-			testEnvironment: 'jsdom',
+			preset: client.preset,
+			setupFilesAfterEnv: [...client.setupFilesAfterEnv],
+
 			testMatch: [
 				'<rootDir>/client/**/**.spec.[jt]s?(x)',
 				'<rootDir>/tests/unit/client/views/**/*.spec.{ts,tsx}',
 				'<rootDir>/tests/unit/client/providers/**/*.spec.{ts,tsx}',
 			],
-			errorOnDeprecated: true,
-
-			modulePathIgnorePatterns: ['<rootDir>/dist/'],
-
-			transform: {
-				'^.+\\.(t|j)sx?$': '@swc/jest',
-			},
-			transformIgnorePatterns: ['!/node_modules/uuid'],
 
 			moduleNameMapper: {
-				'\\.css$': 'identity-obj-proxy',
 				'^react($|/.+)': '<rootDir>/node_modules/react$1',
 				'^react-dom/client$': '<rootDir>/node_modules/react-dom$1',
 				'^react-dom($|/.+)': '<rootDir>/node_modules/react-dom$1',
@@ -29,12 +24,11 @@ export default {
 				'^meteor/(.*)': '<rootDir>/tests/mocks/client/meteor.ts',
 			},
 
-			setupFilesAfterEnv: ['<rootDir>/client/jest.setup.ts'],
 			coveragePathIgnorePatterns: ['<rootDir>/tests/'],
 		},
 		{
 			displayName: 'server',
-			testEnvironment: 'node',
+			preset: server.preset,
 
 			testMatch: [
 				'<rootDir>/app/livechat/server/business-hour/**/*.spec.ts?(x)',
@@ -42,21 +36,6 @@ export default {
 				'<rootDir>/ee/app/authorization/server/validateUserRoles.spec.ts',
 				'<rootDir>/app/cloud/server/functions/supportedVersionsToken/**.spec.ts',
 			],
-			transformIgnorePatterns: ['!/node_modules/jose'],
-			errorOnDeprecated: true,
-
-			modulePathIgnorePatterns: ['<rootDir>/dist/'],
-
-			transform: {
-				'^.+\\.(t|j)sx?$': '@swc/jest',
-			},
-
-			moduleNameMapper: {
-				'\\.css$': 'identity-obj-proxy',
-				'^react($|/.+)': '<rootDir>/node_modules/react$1',
-				'^@tanstack/(.+)': '<rootDir>/node_modules/@tanstack/$1',
-			},
 		},
 	],
-	collectCoverage: true,
 } satisfies Config;

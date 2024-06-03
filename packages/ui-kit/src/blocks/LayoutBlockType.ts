@@ -14,6 +14,7 @@ export enum LayoutBlockType {
 	TAB_NAVIGATION = 'tab_navigation',
 }
 
+// @ts-expect-error is declared but never used
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type AssertEnumKeysFromBlockUnionTypes = {
 	[B in LayoutBlock as Uppercase<B['type']>]: (typeof LayoutBlockType)[Uppercase<B['type']>];
