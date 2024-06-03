@@ -5,10 +5,7 @@ import type { IOmnichannelRoom, IUser, ILivechatInquiryRecord, IOmnichannelSyste
 import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, Subscriptions, LivechatInquiry } from '@rocket.chat/models';
 
-import {
-	notifyOnRoomChangedById,
-	notifyOnSubscriptionChangedByRoomId,
-} from '../../../../../app/lib/server/lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomId } from '../../../../../app/lib/server/lib/notifyListener';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';

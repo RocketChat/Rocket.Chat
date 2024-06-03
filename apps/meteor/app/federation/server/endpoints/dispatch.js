@@ -7,7 +7,11 @@ import { broadcastMessageFromData } from '../../../../server/modules/watchers/li
 import { API } from '../../../api/server';
 import { FileUpload } from '../../../file-upload/server';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
-import { notifyOnRoomChanged, notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
+import {
+	notifyOnRoomChanged,
+	notifyOnRoomChangedById,
+	notifyOnSubscriptionChangedByUserAndRoomId,
+} from '../../../lib/server/lib/notifyListener';
 import { notifyUsersOnMessage } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendAllNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 import { processThreads } from '../../../threads/server/hooks/aftersavemessage';
