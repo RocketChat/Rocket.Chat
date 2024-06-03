@@ -89,7 +89,7 @@ export function createFakeAppPrivate(partial: Partial<App> = {}): App {
 		installed: true,
 		private: true,
 		status: 'manually_enabled' as AppStatus.MANUALLY_ENABLED,
-		// Fiedls from marketplace
+		// Fields from marketplace
 		appRequestStats: undefined,
 		shortDescription: undefined,
 		price: undefined,
