@@ -7,7 +7,11 @@ import { saveRoomTopic } from '../../../../../../app/channel-settings/server';
 import { addUserToRoom } from '../../../../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../../../../app/lib/server/functions/createRoom';
 import { removeUserFromRoom } from '../../../../../../app/lib/server/functions/removeUserFromRoom';
-import { notifyOnSubscriptionChangedById, notifyOnSubscriptionChangedByRoomId } from '../../../../../../app/lib/server/lib/notifyListener';
+import {
+	notifyOnSubscriptionChangedById,
+	notifyOnSubscriptionChangedByRoomId,
+	notifyOnSubscriptionChangedByUserAndRoomId,
+} from '../../../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../../../app/settings/server';
 import { getDefaultSubscriptionPref } from '../../../../../../app/utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../../../../app/utils/server/lib/getValidRoomName';

@@ -57,7 +57,11 @@ import { FileUpload } from '../../../file-upload/server';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomId } from '../../../lib/server/lib/notifyListener';
+import {
+	notifyOnRoomChangedById,
+	notifyOnSubscriptionChangedByRoomId,
+	notifyOnSubscriptionChangedByToken,
+} from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
@@ -1269,15 +1273,15 @@ class LivechatClass {
 			]);
 		}
 
-		await Promise.all([
+		const responses = await Promise.all([
 			Subscriptions.removeByVisitorToken(token),
 			LivechatRooms.removeByVisitorToken(token),
 			LivechatInquiry.removeByVisitorToken(token),
-		]).then((data) => {
-			if (data[0]?.deletedCount) {
-				void notifyOnSubscriptionChangedByToken(token, 'removed');
-			}
-		});
+		]);
+
+		if (responses[0]?.deletedCount) {
+			void notifyOnSubscriptionChangedByToken(token, 'removed');
+		}
 	}
 
 	async deleteMessage({ guest, message }: { guest: ILivechatVisitor; message: IMessage }) {

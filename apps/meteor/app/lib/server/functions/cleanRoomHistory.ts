@@ -84,9 +84,9 @@ export async function cleanRoomHistory({
 		});
 
 		if (threads.size > 0) {
-			const subscriptionIds = (await Subscriptions.findUnreadThreadsByRoomId(rid, [...threads], { projection: { _id: 1 } }))
-				.toArray()
-				.map(({ _id }) => _id);
+			const subscriptionIds: string[] = (
+				await Subscriptions.findUnreadThreadsByRoomId(rid, [...threads], { projection: { _id: 1 } }).toArray()
+			).map(({ _id }: { _id: string }) => _id);
 
 			const removedUnreadThreadsResponse = await Subscriptions.removeUnreadThreadsByRoomId(rid, [...threads]);
 
