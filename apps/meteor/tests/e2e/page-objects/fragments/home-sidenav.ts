@@ -48,6 +48,10 @@ export class HomeSidenav {
 	get sidebarSearchSection() {
 		return this.page.getByRole('navigation', { name: 'sidebar' }).getByRole('searchbox');
 	}
+	
+	get accountProfileOption(): Locator {
+		return this.page.locator('role=menuitemcheckbox[name="Profile"]');
+	}
 
 	getSidebarItemByName(name: string): Locator {
 		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
@@ -137,6 +141,13 @@ export class HomeSidenav {
 		await this.openNewByLabel('Channel');
 		await this.checkboxPrivateChannel.click();
 		await this.inputChannelName.type(name);
+		await this.btnCreate.click();
+	}
+
+	async createEncryptedChannel(name: string) {
+		await this.openNewByLabel('Channel');
+		await this.inputChannelName.type(name);
+		await this.checkboxEncryption.click();
 		await this.btnCreate.click();
 	}
 }

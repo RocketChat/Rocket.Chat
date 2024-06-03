@@ -13,6 +13,10 @@ export class HomeContent {
 		return this.page.locator('main header');
 	}
 
+	get channelRetentionPolicyWarning(): Locator {
+		return this.page.locator('main').getByRole('alert', { name: 'Retention policy warning banner' });
+	}
+
 	get inputMessage(): Locator {
 		return this.page.locator('[name="msg"]');
 	}

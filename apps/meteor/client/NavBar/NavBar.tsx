@@ -3,10 +3,10 @@ import { NavBar as NavBarComponent, NavBarSection, NavBarGroup, NavBarDivider } 
 import { usePermission, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import React, { useRef } from 'react';
 
-import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
 import { useIsCallEnabled, useIsCallReady } from '../contexts/CallContext';
 import { useOmnichannelEnabled } from '../hooks/omnichannel/useOmnichannelEnabled';
 import { useOmnichannelShowQueueLink } from '../hooks/omnichannel/useOmnichannelShowQueueLink';
+import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 import {
 	NavBarItemOmniChannelCallDialPad,
 	NavBarItemOmnichannelContact,

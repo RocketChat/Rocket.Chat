@@ -39,6 +39,7 @@ const UserMenu = ({ user, className }: { user: IUser; className?: string }) => {
 				isOpen={isOpen}
 				onOpenChange={setIsOpen}
 				className={className}
+				aria-label={t('User_menu')}
 			/>
 			<UserAvatarStatus status={status} />
 		</>
