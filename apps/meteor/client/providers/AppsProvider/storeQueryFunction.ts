@@ -53,7 +53,8 @@ export function storeQueryFunction(
 
 	sortByName(clonedData).forEach((app) => {
 		if (app.private) {
-			return privateApps.push(app);
+			privateApps.push(app);
+			return;
 		}
 
 		installedApps.push(app);
