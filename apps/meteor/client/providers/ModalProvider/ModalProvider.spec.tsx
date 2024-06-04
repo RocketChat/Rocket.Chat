@@ -89,13 +89,13 @@ describe('via useSetModal', () => {
 			modalOpener1Ref.current?.open();
 		});
 
-		expect(await screen.findByText('modal1')).toBeInTheDocument();
+		expect(await screen.findByRole('dialog', { name: 'modal1' })).toBeInTheDocument();
 
 		act(() => {
 			modalOpener2Ref.current?.open();
 		});
 
-		expect(await screen.findByText('modal2')).toBeInTheDocument();
+		expect(await screen.findByRole('dialog', { name: 'modal2' })).toBeInTheDocument();
 	});
 });
 
