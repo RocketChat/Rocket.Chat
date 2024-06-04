@@ -19,11 +19,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import {
-	notifyOnRoomChangedById,
-	notifyOnIntegrationChangedByUserId,
-	notifyOnLivechatDepartmentAgentChangedByAgentId,
-} from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnIntegrationChangedByUserId, notifyOnLivechatDepartmentAgentChanged } from '../lib/notifyListener';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
@@ -99,10 +95,22 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 		await Subscriptions.removeByUserId(userId); // Remove user subscriptions
 
+		// Remove user as livechat agent
 		if (user.roles.includes('livechat-agent')) {
-			// Remove user as livechat agent
+			const departmentAgents = await LivechatDepartmentAgents.findByAgentId(userId).toArray();
+
 			await LivechatDepartmentAgents.removeByAgentId(userId);
-			void notifyOnLivechatDepartmentAgentChangedByAgentId(userId, 'removed');
+
+			departmentAgents.forEach((depAgent) => {
+				void notifyOnLivechatDepartmentAgentChanged(
+					{
+						_id: depAgent._id,
+						agentId: userId,
+						departmentId: depAgent.departmentId,
+					},
+					'removed',
+				);
+			});
 		}
 
 		if (user.roles.includes('livechat-monitor')) {
