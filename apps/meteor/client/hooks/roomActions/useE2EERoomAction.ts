@@ -1,22 +1,24 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { e2e } from '../../../app/e2e/client/rocketchat.e2e';
+import { E2EEState } from '../../../app/e2e/client/E2EEState';
 import { OtrRoomState } from '../../../app/otr/lib/OtrRoomState';
 import { dispatchToastMessage } from '../../lib/toast';
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
+import { useE2EEState } from '../../views/room/hooks/useE2EEState';
 import { useOTR } from '../useOTR';
-import { useReactiveValue } from '../useReactiveValue';
 
 export const useE2EERoomAction = () => {
 	const enabled = useSetting('E2E_Enable', false);
 	const room = useRoom();
 	const subscription = useRoomSubscription();
-	const readyToEncrypt = useReactiveValue(useCallback(() => e2e.isReady(), [])) || room.encrypted;
+	const e2eeState = useE2EEState();
+	const isE2EEReady = e2eeState === E2EEState.READY || e2eeState === E2EEState.SAVE_PASSWORD;
+	const readyToEncrypt = isE2EEReady || room.encrypted;
 	const permittedToToggleEncryption = usePermission('toggle-room-e2e-encryption', room._id);
 	const permittedToEditRoom = usePermission('edit-room', room._id);
 	const permitted = (room.t === 'd' || (permittedToEditRoom && permittedToToggleEncryption)) && readyToEncrypt;
