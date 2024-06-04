@@ -146,10 +146,7 @@ export class AppRoomBridge extends RoomBridge {
 
 		const cursor = Messages.find(query, messageQueryOptions);
 
-		const messagePromises: Promise<IMessageRaw>[] = [];
-		await cursor.forEach((message) => {
-			messagePromises.push(messageConverter.convertMessageRaw(message));
-		});
+		const messagePromises: Promise<IMessageRaw>[] = await cursor.map((message) => messageConverter.convertMessageRaw(message)).toArray();
 
 		return Promise.all(messagePromises);
 	}
