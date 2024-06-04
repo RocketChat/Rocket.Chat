@@ -1,4 +1,4 @@
-import { getLoginExpirationInDays } from './getLoginExpiration';
+import { getLoginExpirationInDays, getLoginExpirationInMs } from './getLoginExpiration';
 
 describe('getLoginExpiration', () => {
 	it('should return 90 by default', () => {
@@ -22,5 +22,14 @@ describe('getLoginExpiration', () => {
 	});
 	it('should return the value passed when its valid', () => {
 		expect(getLoginExpirationInDays(85)).toBe(85);
+	});
+});
+
+describe('getLoginExpirationInMs', () => {
+	it('should return 90 days in milliseconds when no value is passed', () => {
+		expect(getLoginExpirationInMs()).toBe(90 * 24 * 60 * 60 * 1000);
+	});
+	it('should return the value passed when its valid', () => {
+		expect(getLoginExpirationInMs(85)).toBe(85 * 24 * 60 * 60 * 1000);
 	});
 });
