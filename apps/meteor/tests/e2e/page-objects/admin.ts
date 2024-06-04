@@ -205,7 +205,19 @@ export class Admin {
 		return this.page.locator('input[placeholder="Room"]');
 	}
 
+	get inputUsers(): Locator {
+		return this.page.locator('input[placeholder="Users"]');
+	}
+
+	get btnAdd(): Locator {
+		return this.page.getByRole('button', { name: 'Add' });
+	}
+
+	get btnBack(): Locator {
+		return this.page.getByRole('button', { name: 'Back' });
+	}
+
 	getUserRowByUsername(username: string): Locator {
-		return this.page.locator('tr', { hasText: username })
+		return this.page.locator('tr', { hasText: username });
 	}
 }
