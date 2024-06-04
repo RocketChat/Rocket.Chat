@@ -31,4 +31,24 @@ describe('MainLayout style tags', () => {
 		const style = queryByAttribute('id', document.head, 'codeBlock-palette');
 		expect(style).not.toBeNull();
 	});
+	const tagLight = queryByAttribute('id', document.head, 'main-palette-light');
+	expect(tagLight).not.toBeNull();
+});
+
+it('should create the Dark theme style tag', () => {
+	render(<MainLayoutStyleTags />, {
+		legacyRoot: true,
+		wrapper: mockAppRoot().withUserPreference('themeAppearence', 'dark').build(),
+	});
+	const tagDark = queryByAttribute('id', document.head, 'main-palette-dark');
+	expect(tagDark).not.toBeNull();
+});
+
+it('should create the codeBlock style tag when in dark mode', () => {
+	render(<MainLayoutStyleTags />, {
+		legacyRoot: true,
+		wrapper: mockAppRoot().withUserPreference('themeAppearence', 'dark').build(),
+	});
+	const style = queryByAttribute('id', document.head, 'codeBlock-palette');
+	expect(style).not.toBeNull();
 });
