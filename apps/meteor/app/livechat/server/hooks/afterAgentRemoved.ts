@@ -1,17 +1,26 @@
 import { LivechatDepartment, Users, LivechatDepartmentAgents, LivechatVisitors } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { notifyOnLivechatDepartmentAgentChangedByAgentId } from '../../../lib/server/lib/notifyListener';
+import { notifyOnLivechatDepartmentAgentChanged } from '../../../lib/server/lib/notifyListener';
 
 callbacks.add('livechat.afterAgentRemoved', async ({ agent }) => {
-	const departmentIds = (await LivechatDepartmentAgents.findByAgentId(agent._id).toArray()).map((department) => department.departmentId);
+	const departments = await LivechatDepartmentAgents.findByAgentId(agent._id).toArray();
 
 	await Promise.all([
 		Users.removeAgent(agent._id),
 		LivechatDepartmentAgents.removeByAgentId(agent._id),
 		agent.username && LivechatVisitors.removeContactManagerByUsername(agent.username),
-		departmentIds.length && LivechatDepartment.decreaseNumberOfAgentsByIds(departmentIds),
+		departments.length && LivechatDepartment.decreaseNumberOfAgentsByIds(departments.map(({ departmentId }) => departmentId)),
 	]);
 
-	void notifyOnLivechatDepartmentAgentChangedByAgentId(agent._id);
+	departments.forEach((depAgent) => {
+		void notifyOnLivechatDepartmentAgentChanged(
+			{
+				_id: depAgent._id,
+				agentId: agent._id,
+				departmentId: depAgent.departmentId,
+			},
+			'removed',
+		);
+	});
 });

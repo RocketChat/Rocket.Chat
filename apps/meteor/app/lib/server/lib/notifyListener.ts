@@ -321,21 +321,6 @@ export async function notifyOnLivechatDepartmentAgentChanged<T extends ILivechat
 	void api.broadcast('watch.livechatDepartmentAgents', { clientAction, id: data._id, data });
 }
 
-export async function notifyOnLivechatDepartmentAgentChangedByAgentId<T extends ILivechatDepartmentAgents>(
-	agentId: T['agentId'],
-	clientAction: 'inserted' | 'updated' = 'updated',
-): Promise<void> {
-	if (!dbWatchersDisabled) {
-		return;
-	}
-
-	const items = LivechatDepartmentAgents.findByAgentId(agentId, { projection: { _id: 1, agentId: 1, departmentId: 1 } });
-
-	for await (const item of items) {
-		void api.broadcast('watch.livechatDepartmentAgents', { clientAction, id: item._id, data: item });
-	}
-}
-
 export async function notifyOnLivechatDepartmentAgentChangedByDepartmentId<T extends ILivechatDepartmentAgents>(
 	departmentId: T['departmentId'],
 	clientAction: 'inserted' | 'updated' = 'updated',
