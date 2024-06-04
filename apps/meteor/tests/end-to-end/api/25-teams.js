@@ -1598,6 +1598,14 @@ describe('[Teams]', () => {
 		describe('team auto-join', () => {
 			let testTeam;
 			let createdRoom;
+			let testUser1;
+			let testUser2;
+
+			before(async () => {
+				const [testUserResult, testUser1Result] = await Promise.all([createUser(), createUser()]);
+				testUser1 = testUserResult;
+				testUser2 = testUser1Result;
+			});
 
 			beforeEach(async () => {
 				const createTeamPromise = createTeam(credentials, `test-team-name${Date.now()}`, 0);
@@ -1621,12 +1629,12 @@ describe('[Teams]', () => {
 				Promise.all([deleteTeam(credentials, testTeam.name), deleteRoom({ roomId: createdRoom.body.channel._id, type: 'c' })]),
 			);
 
-			after(() => updateSetting('API_User_Limit', 500));
+			after(() => Promise.all([updateSetting('API_User_Limit', 500), deleteUser(testUser1), deleteUser(testUser2)]));
 
 			it('should add members when the members count is less than or equal to the API_User_Limit setting', async () => {
 				await updateSetting('API_User_Limit', 2);
 
-				await addMembers(credentials, testTeam.name, [testUser._id, testUser2._id]);
+				await addMembers(credentials, testTeam.name, [testUser1._id, testUser2._id]);
 				await request
 					.post(api('teams.updateRoom'))
 					.set(credentials)
@@ -1644,7 +1652,7 @@ describe('[Teams]', () => {
 			it('should not add all members when we update a team channel to be auto-join and the members count is greater than the API_User_Limit setting', async () => {
 				await updateSetting('API_User_Limit', 1);
 
-				await addMembers(credentials, testTeam.name, [testUser._id, testUser2._id]);
+				await addMembers(credentials, testTeam.name, [testUser1._id, testUser2._id]);
 				await request
 					.post(api('teams.updateRoom'))
 					.set(credentials)
