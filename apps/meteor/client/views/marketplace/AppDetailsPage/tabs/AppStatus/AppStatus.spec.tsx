@@ -29,5 +29,5 @@ it('should look good', async () => {
 			.build(),
 	});
 
-	userEvent.click(screen.getByRole('button', { name: 'Request' }));
+	await userEvent.click(screen.getByRole('button', { name: 'Request' }));
 });
