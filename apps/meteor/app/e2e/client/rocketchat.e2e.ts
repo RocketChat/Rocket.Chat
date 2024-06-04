@@ -116,15 +116,15 @@ class E2E extends Emitter {
 
 	async onE2EEReady() {
 		this.log('startClient -> Done');
-		this.log('decryptSubscriptions');
 		this.initiateHandshake();
+		await this.handleAsyncE2EESuggestedKey();
+		this.log('decryptSubscriptions');
 		await this.decryptSubscriptions();
 		this.log('decryptSubscriptions -> Done');
 		await this.initiateDecryptingPendingMessages();
 		this.log('DecryptingPendingMessages -> Done');
 		await this.initiateKeyDistribution();
 		this.log('initiateKeyDistribution -> Done');
-		await this.handleAsyncE2EESuggestedKey();
 	}
 
 	shouldAskForE2EEPassword() {
