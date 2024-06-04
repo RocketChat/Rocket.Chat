@@ -6,8 +6,8 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 
-import { useRoom } from '../../../contexts/RoomContext';
 import { getRoomTypeTranslation } from '../../../../../lib/getRoomTypeTranslation';
+import { useRoom } from '../../../contexts/RoomContext';
 
 type MessageSearchFormProps = {
 	provider: IMessageSearchProvider;
