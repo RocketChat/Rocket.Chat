@@ -14,7 +14,15 @@ export class AppMessagesConverter {
 		return this.convertMessage(msg);
 	}
 
-	async convertMessage(msgObj) {
+	async convertDiscussionMessage(msgObj) {
+		return this._convertMessage(msgObj, {
+			drid: 'drid',
+			dlm: (msg) => (msg.dlm ? new Date(msg.dlm) : undefined),
+			dcount: 'dcount',
+		});
+	}
+
+	async _convertMessage(msgObj, extraMap = {}) {
 		if (!msgObj) {
 			return undefined;
 		}
@@ -72,9 +80,14 @@ export class AppMessagesConverter {
 
 				return user;
 			},
+			...extraMap,
 		};
 
 		return transformMappedData(msgObj, map);
+	}
+
+	async convertMessage(msgObj) {
+		return this._convertMessage(msgObj);
 	}
 
 	async convertAppMessage(message) {

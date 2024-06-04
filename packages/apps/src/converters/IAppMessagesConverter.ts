@@ -1,3 +1,4 @@
+import type { IDiscussionMessage } from '@rocket.chat/apps-engine/definition/messages/IDiscussionMessage';
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import type { IAppsMessage } from '../AppsEngine';
@@ -10,4 +11,5 @@ export interface IAppMessagesConverter {
 	convertAppMessage(message: undefined | null): Promise<undefined>;
 	convertAppMessage(message: IAppsMessage): Promise<IMessage | undefined>;
 	convertAppMessage(message: IAppsMessage | undefined | null): Promise<IMessage | undefined>;
+	convertDiscussionMessage(message: IMessage): Promise<IDiscussionMessage>;
 }

@@ -1,11 +1,12 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IDiscussionMessage } from '@rocket.chat/apps-engine/definition/messages/IDiscussionMessage';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom } from '@rocket.chat/core-typings';
-import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
 
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
@@ -149,6 +150,50 @@ export class AppRoomBridge extends RoomBridge {
 		await deleteRoom(roomId);
 	}
 
+	protected async getDiscussions(
+		rid: string,
+		options: {
+			limit: number;
+			offset?: number;
+			sort?: Record<string, 1 | -1>;
+		},
+		_appId: string,
+	): Promise<{
+		messages: IDiscussionMessage[];
+		count: number;
+		offset: number;
+		total: number;
+	}> {
+		let { limit, offset = 0, sort } = options;
+
+		if (!Number.isFinite(limit) || limit < 1) {
+			limit = 100;
+		}
+
+		if (!Number.isFinite(offset) || offset < 0) {
+			offset = 0;
+		}
+
+		if (!sort || typeof sort !== 'object') {
+			sort = { ts: -1 };
+		}
+
+		const { cursor, totalCount } = await Messages.findDiscussionsByRoom(rid, {
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit,
+		});
+
+		const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return {
+			messages: await Promise.all(messages.map((message) => this.orch.getConverters()?.get('messages').convertDiscussionMessage(message))),
+			count: messages.length,
+			offset,
+			total,
+		};
+	}
+
 	protected async createDiscussion(
 		room: IRoom,
 		parentMessage: IMessage | undefined = undefined,
@@ -208,5 +253,17 @@ export class AppRoomBridge extends RoomBridge {
 		const users = await Users.findByIds(subs.map((user: { uid: string }) => user.uid)).toArray();
 		const userConverter = this.orch.getConverters().get('users');
 		return users.map((user: ICoreUser) => userConverter.convertToApp(user));
+	}
+
+	protected async getMessages(
+		_roomId: string,
+		_options: {
+			limit: number;
+			skip?: number;
+			sort?: Record<string, 1 | -1>;
+		},
+		_appId: string,
+	): Promise<IMessage[]> {
+		throw new Error('Not implemented.');
 	}
 }
