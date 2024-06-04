@@ -1,3 +1,5 @@
+import { convertFromDaysToMilliseconds } from './converter';
+
 const ACCOUNTS_DEFAULT_LOGIN_EXPIRATION_DAYS = 90;
 
 // Given a value, validates if it mets the conditions to be a valid login expiration.
@@ -7,4 +9,8 @@ export const getLoginExpirationInDays = (expiry?: number) => {
 		return expiry;
 	}
 	return ACCOUNTS_DEFAULT_LOGIN_EXPIRATION_DAYS;
+};
+
+export const getLoginExpirationInMs = (expiry?: number) => {
+	return convertFromDaysToMilliseconds(getLoginExpirationInDays(expiry));
 };

@@ -19,7 +19,7 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
-import { getLoginExpiration } from '@rocket.chat/tools';
+import { getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -1026,8 +1026,7 @@ API.v1.addRoute(
 
 			const loginExp = settings.get<number>('Accounts_LoginExpiration');
 
-			const tokenExpires =
-				(token && 'when' in token && new Date(token.when.getTime() + getLoginExpiration(loginExp) * 60 * 60 * 24 * 1000)) || undefined;
+			const tokenExpires = (token && 'when' in token && new Date(token.when.getTime() + getLoginExpirationInMs(loginExp))) || undefined;
 
 			return API.v1.success({
 				token: xAuthToken,
