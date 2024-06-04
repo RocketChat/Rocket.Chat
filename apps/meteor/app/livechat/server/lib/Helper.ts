@@ -703,19 +703,28 @@ export const updateDepartmentAgents = async (
 	const { upsert = [], remove = [] } = agents;
 
 	const agentsUpdated = [];
-	const agentsRemoved = [];
+	const agentsRemoved = remove.map(({ agentId }: { agentId: string }) => agentId);
 	const agentsAdded = [];
 
-	for await (const { agentId } of remove) {
-		await LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId);
-		agentsRemoved.push(agentId);
-	}
-
 	if (agentsRemoved.length > 0) {
-		callbacks.runAsync('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
+		const removedIds = await LivechatDepartmentAgents.findAgentsByAgentsAndDepartmentId(agentsRemoved, departmentId, {
+			projection: { agentId: 1 },
+		}).toArray();
 
-		// TODO can't use trash here since same agent might have been removed many times from same department, thus causing multiple (wrong) notified data
-		void notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId(agentsRemoved, departmentId, 'removed');
+		await LivechatDepartmentAgents.removeByIds(removedIds.map(({ _id }) => _id));
+
+		removedIds.forEach(({ _id, agentId }) => {
+			void notifyOnLivechatDepartmentAgentChanged(
+				{
+					_id,
+					agentId,
+					departmentId,
+				},
+				'removed',
+			);
+		});
+
+		callbacks.runAsync('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
 	}
 
 	for await (const agent of upsert) {
