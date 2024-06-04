@@ -15,10 +15,12 @@ import { router } from '../providers/RouterProvider';
 Meteor.startup(() => {
 	Tracker.autorun(() => {
 		if (!Meteor.userId()) {
+			e2e.log('Not logged in');
 			return;
 		}
 
 		if (!window.crypto) {
+			e2e.error('No crypto support');
 			return;
 		}
 
@@ -27,8 +29,10 @@ Meteor.startup(() => {
 		const adminEmbedded = isLayoutEmbedded() && router.getLocationPathname().startsWith('/admin');
 
 		if (enabled && !adminEmbedded) {
+			e2e.log('E2E enabled starting client');
 			e2e.startClient();
 		} else {
+			e2e.log('E2E disabled');
 			e2e.setState(E2EEState.DISABLED);
 			e2e.closeAlert();
 		}
@@ -41,6 +45,7 @@ Meteor.startup(() => {
 
 	Tracker.autorun(() => {
 		if (!e2e.isReady()) {
+			e2e.log('Not ready');
 			offClientMessageReceived?.();
 			observable?.stop();
 			offClientBeforeSendMessage?.();
@@ -49,12 +54,14 @@ Meteor.startup(() => {
 		}
 
 		if (listenersAttached) {
+			e2e.log('Listeners already attached');
 			return;
 		}
 
 		observable = Subscriptions.find().observe({
 			changed: async (sub: ISubscription) => {
 				setTimeout(async () => {
+					e2e.log('Subscription changed', sub);
 					if (!sub.encrypted && !sub.E2EKey) {
 						e2e.removeInstanceByRoomId(sub.rid);
 						return;
@@ -96,6 +103,7 @@ Meteor.startup(() => {
 			},
 			added: async (sub: ISubscription) => {
 				setTimeout(async () => {
+					e2e.log('Subscription added', sub);
 					if (!sub.encrypted && !sub.E2EKey) {
 						return;
 					}
@@ -103,6 +111,7 @@ Meteor.startup(() => {
 				}, 0);
 			},
 			removed: (sub: ISubscription) => {
+				e2e.log('Subscription removed', sub);
 				e2e.removeInstanceByRoomId(sub.rid);
 			},
 		});
@@ -142,5 +151,6 @@ Meteor.startup(() => {
 		});
 
 		listenersAttached = true;
+		e2e.log('Listeners attached', listenersAttached);
 	});
 });
