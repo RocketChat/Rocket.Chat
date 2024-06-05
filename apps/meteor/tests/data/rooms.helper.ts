@@ -76,13 +76,13 @@ export const asyncCreateRoom = ({ name, type, username, members = [] }: Pick<Cre
 type ActionType = 'delete' | 'close' | 'addOwner' | 'removeOwner';
 type ActionRoomParams = {
 	action: ActionType;
-	t: Exclude<IRoom['t'], 'v' | 'l'>;
+	type: Exclude<IRoom['t'], 'v' | 'l'>;
 	roomId: IRoom['_id'];
 	overrideCredentials?: Credentials;
 	extraData?: Record<string, any>;
 };
 
-function actionRoom({ action, t: type, roomId, overrideCredentials = credentials, extraData = {} }: ActionRoomParams) {
+function actionRoom({ action, type, roomId, overrideCredentials = credentials, extraData = {} }: ActionRoomParams) {
 	if (!type) {
 		throw new Error(`"type" is required in "${action}Room" test helper`);
 	}
@@ -106,11 +106,11 @@ function actionRoom({ action, t: type, roomId, overrideCredentials = credentials
 	});
 }
 
-export const deleteRoom = ({ t: type, roomId }: { t: ActionRoomParams['t']; roomId: IRoom['_id'] }) =>
-	actionRoom({ action: 'delete', t: type, roomId, overrideCredentials: credentials });
+export const deleteRoom = ({ type, roomId }: { type: ActionRoomParams['type']; roomId: IRoom['_id'] }) =>
+	actionRoom({ action: 'delete', type, roomId, overrideCredentials: credentials });
 
-export const closeRoom = ({ t: type, roomId }: { t: ActionRoomParams['t']; roomId: IRoom['_id'] }) =>
-	actionRoom({ action: 'close', t: type, roomId });
+export const closeRoom = ({ type, roomId }: { type: ActionRoomParams['type']; roomId: IRoom['_id'] }) =>
+	actionRoom({ action: 'close', type, roomId });
 
 export const joinChannel = ({ overrideCredentials = credentials, roomId }: { overrideCredentials: Credentials; roomId: IRoom['_id'] }) =>
 	request.post(api('channels.join')).set(overrideCredentials).send({
@@ -131,11 +131,11 @@ export const inviteToChannel = ({
 		roomId,
 	});
 
-export const addRoomOwner = ({ type, roomId, userId }: { type: ActionRoomParams['t']; roomId: IRoom['_id']; userId: IUser['_id'] }) =>
-	actionRoom({ action: 'addOwner', t: type, roomId, extraData: { userId } });
+export const addRoomOwner = ({ type, roomId, userId }: { type: ActionRoomParams['type']; roomId: IRoom['_id']; userId: IUser['_id'] }) =>
+	actionRoom({ action: 'addOwner', type, roomId, extraData: { userId } });
 
-export const removeRoomOwner = ({ type, roomId, userId }: { type: ActionRoomParams['t']; roomId: IRoom['_id']; userId: IUser['_id'] }) =>
-	actionRoom({ action: 'removeOwner', t: type, roomId, extraData: { userId } });
+export const removeRoomOwner = ({ type, roomId, userId }: { type: ActionRoomParams['type']; roomId: IRoom['_id']; userId: IUser['_id'] }) =>
+	actionRoom({ action: 'removeOwner', type, roomId, extraData: { userId } });
 
 export const getChannelRoles = async ({
 	roomId,
