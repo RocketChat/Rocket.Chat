@@ -10,7 +10,7 @@ import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });
 
-test.describe('OC - Manual Selection', () => {
+test.describe('OC - Manual Selection After Relogin', () => {
 	let poOmnichannel: HomeOmnichannel;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 
@@ -42,16 +42,18 @@ test.describe('OC - Manual Selection', () => {
 
 	// Delete all data
 	test.afterAll(async ({ api }) => {
-		await agent.delete()
+		await agent.delete();
 		await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' });
 		await injectInitialData();
 	});
 
 	test('OC - Manual Selection - Logout & Login', async ({ api }) => {
 		expect(await poOmnichannel.page.locator('#omnichannel-status-toggle').getAttribute('title')).toEqual('Turn off answer chats');
-		
-		const { data: { room } } = await createConversation(api);
-		
+
+		const {
+			data: { room },
+		} = await createConversation(api);
+
 		await test.step('expect login and see the chat in queue after login', async () => {
 			await poOmnichannel.sidenav.getSidebarItemByName(room.fname).click();
 			await expect(poOmnichannel.content.inputMessage).not.toBeVisible();

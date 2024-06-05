@@ -41,6 +41,7 @@ const permitedMutations = {
 		E2ERoomState.ERROR,
 		E2ERoomState.DISABLED,
 		E2ERoomState.WAITING_KEYS,
+		E2ERoomState.CREATING_KEYS,
 	],
 };
 
@@ -90,6 +91,10 @@ export class E2ERoom extends Emitter {
 
 	error(...msg) {
 		logError(`E2E ROOM { state: ${this.state}, rid: ${this.roomId} }`, ...msg);
+	}
+
+	getState() {
+		return this.state;
 	}
 
 	setState(requestedState) {
@@ -208,6 +213,10 @@ export class E2ERoom extends Emitter {
 
 	// Initiates E2E Encryption
 	async handshake() {
+		if (!e2e.isReady()) {
+			return;
+		}
+
 		if (this.state !== E2ERoomState.KEYS_RECEIVED && this.state !== E2ERoomState.NOT_STARTED) {
 			return;
 		}
@@ -459,5 +468,11 @@ export class E2ERoom extends Emitter {
 		}
 
 		this.encryptKeyForOtherParticipants();
+		this.setState(E2ERoomState.READY);
+	}
+
+	onStateChange(cb) {
+		this.on('STATE_CHANGED', cb);
+		return () => this.off('STATE_CHANGED', cb);
 	}
 }

@@ -629,7 +629,7 @@ jobs:
 
     strategy:
       matrix:
-        service: ['account', 'authorization', 'ddp-streamer', 'presence', 'stream-hub']
+        service: ['account', 'authorization', 'ddp-streamer', 'omnichannel-transcript', 'presence', 'queue-worker', 'stream-hub']
 
     steps:
       - name: Login to DockerHub
