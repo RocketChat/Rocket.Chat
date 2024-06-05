@@ -29,7 +29,7 @@ export async function loadMessageHistory({
 		throw new Error('error-invalid-room');
 	}
 
-	const hiddenMessageTypes = getHiddenSystemMessages(room);
+	const hiddenMessageTypes = await getHiddenSystemMessages(room);
 
 	const options: FindOptions<IMessage> = {
 		sort: {

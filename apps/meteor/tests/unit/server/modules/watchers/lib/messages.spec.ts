@@ -9,6 +9,7 @@ describe('Message Broadcast Tests', () => {
 	let broadcastStub: sinon.SinonStub;
 	let getMessageToBroadcast: any;
 	let broadcastMessageFromData: any;
+	let shouldHideSystemMessageStub: sinon.SinonStub;
 
 	const sampleMessage = {
 		_id: '123',
@@ -40,6 +41,10 @@ describe('Message Broadcast Tests', () => {
 		dbWatchersDisabled,
 	});
 
+	const hiddenSystemMessageStub = () => ({
+		shouldHideSystemMessage: shouldHideSystemMessageStub,
+	});
+
 	const memStubs = (value: (data: string) => any) => (data: string) => value(data);
 
 	beforeEach(() => {
@@ -47,8 +52,10 @@ describe('Message Broadcast Tests', () => {
 		usersFindOneStub = sinon.stub();
 		messagesFindOneStub = sinon.stub();
 		broadcastStub = sinon.stub();
+		shouldHideSystemMessageStub = sinon.stub();
 
 		const proxyMock = proxyquire.noCallThru().load('../../../../../../server/modules/watchers/lib/messages', {
+			'../../../lib/systemMessage/hideSystemMessage': hiddenSystemMessageStub(),
 			'@rocket.chat/models': modelsStubs(),
 			'@rocket.chat/core-services': coreStubs(false),
 			'mem': memStubs,
@@ -63,6 +70,17 @@ describe('Message Broadcast Tests', () => {
 	});
 
 	describe('getMessageToBroadcast', () => {
+		let originalEnv: NodeJS.ProcessEnv;
+
+		beforeEach(() => {
+			originalEnv = { ...process.env };
+			sinon.resetHistory();
+		});
+
+		afterEach(() => {
+			process.env = originalEnv;
+		});
+
 		const testCases = [
 			{
 				description: 'should return undefined if message is hidden or imported',
@@ -149,6 +167,8 @@ describe('Message Broadcast Tests', () => {
 				getValueByIdStub.withArgs('Hide_System_Messages').resolves(hideSystemMessages);
 				getValueByIdStub.withArgs('UI_Use_Real_Name').resolves(useRealName);
 
+				shouldHideSystemMessageStub.resolves((hideSystemMessages as string[])?.includes(message.t) || false);
+
 				if (useRealName) {
 					usersFindOneStub.resolves({ name: 'Real User' });
 				}
@@ -163,6 +183,7 @@ describe('Message Broadcast Tests', () => {
 	describe('broadcastMessageFromData', () => {
 		const setupProxyMock = (dbWatchersDisabled: boolean) => {
 			const proxyMock = proxyquire.noCallThru().load('../../../../../../server/modules/watchers/lib/messages', {
+				'../../../lib/systemMessage/hideSystemMessage': hiddenSystemMessageStub(),
 				'@rocket.chat/models': modelsStubs(),
 				'@rocket.chat/core-services': coreStubs(dbWatchersDisabled),
 				'mem': memStubs,
