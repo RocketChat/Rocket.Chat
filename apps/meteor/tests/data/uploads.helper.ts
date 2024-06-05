@@ -23,9 +23,8 @@ export async function testFileUploads(
 		d: 'room',
 	};
 
-	before(async function () {
-		await updateSetting('VoIP_Enabled', true);
-		await updateSetting('Message_KeepHistory', true);
+	before(async () => {
+		await Promise.all([updateSetting('VoIP_Enabled', true), updateSetting('Message_KeepHistory', true)]);
 
 		testRoom = (
 			await createRoom({
@@ -35,13 +34,13 @@ export async function testFileUploads(
 		).body[propertyMap[roomType]];
 	});
 
-	after(async function () {
-		await Promise.all([
+	after(() =>
+		Promise.all([
 			deleteRoom({ t: 'c' as const, roomId: testRoom._id }),
 			updateSetting('VoIP_Enabled', false),
 			updateSetting('Message_KeepHistory', false),
-		]);
-	});
+		]),
+	);
 
 	const createVoipRoom = async function () {
 		const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
