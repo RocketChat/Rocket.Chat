@@ -1,6 +1,6 @@
 import { useToolbar } from '@react-aria/toolbar';
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
-import { isThreadMessage, isRoomFederated, isVideoConfMessage } from '@rocket.chat/core-typings';
+import { isThreadMessage, isRoomFederated, isVideoConfMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import { MessageToolbar as FuselageMessageToolbar, MessageToolbarItem } from '@rocket.chat/fuselage';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useSettings, useTranslation, useMethod, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
@@ -128,6 +128,7 @@ const MessageToolbar = ({
 						title={t(action.label)}
 						data-qa-id={action.label}
 						data-qa-type='message-action-menu'
+						disabled={action?.disabled?.({ message, room, user, subscription, settings: mapSettings, chat, context })}
 					/>
 				))}
 			{actionsQueryResult.isSuccess && actionsQueryResult.data.menu.length > 0 && (
@@ -138,6 +139,8 @@ const MessageToolbar = ({
 					}))}
 					onChangeMenuVisibility={onChangeMenuVisibility}
 					data-qa-type='message-action-menu-options'
+					context={{ message, room, user, subscription, settings: mapSettings, chat, context }}
+					isMessageEncrypted={isE2EEMessage(message)}
 				/>
 			)}
 		</FuselageMessageToolbar>
