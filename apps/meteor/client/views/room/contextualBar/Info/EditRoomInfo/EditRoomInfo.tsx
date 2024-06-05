@@ -465,7 +465,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 							</Field>
 						)}
 					</FieldGroup>
-					{retentionPolicy?.enabled && (
+					{canEditRoomRetentionPolicy && retentionPolicy?.enabled && (
 						<Accordion>
 							<Accordion.Item title={t('Prune')}>
 								<FieldGroup>
@@ -486,12 +486,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												control={control}
 												name='retentionOverrideGlobal'
 												render={({ field: { value, ...field } }) => (
-													<ToggleSwitch
-														id={retentionOverrideGlobalField}
-														{...field}
-														disabled={!retentionEnabled || !canEditRoomRetentionPolicy}
-														checked={value}
-													/>
+													<ToggleSwitch id={retentionOverrideGlobalField} {...field} disabled={!retentionEnabled} checked={value} />
 												)}
 											/>
 										</FieldRow>
