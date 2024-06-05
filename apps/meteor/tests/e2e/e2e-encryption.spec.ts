@@ -205,7 +205,7 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
-	test('expect create a Direct message, encrypt it and attempt to enable OTR', async ({ page, api }) => {
+	test('expect create a Direct message, encrypt it and attempt to enable OTR', async ({ page }) => {
 		await poHomeChannel.sidenav.openNewByLabel('Direct message');
 		await poHomeChannel.sidenav.inputDirectUsername.click();
 		await page.keyboard.type('user2');
