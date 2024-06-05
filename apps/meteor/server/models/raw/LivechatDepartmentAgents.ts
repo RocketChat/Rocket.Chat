@@ -192,8 +192,8 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		);
 	}
 
-	async removeByAgentId(agentId: string): Promise<void> {
-		await this.deleteMany({ agentId });
+	async removeByAgentId(agentId: string): Promise<DeleteResult> {
+		return this.deleteMany({ agentId });
 	}
 
 	async removeByDepartmentIdAndAgentId(departmentId: string, agentId: string): Promise<void> {

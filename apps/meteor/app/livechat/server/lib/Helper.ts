@@ -711,18 +711,20 @@ export const updateDepartmentAgents = async (
 			projection: { agentId: 1 },
 		}).toArray();
 
-		await LivechatDepartmentAgents.removeByIds(removedIds.map(({ _id }) => _id));
+		const { deletedCount } = await LivechatDepartmentAgents.removeByIds(removedIds.map(({ _id }) => _id));
 
-		removedIds.forEach(({ _id, agentId }) => {
-			void notifyOnLivechatDepartmentAgentChanged(
-				{
-					_id,
-					agentId,
-					departmentId,
-				},
-				'removed',
-			);
-		});
+		if (deletedCount > 0) {
+			removedIds.forEach(({ _id, agentId }) => {
+				void notifyOnLivechatDepartmentAgentChanged(
+					{
+						_id,
+						agentId,
+						departmentId,
+					},
+					'removed',
+				);
+			});
+		}
 
 		callbacks.runAsync('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
 	}

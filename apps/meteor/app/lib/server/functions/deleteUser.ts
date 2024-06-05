@@ -99,18 +99,20 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		if (user.roles.includes('livechat-agent')) {
 			const departmentAgents = await LivechatDepartmentAgents.findByAgentId(userId).toArray();
 
-			await LivechatDepartmentAgents.removeByAgentId(userId);
+			const { deletedCount } = await LivechatDepartmentAgents.removeByAgentId(userId);
 
-			departmentAgents.forEach((depAgent) => {
-				void notifyOnLivechatDepartmentAgentChanged(
-					{
-						_id: depAgent._id,
-						agentId: userId,
-						departmentId: depAgent.departmentId,
-					},
-					'removed',
-				);
-			});
+			if (deletedCount > 0) {
+				departmentAgents.forEach((depAgent) => {
+					void notifyOnLivechatDepartmentAgentChanged(
+						{
+							_id: depAgent._id,
+							agentId: userId,
+							departmentId: depAgent.departmentId,
+						},
+						'removed',
+					);
+				});
+			}
 		}
 
 		if (user.roles.includes('livechat-monitor')) {

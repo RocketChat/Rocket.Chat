@@ -31,8 +31,10 @@ class DepartmentHelperClass {
 			`Performing post-department-removal actions: ${_id}. Removing department agents, unsetting fallback department and removing department from rooms`,
 		);
 
+		const removeByDept = LivechatDepartmentAgents.removeByDepartmentId(_id);
+
 		const promiseResponses = await Promise.allSettled([
-			LivechatDepartmentAgents.removeByDepartmentId(_id),
+			removeByDept,
 			LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id),
 			LivechatRooms.bulkRemoveDepartmentAndUnitsFromRooms(_id),
 		]);
@@ -43,16 +45,20 @@ class DepartmentHelperClass {
 			}
 		});
 
-		removedAgents.forEach(({ _id: docId, agentId }) => {
-			void notifyOnLivechatDepartmentAgentChanged(
-				{
-					_id: docId,
-					agentId,
-					departmentId: _id,
-				},
-				'removed',
-			);
-		});
+		const { deletedCount } = await removeByDept;
+
+		if (deletedCount > 0) {
+			removedAgents.forEach(({ _id: docId, agentId }) => {
+				void notifyOnLivechatDepartmentAgentChanged(
+					{
+						_id: docId,
+						agentId,
+						departmentId: _id,
+					},
+					'removed',
+				);
+			});
+		}
 
 		await callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds: removedAgents.map(({ agentId }) => agentId) });
 
