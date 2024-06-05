@@ -707,7 +707,7 @@ export const updateDepartmentAgents = async (
 	const agentsAdded = [];
 
 	if (agentsRemoved.length > 0) {
-		const removedIds = await LivechatDepartmentAgents.findAgentsByAgentsAndDepartmentId(agentsRemoved, departmentId, {
+		const removedIds = await LivechatDepartmentAgents.findByAgentsAndDepartmentId(agentsRemoved, departmentId, {
 			projection: { agentId: 1 },
 		}).toArray();
 

@@ -92,7 +92,7 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 	enableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document>;
 	findAllAgentsConnectedToListOfDepartments(departmentIds: string[]): Promise<string[]>;
 	findByAgentIds(agentIds: string[], options?: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;
-	findAgentsByAgentsAndDepartmentId(
+	findByAgentsAndDepartmentId(
 		agentsIds: ILivechatDepartmentAgents['agentId'][],
 		departmentId: ILivechatDepartmentAgents['departmentId'],
 		options?: FindOptions<ILivechatDepartmentAgents>,

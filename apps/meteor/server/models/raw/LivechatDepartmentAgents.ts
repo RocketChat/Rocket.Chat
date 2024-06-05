@@ -388,7 +388,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.col.distinct('agentId', { departmentId: { $in: departmentIds }, departmentEnabled: true });
 	}
 
-	findAgentsByAgentsAndDepartmentId(
+	findByAgentsAndDepartmentId(
 		agentsIds: ILivechatDepartmentAgents['agentId'][],
 		departmentId: ILivechatDepartmentAgents['departmentId'],
 		options?: FindOptions<ILivechatDepartmentAgents>,

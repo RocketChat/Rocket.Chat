@@ -345,7 +345,7 @@ export async function notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmen
 		return;
 	}
 
-	const items = LivechatDepartmentAgents.findAgentsByAgentsAndDepartmentId(agentsIds, departmentId, {
+	const items = LivechatDepartmentAgents.findByAgentsAndDepartmentId(agentsIds, departmentId, {
 		projection: { _id: 1, agentId: 1, departmentId: 1 },
 	});
 
