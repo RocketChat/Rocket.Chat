@@ -1,10 +1,12 @@
 import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
 import { act, renderHook } from '@testing-library/react-hooks';
 
+import { E2EEState } from '../../../app/e2e/client/E2EEState';
 import { e2e } from '../../../app/e2e/client/rocketchat.e2e';
 import { OtrRoomState } from '../../../app/otr/lib/OtrRoomState';
 import { dispatchToastMessage } from '../../lib/toast';
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
+import { useE2EEState } from '../../views/room/hooks/useE2EEState';
 import { useOTR } from '../useOTR';
 import { useE2EERoomAction } from './useE2EERoomAction';
 
@@ -32,6 +34,11 @@ jest.mock('../../../app/e2e/client/rocketchat.e2e', () => ({
 		isReady: jest.fn(),
 	},
 }));
+
+jest.mock('../../views/room/hooks/useE2EEState', () => ({
+	useE2EEState: jest.fn(),
+}));
+
 jest.mock('react-i18next', () => ({
 	useTranslation: () => ({
 		t: (key: string) => key,
@@ -52,6 +59,7 @@ describe('useE2EERoomAction', () => {
 		(useSetting as jest.Mock).mockReturnValue(true);
 		(useRoom as jest.Mock).mockReturnValue(mockRoom);
 		(useRoomSubscription as jest.Mock).mockReturnValue(mockSubscription);
+		(useE2EEState as jest.Mock).mockReturnValue(E2EEState.READY);
 		(usePermission as jest.Mock).mockReturnValue(true);
 		(useEndpoint as jest.Mock).mockReturnValue(jest.fn().mockResolvedValue({ success: true }));
 		(e2e.isReady as jest.Mock).mockReturnValue(true);
