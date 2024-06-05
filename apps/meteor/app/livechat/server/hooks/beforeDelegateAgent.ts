@@ -1,7 +1,6 @@
 import { LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { notifyOnLivechatDepartmentAgentChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 
 callbacks.add(
@@ -16,14 +15,7 @@ callbacks.add(
 		}
 
 		if (department) {
-			const livechatDepartmentAgent = await LivechatDepartmentAgents.getNextBotForDepartment(department);
-
-			if (livechatDepartmentAgent) {
-				const { agentId, departmentId, _id } = livechatDepartmentAgent;
-				void notifyOnLivechatDepartmentAgentChanged({ agentId, departmentId, _id });
-			}
-
-			return livechatDepartmentAgent;
+			return LivechatDepartmentAgents.getNextBotForDepartment(department);
 		}
 
 		return Users.getNextBotAgent();
