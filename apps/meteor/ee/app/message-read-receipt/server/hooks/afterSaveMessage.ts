@@ -16,8 +16,10 @@ callbacks.add(
 
 		if (!isOmnichannelRoom(room) || !room.closedAt) {
 			// set subscription as read right after message was sent
-			(await Subscriptions.setAsReadByRoomIdAndUserId(room._id, message.u._id)).modifiedCount &&
+			const setAsReadResponse = await Subscriptions.setAsReadByRoomIdAndUserId(room._id, message.u._id);
+			if (setAsReadResponse.modifiedCount) {
 				void notifyOnSubscriptionChangedByUserAndRoomId(message.u._id, room._id);
+			}
 		}
 
 		// mark message as read as well

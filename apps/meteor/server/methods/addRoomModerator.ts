@@ -65,8 +65,10 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		(await Subscriptions.addRoleById(subscription._id, 'moderator')).modifiedCount &&
+		const addRoleResponse = await Subscriptions.addRoleById(subscription._id, 'moderator');
+		if (addRoleResponse.modifiedCount) {
 			void notifyOnSubscriptionChangedById(subscription._id);
+		}
 
 		const fromUser = await Users.findOneById(uid);
 		if (!fromUser) {

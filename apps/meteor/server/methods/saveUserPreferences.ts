@@ -71,13 +71,17 @@ async function updateNotificationPreferences(
 	}
 
 	if (newValue === 'default') {
-		(await Subscriptions.clearNotificationUserPreferences(userId, setting, preferenceType)).modifiedCount &&
+		const clearNotificationResponse = await Subscriptions.clearNotificationUserPreferences(userId, setting, preferenceType);
+		if (clearNotificationResponse.modifiedCount) {
 			void notifyOnSubscriptionChangedByUserPreferences(userId, preferenceType, 'user');
+		}
 		return;
 	}
 
-	(await Subscriptions.updateNotificationUserPreferences(userId, newValue, setting, preferenceType)).modifiedCount &&
+	const updateNotificationResponse = await Subscriptions.updateNotificationUserPreferences(userId, newValue, setting, preferenceType);
+	if (updateNotificationResponse.modifiedCount) {
 		void notifyOnSubscriptionChangedByUserPreferences(userId, preferenceType, 'subscription');
+	}
 }
 
 export const saveUserPreferences = async (settings: Partial<UserPreferences>, userId: string): Promise<void> => {

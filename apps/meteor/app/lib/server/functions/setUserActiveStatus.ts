@@ -42,8 +42,10 @@ async function reactivateDirectConversations(userId: string) {
 		return acc;
 	}, []);
 
-	(await Rooms.setDmReadOnlyByUserId(userId, roomsToReactivate, false, false)).modifiedCount &&
+	const setDmReadOnlyResponse = await Rooms.setDmReadOnlyByUserId(userId, roomsToReactivate, false, false);
+	if (setDmReadOnlyResponse.modifiedCount) {
 		void notifyOnRoomChangedById(roomsToReactivate);
+	}
 }
 
 export async function setUserActiveStatus(userId: string, active: boolean, confirmRelinquish = false): Promise<boolean | undefined> {
@@ -105,13 +107,18 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 	}
 
 	if (user.username) {
-		(await Subscriptions.setArchivedByUsername(user.username, !active)).modifiedCount &&
+		const setArchivedResponse = await Subscriptions.setArchivedByUsername(user.username, !active);
+		if (setArchivedResponse.modifiedCount) {
 			void notifyOnSubscriptionChangedByUserIdAndRoomType(user._id, 'd');
+		}
 	}
 
 	if (active === false) {
 		await Users.unsetLoginTokens(userId);
-		(await Rooms.setDmReadOnlyByUserId(userId, undefined, true, false)).modifiedCount && void notifyOnRoomChangedByUserDM(userId);
+		const setDmReadOnlyResponse = await Rooms.setDmReadOnlyByUserId(userId, undefined, true, false);
+		if (setDmReadOnlyResponse.modifiedCount) {
+			void notifyOnRoomChangedByUserDM(userId);
+		}
 	} else {
 		await Users.unsetReason(userId);
 		await reactivateDirectConversations(userId);

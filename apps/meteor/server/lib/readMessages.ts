@@ -16,8 +16,10 @@ export async function readMessages(rid: IRoom['_id'], uid: IUser['_id'], readThr
 	// do not mark room as read if there are still unread threads
 	const alert = !!(sub.alert && !readThreads && sub.tunread && sub.tunread.length > 0);
 
-	(await Subscriptions.setAsReadByRoomIdAndUserId(rid, uid, readThreads, alert)).modifiedCount &&
+	const setAsReadResponse = await Subscriptions.setAsReadByRoomIdAndUserId(rid, uid, readThreads, alert);
+	if (setAsReadResponse.modifiedCount) {
 		void notifyOnSubscriptionChangedByUserAndRoomId(uid, rid);
+	}
 
 	await NotificationQueue.clearQueueByUserId(uid);
 

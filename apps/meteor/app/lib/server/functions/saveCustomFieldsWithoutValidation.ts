@@ -23,8 +23,10 @@ export const saveCustomFieldsWithoutValidation = async function (userId: string,
 		await Users.setCustomFields(userId, customFields);
 
 		// Update customFields of all Direct Messages' Rooms for userId
-		(await Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields)).modifiedCount &&
+		const setCustomFieldsResponse = await Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields);
+		if (setCustomFieldsResponse.modifiedCount) {
 			void notifyOnSubscriptionChangedByUserIdAndRoomType(userId, 'd');
+		}
 
 		for await (const fieldName of Object.keys(customFields)) {
 			if (!customFieldsMeta[fieldName].modifyRecordField) {

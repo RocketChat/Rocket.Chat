@@ -21,7 +21,10 @@ export const saveRoomCustomFields = async function (rid: string, roomCustomField
 	const response = await Rooms.setCustomFieldsById(rid, roomCustomFields);
 
 	// Update customFields of any user's Subscription related with this rid
-	(await Subscriptions.updateCustomFieldsByRoomId(rid, roomCustomFields)).modifiedCount && void notifyOnSubscriptionChangedByRoomId(rid);
+	const updateCustomFields = await Subscriptions.updateCustomFieldsByRoomId(rid, roomCustomFields);
+	if (updateCustomFields.modifiedCount) {
+		void notifyOnSubscriptionChangedByRoomId(rid);
+	}
 
 	return response;
 };

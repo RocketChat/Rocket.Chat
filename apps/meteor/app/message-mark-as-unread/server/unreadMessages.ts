@@ -37,8 +37,10 @@ Meteor.methods<ServerMethods>({
 				});
 			}
 
-			(await Subscriptions.setAsUnreadByRoomIdAndUserId(lastMessage.rid, userId, lastMessage.ts)).modifiedCount &&
+			const setAsUnreadResponse = await Subscriptions.setAsUnreadByRoomIdAndUserId(lastMessage.rid, userId, lastMessage.ts);
+			if (setAsUnreadResponse.modifiedCount) {
 				void notifyOnSubscriptionChangedByUserAndRoomId(userId, lastMessage.rid);
+			}
 
 			return;
 		}
@@ -77,7 +79,9 @@ Meteor.methods<ServerMethods>({
 		}
 
 		logger.debug(`Updating unread message of ${originalMessage.ts} as the first unread`);
-		(await Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, userId, originalMessage.ts)).modifiedCount &&
+		const setAsUnreadResponse = await Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, userId, originalMessage.ts);
+		if (setAsUnreadResponse.modifiedCount) {
 			void notifyOnSubscriptionChangedByUserAndRoomId(userId, originalMessage.rid);
+		}
 	},
 });

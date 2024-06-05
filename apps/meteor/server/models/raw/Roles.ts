@@ -38,8 +38,10 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 			}
 
 			if (role.scope === 'Subscriptions' && scope) {
-				(await Subscriptions.addRolesByUserId(userId, [role._id], scope)).modifiedCount &&
+				const addRolesResponse = await Subscriptions.addRolesByUserId(userId, [role._id], scope);
+				if (addRolesResponse.modifiedCount) {
 					void notifyOnSubscriptionChangedByUserAndRoomId(userId, scope);
+				}
 			} else {
 				await Users.addRolesByUserId(userId, [role._id]);
 			}
@@ -88,8 +90,10 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 			}
 
 			if (role.scope === 'Subscriptions' && scope) {
-				(await Subscriptions.removeRolesByUserId(userId, [roleId], scope)).modifiedCount &&
+				const removeRolesResponse = await Subscriptions.removeRolesByUserId(userId, [roleId], scope);
+				if (removeRolesResponse.modifiedCount) {
 					void notifyOnSubscriptionChangedByUserAndRoomId(userId, scope);
+				}
 			} else {
 				await Users.removeRolesByUserId(userId, [roleId]);
 			}

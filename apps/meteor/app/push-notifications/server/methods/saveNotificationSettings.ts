@@ -133,7 +133,10 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		(await notifications[field].updateMethod(subscription, value)).modifiedCount && void notifyOnSubscriptionChangedById(subscription._id);
+		const updateResponse = await notifications[field].updateMethod(subscription, value);
+		if (updateResponse.modifiedCount) {
+			void notifyOnSubscriptionChangedById(subscription._id);
+		}
 
 		return true;
 	},
@@ -153,7 +156,10 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		(await saveAudioNotificationValue(subscription._id, value)).modifiedCount && void notifyOnSubscriptionChangedById(subscription._id);
+		const saveAudioNotificationResponse = await saveAudioNotificationValue(subscription._id, value);
+		if (saveAudioNotificationResponse.modifiedCount) {
+			void notifyOnSubscriptionChangedById(subscription._id);
+		}
 
 		return true;
 	},

@@ -45,6 +45,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		let shouldNotifySubscriptionChanged = false;
+
 		switch (field) {
 			case 'autoTranslate':
 				const room = await Rooms.findE2ERoomById(rid, { projection: { _id: 1 } });
@@ -54,18 +56,32 @@ Meteor.methods<ServerMethods>({
 					});
 				}
 
-				(await Subscriptions.updateAutoTranslateById(subscription._id, value === '1')).modifiedCount &&
-					void notifyOnSubscriptionChangedById(subscription._id);
+				const updateAutoTranslateResponse = await Subscriptions.updateAutoTranslateById(subscription._id, value === '1');
+				if (updateAutoTranslateResponse.modifiedCount) {
+					shouldNotifySubscriptionChanged = true;
+				}
 
 				if (!subscription.autoTranslateLanguage && options.defaultLanguage) {
-					(await Subscriptions.updateAutoTranslateLanguageById(subscription._id, options.defaultLanguage)).modifiedCount &&
-						void notifyOnSubscriptionChangedById(subscription._id);
+					const updateAutoTranslateLanguageResponse = await Subscriptions.updateAutoTranslateLanguageById(
+						subscription._id,
+						options.defaultLanguage,
+					);
+					if (updateAutoTranslateLanguageResponse.modifiedCount) {
+						shouldNotifySubscriptionChanged = true;
+					}
 				}
+
 				break;
 			case 'autoTranslateLanguage':
-				(await Subscriptions.updateAutoTranslateLanguageById(subscription._id, value)).modifiedCount &&
-					void notifyOnSubscriptionChangedById(subscription._id);
+				const updateAutoTranslateLanguage = await Subscriptions.updateAutoTranslateLanguageById(subscription._id, value);
+				if (updateAutoTranslateLanguage.modifiedCount) {
+					shouldNotifySubscriptionChanged = true;
+				}
 				break;
+		}
+
+		if (shouldNotifySubscriptionChanged) {
+			void notifyOnSubscriptionChangedById(subscription._id);
 		}
 
 		return true;

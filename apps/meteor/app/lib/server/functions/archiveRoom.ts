@@ -8,7 +8,10 @@ import { notifyOnRoomChanged, notifyOnSubscriptionChangedByRoomId } from '../lib
 export const archiveRoom = async function (rid: string, user: IMessage['u']): Promise<void> {
 	await Rooms.archiveById(rid);
 
-	(await Subscriptions.archiveByRoomId(rid)).modifiedCount && void notifyOnSubscriptionChangedByRoomId(rid);
+	const archiveResponse = await Subscriptions.archiveByRoomId(rid);
+	if (archiveResponse.modifiedCount) {
+		void notifyOnSubscriptionChangedByRoomId(rid);
+	}
 
 	await Message.saveSystemMessage('room-archived', rid, '', user);
 

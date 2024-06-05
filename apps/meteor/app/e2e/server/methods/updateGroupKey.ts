@@ -24,14 +24,20 @@ Meteor.methods<ServerMethods>({
 		if (mySub) {
 			// Setting the key to myself, can set directly to the final field
 			if (userId === uid) {
-				(await Subscriptions.setGroupE2EKey(mySub._id, key)).modifiedCount && void notifyOnSubscriptionChangedById(mySub._id);
+				const setGroupE2EKeyResponse = await Subscriptions.setGroupE2EKey(mySub._id, key);
+				if (setGroupE2EKeyResponse.modifiedCount) {
+					void notifyOnSubscriptionChangedById(mySub._id);
+				}
 				return;
 			}
 
 			// uid also has subscription to this room
 			const userSub = await Subscriptions.findOneByRoomIdAndUserId(rid, uid);
 			if (userSub) {
-				(await Subscriptions.setGroupE2ESuggestedKey(userSub._id, key)).modifiedCount && void notifyOnSubscriptionChangedById(userSub._id);
+				const setGroupE2ESuggestedKeyResponse = await Subscriptions.setGroupE2ESuggestedKey(userSub._id, key);
+				if (setGroupE2ESuggestedKeyResponse.modifiedCount) {
+					void notifyOnSubscriptionChangedById(userSub._id);
+				}
 			}
 		}
 	},

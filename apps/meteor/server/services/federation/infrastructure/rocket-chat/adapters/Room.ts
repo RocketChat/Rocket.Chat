@@ -299,7 +299,10 @@ export class RocketChatRoomAdapter {
 		};
 
 		if (toAdd.length > 0) {
-			(await Subscriptions.addRolesByUserId(uid, toAdd, rid)).modifiedCount && void notifyOnSubscriptionChangedByUserAndRoomId(uid, rid);
+			const addRolesResponse = await Subscriptions.addRolesByUserId(uid, toAdd, rid);
+			if (addRolesResponse.modifiedCount) {
+				void notifyOnSubscriptionChangedByUserAndRoomId(uid, rid);
+			}
 
 			if (notifyChannel) {
 				await Promise.all(
@@ -317,8 +320,10 @@ export class RocketChatRoomAdapter {
 		}
 
 		if (toRemove.length > 0) {
-			(await Subscriptions.removeRolesByUserId(uid, toRemove, rid)).modifiedCount &&
+			const removeRolesResponse = await Subscriptions.removeRolesByUserId(uid, toRemove, rid);
+			if (removeRolesResponse.modifiedCount) {
 				void notifyOnSubscriptionChangedByUserAndRoomId(uid, rid);
+			}
 
 			if (notifyChannel) {
 				await Promise.all(

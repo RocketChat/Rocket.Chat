@@ -65,8 +65,10 @@ export const updateGroupDMsName = async (userThatChangedName: IUser): Promise<vo
 		const subs = Subscriptions.findByRoomId(room._id, { projection: { '_id': 1, 'u._id': 1 } });
 		for await (const sub of subs) {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== sub.u._id);
-			(await Subscriptions.updateNameAndFnameById(sub._id, getName(otherMembers), getFname(otherMembers))).modifiedCount &&
+			const updateNameRespose = await Subscriptions.updateNameAndFnameById(sub._id, getName(otherMembers), getFname(otherMembers));
+			if (updateNameRespose.modifiedCount) {
 				void notifyOnSubscriptionChangedByRoomId(room._id);
+			}
 		}
 	}
 };
