@@ -846,7 +846,7 @@ describe('[Rooms]', () => {
 				.end(done);
 		});
 
-		it('should return an error when send an invalid param', (done) => {
+		it('should return an error when the require parameter (roomName) is not provided', (done) => {
 			void request
 				.get(api('rooms.nameExists'))
 				.set(credentials)
