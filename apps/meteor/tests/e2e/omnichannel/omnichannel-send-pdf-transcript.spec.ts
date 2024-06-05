@@ -42,7 +42,7 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 			await page.goto('/livechat');
 			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newUser, false);
-			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
+			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_visitor');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 		});
 
@@ -59,15 +59,14 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 
 		await test.step('Expect chat to be closed', async () => {
 			await agent.poHomeChannel.content.btnCloseChat.click();
-			await agent.poHomeChannel.content.inputModalClosingComment.type('any_comment');
+			await agent.poHomeChannel.content.inputModalClosingComment.fill('any_comment');
 			await agent.poHomeChannel.transcript.checkboxPDF.click();
 			await agent.poHomeChannel.content.btnModalConfirm.click();
-			await expect(agent.poHomeChannel.toastSuccess).toBeVisible();
+			await agent.poHomeChannel.waitForHomePage();
 		});
 
 		// Exported PDF can be downloaded from rocket.cat room
 		await test.step('Expect to have exported PDF in rocket.cat', async () => {
-			await page.waitForTimeout(3000);
 			await agent.poHomeChannel.sidenav.openChat('rocket.cat');
 			await expect(agent.poHomeChannel.transcript.DownloadedPDF).toBeVisible();
 		});
@@ -76,14 +75,18 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 		await test.step('Expect to have exported PDF in rocket.cat', async () => {
 			await agent.poHomeChannel.transcript.contactCenter.click();
 			await agent.poHomeChannel.transcript.contactCenterChats.click();
-			await agent.poHomeChannel.transcript.contactCenterSearch.type(newUser.name);
-			await page.waitForTimeout(3000);
-			await agent.poHomeChannel.transcript.firstRow.click();
+			await agent.poHomeChannel.transcript.contactCenterSearch.fill(newUser.name);
+			await expect(agent.poHomeChannel.transcript.firstCell).toHaveText(newUser.name);
+			await agent.poHomeChannel.transcript.firstCell.click();
 			await agent.poHomeChannel.transcript.viewFullConversation.click();
 			await agent.poHomeChannel.content.btnSendTranscript.click();
 			await expect(agent.poHomeChannel.content.btnSendTranscriptAsPDF).toHaveAttribute('aria-disabled', 'false');
 			await agent.poHomeChannel.content.btnSendTranscriptAsPDF.click();
-			await expect(agent.poHomeChannel.toastSuccess).toBeVisible();
+		});
+
+		await test.step('Expect to have exported PDF in rocket.cat', async () => {
+			await agent.poHomeChannel.sidenav.openChat('rocket.cat');
+			await expect(agent.poHomeChannel.transcript.DownloadedPDF).toBeVisible();
 		});
 	});
 });

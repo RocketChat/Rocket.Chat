@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { expect } from '../utils/test';
 import { HomeOmnichannelContent, HomeSidenav, HomeFlextab, OmnichannelSidenav } from './fragments';
 import { OmnichannelAgents } from './omnichannel-agents';
 import { OmnichannelCannedResponses } from './omnichannel-canned-responses';
@@ -67,5 +68,9 @@ export class HomeOmnichannel {
 
 	get historyMessage(): Locator {
 		return this.page.locator('[data-qa="chat-history-message"]').first();
+	}
+
+	async waitForHomePage() {
+		await expect(this.page.getByRole('heading', { name: 'Home' })).toBeVisible();
 	}
 }
