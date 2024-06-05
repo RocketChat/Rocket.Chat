@@ -32,7 +32,7 @@ describe('Apps - Video Conferences', function () {
 	});
 
 	after(() =>
-		Promise.all([cleanupApps(), deleteRoom({ t: 'p', roomId: roomId as string }), updateSetting('VideoConf_Default_Provider', '')]),
+		Promise.all([cleanupApps(), deleteRoom({ type: 'p', roomId: roomId as string }), updateSetting('VideoConf_Default_Provider', '')]),
 	);
 
 	describe('[With No App]', () => {
