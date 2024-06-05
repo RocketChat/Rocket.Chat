@@ -5,7 +5,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 type Credentials = { 'X-Auth-Token'?: string; 'X-User-Id'?: string };
 
 type CreateRoomParams = {
-	name: IRoom['name'];
+	name?: IRoom['name'];
 	type: IRoom['t'];
 	username?: string;
 	token?: string;
