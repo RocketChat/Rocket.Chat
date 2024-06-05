@@ -21,7 +21,7 @@ export const NavBarItemAdministrationMenu = (props: Omit<HTMLAttributes<HTMLElem
 			title={t('Manage')}
 			is={NavBarItem}
 			icon='cog'
-			pressed={currentRoute?.includes('/omnichannel') || currentRoute?.includes('/admin')}
+			pressed={currentRoute?.includes('/omnichannel/') || currentRoute?.includes('/admin')}
 			placement='bottom-end'
 			{...props}
 		/>
