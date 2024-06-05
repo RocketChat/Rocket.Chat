@@ -242,7 +242,8 @@ export class E2ERoom extends Emitter {
 
 		try {
 			const room = ChatRoom.findOne({ _id: this.roomId });
-			if (!room.e2eKeyId) {
+			// Only try to create key when key is not created and I was the one creating the room
+			if (!room.e2eKeyId && room.u._id === this.userId) {
 				// TODO CHECK_PERMISSION
 				this.setState(E2ERoomState.CREATING_KEYS);
 				await this.createGroupKey();
