@@ -259,7 +259,13 @@ export const createLivechatSubscription = async (
 		...(department && { department }),
 	} as InsertionModel<ISubscription>;
 
-	return Subscriptions.insertOne(subscriptionData);
+	const response = await Subscriptions.insertOne(subscriptionData);
+
+	if (response?.insertedId) {
+		void notifyOnSubscriptionChangedById(response.insertedId, 'inserted');
+	}
+
+	return response;
 };
 
 export const removeAgentFromSubscription = async (rid: string, { _id, username }: Pick<IUser, '_id' | 'username'>) => {

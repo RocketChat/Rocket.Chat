@@ -10,6 +10,7 @@ import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 import {
 	notifyOnRoomChanged,
 	notifyOnRoomChangedById,
+	notifyOnSubscriptionChangedById,
 	notifyOnSubscriptionChangedByUserAndRoomId,
 } from '../../../lib/server/lib/notifyListener';
 import { notifyUsersOnMessage } from '../../../lib/server/lib/notifyUsersOnMessage';
@@ -138,7 +139,13 @@ const eventHandlers = {
 				if (persistedSubscription) {
 					// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed
 					if (!persistedSubscription.federation) {
-						await Subscriptions.updateOne({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
+						const { modifiedCount } = await Subscriptions.updateOne(
+							{ _id: persistedSubscription._id },
+							{ $set: { federation: subscription.federation } },
+						);
+						if (modifiedCount) {
+							void notifyOnSubscriptionChangedById(persistedSubscription._id);
+						}
 						federationAltered = true;
 					}
 				} else {
@@ -146,7 +153,10 @@ const eventHandlers = {
 					const denormalizedSubscription = normalizers.denormalizeSubscription(subscription);
 
 					// Create the subscription
-					await Subscriptions.insertOne(denormalizedSubscription);
+					const { insertedId } = await Subscriptions.insertOne(denormalizedSubscription);
+					if (insertedId) {
+						void notifyOnSubscriptionChangedById(insertedId);
+					}
 					federationAltered = true;
 				}
 			} catch (ex) {
