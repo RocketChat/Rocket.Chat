@@ -37,7 +37,11 @@ import { i18n } from '../../../../server/lib/i18n';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { notifyOnSubscriptionChangedByRoomId, notifyOnSubscriptionChangedByUserAndRoomId } from '../../../lib/server/lib/notifyListener';
+import {
+	notifyOnSubscriptionChangedById,
+	notifyOnSubscriptionChangedByRoomId,
+	notifyOnSubscriptionChangedByUserAndRoomId,
+} from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
