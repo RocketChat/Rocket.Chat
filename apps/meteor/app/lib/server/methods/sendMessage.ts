@@ -12,6 +12,7 @@ import { canSendMessageAsync } from '../../../authorization/server/functions/can
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
+import { limitDiacriticOverload } from '../functions/limitDiacriticOverload';
 import { sendMessage } from '../functions/sendMessage';
 import { RateLimiter } from '../lib';
 
@@ -49,6 +50,7 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 				method: 'sendMessage',
 			});
 		}
+		message.msg = limitDiacriticOverload(message.msg, 5);
 	}
 
 	const user = await Users.findOneById(uid, {

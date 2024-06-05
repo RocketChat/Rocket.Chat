@@ -9327,6 +9327,7 @@ __metadata:
     "@types/supports-color": ~7.2.0
     "@types/textarea-caret": ^3.0.2
     "@types/ua-parser-js": ^0.7.38
+    "@types/unorm": ^1.3.31
     "@types/use-subscription": ^1.0.1
     "@types/use-sync-external-store": ^0.0.5
     "@types/uuid": ^8.3.4
@@ -9408,6 +9409,7 @@ __metadata:
     generate-password: ^1.7.1
     google-libphonenumber: ^3.2.33
     googleapis: ^104.0.0
+    grapheme-splitter: ^1.0.4
     gravatar: ^1.8.2
     he: ^1.2.0
     highlight.js: ^11.6.0
@@ -9527,6 +9529,7 @@ __metadata:
     ua-parser-js: ^1.0.37
     underscore: ^1.13.6
     universal-perf-hooks: ^1.0.1
+    unorm: ^1.6.0
     url-polyfill: ^1.1.12
     use-subscription: ~1.6.0
     use-sync-external-store: ^1.2.0
@@ -14402,6 +14405,13 @@ __metadata:
   version: 2.0.6
   resolution: "@types/unist@npm:2.0.6"
   checksum: 25cb860ff10dde48b54622d58b23e66214211a61c84c0f15f88d38b61aa1b53d4d46e42b557924a93178c501c166aa37e28d7f6d994aba13d24685326272d5db
+  languageName: node
+  linkType: hard
+
+"@types/unorm@npm:^1.3.31":
+  version: 1.3.31
+  resolution: "@types/unorm@npm:1.3.31"
+  checksum: 8d27b2dca18aa468375f6477ec351f7f7a83411c1b0187e70ff461b5a5fc4665dc2f0bf99e03fde6611ac4706b0af772495333b84705e35d1f9440b87388cdb2
   languageName: node
   linkType: hard
 
@@ -41252,6 +41262,13 @@ __metadata:
   version: 2.0.0
   resolution: "universalify@npm:2.0.0"
   checksum: 2406a4edf4a8830aa6813278bab1f953a8e40f2f63a37873ffa9a3bc8f9745d06cc8e88f3572cb899b7e509013f7f6fcc3e37e8a6d914167a5381d8440518c44
+  languageName: node
+  linkType: hard
+
+"unorm@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "unorm@npm:1.6.0"
+  checksum: 9a86546256a45f855b6cfe719086785d6aada94f63778cecdecece8d814ac26af76cb6da70130da0a08b8803bbf0986e56c7ec4249038198f3de02607fffd811
   languageName: node
   linkType: hard
 
