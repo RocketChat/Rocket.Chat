@@ -36,7 +36,7 @@ export async function testFileUploads(
 
 	after(() =>
 		Promise.all([
-			deleteRoom({ t: 'c' as const, roomId: testRoom._id }),
+			deleteRoom({ type: 'c' as const, roomId: testRoom._id }),
 			updateSetting('VoIP_Enabled', false),
 			updateSetting('Message_KeepHistory', false),
 		]),
