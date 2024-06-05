@@ -1,6 +1,6 @@
 import { IconButton, MenuItem, MenuSection, MenuV2 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ComponentProps, ReactNode, ReactElement, ElementType } from 'react';
 import React from 'react';
 
 import type { GenericMenuItemProps } from './GenericMenuItem';
@@ -11,6 +11,8 @@ type GenericMenuCommonProps = {
 	title: string;
 	icon?: ComponentProps<typeof IconButton>['icon'];
 	disabled?: boolean;
+	button?: ReactElement;
+	is?: ElementType;
 };
 type GenericMenuConditionalProps =
 	| {
@@ -28,7 +30,7 @@ type GenericMenuConditionalProps =
 
 type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof MenuV2>, 'children'>;
 
-const GenericMenu = ({ title, icon = 'menu', disabled, onAction, ...props }: GenericMenuProps) => {
+const GenericMenu = ({ title, icon = 'menu', disabled, onAction, button, ...props }: GenericMenuProps) => {
 	const t = useTranslation();
 
 	const sections = 'sections' in props && props.sections;
@@ -53,7 +55,8 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, ...props }: Gen
 		<>
 			{sections && (
 				<MenuV2
-					icon={icon}
+					icon={!button ? icon : undefined}
+					button={button}
 					title={t.has(title) ? t(title) : title}
 					onAction={onAction || handleAction}
 					{...(disabledKeys && { disabledKeys })}
