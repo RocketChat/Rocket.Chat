@@ -31,6 +31,10 @@ export class Moderation {
 		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
 	}
 
+	findLastReportedMessage(quotedMessage: string): Locator {
+		return this.page.locator(`text=${quotedMessage}`).first();
+	}
+
 	findRowByName(name: string): Locator {
 		return this.page.locator(`tr:has-text("${name}")`);
 	}

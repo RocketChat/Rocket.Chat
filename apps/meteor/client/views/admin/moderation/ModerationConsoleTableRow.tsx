@@ -13,7 +13,7 @@ export type ModerationConsoleRowProps = {
 };
 
 const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: ModerationConsoleRowProps): JSX.Element => {
-	const { userId: _id, rooms, name, count, message, username, ts } = report;
+	const { userId: _id, rooms, name, count, username, ts } = report;
 
 	const roomNames = rooms.map((room) => {
 		if (room.t === 'd') {
@@ -21,14 +21,6 @@ const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: Moder
 		}
 		return room.fname || room.name;
 	});
-
-	const normalizeMessage = () => {
-		const isQuotedMessage = /^\[ \]\([\s\S]*\n/;
-		if (isQuotedMessage.test(message)) {
-			return message.split('\n')[1];
-		}
-		return message;
-	};
 
 	const formatDateAndTime = useFormatDateAndTime();
 
@@ -39,7 +31,6 @@ const ModerationConsoleTableRow = ({ report, onClick, isDesktopOrLarger }: Moder
 			<GenericTableCell withTruncatedText>
 				<UserColumn username={username} name={name} fontSize='micro' size={isDesktopOrLarger ? 'x20' : 'x40'} />
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{normalizeMessage()}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{concatenatedRoomNames}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{formatDateAndTime(ts)}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{count}</GenericTableCell>
