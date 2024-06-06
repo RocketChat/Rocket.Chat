@@ -1,9 +1,11 @@
-import type { IAdminUserTabs } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, ContextualbarIcon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import type { IAdminUserTabs, LicenseInfo } from '@rocket.chat/core-typings';
+import { Button, ButtonGroup, Callout, ContextualbarIcon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { ExternalLink } from '@rocket.chat/ui-client';
 import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Trans } from 'react-i18next';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
@@ -17,8 +19,9 @@ import {
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
+import { useGroupedRules } from '../../../hooks/useGroupedRules';
 import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
-import { SubscriptionCalloutLimits } from '../subscription/SubscriptionCalloutLimits';
+import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
 import AdminInviteUsers from './AdminInviteUsers';
 import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
@@ -40,6 +43,8 @@ const AdminUsersPage = (): ReactElement => {
 	const seatsCap = useSeatsCap();
 
 	const isSeatsCapExceeded = useShouldPreventAction('activeUsers');
+	const { prevent_action } = useGroupedRules() || {};
+	const manageSubscriptionUrl = useCheckoutUrl();
 
 	const router = useRouter();
 	const context = useRouteParameter('context');
@@ -89,6 +94,8 @@ const AdminUsersPage = (): ReactElement => {
 		[context, isCreateUserDisabled],
 	);
 
+	const toTranslationKey = (key: keyof LicenseInfo['limits']) => t(`subscription.callout.${key}`);
+
 	return (
 		<Page flexDirection='row'>
 			<Page>
@@ -110,18 +117,23 @@ const AdminUsersPage = (): ReactElement => {
 						</ButtonGroup>
 					)}
 				</PageHeader>
-				{/* {isSeatsCapExceeded && (
-					<Callout title={t('Service_disruptions_occurring')} type='danger' mbe={19} mi={24}>
-						<Trans i18nKey='Your_workspace_exceeded_the_seat_license_limit'>
-							Your workspace exceeded the seat license limit. This limit cannot be exceeded further.
-							<ExternalLink to={talkToSalesUrl}>Manage your subscription</ExternalLink>
+				{prevent_action?.includes('activeUsers') && (
+					<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} mbe={19} mi={24}>
+						<Trans i18nKey='subscription.callout.description.limitsExceeded' count={prevent_action.length}>
+							Your workspace exceeded the <>{{ val: prevent_action.map(toTranslationKey) }}</> license limit.
+							<ExternalLink
+								to={manageSubscriptionUrl({
+									target: 'callout',
+									action: 'prevent_action',
+									limits: prevent_action.join(','),
+								})}
+							>
+								Manage your subscription
+							</ExternalLink>
 							to increase limits.
 						</Trans>
 					</Callout>
-				)} */}
-				<Box mi={16} mbe={11}>
-					<SubscriptionCalloutLimits />
-				</Box>
+				)}
 				<Tabs>
 					<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChangeAndSort('all')}>
 						{t('All')}
