@@ -38,7 +38,7 @@ Meteor.startup(() => {
 		}
 	});
 
-	let observable: Meteor.LiveQueryHandle | null = null;
+	const observable: Meteor.LiveQueryHandle | null = null;
 	let offClientMessageReceived: undefined | (() => void);
 	let offClientBeforeSendMessage: undefined | (() => void);
 	let listenersAttached = false;
@@ -47,7 +47,6 @@ Meteor.startup(() => {
 		if (!e2e.isReady()) {
 			e2e.log('Not ready');
 			offClientMessageReceived?.();
-			e2e.log('STOPING Observable')
 			observable?.stop();
 			offClientBeforeSendMessage?.();
 			listenersAttached = false;

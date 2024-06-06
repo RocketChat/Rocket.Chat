@@ -70,11 +70,14 @@ class E2E extends Emitter {
 
 	private state: E2EEState;
 
+	private observable: Meteor.LiveQueryHandle | undefined;
+
 	constructor() {
 		super();
 		this.started = false;
 		this.instancesByRoomId = {};
 		this.keyDistributionInterval = null;
+		this.observable = undefined;
 
 		this.on('E2E_STATE_CHANGED', ({ prevState, nextState }) => {
 			this.log(`${prevState} -> ${nextState}`);
@@ -86,6 +89,18 @@ class E2E extends Emitter {
 
 		this.on(E2EEState.SAVE_PASSWORD, async () => {
 			await this.onE2EEReady();
+		});
+
+		this.on(E2EEState.DISABLED, () => {
+			this.observable?.stop();
+		});
+
+		this.on(E2EEState.NOT_STARTED, () => {
+			this.observable?.stop();
+		});
+
+		this.on(E2EEState.ERROR, () => {
+			this.observable?.stop();
 		});
 
 		this.setState(E2EEState.NOT_STARTED);
@@ -125,28 +140,34 @@ class E2E extends Emitter {
 		this.log('DecryptingPendingMessages -> Done');
 		await this.initiateKeyDistribution();
 		this.log('initiateKeyDistribution -> Done');
+		this.observeSubscriptions();
+		this.log('observing subscriptions');
+	}
 
-		Subscriptions.find().observe({
-			changed: async (sub: ISubscription) => {
+	observeSubscriptions() {
+		this.observable?.stop();
+
+		this.observable = Subscriptions.find().observe({
+			changed: (sub: ISubscription) => {
 				setTimeout(async () => {
-					e2e.log('Subscription changed', sub);
+					this.log('Subscription changed', sub);
 					if (!sub.encrypted && !sub.E2EKey) {
-						e2e.removeInstanceByRoomId(sub.rid);
+						this.removeInstanceByRoomId(sub.rid);
 						return;
 					}
 
-					const e2eRoom = await e2e.getInstanceByRoomId(sub.rid);
+					const e2eRoom = await this.getInstanceByRoomId(sub.rid);
 					if (!e2eRoom) {
 						return;
 					}
 
 					if (sub.E2ESuggestedKey) {
 						if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
-							await e2e.acceptSuggestedKey(sub.rid);
+							await this.acceptSuggestedKey(sub.rid);
 							e2eRoom.keyReceived();
 						} else {
 							console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
-							await e2e.rejectSuggestedKey(sub.rid);
+							await this.rejectSuggestedKey(sub.rid);
 						}
 					}
 
@@ -167,21 +188,21 @@ class E2E extends Emitter {
 						return;
 					}
 
-					e2eRoom.decryptSubscription();
+					await e2eRoom.decryptSubscription();
 				}, 0);
 			},
-			added: async (sub: ISubscription) => {
+			added: (sub: ISubscription) => {
 				setTimeout(async () => {
-					e2e.log('Subscription added', sub);
+					this.log('Subscription added', sub);
 					if (!sub.encrypted && !sub.E2EKey) {
 						return;
 					}
-					return e2e.getInstanceByRoomId(sub.rid);
+					return this.getInstanceByRoomId(sub.rid);
 				}, 0);
 			},
 			removed: (sub: ISubscription) => {
-				e2e.log('Subscription removed', sub);
-				e2e.removeInstanceByRoomId(sub.rid);
+				this.log('Subscription removed', sub);
+				this.removeInstanceByRoomId(sub.rid);
 			},
 		});
 	}
