@@ -1,6 +1,6 @@
 import { getLoginExpirationInDays, getLoginExpirationInMs } from './getLoginExpiration';
 
-describe('getLoginExpiration', () => {
+describe('getLoginExpirationInDays', () => {
 	it('should return 90 by default', () => {
 		expect(getLoginExpirationInDays()).toBe(90);
 	});
