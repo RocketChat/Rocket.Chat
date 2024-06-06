@@ -60,10 +60,7 @@ test.describe.serial('admin-rooms', () => {
 		const dropdown = await admin.dropdownFilterRoomType();
 		await dropdown.click();
 
-		const privateOption = page.locator('text=Private channels');
-
-		await privateOption.waitFor();
-		await privateOption.click();
+		await page.locator('text=Private channels').click();
 
 		await expect(page.locator(`[qa-room-name="${privateRoom}"]`)).toBeVisible();
 	});

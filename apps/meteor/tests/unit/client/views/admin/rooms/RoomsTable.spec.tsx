@@ -11,6 +11,18 @@ import sinon from 'sinon';
 
 import RoomsTable from '../../../../../../client/views/admin/rooms/RoomsTable';
 
+jest.mock('../../../../../../../meteor/client/components/GenericTable', () => ({
+	GenericTable: ({ children, ...props }: any) => <table {...props}>{children}</table>,
+	GenericTableBody: ({ children }: any) => <tbody>{children}</tbody>,
+	GenericTableHeader: ({ children }: any) => <thead>{children}</thead>,
+	GenericTableHeaderCell: ({ children, ...props }: any) => <th {...props}>{children}</th>,
+	GenericTableLoadingTable: () => (
+		<tr>
+			<td>Loading</td>
+		</tr>
+	),
+}));
+
 jest.mock('../../../../../../client/views/admin/rooms/RoomRow', () => {
 	return ({ someProp }: any) => (
 		<tr data-id='RoomRow'>
@@ -55,8 +67,8 @@ describe('RoomsTable', () => {
 		});
 
 		render(<RoomsTable reload={{ current: sinon.fake() }} />, { wrapper: mockedQueryClientWrapper() });
-
-		expect(screen.queryByTestId('RoomGenericTableLoadingTable')).not.to.be.undefined;
+		const loading = await screen.findByText('Loading');
+		expect(loading).to.exist;
 
 		sinon.assert.calledOnceWithMatch(
 			useQueryStub,
@@ -119,7 +131,7 @@ describe('RoomsTable', () => {
 		render(<RoomsTable reload={{ current: sinon.fake() }} />, { wrapper: mockedQueryClientWrapper() });
 
 		expect(screen.queryByTestId('RoomRow')).not.be.undefined;
-		expect(screen.queryByTestId('RoomGenericTableLoadingTable')).to.be.null;
+		expect(screen.queryByText(/loading/i)).to.be.null;
 		sinon.assert.calledWithMatch(useQueryStub, ['rooms', 'Room', 'admin'], async () => useEndpointStub);
 	});
 
