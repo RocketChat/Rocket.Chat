@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { settings } from '../../../settings/server';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
@@ -93,12 +94,21 @@ export const updateMessage = async function (
 
 	setImmediate(async () => {
 		const msg = await Messages.findOneById(_id);
-		if (msg) {
-			await callbacks.run('afterSaveMessage', msg, room, user._id);
-			void broadcastMessageFromData({
-				id: msg._id,
-				data: msg,
-			});
+		if (!msg) {
+			return;
+		}
+
+		// although this is an "afterSave" kind callback, we know they can extend message's properties
+		// so we wait for it to run before broadcasting
+		const data = await callbacks.run('afterSaveMessage', msg, room, user._id);
+
+		void broadcastMessageFromData({
+			id: msg._id,
+			data: data as any, // TODO move "afterSaveMessage" type definition to specify a return value
+		});
+
+		if (room?.lastMessage?._id === msg._id) {
+			void notifyOnRoomChangedById(message.rid);
 		}
 	});
 };
