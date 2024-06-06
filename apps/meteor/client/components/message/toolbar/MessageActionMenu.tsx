@@ -63,11 +63,12 @@ const MessageActionMenu = ({ options, onChangeMenuVisibility, context, isMessage
 				title: t('Apps'),
 				items: [
 					{
-						content: t('Not_available_for_encrypted_messages'),
+						content: t('Unavailable'),
 						type: 'apps',
 						id,
 						disabled: true,
 						gap: false,
+						tooltip: t('Apps_not_available_encrypted_content'),
 					},
 				],
 			};
