@@ -1,10 +1,10 @@
-import type { AtLeast, IMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { AtLeast, IMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { E2EEState } from '../../app/e2e/client/E2EEState';
 import { e2e } from '../../app/e2e/client/rocketchat.e2e';
-import { Subscriptions, ChatRoom } from '../../app/models/client';
+import { ChatRoom } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../lib/onClientMessageReceived';
@@ -38,7 +38,6 @@ Meteor.startup(() => {
 		}
 	});
 
-	const observable: Meteor.LiveQueryHandle | null = null;
 	let offClientMessageReceived: undefined | (() => void);
 	let offClientBeforeSendMessage: undefined | (() => void);
 	let listenersAttached = false;
@@ -47,7 +46,6 @@ Meteor.startup(() => {
 		if (!e2e.isReady()) {
 			e2e.log('Not ready');
 			offClientMessageReceived?.();
-			observable?.stop();
 			offClientBeforeSendMessage?.();
 			listenersAttached = false;
 			return;
