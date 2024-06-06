@@ -3,14 +3,14 @@ import { check, Match } from 'meteor/check';
 
 import { API } from '../../../../app/api/server';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
-import { findAllChannelsWithNumberOfMessages } from '../../lib/engagementDashboard/channels';
+import { findChannelsWithNumberOfMessages } from '../../lib/engagementDashboard/channels';
 import { isDateISOString, mapDateForAPI } from '../../lib/engagementDashboard/date';
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/engagement-dashboard/channels/list': {
-			GET: (params: { start: string; end: string; offset?: number; count?: number }) => {
+			GET: (params: { start: string; end: string; offset?: number; count?: number; hideRoomsWithNoActivity?: boolean }) => {
 				channels: {
 					room: {
 						_id: IRoom['_id'];
@@ -45,17 +45,19 @@ API.v1.addRoute(
 				Match.ObjectIncluding({
 					start: Match.Where(isDateISOString),
 					end: Match.Where(isDateISOString),
+					hideRoomsWithNoActivity: Match.Maybe(String),
 					offset: Match.Maybe(String),
 					count: Match.Maybe(String),
 				}),
 			);
 
-			const { start, end } = this.queryParams;
+			const { start, end, hideRoomsWithNoActivity } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
-			const { channels, total } = await findAllChannelsWithNumberOfMessages({
+			const { channels, total } = await findChannelsWithNumberOfMessages({
 				start: mapDateForAPI(start),
 				end: mapDateForAPI(end),
+				hideRoomsWithNoActivity: hideRoomsWithNoActivity === 'true' ?? false,
 				options: { offset, count },
 			});
 
