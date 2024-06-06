@@ -6,8 +6,8 @@ export class Moderation {
 	constructor(page: Page) {
 		this.page = page;
 	}
-
-  get reportedMessagesTab(): Locator {
+	
+	get reportedMessagesTab(): Locator {
 		return this.page.locator('button:has-text("Reported messages")');
 	}
 
