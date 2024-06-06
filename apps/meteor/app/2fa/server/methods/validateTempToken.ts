@@ -44,7 +44,7 @@ Meteor.methods<ServerMethods>({
 
 		// Once the TOTP is validated we logout all other clients
 		const { 'x-auth-token': xAuthToken } = this.connection?.httpHeaders ?? {};
-		if (xAuthToken) {
+		if (xAuthToken && this.userId) {
 			const hashedToken = Accounts._hashLoginToken(xAuthToken);
 
 			const { modifiedCount } = await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken);

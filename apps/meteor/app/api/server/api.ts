@@ -14,6 +14,7 @@ import { Restivus } from 'meteor/rocketchat:restivus';
 import _ from 'underscore';
 
 import { isObject } from '../../../lib/utils/isObject';
+import { getNestedProp } from '../../../server/lib/getNestedProp';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { checkCodeForUser } from '../../2fa/server/code';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
@@ -850,12 +851,13 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			);
 
 			const userTokens = await Users.findOneById(this.user._id, { projection: { [tokenPath]: 1 } });
+			if (userTokens) {
+				const diff = { [tokenPath]: getNestedProp(userTokens, tokenPath) };
 
-			const diff = { [tokenPath]: tokenPath.split('.').reduce((acc, el) => acc[el], userTokens) };
-
-			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
-			// instead of having to listen to every watch.users event
-			void notifyOnUserChange({ clientAction: 'updated', id: this.user._id, diff });
+				// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
+				// instead of having to listen to every watch.users event
+				void notifyOnUserChange({ clientAction: 'updated', id: this.user._id, diff });
+			}
 
 			const response = {
 				status: 'success',
