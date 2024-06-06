@@ -1,5 +1,5 @@
 import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
-import type { IMessage, SettingValue, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, SettingValue, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Messages, Settings, Users } from '@rocket.chat/models';
 import mem from 'mem';
 
@@ -22,7 +22,8 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 	}
 
 	if (message.t) {
-		const shouldHide = await shouldHideSystemMessage(message.t);
+		const hiddenSystemMessages = (await getSettingCached('Hide_System_Messages')) as MessageTypesValues[];
+		const shouldHide = await shouldHideSystemMessage(message.t, hiddenSystemMessages);
 
 		if (shouldHide) {
 			return;

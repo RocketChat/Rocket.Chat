@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
@@ -9,6 +9,7 @@ import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
+import { getSettingCached } from '../lib/getMemSettings';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -67,7 +68,9 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-date', 'Invalid date', { method: 'getChannelHistory' });
 		}
 
-		const hiddenMessageTypes = await getHiddenSystemMessages(room);
+		const hiddenSystemMessages = (await getSettingCached('Hide_System_Messages')) as MessageTypesValues[];
+
+		const hiddenMessageTypes = await getHiddenSystemMessages(room, hiddenSystemMessages);
 
 		const options: Record<string, unknown> = {
 			sort: {
