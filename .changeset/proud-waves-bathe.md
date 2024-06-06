@@ -3,4 +3,4 @@
 "@rocket.chat/model-typings": minor
 ---
 
-Fixed Engagement Dashboard's "Channels" tab not loading when there are many rooms in the workspace
+Improved Engagement Dashboard's "Channels" tab performance by not returning rooms that had no activity in the analyzed period 
