@@ -4,7 +4,7 @@ import { check, Match } from 'meteor/check';
 import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox/EmailInbox_Outgoing';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { insertOneEmailInbox, findEmailInboxes, findOneEmailInbox, updateEmailInbox } from '../lib/emailInbox';
+import { insertOneEmailInbox, findEmailInboxes, updateEmailInbox, removeEmailInbox } from '../lib/emailInbox';
 
 API.v1.addRoute(
 	'email-inbox.list',
@@ -55,12 +55,23 @@ API.v1.addRoute(
 			let _id: string;
 
 			if (!emailInboxParams?._id) {
-				const emailInbox = await insertOneEmailInbox(this.userId, emailInboxParams);
-				_id = emailInbox.insertedId.toString();
+				const { insertedId } = await insertOneEmailInbox(this.userId, emailInboxParams);
+
+				if (!insertedId) {
+					return API.v1.failure('Failed to create email inbox');
+				}
+
+				_id = insertedId;
 			} else {
-				_id = emailInboxParams._id;
-				await updateEmailInbox({ ...emailInboxParams, _id });
+				const emailInbox = await updateEmailInbox({ ...emailInboxParams, _id: emailInboxParams._id });
+
+				if (!emailInbox?._id) {
+					return API.v1.failure('Failed to update email inbox');
+				}
+
+				_id = emailInbox._id;
 			}
+
 			return API.v1.success({ _id });
 		},
 	},
@@ -79,7 +90,7 @@ API.v1.addRoute(
 			if (!_id) {
 				throw new Error('error-invalid-param');
 			}
-			const emailInbox = await findOneEmailInbox({ _id });
+			const emailInbox = await EmailInbox.findOneById(_id);
 
 			if (!emailInbox) {
 				return API.v1.notFound();
@@ -97,11 +108,12 @@ API.v1.addRoute(
 				throw new Error('error-invalid-param');
 			}
 
-			const emailInboxes = await EmailInbox.findOneById(_id);
-			if (!emailInboxes) {
+			const { deletedCount } = await removeEmailInbox(_id);
+
+			if (!deletedCount) {
 				return API.v1.notFound();
 			}
-			await EmailInbox.removeById(_id);
+
 			return API.v1.success({ _id });
 		},
 	},
@@ -120,7 +132,7 @@ API.v1.addRoute(
 
 			// TODO: Chapter day backend - check if user has permission to view this email inbox instead of null values
 			// TODO: Chapter day: Remove this endpoint and move search to GET /email-inbox
-			const emailInbox = await EmailInbox.findOne({ email });
+			const emailInbox = await EmailInbox.findByEmail(email);
 
 			return API.v1.success({ emailInbox });
 		},
@@ -140,7 +152,7 @@ API.v1.addRoute(
 			if (!_id) {
 				throw new Error('error-invalid-param');
 			}
-			const emailInbox = await findOneEmailInbox({ _id });
+			const emailInbox = await EmailInbox.findOneById(_id);
 
 			if (!emailInbox) {
 				return API.v1.notFound();
