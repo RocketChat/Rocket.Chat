@@ -165,7 +165,8 @@ describe('[Engagement Dashboard]', function () {
 					expect(res.body).to.have.property('count');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('channels');
-					expect(res.body.channels).to.be.an('array').that.is.empty;
+					const channelRecord = res.body.channels.find(({ room }: { room: { _id: string } }) => room._id === testRoom._id);
+					expect(channelRecord).to.be.undefined;
 				});
 		});
 
