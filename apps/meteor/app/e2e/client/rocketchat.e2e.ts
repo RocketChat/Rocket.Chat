@@ -125,6 +125,65 @@ class E2E extends Emitter {
 		this.log('DecryptingPendingMessages -> Done');
 		await this.initiateKeyDistribution();
 		this.log('initiateKeyDistribution -> Done');
+
+		Subscriptions.find().observe({
+			changed: async (sub: ISubscription) => {
+				setTimeout(async () => {
+					e2e.log('Subscription changed', sub);
+					if (!sub.encrypted && !sub.E2EKey) {
+						e2e.removeInstanceByRoomId(sub.rid);
+						return;
+					}
+
+					const e2eRoom = await e2e.getInstanceByRoomId(sub.rid);
+					if (!e2eRoom) {
+						return;
+					}
+
+					if (sub.E2ESuggestedKey) {
+						if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
+							await e2e.acceptSuggestedKey(sub.rid);
+							e2eRoom.keyReceived();
+						} else {
+							console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+							await e2e.rejectSuggestedKey(sub.rid);
+						}
+					}
+
+					sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+
+					// Cover private groups and direct messages
+					if (!e2eRoom.isSupportedRoomType(sub.t)) {
+						e2eRoom.disable();
+						return;
+					}
+
+					if (sub.E2EKey && e2eRoom.isWaitingKeys()) {
+						e2eRoom.keyReceived();
+						return;
+					}
+
+					if (!e2eRoom.isReady()) {
+						return;
+					}
+
+					e2eRoom.decryptSubscription();
+				}, 0);
+			},
+			added: async (sub: ISubscription) => {
+				setTimeout(async () => {
+					e2e.log('Subscription added', sub);
+					if (!sub.encrypted && !sub.E2EKey) {
+						return;
+					}
+					return e2e.getInstanceByRoomId(sub.rid);
+				}, 0);
+			},
+			removed: (sub: ISubscription) => {
+				e2e.log('Subscription removed', sub);
+				e2e.removeInstanceByRoomId(sub.rid);
+			},
+		});
 	}
 
 	shouldAskForE2EEPassword() {
