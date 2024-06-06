@@ -2,6 +2,7 @@ import { Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
+import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 import { TOTP } from '../lib/totp';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -46,8 +47,18 @@ Meteor.methods<ServerMethods>({
 		if (xAuthToken) {
 			const hashedToken = Accounts._hashLoginToken(xAuthToken);
 
-			if (!(await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
-				throw new Meteor.Error('error-logging-out-other-clients', 'Error logging out other clients');
+			const { modifiedCount } = await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken);
+
+			if (modifiedCount > 0) {
+				const userTokens = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } });
+
+				// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
+				// instead of having to listen to every watch.users event
+				void notifyOnUserChange({
+					clientAction: 'updated',
+					id: this.userId,
+					diff: { 'services.resume.loginTokens': userTokens?.services?.resume?.loginTokens },
+				});
 			}
 		}
 
