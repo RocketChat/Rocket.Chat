@@ -32,7 +32,7 @@ export async function loadMessageHistory({
 
 	const hiddenSystemMessages = (await getSettingCached('Hide_System_Messages')) as MessageTypesValues[];
 
-	const hiddenMessageTypes = await getHiddenSystemMessages(room, hiddenSystemMessages);
+	const hiddenMessageTypes = getHiddenSystemMessages(room, hiddenSystemMessages);
 
 	const options: FindOptions<IMessage> = {
 		sort: {

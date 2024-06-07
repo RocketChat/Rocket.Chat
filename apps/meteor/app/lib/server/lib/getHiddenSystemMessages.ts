@@ -1,5 +1,5 @@
 import type { MessageTypesValues, IRoom } from '@rocket.chat/core-typings';
 
-export const getHiddenSystemMessages = async (room: IRoom, hiddenSystemMessages: MessageTypesValues[]): Promise<MessageTypesValues[]> => {
+export const getHiddenSystemMessages = (room: IRoom, hiddenSystemMessages: MessageTypesValues[]): MessageTypesValues[] => {
 	return Array.isArray(room?.sysMes) ? room.sysMes : [...hiddenSystemMessages];
 };

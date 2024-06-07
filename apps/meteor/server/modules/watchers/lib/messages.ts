@@ -23,7 +23,7 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 
 	if (message.t) {
 		const hiddenSystemMessages = (await getSettingCached('Hide_System_Messages')) as MessageTypesValues[];
-		const shouldHide = await shouldHideSystemMessage(message.t, hiddenSystemMessages);
+		const shouldHide = shouldHideSystemMessage(message.t, hiddenSystemMessages);
 
 		if (shouldHide) {
 			return;

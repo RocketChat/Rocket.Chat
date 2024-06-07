@@ -15,7 +15,7 @@ describe('getHiddenSystemMessages', () => {
 			_updatedAt: new Date(),
 		};
 
-		const result = await getHiddenSystemMessages(room, []);
+		const result = getHiddenSystemMessages(room, []);
 
 		expect(result).to.deep.equal(room.sysMes);
 	});
@@ -32,7 +32,7 @@ describe('getHiddenSystemMessages', () => {
 			_updatedAt: new Date(),
 		};
 
-		const result = await getHiddenSystemMessages(room, cachedHiddenSystemMessage);
+		const result = getHiddenSystemMessages(room, cachedHiddenSystemMessage);
 
 		expect(result).to.deep.equal(cachedHiddenSystemMessage);
 	});
@@ -47,13 +47,13 @@ describe('getHiddenSystemMessages', () => {
 			_updatedAt: new Date(),
 		};
 
-		const result = await getHiddenSystemMessages(room, []);
+		const result = getHiddenSystemMessages(room, []);
 
 		expect(result).to.deep.equal([]);
 	});
 
 	it('should return cached hidden system messages if room.sysMes is null', async () => {
-		const cachedHiddenSystemMessage: MessageTypesValues[] = ['room_changed_announcement', 'room_changed_announcement'];
+		const cachedHiddenSystemMessage: MessageTypesValues[] = ['subscription-role-added', 'room_changed_announcement'];
 
 		const room: IRoom = {
 			_id: 'roomId',
@@ -65,8 +65,26 @@ describe('getHiddenSystemMessages', () => {
 			_updatedAt: new Date(),
 		};
 
-		const result = await getHiddenSystemMessages(room, cachedHiddenSystemMessage);
+		const result = getHiddenSystemMessages(room, cachedHiddenSystemMessage);
 
 		expect(result).to.deep.equal(cachedHiddenSystemMessage);
+	});
+
+	it('should return cached hidden system messages if room.sysMes array and hidden system message is available', async () => {
+		const cachedHiddenSystemMessage: MessageTypesValues[] = ['room_changed_announcement', 'room-archived'];
+
+		const room: IRoom = {
+			_id: 'roomId',
+			sysMes: ['mute_unmute', 'room_changed_description'] as MessageTypesValues[],
+			t: 'c',
+			msgs: 0,
+			u: {} as IUser,
+			usersCount: 0,
+			_updatedAt: new Date(),
+		};
+
+		const result = getHiddenSystemMessages(room, cachedHiddenSystemMessage);
+
+		expect(result).to.deep.equal(['mute_unmute', 'room_changed_description']);
 	});
 });

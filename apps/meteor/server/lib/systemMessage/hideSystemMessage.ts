@@ -12,10 +12,7 @@ export const getCachedHiddenSystemMessage = async () => {
 	return getSettingCached('Hide_System_Messages') as unknown as MessageTypesValues[];
 };
 
-export const shouldHideSystemMessage = async (
-	messageType: MessageTypesValues,
-	hideSystemMessage?: MessageTypesValues[],
-): Promise<boolean> => {
+export const shouldHideSystemMessage = (messageType: MessageTypesValues, hideSystemMessage?: MessageTypesValues[]): boolean => {
 	if (!hideSystemMessage?.length) {
 		return false;
 	}

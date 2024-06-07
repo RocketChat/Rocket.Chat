@@ -22,26 +22,26 @@ describe('hideSystemMessage', () => {
 		it('should return true if message type is in hidden system messages', async () => {
 			const hiddenMessages: MessageTypesValues[] = ['user-muted', 'mute_unmute'];
 
-			const result = await shouldHideSystemMessage('user-muted', hiddenMessages);
+			const result = shouldHideSystemMessage('user-muted', hiddenMessages);
 			expect(result).to.be.true;
 		});
 
 		it('should return true if message type is user-muted and mute_unmute is in hidden system messages', async () => {
 			const hiddenMessages: MessageTypesValues[] = ['mute_unmute'];
 
-			const result = await shouldHideSystemMessage('user-muted', hiddenMessages);
+			const result = shouldHideSystemMessage('user-muted', hiddenMessages);
 			expect(result).to.be.true;
 		});
 
 		it('should return false if message type is not in hidden system messages', async () => {
 			const hiddenMessages: MessageTypesValues[] = ['room-archived'];
 
-			const result = await shouldHideSystemMessage('user-muted', hiddenMessages);
+			const result = shouldHideSystemMessage('user-muted', hiddenMessages);
 			expect(result).to.be.false;
 		});
 
 		it('should return false if hidden system messages are undefined', async () => {
-			const result = await shouldHideSystemMessage('user-muted', undefined);
+			const result = shouldHideSystemMessage('user-muted', undefined);
 			expect(result).to.be.false;
 		});
 	});
