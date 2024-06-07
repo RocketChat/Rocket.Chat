@@ -166,7 +166,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	isUserInRoleScope(uid: IUser['_id']): Promise<boolean>;
 
-	addBannerById(_id: any, banner: any): any;
+	addBannerById(_id: IUser['_id'], banner: any): Promise<UpdateResult>;
 
 	findOneByAgentUsername(username: any, options: any): any;
 
