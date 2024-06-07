@@ -111,11 +111,12 @@ export class AppRoomBridge extends RoomBridge {
 		},
 		appId: string,
 	): Promise<IMessageRaw[]> {
-		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}"`);
+		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}" with options:`, options);
 
 		let { limit, skip = 0, sort } = options;
 
 		if (!Number.isFinite(limit) || limit < 1) {
+			this.orch.debugLog(`The limit parameter must be a number greater than 0. Received: ${limit}. It will be set to 100.`);
 			limit = 100;
 		}
 
