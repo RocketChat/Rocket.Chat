@@ -7,4 +7,3 @@ export * from './MockedModalContext';
 export * from './MockedServerContext';
 export * from './MockedSettingsContext';
 export * from './MockedUserContext';
-export * from './MockedQueryClientWrapper';

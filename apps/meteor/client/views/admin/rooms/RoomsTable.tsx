@@ -121,7 +121,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingTable data-id='RoomGenericTableLoadingTable' headerCells={mediaQuery ? 6 : 3} />
+						<GenericTableLoadingTable headerCells={mediaQuery ? 6 : 3} />
 					</GenericTableBody>
 				</GenericTable>
 			)}
