@@ -37,6 +37,7 @@ export const openBusinessHour = async (
 
 	if (updateLivechatStatus) {
 		await Users.updateLivechatStatusBasedOnBusinessHours();
+		// TODO missing notify
 	}
 };
 
@@ -46,4 +47,5 @@ export const removeBusinessHourByAgentIds = async (agentIds: string[], businessH
 	}
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHourId);
 	await Users.updateLivechatStatusBasedOnBusinessHours();
+	// TODO missing notify
 };

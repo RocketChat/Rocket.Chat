@@ -19,6 +19,8 @@ export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior imp
 		).map((businessHour) => businessHour._id);
 		await this.UsersRepository.closeAgentsBusinessHoursByBusinessHourIds(businessHoursIds);
 		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
+
+		// TODO missing notify
 	}
 
 	async onStartBusinessHours(): Promise<void> {

@@ -17,6 +17,8 @@ export const closeBusinessHourByAgentIds = async (
 	});
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHourId);
 	await Users.updateLivechatStatusBasedOnBusinessHours();
+
+	// TODO missing notify
 };
 
 export const closeBusinessHour = makeFunction(async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> => {

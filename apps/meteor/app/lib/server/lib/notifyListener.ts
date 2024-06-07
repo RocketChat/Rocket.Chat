@@ -443,19 +443,16 @@ export async function notifyOnSettingChangedById(id: ISetting['_id'], clientActi
 
 	void api.broadcast('watch.settings', { clientAction, setting: item });
 }
-export async function notifyOnUserChange({
-	clientAction,
-	id,
-	data,
-	diff,
-	unset,
-}: {
+
+type NotifyUserChange = {
 	id: IUser['_id'];
 	clientAction: 'inserted' | 'removed' | 'updated';
 	data?: IUser;
 	diff?: Record<string, any>;
 	unset?: Record<string, number>;
-}) {
+};
+
+export async function notifyOnUserChange({ clientAction, id, data, diff, unset }: NotifyUserChange) {
 	if (!dbWatchersDisabled) {
 		return;
 	}
@@ -471,6 +468,28 @@ export async function notifyOnUserChange({
 	void api.broadcast('watch.users', { clientAction, diff: diff!, unset: unset || {}, id });
 }
 
+/**
+ * Calls the callback only if DB Watchers are disabled
+ */
+export async function notifyOnUserChangeAsync(cb: () => Promise<NotifyUserChange | NotifyUserChange[] | void>) {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const result = await cb();
+	if (!result) {
+		return;
+	}
+
+	if (Array.isArray(result)) {
+		result.forEach((n) => notifyOnUserChange(n));
+		return;
+	}
+
+	return notifyOnUserChange(result);
+}
+
+// TODO this may be only useful on 'inserted'
 export async function notifyOnUserChangeById({ clientAction, id }: { id: IUser['_id']; clientAction: 'inserted' | 'removed' | 'updated' }) {
 	if (!dbWatchersDisabled) {
 		return;

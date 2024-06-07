@@ -54,6 +54,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		for (const businessHour of businessHoursToOpen) {
 			void this.openBusinessHour(businessHour);
 		}
+
+		// TODO missing notify user
 	}
 
 	async openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void> {
@@ -214,6 +216,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		}
 		await Users.updateLivechatStatusBasedOnBusinessHours();
 		await businessHourManager.restartCronJobsIfNecessary();
+
+		// TODO missing notify user
 	}
 
 	async onDepartmentArchived(department: Pick<ILivechatDepartment, '_id' | 'businessHourId'>): Promise<void> {
@@ -229,6 +233,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		await this.applyAnyOpenBusinessHourToAgent(agentId);
 
 		await Users.updateLivechatStatusBasedOnBusinessHours([agentId]);
+
+		// TODO missing notify user
 	}
 
 	private async applyAnyOpenBusinessHourToAgent(agentId: string): Promise<void> {

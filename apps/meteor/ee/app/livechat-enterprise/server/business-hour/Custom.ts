@@ -80,6 +80,8 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 		await this.removeBusinessHourFromAgents(businessHourId);
 		await LivechatDepartment.removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId);
 		this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
+
+		// TODO missing notify
 	}
 
 	private async removeBusinessHourFromAgents(businessHourId: string): Promise<void> {
@@ -148,6 +150,8 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 
 		await Users.removeBusinessHourByAgentIds(agentsConnectedToDefaultBH, defaultBusinessHour._id);
 		await Users.updateLivechatStatusBasedOnBusinessHours();
+
+		// TODO missing notify
 	}
 
 	private async addBusinessHourToDepartmentsIfNeeded(businessHourId: string, departmentsToAdd: string[]): Promise<void> {

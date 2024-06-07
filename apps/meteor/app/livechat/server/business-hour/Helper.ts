@@ -32,6 +32,7 @@ export const openBusinessHourDefault = async (): Promise<void> => {
 			active: 1,
 		},
 	});
+
 	const businessHoursToOpenIds = (await filterBusinessHoursThatMustBeOpened(activeBusinessHours)).map((businessHour) => businessHour._id);
 	businessHourLogger.debug({ msg: 'Opening default business hours', businessHoursToOpenIds });
 	await Users.openAgentsBusinessHoursByBusinessHourId(businessHoursToOpenIds);
@@ -39,6 +40,8 @@ export const openBusinessHourDefault = async (): Promise<void> => {
 		await Users.makeAgentsWithinBusinessHourAvailable();
 	}
 	await Users.updateLivechatStatusBasedOnBusinessHours();
+
+	// TODO missing notify
 };
 
 export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {
