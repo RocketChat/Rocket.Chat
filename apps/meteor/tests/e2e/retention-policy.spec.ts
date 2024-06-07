@@ -94,7 +94,7 @@ test.describe.serial('retention-policy', () => {
 
 			await expect(poHomeChannel.tabs.room.pruneAccordion).not.toBeVisible();
 			await auxContext.page.close();
-		})
+		});
 
 		test.describe('retention policy applies enabled by default', () => {
 			test.beforeAll(async ({ api }) => {
@@ -116,7 +116,7 @@ test.describe.serial('retention-policy', () => {
 			test('should prune old messages checkbox enabled by default in team and show retention policy banner', async () => {
 				await poHomeChannel.sidenav.openChat(targetTeam);
 				await expect(poHomeChannel.content.channelRetentionPolicyWarning).toBeVisible();
-	
+
 				await poHomeChannel.tabs.btnRoomInfo.click();
 				await poHomeChannel.tabs.room.btnEdit.click();
 				await poHomeChannel.tabs.room.pruneAccordion.click();

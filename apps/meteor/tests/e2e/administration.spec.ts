@@ -237,7 +237,7 @@ test.describe.parallel('administration', () => {
 				await poAdmin.inputUsers.fill('user1');
 				await page.getByRole('option', { name: 'user1' }).click();
 				await poAdmin.btnAdd.click();
-				
+
 				await expect(poAdmin.getUserRowByUsername('user1')).toBeVisible();
 			});
 
@@ -257,8 +257,8 @@ test.describe.parallel('administration', () => {
 			test('should back to the permissions page', async ({ page }) => {
 				await poAdmin.openRoleByName('Moderator').click();
 				await poAdmin.btnUsersInRole.click();
-				await poAdmin.btnBack.click();			
-					
+				await poAdmin.btnBack.click();
+
 				await expect(page.locator('h1 >> text="Permissions"')).toBeVisible();
 			});
 		});
