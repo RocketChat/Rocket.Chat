@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import { useChat } from '../../contexts/ChatContext';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 
 export const ComposerOmnichannelInquiry = (): ReactElement => {
@@ -16,6 +17,10 @@ export const ComposerOmnichannelInquiry = (): ReactElement => {
 			roomId: room._id,
 		}),
 	);
+
+	// TODO REMOVE THIS ONCE WE MOVE AWAY FROM INQUIRES!
+	const chat = useChat();
+
 	const takeInquiry = useMethod('livechat:takeInquiry');
 
 	const handleTakeInquiry = async (): Promise<void> => {
@@ -27,6 +32,8 @@ export const ComposerOmnichannelInquiry = (): ReactElement => {
 		}
 		try {
 			await takeInquiry(result.data.inquiry._id, { clientAction: true });
+			// TODO REMOVE THIS ONCE WE MOVE AWAY FROM INQUIRES!
+			chat?.readStateManager.attemptMarkAsRead();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
