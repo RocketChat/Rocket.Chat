@@ -112,7 +112,6 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 				const markedHtml = /inline/.test(variant)
 					? marked.parseInline(new Option(content).innerHTML, markedOptions)
 					: marked.parse(new Option(content).innerHTML, markedOptions);
-				console.log(marked.parse(new Option(content).innerHTML), new Option(content).innerHTML, 'content');
 				if (parseEmoji) {
 					// We are using the old emoji parser here. This could come
 					// with additional processing use, but is the workaround available right now.
