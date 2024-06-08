@@ -16,15 +16,17 @@ type MarkdownTextParams = {
 	withTruncatedText: boolean;
 } & ComponentProps<typeof Box>;
 
+const walkTokens = (token: marked.Token) => {
+	const strongPattern = /^\*.*\*$|^\*.*|.*\*$/;
+	if (strongPattern.test(token.raw)) {
+		token.type = 'strong';
+	}
+};
+
+marked.use({ walkTokens });
 const documentRenderer = new marked.Renderer();
 const inlineRenderer = new marked.Renderer();
 const inlineWithoutBreaks = new marked.Renderer();
-
-marked.Lexer.rules.gfm = {
-	...marked.Lexer.rules.gfm,
-	strong: /^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)|^\*(?=\S)([\s\S]*?\S)\*(?!\*)/,
-	em: /^__(?=\S)([\s\S]*?\S)__(?!_)|^_(?=\S)([\s\S]*?\S)_(?!_)/,
-};
 
 const linkMarked = (href: string | null, _title: string | null, text: string): string =>
 	`<a href="${href}" rel="nofollow noopener noreferrer">${text}</a> `;
@@ -110,7 +112,7 @@ const MarkdownText: FC<Partial<MarkdownTextParams>> = ({
 				const markedHtml = /inline/.test(variant)
 					? marked.parseInline(new Option(content).innerHTML, markedOptions)
 					: marked.parse(new Option(content).innerHTML, markedOptions);
-
+				console.log(marked.parse(new Option(content).innerHTML), new Option(content).innerHTML, 'content');
 				if (parseEmoji) {
 					// We are using the old emoji parser here. This could come
 					// with additional processing use, but is the workaround available right now.
