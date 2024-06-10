@@ -177,7 +177,7 @@ test.describe('SAML', () => {
 	test('Login', async ({ page, api }) => {
 		await test.step('expect to have SAML login button available in green color', async () => {
 			await expect(poRegistration.btnLoginWithSaml).toBeVisible({ timeout: 10000 });
-			await expect(poRegistration.btnLoginWithSaml.evaluate((el) => window.getComputedStyle(el).getPropertyValue('background-color'))).toBe('green');
+			await expect(poRegistration.btnLoginWithSaml.evaluate((el) => window.getComputedStyle(el).getPropertyValue('background-color'))).toBe('green !important');
 		});
 
 		await test.step('expect to be redirected to the IdP for login', async () => {
