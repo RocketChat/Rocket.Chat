@@ -359,6 +359,18 @@ export class HomeContent {
 		return this.page.locator('role=button[name="Or talk as anonymous"]');
 	}
 
+	get nextSlideButton(): Locator {
+		return this.page.getByLabel('Next slide');
+	}
+
+	get previousSlideButton(): Locator {
+		return this.page.getByLabel('Previous slide');
+	}
+
+	get currentGalleryImage(): Locator {
+		return this.page.locator('div[class="swiper-slide swiper-slide-active"] img');
+	}
+
 	findSystemMessage(text: string): Locator {
 		return this.page.locator(`[data-qa-type="system-message-body"] >> text="${text}"`);
 	}
