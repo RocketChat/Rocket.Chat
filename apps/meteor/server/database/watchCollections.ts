@@ -32,10 +32,7 @@ export function getWatchCollections(): string[] {
 	const collections = [
 		Users.getCollectionName(),
 		LivechatInquiry.getCollectionName(),
-		LivechatDepartmentAgents.getCollectionName(),
 		InstanceStatus.getCollectionName(),
-		IntegrationHistory.getCollectionName(),
-		EmailInbox.getCollectionName(),
 		Settings.getCollectionName(),
 		Subscriptions.getCollectionName(),
 	];
@@ -50,6 +47,9 @@ export function getWatchCollections(): string[] {
 		collections.push(Permissions.getCollectionName());
 		collections.push(LivechatPriority.getCollectionName());
 		collections.push(LoginServiceConfiguration.getCollectionName());
+		collections.push(EmailInbox.getCollectionName());
+		collections.push(IntegrationHistory.getCollectionName());
+		collections.push(LivechatDepartmentAgents.getCollectionName());
 	}
 
 	if (onlyCollections.length > 0) {

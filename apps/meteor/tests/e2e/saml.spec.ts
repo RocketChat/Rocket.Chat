@@ -2,7 +2,7 @@ import child_process from 'child_process';
 import path from 'path';
 
 import { faker } from '@faker-js/faker';
-import { Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { v2 as compose } from 'docker-compose';
 import { MongoClient } from 'mongodb';
 
@@ -12,8 +12,10 @@ import { Users } from './fixtures/userStates';
 import { Registration } from './page-objects';
 import { createCustomRole, deleteCustomRole } from './utils/custom-role';
 import { getUserInfo } from './utils/getUserInfo';
+import { parseMeteorResponse } from './utils/parseMeteorResponse';
 import { setSettingValueById } from './utils/setSettingValueById';
-import { test, expect, BaseTest } from './utils/test';
+import type { BaseTest } from './utils/test';
+import { test, expect } from './utils/test';
 
 const resetTestData = async (cleanupOnly = false) => {
 	// Reset saml users' data on mongo in the beforeAll hook to allow re-running the tests within the same playwright session
@@ -192,6 +194,30 @@ test.describe('SAML', () => {
 			expect(user?.name).toBe('Saml User 1');
 			expect(user?.emails).toBeDefined();
 			expect(user?.emails?.[0].address).toBe('samluser1@example.com');
+		});
+	});
+
+	test('Allow password change for OAuth users', async ({ api }) => {
+		await test.step("should not send password reset mail if 'Allow Password Change for OAuth Users' setting is disabled", async () => {
+			expect((await setSettingValueById(api, 'Accounts_AllowPasswordChangeForOAuthUsers', false)).status()).toBe(200);
+
+			const response = await api.post('/method.call/sendForgotPasswordEmail', {
+				message: JSON.stringify({ msg: 'method', id: 'id', method: 'sendForgotPasswordEmail', params: ['samluser1@example.com'] }),
+			});
+			const mailSent = await parseMeteorResponse<boolean>(response);
+			expect(response.status()).toBe(200);
+			expect(mailSent).toBe(false);
+		});
+
+		await test.step("should send password reset mail if 'Allow Password Change for OAuth Users' setting is enabled", async () => {
+			expect((await setSettingValueById(api, 'Accounts_AllowPasswordChangeForOAuthUsers', true)).status()).toBe(200);
+
+			const response = await api.post('/method.call/sendForgotPasswordEmail', {
+				message: JSON.stringify({ msg: 'method', id: 'id', method: 'sendForgotPasswordEmail', params: ['samluser1@example.com'] }),
+			});
+			const mailSent = await parseMeteorResponse<boolean>(response);
+			expect(response.status()).toBe(200);
+			expect(mailSent).toBe(true);
 		});
 	});
 
