@@ -14,7 +14,7 @@ type SaveE2EPasswordModalProps = {
 	onConfirm: () => void;
 };
 
-const DOCS_URL = 'https://rocket.chat/docs/user-guides/end-to-end-encryption/';
+const DOCS_URL = 'https://go.rocket.chat/i/e2ee-guide';
 
 const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: SaveE2EPasswordModalProps): ReactElement => {
 	const t = useTranslation();
