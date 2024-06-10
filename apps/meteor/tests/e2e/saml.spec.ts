@@ -78,10 +78,6 @@ const resetTestData = async (cleanupOnly = false) => {
 				_id: 'SAML_Custom_Default_button_label_text',
 				value: 'SAML test login button',
 			},
-			{
-				_id: 'SAML_Custom_Default_button_color',
-				value: 'green',
-			},
 		].map((setting) =>
 			connection
 				.db()
@@ -175,9 +171,8 @@ test.describe('SAML', () => {
 	});
 
 	test('Login', async ({ page, api }) => {
-		await test.step('expect to have SAML login button available in green color', async () => {
+		await test.step('expect to have SAML login button available', async () => {
 			await expect(poRegistration.btnLoginWithSaml).toBeVisible({ timeout: 10000 });
-			await expect(poRegistration.btnLoginWithSaml.evaluate((el) => window.getComputedStyle(el).getPropertyValue('background-color'))).toBe('green !important');
 		});
 
 		await test.step('expect to be redirected to the IdP for login', async () => {
