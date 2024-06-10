@@ -17,11 +17,15 @@ Meteor.methods<ServerMethods>({
 	async resetIrcConnection() {
 		const ircEnabled = Boolean(settings.get('IRC_Enabled'));
 
-		(await Settings.updateValueById('IRC_Bridge_Last_Ping', new Date(0), { upsert: true })).modifiedCount &&
+		const updatedLastPingValue = await Settings.updateValueById('IRC_Bridge_Last_Ping', new Date(0), { upsert: true });
+		if (updatedLastPingValue.modifiedCount || updatedLastPingValue.upsertedCount) {
 			void notifyOnSettingChangedById('IRC_Bridge_Last_Ping');
+		}
 
-		(await Settings.updateValueById('IRC_Bridge_Reset_Time', new Date(), { upsert: true })).modifiedCount &&
+		const updatedResetTimeValue = await Settings.updateValueById('IRC_Bridge_Reset_Time', new Date(), { upsert: true });
+		if (updatedResetTimeValue.modifiedCount || updatedResetTimeValue.upsertedCount) {
 			void notifyOnSettingChangedById('IRC_Bridge_Last_Ping');
+		}
 
 		if (!ircEnabled) {
 			return {

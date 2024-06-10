@@ -44,44 +44,6 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api?: any, cleanupO
 		),
 	);
 
-	// await Promise.all(
-	// 	[
-	// 		{
-	// 			_id: 'Accounts_AllowAnonymousRead',
-	// 			value: false,
-	// 		},
-	// 		{
-	// 			_id: 'SAML_Custom_Default_logout_behaviour',
-	// 			value: 'SAML',
-	// 		},
-	// 		{
-	// 			_id: 'SAML_Custom_Default_immutable_property',
-	// 			value: 'EMail',
-	// 		},
-	// 		{
-	// 			_id: 'SAML_Custom_Default_mail_overwrite',
-	// 			value: false,
-	// 		},
-	// 		{
-	// 			_id: 'SAML_Custom_Default',
-	// 			value: false,
-	// 		},
-	// 		{
-	// 			_id: 'SAML_Custom_Default_role_attribute_sync',
-	// 			value: true,
-	// 		},
-	// 		{
-	// 			_id: 'SAML_Custom_Default_role_attribute_name',
-	// 			value: 'role',
-	// 		},
-	// 	].map((setting) =>
-	// 		connection
-	// 			.db()
-	// 			.collection('rocketchat_settings')
-	// 			.updateOne({ _id: setting._id }, { $set: { value: setting.value } }),
-	// 	),
-	// );
-
 	const settings = [
 		{ _id: 'Accounts_AllowAnonymousRead', value: false },
 		{ _id: 'SAML_Custom_Default_logout_behaviour', value: 'SAML' },
@@ -212,7 +174,7 @@ test.describe('SAML', () => {
 		});
 	});
 
-	test('Allow password change for OAuth users', async ({  api }) => {
+	test('Allow password change for OAuth users', async ({ api }) => {
 		await test.step("should not send password reset mail if 'Allow Password Change for OAuth Users' setting is disabled", async () => {
 			expect((await setSettingValueById(api, 'Accounts_AllowPasswordChangeForOAuthUsers', false)).status()).toBe(200);
 

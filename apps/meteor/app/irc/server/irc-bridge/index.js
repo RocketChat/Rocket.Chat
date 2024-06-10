@@ -22,8 +22,10 @@ const updateLastPing = withThrottling({ wait: 10_000 })(() => {
 	}
 
 	void (async () => {
-		(await Settings.updateValueById('IRC_Bridge_Last_Ping', new Date(), { upsert: true })).modifiedCount &&
+		const updatedValue = await Settings.updateValueById('IRC_Bridge_Last_Ping', new Date(), { upsert: true });
+		if (updatedValue.modifiedCount || updatedValue.upsertedCount) {
 			void notifyOnSettingChangedById('IRC_Bridge_Last_Ping');
+		}
 	})();
 });
 
