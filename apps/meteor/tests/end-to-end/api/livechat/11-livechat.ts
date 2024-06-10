@@ -17,6 +17,7 @@ describe('LIVECHAT - Utils', function () {
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
+		await updateSetting('Livechat_offline_email', '');
 	});
 
 	describe('livechat/offline.message', () => {
@@ -451,6 +452,33 @@ describe('LIVECHAT - Utils', function () {
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('callStatus', 'going');
 			expect(body).to.have.property('token', visitor.token);
+		});
+	});
+	describe('livechat/visitors.search', () => {
+		it('should bring sorted data by last chat time', async () => {
+			const visitor1 = await createVisitor(undefined, 'VisitorInPast');
+			await createLivechatRoom(visitor1.token);
+
+			const visitor2 = await createVisitor(undefined, 'VisitorInPresent');
+			await createLivechatRoom(visitor2.token);
+
+			const { body: result1 } = await request
+				.get(api('livechat/visitors.search?term=VisitorIn&sort={"lastChat.ts":1}'))
+				.set(credentials)
+				.send();
+
+			expect(result1).to.have.property('visitors').that.is.an('array');
+			expect(result1.visitors[0]).to.have.property('name');
+			expect(result1.visitors[0].name).to.be.eq('VisitorInPast');
+
+			const { body: result2 } = await request
+				.get(api('livechat/visitors.search?term=VisitorIn&sort={"lastChat.ts":-1}'))
+				.set(credentials)
+				.send();
+
+			expect(result2).to.have.property('visitors').that.is.an('array');
+			expect(result2.visitors[0]).to.have.property('name');
+			expect(result2.visitors[0].name).to.be.eq('VisitorInPresent');
 		});
 	});
 
