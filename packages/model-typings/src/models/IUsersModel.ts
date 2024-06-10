@@ -77,6 +77,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findLDAPUsers<T = IUser>(options?: any): FindCursor<T>;
 
+	findLDAPUsersExceptIds<T = IUser>(userIds: IUser['_id'][], options?: FindOptions<IUser>): FindCursor<T>;
+
 	findConnectedLDAPUsers<T = IUser>(options?: any): FindCursor<T>;
 
 	isUserInRole(userId: IUser['_id'], roleId: IRole['_id']): Promise<boolean>;

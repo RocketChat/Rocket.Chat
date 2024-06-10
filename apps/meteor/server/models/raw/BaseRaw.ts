@@ -267,6 +267,10 @@ export abstract class BaseRaw<
 		return this.deleteOne({ _id } as Filter<T>);
 	}
 
+	removeByIds(ids: T['_id'][]): Promise<DeleteResult> {
+		return this.deleteMany({ _id: { $in: ids } } as unknown as Filter<T>);
+	}
+
 	async deleteOne(filter: Filter<T>, options?: DeleteOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteResult> {
 		if (!this.trash) {
 			if (options) {

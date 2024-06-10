@@ -2,12 +2,14 @@ import { Media } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
-import { isGETRoomsNameExists, isRoomsImagesProps } from '@rocket.chat/rest-typings';
+import { isGETRoomsNameExists, isRoomsImagesProps, isRoomsMuteUnmuteUserProps, isRoomsExportProps } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/methods/eraseRoom';
+import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
+import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
@@ -19,6 +21,7 @@ import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import {
 	findAdminRoom,
@@ -596,14 +599,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.export',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomsExportProps },
 	{
 		async post() {
 			const { rid, type } = this.bodyParams;
-
-			if (!rid || !type || !['email', 'file'].includes(type)) {
-				throw new Meteor.Error('error-invalid-params');
-			}
 
 			if (!(await hasPermissionAsync(this.userId, 'mail-messages', rid))) {
 				throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed');
@@ -624,12 +623,8 @@ API.v1.addRoute(
 				const { dateFrom, dateTo } = this.bodyParams;
 				const { format } = this.bodyParams;
 
-				if (!['html', 'json'].includes(format || '')) {
-					throw new Meteor.Error('error-invalid-format');
-				}
-
-				const convertedDateFrom = new Date(dateFrom || '');
-				const convertedDateTo = new Date(dateTo || '');
+				const convertedDateFrom = dateFrom ? new Date(dateFrom) : new Date(0);
+				const convertedDateTo = dateTo ? new Date(dateTo) : new Date();
 				convertedDateTo.setDate(convertedDateTo.getDate() + 1);
 
 				if (convertedDateFrom > convertedDateTo) {
@@ -655,10 +650,6 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-recipient');
 				}
 
-				if (messages?.length === 0) {
-					throw new Meteor.Error('error-invalid-messages');
-				}
-
 				const result = await dataExport.sendViaEmail(
 					{
 						rid,
@@ -675,6 +666,42 @@ API.v1.addRoute(
 			}
 
 			return API.v1.failure();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.muteUser',
+	{ authRequired: true, validateParams: isRoomsMuteUnmuteUserProps },
+	{
+		async post() {
+			const user = await getUserFromParams(this.bodyParams);
+
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await muteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.unmuteUser',
+	{ authRequired: true, validateParams: isRoomsMuteUnmuteUserProps },
+	{
+		async post() {
+			const user = await getUserFromParams(this.bodyParams);
+
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await unmuteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success();
 		},
 	},
 );
