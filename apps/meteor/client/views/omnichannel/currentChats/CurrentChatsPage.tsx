@@ -7,9 +7,6 @@ import moment from 'moment';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 
-import { RoomActivityIcon } from '../../../../ee/client/omnichannel/components/RoomActivityIcon';
-import { useOmnichannelPriorities } from '../../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
-import { PriorityIcon } from '../../../../ee/client/omnichannel/priorities/PriorityIcon';
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -24,6 +21,9 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { useIsOverMacLimit } from '../../../hooks/omnichannel/useIsOverMacLimit';
+import { RoomActivityIcon } from '../../../omnichannel/components/RoomActivityIcon';
+import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
+import { PriorityIcon } from '../../../omnichannel/priorities/PriorityIcon';
 import CustomFieldsList from './CustomFieldsList';
 import FilterByText from './FilterByText';
 import RemoveChatButton from './RemoveChatButton';

@@ -97,11 +97,7 @@ const UsersTable = ({
 					{t('Email')}
 				</GenericTableHeaderCell>
 			),
-			!isLaptop && (
-				<GenericTableHeaderCell key='roles' onClick={setSort}>
-					{t('Roles')}
-				</GenericTableHeaderCell>
-			),
+			!isLaptop && <GenericTableHeaderCell key='roles'>{t('Roles')}</GenericTableHeaderCell>,
 			tab === 'all' && !isMobile && (
 				<GenericTableHeaderCell key='status' direction={sortDirection} active={sortBy === 'status'} onClick={setSort} sort='status'>
 					{t('Registration_status')}

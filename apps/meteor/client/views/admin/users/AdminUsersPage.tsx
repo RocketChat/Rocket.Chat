@@ -7,8 +7,6 @@ import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans } from 'react-i18next';
 
-import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
-import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import {
 	Contextualbar,
 	ContextualbarHeader,
@@ -27,9 +25,11 @@ import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
 import AdminUserUpgrade from './AdminUserUpgrade';
+import UserPageHeaderContentWithSeatsCap from './UserPageHeaderContentWithSeatsCap';
 import UsersTable from './UsersTable';
 import useFilteredUsers from './hooks/useFilteredUsers';
 import usePendingUsersCount from './hooks/usePendingUsersCount';
+import { useSeatsCap } from './useSeatsCap';
 
 export type UsersFilters = {
 	text: string;

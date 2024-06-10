@@ -17,18 +17,10 @@ import RetentionPolicyCallout from '../../../../components/InfoPanel/RetentionPo
 import MarkdownText from '../../../../components/MarkdownText';
 import type { Action } from '../../../hooks/useActionSpread';
 import { useActionSpread } from '../../../hooks/useActionSpread';
-
-type RetentionPolicy = {
-	retentionPolicyEnabled: boolean;
-	maxAgeDefault: number;
-	retentionEnabledDefault: boolean;
-	excludePinnedDefault: boolean;
-	filesOnlyDefault: boolean;
-};
+import { useRetentionPolicy } from '../../../room/hooks/useRetentionPolicy';
 
 type TeamsInfoProps = {
 	room: IRoom;
-	retentionPolicy: RetentionPolicy;
 	onClickHide: () => void;
 	onClickClose: () => void;
 	onClickLeave: () => void;
@@ -40,7 +32,6 @@ type TeamsInfoProps = {
 
 const TeamsInfo = ({
 	room,
-	retentionPolicy,
 	onClickHide,
 	onClickClose,
 	onClickLeave,
@@ -51,7 +42,7 @@ const TeamsInfo = ({
 }: TeamsInfoProps): ReactElement => {
 	const t = useTranslation();
 
-	const { retentionPolicyEnabled, filesOnlyDefault, excludePinnedDefault, maxAgeDefault } = retentionPolicy;
+	const retentionPolicy = useRetentionPolicy(room);
 
 	const memoizedActions = useMemo(
 		() => ({
@@ -199,11 +190,11 @@ const TeamsInfo = ({
 							</InfoPanel.Field>
 						)}
 
-						{retentionPolicyEnabled && (
+						{retentionPolicy?.isActive && (
 							<RetentionPolicyCallout
-								filesOnlyDefault={filesOnlyDefault}
-								excludePinnedDefault={excludePinnedDefault}
-								maxAgeDefault={maxAgeDefault}
+								filesOnly={retentionPolicy.filesOnly}
+								excludePinned={retentionPolicy.excludePinned}
+								maxAge={retentionPolicy.maxAge}
 							/>
 						)}
 					</InfoPanel.Section>
