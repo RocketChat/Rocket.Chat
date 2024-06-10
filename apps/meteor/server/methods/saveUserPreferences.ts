@@ -95,8 +95,8 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		mentionsWithSymbol: Match.Optional(Boolean),
 	};
 	check(settings, Match.ObjectIncluding(keys));
-	const user = await Users.findOneById(userId);
 
+	const user = await Users.findOneById(userId);
 	if (!user) {
 		return;
 	}
@@ -135,7 +135,14 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		return data;
 	}, {});
 
-	void notifyOnUserChange({ id: user._id, clientAction: 'updated', diff });
+	void notifyOnUserChange({
+		id: user._id,
+		clientAction: 'updated',
+		diff: {
+			...diff,
+			...(settings.language != null && { language: settings.language }),
+		},
+	});
 
 	// propagate changed notification preferences
 	setImmediate(async () => {
