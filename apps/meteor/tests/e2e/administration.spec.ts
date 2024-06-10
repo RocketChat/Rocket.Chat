@@ -210,7 +210,7 @@ test.describe.parallel('administration', () => {
 		test.describe('Users in role', () => {
 			const channelName = faker.string.uuid();
 			test.beforeAll(async ({ api }) => {
-				// TODO: refactor createChannel utility in order to get channel data when creating 
+				// TODO: refactor createChannel utility in order to get channel data when creating
 				const response = await api.post('/channels.create', { name: channelName, members: ['user1'] });
 				const { channel } = await response.json();
 
@@ -223,7 +223,7 @@ test.describe.parallel('administration', () => {
 				await poAdmin.btnUsersInRole.click();
 				await poAdmin.inputRoom.fill(channelName);
 				await page.getByRole('option', { name: channelName }).click();
-				
+
 				await expect(poAdmin.getUserRowByUsername('user1')).toBeVisible();
 			});
 
@@ -237,7 +237,7 @@ test.describe.parallel('administration', () => {
 				await poAdmin.inputUsers.fill('user1');
 				await page.getByRole('option', { name: 'user1' }).click();
 				await poAdmin.btnAdd.click();
-				
+
 				await expect(poAdmin.getUserRowByUsername('user1')).toBeVisible();
 			});
 
@@ -257,11 +257,11 @@ test.describe.parallel('administration', () => {
 			test('should back to the permissions page', async ({ page }) => {
 				await poAdmin.openRoleByName('Moderator').click();
 				await poAdmin.btnUsersInRole.click();
-				await poAdmin.btnBack.click();			
-					
+				await poAdmin.btnBack.click();
+
 				await expect(page.locator('h1 >> text="Permissions"')).toBeVisible();
 			});
-		})
+		});
 	});
 
 	test.describe('Mailer', () => {
@@ -282,7 +282,7 @@ test.describe.parallel('administration', () => {
 			});
 
 			test.afterAll(async ({ api }) => {
-				await setSettingValueById(api, 'Language', 'en')
+				await setSettingValueById(api, 'Language', 'en');
 			});
 
 			test('expect be able to reset a setting after a change', async () => {
