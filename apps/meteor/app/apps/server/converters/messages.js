@@ -39,7 +39,7 @@ export class AppMessagesConverter {
 			groupable: 'groupable',
 			token: 'token',
 			blocks: 'blocks',
-			room: 'rid',
+			roomId: 'rid',
 			editor: 'editedBy',
 			attachments: getAttachments,
 			sender: 'u',
