@@ -31,39 +31,42 @@ const dmMessagesCsvDir = path.resolve(__dirname, 'fixtures', 'files', 'dm_messag
 
 const usersCsvsToJson = async (): Promise<void> => {
 	await new Promise((resolve) =>
-		fs.createReadStream(slackCsvDir)
+		fs
+			.createReadStream(slackCsvDir)
 			.pipe(parse({ delimiter: ',', from_line: 2 }))
 			.on('data', (rows) => {
 				rowUserName.push(rows[0]);
 			})
-			.on('end', resolve)
+			.on('end', resolve),
 	);
 
 	await new Promise((resolve) =>
-		fs.createReadStream(usersCsvDir)
+		fs
+			.createReadStream(usersCsvDir)
 			.pipe(parse({ delimiter: ',' }))
 			.on('data', (rows) => {
 				rowUserName.push(rows[0]);
 				csvImportedUsernames.push(rows[0]);
 			})
-			.on('end', resolve)
+			.on('end', resolve),
 	);
 };
 
-const countDmMessages = (): Promise<void> => (
+const countDmMessages = (): Promise<void> =>
 	new Promise((resolve) =>
-		fs.createReadStream(dmMessagesCsvDir)
+		fs
+			.createReadStream(dmMessagesCsvDir)
 			.pipe(parse({ delimiter: ',' }))
 			.on('data', (rows) => {
 				dmMessages.push(rows[3]);
 			})
-			.on('end', resolve)
-	)
-);
+			.on('end', resolve),
+	);
 
-const roomsCsvToJson = (): Promise<void> => (
+const roomsCsvToJson = (): Promise<void> =>
 	new Promise((resolve) =>
-		fs.createReadStream(roomsCsvDir)
+		fs
+			.createReadStream(roomsCsvDir)
 			.pipe(parse({ delimiter: ',' }))
 			.on('data', (rows) => {
 				importedRooms.push({
@@ -73,9 +76,8 @@ const roomsCsvToJson = (): Promise<void> => (
 					members: rows[3],
 				});
 			})
-			.on('end', resolve)
-	)
-);
+			.on('end', resolve),
+	);
 
 test.describe.serial('imports', () => {
 	test.beforeAll(async () => {
@@ -136,7 +138,7 @@ test.describe.serial('imports', () => {
 			await poAdmin.inputSearchRooms.fill(room.name);
 
 			const expectedMembersCount = room.members.split(';').filter((username) => username !== room.ownerUsername).length + 1;
-			expect(page.locator(`tbody tr td:nth-child(2) >> text="${ expectedMembersCount }"`));
+			expect(page.locator(`tbody tr td:nth-child(2) >> text="${expectedMembersCount}"`));
 		}
 	});
 
@@ -148,7 +150,9 @@ test.describe.serial('imports', () => {
 			await poAdmin.inputSearchRooms.fill(room.name);
 			await poAdmin.getRoomRow(room.name).click();
 
-			room.visibility === 'private' ? await expect(poAdmin.privateInput).toBeChecked() : await expect(poAdmin.privateInput).not.toBeChecked();
+			room.visibility === 'private'
+				? await expect(poAdmin.privateInput).toBeChecked()
+				: await expect(poAdmin.privateInput).not.toBeChecked();
 			await expect(poAdmin.roomOwnerInput).toHaveValue(room.ownerUsername);
 		}
 	});
@@ -162,10 +166,10 @@ test.describe.serial('imports', () => {
 			expect(page.locator(`tbody tr td:first-child >> text="${user}"`));
 
 			const expectedMembersCount = 2;
-			expect(page.locator(`tbody tr td:nth-child(2) >> text="${ expectedMembersCount }"`));
+			expect(page.locator(`tbody tr td:nth-child(2) >> text="${expectedMembersCount}"`));
 
 			const expectedMessagesCount = dmMessages.length;
-			expect(page.locator(`tbody tr td:nth-child(3) >> text="${ expectedMessagesCount }"`));
-		}		
+			expect(page.locator(`tbody tr td:nth-child(3) >> text="${expectedMessagesCount}"`));
+		}
 	});
 });
