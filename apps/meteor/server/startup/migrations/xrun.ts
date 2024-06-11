@@ -1,4 +1,5 @@
 import { Settings } from '@rocket.chat/models';
+import type { UpdateResult } from 'mongodb';
 
 import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
 import { migrateDatabase, onServerVersionChange } from '../../lib/migrations';
@@ -17,7 +18,7 @@ const maxAgeSettingMap = new Map([
 const moveRetentionSetting = async () => {
 	const convertDaysToMs = (days: number) => days * 24 * 60 * 60 * 1000;
 
-	const promises: Array<Promise<any>> = [];
+	const promises: Array<Promise<UpdateResult>> = [];
 	await Settings.find(
 		{ _id: { $in: Array.from(maxAgeSettingMap.keys()) }, value: { $ne: -1 } },
 		{ projection: { _id: 1, value: 1 } },
@@ -27,7 +28,7 @@ const moveRetentionSetting = async () => {
 		}
 
 		promises.push(
-			Settings.update(
+			Settings.updateOne(
 				{
 					_id: maxAgeSettingMap.get(_id),
 				},

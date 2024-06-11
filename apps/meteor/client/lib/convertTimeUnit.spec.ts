@@ -20,7 +20,15 @@ describe('timeUnitToMs function', () => {
 	});
 
 	it('should throw an error for invalid time units', () => {
-		expect(() => timeUnitToMs('invalidUnit' as TIMEUNIT, 1)).toThrow('TimespanSettingInput - timeUnitToMs - invalid time unit');
+		expect(() => timeUnitToMs('invalidUnit' as TIMEUNIT, 1)).toThrow('timeUnitToMs - invalid time unit');
+	});
+
+	it('should throw an error for invalid timespan', () => {
+		const errorMessage = 'timeUnitToMs - invalid timespan';
+		expect(() => timeUnitToMs(TIMEUNIT.days, NaN)).toThrow(errorMessage);
+		expect(() => timeUnitToMs(TIMEUNIT.days, Infinity)).toThrow(errorMessage);
+		expect(() => timeUnitToMs(TIMEUNIT.days, -Infinity)).toThrow(errorMessage);
+		expect(() => timeUnitToMs(TIMEUNIT.days, -1)).toThrow(errorMessage);
 	});
 });
 
@@ -44,6 +52,14 @@ describe('msToTimeUnit function', () => {
 	});
 
 	it('should throw an error for invalid time units', () => {
-		expect(() => msToTimeUnit('invalidUnit' as TIMEUNIT, 1)).toThrow('TimespanSettingInput - msToTimeUnit - invalid time unit');
+		expect(() => msToTimeUnit('invalidUnit' as TIMEUNIT, 1)).toThrow('msToTimeUnit - invalid time unit');
+	});
+
+	it('should throw an error for invalid timespan', () => {
+		const errorMessage = 'msToTimeUnit - invalid timespan';
+		expect(() => msToTimeUnit(TIMEUNIT.days, NaN)).toThrow(errorMessage);
+		expect(() => msToTimeUnit(TIMEUNIT.days, Infinity)).toThrow(errorMessage);
+		expect(() => msToTimeUnit(TIMEUNIT.days, -Infinity)).toThrow(errorMessage);
+		expect(() => msToTimeUnit(TIMEUNIT.days, -1)).toThrow(errorMessage);
 	});
 });

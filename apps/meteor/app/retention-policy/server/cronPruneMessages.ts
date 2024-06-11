@@ -132,9 +132,9 @@ settings.watchMultiple(
 			types.push('d');
 		}
 
-		maxTimes.c = settings.get('RetentionPolicy_TTL_Channels');
-		maxTimes.p = settings.get('RetentionPolicy_TTL_Groups');
-		maxTimes.d = settings.get('RetentionPolicy_TTL_DMs');
+		maxTimes.c = settings.get<number>('RetentionPolicy_TTL_Channels');
+		maxTimes.p = settings.get<number>('RetentionPolicy_TTL_Groups');
+		maxTimes.d = settings.get<number>('RetentionPolicy_TTL_DMs');
 
 		const precision =
 			(settings.get<boolean>('RetentionPolicy_Advanced_Precision') && settings.get<string>('RetentionPolicy_Advanced_Precision_Cron')) ||
