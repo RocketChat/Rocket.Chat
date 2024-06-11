@@ -17,7 +17,7 @@ describe('[Engagement Dashboard]', function () {
 
 	before(() => updatePermission('view-engagement-dashboard', ['admin']));
 
-	before(() => updatePermission('view-engagement-dashboard', ['admin']));
+	after(() => updatePermission('view-engagement-dashboard', ['admin']));
 
 	(isEnterprise ? describe : describe.skip)('[/engagement-dashboard/channels/list]', () => {
 		let testRoom: IRoom;
