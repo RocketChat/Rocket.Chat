@@ -17,9 +17,12 @@ type MarkdownTextParams = {
 } & ComponentProps<typeof Box>;
 
 const walkTokens = (token: marked.Token) => {
-	const strongPattern = /^\*.*\*$|^\*.*|.*\*$/;
-	if (strongPattern.test(token.raw)) {
+	const boldPattern = /^\*.*\*$|^\*.*|.*\*$/;
+	const italicPattern = /^__(?=\S)([\s\S]*?\S)__(?!_)|^_(?=\S)([\s\S]*?\S)_(?!_)/;
+	if (boldPattern.test(token.raw)) {
 		token.type = 'strong';
+	} else if (italicPattern.test(token.raw)) {
+		token.type = 'em';
 	}
 };
 
