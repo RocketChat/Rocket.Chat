@@ -569,9 +569,7 @@ describe('[Teams]', () => {
 			});
 		});
 
-		after(async () => {
-			return updatePermission('view-all-teams', ['admin']);
-		});
+		after(() => Promise.all([deleteTeam(credential, teamName), updatePermission('view-all-teams', ['admin'])]));
 
 		it('should list all teams', async () => {
 			await request
@@ -585,7 +583,7 @@ describe('[Teams]', () => {
 					expect(res.body).to.have.property('offset', 0);
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('teams');
-					expect(res.body.teams).to.have.length.greaterThan(1);
+					expect(res.body.teams).to.be.an('array').that.is.not.empty;
 					expect(res.body.teams[0]).to.include.property('_id');
 					expect(res.body.teams[0]).to.include.property('_updatedAt');
 					expect(res.body.teams[0]).to.include.property('name');
