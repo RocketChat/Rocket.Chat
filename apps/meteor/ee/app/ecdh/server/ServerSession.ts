@@ -1,4 +1,4 @@
-import { Session } from '../Session';
+import { Session } from '../../../../app/ecdh/Session';
 
 export class ServerSession extends Session {
 	async init(clientPublic: string): Promise<void> {

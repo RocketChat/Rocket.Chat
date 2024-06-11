@@ -5,8 +5,6 @@ import { usePermission, useRouteParameter, useTranslation, useRouter } from '@ro
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
-import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import {
 	Contextualbar,
 	ContextualbarHeader,
@@ -23,8 +21,10 @@ import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
 import AdminUserUpgrade from './AdminUserUpgrade';
+import UserPageHeaderContentWithSeatsCap from './UserPageHeaderContentWithSeatsCap';
 import UsersTable from './UsersTable';
 import useFilteredUsers from './hooks/useFilteredUsers';
+import { useSeatsCap } from './useSeatsCap';
 
 export type UsersFilters = {
 	text: string;
@@ -98,12 +98,12 @@ const AdminUsersPage = (): ReactElement => {
 						</ButtonGroup>
 					)}
 				</PageHeader>
+				<Tabs>
+					<TabsItem selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
+						{t('All')}
+					</TabsItem>
+				</Tabs>
 				<PageContent>
-					<Tabs>
-						<TabsItem selected={!tab || tab === 'all'} onClick={() => setTab('all')}>
-							{t('All')}
-						</TabsItem>
-					</Tabs>
 					<UsersTable
 						filteredUsersQueryResult={filteredUsersQueryResult}
 						setUserFilters={setUserFilters}

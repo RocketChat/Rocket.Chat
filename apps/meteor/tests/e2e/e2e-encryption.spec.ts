@@ -464,5 +464,4 @@ test.describe.serial('e2ee room setup', () => {
 		await expect(poHomeChannel.tabs.btnTabMembers).toBeVisible();
 		await expect(poHomeChannel.tabs.btnRoomInfo).toBeVisible();
 	});
-
 });

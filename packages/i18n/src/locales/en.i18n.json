@@ -4070,6 +4070,7 @@
   "OTR_Enable_Description": "Enable option to use off-the-record (OTR) messages in direct messages between 2 users. OTR messages are not recorded on the server and exchanged directly and encrypted between the 2 users.",
   "OTR_message": "OTR Message",
   "OTR_is_only_available_when_both_users_are_online": "OTR is only available when both users are online",
+  "OTR_Session_ended_other_user_went_offline": "OTR Session has ended. User {{username}} went offline",
   "outbound-voip-calls": "Outbound Voip Calls",
   "outbound-voip-calls_description": "Permission to outbound voip calls",
   "Out_of_seats": "Out of Seats",
@@ -4508,6 +4509,8 @@
   "RetentionPolicyRoom_MaxAge": "Maximum message age in days (default: {{max}})",
   "RetentionPolicyRoom_OverrideGlobal": "Override global retention policy",
   "RetentionPolicyRoom_ReadTheDocs": "Watch out! Tweaking these settings without utmost care can destroy all message history. Please read the documentation before turning the feature on <a href='https://docs.rocket.chat/use-rocket.chat/workspace-administration/settings/retention-policies'>here</a>.",
+  "Retention_policy_warning_banner": "Retention policy warning banner",
+  "Retention_policy_warning_callout": "Retention policy warning callout",
   "Retry": "Retry",
   "Return_to_home": "Return to home",
   "Return_to_previous_page": "Return to previous page",
@@ -6025,6 +6028,7 @@
   "Your_new_email_is_email": "Your new email address is <strong>[email]</strong>.",
   "Your_E2EE_password_is": "Your E2EE password is:",
   "Your_password_is_wrong": "Your password is wrong!",
+  "Your_E2EE_password_is_incorrect": "Your E2EE password is incorrect",
   "Your_password_was_changed_by_an_admin": "Your password was changed by an admin.",
   "Your_push_was_sent_to_s_devices": "Your push was sent to %s devices",
   "Your_request_to_join__roomName__has_been_made_it_could_take_up_to_15_minutes_to_be_processed": "Your request to join {{roomName}} has been made, it could take up to 15 minutes to be processed. You'll be notified when it's ready to go.",
@@ -6431,5 +6435,7 @@
   "Close_gallery": "Close gallery",
   "Next_image": "Next Image",
   "Previous_image": "Previous image",
-  "Image_gallery": "Image gallery"
+  "Image_gallery": "Image gallery",
+  "You_cant_take_chats_unavailable": "You cannot take new conversations because you're unavailable",
+  "You_cant_take_chats_offline": "You cannot take new conversations because you're offline"
 }

@@ -10,8 +10,8 @@ FlowRouter.notFound = {
 
 import('./polyfills')
 	.then(() => import('./meteorOverrides'))
-	.then(() => import('../ee/client/ecdh'))
+	.then(() => import('./ecdh'))
 	.then(() => import('./importPackages'))
 	.then(() => Promise.all([import('./methods'), import('./startup')]))
-	.then(() => import('../ee/client'))
+	.then(() => import('./omnichannel'))
 	.then(() => Promise.all([import('./views/admin'), import('./views/marketplace'), import('./views/account')]));
