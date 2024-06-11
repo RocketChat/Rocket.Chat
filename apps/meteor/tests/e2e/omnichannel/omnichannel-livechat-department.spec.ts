@@ -8,8 +8,6 @@ import { createAgent } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
-
-
 test.use({ storageState: Users.user1.state });
 
 test.describe('OC - Livechat - Department Flow', () => {
@@ -64,7 +62,6 @@ test.describe('OC - Livechat - Department Flow', () => {
 	});
 
 	test('OC - Livechat - Chat with Department', async () => {
-
 		const guest = {
 			name: `${faker.person.firstName()} ${faker.string.nanoid(10)}}`,
 			email: faker.internet.email(),
@@ -92,11 +89,9 @@ test.describe('OC - Livechat - Department Flow', () => {
 	});
 
 	test('OC - Livechat - Change Department', async () => {
-		
 		const guest = {
 			name: `${faker.person.firstName()} ${faker.string.nanoid(10)}}`,
 			email: faker.internet.email(),
-		
 		};
 		await test.step('expect start Chat with department', async () => {
 			await poLiveChat.openAnyLiveChat();
@@ -133,7 +128,7 @@ test.describe('OC - Livechat - Department Flow', () => {
 
 			await expect(poLiveChat.livechatModalText('Are you sure you want to switch the department?')).toBeVisible();
 			await poLiveChat.btnYes.click();
-			
+
 			await expect(poLiveChat.livechatModal).toBeVisible();
 
 			await expect(poLiveChat.livechatModalText('Department switched')).toBeVisible();

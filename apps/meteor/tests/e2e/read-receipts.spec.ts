@@ -35,7 +35,7 @@ test.describe.serial('read-receipts', () => {
 	test.describe('read receipts enabled', async () => {
 		test.beforeAll(async ({ api }) => {
 			await setSettingValueById(api, 'Message_Read_Receipt_Enabled', true);
-			await setSettingValueById(api, 'Message_Read_Receipt_Store_Users', true);			
+			await setSettingValueById(api, 'Message_Read_Receipt_Store_Users', true);
 		});
 
 		test.afterAll(async ({ api }) => {
@@ -48,21 +48,21 @@ test.describe.serial('read-receipts', () => {
 			const auxContext = { page, poHomeChannel: new HomeChannel(page) };
 			await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
 			await auxContext.poHomeChannel.content.sendMessage('hello admin');
-	
+
 			await expect(auxContext.poHomeChannel.content.lastUserMessage.getByRole('status', { name: 'Message sent' })).toBeVisible();
 			await auxContext.page.close();
 		});
-	
+
 		test('should show read receipts message viewed status in the sent message', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
-			await expect(poHomeChannel.content.lastUserMessage.getByRole('status', { name: 'Message viewed' })).toBeVisible();		
+			await expect(poHomeChannel.content.lastUserMessage.getByRole('status', { name: 'Message viewed' })).toBeVisible();
 		});
-	
+
 		test('should show the reads receipt modal with the users who read the message', async ({ page }) => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.content.openLastMessageMenu();
 			await page.locator('role=menuitem[name="Read receipts"]').click();
-	
+
 			await expect(page.getByRole('dialog').getByRole('listitem')).toHaveCount(2);
 		});
 	});
