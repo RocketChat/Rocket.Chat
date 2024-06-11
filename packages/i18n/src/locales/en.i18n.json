@@ -4070,6 +4070,7 @@
   "OTR_Enable_Description": "Enable option to use off-the-record (OTR) messages in direct messages between 2 users. OTR messages are not recorded on the server and exchanged directly and encrypted between the 2 users.",
   "OTR_message": "OTR Message",
   "OTR_is_only_available_when_both_users_are_online": "OTR is only available when both users are online",
+  "OTR_Session_ended_other_user_went_offline": "OTR Session has ended. User {{username}} went offline",
   "outbound-voip-calls": "Outbound Voip Calls",
   "outbound-voip-calls_description": "Permission to outbound voip calls",
   "Out_of_seats": "Out of Seats",
@@ -6434,5 +6435,7 @@
   "Close_gallery": "Close gallery",
   "Next_image": "Next Image",
   "Previous_image": "Previous image",
-  "Image_gallery": "Image gallery"
+  "Image_gallery": "Image gallery",
+  "You_cant_take_chats_unavailable": "You cannot take new conversations because you're unavailable",
+  "You_cant_take_chats_offline": "You cannot take new conversations because you're offline"
 }
