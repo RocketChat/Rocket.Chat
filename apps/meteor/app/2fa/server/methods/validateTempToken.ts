@@ -2,7 +2,7 @@ import { Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
+import { notifyOnUserChangeAsync } from '../../../lib/server/lib/notifyListener';
 import { TOTP } from '../lib/totp';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -50,14 +50,18 @@ Meteor.methods<ServerMethods>({
 			const { modifiedCount } = await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken);
 
 			if (modifiedCount > 0) {
-				const userTokens = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } });
-
 				// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
 				// instead of having to listen to every watch.users event
-				void notifyOnUserChange({
-					clientAction: 'updated',
-					id: this.userId,
-					diff: { 'services.resume.loginTokens': userTokens?.services?.resume?.loginTokens },
+				void notifyOnUserChangeAsync(async () => {
+					if (!this.userId) {
+						return;
+					}
+					const userTokens = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } });
+					return {
+						clientAction: 'updated',
+						id: this.userId,
+						diff: { 'services.resume.loginTokens': userTokens?.services?.resume?.loginTokens },
+					};
 				});
 			}
 		}
