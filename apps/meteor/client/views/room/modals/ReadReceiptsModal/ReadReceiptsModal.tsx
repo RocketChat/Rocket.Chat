@@ -41,9 +41,13 @@ const ReadReceiptsModal = ({ messageId, onClose }: ReadReceiptsModalProps): Reac
 	return (
 		<GenericModal title={t('Read_by')} onConfirm={onClose} onClose={onClose}>
 			{readReceipts.length < 1 && t('No_results_found')}
-			{readReceipts.map((receipt) => (
-				<ReadReceiptRow {...receipt} key={receipt._id} />
-			))}
+			{readReceipts.length > 0 && (
+				<div role='list'>
+					{readReceipts.map((receipt) => (
+						<ReadReceiptRow {...receipt} key={receipt._id} />
+					))}
+				</div>
+			)}
 		</GenericModal>
 	);
 };

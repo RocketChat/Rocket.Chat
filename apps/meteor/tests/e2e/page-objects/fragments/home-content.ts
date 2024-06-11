@@ -13,6 +13,10 @@ export class HomeContent {
 		return this.page.locator('main header');
 	}
 
+	get channelRetentionPolicyWarning(): Locator {
+		return this.page.locator('main').getByRole('alert', { name: 'Retention policy warning banner' });
+	}
+
 	get inputMessage(): Locator {
 		return this.page.locator('[name="msg"]');
 	}
@@ -247,22 +251,6 @@ export class HomeContent {
 		await this.page.locator(`role=dialog[name="Emoji picker"] >> role=tabpanel >> role=button[name="${emoji}"]`).click();
 	}
 
-	async dragAndDropTxtFileToThread(): Promise<void> {
-		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
-		const dataTransfer = await this.page.evaluateHandle((contract) => {
-			const data = new DataTransfer();
-			const file = new File([`${contract}`], 'any_file.txt', {
-				type: 'text/plain',
-			});
-			data.items.add(file);
-			return data;
-		}, contract);
-
-		await this.inputThreadMessage.dispatchEvent('dragenter', { dataTransfer });
-
-		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
-	}
-
 	async dragAndDropTxtFile(): Promise<void> {
 		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
@@ -291,6 +279,22 @@ export class HomeContent {
 		}, contract);
 
 		await this.inputMessage.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+	}
+
+	async dragAndDropTxtFileToThread(): Promise<void> {
+		const contract = await fs.readFile('./tests/e2e/fixtures/files/any_file.txt', 'utf-8');
+		const dataTransfer = await this.page.evaluateHandle((contract) => {
+			const data = new DataTransfer();
+			const file = new File([`${contract}`], 'any_file.txt', {
+				type: 'text/plain',
+			});
+			data.items.add(file);
+			return data;
+		}, contract);
+
+		await this.inputThreadMessage.dispatchEvent('dragenter', { dataTransfer });
 
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
@@ -353,6 +357,18 @@ export class HomeContent {
 
 	get btnAnonymousTalk(): Locator {
 		return this.page.locator('role=button[name="Or talk as anonymous"]');
+	}
+
+	get nextSlideButton(): Locator {
+		return this.page.getByLabel('Next slide');
+	}
+
+	get previousSlideButton(): Locator {
+		return this.page.getByLabel('Previous slide');
+	}
+
+	get currentGalleryImage(): Locator {
+		return this.page.locator('div[class="swiper-slide swiper-slide-active"] img');
 	}
 
 	findSystemMessage(text: string): Locator {
