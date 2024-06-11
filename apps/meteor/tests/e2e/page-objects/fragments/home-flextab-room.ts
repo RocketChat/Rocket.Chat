@@ -56,11 +56,15 @@ export class HomeFlextabRoom {
 	}
 
 	get checkboxPruneMessages(): Locator {
-		return this.page.getByRole('dialog').locator('label', { has: this.page.getByRole('checkbox', { name: 'Automatically prune old messages' }) });
+		return this.page
+			.getByRole('dialog')
+			.locator('label', { has: this.page.getByRole('checkbox', { name: 'Automatically prune old messages' }) });
 	}
 
 	get checkboxOverrideGlobalRetention(): Locator {
-		return this.page.getByRole('dialog').locator('label', { has: this.page.getByRole('checkbox', { name: 'Override global retention policy' }) });
+		return this.page
+			.getByRole('dialog')
+			.locator('label', { has: this.page.getByRole('checkbox', { name: 'Override global retention policy' }) });
 	}
 
 	get checkboxIgnoreThreads(): Locator {

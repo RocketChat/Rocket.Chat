@@ -143,7 +143,7 @@ test.describe.serial('retention-policy', () => {
 			let ignoreThreadsSetting: boolean;
 
 			test.beforeAll(async ({ api }) => {
-				ignoreThreadsSetting = await getSettingValueById(api, 'RetentionPolicy_DoNotPruneThreads') as boolean;
+				ignoreThreadsSetting = (await getSettingValueById(api, 'RetentionPolicy_DoNotPruneThreads')) as boolean;
 				expect((await setSettingValueById(api, 'RetentionPolicy_MaxAge_Channels', 15)).status()).toBe(200);
 			});
 
@@ -182,6 +182,22 @@ test.describe.serial('retention-policy', () => {
 				await poHomeChannel.tabs.room.pruneAccordion.click();
 
 				await expect(poHomeChannel.tabs.room.checkboxIgnoreThreads).toBeChecked({ checked: ignoreThreadsSetting });
+			});
+
+			test('should override ignore threads default value', async () => {
+				await poHomeChannel.sidenav.openChat(targetChannel);
+				await poHomeChannel.tabs.btnRoomInfo.click();
+				await poHomeChannel.tabs.room.btnEdit.click();
+				await poHomeChannel.tabs.room.pruneAccordion.click();
+				await poHomeChannel.tabs.room.checkboxIgnoreThreads.click();
+				await poHomeChannel.tabs.room.btnSave.click();
+				await poHomeChannel.dismissToast();
+
+				await poHomeChannel.tabs.btnRoomInfo.click();
+				await poHomeChannel.tabs.room.btnEdit.click();
+				await poHomeChannel.tabs.room.pruneAccordion.click();
+
+				await expect(poHomeChannel.tabs.room.checkboxIgnoreThreads).toBeChecked({ checked: !ignoreThreadsSetting });
 			});
 		});
 	});
