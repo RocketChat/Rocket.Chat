@@ -1,5 +1,5 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
 
@@ -29,6 +29,9 @@ const ComposerMessage = ({ tmid, readOnly, onSend, ...props }: ComposerMessagePr
 	const chat = useChat();
 	const room = useRoom();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const e2eEnabled = useSetting<boolean>('E2E_Enable');
+	const unencryptedMessagesAllowed = useSetting<boolean>('E2E_Allow_Unencrypted_Messages');
+	const isSlashCommandAllowed = room.encrypted && e2eEnabled && unencryptedMessagesAllowed;
 
 	const composerProps = useMemo(
 		() => ({
@@ -48,6 +51,7 @@ const ComposerMessage = ({ tmid, readOnly, onSend, ...props }: ComposerMessagePr
 						text,
 						tshow,
 						previewUrls,
+						isSlashCommandAllowed,
 					});
 					if (newMessageSent) onSend?.();
 				} catch (error) {
