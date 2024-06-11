@@ -1,11 +1,10 @@
 import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
-import type { IMessage, SettingValue, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
-import { Messages, Settings, Users } from '@rocket.chat/models';
+import type { IMessage, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
+import { Messages, Users } from '@rocket.chat/models';
 import mem from 'mem';
 
+import { getSettingCached } from '../../../../app/lib/server/lib/getMemSettings';
 import { shouldHideSystemMessage } from '../../../lib/systemMessage/hideSystemMessage';
-
-const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
 
 const getUserNameCached = mem(
 	async (userId: string): Promise<string | undefined> => {

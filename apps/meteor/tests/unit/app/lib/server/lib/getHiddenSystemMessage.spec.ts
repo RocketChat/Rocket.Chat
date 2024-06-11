@@ -34,7 +34,7 @@ describe('getHiddenSystemMessages', () => {
 
 		const result = getHiddenSystemMessages(room, cachedHiddenSystemMessage);
 
-		expect(result).to.deep.equal(cachedHiddenSystemMessage);
+		expect(result).to.deep.equal(['user-muted', 'user-unmuted', 'room_changed_description']);
 	});
 
 	it('should return an empty array if both room.sysMes and cached hidden system messages are undefined', async () => {
