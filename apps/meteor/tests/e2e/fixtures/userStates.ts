@@ -6,6 +6,7 @@ import { BASE_URL } from '../config/constants';
 
 export type IUserState = {
 	data: {
+		_id: string;
 		username: string;
 		loginToken: string;
 		loginExpire: Date;
@@ -27,6 +28,7 @@ function generateContext(username: string): IUserState {
 
 	return {
 		data: {
+			_id: username,
 			username,
 			loginToken: token.token,
 			loginExpire: token.when,
