@@ -56,7 +56,7 @@ export const RoomLeader = ({ _id, name, username }: RoomLeaderProps): ReactEleme
 			<UserAvatar role='button' username={username} size='x18' onClick={(event) => onAvatarClick(event, username)} {...triggerProps} />
 			<ReactiveUserStatus uid={_id} />
 			<HeaderSubtitle>{name}</HeaderSubtitle>
-			<IconButton role='link' is='a' title={t('Chat_Now')} icon='message' small href={chatNowLink} />
+			<IconButton role='link' is='a' title={t('Chat_with_leader')} icon='message' small href={chatNowLink} />
 		</Box>
 	);
 };
