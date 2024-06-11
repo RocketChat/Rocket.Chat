@@ -62,7 +62,7 @@ export class HomeChannel {
 	}
 
 	get readOnlyFooter(): Locator {
-		return this.page.locator('footer', { hasText: 'This room is read only' })
+		return this.page.locator('footer', { hasText: 'This room is read only' });
 	}
 
 	get roomHeaderToolbar(): Locator {
