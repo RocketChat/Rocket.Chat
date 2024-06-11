@@ -49,6 +49,11 @@ export class HomeSidenav {
 		return this.page.getByRole('toolbar', { name: 'Sidebar actions' });
 	}
 
+	// Note: this is different from openChat because queued chats are not searchable
+	getQueuedChat(name: string): Locator {
+		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first();
+	}
+
 	get accountProfileOption(): Locator {
 		return this.page.locator('role=menuitemcheckbox[name="Profile"]');
 	}
@@ -131,11 +136,6 @@ export class HomeSidenav {
 
 		const newStatus = await this.page.locator('#omnichannel-status-toggle').getAttribute('title');
 		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
-	}
-
-	// Note: this is a workaround for now since queued omnichannel chats are not searchable yet so we can't use openChat() :(
-	async openQueuedOmnichannelChat(name: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
 	}
 
 	async createPublicChannel(name: string) {
