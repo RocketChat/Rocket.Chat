@@ -66,18 +66,8 @@ function TimespanSettingInput({
 		if (typeof nextTimeUnit !== 'string') {
 			return;
 		}
-		setTimeUnit((prevTimeUnit) => {
-			setInternalValue((currentValue) => {
-				const newValue = sanitizeInputValue(msToTimeUnit(nextTimeUnit as TIMEUNIT, timeUnitToMs(prevTimeUnit, currentValue)));
-
-				// Update the external value since the new internal value could have changed during sanitization
-				onChangeValue?.(timeUnitToMs(nextTimeUnit as TIMEUNIT, newValue));
-
-				return newValue;
-			});
-
-			return nextTimeUnit as TIMEUNIT;
-		});
+		onChangeValue?.(timeUnitToMs(nextTimeUnit as TIMEUNIT, internalValue));
+		setTimeUnit(nextTimeUnit as TIMEUNIT);
 	};
 
 	const timeUnitOptions = useMemo(() => {

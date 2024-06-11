@@ -61,7 +61,7 @@ describe('TimespanSettingInput component', () => {
 		expect(onChangeValueMock).toHaveBeenCalledWith(2 * 24 * 60 * 60 * 1000); // 2 days in milliseconds
 	});
 
-	it('should correctly convert value to minutes when changing time unit to minutes', () => {
+	it('should update value to minutes when changing time unit to minutes', () => {
 		render(
 			<TimespanSettingInput
 				disabled={false}
@@ -80,10 +80,12 @@ describe('TimespanSettingInput component', () => {
 		const minutesOption = screen.getByRole('option', { name: 'minutes' });
 		userEvent.click(minutesOption);
 
-		expect(screen.getByDisplayValue('60')).toBeTruthy();
+		expect(onChangeValueMock).toHaveBeenCalledWith(60000); // 1 min in milliseconds
+
+		expect(screen.getByDisplayValue('1')).toBeTruthy();
 	});
 
-	it('should correctly convert value to hours when changing time unit to hours', () => {
+	it('should update value to hours when changing time unit to hours', () => {
 		render(
 			<TimespanSettingInput
 				disabled={false}
@@ -102,10 +104,12 @@ describe('TimespanSettingInput component', () => {
 		const hoursOption = screen.getByRole('option', { name: 'hours' });
 		userEvent.click(hoursOption);
 
-		expect(screen.getByDisplayValue('24')).toBeTruthy();
+		expect(onChangeValueMock).toHaveBeenCalledWith(3600000); // 1 hour in milliseconds
+
+		expect(screen.getByDisplayValue('1')).toBeTruthy();
 	});
 
-	it('should correctly convert value to days when changing time unit to days', () => {
+	it('should update value to days when changing time unit to days', () => {
 		render(
 			<TimespanSettingInput
 				disabled={false}
@@ -124,7 +128,9 @@ describe('TimespanSettingInput component', () => {
 		const daysOption = screen.getByRole('option', { name: 'days' });
 		userEvent.click(daysOption);
 
-		expect(screen.getByDisplayValue('1')).toBeTruthy();
+		expect(onChangeValueMock).toHaveBeenCalledWith(1036800000); // 12 days in milliseconds
+
+		expect(screen.getByDisplayValue('12')).toBeTruthy();
 	});
 
 	it('should call onResetButtonClick when reset button is clicked', () => {
