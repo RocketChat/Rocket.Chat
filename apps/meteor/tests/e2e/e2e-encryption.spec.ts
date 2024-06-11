@@ -484,5 +484,4 @@ test.describe.serial('e2ee room setup', () => {
 		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
 		await expect(page.locator('.rcx-states__title')).toContainText('Check back later');
 	});
-
 });
