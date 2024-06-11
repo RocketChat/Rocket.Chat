@@ -42,8 +42,9 @@ const EnterE2EPasswordModal = ({
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleConfirm} {...props} />}
 			variant='warning'
 			title={t('Enter_E2E_password')}
+			icon='warning'
 			cancelText={t('Do_It_Later')}
-			confirmText={t('Decode_Key')}
+			confirmText={t('Enable_encryption')}
 			onClose={onClose}
 			onCancel={onCancel}
 		>
