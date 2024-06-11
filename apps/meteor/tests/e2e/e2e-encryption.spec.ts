@@ -272,8 +272,7 @@ test.describe.serial('e2e-encryption', () => {
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
 			await page.locator('[name="msg"]').type('/');
-			await expect(page.locator('#popup-item-contextualbar')).toHaveClass(/disabled/)
-
+			await expect(page.locator('#popup-item-contextualbar')).toHaveClass(/disabled/);
 		});
 	});
 
