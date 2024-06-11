@@ -560,16 +560,17 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.listAll', () => {
+		let teamName;
 		before(async () => {
 			await updatePermission('view-all-teams', ['admin']);
-			const teamName = `test-team-${Date.now()}`;
+			teamName = `test-team-${Date.now()}`;
 			await request.post(api('teams.create')).set(credentials).send({
 				name: teamName,
 				type: 0,
 			});
 		});
 
-		after(() => Promise.all([deleteTeam(credential, teamName), updatePermission('view-all-teams', ['admin'])]));
+		after(() => Promise.all([deleteTeam(credentials, teamName), updatePermission('view-all-teams', ['admin'])]));
 
 		it('should list all teams', async () => {
 			await request
