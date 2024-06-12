@@ -255,7 +255,7 @@ export const isChatReportMessageProps = ajv.compile<ChatReportMessage>(ChatRepor
 
 type ChatGetThreadsList = PaginatedRequest<{
 	rid: IRoom['_id'];
-	type?: 'unread' | 'following' | 'all';
+	type?: 'unread' | 'following';
 	text?: string;
 	fields?: string;
 }>;
@@ -268,7 +268,7 @@ const ChatGetThreadsListSchema = {
 		},
 		type: {
 			type: 'string',
-			enum: ['following', 'unread', 'all'],
+			enum: ['following', 'unread'],
 			nullable: true,
 		},
 		text: {
