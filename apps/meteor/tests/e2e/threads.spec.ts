@@ -142,7 +142,7 @@ test.describe.serial('Threads', () => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await page.locator('role=menuitem[name="Copy text"]').click();
 
-			const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+			const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 			expect(clipboardText).toBe('this is a message for reply');
 		});
 
@@ -151,7 +151,7 @@ test.describe.serial('Threads', () => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await page.locator('role=menuitem[name="Copy link"]').click();
 
-			const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+			const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 			expect(clipboardText).toContain('http');
 		});
 
