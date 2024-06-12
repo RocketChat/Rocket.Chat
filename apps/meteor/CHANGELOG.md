@@ -1,5 +1,41 @@
 # @rocket.chat/meteor
 
+## 6.6.9
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#32599](https://github.com/RocketChat/Rocket.Chat/pull/32599) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes issues with loading license modules when loading the page while logged out
+
+- ([#32497](https://github.com/RocketChat/Rocket.Chat/pull/32497) by [@dionisio-bot](https://github.com/dionisio-bot)) Executing a logout and login action in the same "tab/instance", some streams were not being recreated, causing countless types of bugs.
+
+  PS: as a workaround reloading after logout or login in also solves the problem.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.9
+  - @rocket.chat/rest-typings@6.6.9
+  - @rocket.chat/api-client@0.1.31
+  - @rocket.chat/license@0.1.13
+  - @rocket.chat/omnichannel-services@0.1.13
+  - @rocket.chat/pdf-worker@0.0.37
+  - @rocket.chat/presence@0.1.13
+  - @rocket.chat/core-services@0.3.13
+  - @rocket.chat/cron@0.0.33
+  - @rocket.chat/gazzodown@4.0.9
+  - @rocket.chat/model-typings@0.3.9
+  - @rocket.chat/ui-contexts@4.0.9
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/fuselage-ui-kit@4.0.9
+  - @rocket.chat/models@0.0.37
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/ui-client@4.0.9
+  - @rocket.chat/ui-video-conf@4.0.9
+  - @rocket.chat/web-ui-registration@4.0.9
+  - @rocket.chat/instance-status@0.0.37
+  </details>
+
 ## 6.6.8
 
 ### Patch Changes
