@@ -32,6 +32,17 @@ export default {
 				draft: process.env.REPORTER_ROCKETCHAT_DRAFT === 'true',
 			},
 		],
+		// process.env.REPORTER_ROCKETCHAT_REPORT === 'true' &&
+		[
+			'./reporters/jira.ts',
+			{
+				url: `https://rocketchat.atlassian.net`,
+				apiKey: process.env.REPORTER_JIRA_ROCKETCHAT_API_KEY ?? process.env.JIRA_TOKEN,
+				branch: process.env.REPORTER_ROCKETCHAT_BRANCH,
+				run: Number(process.env.REPORTER_ROCKETCHAT_RUN),
+				// draft: process.env.REPORTER_ROCKETCHAT_DRAFT === 'true',
+			},
+		],
 		[
 			'playwright-qase-reporter',
 			{
