@@ -1,11 +1,11 @@
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
+import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
-import { updatePermission } from '../../data/permissions.helper';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
-import { createTeam, deleteTeam } from '../../data/teams.helper';
+import { addMembers, createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminUsername, password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
@@ -1592,6 +1592,79 @@ describe('[Teams]', () => {
 						expect(res.body.room).to.have.property('teamDefault', true);
 					})
 					.end(done);
+			});
+		});
+
+		describe('team auto-join', () => {
+			let testTeam;
+			let createdRoom;
+			let testUser1;
+			let testUser2;
+
+			before(async () => {
+				const [testUserResult, testUser1Result] = await Promise.all([createUser(), createUser()]);
+				testUser1 = testUserResult;
+				testUser2 = testUser1Result;
+			});
+
+			beforeEach(async () => {
+				const createTeamPromise = createTeam(credentials, `test-team-name${Date.now()}`, 0);
+				const createRoomPromise = createRoom({ name: `test-room-name${Date.now()}`, type: 'c' });
+				const [testTeamCreationResult, testRoomCreationResult] = await Promise.all([createTeamPromise, createRoomPromise]);
+
+				testTeam = testTeamCreationResult;
+				createdRoom = testRoomCreationResult;
+
+				await request
+					.post(api('teams.addRooms'))
+					.set(credentials)
+					.expect(200)
+					.send({
+						rooms: [createdRoom.body.channel._id],
+						teamName: testTeam.name,
+					});
+			});
+
+			afterEach(() =>
+				Promise.all([deleteTeam(credentials, testTeam.name), deleteRoom({ roomId: createdRoom.body.channel._id, type: 'c' })]),
+			);
+
+			after(() => Promise.all([updateSetting('API_User_Limit', 500), deleteUser(testUser1), deleteUser(testUser2)]));
+
+			it('should add members when the members count is less than or equal to the API_User_Limit setting', async () => {
+				await updateSetting('API_User_Limit', 2);
+
+				await addMembers(credentials, testTeam.name, [testUser1._id, testUser2._id]);
+				await request
+					.post(api('teams.updateRoom'))
+					.set(credentials)
+					.send({
+						roomId: createdRoom.body.channel._id,
+						isDefault: true,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('room.usersCount').and.to.be.equal(3);
+					});
+			});
+
+			it('should not add all members when we update a team channel to be auto-join and the members count is greater than the API_User_Limit setting', async () => {
+				await updateSetting('API_User_Limit', 1);
+
+				await addMembers(credentials, testTeam.name, [testUser1._id, testUser2._id]);
+				await request
+					.post(api('teams.updateRoom'))
+					.set(credentials)
+					.send({
+						roomId: createdRoom.body.channel._id,
+						isDefault: true,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('room.usersCount').and.to.be.equal(2);
+					});
 			});
 		});
 	});
