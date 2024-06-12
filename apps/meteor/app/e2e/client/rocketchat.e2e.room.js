@@ -403,6 +403,30 @@ export class E2ERoom extends Emitter {
 		}
 	}
 
+	// Helper function for encryption of content
+	async encryptMessageContent(contentToBeEncrypted) {
+		const data = new TextEncoder().encode(EJSON.stringify(contentToBeEncrypted));
+
+		return {
+			algorithm: 'rc.v1.aes-sha2',
+			ciphertext: await this.encryptText(data),
+		};
+	}
+
+	// Helper function for encryption of content
+	async encryptMessage(message) {
+		const { msg, attachments, ...rest } = message;
+
+		const content = await this.encryptMessageContent({ msg, attachments });
+
+		return {
+			...rest,
+			content,
+			t: 'e2e',
+			e2e: 'pending',
+		};
+	}
+
 	// Helper function for encryption of messages
 	encrypt(message) {
 		if (!this.isSupportedRoomType(this.typeOfRoom)) {
@@ -424,21 +448,26 @@ export class E2ERoom extends Emitter {
 	}
 
 	// Decrypt messages
-
 	async decryptMessage(message) {
 		if (message.t !== 'e2e' || message.e2e === 'done') {
 			return message;
 		}
 
-		const data = await this.decrypt(message.msg);
+		if (message.msg) {
+			const data = await this.decrypt(message.msg);
 
-		if (!data?.text) {
-			return message;
+			if (data?.text) {
+				message.msg = data.text;
+			}
+		}
+
+		if (message.content && message.content.algorithm === 'rc.v1.aes-sha2') {
+			const content = await this.decrypt(message.content.ciphertext);
+			Object.assign(message, content);
 		}
 
 		return {
 			...message,
-			msg: data.text,
 			e2e: 'done',
 		};
 	}
