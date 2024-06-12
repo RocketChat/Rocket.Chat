@@ -239,6 +239,33 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
+	test('expect slash commands to be enabled in an e2ee room', async ({ page }) => {
+		const channelName = faker.string.uuid();
+
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+
+		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.dismissToast();
+
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.content.sendMessage('This is an encrypted message.');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is an encrypted message.');
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		await page.locator('[name="msg"]').type('/');
+		await expect(page.locator('#popup-item-contextualbar')).not.toHaveClass(/disabled/);
+		await page.locator('[name="msg"]').clear();
+
+		await poHomeChannel.content.dispatchSlashCommand('/contextualbar');
+		await expect(poHomeChannel.btnContextualbarClose).toBeVisible();
+
+		await poHomeChannel.btnContextualbarClose.click();
+		await expect(poHomeChannel.btnContextualbarClose).toBeHidden();
+	});
+
 	test.describe('un-encrypted messages not allowed in e2ee rooms', () => {
 		let poHomeChannel: HomeChannel;
 
@@ -251,11 +278,10 @@ test.describe.serial('e2e-encryption', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
+			expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true })).status()).toBe(200);
 		});
 
 		test('expect slash commands to be disabled in an e2ee room', async ({ page }) => {
-			await restoreState(page, Users.admin);
 			const channelName = faker.string.uuid();
 
 			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
