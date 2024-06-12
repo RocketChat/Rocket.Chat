@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { Admin } from './page-objects';
+import { Admin, Utils } from './page-objects';
 import { createTargetChannel } from './utils';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
@@ -11,10 +11,12 @@ test.use({ storageState: Users.admin.state });
 
 test.describe.parallel('administration', () => {
 	let poAdmin: Admin;
+	let poUtils: Utils;
 	let targetChannel: string;
 
 	test.beforeEach(async ({ page }) => {
 		poAdmin = new Admin(page);
+		poUtils = new Utils(page);
 	});
 
 	test.describe('Workspace', () => {
@@ -87,6 +89,26 @@ test.describe.parallel('administration', () => {
 			await poAdmin.tabs.users.btnInvite.click();
 			await poAdmin.tabs.users.setupSmtpLink.click();
 			await expect(page).toHaveURL('/admin/settings/Email');
+		});
+
+		test('expect to show join default channels option only when creating new users, not when editing users', async () => {
+			const username = faker.internet.userName();
+
+			await poAdmin.tabs.users.btnNewUser.click();
+			await poAdmin.tabs.users.inputName.type(faker.person.firstName());
+			await poAdmin.tabs.users.inputUserName.type(username);
+			await poAdmin.tabs.users.inputEmail.type(faker.internet.email());
+			await poAdmin.tabs.users.checkboxVerified.click();
+			await poAdmin.tabs.users.inputPassword.type('any_password');
+			await expect(poAdmin.tabs.users.userRole).toBeVisible();
+			await expect(poAdmin.tabs.users.joinDefaultChannels).toBeVisible();
+			await poAdmin.tabs.users.btnSave.click();
+
+			await poAdmin.inputSearchUsers.fill(username);
+			await poAdmin.getUserRow(username).click();
+			await poAdmin.btnEdit.click();
+			await expect(poAdmin.tabs.users.inputUserName).toHaveValue(username);
+			await expect(poAdmin.tabs.users.joinDefaultChannels).not.toBeVisible();
 		});
 	});
 
@@ -182,7 +204,63 @@ test.describe.parallel('administration', () => {
 		test('expect open upsell modal if not enterprise', async ({ page }) => {
 			test.skip(IS_EE);
 			await poAdmin.btnCreateRole.click();
-			await page.waitForSelector('role=dialog[name="Custom roles"]');
+			await expect(page.getByRole('dialog', { name: 'Custom roles' })).toBeVisible();
+		});
+
+		test.describe('Users in role', () => {
+			const channelName = faker.string.uuid();
+			test.beforeAll(async ({ api }) => {
+				// TODO: refactor createChannel utility in order to get channel data when creating
+				const response = await api.post('/channels.create', { name: channelName, members: ['user1'] });
+				const { channel } = await response.json();
+
+				await api.post('/channels.addOwner', { roomId: channel._id, userId: Users.user1.data._id });
+				await api.post('/channels.removeOwner', { roomId: channel._id, userId: Users.admin.data._id });
+			});
+
+			test('admin should be able to get the owners of a room that wasnt created by him', async ({ page }) => {
+				await poAdmin.openRoleByName('Owner').click();
+				await poAdmin.btnUsersInRole.click();
+				await poAdmin.inputRoom.fill(channelName);
+				await page.getByRole('option', { name: channelName }).click();
+
+				await expect(poAdmin.getUserRowByUsername('user1')).toBeVisible();
+			});
+
+			test('should add user1 as moderator of target channel', async ({ page }) => {
+				await poAdmin.openRoleByName('Moderator').click();
+				await poAdmin.btnUsersInRole.click();
+
+				await poAdmin.inputRoom.fill(channelName);
+				await page.getByRole('option', { name: channelName }).click();
+
+				await poAdmin.inputUsers.fill('user1');
+				await page.getByRole('option', { name: 'user1' }).click();
+				await poAdmin.btnAdd.click();
+
+				await expect(poAdmin.getUserRowByUsername('user1')).toBeVisible();
+			});
+
+			test('should remove user1 as moderator of target channel', async ({ page }) => {
+				await poAdmin.openRoleByName('Moderator').click();
+				await poAdmin.btnUsersInRole.click();
+
+				await poAdmin.inputRoom.fill(channelName);
+				await page.getByRole('option', { name: channelName }).click();
+
+				await poAdmin.getUserRowByUsername('user1').getByRole('button', { name: 'Remove' }).click();
+				await poUtils.btnModalConfirmDelete.click();
+
+				await expect(page.locator('h3 >> text="No results found"')).toBeVisible();
+			});
+
+			test('should back to the permissions page', async ({ page }) => {
+				await poAdmin.openRoleByName('Moderator').click();
+				await poAdmin.btnUsersInRole.click();
+				await poAdmin.btnBack.click();
+
+				await expect(page.locator('h1 >> text="Permissions"')).toBeVisible();
+			});
 		});
 	});
 
@@ -204,7 +282,7 @@ test.describe.parallel('administration', () => {
 			});
 
 			test.afterAll(async ({ api }) => {
-				await setSettingValueById(api, 'Language', 'en')
+				await setSettingValueById(api, 'Language', 'en');
 			});
 
 			test('expect be able to reset a setting after a change', async () => {

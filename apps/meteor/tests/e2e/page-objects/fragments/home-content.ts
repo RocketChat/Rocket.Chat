@@ -13,6 +13,10 @@ export class HomeContent {
 		return this.page.locator('main header');
 	}
 
+	get channelRetentionPolicyWarning(): Locator {
+		return this.page.locator('main').getByRole('alert', { name: 'Retention policy warning banner' });
+	}
+
 	get inputMessage(): Locator {
 		return this.page.locator('[name="msg"]');
 	}
@@ -353,6 +357,18 @@ export class HomeContent {
 
 	get btnAnonymousTalk(): Locator {
 		return this.page.locator('role=button[name="Or talk as anonymous"]');
+	}
+
+	get nextSlideButton(): Locator {
+		return this.page.getByLabel('Next slide');
+	}
+
+	get previousSlideButton(): Locator {
+		return this.page.getByLabel('Previous slide');
+	}
+
+	get currentGalleryImage(): Locator {
+		return this.page.locator('div[class="swiper-slide swiper-slide-active"] img');
 	}
 
 	findSystemMessage(text: string): Locator {
