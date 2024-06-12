@@ -5,6 +5,7 @@ import type { Response } from 'supertest';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { sleep } from '../../../data/livechat/utils';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - appearance', function () {
 	this.retries(0);
@@ -197,6 +198,70 @@ describe('LIVECHAT - appearance', function () {
 			// Get data from livechat/config
 			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
 			expect(body.config.settings.limitTextLength).to.be.false;
+		});
+
+		(IS_EE ? it : it.skip)('should accept an array setting', async () => {
+			await request
+				.post(api('livechat/appearance'))
+				.set(credentials)
+				.send([{ _id: 'Livechat_hide_system_messages', value: ['livechat-started'] }])
+				.expect(200);
+			await sleep(500);
+
+			// Get data from livechat/config
+			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
+			expect(body.config.settings.hiddenSystemMessages).to.be.an('array');
+			expect(body.config.settings.hiddenSystemMessages).to.include('livechat-started');
+		});
+
+		(IS_EE ? it : it.skip)('should accept an array setting with multiple values', async () => {
+			await request
+				.post(api('livechat/appearance'))
+				.set(credentials)
+				.send([{ _id: 'Livechat_hide_system_messages', value: ['uj', 'livechat_transfer_history'] }])
+				.expect(200);
+			await sleep(500);
+
+			// Get data from livechat/config
+			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
+			expect(body.config.settings.hiddenSystemMessages).to.be.an('array');
+			expect(body.config.settings.hiddenSystemMessages).to.include('uj');
+			expect(body.config.settings.hiddenSystemMessages).to.include('livechat_transfer_history');
+			expect(body.config.settings.hiddenSystemMessages).not.to.include('livechat-started');
+		});
+
+		(IS_EE ? it : it.skip)('should not update an array setting with a value other than array', async () => {
+			await request
+				.post(api('livechat/appearance'))
+				.set(credentials)
+				.send([{ _id: 'Livechat_hide_system_messages', value: 'uj' }])
+				.expect(200);
+
+			await sleep(500);
+
+			// Get data from livechat/config
+			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
+			expect(body.config.settings.hiddenSystemMessages).to.be.an('array');
+			expect(body.config.settings.hiddenSystemMessages).to.include('uj');
+			expect(body.config.settings.hiddenSystemMessages).to.include('livechat_transfer_history');
+		});
+
+		(IS_EE ? it : it.skip)('should not update an array setting with values that are not valid setting values', async () => {
+			await request
+				.post(api('livechat/appearance'))
+				.set(credentials)
+				.send([{ _id: 'Livechat_hide_system_messages', value: ['livechat-started', 'invalid'] }])
+				.expect(200);
+
+			await sleep(500);
+
+			// Get data from livechat/config
+			const { body } = await request.get(api('livechat/config')).set(credentials).expect(200);
+			expect(body.config.settings.hiddenSystemMessages).to.be.an('array');
+			expect(body.config.settings.hiddenSystemMessages).to.include('uj');
+			expect(body.config.settings.hiddenSystemMessages).to.include('livechat_transfer_history');
+			expect(body.config.settings.hiddenSystemMessages).to.not.include('livechat-started');
+			expect(body.config.settings.hiddenSystemMessages).to.not.include('invalid');
 		});
 	});
 });

@@ -45,6 +45,7 @@ import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITe
 import type { ITranslationService } from './types/ITranslationService';
 import type { UiKitCoreAppPayload, IUiKitCoreApp, IUiKitCoreAppService } from './types/IUiKitCoreApp';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
+import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
 import type { IVoipService } from './types/IVoipService';
 
@@ -134,9 +135,11 @@ export {
 	IOmnichannelIntegrationService,
 	IImportService,
 	IOmnichannelAnalyticsService,
+	IUserService,
 };
 
-export const dbWatchersDisabled = ['yes', 'true'].includes(String(process.env.DISABLE_DB_WATCHERS).toLowerCase());
+export const dbWatchersDisabled =
+	['yes', 'true'].includes(String(process.env.DISABLE_DB_WATCHERS).toLowerCase()) || process.env.NODE_ENV !== 'production';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
@@ -152,7 +155,7 @@ export const Team = proxifyWithWait<ITeamService>('team');
 export const MessageReads = proxifyWithWait<IMessageReadsService>('message-reads');
 export const Room = proxifyWithWait<IRoomService>('room');
 export const Media = proxifyWithWait<IMediaService>('media');
-export const Voip = proxifyWithWait<IVoipService>('voip');
+export const VoipAsterisk = proxifyWithWait<IVoipService>('voip-asterisk');
 export const LivechatVoip = proxifyWithWait<IOmnichannelVoipService>('omnichannel-voip');
 export const Analytics = proxifyWithWait<IAnalyticsService>('analytics');
 export const LDAP = proxifyWithWait<ILDAPService>('ldap');
@@ -173,6 +176,7 @@ export const Omnichannel = proxifyWithWait<IOmnichannelService>('omnichannel');
 export const OmnichannelEEService = proxifyWithWait<IOmnichannelEEService>('omnichannel-ee');
 export const Import = proxifyWithWait<IImportService>('import');
 export const OmnichannelAnalytics = proxifyWithWait<IOmnichannelAnalyticsService>('omnichannel-analytics');
+export const User = proxifyWithWait<IUserService>('user');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

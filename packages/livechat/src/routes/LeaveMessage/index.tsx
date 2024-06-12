@@ -82,87 +82,97 @@ const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 
 	const defaultTitle = t('leave_a_message');
 	const defaultMessage = t('we_are_not_online_right_now_please_leave_a_message');
-	const defaultUnavailableMessage = ''; // TODO
+	const defaultUnavailableMessage = t('offline_form_not_available');
 
 	return (
 		<Screen title={customOfflineTitle || title || defaultTitle} color={offlineColor} className={createClassName(styles, 'leave-message')}>
-			<FormScrollShadow topRef={topRef} bottomRef={bottomRef}>
-				<Screen.Content full>
-					<div id='top' ref={topRef} style={{ height: '1px', width: '100%' }} />
+			{displayOfflineForm ? (
+				<FormScrollShadow topRef={topRef} bottomRef={bottomRef}>
+					<Screen.Content full>
+						<div id='top' ref={topRef} style={{ height: '1px', width: '100%' }} />
 
-					<div className={createClassName(styles, 'leave-message__main-message')}>
-						<MarkdownBlock
-							text={displayOfflineForm ? offlineMessage || defaultMessage : offlineUnavailableMessage || defaultUnavailableMessage}
-						/>
-					</div>
+						<div className={createClassName(styles, 'leave-message__main-message')}>
+							<MarkdownBlock text={offlineMessage || defaultMessage} />
+						</div>
 
-					<Form
-						// The price of using react-hook-form on a preact project ¯\_(ツ)_/¯
-						onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>) as unknown as JSXInternal.GenericEventHandler<HTMLFormElement>}
-						id='leaveMessage'
-					>
-						<FormField required label={t('name')} error={errors.name?.message?.toString()}>
-							<Controller
-								name='name'
-								control={control}
-								// defaultValue={guestName}
-								rules={{ required: true }}
-								render={({ field }) => (
-									<TextInput placeholder={t('insert_your_field_here', { field: t('name') })} disabled={loading} {...field} />
-								)}
-							/>
-						</FormField>
-
-						<FormField required label={t('email')} error={errors.email?.message?.toString()}>
-							<Controller
-								name='email'
-								control={control}
-								// defaultValue={guestEmail}
-								rules={{
-									required: true,
-									validate: { checkEmail: (value) => validateEmail(value, { style: 'rfc' }) || t('invalid_email') },
-								}}
-								render={({ field }) => (
-									<TextInput placeholder={t('insert_your_field_here', { field: t('email') })} disabled={loading} {...field} />
-								)}
-							/>
-						</FormField>
-
-						{departments?.some((dept) => dept.showOnOfflineForm) ? (
-							<FormField label={t('i_need_help_with')} error={errors.department?.message?.toString()}>
+						<Form
+							// The price of using react-hook-form on a preact project ¯\_(ツ)_/¯
+							onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>) as unknown as JSXInternal.GenericEventHandler<HTMLFormElement>}
+							id='leaveMessage'
+						>
+							<FormField required label={t('name')} error={errors.name?.message?.toString()}>
 								<Controller
-									name='department'
+									name='name'
 									control={control}
+									// defaultValue={guestName}
+									rules={{ required: true }}
 									render={({ field }) => (
-										<SelectInput
-											options={sortArrayByColumn(departments, 'name').map(({ _id, name }: { _id: string; name: string }) => ({
-												value: _id,
-												label: name,
-											}))}
-											placeholder={t('choose_an_option')}
-											disabled={loading}
-											{...field}
-										/>
+										<TextInput placeholder={t('insert_your_field_here', { field: t('name') })} disabled={loading} {...field} />
 									)}
 								/>
 							</FormField>
-						) : null}
-						<FormField required label={t('message')} error={errors.message?.message?.toString()}>
-							<Controller
-								name='message'
-								control={control}
-								rules={{ required: true }}
-								render={({ field }) => <MultilineTextInput rows={4} placeholder={t('write_your_message')} disabled={loading} {...field} />}
-							/>
-						</FormField>
-					</Form>
-					<div ref={bottomRef} id='bottom' style={{ height: '1px', width: '100%' }} />
+
+							<FormField required label={t('email')} error={errors.email?.message?.toString()}>
+								<Controller
+									name='email'
+									control={control}
+									// defaultValue={guestEmail}
+									rules={{
+										required: true,
+										validate: { checkEmail: (value) => validateEmail(value, { style: 'rfc' }) || t('invalid_email') },
+									}}
+									render={({ field }) => (
+										<TextInput placeholder={t('insert_your_field_here', { field: t('email') })} disabled={loading} {...field} />
+									)}
+								/>
+							</FormField>
+
+							{departments?.some((dept) => dept.showOnOfflineForm) ? (
+								<FormField label={t('i_need_help_with')} error={errors.department?.message?.toString()}>
+									<Controller
+										name='department'
+										control={control}
+										render={({ field }) => (
+											<SelectInput
+												options={sortArrayByColumn(departments, 'name').map(({ _id, name }: { _id: string; name: string }) => ({
+													value: _id,
+													label: name,
+												}))}
+												placeholder={t('choose_an_option')}
+												disabled={loading}
+												{...field}
+											/>
+										)}
+									/>
+								</FormField>
+							) : null}
+							<FormField required label={t('message')} error={errors.message?.message?.toString()}>
+								<Controller
+									name='message'
+									control={control}
+									rules={{ required: true }}
+									render={({ field }) => (
+										<MultilineTextInput rows={4} placeholder={t('write_your_message')} disabled={loading} {...field} />
+									)}
+								/>
+							</FormField>
+						</Form>
+						<div ref={bottomRef} id='bottom' style={{ height: '1px', width: '100%' }} />
+					</Screen.Content>
+				</FormScrollShadow>
+			) : (
+				<Screen.Content full>
+					<div className={createClassName(styles, 'leave-message__main-message')}>
+						<MarkdownBlock text={offlineUnavailableMessage || defaultUnavailableMessage} />
+					</div>
 				</Screen.Content>
-			</FormScrollShadow>
+			)}
 			<Screen.Footer>
-				<Button loading={loading} form='leaveMessage' submit full disabled={!isDirty || !isValid || loading || isSubmitting}>
-					{t('send')}
-				</Button>
+				{displayOfflineForm ? (
+					<Button loading={loading} form='leaveMessage' submit full disabled={!isDirty || !isValid || loading || isSubmitting}>
+						{t('send')}
+					</Button>
+				) : null}
 			</Screen.Footer>
 		</Screen>
 	);

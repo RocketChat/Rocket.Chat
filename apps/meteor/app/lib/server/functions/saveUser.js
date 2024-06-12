@@ -1,3 +1,4 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import Gravatar from 'gravatar';
@@ -5,7 +6,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
@@ -276,6 +276,8 @@ const saveNewUser = async function (userData, sendPassword) {
 		password: userData.password,
 		joinDefaultChannels: userData.joinDefaultChannels,
 		isGuest,
+		globalRoles: roles,
+		skipNewUserRolesSetting: true,
 	};
 	if (userData.email) {
 		createUser.email = userData.email;
@@ -285,7 +287,6 @@ const saveNewUser = async function (userData, sendPassword) {
 
 	const updateUser = {
 		$set: {
-			roles,
 			...(typeof userData.name !== 'undefined' && { name: userData.name }),
 			settings: userData.settings || {},
 		},
@@ -400,6 +401,7 @@ export const saveUser = async function (userId, userData) {
 
 	const updateUser = {
 		$set: {},
+		$unset: {},
 	};
 
 	handleBio(updateUser, userData.bio);
@@ -418,6 +420,9 @@ export const saveUser = async function (userId, userData) {
 
 	if (typeof userData.requirePasswordChange !== 'undefined') {
 		updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
+		if (!userData.requirePasswordChange) {
+			updateUser.$unset.requirePasswordChangeReason = 1;
+		}
 	}
 
 	if (typeof userData.verified === 'boolean') {
@@ -434,7 +439,7 @@ export const saveUser = async function (userId, userData) {
 		oldUser: oldUserData,
 	});
 
-	await Apps.triggerEvent(AppEvents.IPostUserUpdated, {
+	await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, {
 		user: userUpdated,
 		previousUser: oldUserData,
 		performedBy: await safeGetMeteorUser(),

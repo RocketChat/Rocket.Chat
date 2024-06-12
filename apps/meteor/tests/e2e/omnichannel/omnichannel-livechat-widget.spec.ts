@@ -8,16 +8,14 @@ test.describe('Omnichannel - Livechat Widget Embedded', () => {
 		let page: Page;
 		let poLiveChat: OmnichannelLiveChatEmbedded;
 
-		test.beforeAll(async ({ browser, api }) => {
+		test.beforeAll(async ({ browser }) => {
 			page = await browser.newPage();
 			poLiveChat = new OmnichannelLiveChatEmbedded(page);
-            await expect((await api.post('/settings/Enable_CSP', { value: false })).status()).toBe(200);
 
 			await page.goto('/packages/rocketchat_livechat/assets/demo.html');
 		});
 
-		test.afterAll(async ({ api }) => {
-            await expect((await api.post('/settings/Enable_CSP', { value: true })).status()).toBe(200);
+		test.afterAll(async () => {
 			await page.close();
 		});
 

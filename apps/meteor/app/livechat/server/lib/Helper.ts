@@ -1,3 +1,4 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { api, Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
@@ -30,13 +31,16 @@ import {
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import {
+	notifyOnLivechatDepartmentAgentChanged,
+	notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId,
+} from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
@@ -273,7 +277,7 @@ export const removeAgentFromSubscription = async (rid: string, { _id, username }
 	await Message.saveSystemMessage('ul', rid, username || '', { _id: user._id, username: user.username, name: user.name });
 
 	setImmediate(() => {
-		void Apps.triggerEvent(AppEvents.IPostLivechatAgentUnassigned, { room, user });
+		void Apps.self?.triggerEvent(AppEvents.IPostLivechatAgentUnassigned, { room, user });
 	});
 };
 
@@ -452,7 +456,7 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 		}
 
 		setImmediate(() => {
-			void Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
+			void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
 				type: LivechatTransferEventType.AGENT,
 				room: rid,
 				from: oldServedBy?._id,
@@ -482,7 +486,7 @@ export const updateChatDepartment = async ({
 	]);
 
 	setImmediate(() => {
-		void Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
+		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
 			type: LivechatTransferEventType.DEPARTMENT,
 			room: rid,
 			from: oldDepartmentId,
@@ -539,10 +543,24 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 		agent = { agentId, username };
 	}
 
-	if (!RoutingManager.getConfig()?.autoAssignAgent || !(await Omnichannel.isWithinMACLimit(room))) {
+	const department = await LivechatDepartment.findOneById<
+		Pick<ILivechatDepartment, 'allowReceiveForwardOffline' | 'fallbackForwardDepartment' | 'name'>
+	>(departmentId, {
+		projection: {
+			allowReceiveForwardOffline: 1,
+			fallbackForwardDepartment: 1,
+			name: 1,
+		},
+	});
+
+	if (
+		!RoutingManager.getConfig()?.autoAssignAgent ||
+		!(await Omnichannel.isWithinMACLimit(room)) ||
+		(department?.allowReceiveForwardOffline && !(await LivechatTyped.checkOnlineAgents(departmentId)))
+	) {
 		logger.debug(`Room ${room._id} will be on department queue`);
 		await LivechatTyped.saveTransferHistory(room, transferData);
-		return RoutingManager.unassignAgent(inquiry, departmentId);
+		return RoutingManager.unassignAgent(inquiry, departmentId, true);
 	}
 
 	// Fake the department to forward the inquiry - Case the forward process does not success
@@ -559,11 +577,6 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
-		const department = departmentId
-			? await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment' | 'name'>>(departmentId, {
-					projection: { fallbackForwardDepartment: 1, name: 1 },
-			  })
-			: null;
 		if (!department?.fallbackForwardDepartment?.length) {
 			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
 			throw new Error('error-no-agents-online-in-department');
@@ -688,14 +701,31 @@ export const updateDepartmentAgents = async (
 	});
 
 	const { upsert = [], remove = [] } = agents;
-	const agentsRemoved = [];
+
+	const agentsUpdated = [];
+	const agentsRemoved = remove.map(({ agentId }: { agentId: string }) => agentId);
 	const agentsAdded = [];
-	for await (const { agentId } of remove) {
-		await LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId);
-		agentsRemoved.push(agentId);
-	}
 
 	if (agentsRemoved.length > 0) {
+		const removedIds = await LivechatDepartmentAgents.findByAgentsAndDepartmentId(agentsRemoved, departmentId, {
+			projection: { agentId: 1 },
+		}).toArray();
+
+		const { deletedCount } = await LivechatDepartmentAgents.removeByIds(removedIds.map(({ _id }) => _id));
+
+		if (deletedCount > 0) {
+			removedIds.forEach(({ _id, agentId }) => {
+				void notifyOnLivechatDepartmentAgentChanged(
+					{
+						_id,
+						agentId,
+						departmentId,
+					},
+					'removed',
+				);
+			});
+		}
+
 		callbacks.runAsync('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
 	}
 
@@ -705,7 +735,7 @@ export const updateDepartmentAgents = async (
 			continue;
 		}
 
-		await LivechatDepartmentAgents.saveAgent({
+		const livechatDepartmentAgent = await LivechatDepartmentAgents.saveAgent({
 			agentId: agent.agentId,
 			departmentId,
 			username: agentFromDb.username || '',
@@ -713,6 +743,20 @@ export const updateDepartmentAgents = async (
 			order: agent.order ? parseFromIntOrStr(agent.order) : 0,
 			departmentEnabled,
 		});
+
+		if (livechatDepartmentAgent.upsertedId) {
+			void notifyOnLivechatDepartmentAgentChanged(
+				{
+					_id: livechatDepartmentAgent.upsertedId as any,
+					agentId: agent.agentId,
+					departmentId,
+				},
+				'inserted',
+			);
+		} else {
+			agentsUpdated.push(agent.agentId);
+		}
+
 		agentsAdded.push(agent.agentId);
 	}
 
@@ -721,6 +765,10 @@ export const updateDepartmentAgents = async (
 			departmentId,
 			agentsId: agentsAdded,
 		});
+	}
+
+	if (agentsUpdated.length > 0) {
+		void notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId(agentsUpdated, departmentId);
 	}
 
 	if (agentsRemoved.length > 0 || agentsAdded.length > 0) {

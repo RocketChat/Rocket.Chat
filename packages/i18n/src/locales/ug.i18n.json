@@ -903,7 +903,6 @@
   "Room_archived": "ئۆي ئاللىبۇرۇن تۈرگە ئايرىپ ساقلاندى",
   "room_changed_privacy": "{{room_type}}ئۆينىڭ تىپىنى بۇنداق ئۆزگەرتتى :{{user_by}}",
   "room_changed_topic": "{{room_topic}} ئۆينىڭ تېمىسىنى بۇنداق قىلىپ ئۆزگەرتتى:{{user_by}}",
-  "Room_has_been_deleted": "ئۆي ئاللىبۇرۇن يۇيۇلدى",
   "Room_Info": "ئۆينىڭ ئۇچۇرى",
   "Room_name_changed": "تىن ئۆزگەرتىلدى. {{user_by}} ،{{room_name}} پاراڭلىشىش ئۆينىڭ ئىسمى بۇنداق ئۆزگەرتىلدى",
   "Room_name_changed_successfully": "پاراڭلىشىش ئۆيىنىڭ ئىسمى ئۇتۇقلۇق ئۆزگەرتىلدى",

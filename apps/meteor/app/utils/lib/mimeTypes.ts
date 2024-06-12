@@ -1,6 +1,7 @@
 import mime from 'mime-type/with-db';
 
 mime.types.wav = 'audio/wav';
+mime.types.lst = 'text/plain';
 mime.define('image/vnd.microsoft.icon', { source: '', extensions: ['ico'] }, mime.dupAppend);
 mime.define('image/x-icon', { source: '', extensions: ['ico'] }, mime.dupAppend);
 mime.types.ico = 'image/x-icon';

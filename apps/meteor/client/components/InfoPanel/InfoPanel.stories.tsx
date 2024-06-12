@@ -52,7 +52,7 @@ export const Default: ComponentStory<typeof InfoPanel> = () => (
 		</InfoPanel.Section>
 
 		<InfoPanel.Section>
-			<RetentionPolicyCallout maxAgeDefault={30} filesOnlyDefault={false} excludePinnedDefault={true} />
+			<RetentionPolicyCallout maxAge={30} filesOnly={false} excludePinned={true} />
 		</InfoPanel.Section>
 	</InfoPanel>
 );

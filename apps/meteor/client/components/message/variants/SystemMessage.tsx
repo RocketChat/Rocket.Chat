@@ -60,6 +60,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	return (
 		<MessageSystem
 			role='listitem'
+			aria-roledescription={t('system_message')}
 			tabIndex={0}
 			onClick={isSelecting ? toggleSelected : undefined}
 			isSelected={isSelected}
@@ -85,7 +86,12 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						{...triggerProps}
 					>
 						<MessageSystemName>{getUserDisplayName(user.name, user.username, showRealName)}</MessageSystemName>
-						{showUsername && <MessageUsername data-username={user.username}>@{user.username}</MessageUsername>}
+						{showUsername && (
+							<>
+								{' '}
+								<MessageUsername data-username={user.username}>@{user.username}</MessageUsername>
+							</>
+						)}
 					</MessageNameContainer>
 					{messageType && (
 						<MessageSystemBody

@@ -8,6 +8,7 @@ export type {
 	IVisitorPhone as IAppsVisitorPhone,
 } from '@rocket.chat/apps-engine/definition/livechat';
 export type { IMessage as IAppsMessage } from '@rocket.chat/apps-engine/definition/messages';
+export { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 export type { IUser as IAppsUser } from '@rocket.chat/apps-engine/definition/users';
 export type { IRole as IAppsRole } from '@rocket.chat/apps-engine/definition/roles';
 export type { IRoom as IAppsRoom } from '@rocket.chat/apps-engine/definition/rooms';
@@ -18,3 +19,5 @@ export type {
 	VideoConference as AppsVideoConference,
 } from '@rocket.chat/apps-engine/definition/videoConferences';
 export { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+export { AppBridges } from '@rocket.chat/apps-engine/server/bridges';
+export { AppMetadataStorage } from '@rocket.chat/apps-engine/server/storage';

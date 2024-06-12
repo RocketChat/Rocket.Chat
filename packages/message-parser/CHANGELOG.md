@@ -1,5 +1,55 @@
 # Change Log
 
+## 0.31.29
+
+### Patch Changes
+
+- ([#31810](https://github.com/RocketChat/Rocket.Chat/pull/31810)) feat(message-parser): add timestamps pattern
+
+  ### Usage
+
+  Pattern: <t:{timestamp}:?{format}>
+
+  - {timestamp} is a Unix timestamp
+  - {format} is an optional parameter that can be used to customize the date and time format.
+
+  #### Formats
+
+  | Format | Description               | Example                                 |
+  | ------ | ------------------------- | --------------------------------------- |
+  | `t`    | Short time                | 12:00 AM                                |
+  | `T`    | Long time                 | 12:00:00 AM                             |
+  | `d`    | Short date                | 12/31/2020                              |
+  | `D`    | Long date                 | Thursday, December 31, 2020             |
+  | `f`    | Full date and time        | Thursday, December 31, 2020 12:00 AM    |
+  | `F`    | Full date and time (long) | Thursday, December 31, 2020 12:00:00 AM |
+  | `R`    | Relative time             | 1 year ago                              |
+
+## 0.31.29-rc.0
+
+### Patch Changes
+
+- ([#31810](https://github.com/RocketChat/Rocket.Chat/pull/31810)) feat(message-parser): add timestamps pattern
+
+  ### Usage
+
+  Pattern: <t:{timestamp}:?{format}>
+
+  - {timestamp} is a Unix timestamp
+  - {format} is an optional parameter that can be used to customize the date and time format.
+
+  #### Formats
+
+  | Format | Description               | Example                                 |
+  | ------ | ------------------------- | --------------------------------------- |
+  | `t`    | Short time                | 12:00 AM                                |
+  | `T`    | Long time                 | 12:00:00 AM                             |
+  | `d`    | Short date                | 12/31/2020                              |
+  | `D`    | Long date                 | Thursday, December 31, 2020             |
+  | `f`    | Full date and time        | Thursday, December 31, 2020 12:00 AM    |
+  | `F`    | Full date and time (long) | Thursday, December 31, 2020 12:00:00 AM |
+  | `R`    | Relative time             | 1 year ago                              |
+
 ## 0.31.28
 
 ### Patch Changes

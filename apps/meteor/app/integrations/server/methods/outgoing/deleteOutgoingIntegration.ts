@@ -3,6 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { notifyOnIntegrationChangedById } from '../../../../lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -40,7 +41,9 @@ export const deleteOutgoingIntegration = async (integrationId: string, userId: s
 	}
 
 	await Integrations.removeById(integrationId);
+	// Don't sending to IntegrationHistory listener since it don't waits for 'removed' events.
 	await IntegrationHistory.removeByIntegrationId(integrationId);
+	void notifyOnIntegrationChangedById(integrationId, 'removed');
 };
 
 Meteor.methods<ServerMethods>({

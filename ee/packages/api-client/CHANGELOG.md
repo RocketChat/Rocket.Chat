@@ -1,5 +1,213 @@
 # @rocket.chat/api-client
 
+## 0.1.33
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ff4e396416, f83bd56cc5, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/core-typings@6.9.0
+  - @rocket.chat/rest-typings@6.9.0
+  </details>
+
+## 0.1.33-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.2
+  - @rocket.chat/rest-typings@6.9.0-rc.2
+  </details>
+
+## 0.1.33-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.1
+  - @rocket.chat/rest-typings@6.9.0-rc.1
+  </details>
+
+## 0.1.33-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ff4e396416, f83bd56cc5, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.0
+  - @rocket.chat/rest-typings@6.9.0-rc.0
+  </details>
+
+## 0.1.32
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [845fd64f45, c47a8e3514, 9a6a7d0a40, 845fd64f45, b94ca7c30b, 9902554388, 4aba7c8a26]:</summary>
+
+  - @rocket.chat/rest-typings@6.8.0
+  - @rocket.chat/core-typings@6.8.0
+  </details>
+
+## 0.1.32-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b94ca7c30b]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.2
+  - @rocket.chat/rest-typings@6.8.0-rc.2
+  </details>
+
+## 0.1.32-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+- @rocket.chat/rest-typings@6.8.0-rc.1
+</details>
+
+## 0.1.32-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [845fd64f45, c47a8e3514, 9a6a7d0a40, 845fd64f45, 9902554388, 4aba7c8a26]:</summary>
+
+  - @rocket.chat/rest-typings@6.8.0-rc.0
+  - @rocket.chat/core-typings@6.8.0-rc.0
+
+## 0.1.31
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.2
+  - @rocket.chat/rest-typings@6.7.2
+  </details>
+
+> > > > > > > origin/master
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.1
+  - @rocket.chat/rest-typings@6.7.1
+  </details>
+
+## 0.1.29
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, d1b1ffe9e5, b9e897a8f5]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0
+  - @rocket.chat/rest-typings@6.7.0
+  </details>
+
+## 0.1.29-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.4
+  - @rocket.chat/rest-typings@6.7.0-rc.4
+  </details>
+
+## 0.1.29-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.3
+  - @rocket.chat/rest-typings@6.7.0-rc.3
+  </details>
+
+## 0.1.29-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.2
+  - @rocket.chat/rest-typings@6.7.0-rc.2
+  </details>
+
+## 0.1.29-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.1
+  - @rocket.chat/rest-typings@6.7.0-rc.1
+  </details>
+
+## 0.1.29-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, d1b1ffe9e5, b9e897a8f5]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.0
+  - @rocket.chat/rest-typings@6.7.0-rc.0
+  </details>
+
+## 0.1.28
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.6
+  - @rocket.chat/rest-typings@6.6.6
+  </details>
+
+## 0.1.27
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.5
+  - @rocket.chat/rest-typings@6.6.5
+  </details>
+
+## 0.1.26
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.4
+  - @rocket.chat/rest-typings@6.6.4
+  </details>
+
+## 0.1.25
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.3
+  - @rocket.chat/rest-typings@6.6.3
+  </details>
+
+## 0.1.24
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.2
+  - @rocket.chat/rest-typings@6.6.2
+  </details>
+
 ## 0.1.23
 
 ### Patch Changes

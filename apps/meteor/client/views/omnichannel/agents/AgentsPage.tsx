@@ -2,6 +2,7 @@ import { usePermission, useRouteParameter, useTranslation } from '@rocket.chat/u
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import AgentEditWithData from './AgentEditWithData';
@@ -27,8 +28,12 @@ const AgentsPage = (): ReactElement => {
 					<AgentsTable />
 				</PageContent>
 			</Page>
-			{id && context === 'edit' && <AgentEditWithData uid={id} />}
-			{id && context === 'info' && <AgentInfo uid={id} />}
+			{context && (
+				<ContextualbarDialog>
+					{id && context === 'edit' && <AgentEditWithData uid={id} />}
+					{id && context === 'info' && <AgentInfo uid={id} />}
+				</ContextualbarDialog>
+			)}
 		</Page>
 	);
 };
