@@ -16,8 +16,8 @@ export class AnalyticsRaw extends BaseRaw<IAnalytic> implements IAnalyticsModel 
 	protected modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { date: 1 } },
-			{ key: { 'room._id': 1, 'date': 1 }, sparse: true, name: 'room-id-date-index' },
-			{ key: { 'room.t': 1, 'date': 1 }, sparse: true },
+			{ key: { 'room._id': 1, 'date': 1 }, unique: true, partialFilterExpression: { type: 'rooms' } },
+			{ key: { 'room.t': 1, 'date': 1 }, partialFilterExpression: { type: 'messages' } },
 		];
 	}
 
