@@ -28,6 +28,23 @@ export const Default = () => (
 	</RoomBanner>
 );
 
+export const WithoutTopic = () => (
+	<RoomBanner>
+		<RoomBannerContent>
+			<Box is='a' href='#'>
+				Add topic
+			</Box>
+		</RoomBannerContent>
+		<Box display='flex' mis='x24' flexShrink={0} alignItems='center'>
+			<CustomAvatar size='x18' />
+			<Box fontScale='p2' color='secondary-info' mi='x4'>
+				Will Bell
+			</Box>
+			<IconButton icon='message' small />
+		</Box>
+	</RoomBanner>
+);
+
 export const TopicAndAnnouncement = () => (
 	<div>
 		<RoomBanner>

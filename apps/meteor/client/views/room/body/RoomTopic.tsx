@@ -54,7 +54,7 @@ export const RoomTopic = ({ room, user }: RoomTopicProps) => {
 		<RoomBanner className='rcx-header-section' role='note'>
 			<RoomBannerContent>
 				{roomLeader && !topic && canEdit ? (
-					<Box is='a' href={href} style={{ cursor: 'pointer' }}>
+					<Box is='a' href={href}>
 						{t('Add_topic')}
 					</Box>
 				) : (
