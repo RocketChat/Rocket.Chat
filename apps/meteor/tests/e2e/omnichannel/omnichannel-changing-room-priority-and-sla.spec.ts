@@ -20,7 +20,7 @@ const getRoomId = (page: Page): string => {
 	return rid;
 };
 
-test.describe('omnichannel-changing-room-priority-and-sla', () => {
+test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 	test.skip(!IS_EE, 'Enterprise Only');
 
 	let poLiveChat: OmnichannelLiveChat;
@@ -69,7 +69,7 @@ test.describe('omnichannel-changing-room-priority-and-sla', () => {
 		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
 		await poLiveChat.btnSendMessageToOnlineAgent.click();
 
-		await agent.poHomeChannel.sidenav.openQueuedOmnichannelChat(newVisitor.name);
+		await agent.poHomeChannel.sidenav.getQueuedChat(newVisitor.name).click();
 	});
 
 	test('expect to change priority of room and corresponding system message should be displayed', async ({ api }) => {

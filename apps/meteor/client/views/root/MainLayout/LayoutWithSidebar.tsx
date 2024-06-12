@@ -1,16 +1,15 @@
-import { Box, PaletteStyleTag } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useLayout, useSetting, useCurrentModal, useRoute, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
-import { useThemeMode } from '@rocket.chat/ui-theming/src/hooks/useThemeMode';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useRef } from 'react';
 
 import { NavBar } from '../../../NavBar';
 import Sidebar from '../../../sidebar';
 import AccessibilityShortcut from './AccessibilityShortcut';
+import { MainLayoutStyleTags } from './MainLayoutStyleTags';
 
 const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
-	const [, , theme] = useThemeMode();
 
 	const modal = useCurrentModal();
 	const currentRoutePath = useCurrentRoutePath();
@@ -51,9 +50,7 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 				aria-hidden={Boolean(modal)}
 			>
-				<PaletteStyleTag theme={theme} selector='.rcx-content--main, .rcx-tile' />
-				<PaletteStyleTag theme='dark' selector='.rcx-sidebar--main, .rcx-navbar' tagId='sidebar-palette' />
-
+				<MainLayoutStyleTags />
 				{!removeSidenav && <Sidebar />}
 				<main
 					id='main-content'

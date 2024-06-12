@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
