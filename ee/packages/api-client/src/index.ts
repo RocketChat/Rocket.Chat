@@ -221,6 +221,7 @@ export class RestClient implements RestClientInterface {
 	}
 
 	send(endpoint: string, method: string, { headers, ...options }: Omit<RequestInit, 'method'> = {}): Promise<Response> {
+		console.log(`hello ${this.baseUrl}${`/${endpoint}`.replace(/\/+/, '/')}`);
 		return fetch(`${this.baseUrl}${`/${endpoint}`.replace(/\/+/, '/')}`, {
 			...options,
 			headers: { ...this.getCredentialsAsHeaders(), ...this.headers, ...headers },
@@ -281,7 +282,7 @@ export class RestClient implements RestClientInterface {
 			}
 			value && data.append(key, value as any);
 		});
-
+		console.log(`hello from file ${this.baseUrl}${`/${endpoint}`.replace(/\/+/, '/')}`);
 		xhr.open('POST', `${this.baseUrl}${`/${endpoint}`.replace(/\/+/, '/')}`, true);
 		Object.entries({ ...this.getCredentialsAsHeaders(), ...options.headers }).forEach(([key, value]) => {
 			xhr.setRequestHeader(key, value);
