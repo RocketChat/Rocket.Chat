@@ -1,5 +1,5 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
-import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
 
@@ -29,9 +29,6 @@ const ComposerMessage = ({ tmid, readOnly, onSend, ...props }: ComposerMessagePr
 	const chat = useChat();
 	const room = useRoom();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const e2eEnabled = useSetting<boolean>('E2E_Enable');
-	const unencryptedMessagesAllowed = useSetting<boolean>('E2E_Allow_Unencrypted_Messages');
-	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 
 	const composerProps = useMemo(
 		() => ({
@@ -44,7 +41,17 @@ const ComposerMessage = ({ tmid, readOnly, onSend, ...props }: ComposerMessagePr
 				}
 			},
 
-			onSend: async ({ value: text, tshow, previewUrls }: { value: string; tshow?: boolean; previewUrls?: string[] }): Promise<void> => {
+			onSend: async ({
+				value: text,
+				tshow,
+				previewUrls,
+				isSlashCommandAllowed,
+			}: {
+				value: string;
+				tshow?: boolean;
+				previewUrls?: string[];
+				isSlashCommandAllowed?: boolean;
+			}): Promise<void> => {
 				try {
 					await chat?.action.stop('typing');
 					const newMessageSent = await chat?.flows.sendMessage({
@@ -71,16 +78,7 @@ const ComposerMessage = ({ tmid, readOnly, onSend, ...props }: ComposerMessagePr
 				return chat?.flows.uploadFiles(files);
 			},
 		}),
-		[
-			chat?.data,
-			chat?.flows,
-			chat?.action,
-			chat?.composer?.text,
-			chat?.messageEditing,
-			dispatchToastMessage,
-			onSend,
-			isSlashCommandAllowed,
-		],
+		[chat?.data, chat?.flows, chat?.action, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, onSend],
 	);
 
 	const publicationReady = useReactiveValue(
