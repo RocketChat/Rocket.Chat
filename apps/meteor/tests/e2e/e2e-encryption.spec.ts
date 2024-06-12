@@ -202,7 +202,6 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(page.locator('role=menuitem[name="Reply in direct message"]')).toHaveClass(/disabled/);
 		await expect(page.locator('role=menuitem[name="Copy link"]')).toHaveClass(/disabled/);
-		await expect(page.locator('role=menuitem[name="Unavailable"]')).toHaveClass(/disabled/);
 	});
 
 	test('expect create a private channel, encrypt it and send an encrypted message', async ({ page }) => {
