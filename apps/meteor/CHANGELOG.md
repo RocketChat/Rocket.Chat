@@ -1,5 +1,52 @@
 # @rocket.chat/meteor
 
+## 6.8.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#32594](https://github.com/RocketChat/Rocket.Chat/pull/32594) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes issues with loading license modules when loading the page while logged out
+
+- ([#32494](https://github.com/RocketChat/Rocket.Chat/pull/32494) by [@dionisio-bot](https://github.com/dionisio-bot)) Executing a logout and login action in the same "tab/instance", some streams were not being recreated, causing countless types of bugs.
+
+  PS: as a workaround reloading after logout or login in also solves the problem.
+
+- ([#32496](https://github.com/RocketChat/Rocket.Chat/pull/32496) by [@dionisio-bot](https://github.com/dionisio-bot)) This fuselage`s bump fixes:
+
+  - The message toolbar visibility on hover (Firefox ESR)
+  - `Bubble` missing font-family
+
+  [more details](https://github.com/RocketChat/fuselage/releases/tag/%40rocket.chat%2Ffuselage%400.53.7)
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.8.1
+  - @rocket.chat/rest-typings@6.8.1
+  - @rocket.chat/api-client@0.1.33
+  - @rocket.chat/license@0.1.15
+  - @rocket.chat/omnichannel-services@0.1.15
+  - @rocket.chat/pdf-worker@0.0.39
+  - @rocket.chat/presence@0.1.15
+  - @rocket.chat/apps@0.0.6
+  - @rocket.chat/core-services@0.3.15
+  - @rocket.chat/cron@0.0.35
+  - @rocket.chat/gazzodown@6.0.1
+  - @rocket.chat/model-typings@0.4.1
+  - @rocket.chat/ui-contexts@6.0.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/fuselage-ui-kit@6.0.1
+  - @rocket.chat/models@0.0.39
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/ui-avatar@2.0.1
+  - @rocket.chat/ui-client@6.0.1
+  - @rocket.chat/ui-video-conf@6.0.1
+  - @rocket.chat/web-ui-registration@6.0.1
+  - @rocket.chat/instance-status@0.0.39
+  </details>
+
 ## 6.8.0
 
 ### Minor Changes
