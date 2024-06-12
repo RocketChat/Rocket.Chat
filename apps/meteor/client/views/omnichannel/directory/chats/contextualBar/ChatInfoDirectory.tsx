@@ -1,5 +1,7 @@
-import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import type { ILivechatCustomField, IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
+import { Box, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
@@ -7,25 +9,24 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { hasPermission } from '../../../../../../app/authorization/client';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
+import InfoPanel from '../../../../../components/InfoPanel';
+import MarkdownText from '../../../../../components/MarkdownText';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
 import CustomField from '../../../components/CustomField';
-import Field from '../../../components/Field';
-import Info from '../../../components/Info';
-import Label from '../../../components/Label';
-import { AgentField, ContactField, SlaField } from '../../components';
+import { AgentField, ContactField, SlaField, SourceField } from '../../components';
 import PriorityField from '../../components/PriorityField';
 import { formatQueuedAt } from '../../utils/formatQueuedAt';
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
 
-function ChatInfoDirectory({ id, route = undefined, room }) {
+const ChatInfoDirectory = ({ id, route = undefined, room }: { id: string; route?: keyof IRouterPaths; room: IOmnichannelRoom }) => {
 	const t = useTranslation();
 
 	const formatDateAndTime = useFormatDateAndTime();
 	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('/v1/livechat/custom-fields');
-	const [customFields, setCustomFields] = useState([]);
+	const [customFields, setCustomFields] = useState<Serialized<ILivechatCustomField>[]>([]);
 	const formatDuration = useFormatDuration();
 
 	const {
@@ -43,6 +44,7 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 		priorityId,
 		livechatData,
 		queuedAt,
+		source,
 	} = room || { room: { v: {} } };
 
 	const routePath = useRoute(route || 'omnichannel-directory');
@@ -63,7 +65,7 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 		}
 	}, [allCustomFields, stateCustomFields]);
 
-	const checkIsVisibleAndScopeRoom = (key) => {
+	const checkIsVisibleAndScopeRoom = (key: string) => {
 		const field = customFields.find(({ _id }) => _id === key);
 		if (field && field.visibility === 'visible' && field.scope === 'room') {
 			return true;
@@ -95,15 +97,17 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 	return (
 		<>
 			<ContextualbarScrollableContent p={24}>
-				<Margins block='x4'>
-					{room && v && <ContactField contact={v} room={room} />}
+				<InfoPanel>
+					{source && <SourceField room={room as IOmnichannelRoom} />}
+					{/* TODO: Sort out differences in different visitor object types and if status is optional or not */}
+					{room && v && <ContactField contact={v as any} room={room} />}
 					{visitorId && <VisitorClientInfo uid={visitorId} />}
 					{servedBy && <AgentField agent={servedBy} />}
 					{departmentId && <DepartmentField departmentId={departmentId} />}
 					{tags && tags.length > 0 && (
-						<Field>
-							<Label>{t('Tags')}</Label>
-							<Info>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Tags')}</InfoPanel.Label>
+							<InfoPanel.Text>
 								{tags.map((tag) => (
 									<Box key={tag} mie={4} display='inline'>
 										<Tag style={{ display: 'inline' }} disabled>
@@ -111,56 +115,58 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 										</Tag>
 									</Box>
 								))}
-							</Info>
-						</Field>
+							</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{topic && (
-						<Field>
-							<Label>{t('Topic')}</Label>
-							<Info>{topic}</Info>
-						</Field>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Topic')}</InfoPanel.Label>
+							<InfoPanel.Text withTruncatedText={false}>
+								<MarkdownText variant='inline' content={topic} />
+							</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{queueStartedAt && (
-						<Field>
-							<Label>{t('Queue_Time')}</Label>
-							{queueTime}
-						</Field>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Queue_Time')}</InfoPanel.Label>
+							<InfoPanel.Text>{queueTime}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{closedAt && (
-						<Field>
-							<Label>{t('Chat_Duration')}</Label>
-							<Info>{moment(closedAt).from(moment(ts), true)}</Info>
-						</Field>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Chat_Duration')}</InfoPanel.Label>
+							<InfoPanel.Text>{moment(closedAt).from(moment(ts), true)}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{ts && (
-						<Field>
-							<Label>{t('Created_at')}</Label>
-							<Info>{formatDateAndTime(ts)}</Info>
-						</Field>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Created_at')}</InfoPanel.Label>
+							<InfoPanel.Text>{formatDateAndTime(ts)}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{closedAt && (
-						<Field>
-							<Label>{t('Closed_At')}</Label>
-							<Info>{formatDateAndTime(closedAt)}</Info>
-						</Field>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Closed_At')}</InfoPanel.Label>
+							<InfoPanel.Text>{formatDateAndTime(closedAt)}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{servedBy?.ts && (
-						<Field>
-							<Label>{t('Taken_at')}</Label>
-							<Info>{formatDateAndTime(servedBy.ts)}</Info>
-						</Field>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Taken_at')}</InfoPanel.Label>
+							<InfoPanel.Text>{formatDateAndTime(servedBy.ts)}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{metrics?.response?.avg && formatDuration(metrics.response.avg) && (
-						<Field>
-							<Label>{t('Avg_response_time')}</Label>
-							<Info>{formatDuration(metrics.response.avg)}</Info>
-						</Field>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Avg_response_time')}</InfoPanel.Label>
+							<InfoPanel.Text>{formatDateAndTime(metrics.response.avg)}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{!waitingResponse && responseBy?.lastMessageTs && (
-						<Field>
-							<Label>{t('Inactivity_Time')}</Label>
-							<Info>{moment(responseBy.lastMessageTs).fromNow(true)}</Info>
-						</Field>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Inactivity_Time')}</InfoPanel.Label>
+							<InfoPanel.Text>{moment(responseBy.lastMessageTs).fromNow(true)}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{canViewCustomFields() &&
 						livechatData &&
@@ -169,7 +175,7 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 						)}
 					{slaId && <SlaField id={slaId} />}
 					{priorityId && <PriorityField id={priorityId} />}
-				</Margins>
+				</InfoPanel>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
@@ -180,6 +186,6 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 			</ContextualbarFooter>
 		</>
 	);
-}
+};
 
 export default ChatInfoDirectory;

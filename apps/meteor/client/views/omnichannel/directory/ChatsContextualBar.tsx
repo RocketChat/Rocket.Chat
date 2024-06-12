@@ -1,3 +1,4 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
@@ -73,7 +74,8 @@ const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => 
 				)}
 				<ContextualbarClose onClick={handleChatsContextualbarCloseButtonClick} />
 			</ContextualbarHeader>
-			{bar === 'info' && <ChatInfoDirectory id={id} room={room} />}
+			{/* TODO: Organize Omnichannel Room Types, what is serialized and what is not */}
+			{bar === 'info' && <ChatInfoDirectory id={id} room={room as unknown as IOmnichannelRoom} />}
 			{bar === 'edit' && (
 				<RoomEditWithData id={id} reload={chatReload} reloadInfo={reloadInfo} onClose={handleChatsContextualbarBackButtonClick} />
 			)}

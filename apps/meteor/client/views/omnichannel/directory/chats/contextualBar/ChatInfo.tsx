@@ -1,18 +1,19 @@
-import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import type { ILivechatCustomField, Serialized, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Box, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
+import InfoPanel from '../../../../../components/InfoPanel';
+import MarkdownText from '../../../../../components/MarkdownText';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
 import CustomField from '../../../components/CustomField';
-import Field from '../../../components/Field';
-import Info from '../../../components/Info';
-import Label from '../../../components/Label';
 import { AgentField, SlaField, ContactField, SourceField } from '../../components';
 import PriorityField from '../../components/PriorityField';
 import { useOmnichannelRoomInfo } from '../../hooks/useOmnichannelRoomInfo';
@@ -21,16 +22,17 @@ import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
 
 // TODO: Remove moment we are mixing moment and our own formatters :sadface:
-function ChatInfo({ id, route }) {
+const ChatInfo = ({ id, route }: { id: string; route?: keyof IRouterPaths }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const formatDateAndTime = useFormatDateAndTime();
 	const { value: allCustomFields, phase: stateCustomFields } = useEndpointData('/v1/livechat/custom-fields');
-	const [customFields, setCustomFields] = useState([]);
+	const [customFields, setCustomFields] = useState<Serialized<ILivechatCustomField>[]>([]);
 	const formatDuration = useFormatDuration();
 
-	const { data: room } = useOmnichannelRoomInfo(id);
+	// TODO: Organize Omnichannel Room Types, what is serialized and what is not
+	const { data: room } = useOmnichannelRoomInfo(id) as unknown as { data: IOmnichannelRoom };
 
 	const {
 		ts,
@@ -63,11 +65,13 @@ function ChatInfo({ id, route }) {
 	useEffect(() => {
 		if (allCustomFields) {
 			const { customFields: customFieldsAPI } = allCustomFields;
-			setCustomFields(customFieldsAPI);
+			if (customFieldsAPI) {
+				setCustomFields(customFieldsAPI);
+			}
 		}
 	}, [allCustomFields, stateCustomFields]);
 
-	const checkIsVisibleAndScopeRoom = (key) => {
+	const checkIsVisibleAndScopeRoom = (key: string) => {
 		const field = customFields.find(({ _id }) => _id === key);
 		return field?.visibility === 'visible' && field?.scope === 'room';
 	};
@@ -93,21 +97,24 @@ function ChatInfo({ id, route }) {
 		);
 	});
 
-	const customFieldEntries = Object.entries(livechatData || {}).filter(([key]) => checkIsVisibleAndScopeRoom(key) && livechatData[key]);
+	const customFieldEntries: [string, any][] = Object.entries(livechatData || {}).filter(
+		([key]) => checkIsVisibleAndScopeRoom(key) && livechatData[key],
+	);
 
 	return (
 		<>
 			<ContextualbarScrollableContent p={24}>
-				<Margins block='x4'>
-					{source && <SourceField room={room} />}
-					{room && v && <ContactField contact={v} room={room} />}
+				<InfoPanel>
+					{source && <SourceField room={room as IOmnichannelRoom} />}
+					{/* TODO: Sort out differences in different visitor object types and if status is optional or not */}
+					{room && v && <ContactField contact={v as any} room={room} />}
 					{visitorId && <VisitorClientInfo uid={visitorId} />}
 					{servedBy && <AgentField agent={servedBy} />}
 					{departmentId && <DepartmentField departmentId={departmentId} />}
 					{tags && tags.length > 0 && (
-						<Field>
-							<Label>{t('Tags')}</Label>
-							<Info>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Tags')}</InfoPanel.Label>
+							<InfoPanel.Text>
 								{tags.map((tag) => (
 									<Box key={tag} mie={4} display='inline'>
 										<Tag style={{ display: 'inline' }} disabled>
@@ -115,61 +122,64 @@ function ChatInfo({ id, route }) {
 										</Tag>
 									</Box>
 								))}
-							</Info>
-						</Field>
+							</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{topic && (
-						<Field>
-							<Label>{t('Topic')}</Label>
-							<Info>{topic}</Info>
-						</Field>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Topic')}</InfoPanel.Label>
+							<InfoPanel.Text withTruncatedText={false}>
+								<MarkdownText variant='inline' content={topic} />
+							</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{queueStartedAt && (
-						<Field>
-							<Label>{t('Queue_Time')}</Label>
-							<Info>{queueTime}</Info>
-						</Field>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Queue_Time')}</InfoPanel.Label>
+							<InfoPanel.Text>{queueTime}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{closedAt && (
-						<Field>
-							<Label>{t('Chat_Duration')}</Label>
-							<Info>{moment(closedAt).from(moment(ts), true)}</Info>
-						</Field>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Chat_Duration')}</InfoPanel.Label>
+							<InfoPanel.Text>{moment(closedAt).from(moment(ts), true)}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{ts && (
-						<Field>
-							<Label>{t('Created_at')}</Label>
-							<Info>{formatDateAndTime(ts)}</Info>
-						</Field>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Created_at')}</InfoPanel.Label>
+							<InfoPanel.Text>{formatDateAndTime(ts)}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{closedAt && (
-						<Field>
-							<Label>{t('Closed_At')}</Label>
-							<Info>{formatDateAndTime(closedAt)}</Info>
-						</Field>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Closed_At')}</InfoPanel.Label>
+							<InfoPanel.Text>{formatDateAndTime(closedAt)}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{servedBy?.ts && (
-						<Field>
-							<Label>{t('Taken_at')}</Label>
-							<Info>{formatDateAndTime(servedBy.ts)}</Info>
-						</Field>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Taken_at')}</InfoPanel.Label>
+							<InfoPanel.Text>{formatDateAndTime(servedBy.ts)}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{metrics?.response?.avg && formatDuration(metrics.response.avg) && (
-						<Field>
-							<Label>{t('Avg_response_time')}</Label>
-							<Info>{formatDuration(metrics.response.avg)}</Info>
-						</Field>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Avg_response_time')}</InfoPanel.Label>
+							<InfoPanel.Text>{formatDateAndTime(metrics.response.avg)}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
 					{!waitingResponse && responseBy?.lastMessageTs && (
-						<Field>
-							<Label>{t('Inactivity_Time')}</Label>
-							<Info>{moment(responseBy.lastMessageTs).fromNow(true)}</Info>
-						</Field>
+						<InfoPanel.Field>
+							<InfoPanel.Label>{t('Inactivity_Time')}</InfoPanel.Label>
+							<InfoPanel.Text>{moment(responseBy.lastMessageTs).fromNow(true)}</InfoPanel.Text>
+						</InfoPanel.Field>
 					)}
-					{canViewCustomFields && customFieldEntries.map(([key, value]) => <CustomField key={key} id={key} value={value} />)}
+					{canViewCustomFields &&
+						customFieldEntries.map(([key, value]: [string, string]) => <CustomField key={key} id={key} value={value} />)}
 					{slaId && <SlaField id={slaId} />}
 					{priorityId && <PriorityField id={priorityId} />}
-				</Margins>
+				</InfoPanel>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
@@ -180,6 +190,6 @@ function ChatInfo({ id, route }) {
 			</ContextualbarFooter>
 		</>
 	);
-}
+};
 
 export default ChatInfo;
