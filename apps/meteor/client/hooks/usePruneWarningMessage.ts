@@ -13,11 +13,11 @@ import { useFormattedRelativeTime } from './useFormattedRelativeTime';
 const getMessage = ({ filesOnly, excludePinned }: { filesOnly: boolean; excludePinned: boolean }): TranslationKey => {
 	if (filesOnly) {
 		return excludePinned
-			? 'RetentionPolicy_RoomWarning_FilesOnly_NextRunDate'
-			: 'RetentionPolicy_RoomWarning_UnpinnedFilesOnly_NextRunDate';
+			? 'RetentionPolicy_RoomWarning_UnpinnedFilesOnly_NextRunDate'
+			: 'RetentionPolicy_RoomWarning_FilesOnly_NextRunDate';
 	}
 
-	return excludePinned ? 'RetentionPolicy_RoomWarning_NextRunDate' : 'RetentionPolicy_RoomWarning_Unpinned_NextRunDate';
+	return excludePinned ? 'RetentionPolicy_RoomWarning_Unpinned_NextRunDate' : 'RetentionPolicy_RoomWarning_NextRunDate';
 };
 
 type CronPrecisionSetting = '0' | '1' | '2' | '3';
@@ -50,7 +50,7 @@ const useNextRunDate = ({
 	const lang = useLanguage();
 
 	useEffect(() => {
-		const timeoutBetweenRunAndNow = nextRunDate.valueOf() - Date.now() + 5000; // wait 5s to get next run date
+		const timeoutBetweenRunAndNow = nextRunDate.valueOf() - Date.now();
 
 		const timeout = setTimeout(
 			() => setNextRunDate(getNextRunDate({ enableAdvancedCronTimer, advancedCronTimer, cronPrecision })),
