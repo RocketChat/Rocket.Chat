@@ -4,7 +4,7 @@ import type { HTMLAttributes } from 'react';
 import React from 'react';
 
 import GenericMenu from '../../components/GenericMenu/GenericMenu';
-import { useMarketPlaceMenu } from '../NavBarSettingsToolbar/hooks/useMarketPlaceMenu';
+import { useMarketPlaceMenu } from './hooks/useMarketPlaceMenu';
 
 export const NavBarItemMarketPlaceMenu = (props: Omit<HTMLAttributes<HTMLElement>, 'is'>) => {
 	const t = useTranslation();
