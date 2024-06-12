@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { timeUnitToMs, TIMEUNIT } from '../../client/lib/convertTimeUnit'
+import { timeUnitToMs, TIMEUNIT } from '../../client/lib/convertTimeUnit';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
