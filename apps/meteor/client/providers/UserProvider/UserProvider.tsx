@@ -4,7 +4,7 @@ import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, useEndpoint } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 
 import { Subscriptions, ChatRoom } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
@@ -43,6 +43,7 @@ type UserProviderProps = {
 
 const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	const userId = useReactiveValue(getUserId);
+	const previousUserId = useRef(userId);
 	const user = useReactiveValue(getUser);
 	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
 	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
@@ -94,9 +95,11 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 	}, [preferedLanguage, setPreferedLanguage, setUserLanguage, user?.language, userLanguage, userId, setUserPreferences]);
 
 	useEffect(() => {
-		if (!userId) {
+		if (previousUserId.current && previousUserId.current !== userId) {
 			queryClient.clear();
 		}
+
+		previousUserId.current = userId;
 	}, [userId]);
 
 	return <UserContext.Provider children={children} value={contextValue} />;
