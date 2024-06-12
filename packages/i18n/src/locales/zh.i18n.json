@@ -62,7 +62,6 @@
   "API_Tokenpass_URL_Description": "例如：`https://domain.com`（不包括尾部斜线）",
   "API_Upper_Count_Limit": "最大记录量",
   "API_Upper_Count_Limit_Description": "REST API 应返回的最大记录数量（在没有限制的条件下）？",
-  "API_Use_REST_For_DDP_Calls": "在 Meteor 调用中使用 REST 代替 websocket",
   "API_User_Limit": "添加所有用户到频道的用户限制",
   "API_Wordpress_URL": "WordPress URL",
   "APIs": "API",
