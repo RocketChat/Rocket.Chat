@@ -83,7 +83,7 @@ Meteor.methods<ServerMethods>({
 							break;
 						case 'int':
 							check(value, Number);
-							if (Number.isNaN(value)) {
+							if (!Number.isInteger(value)) {
 								throw new Meteor.Error(`Invalid setting value ${value}`, 'Invalid setting value', {
 									method: 'saveSettings',
 								});
