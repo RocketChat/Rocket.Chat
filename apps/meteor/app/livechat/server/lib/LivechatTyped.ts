@@ -57,6 +57,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
+import { notifyOnLivechatDepartmentAgentChangedByDepartmentId, notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
@@ -346,6 +347,8 @@ class LivechatClass {
 				options,
 			});
 		}
+
+		void notifyOnRoomChangedById(newRoom._id);
 
 		this.logger.debug(`Room ${newRoom._id} was closed`);
 	}
@@ -999,6 +1002,8 @@ class LivechatClass {
 
 		await Promise.all([LivechatDepartmentAgents.disableAgentsByDepartmentId(_id), LivechatDepartment.archiveDepartment(_id)]);
 
+		void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id);
+
 		await callbacks.run('livechat.afterDepartmentArchived', department);
 	}
 
@@ -1011,6 +1016,9 @@ class LivechatClass {
 
 		// TODO: these kind of actions should be on events instead of here
 		await Promise.all([LivechatDepartmentAgents.enableAgentsByDepartmentId(_id), LivechatDepartment.unarchiveDepartment(_id)]);
+
+		void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id);
+
 		return true;
 	}
 
@@ -1806,9 +1814,9 @@ class LivechatClass {
 				LivechatInquiry.setNameByRoomId(rid, name),
 				Subscriptions.updateDisplayNameByRoomId(rid, name),
 			]);
-
-			return true;
 		}
+
+		void notifyOnRoomChangedById(roomData._id);
 	}
 
 	/**

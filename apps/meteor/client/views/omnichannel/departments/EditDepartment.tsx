@@ -23,11 +23,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import { validateEmail } from '../../../../lib/emailValidator';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useRoomsList } from '../../../hooks/useRoomsList';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentForwarding, DepartmentBusinessHours } from '../additionalForms';
@@ -434,15 +434,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								<ToggleSwitch id={requestTagBeforeClosingChatField} {...register('requestTagBeforeClosingChat')} />
 							</FieldRow>
 						</Field>
-						<Field>
-							<FieldRow>
-								<FieldLabel htmlFor={allowReceiveForwardOffline}>{t('Accept_receive_inquiry_no_online_agents')}</FieldLabel>
-								<ToggleSwitch id={allowReceiveForwardOffline} {...register('allowReceiveForwardOffline')} />
-							</FieldRow>
-							<FieldRow>
-								<FieldHint id={`${allowReceiveForwardOffline}-hint`}>{t('Accept_receive_inquiry_no_online_agents_Hint')}</FieldHint>
-							</FieldRow>
-						</Field>
 						{requestTagBeforeClosingChat && (
 							<Field>
 								<FieldLabel htmlFor={chatClosingTagsField} required>
@@ -470,6 +461,15 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								)}
 							</Field>
 						)}
+						<Field>
+							<FieldRow>
+								<FieldLabel htmlFor={allowReceiveForwardOffline}>{t('Accept_receive_inquiry_no_online_agents')}</FieldLabel>
+								<ToggleSwitch id={allowReceiveForwardOffline} {...register('allowReceiveForwardOffline')} />
+							</FieldRow>
+							<FieldRow>
+								<FieldHint id={`${allowReceiveForwardOffline}-hint`}>{t('Accept_receive_inquiry_no_online_agents_Hint')}</FieldHint>
+							</FieldRow>
+						</Field>
 						<Field>
 							<DepartmentBusinessHours bhId={department?.businessHourId} />
 						</Field>

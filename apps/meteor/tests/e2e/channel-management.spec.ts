@@ -146,7 +146,7 @@ test.describe.serial('channel-management', () => {
 
 		await user1Page.close();
 	});
-	
+
 	test('should set user1 as moderator', async ({ browser }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnTabMembers.click();
@@ -259,12 +259,12 @@ test.describe.serial('channel-management', () => {
 		await expect(page.getByRole('navigation')).toBeVisible();
 	});
 
-	test('should info contextualbar when clicking on roomName', async ({ page }) => {
+	test('should open room info when clicking on roomName', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await page.getByRole('button', { name: targetChannel }).first().focus();
 		await page.keyboard.press('Space');
 		await page.getByRole('dialog').waitFor();
-	
+
 		await expect(page.getByRole('dialog')).toBeVisible();
 	});
 
@@ -275,7 +275,7 @@ test.describe.serial('channel-management', () => {
 		await page.getByRole('menuitem', { name: 'Discussion' }).click();
 		await page.getByRole('textbox', { name: 'Name' }).fill(discussionName);
 		await page.getByRole('button', { name: 'Create' }).click();
-		
+
 		await expect(page.getByRole('heading', { name: discussionName })).toBeVisible();
 	});
 
@@ -286,7 +286,7 @@ test.describe.serial('channel-management', () => {
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Space');
-		
+
 		await expect(page).toHaveURL(`/channel/${targetChannel}`);
 	});
 
