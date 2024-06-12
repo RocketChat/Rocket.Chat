@@ -1,6 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout, ContextualbarSection } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 'react';
@@ -15,6 +15,7 @@ import {
 	ContextualbarContent,
 	ContextualbarFooter,
 	ContextualbarEmptyContent,
+	ContextualbarSection,
 } from '../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';

@@ -11,7 +11,7 @@ import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
-import { RoomAnnouncement } from '../RoomAnnouncement';
+import RoomAnnouncement from '../RoomAnnouncement';
 import ComposerContainer from '../composer/ComposerContainer';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';

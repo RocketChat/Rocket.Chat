@@ -13,7 +13,7 @@ type RoomAnnouncementParams = {
 	announcementDetails?: () => void;
 };
 
-export const RoomAnnouncement: FC<RoomAnnouncementParams> = ({ announcement, announcementDetails }) => {
+const RoomAnnouncement: FC<RoomAnnouncementParams> = ({ announcement, announcementDetails }) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal(null));
@@ -43,3 +43,5 @@ export const RoomAnnouncement: FC<RoomAnnouncementParams> = ({ announcement, ann
 		</AnnouncementComponent>
 	) : null;
 };
+
+export default RoomAnnouncement;

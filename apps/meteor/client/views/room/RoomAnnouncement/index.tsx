@@ -1,1 +1,1 @@
-export * from './RoomAnnouncement';
+export { default } from './RoomAnnouncement';
