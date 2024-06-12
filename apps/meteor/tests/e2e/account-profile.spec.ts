@@ -24,7 +24,6 @@ test.describe.serial('settings-account-profile', () => {
 		})
 
 		test.skip('expect update profile with new name/username', async () => {
-			test.fail()
 			const newName = faker.person.fullName();
 			const newUsername = faker.internet.userName({ firstName: newName });
 	
