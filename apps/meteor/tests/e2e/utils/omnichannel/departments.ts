@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
-import { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 
-import { BaseTest } from '../test';
+import type { BaseTest } from '../test';
 
-type CreateDepartmentParams = { 
+type CreateDepartmentParams = {
 	name?: string;
 	enabled?: boolean;
 	description?: string;
@@ -13,29 +13,32 @@ type CreateDepartmentParams = {
 	email?: string;
 	chatClosingTags?: string[];
 	offlineMessageChannelName?: string;
-	abandonedRoomsCloseCustomMessage?: string,
+	abandonedRoomsCloseCustomMessage?: string;
 	waitingQueueMessage?: string;
 	departmentsAllowedToForward?: string[];
 	fallbackForwardDepartment?: string;
 	maxNumberSimultaneousChat?: number;
- };
+};
 
-export const createDepartment = async (api: BaseTest['api'], {
-	name = '',
-	enabled = true,
-	description = '',
-	showOnRegistration = false,
-	showOnOfflineForm = false,
-	requestTagBeforeClosingChat = false,
-	email = '',
-	chatClosingTags = [],
-	offlineMessageChannelName = '',
-	abandonedRoomsCloseCustomMessage = '',
-	waitingQueueMessage = '',
-	departmentsAllowedToForward = [],
-	fallbackForwardDepartment = '',
-	maxNumberSimultaneousChat
-}: CreateDepartmentParams = {}) => {
+export const createDepartment = async (
+	api: BaseTest['api'],
+	{
+		name = '',
+		enabled = true,
+		description = '',
+		showOnRegistration = false,
+		showOnOfflineForm = false,
+		requestTagBeforeClosingChat = false,
+		email = '',
+		chatClosingTags = [],
+		offlineMessageChannelName = '',
+		abandonedRoomsCloseCustomMessage = '',
+		waitingQueueMessage = '',
+		departmentsAllowedToForward = [],
+		fallbackForwardDepartment = '',
+		maxNumberSimultaneousChat,
+	}: CreateDepartmentParams = {},
+) => {
 	const response = await api.post('/livechat/department', {
 		department: {
 			name: name || faker.string.uuid(),
