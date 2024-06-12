@@ -4070,6 +4070,7 @@
   "OTR_Enable_Description": "Enable option to use off-the-record (OTR) messages in direct messages between 2 users. OTR messages are not recorded on the server and exchanged directly and encrypted between the 2 users.",
   "OTR_message": "OTR Message",
   "OTR_is_only_available_when_both_users_are_online": "OTR is only available when both users are online",
+  "OTR_Session_ended_other_user_went_offline": "OTR Session has ended. User {{username}} went offline",
   "outbound-voip-calls": "Outbound Voip Calls",
   "outbound-voip-calls_description": "Permission to outbound voip calls",
   "Out_of_seats": "Out of Seats",
@@ -5126,6 +5127,8 @@
   "Team_Add_existing_channels": "Add Existing Channels",
   "Team_Add_existing": "Add Existing",
   "Team_Auto-join": "Auto-join",
+  "Team_Auto-join_exceeded_user_limit": "Auto-join has a limit of {{limit}} members, #{{channelName}} now has {{numberOfMembers}} members",
+  "Team_Auto-join_updated": "#{{channelName}} now has {{numberOfMembers}} members",
   "Team_Channels": "Team Channels",
   "Team_Delete_Channel_modal_content_danger": "This can’t be undone.",
   "Team_Delete_Channel_modal_content": "Would you like to delete this Channel?",
@@ -6436,5 +6439,7 @@
   "Previous_image": "Previous image",
   "Image_gallery": "Image gallery",
   "Add_topic": "Add topic",
-  "Chat_with_leader": "Chat with leader"
+  "Chat_with_leader": "Chat with leader",
+  "You_cant_take_chats_unavailable": "You cannot take new conversations because you're unavailable",
+  "You_cant_take_chats_offline": "You cannot take new conversations because you're offline"
 }
