@@ -1,3 +1,4 @@
+import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react-hooks';
 
@@ -41,6 +42,20 @@ const createMock = ({
 };
 
 jest.useFakeTimers();
+
+const getRetentionRoomProps = (props: Partial<IRoomWithRetentionPolicy['retention']> = {}) => {
+	return {
+		retention: {
+			enabled: true,
+			overrideGlobal: true,
+			maxAge: 30,
+			filesOnly: false,
+			excludePinned: false,
+			ignoreThreads: false,
+			...props,
+		},
+	};
+};
 
 const setDate = (minutes = 1, hours = 0, date = 1) => {
 	// June 12, 2024, 12:00 AM
@@ -124,7 +139,7 @@ describe('usePruneWarningMessage hook', () => {
 		});
 	});
 
-	describe('Channels, no override', () => {
+	describe('No override', () => {
 		it('Should return the default warning', () => {
 			const fakeRoom = createFakeRoom({ t: 'c' });
 			setDate();
@@ -177,6 +192,46 @@ describe('usePruneWarningMessage hook', () => {
 				}),
 			});
 			expect(result.current).toEqual('UnpinnedFilesOnly a minute June 1, 2024, 12:30 AM');
+		});
+	});
+
+	describe('Overriden', () => {
+		it('Should return the default warning', () => {
+			const fakeRoom = createFakeRoom({ t: 'p', ...getRetentionRoomProps() });
+			setDate();
+			const { result } = renderHook(() => usePruneWarningMessage(fakeRoom), {
+				wrapper: createMock(),
+			});
+			expect(result.current).toEqual('30 days June 1, 2024, 12:30 AM');
+		});
+
+		it('Should return the unpinned messages warning', () => {
+			const fakeRoom = createFakeRoom({ t: 'p', ...getRetentionRoomProps({ excludePinned: true }) });
+			setDate();
+			const { result } = renderHook(() => usePruneWarningMessage(fakeRoom), {
+				wrapper: createMock(),
+			});
+			expect(result.current).toEqual('Unpinned 30 days June 1, 2024, 12:30 AM');
+		});
+
+		it('Should return the files only warning', () => {
+			const fakeRoom = createFakeRoom({ t: 'p', ...getRetentionRoomProps({ filesOnly: true }) });
+			setDate();
+
+			const { result } = renderHook(() => usePruneWarningMessage(fakeRoom), {
+				wrapper: createMock(),
+			});
+			expect(result.current).toEqual('FilesOnly 30 days June 1, 2024, 12:30 AM');
+		});
+
+		it('Should return the unpinned files only warning', () => {
+			const fakeRoom = createFakeRoom({ t: 'p', ...getRetentionRoomProps({ excludePinned: true, filesOnly: true }) });
+			setDate();
+
+			const { result } = renderHook(() => usePruneWarningMessage(fakeRoom), {
+				wrapper: createMock(),
+			});
+			expect(result.current).toEqual('UnpinnedFilesOnly 30 days June 1, 2024, 12:30 AM');
 		});
 	});
 });
