@@ -31,7 +31,7 @@ const ComposerMessage = ({ tmid, readOnly, onSend, ...props }: ComposerMessagePr
 	const dispatchToastMessage = useToastMessageDispatch();
 	const e2eEnabled = useSetting<boolean>('E2E_Enable');
 	const unencryptedMessagesAllowed = useSetting<boolean>('E2E_Allow_Unencrypted_Messages');
-	const isSlashCommandAllowed = room.encrypted && e2eEnabled && unencryptedMessagesAllowed;
+	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 
 	const composerProps = useMemo(
 		() => ({
@@ -71,7 +71,16 @@ const ComposerMessage = ({ tmid, readOnly, onSend, ...props }: ComposerMessagePr
 				return chat?.flows.uploadFiles(files);
 			},
 		}),
-		[chat?.data, chat?.flows, chat?.action, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, onSend],
+		[
+			chat?.data,
+			chat?.flows,
+			chat?.action,
+			chat?.composer?.text,
+			chat?.messageEditing,
+			dispatchToastMessage,
+			onSend,
+			isSlashCommandAllowed,
+		],
 	);
 
 	const publicationReady = useReactiveValue(
