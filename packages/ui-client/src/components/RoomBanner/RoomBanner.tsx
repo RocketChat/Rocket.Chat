@@ -28,7 +28,7 @@ export const RoomBanner = ({ onClick, className, ...props }: ComponentProps<type
 				bg='room'
 				className={[onClick && clickable, ...(Array.isArray(className) ? className : [className])]}
 				onClick={onClick}
-				tabIndex={onClick ? 0 : undefined}
+				tabIndex={onClick ? 0 : -1}
 				role={onClick ? 'button' : 'banner'}
 				is={onClick ? 'button' : 'div'}
 				{...props}
