@@ -68,7 +68,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-date', 'Invalid date', { method: 'getChannelHistory' });
 		}
 
-		const hiddenSystemMessages = settings.get('Hide_System_Messages') as MessageTypesValues[];
+		const hiddenSystemMessages = settings.get<MessageTypesValues[]>('Hide_System_Messages');
 
 		const hiddenMessageTypes = getHiddenSystemMessages(room, hiddenSystemMessages);
 

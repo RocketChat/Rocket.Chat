@@ -4,12 +4,13 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 describe('Message Broadcast Tests', () => {
-	let getSettingCachedStub: sinon.SinonStub;
+	let getSettingValueByIdStub: sinon.SinonStub;
 	let usersFindOneStub: sinon.SinonStub;
 	let messagesFindOneStub: sinon.SinonStub;
 	let broadcastStub: sinon.SinonStub;
 	let getMessageToBroadcast: any;
 	let broadcastMessageFromData: any;
+	let memStub: sinon.SinonStub;
 
 	const sampleMessage: IMessage = {
 		_id: '123',
@@ -29,6 +30,9 @@ describe('Message Broadcast Tests', () => {
 		Users: {
 			findOne: usersFindOneStub,
 		},
+		Settings: {
+			getValueById: getSettingValueByIdStub,
+		},
 	});
 
 	const coreStubs = (dbWatchersDisabled: boolean) => ({
@@ -39,17 +43,16 @@ describe('Message Broadcast Tests', () => {
 	});
 
 	beforeEach(() => {
-		getSettingCachedStub = sinon.stub();
+		getSettingValueByIdStub = sinon.stub();
 		usersFindOneStub = sinon.stub();
 		messagesFindOneStub = sinon.stub();
 		broadcastStub = sinon.stub();
+		memStub = sinon.stub().callsFake((fn: any) => fn);
 
 		const proxyMock = proxyquire.noCallThru().load('../../../../../../server/modules/watchers/lib/messages', {
 			'@rocket.chat/models': modelsStubs(),
 			'@rocket.chat/core-services': coreStubs(false),
-			'../../../../app/lib/server/lib/getMemSettings': {
-				getSettingCached: getSettingCachedStub,
-			},
+			'mem': memStub,
 		});
 
 		getMessageToBroadcast = proxyMock.getMessageToBroadcast;
@@ -155,8 +158,8 @@ describe('Message Broadcast Tests', () => {
 		testCases.forEach(({ description, message, hideSystemMessages, useRealName, expectedResult }) => {
 			it(description, async () => {
 				messagesFindOneStub.resolves(message);
-				getSettingCachedStub.withArgs('Hide_System_Messages').resolves(hideSystemMessages);
-				getSettingCachedStub.withArgs('UI_Use_Real_Name').resolves(useRealName);
+				getSettingValueByIdStub.withArgs('Hide_System_Messages').resolves(hideSystemMessages);
+				getSettingValueByIdStub.withArgs('UI_Use_Real_Name').resolves(useRealName);
 
 				if (useRealName) {
 					usersFindOneStub.resolves({ name: 'Real User' });
@@ -172,12 +175,9 @@ describe('Message Broadcast Tests', () => {
 	describe('broadcastMessageFromData', () => {
 		const setupProxyMock = (dbWatchersDisabled: boolean) => {
 			const proxyMock = proxyquire.noCallThru().load('../../../../../../server/modules/watchers/lib/messages', {
-				// '../../../lib/systemMessage/hideSystemMessage': hiddenSystemMessageStub(),
 				'@rocket.chat/models': modelsStubs(),
 				'@rocket.chat/core-services': coreStubs(dbWatchersDisabled),
-				'../../../../app/lib/server/lib/getMemSettings': {
-					getSettingCached: getSettingCachedStub,
-				},
+				'mem': memStub,
 			});
 			broadcastMessageFromData = proxyMock.broadcastMessageFromData;
 		};
@@ -199,7 +199,7 @@ describe('Message Broadcast Tests', () => {
 			it(description, async () => {
 				setupProxyMock(dbWatchersDisabled);
 				messagesFindOneStub.resolves(sampleMessage);
-				getSettingCachedStub.resolves([]);
+				getSettingValueByIdStub.resolves([]);
 
 				await broadcastMessageFromData({ id: '123', data: sampleMessage });
 
