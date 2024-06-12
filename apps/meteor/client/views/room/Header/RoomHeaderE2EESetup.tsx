@@ -1,3 +1,4 @@
+import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import React, { lazy } from 'react';
 
 import { E2EEState } from '../../../../app/e2e/client/E2EEState';
@@ -18,7 +19,7 @@ const RoomHeaderE2EESetup = ({ room, topic = '', slots = {} }: RoomHeaderProps) 
 		return <RoomHeader room={room} topic={topic} slots={slots} roomToolbox={<RoomToolboxE2EESetup />} />;
 	}
 
-	if (room.t === 'd' && (room.uids?.length ?? 0) < 3) {
+	if (isDirectMessageRoom(room) && (room.uids?.length ?? 0) < 3) {
 		return <DirectRoomHeader slots={slots} room={room} />;
 	}
 
