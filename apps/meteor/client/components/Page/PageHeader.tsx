@@ -29,7 +29,7 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 			borderBlockEndColor={borderBlockEndColor ?? border ? 'extra-light' : 'transparent'}
 			{...props}
 		>
-			<Box height='100%' marginInline={24} display='flex' flexDirection='row' flexWrap='wrap' alignItems='center' color='default'>
+			<Box height='100%' mi={isMobile ? 16 : 24} display='flex' flexDirection='row' flexWrap='wrap' alignItems='center' color='default'>
 				{isMobile && (
 					<HeaderToolbar>
 						<SidebarToggler />
