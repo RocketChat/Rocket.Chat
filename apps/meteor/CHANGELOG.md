@@ -1,5 +1,43 @@
 # @rocket.chat/meteor
 
+## 6.9.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#32591](https://github.com/RocketChat/Rocket.Chat/pull/32591) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes issues with loading license modules when loading the page while logged out
+
+- ([#32588](https://github.com/RocketChat/Rocket.Chat/pull/32588) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes issues causing nonstop sound notification when taking a chat from the `Current Chats` view
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.1
+  - @rocket.chat/rest-typings@6.9.1
+  - @rocket.chat/api-client@0.1.34
+  - @rocket.chat/license@0.1.16
+  - @rocket.chat/omnichannel-services@0.1.16
+  - @rocket.chat/pdf-worker@0.0.40
+  - @rocket.chat/presence@0.1.16
+  - @rocket.chat/apps@0.0.7
+  - @rocket.chat/core-services@0.3.16
+  - @rocket.chat/cron@0.0.36
+  - @rocket.chat/fuselage-ui-kit@7.0.1
+  - @rocket.chat/gazzodown@7.0.1
+  - @rocket.chat/model-typings@0.4.2
+  - @rocket.chat/ui-contexts@7.0.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.0.40
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/ui-avatar@3.0.1
+  - @rocket.chat/ui-client@7.0.1
+  - @rocket.chat/ui-video-conf@7.0.1
+  - @rocket.chat/web-ui-registration@7.0.1
+  - @rocket.chat/instance-status@0.0.40
+  </details>
+
 ## 6.9.0
 
 ### Minor Changes
