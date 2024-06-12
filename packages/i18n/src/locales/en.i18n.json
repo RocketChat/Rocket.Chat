@@ -1941,11 +1941,8 @@
   "Encrypted_content_cannot_be_searched": "Encrypted content cannot be searched.",
   "Encrypted_key_title": "Click here to disable end-to-end encryption for this channel (requires e2ee-permission)",
   "Encrypted_message": "Encrypted message",
-<<<<<<< Updated upstream
   "Encrypted_RoomType": "Encrypted {{roomType}}",
-=======
   "Encrypted_message_preview_unavailable": "Encrypted message, preview unavailable",
->>>>>>> Stashed changes
   "Encrypted_setting_changed_successfully": "Encrypted setting changed successfully",
   "Encrypted_not_available": "Not available for public {{roomType}}",
   "Encryption_key_saved_successfully": "Your encryption key was saved successfully.",
