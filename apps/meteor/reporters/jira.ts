@@ -124,8 +124,9 @@ class JIRAReporter implements Reporter {
 		await fetch(`${this.url}/rest/api/2/issue/${issue}/comment`, {
 			method: 'POST',
 			body: JSON.stringify({
-				Body: `Test run ${payload.run} failed
-branch: ${payload.branch}`,
+				body: `Test run ${payload.run} failed
+branch: ${payload.branch}
+headSha: ${payload.headSha}`,
 			}),
 			headers: {
 				'Content-Type': 'application/json',
