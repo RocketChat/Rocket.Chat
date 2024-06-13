@@ -48,7 +48,7 @@ export async function createTargetDiscussion(api: BaseTest['api']): Promise<stri
 
 	const response = await api.post('/channels.create', { name: channelName });
 	const { channel } = await response.json();
-	await api.post('/rooms.createDiscussion', { t_name: discussionName, prid: channel._id});
+	await api.post('/rooms.createDiscussion', { t_name: discussionName, prid: channel._id });
 
 	return discussionName;
 }

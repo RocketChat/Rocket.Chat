@@ -18,7 +18,7 @@ import {
 } from '../../../../components/GenericTable';
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import type { UsersFilters } from '../AdminUsersPage';
+import type { UsersFilters, UsersTableSortingOptions } from '../AdminUsersPage';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
@@ -27,7 +27,7 @@ type UsersTableProps = {
 	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
 	filteredUsersQueryResult: UseQueryResult<PaginatedResult<{ users: Serialized<DefaultUserInfo>[] }>>;
 	paginationData: ReturnType<typeof usePagination>;
-	sortData: ReturnType<typeof useSort<'name' | 'username' | 'emails.address' | 'status'>>;
+	sortData: ReturnType<typeof useSort<UsersTableSortingOptions>>;
 };
 
 // TODO: Missing error state
@@ -104,19 +104,12 @@ const UsersTable = ({
 				</GenericTableHeaderCell>
 			),
 			mediaQuery && (
-				<GenericTableHeaderCell w='x120' key='roles' onClick={setSort}>
+				<GenericTableHeaderCell w='x120' key='roles'>
 					{t('Roles')}
 				</GenericTableHeaderCell>
 			),
 			tab === 'all' && (
-				<GenericTableHeaderCell
-					w='x100'
-					key='status'
-					direction={sortDirection}
-					active={sortBy === 'status'}
-					onClick={setSort}
-					sort='status'
-				>
+				<GenericTableHeaderCell w='x100' key='status'>
 					{t('Registration_status')}
 				</GenericTableHeaderCell>
 			),
