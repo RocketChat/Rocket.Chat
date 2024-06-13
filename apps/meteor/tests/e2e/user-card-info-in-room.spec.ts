@@ -11,6 +11,11 @@ test.describe.parallel('Mention User Card', () => {
 
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api, { members: [Users.user1.data.username] });
+
+		await api.post(`/chat.postMessage`, {
+			text: `Hello @${Users.user1.data.username} @${Users.user2.data.username}`,
+			channel: targetChannel,
+		});
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -22,11 +27,8 @@ test.describe.parallel('Mention User Card', () => {
 	test.afterAll(({ api }) => deleteChannel(api, targetChannel));
 
 	test('should show correct userinfo actions for a member of the room', async ({ page }) => {
-		const { username } = Users.user1.data;
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.sendMessage(`Hello @${username}`);
-		await page.locator('button[aria-label="Send"]').click();
-		const mentionSpan = page.locator(`span[title="Mentions user"][data-uid="${username}"]`);
+		const mentionSpan = page.locator(`span[title="Mentions user"][data-uid="${Users.user1.data.username}"]`);
 		await mentionSpan.click();
 
 		await expect(page.locator('button[title="Add to room"]')).not.toBeVisible();
@@ -39,11 +41,8 @@ test.describe.parallel('Mention User Card', () => {
 	});
 
 	test('should show correct userinfo actions for a non-member of the room', async ({ page }) => {
-		const { username } = Users.user2.data;
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.sendMessage(`Hello @${username}`);
-		await page.locator('button[aria-label="Send"]').click();
-		const mentionSpan = page.locator(`span[title="Mentions user"][data-uid="${username}"]`);
+		const mentionSpan = page.locator(`span[title="Mentions user"][data-uid="${Users.user2.data.username}"]`);
 		await mentionSpan.click();
 
 		await expect(page.locator('button[title="Add to room"]')).toBeVisible();
