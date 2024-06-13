@@ -18,7 +18,11 @@ const fileUploadMediaBlackList = function (customBlackList: string): string[] | 
 	return blacklist.split(',').map((item) => item.trim());
 };
 
-const isTypeOnList = function (type: string, list: string[]): boolean | undefined {
+const isTypeOnList = function (type?: string, list?: string[]): boolean {
+	if (!type || !list) {
+		return false;
+	}
+
 	if (list.includes(type)) {
 		return true;
 	}
@@ -29,6 +33,8 @@ const isTypeOnList = function (type: string, list: string[]): boolean | undefine
 	if (wildcards.includes(type.replace(/(\/.*)$/, wildCardGlob))) {
 		return true;
 	}
+
+	return false;
 };
 
 export const fileUploadIsValidContentTypeFromSettings = function (
@@ -43,12 +49,8 @@ export const fileUploadIsValidContentTypeFromSettings = function (
 		return false;
 	}
 
-	if (whiteList && type && isTypeOnList(type, whiteList)) {
-		return true;
-	}
-
-	if (!type && whiteList) {
-		return false;
+	if (whiteList) {
+		return isTypeOnList(type, whiteList);
 	}
 
 	if (!whiteList) {
