@@ -1,9 +1,11 @@
-import type { LicenseBehavior } from '@rocket.chat/core-typings';
+import type { LicenseBehavior, LicenseLimitKind } from '@rocket.chat/core-typings';
 import { validateWarnLimit } from '@rocket.chat/license/src/validation/validateLimit';
 
 import { useLicense } from './useLicense';
 
-export const useGroupedRules = () => {
+type LicenseLimitsByBehavior = Record<LicenseBehavior, LicenseLimitKind[]>;
+
+export const useLicenseLimitsByBehavior = () => {
 	const result = useLicense({ loadValues: true });
 
 	if (result.isLoading || result.isError) {
@@ -57,5 +59,5 @@ export const useGroupedRules = () => {
 		acc[behavior].push(key);
 
 		return acc;
-	}, {} as Record<LicenseBehavior, (keyof typeof limits)[]>);
+	}, {} as LicenseLimitsByBehavior);
 };

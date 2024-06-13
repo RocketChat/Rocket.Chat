@@ -17,7 +17,7 @@ import {
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
-import { useGroupedRules } from '../../../hooks/useGroupedRules';
+import { useLicenseLimitsByBehavior } from '../../../hooks/useLicenseLimitsByBehavior';
 import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
 import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
 import AdminInviteUsers from './AdminInviteUsers';
@@ -43,7 +43,7 @@ const AdminUsersPage = (): ReactElement => {
 	const seatsCap = useSeatsCap();
 
 	const isSeatsCapExceeded = useShouldPreventAction('activeUsers');
-	const { prevent_action } = useGroupedRules() || {};
+	const { prevent_action: preventAction } = useLicenseLimitsByBehavior() ?? {};
 	const manageSubscriptionUrl = useCheckoutUrl();
 
 	const router = useRouter();
@@ -117,15 +117,15 @@ const AdminUsersPage = (): ReactElement => {
 						</ButtonGroup>
 					)}
 				</PageHeader>
-				{prevent_action?.includes('activeUsers') && (
+				{preventAction?.includes('activeUsers') && (
 					<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} mbe={19} mi={24}>
-						<Trans i18nKey='subscription.callout.description.limitsExceeded' count={prevent_action.length}>
-							Your workspace exceeded the <>{{ val: prevent_action.map(toTranslationKey) }}</> license limit.
+						<Trans i18nKey='subscription.callout.description.limitsExceeded' count={preventAction.length}>
+							Your workspace exceeded the <>{{ val: preventAction.map(toTranslationKey) }}</> license limit.
 							<ExternalLink
 								to={manageSubscriptionUrl({
 									target: 'callout',
 									action: 'prevent_action',
-									limits: prevent_action.join(','),
+									limits: preventAction.join(','),
 								})}
 							>
 								Manage your subscription

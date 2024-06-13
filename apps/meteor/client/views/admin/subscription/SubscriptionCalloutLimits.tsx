@@ -4,7 +4,7 @@ import { ExternalLink } from '@rocket.chat/ui-client';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { useGroupedRules } from '../../../hooks/useGroupedRules';
+import { useLicenseLimitsByBehavior } from '../../../hooks/useLicenseLimitsByBehavior';
 import { useCheckoutUrl } from './hooks/useCheckoutUrl';
 
 export const SubscriptionCalloutLimits = () => {
@@ -12,13 +12,13 @@ export const SubscriptionCalloutLimits = () => {
 
 	const { t } = useTranslation();
 
-	const groupedRules = useGroupedRules();
+	const licenseLimits = useLicenseLimitsByBehavior();
 
-	if (!groupedRules) {
+	if (!licenseLimits) {
 		return null;
 	}
 
-	const { prevent_action, disable_modules, invalidate_license, start_fair_policy } = groupedRules;
+	const { prevent_action, disable_modules, invalidate_license, start_fair_policy } = licenseLimits;
 
 	const toTranslationKey = (key: keyof LicenseInfo['limits']) => t(`subscription.callout.${key}`);
 
