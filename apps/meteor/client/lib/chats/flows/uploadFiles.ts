@@ -139,16 +139,9 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 								});
 							}
 
-							const data = new TextEncoder().encode(
-								EJSON.stringify({
-									attachments,
-								}),
-							);
-
-							return {
-								algorithm: 'rc.v1.aes-sha2',
-								ciphertext: await e2eRoom.encryptText(data),
-							};
+							return e2eRoom.encryptMessageContent({
+								attachments,
+							});
 						};
 
 						uploadFile(

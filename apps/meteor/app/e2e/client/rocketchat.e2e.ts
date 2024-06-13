@@ -521,20 +521,7 @@ class E2E extends Emitter {
 			return message;
 		}
 
-		const data = await e2eRoom.decrypt(message.msg);
-
-		if (message.content && message.content.algorithm === 'rc.v1.aes-sha2') {
-			const content = await e2eRoom.decrypt(message.content.ciphertext);
-			Object.assign(message, content);
-		}
-
-		const decryptedMessage: IE2EEMessage = {
-			...message,
-			e2e: 'done',
-			...(data && {
-				msg: data.text,
-			}),
-		};
+		const decryptedMessage: IE2EEMessage = await e2eRoom.decryptMessage(message);
 
 		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
 
