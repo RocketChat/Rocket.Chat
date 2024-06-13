@@ -37,7 +37,6 @@ export const UserMenuButton = forwardRef(function UserMenuButton({ ...props }, r
 					bottom: 0;
 					right: 0;
 					transform: translate(30%, 30%);
-					z-index: 1;
 				`}
 				display='flex'
 				justifyContent='center'
