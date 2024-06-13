@@ -10,7 +10,6 @@ const fileInputProps = { type: 'file', multiple: true };
 export const useFileUploadAction = (disabled: boolean): GenericMenuItemProps => {
 	const t = useTranslation();
 	const fileUploadEnabled = useSetting<boolean>('FileUpload_Enabled');
-	const rejectUnknownMediaTypes = useSetting<boolean>('FileUpload_UnknownMediaTypeProtection');
 	const fileInputRef = useFileInput(fileInputProps);
 	const chat = useChat();
 
@@ -28,7 +27,7 @@ export const useFileUploadAction = (disabled: boolean): GenericMenuItemProps => 
 			const filesToUpload = Array.from(fileInputRef?.current?.files ?? []).map((file) => {
 				const fileMimeType = mime.lookup(file.name);
 				Object.defineProperty(file, 'type', {
-					value: fileMimeType ?? (rejectUnknownMediaTypes ? undefined : 'application/octet-stream'),
+					value: typeof fileMimeType === 'string' ? fileMimeType : 'application/octet-stream',
 				});
 				return file;
 			});

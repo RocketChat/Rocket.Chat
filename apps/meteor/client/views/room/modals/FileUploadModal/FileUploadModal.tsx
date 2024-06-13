@@ -64,15 +64,6 @@ const FileUploadModal = ({
 	};
 
 	useEffect(() => {
-		if (invalidContentType && !file.type) {
-			dispatchToastMessage({
-				type: 'error',
-				message: t('FileUpload_MediaType_Unknown'),
-			});
-			onClose();
-			return;
-		}
-
 		if (invalidContentType) {
 			dispatchToastMessage({
 				type: 'error',

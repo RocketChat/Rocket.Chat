@@ -3,4 +3,4 @@
 "@rocket.chat/i18n": minor
 ---
 
-Added "Unknown media type protection" setting to control whether uploads with unknown media types (MIME types) should be accepted
+Removed "Unknown media type" errors on the client side by using `application/octet-stream` as a fallback media type (MIME type) for all files
