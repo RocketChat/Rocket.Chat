@@ -74,15 +74,27 @@ class JIRAReporter implements Reporter {
 
 		const { issues } = await search.json();
 
-		if (
-			issues.some(
-				(issue: {
-					fields: {
-						summary: string;
-					};
-				}) => issue.fields.summary === payload.name,
-			)
-		) {
+		const existing = issues.find(
+			(issue: {
+				fields: {
+					summary: string;
+				};
+			}) => issue.fields.summary === payload.name,
+		);
+
+		if (existing) {
+			await fetch(`${this.url}/rest/api/2/issue/${existing.key}/comment`, {
+				method: 'POST',
+				body: JSON.stringify({
+					body: `Test run ${payload.run} failed
+	branch: ${payload.branch}
+	headSha: ${payload.headSha}`,
+				}),
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Basic ${this.apiKey}`,
+				},
+			});
 			return;
 		}
 
