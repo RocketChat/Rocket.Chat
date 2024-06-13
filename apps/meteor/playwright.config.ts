@@ -41,6 +41,7 @@ export default {
 				apiKey: process.env.REPORTER_JIRA_ROCKETCHAT_API_KEY ?? process.env.JIRA_TOKEN,
 				branch: process.env.REPORTER_ROCKETCHAT_BRANCH,
 				run: Number(process.env.REPORTER_ROCKETCHAT_RUN),
+				headSha: process.env.REPORTER_ROCKETCHAT_HEAD_SHA,
 				// draft: process.env.REPORTER_ROCKETCHAT_DRAFT === 'true',
 			},
 		],

@@ -87,6 +87,7 @@ class JIRAReporter implements Reporter {
 				method: 'POST',
 				body: JSON.stringify({
 					body: `Test run ${payload.run} failed
+	status: ${payload.status}
 	branch: ${payload.branch}
 	headSha: ${payload.headSha}`,
 				}),
@@ -137,6 +138,7 @@ class JIRAReporter implements Reporter {
 			method: 'POST',
 			body: JSON.stringify({
 				body: `Test run ${payload.run} failed
+status: ${payload.status}
 branch: ${payload.branch}
 headSha: ${payload.headSha}`,
 			}),
