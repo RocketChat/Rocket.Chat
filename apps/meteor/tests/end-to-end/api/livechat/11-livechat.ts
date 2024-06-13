@@ -1,11 +1,18 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 
 import { sleep } from '../../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
-import { createVisitor, createLivechatRoom, makeAgentUnavailable, closeOmnichannelRoom, sendMessage } from '../../../data/livechat/rooms';
+import {
+	createVisitor,
+	createLivechatRoom,
+	makeAgentUnavailable,
+	closeOmnichannelRoom,
+	sendMessage,
+	deleteVisitor,
+} from '../../../data/livechat/rooms';
 import { createBotAgent, getRandomVisitorToken } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -17,6 +24,10 @@ describe('LIVECHAT - Utils', function () {
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
+	});
+
+	after(async () => {
+		await updateSetting('Livechat_enabled', false);
 		await updateSetting('Livechat_offline_email', '');
 	});
 
@@ -457,10 +468,10 @@ describe('LIVECHAT - Utils', function () {
 	describe('livechat/visitors.search', () => {
 		it('should bring sorted data by last chat time', async () => {
 			const visitor1 = await createVisitor(undefined, 'VisitorInPast');
-			await createLivechatRoom(visitor1.token);
+			const room1 = await createLivechatRoom(visitor1.token);
 
 			const visitor2 = await createVisitor(undefined, 'VisitorInPresent');
-			await createLivechatRoom(visitor2.token);
+			const room2 = await createLivechatRoom(visitor2.token);
 
 			const { body: result1 } = await request
 				.get(api('livechat/visitors.search?term=VisitorIn&sort={"lastChat.ts":1}'))
@@ -479,6 +490,11 @@ describe('LIVECHAT - Utils', function () {
 			expect(result2).to.have.property('visitors').that.is.an('array');
 			expect(result2.visitors[0]).to.have.property('name');
 			expect(result2.visitors[0].name).to.be.eq('VisitorInPresent');
+
+			await deleteVisitor(visitor1.token);
+			await deleteVisitor(visitor2.token);
+			await closeOmnichannelRoom(room1._id);
+			await closeOmnichannelRoom(room2._id);
 		});
 	});
 
