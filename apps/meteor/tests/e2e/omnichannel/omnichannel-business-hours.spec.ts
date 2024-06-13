@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
 import { IS_EE } from '../config/constants';
+import { resetAgentsInitialData } from '../fixtures/inject-initial-data';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelBusinessHours } from '../page-objects';
 import { createAgent } from '../utils/omnichannel/agents';
@@ -30,6 +31,7 @@ test.describe('OC - Business Hours', () => {
 	test.afterAll(async ({ api }) => {
 		await department.delete();
 		await department2.delete();
+		await resetAgentsInitialData();
 		await agent.delete();
 		await api.post('/settings/Livechat_enable_business_hours', { value: false }).then((res) => expect(res.status()).toBe(200));
 		await api.post('/settings/Livechat_business_hour_type', { value: 'Single' }).then((res) => expect(res.status()).toBe(200));

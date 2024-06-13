@@ -87,3 +87,24 @@ export default async function injectInitialData() {
 
 	return { usersFixtures };
 }
+
+export async function resetAgentsInitialData() {
+	const connection = await MongoClient.connect(constants.URL_MONGODB);
+
+	await Promise.all(
+		['user1', 'user2', 'user3'].map((username) =>
+			connection
+				.db()
+				.collection('users')
+				.updateOne(
+					{ username },
+					{
+						$set: {
+							statusLivechat: 'available',
+						},
+					},
+					{ upsert: true },
+				),
+		),
+	);
+}
