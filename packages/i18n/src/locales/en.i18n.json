@@ -2375,8 +2375,6 @@
   "FileUpload_ProtectFiles": "Protect Uploaded Files",
   "FileUpload_ProtectFilesDescription": "Only authenticated users will have access",
   "FileUpload_ProtectFilesEnabled_JWTNotSet": "Uploaded files are protected, but JWT access is not setup, this is required for Twilio to send media messages. Setup in Settings -> FileUpload",
-  "FileUpload_UnknownMediaTypeProtection": "Unknown media type protection",
-  "FileUpload_UnknownMediaTypeProtection_Description": "If disabled, the `application/octet-stream` MIME type will be assigned to unknown file types for upload.",
   "FileUpload_RotateImages": "Rotate images on upload",
   "FileUpload_RotateImages_Description": "Enabling this setting may cause image quality loss",
   "FileUpload_S3_Acl": "Acl",
