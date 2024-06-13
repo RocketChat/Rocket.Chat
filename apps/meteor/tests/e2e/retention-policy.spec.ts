@@ -22,7 +22,7 @@ test.describe.serial('retention-policy', () => {
 
 		targetGroup = await createTargetPrivateChannel(api);
 		targetTeam = await createTargetTeam(api);
-	})
+	});
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
@@ -95,7 +95,7 @@ test.describe.serial('retention-policy', () => {
 
 			await expect(poHomeChannel.tabs.room.pruneAccordion).not.toBeVisible();
 			await auxContext.page.close();
-		})
+		});
 
 		test.describe('retention policy applies enabled by default', () => {
 			test.beforeAll(async ({ api }) => {

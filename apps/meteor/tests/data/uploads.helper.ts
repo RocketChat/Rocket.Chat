@@ -9,29 +9,38 @@ import { imgURL } from './interactions';
 import { updateSetting } from './permissions.helper';
 import { createRoom, deleteRoom } from './rooms.helper';
 import { createVisitor } from './livechat/rooms';
+import { IRoom } from '@rocket.chat/core-typings';
 
-export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.files' | 'im.files', roomType: 'c' | 'd' | 'p', invalidRoomError = 'error-room-not-found') {
-	let testRoom: Record<string, any>;
+export async function testFileUploads(
+	filesEndpoint: 'channels.files' | 'groups.files' | 'im.files',
+	roomType: 'c' | 'd' | 'p',
+	invalidRoomError = 'error-room-not-found',
+) {
+	let testRoom: IRoom;
 	const propertyMap = {
-		'c': 'channel',
-		'p': 'group',
-		'd': 'room',
+		c: 'channel',
+		p: 'group',
+		d: 'room',
 	};
 
-	before(async function () {
-		await updateSetting('VoIP_Enabled', true);
-		await updateSetting('Message_KeepHistory', true);
+	before(async () => {
+		await Promise.all([updateSetting('VoIP_Enabled', true), updateSetting('Message_KeepHistory', true)]);
 
-		testRoom = (await createRoom({ type: roomType, ...(roomType === 'd' ? { username: 'rocket.cat' } : { name: `channel-files-${Date.now()}` }) } as any)).body[propertyMap[roomType]];
+		testRoom = (
+			await createRoom({
+				type: roomType,
+				...(roomType === 'd' ? { username: 'rocket.cat' } : { name: `channel-files-${Date.now()}` }),
+			} as any)
+		).body[propertyMap[roomType]];
 	});
 
-	after(async function () {
-		await Promise.all([
-			deleteRoom({ type: 'c', roomId: testRoom._id }),
+	after(() =>
+		Promise.all([
+			deleteRoom({ type: 'c' as const, roomId: testRoom._id }),
 			updateSetting('VoIP_Enabled', false),
 			updateSetting('Message_KeepHistory', false),
-		]);
-	});
+		]),
+	);
 
 	const createVoipRoom = async function () {
 		const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
@@ -42,10 +51,6 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			type: 'v',
 			agentId: testUser._id,
 			credentials: testUserCredentials,
-			name: null,
-			username: null,
-			members: null,
-			extraData: null,
 		});
 
 		return roomResponse.body.room;
