@@ -159,6 +159,13 @@ export const sendFileMessage = async (
 		file: Partial<IUpload>;
 		msgData?: Record<string, any>;
 	},
+	{
+		parseAttachmentsForE2EE,
+	}: {
+		parseAttachmentsForE2EE: boolean;
+	} = {
+		parseAttachmentsForE2EE: true,
+	},
 ): Promise<boolean> => {
 	const user = await Users.findOneById(userId);
 	if (!user) {
@@ -205,7 +212,7 @@ export const sendFileMessage = async (
 		groupable: msgData?.groupable ?? false,
 	};
 
-	if (msgData?.t !== 'e2e') {
+	if (parseAttachmentsForE2EE || msgData?.t !== 'e2e') {
 		const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
 		data.file = files[0];
 		data.files = files;
