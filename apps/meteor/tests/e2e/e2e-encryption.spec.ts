@@ -205,6 +205,32 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
+	test('expect create a Direct message, encrypt it and attempt to enable OTR', async ({ page }) => {
+		await poHomeChannel.sidenav.openNewByLabel('Direct message');
+		await poHomeChannel.sidenav.inputDirectUsername.click();
+		await page.keyboard.type('user2');
+		await page.waitForTimeout(1000);
+		await page.keyboard.press('Enter');
+		await poHomeChannel.sidenav.btnCreate.click();
+
+		await expect(page).toHaveURL(`/direct/rocketchat.internal.admin.testuser2`);
+
+		await poHomeChannel.tabs.kebab.click({ force: true });
+		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
+		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await page.waitForTimeout(1000);
+
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.dismissToast();
+
+		await poHomeChannel.tabs.kebab.click({ force: true });
+		await expect(poHomeChannel.tabs.btnEnableOTR).toBeVisible();
+		await poHomeChannel.tabs.btnEnableOTR.click({ force: true });
+
+		await expect(page.getByText('OTR not available')).toBeVisible();
+	});
+
 	test('expect placeholder text in place of encrypted message, when E2EE is not setup', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
