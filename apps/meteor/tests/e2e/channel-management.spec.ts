@@ -205,7 +205,7 @@ test.describe.serial('channel-management', () => {
 
 		await poHomeChannel.dismissToast();
 		await poHomeChannel.tabs.btnRoomInfo.click();
-		await expect(page.locator('[role="note"]', { hasText: 'hello-announcement-edited' })).toBeVisible();
+		await expect(page.locator('[role="button"]', { hasText: 'hello-announcement-edited' })).toBeVisible();
 		await expect(poHomeChannel.getSystemMessageByText('changed room announcement to: hello-announcement-edited')).toBeVisible();
 	});
 
