@@ -3,6 +3,7 @@ import { isE2EEPinnedMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { E2EEState } from '../../app/e2e/client/E2EEState';
 import { e2e } from '../../app/e2e/client/rocketchat.e2e';
 import { Subscriptions, ChatRoom } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
@@ -29,9 +30,8 @@ Meteor.startup(() => {
 
 		if (enabled && !adminEmbedded) {
 			e2e.startClient();
-			e2e.enabled.set(true);
 		} else {
-			e2e.enabled.set(false);
+			e2e.setState(E2EEState.DISABLED);
 			e2e.closeAlert();
 		}
 	});
@@ -40,6 +40,8 @@ Meteor.startup(() => {
 	let offClientMessageReceived: undefined | (() => void);
 	let offClientBeforeSendMessage: undefined | (() => void);
 	let unsubNotifyUser: undefined | (() => void);
+	let listenersAttached = false;
+
 	Tracker.autorun(() => {
 		if (!e2e.isReady()) {
 			offClientMessageReceived?.();
@@ -47,6 +49,11 @@ Meteor.startup(() => {
 			unsubNotifyUser = undefined;
 			observable?.stop();
 			offClientBeforeSendMessage?.();
+			listenersAttached = false;
+			return;
+		}
+
+		if (listenersAttached) {
 			return;
 		}
 
@@ -147,11 +154,12 @@ Meteor.startup(() => {
 
 			// Should encrypt this message.
 			const msg = await e2eRoom.encrypt(message);
-
 			message.msg = msg;
 			message.t = 'e2e';
 			message.e2e = 'pending';
 			return message;
 		});
+
+		listenersAttached = true;
 	});
 });
