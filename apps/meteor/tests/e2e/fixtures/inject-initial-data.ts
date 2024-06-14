@@ -91,20 +91,21 @@ export default async function injectInitialData() {
 export async function resetAgentsInitialData() {
 	const connection = await MongoClient.connect(constants.URL_MONGODB);
 
-	await Promise.all(
-		['user1', 'user2', 'user3'].map((username) =>
-			connection
-				.db()
-				.collection('users')
-				.updateOne(
-					{ username },
-					{
-						$set: {
-							statusLivechat: 'available',
-						},
-					},
-					{ upsert: true },
-				),
-		),
-	);
+	await connection
+		.db()
+		.collection('users')
+		.updateMany(
+			{
+				statusLivechat: 'not-available',
+			},
+			{
+				$set: {
+					statusLivechat: 'available',
+				},
+				$unset: {
+					openBusinessHours: 1,
+				},
+			},
+			{ upsert: true },
+		);
 }

@@ -31,10 +31,10 @@ test.describe('OC - Business Hours', () => {
 	test.afterAll(async ({ api }) => {
 		await department.delete();
 		await department2.delete();
-		await resetAgentsInitialData();
 		await agent.delete();
 		await api.post('/settings/Livechat_enable_business_hours', { value: false }).then((res) => expect(res.status()).toBe(200));
 		await api.post('/settings/Livechat_business_hour_type', { value: 'Single' }).then((res) => expect(res.status()).toBe(200));
+		await resetAgentsInitialData();
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
