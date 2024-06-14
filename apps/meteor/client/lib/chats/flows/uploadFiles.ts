@@ -152,7 +152,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 						);
 					}
 				},
-				invalidContentType: !(file.type && fileUploadIsValidContentType(file.type)),
+				invalidContentType: !fileUploadIsValidContentType(file?.type),
 			},
 		});
 	};
