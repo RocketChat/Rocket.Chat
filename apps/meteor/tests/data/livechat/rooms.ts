@@ -68,7 +68,7 @@ export const deleteVisitor = async (token: string): Promise<void> => {
 }
 
 export const takeInquiry = async (inquiryId: string, agentCredentials?: IUserCredentialsHeader): Promise<void> => {
-	const userId = agentCredentials ? agentCredentials['X-User-Id'] : credentials['X-User-Id'];
+    const userId = agentCredentials ? agentCredentials['X-User-Id'] : credentials['X-User-Id'];
 
     await request.post(api('livechat/inquiries.take')).set(agentCredentials || credentials).send({ userId, inquiryId }).expect(200);
 };
@@ -193,7 +193,7 @@ export const getLivechatRoomInfo = (roomId: string): Promise<IOmnichannelRoom> =
 
 /**
  * @summary Sends message as visitor
- */
+*/
 export const sendMessage = (roomId: string, message: string, visitorToken: string): Promise<IMessage> => {
 	return new Promise((resolve, reject) => {
 		request
@@ -298,21 +298,21 @@ export const bulkCreateLivechatRooms = async (
 };
 
 export const startANewLivechatRoomAndTakeIt = async ({
-	departmentId,
+    departmentId,
     agent
 }: {
-	departmentId?: string;
-	agent?: IUserCredentialsHeader;
+    departmentId?: string;
+    agent?: IUserCredentialsHeader;
 } = {}): Promise<{ room: IOmnichannelRoom; visitor: ILivechatVisitor }> => {
 
-	const currentRoutingMethod = await getSettingValueById('Livechat_Routing_Method');
-	let routingMethodChanged = false;
-	if (currentRoutingMethod !== 'Manual_Selection') {
-		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+    const currentRoutingMethod = await getSettingValueById('Livechat_Routing_Method');
+    let routingMethodChanged = false;
+    if (currentRoutingMethod !== 'Manual_Selection') {
+        await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 
-		// wait for routing algorithm to stop
-		await sleep(1000);
-	}
+        // wait for routing algorithm to stop
+        await sleep(1000);
+    }
 
 
 	const visitor = await createVisitor(departmentId);
@@ -323,12 +323,12 @@ export const startANewLivechatRoomAndTakeIt = async ({
 	await sendMessage(roomId, 'test message', visitor.token);
 
 
-	if (routingMethodChanged) {
-		await updateSetting('Livechat_Routing_Method', currentRoutingMethod);
+    if (routingMethodChanged) {
+        await updateSetting('Livechat_Routing_Method', currentRoutingMethod);
 
-		// wait for routing algorithm to start
-		await sleep(1000);
-	}
+        // wait for routing algorithm to start
+        await sleep(1000);
+    }
 
 	return { room, visitor };
 };
