@@ -1,6 +1,9 @@
 ---
 name: Bug report
 about: Create a report to help us improve
+title: ''
+labels: ''
+assignees: ''
 
 ---
 
@@ -35,6 +38,8 @@ If you are experiencing a bug please search our issues to be sure it is not alre
 ### Server Setup Information:
 
 - Version of Rocket.Chat Server: 
+- License type:
+- Number of users:
 - Operating System: 
 - Deployment Method: <!-- snap/docker/tar/etc -->
 - Number of Running Instances: 
