@@ -1,10 +1,6 @@
 ---
 name: Release
 about: Internal release checklist template
-title: ''
-labels: ''
-assignees: ''
-
 ---
 
 # Release {version}
