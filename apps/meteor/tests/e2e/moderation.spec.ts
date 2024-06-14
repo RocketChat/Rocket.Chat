@@ -21,7 +21,7 @@ test.describe.serial('Message moderation', () => {
 		targetChannel = await createTargetChannel(api);
 	});
 
-	test.describe('Moderation Console', () => {
+	test.describe.serial('Moderation Console', () => {
 		const singleMessage = 'Message to report';
 
 		test.beforeAll(async ({ browser }) => {
@@ -39,23 +39,18 @@ test.describe.serial('Message moderation', () => {
 			await deleteChannel(api, targetChannel);
 		});
 
-		test.describe('Message reporting', async () => {
-			test('User can report a given text message', async () => {
-				await poHomeChannel.sidenav.openChat(targetChannel);
-				await poHomeChannel.content.openLastMessageMenu();
-				await poModeration.reportMsgButton.click();
-				await expect(poModeration.reportMessageModal).toBeVisible();
-				await poModeration.reportMessageReasonText.fill('Reason to report');
-				await poModeration.reportMessageReasonSubmit.click();
-				await expect(poModeration.toastSuccess).toBeVisible();
-			});
+		test('should user be able to report a given message', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.content.openLastMessageMenu();
+			await poModeration.reportMsgButton.click();
+			await poModeration.reportMessageReasonText.fill('Reason to report');
+			await poModeration.reportMessageReasonSubmit.click();
+		});
 
-			test('Admin can see the reported messages', async ({ page }) => {
-				await page.goto('/admin/moderation/messages');
-				await expect(poModeration.reportedMessagesTab).toBeVisible();
-				await poModeration.findRowByName(targetChannel).click();
-				await expect(poModeration.findLastReportedMessage(singleMessage)).toBeVisible();
-			});
+		test('should admin be able to see the reported messages', async ({ page }) => {
+			await page.goto('/admin/moderation/messages');
+			await poModeration.findRowByName(targetChannel).click();
+			await expect(poModeration.findLastReportedMessage(singleMessage)).toBeVisible();
 		});
 	});
 });

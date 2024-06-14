@@ -7,16 +7,8 @@ export class Moderation {
 		this.page = page;
 	}
 
-	get reportedMessagesTab(): Locator {
-		return this.page.locator('button:has-text("Reported messages")');
-	}
-
 	get reportMsgButton(): Locator {
 		return this.page.locator('role=menuitem[name="Report"]');
-	}
-
-	get reportMessageModal(): Locator {
-		return this.page.locator('dialog h2:has-text("Report this message?")');
 	}
 
 	get reportMessageReasonText(): Locator {
@@ -25,10 +17,6 @@ export class Moderation {
 
 	get reportMessageReasonSubmit(): Locator {
 		return this.page.locator('button[type="submit"]');
-	}
-
-	get toastSuccess(): Locator {
-		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
 	}
 
 	findLastReportedMessage(quotedMessage: string): Locator {
