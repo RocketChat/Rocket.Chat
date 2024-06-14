@@ -110,7 +110,7 @@
     "typescript": "~5.3.3"
   },
   "dependencies": {
-    "@rocket.chat/core-typings": "6.9.0",
+    "@rocket.chat/core-typings": "workspace:^",
     "@rocket.chat/gazzodown": "workspace:^",
     "@rocket.chat/ui-kit": "workspace:~",
     "tslib": "^2.5.3"

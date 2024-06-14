@@ -31,7 +31,9 @@ describe('Apps - Video Conferences', function () {
 		roomId = res.body.group._id;
 	});
 
-	after(() => Promise.all([cleanupApps(), deleteRoom({ type: 'p', roomId }), updateSetting('VideoConf_Default_Provider', '')]));
+	after(() =>
+		Promise.all([cleanupApps(), deleteRoom({ type: 'p', roomId: roomId as string }), updateSetting('VideoConf_Default_Provider', '')]),
+	);
 
 	describe('[With No App]', () => {
 		before(async () => {
