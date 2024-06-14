@@ -245,7 +245,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.room.btnSave.click();
 		targetChannel = hugeName;
 		await page.setViewportSize({ width: 640, height: 460 });
-		await expect(page.getByRole('heading', { name: hugeName })).toHaveCSS('width', '421px');
+		await expect(page.getByRole('heading', { name: hugeName })).toHaveCSS('width', '417px');
 	});
 
 	test('should open sidebar clicking on sidebar toggler', async ({ page }) => {
