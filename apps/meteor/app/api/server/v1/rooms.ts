@@ -271,7 +271,11 @@ API.v1.addRoute(
 			file.description = this.bodyParams.description;
 			delete this.bodyParams.description;
 
-			await sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams });
+			await sendFileMessage(
+				this.userId,
+				{ roomId: this.urlParams.rid, file, msgData: this.bodyParams },
+				{ parseAttachmentsForE2EE: false },
+			);
 
 			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
 

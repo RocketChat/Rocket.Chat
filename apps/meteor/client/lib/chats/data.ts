@@ -28,7 +28,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 				...(sendToChannel && { tshow: sendToChannel }),
 			}),
 			msg,
-		};
+		} as IMessage;
 	};
 
 	const findMessageByID = async (mid: IMessage['_id']): Promise<IMessage | null> =>
