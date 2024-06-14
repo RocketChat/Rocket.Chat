@@ -517,3 +517,48 @@ test.describe.serial('e2ee room setup', () => {
 		await expect(page.locator('.rcx-states__title')).toContainText('Check back later');
 	});
 });
+
+test.describe.serial('e2ee support legacy formats', () => {
+	let poHomeChannel: HomeChannel;
+
+	test.beforeEach(async ({ page }) => {
+		poHomeChannel = new HomeChannel(page);
+	});
+
+	test.beforeAll(async ({ api }) => {
+		test.use({ storageState: Users.userE2EE.state });
+
+		expect((await api.post('/settings/E2E_Enable', { value: true })).status()).toBe(200);
+		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
+	});
+
+	test.afterAll(async ({ api }) => {
+		expect((await api.post('/settings/E2E_Enable', { value: false })).status()).toBe(200);
+		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
+	});
+
+	test('expect create a private channel encrypted and send an encrypted message', async ({ page, api }) => {
+		const channelName = faker.string.uuid();
+
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+
+		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.dismissToast();
+
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		const rid = await page.locator('[data-qa-rc-room]').getAttribute('data-qa-rc-room');
+		console.log({ rid });
+
+		// send old format encrypted message via API
+		await api.post('/chat.sendMessage', {
+			rid,
+			msg: 'eyJhbGciOiJB8NgMxt0P2jW/aRt4y4++lb8LDSpxUExisX1SiXaKCO9FkfrS1HfO7gFS0nxzHu3CjfgRAK5o3A9kWc4PrHfsQnTTLSh5LW/BKpgnu8XLoEoCbP3FTfy14i5urg6QnZRpz9jUsESjXXIFSxLzEx/T2PzuAzwNROhS+omrNKFi3r9oqkfzUZgTAVzitRpkJ7VN',
+			e2e: true,
+		});
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Old format message');
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+	});
+});
