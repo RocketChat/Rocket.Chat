@@ -1,6 +1,7 @@
 ---
 name: Release
 about: Internal release checklist template
+
 ---
 
 # Release {version}
