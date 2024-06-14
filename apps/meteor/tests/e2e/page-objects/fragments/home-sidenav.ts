@@ -49,6 +49,15 @@ export class HomeSidenav {
 		return this.page.getByRole('toolbar', { name: 'Sidebar actions' });
 	}
 
+	// Note: this is different from openChat because queued chats are not searchable
+	getQueuedChat(name: string): Locator {
+		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first();
+	}
+
+	get accountProfileOption(): Locator {
+		return this.page.locator('role=menuitemcheckbox[name="Profile"]');
+	}
+
 	getSidebarItemByName(name: string): Locator {
 		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
 	}
@@ -129,15 +138,17 @@ export class HomeSidenav {
 		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
 	}
 
-	// Note: this is a workaround for now since queued omnichannel chats are not searchable yet so we can't use openChat() :(
-	async openQueuedOmnichannelChat(name: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
-	}
-
 	async createPublicChannel(name: string) {
 		await this.openNewByLabel('Channel');
 		await this.checkboxPrivateChannel.click();
 		await this.inputChannelName.type(name);
+		await this.btnCreate.click();
+	}
+
+	async createEncryptedChannel(name: string) {
+		await this.openNewByLabel('Channel');
+		await this.inputChannelName.type(name);
+		await this.checkboxEncryption.click();
 		await this.btnCreate.click();
 	}
 }

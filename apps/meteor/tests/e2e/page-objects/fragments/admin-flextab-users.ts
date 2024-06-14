@@ -39,6 +39,10 @@ export class AdminFlextabUsers {
 		return this.page.locator('//label[text()="Verified"]');
 	}
 
+	get joinDefaultChannels(): Locator {
+		return this.page.locator('//label[text()="Join default channels"]');
+	}
+
 	get userRole(): Locator {
 		return this.page.locator('button[role="option"]:has-text("user")');
 	}
@@ -49,6 +53,6 @@ export class AdminFlextabUsers {
 	}
 
 	get setupSmtpLink(): Locator {
-		return this.page.locator('role=link[name="Set up SMTP"]')
+		return this.page.locator('role=link[name="Set up SMTP"]');
 	}
 }
