@@ -37,6 +37,14 @@ export class HomeSidenav {
 		return this.page.getByRole('button', { name: 'User menu' });
 	}
 
+	get homeButton(): Locator {
+		return this.page.getByRole('toolbar', { name: 'Pages' }).getByRole('button', { name: 'Home' });
+	}
+
+	get directoryButton(): Locator {
+		return this.page.getByRole('toolbar', { name: 'Pages' }).getByRole('button', { name: 'Directory' });
+	}
+
 	get sidebarChannelsList(): Locator {
 		return this.page.getByRole('list', { name: 'Channels' });
 	}
