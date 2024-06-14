@@ -7,6 +7,7 @@ import {
 	ContextualbarIcon,
 	ContextualbarFooter,
 	ContextualbarEmptyContent,
+	ContextualbarSection,
 } from '@rocket.chat/fuselage';
 
 import ContextualbarBack from './ContextualbarBack';
@@ -33,4 +34,5 @@ export {
 	ContextualbarEmptyContent,
 	ContextualbarScrollableContent,
 	ContextualbarInnerContent,
+	ContextualbarSection,
 };
