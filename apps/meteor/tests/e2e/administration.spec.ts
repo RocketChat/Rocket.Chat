@@ -275,11 +275,12 @@ test.describe.parallel('administration', () => {
 	});
 
 	test.describe('Integrations', () => {
-		const messageCodeHighlightDefault = 'javascript,css,markdown,dockerfile,json,go,rust,clean,bash,plaintext,powershell,scss,shell,yaml,vim';
+		const messageCodeHighlightDefault =
+			'javascript,css,markdown,dockerfile,json,go,rust,clean,bash,plaintext,powershell,scss,shell,yaml,vim';
 		const incomingIntegrationName = faker.string.uuid();
 
 		test.beforeAll(async ({ api }) => {
-			await setSettingValueById(api, 'Message_Code_highlight', '')
+			await setSettingValueById(api, 'Message_Code_highlight', '');
 		});
 
 		test.beforeEach(async ({ page }) => {
@@ -287,8 +288,8 @@ test.describe.parallel('administration', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			await setSettingValueById(api, 'Message_Code_highlight', messageCodeHighlightDefault)
-		})
+			await setSettingValueById(api, 'Message_Code_highlight', messageCodeHighlightDefault);
+		});
 
 		test('should display the example payload correctly', async () => {
 			await poAdmin.btnNew.click();
@@ -305,7 +306,7 @@ test.describe.parallel('administration', () => {
 			await poAdmin.btnSave.click();
 
 			await expect(poAdmin.inputWebhookUrl).not.toHaveValue('Will be available here after saving.');
-	
+
 			await poAdmin.btnBack.click();
 			await expect(poAdmin.getIntegrationByName(incomingIntegrationName)).toBeVisible();
 		});

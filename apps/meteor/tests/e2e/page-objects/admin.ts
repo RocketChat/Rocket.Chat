@@ -232,7 +232,7 @@ export class Admin {
 	get btnInstructions(): Locator {
 		return this.page.getByRole('button', { name: 'Instructions' });
 	}
-	
+
 	get inputName(): Locator {
 		return this.page.getByRole('textbox', { name: 'Name' });
 	}
@@ -254,6 +254,6 @@ export class Admin {
 	}
 
 	get inputWebhookUrl(): Locator {
-		return this.page.getByRole('textbox', { name: 'Webhook URL' })
+		return this.page.getByRole('textbox', { name: 'Webhook URL' });
 	}
 }
