@@ -152,11 +152,11 @@ const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSea
 				{tab === 'pending' && (
 					<>
 						{active ? (
-							<Button small secondary mie={8} onClick={handleResendWelcomeEmail}>
+							<Button small secondary onClick={handleResendWelcomeEmail}>
 								{t('Resend_welcome_email')}
 							</Button>
 						) : (
-							<Button small primary mie={8} onClick={changeUserStatusAction?.action} disabled={isSeatsCapExceeded}>
+							<Button small primary onClick={changeUserStatusAction?.action} disabled={isSeatsCapExceeded}>
 								{t('Activate')}
 							</Button>
 						)}
