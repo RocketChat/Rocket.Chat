@@ -40,7 +40,7 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 
 	const query = useMemo(
 		() => ({
-			onlyMyDepartments: 'true' as const,
+			onlyMyDepartments: 'false' as const,
 			text: debouncedText,
 			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
 			...(current && { offset: current }),

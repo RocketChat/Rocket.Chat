@@ -7,7 +7,7 @@ import { FormSkeleton } from '../../../components/Skeleton';
 import EditDepartment from './EditDepartment';
 import EditDepartmentWithAllowedForwardData from './EditDepartmentWithAllowedForwardData';
 
-const params = { onlyMyDepartments: 'true' } as const;
+const params = { onlyMyDepartments: 'false' } as const;
 
 type EditDepartmentWithDataProps = {
 	id?: string;
