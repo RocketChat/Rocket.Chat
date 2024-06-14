@@ -5,10 +5,11 @@ import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.describe.serial('Message moderation', () => {
+test.describe.serial('moderation-console', () => {
 	let poModeration: Moderation;
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	const singleMessage = 'Message to report';
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
@@ -21,24 +22,22 @@ test.describe.serial('Message moderation', () => {
 		targetChannel = await createTargetChannel(api);
 	});
 
-	test.describe.serial('Moderation Console', () => {
-		const singleMessage = 'Message to report';
+	test.beforeAll(async ({ browser }) => {
+		const user1Page = await browser.newPage({ storageState: Users.user1.state });
+		const user1Channel = new HomeChannel(user1Page);
+		await user1Page.goto(`/channel/${targetChannel}`);
+		await user1Channel.waitForChannel();
+		await user1Channel.content.sendMessage(singleMessage);
+		await expect(user1Channel.content.lastUserMessage).toContainText(singleMessage);
 
-		test.beforeAll(async ({ browser }) => {
-			const user1Page = await browser.newPage({ storageState: Users.user1.state });
-			const user1Channel = new HomeChannel(user1Page);
-			await user1Page.goto(`/channel/${targetChannel}`);
-			await user1Channel.waitForChannel();
-			await user1Channel.content.sendMessage(singleMessage);
-			await expect(user1Channel.content.lastUserMessage).toContainText(singleMessage);
+		await user1Page.close();
+	});
 
-			await user1Page.close();
-		});
+	test.afterAll(async ({ api }) => {
+		await deleteChannel(api, targetChannel);
+	});
 
-		test.afterAll(async ({ api }) => {
-			await deleteChannel(api, targetChannel);
-		});
-
+	test.describe('Message reporting', async () => {
 		test('should user be able to report a given message', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.content.openLastMessageMenu();

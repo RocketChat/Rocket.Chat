@@ -19,8 +19,8 @@ export class Moderation {
 		return this.page.locator('button[type="submit"]');
 	}
 
-	findLastReportedMessage(quotedMessage: string): Locator {
-		return this.page.locator(`text=${quotedMessage}`).first();
+	findLastReportedMessage(message: string): Locator {
+		return this.page.locator(`text=${message}`).first();
 	}
 
 	findRowByName(name: string): Locator {
