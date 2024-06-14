@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import type { ServerResponse, IncomingMessage } from 'http';
 
 import type { IRocketChatAssets, IRocketChatAsset, ISetting } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 import type { NextHandleFunction } from 'connect';
 import sizeOf from 'image-size';
 import { Meteor } from 'meteor/meteor';
@@ -219,7 +220,16 @@ class RocketChatAssetsClass {
 		return assets;
 	}
 
-	public async setAsset(binaryContent: string | Buffer, contentType: string, asset: string): Promise<void> {
+	public async setAsset(binaryContent: string, contentType: string, asset: string): Promise<void> {
+		const file = Buffer.from(binaryContent, 'binary');
+		await this.setAssetWithBuffer(file, contentType, asset);
+	}
+
+	public async setAssetWithBuffer(binaryContent: Buffer, contentType: string, asset: string): Promise<void> {
+		await this._setAsset(binaryContent, contentType, asset);
+	}
+
+	private async _setAsset(file: Buffer, contentType: string, asset: string): Promise<void> {
 		const assetInstance = getAssetByKey(asset);
 		if (!assetInstance) {
 			throw new Meteor.Error('error-invalid-asset', 'Invalid asset', {
@@ -234,7 +244,6 @@ class RocketChatAssetsClass {
 			});
 		}
 
-		const file = typeof binaryContent === 'string' ? Buffer.from(binaryContent, 'binary') : binaryContent;
 		if (assetInstance.constraints.width || assetInstance.constraints.height) {
 			const dimensions = sizeOf(file);
 			if (assetInstance.constraints.width && assetInstance.constraints.width !== dimensions.width) {
@@ -439,7 +448,7 @@ export const setAsset = async (userId: string, binaryContent: Buffer, contentTyp
 		throw new Error('Managing assets not allowed');
 	}
 
-	await RocketChatAssets.setAsset(binaryContent, contentType, asset);
+	await RocketChatAssets.setAssetWithBuffer(binaryContent, contentType, asset);
 };
 
 const listener = (req: IncomingMessage, res: ServerResponse, next: NextHandleFunction) => {
