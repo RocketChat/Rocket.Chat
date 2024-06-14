@@ -106,6 +106,5 @@ export async function resetAgentsInitialData() {
 					openBusinessHours: 1,
 				},
 			},
-			{ upsert: true },
 		);
 }
