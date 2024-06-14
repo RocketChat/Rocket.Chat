@@ -8508,9 +8508,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:deno":
-  version: 1.43.0-deno.738
-  resolution: "@rocket.chat/apps-engine@npm:1.43.0-deno.738"
+"@rocket.chat/apps-engine@npm:alpha":
+  version: 1.43.0-alpha.762
+  resolution: "@rocket.chat/apps-engine@npm:1.43.0-alpha.762"
   dependencies:
     "@msgpack/msgpack": 3.0.0-beta2
     adm-zip: ^0.5.9
@@ -8527,7 +8527,7 @@ __metadata:
     vm2: ^3.9.19
   peerDependencies:
     "@rocket.chat/ui-kit": "*"
-  checksum: f384ca75223e37a8a181c80375af5d7e2b467b4d6a39c1669c9393d2c6c9a97cc84b4d5f03ca8f2d64e4e2e04882630b02c82902c93c1de51ea21c96041a30ef
+  checksum: 90c4322feb1b3adb18cb8bc17cffb6760a607a7f4232a4aae1dc8875179ebeeb6bb53495e10969621e68869de106ce5e36ef1287aee1d21dd6815c46588857ca
   languageName: node
   linkType: hard
 
@@ -8535,7 +8535,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/apps@workspace:packages/apps"
   dependencies:
-    "@rocket.chat/apps-engine": deno
+    "@rocket.chat/apps-engine": alpha
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@types/jest": ~29.5.7
@@ -8614,7 +8614,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@babel/preset-env": ~7.22.20
     "@babel/preset-typescript": ~7.22.15
-    "@rocket.chat/apps-engine": deno
+    "@rocket.chat/apps-engine": alpha
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/icons": ^0.36.0
@@ -8640,7 +8640,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/core-typings@workspace:packages/core-typings"
   dependencies:
-    "@rocket.chat/apps-engine": deno
+    "@rocket.chat/apps-engine": alpha
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/icons": ^0.36.0
     "@rocket.chat/message-parser": "workspace:^"
@@ -8717,7 +8717,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer"
   dependencies:
-    "@rocket.chat/apps-engine": deno
+    "@rocket.chat/apps-engine": alpha
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ~0.31.25
@@ -8913,7 +8913,7 @@ __metadata:
     "@babel/preset-env": ~7.22.20
     "@babel/preset-react": ~7.22.15
     "@babel/preset-typescript": ~7.22.15
-    "@rocket.chat/apps-engine": deno
+    "@rocket.chat/apps-engine": alpha
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/fuselage": ^0.54.2
@@ -9357,7 +9357,7 @@ __metadata:
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
     "@rocket.chat/apps": "workspace:^"
-    "@rocket.chat/apps-engine": deno
+    "@rocket.chat/apps-engine": alpha
     "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
@@ -9995,7 +9995,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@babel/preset-env": ~7.22.20
     "@babel/preset-typescript": ~7.22.15
-    "@rocket.chat/apps-engine": deno
+    "@rocket.chat/apps-engine": alpha
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
@@ -10110,7 +10110,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/rest-typings@workspace:packages/rest-typings"
   dependencies:
-    "@rocket.chat/apps-engine": deno
+    "@rocket.chat/apps-engine": alpha
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/message-parser": "workspace:^"
@@ -37136,7 +37136,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "rocketchat-services@workspace:apps/meteor/ee/server/services"
   dependencies:
-    "@rocket.chat/apps-engine": deno
+    "@rocket.chat/apps-engine": alpha
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ~0.31.25
