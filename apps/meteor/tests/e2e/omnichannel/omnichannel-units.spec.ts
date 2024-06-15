@@ -222,5 +222,5 @@ test.describe('OC - Manage Units', () => {
 
 			await expect(poOmnichannelUnits.contextualBar).not.toBeVisible();
 		});
-	})
+	});
 });

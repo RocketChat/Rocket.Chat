@@ -1,5 +1,5 @@
 import type { APIResponse } from '@playwright/test';
-import { UsersSetPreferencesParamsPOST } from '@rocket.chat/rest-typings';
+import type { UsersSetPreferencesParamsPOST } from '@rocket.chat/rest-typings';
 
 import type { BaseTest } from './test';
 
