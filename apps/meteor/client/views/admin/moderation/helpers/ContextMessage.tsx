@@ -1,5 +1,5 @@
-import type { IMessage, MessageQuoteAttachment, MessageReport, MessageAttachment } from '@rocket.chat/core-typings';
-import { isE2EEMessage } from '@rocket.chat/core-typings';
+import type { IMessage, MessageReport, MessageAttachment } from '@rocket.chat/core-typings';
+import { isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Message, MessageName, MessageToolbarItem, MessageToolbarWrapper, MessageUsername } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
@@ -47,10 +47,6 @@ const ContextMessage = ({
 
 	const displayName = useUserDisplayName({ name, username });
 
-	function isQuoteAttachment(attachment: MessageAttachment): attachment is MessageQuoteAttachment {
-		return !!(attachment as MessageQuoteAttachment).author_name;
-	}
-
 	const quotes = message?.attachments?.filter(isQuoteAttachment) || [];
 
 	const attachments = message?.attachments?.filter((attachment: MessageAttachment) => !isQuoteAttachment(attachment)) || [];
@@ -85,7 +81,7 @@ const ContextMessage = ({
 							message.msg
 						)}
 
-						{!!attachments && <Attachments id={message.files?.[0]._id} attachments={attachments} />}
+						{!!attachments && <Attachments id={message.files?.[0]?._id} attachments={attachments} />}
 						{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
 					</Message.Body>
 					<ReportReasonCollapsible>

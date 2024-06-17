@@ -1,4 +1,4 @@
-import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import { isQuoteAttachment, type IMessage, type MessageAttachment } from '@rocket.chat/core-typings';
 import {
 	Message as MessageTemplate,
 	MessageLeftContainer,
@@ -42,10 +42,6 @@ const ContactHistoryMessage: FC<{
 
 	const format = useFormatDate();
 	const formatTime = useFormatTime();
-
-	function isQuoteAttachment(attachment: MessageAttachment): attachment is MessageQuoteAttachment {
-		return !!(attachment as MessageQuoteAttachment).author_name;
-	}
 
 	const quotes = message?.attachments?.filter(isQuoteAttachment) || [];
 

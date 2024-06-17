@@ -1,5 +1,5 @@
-import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
-import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
+import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -44,10 +44,6 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 
 	const normalizedMessage = useNormalizedMessage(message);
 
-	function isQuoteAttachment(attachment: MessageAttachment): attachment is MessageQuoteAttachment {
-		return !!(attachment as MessageQuoteAttachment).author_name;
-	}
-
 	const quotes = normalizedMessage?.attachments?.filter(isQuoteAttachment) || [];
 
 	const attachments = normalizedMessage?.attachments?.filter((attachment) => !isQuoteAttachment(attachment)) || [];
@@ -70,7 +66,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				</>
 			)}
 
-			{!!attachments && <Attachments id={message.files?.[0]._id} attachments={attachments} />}
+			{!!attachments && <Attachments id={message.files?.[0]?._id} attachments={attachments} />}
 
 			{normalizedMessage.blocks && (
 				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />
