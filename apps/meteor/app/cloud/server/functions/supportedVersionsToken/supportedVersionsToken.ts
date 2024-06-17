@@ -137,9 +137,9 @@ const getSupportedVersionsToken = async () => {
 
 	SystemLogger.debug({
 		msg: 'Supported versions',
-		supportedVersionsFromBuild: JSON.stringify(supportedVersionsFromBuild.timestamp),
-		versionsFromLicense: JSON.stringify(versionsFromLicense?.supportedVersions?.timestamp),
-		response: JSON.stringify(response.success && response.result?.timestamp),
+		supportedVersionsFromBuild: supportedVersionsFromBuild.timestamp,
+		versionsFromLicense: versionsFromLicense?.supportedVersions?.timestamp,
+		response: response.success && response.result?.timestamp,
 	});
 
 	switch (supportedVersions) {
