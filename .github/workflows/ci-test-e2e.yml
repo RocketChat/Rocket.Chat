@@ -265,7 +265,7 @@ jobs:
 
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-test-trace${{ inputs.release }}
           path: ./apps/meteor/tests/e2e/.playwright*
@@ -298,14 +298,14 @@ jobs:
 
       - name: Store e2e-api-ee-coverage
         if: inputs.type == 'api' && inputs.release == 'ee'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: e2e-api-ee-coverage
           path: /tmp/coverage
 
       - name: Store e2e-ee-coverage
         if: inputs.type == 'ui' && inputs.release == 'ee'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: e2e-ee-coverage
           path: ./apps/meteor/coverage*
