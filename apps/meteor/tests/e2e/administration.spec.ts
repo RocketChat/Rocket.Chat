@@ -3,8 +3,7 @@ import { faker } from '@faker-js/faker';
 import { IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { Admin, Utils } from './page-objects';
-import { createTargetChannel } from './utils';
-import { setSettingValueById } from './utils/setSettingValueById';
+import { createTargetChannel, setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -210,7 +209,7 @@ test.describe.parallel('administration', () => {
 		test.describe('Users in role', () => {
 			const channelName = faker.string.uuid();
 			test.beforeAll(async ({ api }) => {
-				// TODO: refactor createChannel utility in order to get channel data when creating 
+				// TODO: refactor createChannel utility in order to get channel data when creating
 				const response = await api.post('/channels.create', { name: channelName, members: ['user1'] });
 				const { channel } = await response.json();
 
@@ -223,7 +222,7 @@ test.describe.parallel('administration', () => {
 				await poAdmin.btnUsersInRole.click();
 				await poAdmin.inputRoom.fill(channelName);
 				await page.getByRole('option', { name: channelName }).click();
-				
+
 				await expect(poAdmin.getUserRowByUsername('user1')).toBeVisible();
 			});
 
@@ -237,7 +236,7 @@ test.describe.parallel('administration', () => {
 				await poAdmin.inputUsers.fill('user1');
 				await page.getByRole('option', { name: 'user1' }).click();
 				await poAdmin.btnAdd.click();
-				
+
 				await expect(poAdmin.getUserRowByUsername('user1')).toBeVisible();
 			});
 
@@ -257,11 +256,11 @@ test.describe.parallel('administration', () => {
 			test('should back to the permissions page', async ({ page }) => {
 				await poAdmin.openRoleByName('Moderator').click();
 				await poAdmin.btnUsersInRole.click();
-				await poAdmin.btnBack.click();			
-					
+				await poAdmin.btnBack.click();
+
 				await expect(page.locator('h1 >> text="Permissions"')).toBeVisible();
 			});
-		})
+		});
 	});
 
 	test.describe('Mailer', () => {
@@ -275,6 +274,52 @@ test.describe.parallel('administration', () => {
 		});
 	});
 
+	test.describe('Integrations', () => {
+		const messageCodeHighlightDefault =
+			'javascript,css,markdown,dockerfile,json,go,rust,clean,bash,plaintext,powershell,scss,shell,yaml,vim';
+		const incomingIntegrationName = faker.string.uuid();
+
+		test.beforeAll(async ({ api }) => {
+			await setSettingValueById(api, 'Message_Code_highlight', '');
+		});
+
+		test.beforeEach(async ({ page }) => {
+			await page.goto('/admin/integrations');
+		});
+
+		test.afterAll(async ({ api }) => {
+			await setSettingValueById(api, 'Message_Code_highlight', messageCodeHighlightDefault);
+		});
+
+		test('should display the example payload correctly', async () => {
+			await poAdmin.btnNew.click();
+			await poAdmin.btnInstructions.click();
+
+			await expect(poAdmin.codeExamplePayload('Loading')).not.toBeVisible();
+		});
+
+		test('should be able to create new incoming integration', async () => {
+			await poAdmin.btnNew.click();
+			await poAdmin.inputName.fill(incomingIntegrationName);
+			await poAdmin.inputPostToChannel.fill('#general');
+			await poAdmin.inputPostAs.fill(Users.admin.data.username);
+			await poAdmin.btnSave.click();
+
+			await expect(poAdmin.inputWebhookUrl).not.toHaveValue('Will be available here after saving.');
+
+			await poAdmin.btnBack.click();
+			await expect(poAdmin.getIntegrationByName(incomingIntegrationName)).toBeVisible();
+		});
+
+		test('should be able to delete an incoming integration', async () => {
+			await poAdmin.getIntegrationByName(incomingIntegrationName).click();
+			await poAdmin.btnDelete.click();
+			await poUtils.btnModalConfirmDelete.click();
+
+			await expect(poAdmin.getIntegrationByName(incomingIntegrationName)).not.toBeVisible();
+		});
+	});
+
 	test.describe('Settings', () => {
 		test.describe('General', () => {
 			test.beforeEach(async ({ page }) => {
@@ -282,7 +327,7 @@ test.describe.parallel('administration', () => {
 			});
 
 			test.afterAll(async ({ api }) => {
-				await setSettingValueById(api, 'Language', 'en')
+				await setSettingValueById(api, 'Language', 'en');
 			});
 
 			test('expect be able to reset a setting after a change', async () => {
