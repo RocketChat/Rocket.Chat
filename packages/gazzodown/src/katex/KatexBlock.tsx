@@ -19,7 +19,7 @@ const KatexBlock = ({ code }: KatexBlockProps): ReactElement => {
 		[code],
 	);
 
-	return <div role='math' aria-label={code} dangerouslySetInnerHTML={{ __html: html }} />;
+	return <div role='math' style={{ overflowX: 'auto' }} aria-label={code} dangerouslySetInnerHTML={{ __html: html }} />;
 };
 
 export default KatexBlock;

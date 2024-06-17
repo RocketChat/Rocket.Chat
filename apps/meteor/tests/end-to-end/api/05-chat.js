@@ -5,7 +5,7 @@ import { getCredentials, api, request, credentials, message } from '../../data/a
 import { sendSimpleMessage, deleteMessage, pinMessage } from '../../data/chat.helper.js';
 import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom, deleteRoom } from '../../data/rooms.helper.js';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
