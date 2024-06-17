@@ -34,7 +34,7 @@ class VersionCompiler {
 						response.on('data', function (chunk) {
 							data += chunk;
 						});
-						response.on('end', function () {
+						response.on('end', async function () {
 							const supportedVersions = JSON.parse(data);
 							if (!supportedVersions?.signed) {
 								return handleError(new Error(`Invalid supportedVersions result:\n  URL: ${url} \n  RESULT: ${data}`));
@@ -45,12 +45,12 @@ class VersionCompiler {
 								return handleError(new Error(`Invalid supportedVersions timestamp:\n  URL: ${url} \n  RESULT: ${data}`));
 							}
 
-							supportedVersions.versions.forEach(({ expiration }) => {
+							for await (const version of supportedVersions.versions) {
 								// check if expiration is after the first rocket.chat release
-								if (new Date(expiration) < new Date('2019-04-01T00:00:00.000Z')) {
+								if (new Date(version.expiration) < new Date('2019-04-01T00:00:00.000Z')) {
 									return handleError(new Error(`Invalid supportedVersions expiration:\n  URL: ${url} \n  RESULT: ${data}`));
 								}
-							});
+							}
 
 							resolve(supportedVersions);
 						});
