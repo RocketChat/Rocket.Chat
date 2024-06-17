@@ -9,9 +9,10 @@ import { AbstractBusinessHourBehavior } from '../../../../../app/livechat/server
 import {
 	filterBusinessHoursThatMustBeOpened,
 	filterBusinessHoursThatMustBeOpenedByDay,
+	makeOnlineAgentsAvailable,
+	makeAgentsUnavailableBasedOnBusinessHour,
 } from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour } from '../../../../../app/livechat/server/business-hour/closeBusinessHour';
-import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { settings } from '../../../../../app/settings/server';
 import { isTruthy } from '../../../../../lib/isTruthy';
 import { bhLogger } from '../lib/logger';
@@ -37,7 +38,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		await this.UsersRepository.removeBusinessHoursFromAllUsers();
 
 		// TODO is this required? since we're calling `this.openBusinessHour(businessHour)` later on, which will call this again (kinda)
-		await Livechat.makeAgentsUnavailableBasedOnBusinessHour();
+		await makeAgentsUnavailableBasedOnBusinessHour();
 
 		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
 		const day = currentTime.format('dddd');
@@ -122,7 +123,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			}
 
 			await this.UsersRepository.addBusinessHourByAgentIds(agentsId, defaultBusinessHour._id);
-			await Livechat.makeOnlineAgentsAvailable(agentsId);
+			await makeOnlineAgentsAvailable(agentsId);
 
 			return options;
 		}
@@ -143,7 +144,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		}
 
 		await this.UsersRepository.addBusinessHourByAgentIds(agentsId, businessHour._id);
-		await Livechat.makeOnlineAgentsAvailable(agentsId);
+		await makeOnlineAgentsAvailable(agentsId);
 
 		return options;
 	}
@@ -218,7 +219,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			await openBusinessHour(bh, false);
 		}
 
-		await Livechat.makeAgentsUnavailableBasedOnBusinessHour();
+		await makeAgentsUnavailableBasedOnBusinessHour();
 		await businessHourManager.restartCronJobsIfNecessary();
 	}
 
@@ -234,7 +235,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	async onNewAgentCreated(agentId: string): Promise<void> {
 		await this.applyAnyOpenBusinessHourToAgent(agentId);
 
-		await Livechat.makeAgentsUnavailableBasedOnBusinessHour([agentId]);
+		await makeAgentsUnavailableBasedOnBusinessHour([agentId]);
 	}
 
 	private async applyAnyOpenBusinessHourToAgent(agentId: string): Promise<void> {

@@ -2,8 +2,11 @@ import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
+import {
+	makeAgentsUnavailableBasedOnBusinessHour,
+	makeOnlineAgentsAvailable,
+} from '../../../../../app/livechat/server/business-hour/Helper';
 import { getAgentIdsForBusinessHour } from '../../../../../app/livechat/server/business-hour/getAgentIdsForBusinessHour';
-import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { businessHourLogger } from '../../../../../app/livechat/server/lib/logger';
 
 export const getAgentIdsToHandle = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<string[]> => {
@@ -34,10 +37,10 @@ export const openBusinessHour = async (
 		top10AgentIds: agentIds.slice(0, 10),
 	});
 	await Users.addBusinessHourByAgentIds(agentIds, businessHour._id);
-	await Livechat.makeOnlineAgentsAvailable(agentIds);
+	await makeOnlineAgentsAvailable(agentIds);
 
 	if (updateLivechatStatus) {
-		await Livechat.makeAgentsUnavailableBasedOnBusinessHour();
+		await makeAgentsUnavailableBasedOnBusinessHour();
 	}
 };
 
@@ -46,5 +49,5 @@ export const removeBusinessHourByAgentIds = async (agentIds: string[], businessH
 		return;
 	}
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHourId);
-	await Livechat.makeAgentsUnavailableBasedOnBusinessHour();
+	await makeAgentsUnavailableBasedOnBusinessHour();
 };

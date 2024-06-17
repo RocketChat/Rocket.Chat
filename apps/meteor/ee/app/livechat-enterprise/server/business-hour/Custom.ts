@@ -5,8 +5,10 @@ import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.cha
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 import type { IBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { AbstractBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
-import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
-import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
+import {
+	filterBusinessHoursThatMustBeOpened,
+	makeAgentsUnavailableBasedOnBusinessHour,
+} from '../../../../../app/livechat/server/business-hour/Helper';
 import { bhLogger } from '../lib/logger';
 
 type IBusinessHoursExtraProperties = {
@@ -81,7 +83,7 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 		await this.removeBusinessHourFromAgents(businessHourId);
 		await LivechatDepartment.removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId);
 
-		await Livechat.makeAgentsUnavailableBasedOnBusinessHour();
+		await makeAgentsUnavailableBasedOnBusinessHour();
 	}
 
 	private async removeBusinessHourFromAgents(businessHourId: string): Promise<void> {
@@ -150,7 +152,7 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 
 		await Users.removeBusinessHourByAgentIds(agentsConnectedToDefaultBH, defaultBusinessHour._id);
 
-		await Livechat.makeAgentsUnavailableBasedOnBusinessHour();
+		await makeAgentsUnavailableBasedOnBusinessHour();
 	}
 
 	private async addBusinessHourToDepartmentsIfNeeded(businessHourId: string, departmentsToAdd: string[]): Promise<void> {
