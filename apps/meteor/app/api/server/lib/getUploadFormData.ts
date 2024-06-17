@@ -5,7 +5,7 @@ import type { ValidateFunction } from 'ajv';
 import busboy from 'busboy';
 import type { Request } from 'express';
 
-import { mime } from '../../../utils/lib/mimeTypes';
+import { getMimeType } from '../../../utils/lib/mimeTypes';
 
 type UploadResult<K> = {
 	file: Readable & { truncated: boolean };
@@ -63,7 +63,7 @@ export async function getUploadFormData<
 	function onFile(
 		fieldname: string,
 		file: Readable & { truncated: boolean },
-		{ filename, encoding, mimeType }: { filename: string; encoding: string; mimeType: string },
+		{ filename, encoding }: { filename: string; encoding: string },
 	) {
 		if (options.field && fieldname !== options.field) {
 			file.resume();
@@ -80,13 +80,12 @@ export async function getUploadFormData<
 				fileChunks.length = 0;
 				return returnError(new MeteorError('error-file-too-large'));
 			}
-			const mimeTypeFromFilename = mime.lookup(filename);
 
 			uploadedFile = {
 				file,
 				filename,
 				encoding,
-				mimetype: typeof mimeTypeFromFilename === 'string' ? mimeTypeFromFilename : mimeType,
+				mimetype: getMimeType(filename),
 				fieldname,
 				fields,
 				fileBuffer: Buffer.concat(fileChunks),

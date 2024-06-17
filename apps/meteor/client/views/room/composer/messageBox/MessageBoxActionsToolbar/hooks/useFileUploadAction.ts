@@ -23,11 +23,10 @@ export const useFileUploadAction = (disabled: boolean): GenericMenuItemProps => 
 		};
 
 		const handleUploadChange = async () => {
-			const { mime } = await import('../../../../../../../app/utils/lib/mimeTypes');
+			const { getMimeType } = await import('../../../../../../../app/utils/lib/mimeTypes');
 			const filesToUpload = Array.from(fileInputRef?.current?.files ?? []).map((file) => {
-				const fileMimeType = mime.lookup(file.name);
 				Object.defineProperty(file, 'type', {
-					value: typeof fileMimeType === 'string' ? fileMimeType : 'application/octet-stream',
+					value: getMimeType(file.name),
 				});
 				return file;
 			});

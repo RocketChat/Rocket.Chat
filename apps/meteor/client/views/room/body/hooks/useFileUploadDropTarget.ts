@@ -38,8 +38,7 @@ export const useFileUploadDropTarget = (): readonly [
 	const chat = useChat();
 
 	const onFileDrop = useMutableCallback(async (files: File[]) => {
-		const { mime } = await import('../../../../../app/utils/lib/mimeTypes');
-
+		const { getMimeType } = await import('../../../../../app/utils/lib/mimeTypes');
 		const getUniqueFiles = () => {
 			const uniqueFiles: File[] = [];
 			const st: Set<number> = new Set();
@@ -55,8 +54,7 @@ export const useFileUploadDropTarget = (): readonly [
 		const uniqueFiles = getUniqueFiles();
 
 		const uploads = Array.from(uniqueFiles).map((file) => {
-			const fileMimeType = mime.lookup(file.name);
-			Object.defineProperty(file, 'type', { value: typeof fileMimeType === 'string' ? fileMimeType : 'application/octet-stream' });
+			Object.defineProperty(file, 'type', { value: getMimeType(file.name) });
 			return file;
 		});
 
