@@ -44,6 +44,10 @@ export class HomeFlextab {
 		return this.page.locator('role=menuitem[name="Notifications Preferences"]');
 	}
 
+	get btnE2EERoomSetupDisableE2E(): Locator {
+		return this.page.locator('[data-qa-id=ToolBoxAction-key]');
+	}
+
 	get btnDisableE2E(): Locator {
 		return this.page.locator('role=menuitem[name="Disable E2E"]');
 	}
