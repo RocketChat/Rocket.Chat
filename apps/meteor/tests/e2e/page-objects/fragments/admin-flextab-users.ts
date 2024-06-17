@@ -53,6 +53,6 @@ export class AdminFlextabUsers {
 	}
 
 	get setupSmtpLink(): Locator {
-		return this.page.locator('role=link[name="Set up SMTP"]')
+		return this.page.locator('role=link[name="Set up SMTP"]');
 	}
 }

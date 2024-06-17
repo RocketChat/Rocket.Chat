@@ -1,5 +1,23 @@
 # @rocket.chat/mock-providers
 
+## 0.0.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ff4e396416, bc50dd54a2, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/i18n@0.4.0
+  </details>
+
+## 0.0.7-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ff4e396416, bc50dd54a2, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/i18n@0.4.0-rc.0
+  </details>
+
 ## 0.0.6
 
 ### Patch Changes
