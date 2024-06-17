@@ -176,7 +176,7 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 						modules={[Navigation, Zoom, Keyboard, A11y]}
 						onInit={(swiper) => setSwiperInst(swiper)}
 						onSlidesGridLengthChange={(swiper) => {
-							swiper.slideTo(images.length - gridSize, 2000);
+							swiper.slideTo(images.length - gridSize, 0);
 							setGridSize(images.length);
 						}}
 						onReachBeginning={loadMore}

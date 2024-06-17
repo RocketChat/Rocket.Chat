@@ -205,6 +205,32 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
+	test('expect create a Direct message, encrypt it and attempt to enable OTR', async ({ page }) => {
+		await poHomeChannel.sidenav.openNewByLabel('Direct message');
+		await poHomeChannel.sidenav.inputDirectUsername.click();
+		await page.keyboard.type('user2');
+		await page.waitForTimeout(1000);
+		await page.keyboard.press('Enter');
+		await poHomeChannel.sidenav.btnCreate.click();
+
+		await expect(page).toHaveURL(`/direct/rocketchat.internal.admin.testuser2`);
+
+		await poHomeChannel.tabs.kebab.click({ force: true });
+		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
+		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await page.waitForTimeout(1000);
+
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.dismissToast();
+
+		await poHomeChannel.tabs.kebab.click({ force: true });
+		await expect(poHomeChannel.tabs.btnEnableOTR).toBeVisible();
+		await poHomeChannel.tabs.btnEnableOTR.click({ force: true });
+
+		await expect(page.getByText('OTR not available')).toBeVisible();
+	});
+
 	test('expect placeholder text in place of encrypted message, when E2EE is not setup', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
@@ -237,6 +263,51 @@ test.describe.serial('e2e-encryption', () => {
 			'This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.',
 		);
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+	});
+
+	test('expect create a private channel, send unecrypted messages, encrypt the channel and delete the last message and check the last message in the sidebar', async ({
+		page,
+	}) => {
+		const channelName = faker.string.uuid();
+
+		// Enable Sidebar Extended display mode
+		await poHomeChannel.sidenav.setDisplayMode('Extended');
+
+		// Create private channel
+		await poHomeChannel.sidenav.openNewByLabel('Channel');
+		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
+		await poHomeChannel.sidenav.btnCreate.click();
+		await expect(page).toHaveURL(`/group/${channelName}`);
+		await expect(poHomeChannel.toastSuccess).toBeVisible();
+		await poHomeChannel.dismissToast();
+
+		// Send Unencrypted Messages
+		await poHomeChannel.content.sendMessage('first unencrypted message');
+		await poHomeChannel.content.sendMessage('second unencrypted message');
+
+		// Encrypt channel
+		await poHomeChannel.tabs.kebab.click({ force: true });
+		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
+		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await page.waitForTimeout(1000);
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		// Send Encrypted Messages
+		const encriptedMessage1 = 'first ENCRYPTED message';
+		const encriptedMessage2 = 'second ENCRYPTED message';
+		await poHomeChannel.content.sendMessage(encriptedMessage1);
+		await poHomeChannel.content.sendMessage(encriptedMessage2);
+
+		//  Delete last message
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText(encriptedMessage2);
+		await poHomeChannel.content.openLastMessageMenu();
+		await page.locator('role=menuitem[name="Delete"]').click();
+		await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--danger').click();
+
+		// Check last message in the sidebar
+		const sidebarChannel = await poHomeChannel.sidenav.getSidebarItemByName(channelName);
+		await expect(sidebarChannel).toBeVisible();
+		await expect(sidebarChannel.locator('span')).toContainText(encriptedMessage1);
 	});
 
 	test.describe('reset keys', () => {
