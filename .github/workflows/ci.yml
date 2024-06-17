@@ -776,7 +776,7 @@ jobs:
       - docker-image-publish
     steps:
       - name: Send context to seperate pipeline
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.DISTRIBUTION_TOKEN }}
           event-type: new_release
@@ -784,7 +784,7 @@ jobs:
           client-payload: '{"tag": "${{ github.ref_name }}"}'
 
       - name: Update docs
-        uses: peter-evans/repository-dispatch@v2
+        uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.DOCS_PAT }}
           event-type: new_release
