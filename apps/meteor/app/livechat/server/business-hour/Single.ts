@@ -1,6 +1,7 @@
 import { ILivechatAgentStatus, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 
+import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 import { Livechat } from '../lib/LivechatTyped';
 import { businessHourLogger } from '../lib/logger';
 import type { IBusinessHourBehavior } from './AbstractBusinessHour';
@@ -43,7 +44,19 @@ export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior imp
 				agentId,
 				newStatus: ILivechatAgentStatus.NOT_AVAILABLE,
 			});
-			await Users.setLivechatStatus(agentId, ILivechatAgentStatus.NOT_AVAILABLE);
+
+			const { modifiedCount } = await Users.setLivechatStatus(agentId, ILivechatAgentStatus.NOT_AVAILABLE);
+			if (modifiedCount > 0) {
+				void notifyOnUserChange({
+					id: agentId,
+					clientAction: 'updated',
+					diff: {
+						statusLivechat: ILivechatAgentStatus.NOT_AVAILABLE,
+						livechatStatusSystemModified: false,
+					},
+				});
+			}
+
 			return;
 		}
 
