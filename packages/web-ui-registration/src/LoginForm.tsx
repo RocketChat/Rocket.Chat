@@ -205,6 +205,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 												e.preventDefault();
 												setLoginRoute('reset-password');
 											}}
+											role='link'
 											style={{ cursor: 'pointer' }}
 										>
 											<Trans i18nKey='registration.page.login.forgot'>Forgot your password?</Trans>
