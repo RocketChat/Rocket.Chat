@@ -163,6 +163,5 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 	void notifyOnUserChange({ clientAction: 'removed', id: user._id });
 
-	// void callbacks.runAsync('afterDeleteUser', user);
 	await callbacks.run('afterDeleteUser', user);
 }
