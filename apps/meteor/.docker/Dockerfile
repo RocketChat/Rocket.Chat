@@ -1,8 +1,19 @@
+FROM node:14.21.3-bullseye-slim as builder
+
+WORKDIR /app
+
+RUN set -x \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends g++ make python ca-certificates
+    
+RUN set -x \
+    && cd /app \
+    && npm install sharp@0.30.4 isolated-vm@4.4.2 bcrypt@5.0.1
+
 FROM node:14.21.3-bullseye-slim
 
 LABEL maintainer="buildmaster@rocket.chat"
 
-# dependencies
 RUN groupadd -g 65533 -r rocketchat \
     && useradd -u 65533 -r -g rocketchat rocketchat \
     && mkdir -p /app/uploads \
@@ -10,26 +21,18 @@ RUN groupadd -g 65533 -r rocketchat \
     && apt-get update \
     && apt-get install -y --no-install-recommends fontconfig
 
+ADD ./bundle/programs/server/package.json /app/bundle/programs/server/package.json
+
+RUN set -x \
+    && cd /app/bundle/programs/server \
+    && npm install --production
+
 # --chown requires Docker 17.12 and works only on Linux
 ADD --chown=rocketchat:rocketchat . /app
 
-RUN aptMark="$(apt-mark showmanual)" \
-    && apt-get install -y --no-install-recommends g++ make python3 ca-certificates \
-    && cd /app/bundle/programs/server \
-    && npm install \
-	&& cd npm/node_modules/isolated-vm \
-	&& npm install \
-    && apt-mark auto '.*' > /dev/null \
-    && apt-mark manual $aptMark > /dev/null \
-    && find /usr/local -type f -executable -exec ldd '{}' ';' \
-    | awk '/=>/ { print $(NF-1) }' \
-    | sort -u \
-    | xargs -r dpkg-query --search \
-    | cut -d: -f1 \
-    | sort -u \
-    | xargs -r apt-mark manual \
-    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-    && npm cache clear --force
+COPY --from=builder /app/node_modules/sharp /app/bundle/programs/server/npm/node_modules/sharp
+COPY --from=builder /app/node_modules/isolated-vm /app/bundle/programs/server/npm/node_modules/isolated-vm
+COPY --from=builder /app/node_modules/bcrypt /app/bundle/programs/server/npm/node_modules/bcrypt
 
 USER rocketchat
 
