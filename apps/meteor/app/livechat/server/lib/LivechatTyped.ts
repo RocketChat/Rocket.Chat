@@ -1965,7 +1965,7 @@ class LivechatClass {
 		return departmentDB;
 	}
 
-	async makeAgentsUnavailableBasedOnBusinessHour(agentIds: string[] = []) {
+	async makeAgentsUnavailableBasedOnBusinessHour(agentIds: string[] | null = null) {
 		const results = await Users.findAgentsAvailableWithoutBusinessHours(agentIds).toArray();
 
 		const update = await Users.updateLivechatStatusByAgentIds(
@@ -1984,6 +1984,32 @@ class LivechatClass {
 					clientAction: 'updated',
 					diff: {
 						statusLivechat: 'not-available',
+						openBusinessHours,
+					},
+				};
+			}),
+		);
+	}
+
+	async makeOnlineAgentsAvailable(agentIds: string[] | null = null) {
+		const results = await Users.findOnlineButNotAvailableAgents(agentIds).toArray();
+
+		const update = await Users.updateLivechatStatusByAgentIds(
+			results.map(({ _id }) => _id),
+			ILivechatAgentStatus.AVAILABLE,
+		);
+
+		if (update.modifiedCount === 0) {
+			return;
+		}
+
+		void notifyOnUserChangeAsync(async () =>
+			results.map(({ _id, openBusinessHours }) => {
+				return {
+					id: _id,
+					clientAction: 'updated',
+					diff: {
+						statusLivechat: 'available',
 						openBusinessHours,
 					},
 				};

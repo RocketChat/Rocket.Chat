@@ -968,9 +968,9 @@ export class UsersRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	makeAgentsWithinBusinessHourAvailable(agentIds) {
+	findOnlineButNotAvailableAgents(userIds) {
 		const query = {
-			...(agentIds && { _id: { $in: agentIds } }),
+			...(userIds && { _id: { $in: userIds } }),
 			roles: 'livechat-agent',
 			// Exclude away users
 			status: 'online',
@@ -978,13 +978,7 @@ export class UsersRaw extends BaseRaw {
 			statusLivechat: 'not-available',
 		};
 
-		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
-		};
-
-		return this.updateMany(query, update);
+		return this.find(query);
 	}
 
 	removeBusinessHourByAgentIds(agentIds = [], businessHourId) {

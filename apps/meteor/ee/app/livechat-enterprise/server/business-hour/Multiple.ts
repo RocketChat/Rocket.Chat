@@ -122,7 +122,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			}
 
 			await this.UsersRepository.addBusinessHourByAgentIds(agentsId, defaultBusinessHour._id);
-			await this.UsersRepository.makeAgentsWithinBusinessHourAvailable(agentsId);
+			await Livechat.makeOnlineAgentsAvailable(agentsId);
 
 			return options;
 		}
@@ -143,7 +143,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		}
 
 		await this.UsersRepository.addBusinessHourByAgentIds(agentsId, businessHour._id);
-		await this.UsersRepository.makeAgentsWithinBusinessHourAvailable(agentsId);
+		await Livechat.makeOnlineAgentsAvailable(agentsId);
 
 		return options;
 	}

@@ -134,8 +134,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	addBusinessHourByAgentIds(agentIds: string[], businessHourId: string): any;
 
-	makeAgentsWithinBusinessHourAvailable(agentIds?: string[]): Promise<UpdateResult | Document>;
-
 	removeBusinessHourByAgentIds(agentIds: any, businessHourId: any): any;
 
 	openBusinessHourToAgentsWithoutDepartment(agentIdsWithDepartment: any, businessHourId: any): any;
@@ -391,6 +389,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countByRole(roleName: string): Promise<number>;
 	removeEmailCodeOfUserId(userId: string): Promise<UpdateResult>;
 	incrementInvalidEmailCodeAttempt(userId: string): Promise<ModifyResult<IUser>>;
-	findAgentsAvailableWithoutBusinessHours(userIds: string[]): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
+	findOnlineButNotAvailableAgents(userIds: string[] | null): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
+	findAgentsAvailableWithoutBusinessHours(userIds: string[] | null): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
 	updateLivechatStatusByAgentIds(userIds: string[], status: ILivechatAgentStatus): Promise<UpdateResult>;
 }
