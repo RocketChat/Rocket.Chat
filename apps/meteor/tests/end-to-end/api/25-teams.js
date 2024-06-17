@@ -1599,18 +1599,32 @@ describe('[Teams]', () => {
 			let testUser1;
 			let testUser2;
 
+			const testRooms = [];
+			const testTeams = [];
+
 			before(async () => {
 				testUser1 = await createUser();
 				testUser2 = await createUser();
 			});
 
-			after(() => Promise.all([updateSetting('API_User_Limit', 500), deleteUser(testUser1), deleteUser(testUser2)]));
+			after(() =>
+				Promise.all([
+					updateSetting('API_User_Limit', 500),
+					deleteUser(testUser1),
+					deleteUser(testUser2),
+					...testRooms.map((r) => deleteRoom({ roomId: r._id, type: 'c' })),
+					...testTeams.map((t) => deleteTeam(credentials, t.name)),
+				]),
+			);
 
 			it('should add members when the members count is less than or equal to the API_User_Limit setting', async () => {
 				const [testTeam, testRoom] = await Promise.all([
 					createTeam(credentials, `test-team-name${Date.now()}`, 0),
 					createRoom({ name: `test-room-name${Date.now()}`, type: 'c' }),
 				]);
+
+				testTeams.push(testTeam);
+				testRooms.push(testRoom.body.channel);
 
 				await addRoom(credentials, testTeam.name, testRoom.body.channel._id);
 
@@ -1629,8 +1643,6 @@ describe('[Teams]', () => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('room.usersCount').and.to.be.equal(3);
 					});
-
-				await Promise.all([deleteTeam(credentials, testTeam.name), deleteRoom({ roomId: testRoom.body.channel._id, type: 'c' })]);
 			});
 
 			it('should not add all members when we update a team channel to be auto-join and the members count is greater than the API_User_Limit setting', async () => {
@@ -1638,6 +1650,9 @@ describe('[Teams]', () => {
 					createTeam(credentials, `test-team-name${Date.now()}`, 0),
 					createRoom({ name: `test-room-name${Date.now()}`, type: 'c' }),
 				]);
+
+				testTeams.push(testTeam);
+				testRooms.push(testRoom.body.channel);
 
 				await addRoom(credentials, testTeam.name, testRoom.body.channel._id);
 
@@ -1656,8 +1671,6 @@ describe('[Teams]', () => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('room.usersCount').and.to.be.equal(2);
 					});
-
-				await Promise.all([deleteTeam(credentials, testTeam.name), deleteRoom({ roomId: testRoom.body.channel._id, type: 'c' })]);
 			});
 		});
 	});
