@@ -201,11 +201,11 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 								{isResetPasswordAllowed && (
 									<FieldRow justifyContent='end'>
 										<FieldLink
-											href='#'
 											onClick={(e): void => {
 												e.preventDefault();
 												setLoginRoute('reset-password');
 											}}
+											style={{ cursor: 'pointer' }}
 										>
 											<Trans i18nKey='registration.page.login.forgot'>Forgot your password?</Trans>
 										</FieldLink>
