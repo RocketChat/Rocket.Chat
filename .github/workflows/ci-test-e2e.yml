@@ -279,7 +279,7 @@ jobs:
         working-directory: ./apps/meteor
         run: yarn test:e2e:nyc
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         if: inputs.type == 'ui' && inputs.release == 'ee'
         with:
           directory: ./apps/meteor
@@ -287,7 +287,7 @@ jobs:
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         if: inputs.type == 'api' && inputs.release == 'ee'
         with:
           directory: /tmp/coverage
