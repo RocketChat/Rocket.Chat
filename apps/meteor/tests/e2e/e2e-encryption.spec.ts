@@ -179,6 +179,40 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
+	test('expect create a private encrypted channel and send a encrypted thread message', async ({ page }) => {
+		const channelName = faker.string.uuid();
+
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+
+		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.dismissToast();
+
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.content.sendMessage('This is the thread main message.');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is the thread main message.');
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		await page.locator('[data-qa-type="message"]').last().hover();
+		await page.locator('role=button[name="Reply in thread"]').click();
+
+		await expect(page).toHaveURL(/.*thread/);
+
+		await expect(poHomeChannel.content.mainThreadMessageText).toContainText('This is the thread main message.');
+		await expect(poHomeChannel.content.mainThreadMessageText.locator('.rcx-icon--name-key')).toBeVisible();
+
+		await poHomeChannel.content.toggleAlsoSendThreadToChannel(true);
+		await page.getByRole('dialog').locator('[name="msg"]').last().fill('This is an encrypted thread message also sent in channel');
+		await page.keyboard.press('Enter');
+		await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is an encrypted thread message also sent in channel');
+		await expect(poHomeChannel.content.lastThreadMessageText.locator('.rcx-icon--name-key')).toBeVisible();
+		await expect(poHomeChannel.content.lastUserMessage).toContainText('This is an encrypted thread message also sent in channel');
+		await expect(poHomeChannel.content.mainThreadMessageText).toContainText('This is the thread main message.');
+		await expect(poHomeChannel.content.mainThreadMessageText.locator('.rcx-icon--name-key')).toBeVisible();
+	});
+
 	test('expect create a private channel, encrypt it and send an encrypted message', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
