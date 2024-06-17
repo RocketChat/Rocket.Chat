@@ -1044,24 +1044,21 @@ export class UsersRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	updateLivechatStatusBasedOnBusinessHours(userIds = []) {
-		const query = {
-			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
-			$and: [{ roles: 'livechat-agent' }, { roles: { $ne: 'bot' } }],
-			// exclude deactivated users
-			active: true,
-			// Avoid unnecessary updates
-			statusLivechat: 'available',
-			...(Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } }),
-		};
-
-		const update = {
-			$set: {
-				statusLivechat: 'not-available',
+	findAgentsAvailableWithoutBusinessHours(userIds = []) {
+		return this.find(
+			{
+				$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
+				$and: [{ roles: 'livechat-agent' }, { roles: { $ne: 'bot' } }],
+				// exclude deactivated users
+				active: true,
+				// Avoid unnecessary updates
+				statusLivechat: 'available',
+				...(Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } }),
 			},
-		};
-
-		return this.updateMany(query, update);
+			{
+				projection: { openBusinessHours: 1 },
+			},
+		);
 	}
 
 	setLivechatStatusActiveBasedOnBusinessHours(userId) {
@@ -3073,5 +3070,18 @@ export class UsersRaw extends BaseRaw {
 
 	countByRole(role) {
 		return this.col.countDocuments({ roles: role });
+	}
+
+	updateLivechatStatusByAgentIds(userIds, status) {
+		return this.updateMany(
+			{
+				_id: { $in: userIds },
+			},
+			{
+				$set: {
+					statusLivechat: status,
+				},
+			},
+		);
 	}
 }

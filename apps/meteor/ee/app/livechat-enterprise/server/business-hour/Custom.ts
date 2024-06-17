@@ -6,6 +6,7 @@ import { businessHourManager } from '../../../../../app/livechat/server/business
 import type { IBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { AbstractBusinessHourType } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';
 import { filterBusinessHoursThatMustBeOpened } from '../../../../../app/livechat/server/business-hour/Helper';
+import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { bhLogger } from '../lib/logger';
 
 type IBusinessHoursExtraProperties = {
@@ -79,9 +80,8 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 		await this.BusinessHourRepository.removeById(businessHourId);
 		await this.removeBusinessHourFromAgents(businessHourId);
 		await LivechatDepartment.removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId);
-		this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 
-		// TODO missing notify
+		await Livechat.makeAgentsUnavailableBasedOnBusinessHour();
 	}
 
 	private async removeBusinessHourFromAgents(businessHourId: string): Promise<void> {
@@ -149,9 +149,8 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 		).map((dept) => dept.agentId);
 
 		await Users.removeBusinessHourByAgentIds(agentsConnectedToDefaultBH, defaultBusinessHour._id);
-		await Users.updateLivechatStatusBasedOnBusinessHours();
 
-		// TODO missing notify
+		await Livechat.makeAgentsUnavailableBasedOnBusinessHour();
 	}
 
 	private async addBusinessHourToDepartmentsIfNeeded(businessHourId: string, departmentsToAdd: string[]): Promise<void> {

@@ -2,6 +2,7 @@ import type { ILivechatBusinessHour, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { makeFunction } from '@rocket.chat/patch-injection';
 
+import { Livechat } from '../lib/LivechatTyped';
 import { businessHourLogger } from '../lib/logger';
 import { getAgentIdsForBusinessHour } from './getAgentIdsForBusinessHour';
 
@@ -16,9 +17,8 @@ export const closeBusinessHourByAgentIds = async (
 		top10AgentIds: agentIds.slice(0, 10),
 	});
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHourId);
-	await Users.updateLivechatStatusBasedOnBusinessHours();
 
-	// TODO missing notify
+	await Livechat.makeAgentsUnavailableBasedOnBusinessHour();
 };
 
 export const closeBusinessHour = makeFunction(async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> => {

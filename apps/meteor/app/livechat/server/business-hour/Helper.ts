@@ -3,6 +3,7 @@ import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 import moment from 'moment';
 
+import { Livechat } from '../lib/LivechatTyped';
 import { businessHourLogger } from '../lib/logger';
 import { createDefaultBusinessHourRow } from './LivechatBusinessHours';
 import { filterBusinessHoursThatMustBeOpened } from './filterBusinessHoursThatMustBeOpened';
@@ -39,9 +40,7 @@ export const openBusinessHourDefault = async (): Promise<void> => {
 	if (businessHoursToOpenIds.length) {
 		await Users.makeAgentsWithinBusinessHourAvailable();
 	}
-	await Users.updateLivechatStatusBasedOnBusinessHours();
-
-	// TODO missing notify
+	await Livechat.makeAgentsUnavailableBasedOnBusinessHour();
 };
 
 export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {

@@ -11,6 +11,7 @@ import {
 	filterBusinessHoursThatMustBeOpenedByDay,
 } from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour } from '../../../../../app/livechat/server/business-hour/closeBusinessHour';
+import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { settings } from '../../../../../app/settings/server';
 import { isTruthy } from '../../../../../lib/isTruthy';
 import { bhLogger } from '../lib/logger';
@@ -34,7 +35,10 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 
 	async onStartBusinessHours(): Promise<void> {
 		await this.UsersRepository.removeBusinessHoursFromAllUsers();
-		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
+
+		// TODO is this required? since we're calling `this.openBusinessHour(businessHour)` later on, which will call this again (kinda)
+		await Livechat.makeAgentsUnavailableBasedOnBusinessHour();
+
 		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
 		const day = currentTime.format('dddd');
 		const activeBusinessHours = await this.BusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
@@ -54,8 +58,6 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		for (const businessHour of businessHoursToOpen) {
 			void this.openBusinessHour(businessHour);
 		}
-
-		// TODO missing notify user
 	}
 
 	async openBusinessHoursByDayAndHour(day: string, hour: string): Promise<void> {
@@ -210,14 +212,14 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		if (!settings.get('Livechat_enable_business_hours')) {
 			return;
 		}
+
 		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([businessHour, defaultBH]);
 		for await (const bh of businessHourToOpen) {
 			await openBusinessHour(bh, false);
 		}
-		await Users.updateLivechatStatusBasedOnBusinessHours();
-		await businessHourManager.restartCronJobsIfNecessary();
 
-		// TODO missing notify user
+		await Livechat.makeAgentsUnavailableBasedOnBusinessHour();
+		await businessHourManager.restartCronJobsIfNecessary();
 	}
 
 	async onDepartmentArchived(department: Pick<ILivechatDepartment, '_id' | 'businessHourId'>): Promise<void> {
@@ -232,9 +234,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	async onNewAgentCreated(agentId: string): Promise<void> {
 		await this.applyAnyOpenBusinessHourToAgent(agentId);
 
-		await Users.updateLivechatStatusBasedOnBusinessHours([agentId]);
-
-		// TODO missing notify user
+		await Livechat.makeAgentsUnavailableBasedOnBusinessHour([agentId]);
 	}
 
 	private async applyAnyOpenBusinessHourToAgent(agentId: string): Promise<void> {

@@ -1,6 +1,7 @@
 import { ILivechatAgentStatus, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 
+import { Livechat } from '../lib/LivechatTyped';
 import { businessHourLogger } from '../lib/logger';
 import type { IBusinessHourBehavior } from './AbstractBusinessHour';
 import { AbstractBusinessHourBehavior } from './AbstractBusinessHour';
@@ -18,9 +19,8 @@ export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior imp
 			})
 		).map((businessHour) => businessHour._id);
 		await this.UsersRepository.closeAgentsBusinessHoursByBusinessHourIds(businessHoursIds);
-		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
 
-		// TODO missing notify
+		await Livechat.makeAgentsUnavailableBasedOnBusinessHour();
 	}
 
 	async onStartBusinessHours(): Promise<void> {

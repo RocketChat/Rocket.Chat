@@ -3,6 +3,7 @@ import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
 import { getAgentIdsForBusinessHour } from '../../../../../app/livechat/server/business-hour/getAgentIdsForBusinessHour';
+import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { businessHourLogger } from '../../../../../app/livechat/server/lib/logger';
 
 export const getAgentIdsToHandle = async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<string[]> => {
@@ -36,8 +37,7 @@ export const openBusinessHour = async (
 	await Users.makeAgentsWithinBusinessHourAvailable(agentIds);
 
 	if (updateLivechatStatus) {
-		await Users.updateLivechatStatusBasedOnBusinessHours();
-		// TODO missing notify
+		await Livechat.makeAgentsUnavailableBasedOnBusinessHour();
 	}
 };
 
@@ -46,6 +46,5 @@ export const removeBusinessHourByAgentIds = async (agentIds: string[], businessH
 		return;
 	}
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHourId);
-	await Users.updateLivechatStatusBasedOnBusinessHours();
-	// TODO missing notify
+	await Livechat.makeAgentsUnavailableBasedOnBusinessHour();
 };
