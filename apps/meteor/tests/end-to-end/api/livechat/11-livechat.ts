@@ -27,7 +27,7 @@ describe('LIVECHAT - Utils', function () {
 	});
 
 	after(async () => {
-		await updateSetting('Livechat_enabled', false);
+		await updateSetting('Livechat_enabled', true);
 		await updateSetting('Livechat_offline_email', '');
 	});
 
