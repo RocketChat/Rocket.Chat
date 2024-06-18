@@ -37,19 +37,15 @@ test.describe.serial('moderation-console', () => {
 		await deleteChannel(api, targetChannel);
 	});
 
-	test.describe('Message reporting', async () => {
-		test('should user be able to report a given message', async () => {
-			await poHomeChannel.sidenav.openChat(targetChannel);
-			await poHomeChannel.content.openLastMessageMenu();
-			await poModeration.reportMsgButton.click();
-			await poModeration.reportMessageReasonText.fill('Reason to report');
-			await poModeration.reportMessageReasonSubmit.click();
-		});
+	test('should admin be able to see the reported messages', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.openLastMessageMenu();
+		await poModeration.reportMsgButton.click();
+		await poModeration.reportMessageReasonText.fill('Reason to report');
+		await poModeration.reportMessageReasonSubmit.click();
 
-		test('should admin be able to see the reported messages', async ({ page }) => {
-			await page.goto('/admin/moderation/messages');
-			await poModeration.findRowByName(targetChannel).click();
-			await expect(poModeration.findLastReportedMessage(singleMessage)).toBeVisible();
-		});
+		await page.goto('/admin/moderation/messages');
+		await poModeration.findRowByName(targetChannel).click();
+		await expect(poModeration.findLastReportedMessage(singleMessage)).toBeVisible();
 	});
 });
