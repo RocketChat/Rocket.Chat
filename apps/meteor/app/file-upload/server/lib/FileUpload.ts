@@ -28,7 +28,7 @@ import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { UploadFS } from '../../../../server/ufs';
 import { ufsComplete } from '../../../../server/ufs/ufs-methods';
 import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
-import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
@@ -170,7 +170,7 @@ export const FileUpload = {
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 
-		if (!fileUploadIsValidContentType(file.type as string, '')) {
+		if (!fileUploadIsValidContentType(file?.type)) {
 			const reason = i18n.t('File_type_is_not_accepted', { lng: language });
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
@@ -420,7 +420,6 @@ export const FileUpload = {
 			await Avatars.deleteFile(oldAvatar._id);
 		}
 		await Avatars.updateFileNameById(file._id, user.username);
-		// console.log('upload finished ->', file);
 	},
 
 	async requestCanAccessFiles({ headers = {}, url }: http.IncomingMessage, file?: IUpload) {
@@ -464,14 +463,24 @@ export const FileUpload = {
 			return false;
 		}
 
-		if (!settings.get('FileUpload_Restrict_to_room_members') || !file?.rid) {
+		if (!file?.rid) {
 			return true;
 		}
 
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { projection: { _id: 1 } });
+		const fileUploadRestrictedToMembers = settings.get<boolean>('FileUpload_Restrict_to_room_members');
+		const fileUploadRestrictToUsersWhoCanAccessRoom = settings.get<boolean>('FileUpload_Restrict_to_users_who_can_access_room');
 
-		if (subscription) {
+		if (!fileUploadRestrictToUsersWhoCanAccessRoom && !fileUploadRestrictedToMembers) {
 			return true;
+		}
+
+		if (fileUploadRestrictedToMembers && !fileUploadRestrictToUsersWhoCanAccessRoom) {
+			const sub = await Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { projection: { _id: 1 } });
+			return !!sub;
+		}
+
+		if (fileUploadRestrictToUsersWhoCanAccessRoom && !fileUploadRestrictedToMembers) {
+			return canAccessRoomIdAsync(file.rid, user._id);
 		}
 
 		return false;
