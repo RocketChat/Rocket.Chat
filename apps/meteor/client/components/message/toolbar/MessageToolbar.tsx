@@ -125,7 +125,11 @@ const MessageToolbar = ({
 						onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions })}
 						key={action.id}
 						icon={action.icon}
-						title={t(action.label)}
+						title={
+							action?.disabled?.({ message, room, user, subscription, settings: mapSettings, chat, context })
+								? t('Action_not_available_encrypted_content', { action: t(action.label) })
+								: t(action.label)
+						}
 						data-qa-id={action.label}
 						data-qa-type='message-action-menu'
 						disabled={action?.disabled?.({ message, room, user, subscription, settings: mapSettings, chat, context })}

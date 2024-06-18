@@ -36,6 +36,8 @@ const MessageActionMenu = ({ options, onChangeMenuVisibility, context, isMessage
 			onClick: option.action,
 			type: option.type,
 			...(option.disabled && { disabled: option?.disabled?.(context) }),
+			...(option.disabled &&
+				option?.disabled?.(context) && { tooltip: t('Action_not_available_encrypted_content', { action: t(option.label) }) }),
 		}))
 		.reduce((acc, option) => {
 			const group = option.type ? option.type : '';
@@ -68,7 +70,7 @@ const MessageActionMenu = ({ options, onChangeMenuVisibility, context, isMessage
 						id,
 						disabled: true,
 						gap: false,
-						tooltip: t('Apps_not_available_encrypted_content'),
+						tooltip: t('Action_not_available_encrypted_content', { action: t('Apps') }),
 					},
 				],
 			};
