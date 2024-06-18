@@ -170,7 +170,7 @@ export const FileUpload = {
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 
-		if (!fileUploadIsValidContentType(file.type as string, '')) {
+		if (!fileUploadIsValidContentType(file?.type)) {
 			const reason = i18n.t('File_type_is_not_accepted', { lng: language });
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
@@ -420,7 +420,6 @@ export const FileUpload = {
 			await Avatars.deleteFile(oldAvatar._id);
 		}
 		await Avatars.updateFileNameById(file._id, user.username);
-		// console.log('upload finished ->', file);
 	},
 
 	async requestCanAccessFiles({ headers = {}, url }: http.IncomingMessage, file?: IUpload) {
