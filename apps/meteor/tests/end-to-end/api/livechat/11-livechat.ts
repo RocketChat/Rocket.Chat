@@ -487,10 +487,10 @@ describe('LIVECHAT - Utils', function () {
 			expect(result2.visitors[0]).to.have.property('name');
 			expect(result2.visitors[0].name).to.be.eq('VisitorInPresent');
 
-			await deleteVisitor(visitor1.token);
-			await deleteVisitor(visitor2.token);
 			await closeOmnichannelRoom(room1._id);
 			await closeOmnichannelRoom(room2._id);
+			await deleteVisitor(visitor1.token);
+			await deleteVisitor(visitor2.token);
 		});
 	});
 
