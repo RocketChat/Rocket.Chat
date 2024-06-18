@@ -1,4 +1,5 @@
 import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
@@ -7,6 +8,8 @@ import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 
 export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
 	const retentionPolicy = useRetentionPolicy(room);
+	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
+
 	const { t, ro, archived, topic, description, announcement, joinCodeRequired, sysMes, encrypted, retention, reactWhenReadOnly } = room;
 
 	return useMemo(
@@ -25,13 +28,14 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
 			systemMessages: Array.isArray(sysMes) ? sysMes : [],
 			hideSysMes: Array.isArray(sysMes) ? !!sysMes?.length : !!sysMes,
 			encrypted,
-			...(retentionPolicy?.enabled && {
-				retentionEnabled: retention?.enabled ?? retentionPolicy.isActive,
-				retentionOverrideGlobal: !!retention?.overrideGlobal,
-				retentionMaxAge: retention?.maxAge ?? msToTimeUnit(TIMEUNIT.days, retentionPolicy.maxAge),
-				retentionExcludePinned: retention?.excludePinned ?? retentionPolicy.excludePinned,
-				retentionFilesOnly: retention?.filesOnly ?? retentionPolicy.filesOnly,
-			}),
+			...(canEditRoomRetentionPolicy &&
+				retentionPolicy?.enabled && {
+					retentionEnabled: retention?.enabled ?? retentionPolicy.isActive,
+					retentionOverrideGlobal: !!retention?.overrideGlobal,
+					retentionMaxAge: retention?.maxAge ?? msToTimeUnit(TIMEUNIT.days, retentionPolicy.maxAge),
+					retentionExcludePinned: retention?.excludePinned ?? retentionPolicy.excludePinned,
+					retentionFilesOnly: retention?.filesOnly ?? retentionPolicy.filesOnly,
+				}),
 		}),
 		[
 			announcement,
@@ -47,6 +51,7 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
 			topic,
 			encrypted,
 			reactWhenReadOnly,
+			canEditRoomRetentionPolicy,
 		],
 	);
 };

@@ -2763,6 +2763,7 @@
   "Integrations_Outgoing_Type_RoomLeft": "User Left Room",
   "Integrations_Outgoing_Type_SendMessage": "Message Sent",
   "Integrations_Outgoing_Type_UserCreated": "User Created",
+  "Integrations_table": "Integrations table",
   "InternalHubot": "Internal Hubot",
   "InternalHubot_EnableForChannels": "Enable for Public Channels",
   "InternalHubot_EnableForDirectMessages": "Enable for Direct Messages",
