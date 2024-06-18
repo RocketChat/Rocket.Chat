@@ -5,15 +5,18 @@ import type { ValidateFunction } from 'ajv';
 import busboy from 'busboy';
 import type { Request } from 'express';
 
-type UploadResult<K> = {
+type UploadedFile = {
 	file: Readable & { truncated: boolean };
 	fieldname: string;
 	filename: string;
 	encoding: string;
 	mimetype: string;
 	fileBuffer: Buffer;
-	fields: K;
 };
+
+type UploadResult<K> = {
+	fields: K;
+} & UploadedFile;
 
 export async function getUploadFormData<
 	T extends string,
@@ -25,7 +28,8 @@ export async function getUploadFormData<
 		field?: T;
 		validate?: V;
 		sizeLimit?: number;
-	} = {},
+		isFileRequired?: boolean;
+	} = { isFileRequired: true },
 ): Promise<UploadResult<K>> {
 	const limits = {
 		files: 1,
@@ -35,7 +39,8 @@ export async function getUploadFormData<
 	const bb = busboy({ headers: request.headers, defParamCharset: 'utf8', limits });
 	const fields = Object.create(null) as K;
 
-	let uploadedFile: UploadResult<K> | undefined;
+	let result: UploadResult<K>;
+	let uploadedFile: UploadedFile | undefined;
 
 	let returnResult = (_value: UploadResult<K>) => {
 		// noop
@@ -49,13 +54,25 @@ export async function getUploadFormData<
 	}
 
 	function onEnd() {
-		if (!uploadedFile) {
+		if (!uploadedFile && options.isFileRequired) {
 			return returnError(new MeteorError('No file uploaded'));
+		}
+		if (uploadedFile) {
+			result = {
+				...result,
+				...uploadedFile,
+			};
+		}
+		if (Object.keys(fields).length > 0) {
+			result = {
+				...result,
+				fields,
+			};
 		}
 		if (options.validate !== undefined && !options.validate(fields)) {
 			return returnError(new MeteorError(`Invalid fields ${options.validate.errors?.join(', ')}`));
 		}
-		return returnResult(uploadedFile);
+		return returnResult(result);
 	}
 
 	function onFile(
@@ -85,7 +102,6 @@ export async function getUploadFormData<
 				encoding,
 				mimetype,
 				fieldname,
-				fields,
 				fileBuffer: Buffer.concat(fileChunks),
 			};
 		});
