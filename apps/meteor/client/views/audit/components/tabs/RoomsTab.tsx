@@ -6,7 +6,6 @@ import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
-import { getRoomTypeTranslation } from '../../../../lib/getRoomTypeTranslation';
 import type { AuditFields } from '../../hooks/useAuditForm';
 
 type RoomsTabProps = {
@@ -30,14 +29,8 @@ const RoomsTab = ({ form: { control }, setSelectedRoom }: RoomsTabProps) => {
 					error={!!ridFieldState.error}
 					placeholder={t('Channel_Name_Placeholder')}
 					onChange={ridField.onChange}
-					renderRoomIcon={({ encrypted, type }) =>
-						encrypted ? (
-							<Icon
-								name='key'
-								color='danger'
-								title={t('Encrypted_content_will_not_appear_search', { roomType: getRoomTypeTranslation(type).toLowerCase() })}
-							/>
-						) : null
+					renderRoomIcon={({ encrypted }) =>
+						encrypted ? <Icon name='key' color='danger' title={t('Encrypted_content_will_not_appear_search')} /> : null
 					}
 				/>
 			</FieldRow>

@@ -82,7 +82,7 @@ const MessageSearchForm = ({ provider, onSearch }: MessageSearchFormProps) => {
 			</Box>
 			{room.encrypted && (
 				<Callout type='warning' mbs={12} icon='circle-exclamation'>
-					<Box fontScale='p2b'>{t('Encrypted_RoomType', { roomType: getRoomTypeTranslation(room.t).toLowerCase() })}</Box>
+					<Box fontScale='p2b'>{t('Encrypted_RoomType', { roomType: getRoomTypeTranslation(room).toLowerCase() })}</Box>
 					{t('Encrypted_content_cannot_be_searched')}
 				</Callout>
 			)}
