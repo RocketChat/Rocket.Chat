@@ -22,10 +22,6 @@ describe('LIVECHAT - Utils', function () {
 
 	before((done) => getCredentials(done));
 
-	before(async () => {
-		await updateSetting('Livechat_enabled', true);
-	});
-
 	after(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateSetting('Livechat_offline_email', '');
