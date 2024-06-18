@@ -4,16 +4,15 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import React, { useEffect } from 'react';
 
-import { AppClientOrchestratorInstance } from '../apps/orchestrator';
-import { AppsContext } from '../contexts/AppsContext';
-import { useIsEnterprise } from '../hooks/useIsEnterprise';
-import { useInvalidateLicense } from '../hooks/useLicense';
-import type { AsyncState } from '../lib/asyncState';
-import { AsyncStatePhase } from '../lib/asyncState';
-import { useInvalidateAppsCountQueryCallback } from '../views/marketplace/hooks/useAppsCountQuery';
-import type { App } from '../views/marketplace/types';
-
-const sortByName = (apps: App[]): App[] => apps.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1));
+import { AppClientOrchestratorInstance } from '../../apps/orchestrator';
+import { AppsContext } from '../../contexts/AppsContext';
+import { useIsEnterprise } from '../../hooks/useIsEnterprise';
+import { useInvalidateLicense } from '../../hooks/useLicense';
+import type { AsyncState } from '../../lib/asyncState';
+import { AsyncStatePhase } from '../../lib/asyncState';
+import { useInvalidateAppsCountQueryCallback } from '../../views/marketplace/hooks/useAppsCountQuery';
+import type { App } from '../../views/marketplace/types';
+import { storeQueryFunction } from './storeQueryFunction';
 
 const getAppState = (
 	loading: boolean,
@@ -96,60 +95,10 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 		},
 	);
 
-	const store = useQuery(
-		['marketplace', 'apps-stored', instance.data, marketplace.data],
-		() => {
-			if (!marketplace.isFetched && !instance.isFetched) {
-				throw new Error('Apps not loaded');
-			}
-
-			const marketplaceApps: App[] = [];
-			const installedApps: App[] = [];
-			const privateApps: App[] = [];
-			const clonedData = [...(instance.data || [])];
-
-			sortByName(marketplace.data || []).forEach((app) => {
-				const appIndex = clonedData.findIndex(({ id }) => id === app.id);
-				const [installedApp] = appIndex > -1 ? clonedData.splice(appIndex, 1) : [];
-
-				const record = {
-					...app,
-					...(installedApp && {
-						private: installedApp.private,
-						installed: true,
-						status: installedApp.status,
-						version: installedApp.version,
-						licenseValidation: installedApp.licenseValidation,
-						migrated: installedApp.migrated,
-					}),
-					bundledIn: app.bundledIn,
-					marketplaceVersion: app.version,
-				};
-
-				if (installedApp) {
-					if (installedApp.private) {
-						privateApps.push(record);
-					} else {
-						installedApps.push(record);
-					}
-				}
-
-				marketplaceApps.push(record);
-			});
-
-			sortByName(clonedData).forEach((app) => {
-				if (app.private) {
-					privateApps.push(app);
-				}
-			});
-
-			return [marketplaceApps, installedApps, privateApps];
-		},
-		{
-			enabled: marketplace.isFetched && instance.isFetched,
-			keepPreviousData: true,
-		},
-	);
+	const store = useQuery(['marketplace', 'apps-stored', instance.data, marketplace.data], () => storeQueryFunction(marketplace, instance), {
+		enabled: marketplace.isFetched && instance.isFetched,
+		keepPreviousData: true,
+	});
 
 	const [marketplaceAppsData, installedAppsData, privateAppsData] = store.data || [];
 	const { isLoading } = store;
