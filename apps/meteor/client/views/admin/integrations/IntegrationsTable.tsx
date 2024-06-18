@@ -107,7 +107,7 @@ const IntegrationsTable = ({ type }: { type?: string }) => {
 			)}
 			{isSuccess && data && data.integrations.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable aria-label={t('Integrations_table')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{isSuccess &&
