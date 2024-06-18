@@ -21,16 +21,18 @@ test.describe('Omnichannel Canned Responses Sidebar', () => {
 			email: faker.internet.email(),
 		};
 
-		console.log('[before] user1.info ->', await (await api.get('/users.info?userId=user1')).json());
+		console.log('[before] agents ->', await (await api.get('/livechat/users/agent')).json());
 
 		// Set user user 1 as manager and agent
 		await api.post('/livechat/users/agent', { username: 'user1' });
 		await api.post('/livechat/users/manager', { username: 'user1' });
 
-		console.log('[after] user1.info ->', await (await api.get('/users.info?userId=user1')).json());
+		console.log('[after] agents ->', await (await api.get('/livechat/users/agent')).json());
 
 		const { page } = await createAuxContext(browser, Users.user1);
 		agent = { page, poHomeChannel: new HomeChannel(page) };
+
+		console.log('[after.page] agents ->', await (await api.get('/livechat/users/agent')).json());
 	});
 	test.beforeEach(async ({ page, api }) => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
@@ -42,7 +44,9 @@ test.describe('Omnichannel Canned Responses Sidebar', () => {
 		await agent.page.close();
 	});
 
-	test('Receiving a message from visitor', async ({ page }) => {
+	test('Receiving a message from visitor', async ({ page, api }) => {
+		console.log('[before] agents ->', await (await api.get('/livechat/users/agent')).json());
+
 		await test.step('Expect send a message as a visitor', async () => {
 			await page.goto('/livechat');
 			await poLiveChat.openLiveChat();
