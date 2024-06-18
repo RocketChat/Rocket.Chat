@@ -35,7 +35,7 @@ const RoomsTab = ({ form: { control }, setSelectedRoom }: RoomsTabProps) => {
 							<Icon
 								name='key'
 								color='danger'
-								title={t('Encrypted_content_will_not_appear_search', { roomType: getRoomTypeTranslation(type) })}
+								title={t('Encrypted_content_will_not_appear_search', { roomType: getRoomTypeTranslation(type).toLowerCase() })}
 							/>
 						) : null
 					}
