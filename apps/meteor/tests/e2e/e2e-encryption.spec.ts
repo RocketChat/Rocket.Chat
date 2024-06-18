@@ -299,7 +299,6 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
-	// Not sure what to do on this case now. Maybe we should not have the backend generated attachment so message would be empty before decrypted
 	test('expect placeholder text in place of encrypted file description, when E2EE is not setup', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
@@ -633,6 +632,7 @@ test.describe.serial('e2ee support legacy formats', () => {
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
 	});
 
+	// Not testing upload since it was not implemented in the legacy format
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page, api }) => {
 		const channelName = faker.string.uuid();
 
