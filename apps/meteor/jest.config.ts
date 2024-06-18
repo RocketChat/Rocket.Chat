@@ -27,7 +27,10 @@ const config: Config = {
 		{
 			displayName: 'server',
 			testEnvironment: 'node',
-			testMatch: ['<rootDir>/ee/app/authorization/server/validateUserRoles.spec.ts'],
+			testMatch: [
+				'<rootDir>/ee/app/authorization/server/validateUserRoles.spec.ts',
+				'<rootDir>/app/cloud/server/functions/supportedVersionsToken/**.spec.ts',
+			],
 			transformIgnorePatterns: ['!/node_modules/jose'],
 			errorOnDeprecated: true,
 
