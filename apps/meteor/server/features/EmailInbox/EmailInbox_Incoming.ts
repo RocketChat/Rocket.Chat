@@ -40,15 +40,19 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 		return guest;
 	}
 
-	const userId = await LivechatTyped.registerGuest({
+	const livechatVisitor = await LivechatTyped.registerGuest({
 		token: Random.id(),
 		name: name || email,
 		email,
 		department,
 	});
 
-	const newGuest = await LivechatVisitors.findOneEnabledById(userId);
-	logger.debug(`Guest ${userId} for visitor ${email} created`);
+	if (!livechatVisitor) {
+		throw new Error('Error getting guest');
+	}
+
+	const newGuest = await LivechatVisitors.findOneEnabledById(livechatVisitor._id);
+	logger.debug(`Guest ${livechatVisitor._id} for visitor ${email} created`);
 
 	if (newGuest) {
 		return newGuest;
@@ -135,14 +139,14 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	// TODO: html => md with turndown
 	const msg = email.html
 		? stripHtml(email.html, {
-				dumpLinkHrefsNearby: {
-					enabled: true,
-					putOnNewLine: false,
-					wrapHeads: '(',
-					wrapTails: ')',
-				},
-				skipHtmlDecoding: false,
-		  }).result
+			dumpLinkHrefsNearby: {
+				enabled: true,
+				putOnNewLine: false,
+				wrapHeads: '(',
+				wrapTails: ')',
+			},
+			skipHtmlDecoding: false,
+		}).result
 		: email.text || '';
 
 	const rid = room?._id ?? Random.id();

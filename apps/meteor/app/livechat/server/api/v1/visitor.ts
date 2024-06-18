@@ -47,9 +47,14 @@ API.v1.addRoute('livechat/visitor', {
 			connectionData: normalizeHttpHeaderData(this.request.headers),
 		};
 
-		const visitorId = await LivechatTyped.registerGuest(guest);
+		const livechatVisitor = await LivechatTyped.registerGuest(guest);
+		if (!livechatVisitor) {
+			throw new Meteor.Error('error-livechat-visitor-registration', 'Error registering visitor', {
+				method: 'livechat/visitor',
+			});
+		}
 
-		let visitor: ILivechatVisitor | null = await VisitorsRaw.findOneEnabledById(visitorId, {});
+		let visitor: ILivechatVisitor | null = await VisitorsRaw.findOneEnabledById(livechatVisitor._id, {});
 		if (visitor) {
 			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
 			// If it's updating an existing visitor, it must also update the roomInfo
@@ -96,7 +101,7 @@ API.v1.addRoute('livechat/visitor', {
 			if (processedKeys.length !== keys.length) {
 				LivechatTyped.logger.warn({
 					msg: 'Some custom fields were not processed',
-					visitorId,
+					visitorId: livechatVisitor._id,
 					missingKeys: keys.filter((key) => !processedKeys.includes(key)),
 				});
 			}
@@ -104,13 +109,13 @@ API.v1.addRoute('livechat/visitor', {
 			if (errors.length > 0) {
 				LivechatTyped.logger.error({
 					msg: 'Error updating custom fields',
-					visitorId,
+					visitorId: livechatVisitor._id,
 					errors,
 				});
 				throw new Error('error-updating-custom-fields');
 			}
 
-			visitor = await VisitorsRaw.findOneEnabledById(visitorId, {});
+			visitor = await VisitorsRaw.findOneEnabledById(livechatVisitor._id);
 		}
 
 		if (!visitor) {

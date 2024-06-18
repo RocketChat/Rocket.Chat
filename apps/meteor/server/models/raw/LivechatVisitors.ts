@@ -14,6 +14,8 @@ import type {
 	IndexDescription,
 	DeleteResult,
 	UpdateFilter,
+	ModifyResult,
+	FindOneAndUpdateOptions,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -196,23 +198,23 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			$or: [
 				...(emailOrPhone
 					? [
-							{
-								'visitorEmails.address': emailOrPhone,
-							},
-							{
-								'phone.phoneNumber': emailOrPhone,
-							},
-					  ]
+						{
+							'visitorEmails.address': emailOrPhone,
+						},
+						{
+							'phone.phoneNumber': emailOrPhone,
+						},
+					]
 					: []),
 				...(nameOrUsername
 					? [
-							{
-								name: nameOrUsername,
-							},
-							{
-								username: nameOrUsername,
-							},
-					  ]
+						{
+							name: nameOrUsername,
+						},
+						{
+							username: nameOrUsername,
+						},
+					]
 					: []),
 				...allowedCustomFields.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })),
 			],
@@ -288,6 +290,32 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 
 	updateById(_id: string, update: UpdateFilter<ILivechatVisitor>): Promise<Document | UpdateResult> {
 		return this.updateOne({ _id }, update);
+	}
+
+	async findOneByEmailPhoneToken(email?: string, phone?: string, token?: ILivechatVisitor['token'], options?: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
+		const query: Filter<ILivechatVisitor> = {
+			$or: [
+				...(email ? [{ 'visitorEmails.address': email }] : []),
+				...(phone ? [{ 'phone.phoneNumber': phone }] : []),
+				...(token ? [{ token }] : []),
+			],
+		};
+
+		return this.findOne(query, options);
+	}
+
+	async updateOneByIdOrToken(
+		update: Partial<ILivechatVisitor>,
+		options?: FindOneAndUpdateOptions,
+	): Promise<ModifyResult<ILivechatVisitor>> {
+		const query: Filter<ILivechatVisitor> = {
+			$or: [
+				...(update._id ? [{ _id: update._id }] : []),
+				...(update.token ? [{ token: update.token }] : []),
+			],
+		};
+
+		return this.findOneAndUpdate(query, { $set: update }, options);
 	}
 
 	saveGuestById(

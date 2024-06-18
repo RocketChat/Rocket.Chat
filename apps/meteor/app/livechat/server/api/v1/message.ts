@@ -267,8 +267,11 @@ API.v1.addRoute(
 				const guest: typeof this.bodyParams.visitor & { connectionData?: unknown } = this.bodyParams.visitor;
 				guest.connectionData = normalizeHttpHeaderData(this.request.headers);
 
-				const visitorId = await LivechatTyped.registerGuest(guest);
-				visitor = await LivechatVisitors.findOneEnabledById(visitorId);
+				const livechatVisitor = await LivechatTyped.registerGuest(guest);
+				if (!livechatVisitor) {
+					throw new Error('error-livechat-visitor-registration');
+				}
+				visitor = await LivechatVisitors.findOneEnabledById(livechatVisitor?._id);
 			}
 
 			const guest = visitor;

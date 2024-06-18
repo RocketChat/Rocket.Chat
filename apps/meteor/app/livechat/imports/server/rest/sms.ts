@@ -67,8 +67,12 @@ const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
 		data.department = targetDepartment;
 	}
 
-	const id = await LivechatTyped.registerGuest(data);
-	return LivechatVisitors.findOneEnabledById(id);
+	const livechatVisitor = await LivechatTyped.registerGuest(data);
+	if (!livechatVisitor) {
+		throw new Meteor.Error('error-invalid-visitor', 'Invalid visitor');
+	}
+
+	return LivechatVisitors.findOneEnabledById(livechatVisitor._id);
 };
 
 const normalizeLocationSharing = (payload: ServiceData) => {
