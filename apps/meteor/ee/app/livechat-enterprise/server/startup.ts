@@ -32,11 +32,16 @@ Meteor.startup(async () => {
 	});
 	settings.change<string>('Livechat_business_hour_type', async (value) => {
 		logger.debug(`Changing business hour type to ${value}`);
+
+		console.log('Livechat_business_hour_type ->', value);
+		console.log('Livechat_enable_business_hours ->', settings.get('Livechat_enable_business_hours'));
+
 		if (!Object.keys(businessHours).includes(value)) {
 			logger.error(`Invalid business hour type ${value}`);
 			return;
 		}
 		businessHourManager.registerBusinessHourBehavior(businessHours[value as keyof typeof businessHours]);
+
 		if (settings.get('Livechat_enable_business_hours')) {
 			await businessHourManager.restartManager();
 			logger.debug(`Business hour manager started`);

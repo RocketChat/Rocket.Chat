@@ -8,7 +8,7 @@ export const defaultWorkHours = (allDays = false) =>
 			time: '08:00',
 		},
 		finish: {
-			time: '18:00',
+			time: '12:00',
 		},
 		open: allDays ? true : !closedDays.includes(day),
 	}));

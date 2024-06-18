@@ -91,7 +91,7 @@ export default async function injectInitialData() {
 export async function resetAgentsInitialData() {
 	const connection = await MongoClient.connect(constants.URL_MONGODB);
 
-	await connection
+	const result = await connection
 		.db()
 		.collection('users')
 		.updateMany(
@@ -107,4 +107,6 @@ export async function resetAgentsInitialData() {
 				},
 			},
 		);
+
+	console.log('resetAgentsInitialData ->', result);
 }

@@ -21,9 +21,13 @@ test.describe('Omnichannel Canned Responses Sidebar', () => {
 			email: faker.internet.email(),
 		};
 
+		console.log('[before] user1.info ->', await (await api.get('/users.info?userId=user1')).json());
+
 		// Set user user 1 as manager and agent
 		await api.post('/livechat/users/agent', { username: 'user1' });
 		await api.post('/livechat/users/manager', { username: 'user1' });
+
+		console.log('[after] user1.info ->', await (await api.get('/users.info?userId=user1')).json());
 
 		const { page } = await createAuxContext(browser, Users.user1);
 		agent = { page, poHomeChannel: new HomeChannel(page) };
