@@ -429,10 +429,16 @@ test.describe.serial('e2ee room setup', () => {
 
 		await poHomeChannel.dismissToast();
 
-		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+		await poHomeChannel.content.encryptedRoomHeaderIcon.first().waitFor();
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon.first()).toBeVisible();
 
 		await page.locator('role=button[name="Save E2EE password"]').waitFor();
 		await expect(page.locator('role=button[name="Save E2EE password"]')).toBeVisible();
+
+		await poHomeChannel.tabs.btnE2EERoomSetupDisableE2E.waitFor();
+		await expect(poHomeChannel.tabs.btnE2EERoomSetupDisableE2E).toBeVisible();
+		await expect(poHomeChannel.tabs.btnTabMembers).toBeVisible();
+		await expect(poHomeChannel.tabs.btnRoomInfo).toBeVisible();
 
 		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
 
@@ -477,11 +483,17 @@ test.describe.serial('e2ee room setup', () => {
 
 		await poHomeChannel.dismissToast();
 
-		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon.first()).toBeVisible();
 
 		await page.locator('role=button[name="Enter your E2E password"]').waitFor();
 
 		await expect(page.locator('role=banner >> text="Enter your E2E password"')).toBeVisible();
+
+		await poHomeChannel.tabs.btnE2EERoomSetupDisableE2E.waitFor();
+		await expect(poHomeChannel.tabs.btnE2EERoomSetupDisableE2E).toBeVisible();
+		await expect(poHomeChannel.tabs.btnTabMembers).toBeVisible();
+		await expect(poHomeChannel.tabs.btnRoomInfo).toBeVisible();
+
 		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
 
 		await page.locator('role=button[name="Enter your E2E password"]').click();
@@ -518,7 +530,7 @@ test.describe.serial('e2ee room setup', () => {
 
 		await poHomeChannel.dismissToast();
 
-		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon.first()).toBeVisible();
 
 		await poHomeChannel.content.sendMessage('hello world');
 
@@ -551,5 +563,10 @@ test.describe.serial('e2ee room setup', () => {
 
 		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
 		await expect(page.locator('.rcx-states__title')).toContainText('Check back later');
+
+		await poHomeChannel.tabs.btnE2EERoomSetupDisableE2E.waitFor();
+		await expect(poHomeChannel.tabs.btnE2EERoomSetupDisableE2E).toBeVisible();
+		await expect(poHomeChannel.tabs.btnTabMembers).toBeVisible();
+		await expect(poHomeChannel.tabs.btnRoomInfo).toBeVisible();
 	});
 });
