@@ -34,7 +34,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	} = useMemberExists({ roomId: rid, username });
 
 	const isLoading = isUserInfoLoading || isMembershipStatusLoading;
-	const isMember = (isMemberData?.exists as boolean) && membershipCheckSuccess;
+	const isMember = membershipCheckSuccess && isMemberData?.exists;
 
 	const user = useMemo(() => {
 		const defaultValue = isLoading ? undefined : null;

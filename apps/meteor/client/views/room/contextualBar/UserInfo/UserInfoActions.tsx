@@ -25,7 +25,7 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 		isLoading,
 	} = useMemberExists({ roomId: rid, username: user.username as string });
 
-	const isMember = (isMemberData?.exists as boolean) && membershipCheckSuccess;
+	const isMember = membershipCheckSuccess && isMemberData?.exists;
 
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions(
 		{ _id: user._id, username: user.username, name: user.name },
