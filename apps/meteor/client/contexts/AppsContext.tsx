@@ -4,7 +4,7 @@ import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { Serialized } from '@rocket.chat/core-typings';
 import { createContext } from 'react';
 
-import type { IAppExternalURL, ICategory } from '../../ee/client/apps/@types/IOrchestrator';
+import type { IAppExternalURL, ICategory } from '../apps/@types/IOrchestrator';
 import type { AsyncState } from '../lib/asyncState';
 import { AsyncStatePhase } from '../lib/asyncState';
 import type { App } from '../views/marketplace/types';

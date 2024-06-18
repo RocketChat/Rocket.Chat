@@ -18,7 +18,7 @@ test.describe.parallel('Login', () => {
 	test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
 		const results = await makeAxeBuilder().analyze();
 		expect(results.violations).toEqual([]);
-	})
+	});
 
 	test('Login with invalid credentials', async () => {
 		await test.step('expect to have username and password marked as invalid', async () => {
