@@ -24,6 +24,8 @@ test.describe('OC - Manage Units', () => {
 
 	let monitor: Awaited<ReturnType<typeof createMonitor>>;
 
+	let monitor2: Awaited<ReturnType<typeof createMonitor>>;
+
 	test.beforeAll(async ({ api }) => {
 		department = await createDepartment(api);
 		department2 = await createDepartment(api);
@@ -35,12 +37,14 @@ test.describe('OC - Manage Units', () => {
 
 	test.beforeAll(async ({ api }) => {
 		monitor = await createMonitor(api, 'user2');
+		monitor2 = await createMonitor(api, 'user3');
 	});
 
 	test.afterAll(async () => {
 		await department.delete();
 		await department2.delete();
 		await monitor.delete();
+		await monitor2.delete();
 		await agent.delete();
 	});
 
@@ -101,8 +105,9 @@ test.describe('OC - Manage Units', () => {
 			return newUnit;
 		});
 
-		await page.reload();
-		
+		await page.goto('/omnichannel');
+		await poOmnichannelUnits.sidenav.linkUnits.click();
+
 		await test.step('expect to edit unit', async () => {
 			await poOmnichannelUnits.search(unit.name);
 			await poOmnichannelUnits.findRowByName(unit.name).click();
@@ -115,6 +120,32 @@ test.describe('OC - Manage Units', () => {
 			await expect(poOmnichannelUnits.inputSearch).toBeVisible();
 			await poOmnichannelUnits.search(editedUnitName);
 			await expect(poOmnichannelUnits.findRowByName(editedUnitName)).toBeVisible();
+		});
+
+		await test.step('expect to add another monitor to list', async () => {
+			await poOmnichannelUnits.findRowByName(editedUnitName).click();
+			await poOmnichannelUnits.selectMonitor('user3');
+			await poOmnichannelUnits.btnSave.click();
+		});
+
+		await test.step('expect unit to have been edited with 2 monitors', async () => {
+			await poOmnichannelUnits.search(editedUnitName);
+			await poOmnichannelUnits.findRowByName(editedUnitName).click();
+
+			await expect(poOmnichannelUnits.inputMonitors).toHaveText(/user2/);
+			await expect(poOmnichannelUnits.inputMonitors).toHaveText(/user3/);
+		});
+
+		await test.step('expect unit to remove one of the two monitors', async () => {
+			await poOmnichannelUnits.search(editedUnitName);
+			await poOmnichannelUnits.findRowByName(editedUnitName).click();
+			await poOmnichannelUnits.selectMonitor('user2');
+			await poOmnichannelUnits.btnSave.click();
+
+			await poOmnichannelUnits.search(editedUnitName);
+			await poOmnichannelUnits.findRowByName(editedUnitName).click();
+			await expect(poOmnichannelUnits.inputMonitors).toHaveText(/user3/);
+			await expect(poOmnichannelUnits.inputMonitors).not.toHaveText(/user2/);
 		});
 
 		await test.step('expect to delete unit', async () => {
@@ -191,5 +222,5 @@ test.describe('OC - Manage Units', () => {
 
 			await expect(poOmnichannelUnits.contextualBar).not.toBeVisible();
 		});
-	})
+	});
 });

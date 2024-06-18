@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
