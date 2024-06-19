@@ -129,6 +129,8 @@ API.v1.addRoute(
 				return API.v1.failure();
 			}
 
+			console.log('[delete] user ->', user);
+
 			if (this.urlParams.type === 'agent') {
 				if (await Livechat.removeAgent(user.username)) {
 					return API.v1.success();
