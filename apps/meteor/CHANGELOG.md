@@ -1,5 +1,39 @@
 # @rocket.chat/meteor
 
+## 6.7.5
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#32629](https://github.com/RocketChat/Rocket.Chat/pull/32629) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes the supported versions problem, where in most cases the data chosen was the oldest
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.5
+  - @rocket.chat/rest-typings@6.7.5
+  - @rocket.chat/api-client@0.1.34
+  - @rocket.chat/license@0.1.16
+  - @rocket.chat/omnichannel-services@0.1.16
+  - @rocket.chat/pdf-worker@0.0.40
+  - @rocket.chat/presence@0.1.16
+  - @rocket.chat/apps@0.0.7
+  - @rocket.chat/core-services@0.3.16
+  - @rocket.chat/cron@0.0.36
+  - @rocket.chat/gazzodown@5.0.5
+  - @rocket.chat/model-typings@0.3.12
+  - @rocket.chat/ui-contexts@5.0.5
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/fuselage-ui-kit@5.0.5
+  - @rocket.chat/models@0.0.40
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/ui-avatar@1.0.5
+  - @rocket.chat/ui-client@5.0.5
+  - @rocket.chat/ui-video-conf@5.0.5
+  - @rocket.chat/web-ui-registration@5.0.5
+  - @rocket.chat/instance-status@0.0.40
+  </details>
+
 ## 6.7.4
 
 ### Patch Changes
