@@ -16,6 +16,7 @@ const evaluateChangesAndLoadConfigByFields = async (fn: () => Promise<void>) => 
 		JSON.stringify({
 			user: store.state.user || {},
 			department: store.state.department,
+			iframeDepartment: store.state.iframe?.guest?.department,
 			token: store.state.token,
 		}),
 	);
@@ -43,6 +44,12 @@ const evaluateChangesAndLoadConfigByFields = async (fn: () => Promise<void>) => 
 		return;
 	}
 
+	if (oldStore.iframeDepartment !== store.state.iframe?.guest?.department) {
+		await loadConfig();
+		await loadMessages();
+		return;
+	}
+
 	if (oldStore.token !== store.state.token) {
 		await loadConfig();
 		await loadMessages();
@@ -56,6 +63,12 @@ const createOrUpdateGuest = async (guest: StoreState['guest']) => {
 
 	const { token } = guest;
 	token && (await store.setState({ token }));
+
+	const { department } = store.state;
+	if (department && !guest.department) {
+		guest.department = department;
+	}
+
 	const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...guest } });
 
 	if (!user) {
@@ -143,13 +156,10 @@ const api = {
 			user,
 			config: { departments = [] },
 			defaultAgent,
+			room,
 		} = store.state;
 
-		if (!user) {
-			updateIframeData({ defaultDepartment: value });
-			return;
-		}
-
+		updateIframeData({ defaultDepartment: value });
 		const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
 
 		if (!department) {
@@ -158,8 +168,15 @@ const api = {
 			);
 		}
 
-		updateIframeGuestData({ department });
 		store.setState({ department });
+
+		if (!user) {
+			return;
+		}
+
+		if (room) {
+			await Livechat.transferChat({ rid: room._id, department });
+		}
 
 		if (defaultAgent && defaultAgent.department !== department) {
 			store.setState({ defaultAgent: undefined });
@@ -243,9 +260,12 @@ const api = {
 			if (!data.token) {
 				data.token = createToken();
 			}
+			const { department } = store.state;
 
 			if (data.department) {
 				await api._setDepartment(data.department);
+			} else if (department) {
+				await api._setDepartment(department);
 			}
 
 			Livechat.unsubscribeAll();

@@ -51,6 +51,7 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 		token,
 		dispatch,
 		user,
+		department: currentDepartment,
 	} = useContext(StoreContext);
 
 	const defaultTitle = t('need_help');
@@ -77,13 +78,14 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 		department?: string;
 		customFields: FormPayloadCustomField;
 	}) => {
+		const guestDepartment = department || currentDepartment;
 		const fields = {
 			name,
 			email,
-			...(department && { department }),
+			...(guestDepartment && { department: guestDepartment }),
 		};
 
-		dispatch({ loading: true, department });
+		dispatch({ loading: true, department: guestDepartment });
 
 		try {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...fields, token } });
@@ -98,7 +100,7 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 	};
 
 	const getDepartmentDefault = () => {
-		const dept = departments.find((dept) => dept._id === defaultDepartment || dept.name === defaultDepartment);
+		const dept = departments.find((dept) => dept.name === defaultDepartment || dept._id === defaultDepartment);
 		if (dept?._id) {
 			return dept._id;
 		}
