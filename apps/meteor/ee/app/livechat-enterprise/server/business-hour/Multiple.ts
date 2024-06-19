@@ -244,7 +244,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 		});
 		const openedBusinessHours = await filterBusinessHoursThatMustBeOpenedByDay(allActiveBusinessHoursForEntireWeek, day);
 		if (!openedBusinessHours.length) {
-			console.log('No business hours to apply to agent', agentId);
+			console.log('MULTIPLE  sssss No business hours to apply to agent', agentId);
 			bhLogger.debug({
 				msg: 'Business hour status check failed for agent. No opened business hour found for the current day',
 				agentId,
@@ -261,12 +261,12 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			// check if default businessHour is active
 			const isDefaultBHActive = openedBusinessHours.find(({ type }) => type === LivechatBusinessHourTypes.DEFAULT);
 			if (isDefaultBHActive?._id) {
-				console.log('Default business hour found and applied to agent', agentId);
+				console.log('MULTIPLE Default business hour found and applied to agent', agentId);
 				await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId([isDefaultBHActive._id], agentId);
 				return;
 			}
 
-			console.log('No business hours to apply to agent', agentId);
+			console.log('MULTIPLE aaaaa t', agentId);
 
 			bhLogger.debug({
 				msg: 'Business hour status check failed for agent. Found default business hour to be inactive',
@@ -296,12 +296,12 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			if (!hasAtLeastOneDepartmentWithNonDefaultBH) {
 				const isDefaultBHActive = openedBusinessHours.find(({ type }) => type === LivechatBusinessHourTypes.DEFAULT);
 				if (isDefaultBHActive?._id) {
-					console.log('Default business hour found and applied to agent', agentId);
+					console.log('asd Default business hour found and applied to agent', agentId);
 					await Users.openAgentBusinessHoursByBusinessHourIdsAndAgentId([isDefaultBHActive._id], agentId);
 					return;
 				}
 			}
-			console.log('No business hours to apply to agent', agentId);
+			console.log('MULTIPLE ASDASDAS No business hours to apply to agent', agentId);
 			bhLogger.debug({
 				msg: 'Business hour status check failed for agent. No opened business hour found for any of the departments connected to the agent',
 				agentId,

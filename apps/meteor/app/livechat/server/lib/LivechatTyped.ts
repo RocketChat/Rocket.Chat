@@ -1668,6 +1668,7 @@ class LivechatClass {
 	}
 
 	async setUserStatusLivechat(userId: string, status: ILivechatAgentStatus) {
+		console.log('[setUserStatusLivechat] userId ->', userId, status);
 		const user = await Users.setLivechatStatus(userId, status);
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
 		return user;

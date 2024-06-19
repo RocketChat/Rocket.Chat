@@ -177,7 +177,7 @@ export class BusinessHourManager {
 		callbacks.add(
 			'livechat.onNewAgentCreated',
 			(...args) => {
-				console.log('onNewAgentCreated', args);
+				console.log('BUSINESS_HOUR: onNewAgentCreated', args);
 				return this.behavior.onNewAgentCreated.bind(this)(...args);
 			},
 			callbacks.priority.HIGH,
