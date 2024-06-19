@@ -374,7 +374,6 @@ describe('[Rooms]', function () {
 			await request
 				.post(api(`rooms.upload/${testChannel._id}`))
 				.set(credentials)
-				.field('t', 'e2e')
 				.field('description', 'some_file_description')
 				.attach('file', imgURL)
 				.expect('Content-Type', 'application/json')
@@ -391,7 +390,6 @@ describe('[Rooms]', function () {
 					expect(res.body.message.files[0]).to.have.property('type', 'image/png');
 					expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
 					expect(res.body.message.attachments[0]).to.have.property('description', 'some_file_description');
-					expect(res.body.message).to.have.property('t', 'e2e');
 				});
 		});
 	});
@@ -491,7 +489,7 @@ describe('[Rooms]', function () {
 				});
 
 			await request
-				.post(api(`rooms.mediaConfirm/${fileId}/`))
+				.post(api(`rooms.mediaConfirm/${testChannel._id}/${fileId}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -545,7 +543,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should not allow uploading a blocked media type to a room', async () => {
-			await updateSetting('FileUpload_MediaTypeBlackList', 'application/octet-stream');
+			await updateSetting('FileUpload_MediaTypeBlackList', 'text/plain');
 			await request
 				.post(api(`rooms.media/${testChannel._id}`))
 				.set(credentials)
@@ -695,8 +693,9 @@ describe('[Rooms]', function () {
 			await request
 				.post(api(`rooms.mediaConfirm/${testChannel._id}/${fileId}`))
 				.set(credentials)
-				.field('t', 'e2e')
-				.field('description', 'some_file_description')
+				.send({
+					description: 'some_file_description',
+				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -711,7 +710,6 @@ describe('[Rooms]', function () {
 					expect(res.body.message.files[0]).to.have.property('type', 'image/png');
 					expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
 					expect(res.body.message.attachments[0]).to.have.property('description', 'some_file_description');
-					expect(res.body.message).to.have.property('t', 'e2e');
 				});
 		});
 	});

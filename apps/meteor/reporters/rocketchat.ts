@@ -36,7 +36,7 @@ class RocketChatReporter implements Reporter {
 			draft: this.draft,
 			run: this.run,
 		};
-		console.log(`Sending test result to Rocket.Chat: ${JSON.stringify(payload)}`);
+		// console.log(`Sending test result to Rocket.Chat: ${JSON.stringify(payload)}`);
 		return fetch(this.url, {
 			method: 'POST',
 			body: JSON.stringify(payload),
