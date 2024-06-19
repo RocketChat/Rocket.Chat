@@ -31,8 +31,6 @@ const onlyCollections = DBWATCHER_ONLY_COLLECTIONS.split(',')
 export function getWatchCollections(): string[] {
 	const collections = [
 		Users.getCollectionName(),
-		Subscriptions.getCollectionName(),
-		LivechatDepartmentAgents.getCollectionName(),
 		InstanceStatus.getCollectionName(),
 		Settings.getCollectionName(),
 		Subscriptions.getCollectionName(),
@@ -51,6 +49,7 @@ export function getWatchCollections(): string[] {
 		collections.push(LoginServiceConfiguration.getCollectionName());
 		collections.push(EmailInbox.getCollectionName());
 		collections.push(IntegrationHistory.getCollectionName());
+		collections.push(LivechatDepartmentAgents.getCollectionName());
 	}
 
 	if (onlyCollections.length > 0) {

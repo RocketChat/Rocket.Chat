@@ -5,7 +5,6 @@ import { HomeChannel } from './page-objects';
 import { createTargetPrivateChannel, createTargetTeam, deleteChannel, deleteTeam } from './utils';
 import { test, expect } from './utils/test';
 
-
 test.use({ storageState: Users.admin.state });
 
 const getMentionText = (username: string, kind?: number): string => {
@@ -41,11 +40,15 @@ test.describe.serial('message-mentions', () => {
 	test.describe('Should not allow to send @all mention if permission to do so is disabled', () => {
 		let targetChannel2: string;
 		test.beforeAll(async ({ api }) => {
-			expect((await api.post('/permissions.update', { permissions: [{ '_id': 'mention-all', 'roles': [] }] })).status()).toBe(200);
+			expect((await api.post('/permissions.update', { permissions: [{ _id: 'mention-all', roles: [] }] })).status()).toBe(200);
 		});
 
 		test.afterAll(async ({ api }) => {
-			expect((await api.post('/permissions.update', { permissions: [{ '_id': 'mention-all', 'roles': ['admin', 'owner', 'moderator', 'user'] }] })).status()).toBe(200);
+			expect(
+				(
+					await api.post('/permissions.update', { permissions: [{ _id: 'mention-all', roles: ['admin', 'owner', 'moderator', 'user'] }] })
+				).status(),
+			).toBe(200);
 			await deleteChannel(api, targetChannel2);
 		});
 
@@ -72,11 +75,15 @@ test.describe.serial('message-mentions', () => {
 	test.describe('Should not allow to send @here mention if permission to do so is disabled', () => {
 		let targetChannel2: string;
 		test.beforeAll(async ({ api }) => {
-			expect((await api.post('/permissions.update', { permissions: [{ '_id': 'mention-here', 'roles': [] }] })).status()).toBe(200);
+			expect((await api.post('/permissions.update', { permissions: [{ _id: 'mention-here', roles: [] }] })).status()).toBe(200);
 		});
 
 		test.afterAll(async ({ api }) => {
-			expect((await api.post('/permissions.update', { permissions: [{ '_id': 'mention-here', 'roles': ['admin', 'owner', 'moderator', 'user'] }] })).status()).toBe(200);
+			expect(
+				(
+					await api.post('/permissions.update', { permissions: [{ _id: 'mention-here', roles: ['admin', 'owner', 'moderator', 'user'] }] })
+				).status(),
+			).toBe(200);
 			await deleteChannel(api, targetChannel2);
 		});
 
@@ -191,16 +198,18 @@ test.describe.serial('message-mentions', () => {
 					await expect(userPage.content.lastUserMessageBody).toContainText(getMentionText(Users.user2.data.username, 3));
 				});
 			});
-		})
+		});
 
 		test.describe(() => {
 			test.use({ storageState: Users.user1.state });
 			test.beforeAll(async ({ api }) => {
-				expect((await api.post('/permissions.update', { permissions: [{ '_id': 'create-d', 'roles': ['admin'] }] })).status()).toBe(200);
+				expect((await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: ['admin'] }] })).status()).toBe(200);
 			});
 
 			test.afterAll(async ({ api }) => {
-				expect((await api.post('/permissions.update', { permissions: [{ '_id': 'create-d', 'roles': ['admin', 'user', 'bot', 'app'] }] })).status()).toBe(200);
+				expect(
+					(await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: ['admin', 'user', 'bot', 'app'] }] })).status(),
+				).toBe(200);
 			});
 
 			test('dismiss and add users actions', async ({ page }) => {
@@ -215,7 +224,7 @@ test.describe.serial('message-mentions', () => {
 					await poHomeChannel.sidenav.btnCreate.click();
 
 					await expect(page).toHaveURL(`/group/${targetChannel2}`);
-				})
+				});
 
 				await test.step('receive bot message', async () => {
 					await userPage.sidenav.openChat(targetChannel2);
@@ -251,11 +260,13 @@ test.describe.serial('message-mentions', () => {
 		test.describe(() => {
 			test.use({ storageState: Users.user2.state });
 			test.beforeAll(async ({ api }) => {
-				expect((await api.post('/permissions.update', { permissions: [{ '_id': 'create-d', 'roles': ['admin'] }] })).status()).toBe(200);
+				expect((await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: ['admin'] }] })).status()).toBe(200);
 			});
 
 			test.afterAll(async ({ api }) => {
-				expect((await api.post('/permissions.update', { permissions: [{ '_id': 'create-d', 'roles': ['admin', 'user', 'bot', 'app'] }] })).status()).toBe(200);
+				expect(
+					(await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: ['admin', 'user', 'bot', 'app'] }] })).status(),
+				).toBe(200);
 			});
 			test('no actions', async ({ page }) => {
 				const userPage = new HomeChannel(page);
@@ -263,7 +274,9 @@ test.describe.serial('message-mentions', () => {
 				await test.step('receive bot message', async () => {
 					await userPage.sidenav.openChat(targetChannel2);
 					await userPage.content.sendMessage(getMentionText(Users.user3.data.username));
-					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(getMentionText(Users.user3.data.username, 2));
+					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).toContainText(
+						getMentionText(Users.user3.data.username, 2),
+					);
 				});
 
 				await test.step('not show "Do nothing" action', async () => {
@@ -276,7 +289,7 @@ test.describe.serial('message-mentions', () => {
 					await expect(userPage.content.lastUserMessage.locator('button >> text="Let them know"')).not.toBeVisible();
 				});
 			});
-		})
+		});
 
 		test.describe('team mention', () => {
 			let team: string;
@@ -297,9 +310,7 @@ test.describe.serial('message-mentions', () => {
 					await userPage.content.sendMessage(getMentionText(team));
 					await expect(userPage.content.lastUserMessage.locator('.rcx-message-block')).not.toBeVisible();
 				});
-
 			});
-		})
-
-	})
+		});
+	});
 });

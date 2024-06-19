@@ -1,10 +1,12 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 import { api, credentials, request } from './api-data';
 import { password } from './user';
+import { MongoClient } from 'mongodb';
+import { URL_MONGODB } from '../e2e/config/constants';
 
 export const createUser = (userData = {}) =>
-	new Promise((resolve) => {
-		const username = userData.username || `user.test.${Date.now()}`;
+	new Promise((resolve, reject) => {
+		const username = userData.username || `user.test.${Date.now()}.${Math.random()}`;
 		const email = userData.email || `${username}@rocket.chat`;
 		request
 			.post(api('users.create'))
@@ -104,4 +106,16 @@ export const registerUser = async (userData = {}, overrideCredentials = credenti
 		.send({ email, name: username, username, pass: password, ...userData });
 
 	return result.body.user;
+};
+
+// For changing user data when it's not possible to do so via API
+export const updateUserInDb = async (userId, userData) => {
+	const connection = await MongoClient.connect(URL_MONGODB);
+
+	await connection
+		.db()
+		.collection('users')
+		.updateOne({ _id: userId }, { $set: { ...userData } });
+
+	await connection.close();
 };

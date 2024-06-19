@@ -62,6 +62,7 @@ import {
 	notifyOnLivechatInquiryChangedByRoom,
 	notifyOnRoomChangedById,
 	notifyOnLivechatInquiryChangedByToken,
+	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
 } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
@@ -1010,6 +1011,8 @@ class LivechatClass {
 
 		await Promise.all([LivechatDepartmentAgents.disableAgentsByDepartmentId(_id), LivechatDepartment.archiveDepartment(_id)]);
 
+		void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id);
+
 		await callbacks.run('livechat.afterDepartmentArchived', department);
 	}
 
@@ -1022,6 +1025,9 @@ class LivechatClass {
 
 		// TODO: these kind of actions should be on events instead of here
 		await Promise.all([LivechatDepartmentAgents.enableAgentsByDepartmentId(_id), LivechatDepartment.unarchiveDepartment(_id)]);
+
+		void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id);
+
 		return true;
 	}
 
