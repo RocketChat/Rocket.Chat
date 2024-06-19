@@ -168,6 +168,12 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
+        with:
+          theme: dark
+          job_summary: true
+          comment_on_pr: false
       - name: Github Info
         run: |
           echo "GITHUB_ACTION: $GITHUB_ACTION"
@@ -192,6 +198,12 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
+        with:
+          theme: dark
+          job_summary: true
+          comment_on_pr: false
       - name: Github Info
         run: |
           echo "GITHUB_ACTION: $GITHUB_ACTION"

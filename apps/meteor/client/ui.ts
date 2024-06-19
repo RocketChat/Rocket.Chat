@@ -78,3 +78,5 @@ export const quickActionHooks = [
 	useCloseChatQuickAction,
 	useOnHoldChatQuickAction,
 ] satisfies (() => QuickActionsActionConfig | undefined)[];
+
+export const roomActionHooksForE2EESetup = [useChannelSettingsRoomAction, useMembersListRoomAction, useE2EERoomAction];

@@ -10,7 +10,7 @@ import { processSetReaction } from './processSetReaction';
 import { processSlashCommand } from './processSlashCommand';
 import { processTooLongMessage } from './processTooLongMessage';
 
-const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[]): Promise<void> => {
+const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[], isSlashCommandAllowed?: boolean): Promise<void> => {
 	KonchatNotification.removeRoomNotification(message.rid);
 
 	if (await processSetReaction(chat, message)) {
@@ -25,7 +25,7 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[])
 		return;
 	}
 
-	if (await processSlashCommand(chat, message)) {
+	if (isSlashCommandAllowed && (await processSlashCommand(chat, message))) {
 		return;
 	}
 
@@ -34,7 +34,12 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[])
 
 export const sendMessage = async (
 	chat: ChatAPI,
-	{ text, tshow, previewUrls }: { text: string; tshow?: boolean; previewUrls?: string[] },
+	{
+		text,
+		tshow,
+		previewUrls,
+		isSlashCommandAllowed,
+	}: { text: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean },
 ): Promise<boolean> => {
 	if (!(await chat.data.isSubscribedToRoom())) {
 		try {
@@ -63,7 +68,7 @@ export const sendMessage = async (
 		});
 
 		try {
-			await process(chat, message, previewUrls);
+			await process(chat, message, previewUrls, isSlashCommandAllowed);
 			chat.composer?.dismissAllQuotedMessages();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

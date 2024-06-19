@@ -44,12 +44,20 @@ export class HomeFlextab {
 		return this.page.locator('role=menuitem[name="Notifications Preferences"]');
 	}
 
+	get btnE2EERoomSetupDisableE2E(): Locator {
+		return this.page.locator('[data-qa-id=ToolBoxAction-key]');
+	}
+
 	get btnDisableE2E(): Locator {
 		return this.page.locator('role=menuitem[name="Disable E2E"]');
 	}
 
 	get btnEnableE2E(): Locator {
 		return this.page.locator('role=menuitem[name="Enable E2E"]');
+	}
+
+	get btnEnableOTR(): Locator {
+		return this.page.locator('role=menuitem[name="OTR"]');
 	}
 
 	get flexTabViewThreadMessage(): Locator {

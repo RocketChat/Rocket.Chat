@@ -431,7 +431,7 @@ test.describe('OC - Livechat API', () => {
 
 				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor_1')).toBeVisible();
 				// wait for load messages to happen
-				await page.waitForResponse(response => response.url().includes(`token=${registerGuestVisitor1.token}`));
+				await page.waitForResponse((response) => response.url().includes(`token=${registerGuestVisitor1.token}`));
 			});
 
 			await test.step('Expect registerGuest to create guest 2', async () => {
@@ -441,9 +441,12 @@ test.describe('OC - Livechat API', () => {
 				);
 
 				// wait for load messages to happen
-				await page.waitForResponse(response => response.url().includes(`token=${registerGuestVisitor2.token}`));
+				await page.waitForResponse((response) => response.url().includes(`token=${registerGuestVisitor2.token}`));
 
-				await poLiveChat.page.frameLocator('#rocketchat-iframe').getByText('this_a_test_message_from_visitor_1').waitFor({ state: 'hidden' });
+				await poLiveChat.page
+					.frameLocator('#rocketchat-iframe')
+					.getByText('this_a_test_message_from_visitor_1')
+					.waitFor({ state: 'hidden' });
 
 				await expect(poLiveChat.page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
 

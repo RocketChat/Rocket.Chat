@@ -131,6 +131,13 @@ export class BaseDummy<
 		};
 	}
 
+	async removeByIds(_ids: T['_id'][]): Promise<DeleteResult> {
+		return {
+			acknowledged: true,
+			deletedCount: 0,
+		};
+	}
+
 	async deleteOne(filter: Filter<T>, options?: DeleteOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteResult> {
 		return this.deleteMany(filter, options);
 	}

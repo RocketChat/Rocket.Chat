@@ -23,7 +23,7 @@ import {
 } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user';
-import { createUser, login, deleteUser, getUserStatus, getUserByUsername, registerUser } from '../../data/users.helper.js';
+import { createUser, login, deleteUser, getUserStatus, getUserByUsername, registerUser, updateUserInDb } from '../../data/users.helper.js';
 
 const targetUser = {};
 
@@ -1651,6 +1651,34 @@ describe('[Users]', function () {
 						.end(done);
 				});
 			});
+		});
+
+		it('should delete requirePasswordChangeReason when requirePasswordChange is set to false', async () => {
+			const user = await createUser({
+				requirePasswordChange: true,
+			});
+
+			await updateUserInDb(user._id, { requirePasswordChangeReason: 'any_data' });
+
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: user._id,
+					data: {
+						requirePasswordChange: false,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('user');
+					expect(res.body.user).to.have.property('requirePasswordChange', false);
+					expect(res.body.user).to.not.have.property('requirePasswordChangeReason');
+				});
+
+			await deleteUser(user);
 		});
 
 		function failUpdateUser(name) {

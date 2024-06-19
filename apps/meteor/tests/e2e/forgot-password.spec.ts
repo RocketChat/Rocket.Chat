@@ -2,7 +2,7 @@ import { Registration } from './page-objects';
 import { test, expect } from './utils/test';
 
 test.describe.parallel('Forgot Password', () => {
-	let poRegistration: Registration;	
+	let poRegistration: Registration;
 
 	test.beforeEach(async ({ page }) => {
 		poRegistration = new Registration(page);
@@ -42,5 +42,5 @@ test.describe.parallel('Forgot Password', () => {
 	test('should not have any accessibility violations', async ({ makeAxeBuilder }) => {
 		const results = await makeAxeBuilder().analyze();
 		expect(results.violations).toEqual([]);
-	})
+	});
 });

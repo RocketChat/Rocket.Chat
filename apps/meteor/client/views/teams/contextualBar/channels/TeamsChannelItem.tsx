@@ -22,11 +22,12 @@ import TeamsChannelItemMenu from './TeamsChannelItemMenu';
 
 type TeamsChannelItemProps = {
 	room: IRoom;
+	mainRoom: IRoom;
 	onClickView: (room: IRoom) => void;
 	reload: () => void;
 };
 
-const TeamsChannelItem = ({ room, onClickView, reload }: TeamsChannelItemProps) => {
+const TeamsChannelItem = ({ room, mainRoom, onClickView, reload }: TeamsChannelItemProps) => {
 	const t = useTranslation();
 	const rid = room._id;
 	const type = room.t;
@@ -68,7 +69,7 @@ const TeamsChannelItem = ({ room, onClickView, reload }: TeamsChannelItemProps) 
 			</OptionContent>
 			{(canRemoveTeamChannel || canEditTeamChannel || canDeleteTeamChannel) && (
 				<OptionMenu onClick={onClick}>
-					{showButton ? <TeamsChannelItemMenu room={room} reload={reload} /> : <IconButton tiny icon='kebab' />}
+					{showButton ? <TeamsChannelItemMenu room={room} mainRoom={mainRoom} reload={reload} /> : <IconButton tiny icon='kebab' />}
 				</OptionMenu>
 			)}
 		</Option>

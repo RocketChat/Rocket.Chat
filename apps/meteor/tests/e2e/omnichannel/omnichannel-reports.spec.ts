@@ -1,4 +1,4 @@
-import { Route } from '@playwright/test';
+import type { Route } from '@playwright/test';
 
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';

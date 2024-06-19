@@ -16,6 +16,7 @@ import type {
 	AggregationCursor,
 } from 'mongodb';
 
+import { notifyOnLivechatDepartmentAgentChangedByDepartmentId } from '../../../app/lib/server/lib/notifyListener';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implements ILivechatDepartmentModel {
@@ -251,6 +252,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 
 		if (current?.enabled !== data.enabled) {
 			await LivechatDepartmentAgents.setDepartmentEnabledByDepartmentId(_id, data.enabled);
+			void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id, current ? 'updated' : 'inserted');
 		}
 
 		const latestDept = await this.findOneById(_id);

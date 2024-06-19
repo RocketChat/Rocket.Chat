@@ -27,7 +27,7 @@ test.describe.serial('access-security-page', () => {
 			setSettingValueById(api, 'Accounts_AllowPasswordChange', true),
 			setSettingValueById(api, 'Accounts_TwoFactorAuthentication_Enabled', true),
 			setSettingValueById(api, 'E2E_Enable', false),
-		])
+		]),
 	);
 
 	test('security tab is invisible when password change, 2FA and E2E are disabled', async ({ page }) => {
@@ -77,5 +77,5 @@ test.describe.serial('access-security-page', () => {
 			]);
 			await expect(poAccountProfile.securityE2EEncryptionSection).toBeVisible();
 		});
-	})
+	});
 });

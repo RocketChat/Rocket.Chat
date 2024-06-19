@@ -2,7 +2,7 @@ import child_process from 'child_process';
 import path from 'path';
 
 import { faker } from '@faker-js/faker';
-import { Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { v2 as compose } from 'docker-compose';
 import { MongoClient } from 'mongodb';
 
@@ -14,7 +14,8 @@ import { createCustomRole, deleteCustomRole } from './utils/custom-role';
 import { getUserInfo } from './utils/getUserInfo';
 import { parseMeteorResponse } from './utils/parseMeteorResponse';
 import { setSettingValueById } from './utils/setSettingValueById';
-import { test, expect, BaseTest } from './utils/test';
+import type { BaseTest } from './utils/test';
+import { test, expect } from './utils/test';
 
 const resetTestData = async (cleanupOnly = false) => {
 	// Reset saml users' data on mongo in the beforeAll hook to allow re-running the tests within the same playwright session
@@ -196,7 +197,7 @@ test.describe('SAML', () => {
 		});
 	});
 
-	test('Allow password change for OAuth users', async ({  api }) => {
+	test('Allow password change for OAuth users', async ({ api }) => {
 		await test.step("should not send password reset mail if 'Allow Password Change for OAuth Users' setting is disabled", async () => {
 			expect((await setSettingValueById(api, 'Accounts_AllowPasswordChangeForOAuthUsers', false)).status()).toBe(200);
 

@@ -67,33 +67,34 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 		options?: FindOptions<ILivechatDepartmentAgents>,
 	): Promise<ILivechatDepartmentAgents | null>;
 	findOneByAgentIdAndDepartmentId(agentId: string, departmentId: string): Promise<ILivechatDepartmentAgents | null>;
-	saveAgent(agent: {
-		agentId: string;
-		departmentId: string;
-		username: string;
-		departmentEnabled: boolean;
-		count: number;
-		order: number;
-	}): Promise<Document | UpdateResult>;
-	removeByAgentId(agentId: string): Promise<void>;
+	saveAgent(agent: Omit<ILivechatDepartmentAgents, '_id'>): Promise<UpdateResult>;
+	removeByAgentId(agentId: string): Promise<DeleteResult>;
 	removeByDepartmentIdAndAgentId(departmentId: string, agentId: string): Promise<void>;
 	getNextAgentForDepartment(
-		departmentId: string,
+		departmentId: ILivechatDepartmentAgents['departmentId'],
 		isLivechatEnabledWhenAgentIdle?: boolean,
-		ignoreAgentId?: string,
+		ignoreAgentId?: ILivechatDepartmentAgents['agentId'],
 		extraQuery?: Filter<IUser>,
-	): Promise<{ agentId: string; username: string } | null | undefined>;
+	): Promise<Pick<ILivechatDepartmentAgents, '_id' | 'agentId' | 'departmentId' | 'username'> | null | undefined>;
 	checkOnlineForDepartment(departmentId: string): Promise<boolean>;
 	getOnlineForDepartment(
 		departmentId: string,
 		isLivechatEnabledWhenAgentIdle?: boolean,
 	): Promise<FindCursor<ILivechatDepartmentAgents> | undefined>;
 	getBotsForDepartment(departmentId: string): Promise<undefined | FindCursor<ILivechatDepartmentAgents>>;
-	getNextBotForDepartment(departmentId: string, ignoreAgentId?: string): Promise<{ agentId: string; username: string } | undefined>;
+	getNextBotForDepartment(
+		departmentId: ILivechatDepartmentAgents['departmentId'],
+		ignoreAgentId?: ILivechatDepartmentAgents['agentId'],
+	): Promise<Pick<ILivechatDepartmentAgents, '_id' | 'agentId' | 'departmentId' | 'username'> | null | undefined>;
 	replaceUsernameOfAgentByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 	countByDepartmentId(departmentId: string): Promise<number>;
 	disableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document>;
 	enableAgentsByDepartmentId(departmentId: string): Promise<UpdateResult | Document>;
 	findAllAgentsConnectedToListOfDepartments(departmentIds: string[]): Promise<string[]>;
 	findByAgentIds(agentIds: string[], options?: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;
+	findByAgentsAndDepartmentId(
+		agentsIds: ILivechatDepartmentAgents['agentId'][],
+		departmentId: ILivechatDepartmentAgents['departmentId'],
+		options?: FindOptions<ILivechatDepartmentAgents>,
+	): FindCursor<ILivechatDepartmentAgents>;
 }

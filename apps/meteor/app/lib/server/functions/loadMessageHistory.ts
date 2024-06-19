@@ -1,7 +1,8 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
+import { settings } from '../../../settings/server/cached';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
@@ -29,7 +30,9 @@ export async function loadMessageHistory({
 		throw new Error('error-invalid-room');
 	}
 
-	const hiddenMessageTypes = getHiddenSystemMessages(room);
+	const hiddenSystemMessages = settings.get<MessageTypesValues[]>('Hide_System_Messages');
+
+	const hiddenMessageTypes = getHiddenSystemMessages(room, hiddenSystemMessages);
 
 	const options: FindOptions<IMessage> = {
 		sort: {

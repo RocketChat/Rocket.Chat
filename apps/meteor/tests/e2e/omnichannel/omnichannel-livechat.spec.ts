@@ -278,7 +278,7 @@ test.describe('OC - Livechat - Livechat_Display_Offline_Form', () => {
 	test('OC - Livechat - Livechat_Display_Offline_Form false', async () => {
 		await test.step('expect offline form to not be visible', async () => {
 			await poLiveChat.openAnyLiveChat();
-			await expect (poLiveChat.page.locator(`div >> text=${message}`)).toBeVisible();
+			await expect(poLiveChat.page.locator(`div >> text=${message}`)).toBeVisible();
 			await expect(poLiveChat.textAreaMessage).not.toBeVisible();
 		});
 	});

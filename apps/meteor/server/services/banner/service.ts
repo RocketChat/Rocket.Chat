@@ -68,6 +68,12 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 			.filter((banner) => !dismissed.has(banner._id))
 			.map((banner) => ({
 				...banner,
+				view: {
+					...banner.view,
+					// All modern banners should have a viewId, but we have old banners that were created without it
+					// such as the seatsTaken banner. In this case, we use the bannerId as the viewId
+					viewId: banner.view.viewId || banner._id,
+				},
 				// add surface to legacy banners
 				surface: !banner.surface ? 'banner' : banner.surface,
 			}));

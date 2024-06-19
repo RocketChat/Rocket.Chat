@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 import { DEFAULT_USER_CREDENTIALS } from '../config/constants';
 import injectInitialData from '../fixtures/inject-initial-data';

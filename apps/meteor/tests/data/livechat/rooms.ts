@@ -32,7 +32,7 @@ export const createLivechatRoom = async (visitorToken: string, extraRoomParams?:
 	return response.body.room;
 };
 
-export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
+export const createVisitor = (department?: string, visitorName?: string): Promise<ILivechatVisitor> =>
 	new Promise((resolve, reject) => {
 		const token = getRandomVisitorToken();
 		const email = `${token}@${token}.com`;
@@ -46,7 +46,7 @@ export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 				.set(credentials)
 				.send({
 					visitor: {
-						name: `Visitor ${Date.now()}`,
+						name: visitorName || `Visitor ${Date.now()}`,
 						email,
 						token,
 						phone,

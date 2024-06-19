@@ -95,7 +95,7 @@ describe('Apps - Send Messages As User', function () {
 
 			after(() => Promise.all([deleteRoom({ type: 'p', roomId: group._id }), deleteUser(user)]));
 
-			it('should send a message as app user', (done) => {
+			it('should return 500 when sending a message as user that has no permissions', (done) => {
 				request
 					.post(apps(`/public/${app.id}/send-message-as-user?userId=${user._id}`))
 					.set(userCredentials)

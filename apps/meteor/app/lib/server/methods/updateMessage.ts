@@ -53,7 +53,7 @@ export async function executeUpdateMessage(uid: IUser['_id'], message: AtLeast<I
 	}
 
 	const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
-	const bypassBlockTimeLimit = await hasPermissionAsync(uid, 'bypass-time-limit-edit-and-delete');
+	const bypassBlockTimeLimit = await hasPermissionAsync(uid, 'bypass-time-limit-edit-and-delete', message.rid);
 
 	if (!bypassBlockTimeLimit && Match.test(blockEditInMinutes, Number) && blockEditInMinutes !== 0) {
 		let currentTsDiff = 0;

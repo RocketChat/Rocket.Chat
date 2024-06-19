@@ -62,6 +62,7 @@ const cacheValueInSettings = <T extends SettingValue>(
 	reset: () => Promise<T>;
 } => {
 	const reset = async () => {
+		SystemLogger.debug(`Resetting cached value ${key} in settings`);
 		const value = await fn();
 
 		await Settings.updateValueById(key, value);
@@ -133,6 +134,31 @@ const getSupportedVersionsToken = async () => {
 		versionsFromLicense?.supportedVersions,
 		(response.success && response.result) || undefined,
 	);
+
+	SystemLogger.debug({
+		msg: 'Supported versions',
+		supportedVersionsFromBuild: supportedVersionsFromBuild.timestamp,
+		versionsFromLicense: versionsFromLicense?.supportedVersions?.timestamp,
+		response: response.success && response.result?.timestamp,
+	});
+
+	switch (supportedVersions) {
+		case supportedVersionsFromBuild:
+			SystemLogger.info({
+				msg: 'Using supported versions from build',
+			});
+			break;
+		case versionsFromLicense?.supportedVersions:
+			SystemLogger.info({
+				msg: 'Using supported versions from license',
+			});
+			break;
+		case response.success && response.result:
+			SystemLogger.info({
+				msg: 'Using supported versions from cloud',
+			});
+			break;
+	}
 
 	await buildVersionUpdateMessage(supportedVersions?.versions);
 

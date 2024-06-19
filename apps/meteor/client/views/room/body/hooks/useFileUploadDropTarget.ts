@@ -29,7 +29,7 @@ export const useFileUploadDropTarget = (): readonly [
 
 	const t = useTranslation();
 
-	const fileUploadEnabled = useSetting('FileUpload_Enabled') as boolean;
+	const fileUploadEnabled = useSetting<boolean>('FileUpload_Enabled');
 	const user = useUser();
 	const fileUploadAllowedForUser = useReactiveValue(
 		useCallback(() => !roomCoordinator.readOnly(room._id, { username: user?.username }), [room._id, user?.username]),
@@ -38,8 +38,7 @@ export const useFileUploadDropTarget = (): readonly [
 	const chat = useChat();
 
 	const onFileDrop = useMutableCallback(async (files: File[]) => {
-		const { mime } = await import('../../../../../app/utils/lib/mimeTypes');
-
+		const { getMimeType } = await import('../../../../../app/utils/lib/mimeTypes');
 		const getUniqueFiles = () => {
 			const uniqueFiles: File[] = [];
 			const st: Set<number> = new Set();
@@ -55,7 +54,7 @@ export const useFileUploadDropTarget = (): readonly [
 		const uniqueFiles = getUniqueFiles();
 
 		const uploads = Array.from(uniqueFiles).map((file) => {
-			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
+			Object.defineProperty(file, 'type', { value: getMimeType(file.name) });
 			return file;
 		});
 

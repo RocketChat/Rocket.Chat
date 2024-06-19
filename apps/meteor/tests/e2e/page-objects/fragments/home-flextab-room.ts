@@ -48,7 +48,7 @@ export class HomeFlextabRoom {
 	}
 
 	getMaxAgeLabel(maxAge = '30') {
-		return this.page.getByRole('dialog').getByText(`Maximum message age in days (default: ${maxAge})`)
+		return this.page.getByRole('dialog').getByText(`Maximum message age in days (default: ${maxAge})`);
 	}
 
 	get inputRetentionMaxAge(): Locator {

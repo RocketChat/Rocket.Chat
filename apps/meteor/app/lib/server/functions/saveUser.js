@@ -401,6 +401,7 @@ export const saveUser = async function (userId, userData) {
 
 	const updateUser = {
 		$set: {},
+		$unset: {},
 	};
 
 	handleBio(updateUser, userData.bio);
@@ -419,6 +420,9 @@ export const saveUser = async function (userId, userData) {
 
 	if (typeof userData.requirePasswordChange !== 'undefined') {
 		updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
+		if (!userData.requirePasswordChange) {
+			updateUser.$unset.requirePasswordChangeReason = 1;
+		}
 	}
 
 	if (typeof userData.verified === 'boolean') {

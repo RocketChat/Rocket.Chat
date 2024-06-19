@@ -1,4 +1,4 @@
-import { BaseTest } from '../test';
+import type { BaseTest } from '../test';
 
 export const createManager = async (api: BaseTest['api'], username: string) => {
 	const response = await api.post('/livechat/users/manager', {
