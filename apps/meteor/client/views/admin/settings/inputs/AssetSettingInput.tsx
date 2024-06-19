@@ -35,7 +35,7 @@ function AssetSettingInput({ _id, label, value, asset, required, disabled, fileC
 			dispatchToastMessage({ type: 'info', message: t('Uploading_file') });
 
 			const fileData = new FormData();
-			fileData.append('asset', blob, asset);
+			fileData.append('asset', blob, blob.name);
 			fileData.append('assetName', asset);
 
 			try {
