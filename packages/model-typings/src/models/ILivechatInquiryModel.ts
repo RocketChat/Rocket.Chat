@@ -41,7 +41,6 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	findOneByToken(token: string): Promise<ILivechatInquiryRecord | null>;
 	removeDefaultAgentById(inquiryId: string): Promise<UpdateResult | Document>;
 	removeByVisitorToken(token: string): Promise<void>;
-	removeByIds(ids: ILivechatInquiryRecord['_id'][]): Promise<void>;
 	markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ILivechatInquiryRecord | null>;
 	findIdsByVisitorToken(token: ILivechatInquiryRecord['v']['token']): FindCursor<ILivechatInquiryRecord>;
 }

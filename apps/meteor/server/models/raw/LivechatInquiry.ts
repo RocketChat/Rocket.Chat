@@ -421,10 +421,6 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	async removeByIds(ids: ILivechatInquiryRecord['_id'][]): Promise<void> {
-		await this.deleteMany({ _id: { $in: ids } });
-	}
-
 	async removeByVisitorToken(token: string): Promise<void> {
 		const query = {
 			'v.token': token,
