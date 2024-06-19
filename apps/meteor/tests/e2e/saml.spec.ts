@@ -17,7 +17,7 @@ import { setSettingValueById } from './utils/setSettingValueById';
 import type { BaseTest } from './utils/test';
 import { test, expect } from './utils/test';
 
-const resetTestData = async ({ api, cleanupOnly = false }: { api?: any, cleanupOnly?: boolean } = {}) => {
+const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupOnly?: boolean } = {}) => {
 	// Reset saml users' data on mongo in the beforeAll hook to allow re-running the tests within the same playwright session
 	// This is needed because those tests will modify this data and running them a second time would trigger different code paths
 	const connection = await MongoClient.connect(constants.URL_MONGODB);
