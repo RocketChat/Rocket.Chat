@@ -316,7 +316,10 @@ class E2E extends Emitter {
 			this.db_private_key = private_key;
 		} catch (error) {
 			this.setState(E2EEState.ERROR);
-			return this.error('Error fetching RSA keys: ', error);
+			this.error('Error fetching RSA keys: ', error);
+			// Stop any process since we can't communicate with the server
+			// to get the keys. This prevents new key generation
+			throw error;
 		}
 	}
 

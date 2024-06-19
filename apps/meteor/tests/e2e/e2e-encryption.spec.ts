@@ -616,13 +616,13 @@ test.describe.serial('e2ee room setup', () => {
 test.describe.serial('e2ee support legacy formats', () => {
 	let poHomeChannel: HomeChannel;
 
+	test.use({ storageState: Users.userE2EE.state });
+
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 	});
 
 	test.beforeAll(async ({ api }) => {
-		test.use({ storageState: Users.userE2EE.state });
-
 		expect((await api.post('/settings/E2E_Enable', { value: true })).status()).toBe(200);
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
 	});

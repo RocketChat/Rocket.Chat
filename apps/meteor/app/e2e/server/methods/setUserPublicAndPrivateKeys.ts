@@ -19,6 +19,14 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		const keys = await Users.fetchKeysByUserId(userId);
+
+		if (keys.private_key && keys.public_key) {
+			throw new Meteor.Error('error-keys-already-set', 'Keys already set', {
+				method: 'e2e.setUserPublicAndPrivateKeys',
+			});
+		}
+
 		await Users.setE2EPublicAndPrivateKeysByUserId(userId, {
 			private_key: keyPair.private_key,
 			public_key: keyPair.public_key,

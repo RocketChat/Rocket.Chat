@@ -478,7 +478,6 @@ describe('[Rooms]', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
-					const { message } = res.body;
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('file');
 					expect(res.body.file).to.have.property('_id');
@@ -486,9 +485,9 @@ describe('[Rooms]', function () {
 					// expect(res.body.message.files[0]).to.have.property('type', 'image/png');
 					// expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
 
-					fileNewUrl = message.file.url;
-					fileOldUrl = message.file.url.replace('/file-upload/', '/ufs/GridFS:Uploads/');
-					fileId = message.file._id;
+					fileNewUrl = res.body.file.url;
+					fileOldUrl = res.body.file.url.replace('/file-upload/', '/ufs/GridFS:Uploads/');
+					fileId = res.body.file._id;
 				});
 
 			await request
