@@ -198,11 +198,6 @@ export class SAML {
 			updateData.emails = emails;
 		}
 
-		// Overwrite fullname if needed
-		if (nameOverwrite === true) {
-			updateData.name = fullName;
-		}
-
 		// When updating an user, we only update the roles if we received them from the mapping
 		if (userObject.roles?.length) {
 			updateData.roles = userObject.roles;
