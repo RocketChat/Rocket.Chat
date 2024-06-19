@@ -24,8 +24,8 @@ test.describe('Omnichannel Canned Responses Sidebar', () => {
 		console.log('[before] agents ->', await (await api.get('/livechat/users/agent')).json());
 
 		// Set user user 1 as manager and agent
-		await api.post('/livechat/users/agent', { username: 'user1' });
-		await api.post('/livechat/users/manager', { username: 'user1' });
+		await api.post('/livechat/users/agent', { username: 'user3' });
+		await api.post('/livechat/users/manager', { username: 'user3' });
 
 		console.log('[after] agents ->', await (await api.get('/livechat/users/agent')).json());
 
@@ -39,8 +39,8 @@ test.describe('Omnichannel Canned Responses Sidebar', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.delete('/livechat/users/agent/user1');
-		await api.delete('/livechat/users/manager/user1');
+		await api.delete('/livechat/users/agent/user3');
+		await api.delete('/livechat/users/manager/user3');
 		await agent.page.close();
 	});
 
