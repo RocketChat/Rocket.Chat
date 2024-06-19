@@ -82,7 +82,7 @@ describe('[Users]', function () {
 				public_key: 'test',
 			})
 			.expect('Content-Type', 'application/json')
-			.expect(200)
+			.expect(400)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error', 'Keys already set [error-keys-already-set]');
