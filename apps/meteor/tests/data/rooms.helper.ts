@@ -1,6 +1,6 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+
 import { api, credentials, request } from './api-data';
-import type { IUser } from '@rocket.chat/core-typings';
 
 type Credentials = { 'X-Auth-Token'?: string; 'X-User-Id'?: string };
 
@@ -70,7 +70,7 @@ export const createRoom = ({
 
 export const asyncCreateRoom = ({ name, type, username, members = [] }: Pick<CreateRoomParams, 'name' | 'type' | 'username' | 'members'>) =>
 	new Promise((resolve) => {
-		createRoom({ name, type, username, members }).end(resolve);
+		void createRoom({ name, type, username, members }).end(resolve);
 	});
 
 type ActionType = 'delete' | 'close' | 'addOwner' | 'removeOwner';
@@ -95,7 +95,7 @@ function actionRoom({ action, type, roomId, overrideCredentials = credentials, e
 		d: 'im',
 	};
 	return new Promise((resolve) => {
-		request
+		void request
 			.post(api(`${endpoints[type]}.${action}`))
 			.set(overrideCredentials)
 			.send({

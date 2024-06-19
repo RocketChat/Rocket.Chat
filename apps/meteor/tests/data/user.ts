@@ -1,4 +1,4 @@
-import { IUser } from "@rocket.chat/core-typings";
+import type { IUser } from '@rocket.chat/core-typings';
 
 export const username = 'user.test';
 export const email = `${username}@rocket.chat`;
@@ -37,9 +37,9 @@ export const preferences = {
 	},
 };
 
-export type IUserCredentialsHeader = { 'X-Auth-Token': string; 'X-User-Id': string; };
+export type IUserCredentialsHeader = { 'X-Auth-Token': string; 'X-User-Id': string };
 
 export type IUserWithCredentials = {
-    user: IUser;
-    credentials: IUserCredentialsHeader;
+	user: IUser;
+	credentials: IUserCredentialsHeader;
 };

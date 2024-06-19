@@ -1,8 +1,9 @@
 import { UserStatus } from '@rocket.chat/core-typings';
+import { MongoClient } from 'mongodb';
+
+import { URL_MONGODB } from '../e2e/config/constants';
 import { api, credentials, request } from './api-data';
 import { password } from './user';
-import { MongoClient } from 'mongodb';
-import { URL_MONGODB } from '../e2e/config/constants';
 
 export const createUser = (userData = {}) =>
 	new Promise((resolve, reject) => {

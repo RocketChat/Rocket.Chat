@@ -1,9 +1,13 @@
+/* eslint-disable no-await-in-loop */
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
+
 import { api, request } from '../api-data';
 
-
-export const fetchAllInquiries = async (credentials: { 'X-Auth-Token': string; 'X-User-Id': string; }, department?: string): Promise<ILivechatInquiryRecord[]> => {
+export const fetchAllInquiries = async (
+	credentials: { 'X-Auth-Token': string; 'X-User-Id': string },
+	department?: string,
+): Promise<ILivechatInquiryRecord[]> => {
 	const inquiries: ILivechatInquiryRecord[] = [];
 
 	let hasMore = true;
@@ -26,6 +30,5 @@ export const fetchAllInquiries = async (credentials: { 'X-Auth-Token': string; '
 		offset += body.count;
 	}
 
-
 	return inquiries;
-}
+};

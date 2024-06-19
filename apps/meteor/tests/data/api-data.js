@@ -1,6 +1,6 @@
 import supertest from 'supertest';
 
-import { publicChannelName, privateChannelName } from './channel';
+import { privateChannelName } from './channel';
 import { roleNameUsers, roleNameSubscriptions, roleScopeUsers, roleScopeSubscriptions, roleDescription } from './role';
 import { username, email, adminUsername, adminPassword } from './user';
 

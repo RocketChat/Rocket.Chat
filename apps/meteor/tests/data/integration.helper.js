@@ -22,7 +22,7 @@ export const createIntegration = (integration, userCredentials) =>
 	});
 
 export const removeIntegration = (integrationId, type) =>
-	new Promise((resolve, reject) => {
+	new Promise((resolve) => {
 		request
 			.post(api('integrations.remove'))
 			.set(credentials)
