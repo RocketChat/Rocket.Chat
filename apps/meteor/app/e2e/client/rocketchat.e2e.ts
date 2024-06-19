@@ -156,7 +156,11 @@ class E2E extends Emitter {
 		delete this.instancesByRoomId[rid];
 	}
 
-	async persistKeys({ public_key, private_key }: KeyPair, password: string, { force = false }): Promise<void> {
+	async persistKeys(
+		{ public_key, private_key }: KeyPair,
+		password: string,
+		{ force }: { force: boolean } = { force: false },
+	): Promise<void> {
 		if (typeof public_key !== 'string' || typeof private_key !== 'string') {
 			throw new Error('Failed to persist keys as they are not strings.');
 		}
