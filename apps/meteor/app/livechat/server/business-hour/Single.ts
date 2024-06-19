@@ -28,6 +28,7 @@ export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior imp
 	async onNewAgentCreated(agentId: string): Promise<void> {
 		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour();
 		if (!defaultBusinessHour) {
+			console.log('[SINGLE] no default business hour');
 			businessHourLogger.debug('No default business hour found for agentId', {
 				agentId,
 			});
@@ -36,6 +37,7 @@ export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior imp
 
 		const businessHourToOpen = await filterBusinessHoursThatMustBeOpened([defaultBusinessHour]);
 		if (!businessHourToOpen.length) {
+			console.log('[SINGLE] no business hour to open');
 			businessHourLogger.debug({
 				msg: 'No business hours found. Moving agent to NOT_AVAILABLE status',
 				agentId,
@@ -46,7 +48,7 @@ export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior imp
 		}
 
 		await Users.addBusinessHourByAgentIds([agentId], defaultBusinessHour._id);
-
+		console.log('[SINGLE] Business hours found');
 		businessHourLogger.debug({
 			msg: 'Business hours found. Moving agent to AVAILABLE status',
 			agentId,

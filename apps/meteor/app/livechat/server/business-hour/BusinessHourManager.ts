@@ -138,6 +138,7 @@ export class BusinessHourManager {
 	}
 
 	private setupCallbacks(): void {
+		console.log('setupCallbacks');
 		callbacks.add(
 			'livechat.removeAgentDepartment',
 			this.behavior.onRemoveAgentFromDepartment.bind(this),
@@ -170,13 +171,17 @@ export class BusinessHourManager {
 		);
 		callbacks.add(
 			'livechat.onNewAgentCreated',
-			this.behavior.onNewAgentCreated.bind(this),
+			(...args) => {
+				console.log('onNewAgentCreated', args);
+				return this.behavior.onNewAgentCreated.bind(this)(...args);
+			},
 			callbacks.priority.HIGH,
 			'business-hour-livechat-on-agent-created',
 		);
 	}
 
 	private removeCallbacks(): void {
+		console.log('removeCallbacks!!');
 		callbacks.remove('livechat.removeAgentDepartment', 'business-hour-livechat-on-remove-agent-department');
 		callbacks.remove('livechat.afterRemoveDepartment', 'business-hour-livechat-after-remove-department');
 		callbacks.remove('livechat.saveAgentDepartment', 'business-hour-livechat-on-save-agent-department');

@@ -1678,6 +1678,8 @@ class LivechatClass {
 			Users.setOperator(user._id, true),
 			this.setUserStatusLivechat(user._id, user.status !== 'offline' ? ILivechatAgentStatus.AVAILABLE : ILivechatAgentStatus.NOT_AVAILABLE),
 		]);
+
+		console.log(`User ${user.username} was added as a livechat agent`);
 		callbacks.runAsync('livechat.onNewAgentCreated', user._id);
 
 		return user;
