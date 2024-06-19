@@ -50,6 +50,7 @@ export { useMediaUrl } from './hooks/useMediaUrl';
 export { useMethod } from './hooks/useMethod';
 export { useModal } from './hooks/useModal';
 export { usePermission } from './hooks/usePermission';
+export { useQuill } from './hooks/useQuill';
 export { usePermissionWithScopedRoles } from './hooks/usePermissionWithScopedRoles';
 export { useRole } from './hooks/useRole';
 export { useRolesDescription } from './hooks/useRolesDescription';
