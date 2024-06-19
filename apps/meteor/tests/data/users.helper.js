@@ -6,7 +6,7 @@ import { URL_MONGODB } from '../e2e/config/constants';
 
 export const createUser = (userData = {}) =>
 	new Promise((resolve, reject) => {
-		const username = userData.username || `user.test.${Date.now()}`;
+		const username = userData.username || `user.test.${Date.now()}.${Math.random()}`;
 		const email = userData.email || `${username}@rocket.chat`;
 		request
 			.post(api('users.create'))
