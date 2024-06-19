@@ -7,7 +7,7 @@ import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
-import { imgURL, lstURL, svgLogoFileName, svgLogoURL } from '../../data/interactions';
+import { drawioURL, imgURL, lstURL, svgLogoFileName, svgLogoURL } from '../../data/interactions';
 import { getSettingValueById, updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { deleteTeam } from '../../data/teams.helper';
@@ -183,8 +183,8 @@ describe('[Rooms]', function () {
 				});
 		});
 
-		it('should upload a LST file to room', (done) => {
-			request
+		it('should upload a LST file to room', () => {
+			return request
 				.post(api(`rooms.upload/${testChannel._id}`))
 				.set(credentials)
 				.attach('file', lstURL)
@@ -200,16 +200,51 @@ describe('[Rooms]', function () {
 					expect(res.body.message).to.have.property('files');
 					expect(res.body.message.files).to.be.an('array').of.length(1);
 					expect(res.body.message.files[0]).to.have.property('name', 'lst-test.lst');
-				})
-				.end(done);
+					expect(res.body.message.files[0]).to.have.property('type', 'text/plain');
+				});
+		});
+
+		it('should upload a DRAWIO file (unknown media type) to room', () => {
+			return request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', drawioURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.have.property('attachments');
+					expect(res.body.message.attachments).to.be.an('array').of.length(1);
+					expect(res.body.message.attachments[0]).to.have.property('format', 'DRAWIO');
+					expect(res.body.message.attachments[0]).to.have.property('title', 'diagram.drawio');
+					expect(res.body.message).to.have.property('files');
+					expect(res.body.message.files).to.be.an('array').of.length(1);
+					expect(res.body.message.files[0]).to.have.property('name', 'diagram.drawio');
+					expect(res.body.message.files[0]).to.have.property('type', 'application/octet-stream');
+				});
 		});
 
 		it('should not allow uploading a blocked media type to a room', async () => {
-			await updateSetting('FileUpload_MediaTypeBlackList', 'application/octet-stream');
+			await updateSetting('FileUpload_MediaTypeBlackList', 'text/plain');
 			await request
 				.post(api(`rooms.upload/${testChannel._id}`))
 				.set(credentials)
 				.attach('file', lstURL)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
+				});
+		});
+
+		it('should not allow uploading an unknown media type to a room if the default one is blocked', async () => {
+			await updateSetting('FileUpload_MediaTypeBlackList', 'application/octet-stream');
+			await request
+				.post(api(`rooms.upload/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', drawioURL)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
