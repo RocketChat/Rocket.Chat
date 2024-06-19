@@ -1,10 +1,8 @@
-import { Base64 } from '@rocket.chat/base64';
 import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import FileItemIcon from './FileItemIcon';
 import FileItemMenu from './FileItemMenu';
@@ -24,22 +22,7 @@ type FileItemProps = {
 
 const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 	const format = useFormatDateAndTime();
-	const [file, setFile] = useState<IUploadWithUser>(fileData);
-	const { _id, path, name, uploadedAt, type, typeGroup, user } = file;
-
-	useEffect(() => {
-		(async () => {
-			if (fileData.rid && fileData.content) {
-				const e2eRoom = await e2e.getInstanceByRoomId(fileData.rid);
-				if (e2eRoom?.shouldConvertReceivedMessages()) {
-					const decrypted = await e2e.decryptFileContent(fileData);
-					const key = Base64.encode(JSON.stringify(decrypted.encryption));
-					decrypted.path = `/file-decrypt${decrypted.path}?key=${key}`;
-					setFile({ ...decrypted });
-				}
-			}
-		})();
-	}, [fileData]);
+	const { _id, path, name, uploadedAt, type, typeGroup, user } = fileData;
 
 	return (
 		<Box display='flex' pb={12} pi={24} borderRadius={4} className={hoverClass}>

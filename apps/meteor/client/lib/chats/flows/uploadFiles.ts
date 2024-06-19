@@ -154,8 +154,20 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 								});
 							}
 
+							const files = [
+								{
+									_id,
+									name: file.name,
+									type: file.type,
+									size: file.size,
+									// "format": "png"
+								},
+							];
+
 							return e2eRoom.encryptMessageContent({
 								attachments,
+								files,
+								file: files[0],
 							});
 						};
 

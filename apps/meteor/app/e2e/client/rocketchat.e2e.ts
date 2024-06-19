@@ -511,6 +511,10 @@ class E2E extends Emitter {
 	}
 
 	async decryptFileContent(file: IUploadWithUser): Promise<IUploadWithUser> {
+		if (!file.rid) {
+			return file;
+		}
+
 		const e2eRoom = await this.getInstanceByRoomId(file.rid);
 
 		if (!e2eRoom) {
