@@ -23,6 +23,7 @@ export const createFileUploadSettings = () =>
 			type: 'string',
 			public: true,
 			i18nDescription: 'FileUpload_MediaTypeBlackListDescription',
+			alert: 'FileUpload_MediaTypeBlackList_Alert',
 		});
 
 		await this.add('FileUpload_ProtectFiles', true, {
