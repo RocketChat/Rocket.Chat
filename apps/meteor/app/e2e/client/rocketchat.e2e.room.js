@@ -186,11 +186,12 @@ export class E2ERoom extends Emitter {
 	async decryptSubscription() {
 		const subscription = Subscriptions.findOne({ rid: this.roomId });
 
-		const data = await (subscription.lastMessage?.msg && this.decrypt(subscription.lastMessage.msg));
-		if (!data?.text) {
+		if (subscription.lastMessage?.t !== 'e2e') {
 			this.log('decryptSubscriptions nothing to do');
 			return;
 		}
+
+		const message = await this.decryptMessage(subscription.lastMessage);
 
 		Subscriptions.update(
 			{
@@ -198,8 +199,7 @@ export class E2ERoom extends Emitter {
 			},
 			{
 				$set: {
-					'lastMessage.msg': data.text,
-					'lastMessage.e2e': 'done',
+					lastMessage: message,
 				},
 			},
 		);
