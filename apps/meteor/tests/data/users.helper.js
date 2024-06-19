@@ -5,7 +5,7 @@ import { MongoClient } from 'mongodb';
 import { URL_MONGODB } from '../e2e/config/constants';
 
 export const createUser = (userData = {}) =>
-	new Promise((resolve) => {
+	new Promise((resolve, reject) => {
 		const username = userData.username || `user.test.${Date.now()}`;
 		const email = userData.email || `${username}@rocket.chat`;
 		request

@@ -1602,9 +1602,8 @@ describe('[Teams]', () => {
 			let testUser2;
 
 			before(async () => {
-				const [testUserResult, testUser1Result] = await Promise.all([createUser(), createUser()]);
-				testUser1 = testUserResult;
-				testUser2 = testUser1Result;
+				testUser1 = await createUser();
+				testUser2 = await createUser();
 			});
 
 			beforeEach(async () => {
