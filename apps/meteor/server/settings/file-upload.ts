@@ -33,10 +33,30 @@ export const createFileUploadSettings = () =>
 
 		await this.add('FileUpload_Restrict_to_room_members', true, {
 			type: 'boolean',
-			enableQuery: {
-				_id: 'FileUpload_ProtectFiles',
-				value: true,
-			},
+			enableQuery: [
+				{
+					_id: 'FileUpload_ProtectFiles',
+					value: true,
+				},
+				{
+					_id: 'FileUpload_Restrict_to_users_who_can_access_room',
+					value: false,
+				},
+			],
+		});
+
+		await this.add('FileUpload_Restrict_to_users_who_can_access_room', false, {
+			type: 'boolean',
+			enableQuery: [
+				{
+					_id: 'FileUpload_ProtectFiles',
+					value: true,
+				},
+				{
+					_id: 'FileUpload_Restrict_to_room_members',
+					value: false,
+				},
+			],
 		});
 
 		await this.add('FileUpload_RotateImages', true, {

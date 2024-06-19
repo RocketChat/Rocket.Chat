@@ -2354,6 +2354,8 @@
   "FileUpload_Enable_json_web_token_for_files_description": "Appends a JWT to uploaded files urls",
   "FileUpload_Restrict_to_room_members": "Restrict files to rooms' members",
   "FileUpload_Restrict_to_room_members_Description": "Restrict the access of files uploaded on rooms to the rooms' members only",
+  "FileUpload_Restrict_to_users_who_can_access_room": "Restrict files to users who can access the room",
+  "FileUpload_Restrict_to_users_who_can_access_room_Description": "Restrict the access of files uploaded on rooms to the users who can access the room. This option is mutually exclusive with the \"Restrict files to rooms' members\" option as this one allows for users that are not part of some rooms but have special permissions that allow them to see it to access the files uploaded, for example, Omnichannel Managers & Monitors",
   "FileUpload_Enabled": "File Uploads Enabled",
   "FileUpload_Enabled_Direct": "File Uploads Enabled in Direct Messages ",
   "FileUpload_Error": "File Upload Error",
