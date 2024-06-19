@@ -213,6 +213,31 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.mainThreadMessageText.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
+	test('expect create a private encrypted channel and check disabled message menu actions on an encrypted message', async ({ page }) => {
+		const channelName = faker.string.uuid();
+
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+
+		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.dismissToast();
+
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.content.sendMessage('This is an encrypted message.');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is an encrypted message.');
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		await page.locator('[data-qa-type="message"]').last().hover();
+		await expect(page.locator('role=button[name="Forward message"]')).toBeDisabled();
+
+		await poHomeChannel.content.openLastMessageMenu();
+
+		await expect(page.locator('role=menuitem[name="Reply in direct message"]')).toHaveClass(/disabled/);
+		await expect(page.locator('role=menuitem[name="Copy link"]')).toHaveClass(/disabled/);
+	});
+
 	test('expect create a private channel, encrypt it and send an encrypted message', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
