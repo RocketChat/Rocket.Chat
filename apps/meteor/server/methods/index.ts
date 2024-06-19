@@ -39,7 +39,6 @@ import './removeRoomLeader';
 import './removeRoomModerator';
 import './removeRoomOwner';
 import './removeUserFromRoom';
-import './reportMessage';
 import './requestDataDownload';
 import './resetAvatar';
 import './roomNameExists';
