@@ -80,6 +80,7 @@ export class Presence extends ServiceClass implements IPresence {
 
 		try {
 			await Settings.updateValueById('Presence_broadcast_disabled', false);
+
 			this.hasScalabilityLicense = await License.hasModule('scalability');
 			this.hasPresenceLicense = await License.hasModule('unlimited-presence');
 			this.hasLicense = this.hasPresenceLicense || this.hasScalabilityLicense;

@@ -116,6 +116,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	}
 
 	async getNextVisitorUsername(): Promise<string> {
+		// TODO remove dependency from another model - this logic should be inside a service/function
 		const livechatCount = await Settings.incrementValueById('Livechat_guest_count', 1, { returnDocument: 'after' });
 
 		if (!livechatCount.value) {
