@@ -1,8 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
+import { Box, Callout } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import {
 	ContextualbarHeader,
@@ -15,10 +15,10 @@ import {
 import InfoPanel from '../../../../../components/InfoPanel';
 import RetentionPolicyCallout from '../../../../../components/InfoPanel/RetentionPolicyCallout';
 import MarkdownText from '../../../../../components/MarkdownText';
-import type { Action } from '../../../../hooks/useActionSpread';
-import { useActionSpread } from '../../../../hooks/useActionSpread';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 import { useRoomActions } from '../hooks/useRoomActions';
+import Actions from './Actions';
+import RoomActionsMenu from './RoomActionsMenu';
 
 type RoomInfoProps = {
 	room: IRoom;
@@ -37,35 +37,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 	const isDiscussion = 'prid' in room;
 
 	const retentionPolicy = useRetentionPolicy(room);
-	const memoizedActions = useRoomActions(room, { onClickEnterRoom, onClickEdit }, resetState);
-	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);
-
-	const menu = useMemo(() => {
-		if (!menuOptions) {
-			return null;
-		}
-
-		return (
-			<Menu
-				small={false}
-				flexShrink={0}
-				flexGrow={0}
-				key='menu'
-				maxHeight='initial'
-				secondary
-				renderItem={({ label: { label, icon }, ...props }) => <Option {...props} label={label} icon={icon} />}
-				options={menuOptions}
-			/>
-		);
-	}, [menuOptions]);
-
-	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action }]: [string, Action]) => (
-			<InfoPanel.Action key={key} label={label} onClick={action} icon={icon} />
-		);
-
-		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
-	}, [actionsDefinition, menu]);
+	const { actions: actionsDefinition, menu: menuActions } = useRoomActions(room, { onClickEnterRoom, onClickEdit, resetState });
 
 	return (
 		<>
@@ -82,7 +54,10 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 							<RoomAvatar size='x332' room={room} />
 						</InfoPanel.Avatar>
 
-						<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
+						<InfoPanel.ActionGroup>
+							<Actions actions={actionsDefinition} />
+							{menuActions && <RoomActionsMenu actions={menuActions} />}
+						</InfoPanel.ActionGroup>
 					</InfoPanel.Section>
 
 					{archived && (
