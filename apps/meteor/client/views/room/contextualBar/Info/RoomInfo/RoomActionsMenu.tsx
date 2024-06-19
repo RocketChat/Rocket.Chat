@@ -3,6 +3,8 @@ import type { Keys as IconKeys } from '@rocket.chat/icons';
 import type { Key } from 'react';
 import React, { useCallback } from 'react';
 
+import { isTruthy } from '../../../../../../lib/isTruthy';
+
 type RegularAction = {
 	id: string;
 	name: string;
@@ -38,26 +40,26 @@ const RoomActionsMenu = ({ actions }: RoomActionsMenuProps) => {
 			button={<IconButton icon='kebab' secondary flexShrink={0} flexGrow={0} maxHeight='initial' />}
 			onAction={onAction}
 		>
-			<MenuSection items={regular}>
-				{(item) => (
-					<MenuItem key={item.id}>
-						<MenuItemIcon name={item.icon} />
-						<MenuItemContent>{item.name}</MenuItemContent>
-					</MenuItem>
-				)}
-			</MenuSection>
-			{danger?.length ? (
-				<MenuSection items={danger}>
+			{[
+				<MenuSection key='regular' items={regular}>
 					{(item) => (
 						<MenuItem key={item.id}>
 							<MenuItemIcon name={item.icon} />
 							<MenuItemContent>{item.name}</MenuItemContent>
 						</MenuItem>
 					)}
-				</MenuSection>
-			) : (
-				<></>
-			)}
+				</MenuSection>,
+				danger?.length ? (
+					<MenuSection key='danger' items={danger}>
+						{(item) => (
+							<MenuItem key={item.id}>
+								<MenuItemIcon name={item.icon} />
+								<MenuItemContent>{item.name}</MenuItemContent>
+							</MenuItem>
+						)}
+					</MenuSection>
+				) : null,
+			].filter(isTruthy)}
 		</MenuV2>
 	);
 };
