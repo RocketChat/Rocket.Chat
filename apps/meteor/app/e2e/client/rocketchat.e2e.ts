@@ -156,7 +156,7 @@ class E2E extends Emitter {
 		delete this.instancesByRoomId[rid];
 	}
 
-	async persistKeys({ public_key, private_key }: KeyPair, password: string): Promise<void> {
+	async persistKeys({ public_key, private_key }: KeyPair, password: string, { force = false }): Promise<void> {
 		if (typeof public_key !== 'string' || typeof private_key !== 'string') {
 			throw new Error('Failed to persist keys as they are not strings.');
 		}
@@ -170,6 +170,7 @@ class E2E extends Emitter {
 		await sdk.rest.post('/v1/e2e.setUserPublicAndPrivateKeys', {
 			public_key,
 			private_key: encodedPrivateKey,
+			force,
 		});
 	}
 
@@ -300,7 +301,7 @@ class E2E extends Emitter {
 	}
 
 	async changePassword(newPassword: string): Promise<void> {
-		await this.persistKeys(this.getKeysFromLocalStorage(), newPassword);
+		await this.persistKeys(this.getKeysFromLocalStorage(), newPassword, { force: true });
 
 		if (Meteor._localStorage.getItem('e2e.randomPassword')) {
 			Meteor._localStorage.setItem('e2e.randomPassword', newPassword);

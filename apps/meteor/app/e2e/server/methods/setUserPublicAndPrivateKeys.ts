@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'e2e.setUserPublicAndPrivateKeys'({ public_key, private_key }: { public_key: string; private_key: string }): void;
+		'e2e.setUserPublicAndPrivateKeys'({ public_key, private_key }: { public_key: string; private_key: string; force?: boolean }): void;
 	}
 }
 
@@ -19,12 +19,14 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const keys = await Users.fetchKeysByUserId(userId);
+		if (!keyPair.force) {
+			const keys = await Users.fetchKeysByUserId(userId);
 
-		if (keys.private_key && keys.public_key) {
-			throw new Meteor.Error('error-keys-already-set', 'Keys already set', {
-				method: 'e2e.setUserPublicAndPrivateKeys',
-			});
+			if (keys.private_key && keys.public_key) {
+				throw new Meteor.Error('error-keys-already-set', 'Keys already set', {
+					method: 'e2e.setUserPublicAndPrivateKeys',
+				});
+			}
 		}
 
 		await Users.setE2EPublicAndPrivateKeysByUserId(userId, {
