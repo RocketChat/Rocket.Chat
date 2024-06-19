@@ -679,8 +679,6 @@ test.describe.serial('e2ee room setup', () => {
 test.describe.serial('e2ee support legacy formats', () => {
 	let poHomeChannel: HomeChannel;
 
-	test.use({ storageState: Users.userE2EE.state });
-
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 	});
@@ -697,6 +695,8 @@ test.describe.serial('e2ee support legacy formats', () => {
 
 	// Not testing upload since it was not implemented in the legacy format
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page, api }) => {
+		await restoreState(page, Users.userE2EE);
+
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
