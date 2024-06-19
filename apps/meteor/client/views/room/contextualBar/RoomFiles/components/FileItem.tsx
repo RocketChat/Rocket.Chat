@@ -26,7 +26,6 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 	const format = useFormatDateAndTime();
 	const [file, setFile] = useState<IUploadWithUser>(fileData);
 	const { _id, path, name, uploadedAt, type, typeGroup, user } = file;
-	console.log(123, file);
 
 	useEffect(() => {
 		(async () => {

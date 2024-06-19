@@ -21,6 +21,19 @@ if ('serviceWorker' in navigator) {
 		});
 }
 
+const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
+	return new Promise((resolve) => {
+		const img = new Image();
+		img.onload = () => {
+			resolve({
+				height: img.height,
+				width: img.width,
+			});
+		};
+		img.src = dataURL;
+	});
+};
+
 export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFileInput?: () => void): Promise<void> => {
 	const replies = chat.composer?.quotedMessages.get() ?? [];
 
@@ -108,16 +121,17 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 							};
 
 							if (/^image\/.+/.test(file.type)) {
+								const dimensions = await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(file));
+
 								attachments.push({
 									...attachment,
 									image_url: fileUrl,
 									image_type: file.type,
 									image_size: file.size,
+									...(dimensions && {
+										image_dimensions: dimensions,
+									}),
 								});
-
-								// if (file.identify?.size) {
-								// 	attachment.image_dimensions = file.identify.size;
-								// }
 							} else if (/^audio\/.+/.test(file.type)) {
 								attachments.push({
 									...attachment,
