@@ -123,10 +123,15 @@ export class BusinessHourManager {
 
 	async onLogin(agentId: string): Promise<any> {
 		if (!settings.get('Livechat_enable_business_hours')) {
+			console.log('BusinessHourManager.onLogin: Business hours are disabled');
 			return this.behavior.changeAgentActiveStatus(agentId, 'available');
 		}
 
-		return Users.setLivechatStatusActiveBasedOnBusinessHours(agentId);
+		console.log('BusinessHourManager.onLogin: Business hours are enabled');
+		const user = await Users.setLivechatStatusActiveBasedOnBusinessHours(agentId);
+
+		console.log('BusinessHourManager.onLogin: user', JSON.stringify(user));
+		return user;
 	}
 
 	async restartCronJobsIfNecessary(): Promise<void> {
