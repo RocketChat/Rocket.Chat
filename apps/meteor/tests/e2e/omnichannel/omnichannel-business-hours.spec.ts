@@ -12,7 +12,7 @@ import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.describe('OC - Business Hours', () => {
+test.describe.only('OC - Business Hours', () => {
 	test.skip(!IS_EE, 'OC - Manage Business Hours > Enterprise Edition Only');
 
 	let poOmnichannelBusinessHours: OmnichannelBusinessHours;

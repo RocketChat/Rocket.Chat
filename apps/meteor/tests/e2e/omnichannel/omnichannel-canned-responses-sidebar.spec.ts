@@ -7,7 +7,7 @@ import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeChannel } from '../page-objects';
 import { test } from '../utils/test';
 
-test.describe('Omnichannel Canned Responses Sidebar', () => {
+test.describe.only('Omnichannel Canned Responses Sidebar', () => {
 	test.skip(!IS_EE, 'Enterprise Only');
 
 	let poLiveChat: OmnichannelLiveChat;
@@ -29,7 +29,7 @@ test.describe('Omnichannel Canned Responses Sidebar', () => {
 
 		console.log('[after] agents ->', await (await api.get('/livechat/users/agent')).json());
 
-		const { page } = await createAuxContext(browser, Users.user1);
+		const { page } = await createAuxContext(browser, Users.user3);
 		agent = { page, poHomeChannel: new HomeChannel(page) };
 
 		console.log('[after.page] agents ->', await (await api.get('/livechat/users/agent')).json());
