@@ -101,12 +101,14 @@ function generateContext(username: string): IUserState {
 							name: 'Meteor.userId',
 							value: username,
 						},
-						...(e2eeData[username] && [
-							{
-								name: 'private_key',
-								value: e2eeData[username]?.client.private_key,
-							},
-						]),
+						...(e2eeData[username]
+							? [
+									{
+										name: 'private_key',
+										value: e2eeData[username]?.client.private_key,
+									},
+							  ]
+							: []),
 					],
 				},
 			],
