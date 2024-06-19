@@ -256,4 +256,12 @@ export class Admin {
 	get inputWebhookUrl(): Locator {
 		return this.page.getByRole('textbox', { name: 'Webhook URL' });
 	}
+
+	getAccordionBtnByName(name: string): Locator {
+		return this.page.getByRole('button', { name });
+	}
+
+	get btnFullScreen(): Locator {
+		return this.page.getByRole('button', { name: 'Full Screen' });
+	}
 }
