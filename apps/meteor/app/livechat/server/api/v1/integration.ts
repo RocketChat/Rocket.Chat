@@ -10,50 +10,47 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: { POST: isPOSTomnichannelIntegrations } },
 	{
 		async post() {
-			const settingsIds = [
-				{ _id: 'Livechat_webhookUrl', value: this.bodyParams.LivechatWebhookUrl ? trim(this.bodyParams.LivechatWebhookUrl) : undefined },
-				{
-					_id: 'Livechat_secret_token',
-					value: this.bodyParams.LivechatSecretToken ? trim(this.bodyParams.LivechatSecretToken) : undefined,
-				},
-				{ _id: 'Livechat_http_timeout', value: this.bodyParams.LivechatHttpTimeout },
-				{
-					_id: 'Livechat_webhookOnStart',
-					value: this.bodyParams.LivechatWebhookOnStart ? !!this.bodyParams.LivechatWebhookOnStart : undefined,
-				},
-				{
-					_id: 'Livechat_webhookOnClose',
-					value: this.bodyParams.LivechatWebhookOnClose ? !!this.bodyParams.LivechatWebhookOnClose : undefined,
-				},
-				{
-					_id: 'Livechat_webhookOnChatTaken',
-					value: this.bodyParams.LivechatWebhookOnChatTaken ? !!this.bodyParams.LivechatWebhookOnChatTaken : undefined,
-				},
-				{
-					_id: 'Livechat_webhookOnChatQueued',
-					value: this.bodyParams.LivechatWebhookOnChatQueued ? !!this.bodyParams.LivechatWebhookOnChatQueued : undefined,
-				},
-				{
-					_id: 'Livechat_webhookOnForward',
-					value: this.bodyParams.LivechatWebhookOnForward ? !!this.bodyParams.LivechatWebhookOnForward : undefined,
-				},
-				{
-					_id: 'Livechat_webhookOnOfflineMsg',
-					value: this.bodyParams.LivechatWebhookOnOfflineMsg ? !!this.bodyParams.LivechatWebhookOnOfflineMsg : undefined,
-				},
-				{
-					_id: 'Livechat_webhookOnVisitorMessage',
-					value: this.bodyParams.LivechatWebhookOnVisitorMessage ? !!this.bodyParams.LivechatWebhookOnVisitorMessage : undefined,
-				},
-				{
-					_id: 'Livechat_webhookOnAgentMessage',
-					value: this.bodyParams.LivechatWebhookOnAgentMessage ? !!this.bodyParams.LivechatWebhookOnAgentMessage : undefined,
-				},
-			];
+			const {
+				LivechatWebhookUrl,
+				LivechatSecretToken,
+				LivechatHttpTimeout,
+				LivechatWebhookOnStart,
+				LivechatWebhookOnClose,
+				LivechatWebhookOnChatTaken,
+				LivechatWebhookOnChatQueued,
+				LivechatWebhookOnForward,
+				LivechatWebhookOnOfflineMsg,
+				LivechatWebhookOnVisitorMessage,
+				LivechatWebhookOnAgentMessage,
+			} = this.bodyParams;
 
-			const promises = settingsIds
-				.filter((setting) => typeof setting.value !== 'undefined')
-				.map((setting) => Settings.updateValueById(setting._id, setting.value));
+			const settingsIds = [
+				typeof LivechatWebhookUrl !== 'undefined' && { _id: 'Livechat_webhookUrl', value: trim(LivechatWebhookUrl) },
+				typeof LivechatSecretToken !== 'undefined' && { _id: 'Livechat_secret_token', value: trim(LivechatSecretToken) },
+				typeof LivechatHttpTimeout !== 'undefined' && { _id: 'Livechat_http_timeout', value: LivechatHttpTimeout },
+				typeof LivechatWebhookOnStart !== 'undefined' && { _id: 'Livechat_webhook_on_start', value: !!LivechatWebhookOnStart },
+				typeof LivechatWebhookOnClose !== 'undefined' && { _id: 'Livechat_webhook_on_close', value: !!LivechatWebhookOnClose },
+				typeof LivechatWebhookOnChatTaken !== 'undefined' && { _id: 'Livechat_webhook_on_chat_taken', value: !!LivechatWebhookOnChatTaken },
+				typeof LivechatWebhookOnChatQueued !== 'undefined' && {
+					_id: 'Livechat_webhook_on_chat_queued',
+					value: !!LivechatWebhookOnChatQueued,
+				},
+				typeof LivechatWebhookOnForward !== 'undefined' && { _id: 'Livechat_webhook_on_forward', value: !!LivechatWebhookOnForward },
+				typeof LivechatWebhookOnOfflineMsg !== 'undefined' && {
+					_id: 'Livechat_webhook_on_offline_msg',
+					value: !!LivechatWebhookOnOfflineMsg,
+				},
+				typeof LivechatWebhookOnVisitorMessage !== 'undefined' && {
+					_id: 'Livechat_webhook_on_visitor_message',
+					value: !!LivechatWebhookOnVisitorMessage,
+				},
+				typeof LivechatWebhookOnAgentMessage !== 'undefined' && {
+					_id: 'Livechat_webhook_on_agent_message',
+					value: !!LivechatWebhookOnAgentMessage,
+				},
+			].filter(Boolean) as unknown as { _id: string; value: any }[];
+
+			const promises = settingsIds.map((setting) => Settings.updateValueById(setting._id, setting.value));
 
 			(await Promise.all(promises)).forEach((value, index) => {
 				if (value?.modifiedCount) {

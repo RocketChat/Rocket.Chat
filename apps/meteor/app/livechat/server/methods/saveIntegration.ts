@@ -26,37 +26,44 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const settingsIds = [
-			{ _id: 'Livechat_webhookUrl', value: values.Livechat_webhookUrl ? trim(values.Livechat_webhookUrl) : undefined },
-			{ _id: 'Livechat_secret_token', value: values.Livechat_secret_token ? trim(values.Livechat_secret_token) : undefined },
-			{ _id: 'Livechat_http_timeout', value: values.Livechat_http_timeout },
-			{ _id: 'Livechat_webhook_on_start', value: values.Livechat_webhook_on_start ? !!values.Livechat_webhook_on_start : undefined },
-			{ _id: 'Livechat_webhook_on_close', value: values.Livechat_webhook_on_close ? !!values.Livechat_webhook_on_close : undefined },
-			{
+			typeof values.Livechat_webhookUrl !== 'undefined' && { _id: 'Livechat_webhookUrl', value: trim(values.Livechat_webhookUrl) },
+			typeof values.Livechat_secret_token !== 'undefined' && { _id: 'Livechat_secret_token', value: trim(values.Livechat_secret_token) },
+			typeof values.Livechat_http_timeout !== 'undefined' && { _id: 'Livechat_http_timeout', value: values.Livechat_http_timeout },
+			typeof values.Livechat_webhook_on_start !== 'undefined' && {
+				_id: 'Livechat_webhook_on_start',
+				value: !!values.Livechat_webhook_on_start,
+			},
+			typeof values.Livechat_webhook_on_close !== 'undefined' && {
+				_id: 'Livechat_webhook_on_close',
+				value: !!values.Livechat_webhook_on_close,
+			},
+			typeof values.Livechat_webhook_on_forward !== 'undefined' && {
+				_id: 'Livechat_webhook_on_forward',
+				value: !!values.Livechat_webhook_on_forward,
+			},
+			typeof values.Livechat_webhook_on_chat_taken !== 'undefined' && {
 				_id: 'Livechat_webhook_on_chat_taken',
-				value: values.Livechat_webhook_on_chat_taken ? !!values.Livechat_webhook_on_chat_taken : undefined,
+				value: !!values.Livechat_webhook_on_chat_taken,
 			},
-			{
+			typeof values.Livechat_webhook_on_chat_queued !== 'undefined' && {
 				_id: 'Livechat_webhook_on_chat_queued',
-				value: values.Livechat_webhook_on_chat_queued ? !!values.Livechat_webhook_on_chat_queued : undefined,
+				value: !!values.Livechat_webhook_on_chat_queued,
 			},
-			{ _id: 'Livechat_webhook_on_forward', value: values.Livechat_webhook_on_forward ? !!values.Livechat_webhook_on_forward : undefined },
-			{
+			typeof values.Livechat_webhook_on_offline_msg !== 'undefined' && {
 				_id: 'Livechat_webhook_on_offline_msg',
-				value: values.Livechat_webhook_on_offline_msg ? !!values.Livechat_webhook_on_offline_msg : undefined,
+				value: !!values.Livechat_webhook_on_offline_msg,
 			},
-			{
+			typeof values.Livechat_webhook_on_visitor_message !== 'undefined' && {
 				_id: 'Livechat_webhook_on_visitor_message',
-				value: values.Livechat_webhook_on_visitor_message ? !!values.Livechat_webhook_on_visitor_message : undefined,
+				value: !!values.Livechat_webhook_on_visitor_message,
 			},
-			{
+			typeof values.Livechat_webhook_on_agent_message !== 'undefined' && {
 				_id: 'Livechat_webhook_on_agent_message',
-				value: values.Livechat_webhook_on_agent_message ? !!values.Livechat_webhook_on_agent_message : undefined,
+				value: !!values.Livechat_webhook_on_agent_message,
 			},
-		];
+		].filter(Boolean) as unknown as { _id: string; value: any }[];
 
-		const promises = settingsIds
-			.filter((setting) => typeof setting.value !== 'undefined')
-			.map((setting) => Settings.updateValueById(setting._id, setting.value));
+		const promises = settingsIds.map((setting) => Settings.updateValueById(setting._id, setting.value));
 
 		(await Promise.all(promises)).forEach((value, index) => {
 			if (value?.modifiedCount) {
