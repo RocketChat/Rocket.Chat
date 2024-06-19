@@ -45,6 +45,7 @@ const send = async (
 		t?: IMessage['t'];
 	},
 	getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
+	fileContent?: IE2EEMessage['content'],
 ): Promise<void> => {
 	const id = Random.id();
 
@@ -63,6 +64,9 @@ const send = async (
 				`/v1/rooms.media/${rid}`,
 				{
 					file,
+					...(fileContent && {
+						content: JSON.stringify(fileContent),
+					}),
 				},
 				{
 					load: (event) => {
@@ -168,5 +172,6 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 		file: File,
 		{ description, msg, t }: { description?: string; msg?: string; t?: IMessage['t'] },
 		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
-	): Promise<void> => send(file, { description, msg, rid, tmid, t }, getContent),
+		fileContent?: IE2EEMessage['content'],
+	): Promise<void> => send(file, { description, msg, rid, tmid, t }, getContent, fileContent),
 });

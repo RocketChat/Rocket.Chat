@@ -48,6 +48,10 @@ export interface IUpload {
 	Webdav?: {
 		path: string;
 	};
+	content?: {
+		algorithm: string; // 'rc.v1.aes-sha2'
+		ciphertext: string; // Encrypted subset JSON of IUpload
+	};
 }
 
 export type IUploadWithUser = IUpload & { user?: Pick<IUser, '_id' | 'name' | 'username'> };

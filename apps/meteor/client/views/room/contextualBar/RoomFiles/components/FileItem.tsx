@@ -1,8 +1,10 @@
+import { Base64 } from '@rocket.chat/base64';
 import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
+import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import FileItemIcon from './FileItemIcon';
 import FileItemMenu from './FileItemMenu';
@@ -22,12 +24,28 @@ type FileItemProps = {
 
 const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 	const format = useFormatDateAndTime();
-	const { _id, name, url, uploadedAt, type, typeGroup, user } = fileData;
+	const [file, setFile] = useState<IUploadWithUser>(fileData);
+	const { _id, path, name, uploadedAt, type, typeGroup, user } = file;
+	console.log(123, file);
+
+	useEffect(() => {
+		(async () => {
+			if (fileData.rid && fileData.content) {
+				const e2eRoom = await e2e.getInstanceByRoomId(fileData.rid);
+				if (e2eRoom?.shouldConvertReceivedMessages()) {
+					const decrypted = await e2e.decryptFileContent(fileData);
+					const key = Base64.encode(JSON.stringify(decrypted.encryption));
+					decrypted.path = `/file-decrypt${decrypted.path}?key=${key}`;
+					setFile({ ...decrypted });
+				}
+			}
+		})();
+	}, [fileData]);
 
 	return (
 		<Box display='flex' pb={12} pi={24} borderRadius={4} className={hoverClass}>
 			{typeGroup === 'image' ? (
-				<ImageItem id={_id} url={url} name={name} username={user?.username} timestamp={format(uploadedAt)} />
+				<ImageItem id={_id} url={path} name={name} username={user?.username} timestamp={format(uploadedAt)} />
 			) : (
 				<Box
 					is='a'
@@ -39,7 +57,7 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 					display='flex'
 					flexGrow={1}
 					flexShrink={1}
-					href={url}
+					href={path}
 					textDecorationLine='none'
 				>
 					<FileItemIcon type={type} />

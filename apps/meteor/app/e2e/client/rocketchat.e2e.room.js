@@ -447,6 +447,15 @@ export class E2ERoom extends Emitter {
 		return this.encryptText(data);
 	}
 
+	async decryptContent(data) {
+		if (data.content && data.content.algorithm === 'rc.v1.aes-sha2') {
+			const content = await this.decrypt(data.content.ciphertext);
+			Object.assign(data, content);
+		}
+
+		return data;
+	}
+
 	// Decrypt messages
 	async decryptMessage(message) {
 		if (message.t !== 'e2e' || message.e2e === 'done') {
@@ -461,10 +470,7 @@ export class E2ERoom extends Emitter {
 			}
 		}
 
-		if (message.content && message.content.algorithm === 'rc.v1.aes-sha2') {
-			const content = await this.decrypt(message.content.ciphertext);
-			Object.assign(message, content);
-		}
+		message = await this.decryptContent(message);
 
 		return {
 			...message,

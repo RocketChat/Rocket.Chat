@@ -34,6 +34,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 		file: File,
 		extraData?: Pick<IMessage, 't' | 'e2e'> & { description?: string },
 		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
+		fileContent?: IE2EEMessage['content'],
 	) => {
 		chat.uploads.send(
 			file,
@@ -42,6 +43,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 				...extraData,
 			},
 			getContent,
+			fileContent,
 		);
 		chat.composer?.clear();
 		imperativeModal.close();
@@ -143,12 +145,25 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 							});
 						};
 
+						const fileContentData = {
+							type: file.type,
+							typeGroup: file.type.split('/')[0],
+							name: fileName,
+							encryption: {
+								key: encryptedFile.key,
+								iv: encryptedFile.iv,
+							},
+						};
+
+						const fileContent = await e2eRoom.encryptMessageContent(fileContentData);
+
 						uploadFile(
 							encryptedFile.file,
 							{
 								t: 'e2e',
 							},
 							getContent,
+							fileContent,
 						);
 					}
 				},

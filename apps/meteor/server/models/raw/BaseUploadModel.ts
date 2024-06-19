@@ -88,7 +88,6 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 			},
 		};
 
-		console.log('confirm', filter, update);
 		return this.updateOne(filter, update);
 	}
 
