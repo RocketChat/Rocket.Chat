@@ -41,7 +41,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, ...props }: Gen
 
 	const hasIcon = itemsList.some(({ icon }) => icon);
 	const handleItems = (items: GenericMenuItemProps[]) =>
-		hasIcon ? items.map((item) => ({ ...item, gap: !item.icon && !item.status })) : items;
+		hasIcon ? items.map((item) => ({ ...item, gap: item.gap ?? (!item.icon && !item.status) })) : items;
 
 	const isMenuEmpty = !(sections && sections.length > 0) && !(items && items.length > 0);
 
