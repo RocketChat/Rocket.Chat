@@ -85,15 +85,30 @@ test.describe.serial('retention-policy', () => {
 			await expect(poHomeChannel.tabs.room.pruneAccordion).toBeVisible();
 		});
 
-		test('should not show prune section in edit channel for users without permission', async ({ browser }) => {
-			const { page } = await createAuxContext(browser, Users.user1);
-			const auxContext = { page, poHomeChannel: new HomeChannel(page) };
-			await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
-			await auxContext.poHomeChannel.tabs.btnRoomInfo.click();
-			await auxContext.poHomeChannel.tabs.room.btnEdit.click();
+		test.describe('edit-room-retention-policy permission', async () => {
+			test('should not show prune section in edit channel for users without permission', async ({ browser }) => {
+				const { page } = await createAuxContext(browser, Users.user1);
+				const auxContext = { page, poHomeChannel: new HomeChannel(page) };
+				await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
+				await auxContext.poHomeChannel.tabs.btnRoomInfo.click();
+				await auxContext.poHomeChannel.tabs.room.btnEdit.click();
 
-			await expect(poHomeChannel.tabs.room.pruneAccordion).not.toBeVisible();
-			await auxContext.page.close();
+				await expect(poHomeChannel.tabs.room.pruneAccordion).not.toBeVisible();
+				await auxContext.page.close();
+			});
+
+			test('users without permission should be able to edit the channel', async ({ browser }) => {
+				const { page } = await createAuxContext(browser, Users.user1);
+				const auxContext = { page, poHomeChannel: new HomeChannel(page) };
+				await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
+				await auxContext.poHomeChannel.tabs.btnRoomInfo.click();
+				await auxContext.poHomeChannel.tabs.room.btnEdit.click();
+				await auxContext.poHomeChannel.tabs.room.checkboxReadOnly.check();
+				await auxContext.poHomeChannel.tabs.room.btnSave.click();
+
+				await expect(auxContext.poHomeChannel.getSystemMessageByText('set room to read only')).toBeVisible();
+				await auxContext.page.close();
+			});
 		});
 
 		test.describe('retention policy applies enabled by default', () => {
