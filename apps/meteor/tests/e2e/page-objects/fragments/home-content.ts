@@ -143,6 +143,10 @@ export class HomeContent {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
 	}
 
+	get mainThreadMessageText(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').first();
+	}
+
 	get lastThreadMessageText(): Locator {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last();
 	}
@@ -357,6 +361,18 @@ export class HomeContent {
 
 	get btnAnonymousTalk(): Locator {
 		return this.page.locator('role=button[name="Or talk as anonymous"]');
+	}
+
+	get nextSlideButton(): Locator {
+		return this.page.getByLabel('Next slide');
+	}
+
+	get previousSlideButton(): Locator {
+		return this.page.getByLabel('Previous slide');
+	}
+
+	get currentGalleryImage(): Locator {
+		return this.page.locator('div[class="swiper-slide swiper-slide-active"] img');
 	}
 
 	findSystemMessage(text: string): Locator {
