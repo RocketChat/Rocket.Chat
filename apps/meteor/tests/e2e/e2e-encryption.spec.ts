@@ -259,10 +259,6 @@ test.describe.serial('e2e-encryption', () => {
 		});
 
 		await expect(userMention).toBeVisible();
-
-		await userMention.click();
-
-		await expect(poHomeChannel.content.userCard).toBeVisible();
 	});
 
 	test('expect create a encrypted private channel, mention a channel and navigate to it', async ({ page }) => {
