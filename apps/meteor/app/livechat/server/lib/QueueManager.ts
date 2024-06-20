@@ -21,9 +21,14 @@ import { RoutingManager } from './RoutingManager';
 const logger = new Logger('QueueManager');
 
 export const saveQueueInquiry = async (inquiry: ILivechatInquiryRecord) => {
-	await LivechatInquiry.queueInquiry(inquiry._id);
-	await callbacks.run('livechat.afterInquiryQueued', inquiry);
-	void notifyOnLivechatInquiryChanged(inquiry, 'updated', {
+	const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id);
+	if (!queuedInquiry) {
+		return;
+	}
+
+	await callbacks.run('livechat.afterInquiryQueued', queuedInquiry);
+
+	void notifyOnLivechatInquiryChanged(queuedInquiry, 'updated', {
 		status: LivechatInquiryStatus.QUEUED,
 		queuedAt: new Date(),
 		takenAt: undefined,

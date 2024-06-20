@@ -308,8 +308,8 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		);
 	}
 
-	queueInquiry(inquiryId: string): Promise<UpdateResult> {
-		return this.updateOne(
+	async queueInquiry(inquiryId: string): Promise<ILivechatInquiryRecord | null> {
+		const result = await this.findOneAndUpdate(
 			{
 				_id: inquiryId,
 			},
@@ -317,7 +317,10 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				$set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() },
 				$unset: { takenAt: 1 },
 			},
+			{ returnDocument: 'after' },
 		);
+
+		return result?.value;
 	}
 
 	queueInquiryAndRemoveDefaultAgent(inquiryId: string): Promise<UpdateResult> {
