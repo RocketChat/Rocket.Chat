@@ -14,6 +14,7 @@ import { hasPermissionAsync } from '../../authorization/server/functions/hasPerm
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
 import { notifyOnRoomChangedById } from '../../lib/server/lib/notifyListener';
+import { sendMessageNotifications } from '../../lib/server/lib/sendNotificationsOnMessage';
 
 const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
 	if (!message.reactions) {
@@ -103,6 +104,9 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 			await Rooms.setReactionsInLastMessage(room._id, message.reactions);
 			void notifyOnRoomChangedById(room._id);
 		}
+
+		await sendMessageNotifications(message, room, undefined, reaction, user);
+
 		await callbacks.run('setReaction', message._id, reaction);
 		await callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
 
