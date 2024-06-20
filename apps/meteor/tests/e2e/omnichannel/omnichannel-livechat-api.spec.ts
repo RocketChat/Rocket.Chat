@@ -350,7 +350,14 @@ test.describe('OC - Livechat API', () => {
 			});
 
 			await test.step('Expect registered guest to be in dep2', async () => {
-				await poAuxContext2.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
+				// await poAuxContext2.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
+				await poAuxContext2.page.locator('role=navigation >> role=button[name=Search]').click();
+				await poAuxContext2.page.locator('role=search >> role=searchbox').fill(registerGuestVisitor.name);
+				await poAuxContext2.page.locator(`role=search >> role=listbox >> role=link >> text="${registerGuestVisitor.name}"`).click();
+				await poAuxContext2.page.locator('role=main').waitFor();
+				await poAuxContext2.page.locator('role=main >> role=heading[level=1]').waitFor();
+				await expect(poAuxContext2.page.locator('role=main >> .rcx-skeleton')).toHaveCount(0);
+				await expect(poAuxContext2.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
 			});
 		});
 
