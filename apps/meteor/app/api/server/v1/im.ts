@@ -15,6 +15,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
+import { eraseRoom } from '../../../../server/methods/eraseRoom';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -26,6 +27,7 @@ import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+
 // TODO: Refact or remove
 
 type findDirectMessageRoomProps =
@@ -107,7 +109,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			await Meteor.callAsync('eraseRoom', room._id);
+			await eraseRoom(room._id, this.userId);
 
 			return API.v1.success();
 		},
