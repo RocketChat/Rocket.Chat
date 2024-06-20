@@ -344,6 +344,51 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(sidebarChannel.locator('span')).toContainText(encriptedMessage1);
 	});
 
+	test('expect create a private encrypted channel and pin/star an encrypted message', async ({ page }) => {
+		const channelName = faker.string.uuid();
+
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+
+		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.dismissToast();
+
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.content.sendMessage('This message should be pinned and stared.');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This message should be pinned and stared.');
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		await poHomeChannel.content.openLastMessageMenu();
+		await page.locator('role=menuitem[name="Star"]').click();
+
+		await expect(poHomeChannel.toastSuccess).toBeVisible();
+		await poHomeChannel.dismissToast();
+
+		await poHomeChannel.content.openLastMessageMenu();
+		await page.locator('role=menuitem[name="Pin"]').click();
+		await page.locator('#modal-root >> button:has-text("Yes, pin message")').click();
+
+		await poHomeChannel.tabs.kebab.click();
+		await poHomeChannel.tabs.btnPinnedMessagesList.click();
+
+		await expect(page.getByRole('dialog', { name: 'Pinned Messages' })).toBeVisible();
+		await expect(page.getByRole('dialog', { name: 'Pinned Messages' }).locator('[data-qa-type="message"]').last()).toContainText(
+			'This message should be pinned and stared.',
+		);
+
+		await poHomeChannel.btnContextualbarClose.click();
+
+		await poHomeChannel.tabs.kebab.click();
+		await poHomeChannel.tabs.btnStarredMessageList.click();
+
+		await expect(page.getByRole('dialog', { name: 'Starred Messages' })).toBeVisible();
+		await expect(page.getByRole('dialog', { name: 'Starred Messages' }).locator('[data-qa-type="message"]').last()).toContainText(
+			'This message should be pinned and stared.',
+		);
+	});
+
 	test.describe('reset keys', () => {
 		let anotherClientPage: Page;
 
