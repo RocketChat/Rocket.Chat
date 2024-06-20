@@ -181,8 +181,8 @@ API.v1.addRoute(
 
 				if (isSettingAction(setting) && isSettingsUpdatePropsActions(this.bodyParams) && this.bodyParams.execute) {
 					// execute the configured method
-					await Meteor.callAsync(setting.value);
-					return API.v1.success();
+					const result = await Meteor.callAsync(setting.value);
+					return API.v1.success(result);
 				}
 
 				if (isSettingColor(setting) && isSettingsUpdatePropsColor(this.bodyParams)) {

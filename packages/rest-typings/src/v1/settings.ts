@@ -50,7 +50,9 @@ export type SettingsEndpoints = {
 
 	'/v1/settings/:_id': {
 		GET: () => Pick<ISetting, '_id' | 'value'>;
-		POST: (params: SettingsUpdateProps) => void;
+		POST: <T extends SettingsUpdateProps>(
+			params: T,
+		) => T extends SettingsUpdatePropsActions ? { success: boolean; message: string; params?: string[] } : void;
 	};
 
 	'/v1/service.configurations': {

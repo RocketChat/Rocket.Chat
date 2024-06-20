@@ -1,7 +1,7 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Button, FieldRow, FieldHint } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -12,18 +12,27 @@ type ActionSettingInputProps = {
 	disabled: boolean;
 	sectionChanged: boolean;
 };
-function ActionSettingInput({ _id, actionText, value, disabled, sectionChanged }: ActionSettingInputProps): ReactElement {
+function ActionSettingInput({ _id, actionText, disabled, sectionChanged }: ActionSettingInputProps): ReactElement {
 	const t = useTranslation();
 
 	const dispatchToastMessage = useToastMessageDispatch();
-	const actionMethod = useMethod(value);
+	const actionMethod = useEndpoint('POST', '/v1/settings/:_id', { _id });
 
 	const handleClick = async (): Promise<void> => {
 		try {
-			const data: { message: TranslationKey; params?: string[] } = await actionMethod();
+			const data = await actionMethod({ execute: true });
 
-			const params = data.params || [];
-			dispatchToastMessage({ type: 'success', message: t(data.message, ...params) });
+			if (!data) {
+				console.warn(`some data expected for ${_id}, but none received`);
+				return;
+			}
+
+			// TODO: handle Meteor.errors
+
+			console.log(data);
+
+			const params = data?.params || [];
+			dispatchToastMessage({ type: 'success', message: t(data?.message, ...params) });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
