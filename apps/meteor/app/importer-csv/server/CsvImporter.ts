@@ -7,6 +7,7 @@ import { Importer, ProgressStep, ImporterWebsocket } from '../../importer/server
 import type { IConverterOptions } from '../../importer/server/classes/ImportDataConverter';
 import type { ImporterProgress } from '../../importer/server/classes/ImporterProgress';
 import type { ImporterInfo } from '../../importer/server/definitions/ImporterInfo';
+import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
 
 export class CsvImporter extends Importer {
 	private csvParser: (csv: string) => string[];
@@ -236,7 +237,10 @@ export class CsvImporter extends Importer {
 		}
 
 		if (usersCount) {
-			await Settings.incrementValueById('CSV_Importer_Count', usersCount);
+			const { value } = await Settings.incrementValueById('CSV_Importer_Count', usersCount, { returnDocument: 'after' });
+			if (value) {
+				void notifyOnSettingChanged(value);
+			}
 		}
 
 		// Check if any of the message usernames was not in the imported list of users
