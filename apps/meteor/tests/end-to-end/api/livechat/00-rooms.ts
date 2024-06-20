@@ -48,7 +48,7 @@ import {
 } from '../../../data/permissions.helper';
 import { getSubscriptionForRoom } from '../../../data/subscriptions';
 import { adminUsername, password } from '../../../data/user';
-import { createUser, deleteUser, login } from '../../../data/users.helper.js';
+import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - rooms', function () {

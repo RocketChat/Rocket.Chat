@@ -5,7 +5,7 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { getUsersReports, reportUser } from '../../data/moderation.helper';
-import { createUser, deleteUser } from '../../data/users.helper.js';
+import { createUser, deleteUser } from '../../data/users.helper';
 
 // test for the /moderation.reportsByUsers endpoint
 

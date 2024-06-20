@@ -1,12 +1,12 @@
 import { expect } from 'chai';
 import { before, describe, after, it } from 'mocha';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage } from '../../data/chat.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
-import { createUser, deleteUser, login } from '../../data/users.helper.js';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 const resetAutoTranslateDefaults = async () => {
 	await Promise.all([

@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, request, credentials } from '../../data/api-data.js';
-import { apps } from '../../data/apps/apps-data.js';
-import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
-import { getMessageById } from '../../data/chat.helper.js';
+import { getCredentials, request, credentials } from '../../data/api-data';
+import { apps } from '../../data/apps/apps-data';
+import { cleanupApps, installTestApp } from '../../data/apps/helper';
+import { getMessageById } from '../../data/chat.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 
 describe('Apps - Send Messages As APP User', function () {

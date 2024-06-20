@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { after, before, beforeEach, afterEach, describe, it } from 'mocha';
 
 import { sleep } from '../../../lib/utils/sleep';
-import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser } from '../../data/users.helper';

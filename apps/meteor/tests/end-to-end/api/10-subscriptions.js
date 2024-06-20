@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { adminUsername } from '../../data/user';
-import { createUser, deleteUser, login } from '../../data/users.helper.js';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Subscriptions]', function () {
 	this.retries(0);

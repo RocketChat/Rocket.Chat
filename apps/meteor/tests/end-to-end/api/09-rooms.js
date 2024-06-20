@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
 import { sleep } from '../../../lib/utils/sleep';
-import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { drawioURL, imgURL, lstURL, svgLogoFileName, svgLogoURL } from '../../data/interactions';
 import { getSettingValueById, updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';

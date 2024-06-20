@@ -1,6 +1,6 @@
 import { describe, it } from 'mocha';
 
-import { request } from '../../data/api-data.js';
+import { request } from '../../data/api-data';
 
 describe('assets', function () {
 	this.retries(0);

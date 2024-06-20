@@ -1,13 +1,13 @@
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, request, credentials } from '../../data/api-data.js';
-import { apps } from '../../data/apps/apps-data.js';
-import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
-import { getMessageById } from '../../data/chat.helper.js';
+import { getCredentials, request, credentials } from '../../data/api-data';
+import { apps } from '../../data/apps/apps-data';
+import { cleanupApps, installTestApp } from '../../data/apps/helper';
+import { getMessageById } from '../../data/chat.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { adminUsername, password } from '../../data/user';
-import { createUser, deleteUser, login } from '../../data/users.helper.js';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('Apps - Send Messages As User', function () {
 	this.retries(0);

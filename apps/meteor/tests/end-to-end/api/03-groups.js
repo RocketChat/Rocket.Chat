@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials, group, apiPrivateChannelName } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials, group, apiPrivateChannelName } from '../../data/api-data';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';

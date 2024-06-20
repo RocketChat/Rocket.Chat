@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials, directMessage, apiUsername, apiEmail, methodCall } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials, directMessage, apiUsername, apiEmail, methodCall } from '../../data/api-data';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
 import { deleteRoom } from '../../data/rooms.helper';
 import { testFileUploads } from '../../data/uploads.helper';

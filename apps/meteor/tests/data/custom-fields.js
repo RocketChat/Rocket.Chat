@@ -1,4 +1,4 @@
-import { credentials, request, api } from './api-data.js';
+import { credentials, request, api } from './api-data';
 
 export const customFieldText = {
 	type: 'text',

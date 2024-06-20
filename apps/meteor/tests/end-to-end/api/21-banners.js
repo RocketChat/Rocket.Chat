@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 
 describe('banners', function () {
 	this.retries(0);

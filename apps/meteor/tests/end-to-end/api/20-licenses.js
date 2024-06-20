@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 

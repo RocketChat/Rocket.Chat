@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 

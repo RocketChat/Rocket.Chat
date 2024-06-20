@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, request, credentials } from '../../data/api-data.js';
-import { apps } from '../../data/apps/apps-data.js';
-import { installTestApp, cleanupApps } from '../../data/apps/helper.js';
+import { getCredentials, request, credentials } from '../../data/api-data';
+import { apps } from '../../data/apps/apps-data';
+import { installTestApp, cleanupApps } from '../../data/apps/helper';
 
 describe('Apps - Uninstall', function () {
 	this.retries(0);

@@ -4,9 +4,9 @@ import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials, apiEmail, apiUsername, log, wait, reservedWords } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials, apiEmail, apiUsername, log, wait, reservedWords } from '../../data/api-data';
 import { MAX_BIO_LENGTH, MAX_NICKNAME_LENGTH } from '../../data/constants.ts';
-import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields.js';
+import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields';
 import { imgURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
@@ -23,7 +23,7 @@ import {
 } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user';
-import { createUser, login, deleteUser, getUserStatus, getUserByUsername, registerUser, updateUserInDb } from '../../data/users.helper.js';
+import { createUser, login, deleteUser, getUserStatus, getUserByUsername, registerUser, updateUserInDb } from '../../data/users.helper';
 
 const targetUser = {};
 

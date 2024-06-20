@@ -1,13 +1,13 @@
 import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 
-import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data.js';
-import { sendSimpleMessage } from '../../data/chat.helper.js';
+import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data';
+import { sendSimpleMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
-import { createUser, deleteUser, login } from '../../data/users.helper.js';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 describe('Meteor.methods', function () {

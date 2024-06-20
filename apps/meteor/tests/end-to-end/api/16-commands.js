@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { sendSimpleMessage } from '../../data/chat.helper.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { sendSimpleMessage } from '../../data/chat.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
-import { createUser, deleteUser, login } from '../../data/users.helper.js';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Commands]', function () {
 	this.retries(0);

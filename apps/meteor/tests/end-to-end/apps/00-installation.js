@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, request, credentials, api } from '../../data/api-data.js';
-import { APP_URL, apps, APP_USERNAME } from '../../data/apps/apps-data.js';
-import { cleanupApps } from '../../data/apps/helper.js';
+import { getCredentials, request, credentials, api } from '../../data/api-data';
+import { APP_URL, apps, APP_USERNAME } from '../../data/apps/apps-data';
+import { cleanupApps } from '../../data/apps/helper';
 import { updatePermission } from '../../data/permissions.helper';
-import { getUserByUsername } from '../../data/users.helper.js';
+import { getUserByUsername } from '../../data/users.helper';
 
 describe('Apps - Installation', function () {
 	this.retries(0);

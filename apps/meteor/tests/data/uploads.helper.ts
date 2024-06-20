@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { after, before, it } from 'mocha';
 import type { Response } from 'supertest';
 
-import { api, request, credentials } from './api-data.js';
+import { api, request, credentials } from './api-data';
 import { imgURL } from './interactions';
 import { createVisitor } from './livechat/rooms';
 import { updateSetting } from './permissions.helper';

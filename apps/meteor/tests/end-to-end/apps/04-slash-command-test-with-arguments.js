@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, request, credentials, api } from '../../data/api-data.js';
-import { cleanupApps, installTestApp } from '../../data/apps/helper.js';
+import { getCredentials, request, credentials, api } from '../../data/api-data';
+import { cleanupApps, installTestApp } from '../../data/apps/helper';
 
 describe('Apps - Slash Command "test-with-arguments"', function () {
 	this.retries(0);

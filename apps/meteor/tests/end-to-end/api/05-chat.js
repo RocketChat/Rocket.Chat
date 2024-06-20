@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials, message } from '../../data/api-data.js';
-import { sendSimpleMessage, deleteMessage, pinMessage } from '../../data/chat.helper.js';
+import { getCredentials, api, request, credentials, message } from '../../data/api-data';
+import { sendSimpleMessage, deleteMessage, pinMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
