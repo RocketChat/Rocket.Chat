@@ -1,5 +1,6 @@
 import type { Cloud, Serialized } from '@rocket.chat/core-typings';
 import { DuplicatedLicenseError } from '@rocket.chat/license';
+import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { v, compile } from 'suretype';
 
@@ -8,7 +9,6 @@ import { CloudWorkspaceAccessError } from '../../../../../lib/errors/CloudWorksp
 import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
-import { settings } from '../../../../settings/server';
 import { buildWorkspaceRegistrationData } from '../buildRegistrationData';
 import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
 import { retrieveRegistrationStatus } from '../retrieveRegistrationStatus';
@@ -28,7 +28,7 @@ const fetchWorkspaceSyncPayload = async ({
 	token: string;
 	data: Cloud.WorkspaceSyncRequestPayload;
 }): Promise<Serialized<Cloud.WorkspaceSyncResponse>> => {
-	const workspaceRegistrationClientUri = settings.get<string>('Cloud_Workspace_Registration_Client_Uri');
+	const workspaceRegistrationClientUri = await Settings.getValueById('Cloud_Workspace_Registration_Client_Uri');
 	const response = await fetch(`${workspaceRegistrationClientUri}/sync`, {
 		method: 'POST',
 		headers: {

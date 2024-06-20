@@ -5,7 +5,6 @@ import { v, compile } from 'suretype';
 
 import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
-import { settings } from '../../../../settings/server';
 import type { WorkspaceRegistrationData } from '../buildRegistrationData';
 import { buildWorkspaceRegistrationData } from '../buildRegistrationData';
 import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
@@ -91,7 +90,7 @@ const fetchWorkspaceClientPayload = async ({
 	token: string;
 	workspaceRegistrationData: WorkspaceRegistrationData<undefined>;
 }): Promise<Serialized<Cloud.WorkspaceSyncPayload> | undefined> => {
-	const workspaceRegistrationClientUri = settings.get<string>('Cloud_Workspace_Registration_Client_Uri');
+	const workspaceRegistrationClientUri = await Settings.getValueById('Cloud_Workspace_Registration_Client_Uri');
 	const response = await fetch(`${workspaceRegistrationClientUri}/client`, {
 		method: 'POST',
 		headers: {
