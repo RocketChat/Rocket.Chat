@@ -1,8 +1,20 @@
 import { applyLicense } from '@rocket.chat/license';
-import { Settings } from '@rocket.chat/models';
+import { Settings, WorkspaceCredentials } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { syncCloudData } from './syncWorkspace/syncCloudData';
+
+type SaveRegistrationDataDTO = {
+	workspaceId: string;
+	client_name: string;
+	client_id: string;
+	client_secret: string;
+	client_secret_expires_at: number;
+	publicKey: string;
+	registration_client_uri: string;
+};
+
+type ManualSaveRegistrationDataDTO = SaveRegistrationDataDTO & { licenseData: { license: string } };
 
 export async function saveRegistrationData({
 	workspaceId,
@@ -12,15 +24,7 @@ export async function saveRegistrationData({
 	client_secret_expires_at,
 	publicKey,
 	registration_client_uri,
-}: {
-	workspaceId: string;
-	client_name: string;
-	client_id: string;
-	client_secret: string;
-	client_secret_expires_at: number;
-	publicKey: string;
-	registration_client_uri: string;
-}) {
+}: SaveRegistrationDataDTO) {
 	await saveRegistrationDataBase({
 		workspaceId,
 		client_name,
@@ -33,6 +37,7 @@ export async function saveRegistrationData({
 
 	await syncCloudData();
 }
+
 function saveRegistrationDataBase({
 	workspaceId,
 	client_name,
@@ -41,15 +46,7 @@ function saveRegistrationDataBase({
 	client_secret_expires_at,
 	publicKey,
 	registration_client_uri,
-}: {
-	workspaceId: string;
-	client_name: string;
-	client_id: string;
-	client_secret: string;
-	client_secret_expires_at: number;
-	publicKey: string;
-	registration_client_uri: string;
-}) {
+}: SaveRegistrationDataDTO) {
 	return Promise.all([
 		Settings.updateValueById('Register_Server', true),
 		Settings.updateValueById('Cloud_Workspace_Id', workspaceId),
@@ -59,6 +56,7 @@ function saveRegistrationDataBase({
 		Settings.updateValueById('Cloud_Workspace_Client_Secret_Expires_At', client_secret_expires_at),
 		Settings.updateValueById('Cloud_Workspace_PublicKey', publicKey),
 		Settings.updateValueById('Cloud_Workspace_Registration_Client_Uri', registration_client_uri),
+		WorkspaceCredentials.updateCredentialByScope('', '', new Date(0)),
 	]).then(async (...results) => {
 		// wait until all the settings are updated before syncing the data
 		for await (const retry of Array.from({ length: 10 })) {
@@ -93,18 +91,7 @@ export async function saveRegistrationDataManual({
 	publicKey,
 	registration_client_uri,
 	licenseData,
-}: {
-	workspaceId: string;
-	client_name: string;
-	client_id: string;
-	client_secret: string;
-	client_secret_expires_at: number;
-	publicKey: string;
-	registration_client_uri: string;
-	licenseData: {
-		license: string;
-	};
-}) {
+}: ManualSaveRegistrationDataDTO) {
 	await saveRegistrationDataBase({
 		workspaceId,
 		client_name,

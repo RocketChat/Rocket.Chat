@@ -1322,28 +1322,6 @@ export const createSetupWSettings = () =>
 				secret: true,
 			});
 
-			await this.add('Cloud_Workspace_Access_Token', '', {
-				type: 'string',
-				hidden: true,
-				readonly: true,
-				enableQuery: {
-					_id: 'Register_Server',
-					value: true,
-				},
-				secret: true,
-			});
-
-			await this.add('Cloud_Workspace_Access_Token_Expires_At', new Date(0), {
-				type: 'date',
-				hidden: true,
-				readonly: true,
-				enableQuery: {
-					_id: 'Register_Server',
-					value: true,
-				},
-				secret: true,
-			});
-
 			await this.add('Cloud_Workspace_Registration_State', '', {
 				type: 'string',
 				hidden: true,
@@ -1354,6 +1332,7 @@ export const createSetupWSettings = () =>
 				},
 				secret: true,
 			});
+
 			await this.add('Cloud_Billing_Url', 'https://billing.rocket.chat', {
 				type: 'string',
 				hidden: true,

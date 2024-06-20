@@ -1,9 +1,9 @@
+import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { CloudWorkspaceConnectionError } from '../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceRegistrationError } from '../../../../lib/errors/CloudWorkspaceRegistrationError';
-import { settings } from '../../../settings/server';
 import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
@@ -20,7 +20,8 @@ export async function removeLicense() {
 			throw new CloudWorkspaceAccessTokenEmptyError();
 		}
 
-		const workspaceRegistrationClientUri = settings.get<string>('Cloud_Workspace_Registration_Client_Uri');
+		const workspaceRegistrationClientUri = await Settings.getValueById('Cloud_Workspace_Registration_Client_Uri');
+
 		const response = await fetch(`${workspaceRegistrationClientUri}/client/downgrade`, {
 			method: 'POST',
 			headers: {
