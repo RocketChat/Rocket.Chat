@@ -39,7 +39,13 @@ export const useNormalizedMessage = <TMessage extends IMessage>(message: TMessag
 				return attachment;
 			}
 
-			const key = Base64.encode(JSON.stringify(attachment.encryption));
+			const key = Base64.encode(
+				JSON.stringify({
+					...attachment.encryption,
+					name: normalizedMessage.file?.name,
+					type: normalizedMessage.file?.type,
+				}),
+			);
 
 			if (isFileAttachment(attachment)) {
 				if (attachment.title_link && !attachment.title_link.startsWith('/file-decrypt/')) {

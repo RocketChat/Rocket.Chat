@@ -53,7 +53,13 @@ export const useImagesList = (
 					const e2eRoom = await e2e.getInstanceByRoomId(file.rid);
 					if (e2eRoom?.shouldConvertReceivedMessages()) {
 						const decrypted = await e2e.decryptFileContent(file);
-						const key = Base64.encode(JSON.stringify(decrypted.encryption));
+						const key = Base64.encode(
+							JSON.stringify({
+								...decrypted.encryption,
+								name: decrypted.name,
+								type: decrypted.type,
+							}),
+						);
 						decrypted.path = `/file-decrypt${decrypted.path}?key=${key}`;
 						Object.assign(file, decrypted);
 					}
