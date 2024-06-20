@@ -299,11 +299,15 @@ class LivechatClass {
 
 		this.logger.debug(`Updating DB for room ${room._id} with close data`);
 
+		const inquiry = await LivechatInquiry.findOneByRoomId(rid);
+
 		const removedInquiry = await LivechatInquiry.removeByRoomId(rid);
 		if (removedInquiry && removedInquiry.deletedCount !== 1) {
 			throw new Error('Error removing inquiry');
 		}
-		void notifyOnLivechatInquiryChangedByRoom(rid, 'removed');
+		if (inquiry) {
+			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
+		}
 
 		const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData);
 		if (!updatedRoom || updatedRoom.modifiedCount !== 1) {
@@ -507,6 +511,8 @@ class LivechatClass {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
 
+		const inquiry = await LivechatInquiry.findOneByRoomId(rid);
+
 		const result = await Promise.allSettled([
 			Messages.removeByRoomId(rid),
 			ReadReceipts.removeByRoomId(rid),
@@ -515,7 +521,9 @@ class LivechatClass {
 			LivechatRooms.removeById(rid),
 		]);
 
-		void notifyOnLivechatInquiryChangedByRoom(rid, 'removed');
+		if (inquiry) {
+			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
+		}
 
 		for (const r of result) {
 			if (r.status === 'rejected') {
