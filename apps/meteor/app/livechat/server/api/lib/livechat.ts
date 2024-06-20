@@ -129,6 +129,8 @@ export function getRoom({
 		ts: new Date(),
 	};
 
+	console.log('getRoommm', { guest });
+
 	return LivechatTyped.getRoom(guest, message, roomInfo, agent, extraParams);
 }
 

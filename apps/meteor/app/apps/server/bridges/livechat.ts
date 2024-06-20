@@ -180,7 +180,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		return Promise.all(result.map((room) => this.orch.getConverters()?.get('rooms').convertRoom(room) as Promise<ILivechatRoom>));
 	}
 
-	protected async createVisitor(visitor: IVisitor, appId: string): Promise<string> {
+	protected async createVisitor(visitor: IVisitor, appId: string): Promise<IVisitor | null> {
 		this.orch.debugLog(`The App ${appId} is creating a livechat visitor.`);
 
 		const registerData = {

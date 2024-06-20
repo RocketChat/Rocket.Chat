@@ -2,6 +2,7 @@ import dns from 'dns';
 import * as util from 'util';
 
 import { Apps, AppEvents } from '@rocket.chat/apps';
+import type { IVisitor } from '@rocket.chat/apps-engine/definition/livechat';
 import { Message, VideoConf, api, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelRoom,
@@ -68,7 +69,8 @@ import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
 
-type RegisterGuestType = Partial<Pick<ILivechatVisitor, '_id' | 'token' | 'name' | 'department' | 'status' | 'username'>> & {
+type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
+	id?: string;
 	connectionData?: any;
 	email?: string;
 	phone?: string;
@@ -646,7 +648,7 @@ class LivechatClass {
 	}
 
 	async registerGuest({
-		_id,
+		id,
 		token,
 		name,
 		phone,
@@ -655,13 +657,13 @@ class LivechatClass {
 		username,
 		connectionData,
 		status = UserStatus.ONLINE,
-	}: RegisterGuestType): Promise<ILivechatVisitor | null> {
+	}: RegisterGuestType): Promise<IVisitor | null> {
 		check(token, String);
-		check(_id, Match.Maybe(String));
+		check(id, Match.Maybe(String));
 
-		Livechat.logger.debug(`New incoming conversation: id: ${_id} | token: ${token}`);
+		Livechat.logger.debug(`New incoming conversation: id: ${id} | token: ${token}`);
 
-		const visitorDataToUpdate: Partial<ILivechatVisitor> = {
+		const visitorDataToUpdate: Partial<ILivechatVisitor> & { userAgent?: string; ip?: string; host?: string } = {
 			token,
 			status,
 			...(phone ? { phone: [{ phoneNumber: phone }] } : {}),
@@ -669,7 +671,7 @@ class LivechatClass {
 		};
 
 		if (email) {
-			const visitorEmail = email.trim().toLowerCase();;
+			const visitorEmail = email.trim().toLowerCase();
 			validateEmail(visitorEmail);
 			visitorDataToUpdate.visitorEmails = [{ address: visitorEmail }];
 		}
@@ -685,47 +687,53 @@ class LivechatClass {
 			visitorDataToUpdate.department = dep._id;
 		}
 
-		const livechatVisitor = await LivechatVisitors.findOneByEmailPhoneToken(email, phone, token, { projection: { _id: 1, token: 1 } });
+		const livechatVisitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 
-		if (!livechatVisitor) {
+		let existingUser = null;
+
+		if (livechatVisitor) {
+			Livechat.logger.debug('Found matching user by token');
+			visitorDataToUpdate._id = livechatVisitor._id;
+		} else if (phone && (existingUser = await LivechatVisitors.findOneVisitorByPhone(phone))) {
+			Livechat.logger.debug('Found matching user by phone number');
+			visitorDataToUpdate._id = existingUser._id;
+			// Don't change token when matching by phone number, use current visitor token
+			visitorDataToUpdate.token = existingUser.token;
+		} else if (email && (existingUser = await LivechatVisitors.findOneGuestByEmailAddress(email))) {
+			Livechat.logger.debug('Found matching user by email');
+			visitorDataToUpdate._id = existingUser._id;
+		} else if (!livechatVisitor) {
 			Livechat.logger.debug(`No matches found. Attempting to create new user with token ${token}`);
 
-			if (!username) {
-				visitorDataToUpdate.username = await LivechatVisitors.getNextVisitorUsername();
-			}
-
-			if (_id) {
-				visitorDataToUpdate._id = _id;
-			}
-
+			visitorDataToUpdate._id = id || undefined;
+			visitorDataToUpdate.username = username || (await LivechatVisitors.getNextVisitorUsername());
 			visitorDataToUpdate.status = status;
 			visitorDataToUpdate.ts = new Date();
 
 			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
 				Livechat.logger.debug(`Saving connection data for visitor ${token}`);
-				const connection = connectionData;
-				if (connection?.httpHeaders) {
-					visitorDataToUpdate.userAgent = connection.httpHeaders['user-agent'];
-					visitorDataToUpdate.ip =
-						connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'] || connection.clientAddress;
-					visitorDataToUpdate.host = connection.httpHeaders.host;
+				const { httpHeaders, clientAddress } = connectionData;
+				if (httpHeaders) {
+					visitorDataToUpdate.userAgent = httpHeaders['user-agent'];
+					visitorDataToUpdate.ip = httpHeaders['x-real-ip'] || httpHeaders['x-forwarded-for'] || clientAddress;
+					visitorDataToUpdate.host = httpHeaders?.host;
 				}
 			}
-		} else {
-			Livechat.logger.debug(`Found matching visitor by token: ${token}`);
-			visitorDataToUpdate._id = livechatVisitor._id;
 		}
 
 		visitorDataToUpdate.token = livechatVisitor?.token || token;
 
-		const upsertedLivechatVisitor = await LivechatVisitors.updateOneByIdOrToken(visitorDataToUpdate, { upsert: true, returnDocument: 'after' });
+		const upsertedLivechatVisitor = await LivechatVisitors.updateOneByIdOrToken(visitorDataToUpdate, {
+			upsert: true,
+			returnDocument: 'after',
+		});
 
 		if (!upsertedLivechatVisitor.value) {
 			Livechat.logger.debug(`No visitor found after upsert`);
 			return null;
 		}
 
-		return { ...upsertedLivechatVisitor.value, _id: upsertedLivechatVisitor.value._id.toString() };
+		return { ...upsertedLivechatVisitor.value, id: upsertedLivechatVisitor.value._id.toString() } as IVisitor;
 	}
 
 	private async getBotAgents(department?: string) {

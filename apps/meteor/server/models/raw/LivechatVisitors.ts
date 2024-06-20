@@ -308,12 +308,13 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		update: Partial<ILivechatVisitor>,
 		options?: FindOneAndUpdateOptions,
 	): Promise<ModifyResult<ILivechatVisitor>> {
-		const query: Filter<ILivechatVisitor> = {
-			$or: [
-				...(update._id ? [{ _id: update._id }] : []),
-				...(update.token ? [{ token: update.token }] : []),
-			],
-		};
+		let query: Filter<ILivechatVisitor> = {};
+
+		if (update._id) {
+			query = { _id: update._id };
+		} else if (update.token) {
+			query = { token: update.token };
+		}
 
 		return this.findOneAndUpdate(query, { $set: update }, options);
 	}
