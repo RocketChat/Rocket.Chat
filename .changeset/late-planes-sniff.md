@@ -4,5 +4,4 @@
 "@rocket.chat/i18n": patch
 ---
 
-Added the possibility to enable mentions in End to end encrypted channels
-
+Added a new setting to enable mentions in end to end encrypted channels
