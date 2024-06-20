@@ -28,9 +28,10 @@ export type RoomHeaderProps = {
 			pos?: unknown;
 		};
 	};
+	roomToolbox?: JSX.Element;
 };
 
-const RoomHeader = ({ room, slots = {} }: RoomHeaderProps) => {
+const RoomHeader = ({ room, slots = {}, roomToolbox }: RoomHeaderProps) => {
 	const t = useTranslation();
 
 	return (
@@ -56,7 +57,7 @@ const RoomHeader = ({ room, slots = {} }: RoomHeaderProps) => {
 			<Suspense fallback={null}>
 				<HeaderToolbar aria-label={t('Toolbox_room_actions')}>
 					{slots?.toolbox?.pre}
-					{slots?.toolbox?.content || <RoomToolbox />}
+					{slots?.toolbox?.content || roomToolbox || <RoomToolbox />}
 					{slots?.toolbox?.pos}
 				</HeaderToolbar>
 			</Suspense>
