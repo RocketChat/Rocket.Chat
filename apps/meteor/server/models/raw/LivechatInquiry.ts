@@ -123,7 +123,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 	}
 
 	findIdsByVisitorToken(token: ILivechatInquiryRecord['v']['token']): FindCursor<ILivechatInquiryRecord> {
-		return this.find({ token }, { projection: { _id: 1 } });
+		return this.find({ 'v.token': token }, { projection: { _id: 1 } });
 	}
 
 	getDistinctQueuedDepartments(options: DistinctOptions): Promise<(string | undefined)[]> {
