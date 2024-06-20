@@ -2,6 +2,7 @@ import { IconButton, MenuItem, MenuItemContent, MenuItemIcon, MenuSection, MenuV
 import type { Keys as IconKeys } from '@rocket.chat/icons';
 import type { Key } from 'react';
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { isTruthy } from '../../../../../../lib/isTruthy';
 
@@ -21,6 +22,7 @@ type RoomActionsMenuProps = {
 
 const RoomActionsMenu = ({ actions }: RoomActionsMenuProps) => {
 	const { regular, danger } = actions;
+	const { t } = useTranslation();
 
 	const itemsList = [regular, danger].reduce((acc, item) => [...(acc || []), ...(item || [])]);
 
@@ -36,6 +38,7 @@ const RoomActionsMenu = ({ actions }: RoomActionsMenuProps) => {
 	return (
 		<MenuV2
 			key='menu'
+			title={t('More')}
 			placement='bottom-end'
 			button={<IconButton icon='kebab' secondary flexShrink={0} flexGrow={0} maxHeight='initial' />}
 			onAction={onAction}

@@ -178,7 +178,10 @@ test.describe.serial('channel-management', () => {
 		await user1Page.goto(`/channel/${targetChannel}`);
 		await user1Channel.waitForChannel();
 		await user1Channel.tabs.btnRoomInfo.click();
-		await expect(user1Channel.tabs.room.btnDelete).toBeVisible();
+
+		await user1Channel.tabs.room.kebab.click();
+
+		await expect(user1Channel.tabs.room.itemDelete).toBeVisible();
 
 		await user1Page.close();
 	});
