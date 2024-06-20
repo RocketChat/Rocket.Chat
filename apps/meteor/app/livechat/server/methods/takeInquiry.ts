@@ -60,7 +60,7 @@ export const takeInquiry = async (
 	};
 
 	try {
-		await RoutingManager.takeInquiry(inquiry, agent, options);
+		await RoutingManager.takeInquiry(inquiry, agent, options ?? {}, room);
 	} catch (e: any) {
 		throw new Meteor.Error(e.message);
 	}

@@ -5,7 +5,7 @@ import { cbLogger } from '../lib/logger';
 
 callbacks.add(
 	'livechat.afterTakeInquiry',
-	async (inquiry) => {
+	async ({ inquiry }) => {
 		if (!settings.get('Livechat_waiting_queue')) {
 			return inquiry;
 		}
