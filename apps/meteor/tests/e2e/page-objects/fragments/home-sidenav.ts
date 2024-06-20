@@ -54,7 +54,17 @@ export class HomeSidenav {
 	}
 
 	get sidebarSearchSection() {
-		return this.page.getByRole('navigation', { name: 'sidebar' }).getByRole('searchbox');
+		return this.page.getByRole('navigation', { name: 'sidebar' }).getByRole('search');
+	}
+
+	get sidebarSearchBox() {
+		return this.sidebarSearchSection.getByRole('searchbox');
+	}
+
+	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
+		await this.sidebarSearchSection.getByRole('button', { name: 'Display' }).click();
+		await this.sidebarSearchSection.getByRole('menuitemcheckbox', { name: mode }).click();
+		await this.sidebarSearchSection.click();
 	}
 
 	// Note: this is different from openChat because queued chats are not searchable
@@ -93,7 +103,7 @@ export class HomeSidenav {
 	}
 
 	async typeSearch(text: string): Promise<void> {
-		await this.sidebarSearchSection.fill(text);
+		await this.sidebarSearchBox.fill(text);
 	}
 
 	async logout(): Promise<void> {

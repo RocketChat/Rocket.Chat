@@ -111,8 +111,8 @@ export class AppCommandsBridge extends CommandBridge {
 			permission: command.permission,
 			callback: this._appCommandExecutor.bind(this),
 			providesPreview: command.providesPreview,
-			previewer: !command.previewer ? undefined : this._appCommandPreviewer.bind(this),
-			previewCallback: (!command.executePreviewItem ? undefined : this._appCommandPreviewExecutor.bind(this)) as
+			previewer: command.providesPreview ? this._appCommandPreviewer.bind(this) : undefined,
+			previewCallback: (command.providesPreview ? this._appCommandPreviewExecutor.bind(this) : undefined) as
 				| (typeof slashCommands.commands)[string]['previewCallback']
 				| undefined,
 		} as SlashCommand;
@@ -153,10 +153,6 @@ export class AppCommandsBridge extends CommandBridge {
 		}
 
 		if (typeof command.providesPreview !== 'boolean') {
-			throw new Error('Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.');
-		}
-
-		if (typeof command.executor !== 'function') {
 			throw new Error('Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.');
 		}
 	}

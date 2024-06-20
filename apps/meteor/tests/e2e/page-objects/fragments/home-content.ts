@@ -143,6 +143,10 @@ export class HomeContent {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
 	}
 
+	get mainThreadMessageText(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').first();
+	}
+
 	get lastThreadMessageText(): Locator {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last();
 	}
