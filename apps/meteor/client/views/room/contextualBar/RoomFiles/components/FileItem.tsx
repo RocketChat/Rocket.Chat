@@ -3,6 +3,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import React from 'react';
 
+import { useDownloadFromServiceWorker } from '../../../../../hooks/useDownloadFromServiceWorker';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import FileItemIcon from './FileItemIcon';
 import FileItemMenu from './FileItemMenu';
@@ -24,6 +25,8 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 	const format = useFormatDateAndTime();
 	const { _id, path, name, uploadedAt, type, typeGroup, user } = fileData;
 
+	const encryptedAnchorProps = useDownloadFromServiceWorker(path || '', name);
+
 	return (
 		<Box display='flex' pb={12} pi={24} borderRadius={4} className={hoverClass}>
 			{typeGroup === 'image' ? (
@@ -41,6 +44,7 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 					flexShrink={1}
 					href={path}
 					textDecorationLine='none'
+					{...(path?.includes('/file-decrypt/') ? encryptedAnchorProps : {})}
 				>
 					<FileItemIcon type={type} />
 					<Box mis={8} flexShrink={1} overflow='hidden'>
