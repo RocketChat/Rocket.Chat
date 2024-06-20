@@ -38,8 +38,10 @@ callbacks.add(
 		}
 
 		if (!room.v?.activity?.includes(monthYear)) {
-			void LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear);
-			const livechatInquiry = await LivechatInquiry.markInquiryActiveForPeriod(room._id, monthYear);
+			const [, livechatInquiry] = await Promise.all([
+				LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear),
+				LivechatInquiry.markInquiryActiveForPeriod(room._id, monthYear),
+			]);
 			if (livechatInquiry) {
 				void notifyOnLivechatInquiryChanged(livechatInquiry, 'updated', { v: livechatInquiry.v });
 			}
