@@ -14,6 +14,7 @@ import type {
 	IEmailInbox,
 	IIntegrationHistory,
 	AtLeast,
+	ISettingColor,
 } from '@rocket.chat/core-typings';
 import {
 	Rooms,
@@ -103,14 +104,6 @@ export async function notifyOnRoomChangedByUserDM<T extends IRoom>(
 	for await (const item of items) {
 		void api.broadcast('watch.rooms', { clientAction, room: item });
 	}
-}
-
-export async function notifyOnSettingChanged(setting: ISetting, clientAction: ClientAction = 'updated'): Promise<void> {
-	if (!dbWatchersDisabled) {
-		return;
-	}
-
-	void api.broadcast('watch.settings', { clientAction, setting });
 }
 
 export async function notifyOnPermissionChanged(permission: IPermission, clientAction: ClientAction = 'updated'): Promise<void> {
@@ -352,4 +345,29 @@ export async function notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmen
 	for await (const item of items) {
 		void api.broadcast('watch.livechatDepartmentAgents', { clientAction, id: item._id, data: item });
 	}
+}
+
+export async function notifyOnSettingChanged(
+	setting: ISetting & { editor?: ISettingColor['editor'] },
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	void api.broadcast('watch.settings', { clientAction, setting });
+}
+
+export async function notifyOnSettingChangedById(id: ISetting['_id'], clientAction: ClientAction = 'updated'): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const item = clientAction === 'removed' ? await Settings.trashFindOneById(id) : await Settings.findOneById(id);
+
+	if (!item) {
+		return;
+	}
+
+	void api.broadcast('watch.settings', { clientAction, setting: item });
 }
