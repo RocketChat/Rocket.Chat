@@ -333,7 +333,7 @@ export class CachedSettings
 	}
 
 	public getConfig = (config?: OverCustomSettingsConfig): SettingsConfig => ({
-		debounce: process.env.TEST_MODE === 'true' ? 0 : 500,
+		debounce: 500,
 		...config,
 	});
 
