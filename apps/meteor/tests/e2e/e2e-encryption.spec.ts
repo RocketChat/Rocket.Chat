@@ -213,6 +213,31 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.mainThreadMessageText.locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
+	test('expect create a private encrypted channel and check disabled message menu actions on an encrypted message', async ({ page }) => {
+		const channelName = faker.string.uuid();
+
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+
+		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.dismissToast();
+
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.content.sendMessage('This is an encrypted message.');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is an encrypted message.');
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		await page.locator('[data-qa-type="message"]').last().hover();
+		await expect(page.locator('role=button[name="Forward message"]')).toBeDisabled();
+
+		await poHomeChannel.content.openLastMessageMenu();
+
+		await expect(page.locator('role=menuitem[name="Reply in direct message"]')).toHaveClass(/disabled/);
+		await expect(page.locator('role=menuitem[name="Copy link"]')).toHaveClass(/disabled/);
+	});
+
 	test('expect create a private channel, encrypt it and send an encrypted message', async ({ page }) => {
 		const channelName = faker.string.uuid();
 
@@ -297,6 +322,69 @@ test.describe.serial('e2e-encryption', () => {
 			'This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.',
 		);
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+	});
+
+	test('expect slash commands to be enabled in an e2ee room', async ({ page }) => {
+		const channelName = faker.string.uuid();
+
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+
+		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.dismissToast();
+
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.content.sendMessage('This is an encrypted message.');
+
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is an encrypted message.');
+		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		await page.locator('[name="msg"]').type('/');
+		await expect(page.locator('#popup-item-contextualbar')).not.toHaveClass(/disabled/);
+		await page.locator('[name="msg"]').clear();
+
+		await poHomeChannel.content.dispatchSlashCommand('/contextualbar');
+		await expect(poHomeChannel.btnContextualbarClose).toBeVisible();
+
+		await poHomeChannel.btnContextualbarClose.click();
+		await expect(poHomeChannel.btnContextualbarClose).toBeHidden();
+	});
+
+	test.describe('un-encrypted messages not allowed in e2ee rooms', () => {
+		let poHomeChannel: HomeChannel;
+
+		test.beforeEach(async ({ page }) => {
+			poHomeChannel = new HomeChannel(page);
+			await page.goto('/home');
+		});
+		test.beforeAll(async ({ api }) => {
+			expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
+		});
+
+		test.afterAll(async ({ api }) => {
+			expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true })).status()).toBe(200);
+		});
+
+		test('expect slash commands to be disabled in an e2ee room', async ({ page }) => {
+			const channelName = faker.string.uuid();
+
+			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+
+			await expect(page).toHaveURL(`/group/${channelName}`);
+
+			await poHomeChannel.dismissToast();
+
+			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+			await poHomeChannel.content.sendMessage('This is an encrypted message.');
+
+			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('This is an encrypted message.');
+			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+			await page.locator('[name="msg"]').type('/');
+			await expect(page.locator('#popup-item-contextualbar')).toHaveClass(/disabled/);
+		});
 	});
 
 	test('expect create a private channel, send unecrypted messages, encrypt the channel and delete the last message and check the last message in the sidebar', async ({
