@@ -184,13 +184,15 @@ export const RoutingManager: Routing = {
 		const { servedBy } = room;
 
 		if (shouldQueue) {
-			inquiry = await LivechatInquiry.queueInquiry(inquiry._id);
-
-			void notifyOnLivechatInquiryChanged(inquiry, 'updated', {
-				status: LivechatInquiryStatus.QUEUED,
-				queuedAt: new Date(),
-				takenAt: undefined,
-			});
+			const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id);
+			if (queuedInquiry) {
+				inquiry = queuedInquiry;
+				void notifyOnLivechatInquiryChanged(inquiry, 'updated', {
+					status: LivechatInquiryStatus.QUEUED,
+					queuedAt: new Date(),
+					takenAt: undefined,
+				});
+			}
 		}
 
 		if (servedBy) {
