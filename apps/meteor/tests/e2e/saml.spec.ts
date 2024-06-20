@@ -64,6 +64,10 @@ const resetTestData = async (cleanupOnly = false) => {
 				value: false,
 			},
 			{
+				_id: 'SAML_Custom_Default_name_overwrite',
+				value: false,
+			},
+			{
 				_id: 'SAML_Custom_Default',
 				value: false,
 			},
@@ -74,6 +78,10 @@ const resetTestData = async (cleanupOnly = false) => {
 			{
 				_id: 'SAML_Custom_Default_role_attribute_name',
 				value: 'role',
+			},
+			{
+				_id: 'SAML_Custom_Default_user_data_fieldmap',
+				value: '{"username":"username", "email":"email", "name": "cn"}',
 			},
 		].map((setting) =>
 			connection
@@ -296,6 +304,26 @@ test.describe('SAML', () => {
 			expect(user).toBeDefined();
 			expect(user?._id).toBe('user_for_saml_merge');
 			expect(user?.username).toBe('samluser2');
+			expect(user?.name).toBe('user_for_saml_merge');
+			expect(user?.emails).toBeDefined();
+			expect(user?.emails?.[0].address).toBe('user_for_saml_merge@email.com');
+		});
+	});
+
+	test('User Merge - By Email with Name Override', async ({ page, api }) => {
+		await test.step('Configure SAML to identify users by email', async () => {
+			expect((await setSettingValueById(api, 'SAML_Custom_Default_immutable_property', 'EMail')).status()).toBe(200);
+			expect((await setSettingValueById(api, 'SAML_Custom_Default_name_overwrite', true)).status()).toBe(200);
+		});
+
+		await doLoginStep(page, 'samluser2');
+
+		await test.step('expect user data to have been mapped to the correct fields', async () => {
+			const user = await getUserInfo(api, 'samluser2');
+
+			expect(user).toBeDefined();
+			expect(user?._id).toBe('user_for_saml_merge');
+			expect(user?.username).toBe('samluser2');
 			expect(user?.name).toBe('Saml User 2');
 			expect(user?.emails).toBeDefined();
 			expect(user?.emails?.[0].address).toBe('user_for_saml_merge@email.com');
@@ -304,8 +332,9 @@ test.describe('SAML', () => {
 
 	test('User Merge - By Username', async ({ page, api }) => {
 		await test.step('Configure SAML to identify users by username', async () => {
-			await expect((await setSettingValueById(api, 'SAML_Custom_Default_immutable_property', 'Username')).status()).toBe(200);
-			await expect((await setSettingValueById(api, 'SAML_Custom_Default_mail_overwrite', false)).status()).toBe(200);
+			expect((await setSettingValueById(api, 'SAML_Custom_Default_immutable_property', 'Username')).status()).toBe(200);
+			expect((await setSettingValueById(api, 'SAML_Custom_Default_name_overwrite', false)).status()).toBe(200);
+			expect((await setSettingValueById(api, 'SAML_Custom_Default_mail_overwrite', false)).status()).toBe(200);
 		});
 
 		await doLoginStep(page, 'samluser3');
@@ -316,7 +345,7 @@ test.describe('SAML', () => {
 			expect(user).toBeDefined();
 			expect(user?._id).toBe('user_for_saml_merge2');
 			expect(user?.username).toBe('user_for_saml_merge2');
-			expect(user?.name).toBe('Saml User 3');
+			expect(user?.name).toBe('user_for_saml_merge2');
 			expect(user?.emails).toBeDefined();
 			expect(user?.emails?.[0].address).toBe('user_for_saml_merge2@email.com');
 		});
@@ -324,8 +353,29 @@ test.describe('SAML', () => {
 
 	test('User Merge - By Username with Email Override', async ({ page, api }) => {
 		await test.step('Configure SAML to identify users by username', async () => {
+			expect((await setSettingValueById(api, 'SAML_Custom_Default_immutable_property', 'Username')).status()).toBe(200);
+			expect((await setSettingValueById(api, 'SAML_Custom_Default_name_overwrite', false)).status()).toBe(200);
+			expect((await setSettingValueById(api, 'SAML_Custom_Default_mail_overwrite', true)).status()).toBe(200);
+		});
+
+		await doLoginStep(page, 'samluser3');
+
+		await test.step('expect user data to have been mapped to the correct fields', async () => {
+			const user = await getUserInfo(api, 'user_for_saml_merge2');
+
+			expect(user).toBeDefined();
+			expect(user?._id).toBe('user_for_saml_merge2');
+			expect(user?.username).toBe('user_for_saml_merge2');
+			expect(user?.name).toBe('user_for_saml_merge2');
+			expect(user?.emails).toBeDefined();
+			expect(user?.emails?.[0].address).toBe('samluser3@example.com');
+		});
+	});
+
+	test('User Merge - By Username with Name Override', async ({ page, api }) => {
+		await test.step('Configure SAML to identify users by username', async () => {
 			await expect((await setSettingValueById(api, 'SAML_Custom_Default_immutable_property', 'Username')).status()).toBe(200);
-			await expect((await setSettingValueById(api, 'SAML_Custom_Default_mail_overwrite', true)).status()).toBe(200);
+			await expect((await setSettingValueById(api, 'SAML_Custom_Default_name_overwrite', true)).status()).toBe(200);
 		});
 
 		await doLoginStep(page, 'samluser3');

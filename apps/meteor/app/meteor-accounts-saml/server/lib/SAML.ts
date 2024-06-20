@@ -198,11 +198,6 @@ export class SAML {
 			updateData.emails = emails;
 		}
 
-		// Overwrite fullname if needed
-		if (nameOverwrite === true) {
-			updateData.name = fullName;
-		}
-
 		// When updating an user, we only update the roles if we received them from the mapping
 		if (userObject.roles?.length) {
 			updateData.roles = userObject.roles;
@@ -221,8 +216,8 @@ export class SAML {
 			},
 		);
 
-		if ((username && username !== user.username) || (fullName && fullName !== user.name)) {
-			await saveUserIdentity({ _id: user._id, name: fullName || undefined, username });
+		if ((username && username !== user.username) || (nameOverwrite && fullName && fullName !== user.name)) {
+			await saveUserIdentity({ _id: user._id, name: nameOverwrite ? fullName || undefined : user.name, username });
 		}
 
 		// sending token along with the userId
