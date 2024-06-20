@@ -22,6 +22,7 @@ import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 import { useUserCard } from '../contexts/UserCardContext';
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
+import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LeaderBar from './LeaderBar';
@@ -39,7 +40,6 @@ import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
-import { useRetentionPolicy } from './hooks/useRetentionPolicy';
 import { useHandleUnread } from './hooks/useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
@@ -291,7 +291,7 @@ const RoomBody = (): ReactElement => {
 															<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 														) : (
 															<li className='start color-info-font-color'>
-																{retentionPolicy ? <RetentionPolicyWarning {...retentionPolicy} /> : null}
+																{retentionPolicy?.isActive ? <RetentionPolicyWarning {...retentionPolicy} /> : null}
 																<RoomForeword user={user} room={room} />
 															</li>
 														)}

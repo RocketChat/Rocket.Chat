@@ -7,9 +7,9 @@ import React, { useCallback } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
-import { useOmnichannelPriorities } from '../../../../../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
 import { ContextualbarFooter, ContextualbarScrollableContent } from '../../../../../../components/Contextualbar';
 import Tags from '../../../../../../components/Omnichannel/Tags';
+import { useOmnichannelPriorities } from '../../../../../../omnichannel/hooks/useOmnichannelPriorities';
 import { SlaPoliciesSelect, PrioritiesSelect } from '../../../../additionalForms';
 import { FormSkeleton } from '../../../components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../../../hooks/useCustomFieldsMetadata';
