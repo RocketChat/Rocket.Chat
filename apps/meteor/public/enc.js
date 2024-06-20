@@ -45,6 +45,7 @@ self.addEventListener('fetch', (event) => {
 
 		const requestToFetch = new Request(url, {
 			...event.request,
+			mode: 'cors',
 		});
 
 		event.respondWith(
