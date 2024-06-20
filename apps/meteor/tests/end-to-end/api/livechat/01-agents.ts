@@ -1,3 +1,4 @@
+import type { Credentials } from '@rocket.chat/api-client';
 import { UserStatus, type ILivechatAgent, type ILivechatDepartment, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
@@ -18,7 +19,6 @@ import {
 	closeOmnichannelRoom,
 } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import type { IUserCredentialsHeader } from '../../../data/user';
 import { password } from '../../../data/user';
 import { createUser, deleteUser, getMe, login, setUserStatus } from '../../../data/users.helper';
 
@@ -590,7 +590,7 @@ describe('LIVECHAT - Agents', function () {
 	});
 
 	describe('Agent sidebar', () => {
-		let testUser: { user: IUser; credentials: IUserCredentialsHeader };
+		let testUser: { user: IUser; credentials: Credentials };
 		before(async () => {
 			const user = await createUser();
 			await createAgent(user.username);

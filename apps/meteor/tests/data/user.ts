@@ -1,3 +1,4 @@
+import type { Credentials } from '@rocket.chat/api-client';
 import type { IUser } from '@rocket.chat/core-typings';
 
 export const username = 'user.test';
@@ -37,9 +38,7 @@ export const preferences = {
 	},
 };
 
-export type IUserCredentialsHeader = { 'X-Auth-Token': string; 'X-User-Id': string };
-
 export type IUserWithCredentials = {
 	user: IUser;
-	credentials: IUserCredentialsHeader;
+	credentials: Credentials;
 };

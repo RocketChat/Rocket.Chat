@@ -1,3 +1,4 @@
+import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatInquiryRecord, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
@@ -17,7 +18,6 @@ import {
 } from '../../../data/livechat/rooms';
 import { parseMethodResponse } from '../../../data/livechat/utils';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
-import type { IUserCredentialsHeader } from '../../../data/user';
 import { password } from '../../../data/user';
 import { createUser, login, deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -316,7 +316,7 @@ describe('LIVECHAT - inquiries', function () {
 	});
 
 	describe('livechat:returnAsInquiry', () => {
-		let testUser: { user: IUser; credentials: IUserCredentialsHeader };
+		let testUser: { user: IUser; credentials: Credentials };
 		before(async () => {
 			const user = await createUser();
 			await createAgent(user.username);

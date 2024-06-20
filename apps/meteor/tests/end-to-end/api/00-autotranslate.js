@@ -66,22 +66,21 @@ describe('AutoTranslate', function () {
 					});
 				});
 			});
-			it('should return a list of languages', (done) => {
-				updatePermission('auto-translate', ['admin']).then(() => {
-					request
-						.get(api('autotranslate.getSupportedLanguages'))
-						.set(credentials)
-						.query({
-							targetLanguage: 'en',
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.a.property('success', true);
-							expect(res.body.languages).to.be.an('array');
-						})
-						.end(done);
-				});
+
+			it('should return a list of languages', async () => {
+				await updatePermission('auto-translate', ['admin']);
+				await request
+					.get(api('autotranslate.getSupportedLanguages'))
+					.set(credentials)
+					.query({
+						targetLanguage: 'en',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body.languages).to.be.an('array');
+					});
 			});
 		});
 

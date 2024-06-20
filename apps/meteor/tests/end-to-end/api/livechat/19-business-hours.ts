@@ -1,3 +1,4 @@
+import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatAgent, ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourBehaviors, LivechatBusinessHourTypes, ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
@@ -26,7 +27,6 @@ import {
 import { createAgent, createManager, makeAgentAvailable } from '../../../data/livechat/rooms';
 import { removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting, updateEESetting } from '../../../data/permissions.helper';
-import type { IUserCredentialsHeader } from '../../../data/user';
 import { password } from '../../../data/user';
 import { setUserActiveStatus, createUser, deleteUser, getMe, getUserByUsername, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -765,7 +765,7 @@ describe('LIVECHAT - business hours', function () {
 	describe('[CE][BH] On Agent created/removed', () => {
 		let defaultBH: ILivechatBusinessHour;
 		let agent: ILivechatAgent;
-		let agentCredentials: IUserCredentialsHeader;
+		let agentCredentials: Credentials;
 
 		before(async () => {
 			await updateSetting('Livechat_enable_business_hours', true);
@@ -840,7 +840,7 @@ describe('LIVECHAT - business hours', function () {
 
 		describe('Special Case - Agent created, BH already enabled', () => {
 			let newAgent: ILivechatAgent;
-			let newAgentCredentials: IUserCredentialsHeader;
+			let newAgentCredentials: Credentials;
 			before(async () => {
 				newAgent = await createUser({ roles: ['user', 'livechat-agent'] });
 				newAgentCredentials = await login(newAgent.username, password);

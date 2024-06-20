@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
@@ -18,7 +19,6 @@ import {
 import { createAnOnlineAgent } from '../../../data/livechat/users';
 import { sleep } from '../../../data/livechat/utils';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting } from '../../../data/permissions.helper';
-import type { IUserCredentialsHeader } from '../../../data/user';
 import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - dashboards', function () {
@@ -34,7 +34,7 @@ describe('LIVECHAT - dashboards', function () {
 
 	let department: ILivechatDepartment;
 	const agents: {
-		credentials: IUserCredentialsHeader;
+		credentials: Credentials;
 		user: IUser & { username: string };
 	}[] = [];
 	let avgClosedRoomChatDuration = 0;

@@ -1,5 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { faker } from '@faker-js/faker';
+import type { Credentials } from '@rocket.chat/api-client';
 import type {
 	ILivechatInquiryRecord,
 	ILivechatAgent,
@@ -13,7 +14,6 @@ import type { Response } from 'supertest';
 import { api, credentials, methodCall, request } from '../api-data';
 import { imgURL } from '../interactions';
 import { getSettingValueById, restorePermissionToRoles, updateSetting } from '../permissions.helper';
-import type { IUserCredentialsHeader } from '../user';
 import { adminUsername } from '../user';
 import { getRandomVisitorToken } from './users';
 import type { DummyResponse } from './utils';
@@ -71,7 +71,7 @@ export const deleteVisitor = async (token: string): Promise<void> => {
 	await request.delete(api(`livechat/visitor/${token}`));
 };
 
-export const takeInquiry = async (inquiryId: string, agentCredentials?: IUserCredentialsHeader): Promise<void> => {
+export const takeInquiry = async (inquiryId: string, agentCredentials?: Credentials): Promise<void> => {
 	const userId = agentCredentials ? agentCredentials['X-User-Id'] : credentials['X-User-Id'];
 
 	await request
@@ -178,7 +178,7 @@ export const makeAgentAvailable = async (overrideCredentials?: {
 		});
 };
 
-export const makeAgentUnavailable = async (overrideCredentials?: { 'X-Auth-Token': string; 'X-User-Id': string }): Promise<void> => {
+export const makeAgentUnavailable = async (overrideCredentials?: Credentials): Promise<void> => {
 	await request
 		.post(api('users.setStatus'))
 		.set(overrideCredentials || credentials)
@@ -322,7 +322,7 @@ export const startANewLivechatRoomAndTakeIt = async ({
 	agent,
 }: {
 	departmentId?: string;
-	agent?: IUserCredentialsHeader;
+	agent?: Credentials;
 } = {}): Promise<{ room: IOmnichannelRoom; visitor: ILivechatVisitor }> => {
 	const currentRoutingMethod = await getSettingValueById('Livechat_Routing_Method');
 	const routingMethodChanged = false;
@@ -354,7 +354,7 @@ export const placeRoomOnHold = async (roomId: string): Promise<void> => {
 	await request.post(api('livechat/room.onHold')).set(credentials).send({ roomId }).expect(200);
 };
 
-export const moveBackToQueue = async (roomId: string, overrideCredentials?: IUserCredentialsHeader): Promise<void> => {
+export const moveBackToQueue = async (roomId: string, overrideCredentials?: Credentials): Promise<void> => {
 	await request
 		.post(methodCall('livechat:returnAsInquiry'))
 		.set(overrideCredentials || credentials)

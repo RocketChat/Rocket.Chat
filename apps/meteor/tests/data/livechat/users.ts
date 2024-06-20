@@ -1,14 +1,14 @@
 import { faker } from '@faker-js/faker';
+import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatAgent, IUser } from '@rocket.chat/core-typings';
 
 import { api, credentials, request } from '../api-data';
-import type { IUserCredentialsHeader } from '../user';
 import { password } from '../user';
 import { createUser, login } from '../users.helper';
 import { createAgent, makeAgentAvailable, makeAgentUnavailable } from './rooms';
 
 export const createBotAgent = async (): Promise<{
-	credentials: { 'X-Auth-Token': string; 'X-User-Id': string };
+	credentials: Credentials;
 	user: IUser;
 }> => {
 	const agent: IUser = await createUser({
@@ -42,7 +42,7 @@ export const removeAgent = async (userId: string): Promise<void> => {
 };
 
 export const createAnOnlineAgent = async (): Promise<{
-	credentials: IUserCredentialsHeader;
+	credentials: Credentials;
 	user: IUser & { username: string };
 }> => {
 	const username = `user.test.${Date.now()}`;
@@ -60,7 +60,7 @@ export const createAnOnlineAgent = async (): Promise<{
 };
 
 export const createAnOfflineAgent = async (): Promise<{
-	credentials: IUserCredentialsHeader;
+	credentials: Credentials;
 	user: IUser & { username: string };
 }> => {
 	const username = `user.test.${Date.now()}.offline`;

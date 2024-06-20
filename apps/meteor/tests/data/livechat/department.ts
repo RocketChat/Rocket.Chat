@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
+import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, IUser, LivechatDepartmentDTO } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { api, credentials, methodCall, request } from '../api-data';
-import type { IUserCredentialsHeader } from '../user';
 import { createAnOnlineAgent, createAnOfflineAgent } from './users';
 import type { WithRequiredProperty } from './utils';
 
@@ -79,7 +79,7 @@ export const createDepartmentWithMethod = (
 
 type OnlineAgent = {
 	user: WithRequiredProperty<IUser, 'username'>;
-	credentials: IUserCredentialsHeader;
+	credentials: Credentials;
 };
 
 export const createDepartmentWithAnOnlineAgent = async (): Promise<{ department: ILivechatDepartment; agent: OnlineAgent }> => {
@@ -136,7 +136,7 @@ export const createDepartmentWithAnOfflineAgent = async ({
 }): Promise<{
 	department: ILivechatDepartment;
 	agent: {
-		credentials: IUserCredentialsHeader;
+		credentials: Credentials;
 		user: WithRequiredProperty<IUser, 'username'>;
 	};
 }> => {

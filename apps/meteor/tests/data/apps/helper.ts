@@ -1,19 +1,21 @@
+import type { App } from '@rocket.chat/core-typings';
+
 import { request, credentials } from '../api-data';
 import { apps, APP_URL, APP_NAME } from './apps-data';
 
-export const getApps = () =>
-	new Promise((resolve) => {
-		request
+const getApps = () =>
+	new Promise<App[]>((resolve) => {
+		void request
 			.get(apps())
 			.set(credentials)
-			.end((err, res) => {
+			.end((_err, res) => {
 				resolve(res.body.apps);
 			});
 	});
 
-export const removeAppById = (id) =>
+const removeAppById = (id: App['id']) =>
 	new Promise((resolve) => {
-		request
+		void request
 			.delete(apps(`/${id}`))
 			.set(credentials)
 			.end(resolve);
@@ -28,14 +30,14 @@ export const cleanupApps = async () => {
 };
 
 export const installTestApp = () =>
-	new Promise((resolve) => {
-		request
+	new Promise<App>((resolve) => {
+		void request
 			.post(apps())
 			.set(credentials)
 			.send({
 				url: APP_URL,
 			})
-			.end((err, res) => {
+			.end((_err, res) => {
 				resolve(res.body.app);
 			});
 	});

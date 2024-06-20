@@ -21,6 +21,11 @@ export const createUser = (userData = {}) =>
 			});
 	});
 
+/**
+ * @param {string | undefined} username
+ * @param {string} password
+ * @returns {Promise<import('@rocket.chat/api-client').Credentials>}
+ */
 export const login = (username, password) =>
 	new Promise((resolve) => {
 		request
