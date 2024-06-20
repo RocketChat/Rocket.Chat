@@ -1,3 +1,5 @@
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, after, it } from 'mocha';
 
@@ -6,6 +8,7 @@ import { sendSimpleMessage } from '../../data/chat.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
 const resetAutoTranslateDefaults = async () => {
@@ -32,7 +35,7 @@ describe('AutoTranslate', function () {
 			after(() => resetAutoTranslateDefaults());
 
 			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
-				request
+				void request
 					.get(api('autotranslate.getSupportedLanguages'))
 					.set(credentials)
 					.query({
@@ -47,9 +50,9 @@ describe('AutoTranslate', function () {
 					.end(done);
 			});
 			it('should throw an error when the user does not have the "auto-translate" permission', (done) => {
-				updateSetting('AutoTranslate_Enabled', true).then(() => {
-					updatePermission('auto-translate', []).then(() => {
-						request
+				void updateSetting('AutoTranslate_Enabled', true).then(() => {
+					void updatePermission('auto-translate', []).then(() => {
+						void request
 							.get(api('autotranslate.getSupportedLanguages'))
 							.set(credentials)
 							.query({
@@ -85,8 +88,8 @@ describe('AutoTranslate', function () {
 		});
 
 		describe('[/autotranslate.saveSettings', () => {
-			let testGroupId;
-			let testChannelId;
+			let testGroupId: IRoom['_id'];
+			let testChannelId: IRoom['_id'];
 
 			before(async () => {
 				await Promise.all([
@@ -109,7 +112,7 @@ describe('AutoTranslate', function () {
 			});
 
 			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
-				request
+				void request
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
@@ -127,9 +130,9 @@ describe('AutoTranslate', function () {
 					.end(done);
 			});
 			it('should throw an error when the user does not have the "auto-translate" permission', (done) => {
-				updateSetting('AutoTranslate_Enabled', true).then(() => {
-					updatePermission('auto-translate', []).then(() => {
-						request
+				void updateSetting('AutoTranslate_Enabled', true).then(() => {
+					void updatePermission('auto-translate', []).then(() => {
+						void request
 							.post(api('autotranslate.saveSettings'))
 							.set(credentials)
 							.send({
@@ -150,8 +153,8 @@ describe('AutoTranslate', function () {
 				});
 			});
 			it('should throw an error when the bodyParam "roomId" is not provided', (done) => {
-				updatePermission('auto-translate', ['admin']).then(() => {
-					request
+				void updatePermission('auto-translate', ['admin']).then(() => {
+					void request
 						.post(api('autotranslate.saveSettings'))
 						.set(credentials)
 						.send({})
@@ -164,7 +167,7 @@ describe('AutoTranslate', function () {
 				});
 			});
 			it('should throw an error when the bodyParam "field" is not provided', (done) => {
-				request
+				void request
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
@@ -178,7 +181,7 @@ describe('AutoTranslate', function () {
 					.end(done);
 			});
 			it('should throw an error when the bodyParam "value" is not provided', (done) => {
-				request
+				void request
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
@@ -193,7 +196,7 @@ describe('AutoTranslate', function () {
 					.end(done);
 			});
 			it('should throw an error when the bodyParam "autoTranslate" is not a boolean', (done) => {
-				request
+				void request
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
@@ -209,7 +212,7 @@ describe('AutoTranslate', function () {
 					.end(done);
 			});
 			it('should throw an error when the bodyParam "autoTranslateLanguage" is not a string', (done) => {
-				request
+				void request
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
@@ -225,7 +228,7 @@ describe('AutoTranslate', function () {
 					.end(done);
 			});
 			it('should throw an error when the bodyParam "field" is invalid', (done) => {
-				request
+				void request
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
@@ -241,7 +244,7 @@ describe('AutoTranslate', function () {
 					.end(done);
 			});
 			it('should throw an error when the bodyParam "roomId" is invalid or the user is not subscribed', (done) => {
-				request
+				void request
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
@@ -276,7 +279,7 @@ describe('AutoTranslate', function () {
 					});
 			});
 			it('should return success when the setting is saved correctly', (done) => {
-				request
+				void request
 					.post(api('autotranslate.saveSettings'))
 					.set(credentials)
 					.send({
@@ -294,8 +297,8 @@ describe('AutoTranslate', function () {
 		});
 
 		describe('[/autotranslate.translateMessage', () => {
-			let messageSent;
-			let testChannelId;
+			let messageSent: IMessage;
+			let testChannelId: IRoom['_id'];
 
 			before(async () => {
 				await resetAutoTranslateDefaults();
@@ -313,7 +316,7 @@ describe('AutoTranslate', function () {
 			});
 
 			it('should throw an error when the "AutoTranslate_Enabled" setting is disabled', (done) => {
-				request
+				void request
 					.post(api('autotranslate.translateMessage'))
 					.set(credentials)
 					.send({
@@ -329,9 +332,9 @@ describe('AutoTranslate', function () {
 					.end(done);
 			});
 			it('should throw an error when the bodyParam "messageId" is not provided', (done) => {
-				updateSetting('AutoTranslate_Enabled', true).then(() => {
-					updatePermission('auto-translate', ['admin']).then(() => {
-						request
+				void updateSetting('AutoTranslate_Enabled', true).then(() => {
+					void updatePermission('auto-translate', ['admin']).then(() => {
+						void request
 							.post(api('autotranslate.translateMessage'))
 							.set(credentials)
 							.send({})
@@ -345,7 +348,7 @@ describe('AutoTranslate', function () {
 				});
 			});
 			it('should throw an error when the bodyParam "messageId" is invalid', (done) => {
-				request
+				void request
 					.post(api('autotranslate.translateMessage'))
 					.set(credentials)
 					.send({
@@ -360,7 +363,7 @@ describe('AutoTranslate', function () {
 					.end(done);
 			});
 			it('should return success when the translate is successful', (done) => {
-				request
+				void request
 					.post(api('autotranslate.translateMessage'))
 					.set(credentials)
 					.send({
@@ -376,17 +379,17 @@ describe('AutoTranslate', function () {
 		});
 
 		describe('Autoenable setting', () => {
-			let userA;
-			let userB;
-			let credA;
-			let credB;
-			let channel;
-			const channelsToRemove = [];
+			let userA: TestUser<IUser>;
+			let userB: TestUser<IUser>;
+			let credA: Credentials;
+			let credB: Credentials;
+			let channel: IRoom;
+			const channelsToRemove: IRoom[] = [];
 
-			const createChannel = async (members, cred) =>
+			const createChannel = async (members: string[] | undefined, cred: Credentials) =>
 				(await createRoom({ type: 'c', members, name: `channel-test-${Date.now()}`, credentials: cred })).body.channel;
 
-			const setLanguagePref = async (language, cred) => {
+			const setLanguagePref = async (language: string, cred: Credentials) => {
 				await request
 					.post(api('users.setPreferences'))
 					.set(cred)
@@ -398,7 +401,7 @@ describe('AutoTranslate', function () {
 					});
 			};
 
-			const getSub = async (roomId, cred) =>
+			const getSub = async (roomId: IRoom['_id'], cred: Credentials) =>
 				(
 					await request
 						.get(api('subscriptions.getOne'))

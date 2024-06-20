@@ -1,7 +1,7 @@
 import { getCredentials, api, request, credentials } from '../api-data';
 
 export const createEmailInbox = async (): Promise<{ _id: string }> => {
-	await getCredentials();
+	await new Promise((resolve) => getCredentials(resolve));
 	const { body } = await request
 		.post(api('email-inbox'))
 		.set(credentials)

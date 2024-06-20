@@ -1,4 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
+import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
@@ -10,7 +11,7 @@ import { createUser, deleteUser, login } from '../../data/users.helper';
 describe('[Calendar Events]', function () {
 	this.retries(0);
 
-	let user2: Awaited<ReturnType<typeof createUser>> | undefined;
+	let user2: IUser;
 	let userCredentials: Credentials;
 
 	before((done) => getCredentials(done));

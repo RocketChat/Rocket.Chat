@@ -120,7 +120,7 @@ export const disableDefaultBusinessHour = async () => {
 		});
 };
 
-export const removeCustomBusinessHour = async (businessHourId: string) => {
+const removeCustomBusinessHour = async (businessHourId: string) => {
 	await request
 		.post(methodCall('livechat:removeBusinessHour'))
 		.set(credentials)

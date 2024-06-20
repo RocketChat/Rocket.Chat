@@ -1,10 +1,24 @@
+import type { IRoom, IMessage } from '@rocket.chat/core-typings';
+
 import { api, credentials, request } from './api-data';
 
-export const sendSimpleMessage = ({ roomId, text = 'test message', tmid }) => {
+export const sendSimpleMessage = ({
+	roomId,
+	text = 'test message',
+	tmid,
+}: {
+	roomId: IRoom['_id'];
+	text?: string;
+	tmid?: IMessage['_id'];
+}) => {
 	if (!roomId) {
 		throw new Error('"roomId" is required in "sendSimpleMessage" test helper');
 	}
-	const message = {
+	const message: {
+		rid: IRoom['_id'];
+		text: string;
+		tmid?: IMessage['_id'];
+	} = {
 		rid: roomId,
 		text,
 	};
@@ -15,7 +29,7 @@ export const sendSimpleMessage = ({ roomId, text = 'test message', tmid }) => {
 	return request.post(api('chat.sendMessage')).set(credentials).send({ message });
 };
 
-export const pinMessage = ({ msgId }) => {
+export const pinMessage = ({ msgId }: { msgId: IMessage['_id'] }) => {
 	if (!msgId) {
 		throw new Error('"msgId" is required in "pinMessage" test helper');
 	}
@@ -25,7 +39,7 @@ export const pinMessage = ({ msgId }) => {
 	});
 };
 
-export const deleteMessage = ({ roomId, msgId }) => {
+export const deleteMessage = ({ roomId, msgId }: { roomId: IRoom['_id']; msgId: IMessage['_id'] }) => {
 	if (!roomId) {
 		throw new Error('"roomId" is required in "deleteMessage" test helper');
 	}
@@ -39,16 +53,16 @@ export const deleteMessage = ({ roomId, msgId }) => {
 	});
 };
 
-export const getMessageById = ({ msgId }) => {
+export const getMessageById = ({ msgId }: { msgId: IMessage['_id'] }) => {
 	if (!msgId) {
 		throw new Error('"msgId" is required in "getMessageById" test helper');
 	}
 
 	return new Promise((resolve) => {
-		request
+		void request
 			.get(api(`chat.getMessage?msgId=${msgId}`))
 			.set(credentials)
-			.end((err, res) => {
+			.end((_err, res) => {
 				resolve(res.body.message);
 			});
 	});

@@ -2,7 +2,6 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { CallbackHandler, Response } from 'supertest';
 import supertest from 'supertest';
 
-import { privateChannelName } from './channel';
 import { roleNameUsers, roleNameSubscriptions, roleScopeUsers, roleScopeSubscriptions, roleDescription } from './role';
 import { username, email, adminUsername, adminPassword } from './user';
 
@@ -14,6 +13,8 @@ const prefix = '/api/v1/';
 export function wait(cb: () => void, time: number) {
 	return () => setTimeout(cb, time);
 }
+
+const privateChannelName = `private-channel-test-${Date.now()}` as const;
 
 export const apiUsername = `api${username}-${Date.now()}` as const;
 export const apiEmail = `api${email}-${Date.now()}` as const;
@@ -32,9 +33,9 @@ export const directMessage = {};
 export const integration = {};
 
 export const credentials: Credentials = {
-	'X-Auth-Token': undefined as unknown as string, // FIXME
-	'X-User-Id': undefined as unknown as string, // FIXME
-};
+	'X-Auth-Token': undefined,
+	'X-User-Id': undefined,
+} as unknown as Credentials; // FIXME
 export const login = {
 	user: adminUsername,
 	password: adminPassword,

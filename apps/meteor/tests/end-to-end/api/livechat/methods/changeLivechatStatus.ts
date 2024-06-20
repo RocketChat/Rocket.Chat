@@ -1,3 +1,4 @@
+import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatAgent, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
@@ -13,14 +14,14 @@ import { createUser, deleteUser, getMe, login } from '../../../../data/users.hel
 describe('livechat:changeLivechatStatus', function () {
 	this.retries(0);
 
-	let agent: { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };
+	let agent: { user: IUser; credentials: Credentials };
 
 	before((done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 
-		const user: IUser = await createUser();
+		const user = await createUser();
 		const userCredentials = await login(user.username, password);
 		await createAgent(user.username);
 
@@ -60,7 +61,7 @@ describe('livechat:changeLivechatStatus', function () {
 			await updatePermission('manage-livechat-agents', ['admin']);
 		});
 		it('should return an error if user is not an agent', async () => {
-			const user: IUser = await createUser();
+			const user = await createUser();
 			const userCredentials = await login(user.username, password);
 			await request
 				.post(methodCall('livechat:changeLivechatStatus'))
@@ -128,7 +129,7 @@ describe('livechat:changeLivechatStatus', function () {
 				});
 		});
 		it('should change logged in users status', async () => {
-			const currentUser: ILivechatAgent = await getMe(agent.credentials as any);
+			const currentUser: ILivechatAgent = await getMe(agent.credentials);
 			const currentStatus = currentUser.statusLivechat;
 			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
 
@@ -153,7 +154,7 @@ describe('livechat:changeLivechatStatus', function () {
 		it('should allow managers to change other agents status', async () => {
 			await updatePermission('manage-livechat-agents', ['admin']);
 
-			const currentUser: ILivechatAgent = await getMe(agent.credentials as any);
+			const currentUser: ILivechatAgent = await getMe(agent.credentials);
 			const currentStatus = currentUser.statusLivechat;
 			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
 
@@ -178,7 +179,7 @@ describe('livechat:changeLivechatStatus', function () {
 		it('should throw an error if agent tries to make themselves available outside of Business hour', async () => {
 			await makeDefaultBusinessHourActiveAndClosed();
 
-			const currentUser: ILivechatAgent = await getMe(agent.credentials as any);
+			const currentUser: ILivechatAgent = await getMe(agent.credentials);
 			const currentStatus = currentUser.statusLivechat;
 			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
 
@@ -204,7 +205,7 @@ describe('livechat:changeLivechatStatus', function () {
 		it('should allow managers to make other agents available outside business hour', async () => {
 			await updatePermission('manage-livechat-agents', ['admin']);
 
-			const currentUser: ILivechatAgent = await getMe(agent.credentials as any);
+			const currentUser: ILivechatAgent = await getMe(agent.credentials);
 			const currentStatus = currentUser.statusLivechat;
 			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
 

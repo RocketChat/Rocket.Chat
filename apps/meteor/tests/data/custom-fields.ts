@@ -7,7 +7,7 @@ export const customFieldText = {
 	maxLength: 10,
 };
 
-export function setCustomFields(customFields) {
+export function setCustomFields(customFields: unknown) {
 	const stringified = customFields ? JSON.stringify(customFields) : '';
 
 	return request.post(api('settings/Accounts_CustomFields')).set(credentials).send({ value: stringified }).expect(200);

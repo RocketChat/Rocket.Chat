@@ -1,6 +1,6 @@
 import { api, credentials, request } from './api-data';
 
-export const makeModerationApiRequest = async (url: string, method: 'get' | 'post', data?: any) => {
+const makeModerationApiRequest = async (url: string, method: 'get' | 'post', data?: any) => {
 	let res: any;
 
 	if (method === 'get') {

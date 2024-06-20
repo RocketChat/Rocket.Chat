@@ -5,7 +5,6 @@ import { faker } from '@faker-js/faker';
 import type {
 	IOmnichannelRoom,
 	ILivechatVisitor,
-	IUser,
 	IOmnichannelSystemMessage,
 	ILivechatPriority,
 	ILivechatDepartment,
@@ -488,7 +487,7 @@ describe('LIVECHAT - rooms', function () {
 				room: { _id: roomId },
 			} = await startANewLivechatRoomAndTakeIt();
 
-			const manager: IUser = await createUser();
+			const manager = await createUser();
 			const managerCredentials = await login(manager.username, password);
 			await createManager(manager.username);
 
@@ -659,7 +658,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 
 		it('should return a success message when transferred successfully to agent', async () => {
-			const initialAgentAssignedToChat: IUser = await createUser();
+			const initialAgentAssignedToChat = await createUser();
 			const initialAgentCredentials = await login(initialAgentAssignedToChat.username, password);
 			await createAgent(initialAgentAssignedToChat.username);
 			await makeAgentAvailable(initialAgentCredentials);
@@ -668,7 +667,7 @@ describe('LIVECHAT - rooms', function () {
 			// at this point, the chat will get transferred to agent "user"
 			const newRoom = await createLivechatRoom(newVisitor.token);
 
-			const forwardChatToUser: IUser = await createUser();
+			const forwardChatToUser = await createUser();
 			const forwardChatToUserCredentials = await login(forwardChatToUser.username, password);
 			await createAgent(forwardChatToUser.username);
 			await makeAgentAvailable(forwardChatToUserCredentials);
@@ -839,7 +838,7 @@ describe('LIVECHAT - rooms', function () {
 
 			await makeAgentUnavailable(offlineAgent.credentials);
 
-			const manager: IUser = await createUser();
+			const manager = await createUser();
 			const managerCredentials = await login(manager.username, password);
 			await createManager(manager.username);
 
@@ -1544,7 +1543,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return the transfer history for a room', async () => {
 			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
-			const initialAgentAssignedToChat: IUser = await createUser();
+			const initialAgentAssignedToChat = await createUser();
 			const initialAgentCredentials = await login(initialAgentAssignedToChat.username, password);
 			await createAgent(initialAgentAssignedToChat.username);
 			await makeAgentAvailable(initialAgentCredentials);
@@ -1553,7 +1552,7 @@ describe('LIVECHAT - rooms', function () {
 			// at this point, the chat will get transferred to agent "user"
 			const newRoom = await createLivechatRoom(newVisitor.token);
 
-			const forwardChatToUser: IUser = await createUser();
+			const forwardChatToUser = await createUser();
 			const forwardChatToUserCredentials = await login(forwardChatToUser.username, password);
 			await createAgent(forwardChatToUser.username);
 			await makeAgentAvailable(forwardChatToUserCredentials);

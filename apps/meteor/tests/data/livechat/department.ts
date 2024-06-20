@@ -7,7 +7,7 @@ import { api, credentials, methodCall, request } from '../api-data';
 import { createAnOnlineAgent, createAnOfflineAgent } from './users';
 import type { WithRequiredProperty } from './utils';
 
-export const NewDepartmentData = ((): Partial<ILivechatDepartment> => ({
+const NewDepartmentData = ((): Partial<ILivechatDepartment> => ({
 	enabled: true,
 	name: `new department ${Date.now()}`,
 	description: 'created from api',
@@ -27,10 +27,7 @@ export const createDepartment = async (departmentData: Partial<ILivechatDepartme
 	return response.body.department;
 };
 
-export const updateDepartment = async (
-	departmentId: string,
-	departmentData: Partial<LivechatDepartmentDTO>,
-): Promise<ILivechatDepartment> => {
+const updateDepartment = async (departmentId: string, departmentData: Partial<LivechatDepartmentDTO>): Promise<ILivechatDepartment> => {
 	const response = await request
 		.put(api(`livechat/department/${departmentId}`))
 		.set(credentials)
@@ -41,10 +38,7 @@ export const updateDepartment = async (
 	return response.body.department;
 };
 
-export const createDepartmentWithMethod = (
-	initialAgents: { agentId: string; username: string }[] = [],
-	allowReceiveForwardOffline = false,
-) =>
+const createDepartmentWithMethod = (initialAgents: { agentId: string; username: string }[] = [], allowReceiveForwardOffline = false) =>
 	new Promise((resolve, reject) => {
 		void request
 			.post(methodCall('livechat:saveDepartment'))
@@ -129,6 +123,7 @@ export const addOrRemoveAgentFromDepartment = async (
 		throw new Error(`Failed to add or remove agent from department. Status code: ${response.status}\n${response.body}`);
 	}
 };
+
 export const createDepartmentWithAnOfflineAgent = async ({
 	allowReceiveForwardOffline = false,
 }: {

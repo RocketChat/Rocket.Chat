@@ -1,5 +1,8 @@
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IInstanceStatus, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import { expect } from 'chai';
+import type { IInstance } from '@rocket.chat/rest-typings';
+import { AssertionError, expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
@@ -7,6 +10,7 @@ import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login as doLogin } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
@@ -18,9 +22,9 @@ describe('miscellaneous', function () {
 	describe('API default', () => {
 		// Required by mobile apps
 		describe('/info', () => {
-			let version;
+			let version: string;
 			it('should return "version", "build", "commit" and "marketplaceApiVersion" when the user is logged in', (done) => {
-				request
+				void request
 					.get('/api/info')
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
@@ -36,7 +40,7 @@ describe('miscellaneous', function () {
 					.end(done);
 			});
 			it('should return only "version" and the version should not have patch info when the user is not logged in', (done) => {
-				request
+				void request
 					.get('/api/info')
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -56,7 +60,7 @@ describe('miscellaneous', function () {
 	});
 
 	it('/login (wrapper username)', (done) => {
-		request
+		void request
 			.post(api('login'))
 			.send({
 				user: {
@@ -77,7 +81,7 @@ describe('miscellaneous', function () {
 	});
 
 	it('/login (wrapper email)', (done) => {
-		request
+		void request
 			.post(api('login'))
 			.send({
 				user: {
@@ -98,7 +102,7 @@ describe('miscellaneous', function () {
 	});
 
 	it('/login by user', (done) => {
-		request
+		void request
 			.post(api('login'))
 			.send({
 				user: adminEmail,
@@ -117,7 +121,7 @@ describe('miscellaneous', function () {
 	});
 
 	it('/login by username', (done) => {
-		request
+		void request
 			.post(api('login'))
 			.send({
 				username: adminUsername,
@@ -201,11 +205,11 @@ describe('miscellaneous', function () {
 	});
 
 	describe('/directory', () => {
-		let user;
-		let testChannel;
-		let normalUserCredentials;
-		const teamName = `new-team-name-${Date.now()}`;
-		let teamCreated = {};
+		let user: TestUser<IUser>;
+		let testChannel: IRoom;
+		let normalUserCredentials: Credentials;
+		const teamName = `new-team-name-${Date.now()}` as const;
+		let teamCreated: ITeam;
 
 		before(async () => {
 			await updatePermission('create-team', ['admin', 'user']);
@@ -225,7 +229,7 @@ describe('miscellaneous', function () {
 		});
 
 		it('should return an array(result) when search by user and execute successfully', (done) => {
-			request
+			void request
 				.get(api('directory'))
 				.set(credentials)
 				.query({
@@ -252,7 +256,7 @@ describe('miscellaneous', function () {
 		});
 
 		it('should not return the emails field for non admins', (done) => {
-			request
+			void request
 				.get(api('directory'))
 				.set(normalUserCredentials)
 				.query({
@@ -278,7 +282,7 @@ describe('miscellaneous', function () {
 				.end(done);
 		});
 		it('should return an array(result) when search by channel and execute successfully', (done) => {
-			request
+			void request
 				.get(api('directory'))
 				.set(credentials)
 				.query({
@@ -303,7 +307,7 @@ describe('miscellaneous', function () {
 				.end(done);
 		});
 		it('should return an array(result) when search by channel with sort params correctly and execute successfully', (done) => {
-			request
+			void request
 				.get(api('directory'))
 				.set(credentials)
 				.query({
@@ -331,7 +335,7 @@ describe('miscellaneous', function () {
 				.end(done);
 		});
 		it('should return an error when send invalid query', (done) => {
-			request
+			void request
 				.get(api('directory'))
 				.set(credentials)
 				.query({
@@ -348,7 +352,7 @@ describe('miscellaneous', function () {
 				.end(done);
 		});
 		it('should return an error when have more than one sort parameter', (done) => {
-			request
+			void request
 				.get(api('directory'))
 				.set(credentials)
 				.query({
@@ -370,7 +374,7 @@ describe('miscellaneous', function () {
 		});
 
 		it('should return an object containing rooms and totalCount from teams', (done) => {
-			request
+			void request
 				.get(api('directory'))
 				.set(normalUserCredentials)
 				.query({
@@ -405,11 +409,11 @@ describe('miscellaneous', function () {
 	});
 
 	describe('[/spotlight]', () => {
-		let user;
-		let userCredentials;
-		let testChannel;
-		let testTeam;
-		let testChannelSpecialChars;
+		let user: TestUser<IUser>;
+		let userCredentials: Credentials;
+		let testChannel: IRoom;
+		let testTeam: ITeam;
+		let testChannelSpecialChars: IRoom;
 		const fnameSpecialCharsRoom = `test ГДΕληνικά-${Date.now()}`;
 		const teamName = `team-test-${Date.now()}`;
 
@@ -431,7 +435,7 @@ describe('miscellaneous', function () {
 		});
 
 		it('should fail when does not have query param', (done) => {
-			request
+			void request
 				.get(api('spotlight'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -443,7 +447,7 @@ describe('miscellaneous', function () {
 				.end(done);
 		});
 		it('should return object inside users array when search by a valid user', (done) => {
-			request
+			void request
 				.get(api('spotlight'))
 				.query({
 					query: `@${adminUsername}`,
@@ -463,7 +467,7 @@ describe('miscellaneous', function () {
 				.end(done);
 		});
 		it('must return the object inside the room array when searching for a valid room and that user is not a member of it', (done) => {
-			request
+			void request
 				.get(api('spotlight'))
 				.query({
 					query: `#${testChannel.name}`,
@@ -482,7 +486,7 @@ describe('miscellaneous', function () {
 				.end(done);
 		});
 		it('must return the teamMain property when searching for a valid team that the user is not a member of', (done) => {
-			request
+			void request
 				.get(api('spotlight'))
 				.query({
 					query: `${testTeam.name}`,
@@ -502,7 +506,7 @@ describe('miscellaneous', function () {
 				.end(done);
 		});
 		it('must return rooms when searching for a valid fname', (done) => {
-			request
+			void request
 				.get(api('spotlight'))
 				.query({
 					query: `#${fnameSpecialCharsRoom}`,
@@ -523,14 +527,14 @@ describe('miscellaneous', function () {
 	});
 
 	describe('[/instances.get]', () => {
-		let unauthorizedUserCredentials;
+		let unauthorizedUserCredentials: Credentials;
 		before(async () => {
 			const createdUser = await createUser();
 			unauthorizedUserCredentials = await doLogin(createdUser.username, password);
 		});
 
 		it('should fail if user is logged in but is unauthorized', (done) => {
-			request
+			void request
 				.get(api('instances.get'))
 				.set(unauthorizedUserCredentials)
 				.expect('Content-Type', 'application/json')
@@ -543,7 +547,7 @@ describe('miscellaneous', function () {
 		});
 
 		it('should fail if not logged in', (done) => {
-			request
+			void request
 				.get(api('instances.get'))
 				.expect('Content-Type', 'application/json')
 				.expect(401)
@@ -555,7 +559,7 @@ describe('miscellaneous', function () {
 		});
 
 		it('should return instances if user is logged in and is authorized', (done) => {
-			request
+			void request
 				.get(api('instances.get'))
 				.set(credentials)
 				.expect(200)
@@ -564,11 +568,15 @@ describe('miscellaneous', function () {
 
 					expect(res.body).to.have.property('instances').and.to.be.an('array').with.lengthOf(1);
 
-					const { instances } = res.body;
+					const instances = res.body.instances as IInstance[];
 
 					const instanceName = IS_EE ? 'ddp-streamer' : 'rocket.chat';
 
-					const instance = instances.filter((i) => i.instanceRecord.name === instanceName)[0];
+					const instance = instances.find(
+						(i): i is IInstance & { instanceRecord: IInstanceStatus } => i.instanceRecord?.name === instanceName,
+					);
+
+					if (!instance) throw new AssertionError(`no instance named "${instanceName}"`);
 
 					expect(instance).to.have.property('instanceRecord');
 					expect(instance).to.have.property('currentStatus');
@@ -604,7 +612,7 @@ describe('miscellaneous', function () {
 		after(() => updateSetting('API_Enable_Shields', true));
 
 		it('should fail if API_Enable_Shields is disabled', (done) => {
-			request
+			void request
 				.get(api('shield.svg'))
 				.query({
 					type: 'online',
@@ -622,8 +630,8 @@ describe('miscellaneous', function () {
 		});
 
 		it('should succeed if API_Enable_Shields is enabled', (done) => {
-			updateSetting('API_Enable_Shields', true).then(() => {
-				request
+			void updateSetting('API_Enable_Shields', true).then(() => {
+				void request
 					.get(api('shield.svg'))
 					.query({
 						type: 'online',
@@ -640,7 +648,7 @@ describe('miscellaneous', function () {
 
 	describe('/pw.getPolicy', () => {
 		it('should return policies', (done) => {
-			request
+			void request
 				.get(api('pw.getPolicy'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -656,7 +664,7 @@ describe('miscellaneous', function () {
 
 	describe('/pw.getPolicyReset', () => {
 		it('should fail if no token provided', (done) => {
-			request
+			void request
 				.get(api('pw.getPolicyReset'))
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -668,7 +676,7 @@ describe('miscellaneous', function () {
 		});
 
 		it('should fail if no token is invalid format', (done) => {
-			request
+			void request
 				.get(api('pw.getPolicyReset?token=123'))
 				.expect('Content-Type', 'application/json')
 				.expect(403)
@@ -681,7 +689,7 @@ describe('miscellaneous', function () {
 
 		// not sure we have a way to get the reset token, looks like it is only sent via email by Meteor
 		it.skip('should return policies if correct token is provided', (done) => {
-			request
+			void request
 				.get(api('pw.getPolicyReset?token'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')

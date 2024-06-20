@@ -27,7 +27,7 @@ describe('LIVECHAT - Agents', function () {
 	let agent: ILivechatAgent;
 	let manager: ILivechatAgent;
 
-	let agent2: { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };
+	let agent2: { user: IUser; credentials: Credentials };
 
 	before((done) => getCredentials(done));
 
@@ -39,7 +39,7 @@ describe('LIVECHAT - Agents', function () {
 	});
 
 	before(async () => {
-		const user: IUser = await createUser();
+		const user = await createUser();
 		const userCredentials = await login(user.username, password);
 		await createAgent(user.username);
 
@@ -243,7 +243,7 @@ describe('LIVECHAT - Agents', function () {
 
 		it('should return a valid user when all goes fine', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
-			const user: IUser = await createUser();
+			const user = await createUser();
 			await request
 				.post(api('livechat/users/agent'))
 				.set(credentials)
@@ -264,7 +264,7 @@ describe('LIVECHAT - Agents', function () {
 		});
 
 		it('should properly create a manager', async () => {
-			const user: IUser = await createUser();
+			const user = await createUser();
 			await request
 				.post(api('livechat/users/manager'))
 				.set(credentials)
@@ -331,7 +331,7 @@ describe('LIVECHAT - Agents', function () {
 
 		it('should return { user: null } when user is not an agent', async () => {
 			await updatePermission('view-livechat-manager', ['admin']);
-			const user: IUser = await createUser();
+			const user = await createUser();
 			await request
 				.get(api(`livechat/users/agent/${user._id}`))
 				.set(credentials)
@@ -482,7 +482,7 @@ describe('LIVECHAT - Agents', function () {
 			await updatePermission('manage-livechat-agents', ['admin']);
 		});
 		it('should return an error if user is not an agent', async () => {
-			const user: IUser = await createUser({ roles: ['livechat-manager'] });
+			const user = await createUser({ roles: ['livechat-manager'] });
 			const userCredentials = await login(user.username, password);
 			await request
 				.post(api('livechat/agent.status'))
@@ -520,7 +520,7 @@ describe('LIVECHAT - Agents', function () {
 				});
 		});
 		it('should change logged in users status', async () => {
-			const currentUser: ILivechatAgent = await getMe(agent2.credentials as any);
+			const currentUser: ILivechatAgent = await getMe(agent2.credentials);
 			const currentStatus = currentUser.statusLivechat;
 			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
 
@@ -537,7 +537,7 @@ describe('LIVECHAT - Agents', function () {
 		it('should allow managers to change other agents status', async () => {
 			await updatePermission('manage-livechat-agents', ['admin']);
 
-			const currentUser: ILivechatAgent = await getMe(agent2.credentials as any);
+			const currentUser: ILivechatAgent = await getMe(agent2.credentials);
 			const currentStatus = currentUser.statusLivechat;
 			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
 
@@ -554,7 +554,7 @@ describe('LIVECHAT - Agents', function () {
 		it('should throw an error if agent tries to make themselves available outside of Business hour', async () => {
 			await makeDefaultBusinessHourActiveAndClosed();
 
-			const currentUser: ILivechatAgent = await getMe(agent2.credentials as any);
+			const currentUser: ILivechatAgent = await getMe(agent2.credentials);
 			const currentStatus = currentUser.statusLivechat;
 			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
 
@@ -571,7 +571,7 @@ describe('LIVECHAT - Agents', function () {
 		it('should not allow managers to make other agents available outside business hour', async () => {
 			await updatePermission('manage-livechat-agents', ['admin']);
 
-			const currentUser: ILivechatAgent = await getMe(agent2.credentials as any);
+			const currentUser: ILivechatAgent = await getMe(agent2.credentials);
 			const currentStatus = currentUser.statusLivechat;
 			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
 
@@ -603,7 +603,7 @@ describe('LIVECHAT - Agents', function () {
 			};
 		});
 		after(async () => {
-			await deleteUser(testUser.user._id);
+			await deleteUser(testUser.user);
 		});
 
 		it('should return an empty list of rooms for a newly created agent', async () => {

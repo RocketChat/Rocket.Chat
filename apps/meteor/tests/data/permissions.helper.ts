@@ -19,7 +19,7 @@ export const updatePermission = (permission: string, roles: string[]): Promise<v
 export const updateEEPermission = (permission: string, roles: string[]): Promise<void | Error> =>
 	IS_EE ? updatePermission(permission, roles) : Promise.resolve();
 
-export const updateManyPermissions = (permissions: { [key: string]: string[] }): Promise<void | Error> =>
+const updateManyPermissions = (permissions: { [key: string]: string[] }): Promise<void | Error> =>
 	new Promise((resolve, reject) => {
 		void request
 			.post(api('permissions.update'))
@@ -74,6 +74,14 @@ export const removePermissionFromAllRoles = async (permission: Permission) => {
 	await updatePermission(permission, []);
 };
 
+const getPermissions = () => {
+	if (!IS_EE) {
+		return permissions;
+	}
+
+	return [...permissions, ...omnichannelEEPermissions];
+};
+
 export const restorePermissionToRoles = async (permission: Permission) => {
 	const defaultPermission = getPermissions().find((p) => p._id === permission);
 	if (!defaultPermission) {
@@ -93,12 +101,4 @@ export const restorePermissionToRoles = async (permission: Permission) => {
 	}
 
 	await updatePermission(permission, mutableDefaultRoles);
-};
-
-const getPermissions = () => {
-	if (!IS_EE) {
-		return permissions;
-	}
-
-	return [...permissions, ...omnichannelEEPermissions];
 };

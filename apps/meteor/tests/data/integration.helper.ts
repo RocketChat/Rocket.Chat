@@ -1,8 +1,11 @@
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IIntegration } from '@rocket.chat/core-typings';
+
 import { api, credentials, request } from './api-data';
 
-export const createIntegration = (integration, userCredentials) =>
+export const createIntegration = (integration: IIntegration, userCredentials: Credentials) =>
 	new Promise((resolve, reject) => {
-		request
+		void request
 			.post(api('integrations.create'))
 			.set(userCredentials)
 			.send(integration)
@@ -21,9 +24,9 @@ export const createIntegration = (integration, userCredentials) =>
 			});
 	});
 
-export const removeIntegration = (integrationId, type) =>
-	new Promise((resolve) => {
-		request
+export const removeIntegration = (integrationId: IIntegration['_id'], type: 'incoming' | 'outgoing') =>
+	new Promise<void>((resolve) => {
+		void request
 			.post(api('integrations.remove'))
 			.set(credentials)
 			.send({

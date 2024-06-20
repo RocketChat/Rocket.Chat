@@ -231,7 +231,7 @@ describe('LIVECHAT - inquiries', function () {
 		});
 		after(async () => {
 			await updateSetting('Livechat_accept_chats_with_no_agents', false);
-			await deleteUser(testUser.user._id);
+			await deleteUser(testUser.user);
 		});
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('view-l-room', []);
@@ -329,7 +329,7 @@ describe('LIVECHAT - inquiries', function () {
 			};
 		});
 		after(async () => {
-			await deleteUser(testUser.user._id);
+			await deleteUser(testUser.user);
 		});
 
 		it('should throw an error if user doesnt have view-l-room permission', async () => {

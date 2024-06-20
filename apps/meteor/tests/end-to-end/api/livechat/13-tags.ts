@@ -68,7 +68,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 
 		after(async () => {
-			await deleteUser(monitor);
+			await deleteUser(monitor.user);
 		});
 
 		it('should throw unauthorized error when the user does not have the necessary permission', async () => {

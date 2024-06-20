@@ -1,8 +1,7 @@
+import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { api, credentials, request } from './api-data';
-
-type Credentials = { 'X-Auth-Token'?: string; 'X-User-Id'?: string };
 
 type CreateRoomParams = {
 	name?: IRoom['name'];
@@ -68,11 +67,6 @@ export const createRoom = ({
 		});
 };
 
-export const asyncCreateRoom = ({ name, type, username, members = [] }: Pick<CreateRoomParams, 'name' | 'type' | 'username' | 'members'>) =>
-	new Promise((resolve) => {
-		void createRoom({ name, type, username, members }).end(resolve);
-	});
-
 type ActionType = 'delete' | 'close' | 'addOwner' | 'removeOwner';
 type ActionRoomParams = {
 	action: ActionType;
@@ -108,9 +102,6 @@ function actionRoom({ action, type, roomId, overrideCredentials = credentials, e
 
 export const deleteRoom = ({ type, roomId }: { type: ActionRoomParams['type']; roomId: IRoom['_id'] }) =>
 	actionRoom({ action: 'delete', type, roomId, overrideCredentials: credentials });
-
-export const closeRoom = ({ type, roomId }: { type: ActionRoomParams['type']; roomId: IRoom['_id'] }) =>
-	actionRoom({ action: 'close', type, roomId });
 
 export const joinChannel = ({ overrideCredentials = credentials, roomId }: { overrideCredentials: Credentials; roomId: IRoom['_id'] }) =>
 	request.post(api('channels.join')).set(overrideCredentials).send({

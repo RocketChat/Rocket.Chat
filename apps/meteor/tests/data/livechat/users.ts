@@ -11,7 +11,7 @@ export const createBotAgent = async (): Promise<{
 	credentials: Credentials;
 	user: IUser;
 }> => {
-	const agent: IUser = await createUser({
+	const agent = await createUser({
 		roles: ['bot'],
 	});
 	const createdUserCredentials = await login(agent.username, password);
