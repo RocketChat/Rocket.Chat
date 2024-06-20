@@ -230,7 +230,7 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 
 		await page.locator('[data-qa-type="message"]').last().hover();
-		await expect(page.locator('role=button[name="Forward message"]')).toBeDisabled();
+		await expect(page.locator('role=button[name="Forward message not available on encrypted content"]')).toBeDisabled();
 
 		await poHomeChannel.content.openLastMessageMenu();
 
