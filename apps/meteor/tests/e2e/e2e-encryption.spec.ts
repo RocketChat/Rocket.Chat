@@ -695,6 +695,8 @@ test.describe.serial('e2ee support legacy formats', () => {
 
 	// Not testing upload since it was not implemented in the legacy format
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page, api }) => {
+		await page.goto('/home');
+
 		await restoreState(page, Users.userE2EE);
 
 		const channelName = faker.string.uuid();
