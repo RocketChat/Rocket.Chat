@@ -64,7 +64,9 @@ type addGroupCallback = (this: {
 	with(options: ISettingAddOptions, cb: addGroupCallback): Promise<void>;
 }) => Promise<void>;
 
-type ISettingAddOptions = Partial<ISetting>;
+type ISettingAction = { trigger?: <T>() => Promise<T> } & ISetting;
+
+type ISettingAddOptions = Partial<ISettingAction>;
 
 const compareSettingsIgnoringKeys =
 	(keys: Array<keyof ISetting>) =>
@@ -98,7 +100,7 @@ export class SettingsRegistry {
 	/*
 	 * Add a setting
 	 */
-	async add(_id: string, value: SettingValue, { sorter, section, group, ...options }: ISettingAddOptions = {}): Promise<void> {
+	async add(_id: string, value: SettingValue, { sorter, section, group, trigger, ...options }: ISettingAddOptions = {}): Promise<void> {
 		if (!_id || value == null) {
 			throw new Error('Invalid arguments');
 		}
@@ -138,16 +140,23 @@ export class SettingsRegistry {
 
 		const settingFromCodeOverwritten = overwriteSetting(settingFromCode);
 
-		const settingStored = this.store.getSetting(_id);
+		const settingStored = trigger ? settingFromCode : this.store.getSetting(_id);
+
 		const settingStoredOverwritten = settingStored && overwriteSetting(settingStored);
+
+		const settingOverwrittenDefault = overrideSetting(settingFromCode);
+
+		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
+
+		const setting = isOverwritten ? settingFromCodeOverwritten : settingOverwrittenDefault;
+
+		const settingWithTrigger = trigger ? Object.assign(setting, trigger) : setting;
 
 		try {
 			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
 		} catch (e) {
 			IS_DEVELOPMENT && SystemLogger.error(`Invalid setting code ${_id}: ${(e as Error).message}`);
 		}
-
-		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
 
 		const { _id: _, ...settingProps } = settingFromCodeOverwritten;
 
@@ -166,7 +175,9 @@ export class SettingsRegistry {
 			})();
 
 			await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
-			this.store.set(settingFromCodeOverwritten);
+
+			this.store.set(settingWithTrigger);
+
 			return;
 		}
 
@@ -176,7 +187,8 @@ export class SettingsRegistry {
 				const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
 				await this.saveUpdatedSetting(_id, settingProps, removedKeys);
-				this.store.set(settingFromCodeOverwritten);
+
+				this.store.set(settingWithTrigger);
 			}
 			return;
 		}
@@ -190,13 +202,9 @@ export class SettingsRegistry {
 			return;
 		}
 
-		const settingOverwrittenDefault = overrideSetting(settingFromCode);
-
-		const setting = isOverwritten ? settingFromCodeOverwritten : settingOverwrittenDefault;
-
 		await this.model.insertOne(setting); // no need to emit unless we remove the oplog
 
-		this.store.set(setting);
+		this.store.set(settingWithTrigger);
 	}
 
 	/*
