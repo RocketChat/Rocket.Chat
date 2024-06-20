@@ -150,7 +150,7 @@ Meteor.startup(() => {
 			const mentionsEnabled = settings.get<boolean>('E2E_Enabled_Mentions');
 
 			if (mentionsEnabled) {
-				const me = (message.u?._id && Users.findOne(message.u?._id, { fields: { username: 1 } })?.username) || '';
+				const me = Meteor.user()?.username || '';
 				const pattern = settings.get('UTF8_User_Names_Validation');
 				const useRealName = settings.get('UI_Use_Real_Name');
 
