@@ -10,6 +10,7 @@ import {
 	notifyOnSubscriptionChangedByAutoTranslateAndUserId,
 	notifyOnSubscriptionChangedByUserId,
 	notifyOnSubscriptionChangedByUserPreferences,
+	notifyOnUserChange,
 } from '../../app/lib/server/lib/notifyListener';
 import { settings as rcSettings } from '../../app/settings/server';
 
@@ -125,8 +126,8 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		mentionsWithSymbol: Match.Optional(Boolean),
 	};
 	check(settings, Match.ObjectIncluding(keys));
-	const user = await Users.findOneById(userId);
 
+	const user = await Users.findOneById(userId);
 	if (!user) {
 		return;
 	}
@@ -159,6 +160,22 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 
 	await Users.setPreferences(user._id, settings);
 
+	const diff = (Object.keys(settings) as (keyof UserPreferences)[]).reduce<Record<string, any>>((data, key) => {
+		data[`settings.preferences.${key}`] = settings[key];
+
+		return data;
+	}, {});
+
+	void notifyOnUserChange({
+		id: user._id,
+		clientAction: 'updated',
+		diff: {
+			...diff,
+			...(settings.language != null && { language: settings.language }),
+		},
+	});
+
+	// propagate changed notification preferences
 	setImmediate(async () => {
 		const { desktopNotifications, pushNotifications, emailNotificationMode, highlights, language } = settings;
 		const promises = [];

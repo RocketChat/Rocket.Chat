@@ -12,7 +12,7 @@ import {
 	MessageComposerHint,
 	MessageComposerButton,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type {
 	ReactElement,
@@ -92,7 +92,7 @@ const getEmptyArray = () => a;
 type MessageBoxProps = {
 	tmid?: IMessage['_id'];
 	readOnly: boolean;
-	onSend?: (params: { value: string; tshow?: boolean; previewUrls?: string[] }) => Promise<void>;
+	onSend?: (params: { value: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean }) => Promise<void>;
 	onJoin?: () => Promise<void>;
 	onResize?: () => void;
 	onTyping?: () => void;
@@ -123,6 +123,9 @@ const MessageBox = ({
 	const chat = useChat();
 	const room = useRoom();
 	const t = useTranslation();
+	const e2eEnabled = useSetting<boolean>('E2E_Enable');
+	const unencryptedMessagesAllowed = useSetting<boolean>('E2E_Allow_Unencrypted_Messages');
+	const isSlashCommandAllowed = !e2eEnabled || !room.encrypted || unencryptedMessagesAllowed;
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 
 	const [typing, setTyping] = useReducer(reducer, false);
@@ -176,6 +179,7 @@ const MessageBox = ({
 			value: text,
 			tshow,
 			previewUrls,
+			isSlashCommandAllowed,
 		});
 	});
 

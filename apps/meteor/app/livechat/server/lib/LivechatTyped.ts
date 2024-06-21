@@ -58,7 +58,12 @@ import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import {
+	notifyOnLivechatInquiryChanged,
+	notifyOnLivechatInquiryChangedByRoom,
 	notifyOnRoomChangedById,
+	notifyOnLivechatInquiryChangedByToken,
+	notifyOnUserChange,
+	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
 	notifyOnSubscriptionChangedByRoomId,
 	notifyOnSubscriptionChangedByToken,
 } from '../../../lib/server/lib/notifyListener';
@@ -297,9 +302,14 @@ class LivechatClass {
 
 		this.logger.debug(`Updating DB for room ${room._id} with close data`);
 
+		const inquiry = await LivechatInquiry.findOneByRoomId(rid);
+
 		const removedInquiry = await LivechatInquiry.removeByRoomId(rid);
 		if (removedInquiry && removedInquiry.deletedCount !== 1) {
 			throw new Error('Error removing inquiry');
+		}
+		if (inquiry) {
+			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
 		}
 
 		const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData);
@@ -504,6 +514,8 @@ class LivechatClass {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
 
+		const inquiry = await LivechatInquiry.findOneByRoomId(rid);
+
 		const result = await Promise.allSettled([
 			Messages.removeByRoomId(rid),
 			ReadReceipts.removeByRoomId(rid),
@@ -514,6 +526,10 @@ class LivechatClass {
 
 		if (result[2]?.status === 'fulfilled' && result[2].value?.deletedCount) {
 			void notifyOnSubscriptionChangedByRoomId(rid, 'removed');
+		}
+
+		if (result[3]?.status === 'fulfilled' && result[3].value?.deletedCount) {
+			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
 		}
 
 		for (const r of result) {
@@ -1010,6 +1026,8 @@ class LivechatClass {
 
 		await Promise.all([LivechatDepartmentAgents.disableAgentsByDepartmentId(_id), LivechatDepartment.archiveDepartment(_id)]);
 
+		void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id);
+
 		await callbacks.run('livechat.afterDepartmentArchived', department);
 	}
 
@@ -1022,6 +1040,9 @@ class LivechatClass {
 
 		// TODO: these kind of actions should be on events instead of here
 		await Promise.all([LivechatDepartmentAgents.enableAgentsByDepartmentId(_id), LivechatDepartment.unarchiveDepartment(_id)]);
+
+		void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id);
+
 		return true;
 	}
 
@@ -1282,6 +1303,10 @@ class LivechatClass {
 		if (responses[0]?.deletedCount) {
 			void notifyOnSubscriptionChangedByToken(token, 'removed');
 		}
+
+		if (response[2]?.deletedCount) {
+			void notifyOnLivechatInquiryChanged(livechatInquiries, 'removed');
+		}
 	}
 
 	async deleteMessage({ guest, message }: { guest: ILivechatVisitor; message: IMessage }) {
@@ -1298,9 +1323,18 @@ class LivechatClass {
 	}
 
 	async setUserStatusLivechatIf(userId: string, status: ILivechatAgentStatus, condition?: Filter<IUser>, fields?: AKeyOf<ILivechatAgent>) {
-		const user = await Users.setLivechatStatusIf(userId, status, condition, fields);
+		const result = await Users.setLivechatStatusIf(userId, status, condition, fields);
+
+		if (result.modifiedCount > 0) {
+			void notifyOnUserChange({
+				id: userId,
+				clientAction: 'updated',
+				diff: { ...fields, statusLivechat: status },
+			});
+		}
+
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
-		return user;
+		return result;
 	}
 
 	async returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?: string, overrideTransferData: any = {}) {
@@ -1670,13 +1704,30 @@ class LivechatClass {
 	}
 
 	async notifyGuestStatusChanged(token: string, status: UserStatus) {
-		await LivechatInquiry.updateVisitorStatus(token, status);
 		await LivechatRooms.updateVisitorStatus(token, status);
+
+		const inquiryVisitorStatus = await LivechatInquiry.updateVisitorStatus(token, status);
+
+		if (inquiryVisitorStatus.modifiedCount) {
+			void notifyOnLivechatInquiryChangedByToken(token, 'updated', { v: { status } });
+		}
 	}
 
 	async setUserStatusLivechat(userId: string, status: ILivechatAgentStatus) {
 		const user = await Users.setLivechatStatus(userId, status);
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
+
+		if (user.modifiedCount > 0) {
+			void notifyOnUserChange({
+				id: userId,
+				clientAction: 'updated',
+				diff: {
+					statusLivechat: status,
+					livechatStatusSystemModified: false,
+				},
+			});
+		}
+
 		return user;
 	}
 
@@ -1823,12 +1874,18 @@ class LivechatClass {
 				Subscriptions.updateDisplayNameByRoomId(rid, name),
 			]);
 
+			if (responses[1]?.modifiedCount) {
+				void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
+			}
+
 			if (responses[2]?.modifiedCount) {
 				await notifyOnSubscriptionChangedByRoomId(rid);
 			}
 		}
 
 		void notifyOnRoomChangedById(roomData._id);
+
+		return true;
 	}
 
 	/**

@@ -4,7 +4,6 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import { useFormattedRelativeTime } from '../../../hooks/useFormattedRelativeTime';
-import { getMaxAgeInMS } from '../hooks/useRetentionPolicy';
 
 type RetentionPolicyWarningProps = {
 	filesOnly: boolean;
@@ -14,7 +13,7 @@ type RetentionPolicyWarningProps = {
 
 const RetentionPolicyWarning = ({ filesOnly, excludePinned, maxAge }: RetentionPolicyWarningProps): ReactElement => {
 	const t = useTranslation();
-	const time = useFormattedRelativeTime(getMaxAgeInMS(maxAge));
+	const time = useFormattedRelativeTime(maxAge);
 
 	if (filesOnly) {
 		return (

@@ -28,7 +28,7 @@ import { generateUsernameSuggestion } from '../../../lib/server/functions/getUse
 import { insertMessage } from '../../../lib/server/functions/insertMessage';
 import { saveUserIdentity } from '../../../lib/server/functions/saveUserIdentity';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
-import { notifyOnSubscriptionChangedByRoomId } from '../../../lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedByRoomId, notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
@@ -251,6 +251,9 @@ export class ImportDataConverter {
 
 	async updateUser(existingUser: IUser, userData: IImportUser): Promise<void> {
 		const { _id } = existingUser;
+		if (!_id) {
+			return;
+		}
 
 		userData._id = _id;
 
@@ -298,10 +301,12 @@ export class ImportDataConverter {
 
 		// Deleted users are 'inactive' users in Rocket.Chat
 		if (userData.deleted && existingUser?.active) {
-			userData._id && (await setUserActiveStatus(userData._id, false, true));
+			await setUserActiveStatus(_id, false, true);
 		} else if (userData.deleted === false && existingUser?.active === false) {
-			userData._id && (await setUserActiveStatus(userData._id, true));
+			await setUserActiveStatus(_id, true);
 		}
+
+		void notifyOnUserChange({ clientAction: 'updated', id: _id, diff: updateData.$set });
 	}
 
 	private async hashPassword(password: string): Promise<string> {
@@ -356,11 +361,11 @@ export class ImportDataConverter {
 						...user.services,
 						...(this._options.enableEmail2fa
 							? {
-									email2fa: {
-										enabled: true,
-										changedAt: new Date(),
-									},
-							  }
+								email2fa: {
+									enabled: true,
+									changedAt: new Date(),
+								},
+							}
 							: {}),
 					},
 				} as IUser;

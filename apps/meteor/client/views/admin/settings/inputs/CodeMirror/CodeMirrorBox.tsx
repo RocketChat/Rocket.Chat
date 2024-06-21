@@ -39,7 +39,9 @@ const CodeMirrorBox = ({ label, children }: { label: ReactNode; children: ReactE
 					{label}
 				</Box>
 			)}
-			{children}
+			<Box display='flex' flexDirection='column' height='100%' role='code' aria-label={typeof label === 'string' ? label : undefined}>
+				{children}
+			</Box>
 			<Box mbs={8}>
 				<ButtonGroup>
 					<Button primary onClick={(): void => toggleFullScreen()}>

@@ -12,6 +12,7 @@ import {
 	notifyOnRoomChangedById,
 	notifyOnRoomChangedByUserDM,
 	notifyOnSubscriptionChangedByUserIdAndRoomType,
+	notifyOnUserChange,
 } from '../lib/notifyListener';
 import { closeOmnichannelConversations } from './closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
@@ -115,14 +116,17 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 
 	if (active === false) {
 		await Users.unsetLoginTokens(userId);
-		const setDmReadOnlyResponse = await Rooms.setDmReadOnlyByUserId(userId, undefined, true, false);
-		if (setDmReadOnlyResponse.modifiedCount) {
-			void notifyOnRoomChangedByUserDM(userId);
-		}
+		await Rooms.setDmReadOnlyByUserId(userId, undefined, true, false);
+
+		void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [], active } });
+		void notifyOnRoomChangedByUserDM(userId);
 	} else {
 		await Users.unsetReason(userId);
+
+		void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { active } });
 		await reactivateDirectConversations(userId);
 	}
+
 	if (active && !settings.get('Accounts_Send_Email_When_Activating')) {
 		return true;
 	}

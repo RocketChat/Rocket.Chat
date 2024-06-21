@@ -38,6 +38,8 @@ import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import {
+	notifyOnLivechatDepartmentAgentChanged,
+	notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId,
 	notifyOnSubscriptionChangedById,
 	notifyOnSubscriptionChangedByRoomId,
 	notifyOnSubscriptionChangedByUserAndRoomId,
@@ -717,14 +719,31 @@ export const updateDepartmentAgents = async (
 	});
 
 	const { upsert = [], remove = [] } = agents;
-	const agentsRemoved = [];
+
+	const agentsUpdated = [];
+	const agentsRemoved = remove.map(({ agentId }: { agentId: string }) => agentId);
 	const agentsAdded = [];
-	for await (const { agentId } of remove) {
-		await LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId);
-		agentsRemoved.push(agentId);
-	}
 
 	if (agentsRemoved.length > 0) {
+		const removedIds = await LivechatDepartmentAgents.findByAgentsAndDepartmentId(agentsRemoved, departmentId, {
+			projection: { agentId: 1 },
+		}).toArray();
+
+		const { deletedCount } = await LivechatDepartmentAgents.removeByIds(removedIds.map(({ _id }) => _id));
+
+		if (deletedCount > 0) {
+			removedIds.forEach(({ _id, agentId }) => {
+				void notifyOnLivechatDepartmentAgentChanged(
+					{
+						_id,
+						agentId,
+						departmentId,
+					},
+					'removed',
+				);
+			});
+		}
+
 		callbacks.runAsync('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
 	}
 
@@ -734,7 +753,7 @@ export const updateDepartmentAgents = async (
 			continue;
 		}
 
-		await LivechatDepartmentAgents.saveAgent({
+		const livechatDepartmentAgent = await LivechatDepartmentAgents.saveAgent({
 			agentId: agent.agentId,
 			departmentId,
 			username: agentFromDb.username || '',
@@ -742,6 +761,20 @@ export const updateDepartmentAgents = async (
 			order: agent.order ? parseFromIntOrStr(agent.order) : 0,
 			departmentEnabled,
 		});
+
+		if (livechatDepartmentAgent.upsertedId) {
+			void notifyOnLivechatDepartmentAgentChanged(
+				{
+					_id: livechatDepartmentAgent.upsertedId as any,
+					agentId: agent.agentId,
+					departmentId,
+				},
+				'inserted',
+			);
+		} else {
+			agentsUpdated.push(agent.agentId);
+		}
+
 		agentsAdded.push(agent.agentId);
 	}
 
@@ -750,6 +783,10 @@ export const updateDepartmentAgents = async (
 			departmentId,
 			agentsId: agentsAdded,
 		});
+	}
+
+	if (agentsUpdated.length > 0) {
+		void notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId(agentsUpdated, departmentId);
 	}
 
 	if (agentsRemoved.length > 0 || agentsAdded.length > 0) {
