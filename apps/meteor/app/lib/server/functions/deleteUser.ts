@@ -24,6 +24,7 @@ import {
 	notifyOnIntegrationChangedByUserId,
 	notifyOnLivechatDepartmentAgentChanged,
 	notifyOnUserChange,
+	notifyOnSubscriptionChangedByUserId,
 } from '../lib/notifyListener';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';

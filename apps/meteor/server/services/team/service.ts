@@ -61,8 +61,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			!members || !Array.isArray(members) || members.length === 0
 				? []
 				: await Users.findActiveByIdsOrUsernames(members, {
-					projection: { username: 1 },
-				}).toArray();
+						projection: { username: 1 },
+				  }).toArray();
 		const memberUsernames = membersResult.map(({ username }) => username);
 		const memberIds = membersResult.map(({ _id }) => _id);
 
@@ -809,8 +809,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					removedUser,
 					uid !== member.userId
 						? {
-							byUser,
-						}
+								byUser,
+						  }
 						: undefined,
 				);
 			}

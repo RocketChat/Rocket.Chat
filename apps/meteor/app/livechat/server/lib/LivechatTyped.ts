@@ -528,7 +528,7 @@ class LivechatClass {
 			void notifyOnSubscriptionChangedByRoomId(rid, 'removed');
 		}
 
-		if (result[3]?.status === 'fulfilled' && result[3].value?.deletedCount) {
+		if (result[3]?.status === 'fulfilled' && result[3].value?.deletedCount && inquiry) {
 			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
 		}
 
@@ -1294,19 +1294,15 @@ class LivechatClass {
 			]);
 		}
 
-		const responses = await Promise.all([
-			Subscriptions.removeByVisitorToken(token),
-			LivechatRooms.removeByVisitorToken(token),
-			LivechatInquiry.removeByVisitorToken(token),
-		]);
+		const responses = await Promise.all([Subscriptions.removeByVisitorToken(token), LivechatRooms.removeByVisitorToken(token)]);
 
 		if (responses[0]?.deletedCount) {
 			void notifyOnSubscriptionChangedByToken(token, 'removed');
 		}
 
-		if (response[2]?.deletedCount) {
-			void notifyOnLivechatInquiryChanged(livechatInquiries, 'removed');
-		}
+		const livechatInquiries = await LivechatInquiry.findIdsByVisitorToken(token).toArray();
+		await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
+		void notifyOnLivechatInquiryChanged(livechatInquiries, 'removed');
 	}
 
 	async deleteMessage({ guest, message }: { guest: ILivechatVisitor; message: IMessage }) {

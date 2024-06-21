@@ -361,11 +361,11 @@ export class ImportDataConverter {
 						...user.services,
 						...(this._options.enableEmail2fa
 							? {
-								email2fa: {
-									enabled: true,
-									changedAt: new Date(),
-								},
-							}
+									email2fa: {
+										enabled: true,
+										changedAt: new Date(),
+									},
+							  }
 							: {}),
 					},
 				} as IUser;
