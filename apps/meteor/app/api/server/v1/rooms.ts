@@ -221,12 +221,26 @@ API.v1.addRoute(
 			const expiresAt = new Date();
 			expiresAt.setHours(expiresAt.getHours() + 24);
 
+			const { fields } = file;
+
+			let content;
+
+			if (fields.content) {
+				try {
+					content = JSON.parse(fields.content);
+				} catch (e) {
+					console.error(e);
+					throw new Meteor.Error('invalid-field-content');
+				}
+			}
+
 			const details = {
 				name: file.filename,
 				size: fileBuffer.length,
 				type: file.mimetype,
 				rid: this.urlParams.rid,
 				userId: this.userId,
+				content,
 				expiresAt,
 			};
 
@@ -239,14 +253,14 @@ API.v1.addRoute(
 			const fileStore = FileUpload.getStore('Uploads');
 			const uploadedFile = await fileStore.insert(details, fileBuffer);
 
-			await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
+			uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
 
-			const fileUrl = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
+			await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
 
 			return API.v1.success({
 				file: {
 					_id: uploadedFile._id,
-					url: fileUrl,
+					url: uploadedFile.path,
 				},
 			});
 		},

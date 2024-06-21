@@ -20,16 +20,19 @@ const decrypt = async (key, iv, file) => {
 
 	return result;
 };
+
 const getUrlParams = (url) => {
-	const urlObj = new URL(url);
+	const urlObj = new URL(url, location.origin);
 
 	const k = base64DecodeString(urlObj.searchParams.get('key'));
 
-	const { key, iv } = JSON.parse(k);
+	urlObj.searchParams.delete('key');
+
+	const { key, iv, name, type } = JSON.parse(k);
 
 	const newUrl = urlObj.href.replace('/file-decrypt/', '/');
 
-	return { key, iv, url: newUrl };
+	return { key, iv, url: newUrl, name, type };
 };
 
 self.addEventListener('fetch', (event) => {
@@ -38,9 +41,12 @@ self.addEventListener('fetch', (event) => {
 	}
 
 	try {
-		const { url, key, iv } = getUrlParams(event.request.url);
+		const { url, key, iv, name, type } = getUrlParams(event.request.url);
 
-		const requestToFetch = new Request(url, event.request);
+		const requestToFetch = new Request(url, {
+			...event.request,
+			mode: 'cors',
+		});
 
 		event.respondWith(
 			caches.match(requestToFetch).then((response) => {
@@ -51,8 +57,24 @@ self.addEventListener('fetch', (event) => {
 				return fetch(requestToFetch)
 					.then(async (res) => {
 						const file = await res.arrayBuffer();
+
+						if (res.status !== 200 || file.byteLength === 0) {
+							console.error('Failed to fetch file', { req: requestToFetch, res });
+							return res;
+						}
+
 						const result = await decrypt(key, iv, file);
-						const response = new Response(result);
+
+						const newHeaders = new Headers(res.headers);
+						newHeaders.set('Content-Disposition', 'inline; filename="'+name+'"');
+						newHeaders.set('Content-Type', type);
+
+						const response = new Response(result, {
+							status: res.status,
+							statusText: res.statusText,
+							headers: newHeaders,
+						});
+
 						await caches.open('v1').then((cache) => {
 							cache.put(requestToFetch, response.clone());
 						});
@@ -76,7 +98,8 @@ self.addEventListener('message', async (event) => {
 	if (event.data.type !== 'attachment-download') {
 		return;
 	}
-	const requestToFetch = new Request(url);
+
+	const requestToFetch = new Request(event.data.url);
 
 	const { url, key, iv } = getUrlParams(event.data.url);
 	const res = (await caches.match(requestToFetch)) ?? (await fetch(url));
@@ -88,13 +111,13 @@ self.addEventListener('message', async (event) => {
 			id: event.data.id,
 			type: 'attachment-download-result',
 			result,
-		})
-		.catch((error) => {
-			console.error('Posting message failed:', error);
-			event.source.postMessage({
-				id: event.data.id,
-				type: 'attachment-download-result',
-				error,
-			});
 		});
+		// .catch((error) => {
+		// 	console.error('Posting message failed:', error);
+		// 	event.source.postMessage({
+		// 		id: event.data.id,
+		// 		type: 'attachment-download-result',
+		// 		error,
+		// 	});
+		// });
 });

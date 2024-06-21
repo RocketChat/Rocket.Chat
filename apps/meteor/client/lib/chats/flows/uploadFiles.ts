@@ -21,6 +21,19 @@ if ('serviceWorker' in navigator) {
 		});
 }
 
+const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
+	return new Promise((resolve) => {
+		const img = new Image();
+		img.onload = () => {
+			resolve({
+				height: img.height,
+				width: img.width,
+			});
+		};
+		img.src = dataURL;
+	});
+};
+
 export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFileInput?: () => void): Promise<void> => {
 	const replies = chat.composer?.quotedMessages.get() ?? [];
 
@@ -34,6 +47,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 		file: File,
 		extraData?: Pick<IMessage, 't' | 'e2e'> & { description?: string },
 		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
+		fileContent?: IE2EEMessage['content'],
 	) => {
 		chat.uploads.send(
 			file,
@@ -42,6 +56,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 				...extraData,
 			},
 			getContent,
+			fileContent,
 		);
 		chat.composer?.clear();
 		imperativeModal.close();
@@ -106,16 +121,17 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 							};
 
 							if (/^image\/.+/.test(file.type)) {
+								const dimensions = await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(file));
+
 								attachments.push({
 									...attachment,
 									image_url: fileUrl,
 									image_type: file.type,
 									image_size: file.size,
+									...(dimensions && {
+										image_dimensions: dimensions,
+									}),
 								});
-
-								// if (file.identify?.size) {
-								// 	attachment.image_dimensions = file.identify.size;
-								// }
 							} else if (/^audio\/.+/.test(file.type)) {
 								attachments.push({
 									...attachment,
@@ -138,10 +154,34 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 								});
 							}
 
+							const files = [
+								{
+									_id,
+									name: file.name,
+									type: file.type,
+									size: file.size,
+									// "format": "png"
+								},
+							];
+
 							return e2eRoom.encryptMessageContent({
 								attachments,
+								files,
+								file: files[0],
 							});
 						};
+
+						const fileContentData = {
+							type: file.type,
+							typeGroup: file.type.split('/')[0],
+							name: fileName,
+							encryption: {
+								key: encryptedFile.key,
+								iv: encryptedFile.iv,
+							},
+						};
+
+						const fileContent = await e2eRoom.encryptMessageContent(fileContentData);
 
 						uploadFile(
 							encryptedFile.file,
@@ -149,6 +189,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 								t: 'e2e',
 							},
 							getContent,
+							fileContent,
 						);
 					}
 				},

@@ -104,6 +104,7 @@ export type UploadsAPI = {
 		file: File,
 		{ description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] },
 		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
+		fileContent?: IE2EEMessage['content'],
 	): Promise<void>;
 };
 
@@ -144,7 +145,15 @@ export type ChatAPI = {
 
 	readonly flows: {
 		readonly uploadFiles: (files: readonly File[], resetFileInput?: () => void) => Promise<void>;
-		readonly sendMessage: ({ text, tshow }: { text: string; tshow?: boolean; previewUrls?: string[] }) => Promise<boolean>;
+		readonly sendMessage: ({
+			text,
+			tshow,
+		}: {
+			text: string;
+			tshow?: boolean;
+			previewUrls?: string[];
+			isSlashCommandAllowed?: boolean;
+		}) => Promise<boolean>;
 		readonly processSlashCommand: (message: IMessage, userId: string | null) => Promise<boolean>;
 		readonly processTooLongMessage: (message: IMessage) => Promise<boolean>;
 		readonly processMessageEditing: (
