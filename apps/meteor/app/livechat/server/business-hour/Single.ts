@@ -1,10 +1,11 @@
 import { ILivechatAgentStatus, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 
+import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 import { businessHourLogger } from '../lib/logger';
 import type { IBusinessHourBehavior } from './AbstractBusinessHour';
 import { AbstractBusinessHourBehavior } from './AbstractBusinessHour';
-import { filterBusinessHoursThatMustBeOpened, openBusinessHourDefault } from './Helper';
+import { filterBusinessHoursThatMustBeOpened, makeAgentsUnavailableBasedOnBusinessHour, openBusinessHourDefault } from './Helper';
 
 export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {
 	async openBusinessHoursByDayAndHour(): Promise<void> {
@@ -18,7 +19,8 @@ export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior imp
 			})
 		).map((businessHour) => businessHour._id);
 		await this.UsersRepository.closeAgentsBusinessHoursByBusinessHourIds(businessHoursIds);
-		await this.UsersRepository.updateLivechatStatusBasedOnBusinessHours();
+
+		await makeAgentsUnavailableBasedOnBusinessHour();
 	}
 
 	async onStartBusinessHours(): Promise<void> {
@@ -41,7 +43,19 @@ export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior imp
 				agentId,
 				newStatus: ILivechatAgentStatus.NOT_AVAILABLE,
 			});
-			await Users.setLivechatStatus(agentId, ILivechatAgentStatus.NOT_AVAILABLE);
+
+			const { modifiedCount } = await Users.setLivechatStatus(agentId, ILivechatAgentStatus.NOT_AVAILABLE);
+			if (modifiedCount > 0) {
+				void notifyOnUserChange({
+					id: agentId,
+					clientAction: 'updated',
+					diff: {
+						statusLivechat: ILivechatAgentStatus.NOT_AVAILABLE,
+						livechatStatusSystemModified: false,
+					},
+				});
+			}
+
 			return;
 		}
 
