@@ -181,7 +181,7 @@ API.v1.addRoute(
 
 				if (isSettingAction(setting) && isSettingsUpdatePropsActions(this.bodyParams) && this.bodyParams.execute) {
 					// execute the configured method
-					const result = await settings.getSetting(this.urlParams._id)?.trigger?.();
+					const result = await settings.getSetting(this.urlParams._id)?.trigger?.bind(this)();
 					return API.v1.success(result);
 				}
 

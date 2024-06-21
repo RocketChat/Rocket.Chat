@@ -1,4 +1,5 @@
 import { settingsRegistry } from '../../app/settings/server';
+import { sendSMTPTestEmail } from '../../app/lib/server/functions/sendSMTPTestEmail';
 
 export const createEmailSettings = () =>
 	settingsRegistry.addGroup('Email', async function() {
@@ -405,9 +406,7 @@ export const createEmailSettings = () =>
 						$ne: '',
 					},
 				},
-				trigger: () => {
-					return Promise.resolve({ message: 'done' as any });
-				},
+				trigger: sendSMTPTestEmail,
 			});
 		});
 
