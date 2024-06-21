@@ -1,10 +1,13 @@
 import type { IMessageSearchProvider } from '@rocket.chat/core-typings';
-import { Box, Field, FieldLabel, FieldRow, FieldHint, Icon, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, FieldHint, Icon, TextInput, ToggleSwitch, Callout } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
+
+import { getRoomTypeTranslation } from '../../../../../lib/getRoomTypeTranslation';
+import { useRoom } from '../../../contexts/RoomContext';
 
 type MessageSearchFormProps = {
 	provider: IMessageSearchProvider;
@@ -18,6 +21,8 @@ const MessageSearchForm = ({ provider, onSearch }: MessageSearchFormProps) => {
 			globalSearch: false,
 		},
 	});
+
+	const room = useRoom();
 
 	useEffect(() => {
 		setFocus('searchText');
@@ -75,6 +80,12 @@ const MessageSearchForm = ({ provider, onSearch }: MessageSearchFormProps) => {
 					</Field>
 				)}
 			</Box>
+			{room.encrypted && (
+				<Callout type='warning' mbs={12} icon='circle-exclamation'>
+					<Box fontScale='p2b'>{t('Encrypted_RoomType', { roomType: getRoomTypeTranslation(room).toLowerCase() })}</Box>
+					{t('Encrypted_content_cannot_be_searched')}
+				</Callout>
+			)}
 		</Box>
 	);
 };
