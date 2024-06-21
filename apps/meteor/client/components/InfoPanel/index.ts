@@ -18,3 +18,15 @@ export default Object.assign(InfoPanel, {
 	Section: InfoPanelSection,
 	ActionGroup: InfoPanelActionGroup,
 });
+
+export {
+	InfoPanel,
+	InfoPanelTitle,
+	InfoPanelLabel,
+	InfoPanelText,
+	InfoPanelAvatar,
+	InfoPanelField,
+	InfoPanelAction,
+	InfoPanelSection,
+	InfoPanelActionGroup,
+};

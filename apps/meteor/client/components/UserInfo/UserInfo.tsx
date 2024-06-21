@@ -9,14 +9,16 @@ import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { ContextualbarScrollableContent } from '../Contextualbar';
-import InfoPanel from '../InfoPanel';
-import InfoPanelActionGroup from '../InfoPanel/InfoPanelActionGroup';
-import InfoPanelAvatar from '../InfoPanel/InfoPanelAvatar';
-import InfoPanelField from '../InfoPanel/InfoPanelField';
-import InfoPanelLabel from '../InfoPanel/InfoPanelLabel';
-import InfoPanelSection from '../InfoPanel/InfoPanelSection';
-import InfoPanelText from '../InfoPanel/InfoPanelText';
-import InfoPanelTitle from '../InfoPanel/InfoPanelTitle';
+import {
+	InfoPanel,
+	InfoPanelActionGroup,
+	InfoPanelAvatar,
+	InfoPanelField,
+	InfoPanelLabel,
+	InfoPanelSection,
+	InfoPanelText,
+	InfoPanelTitle,
+} from '../InfoPanel';
 import MarkdownText from '../MarkdownText';
 import UTCClock from '../UTCClock';
 import { UserCardRoles } from '../UserCard';
