@@ -1,13 +1,7 @@
-import InfoPanel from '../InfoPanel';
+import { InfoPanelLabel, InfoPanelText } from '../InfoPanel';
 import UserInfo from './UserInfo';
 import UserInfoAction from './UserInfoAction';
 import UserInfoAvatar from './UserInfoAvatar';
 import UserInfoUsername from './UserInfoUsername';
 
-export default Object.assign(UserInfo, {
-	Action: UserInfoAction,
-	Avatar: UserInfoAvatar,
-	Info: InfoPanel.Text,
-	Label: InfoPanel.Label,
-	Username: UserInfoUsername,
-});
+export { UserInfo, UserInfoAction, UserInfoAvatar, InfoPanelText as UserInfoText, InfoPanelLabel as UserInfoLabel, UserInfoUsername };
