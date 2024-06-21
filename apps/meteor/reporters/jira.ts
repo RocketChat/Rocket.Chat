@@ -102,13 +102,17 @@ class JIRAReporter implements Reporter {
 		);
 
 		if (existing) {
+			const { location } = test;
+
 			await fetch(`${this.url}/rest/api/2/issue/${existing.key}/comment`, {
 				method: 'POST',
 				body: JSON.stringify({
 					body: `Test run ${payload.run} failed
-	status: ${payload.status}
-	branch: ${payload.branch}
-	headSha: ${payload.headSha}`,
+author: ${this.author}
+PR: ${this.pr}
+https://github.com/RocketChat/Rocket.Chat/blob/${payload.headSha}/apps/meteor/${location.file}#L${location.line}:${location.column}
+${this.run_url}
+`,
 				}),
 				headers: {
 					'Content-Type': 'application/json',
