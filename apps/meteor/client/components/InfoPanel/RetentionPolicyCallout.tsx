@@ -4,7 +4,6 @@ import type { FC } from 'react';
 import React from 'react';
 
 import { useFormattedRelativeTime } from '../../hooks/useFormattedRelativeTime';
-import { getMaxAgeInMS } from '../../views/room/hooks/useRetentionPolicy';
 
 type RetentionPolicyCalloutProps = {
 	filesOnly: boolean;
@@ -14,7 +13,7 @@ type RetentionPolicyCalloutProps = {
 
 const RetentionPolicyCallout: FC<RetentionPolicyCalloutProps> = ({ filesOnly, excludePinned, maxAge }) => {
 	const t = useTranslation();
-	const time = useFormattedRelativeTime(getMaxAgeInMS(maxAge));
+	const time = useFormattedRelativeTime(maxAge);
 
 	return (
 		<Callout arial-label={t('Retention_policy_warning_callout')} role='alert' aria-live='polite' type='warning'>

@@ -9,11 +9,13 @@ import type {
 	IIntegration,
 	IPbxEvent,
 	LoginServiceConfiguration as LoginServiceConfigurationData,
+	ILivechatInquiryRecord,
 	ILivechatPriority,
 	ILivechatDepartmentAgents,
 	IEmailInbox,
 	IIntegrationHistory,
 	AtLeast,
+	ISettingColor,
 } from '@rocket.chat/core-typings';
 import {
 	Rooms,
@@ -24,6 +26,7 @@ import {
 	Integrations,
 	LoginServiceConfiguration,
 	IntegrationHistory,
+	LivechatInquiry,
 	LivechatDepartmentAgents,
 } from '@rocket.chat/models';
 
@@ -103,14 +106,6 @@ export async function notifyOnRoomChangedByUserDM<T extends IRoom>(
 	for await (const item of items) {
 		void api.broadcast('watch.rooms', { clientAction, room: item });
 	}
-}
-
-export async function notifyOnSettingChanged(setting: ISetting, clientAction: ClientAction = 'updated'): Promise<void> {
-	if (!dbWatchersDisabled) {
-		return;
-	}
-
-	void api.broadcast('watch.settings', { clientAction, setting });
 }
 
 export async function notifyOnPermissionChanged(permission: IPermission, clientAction: ClientAction = 'updated'): Promise<void> {
@@ -280,6 +275,76 @@ export async function notifyOnEmailInboxChanged<T extends IEmailInbox>(
 	void api.broadcast('watch.emailInbox', { clientAction, id: data._id, data });
 }
 
+export async function notifyOnLivechatInquiryChanged(
+	data: ILivechatInquiryRecord | ILivechatInquiryRecord[],
+	clientAction: ClientAction = 'updated',
+	diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const items = Array.isArray(data) ? data : [data];
+
+	for (const item of items) {
+		void api.broadcast('watch.inquiries', { clientAction, inquiry: item, diff });
+	}
+}
+
+export async function notifyOnLivechatInquiryChangedById(
+	id: ILivechatInquiryRecord['_id'],
+	clientAction: ClientAction = 'updated',
+	diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const inquiry = clientAction === 'removed' ? await LivechatInquiry.trashFindOneById(id) : await LivechatInquiry.findOneById(id);
+
+	if (!inquiry) {
+		return;
+	}
+
+	void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+}
+
+export async function notifyOnLivechatInquiryChangedByRoom(
+	rid: ILivechatInquiryRecord['rid'],
+	clientAction: ClientAction = 'updated',
+	diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const inquiry = await LivechatInquiry.findOneByRoomId(rid, {});
+
+	if (!inquiry) {
+		return;
+	}
+
+	void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+}
+
+export async function notifyOnLivechatInquiryChangedByToken(
+	token: ILivechatInquiryRecord['v']['token'],
+	clientAction: ClientAction = 'updated',
+	diff?: Partial<Record<keyof ILivechatInquiryRecord, unknown> & { queuedAt: unknown; takenAt: unknown }>,
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const inquiry = await LivechatInquiry.findOneByToken(token);
+
+	if (!inquiry) {
+		return;
+	}
+
+	void api.broadcast('watch.inquiries', { clientAction, inquiry, diff });
+}
+
 export async function notifyOnIntegrationHistoryChanged<T extends IIntegrationHistory>(
 	data: AtLeast<T, '_id'>,
 	clientAction: ClientAction = 'updated',
@@ -352,4 +417,29 @@ export async function notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmen
 	for await (const item of items) {
 		void api.broadcast('watch.livechatDepartmentAgents', { clientAction, id: item._id, data: item });
 	}
+}
+
+export async function notifyOnSettingChanged(
+	setting: ISetting & { editor?: ISettingColor['editor'] },
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	void api.broadcast('watch.settings', { clientAction, setting });
+}
+
+export async function notifyOnSettingChangedById(id: ISetting['_id'], clientAction: ClientAction = 'updated'): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const item = clientAction === 'removed' ? await Settings.trashFindOneById(id) : await Settings.findOneById(id);
+
+	if (!item) {
+		return;
+	}
+
+	void api.broadcast('watch.settings', { clientAction, setting: item });
 }
