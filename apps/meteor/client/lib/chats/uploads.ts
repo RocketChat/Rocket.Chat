@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IE2EEMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
 
@@ -45,7 +45,7 @@ const send = async (
 		t?: IMessage['t'];
 	},
 	getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
-	fileContent?: IE2EEMessage['content'],
+	fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
 ): Promise<void> => {
 	const id = Random.id();
 
@@ -53,7 +53,7 @@ const send = async (
 		...uploads,
 		{
 			id,
-			name: file.name,
+			name: fileContent?.raw.name || file.name,
 			percentage: 0,
 		},
 	]);
@@ -65,7 +65,7 @@ const send = async (
 				{
 					file,
 					...(fileContent && {
-						content: JSON.stringify(fileContent),
+						content: JSON.stringify(fileContent.encrypted),
 					}),
 				},
 				{
@@ -172,6 +172,6 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 		file: File,
 		{ description, msg, t }: { description?: string; msg?: string; t?: IMessage['t'] },
 		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
-		fileContent?: IE2EEMessage['content'],
+		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
 	): Promise<void> => send(file, { description, msg, rid, tmid, t }, getContent, fileContent),
 });

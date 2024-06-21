@@ -1,4 +1,4 @@
-import type { IMessage, FileAttachmentProps, IE2EEMessage } from '@rocket.chat/core-typings';
+import type { IMessage, FileAttachmentProps, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { e2e } from '../../../../app/e2e/client';
@@ -47,7 +47,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 		file: File,
 		extraData?: Pick<IMessage, 't' | 'e2e'> & { description?: string },
 		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
-		fileContent?: IE2EEMessage['content'],
+		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
 	) => {
 		chat.uploads.send(
 			file,
@@ -181,7 +181,10 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 							},
 						};
 
-						const fileContent = await e2eRoom.encryptMessageContent(fileContentData);
+						const fileContent = {
+							raw: fileContentData,
+							encrypted: await e2eRoom.encryptMessageContent(fileContentData),
+						};
 
 						uploadFile(
 							encryptedFile.file,
