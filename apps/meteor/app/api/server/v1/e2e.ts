@@ -113,6 +113,8 @@ API.v1.addRoute(
  *                  type: string
  *                private_key:
  *                  type: string
+ *                force:
+ *                  type: boolean
  *      responses:
  *        200:
  *          content:
@@ -135,11 +137,12 @@ API.v1.addRoute(
 	{
 		async post() {
 			// eslint-disable-next-line @typescript-eslint/naming-convention
-			const { public_key, private_key } = this.bodyParams;
+			const { public_key, private_key, force } = this.bodyParams;
 
 			await Meteor.callAsync('e2e.setUserPublicAndPrivateKeys', {
 				public_key,
 				private_key,
+				force,
 			});
 
 			return API.v1.success();
