@@ -72,55 +72,51 @@ export class AppHttpBridge extends HttpBridge {
 
 		this.orch.debugLog(`The App ${info.appId} is requesting from the outter webs:`, info);
 
-		try {
-			const response = await fetch(
-				url.href,
-				{
-					method,
-					body: content,
-					headers,
-					timeout,
-				},
-				(request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
-					(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized),
-			);
+		const response = await fetch(
+			url.href,
+			{
+				method,
+				body: content,
+				headers,
+				timeout,
+			},
+			(request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
+				(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized),
+		);
 
-			const result: IHttpResponse = {
-				url: info.url,
-				method: info.method,
-				statusCode: response.status,
-				headers: Object.fromEntries(response.headers as unknown as any),
-			};
+		const result: IHttpResponse = {
+			url: info.url,
+			method: info.method,
+			statusCode: response.status,
+			headers: Object.fromEntries(response.headers as unknown as any),
+		};
 
-			const body = Buffer.from(await response.arrayBuffer());
+		const body = Buffer.from(await response.arrayBuffer());
 
-			if (request.encoding === null) {
-				/**
-				 * The property `content` is not appropriately typed in the
-				 * Apps-engine definition, and we can't simply change it there
-				 * as it would be a breaking change. Thus, we're left with this
-				 * type assertion.
-				 */
-				result.content = body as any;
-			} else {
-				result.content = body.toString(request.encoding as BufferEncoding);
-				result.data = ((): any => {
-					const contentType = (response.headers.get('content-type') || '').split(';')[0];
-					if (!['application/json', 'text/javascript', 'application/javascript', 'application/x-javascript'].includes(contentType)) {
-						return null;
-					}
+		if (request.encoding === null) {
+			/**
+			 * The property `content` is not appropriately typed in the
+			 * Apps-engine definition, and we can't simply change it there
+			 * as it would be a breaking change. Thus, we're left with this
+			 * type assertion.
+			 */
+			result.content = body as any;
+		} else {
+			result.content = body.toString(request.encoding as BufferEncoding);
+			result.data = ((): any => {
+				const contentType = (response.headers.get('content-type') || '').split(';')[0];
+				if (!['application/json', 'text/javascript', 'application/javascript', 'application/x-javascript'].includes(contentType)) {
+					return null;
+				}
 
-					try {
-						return JSON.parse(result.content);
-					} catch {
-						return null;
-					}
-				})();
-			}
-
-			return result;
-		} catch (e: any) {
-			return e.response;
+				try {
+					return JSON.parse(result.content);
+				} catch {
+					return null;
+				}
+			})();
 		}
+
+		return result;
 	}
 }
