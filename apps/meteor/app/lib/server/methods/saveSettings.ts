@@ -82,6 +82,7 @@ Meteor.methods<ServerMethods>({
 						case 'boolean':
 							check(value, Boolean);
 							break;
+						case 'timespan':
 						case 'int':
 							check(value, Number);
 							break;

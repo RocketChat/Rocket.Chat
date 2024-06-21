@@ -1,6 +1,8 @@
 import type { IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 
+import { TIMEUNIT, timeUnitToMs } from '../../../lib/convertTimeUnit';
+
 const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>
 	'retention' in room && room.retention !== undefined;
 
@@ -16,8 +18,6 @@ type RetentionPolicySettings = {
 	appliesToDMs: boolean;
 	maxAgeDMs: number;
 };
-
-export const getMaxAgeInMS = (maxAge: number) => maxAge * 24 * 60 * 60 * 1000;
 
 const isActive = (room: IRoom, { enabled, appliesToChannels, appliesToGroups, appliesToDMs }: RetentionPolicySettings): boolean => {
 	if (!enabled) {
@@ -66,7 +66,7 @@ const extractIgnoreThreads = (room: IRoom, { ignoreThreads }: RetentionPolicySet
 
 const getMaxAge = (room: IRoom, { maxAgeChannels, maxAgeGroups, maxAgeDMs }: RetentionPolicySettings): number => {
 	if (hasRetentionPolicy(room) && room.retention.overrideGlobal) {
-		return room.retention.maxAge;
+		return timeUnitToMs(TIMEUNIT.days, room.retention.maxAge);
 	}
 
 	if (room.t === 'c') {
@@ -100,11 +100,11 @@ export const useRetentionPolicy = (
 		doNotPrunePinned: useSetting('RetentionPolicy_DoNotPrunePinned') as boolean,
 		ignoreThreads: useSetting('RetentionPolicy_DoNotPruneThreads') as boolean,
 		appliesToChannels: useSetting('RetentionPolicy_AppliesToChannels') as boolean,
-		maxAgeChannels: useSetting('RetentionPolicy_MaxAge_Channels') as number,
+		maxAgeChannels: useSetting('RetentionPolicy_TTL_Channels') as number,
 		appliesToGroups: useSetting('RetentionPolicy_AppliesToGroups') as boolean,
-		maxAgeGroups: useSetting('RetentionPolicy_MaxAge_Groups') as number,
+		maxAgeGroups: useSetting('RetentionPolicy_TTL_Groups') as number,
 		appliesToDMs: useSetting('RetentionPolicy_AppliesToDMs') as boolean,
-		maxAgeDMs: useSetting('RetentionPolicy_MaxAge_DMs') as number,
+		maxAgeDMs: useSetting('RetentionPolicy_TTL_DMs') as number,
 	} as const;
 
 	if (!room) {

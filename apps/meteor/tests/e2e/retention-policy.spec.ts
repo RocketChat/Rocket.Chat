@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 
+import { timeUnitToMs, TIMEUNIT } from '../../client/lib/convertTimeUnit';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
@@ -60,7 +61,7 @@ test.describe.serial('retention-policy', () => {
 			await setSettingValueById(api, 'RetentionPolicy_AppliesToChannels', false);
 			await setSettingValueById(api, 'RetentionPolicy_AppliesToGroups', false);
 			await setSettingValueById(api, 'RetentionPolicy_AppliesToDMs', false);
-			await setSettingValueById(api, 'RetentionPolicy_MaxAge_Channels', 30);
+			await setSettingValueById(api, 'RetentionPolicy_TTL_Channels', timeUnitToMs(TIMEUNIT.days, 30));
 		});
 
 		test('should not show prune banner even with retention policy setting enabled in any type of room', async () => {
@@ -159,7 +160,7 @@ test.describe.serial('retention-policy', () => {
 
 			test.beforeAll(async ({ api }) => {
 				ignoreThreadsSetting = (await getSettingValueById(api, 'RetentionPolicy_DoNotPruneThreads')) as boolean;
-				expect((await setSettingValueById(api, 'RetentionPolicy_MaxAge_Channels', 15)).status()).toBe(200);
+				expect((await setSettingValueById(api, 'RetentionPolicy_TTL_Channels', timeUnitToMs(TIMEUNIT.days, 15))).status()).toBe(200);
 			});
 
 			test('should display the default max age in edit channel', async () => {
