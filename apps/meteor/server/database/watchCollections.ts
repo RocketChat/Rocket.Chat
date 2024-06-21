@@ -29,7 +29,7 @@ const onlyCollections = DBWATCHER_ONLY_COLLECTIONS.split(',')
 	.filter(Boolean);
 
 export function getWatchCollections(): string[] {
-	const collections = [InstanceStatus.getCollectionName(), Subscriptions.getCollectionName()];
+	const collections = [InstanceStatus.getCollectionName()];
 
 	// add back to the list of collections in case db watchers are enabled
 	if (!dbWatchersDisabled) {
