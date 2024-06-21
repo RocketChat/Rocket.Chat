@@ -1,7 +1,8 @@
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
-import InfoPanel, {
+import {
+	InfoPanel,
 	InfoPanelAction,
 	InfoPanelActionGroup,
 	InfoPanelAvatar,
@@ -30,8 +31,7 @@ export default {
 	},
 } as ComponentMeta<typeof InfoPanel>;
 
-const fakeRoom = 
-  ();
+const fakeRoom = createFakeRoom();
 
 export const Default: ComponentStory<typeof InfoPanel> = () => (
 	<InfoPanel>
