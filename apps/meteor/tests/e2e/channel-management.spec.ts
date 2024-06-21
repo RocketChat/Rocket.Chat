@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel, createTargetPrivateChannel } from './utils';
+import { createTargetChannel } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
@@ -11,12 +11,10 @@ test.use({ storageState: Users.admin.state });
 test.describe.serial('channel-management', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
-	let targetChannelPrivate: string;
 	let discussionName: string;
 
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);
-		targetChannelPrivate = await createTargetPrivateChannel(api);
 	});
 
 	test.beforeEach(async ({ page }) => {
