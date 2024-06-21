@@ -4,7 +4,7 @@ export enum TIMEUNIT {
 	minutes = 'minutes',
 }
 
-const isValidTimespan = (timespan: number): boolean => {
+export const isValidTimespan = (timespan: number): boolean => {
 	if (Number.isNaN(timespan)) {
 		return false;
 	}
@@ -22,7 +22,7 @@ const isValidTimespan = (timespan: number): boolean => {
 
 export const timeUnitToMs = (unit: TIMEUNIT, timespan: number) => {
 	if (!isValidTimespan(timespan)) {
-		throw new Error('timeUnitToMs - invalid timespan');
+		throw new Error(`timeUnitToMs - invalid timespan:${timespan}`);
 	}
 
 	switch (unit) {
@@ -42,7 +42,7 @@ export const timeUnitToMs = (unit: TIMEUNIT, timespan: number) => {
 
 export const msToTimeUnit = (unit: TIMEUNIT, timespan: number) => {
 	if (!isValidTimespan(timespan)) {
-		throw new Error('msToTimeUnit - invalid timespan');
+		throw new Error(`msToTimeUnit - invalid timespan:${timespan}`);
 	}
 
 	switch (unit) {
