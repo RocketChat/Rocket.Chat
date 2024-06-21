@@ -8509,8 +8509,8 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/apps-engine@npm:alpha":
-  version: 1.43.0-alpha.763
-  resolution: "@rocket.chat/apps-engine@npm:1.43.0-alpha.763"
+  version: 1.43.0-alpha.765
+  resolution: "@rocket.chat/apps-engine@npm:1.43.0-alpha.765"
   dependencies:
     "@msgpack/msgpack": 3.0.0-beta2
     adm-zip: ^0.5.9
@@ -8526,7 +8526,7 @@ __metadata:
     uuid: ~8.3.2
   peerDependencies:
     "@rocket.chat/ui-kit": "*"
-  checksum: f4498febb2f11766c6cab98c3738ca8ba50e9cfa68d129577a781a6fbbe91cfc48c82d6e418f05f0db6b3561becd6aab09b5b19b26652deb5e5621d7fd7b4c4a
+  checksum: 97fb5773c8d99e63e8c1d6f6002956d35b031cbe60d640d637b28a65ebbc37b89366e91f5c8bda254f634987a66fef37b70716c20d9a75bae86171447d477bb6
   languageName: node
   linkType: hard
 
