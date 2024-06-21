@@ -14,13 +14,32 @@ class JIRAReporter implements Reporter {
 
 	private headSha: string;
 
-	constructor(options: { url: string; apiKey: string; branch: string; draft: boolean; run: number; headSha: string }) {
+	private author: string;
+
+	private run_url: string;
+
+	private pr: number;
+
+	constructor(options: {
+		url: string;
+		apiKey: string;
+		branch: string;
+		draft: boolean;
+		run: number;
+		headSha: string;
+		author: string;
+		run_url: string;
+		pr: number;
+	}) {
 		this.url = options.url;
 		this.apiKey = options.apiKey;
 		this.branch = options.branch;
 		this.draft = options.draft;
 		this.run = options.run;
 		this.headSha = options.headSha;
+		this.author = options.author;
+		this.run_url = options.run_url;
+		this.pr = options.pr;
 	}
 
 	async onTestEnd(test: TestCase, result: TestResult) {
@@ -134,13 +153,17 @@ class JIRAReporter implements Reporter {
 
 		const issue = (await responseIssue.json()).key;
 
+		const { location } = test;
+
 		await fetch(`${this.url}/rest/api/2/issue/${issue}/comment`, {
 			method: 'POST',
 			body: JSON.stringify({
 				body: `Test run ${payload.run} failed
-status: ${payload.status}
-branch: ${payload.branch}
-headSha: ${payload.headSha}`,
+author: ${this.author}
+PR: ${this.pr}
+https://github.com/RocketChat/Rocket.Chat/blob/${payload.headSha}/apps/meteor/${location.file}#L${location.line}:${location.column}
+${this.run_url}
+`,
 			}),
 			headers: {
 				'Content-Type': 'application/json',

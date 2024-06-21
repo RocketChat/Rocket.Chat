@@ -33,8 +33,7 @@ export default {
 				headSha: process.env.REPORTER_ROCKETCHAT_HEAD_SHA,
 			},
 		],
-		// process.env.REPORTER_ROCKETCHAT_REPORT === 'true' &&
-		[
+		process.env.REPORTER_ROCKETCHAT_REPORT === 'true' && [
 			'./reporters/jira.ts',
 			{
 				url: `https://rocketchat.atlassian.net`,
@@ -42,7 +41,10 @@ export default {
 				branch: process.env.REPORTER_ROCKETCHAT_BRANCH,
 				run: Number(process.env.REPORTER_ROCKETCHAT_RUN),
 				headSha: process.env.REPORTER_ROCKETCHAT_HEAD_SHA,
-				// draft: process.env.REPORTER_ROCKETCHAT_DRAFT === 'true',
+				author: process.env.REPORTER_ROCKETCHAT_AUTHOR,
+				run_url: process.env.REPORTER_ROCKETCHAT_RUN_URL,
+				pr: Number(process.env.REPORTER_ROCKETCHAT_PR),
+				draft: process.env.REPORTER_ROCKETCHAT_DRAFT === 'true',
 			},
 		],
 		[
