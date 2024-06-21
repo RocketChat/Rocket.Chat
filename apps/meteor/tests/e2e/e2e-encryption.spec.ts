@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { BASE_API_URL } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import injectInitialData from './fixtures/inject-initial-data';
 import { Users, storeState, restoreState } from './fixtures/userStates';
@@ -702,6 +703,8 @@ test.describe.serial('e2ee room setup', () => {
 });
 
 test.describe.serial('e2ee support legacy formats', () => {
+	test.use({ storageState: Users.userE2EE.state });
+
 	let poHomeChannel: HomeChannel;
 
 	test.beforeEach(async ({ page }) => {
@@ -719,10 +722,8 @@ test.describe.serial('e2ee support legacy formats', () => {
 	});
 
 	// Not testing upload since it was not implemented in the legacy format
-	test('expect create a private channel encrypted and send an encrypted message', async ({ page, api }) => {
+	test('expect create a private channel encrypted and send an encrypted message', async ({ page, request }) => {
 		await page.goto('/home');
-
-		await restoreState(page, Users.userE2EE);
 
 		const channelName = faker.string.uuid();
 
@@ -737,11 +738,24 @@ test.describe.serial('e2ee support legacy formats', () => {
 		const rid = await page.locator('[data-qa-rc-room]').getAttribute('data-qa-rc-room');
 
 		// send old format encrypted message via API
-		await api.post('/chat.sendMessage', {
-			message: {
-				rid,
-				msg: 'eyJhbGciOiJB8NgMxt0P2jW/aRt4y4++lb8LDSpxUExisX1SiXaKCO9FkfrS1HfO7gFS0nxzHu3CjfgRAK5o3A9kWc4PrHfsQnTTLSh5LW/BKpgnu8XLoEoCbP3FTfy14i5urg6QnZRpz9jUsESjXXIFSxLzEx/T2PzuAzwNROhS+omrNKFi3r9oqkfzUZgTAVzitRpkJ7VN',
-				t: 'e2e',
+		const msg = await page.evaluate(async (rid) => {
+			// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires, import/no-absolute-path
+			const { e2e } = require('/app/e2e/client/rocketchat.e2e.ts');
+			const e2eRoom = await e2e.getInstanceByRoomId(rid);
+			return e2eRoom.encrypt({ _id: 'id', msg: 'Old format message' });
+		}, rid);
+
+		await request.post(`${BASE_API_URL}/chat.sendMessage`, {
+			headers: {
+				'X-Auth-Token': Users.userE2EE.data.loginToken,
+				'X-User-Id': Users.userE2EE.data._id,
+			},
+			data: {
+				message: {
+					rid,
+					msg,
+					t: 'e2e',
+				},
 			},
 		});
 
