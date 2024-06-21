@@ -1,9 +1,10 @@
 import { MessageTypesValues } from '../../app/lib/lib/MessageTypes';
 import { settingsRegistry } from '../../app/settings/server';
+import { executeClearOEmbedCache } from '../methods/OEmbedCacheCleanup';
 
 export const createMessageSettings = () =>
-	settingsRegistry.addGroup('Message', async function () {
-		await this.section('Message_Attachments', async function () {
+	settingsRegistry.addGroup('Message', async function() {
+		await this.section('Message_Attachments', async function() {
 			await this.add('Message_Attachments_Thumbnails_Enabled', true, {
 				type: 'boolean',
 				public: true,
@@ -38,7 +39,7 @@ export const createMessageSettings = () =>
 				i18nDescription: 'Message_Attachments_Strip_ExifDescription',
 			});
 		});
-		await this.section('Message_Audio', async function () {
+		await this.section('Message_Audio', async function() {
 			await this.add('Message_AudioRecorderEnabled', true, {
 				type: 'boolean',
 				public: true,
@@ -49,7 +50,7 @@ export const createMessageSettings = () =>
 				public: true,
 			});
 		});
-		await this.section('Read_Receipts', async function () {
+		await this.section('Read_Receipts', async function() {
 			await this.add('Message_Read_Receipt_Enabled', false, {
 				type: 'boolean',
 				enterprise: true,
@@ -156,6 +157,10 @@ export const createMessageSettings = () =>
 			type: 'action',
 			actionText: 'clear',
 			i18nLabel: 'clear_cache_now',
+			trigger: async () => {
+				await executeClearOEmbedCache();
+				return { message: 'cache_cleared' };
+			},
 		});
 		// TODO: deprecate this setting in favor of App
 		await this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {
@@ -337,7 +342,7 @@ export const createMessageSettings = () =>
 			public: true,
 		});
 
-		await this.section('Katex', async function () {
+		await this.section('Katex', async function() {
 			const enableQuery = {
 				_id: 'Katex_Enabled',
 				value: true,
@@ -361,7 +366,7 @@ export const createMessageSettings = () =>
 			});
 		});
 
-		await this.section('Google Maps', async function () {
+		await this.section('Google Maps', async function() {
 			await this.add('MapView_Enabled', false, {
 				type: 'boolean',
 				public: true,
