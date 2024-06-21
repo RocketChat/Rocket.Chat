@@ -1,6 +1,7 @@
 import type { IUser, SelectedAgent } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 
+import { notifyOnLivechatInquiryChanged } from '../../../../../app/lib/server/lib/notifyListener';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
@@ -68,10 +69,13 @@ settings.watch<boolean>('Livechat_last_chatted_agent_routing', (value) => {
 				return inquiry;
 			}
 
-			const { _id } = inquiry;
+			await LivechatInquiry.removeDefaultAgentById(inquiry._id);
 
-			await LivechatInquiry.removeDefaultAgentById(_id);
-			return LivechatInquiry.findOneById(_id);
+			void notifyOnLivechatInquiryChanged(inquiry, 'updated', {
+				defaultAgent: undefined,
+			});
+
+			return LivechatInquiry.findOneById(inquiry._id);
 		},
 		callbacks.priority.MEDIUM,
 		'livechat-on-max-number-simultaneous-chats-reached',
