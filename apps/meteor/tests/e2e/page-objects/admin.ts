@@ -2,6 +2,28 @@ import type { Locator, Page } from '@playwright/test';
 
 import { AdminFlextab } from './fragments/admin-flextab';
 
+export enum AdminSectionsHref {
+	Workspace = '/admin/info',
+	Subscription = '/admin/subscription',
+	Engagement = '/admin/engagement/users',
+	Moderation = '/admin/moderation',
+	Federation = '/admin/federation',
+	Rooms = '/admin/rooms',
+	Users = '/admin/users',
+	Invites = '/admin/invites',
+	User_Status = '/admin/user-status',
+	Permissions = '/admin/permissions',
+	Device_Management = '/admin/device-management',
+	Email_Inboxes = '/admin/email-inboxes',
+	Mailer = '/admin/mailer',
+	Third_party_login = '/admin/third-party-login',
+	Integrations = '/admin/integrations',
+	Import = '/admin/import',
+	Reports = '/admin/reports',
+	Sounds = '/admin/sounds',
+	Emoji = '/admin/emoji',
+	Settings = '/admin/settings',
+}
 export class Admin {
 	public readonly page: Page;
 
@@ -26,6 +48,10 @@ export class Admin {
 
 	get btnSave(): Locator {
 		return this.page.locator('button >> text="Save"');
+	}
+
+	get btnSaveSettings(): Locator {
+		return this.page.getByRole('button', { name: 'Save changes' });
 	}
 
 	get btnEdit(): Locator {
@@ -263,5 +289,13 @@ export class Admin {
 
 	get btnFullScreen(): Locator {
 		return this.page.getByRole('button', { name: 'Full Screen' });
+	}
+
+	async dropdownFilterRoomType(text = 'All rooms'): Promise<Locator> {
+		return this.page.locator(`div[role="button"]:has-text("${text}")`);
+	}
+
+	async adminSectionButton(href: AdminSectionsHref): Promise<Locator> {
+		return this.page.locator(`a[href="${href}"]`);
 	}
 }
