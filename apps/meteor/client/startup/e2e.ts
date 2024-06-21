@@ -5,7 +5,7 @@ import { Tracker } from 'meteor/tracker';
 import { E2EEState } from '../../app/e2e/client/E2EEState';
 import { e2e } from '../../app/e2e/client/rocketchat.e2e';
 import { MentionsParser } from '../../app/mentions/lib/MentionsParser';
-import { Subscriptions, ChatRoom, Users } from '../../app/models/client';
+import { Subscriptions, ChatRoom } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
