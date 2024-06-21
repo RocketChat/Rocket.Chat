@@ -696,7 +696,7 @@ API.v1.addRoute(
 				return API.v1.failure('error-user-not-found');
 			}
 
-			if (await canAccessRoomAsync(room, this.user)) {
+			if (await canAccessRoomAsync(room, { _id: this.user._id })) {
 				return API.v1.success({
 					exists: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0,
 				});
