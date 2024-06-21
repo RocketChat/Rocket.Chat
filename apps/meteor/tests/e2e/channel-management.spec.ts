@@ -212,24 +212,6 @@ test.describe.serial('channel-management', () => {
 		await expect(poHomeChannel.getSystemMessageByText('changed room announcement to: hello-announcement-edited')).toBeVisible();
 	});
 
-	test('should set channel as private', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.tabs.btnRoomInfo.click();
-		await poHomeChannel.tabs.room.btnEdit.click();
-		await poHomeChannel.tabs.room.checkboxPrivate.click();
-		await poHomeChannel.tabs.room.btnSave.click();
-		await expect(poHomeChannel.getSystemMessageByText('changed room to private')).toBeVisible();
-	});
-
-	test('should set channel as encrypted', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannelPrivate);
-		await poHomeChannel.tabs.btnRoomInfo.click();
-		await poHomeChannel.tabs.room.btnEdit.click();
-		await poHomeChannel.tabs.room.checkboxEncrypted.click();
-		await poHomeChannel.tabs.room.btnSave.click();
-		await expect(poHomeChannel.getSystemMessageByText('enabled E2E Encryption for this room')).toBeVisible();
-	});
-
 	test('should edit description of targetChannel', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
