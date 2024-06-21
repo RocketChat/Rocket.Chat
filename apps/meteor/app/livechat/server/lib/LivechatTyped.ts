@@ -2,7 +2,6 @@ import dns from 'dns';
 import * as util from 'util';
 
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import type { IVisitor } from '@rocket.chat/apps-engine/definition/livechat';
 import { Message, VideoConf, api, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelRoom,
@@ -83,13 +82,13 @@ type GenericCloseRoomParams = {
 		clientAction?: boolean;
 		tags?: string[];
 		emailTranscript?:
-		| {
-			sendToVisitor: false;
-		}
-		| {
-			sendToVisitor: true;
-			requestData: NonNullable<IOmnichannelRoom['transcriptRequest']>;
-		};
+			| {
+					sendToVisitor: false;
+			  }
+			| {
+					sendToVisitor: true;
+					requestData: NonNullable<IOmnichannelRoom['transcriptRequest']>;
+			  };
 		pdfTranscript?: {
 			requestedBy: string;
 		};
@@ -657,7 +656,7 @@ class LivechatClass {
 		username,
 		connectionData,
 		status = UserStatus.ONLINE,
-	}: RegisterGuestType): Promise<IVisitor | null> {
+	}: RegisterGuestType): Promise<ILivechatVisitor | null> {
 		check(token, String);
 		check(id, Match.Maybe(String));
 
@@ -733,7 +732,7 @@ class LivechatClass {
 			return null;
 		}
 
-		return { ...upsertedLivechatVisitor.value, id: upsertedLivechatVisitor.value._id.toString() } as IVisitor;
+		return { ...upsertedLivechatVisitor.value, _id: upsertedLivechatVisitor.value._id.toString() };
 	}
 
 	private async getBotAgents(department?: string) {

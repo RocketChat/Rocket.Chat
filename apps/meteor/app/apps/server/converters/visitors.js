@@ -25,6 +25,10 @@ export class AppVisitorsConverter {
 			return undefined;
 		}
 
+		if (typeof visitor?._id === 'object') {
+			visitor._id = visitor._id.toString();
+		}
+
 		const map = {
 			id: '_id',
 			username: 'username',

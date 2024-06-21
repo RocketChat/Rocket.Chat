@@ -43,7 +43,7 @@ API.v1.addRoute('livechat/visitor', {
 			...(department && { department }),
 			...(username && { username }),
 			...(connectionData && { connectionData }),
-			...(phone && typeof phone === 'string' && { phone: { number: phone as string } }),
+			...(phone && typeof phone === 'string' && { phone: phone as string }),
 			connectionData: normalizeHttpHeaderData(this.request.headers),
 		};
 

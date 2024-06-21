@@ -30,14 +30,17 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	async 'livechat:registerGuest'({ token, name, email, department, customFields } = {}) {
+	async 'livechat:registerGuest'({ token, name, email, department, customFields } = {}): Promise<{
+		userId: string;
+		visitor: ILivechatVisitor | null;
+	}> {
 		methodDeprecationLogger.method('livechat:registerGuest', '7.0.0');
 
 		if (!token) {
 			throw new Meteor.Error('error-invalid-token', 'Invalid token', { method: 'livechat:registerGuest' });
 		}
 
-		const userId = await LivechatTyped.registerGuest.call(this, {
+		const livechatVisitor = await LivechatTyped.registerGuest.call(this, {
 			token,
 			name,
 			email,
@@ -47,6 +50,7 @@ Meteor.methods<ServerMethods>({
 		// update visited page history to not expire
 		await Messages.keepHistoryForToken(token);
 
+		// TODO: remove unneeded find - registerGuest returns created record
 		const visitor = await LivechatVisitors.getVisitorByToken(token, {
 			projection: {
 				token: 1,
@@ -89,7 +93,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		return {
-			userId,
+			userId: livechatVisitor?._id.toString() ?? '',
 			visitor,
 		};
 	},

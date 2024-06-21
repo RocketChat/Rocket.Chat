@@ -191,11 +191,13 @@ export class AppLivechatBridge extends LivechatBridge {
 			email: '',
 			connectionData: undefined,
 			id: visitor.id,
-			...(visitor.phone?.length && { phone: { number: visitor.phone[0].phoneNumber } }),
+			...(visitor.phone?.length && { phone: visitor.phone[0].phoneNumber }),
 			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
 		};
 
-		return LivechatTyped.registerGuest(registerData);
+		const livechatVisitor = await LivechatTyped.registerGuest(registerData);
+
+		return this.orch.getConverters()?.get('visitors').convertVisitor(livechatVisitor);
 	}
 
 	protected async transferVisitor(visitor: IVisitor, transferData: ILivechatTransferData, appId: string): Promise<boolean> {

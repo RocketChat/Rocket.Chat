@@ -68,6 +68,7 @@ const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
 	}
 
 	const livechatVisitor = await LivechatTyped.registerGuest(data);
+
 	if (!livechatVisitor) {
 		throw new Meteor.Error('error-invalid-visitor', 'Invalid visitor');
 	}

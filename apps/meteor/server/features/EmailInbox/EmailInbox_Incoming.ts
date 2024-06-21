@@ -139,14 +139,14 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	// TODO: html => md with turndown
 	const msg = email.html
 		? stripHtml(email.html, {
-			dumpLinkHrefsNearby: {
-				enabled: true,
-				putOnNewLine: false,
-				wrapHeads: '(',
-				wrapTails: ')',
-			},
-			skipHtmlDecoding: false,
-		}).result
+				dumpLinkHrefsNearby: {
+					enabled: true,
+					putOnNewLine: false,
+					wrapHeads: '(',
+					wrapTails: ')',
+				},
+				skipHtmlDecoding: false,
+		  }).result
 		: email.text || '';
 
 	const rid = room?._id ?? Random.id();

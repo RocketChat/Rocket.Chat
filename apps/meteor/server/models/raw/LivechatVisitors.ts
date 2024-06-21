@@ -198,23 +198,23 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			$or: [
 				...(emailOrPhone
 					? [
-						{
-							'visitorEmails.address': emailOrPhone,
-						},
-						{
-							'phone.phoneNumber': emailOrPhone,
-						},
-					]
+							{
+								'visitorEmails.address': emailOrPhone,
+							},
+							{
+								'phone.phoneNumber': emailOrPhone,
+							},
+					  ]
 					: []),
 				...(nameOrUsername
 					? [
-						{
-							name: nameOrUsername,
-						},
-						{
-							username: nameOrUsername,
-						},
-					]
+							{
+								name: nameOrUsername,
+							},
+							{
+								username: nameOrUsername,
+							},
+					  ]
 					: []),
 				...allowedCustomFields.map((c: string) => ({ [`livechatData.${c}`]: nameOrUsername })),
 			],
@@ -292,7 +292,12 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.updateOne({ _id }, update);
 	}
 
-	async findOneByEmailPhoneToken(email?: string, phone?: string, token?: ILivechatVisitor['token'], options?: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null> {
+	async findOneByEmailPhoneToken(
+		email?: string,
+		phone?: string,
+		token?: ILivechatVisitor['token'],
+		options?: FindOptions<ILivechatVisitor>,
+	): Promise<ILivechatVisitor | null> {
 		const query: Filter<ILivechatVisitor> = {
 			$or: [
 				...(email ? [{ 'visitorEmails.address': email }] : []),
