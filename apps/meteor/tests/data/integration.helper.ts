@@ -1,10 +1,11 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IIntegration } from '@rocket.chat/core-typings';
+import type { IntegrationsCreateProps } from '@rocket.chat/rest-typings';
 
 import { api, credentials, request } from './api-data';
 
-export const createIntegration = (integration: IIntegration, userCredentials: Credentials) =>
-	new Promise((resolve, reject) => {
+export const createIntegration = (integration: IntegrationsCreateProps, userCredentials: Credentials) =>
+	new Promise<IIntegration>((resolve, reject) => {
 		void request
 			.post(api('integrations.create'))
 			.set(userCredentials)

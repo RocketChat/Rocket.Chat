@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IGetRoomRoles, IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { api, credentials, request } from './api-data';
 
@@ -113,7 +113,7 @@ export const inviteToChannel = ({
 	roomId,
 	userId,
 }: {
-	overrideCredentials: Credentials;
+	overrideCredentials?: Credentials;
 	roomId: IRoom['_id'];
 	userId: IUser['_id'];
 }) =>
@@ -133,15 +133,15 @@ export const getChannelRoles = async ({
 	overrideCredentials = credentials,
 }: {
 	roomId: IRoom['_id'];
-	overrideCredentials: Credentials;
+	overrideCredentials?: Credentials;
 }) =>
 	(
 		await request.get(api('channels.roles')).set(overrideCredentials).query({
 			roomId,
 		})
-	).body.roles;
+	).body.roles as IGetRoomRoles[];
 
-export const setRoomConfig = ({ roomId, favorite, isDefault }: { roomId: IRoom['_id']; favorite: boolean; isDefault: boolean }) => {
+export const setRoomConfig = ({ roomId, favorite, isDefault }: { roomId: IRoom['_id']; favorite?: boolean; isDefault: boolean }) => {
 	return request
 		.post(api('rooms.saveRoomSettings'))
 		.set(credentials)

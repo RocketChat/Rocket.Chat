@@ -1,4 +1,6 @@
-import { expect } from 'chai';
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IIntegration, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { expect, assert } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, reservedWords } from '../../data/api-data';
@@ -9,25 +11,25 @@ import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { deleteTeam } from '../../data/teams.helper';
 import { testFileUploads } from '../../data/uploads.helper';
 import { adminUsername, password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, login, deleteUser } from '../../data/users.helper';
 
-function getRoomInfo(roomId) {
-	return new Promise((resolve /* , reject*/) => {
-		request
+function getRoomInfo(roomId: IRoom['_id']) {
+	return new Promise<{ channel: IRoom }>((resolve) => {
+		void request
 			.get(api('channels.info'))
 			.set(credentials)
 			.query({
 				roomId,
 			})
-			.end((err, req) => {
+			.end((_err, req) => {
 				resolve(req.body);
 			});
 	});
 }
 
-const channel = {};
-
 describe('[Channels]', function () {
+	let channel: Pick<IRoom, '_id' | 'name'>;
 	const apiPublicChannelName = `api-channel-test-${Date.now()}`;
 
 	this.retries(0);
@@ -35,7 +37,7 @@ describe('[Channels]', function () {
 	before((done) => getCredentials(done));
 
 	before('Creating channel', (done) => {
-		request
+		void request
 			.post(api('channels.create'))
 			.set(credentials)
 			.send({
@@ -49,8 +51,10 @@ describe('[Channels]', function () {
 				expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
 				expect(res.body).to.have.nested.property('channel.t', 'c');
 				expect(res.body).to.have.nested.property('channel.msgs', 0);
-				channel._id = res.body.channel._id;
-				channel.name = res.body.channel.name;
+				channel = {
+					_id: res.body.channel._id,
+					name: res.body.channel.name,
+				};
 			})
 			.end(done);
 	});
@@ -81,7 +85,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.addModerator', (done) => {
-		request
+		void request
 			.post(api('channels.addModerator'))
 			.set(credentials)
 			.send({
@@ -97,7 +101,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.addModerator should fail with missing room Id', (done) => {
-		request
+		void request
 			.post(api('channels.addModerator'))
 			.set(credentials)
 			.send({
@@ -112,7 +116,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.addModerator should fail with missing user Id', (done) => {
-		request
+		void request
 			.post(api('channels.addModerator'))
 			.set(credentials)
 			.send({
@@ -127,7 +131,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.removeModerator', (done) => {
-		request
+		void request
 			.post(api('channels.removeModerator'))
 			.set(credentials)
 			.send({
@@ -143,7 +147,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.removeModerator should fail on invalid room id', (done) => {
-		request
+		void request
 			.post(api('channels.removeModerator'))
 			.set(credentials)
 			.send({
@@ -158,7 +162,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.removeModerator should fail on invalid user id', (done) => {
-		request
+		void request
 			.post(api('channels.removeModerator'))
 			.set(credentials)
 			.send({
@@ -173,7 +177,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.addOwner', (done) => {
-		request
+		void request
 			.post(api('channels.addOwner'))
 			.set(credentials)
 			.send({
@@ -189,7 +193,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.removeOwner', (done) => {
-		request
+		void request
 			.post(api('channels.removeOwner'))
 			.set(credentials)
 			.send({
@@ -247,7 +251,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.addOwner', (done) => {
-		request
+		void request
 			.post(api('channels.addOwner'))
 			.set(credentials)
 			.send({
@@ -263,7 +267,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.archive', (done) => {
-		request
+		void request
 			.post(api('channels.archive'))
 			.set(credentials)
 			.send({
@@ -278,7 +282,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.unarchive', (done) => {
-		request
+		void request
 			.post(api('channels.unarchive'))
 			.set(credentials)
 			.send({
@@ -293,7 +297,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.close', (done) => {
-		request
+		void request
 			.post(api('channels.close'))
 			.set(credentials)
 			.send({
@@ -308,7 +312,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.close', (done) => {
-		request
+		void request
 			.post(api('channels.close'))
 			.set(credentials)
 			.send({
@@ -324,7 +328,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.open', (done) => {
-		request
+		void request
 			.post(api('channels.open'))
 			.set(credentials)
 			.send({
@@ -339,7 +343,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.list', (done) => {
-		request
+		void request
 			.get(api('channels.list'))
 			.set(credentials)
 			.query({
@@ -356,7 +360,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.list.joined', (done) => {
-		request
+		void request
 			.get(api('channels.list.joined'))
 			.set(credentials)
 			.query({
@@ -372,7 +376,7 @@ describe('[Channels]', function () {
 			.end(done);
 	});
 	it('/channels.counters', (done) => {
-		request
+		void request
 			.get(api('channels.counters'))
 			.set(credentials)
 			.query({
@@ -396,9 +400,9 @@ describe('[Channels]', function () {
 	it('/channels.rename', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		function failRenameChannel(name) {
+		function failRenameChannel(name: string) {
 			it(`should not rename a channel to the reserved name ${name}`, (done) => {
-				request
+				void request
 					.post(api('channels.rename'))
 					.set(credentials)
 					.send({
@@ -438,7 +442,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.addAll', (done) => {
-		request
+		void request
 			.post(api('channels.addAll'))
 			.set(credentials)
 			.send({
@@ -456,7 +460,7 @@ describe('[Channels]', function () {
 	});
 
 	it('/channels.addLeader', (done) => {
-		request
+		void request
 			.post(api('channels.addLeader'))
 			.set(credentials)
 			.send({
@@ -471,7 +475,7 @@ describe('[Channels]', function () {
 			.end(done);
 	});
 	it('/channels.removeLeader', (done) => {
-		request
+		void request
 			.post(api('channels.removeLeader'))
 			.set(credentials)
 			.send({
@@ -548,8 +552,8 @@ describe('[Channels]', function () {
 	});
 
 	describe('[/channels.create]', () => {
-		let guestUser;
-		let room;
+		let guestUser: TestUser<IUser>;
+		let room: IRoom;
 
 		before(async () => {
 			guestUser = await createUser({ roles: ['guest'] });
@@ -592,7 +596,7 @@ describe('[Channels]', function () {
 			}
 			const channelIds = (await Promise.all(promises)).map((r) => r.body.channel).map((channel) => channel._id);
 
-			request
+			void request
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
@@ -606,7 +610,7 @@ describe('[Channels]', function () {
 					room = res.body.group;
 				})
 				.then(() => {
-					request
+					void request
 						.get(api('channels.members'))
 						.set(credentials)
 						.query({
@@ -626,15 +630,14 @@ describe('[Channels]', function () {
 	});
 	describe('[/channels.info]', () => {
 		const testChannelName = `api-channel-test-${Date.now()}`;
-		let testChannel = {};
-		let channelMessage = {};
+		let testChannel: IRoom;
 
 		after(async () => {
 			await deleteRoom({ type: 'c', roomId: testChannel._id });
 		});
 
 		it('creating new channel...', (done) => {
-			request
+			void request
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
@@ -648,7 +651,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('should fail to create the same channel twice', (done) => {
-			request
+			void request
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
@@ -663,7 +666,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('should return channel basic structure', (done) => {
-			request
+			void request
 				.get(api('channels.info'))
 				.set(credentials)
 				.query({
@@ -680,8 +683,11 @@ describe('[Channels]', function () {
 				})
 				.end(done);
 		});
+
+		let channelMessage: IMessage;
+
 		it('sending a message...', (done) => {
-			request
+			void request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -699,7 +705,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('REACTing with last message', (done) => {
-			request
+			void request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -714,7 +720,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('STARring last message', (done) => {
-			request
+			void request
 				.post(api('chat.starMessage'))
 				.set(credentials)
 				.send({
@@ -728,7 +734,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('PINning last message', (done) => {
-			request
+			void request
 				.post(api('chat.pinMessage'))
 				.set(credentials)
 				.send({
@@ -742,7 +748,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('should return channel structure with "lastMessage" object including pin, reactions and star(should be an array) infos', (done) => {
-			request
+			void request
 				.get(api('channels.info'))
 				.set(credentials)
 				.query({
@@ -764,7 +770,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('should return all channels messages where the last message of array should have the "star" array with USERS star ONLY', (done) => {
-			request
+			void request
 				.get(api('channels.messages'))
 				.set(credentials)
 				.query({
@@ -775,15 +781,15 @@ describe('[Channels]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					const { messages } = res.body;
+					const messages = res.body.messages as IMessage[];
 					const lastMessage = messages.filter((message) => message._id === channelMessage._id)[0];
 					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
-					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
+					expect(lastMessage.starred?.[0]._id).to.be.equal(adminUsername);
 				})
 				.end(done);
 		});
 		it('should return all channels messages where the last message of array should have the "star" array with USERS star ONLY even requested with count and offset params', (done) => {
-			request
+			void request
 				.get(api('channels.messages'))
 				.set(credentials)
 				.query({
@@ -796,18 +802,18 @@ describe('[Channels]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					const { messages } = res.body;
+					const messages = res.body.messages as IMessage[];
 					const lastMessage = messages.filter((message) => message._id === channelMessage._id)[0];
 					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
-					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
+					expect(lastMessage.starred?.[0]._id).to.be.equal(adminUsername);
 				})
 				.end(done);
 		});
 	});
 
 	describe('[/channels.online]', () => {
-		const createdChannels = [];
-		const createdUsers = [];
+		const createdChannels: IRoom[] = [];
+		const createdUsers: TestUser<IUser>[] = [];
 
 		const createUserAndChannel = async () => {
 			const testUser = await createUser();
@@ -843,7 +849,7 @@ describe('[Channels]', function () {
 		});
 
 		it('should return an error if no query', () =>
-			request
+			void request
 				.get(api('channels.online'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -854,7 +860,7 @@ describe('[Channels]', function () {
 				}));
 
 		it('should return an error if passing an empty query', () =>
-			request
+			void request
 				.get(api('channels.online'))
 				.set(credentials)
 				.query('query={}')
@@ -916,10 +922,10 @@ describe('[Channels]', function () {
 	});
 
 	describe('[/channels.join]', () => {
-		let testChannelNoCode;
-		let testChannelWithCode;
-		let testUser;
-		let testUserCredentials;
+		let testChannelNoCode: IRoom;
+		let testChannelWithCode: IRoom;
+		let testUser: TestUser<IUser>;
+		let testUserCredentials: Credentials;
 
 		before('Create test user', async () => {
 			testUser = await createUser();
@@ -943,7 +949,7 @@ describe('[Channels]', function () {
 		});
 
 		before('Set code for channel', (done) => {
-			request
+			void request
 				.post(api('channels.setJoinCode'))
 				.set(testUserCredentials)
 				.send({
@@ -959,7 +965,7 @@ describe('[Channels]', function () {
 		});
 
 		it('should fail if invalid channel', (done) => {
-			request
+			void request
 				.post(api('channels.join'))
 				.set(credentials)
 				.send({
@@ -976,7 +982,7 @@ describe('[Channels]', function () {
 
 		describe('code-free channel', () => {
 			it('should succeed when joining code-free channel without join code', (done) => {
-				request
+				void request
 					.post(api('channels.join'))
 					.set(credentials)
 					.send({
@@ -999,7 +1005,7 @@ describe('[Channels]', function () {
 				});
 
 				it('should fail when joining code-needed channel without join code and no join-without-join-code permission', (done) => {
-					request
+					void request
 						.post(api('channels.join'))
 						.set(credentials)
 						.send({
@@ -1015,7 +1021,7 @@ describe('[Channels]', function () {
 				});
 
 				it('should fail when joining code-needed channel with incorrect join code and no join-without-join-code permission', (done) => {
-					request
+					void request
 						.post(api('channels.join'))
 						.set(credentials)
 						.send({
@@ -1032,7 +1038,7 @@ describe('[Channels]', function () {
 				});
 
 				it('should succeed when joining code-needed channel with join code', (done) => {
-					request
+					void request
 						.post(api('channels.join'))
 						.set(credentials)
 						.send({
@@ -1055,7 +1061,7 @@ describe('[Channels]', function () {
 				});
 
 				before('leave channel', (done) => {
-					request
+					void request
 						.post(api('channels.leave'))
 						.set(credentials)
 						.send({
@@ -1070,7 +1076,7 @@ describe('[Channels]', function () {
 				});
 
 				it('should succeed when joining code-needed channel without join code and with join-without-join-code permission', (done) => {
-					request
+					void request
 						.post(api('channels.join'))
 						.set(credentials)
 						.send({
@@ -1090,7 +1096,7 @@ describe('[Channels]', function () {
 
 	describe('/channels.setDescription', () => {
 		it('should set the description of the channel with a string', (done) => {
-			request
+			void request
 				.post(api('channels.setDescription'))
 				.set(credentials)
 				.send({
@@ -1106,7 +1112,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('should set the description of the channel with an empty string(remove the description)', (done) => {
-			request
+			void request
 				.post(api('channels.setDescription'))
 				.set(credentials)
 				.send({
@@ -1125,7 +1131,7 @@ describe('[Channels]', function () {
 
 	describe('/channels.setTopic', () => {
 		it('should set the topic of the channel with a string', (done) => {
-			request
+			void request
 				.post(api('channels.setTopic'))
 				.set(credentials)
 				.send({
@@ -1141,7 +1147,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('should set the topic of the channel with an empty string(remove the topic)', (done) => {
-			request
+			void request
 				.post(api('channels.setTopic'))
 				.set(credentials)
 				.send({
@@ -1160,7 +1166,7 @@ describe('[Channels]', function () {
 
 	describe('/channels.setAnnouncement', () => {
 		it('should set the announcement of the channel with a string', (done) => {
-			request
+			void request
 				.post(api('channels.setAnnouncement'))
 				.set(credentials)
 				.send({
@@ -1176,7 +1182,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('should set the announcement of the channel with an empty string(remove the announcement)', (done) => {
-			request
+			void request
 				.post(api('channels.setAnnouncement'))
 				.set(credentials)
 				.send({
@@ -1195,7 +1201,7 @@ describe('[Channels]', function () {
 
 	describe('/channels.setPurpose', () => {
 		it('should set the purpose of the channel with a string', (done) => {
-			request
+			void request
 				.post(api('channels.setPurpose'))
 				.set(credentials)
 				.send({
@@ -1211,7 +1217,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('should set the announcement of channel with an empty string(remove the purpose)', (done) => {
-			request
+			void request
 				.post(api('channels.setPurpose'))
 				.set(credentials)
 				.send({
@@ -1230,7 +1236,7 @@ describe('[Channels]', function () {
 
 	describe('/channels.history', () => {
 		it('should return an array of members by channel', (done) => {
-			request
+			void request
 				.get(api('channels.history'))
 				.set(credentials)
 				.query({
@@ -1246,7 +1252,7 @@ describe('[Channels]', function () {
 		});
 
 		it('should return an array of members by channel even requested with count and offset params', (done) => {
-			request
+			void request
 				.get(api('channels.history'))
 				.set(credentials)
 				.query({
@@ -1265,7 +1271,7 @@ describe('[Channels]', function () {
 	});
 
 	describe('/channels.members', () => {
-		let testUser;
+		let testUser: TestUser<IUser>;
 
 		before(async () => {
 			testUser = await createUser();
@@ -1286,7 +1292,7 @@ describe('[Channels]', function () {
 		});
 
 		it('should return an array of members by channel', (done) => {
-			request
+			void request
 				.get(api('channels.members'))
 				.set(credentials)
 				.query({
@@ -1305,7 +1311,7 @@ describe('[Channels]', function () {
 		});
 
 		it('should return an array of members by channel even requested with count and offset params', (done) => {
-			request
+			void request
 				.get(api('channels.members'))
 				.set(credentials)
 				.query({
@@ -1326,7 +1332,7 @@ describe('[Channels]', function () {
 		});
 
 		it('should return an filtered array of members by channel', (done) => {
-			request
+			void request
 				.get(api('channels.members'))
 				.set(credentials)
 				.query({
@@ -1349,21 +1355,21 @@ describe('[Channels]', function () {
 	});
 
 	describe('/channels.getIntegrations', () => {
-		let integrationCreatedByAnUser;
-		let userCredentials;
-		let createdChannel;
-		let user;
+		let integrationCreatedByAnUser: IIntegration;
+		let userCredentials: Credentials;
+		let createdChannel: IRoom;
+		let user: TestUser<IUser>;
 
 		before((done) => {
-			createRoom({ name: `test-integration-channel-${Date.now()}`, type: 'c' }).end((err, res) => {
+			void createRoom({ name: `test-integration-channel-${Date.now()}`, type: 'c' }).end((_err, res) => {
 				createdChannel = res.body.channel;
-				createUser().then((createdUser) => {
+				void createUser().then((createdUser) => {
 					user = createdUser;
-					login(user.username, password).then((credentials) => {
+					void login(user.username, password).then((credentials) => {
 						userCredentials = credentials;
-						updatePermission('manage-incoming-integrations', ['user']).then(() => {
-							updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
-								createIntegration(
+						void updatePermission('manage-incoming-integrations', ['user']).then(() => {
+							void updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
+								void createIntegration(
 									{
 										type: 'webhook-incoming',
 										name: 'Incoming test',
@@ -1397,8 +1403,8 @@ describe('[Channels]', function () {
 		});
 
 		it('should return the list of integrations of created channel and it should contain the integration created by user when the admin DOES have the permission', (done) => {
-			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
-				request
+			void updatePermission('manage-incoming-integrations', ['admin']).then(() => {
+				void request
 					.get(api('channels.getIntegrations'))
 					.set(credentials)
 					.query({
@@ -1408,9 +1414,10 @@ describe('[Channels]', function () {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						const integrationCreated = res.body.integrations.find(
+						const integrationCreated = (res.body.integrations as IIntegration[]).find(
 							(createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id,
 						);
+						assert.isDefined(integrationCreated);
 						expect(integrationCreated).to.be.an('object');
 						expect(integrationCreated._id).to.be.equal(integrationCreatedByAnUser._id);
 						expect(res.body).to.have.property('offset');
@@ -1421,9 +1428,9 @@ describe('[Channels]', function () {
 		});
 
 		it('should return the list of integrations created by the user only', (done) => {
-			updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
-				updatePermission('manage-incoming-integrations', []).then(() => {
-					request
+			void updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
+				void updatePermission('manage-incoming-integrations', []).then(() => {
+					void request
 						.get(api('channels.getIntegrations'))
 						.set(credentials)
 						.query({
@@ -1433,9 +1440,10 @@ describe('[Channels]', function () {
 						.expect(200)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
-							const integrationCreated = res.body.integrations.find(
+							const integrationCreated = (res.body.integrations as IIntegration[]).find(
 								(createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id,
 							);
+							assert.isUndefined(integrationCreated);
 							expect(integrationCreated).to.be.equal(undefined);
 							expect(res.body).to.have.property('offset');
 							expect(res.body).to.have.property('total');
@@ -1446,11 +1454,11 @@ describe('[Channels]', function () {
 		});
 
 		it('should return unauthorized error when the user does not have any integrations permissions', (done) => {
-			updatePermission('manage-incoming-integrations', []).then(() => {
-				updatePermission('manage-own-incoming-integrations', []).then(() => {
-					updatePermission('manage-outgoing-integrations', []).then(() => {
-						updatePermission('manage-own-outgoing-integrations', []).then(() => {
-							request
+			void updatePermission('manage-incoming-integrations', []).then(() => {
+				void updatePermission('manage-own-incoming-integrations', []).then(() => {
+					void updatePermission('manage-outgoing-integrations', []).then(() => {
+						void updatePermission('manage-own-outgoing-integrations', []).then(() => {
+							void request
 								.get(api('channels.getIntegrations'))
 								.set(credentials)
 								.query({
@@ -1471,8 +1479,8 @@ describe('[Channels]', function () {
 	});
 
 	describe('/channels.setCustomFields:', () => {
-		let withCFChannel;
-		let withoutCFChannel;
+		let withCFChannel: IRoom;
+		let withoutCFChannel: IRoom;
 
 		after(async () => {
 			await deleteRoom({ type: 'c', roomId: withCFChannel._id });
@@ -1480,20 +1488,20 @@ describe('[Channels]', function () {
 
 		it('create channel with customFields', (done) => {
 			const customFields = { field0: 'value0' };
-			request
+			void request
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
 					name: `channel.cf.${Date.now()}`,
 					customFields,
 				})
-				.end((err, res) => {
+				.end((_err, res) => {
 					withCFChannel = res.body.channel;
 					done();
 				});
 		});
 		it('get customFields using channels.info', (done) => {
-			request
+			void request
 				.get(api('channels.info'))
 				.set(credentials)
 				.query({
@@ -1528,7 +1536,7 @@ describe('[Channels]', function () {
 				});
 		});
 		it('get customFields using channels.info', (done) => {
-			request
+			void request
 				.get(api('channels.info'))
 				.set(credentials)
 				.query({
@@ -1543,7 +1551,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('delete channels with customFields', (done) => {
-			request
+			void request
 				.post(api('channels.delete'))
 				.set(credentials)
 				.send({
@@ -1557,13 +1565,13 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('create channel without customFields', (done) => {
-			request
+			void request
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
 					name: `channel.cf.${Date.now()}`,
 				})
-				.end((err, res) => {
+				.end((_err, res) => {
 					withoutCFChannel = res.body.channel;
 					done();
 				});
@@ -1613,7 +1621,7 @@ describe('[Channels]', function () {
 		it('set customFields to empty object', (done) => {
 			const customFields = {};
 
-			request
+			void request
 				.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -1636,7 +1644,7 @@ describe('[Channels]', function () {
 		it('set customFields as a string -> should return 400', (done) => {
 			const customFields = '';
 
-			request
+			void request
 				.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -1651,7 +1659,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('delete channel with empty customFields', (done) => {
-			request
+			void request
 				.post(api('channels.delete'))
 				.set(credentials)
 				.send({
@@ -1667,7 +1675,7 @@ describe('[Channels]', function () {
 	});
 
 	describe('/channels.setDefault', () => {
-		let testChannel;
+		let testChannel: IRoom;
 		const name = `setDefault-${Date.now()}`;
 
 		before(async () => {
@@ -1723,7 +1731,7 @@ describe('[Channels]', function () {
 	});
 
 	describe('/channels.setType', () => {
-		let testChannel;
+		let testChannel: IRoom;
 		const name = `setType-${Date.now()}`;
 
 		before(async () => {
@@ -1737,7 +1745,7 @@ describe('[Channels]', function () {
 		it('should change the type public channel to private', async () => {
 			const roomInfo = await getRoomInfo(testChannel._id);
 
-			request
+			void request
 				.post(api('channels.setType'))
 				.set(credentials)
 				.send({
@@ -1757,7 +1765,7 @@ describe('[Channels]', function () {
 	});
 
 	describe('/channels.delete:', () => {
-		let testChannel;
+		let testChannel: IRoom;
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}` })).body.channel;
@@ -1768,7 +1776,7 @@ describe('[Channels]', function () {
 		});
 
 		it('/channels.delete', (done) => {
-			request
+			void request
 				.post(api('channels.delete'))
 				.set(credentials)
 				.send({
@@ -1782,7 +1790,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('/channels.info', (done) => {
-			request
+			void request
 				.get(api('channels.info'))
 				.set(credentials)
 				.query({
@@ -1800,7 +1808,7 @@ describe('[Channels]', function () {
 
 	describe('/channels.getAllUserMentionsByChannel', () => {
 		it('should return an array of mentions by channel', (done) => {
-			request
+			void request
 				.get(api('channels.getAllUserMentionsByChannel'))
 				.set(credentials)
 				.query({
@@ -1818,7 +1826,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('should return an array of mentions by channel even requested with count and offset params', (done) => {
-			request
+			void request
 				.get(api('channels.getAllUserMentionsByChannel'))
 				.set(credentials)
 				.query({
@@ -1840,7 +1848,7 @@ describe('[Channels]', function () {
 	});
 
 	describe('/channels.roles', () => {
-		let testChannel;
+		let testChannel: IRoom;
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `channel.roles.test.${Date.now()}` })).body.channel;
@@ -1851,7 +1859,7 @@ describe('[Channels]', function () {
 		});
 
 		it('/channels.invite', (done) => {
-			request
+			void request
 				.post(api('channels.invite'))
 				.set(credentials)
 				.send({
@@ -1861,7 +1869,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('/channels.addModerator', (done) => {
-			request
+			void request
 				.post(api('channels.addModerator'))
 				.set(credentials)
 				.send({
@@ -1871,7 +1879,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('/channels.addLeader', (done) => {
-			request
+			void request
 				.post(api('channels.addLeader'))
 				.set(credentials)
 				.send({
@@ -1881,7 +1889,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('should return an array of role <-> user relationships in a channel', (done) => {
-			request
+			void request
 				.get(api('channels.roles'))
 				.set(credentials)
 				.query({
@@ -1912,7 +1920,7 @@ describe('[Channels]', function () {
 	});
 
 	describe('/channels.moderators', () => {
-		let testChannel;
+		let testChannel: IRoom;
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `channel.moderators.test.${Date.now()}` })).body.channel;
@@ -1923,7 +1931,7 @@ describe('[Channels]', function () {
 		});
 
 		it('/channels.invite', (done) => {
-			request
+			void request
 				.post(api('channels.invite'))
 				.set(credentials)
 				.send({
@@ -1933,7 +1941,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('/channels.addModerator', (done) => {
-			request
+			void request
 				.post(api('channels.addModerator'))
 				.set(credentials)
 				.send({
@@ -1943,7 +1951,7 @@ describe('[Channels]', function () {
 				.end(done);
 		});
 		it('should return an array of moderators with rocket.cat as a moderator', (done) => {
-			request
+			void request
 				.get(api('channels.moderators'))
 				.set(credentials)
 				.query({
@@ -1961,7 +1969,7 @@ describe('[Channels]', function () {
 	});
 
 	describe('/channels.anonymousread', () => {
-		let testChannel;
+		let testChannel: IRoom;
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `channel.anonymousread.test.${Date.now()}` })).body.channel;
@@ -1972,8 +1980,8 @@ describe('[Channels]', function () {
 		});
 
 		it('should return an error when the setting "Accounts_AllowAnonymousRead" is disabled', (done) => {
-			updateSetting('Accounts_AllowAnonymousRead', false).then(() => {
-				request
+			void updateSetting('Accounts_AllowAnonymousRead', false).then(() => {
+				void request
 					.get(api('channels.anonymousread'))
 					.query({
 						roomId: testChannel._id,
@@ -1991,8 +1999,8 @@ describe('[Channels]', function () {
 			});
 		});
 		it('should return the messages list when the setting "Accounts_AllowAnonymousRead" is enabled', (done) => {
-			updateSetting('Accounts_AllowAnonymousRead', true).then(() => {
-				request
+			void updateSetting('Accounts_AllowAnonymousRead', true).then(() => {
+				void request
 					.get(api('channels.anonymousread'))
 					.query({
 						roomId: testChannel._id,
@@ -2007,8 +2015,8 @@ describe('[Channels]', function () {
 			});
 		});
 		it('should return the messages list when the setting "Accounts_AllowAnonymousRead" is enabled even requested with count and offset params', (done) => {
-			updateSetting('Accounts_AllowAnonymousRead', true).then(() => {
-				request
+			void updateSetting('Accounts_AllowAnonymousRead', true).then(() => {
+				void request
 					.get(api('channels.anonymousread'))
 					.query({
 						roomId: testChannel._id,
@@ -2027,13 +2035,14 @@ describe('[Channels]', function () {
 	});
 
 	describe('/channels.convertToTeam', () => {
-		let testChannel;
+		let testChannel: IRoom;
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `channel.convertToTeam.test.${Date.now()}` })).body.channel;
 		});
 
 		after(async () => {
+			assert.isDefined(testChannel.name);
 			await Promise.all([
 				updatePermission('create-team', ['admin', 'user']),
 				updatePermission('edit-room', ['admin', 'owner', 'moderator']),
@@ -2070,7 +2079,7 @@ describe('[Channels]', function () {
 		});
 
 		it(`should return an error when the channel's name and id are sent as parameter`, (done) => {
-			request
+			void request
 				.post(api('channels.convertToTeam'))
 				.set(credentials)
 				.send({
@@ -2120,11 +2129,11 @@ describe('[Channels]', function () {
 		});
 
 		it('should fail to convert channel without the required parameters', (done) => {
-			request.post(api('channels.convertToTeam')).set(credentials).send({}).expect(400).end(done);
+			void request.post(api('channels.convertToTeam')).set(credentials).send({}).expect(400).end(done);
 		});
 
 		it("should fail to convert channel if it's already taken", (done) => {
-			request
+			void request
 				.post(api('channels.convertToTeam'))
 				.set(credentials)
 				.send({ channelId: testChannel._id })
@@ -2137,7 +2146,7 @@ describe('[Channels]', function () {
 	});
 
 	describe("Setting: 'Use Real Name': true", () => {
-		let testChannel;
+		let testChannel: IRoom;
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `channel.anonymousread.test.${Date.now()}` })).body.channel;
@@ -2183,7 +2192,7 @@ describe('[Channels]', function () {
 		});
 
 		it('/channels.list', (done) => {
-			request
+			void request
 				.get(api('channels.list'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -2194,7 +2203,7 @@ describe('[Channels]', function () {
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('channels').and.to.be.an('array');
 
-					const retChannel = res.body.channels.find(({ _id }) => _id === testChannel._id);
+					const retChannel = (res.body.channels as IRoom[]).find(({ _id }) => _id === testChannel._id);
 
 					expect(retChannel).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})
@@ -2202,7 +2211,7 @@ describe('[Channels]', function () {
 		});
 
 		it('/channels.list.joined', (done) => {
-			request
+			void request
 				.get(api('channels.list.joined'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -2213,7 +2222,7 @@ describe('[Channels]', function () {
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('channels').and.to.be.an('array');
 
-					const retChannel = res.body.channels.find(({ _id }) => _id === testChannel._id);
+					const retChannel = (res.body.channels as IRoom[]).find(({ _id }) => _id === testChannel._id);
 
 					expect(retChannel).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})

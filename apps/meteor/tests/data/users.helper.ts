@@ -14,6 +14,12 @@ export const createUser = <TUser extends IUser>(
 		username?: string;
 		email?: string;
 		roles?: string[];
+		active?: boolean;
+		joinDefaultChannels?: boolean;
+		verified?: boolean;
+		requirePasswordChange?: boolean;
+		name?: string;
+		password?: string;
 	} = {},
 ) =>
 	new Promise<TestUser<TUser>>((resolve, reject) => {
@@ -47,7 +53,7 @@ export const login = (username: string | undefined, password: string): Promise<C
 			});
 	});
 
-export const deleteUser = async (user: IUser, extraData = {}) =>
+export const deleteUser = async (user: Pick<IUser, '_id'>, extraData = {}) =>
 	request
 		.post(api('users.delete'))
 		.set(credentials)
@@ -67,7 +73,12 @@ export const getUserByUsername = <TUser extends IUser>(username: string) =>
 	});
 
 export const getUserStatus = (userId: IUser['_id']) =>
-	new Promise((resolve) => {
+	new Promise<{
+		status: 'online' | 'offline' | 'away' | 'busy';
+		message?: string;
+		_id?: string;
+		connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
+	}>((resolve) => {
 		void request
 			.get(api(`users.getStatus?userId=${userId}`))
 			.set(credentials)
@@ -112,6 +123,8 @@ export const registerUser = async (
 	userData: {
 		username?: string;
 		email?: string;
+		name?: string;
+		pass?: string;
 	} = {},
 	overrideCredentials = credentials,
 ) => {
