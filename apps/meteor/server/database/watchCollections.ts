@@ -29,10 +29,11 @@ const onlyCollections = DBWATCHER_ONLY_COLLECTIONS.split(',')
 	.filter(Boolean);
 
 export function getWatchCollections(): string[] {
-	const collections = [Users.getCollectionName(), InstanceStatus.getCollectionName(), Subscriptions.getCollectionName()];
+	const collections = [InstanceStatus.getCollectionName(), Subscriptions.getCollectionName()];
 
 	// add back to the list of collections in case db watchers are enabled
 	if (!dbWatchersDisabled) {
+		collections.push(Users.getCollectionName());
 		collections.push(Messages.getCollectionName());
 		collections.push(LivechatInquiry.getCollectionName());
 		collections.push(Roles.getCollectionName());

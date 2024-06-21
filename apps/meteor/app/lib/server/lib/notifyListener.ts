@@ -16,6 +16,7 @@ import type {
 	IIntegrationHistory,
 	AtLeast,
 	ISettingColor,
+	IUser,
 } from '@rocket.chat/core-typings';
 import {
 	Rooms,
@@ -28,6 +29,7 @@ import {
 	IntegrationHistory,
 	LivechatInquiry,
 	LivechatDepartmentAgents,
+	Users,
 } from '@rocket.chat/models';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
@@ -426,7 +428,6 @@ export async function notifyOnSettingChanged(
 	if (!dbWatchersDisabled) {
 		return;
 	}
-
 	void api.broadcast('watch.settings', { clientAction, setting });
 }
 
@@ -434,7 +435,6 @@ export async function notifyOnSettingChangedById(id: ISetting['_id'], clientActi
 	if (!dbWatchersDisabled) {
 		return;
 	}
-
 	const item = clientAction === 'removed' ? await Settings.trashFindOneById(id) : await Settings.findOneById(id);
 
 	if (!item) {
@@ -442,4 +442,62 @@ export async function notifyOnSettingChangedById(id: ISetting['_id'], clientActi
 	}
 
 	void api.broadcast('watch.settings', { clientAction, setting: item });
+}
+
+type NotifyUserChange = {
+	id: IUser['_id'];
+	clientAction: 'inserted' | 'removed' | 'updated';
+	data?: IUser;
+	diff?: Record<string, any>;
+	unset?: Record<string, number>;
+};
+
+export async function notifyOnUserChange({ clientAction, id, data, diff, unset }: NotifyUserChange) {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+	if (clientAction === 'removed') {
+		void api.broadcast('watch.users', { clientAction, id });
+		return;
+	}
+	if (clientAction === 'inserted') {
+		void api.broadcast('watch.users', { clientAction, id, data: data! });
+		return;
+	}
+
+	void api.broadcast('watch.users', { clientAction, diff: diff!, unset: unset || {}, id });
+}
+
+/**
+ * Calls the callback only if DB Watchers are disabled
+ */
+export async function notifyOnUserChangeAsync(cb: () => Promise<NotifyUserChange | NotifyUserChange[] | void>) {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const result = await cb();
+	if (!result) {
+		return;
+	}
+
+	if (Array.isArray(result)) {
+		result.forEach((n) => notifyOnUserChange(n));
+		return;
+	}
+
+	return notifyOnUserChange(result);
+}
+
+// TODO this may be only useful on 'inserted'
+export async function notifyOnUserChangeById({ clientAction, id }: { id: IUser['_id']; clientAction: 'inserted' | 'removed' | 'updated' }) {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+	const user = await Users.findOneById(id);
+	if (!user) {
+		return;
+	}
+
+	void notifyOnUserChange({ id, clientAction, data: user });
 }

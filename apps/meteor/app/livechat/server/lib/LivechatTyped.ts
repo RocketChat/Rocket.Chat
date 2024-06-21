@@ -63,6 +63,7 @@ import {
 	notifyOnRoomChangedById,
 	notifyOnLivechatInquiryChangedByToken,
 	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
+	notifyOnUserChange,
 } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
@@ -1308,9 +1309,18 @@ class LivechatClass {
 	}
 
 	async setUserStatusLivechatIf(userId: string, status: ILivechatAgentStatus, condition?: Filter<IUser>, fields?: AKeyOf<ILivechatAgent>) {
-		const user = await Users.setLivechatStatusIf(userId, status, condition, fields);
+		const result = await Users.setLivechatStatusIf(userId, status, condition, fields);
+
+		if (result.modifiedCount > 0) {
+			void notifyOnUserChange({
+				id: userId,
+				clientAction: 'updated',
+				diff: { ...fields, statusLivechat: status },
+			});
+		}
+
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
-		return user;
+		return result;
 	}
 
 	async returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?: string, overrideTransferData: any = {}) {
@@ -1692,6 +1702,18 @@ class LivechatClass {
 	async setUserStatusLivechat(userId: string, status: ILivechatAgentStatus) {
 		const user = await Users.setLivechatStatus(userId, status);
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
+
+		if (user.modifiedCount > 0) {
+			void notifyOnUserChange({
+				id: userId,
+				clientAction: 'updated',
+				diff: {
+					statusLivechat: status,
+					livechatStatusSystemModified: false,
+				},
+			});
+		}
+
 		return user;
 	}
 
