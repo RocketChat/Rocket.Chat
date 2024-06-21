@@ -1,3 +1,4 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Button, FieldGroup, Field, FieldLabel, ButtonGroup, PasswordInput, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form } from '@rocket.chat/layout';
@@ -13,7 +14,7 @@ import HorizontalTemplate from '../template/HorizontalTemplate';
 const getChangePasswordReason = ({
 	requirePasswordChange,
 	requirePasswordChangeReason = requirePasswordChange ? 'You_need_to_change_your_password' : 'Please_enter_your_new_password_below',
-}: { requirePasswordChange?: boolean; requirePasswordChangeReason?: TranslationKey } = {}): TranslationKey => requirePasswordChangeReason;
+}: Pick<IUser, 'requirePasswordChange' | 'requirePasswordChangeReason'> = {}) => requirePasswordChangeReason as TranslationKey;
 
 const ResetPasswordPage = (): ReactElement => {
 	const user = useUser();
