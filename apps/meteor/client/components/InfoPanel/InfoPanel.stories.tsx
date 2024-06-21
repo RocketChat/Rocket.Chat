@@ -11,6 +11,7 @@ import InfoPanel, {
 	InfoPanelText,
 	InfoPanelTitle,
 } from '.';
+import { createFakeRoom } from '../../../tests/mocks/data';
 import RetentionPolicyCallout from './RetentionPolicyCallout';
 
 export default {
@@ -28,6 +29,9 @@ export default {
 		RetentionPolicyCallout,
 	},
 } as ComponentMeta<typeof InfoPanel>;
+
+const fakeRoom = 
+  ();
 
 export const Default: ComponentStory<typeof InfoPanel> = () => (
 	<InfoPanel>
@@ -59,9 +63,8 @@ export const Default: ComponentStory<typeof InfoPanel> = () => (
 				</InfoPanelText>
 			</InfoPanelField>
 		</InfoPanelSection>
-
 		<InfoPanelSection>
-			<RetentionPolicyCallout maxAge={30} filesOnly={false} excludePinned={true} />
+			<RetentionPolicyCallout room={fakeRoom} />
 		</InfoPanelSection>
 	</InfoPanel>
 );

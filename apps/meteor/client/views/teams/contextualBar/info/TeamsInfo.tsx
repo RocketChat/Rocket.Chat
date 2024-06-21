@@ -200,13 +200,7 @@ const TeamsInfo = ({
 							</InfoPanelField>
 						)}
 
-						{retentionPolicy?.isActive && (
-							<RetentionPolicyCallout
-								filesOnly={retentionPolicy.filesOnly}
-								excludePinned={retentionPolicy.excludePinned}
-								maxAge={retentionPolicy.maxAge}
-							/>
-						)}
+						{retentionPolicy?.isActive && <RetentionPolicyCallout room={room} />}
 					</InfoPanelSection>
 				</InfoPanel>
 			</ContextualbarScrollableContent>
