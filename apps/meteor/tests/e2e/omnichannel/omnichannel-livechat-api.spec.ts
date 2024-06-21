@@ -350,7 +350,6 @@ test.describe('OC - Livechat API', () => {
 			});
 
 			await test.step('Expect registered guest to be in dep2', async () => {
-				// await poAuxContext2.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
 				await poAuxContext2.page.locator('role=navigation >> role=button[name=Search]').click();
 				await poAuxContext2.page.locator('role=search >> role=searchbox').fill(registerGuestVisitor.name);
 				await poAuxContext2.page.locator(`role=search >> role=listbox >> role=link >> text="${registerGuestVisitor.name}"`).click();
