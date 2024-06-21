@@ -25,7 +25,7 @@ export type MessageActionContext =
 
 type MessageActionType = 'communication' | 'interaction' | 'duplication' | 'apps' | 'management';
 
-type MessageActionConditionProps = {
+export type MessageActionConditionProps = {
 	message: IMessage;
 	user: IUser | undefined;
 	room: IRoom;
@@ -65,6 +65,7 @@ export type MessageActionConfig = {
 	) => any;
 	condition?: (props: MessageActionConditionProps) => Promise<boolean> | boolean;
 	type?: MessageActionType;
+	disabled?: (props: MessageActionConditionProps) => boolean;
 };
 
 class MessageAction {
