@@ -12,19 +12,19 @@ type UseRoomActionsOptions = {
 	onClickEnterRoom?: () => void;
 	onClickEdit?: () => void;
 	resetState?: () => void;
+	size?: number;
 };
 
 /**
  *
  * @param room
- * @param param1
- * @param resetState
+ * @param options
  * @returns If more than two room actions are enabled `menu.regular` will be a non-empty array
  */
-export const useRoomActions = (room: IRoom, { onClickEnterRoom, onClickEdit, resetState }: UseRoomActionsOptions) => {
-	const t = useTranslation();
-	const size = 2;
+export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
+	const { onClickEnterRoom, onClickEdit, resetState, size = 2 } = options;
 
+	const t = useTranslation();
 	const handleHide = useRoomHide(room);
 	const handleLeave = useRoomLeave(room);
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload: resetState });
@@ -32,87 +32,93 @@ export const useRoomActions = (room: IRoom, { onClickEnterRoom, onClickEdit, res
 	const handleConvertToTeam = useRoomConvertToTeam(room);
 
 	return useMemo(() => {
-		const memoizedActions = [
-			...(handleHide
-				? [
-						{
-							id: 'hide',
-							name: t('Hide'),
-							icon: 'eye-off' as const,
-							action: handleHide,
-						},
-				  ]
-				: []),
-			...(onClickEnterRoom
-				? [
-						{
-							id: 'enter',
-							name: t('Enter'),
-							icon: 'login' as const,
-							action: onClickEnterRoom,
-						},
-				  ]
-				: []),
-			...(onClickEdit
-				? [
-						{
-							id: 'edit',
-							name: t('Edit'),
-							icon: 'edit' as const,
-							action: onClickEdit,
-						},
-				  ]
-				: []),
-			...(handleLeave
-				? [
-						{
-							id: 'leave',
-							name: t('Leave'),
-							icon: 'sign-out' as const,
-							action: handleLeave,
-						},
-				  ]
-				: []),
-			...(handleMoveToTeam
-				? [
-						{
-							id: 'move_channel_team',
-							name: t('Teams_move_channel_to_team'),
-							icon: 'team-arrow-right' as const,
-							action: handleMoveToTeam,
-						},
-				  ]
-				: []),
-			...(handleConvertToTeam
-				? [
-						{
-							id: 'convert_channel_team',
-							name: t('Teams_convert_channel_to_team'),
-							icon: 'team' as const,
-							action: handleConvertToTeam,
-						},
-				  ]
-				: []),
-		];
+		const memoizedActions = {
+			items: [
+				{
+					id: 'hide',
+					content: t('Hide'),
+					icon: 'eye-off' as const,
+					onClick: handleHide,
+				},
 
-		if (memoizedActions.length <= size) {
+				...(onClickEnterRoom
+					? [
+							{
+								id: 'enter',
+								content: t('Enter'),
+								icon: 'login' as const,
+								onClick: onClickEnterRoom,
+							},
+					  ]
+					: []),
+				...(onClickEdit
+					? [
+							{
+								id: 'edit',
+								content: t('Edit'),
+								icon: 'edit' as const,
+								onClick: onClickEdit,
+							},
+					  ]
+					: []),
+				...(handleLeave
+					? [
+							{
+								id: 'leave',
+								content: t('Leave'),
+								icon: 'sign-out' as const,
+								onClick: handleLeave,
+							},
+					  ]
+					: []),
+				...(handleMoveToTeam
+					? [
+							{
+								id: 'move_channel_team',
+								content: t('Teams_move_channel_to_team'),
+								icon: 'team-arrow-right' as const,
+								onClick: handleMoveToTeam,
+							},
+					  ]
+					: []),
+				...(handleConvertToTeam
+					? [
+							{
+								id: 'convert_channel_team',
+								content: t('Teams_convert_channel_to_team'),
+								icon: 'team' as const,
+								onClick: handleConvertToTeam,
+							},
+					  ]
+					: []),
+			],
+		};
+
+		if (memoizedActions.items.length <= size) {
 			return { actions: memoizedActions };
 		}
 
-		const actions = memoizedActions.slice(0, size);
-		const regular = memoizedActions.slice(size);
+		const buttons = memoizedActions.items.slice(0, size);
+		const regular = memoizedActions.items.slice(size);
 		const danger = canDeleteRoom
 			? [
 					{
-						id: 'delete',
-						name: t('Delete'),
-						icon: 'trash' as const,
-						action: handleDelete,
-						variant: 'danger',
+						items: [
+							{
+								id: 'delete',
+								content: t('Delete'),
+								icon: 'trash' as const,
+								onClick: handleDelete,
+								variant: 'danger',
+							},
+						],
 					},
 			  ]
-			: null;
+			: [];
 
-		return { actions, menu: { regular, danger } };
-	}, [canDeleteRoom, handleConvertToTeam, handleDelete, handleHide, handleLeave, handleMoveToTeam, onClickEdit, onClickEnterRoom, t]);
+		const menu = [{ items: regular }, ...danger];
+		const actions = { items: buttons };
+
+		return { actions, menu };
+	}, [canDeleteRoom, handleConvertToTeam, handleDelete, handleHide, handleLeave, handleMoveToTeam, onClickEdit, onClickEnterRoom, size, t]);
 };

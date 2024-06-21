@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Callout } from '@rocket.chat/fuselage';
+import { Box, Callout, IconButton } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -12,13 +12,13 @@ import {
 	ContextualbarClose,
 	ContextualbarTitle,
 } from '../../../../../components/Contextualbar';
+import GenericMenu from '../../../../../components/GenericMenu/GenericMenu';
 import InfoPanel from '../../../../../components/InfoPanel';
 import RetentionPolicyCallout from '../../../../../components/InfoPanel/RetentionPolicyCallout';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 import { useRoomActions } from '../hooks/useRoomActions';
-import Actions from './Actions';
-import RoomActionsMenu from './RoomActionsMenu';
+import RoomInfoActions from './RoomInfoActions';
 
 type RoomInfoProps = {
 	room: IRoom;
@@ -55,8 +55,15 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 						</InfoPanel.Avatar>
 
 						<InfoPanel.ActionGroup>
-							<Actions actions={actionsDefinition} />
-							{menuActions && <RoomActionsMenu actions={menuActions} />}
+							<RoomInfoActions actions={actionsDefinition} />
+							{menuActions && (
+								<GenericMenu
+									title={t('More')}
+									placement='bottom-end'
+									button={<IconButton icon='kebab' secondary flexShrink={0} flexGrow={0} maxHeight='initial' />}
+									sections={menuActions}
+								/>
+							)}
 						</InfoPanel.ActionGroup>
 					</InfoPanel.Section>
 
