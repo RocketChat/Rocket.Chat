@@ -2,8 +2,7 @@ import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { isSettingColor } from '@rocket.chat/core-typings';
 
 export const getSettingDefaults = (
-	setting: Partial<ISetting> & Pick<ISetting, '_id' | 'value' | 'type'>,
-	blockedSettings: Set<string> = new Set(),
+	setting: Partial<ISetting> & Pick<ISetting, '_id' | 'value' | 'type'>, blockedSettings: Set<string> = new Set(),
 	hiddenSettings: Set<string> = new Set(),
 	wizardRequiredSettings: Set<string> = new Set(),
 ): ISetting => {

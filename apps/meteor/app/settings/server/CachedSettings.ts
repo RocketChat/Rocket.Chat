@@ -1,4 +1,5 @@
 import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { Emitter } from '@rocket.chat/emitter';
 import _ from 'underscore';
 
@@ -12,6 +13,8 @@ type SettingsConfig = {
 
 type OverCustomSettingsConfig = Partial<SettingsConfig>;
 
+export type ISettingAction = { trigger?: () => Promise<{ message: TranslationKey; params?: string[] }> } & ISetting;
+
 export interface ICachedSettings {
 	/*
 	 * @description: The settings object as ready
@@ -20,7 +23,7 @@ export interface ICachedSettings {
 
 	has(_id: ISetting['_id']): boolean;
 
-	getSetting(_id: ISetting['_id']): ISetting | undefined;
+	getSetting(_id: ISetting['_id']): ISettingAction | undefined;
 
 	get<T extends SettingValue = SettingValue>(_id: ISetting['_id']): T;
 
@@ -54,7 +57,7 @@ export interface ICachedSettings {
 		config?: OverCustomSettingsConfig,
 	): () => void;
 
-	set(record: ISetting): void;
+	set(record: ISettingAction): void;
 
 	getConfig(config?: OverCustomSettingsConfig): SettingsConfig;
 
@@ -83,8 +86,7 @@ export class CachedSettings
 			[k: string]: SettingValue;
 		}
 	>
-	implements ICachedSettings
-{
+	implements ICachedSettings {
 	ready = false;
 
 	store = new Map<string, ISetting>();
@@ -118,7 +120,7 @@ export class CachedSettings
 	 * @param _id - The setting id
 	 * @returns {ISetting} - The current Object of the setting
 	 */
-	public getSetting(_id: ISetting['_id']): ISetting | undefined {
+	public getSetting(_id: ISetting['_id']): ISettingAction | undefined {
 		if (!this.ready && warn) {
 			SystemLogger.warn(`Settings not initialized yet. getting: ${_id}`);
 		}
@@ -315,7 +317,7 @@ export class CachedSettings
 	 * @param value - The value to set
 	 * @returns {void}
 	 */
-	public set(record: ISetting): void {
+	public set(record: ISettingAction): void {
 		if (this.store.has(record._id) && this.store.get(record._id)?.value === record.value) {
 			return;
 		}

@@ -1,8 +1,8 @@
 import { settingsRegistry } from '../../app/settings/server';
 
 export const createEmailSettings = () =>
-	settingsRegistry.addGroup('Email', async function () {
-		await this.section('Style', async function () {
+	settingsRegistry.addGroup('Email', async function() {
+		await this.section('Style', async function() {
 			await this.add('email_plain_text_only', false, {
 				type: 'boolean',
 			});
@@ -122,7 +122,7 @@ export const createEmailSettings = () =>
 			);
 		});
 
-		await this.section('Subject', async function () {
+		await this.section('Subject', async function() {
 			await this.add('Offline_DM_Email', '[[Site_Name]] You have been direct messaged by [User]', {
 				type: 'code',
 				code: 'text',
@@ -145,7 +145,7 @@ export const createEmailSettings = () =>
 				i18nDescription: 'Offline_Email_Subject_Description',
 			});
 		});
-		await this.section('Header_and_Footer', async function () {
+		await this.section('Header_and_Footer', async function() {
 			await this.add(
 				'Email_Header',
 				'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><!-- If you delete this tag, the sky will fall on your head --><meta name="viewport" content="width=device-width" /><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Rocket.Chat Cloud</title></head><body bgcolor="#F7F8FA"><table class="body" bgcolor="#F7F8FA" width="100%"><tr><td><!-- HEADER --><table class="wrap" bgcolor="#F7F8FA"><tr><td class="header container"><div class="header-content"><table bgcolor="#F7F8FA" width="100%"><tr><td><img src="[Site_Url_Slash]assets/logo.png" alt="Rocket.chat" width="150px" /></td></tr></table></div></td></tr></table><!-- /HEADER --></td></tr><tr><td><!-- BODY --><table class="wrap"><tr><td class="container" bgcolor="#FFFFFF"><div class="content"><table><tr><td>',
@@ -173,7 +173,7 @@ export const createEmailSettings = () =>
 				i18nLabel: 'Footer_Direct_Reply',
 			});
 		});
-		await this.section('Direct_Reply', async function () {
+		await this.section('Direct_Reply', async function() {
 			await this.add('Direct_Reply_Enable', false, {
 				type: 'boolean',
 				env: true,
@@ -337,7 +337,7 @@ export const createEmailSettings = () =>
 			});
 		});
 
-		await this.section('SMTP', async function () {
+		await this.section('SMTP', async function() {
 			await this.add('SMTP_Protocol', 'smtp', {
 				type: 'select',
 				values: [
@@ -405,10 +405,13 @@ export const createEmailSettings = () =>
 						$ne: '',
 					},
 				},
+				trigger: () => {
+					return Promise.resolve({ message: 'done' as any });
+				},
 			});
 		});
 
-		await this.section('Registration', async function () {
+		await this.section('Registration', async function() {
 			await this.add('Accounts_Enrollment_Email_Subject', '{Welcome_to}', {
 				type: 'string',
 				i18nLabel: 'Subject',
@@ -425,7 +428,7 @@ export const createEmailSettings = () =>
 			);
 		});
 
-		await this.section('Registration_via_Admin', async function () {
+		await this.section('Registration_via_Admin', async function() {
 			await this.add('Accounts_UserAddedEmail_Subject', '{Welcome_to}', {
 				type: 'string',
 				i18nLabel: 'Subject',
@@ -443,7 +446,7 @@ export const createEmailSettings = () =>
 			);
 		});
 
-		await this.section('Verification', async function () {
+		await this.section('Verification', async function() {
 			await this.add('Verification_Email_Subject', '{Verification_Email_Subject}', {
 				type: 'string',
 				i18nLabel: 'Subject',
@@ -462,13 +465,13 @@ export const createEmailSettings = () =>
 			);
 		});
 
-		await this.section('Offline_Message', async function () {
+		await this.section('Offline_Message', async function() {
 			await this.add('Offline_Message_Use_DeepLink', true, {
 				type: 'boolean',
 			});
 		});
 
-		await this.section('Invitation', async function () {
+		await this.section('Invitation', async function() {
 			await this.add('Invitation_Subject', '{Invitation_Subject_Default}', {
 				type: 'string',
 				i18nLabel: 'Subject',
@@ -491,7 +494,7 @@ export const createEmailSettings = () =>
 			hidden: true,
 		});
 
-		await this.section('Forgot_password_section', async function () {
+		await this.section('Forgot_password_section', async function() {
 			await this.add('Forgot_Password_Email_Subject', '{Forgot_Password_Email_Subject}', {
 				type: 'string',
 				i18nLabel: 'Subject',
@@ -510,7 +513,7 @@ export const createEmailSettings = () =>
 			);
 		});
 
-		await this.section('Email_changed_section', async function () {
+		await this.section('Email_changed_section', async function() {
 			await this.add('Email_Changed_Email_Subject', '{Email_Changed_Email_Subject}', {
 				type: 'string',
 				i18nLabel: 'Subject',
@@ -529,7 +532,7 @@ export const createEmailSettings = () =>
 			);
 		});
 
-		await this.section('Password_changed_section', async function () {
+		await this.section('Password_changed_section', async function() {
 			await this.add('Password_Changed_Email_Subject', '{Password_Changed_Email_Subject}', {
 				type: 'string',
 				i18nLabel: 'Subject',
@@ -548,7 +551,7 @@ export const createEmailSettings = () =>
 			);
 		});
 
-		await this.section('Privacy', async function () {
+		await this.section('Privacy', async function() {
 			await this.add('Email_notification_show_message', true, {
 				type: 'boolean',
 				public: true,
