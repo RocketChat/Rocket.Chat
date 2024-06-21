@@ -85,6 +85,12 @@ Meteor.methods<ServerMethods>({
 						case 'timespan':
 						case 'int':
 							check(value, Number);
+							if (!Number.isInteger(value)) {
+								throw new Meteor.Error(`Invalid setting value ${value}`, 'Invalid setting value', {
+									method: 'saveSettings',
+								});
+							}
+
 							break;
 						case 'multiSelect':
 							check(value, Array);
