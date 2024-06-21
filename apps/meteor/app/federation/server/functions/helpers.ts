@@ -2,6 +2,7 @@ import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import type { ISubscription, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Settings, Users, Subscriptions } from '@rocket.chat/models';
 
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { STATUS_ENABLED, STATUS_REGISTERING } from '../constants';
 
 export const getNameAndDomain = (fullyQualifiedName: string): string[] => fullyQualifiedName.split('@');
@@ -14,11 +15,12 @@ export async function isRegisteringOrEnabled(): Promise<boolean> {
 }
 
 export async function updateStatus(status: string): Promise<void> {
+	// No need to call ws listener because current function is called on startup
 	await Settings.updateValueById('FEDERATION_Status', status);
 }
 
 export async function updateEnabled(enabled: boolean): Promise<void> {
-	await Settings.updateValueById('FEDERATION_Enabled', enabled);
+	(await Settings.updateValueById('FEDERATION_Enabled', enabled)).modifiedCount && void notifyOnSettingChangedById('FEDERATION_Enabled');
 }
 
 export const checkRoomType = (room: IRoom): boolean => room.t === 'p' || room.t === 'd';
