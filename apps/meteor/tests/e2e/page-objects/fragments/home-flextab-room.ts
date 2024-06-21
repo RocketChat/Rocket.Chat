@@ -44,7 +44,7 @@ export class HomeFlextabRoom {
 	}
 
 	get pruneAccordion(): Locator {
-		return this.page.getByRole('dialog').getByRole('button', { name: 'Prune' });
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Prune', exact: true });
 	}
 
 	getMaxAgeLabel(maxAge = '30') {
