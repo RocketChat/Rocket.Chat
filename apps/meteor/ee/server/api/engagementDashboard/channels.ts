@@ -55,14 +55,16 @@ API.v1.addRoute(
 			const { start, end, hideRoomsWithNoActivity } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
-			apiDeprecationLogger.deprecatedParameterUsage(
-				this.request.route,
-				'hideRoomsWithNoActivity',
-				'7.0.0',
-				this.response,
-				({ parameter, endpoint, version }) =>
-					`Returning rooms that had no activity in ${endpoint} is deprecated and will be removed on version ${version} along with the \`${parameter}\` param. Set \`${parameter}\` as \`true\` to check how the endpoint will behave starting on ${version}`,
-			);
+			if (hideRoomsWithNoActivity) {
+				apiDeprecationLogger.deprecatedParameterUsage(
+					this.request.route,
+					'hideRoomsWithNoActivity',
+					'7.0.0',
+					this.response,
+					({ parameter, endpoint, version }) =>
+						`Returning rooms that had no activity in ${endpoint} is deprecated and will be removed on version ${version} along with the \`${parameter}\` param. Set \`${parameter}\` as \`true\` to check how the endpoint will behave starting on ${version}`,
+				);
+			}
 
 			const { channels, total } = await findChannelsWithNumberOfMessages({
 				start: mapDateForAPI(start),
