@@ -100,7 +100,8 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				// And sorting them by _updatedAt: -1 will make it so that the oldest inquiries are taken first
 				// preventing us from playing with the same inquiry over and over again
 				queueLogger.debug(`Inquiry ${nextInquiry._id} not taken. Unlocking and re-queueing`);
-				return await LivechatInquiry.unlockAndQueue(nextInquiry._id);
+				const updatedQueue = await LivechatInquiry.unlockAndQueue(nextInquiry._id);
+				return updatedQueue;
 			}
 
 			queueLogger.debug(`Inquiry ${nextInquiry._id} taken successfully. Unlocking`);
