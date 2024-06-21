@@ -153,6 +153,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 			retentionMaxAge,
 			retentionExcludePinned,
 			retentionFilesOnly,
+			retentionIgnoreThreads,
 			...formData
 		}) => {
 			const data = getDirtyFields(formData, dirtyFields);
@@ -173,6 +174,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 							retentionMaxAge,
 							retentionExcludePinned,
 							retentionFilesOnly,
+							retentionIgnoreThreads,
 						}),
 				});
 
@@ -219,6 +221,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const retentionMaxAgeField = useUniqueId();
 	const retentionExcludePinnedField = useUniqueId();
 	const retentionFilesOnlyField = useUniqueId();
+	const retentionIgnoreThreads = useUniqueId();
 
 	return (
 		<>
@@ -535,6 +538,18 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 														name='retentionFilesOnly'
 														render={({ field: { value, ...field } }) => (
 															<ToggleSwitch id={retentionFilesOnlyField} {...field} checked={value} />
+														)}
+													/>
+												</FieldRow>
+											</Field>
+											<Field>
+												<FieldRow>
+													<FieldLabel htmlFor={retentionIgnoreThreads}>{t('RetentionPolicy_DoNotPruneThreads')}</FieldLabel>
+													<Controller
+														control={control}
+														name='retentionIgnoreThreads'
+														render={({ field: { value, ...field } }) => (
+															<ToggleSwitch id={retentionIgnoreThreads} {...field} checked={value} />
 														)}
 													/>
 												</FieldRow>

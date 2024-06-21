@@ -35,6 +35,7 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
 					retentionMaxAge: retention?.maxAge ?? msToTimeUnit(TIMEUNIT.days, retentionPolicy.maxAge),
 					retentionExcludePinned: retention?.excludePinned ?? retentionPolicy.excludePinned,
 					retentionFilesOnly: retention?.filesOnly ?? retentionPolicy.filesOnly,
+					retentionIgnoreThreads: retention?.ignoreThreads ?? retentionPolicy.ignoreThreads,
 				}),
 		}),
 		[

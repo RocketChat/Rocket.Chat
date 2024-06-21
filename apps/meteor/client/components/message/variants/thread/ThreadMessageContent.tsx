@@ -1,5 +1,5 @@
 import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
-import { isE2EEMessage } from '@rocket.chat/core-typings';
+import { isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -37,8 +37,14 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 
 	const normalizedMessage = useNormalizedMessage(message);
 
+	const quotes = normalizedMessage?.attachments?.filter(isQuoteAttachment) || [];
+
+	const attachments = normalizedMessage?.attachments?.filter((attachment) => !isQuoteAttachment(attachment)) || [];
+
 	return (
 		<>
+			{!!quotes?.length && <Attachments attachments={quotes} />}
+
 			{!normalizedMessage.blocks?.length && !!normalizedMessage.md?.length && (
 				<>
 					{(!encrypted || normalizedMessage.e2e === 'done') && (
@@ -52,7 +58,7 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />
 			)}
 
-			{normalizedMessage.attachments && <Attachments attachments={normalizedMessage.attachments} id={normalizedMessage.files?.[0]._id} />}
+			{!!attachments && <Attachments id={message.files?.[0]?._id} attachments={attachments} />}
 
 			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}
 
