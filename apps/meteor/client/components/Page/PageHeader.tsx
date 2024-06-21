@@ -24,12 +24,20 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 		<Box
 			is='header'
 			borderBlockEndWidth='default'
-			minHeight='x64'
 			pb={8}
 			borderBlockEndColor={borderBlockEndColor ?? border ? 'extra-light' : 'transparent'}
 			{...props}
 		>
-			<Box height='100%' marginInline={24} display='flex' flexDirection='row' flexWrap='wrap' alignItems='center' color='default'>
+			<Box
+				height='100%'
+				marginInline={24}
+				minHeight='x64'
+				display='flex'
+				flexDirection='row'
+				flexWrap='wrap'
+				alignItems='center'
+				color='default'
+			>
 				{isMobile && (
 					<HeaderToolbar>
 						<SidebarToggler />
