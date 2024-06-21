@@ -29,7 +29,7 @@ async function job(): Promise<void> {
 	// get all rooms with default values
 	for await (const type of types) {
 		const maxAge = maxTimes[type] || 0;
-		const latest = new Date(now.getTime() - toDays(maxAge));
+		const latest = new Date(now.getTime() - maxAge);
 
 		const rooms = await Rooms.find(
 			{
@@ -107,9 +107,9 @@ settings.watchMultiple(
 		'RetentionPolicy_AppliesToChannels',
 		'RetentionPolicy_AppliesToGroups',
 		'RetentionPolicy_AppliesToDMs',
-		'RetentionPolicy_MaxAge_Channels',
-		'RetentionPolicy_MaxAge_Groups',
-		'RetentionPolicy_MaxAge_DMs',
+		'RetentionPolicy_TTL_Channels',
+		'RetentionPolicy_TTL_Groups',
+		'RetentionPolicy_TTL_DMs',
 		'RetentionPolicy_Advanced_Precision',
 		'RetentionPolicy_Advanced_Precision_Cron',
 		'RetentionPolicy_Precision',
@@ -132,9 +132,9 @@ settings.watchMultiple(
 			types.push('d');
 		}
 
-		maxTimes.c = settings.get('RetentionPolicy_MaxAge_Channels');
-		maxTimes.p = settings.get('RetentionPolicy_MaxAge_Groups');
-		maxTimes.d = settings.get('RetentionPolicy_MaxAge_DMs');
+		maxTimes.c = settings.get<number>('RetentionPolicy_TTL_Channels');
+		maxTimes.p = settings.get<number>('RetentionPolicy_TTL_Groups');
+		maxTimes.d = settings.get<number>('RetentionPolicy_TTL_DMs');
 
 		const precision =
 			(settings.get<boolean>('RetentionPolicy_Advanced_Precision') && settings.get<string>('RetentionPolicy_Advanced_Precision_Cron')) ||
