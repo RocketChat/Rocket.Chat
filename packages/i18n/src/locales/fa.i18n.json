@@ -2380,8 +2380,8 @@
   "RetentionPolicy_MaxAge": "حداکثر سن پیام",
   "RetentionPolicy_Precision": "تایمر دقیق",
   "RetentionPolicy_Precision_Description": "هر چند وقت یکبار تایمر بره باید اجرا شود تنظیم این به یک مقدار دقیق تر باعث می شود کانال های با تایمر نگهداری سریع کار بهتر، اما ممکن است پردازش قدرت اضافی در جوامع بزرگ هزینه.",
-  "RetentionPolicy_RoomWarning": "پیام های قدیمی تر از%s به طور خودکار در اینجا بریده می شوند",
-  "RetentionPolicy_RoomWarning_Unpinned": "پیغامهای غیر مسدود شده قدیمیتر از%s به صورت خودکار در اینجا برچیده میشوند",
+
+
   "RetentionPolicyRoom_Enabled": "پیام های قدیمی را به طور خودکار خرد کنید",
   "RetentionPolicyRoom_ExcludePinned": "پیام های پین شده را حذف کنید",
   "RetentionPolicyRoom_FilesOnly": "فقط پرونده ها را ببندید، پیام ها را نگه دارید",
