@@ -741,7 +741,7 @@ test.describe.serial('e2ee support legacy formats', () => {
 			message: {
 				rid,
 				msg: 'eyJhbGciOiJB8NgMxt0P2jW/aRt4y4++lb8LDSpxUExisX1SiXaKCO9FkfrS1HfO7gFS0nxzHu3CjfgRAK5o3A9kWc4PrHfsQnTTLSh5LW/BKpgnu8XLoEoCbP3FTfy14i5urg6QnZRpz9jUsESjXXIFSxLzEx/T2PzuAzwNROhS+omrNKFi3r9oqkfzUZgTAVzitRpkJ7VN',
-				e2e: true,
+				t: 'e2e',
 			},
 		});
 

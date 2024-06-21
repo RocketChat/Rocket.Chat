@@ -140,10 +140,15 @@ API.v1.addRoute(
 	},
 );
 
-// TODO: deprecate API
 API.v1.addRoute(
 	'rooms.upload/:rid',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		deprecation: {
+			version: '8.0.0',
+			alternatives: ['rooms.media'],
+		},
+	},
 	{
 		async post() {
 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
