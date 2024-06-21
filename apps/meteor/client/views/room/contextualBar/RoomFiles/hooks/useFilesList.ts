@@ -75,7 +75,7 @@ export const useFilesList = (
 						const key = Base64.encode(
 							JSON.stringify({
 								...decrypted.encryption,
-								name: decrypted.name,
+								name: String.fromCharCode(...new TextEncoder().encode(decrypted.name)),
 								type: decrypted.type,
 							}),
 						);

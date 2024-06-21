@@ -42,7 +42,7 @@ export const useNormalizedMessage = <TMessage extends IMessage>(message: TMessag
 			const key = Base64.encode(
 				JSON.stringify({
 					...attachment.encryption,
-					name: normalizedMessage.file?.name,
+					name: String.fromCharCode(...new TextEncoder().encode(normalizedMessage.file?.name)),
 					type: normalizedMessage.file?.type,
 				}),
 			);
