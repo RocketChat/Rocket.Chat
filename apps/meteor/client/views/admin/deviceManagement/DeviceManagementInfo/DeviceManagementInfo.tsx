@@ -13,7 +13,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarTitle,
 } from '../../../../components/Contextualbar';
-import InfoPanel, { InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../components/InfoPanel';
+import { InfoPanel, InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../components/InfoPanel';
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { usePresence } from '../../../../hooks/usePresence';
