@@ -46,6 +46,7 @@ export const sendNotification = async ({
 	mentionIds,
 	disableAllMessageNotifications,
 	reaction,
+	reactionWithTranslation,
 }: {
 	subscription: SubscriptionAggregation;
 	sender: Pick<IUser, '_id' | 'name' | 'username'>;
@@ -59,6 +60,7 @@ export const sendNotification = async ({
 	mentionIds: string[];
 	disableAllMessageNotifications: boolean;
 	reaction: string;
+	reactionWithTranslation: string;
 }) => {
 	if (settings.get<boolean>('Troubleshoot_Disable_Notifications') === true) {
 		return;
@@ -137,6 +139,7 @@ export const sendNotification = async ({
 			message,
 			room,
 			reaction,
+			reactionWithTranslation,
 		});
 	}
 
@@ -265,7 +268,7 @@ const lookup = {
 	},
 } as const;
 
-export async function sendMessageNotifications(message: IMessage, room: IRoom, usersInThread: string[] = [], reaction = '', user?: IUser) {
+export async function sendMessageNotifications(message: IMessage, room: IRoom, usersInThread: string[] = [], reaction = '', user?: IUser, reactionWithTranslation?: string) {
 	if (settings.get<boolean>('Troubleshoot_Disable_Notifications') === true) {
 		return;
 	}
@@ -369,7 +372,8 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 				mentionIds,
 				disableAllMessageNotifications,
 				hasReplyToThread: usersInThread?.includes(subscription.u._id),
-				reaction
+				reaction,
+				reactionWithTranslation: reactionWithTranslation || '',
 			}),
 	);
 

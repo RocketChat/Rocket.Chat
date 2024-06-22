@@ -58,7 +58,7 @@ class KonchatNotification {
 		const requireInteraction = getUserPreference<boolean>(Meteor.userId(), 'desktopNotificationRequireInteraction');
 		const n = new Notification(notification.title, {
 			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username as string),
-			body: notification.reacted ? parseReaction(notification.text, notification.payload.type as RoomType) : stripTags(message.msg),
+			body: notification.reacted ? parseReaction(notification.text, notification.payload.type as RoomType, notification.reactionWithTranslation) : stripTags(message.msg),
 			tag: notification.payload._id,
 			canReply: true,
 			silent: true,

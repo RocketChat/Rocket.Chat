@@ -336,8 +336,8 @@ const ChatDeleteSchema = {
 export const isChatDeleteProps = ajv.compile<ChatDelete>(ChatDeleteSchema);
 
 type ChatReact =
-	| { emoji: string; messageId: IMessage['_id']; shouldReact?: boolean }
-	| { reaction: string; messageId: IMessage['_id']; shouldReact?: boolean };
+	| { emoji: string; messageId: IMessage['_id']; shouldReact?: boolean; reactionWithTranslation?: string }
+	| { reaction: string; messageId: IMessage['_id']; shouldReact?: boolean; reactionWithTranslation?: string };
 
 const ChatReactSchema = {
 	oneOf: [
@@ -352,6 +352,10 @@ const ChatReactSchema = {
 				},
 				shouldReact: {
 					type: 'boolean',
+					nullable: true,
+				},
+				reactionWithTranslation: {
+					type: 'string',
 					nullable: true,
 				},
 			},
@@ -369,6 +373,10 @@ const ChatReactSchema = {
 				},
 				shouldReact: {
 					type: 'boolean',
+					nullable: true,
+				},
+				reactionWithTranslation: {
+					type: 'string',
 					nullable: true,
 				},
 			},

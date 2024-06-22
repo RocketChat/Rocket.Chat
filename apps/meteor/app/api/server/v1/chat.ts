@@ -371,7 +371,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
 			}
 
-			await executeSetReaction(this.userId, emoji, msg._id, this.bodyParams.shouldReact);
+			await executeSetReaction(this.userId, emoji, msg._id, this.bodyParams.shouldReact, this.bodyParams.reactionWithTranslation);
 
 			return API.v1.success();
 		},
