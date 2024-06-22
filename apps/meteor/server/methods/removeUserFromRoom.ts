@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { canAccessRoomAsync, getUsersInRole } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
-import { notifyOnRoomChanged } from '../../app/lib/server/lib/notifyListener';
+import { notifyOnRoomChanged, notifyOnSubscriptionChangedByUserAndRoomId } from '../../app/lib/server/lib/notifyListener';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { callbacks } from '../../lib/callbacks';
 import { afterRemoveFromRoomCallback } from '../../lib/callbacks/afterRemoveFromRoomCallback';
@@ -76,7 +76,11 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 
 	await callbacks.run('beforeRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 
-	await Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
+	const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
+
+	if (deletedSubscription) {
+		void notifyOnSubscriptionChangedByUserAndRoomId(removedUser._id, data.rid, 'removed');
+	}
 
 	if (['c', 'p'].includes(room.t) === true) {
 		await removeUserFromRolesAsync(removedUser._id, ['moderator', 'owner'], data.rid);

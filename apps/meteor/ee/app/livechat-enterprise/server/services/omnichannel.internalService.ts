@@ -5,7 +5,11 @@ import type { IOmnichannelRoom, IUser, ILivechatInquiryRecord, IOmnichannelSyste
 import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, Subscriptions, LivechatInquiry } from '@rocket.chat/models';
 
-import { notifyOnLivechatInquiryChangedById, notifyOnRoomChangedById } from '../../../../../app/lib/server/lib/notifyListener';
+import {
+	notifyOnSubscriptionChangedByRoomId,
+	notifyOnLivechatInquiryChangedById,
+	notifyOnRoomChangedById,
+} from '../../../../../app/lib/server/lib/notifyListener';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
@@ -57,11 +61,17 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			LivechatRooms.setOnHoldByRoomId(roomId),
 			Subscriptions.setOnHoldByRoomId(roomId),
 			Message.saveSystemMessage<IOmnichannelSystemMessage>('omnichannel_placed_chat_on_hold', roomId, '', onHoldBy, { comment }),
-		]);
+		]).then((data) => {
+			if (data[0].modifiedCount) {
+				void notifyOnRoomChangedById(roomId);
+			}
+
+			if (data[1].modifiedCount) {
+				void notifyOnSubscriptionChangedByRoomId(roomId);
+			}
+		});
 
 		await callbacks.run('livechat:afterOnHold', room);
-
-		void notifyOnRoomChangedById(roomId);
 	}
 
 	async resumeRoomOnHold(
@@ -108,11 +118,17 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			LivechatRooms.unsetOnHoldByRoomId(roomId),
 			Subscriptions.unsetOnHoldByRoomId(roomId),
 			Message.saveSystemMessage<IOmnichannelSystemMessage>('omnichannel_on_hold_chat_resumed', roomId, '', resumeBy, { comment }),
-		]);
+		]).then((data) => {
+			if (data[0].modifiedCount) {
+				void notifyOnRoomChangedById(roomId);
+			}
+
+			if (data[1].modifiedCount) {
+				void notifyOnSubscriptionChangedByRoomId(roomId);
+			}
+		});
 
 		await callbacks.run('livechat:afterOnHoldChatResumed', room);
-
-		void notifyOnRoomChangedById(roomId);
 	}
 
 	private async attemptToAssignRoomToServingAgentElseQueueIt({

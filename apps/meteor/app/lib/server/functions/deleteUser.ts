@@ -24,6 +24,7 @@ import {
 	notifyOnIntegrationChangedByUserId,
 	notifyOnLivechatDepartmentAgentChanged,
 	notifyOnUserChange,
+	notifyOnSubscriptionChangedByUserId,
 } from '../lib/notifyListener';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
@@ -98,7 +99,9 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		const rids = subscribedRooms.map((room) => room.rid);
 		void notifyOnRoomChangedById(rids);
 
-		await Subscriptions.removeByUserId(userId); // Remove user subscriptions
+		// TODO: handle modifiedCount and/or return validity to call listener
+		await Subscriptions.removeByUserId(userId);
+		void notifyOnSubscriptionChangedByUserId(userId);
 
 		// Remove user as livechat agent
 		if (user.roles.includes('livechat-agent')) {

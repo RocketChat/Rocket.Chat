@@ -1,6 +1,7 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Subscriptions } from '@rocket.chat/models';
 
+import { notifyOnSubscriptionChangedByRoomId } from '../../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
@@ -20,7 +21,11 @@ const onCloseLivechat = async (params: LivechatCloseCallbackParams) => {
 		LivechatRooms.unsetOnHoldByRoomId(roomId),
 		Subscriptions.unsetOnHoldByRoomId(roomId),
 		AutoCloseOnHoldScheduler.unscheduleRoom(roomId),
-	]);
+	]).then((data) => {
+		if (data[1].modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomId(roomId);
+		}
+	});
 
 	if (!settings.get('Livechat_waiting_queue')) {
 		return params;

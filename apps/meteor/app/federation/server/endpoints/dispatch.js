@@ -7,7 +7,12 @@ import { broadcastMessageFromData } from '../../../../server/modules/watchers/li
 import { API } from '../../../api/server';
 import { FileUpload } from '../../../file-upload/server';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
-import { notifyOnRoomChanged, notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
+import {
+	notifyOnRoomChanged,
+	notifyOnRoomChangedById,
+	notifyOnSubscriptionChangedById,
+	notifyOnSubscriptionChangedByUserAndRoomId,
+} from '../../../lib/server/lib/notifyListener';
 import { notifyUsersOnMessage } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendAllNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 import { processThreads } from '../../../threads/server/hooks/aftersavemessage';
@@ -134,7 +139,13 @@ const eventHandlers = {
 				if (persistedSubscription) {
 					// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed
 					if (!persistedSubscription.federation) {
-						await Subscriptions.updateOne({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
+						const { modifiedCount } = await Subscriptions.updateOne(
+							{ _id: persistedSubscription._id },
+							{ $set: { federation: subscription.federation } },
+						);
+						if (modifiedCount) {
+							void notifyOnSubscriptionChangedById(persistedSubscription._id);
+						}
 						federationAltered = true;
 					}
 				} else {
@@ -142,7 +153,10 @@ const eventHandlers = {
 					const denormalizedSubscription = normalizers.denormalizeSubscription(subscription);
 
 					// Create the subscription
-					await Subscriptions.insertOne(denormalizedSubscription);
+					const { insertedId } = await Subscriptions.insertOne(denormalizedSubscription);
+					if (insertedId) {
+						void notifyOnSubscriptionChangedById(insertedId);
+					}
 					federationAltered = true;
 				}
 			} catch (ex) {
@@ -177,7 +191,11 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the user's subscription
-			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+
+			if (deletedSubscription) {
+				void notifyOnSubscriptionChangedByUserAndRoomId(user._id, roomId, 'removed');
+			}
 
 			// Refresh the servers list
 			await FederationServers.refreshServers();
@@ -205,7 +223,11 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the user's subscription
-			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+
+			if (deletedSubscription) {
+				void notifyOnSubscriptionChangedByUserAndRoomId(user._id, roomId, 'removed');
+			}
 
 			// Refresh the servers list
 			await FederationServers.refreshServers();

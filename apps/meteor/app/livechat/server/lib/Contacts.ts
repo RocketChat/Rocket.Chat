@@ -6,7 +6,11 @@ import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
-import { notifyOnRoomChangedById, notifyOnLivechatInquiryChangedByRoom } from '../../../lib/server/lib/notifyListener';
+import {
+	notifyOnRoomChangedById,
+	notifyOnSubscriptionChangedByRoomId,
+	notifyOnLivechatInquiryChangedByRoom,
+} from '../../../lib/server/lib/notifyListener';
 import { i18n } from '../../../utils/lib/i18n';
 
 type RegisterContactProps = {
@@ -138,14 +142,23 @@ export const Contacts = {
 			for await (const room of rooms) {
 				const { _id: rid } = room;
 
-				await Promise.all([
+				const responses = await Promise.all([
 					Rooms.setFnameById(rid, name),
 					LivechatInquiry.setNameByRoomId(rid, name),
 					Subscriptions.updateDisplayNameByRoomId(rid, name),
 				]);
 
-				void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
-				void notifyOnRoomChangedById(rid);
+				if (responses[0]?.modifiedCount) {
+					void notifyOnRoomChangedById(rid);
+				}
+
+				if (responses[1]?.modifiedCount) {
+					void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
+				}
+
+				if (responses[2]?.modifiedCount) {
+					void notifyOnSubscriptionChangedByRoomId(rid);
+				}
 			}
 		}
 
