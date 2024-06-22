@@ -1,5 +1,22 @@
 # @rocket.chat/uikit-playground
 
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- ([#32604](https://github.com/RocketChat/Rocket.Chat/pull/32604)) Upgrades fuselage-toastbar version in order to add RTL support to the component
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a565999ae0, 4f72d62aa7]:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@8.0.0-rc.0
+  - @rocket.chat/ui-contexts@8.0.0-rc.0
+  - @rocket.chat/ui-avatar@4.0.0-rc.0
+  </details>
+
 ## 0.2.25
 
 ### Patch Changes
