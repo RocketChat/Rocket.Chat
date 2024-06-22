@@ -16,6 +16,27 @@
   - @rocket.chat/ui-contexts@8.0.0-rc.0
   - @rocket.chat/ui-avatar@4.0.0-rc.0
   </details>
+## 0.2.25
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@7.0.2
+  - @rocket.chat/ui-contexts@7.0.2
+  - @rocket.chat/ui-avatar@3.0.2
+  </details>
+
+## 0.2.24
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@7.0.1
+  - @rocket.chat/ui-contexts@7.0.1
+  - @rocket.chat/ui-avatar@3.0.1
+  </details>
 
 ## 0.2.23
 

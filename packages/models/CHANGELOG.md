@@ -12,6 +12,23 @@
 
   - @rocket.chat/model-typings@0.5.0-rc.0
   </details>
+## 0.0.41
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.4.3
+  </details>
+
+## 0.0.40
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.4.2
+  </details>
 
 ## 0.0.39
 

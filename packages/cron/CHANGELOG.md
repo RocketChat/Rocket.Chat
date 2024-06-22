@@ -12,6 +12,25 @@
 
   - @rocket.chat/core-typings@6.10.0-rc.0
   - @rocket.chat/models@0.1.0-rc.0
+</details>
+## 0.0.37
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.2
+  - @rocket.chat/models@0.0.41
+  </details>
+
+## 0.0.36
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.1
+  - @rocket.chat/models@0.0.40
   </details>
 
 ## 0.0.35
