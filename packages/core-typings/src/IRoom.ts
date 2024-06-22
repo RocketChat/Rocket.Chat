@@ -95,6 +95,8 @@ export interface IRoom extends IRocketChatRecord {
 	customFields?: Record<string, any>;
 
 	channel?: { _id: string };
+
+	usersWaitingForE2EKeys?: { userId: IUser['_id']; ts: Date }[];
 }
 
 export const isRoomWithJoinCode = (room: Partial<IRoom>): room is IRoomWithJoinCode =>

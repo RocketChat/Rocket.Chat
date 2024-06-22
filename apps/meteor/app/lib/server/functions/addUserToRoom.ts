@@ -9,6 +9,7 @@ import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { callbacks } from '../../../../lib/callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { notifyOnRoomChangedById } from '../lib/notifyListener';
 
@@ -130,6 +131,10 @@ export const addUserToRoom = async function (
 	if (room.teamMain && room.teamId) {
 		// if user is joining to main team channel, create a membership
 		await Team.addMember(inviter || userToBeAdded, userToBeAdded._id, room.teamId);
+	}
+
+	if (room.encrypted && settings.get('E2E_Enable') && userToBeAdded.e2e?.public_key) {
+		await Rooms.addUserIdToE2EEQueueByRoomIds([room._id], userToBeAdded._id);
 	}
 
 	return true;

@@ -73,6 +73,22 @@ describe('[Users]', function () {
 			});
 	});
 
+	it('should fail when trying to set keys for a user with keys already set', async () => {
+		await request
+			.post(api('e2e.setUserPublicAndPrivateKeys'))
+			.set(userCredentials)
+			.send({
+				private_key: 'test',
+				public_key: 'test',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'Keys already set [error-keys-already-set]');
+			});
+	});
+
 	describe('[/users.create]', () => {
 		before(async () => clearCustomFields());
 		after(async () => clearCustomFields());
