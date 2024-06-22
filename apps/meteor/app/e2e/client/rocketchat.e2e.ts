@@ -1,7 +1,7 @@
 import QueryString from 'querystring';
 import URL from 'url';
 
-import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IE2EEMessage, IMessage, IRoom, ISubscription, IUploadWithUser } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import EJSON from 'ejson';
@@ -518,6 +518,20 @@ class E2E extends Emitter {
 		}
 	}
 
+	async decryptFileContent(file: IUploadWithUser): Promise<IUploadWithUser> {
+		if (!file.rid) {
+			return file;
+		}
+
+		const e2eRoom = await this.getInstanceByRoomId(file.rid);
+
+		if (!e2eRoom) {
+			return file;
+		}
+
+		return e2eRoom.decryptContent(file);
+	}
+
 	async decryptMessage(message: IMessage | IE2EEMessage): Promise<IMessage> {
 		if (!isE2EEMessage(message) || message.e2e === 'done') {
 			return message;
@@ -529,17 +543,7 @@ class E2E extends Emitter {
 			return message;
 		}
 
-		const data = await e2eRoom.decrypt(message.msg);
-
-		if (!data) {
-			return message;
-		}
-
-		const decryptedMessage: IE2EEMessage = {
-			...message,
-			msg: data.text,
-			e2e: 'done',
-		};
+		const decryptedMessage: IE2EEMessage = await e2eRoom.decryptMessage(message);
 
 		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
 
