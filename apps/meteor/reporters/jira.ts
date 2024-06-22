@@ -110,7 +110,10 @@ class JIRAReporter implements Reporter {
 					body: `Test run ${payload.run} failed
 author: ${this.author}
 PR: ${this.pr}
-https://github.com/RocketChat/Rocket.Chat/blob/${payload.headSha}/apps/meteor/${location.file}#L${location.line}:${location.column}
+https://github.com/RocketChat/Rocket.Chat/blob/${payload.headSha}/${location.file.replace(
+						'/home/runner/work/Rocket.Chat/Rocket.Chat',
+						'',
+					)}#L${location.line}:${location.column}
 ${this.run_url}
 `,
 				}),
@@ -165,7 +168,10 @@ ${this.run_url}
 				body: `Test run ${payload.run} failed
 author: ${this.author}
 PR: ${this.pr}
-https://github.com/RocketChat/Rocket.Chat/blob/${payload.headSha}/apps/meteor/${location.file}#L${location.line}:${location.column}
+https://github.com/RocketChat/Rocket.Chat/blob/${payload.headSha}/${location.file.replace(
+					'/home/runner/work/Rocket.Chat/Rocket.Chat',
+					'',
+				)}#L${location.line}:${location.column},
 ${this.run_url}
 `,
 			}),

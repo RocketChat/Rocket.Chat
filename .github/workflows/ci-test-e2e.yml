@@ -259,7 +259,7 @@ jobs:
           REPORTER_ROCKETCHAT_DRAFT: ${{ github.event.pull_request.draft }}
           REPORTER_ROCKETCHAT_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           REPORTER_ROCKETCHAT_AUTHOR: ${{ github.event.pull_request.user.login }}
-          REPORTER_ROCKETCHAT_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}?pull_number=${{ github.event.pull_request.number }}
+          REPORTER_ROCKETCHAT_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           REPORTER_ROCKETCHAT_PR: ${{ github.event.pull_request.number }}
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
