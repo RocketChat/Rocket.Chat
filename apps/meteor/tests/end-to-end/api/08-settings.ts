@@ -1,3 +1,4 @@
+import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
@@ -11,7 +12,7 @@ describe('[Settings]', function () {
 
 	describe('[/settings.public]', () => {
 		it('should return public settings', (done) => {
-			request
+			void request
 				.get(api('settings.public'))
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -23,7 +24,7 @@ describe('[Settings]', function () {
 				.end(done);
 		});
 		it('should return public settings even requested with count and offset params', (done) => {
-			request
+			void request
 				.get(api('settings.public'))
 				.query({
 					count: 5,
@@ -42,7 +43,7 @@ describe('[Settings]', function () {
 
 	describe('[/settings]', () => {
 		it('should return private settings', (done) => {
-			request
+			void request
 				.get(api('settings'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -58,7 +59,7 @@ describe('[Settings]', function () {
 
 	describe('[/settings/:_id]', () => {
 		it('should return one setting', (done) => {
-			request
+			void request
 				.get(api('settings/Site_Url'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -74,7 +75,7 @@ describe('[Settings]', function () {
 
 	describe('[/service.configurations]', () => {
 		it('should return service configurations', (done) => {
-			request
+			void request
 				.get(api('service.configurations'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -94,7 +95,7 @@ describe('[Settings]', function () {
 			it('should include the OAuth service in the response', (done) => {
 				// wait 3 seconds before getting the service list so the server has had time to update it
 				setTimeout(() => {
-					request
+					void request
 						.get(api('service.configurations'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
@@ -103,7 +104,7 @@ describe('[Settings]', function () {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('configurations');
 
-							expect(res.body.configurations.find(({ service }) => service === 'google')).to.exist;
+							expect((res.body.configurations as LoginServiceConfiguration[]).find(({ service }) => service === 'google')).to.exist;
 						})
 						.end(done);
 				}, 3000);
@@ -118,7 +119,7 @@ describe('[Settings]', function () {
 			it('should not include the OAuth service in the response', (done) => {
 				// wait 3 seconds before getting the service list so the server has had time to update it
 				setTimeout(() => {
-					request
+					void request
 						.get(api('service.configurations'))
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
@@ -127,7 +128,7 @@ describe('[Settings]', function () {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('configurations');
 
-							expect(res.body.configurations.find(({ service }) => service === 'google')).to.not.exist;
+							expect((res.body.configurations as LoginServiceConfiguration[]).find(({ service }) => service === 'google')).to.not.exist;
 						})
 						.end(done);
 				}, 3000);
@@ -137,7 +138,7 @@ describe('[Settings]', function () {
 
 	describe('/settings.oauth', () => {
 		it('should have return list of available oauth services when user is not logged', (done) => {
-			request
+			void request
 				.get(api('settings.oauth'))
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -149,7 +150,7 @@ describe('[Settings]', function () {
 		});
 
 		it('should have return list of available oauth services when user is logged', (done) => {
-			request
+			void request
 				.get(api('settings.oauth'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')

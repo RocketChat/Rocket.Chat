@@ -1,4 +1,6 @@
-import { expect } from 'chai';
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IIntegration, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { assert, expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
@@ -6,17 +8,18 @@ import { createIntegration, removeIntegration } from '../../data/integration.hel
 import { updatePermission } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Incoming Integrations]', function () {
 	this.retries(0);
 
-	let integration;
-	let integrationCreatedByAnUser;
-	let user;
-	let userCredentials;
-	let channel;
-	let testChannelName;
+	let integration: IIntegration;
+	let integrationCreatedByAnUser: IIntegration;
+	let user: TestUser<IUser>;
+	let userCredentials: Credentials;
+	let channel: IRoom;
+	let testChannelName: string;
 
 	before((done) => getCredentials(done));
 
@@ -46,8 +49,8 @@ describe('[Incoming Integrations]', function () {
 
 	describe('[/integrations.create]', () => {
 		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to add an incoming integration', (done) => {
-			updatePermission('manage-incoming-integrations', []).then(() => {
-				request
+			void updatePermission('manage-incoming-integrations', []).then(() => {
+				void request
 					.post(api('integrations.create'))
 					.set(credentials)
 					.send({
@@ -71,8 +74,8 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should return an error when the user DOES NOT have the permission "manage-own-incoming-integrations" to add an incoming integration', (done) => {
-			updatePermission('manage-own-incoming-integrations', []).then(() => {
-				request
+			void updatePermission('manage-own-incoming-integrations', []).then(() => {
+				void request
 					.post(api('integrations.create'))
 					.set(credentials)
 					.send({
@@ -96,7 +99,7 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should return an error when the user sends an invalid type of integration', (done) => {
-			request
+			void request
 				.post(api('integrations.create'))
 				.set(credentials)
 				.send({
@@ -119,9 +122,9 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should add the integration successfully when the user ONLY has the permission "manage-incoming-integrations" to add an incoming integration', (done) => {
-			let integrationId;
-			updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
-				request
+			let integrationId: IIntegration['_id'];
+			void updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
+				void request
 					.post(api('integrations.create'))
 					.set(credentials)
 					.send({
@@ -146,8 +149,7 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should set overrideDestinationChannelEnabled setting to false when it is not provided', async () => {
-			let integrationId;
-			await request
+			const res = await request
 				.post(api('integrations.create'))
 				.set(credentials)
 				.send({
@@ -160,20 +162,19 @@ describe('[Incoming Integrations]', function () {
 					channel: '#general',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('integration').and.to.be.an('object');
-					expect(res.body.integration).to.have.property('overrideDestinationChannelEnabled', false);
-					integrationId = res.body.integration._id;
-				});
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('integration').and.to.be.an('object');
+			expect(res.body.integration).to.have.property('overrideDestinationChannelEnabled', false);
+			const integrationId = res.body.integration._id;
 			await removeIntegration(integrationId, 'incoming');
 		});
 
 		it('should add the integration successfully when the user ONLY has the permission "manage-own-incoming-integrations" to add an incoming integration', (done) => {
-			updatePermission('manage-incoming-integrations', []).then(() => {
-				updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
-					request
+			void updatePermission('manage-incoming-integrations', []).then(() => {
+				void updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
+					void request
 						.post(api('integrations.create'))
 						.set(credentials)
 						.send({
@@ -199,7 +200,7 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should execute the incoming integration', (done) => {
-			request
+			void request
 				.post(`/hooks/${integration._id}/${integration.token}`)
 				.send({
 					text: 'Example message',
@@ -209,7 +210,7 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it("should return an error when sending 'channel' field telling its configuration is disabled", (done) => {
-			request
+			void request
 				.post(`/hooks/${integration._id}/${integration.token}`)
 				.send({
 					text: 'Example message',
@@ -224,7 +225,7 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it("should return an error when sending 'roomId' field telling its configuration is disabled", (done) => {
-			request
+			void request
 				.post(`/hooks/${integration._id}/${integration.token}`)
 				.send({
 					text: 'Example message',
@@ -239,7 +240,7 @@ describe('[Incoming Integrations]', function () {
 		});
 		it('should send a message for a channel that is specified in the webhooks configuration', (done) => {
 			const successfulMesssage = `Message sent successfully at #${Date.now()}`;
-			request
+			void request
 				.post(`/hooks/${integration._id}/${integration.token}`)
 				.send({
 					text: successfulMesssage,
@@ -257,7 +258,7 @@ describe('[Incoming Integrations]', function () {
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('messages').and.to.be.an('array');
-							expect(!!res.body.messages.find((m) => m.msg === successfulMesssage)).to.be.true;
+							expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.true;
 						})
 						.end(done);
 				});
@@ -303,14 +304,14 @@ describe('[Incoming Integrations]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					expect(!!res.body.messages.find((m) => m.msg === successfulMesssage)).to.be.true;
+					expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMesssage)).to.be.true;
 				});
 		});
 	});
 
 	describe('[/integrations.history]', () => {
 		it('should return an error when trying to get history of incoming integrations', (done) => {
-			request
+			void request
 				.get(api('integrations.history'))
 				.set(credentials)
 				.query({
@@ -328,12 +329,12 @@ describe('[Incoming Integrations]', function () {
 
 	describe('[/integrations.list]', () => {
 		before((done) => {
-			createUser().then((createdUser) => {
+			void createUser().then((createdUser) => {
 				user = createdUser;
-				login(user.username, password).then((credentials) => {
+				void login(user.username, password).then((credentials) => {
 					userCredentials = credentials;
-					updatePermission('manage-incoming-integrations', ['user']).then(() => {
-						createIntegration(
+					void updatePermission('manage-incoming-integrations', ['user']).then(() => {
+						void createIntegration(
 							{
 								type: 'webhook-incoming',
 								name: 'Incoming test',
@@ -355,14 +356,17 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should return the list of incoming integrations', (done) => {
-			request
+			void request
 				.get(api('integrations.list'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					const integrationCreatedByAdmin = res.body.integrations.find((createdIntegration) => createdIntegration._id === integration._id);
+					const integrationCreatedByAdmin = (res.body.integrations as IIntegration[]).find(
+						(createdIntegration) => createdIntegration._id === integration._id,
+					);
+					assert.isDefined(integrationCreatedByAdmin);
 					expect(integrationCreatedByAdmin).to.be.an('object');
 					expect(integrationCreatedByAdmin._id).to.be.equal(integration._id);
 					expect(res.body).to.have.property('offset');
@@ -373,16 +377,16 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should return the list of integrations created by the user only', (done) => {
-			updatePermission('manage-incoming-integrations', []).then(() => {
-				updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
-					request
+			void updatePermission('manage-incoming-integrations', []).then(() => {
+				void updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
+					void request
 						.get(api('integrations.list'))
 						.set(userCredentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
-							const integrationCreatedByAdmin = res.body.integrations.find(
+							const integrationCreatedByAdmin = (res.body.integrations as IIntegration[]).find(
 								(createdIntegration) => createdIntegration._id === integration._id,
 							);
 							expect(integrationCreatedByAdmin).to.be.equal(undefined);
@@ -396,11 +400,11 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should return unauthorized error when the user does not have any integrations permissions', (done) => {
-			updatePermission('manage-incoming-integrations', []).then(() => {
-				updatePermission('manage-own-incoming-integrations', []).then(() => {
-					updatePermission('manage-outgoing-integrations', []).then(() => {
-						updatePermission('manage-outgoing-integrations', []).then(() => {
-							request
+			void updatePermission('manage-incoming-integrations', []).then(() => {
+				void updatePermission('manage-own-incoming-integrations', []).then(() => {
+					void updatePermission('manage-outgoing-integrations', []).then(() => {
+						void updatePermission('manage-outgoing-integrations', []).then(() => {
+							void request
 								.get(api('integrations.list'))
 								.set(credentials)
 								.expect('Content-Type', 'application/json')
@@ -419,7 +423,7 @@ describe('[Incoming Integrations]', function () {
 
 	describe('[/integrations.get]', () => {
 		it('should return an error when the required "integrationId" query parameters is not sent', (done) => {
-			request
+			void request
 				.get(api('integrations.get'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -432,8 +436,8 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration', (done) => {
-			updatePermission('manage-incoming-integrations', []).then(() => {
-				request
+			void updatePermission('manage-incoming-integrations', []).then(() => {
+				void request
 					.get(api(`integrations.get?integrationId=${integration._id}`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
@@ -447,8 +451,8 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration created by another user', (done) => {
-			updatePermission('manage-incoming-integrations', []).then(() => {
-				request
+			void updatePermission('manage-incoming-integrations', []).then(() => {
+				void request
 					.get(api(`integrations.get?integrationId=${integrationCreatedByAnUser._id}`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
@@ -462,8 +466,8 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should return an error when the user sends an invalid integration', (done) => {
-			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
-				request
+			void updatePermission('manage-incoming-integrations', ['admin']).then(() => {
+				void request
 					.get(api('integrations.get?integrationId=invalid'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
@@ -477,10 +481,10 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should return the integration successfully when the user is able to see only your own integrations', (done) => {
-			updatePermission('manage-incoming-integrations', [])
+			void updatePermission('manage-incoming-integrations', [])
 				.then(() => updatePermission('manage-own-incoming-integrations', ['user']))
 				.then(() => {
-					request
+					void request
 						.get(api(`integrations.get?integrationId=${integrationCreatedByAnUser._id}`))
 						.set(userCredentials)
 						.expect('Content-Type', 'application/json')
@@ -495,8 +499,8 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should return the integration successfully', (done) => {
-			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
-				request
+			void updatePermission('manage-incoming-integrations', ['admin']).then(() => {
+				void request
 					.get(api(`integrations.get?integrationId=${integration._id}`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
@@ -513,7 +517,7 @@ describe('[Incoming Integrations]', function () {
 
 	describe('[/integrations.update]', () => {
 		it('should update an integration by id and return the new data', (done) => {
-			request
+			void request
 				.put(api('integrations.update'))
 				.set(credentials)
 				.send({
@@ -540,7 +544,7 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should have integration updated on subsequent gets', (done) => {
-			request
+			void request
 				.get(api(`integrations.get?integrationId=${integration._id}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -558,8 +562,8 @@ describe('[Incoming Integrations]', function () {
 
 	describe('[/integrations.remove]', () => {
 		it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to remove an incoming integration', (done) => {
-			updatePermission('manage-incoming-integrations', []).then(() => {
-				request
+			void updatePermission('manage-incoming-integrations', []).then(() => {
+				void request
 					.post(api('integrations.remove'))
 					.set(credentials)
 					.send({
@@ -577,8 +581,8 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should return an error when the user DOES NOT have the permission "manage-own-incoming-integrations" to remove an incoming integration', (done) => {
-			updatePermission('manage-own-incoming-integrations', []).then(() => {
-				request
+			void updatePermission('manage-own-incoming-integrations', []).then(() => {
+				void request
 					.post(api('integrations.remove'))
 					.set(credentials)
 					.send({
@@ -596,8 +600,8 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should return an error when the user sends an invalid type of integration', (done) => {
-			updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
-				request
+			void updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
+				void request
 					.post(api('integrations.remove'))
 					.set(credentials)
 					.send({
@@ -615,8 +619,8 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('should remove the integration successfully when the user at least one of the necessary permission to remove an incoming integration', (done) => {
-			updatePermission('manage-incoming-integrations', ['admin']).then(() => {
-				request
+			void updatePermission('manage-incoming-integrations', ['admin']).then(() => {
+				void request
 					.post(api('integrations.remove'))
 					.set(credentials)
 					.send({
@@ -633,8 +637,8 @@ describe('[Incoming Integrations]', function () {
 		});
 
 		it('the normal user should remove the integration successfully when the user have the "manage-own-incoming-integrations" to remove an incoming integration', (done) => {
-			updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
-				request
+			void updatePermission('manage-own-incoming-integrations', ['user']).then(() => {
+				void request
 					.post(api('integrations.remove'))
 					.set(userCredentials)
 					.send({
