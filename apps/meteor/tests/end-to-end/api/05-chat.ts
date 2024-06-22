@@ -1,17 +1,22 @@
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IMessage, IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
+import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials, message } from '../../data/api-data';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage, deleteMessage, pinMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Chat]', function () {
 	this.retries(0);
-	let testChannel;
+	let testChannel: IRoom;
+	let message: { _id: IMessage['_id'] };
 
 	before((done) => getCredentials(done));
 
@@ -23,7 +28,7 @@ describe('[Chat]', function () {
 
 	describe('/chat.postMessage', () => {
 		it('should throw an error when at least one of required parameters(channel, roomId) is not sent', (done) => {
-			request
+			void request
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -42,7 +47,7 @@ describe('[Chat]', function () {
 		});
 
 		it('should throw an error when it has some properties with the wrong type(attachments.title_link_download, attachments.fields, message_link)', (done) => {
-			request
+			void request
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -83,7 +88,7 @@ describe('[Chat]', function () {
 
 		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
 			it('attachment.message_link', () =>
-				request
+				void request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -110,7 +115,7 @@ describe('[Chat]', function () {
 					}));
 
 			it('attachment.author_link', () =>
-				request
+				void request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -137,7 +142,7 @@ describe('[Chat]', function () {
 					}));
 
 			it('attachment.title_link', () =>
-				request
+				void request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -164,7 +169,7 @@ describe('[Chat]', function () {
 					}));
 
 			it('attachment.action.url', () =>
-				request
+				void request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -198,7 +203,7 @@ describe('[Chat]', function () {
 					}));
 
 			it('message.avatar', () =>
-				request
+				void request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -232,7 +237,7 @@ describe('[Chat]', function () {
 					}));
 
 			it('attachment.action.image_url', () =>
-				request
+				void request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -267,7 +272,7 @@ describe('[Chat]', function () {
 					}));
 
 			it('attachment.thumb_url', () =>
-				request
+				void request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -295,7 +300,7 @@ describe('[Chat]', function () {
 					}));
 
 			it('attachment.author_icon', () =>
-				request
+				void request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -323,7 +328,7 @@ describe('[Chat]', function () {
 					}));
 
 			it('attachment.image_url', () =>
-				request
+				void request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -350,7 +355,7 @@ describe('[Chat]', function () {
 						expect(res.body).to.have.property('error');
 					}));
 			it('attachment.audio_url', () =>
-				request
+				void request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -377,7 +382,7 @@ describe('[Chat]', function () {
 						expect(res.body).to.have.property('error');
 					}));
 			it('attachment.video_url', () =>
-				request
+				void request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -406,7 +411,7 @@ describe('[Chat]', function () {
 		});
 
 		it('should throw an error when the properties (attachments.fields.title, attachments.fields.value) are with the wrong type', (done) => {
-			request
+			void request
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -452,7 +457,7 @@ describe('[Chat]', function () {
 		});
 
 		it('should return statusCode 200 when postMessage successfully', (done) => {
-			request
+			void request
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -496,7 +501,7 @@ describe('[Chat]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', 'Sample message');
-					message._id = res.body.message._id;
+					message = { _id: res.body.message._id };
 				})
 				.end(done);
 		});
@@ -504,7 +509,7 @@ describe('[Chat]', function () {
 
 	describe('/chat.getMessage', () => {
 		it('should retrieve the message successfully', (done) => {
-			request
+			void request
 				.get(api('chat.getMessage'))
 				.set(credentials)
 				.query({
@@ -522,7 +527,7 @@ describe('[Chat]', function () {
 
 	describe('/chat.sendMessage', () => {
 		it("should throw an error when the required param 'rid' is not sent", (done) => {
-			request
+			void request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -544,7 +549,7 @@ describe('[Chat]', function () {
 
 		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
 			it('attachment.message_link', () =>
-				request
+				void request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -571,7 +576,7 @@ describe('[Chat]', function () {
 					}));
 
 			it('attachment.author_link', () =>
-				request
+				void request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -598,7 +603,7 @@ describe('[Chat]', function () {
 					}));
 
 			it('attachment.title_link', () =>
-				request
+				void request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -625,7 +630,7 @@ describe('[Chat]', function () {
 					}));
 
 			it('attachment.action.url', () =>
-				request
+				void request
 					.post(api('chat.postMessage'))
 					.set(credentials)
 					.send({
@@ -660,7 +665,7 @@ describe('[Chat]', function () {
 		});
 
 		it('should throw an error when it has some properties with the wrong type(attachments.title_link_download, attachments.fields, message_link)', (done) => {
-			request
+			void request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -703,7 +708,7 @@ describe('[Chat]', function () {
 
 		it('should send a message successfully', (done) => {
 			message._id = `id-${Date.now()}`;
-			request
+			void request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -755,8 +760,8 @@ describe('[Chat]', function () {
 		});
 
 		describe('oembed', () => {
-			let ytEmbedMsgId;
-			let imgUrlMsgId;
+			let ytEmbedMsgId: IMessage['_id'];
+			let imgUrlMsgId: IMessage['_id'];
 
 			before(() => Promise.all([updateSetting('API_EmbedIgnoredHosts', ''), updateSetting('API_EmbedSafePorts', '80, 443, 3000')]));
 
@@ -793,7 +798,7 @@ describe('[Chat]', function () {
 
 			it('should have an iframe oembed with style max-width', (done) => {
 				setTimeout(() => {
-					request
+					void request
 						.get(api('chat.getMessage'))
 						.set(credentials)
 						.query({
@@ -815,7 +820,7 @@ describe('[Chat]', function () {
 
 			it('should embed an image preview if message has an image url', (done) => {
 				setTimeout(() => {
-					request
+					void request
 						.get(api('chat.getMessage'))
 						.set(credentials)
 						.query({
@@ -945,7 +950,7 @@ describe('[Chat]', function () {
 					.expect((res) => {
 						expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.has.lengthOf(urls.length);
 
-						res.body.message.urls.forEach((url) => {
+						(res.body.message as IMessage).urls?.forEach((url) => {
 							expect(url).to.not.have.property('ignoreParse');
 							expect(url).to.have.property('meta').that.is.an('object').that.is.empty;
 						});
@@ -954,9 +959,9 @@ describe('[Chat]', function () {
 		});
 
 		describe('Read only channel', () => {
-			let readOnlyChannel;
-			let userCredentials;
-			let user;
+			let readOnlyChannel: IRoom;
+			let userCredentials: Credentials;
+			let user: TestUser<IUser>;
 
 			before(async () => {
 				user = await createUser();
@@ -972,7 +977,7 @@ describe('[Chat]', function () {
 			);
 
 			it('Creating a read-only channel', (done) => {
-				request
+				void request
 					.post(api('channels.create'))
 					.set(credentials)
 					.send({
@@ -988,7 +993,7 @@ describe('[Chat]', function () {
 					.end(done);
 			});
 			it('should send a message when the user is the owner of a readonly channel', (done) => {
-				request
+				void request
 					.post(api('chat.sendMessage'))
 					.set(credentials)
 					.send({
@@ -1006,7 +1011,7 @@ describe('[Chat]', function () {
 					.end(done);
 			});
 			it('Inviting regular user to read-only channel', (done) => {
-				request
+				void request
 					.post(api('channels.invite'))
 					.set(credentials)
 					.send({
@@ -1024,7 +1029,7 @@ describe('[Chat]', function () {
 			});
 
 			it('should fail to send message when the user lacks permission', (done) => {
-				request
+				void request
 					.post(api('chat.sendMessage'))
 					.set(userCredentials)
 					.send({
@@ -1064,7 +1069,7 @@ describe('[Chat]', function () {
 		});
 
 		it('should fail if user does not have the message-impersonate permission and tries to send message with alias param', (done) => {
-			request
+			void request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -1084,7 +1089,7 @@ describe('[Chat]', function () {
 		});
 
 		it('should fail if user does not have the message-impersonate permission and tries to send message with avatar param', (done) => {
-			request
+			void request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -1104,7 +1109,15 @@ describe('[Chat]', function () {
 		});
 
 		describe('customFields', () => {
-			async function testMessageSending({ customFields, testCb, statusCode }) {
+			async function testMessageSending({
+				customFields,
+				testCb,
+				statusCode,
+			}: {
+				customFields?: Record<string, unknown>;
+				testCb: (res: Response) => any;
+				statusCode: number;
+			}) {
 				await request
 					.post(api('chat.sendMessage'))
 					.set(credentials)
@@ -1334,7 +1347,7 @@ describe('[Chat]', function () {
 
 	describe('/chat.update', () => {
 		const siteUrl = process.env.SITE_URL || process.env.TEST_API_URL || 'http://localhost:3000';
-		let simpleMessageId;
+		let simpleMessageId: IMessage['_id'];
 
 		before('should send simple message in room', async () => {
 			const res = await sendSimpleMessage({ roomId: 'GENERAL' });
@@ -1342,7 +1355,7 @@ describe('[Chat]', function () {
 		});
 
 		it('should update a message successfully', (done) => {
-			request
+			void request
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
@@ -1361,7 +1374,7 @@ describe('[Chat]', function () {
 
 		it('should add quote attachments to a message', async () => {
 			const quotedMsgLink = `${siteUrl}/channel/general?msg=${message._id}`;
-			request
+			void request
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
@@ -1381,7 +1394,7 @@ describe('[Chat]', function () {
 
 		it('should replace a quote attachment in a message', async () => {
 			const quotedMsgLink = `${siteUrl}/channel/general?msg=${simpleMessageId}`;
-			request
+			void request
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
@@ -1402,7 +1415,7 @@ describe('[Chat]', function () {
 		it('should add multiple quote attachments in a single message', async () => {
 			const quotedMsgLink = `${siteUrl}/channel/general?msg=${simpleMessageId}`;
 			const newQuotedMsgLink = `${siteUrl}/channel/general?msg=${message._id}`;
-			request
+			void request
 				.post(api('chat.update'))
 				.set(credentials)
 				.send({
@@ -1441,9 +1454,9 @@ describe('[Chat]', function () {
 	});
 
 	describe('[/chat.delete]', () => {
-		let msgId;
-		let user;
-		let userCredentials;
+		let msgId: IMessage['_id'];
+		let user: TestUser<IUser>;
+		let userCredentials: Credentials;
 
 		before(async () => {
 			user = await createUser();
@@ -1453,7 +1466,7 @@ describe('[Chat]', function () {
 		after(() => deleteUser(user));
 
 		beforeEach((done) => {
-			request
+			void request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -1471,7 +1484,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 		it('should delete a message successfully', (done) => {
-			request
+			void request
 				.post(api('chat.delete'))
 				.set(credentials)
 				.send({
@@ -1486,7 +1499,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 		it('sending message as another user...', (done) => {
-			request
+			void request
 				.post(api('chat.sendMessage'))
 				.set(userCredentials)
 				.send({
@@ -1504,7 +1517,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 		it('should delete a message successfully when the user deletes a message send by another user', (done) => {
-			request
+			void request
 				.post(api('chat.delete'))
 				.set(credentials)
 				.send({
@@ -1523,7 +1536,7 @@ describe('[Chat]', function () {
 
 	describe('/chat.search', () => {
 		before(async () => {
-			const sendMessage = (text) =>
+			const sendMessage = (text: string) =>
 				request
 					.post(api('chat.sendMessage'))
 					.set(credentials)
@@ -1542,7 +1555,7 @@ describe('[Chat]', function () {
 		});
 
 		it('should return a list of messages when execute successfully', (done) => {
-			request
+			void request
 				.get(api('chat.search'))
 				.set(credentials)
 				.query({
@@ -1558,7 +1571,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 		it('should return a list of messages(length=1) when is provided "count" query parameter execute successfully', (done) => {
-			request
+			void request
 				.get(api('chat.search'))
 				.set(credentials)
 				.query({
@@ -1576,7 +1589,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 		it('should return a list of messages(length=3) when is provided "count" and "offset" query parameters are executed successfully', (done) => {
-			request
+			void request
 				.get(api('chat.search'))
 				.set(credentials)
 				.query({
@@ -1596,7 +1609,7 @@ describe('[Chat]', function () {
 		});
 
 		it('should return a empty list of messages when is provided a huge offset value', (done) => {
-			request
+			void request
 				.get(api('chat.search'))
 				.set(credentials)
 				.query({
@@ -1618,7 +1631,7 @@ describe('[Chat]', function () {
 
 	describe('[/chat.react]', () => {
 		it("should return statusCode: 200 and success when try unreact a message that's no reacted yet", (done) => {
-			request
+			void request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -1634,7 +1647,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 		it('should react a message successfully', (done) => {
-			request
+			void request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -1650,7 +1663,7 @@ describe('[Chat]', function () {
 		});
 
 		it('should return statusCode: 200 when the emoji is valid', (done) => {
-			request
+			void request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -1665,7 +1678,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 		it("should return statusCode: 200 and success when try react a message that's already reacted", (done) => {
-			request
+			void request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -1681,7 +1694,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 		it('should return statusCode: 200 when unreact a message with flag, shouldReact: false', (done) => {
-			request
+			void request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -1697,7 +1710,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 		it('should return statusCode: 200 when react a message with flag, shouldReact: true', (done) => {
-			request
+			void request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -1713,7 +1726,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 		it('should return statusCode: 200 when the emoji is valid and has no colons', (done) => {
-			request
+			void request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -1728,7 +1741,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 		it('should return statusCode: 200 for reaction property when the emoji is valid', (done) => {
-			request
+			void request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -1752,7 +1765,7 @@ describe('[Chat]', function () {
 					this.skip();
 				}
 
-				request
+				void request
 					.get(api(`chat.getMessageReadReceipts`))
 					.set(credentials)
 					.query({
@@ -1775,7 +1788,7 @@ describe('[Chat]', function () {
 				if (isEnterprise) {
 					this.skip();
 				}
-				request
+				void request
 					.get(api(`chat.getMessageReadReceipts`))
 					.set(credentials)
 					.query({
@@ -1796,7 +1809,7 @@ describe('[Chat]', function () {
 					this.skip();
 				}
 
-				request
+				void request
 					.get(api('chat.getMessageReadReceipts'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
@@ -1814,7 +1827,7 @@ describe('[Chat]', function () {
 	describe('[/chat.reportMessage]', () => {
 		describe('when execute successfully', () => {
 			it('should return the statusCode 200', (done) => {
-				request
+				void request
 					.post(api('chat.reportMessage'))
 					.set(credentials)
 					.send({
@@ -1832,7 +1845,7 @@ describe('[Chat]', function () {
 
 		describe('when an error occurs', () => {
 			it('should return statusCode 400 and an error', (done) => {
-				request
+				void request
 					.post(api('chat.reportMessage'))
 					.set(credentials)
 					.send({
@@ -1850,7 +1863,7 @@ describe('[Chat]', function () {
 	});
 
 	describe('[/chat.getDeletedMessages]', () => {
-		let roomId;
+		let roomId: IRoom['_id'];
 
 		before(async () => {
 			roomId = (
@@ -1867,7 +1880,7 @@ describe('[Chat]', function () {
 
 		describe('when execute successfully', () => {
 			it('should return a list of deleted messages', (done) => {
-				request
+				void request
 					.get(api('chat.getDeletedMessages'))
 					.set(credentials)
 					.query({
@@ -1884,7 +1897,7 @@ describe('[Chat]', function () {
 					.end(done);
 			});
 			it('should return a list of deleted messages when the user sets count query parameter', (done) => {
-				request
+				void request
 					.get(api('chat.getDeletedMessages'))
 					.set(credentials)
 					.query({
@@ -1902,7 +1915,7 @@ describe('[Chat]', function () {
 					.end(done);
 			});
 			it('should return a list of deleted messages when the user sets count and offset query parameters', (done) => {
-				request
+				void request
 					.get(api('chat.getDeletedMessages'))
 					.set(credentials)
 					.query({
@@ -1924,7 +1937,7 @@ describe('[Chat]', function () {
 
 		describe('when an error occurs', () => {
 			it('should return statusCode 400 and an error when "roomId" is not provided', (done) => {
-				request
+				void request
 					.get(api('chat.getDeletedMessages'))
 					.set(credentials)
 					.query({
@@ -1941,7 +1954,7 @@ describe('[Chat]', function () {
 					.end(done);
 			});
 			it('should return statusCode 400 and an error when "since" is not provided', (done) => {
-				request
+				void request
 					.get(api('chat.getDeletedMessages'))
 					.set(credentials)
 					.query({
@@ -1958,7 +1971,7 @@ describe('[Chat]', function () {
 					.end(done);
 			});
 			it('should return statusCode 400 and an error when "since" is provided but it is invalid ISODate', (done) => {
-				request
+				void request
 					.get(api('chat.getDeletedMessages'))
 					.set(credentials)
 					.query({
@@ -1984,8 +1997,8 @@ describe('[Chat]', function () {
 		);
 
 		it('should return an error when pinMessage is not allowed in this server', (done) => {
-			updateSetting('Message_AllowPinning', false).then(() => {
-				request
+			void updateSetting('Message_AllowPinning', false).then(() => {
+				void request
 					.post(api('chat.pinMessage'))
 					.set(credentials)
 					.send({
@@ -2002,9 +2015,9 @@ describe('[Chat]', function () {
 		});
 
 		it('should return an error when pinMessage is allowed in server but user dont have permission', (done) => {
-			updateSetting('Message_AllowPinning', true).then(() => {
-				updatePermission('pin-message', []).then(() => {
-					request
+			void updateSetting('Message_AllowPinning', true).then(() => {
+				void updatePermission('pin-message', []).then(() => {
+					void request
 						.post(api('chat.pinMessage'))
 						.set(credentials)
 						.send({
@@ -2022,8 +2035,8 @@ describe('[Chat]', function () {
 		});
 
 		it('should pin Message successfully', (done) => {
-			updatePermission('pin-message', ['admin']).then(() => {
-				request
+			void updatePermission('pin-message', ['admin']).then(() => {
+				void request
 					.post(api('chat.pinMessage'))
 					.set(credentials)
 					.send({
@@ -2046,8 +2059,8 @@ describe('[Chat]', function () {
 		);
 
 		it('should return an error when pinMessage is not allowed in this server', (done) => {
-			updateSetting('Message_AllowPinning', false).then(() => {
-				request
+			void updateSetting('Message_AllowPinning', false).then(() => {
+				void request
 					.post(api('chat.unPinMessage'))
 					.set(credentials)
 					.send({
@@ -2064,9 +2077,9 @@ describe('[Chat]', function () {
 		});
 
 		it('should return an error when pinMessage is allowed in server but users dont have permission', (done) => {
-			updateSetting('Message_AllowPinning', true).then(() => {
-				updatePermission('pin-message', []).then(() => {
-					request
+			void updateSetting('Message_AllowPinning', true).then(() => {
+				void updatePermission('pin-message', []).then(() => {
+					void request
 						.post(api('chat.unPinMessage'))
 						.set(credentials)
 						.send({
@@ -2084,8 +2097,8 @@ describe('[Chat]', function () {
 		});
 
 		it('should unpin Message successfully', (done) => {
-			updatePermission('pin-message', ['admin']).then(() => {
-				request
+			void updatePermission('pin-message', ['admin']).then(() => {
+				void request
 					.post(api('chat.unPinMessage'))
 					.set(credentials)
 					.send({
@@ -2106,8 +2119,8 @@ describe('[Chat]', function () {
 		after(() => updateSetting('Message_AllowStarring', true));
 
 		it('should return an error when starMessage is not allowed in this server', (done) => {
-			updateSetting('Message_AllowStarring', false).then(() => {
-				request
+			void updateSetting('Message_AllowStarring', false).then(() => {
+				void request
 					.post(api('chat.unStarMessage'))
 					.set(credentials)
 					.send({
@@ -2124,8 +2137,8 @@ describe('[Chat]', function () {
 		});
 
 		it('should unstar Message successfully', (done) => {
-			updateSetting('Message_AllowStarring', true).then(() => {
-				request
+			void updateSetting('Message_AllowStarring', true).then(() => {
+				void request
 					.post(api('chat.unStarMessage'))
 					.set(credentials)
 					.send({
@@ -2146,8 +2159,8 @@ describe('[Chat]', function () {
 		after(() => updateSetting('Message_AllowStarring', true));
 
 		it('should return an error when starMessage is not allowed in this server', (done) => {
-			updateSetting('Message_AllowStarring', false).then(() => {
-				request
+			void updateSetting('Message_AllowStarring', false).then(() => {
+				void request
 					.post(api('chat.starMessage'))
 					.set(credentials)
 					.send({
@@ -2164,8 +2177,8 @@ describe('[Chat]', function () {
 		});
 
 		it('should star Message successfully', (done) => {
-			updateSetting('Message_AllowStarring', true).then(() => {
-				request
+			void updateSetting('Message_AllowStarring', true).then(() => {
+				void request
 					.post(api('chat.starMessage'))
 					.set(credentials)
 					.send({
@@ -2186,7 +2199,7 @@ describe('[Chat]', function () {
 		after(() => deleteRoom({ type: 'd', roomId: 'rocket.catrocketchat.internal.admin.test' }));
 
 		it('should fail if invalid roomId', (done) => {
-			request
+			void request
 				.get(api('chat.ignoreUser'))
 				.set(credentials)
 				.query({
@@ -2204,7 +2217,7 @@ describe('[Chat]', function () {
 				});
 		});
 		it('should fail if invalid userId', (done) => {
-			request
+			void request
 				.get(api('chat.ignoreUser'))
 				.set(credentials)
 				.query({
@@ -2222,7 +2235,7 @@ describe('[Chat]', function () {
 				});
 		});
 		it('should successfully ignore user', (done) => {
-			request
+			void request
 				.get(api('chat.ignoreUser'))
 				.set(credentials)
 				.query({
@@ -2239,7 +2252,7 @@ describe('[Chat]', function () {
 				});
 		});
 		it('should successfully unignore user', (done) => {
-			request
+			void request
 				.get(api('chat.ignoreUser'))
 				.set(credentials)
 				.query({
@@ -2259,7 +2272,7 @@ describe('[Chat]', function () {
 	});
 
 	describe('[/chat.getPinnedMessages]', () => {
-		let roomId;
+		let roomId: IRoom['_id'];
 
 		before(async () => {
 			roomId = (
@@ -2278,7 +2291,7 @@ describe('[Chat]', function () {
 
 		describe('when execute successfully', () => {
 			it('should return a list of pinned messages', (done) => {
-				request
+				void request
 					.get(api('chat.getPinnedMessages'))
 					.set(credentials)
 					.query({
@@ -2294,7 +2307,7 @@ describe('[Chat]', function () {
 					.end(done);
 			});
 			it('should return a list of pinned messages when the user sets count query parameter', (done) => {
-				request
+				void request
 					.get(api('chat.getPinnedMessages'))
 					.set(credentials)
 					.query({
@@ -2311,7 +2324,7 @@ describe('[Chat]', function () {
 					.end(done);
 			});
 			it('should return a list of pinned messages when the user sets count and offset query parameters', (done) => {
-				request
+				void request
 					.get(api('chat.getPinnedMessages'))
 					.set(credentials)
 					.query({
@@ -2332,7 +2345,7 @@ describe('[Chat]', function () {
 
 		describe('when an error occurs', () => {
 			it('should return statusCode 400 and an error when "roomId" is not provided', (done) => {
-				request
+				void request
 					.get(api('chat.getPinnedMessages'))
 					.set(credentials)
 					.query({
@@ -2351,7 +2364,7 @@ describe('[Chat]', function () {
 	});
 
 	describe('[/chat.getMentionedMessages]', () => {
-		let testChannel;
+		let testChannel: IRoom;
 
 		before(async () => {
 			testChannel = (
@@ -2365,7 +2378,7 @@ describe('[Chat]', function () {
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
 		it('should return an error when the required "roomId" parameter is not sent', (done) => {
-			request
+			void request
 				.get(api('chat.getMentionedMessages'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -2378,7 +2391,7 @@ describe('[Chat]', function () {
 		});
 
 		it('should return an error when the roomId is invalid', (done) => {
-			request
+			void request
 				.get(api('chat.getMentionedMessages?roomId=invalid-room'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -2391,7 +2404,7 @@ describe('[Chat]', function () {
 		});
 
 		it('should return the mentioned messages', (done) => {
-			request
+			void request
 				.get(api(`chat.getMentionedMessages?roomId=${testChannel._id}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -2408,7 +2421,7 @@ describe('[Chat]', function () {
 	});
 
 	describe('[/chat.getStarredMessages]', () => {
-		let testChannel;
+		let testChannel: IRoom;
 
 		before(async () => {
 			testChannel = (
@@ -2422,7 +2435,7 @@ describe('[Chat]', function () {
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
 		it('should return an error when the required "roomId" parameter is not sent', (done) => {
-			request
+			void request
 				.get(api('chat.getStarredMessages'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -2435,7 +2448,7 @@ describe('[Chat]', function () {
 		});
 
 		it('should return an error when the roomId is invalid', (done) => {
-			request
+			void request
 				.get(api('chat.getStarredMessages?roomId=invalid-room'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -2448,7 +2461,7 @@ describe('[Chat]', function () {
 		});
 
 		it('should return the starred messages', (done) => {
-			request
+			void request
 				.get(api(`chat.getStarredMessages?roomId=${testChannel._id}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -2466,8 +2479,8 @@ describe('[Chat]', function () {
 
 	describe('[/chat.getDiscussions]', () => {
 		const messageText = 'Message to create discussion';
-		let testChannel;
-		let discussionRoom;
+		let testChannel: IRoom;
+		let discussionRoom: IRoom & { rid: IRoom['_id'] };
 		const messageWords = [
 			...messageText.split(' '),
 			...messageText.toUpperCase().split(' '),
@@ -2496,7 +2509,7 @@ describe('[Chat]', function () {
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
 		it('should return an error when the required "roomId" parameter is not sent', (done) => {
-			request
+			void request
 				.get(api('chat.getDiscussions'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -2509,7 +2522,7 @@ describe('[Chat]', function () {
 		});
 
 		it('should return an error when the roomId is invalid', (done) => {
-			request
+			void request
 				.get(api('chat.getDiscussions?roomId=invalid-room'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -2522,7 +2535,7 @@ describe('[Chat]', function () {
 		});
 
 		it('should return the discussions of a room', (done) => {
-			request
+			void request
 				.get(api(`chat.getDiscussions?roomId=${testChannel._id}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -2537,7 +2550,7 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 		it('should return the discussions of a room even requested with count and offset params', (done) => {
-			request
+			void request
 				.get(api('chat.getDiscussions'))
 				.set(credentials)
 				.query({
@@ -2557,9 +2570,9 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 
-		function filterDiscussionsByText(text) {
+		function filterDiscussionsByText(text: string) {
 			it(`should return the room's discussion list filtered by the text '${text}'`, (done) => {
-				request
+				void request
 					.get(api('chat.getDiscussions'))
 					.set(credentials)
 					.query({
@@ -2581,7 +2594,7 @@ describe('[Chat]', function () {
 			});
 
 			it(`should return the room's discussion list filtered by the text '${text}' even requested with count and offset params`, (done) => {
-				request
+				void request
 					.get(api('chat.getDiscussions'))
 					.set(credentials)
 					.query({
@@ -2612,7 +2625,7 @@ describe('[Chat]', function () {
 });
 
 describe('Threads', () => {
-	let testThreadChannel;
+	let testThreadChannel: IRoom;
 
 	before((done) => getCredentials(done));
 
@@ -2632,9 +2645,9 @@ describe('Threads', () => {
 
 	describe('[/chat.getThreadsList]', () => {
 		const messageText = 'Message to create thread';
-		let testChannel;
-		let threadMessage;
-		let user;
+		let testChannel: IRoom;
+		let threadMessage: IThreadMessage;
+		let user: TestUser<IUser>;
 		const messageWords = [
 			...messageText.split(' '),
 			...messageText.toUpperCase().split(' '),
@@ -2686,8 +2699,8 @@ describe('Threads', () => {
 		);
 
 		it('should return an error for chat.getThreadsList when threads are not allowed in this server', (done) => {
-			updateSetting('Threads_enabled', false).then(() => {
-				request
+			void updateSetting('Threads_enabled', false).then(() => {
+				void request
 					.get(api('chat.getThreadsList'))
 					.set(credentials)
 					.query({
@@ -2705,12 +2718,12 @@ describe('Threads', () => {
 		});
 
 		it('should return an error when the user is not allowed access the room', (done) => {
-			createUser().then((createdUser) => {
+			void createUser().then((createdUser) => {
 				user = createdUser;
-				login(createdUser.username, password).then((userCredentials) => {
-					updateSetting('Threads_enabled', true).then(() => {
-						updatePermission('view-c-room', []).then(() => {
-							request
+				void login(createdUser.username, password).then((userCredentials) => {
+					void updateSetting('Threads_enabled', true).then(() => {
+						void updatePermission('view-c-room', []).then(() => {
+							void request
 								.get(api('chat.getThreadsList'))
 								.set(userCredentials)
 								.query({
@@ -2731,8 +2744,8 @@ describe('Threads', () => {
 		});
 
 		it("should return the room's thread list", (done) => {
-			updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				request
+			void updatePermission('view-c-room', ['admin', 'user']).then(() => {
+				void request
 					.get(api('chat.getThreadsList'))
 					.set(credentials)
 					.query({
@@ -2754,8 +2767,8 @@ describe('Threads', () => {
 		});
 
 		it("should return the room's thread list even requested with count and offset params", (done) => {
-			updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				request
+			void updatePermission('view-c-room', ['admin', 'user']).then(() => {
+				void request
 					.get(api('chat.getThreadsList'))
 					.set(credentials)
 					.query({
@@ -2778,9 +2791,9 @@ describe('Threads', () => {
 			});
 		});
 
-		function filterThreadsByText(text) {
+		function filterThreadsByText(text: string) {
 			it(`should return the room's thread list filtered by the text '${text}'`, (done) => {
-				request
+				void request
 					.get(api('chat.getThreadsList'))
 					.set(credentials)
 					.query({
@@ -2801,7 +2814,7 @@ describe('Threads', () => {
 					.end(done);
 			});
 			it(`should return the room's thread list filtered by the text '${text}' even requested with count and offset params`, (done) => {
-				request
+				void request
 					.get(api('chat.getThreadsList'))
 					.set(credentials)
 					.query({
@@ -2830,8 +2843,8 @@ describe('Threads', () => {
 		});
 
 		it('should return an empty thread list', (done) => {
-			updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				request
+			void updatePermission('view-c-room', ['admin', 'user']).then(() => {
+				void request
 					.get(api('chat.getThreadsList'))
 					.set(credentials)
 					.query({
@@ -2854,9 +2867,9 @@ describe('Threads', () => {
 	});
 
 	describe('[/chat.syncThreadsList]', () => {
-		let testChannel;
-		let threadMessage;
-		let user;
+		let testChannel: IRoom;
+		let threadMessage: IThreadMessage;
+		let user: TestUser<IUser>;
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `.threads.sync.${Date.now()}` })).body.channel;
@@ -2884,8 +2897,8 @@ describe('Threads', () => {
 		);
 
 		it('should return an error for chat.getThreadsList when threads are not allowed in this server', (done) => {
-			updateSetting('Threads_enabled', false).then(() => {
-				request
+			void updateSetting('Threads_enabled', false).then(() => {
+				void request
 					.get(api('chat.getThreadsList'))
 					.set(credentials)
 					.query({
@@ -2903,8 +2916,8 @@ describe('Threads', () => {
 		});
 
 		it('should return an error when the required param "rid" is missing', (done) => {
-			updateSetting('Threads_enabled', true).then(() => {
-				request
+			void updateSetting('Threads_enabled', true).then(() => {
+				void request
 					.get(api('chat.syncThreadsList'))
 					.set(credentials)
 					.query({})
@@ -2920,8 +2933,8 @@ describe('Threads', () => {
 		});
 
 		it('should return an error when the required param "updatedSince" is missing', (done) => {
-			updateSetting('Threads_enabled', true).then(() => {
-				request
+			void updateSetting('Threads_enabled', true).then(() => {
+				void request
 					.get(api('chat.syncThreadsList'))
 					.set(credentials)
 					.query({
@@ -2939,8 +2952,8 @@ describe('Threads', () => {
 		});
 
 		it('should return an error when the param "updatedSince" is an invalid date', (done) => {
-			updateSetting('Threads_enabled', true).then(() => {
-				request
+			void updateSetting('Threads_enabled', true).then(() => {
+				void request
 					.get(api('chat.syncThreadsList'))
 					.set(credentials)
 					.query({
@@ -2962,11 +2975,11 @@ describe('Threads', () => {
 		});
 
 		it('should return an error when the user is not allowed access the room', (done) => {
-			createUser().then((createdUser) => {
+			void createUser().then((createdUser) => {
 				user = createdUser;
-				login(createdUser.username, password).then((userCredentials) => {
-					updatePermission('view-c-room', []).then(() => {
-						request
+				void login(createdUser.username, password).then((userCredentials) => {
+					void updatePermission('view-c-room', []).then(() => {
+						void request
 							.get(api('chat.syncThreadsList'))
 							.set(userCredentials)
 							.query({
@@ -2987,8 +3000,8 @@ describe('Threads', () => {
 		});
 
 		it("should return the room's thread synced list", (done) => {
-			updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				request
+			void updatePermission('view-c-room', ['admin', 'user']).then(() => {
+				void request
 					.get(api('chat.syncThreadsList'))
 					.set(credentials)
 					.query({
@@ -3012,10 +3025,10 @@ describe('Threads', () => {
 	});
 
 	describe('[/chat.getThreadMessages]', () => {
-		let testChannel;
-		let threadMessage;
-		let createdThreadMessage;
-		let user;
+		let testChannel: IRoom;
+		let threadMessage: IThreadMessage;
+		let createdThreadMessage: IThreadMessage;
+		let user: TestUser<IUser>;
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `channel.test.threads.${Date.now()}` })).body.channel;
@@ -3045,8 +3058,8 @@ describe('Threads', () => {
 		);
 
 		it('should return an error for chat.getThreadMessages when threads are not allowed in this server', (done) => {
-			updateSetting('Threads_enabled', false).then(() => {
-				request
+			void updateSetting('Threads_enabled', false).then(() => {
+				void request
 					.get(api('chat.getThreadMessages'))
 					.set(credentials)
 					.query({
@@ -3064,12 +3077,12 @@ describe('Threads', () => {
 		});
 
 		it('should return an error when the user is not allowed access the room', (done) => {
-			createUser().then((createdUser) => {
+			void createUser().then((createdUser) => {
 				user = createdUser;
-				login(createdUser.username, password).then((userCredentials) => {
-					updateSetting('Threads_enabled', true).then(() => {
-						updatePermission('view-c-room', []).then(() => {
-							request
+				void login(createdUser.username, password).then((userCredentials) => {
+					void updateSetting('Threads_enabled', true).then(() => {
+						void updatePermission('view-c-room', []).then(() => {
+							void request
 								.get(api('chat.getThreadMessages'))
 								.set(userCredentials)
 								.query({
@@ -3090,8 +3103,8 @@ describe('Threads', () => {
 		});
 
 		it("should return the thread's message list", (done) => {
-			updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				request
+			void updatePermission('view-c-room', ['admin', 'user']).then(() => {
+				void request
 					.get(api('chat.getThreadMessages'))
 					.set(credentials)
 					.query({
@@ -3114,10 +3127,10 @@ describe('Threads', () => {
 	});
 
 	describe('[/chat.syncThreadMessages]', () => {
-		let testChannel;
-		let threadMessage;
-		let createdThreadMessage;
-		let user;
+		let testChannel: IRoom;
+		let threadMessage: IThreadMessage;
+		let createdThreadMessage: IThreadMessage;
+		let user: TestUser<IUser>;
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `message.threads.${Date.now()}` })).body.channel;
@@ -3147,8 +3160,8 @@ describe('Threads', () => {
 		);
 
 		it('should return an error for chat.syncThreadMessages when threads are not allowed in this server', (done) => {
-			updateSetting('Threads_enabled', false).then(() => {
-				request
+			void updateSetting('Threads_enabled', false).then(() => {
+				void request
 					.get(api('chat.syncThreadMessages'))
 					.set(credentials)
 					.query({
@@ -3167,8 +3180,8 @@ describe('Threads', () => {
 		});
 
 		it('should return an error when the required param "tmid" is missing', (done) => {
-			updateSetting('Threads_enabled', true).then(() => {
-				request
+			void updateSetting('Threads_enabled', true).then(() => {
+				void request
 					.get(api('chat.syncThreadMessages'))
 					.set(credentials)
 					.query({})
@@ -3184,8 +3197,8 @@ describe('Threads', () => {
 		});
 
 		it('should return an error when the required param "updatedSince" is missing', (done) => {
-			updateSetting('Threads_enabled', true).then(() => {
-				request
+			void updateSetting('Threads_enabled', true).then(() => {
+				void request
 					.get(api('chat.syncThreadMessages'))
 					.set(credentials)
 					.query({
@@ -3203,8 +3216,8 @@ describe('Threads', () => {
 		});
 
 		it('should return an error when the param "updatedSince" is an invalid date', (done) => {
-			updateSetting('Threads_enabled', true).then(() => {
-				request
+			void updateSetting('Threads_enabled', true).then(() => {
+				void request
 					.get(api('chat.syncThreadMessages'))
 					.set(credentials)
 					.query({
@@ -3226,11 +3239,11 @@ describe('Threads', () => {
 		});
 
 		it('should return an error when the user is not allowed access the room', (done) => {
-			createUser().then((createdUser) => {
+			void createUser().then((createdUser) => {
 				user = createdUser;
-				login(createdUser.username, password).then((userCredentials) => {
-					updatePermission('view-c-room', []).then(() => {
-						request
+				void login(createdUser.username, password).then((userCredentials) => {
+					void updatePermission('view-c-room', []).then(() => {
+						void request
 							.get(api('chat.syncThreadMessages'))
 							.set(userCredentials)
 							.query({
@@ -3251,8 +3264,8 @@ describe('Threads', () => {
 		});
 
 		it("should return the thread's message list", (done) => {
-			updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				request
+			void updatePermission('view-c-room', ['admin', 'user']).then(() => {
+				void request
 					.get(api('chat.syncThreadMessages'))
 					.set(credentials)
 					.query({
@@ -3276,9 +3289,9 @@ describe('Threads', () => {
 	});
 
 	describe('[/chat.followMessage]', () => {
-		let testChannel;
-		let threadMessage;
-		let user;
+		let testChannel: IRoom;
+		let threadMessage: IThreadMessage;
+		let user: TestUser<IUser>;
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `channel.test.threads.follow${Date.now()}` })).body.channel;
@@ -3306,8 +3319,8 @@ describe('Threads', () => {
 		);
 
 		it('should return an error for chat.followMessage when threads are not allowed in this server', (done) => {
-			updateSetting('Threads_enabled', false).then(() => {
-				request
+			void updateSetting('Threads_enabled', false).then(() => {
+				void request
 					.post(api('chat.followMessage'))
 					.set(credentials)
 					.send({
@@ -3325,8 +3338,8 @@ describe('Threads', () => {
 		});
 
 		it('should return an error when the message does not exist', (done) => {
-			updateSetting('Threads_enabled', true).then(() => {
-				request
+			void updateSetting('Threads_enabled', true).then(() => {
+				void request
 					.post(api('chat.followMessage'))
 					.set(credentials)
 					.send({
@@ -3344,11 +3357,11 @@ describe('Threads', () => {
 		});
 
 		it('should return an error when the user is not allowed access the room', (done) => {
-			createUser().then((createdUser) => {
+			void createUser().then((createdUser) => {
 				user = createdUser;
-				login(createdUser.username, password).then((userCredentials) => {
-					updatePermission('view-c-room', []).then(() => {
-						request
+				void login(createdUser.username, password).then((userCredentials) => {
+					void updatePermission('view-c-room', []).then(() => {
+						void request
 							.post(api('chat.followMessage'))
 							.set(userCredentials)
 							.send({
@@ -3368,8 +3381,8 @@ describe('Threads', () => {
 		});
 
 		it('should return success: true when it execute successfully', (done) => {
-			updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				request
+			void updatePermission('view-c-room', ['admin', 'user']).then(() => {
+				void request
 					.post(api('chat.followMessage'))
 					.set(credentials)
 					.send({
@@ -3386,9 +3399,9 @@ describe('Threads', () => {
 	});
 
 	describe('[/chat.unfollowMessage]', () => {
-		let testChannel;
-		let threadMessage;
-		let user;
+		let testChannel: IRoom;
+		let threadMessage: IThreadMessage;
+		let user: TestUser<IUser>;
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `channel.test.threads.unfollow.${Date.now()}` })).body.channel;
@@ -3415,8 +3428,8 @@ describe('Threads', () => {
 			]),
 		);
 		it('should return an error for chat.unfollowMessage when threads are not allowed in this server', (done) => {
-			updateSetting('Threads_enabled', false).then(() => {
-				request
+			void updateSetting('Threads_enabled', false).then(() => {
+				void request
 					.post(api('chat.unfollowMessage'))
 					.set(credentials)
 					.send({
@@ -3434,8 +3447,8 @@ describe('Threads', () => {
 		});
 
 		it('should return an error when the message does not exist', (done) => {
-			updateSetting('Threads_enabled', true).then(() => {
-				request
+			void updateSetting('Threads_enabled', true).then(() => {
+				void request
 					.post(api('chat.unfollowMessage'))
 					.set(credentials)
 					.send({
@@ -3453,11 +3466,11 @@ describe('Threads', () => {
 		});
 
 		it('should return an error when the user is not allowed access the room', (done) => {
-			createUser().then((createdUser) => {
+			void createUser().then((createdUser) => {
 				user = createdUser;
-				login(createdUser.username, password).then((userCredentials) => {
-					updatePermission('view-c-room', []).then(() => {
-						request
+				void login(createdUser.username, password).then((userCredentials) => {
+					void updatePermission('view-c-room', []).then(() => {
+						void request
 							.post(api('chat.unfollowMessage'))
 							.set(userCredentials)
 							.send({
@@ -3477,8 +3490,8 @@ describe('Threads', () => {
 		});
 
 		it('should return success: true when it execute successfully', (done) => {
-			updatePermission('view-c-room', ['admin', 'user']).then(() => {
-				request
+			void updatePermission('view-c-room', ['admin', 'user']).then(() => {
+				void request
 					.post(api('chat.unfollowMessage'))
 					.set(credentials)
 					.send({

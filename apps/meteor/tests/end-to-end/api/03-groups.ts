@@ -1,7 +1,9 @@
-import { expect } from 'chai';
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IIntegration, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { assert, expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials, group, apiPrivateChannelName } from '../../data/api-data';
+import { getCredentials, api, request, credentials, apiPrivateChannelName } from '../../data/api-data';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -9,23 +11,29 @@ import { createRoom } from '../../data/rooms.helper';
 import { deleteTeam } from '../../data/teams.helper';
 import { testFileUploads } from '../../data/uploads.helper';
 import { adminUsername, password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, login, deleteUser } from '../../data/users.helper';
 
-function getRoomInfo(roomId) {
-	return new Promise((resolve /* , reject*/) => {
-		request
+function getRoomInfo(roomId: IRoom['_id']) {
+	return new Promise<{ group: IRoom }>((resolve) => {
+		void request
 			.get(api('groups.info'))
 			.set(credentials)
 			.query({
 				roomId,
 			})
-			.end((err, req) => {
+			.end((_err, req) => {
 				resolve(req.body);
 			});
 	});
 }
 
 describe('[Groups]', function () {
+	let group: {
+		_id: string;
+		name: string;
+	};
+
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -45,8 +53,10 @@ describe('[Groups]', function () {
 				expect(res.body).to.have.nested.property('group.name', apiPrivateChannelName);
 				expect(res.body).to.have.nested.property('group.t', 'p');
 				expect(res.body).to.have.nested.property('group.msgs', 0);
-				group._id = res.body.group._id;
-				group.name = res.body.group.name;
+				group = {
+					_id: res.body.group._id,
+					name: res.body.group.name,
+				};
 			});
 	});
 
@@ -62,12 +72,13 @@ describe('[Groups]', function () {
 	});
 
 	describe('/groups.create', () => {
-		let guestUser;
-		let room;
+		let guestUser: TestUser<IUser>;
+		let room: IRoom;
 
 		before(async () => {
 			guestUser = await createUser({ roles: ['guest'] });
 		});
+
 		after(async () => {
 			await deleteUser(guestUser);
 		});
@@ -131,7 +142,7 @@ describe('[Groups]', function () {
 				await Promise.all([updateSetting('E2E_Enable', false), updateSetting('E2E_Allow_Unencrypted_Messages', true)]);
 			});
 
-			let rid;
+			let rid: IRoom['_id'];
 
 			it('should create a new encrypted group', async () => {
 				await request
@@ -262,8 +273,7 @@ describe('[Groups]', function () {
 	});
 
 	describe('/groups.info', () => {
-		let testGroup = {};
-		let groupMessage = {};
+		let testGroup: IRoom;
 
 		const newGroupInfoName = `info-private-channel-test-${Date.now()}`;
 
@@ -309,6 +319,8 @@ describe('[Groups]', function () {
 					expect(res.body).to.have.nested.property('group.msgs', 0);
 				});
 		});
+
+		let groupMessage: IMessage;
 
 		it('sending a message...', async () => {
 			await request
@@ -404,10 +416,10 @@ describe('[Groups]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					const { messages } = res.body;
+					const messages = res.body.messages as IMessage[];
 					const lastMessage = messages.filter((message) => message._id === groupMessage._id)[0];
 					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
-					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
+					expect(lastMessage.starred?.[0]._id).to.be.equal(adminUsername);
 				});
 		});
 
@@ -425,16 +437,16 @@ describe('[Groups]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					const { messages } = res.body;
+					const messages = res.body.messages as IMessage[];
 					const lastMessage = messages.filter((message) => message._id === groupMessage._id)[0];
 					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
-					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
+					expect(lastMessage.starred?.[0]._id).to.be.equal(adminUsername);
 				});
 		});
 	});
 
 	describe('/groups.invite', async () => {
-		let roomInfo = {};
+		let roomInfo: { group: IRoom };
 
 		before(async () => {
 			roomInfo = await getRoomInfo(group._id);
@@ -462,7 +474,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.addModerator', () => {
 		it('should make user a moderator', (done) => {
-			request
+			void request
 				.post(api('groups.addModerator'))
 				.set(credentials)
 				.send({
@@ -480,7 +492,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.removeModerator', () => {
 		it('should remove user from moderator', (done) => {
-			request
+			void request
 				.post(api('groups.removeModerator'))
 				.set(credentials)
 				.send({
@@ -498,7 +510,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.addOwner', () => {
 		it('should add user as owner', (done) => {
-			request
+			void request
 				.post(api('groups.addOwner'))
 				.set(credentials)
 				.send({
@@ -516,7 +528,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.removeOwner', () => {
 		it('should remove user from owner', (done) => {
-			request
+			void request
 				.post(api('groups.removeOwner'))
 				.set(credentials)
 				.send({
@@ -534,7 +546,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.addLeader', () => {
 		it('should add user as leader', (done) => {
-			request
+			void request
 				.post(api('groups.addLeader'))
 				.set(credentials)
 				.send({
@@ -552,7 +564,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.removeLeader', () => {
 		it('should remove user from leader', (done) => {
-			request
+			void request
 				.post(api('groups.removeLeader'))
 				.set(credentials)
 				.send({
@@ -569,14 +581,14 @@ describe('[Groups]', function () {
 	});
 
 	describe('/groups.kick', () => {
-		let testUserModerator;
-		let credsModerator;
-		let testUserOwner;
-		let credsOwner;
-		let testUserMember;
-		let groupTest;
+		let testUserModerator: TestUser<IUser>;
+		let credsModerator: Credentials;
+		let testUserOwner: TestUser<IUser>;
+		let credsOwner: Credentials;
+		let testUserMember: TestUser<IUser>;
+		let groupTest: IRoom;
 
-		const inviteUser = async (userId) => {
+		const inviteUser = async (userId: IUser['_id']) => {
 			await request
 				.post(api('groups.invite'))
 				.set(credsOwner)
@@ -748,7 +760,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.setDescription', () => {
 		it('should set the description of the group with a string', (done) => {
-			request
+			void request
 				.post(api('groups.setDescription'))
 				.set(credentials)
 				.send({
@@ -764,7 +776,7 @@ describe('[Groups]', function () {
 				.end(done);
 		});
 		it('should set the description of the group with an empty string(remove the description)', (done) => {
-			request
+			void request
 				.post(api('groups.setDescription'))
 				.set(credentials)
 				.send({
@@ -783,7 +795,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.setTopic', () => {
 		it('should set the topic of the group with a string', (done) => {
-			request
+			void request
 				.post(api('groups.setTopic'))
 				.set(credentials)
 				.send({
@@ -799,7 +811,7 @@ describe('[Groups]', function () {
 				.end(done);
 		});
 		it('should set the topic of the group with an empty string(remove the topic)', (done) => {
-			request
+			void request
 				.post(api('groups.setTopic'))
 				.set(credentials)
 				.send({
@@ -818,7 +830,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.setPurpose', () => {
 		it('should set the purpose of the group with a string', (done) => {
-			request
+			void request
 				.post(api('groups.setPurpose'))
 				.set(credentials)
 				.send({
@@ -834,7 +846,7 @@ describe('[Groups]', function () {
 				.end(done);
 		});
 		it('should set the purpose of the group with an empty string(remove the purpose)', (done) => {
-			request
+			void request
 				.post(api('groups.setPurpose'))
 				.set(credentials)
 				.send({
@@ -853,7 +865,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.history', () => {
 		it('should return groups history when searching by roomId', (done) => {
-			request
+			void request
 				.get(api('groups.history'))
 				.set(credentials)
 				.query({
@@ -868,7 +880,7 @@ describe('[Groups]', function () {
 				.end(done);
 		});
 		it('should return groups history when searching by roomId even requested with count and offset params', (done) => {
-			request
+			void request
 				.get(api('groups.history'))
 				.set(credentials)
 				.query({
@@ -888,7 +900,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.archive', () => {
 		it('should archive the group', (done) => {
-			request
+			void request
 				.post(api('groups.archive'))
 				.set(credentials)
 				.send({
@@ -905,7 +917,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.unarchive', () => {
 		it('should unarchive the group', (done) => {
-			request
+			void request
 				.post(api('groups.unarchive'))
 				.set(credentials)
 				.send({
@@ -922,7 +934,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.close', () => {
 		it('should close the group', (done) => {
-			request
+			void request
 				.post(api('groups.close'))
 				.set(credentials)
 				.send({
@@ -937,7 +949,7 @@ describe('[Groups]', function () {
 		});
 
 		it('should return an error when trying to close a private group that is already closed', (done) => {
-			request
+			void request
 				.post(api('groups.close'))
 				.set(credentials)
 				.send({
@@ -955,7 +967,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.open', () => {
 		it('should open the group', (done) => {
-			request
+			void request
 				.post(api('groups.open'))
 				.set(credentials)
 				.send({
@@ -972,7 +984,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.list', () => {
 		it('should list the groups the caller is part of', (done) => {
-			request
+			void request
 				.get(api('groups.list'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -1099,7 +1111,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.members', () => {
 		it('should return group members when searching by roomId', (done) => {
-			request
+			void request
 				.get(api('groups.members'))
 				.set(credentials)
 				.query({
@@ -1117,7 +1129,7 @@ describe('[Groups]', function () {
 				.end(done);
 		});
 		it('should return group members when searching by roomId even requested with count and offset params', (done) => {
-			request
+			void request
 				.get(api('groups.members'))
 				.set(credentials)
 				.query({
@@ -1144,8 +1156,8 @@ describe('[Groups]', function () {
 
 	describe('/groups.listAll', () => {
 		it('should fail if the user doesnt have view-room-administration permission', (done) => {
-			updatePermission('view-room-administration', []).then(() => {
-				request
+			void updatePermission('view-room-administration', []).then(() => {
+				void request
 					.get(api('groups.listAll'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
@@ -1158,8 +1170,8 @@ describe('[Groups]', function () {
 			});
 		});
 		it('should succeed if user has view-room-administration permission', (done) => {
-			updatePermission('view-room-administration', ['admin']).then(() => {
-				request
+			void updatePermission('view-room-administration', ['admin']).then(() => {
+				void request
 					.get(api('groups.listAll'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
@@ -1175,7 +1187,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.counters', () => {
 		it('should return group counters', (done) => {
-			request
+			void request
 				.get(api('groups.counters'))
 				.set(credentials)
 				.query({
@@ -1198,7 +1210,7 @@ describe('[Groups]', function () {
 	});
 
 	describe('/groups.rename', async () => {
-		let roomInfo;
+		let roomInfo: { group: IRoom };
 		before(async () => {
 			roomInfo = await getRoomInfo(group._id);
 		});
@@ -1224,8 +1236,8 @@ describe('[Groups]', function () {
 	});
 
 	describe('/groups.getIntegrations', () => {
-		let integrationCreatedByAnUser;
-		let createdGroup;
+		let integrationCreatedByAnUser: IIntegration;
+		let createdGroup: IRoom;
 
 		before(async () => {
 			const resRoom = await createRoom({ name: `test-integration-group-${Date.now()}`, type: 'p' });
@@ -1280,9 +1292,10 @@ describe('[Groups]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					const integrationCreated = res.body.integrations.find(
+					const integrationCreated = (res.body.integrations as IIntegration[]).find(
 						(createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id,
 					);
+					assert.isDefined(integrationCreated);
 					expect(integrationCreated).to.be.an('object');
 					expect(integrationCreated._id).to.be.equal(integrationCreatedByAnUser._id);
 					expect(res.body).to.have.property('offset');
@@ -1306,7 +1319,7 @@ describe('[Groups]', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					const integrationCreated = res.body.integrations.find(
+					const integrationCreated = (res.body.integrations as IIntegration[]).find(
 						(createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id,
 					);
 					expect(integrationCreated).to.be.equal(undefined);
@@ -1340,7 +1353,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.setReadOnly', () => {
 		it('should set the group as read only', (done) => {
-			request
+			void request
 				.post(api('groups.setReadOnly'))
 				.set(credentials)
 				.send({
@@ -1358,7 +1371,7 @@ describe('[Groups]', function () {
 
 	describe.skip('/groups.leave', () => {
 		it('should allow the user to leave the group', (done) => {
-			request
+			void request
 				.post(api('groups.leave'))
 				.set(credentials)
 				.send({
@@ -1375,7 +1388,7 @@ describe('[Groups]', function () {
 
 	describe('/groups.setAnnouncement', () => {
 		it('should set the announcement of the group with a string', (done) => {
-			request
+			void request
 				.post(api('groups.setAnnouncement'))
 				.set(credentials)
 				.send({
@@ -1391,7 +1404,7 @@ describe('[Groups]', function () {
 				.end(done);
 		});
 		it('should set the announcement of the group with an empty string(remove the announcement)', (done) => {
-			request
+			void request
 				.post(api('groups.setAnnouncement'))
 				.set(credentials)
 				.send({
@@ -1409,7 +1422,7 @@ describe('[Groups]', function () {
 	});
 
 	describe('/groups.setType', () => {
-		let roomTypeId;
+		let roomTypeId: IRoom['_id'];
 
 		before(async () => {
 			await request
@@ -1456,8 +1469,8 @@ describe('[Groups]', function () {
 	});
 
 	describe('/groups.setCustomFields', () => {
-		let cfchannel;
-		let groupWithoutCustomFields;
+		let cfchannel: IRoom;
+		let groupWithoutCustomFields: IRoom;
 
 		before('create group with customFields', async () => {
 			const customFields = { field0: 'value0' };
@@ -1505,7 +1518,7 @@ describe('[Groups]', function () {
 		});
 
 		it('get customFields using groups.info', (done) => {
-			request
+			void request
 				.get(api('groups.info'))
 				.set(credentials)
 				.query({
@@ -1540,7 +1553,7 @@ describe('[Groups]', function () {
 				});
 		});
 		it('get customFields using groups.info', (done) => {
-			request
+			void request
 				.get(api('groups.info'))
 				.set(credentials)
 				.query({
@@ -1622,7 +1635,7 @@ describe('[Groups]', function () {
 		it('set customFields as a string -> should return 400', (done) => {
 			const customFields = '';
 
-			request
+			void request
 				.post(api('groups.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -1639,7 +1652,7 @@ describe('[Groups]', function () {
 	});
 
 	describe('/groups.delete', () => {
-		let testGroup;
+		let testGroup: IRoom;
 		before(async () => {
 			await request
 				.post(api('groups.create'))
@@ -1655,7 +1668,7 @@ describe('[Groups]', function () {
 		});
 
 		it('should delete group', (done) => {
-			request
+			void request
 				.post(api('groups.delete'))
 				.set(credentials)
 				.send({
@@ -1670,7 +1683,7 @@ describe('[Groups]', function () {
 		});
 
 		it('should return group not found', (done) => {
-			request
+			void request
 				.get(api('groups.info'))
 				.set(credentials)
 				.query({
@@ -1687,7 +1700,7 @@ describe('[Groups]', function () {
 	});
 
 	describe('/groups.roles', () => {
-		let testGroup;
+		let testGroup: IRoom;
 		before(async () => {
 			await request
 				.post(api('groups.create'))
@@ -1714,7 +1727,7 @@ describe('[Groups]', function () {
 		});
 
 		it('/groups.invite', (done) => {
-			request
+			void request
 				.post(api('groups.invite'))
 				.set(credentials)
 				.send({
@@ -1724,7 +1737,7 @@ describe('[Groups]', function () {
 				.end(done);
 		});
 		it('/groups.addModerator', (done) => {
-			request
+			void request
 				.post(api('groups.addModerator'))
 				.set(credentials)
 				.send({
@@ -1734,7 +1747,7 @@ describe('[Groups]', function () {
 				.end(done);
 		});
 		it('/groups.addLeader', (done) => {
-			request
+			void request
 				.post(api('groups.addLeader'))
 				.set(credentials)
 				.send({
@@ -1744,7 +1757,7 @@ describe('[Groups]', function () {
 				.end(done);
 		});
 		it('should return an array of roles <-> user relationships in a private group', (done) => {
-			request
+			void request
 				.get(api('groups.roles'))
 				.set(credentials)
 				.query({
@@ -1775,7 +1788,7 @@ describe('[Groups]', function () {
 	});
 
 	describe('/groups.moderators', () => {
-		let testGroup;
+		let testGroup: IRoom;
 		before(async () => {
 			await request
 				.post(api('groups.create'))
@@ -1802,7 +1815,7 @@ describe('[Groups]', function () {
 		});
 
 		it('/groups.invite', (done) => {
-			request
+			void request
 				.post(api('groups.invite'))
 				.set(credentials)
 				.send({
@@ -1812,7 +1825,7 @@ describe('[Groups]', function () {
 				.end(done);
 		});
 		it('/groups.addModerator', (done) => {
-			request
+			void request
 				.post(api('groups.addModerator'))
 				.set(credentials)
 				.send({
@@ -1822,7 +1835,7 @@ describe('[Groups]', function () {
 				.end(done);
 		});
 		it('should return an array of moderators with rocket.cat as a moderator', (done) => {
-			request
+			void request
 				.get(api('groups.moderators'))
 				.set(credentials)
 				.query({
@@ -1840,7 +1853,7 @@ describe('[Groups]', function () {
 	});
 
 	describe('/groups.setEncrypted', () => {
-		let testGroup;
+		let testGroup: IRoom;
 
 		before(async () => {
 			await request
@@ -1873,7 +1886,7 @@ describe('[Groups]', function () {
 		});
 
 		it('should return an error when passing no boolean param', (done) => {
-			request
+			void request
 				.post(api('groups.setEncrypted'))
 				.set(credentials)
 				.send({
@@ -1889,7 +1902,7 @@ describe('[Groups]', function () {
 		});
 
 		it('should set group as encrypted correctly and return the new data', (done) => {
-			request
+			void request
 				.post(api('groups.setEncrypted'))
 				.set(credentials)
 				.send({
@@ -1914,7 +1927,7 @@ describe('[Groups]', function () {
 		});
 
 		it('should set group as unencrypted correctly and return the new data', (done) => {
-			request
+			void request
 				.post(api('groups.setEncrypted'))
 				.set(credentials)
 				.send({
@@ -1940,7 +1953,7 @@ describe('[Groups]', function () {
 	});
 
 	describe('/groups.convertToTeam', () => {
-		let newGroup;
+		let newGroup: IRoom;
 
 		before(async () => {
 			await request
@@ -1953,12 +1966,15 @@ describe('[Groups]', function () {
 				});
 		});
 
-		after(() => Promise.all([deleteTeam(credentials, newGroup.name), updatePermission('create-team', ['admin', 'user'])]));
+		after(() => {
+			assert.isDefined(newGroup.name);
+			return Promise.all([deleteTeam(credentials, newGroup.name), updatePermission('create-team', ['admin', 'user'])]);
+		});
 
 		it('should fail to convert group if lacking edit-room permission', (done) => {
-			updatePermission('create-team', []).then(() => {
-				updatePermission('edit-room', ['admin']).then(() => {
-					request
+			void updatePermission('create-team', []).then(() => {
+				void updatePermission('edit-room', ['admin']).then(() => {
+					void request
 						.post(api('groups.convertToTeam'))
 						.set(credentials)
 						.send({ roomId: newGroup._id })
@@ -1972,9 +1988,9 @@ describe('[Groups]', function () {
 		});
 
 		it('should fail to convert group if lacking create-team permission', (done) => {
-			updatePermission('create-team', ['admin']).then(() => {
-				updatePermission('edit-room', []).then(() => {
-					request
+			void updatePermission('create-team', ['admin']).then(() => {
+				void updatePermission('edit-room', []).then(() => {
+					void request
 						.post(api('groups.convertToTeam'))
 						.set(credentials)
 						.send({ roomId: newGroup._id })
@@ -1988,9 +2004,9 @@ describe('[Groups]', function () {
 		});
 
 		it('should successfully convert a group to a team', (done) => {
-			updatePermission('create-team', ['admin']).then(() => {
-				updatePermission('edit-room', ['admin']).then(() => {
-					request
+			void updatePermission('create-team', ['admin']).then(() => {
+				void updatePermission('edit-room', ['admin']).then(() => {
+					void request
 						.post(api('groups.convertToTeam'))
 						.set(credentials)
 						.send({ roomId: newGroup._id })
@@ -2004,11 +2020,11 @@ describe('[Groups]', function () {
 		});
 
 		it('should fail to convert group without the required parameters', (done) => {
-			request.post(api('groups.convertToTeam')).set(credentials).send({}).expect(400).end(done);
+			void request.post(api('groups.convertToTeam')).set(credentials).send({}).expect(400).end(done);
 		});
 
 		it("should fail to convert group if it's already taken", (done) => {
-			request
+			void request
 				.post(api('groups.convertToTeam'))
 				.set(credentials)
 				.send({ roomId: newGroup._id })
@@ -2021,7 +2037,7 @@ describe('[Groups]', function () {
 	});
 
 	describe("Setting: 'Use Real Name': true", () => {
-		let realNameGroup;
+		let realNameGroup: IRoom;
 
 		before(async () => {
 			await updateSetting('UI_Use_Real_Name', true);
@@ -2067,7 +2083,7 @@ describe('[Groups]', function () {
 		});
 
 		it('/groups.list', (done) => {
-			request
+			void request
 				.get(api('groups.list'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -2078,7 +2094,7 @@ describe('[Groups]', function () {
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('groups').and.to.be.an('array');
 
-					const retGroup = res.body.groups.find(({ _id }) => _id === realNameGroup._id);
+					const retGroup = (res.body.groups as IRoom[]).find(({ _id }) => _id === realNameGroup._id);
 
 					expect(retGroup).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})
@@ -2086,7 +2102,7 @@ describe('[Groups]', function () {
 		});
 
 		it('/groups.listAll', (done) => {
-			request
+			void request
 				.get(api('groups.listAll'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -2097,7 +2113,7 @@ describe('[Groups]', function () {
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('groups').and.to.be.an('array');
 
-					const retGroup = res.body.groups.find(({ _id }) => _id === realNameGroup._id);
+					const retGroup = (res.body.groups as IRoom[]).find(({ _id }) => _id === realNameGroup._id);
 
 					expect(retGroup).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})

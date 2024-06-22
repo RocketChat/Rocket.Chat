@@ -1,20 +1,25 @@
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials, directMessage, apiUsername, apiEmail, methodCall } from '../../data/api-data';
+import { getCredentials, api, request, credentials, apiUsername, apiEmail, methodCall } from '../../data/api-data';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
 import { deleteRoom } from '../../data/rooms.helper';
 import { testFileUploads } from '../../data/uploads.helper';
 import { password, adminUsername } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Direct Messages]', function () {
 	this.retries(0);
 
+	let directMessage: { _id: IRoom['_id'] };
+
 	before((done) => getCredentials(done));
 
 	before('/chat.postMessage', (done) => {
-		request
+		void request
 			.post(api('chat.postMessage'))
 			.set(credentials)
 			.send({
@@ -27,14 +32,14 @@ describe('[Direct Messages]', function () {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.nested.property('message.msg', 'This message was sent using the API');
 				expect(res.body).to.have.nested.property('message.rid');
-				directMessage._id = res.body.message.rid;
+				directMessage = { _id: res.body.message.rid };
 			})
 			.end(done);
 	});
 
 	describe('/im.setTopic', () => {
 		it('should set the topic of the DM with a string', (done) => {
-			request
+			void request
 				.post(api('im.setTopic'))
 				.set(credentials)
 				.send({
@@ -50,7 +55,7 @@ describe('[Direct Messages]', function () {
 				.end(done);
 		});
 		it('should set the topic of DM with an empty string(remove the topic)', (done) => {
-			request
+			void request
 				.post(api('im.setTopic'))
 				.set(credentials)
 				.send({
@@ -68,10 +73,10 @@ describe('[Direct Messages]', function () {
 	});
 
 	describe('Testing DM info', () => {
-		let testDM = {};
-		let dmMessage = {};
+		let testDM: IRoom;
+		let dmMessage: IMessage;
 		it('creating new DM...', (done) => {
-			request
+			void request
 				.post(api('im.create'))
 				.set(credentials)
 				.send({
@@ -85,7 +90,7 @@ describe('[Direct Messages]', function () {
 				.end(done);
 		});
 		it('sending a message...', (done) => {
-			request
+			void request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -103,7 +108,7 @@ describe('[Direct Messages]', function () {
 				.end(done);
 		});
 		it('REACTing with last message', (done) => {
-			request
+			void request
 				.post(api('chat.react'))
 				.set(credentials)
 				.send({
@@ -118,7 +123,7 @@ describe('[Direct Messages]', function () {
 				.end(done);
 		});
 		it('STARring last message', (done) => {
-			request
+			void request
 				.post(api('chat.starMessage'))
 				.set(credentials)
 				.send({
@@ -132,7 +137,7 @@ describe('[Direct Messages]', function () {
 				.end(done);
 		});
 		it('PINning last message', (done) => {
-			request
+			void request
 				.post(api('chat.pinMessage'))
 				.set(credentials)
 				.send({
@@ -146,7 +151,7 @@ describe('[Direct Messages]', function () {
 				.end(done);
 		});
 		it('should return all DM messages where the last message of array should have the "star" array with USERS star ONLY', (done) => {
-			request
+			void request
 				.get(api('im.messages'))
 				.set(credentials)
 				.query({
@@ -157,17 +162,17 @@ describe('[Direct Messages]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('messages').and.to.be.an('array');
-					const { messages } = res.body;
+					const messages = res.body.messages as IMessage[];
 					const lastMessage = messages.filter((message) => message._id === dmMessage._id)[0];
 					expect(lastMessage).to.have.property('starred').and.to.be.an('array');
-					expect(lastMessage.starred[0]._id).to.be.equal(adminUsername);
+					expect(lastMessage.starred?.[0]._id).to.be.equal(adminUsername);
 				})
 				.end(done);
 		});
 	});
 
 	it('/im.history', (done) => {
-		request
+		void request
 			.get(api('im.history'))
 			.set(credentials)
 			.query({
@@ -183,7 +188,7 @@ describe('[Direct Messages]', function () {
 	});
 
 	it('/im.list', (done) => {
-		request
+		void request
 			.get(api('im.list'))
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
@@ -207,7 +212,7 @@ describe('[Direct Messages]', function () {
 	});
 
 	it('/im.list.everyone', (done) => {
-		request
+		void request
 			.get(api('im.list.everyone'))
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
@@ -236,7 +241,7 @@ describe('[Direct Messages]', function () {
 		after(async () => updateSetting('UI_Use_Real_Name', false));
 
 		it('/im.list', (done) => {
-			request
+			void request
 				.get(api('im.list'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -266,7 +271,7 @@ describe('[Direct Messages]', function () {
 		});
 
 		it('/im.list.everyone', (done) => {
-			request
+			void request
 				.get(api('im.list.everyone'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -296,7 +301,7 @@ describe('[Direct Messages]', function () {
 	});
 
 	it('/im.open', (done) => {
-		request
+		void request
 			.post(api('im.open'))
 			.set(credentials)
 			.send({
@@ -311,7 +316,7 @@ describe('[Direct Messages]', function () {
 	});
 
 	it('/im.counters', (done) => {
-		request
+		void request
 			.get(api('im.counters'))
 			.set(credentials)
 			.query({
@@ -338,7 +343,7 @@ describe('[Direct Messages]', function () {
 
 	describe('/im.messages', () => {
 		it('should return all DM messages that were sent to yourself using your username', (done) => {
-			request
+			void request
 				.get(api('im.messages'))
 				.set(credentials)
 				.query({
@@ -356,8 +361,8 @@ describe('[Direct Messages]', function () {
 
 	describe('/im.messages.others', () => {
 		it('should fail when the endpoint is disabled', (done) => {
-			updateSetting('API_Enable_Direct_Message_History_EndPoint', false).then(() => {
-				request
+			void updateSetting('API_Enable_Direct_Message_History_EndPoint', false).then(() => {
+				void request
 					.get(api('im.messages.others'))
 					.set(credentials)
 					.query({
@@ -373,9 +378,9 @@ describe('[Direct Messages]', function () {
 			});
 		});
 		it('should fail when the endpoint is enabled but the user doesnt have permission', (done) => {
-			updateSetting('API_Enable_Direct_Message_History_EndPoint', true).then(() => {
-				updatePermission('view-room-administration', []).then(() => {
-					request
+			void updateSetting('API_Enable_Direct_Message_History_EndPoint', true).then(() => {
+				void updatePermission('view-room-administration', []).then(() => {
+					void request
 						.get(api('im.messages.others'))
 						.set(credentials)
 						.query({
@@ -392,9 +397,9 @@ describe('[Direct Messages]', function () {
 			});
 		});
 		it('should succeed when the endpoint is enabled and user has permission', (done) => {
-			updateSetting('API_Enable_Direct_Message_History_EndPoint', true).then(() => {
-				updatePermission('view-room-administration', ['admin']).then(() => {
-					request
+			void updateSetting('API_Enable_Direct_Message_History_EndPoint', true).then(() => {
+				void updatePermission('view-room-administration', ['admin']).then(() => {
+					void request
 						.get(api('im.messages.others'))
 						.set(credentials)
 						.query({
@@ -416,7 +421,7 @@ describe('[Direct Messages]', function () {
 	});
 
 	it('/im.close', (done) => {
-		request
+		void request
 			.post(api('im.close'))
 			.set(credentials)
 			.send({
@@ -436,12 +441,12 @@ describe('[Direct Messages]', function () {
 		const name = `Name fname_${apiUsername}`;
 		const updatedName = `Updated Name fname_${apiUsername}`;
 		const email = `fname_${apiEmail}`;
-		let userId;
-		let directMessageId;
-		let user;
+		let userId: IUser['_id'];
+		let directMessageId: IMessage['_id'];
+		let user: TestUser<IUser>;
 
 		before((done) => {
-			request
+			void request
 				.post(api('users.create'))
 				.set(credentials)
 				.send({
@@ -462,7 +467,7 @@ describe('[Direct Messages]', function () {
 		});
 
 		before((done) => {
-			request
+			void request
 				.post(api('chat.postMessage'))
 				.set(credentials)
 				.send({
@@ -483,7 +488,7 @@ describe('[Direct Messages]', function () {
 		after(async () => deleteUser(user));
 
 		it('should have fname property', (done) => {
-			request
+			void request
 				.get(api('subscriptions.getOne'))
 				.set(credentials)
 				.query({
@@ -500,7 +505,7 @@ describe('[Direct Messages]', function () {
 		});
 
 		it("should update user's name", (done) => {
-			request
+			void request
 				.post(api('users.update'))
 				.set(credentials)
 				.send({
@@ -516,7 +521,7 @@ describe('[Direct Messages]', function () {
 		});
 
 		it('should have fname property updated', (done) => {
-			request
+			void request
 				.get(api('subscriptions.getOne'))
 				.set(credentials)
 				.query({
@@ -535,7 +540,7 @@ describe('[Direct Messages]', function () {
 
 	describe('/im.members', () => {
 		it('should return and array with two members', (done) => {
-			request
+			void request
 				.get(api('im.members'))
 				.set(credentials)
 				.query({
@@ -553,7 +558,7 @@ describe('[Direct Messages]', function () {
 				.end(done);
 		});
 		it('should return and array with one member', (done) => {
-			request
+			void request
 				.get(api('im.members'))
 				.set(credentials)
 				.query({
@@ -571,7 +576,7 @@ describe('[Direct Messages]', function () {
 				.end(done);
 		});
 		it('should return and array with one member queried by status', (done) => {
-			request
+			void request
 				.get(api('im.members'))
 				.set(credentials)
 				.query({
@@ -592,16 +597,16 @@ describe('[Direct Messages]', function () {
 	});
 
 	describe('/im.create', () => {
-		let user;
-		let userCredentials;
+		let user: TestUser<IUser>;
+		let userCredentials: Credentials;
 
-		let otherUser;
-		let otherUserCredentials;
+		let otherUser: TestUser<IUser>;
+		let otherUserCredentials: Credentials;
 
-		let thirdUser;
-		let thirdUserCredentials;
+		let thirdUser: TestUser<IUser>;
+		let thirdUserCredentials: Credentials;
 
-		let roomIds = {};
+		let roomIds: Record<string, IRoom['_id']> = {};
 
 		// Names have to be in alfabetical order so we can test the room's fullname
 		const userFullName = 'User A';
@@ -623,13 +628,10 @@ describe('[Direct Messages]', function () {
 			await deleteUser(user);
 			await deleteUser(otherUser);
 			await deleteUser(thirdUser);
-			user = undefined;
-			otherUser = undefined;
-			thirdUser = undefined;
 		});
 
 		it('creates a DM between two other parties (including self)', (done) => {
-			request
+			void request
 				.post(api('im.create'))
 				.set(userCredentials)
 				.send({
@@ -647,7 +649,7 @@ describe('[Direct Messages]', function () {
 		});
 
 		it('creates a DM between two other parties (excluding self)', (done) => {
-			request
+			void request
 				.post(api('im.create'))
 				.set(credentials)
 				.send({
@@ -666,7 +668,7 @@ describe('[Direct Messages]', function () {
 		});
 
 		it('should create a self-DM', (done) => {
-			request
+			void request
 				.post(api('im.create'))
 				.set(userCredentials)
 				.send({
@@ -684,9 +686,9 @@ describe('[Direct Messages]', function () {
 		});
 
 		describe('should create dm with correct notification preferences', () => {
-			let user;
-			let userCredentials;
-			let userPrefRoomId;
+			let user: TestUser<IUser>;
+			let userCredentials: Credentials;
+			let userPrefRoomId: IRoom['_id'];
 
 			before(async () => {
 				user = await createUser();
@@ -698,7 +700,6 @@ describe('[Direct Messages]', function () {
 					await deleteRoom({ type: 'd', roomId: userPrefRoomId });
 				}
 				await deleteUser(user);
-				user = undefined;
 			});
 
 			it('should save user preferences', async () => {
@@ -717,7 +718,7 @@ describe('[Direct Messages]', function () {
 			});
 
 			it('should create a DM', (done) => {
-				request
+				void request
 					.post(api('im.create'))
 					.set(userCredentials)
 					.send({
@@ -735,7 +736,7 @@ describe('[Direct Messages]', function () {
 			});
 
 			it('should return the right user notification preferences in the dm', (done) => {
-				request
+				void request
 					.get(api('subscriptions.getOne'))
 					.set(userCredentials)
 					.query({
@@ -752,7 +753,7 @@ describe('[Direct Messages]', function () {
 			});
 		});
 
-		async function testRoomFNameForUser(testCredentials, roomId, fullName) {
+		async function testRoomFNameForUser(testCredentials: Credentials, roomId: IRoom['_id'], fullName: string) {
 			return request
 				.get(api('subscriptions.getOne'))
 				.set(testCredentials)
@@ -785,10 +786,10 @@ describe('[Direct Messages]', function () {
 	});
 
 	describe('/im.delete', () => {
-		let testDM;
+		let testDM: IRoom;
 
 		it('/im.create', (done) => {
-			request
+			void request
 				.post(api('im.create'))
 				.set(credentials)
 				.send({
@@ -803,7 +804,7 @@ describe('[Direct Messages]', function () {
 		});
 
 		it('/im.delete', (done) => {
-			request
+			void request
 				.post(api('im.delete'))
 				.set(credentials)
 				.send({
@@ -818,7 +819,7 @@ describe('[Direct Messages]', function () {
 		});
 
 		it('/im.open', (done) => {
-			request
+			void request
 				.post(api('im.open'))
 				.set(credentials)
 				.send({
@@ -834,8 +835,8 @@ describe('[Direct Messages]', function () {
 		});
 
 		describe('when authenticated as a non-admin user', () => {
-			let otherUser;
-			let otherCredentials;
+			let otherUser: TestUser<IUser>;
+			let otherCredentials: Credentials;
 
 			before(async () => {
 				otherUser = await createUser();
@@ -844,11 +845,10 @@ describe('[Direct Messages]', function () {
 
 			after(async () => {
 				await deleteUser(otherUser);
-				otherUser = undefined;
 			});
 
 			it('/im.create', (done) => {
-				request
+				void request
 					.post(api('im.create'))
 					.set(credentials)
 					.send({
@@ -863,7 +863,7 @@ describe('[Direct Messages]', function () {
 			});
 
 			it('/im.delete', (done) => {
-				request
+				void request
 					.post(api('im.delete'))
 					.set(otherCredentials)
 					.send({

@@ -27,19 +27,10 @@ export const apiRoleScopeSubscriptions = `${roleScopeSubscriptions}` as const;
 export const apiRoleDescription = `api${roleDescription}` as const;
 export const reservedWords = ['admin', 'administrator', 'system', 'user'] as const;
 
-export const group = {};
-export const message = {};
-export const directMessage = {};
-export const integration = {};
-
 export const credentials: Credentials = {
 	'X-Auth-Token': undefined,
 	'X-User-Id': undefined,
 } as unknown as Credentials; // FIXME
-export const login = {
-	user: adminUsername,
-	password: adminPassword,
-} as const;
 
 export function api<TPath extends string>(path: TPath) {
 	return `${prefix}${path}` as const;
@@ -60,7 +51,10 @@ export function log(res: Response) {
 export function getCredentials(done?: CallbackHandler) {
 	void request
 		.post(api('login'))
-		.send(login)
+		.send({
+			user: adminUsername,
+			password: adminPassword,
+		})
 		.expect('Content-Type', 'application/json')
 		.expect(200)
 		.expect((res) => {
