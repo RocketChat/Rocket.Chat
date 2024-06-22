@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IGetRoomRoles, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 import { api, credentials, request } from './api-data';
 
@@ -68,7 +68,7 @@ export const createRoom = ({
 };
 
 type ActionType = 'delete' | 'close' | 'addOwner' | 'removeOwner';
-type ActionRoomParams = {
+export type ActionRoomParams = {
 	action: ActionType;
 	type: Exclude<IRoom['t'], 'v' | 'l'>;
 	roomId: IRoom['_id'];
@@ -76,7 +76,7 @@ type ActionRoomParams = {
 	extraData?: Record<string, any>;
 };
 
-function actionRoom({ action, type, roomId, overrideCredentials = credentials, extraData = {} }: ActionRoomParams) {
+export function actionRoom({ action, type, roomId, overrideCredentials = credentials, extraData = {} }: ActionRoomParams) {
 	if (!type) {
 		throw new Error(`"type" is required in "${action}Room" test helper`);
 	}
@@ -102,57 +102,3 @@ function actionRoom({ action, type, roomId, overrideCredentials = credentials, e
 
 export const deleteRoom = ({ type, roomId }: { type: ActionRoomParams['type']; roomId: IRoom['_id'] }) =>
 	actionRoom({ action: 'delete', type, roomId, overrideCredentials: credentials });
-
-export const joinChannel = ({ overrideCredentials = credentials, roomId }: { overrideCredentials: Credentials; roomId: IRoom['_id'] }) =>
-	request.post(api('channels.join')).set(overrideCredentials).send({
-		roomId,
-	});
-
-export const inviteToChannel = ({
-	overrideCredentials = credentials,
-	roomId,
-	userId,
-}: {
-	overrideCredentials?: Credentials;
-	roomId: IRoom['_id'];
-	userId: IUser['_id'];
-}) =>
-	request.post(api('channels.invite')).set(overrideCredentials).send({
-		userId,
-		roomId,
-	});
-
-export const addRoomOwner = ({ type, roomId, userId }: { type: ActionRoomParams['type']; roomId: IRoom['_id']; userId: IUser['_id'] }) =>
-	actionRoom({ action: 'addOwner', type, roomId, extraData: { userId } });
-
-export const removeRoomOwner = ({ type, roomId, userId }: { type: ActionRoomParams['type']; roomId: IRoom['_id']; userId: IUser['_id'] }) =>
-	actionRoom({ action: 'removeOwner', type, roomId, extraData: { userId } });
-
-export const getChannelRoles = async ({
-	roomId,
-	overrideCredentials = credentials,
-}: {
-	roomId: IRoom['_id'];
-	overrideCredentials?: Credentials;
-}) =>
-	(
-		await request.get(api('channels.roles')).set(overrideCredentials).query({
-			roomId,
-		})
-	).body.roles as IGetRoomRoles[];
-
-export const setRoomConfig = ({ roomId, favorite, isDefault }: { roomId: IRoom['_id']; favorite?: boolean; isDefault: boolean }) => {
-	return request
-		.post(api('rooms.saveRoomSettings'))
-		.set(credentials)
-		.send({
-			rid: roomId,
-			default: isDefault,
-			favorite: favorite
-				? {
-						defaultValue: true,
-						favorite: false,
-				  }
-				: undefined,
-		});
-};

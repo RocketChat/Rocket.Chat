@@ -2,8 +2,7 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { CallbackHandler, Response } from 'supertest';
 import supertest from 'supertest';
 
-import { roleNameUsers, roleNameSubscriptions, roleScopeUsers, roleScopeSubscriptions, roleDescription } from './role';
-import { username, email, adminUsername, adminPassword } from './user';
+import { adminUsername, adminPassword } from './user';
 
 const apiUrl = process.env.TEST_API_URL || 'http://localhost:3000';
 
@@ -16,9 +15,18 @@ export function wait(cb: () => void, time: number) {
 
 const privateChannelName = `private-channel-test-${Date.now()}` as const;
 
+const username = 'user.test';
+const email = `${username}@rocket.chat`;
+
 export const apiUsername = `api${username}-${Date.now()}` as const;
 export const apiEmail = `api${email}-${Date.now()}` as const;
 export const apiPrivateChannelName = `api${privateChannelName}-${Date.now()}` as const;
+
+const roleNameUsers = `role-name-test-users-${Date.now()}` as const;
+const roleNameSubscriptions = `role-name-test-subscriptions-${Date.now()}` as const;
+const roleScopeUsers = 'Users' as const;
+const roleScopeSubscriptions = 'Subscriptions' as const;
+const roleDescription = `role-description-test-${Date.now()}` as const;
 
 export const apiRoleNameUsers = `api${roleNameUsers}` as const;
 export const apiRoleNameSubscriptions = `api${roleNameSubscriptions}` as const;

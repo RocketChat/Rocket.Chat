@@ -1,4 +1,3 @@
-import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
 
 import { api, request } from './api-data';
@@ -16,14 +15,4 @@ export const deleteTeam = async (credentials: Record<string, any>, teamName: str
 	await request.post(api('teams.delete')).set(credentials).send({
 		teamName,
 	});
-};
-
-export const addMembers = async (credentials: Record<string, any>, teamName: string, members: IUser['id'][]): Promise<void> => {
-	await request
-		.post(api('teams.addMembers'))
-		.set(credentials)
-		.send({
-			teamName,
-			members: members.map((userId) => ({ userId, roles: ['member'] })),
-		});
 };

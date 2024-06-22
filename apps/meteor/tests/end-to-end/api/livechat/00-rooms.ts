@@ -2,12 +2,14 @@ import fs from 'fs';
 import path from 'path';
 
 import { faker } from '@faker-js/faker';
+import type { Credentials } from '@rocket.chat/api-client';
 import type {
 	IOmnichannelRoom,
 	ILivechatVisitor,
 	IOmnichannelSystemMessage,
 	ILivechatPriority,
 	ILivechatDepartment,
+	ISubscription,
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
@@ -45,10 +47,22 @@ import {
 	updatePermission,
 	updateSetting,
 } from '../../../data/permissions.helper';
-import { getSubscriptionForRoom } from '../../../data/subscriptions';
 import { adminUsername, password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
+
+const getSubscriptionForRoom = async (roomId: string, overrideCredential?: Credentials): Promise<ISubscription> => {
+	const response = await request
+		.get(api('subscriptions.getOne'))
+		.set(overrideCredential || credentials)
+		.query({ roomId })
+		.expect('Content-Type', 'application/json')
+		.expect(200);
+
+	const { subscription } = response.body;
+
+	return subscription;
+};
 
 describe('LIVECHAT - rooms', function () {
 	this.retries(0);

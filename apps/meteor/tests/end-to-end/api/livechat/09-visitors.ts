@@ -6,7 +6,6 @@ import moment from 'moment';
 import { type Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { getLicenseInfo } from '../../../data/licenses.helper';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 import {
 	makeAgentAvailable,
@@ -21,6 +20,10 @@ import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
 import { updatePermission, updateSetting, removePermissionFromAllRoles, restorePermissionToRoles } from '../../../data/permissions.helper';
 import { adminUsername } from '../../../data/user';
 import { IS_EE } from '../../../e2e/config/constants';
+
+const getLicenseInfo = (loadValues = false) => {
+	return request.get(api('licenses.info')).set(credentials).query({ loadValues }).expect(200);
+};
 
 describe('LIVECHAT - visitors', function () {
 	this.retries(0);

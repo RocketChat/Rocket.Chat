@@ -1,9 +1,7 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import { MongoClient } from 'mongodb';
 
-import { URL_MONGODB } from '../e2e/config/constants';
 import { api, credentials, request } from './api-data';
 import { password } from './user';
 
@@ -72,23 +70,6 @@ export const getUserByUsername = <TUser extends IUser>(username: string) =>
 			});
 	});
 
-export const getUserStatus = (userId: IUser['_id']) =>
-	new Promise<{
-		status: 'online' | 'offline' | 'away' | 'busy';
-		message?: string;
-		_id?: string;
-		connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
-	}>((resolve) => {
-		void request
-			.get(api(`users.getStatus?userId=${userId}`))
-			.set(credentials)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.end((_end, res) => {
-				resolve(res.body);
-			});
-	});
-
 export const getMe = <TUser extends IUser>(overrideCredential = credentials) =>
 	new Promise<TestUser<TUser>>((resolve) => {
 		void request
@@ -118,34 +99,3 @@ export const setUserStatus = (overrideCredentials = credentials, status = UserSt
 		message: '',
 		status,
 	});
-
-export const registerUser = async (
-	userData: {
-		username?: string;
-		email?: string;
-		name?: string;
-		pass?: string;
-	} = {},
-	overrideCredentials = credentials,
-) => {
-	const username = userData.username || `user.test.${Date.now()}`;
-	const email = userData.email || `${username}@rocket.chat`;
-	const result = await request
-		.post(api('users.register'))
-		.set(overrideCredentials)
-		.send({ email, name: username, username, pass: password, ...userData });
-
-	return result.body.user;
-};
-
-// For changing user data when it's not possible to do so via API
-export const updateUserInDb = async (userId: IUser['_id'], userData: Partial<IUser>) => {
-	const connection = await MongoClient.connect(URL_MONGODB);
-
-	await connection
-		.db()
-		.collection('users')
-		.updateOne({ _id: userId }, { $set: { ...userData } });
-
-	await connection.close();
-};

@@ -4,10 +4,23 @@ import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { getUsersReports, reportUser } from '../../data/moderation.helper';
 import { createUser, deleteUser } from '../../data/users.helper';
 
-// test for the /moderation.reportsByUsers endpoint
+const makeModerationApiRequest = async (url: string, method: 'get' | 'post', data?: any) => {
+	let res: any;
+
+	if (method === 'get') {
+		res = await request.get(api(url)).set(credentials).query(data);
+	} else if (method === 'post') {
+		res = await request.post(api(url)).set(credentials).send(data);
+	}
+
+	return res.body;
+};
+
+const reportUser = (userId: string, reason: string) => makeModerationApiRequest('moderation.reportUser', 'post', { userId, reason });
+
+const getUsersReports = (userId: string) => makeModerationApiRequest('moderation.user.reportsByUserId', 'get', { userId });
 
 describe('[Moderation]', function () {
 	this.retries(0);

@@ -5,13 +5,23 @@ import { after, before, beforeEach, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { sendSimpleMessage, deleteMessage, pinMessage } from '../../data/chat.helper';
+import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
+
+const pinMessage = ({ msgId }: { msgId: IMessage['_id'] }) => {
+	if (!msgId) {
+		throw new Error('"msgId" is required in "pinMessage" test helper');
+	}
+
+	return request.post(api('chat.pinMessage')).set(credentials).send({
+		messageId: msgId,
+	});
+};
 
 describe('[Chat]', function () {
 	this.retries(0);

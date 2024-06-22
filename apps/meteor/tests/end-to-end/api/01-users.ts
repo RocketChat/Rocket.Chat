@@ -1,34 +1,178 @@
 import crypto from 'crypto';
 
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IRoom, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IGetRoomRoles, IRoom, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { assert, expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
+import { MongoClient } from 'mongodb';
 
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, log, wait, reservedWords } from '../../data/api-data';
-import { MAX_BIO_LENGTH, MAX_NICKNAME_LENGTH } from '../../data/constants';
-import { customFieldText, clearCustomFields, setCustomFields } from '../../data/custom-fields';
 import { imgURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import {
-	addRoomOwner,
-	createRoom,
-	deleteRoom,
-	getChannelRoles,
-	inviteToChannel,
-	joinChannel,
-	removeRoomOwner,
-	setRoomConfig,
-} from '../../data/rooms.helper';
+import type { ActionRoomParams } from '../../data/rooms.helper';
+import { actionRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import type { IUserWithCredentials } from '../../data/user';
-import { adminEmail, preferences, password, adminUsername } from '../../data/user';
+import { adminEmail, password, adminUsername } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
-import { createUser, login, deleteUser, getUserStatus, getUserByUsername, registerUser, updateUserInDb } from '../../data/users.helper';
+import { createUser, login, deleteUser, getUserByUsername } from '../../data/users.helper';
+import { URL_MONGODB } from '../../e2e/config/constants';
+
+const MAX_BIO_LENGTH = 260;
+const MAX_NICKNAME_LENGTH = 120;
+
+const customFieldText = {
+	type: 'text',
+	required: true,
+	minLength: 2,
+	maxLength: 10,
+};
+
+function setCustomFields(customFields: unknown) {
+	const stringified = customFields ? JSON.stringify(customFields) : '';
+
+	return request.post(api('settings/Accounts_CustomFields')).set(credentials).send({ value: stringified }).expect(200);
+}
+
+function clearCustomFields() {
+	return setCustomFields(null);
+}
+
+const joinChannel = ({ overrideCredentials = credentials, roomId }: { overrideCredentials: Credentials; roomId: IRoom['_id'] }) =>
+	request.post(api('channels.join')).set(overrideCredentials).send({
+		roomId,
+	});
+
+const inviteToChannel = ({
+	overrideCredentials = credentials,
+	roomId,
+	userId,
+}: {
+	overrideCredentials?: Credentials;
+	roomId: IRoom['_id'];
+	userId: IUser['_id'];
+}) =>
+	request.post(api('channels.invite')).set(overrideCredentials).send({
+		userId,
+		roomId,
+	});
+
+const addRoomOwner = ({ type, roomId, userId }: { type: ActionRoomParams['type']; roomId: IRoom['_id']; userId: IUser['_id'] }) =>
+	actionRoom({ action: 'addOwner', type, roomId, extraData: { userId } });
+
+const removeRoomOwner = ({ type, roomId, userId }: { type: ActionRoomParams['type']; roomId: IRoom['_id']; userId: IUser['_id'] }) =>
+	actionRoom({ action: 'removeOwner', type, roomId, extraData: { userId } });
+
+const getChannelRoles = async ({
+	roomId,
+	overrideCredentials = credentials,
+}: {
+	roomId: IRoom['_id'];
+	overrideCredentials?: Credentials;
+}) =>
+	(
+		await request.get(api('channels.roles')).set(overrideCredentials).query({
+			roomId,
+		})
+	).body.roles as IGetRoomRoles[];
+
+const setRoomConfig = ({ roomId, favorite, isDefault }: { roomId: IRoom['_id']; favorite?: boolean; isDefault: boolean }) => {
+	return request
+		.post(api('rooms.saveRoomSettings'))
+		.set(credentials)
+		.send({
+			rid: roomId,
+			default: isDefault,
+			favorite: favorite
+				? {
+						defaultValue: true,
+						favorite: false,
+				  }
+				: undefined,
+		});
+};
+
+const preferences = {
+	data: {
+		newRoomNotification: 'door',
+		newMessageNotification: 'chime',
+		muteFocusedConversations: true,
+		clockMode: 1,
+		useEmojis: true,
+		convertAsciiEmoji: true,
+		saveMobileBandwidth: true,
+		collapseMediaByDefault: false,
+		autoImageLoad: true,
+		emailNotificationMode: 'mentions',
+		unreadAlert: true,
+		notificationsSoundVolume: 100,
+		desktopNotifications: 'default',
+		pushNotifications: 'default',
+		enableAutoAway: true,
+		highlights: [],
+		desktopNotificationRequireInteraction: false,
+		hideUsernames: false,
+		hideRoles: false,
+		displayAvatars: true,
+		hideFlexTab: false,
+		sendOnEnter: 'normal',
+		idleTimeLimit: 3600,
+		notifyCalendarEvents: false,
+		enableMobileRinging: false,
+	},
+};
+
+const getUserStatus = (userId: IUser['_id']) =>
+	new Promise<{
+		status: 'online' | 'offline' | 'away' | 'busy';
+		message?: string;
+		_id?: string;
+		connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
+	}>((resolve) => {
+		void request
+			.get(api(`users.getStatus?userId=${userId}`))
+			.set(credentials)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.end((_end, res) => {
+				resolve(res.body);
+			});
+	});
+
+const registerUser = async (
+	userData: {
+		username?: string;
+		email?: string;
+		name?: string;
+		pass?: string;
+	} = {},
+	overrideCredentials = credentials,
+) => {
+	const username = userData.username || `user.test.${Date.now()}`;
+	const email = userData.email || `${username}@rocket.chat`;
+	const result = await request
+		.post(api('users.register'))
+		.set(overrideCredentials)
+		.send({ email, name: username, username, pass: password, ...userData });
+
+	return result.body.user;
+};
+
+// For changing user data when it's not possible to do so via API
+const updateUserInDb = async (userId: IUser['_id'], userData: Partial<IUser>) => {
+	const connection = await MongoClient.connect(URL_MONGODB);
+
+	await connection
+		.db()
+		.collection('users')
+		.updateOne({ _id: userId }, { $set: { ...userData } });
+
+	await connection.close();
+};
 
 describe('[Users]', function () {
 	let targetUser: { _id: IUser['_id']; username: string };

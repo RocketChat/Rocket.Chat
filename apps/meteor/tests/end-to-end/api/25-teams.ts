@@ -7,7 +7,7 @@ import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
-import { addMembers, createTeam, deleteTeam } from '../../data/teams.helper';
+import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminUsername, password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
@@ -26,6 +26,16 @@ interface ITeamMemberInfo {
 	createdBy: Omit<IUserInfo, 'name' | 'status'>;
 	createdAt: Date;
 }
+
+const addMembers = async (credentials: Record<string, any>, teamName: string, members: IUser['_id'][]): Promise<void> => {
+	await request
+		.post(api('teams.addMembers'))
+		.set(credentials)
+		.send({
+			teamName,
+			members: members.map((userId) => ({ userId, roles: ['member'] })),
+		});
+};
 
 describe('[Teams]', () => {
 	before((done) => getCredentials(done));

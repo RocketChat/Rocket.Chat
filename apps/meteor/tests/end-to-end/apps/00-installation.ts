@@ -2,10 +2,12 @@ import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials, api } from '../../data/api-data';
-import { APP_URL, apps, APP_USERNAME } from '../../data/apps/apps-data';
+import { APP_URL, apps } from '../../data/apps/apps-data';
 import { cleanupApps } from '../../data/apps/helper';
 import { updatePermission } from '../../data/permissions.helper';
 import { getUserByUsername } from '../../data/users.helper';
+
+const APP_USERNAME = 'appsrocketchattester.bot';
 
 describe('Apps - Installation', function () {
 	this.retries(0);

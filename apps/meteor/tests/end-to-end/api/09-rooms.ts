@@ -9,7 +9,7 @@ import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
-import { drawioURL, imgURL, lstURL, svgLogoFileName, svgLogoURL } from '../../data/interactions';
+import { imgURL } from '../../data/interactions';
 import { getSettingValueById, updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { deleteTeam } from '../../data/teams.helper';
@@ -17,6 +17,11 @@ import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
+
+const lstURL = './tests/e2e/fixtures/files/lst-test.lst';
+const drawioURL = './tests/e2e/fixtures/files/diagram.drawio';
+const svgLogoURL = './public/images/logo/logo.svg';
+const svgLogoFileName = 'logo.svg';
 
 describe('[Rooms]', function () {
 	this.retries(0);
