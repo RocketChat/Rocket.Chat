@@ -16,7 +16,7 @@ describe('[Assets]', function () {
 
 	describe('[/assets.setAsset]', () => {
 		it('should set the "logo" asset', (done) => {
-			request
+			void request
 				.post(api('assets.setAsset'))
 				.set(credentials)
 				.attach('asset', imgURL)
@@ -31,7 +31,7 @@ describe('[Assets]', function () {
 				.end(done);
 		});
 		it('should throw an error when we try set an invalid asset', (done) => {
-			request
+			void request
 				.post(api('assets.setAsset'))
 				.set(credentials)
 				.attach('invalidAsset', imgURL)
@@ -46,7 +46,7 @@ describe('[Assets]', function () {
 
 	describe('[/assets.unsetAsset]', () => {
 		it('should unset the "logo" asset', (done) => {
-			request
+			void request
 				.post(api('assets.unsetAsset'))
 				.set(credentials)
 				.send({
@@ -60,7 +60,7 @@ describe('[Assets]', function () {
 				.end(done);
 		});
 		it('should throw an error when we try set an invalid asset', (done) => {
-			request
+			void request
 				.post(api('assets.unsetAsset'))
 				.set(credentials)
 				.send({

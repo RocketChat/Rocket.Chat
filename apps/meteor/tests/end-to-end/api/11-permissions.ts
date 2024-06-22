@@ -13,7 +13,7 @@ describe('[Permissions]', function () {
 
 	describe('[/permissions.listAll]', () => {
 		it('should return an array with update and remove properties', (done) => {
-			request
+			void request
 				.get(api('permissions.listAll'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -27,7 +27,7 @@ describe('[Permissions]', function () {
 		});
 
 		it('should return an array with update and remov properties when search by "updatedSince" query parameter', (done) => {
-			request
+			void request
 				.get(api('permissions.listAll?updatedSince=2018-11-27T13:52:01Z'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -41,7 +41,7 @@ describe('[Permissions]', function () {
 		});
 
 		it('should return an error when updatedSince query parameter is not a valid ISODate string', (done) => {
-			request
+			void request
 				.get(api('permissions.listAll?updatedSince=fsafdf'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -61,7 +61,7 @@ describe('[Permissions]', function () {
 					roles: ['admin', 'user'],
 				},
 			];
-			request
+			void request
 				.post(api('permissions.update'))
 				.set(credentials)
 				.send({ permissions })
@@ -85,7 +85,7 @@ describe('[Permissions]', function () {
 					roles: ['admin'],
 				},
 			];
-			request
+			void request
 				.post(api('permissions.update'))
 				.set(credentials)
 				.send({ permissions })
@@ -103,7 +103,7 @@ describe('[Permissions]', function () {
 					roles: ['this-role-does-not-exist'],
 				},
 			];
-			request
+			void request
 				.post(api('permissions.update'))
 				.set(credentials)
 				.send({ permissions })
@@ -116,7 +116,7 @@ describe('[Permissions]', function () {
 		});
 		it('should 400 when trying to set permissions to a string', (done) => {
 			const permissions = '';
-			request
+			void request
 				.post(api('permissions.update'))
 				.set(credentials)
 				.send({ permissions })

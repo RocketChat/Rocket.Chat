@@ -1,3 +1,5 @@
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
@@ -5,6 +7,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage } from '../../data/chat.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Commands]', function () {
@@ -14,7 +17,7 @@ describe('[Commands]', function () {
 
 	describe('[/commands.get]', () => {
 		it('should return an error when call the endpoint without "command" required parameter', (done) => {
-			request
+			void request
 				.get(api('commands.get'))
 				.set(credentials)
 				.expect(400)
@@ -25,7 +28,7 @@ describe('[Commands]', function () {
 				.end(done);
 		});
 		it('should return an error when call the endpoint with an invalid command', (done) => {
-			request
+			void request
 				.get(api('commands.get'))
 				.set(credentials)
 				.query({
@@ -39,7 +42,7 @@ describe('[Commands]', function () {
 				.end(done);
 		});
 		it('should return success when parameters are correct', (done) => {
-			request
+			void request
 				.get(api('commands.get'))
 				.set(credentials)
 				.query({
@@ -94,8 +97,8 @@ describe('[Commands]', function () {
 	});
 
 	describe('[/commands.run]', () => {
-		let testChannel;
-		let threadMessage;
+		let testChannel: IRoom;
+		let threadMessage: IThreadMessage;
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `channel.test.commands.${Date.now()}` })).body.channel;
@@ -116,7 +119,7 @@ describe('[Commands]', function () {
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
 		it('should return an error when call the endpoint without "command" required parameter', (done) => {
-			request
+			void request
 				.post(api('commands.run'))
 				.set(credentials)
 				.expect(400)
@@ -127,7 +130,7 @@ describe('[Commands]', function () {
 				.end(done);
 		});
 		it('should return an error when call the endpoint with the param "params" and it is not a string', (done) => {
-			request
+			void request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
@@ -142,7 +145,7 @@ describe('[Commands]', function () {
 				.end(done);
 		});
 		it('should return an error when call the endpoint without "roomId" required parameter', (done) => {
-			request
+			void request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
@@ -157,7 +160,7 @@ describe('[Commands]', function () {
 				.end(done);
 		});
 		it('should return an error when call the endpoint with the param "tmid" and it is not a string', (done) => {
-			request
+			void request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
@@ -174,7 +177,7 @@ describe('[Commands]', function () {
 				.end(done);
 		});
 		it('should return an error when call the endpoint with the invalid "command" param', (done) => {
-			request
+			void request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
@@ -190,7 +193,7 @@ describe('[Commands]', function () {
 				.end(done);
 		});
 		it('should return an error when call the endpoint with an invalid thread id', (done) => {
-			request
+			void request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
@@ -207,7 +210,7 @@ describe('[Commands]', function () {
 				.end(done);
 		});
 		it('should return an error when call the endpoint with a valid thread id of wrong channel', (done) => {
-			request
+			void request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
@@ -224,7 +227,7 @@ describe('[Commands]', function () {
 				.end(done);
 		});
 		it('should return success when parameters are correct', (done) => {
-			request
+			void request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
@@ -243,8 +246,8 @@ describe('[Commands]', function () {
 
 	describe('Command archive', function () {
 		describe('unauthorized cases', () => {
-			let user;
-			let credentials;
+			let user: TestUser<IUser>;
+			let credentials: Credentials;
 
 			this.beforeAll(async () => {
 				user = await createUser({
@@ -319,8 +322,8 @@ describe('[Commands]', function () {
 
 	describe('Command unarchive', function () {
 		describe('unauthorized cases', () => {
-			let user;
-			let credentials;
+			let user: TestUser<IUser>;
+			let credentials: Credentials;
 			this.beforeAll(async () => {
 				user = await createUser({
 					joinDefaultChannels: true,

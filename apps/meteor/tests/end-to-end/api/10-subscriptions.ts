@@ -1,9 +1,12 @@
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { adminUsername } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Subscriptions]', function () {
@@ -11,7 +14,7 @@ describe('[Subscriptions]', function () {
 
 	before((done) => getCredentials(done));
 
-	let testChannel;
+	let testChannel: IRoom;
 
 	before(async () => {
 		testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}` })).body.channel;
@@ -20,7 +23,7 @@ describe('[Subscriptions]', function () {
 	after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
 	it('/subscriptions.get', (done) => {
-		request
+		void request
 			.get(api('subscriptions.get'))
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
@@ -34,7 +37,7 @@ describe('[Subscriptions]', function () {
 	});
 
 	it('/subscriptions.get?updatedSince', (done) => {
-		request
+		void request
 			.get(api('subscriptions.get'))
 			.set(credentials)
 			.query({
@@ -51,7 +54,7 @@ describe('[Subscriptions]', function () {
 
 	it('/subscriptions.getOne:', () => {
 		it('subscriptions.getOne', (done) => {
-			request
+			void request
 				.get(api('subscriptions.getOne'))
 				.set(credentials)
 				.query({
@@ -68,9 +71,9 @@ describe('[Subscriptions]', function () {
 	});
 
 	describe('[/subscriptions.read]', () => {
-		let testChannel;
-		let testGroup;
-		let testDM;
+		let testChannel: IRoom;
+		let testGroup: IRoom;
+		let testDM: IRoom;
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}` })).body.channel;
@@ -87,7 +90,7 @@ describe('[Subscriptions]', function () {
 		);
 
 		it('should mark public channels as read', (done) => {
-			request
+			void request
 				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
@@ -101,7 +104,7 @@ describe('[Subscriptions]', function () {
 		});
 
 		it('should mark groups as read', (done) => {
-			request
+			void request
 				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
@@ -115,7 +118,7 @@ describe('[Subscriptions]', function () {
 		});
 
 		it('should mark DMs as read', (done) => {
-			request
+			void request
 				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
@@ -129,7 +132,7 @@ describe('[Subscriptions]', function () {
 		});
 
 		it('should fail on two params with different ids', (done) => {
-			request
+			void request
 				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
@@ -145,7 +148,7 @@ describe('[Subscriptions]', function () {
 		});
 
 		it('should fail on mark inexistent public channel as read', (done) => {
-			request
+			void request
 				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
@@ -160,7 +163,7 @@ describe('[Subscriptions]', function () {
 		});
 
 		it('should fail on mark inexistent group as read', (done) => {
-			request
+			void request
 				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
@@ -175,7 +178,7 @@ describe('[Subscriptions]', function () {
 		});
 
 		it('should fail on mark inexistent DM as read', (done) => {
-			request
+			void request
 				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
@@ -190,7 +193,7 @@ describe('[Subscriptions]', function () {
 		});
 
 		it('should fail on invalid params', (done) => {
-			request
+			void request
 				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({
@@ -205,7 +208,7 @@ describe('[Subscriptions]', function () {
 		});
 
 		it('should fail on empty params', (done) => {
-			request
+			void request
 				.post(api('subscriptions.read'))
 				.set(credentials)
 				.send({})
@@ -218,9 +221,9 @@ describe('[Subscriptions]', function () {
 		});
 
 		describe('should handle threads correctly', () => {
-			let threadId;
-			let user;
-			let threadUserCredentials;
+			let threadId: IThreadMessage['_id'];
+			let user: TestUser<IUser>;
+			let threadUserCredentials: Credentials;
 
 			before(async () => {
 				user = await createUser({ username: 'testthread123', password: 'testthread123' });
@@ -320,7 +323,7 @@ describe('[Subscriptions]', function () {
 	});
 
 	describe('[/subscriptions.unread]', () => {
-		let testChannel;
+		let testChannel: IRoom;
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}` })).body.channel;
@@ -329,7 +332,7 @@ describe('[Subscriptions]', function () {
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
 		it('should fail when there are no messages on an channel', (done) => {
-			request
+			void request
 				.post(api('subscriptions.unread'))
 				.set(credentials)
 				.send({
@@ -344,7 +347,7 @@ describe('[Subscriptions]', function () {
 				.end(done);
 		});
 		it('sending message', (done) => {
-			request
+			void request
 				.post(api('chat.sendMessage'))
 				.set(credentials)
 				.send({
@@ -362,7 +365,7 @@ describe('[Subscriptions]', function () {
 				.end(done);
 		});
 		it('should return success: true when make as unread successfully', (done) => {
-			request
+			void request
 				.post(api('subscriptions.unread'))
 				.set(credentials)
 				.send({
@@ -376,7 +379,7 @@ describe('[Subscriptions]', function () {
 		});
 
 		it('should fail on invalid params', (done) => {
-			request
+			void request
 				.post(api('subscriptions.unread'))
 				.set(credentials)
 				.send({
@@ -391,7 +394,7 @@ describe('[Subscriptions]', function () {
 		});
 
 		it('should fail on empty params', (done) => {
-			request
+			void request
 				.post(api('subscriptions.unread'))
 				.set(credentials)
 				.send({})
