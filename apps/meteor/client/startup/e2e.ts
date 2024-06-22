@@ -65,7 +65,7 @@ Meteor.startup(() => {
 		});
 
 		// Encrypt messages before sending
-		offClientBeforeSendMessage = onClientBeforeSendMessage.use(async (message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>) => {
+		offClientBeforeSendMessage = onClientBeforeSendMessage.use(async (message) => {
 			const e2eRoom = await e2e.getInstanceByRoomId(message.rid);
 
 			if (!e2eRoom) {
@@ -83,11 +83,7 @@ Meteor.startup(() => {
 			}
 
 			// Should encrypt this message.
-			const msg = await e2eRoom.encrypt(message);
-			message.msg = msg;
-			message.t = 'e2e';
-			message.e2e = 'pending';
-			return message;
+			return e2eRoom.encryptMessage(message);
 		});
 
 		listenersAttached = true;
