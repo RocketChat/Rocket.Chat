@@ -1,5 +1,25 @@
 # Change Log
 
+## 8.0.0-rc.0
+
+### Minor Changes
+
+- ([#31455](https://github.com/RocketChat/Rocket.Chat/pull/31455)) Introduced new elements for apps to select users
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a565999ae0, 1240c874a5, 59df102d0c, 5f95c4ec6b, f75a2cb4bb, 4f72d62aa7, dfa49bdbb2]:</summary>
+
+  - @rocket.chat/ui-kit@0.35.0-rc.0
+  - @rocket.chat/core-typings@6.10.0-rc.0
+  - @rocket.chat/gazzodown@8.0.0-rc.0
+  - @rocket.chat/ui-video-conf@8.0.0-rc.0
+  - @rocket.chat/ui-contexts@8.0.0-rc.0
+  - @rocket.chat/ui-avatar@4.0.0-rc.0
+  </details>
+
 ## 7.0.0
 
 ### Minor Changes

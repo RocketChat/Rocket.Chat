@@ -1,5 +1,19 @@
 # @rocket.chat/ddp-client
 
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [495628bce0, f75a2cb4bb, 07c4ca0621, 4f72d62aa7]:</summary>
+
+  - @rocket.chat/rest-typings@6.10.0-rc.0
+  - @rocket.chat/api-client@0.2.0-rc.0
+  </details>
+
 ## 0.2.24
 
 ### Patch Changes
