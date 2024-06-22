@@ -1,4 +1,5 @@
 import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import { isE2EEPinnedMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
@@ -125,6 +126,11 @@ Meteor.startup(() => {
 			if (!e2eRoom?.shouldConvertReceivedMessages()) {
 				return msg;
 			}
+
+			if (isE2EEPinnedMessage(msg)) {
+				return e2e.decryptPinnedMessage(msg);
+			}
+
 			return e2e.decryptMessage(msg);
 		});
 
