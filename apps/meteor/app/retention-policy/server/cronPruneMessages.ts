@@ -2,6 +2,7 @@ import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { Rooms } from '@rocket.chat/models';
 
+import { getCronAdvancedTimerFromPrecisionSetting } from '../../../lib/getCronAdvancedTimerFromPrecisionSetting';
 import { cleanRoomHistory } from '../../lib/server/functions/cleanRoomHistory';
 import { settings } from '../../settings/server';
 
@@ -79,19 +80,6 @@ async function job(): Promise<void> {
 	}
 }
 
-function getSchedule(precision: '0' | '1' | '2' | '3'): string {
-	switch (precision) {
-		case '0':
-			return '*/30 * * * *'; // 30 minutes
-		case '1':
-			return '0 * * * *'; // hour
-		case '2':
-			return '0 */6 * * *'; // 6 hours
-		case '3':
-			return '0 0 * * *'; // day
-	}
-}
-
 const pruneCronName = 'Prune old messages by retention policy';
 
 async function deployCron(precision: string): Promise<void> {
@@ -138,7 +126,7 @@ settings.watchMultiple(
 
 		const precision =
 			(settings.get<boolean>('RetentionPolicy_Advanced_Precision') && settings.get<string>('RetentionPolicy_Advanced_Precision_Cron')) ||
-			getSchedule(settings.get('RetentionPolicy_Precision'));
+			getCronAdvancedTimerFromPrecisionSetting(settings.get('RetentionPolicy_Precision'));
 
 		return deployCron(precision);
 	},

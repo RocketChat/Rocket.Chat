@@ -156,7 +156,11 @@ class E2E extends Emitter {
 		delete this.instancesByRoomId[rid];
 	}
 
-	async persistKeys({ public_key, private_key }: KeyPair, password: string): Promise<void> {
+	async persistKeys(
+		{ public_key, private_key }: KeyPair,
+		password: string,
+		{ force }: { force: boolean } = { force: false },
+	): Promise<void> {
 		if (typeof public_key !== 'string' || typeof private_key !== 'string') {
 			throw new Error('Failed to persist keys as they are not strings.');
 		}
@@ -170,6 +174,7 @@ class E2E extends Emitter {
 		await sdk.rest.post('/v1/e2e.setUserPublicAndPrivateKeys', {
 			public_key,
 			private_key: encodedPrivateKey,
+			force,
 		});
 	}
 
@@ -300,7 +305,7 @@ class E2E extends Emitter {
 	}
 
 	async changePassword(newPassword: string): Promise<void> {
-		await this.persistKeys(this.getKeysFromLocalStorage(), newPassword);
+		await this.persistKeys(this.getKeysFromLocalStorage(), newPassword, { force: true });
 
 		if (Meteor._localStorage.getItem('e2e.randomPassword')) {
 			Meteor._localStorage.setItem('e2e.randomPassword', newPassword);
@@ -316,7 +321,10 @@ class E2E extends Emitter {
 			this.db_private_key = private_key;
 		} catch (error) {
 			this.setState(E2EEState.ERROR);
-			return this.error('Error fetching RSA keys: ', error);
+			this.error('Error fetching RSA keys: ', error);
+			// Stop any process since we can't communicate with the server
+			// to get the keys. This prevents new key generation
+			throw error;
 		}
 	}
 
@@ -510,6 +518,20 @@ class E2E extends Emitter {
 		}
 	}
 
+	async decryptFileContent(file: IUploadWithUser): Promise<IUploadWithUser> {
+		if (!file.rid) {
+			return file;
+		}
+
+		const e2eRoom = await this.getInstanceByRoomId(file.rid);
+
+		if (!e2eRoom) {
+			return file;
+		}
+
+		return e2eRoom.decryptContent(file);
+	}
+
 	async decryptMessage(message: IMessage | IE2EEMessage): Promise<IMessage> {
 		if (!isE2EEMessage(message) || message.e2e === 'done') {
 			return message;
@@ -521,17 +543,7 @@ class E2E extends Emitter {
 			return message;
 		}
 
-		const data = await e2eRoom.decrypt(message.msg);
-
-		if (!data) {
-			return message;
-		}
-
-		const decryptedMessage: IE2EEMessage = {
-			...message,
-			msg: data.text,
-			e2e: 'done',
-		};
+		const decryptedMessage: IE2EEMessage = await e2eRoom.decryptMessage(message);
 
 		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
 
