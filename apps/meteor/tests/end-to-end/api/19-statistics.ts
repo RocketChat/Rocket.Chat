@@ -12,10 +12,10 @@ describe('[Statistics]', function () {
 	after(() => updatePermission('view-statistics', ['admin']));
 
 	describe('[/statistics]', () => {
-		let lastUptime;
+		let lastUptime: unknown;
 		it('should return an error when the user does not have the necessary permission', (done) => {
-			updatePermission('view-statistics', []).then(() => {
-				request
+			void updatePermission('view-statistics', []).then(() => {
+				void request
 					.get(api('statistics'))
 					.set(credentials)
 					.expect(400)
@@ -27,8 +27,8 @@ describe('[Statistics]', function () {
 			});
 		});
 		it('should return an object with the statistics', (done) => {
-			updatePermission('view-statistics', ['admin']).then(() => {
-				request
+			void updatePermission('view-statistics', ['admin']).then(() => {
+				void request
 					.get(api('statistics'))
 					.set(credentials)
 					.expect(200)
@@ -42,7 +42,7 @@ describe('[Statistics]', function () {
 			});
 		});
 		it('should update the statistics when is provided the "refresh:true" query parameter', (done) => {
-			request
+			void request
 				.get(api('statistics?refresh=true'))
 				.set(credentials)
 				.expect(200)
@@ -58,8 +58,8 @@ describe('[Statistics]', function () {
 
 	describe('[/statistics.list]', () => {
 		it('should return an error when the user does not have the necessary permission', (done) => {
-			updatePermission('view-statistics', []).then(() => {
-				request
+			void updatePermission('view-statistics', []).then(() => {
+				void request
 					.get(api('statistics.list'))
 					.set(credentials)
 					.expect(400)
@@ -71,8 +71,8 @@ describe('[Statistics]', function () {
 			});
 		});
 		it('should return an array with the statistics', (done) => {
-			updatePermission('view-statistics', ['admin']).then(() => {
-				request
+			void updatePermission('view-statistics', ['admin']).then(() => {
+				void request
 					.get(api('statistics.list'))
 					.set(credentials)
 					.expect(200)
@@ -87,8 +87,8 @@ describe('[Statistics]', function () {
 			});
 		});
 		it('should return an array with the statistics even requested with count and offset params', (done) => {
-			updatePermission('view-statistics', ['admin']).then(() => {
-				request
+			void updatePermission('view-statistics', ['admin']).then(() => {
+				void request
 					.get(api('statistics.list'))
 					.set(credentials)
 					.query({

@@ -10,7 +10,7 @@ describe('banners', function () {
 
 	describe('[/banners.getNew]', () => {
 		it('should fail if not logged in', (done) => {
-			request
+			void request
 				.get(api('banners.getNew'))
 				.query({
 					platform: 'web',
@@ -24,7 +24,7 @@ describe('banners', function () {
 		});
 
 		it('should fail if missing platform key', (done) => {
-			request
+			void request
 				.get(api('banners.getNew'))
 				.set(credentials)
 				.expect(400)
@@ -35,7 +35,7 @@ describe('banners', function () {
 		});
 
 		it('should fail if platform param is unknown', (done) => {
-			request
+			void request
 				.get(api('banners.getNew'))
 				.set(credentials)
 				.query({
@@ -49,7 +49,7 @@ describe('banners', function () {
 		});
 
 		it('should fail if platform param is empty', (done) => {
-			request
+			void request
 				.get(api('banners.getNew'))
 				.set(credentials)
 				.query({
@@ -63,7 +63,7 @@ describe('banners', function () {
 		});
 
 		it('should return banners if platform param is valid', (done) => {
-			request
+			void request
 				.get(api('banners.getNew'))
 				.set(credentials)
 				.query({
@@ -80,7 +80,7 @@ describe('banners', function () {
 
 	describe('[/banners.dismiss]', () => {
 		it('should fail if not logged in', (done) => {
-			request
+			void request
 				.post(api('banners.dismiss'))
 				.send({
 					bannerId: '123',
@@ -94,7 +94,7 @@ describe('banners', function () {
 		});
 
 		it('should fail if missing bannerId key', (done) => {
-			request
+			void request
 				.post(api('banners.dismiss'))
 				.set(credentials)
 				.send({})
@@ -107,7 +107,7 @@ describe('banners', function () {
 		});
 
 		it('should fail if missing bannerId is empty', (done) => {
-			request
+			void request
 				.post(api('banners.dismiss'))
 				.set(credentials)
 				.send({
@@ -121,7 +121,7 @@ describe('banners', function () {
 		});
 
 		it('should fail if missing bannerId is invalid', (done) => {
-			request
+			void request
 				.post(api('banners.dismiss'))
 				.set(credentials)
 				.send({

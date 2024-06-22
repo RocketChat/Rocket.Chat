@@ -1,16 +1,19 @@
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('licenses', function () {
-	let createdUser;
+	let createdUser: TestUser<IUser>;
 	this.retries(0);
 
 	before((done) => getCredentials(done));
-	let unauthorizedUserCredentials;
+	let unauthorizedUserCredentials: Credentials;
 
 	before(async () => {
 		createdUser = await createUser();
@@ -21,7 +24,7 @@ describe('licenses', function () {
 
 	describe('[/licenses.add]', () => {
 		it('should fail if not logged in', (done) => {
-			request
+			void request
 				.post(api('licenses.add'))
 				.send({
 					license: '',
@@ -36,7 +39,7 @@ describe('licenses', function () {
 		});
 
 		it('should fail if user is unauthorized', (done) => {
-			request
+			void request
 				.post(api('licenses.add'))
 				.set(unauthorizedUserCredentials)
 				.send({
@@ -52,7 +55,7 @@ describe('licenses', function () {
 		});
 
 		it('should fail if license is invalid', (done) => {
-			request
+			void request
 				.post(api('licenses.add'))
 				.set(credentials)
 				.send({
@@ -70,7 +73,7 @@ describe('licenses', function () {
 
 	describe('[/licenses.get]', () => {
 		it('should fail if not logged in', (done) => {
-			request
+			void request
 				.get(api('licenses.get'))
 				.expect('Content-Type', 'application/json')
 				.expect(401)
@@ -82,7 +85,7 @@ describe('licenses', function () {
 		});
 
 		it('should fail if user is unauthorized', (done) => {
-			request
+			void request
 				.get(api('licenses.get'))
 				.set(unauthorizedUserCredentials)
 				.expect('Content-Type', 'application/json')
@@ -95,7 +98,7 @@ describe('licenses', function () {
 		});
 
 		it('should return licenses if user is logged in and is authorized', (done) => {
-			request
+			void request
 				.get(api('licenses.get'))
 				.set(credentials)
 				.expect(200)
@@ -110,7 +113,7 @@ describe('licenses', function () {
 
 	describe('[/licenses.info]', () => {
 		it('should fail if not logged in', (done) => {
-			request
+			void request
 				.get(api('licenses.info'))
 				.expect('Content-Type', 'application/json')
 				.expect(401)
@@ -122,7 +125,7 @@ describe('licenses', function () {
 		});
 
 		it('should return limited information if user is unauthorized', (done) => {
-			request
+			void request
 				.get(api('licenses.info'))
 				.set(unauthorizedUserCredentials)
 				.expect('Content-Type', 'application/json')
@@ -137,7 +140,7 @@ describe('licenses', function () {
 		});
 
 		it('should return unrestricted info if user is logged in and is authorized', (done) => {
-			request
+			void request
 				.get(api('licenses.info'))
 				.set(credentials)
 				.expect(200)
@@ -156,7 +159,7 @@ describe('licenses', function () {
 
 	describe('[/licenses.isEnterprise]', () => {
 		it('should fail if not logged in', (done) => {
-			request
+			void request
 				.get(api('licenses.isEnterprise'))
 				.expect('Content-Type', 'application/json')
 				.expect(401)
@@ -168,7 +171,7 @@ describe('licenses', function () {
 		});
 
 		it('should pass if user has user role', (done) => {
-			request
+			void request
 				.get(api('licenses.isEnterprise'))
 				.set(unauthorizedUserCredentials)
 				.expect('Content-Type', 'application/json')
@@ -180,7 +183,7 @@ describe('licenses', function () {
 		});
 
 		it('should pass if user has admin role', (done) => {
-			request
+			void request
 				.get(api('licenses.isEnterprise'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')

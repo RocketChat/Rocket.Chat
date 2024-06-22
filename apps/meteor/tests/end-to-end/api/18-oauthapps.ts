@@ -1,3 +1,4 @@
+import type { IOAuthApps } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
@@ -5,7 +6,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
 
 describe('[OAuthApps]', function () {
-	const createdAppsIds = [];
+	const createdAppsIds: IOAuthApps['_id'][] = [];
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -23,8 +24,8 @@ describe('[OAuthApps]', function () {
 
 	describe('[/oauth-apps.list]', () => {
 		it('should return an error when the user does not have the necessary permission', (done) => {
-			updatePermission('manage-oauth-apps', []).then(() => {
-				request
+			void updatePermission('manage-oauth-apps', []).then(() => {
+				void request
 					.get(api('oauth-apps.list'))
 					.set(credentials)
 					.expect(400)
@@ -36,8 +37,8 @@ describe('[OAuthApps]', function () {
 			});
 		});
 		it('should return an array of oauth apps', (done) => {
-			updatePermission('manage-oauth-apps', ['admin']).then(() => {
-				request
+			void updatePermission('manage-oauth-apps', ['admin']).then(() => {
+				void request
 					.get(api('oauth-apps.list'))
 					.set(credentials)
 					.expect(200)
@@ -52,7 +53,7 @@ describe('[OAuthApps]', function () {
 
 	describe('[/oauth-apps.get]', () => {
 		it('should return a single oauthApp by id', (done) => {
-			request
+			void request
 				.get(api('oauth-apps.get?appId=zapier'))
 				.set(credentials)
 				.expect(200)
@@ -64,7 +65,7 @@ describe('[OAuthApps]', function () {
 				.end(done);
 		});
 		it('should return a single oauthApp by client id', (done) => {
-			request
+			void request
 				.get(api('oauth-apps.get?clientId=zapier'))
 				.set(credentials)
 				.expect(200)
@@ -76,8 +77,8 @@ describe('[OAuthApps]', function () {
 				.end(done);
 		});
 		it('should return a 403 Forbidden error when the user does not have the necessary permission by client id', (done) => {
-			updatePermission('manage-oauth-apps', []).then(() => {
-				request
+			void updatePermission('manage-oauth-apps', []).then(() => {
+				void request
 					.get(api('oauth-apps.get?clientId=zapier'))
 					.set(credentials)
 					.expect(403)
@@ -89,8 +90,8 @@ describe('[OAuthApps]', function () {
 			});
 		});
 		it('should return a 403 Forbidden error when the user does not have the necessary permission by app id', (done) => {
-			updatePermission('manage-oauth-apps', []).then(() => {
-				request
+			void updatePermission('manage-oauth-apps', []).then(() => {
+				void request
 					.get(api('oauth-apps.get?appId=zapier'))
 					.set(credentials)
 					.expect(403)
@@ -197,13 +198,13 @@ describe('[OAuthApps]', function () {
 	});
 
 	describe('[/oauth-apps.update]', () => {
-		let appId;
+		let appId: IOAuthApps['_id'];
 
 		before((done) => {
 			const name = 'test-oauth-app';
 			const redirectUri = 'https://test.com';
 			const active = true;
-			request
+			void request
 				.post(api('oauth-apps.create'))
 				.set(credentials)
 				.send({
@@ -213,7 +214,7 @@ describe('[OAuthApps]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.end((err, res) => {
+				.end((_err, res) => {
 					appId = res.body.application._id;
 					createdAppsIds.push(appId);
 					done();
@@ -246,13 +247,13 @@ describe('[OAuthApps]', function () {
 	});
 
 	describe('[/oauth-apps.delete]', () => {
-		let appId;
+		let appId: IOAuthApps['_id'];
 
 		before((done) => {
 			const name = 'test-oauth-app';
 			const redirectUri = 'https://test.com';
 			const active = true;
-			request
+			void request
 				.post(api('oauth-apps.create'))
 				.set(credentials)
 				.send({
@@ -262,7 +263,7 @@ describe('[OAuthApps]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.end((err, res) => {
+				.end((_err, res) => {
 					appId = res.body.application._id;
 					done();
 				});

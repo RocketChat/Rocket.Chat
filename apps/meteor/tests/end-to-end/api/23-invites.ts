@@ -1,16 +1,17 @@
+import type { IInvite } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 
 describe('Invites', function () {
-	let testInviteID;
+	let testInviteID: IInvite['_id'];
 	this.retries(0);
 
 	before((done) => getCredentials(done));
 	describe('POST [/findOrCreateInvite]', () => {
 		it('should fail if not logged in', (done) => {
-			request
+			void request
 				.post(api('findOrCreateInvite'))
 				.send({
 					rid: 'GENERAL',
@@ -26,7 +27,7 @@ describe('Invites', function () {
 		});
 
 		it('should fail if invalid roomid', (done) => {
-			request
+			void request
 				.post(api('findOrCreateInvite'))
 				.set(credentials)
 				.send({
@@ -43,7 +44,7 @@ describe('Invites', function () {
 		});
 
 		it('should create an invite for GENERAL', (done) => {
-			request
+			void request
 				.post(api('findOrCreateInvite'))
 				.set(credentials)
 				.send({
@@ -64,7 +65,7 @@ describe('Invites', function () {
 		});
 
 		it('should return an existing invite for GENERAL', (done) => {
-			request
+			void request
 				.post(api('findOrCreateInvite'))
 				.set(credentials)
 				.send({
@@ -86,7 +87,7 @@ describe('Invites', function () {
 
 	describe('GET [/listInvites]', () => {
 		it('should fail if not logged in', (done) => {
-			request
+			void request
 				.get(api('listInvites'))
 				.expect(401)
 				.expect((res) => {
@@ -97,7 +98,7 @@ describe('Invites', function () {
 		});
 
 		it('should return the existing invite for GENERAL', (done) => {
-			request
+			void request
 				.get(api('listInvites'))
 				.set(credentials)
 				.expect(200)
@@ -110,7 +111,7 @@ describe('Invites', function () {
 
 	describe('POST [/useInviteToken]', () => {
 		it('should fail if not logged in', (done) => {
-			request
+			void request
 				.post(api('useInviteToken'))
 				.expect(401)
 				.expect((res) => {
@@ -121,7 +122,7 @@ describe('Invites', function () {
 		});
 
 		it('should fail if invalid token', (done) => {
-			request
+			void request
 				.post(api('useInviteToken'))
 				.set(credentials)
 				.send({
@@ -136,7 +137,7 @@ describe('Invites', function () {
 		});
 
 		it('should fail if missing token', (done) => {
-			request
+			void request
 				.post(api('useInviteToken'))
 				.set(credentials)
 				.send({})
@@ -149,7 +150,7 @@ describe('Invites', function () {
 		});
 
 		it('should use the existing invite for GENERAL', (done) => {
-			request
+			void request
 				.post(api('useInviteToken'))
 				.set(credentials)
 				.send({
@@ -165,7 +166,7 @@ describe('Invites', function () {
 
 	describe('POST [/validateInviteToken]', () => {
 		it('should warn if invalid token', (done) => {
-			request
+			void request
 				.post(api('validateInviteToken'))
 				.set(credentials)
 				.send({
@@ -180,7 +181,7 @@ describe('Invites', function () {
 		});
 
 		it('should succeed when valid token', (done) => {
-			request
+			void request
 				.post(api('validateInviteToken'))
 				.set(credentials)
 				.send({
@@ -197,7 +198,7 @@ describe('Invites', function () {
 
 	describe('DELETE [/removeInvite]', () => {
 		it('should fail if not logged in', (done) => {
-			request
+			void request
 				.delete(api(`removeInvite/${testInviteID}`))
 				.expect(401)
 				.expect((res) => {
@@ -208,7 +209,7 @@ describe('Invites', function () {
 		});
 
 		it('should fail if invalid token', (done) => {
-			request
+			void request
 				.delete(api('removeInvite/invalid'))
 				.set(credentials)
 				.expect(400)
@@ -220,7 +221,7 @@ describe('Invites', function () {
 		});
 
 		it('should succeed when valid token', (done) => {
-			request
+			void request
 				.delete(api(`removeInvite/${testInviteID}`))
 				.set(credentials)
 				.expect(200)
@@ -231,7 +232,7 @@ describe('Invites', function () {
 		});
 
 		it('should fail when deleting the same invite again', (done) => {
-			request
+			void request
 				.delete(api(`removeInvite/${testInviteID}`))
 				.set(credentials)
 				.expect(400)
