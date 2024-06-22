@@ -1,3 +1,4 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
@@ -17,7 +18,7 @@ describe('Apps - Slash Command "test-simple"', function () {
 
 	describe('[Slash command "test-simple"]', () => {
 		it('should return an error when no command is provided', (done) => {
-			request
+			void request
 				.post(api('commands.run'))
 				.send({
 					roomId: 'GENERAL',
@@ -32,7 +33,7 @@ describe('Apps - Slash Command "test-simple"', function () {
 				.end(done);
 		});
 		it('should return an error when the command does not exist', (done) => {
-			request
+			void request
 				.post(api('commands.run'))
 				.send({
 					roomId: 'GENERAL',
@@ -47,7 +48,7 @@ describe('Apps - Slash Command "test-simple"', function () {
 				.end(done);
 		});
 		it('should execute the slash command successfully', (done) => {
-			request
+			void request
 				.post(api('commands.run'))
 				.send({
 					roomId: 'GENERAL',
@@ -61,7 +62,7 @@ describe('Apps - Slash Command "test-simple"', function () {
 				.end(done);
 		});
 		it('should have sent the message correctly', (done) => {
-			request
+			void request
 				.get(api('chat.search'))
 				.query({
 					roomId: 'GENERAL',
@@ -70,7 +71,9 @@ describe('Apps - Slash Command "test-simple"', function () {
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
-					const message = res.body.messages.find((message) => message.msg === "Slashcommand 'test-simple' successfully executed");
+					const message = (res.body.messages as IMessage[]).find(
+						(message) => message.msg === "Slashcommand 'test-simple' successfully executed",
+					);
 					expect(message).to.not.be.equal(undefined);
 				})
 				.end(done);

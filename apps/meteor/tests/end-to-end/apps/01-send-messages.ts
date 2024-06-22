@@ -1,3 +1,4 @@
+import type { App, IMessage, IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
@@ -9,7 +10,7 @@ import { createRoom, deleteRoom } from '../../data/rooms.helper';
 
 describe('Apps - Send Messages As APP User', function () {
 	this.retries(0);
-	let app;
+	let app: App;
 
 	before((done) => getCredentials(done));
 	before(async () => {
@@ -21,25 +22,25 @@ describe('Apps - Send Messages As APP User', function () {
 
 	describe('[Send Message as app user]', () => {
 		it('should return an error when the room is not found', (done) => {
-			request
+			void request
 				.post(apps(`/public/${app.id}/send-message-as-app-user`))
 				.send({
 					roomId: 'invalid-room',
 				})
 				.set(credentials)
 				.expect(404)
-				.expect((err, res) => {
+				.expect((err: unknown, res: undefined) => {
 					expect(err).to.have.a.property('error');
 					expect(res).to.be.equal(undefined);
-					expect(err.error).to.have.a.property('text');
-					expect(err.error.text).to.be.equal('Room "invalid-room" could not be found');
+					expect((err as { error?: any }).error).to.have.a.property('text');
+					expect((err as { error?: any }).error.text).to.be.equal('Room "invalid-room" could not be found');
 				})
 				.end(done);
 		});
 		describe('Send to a Public Channel', () => {
-			let publicMessageId;
+			let publicMessageId: IMessage['_id'];
 			it('should send a message as app user', (done) => {
-				request
+				void request
 					.post(apps(`/public/${app.id}/send-message-as-app-user`))
 					.set(credentials)
 					.send({
@@ -59,8 +60,8 @@ describe('Apps - Send Messages As APP User', function () {
 			});
 		});
 		describe('Send to a Private Channel', () => {
-			let privateMessageId;
-			let group;
+			let privateMessageId: IMessage['_id'];
+			let group: IRoom;
 
 			before(async () => {
 				group = (
@@ -74,7 +75,7 @@ describe('Apps - Send Messages As APP User', function () {
 			after(() => deleteRoom({ type: 'p', roomId: group._id }));
 
 			it('should send a message as app user', (done) => {
-				request
+				void request
 					.post(apps(`/public/${app.id}/send-message-as-app-user`))
 					.set(credentials)
 					.send({
@@ -94,8 +95,8 @@ describe('Apps - Send Messages As APP User', function () {
 			});
 		});
 		describe('Send to a DM Channel', () => {
-			let DMMessageId;
-			let dmRoom;
+			let DMMessageId: IMessage['_id'];
+			let dmRoom: IRoom;
 
 			before(async () => {
 				dmRoom = (
@@ -109,7 +110,7 @@ describe('Apps - Send Messages As APP User', function () {
 			after(() => deleteRoom({ type: 'd', roomId: dmRoom._id }));
 
 			it('should send a message as app user', (done) => {
-				request
+				void request
 					.post(apps(`/public/${app.id}/send-message-as-app-user`))
 					.set(credentials)
 					.send({

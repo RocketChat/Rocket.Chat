@@ -58,7 +58,7 @@ export const getMessageById = ({ msgId }: { msgId: IMessage['_id'] }) => {
 		throw new Error('"msgId" is required in "getMessageById" test helper');
 	}
 
-	return new Promise((resolve) => {
+	return new Promise<IMessage>((resolve) => {
 		void request
 			.get(api(`chat.getMessage?msgId=${msgId}`))
 			.set(credentials)

@@ -1,3 +1,5 @@
+import type { Credentials } from '@rocket.chat/api-client';
+import type { App, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
@@ -7,11 +9,12 @@ import { cleanupApps, installTestApp } from '../../data/apps/helper';
 import { getMessageById } from '../../data/chat.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { adminUsername, password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('Apps - Send Messages As User', function () {
 	this.retries(0);
-	let app;
+	let app: App;
 
 	before((done) => getCredentials(done));
 	before(async () => {
@@ -23,41 +26,41 @@ describe('Apps - Send Messages As User', function () {
 
 	describe('[Send Message as user]', () => {
 		it('should return an error when the room is not found', (done) => {
-			request
+			void request
 				.post(apps(`/public/${app.id}/send-message-as-user`))
 				.send({
 					roomId: 'invalid-room',
 				})
 				.set(credentials)
 				.expect(404)
-				.expect((err, res) => {
+				.expect((err: unknown, res: undefined) => {
 					expect(err).to.have.a.property('error');
 					expect(res).to.be.equal(undefined);
-					expect(err.error).to.have.a.property('text');
-					expect(err.error.text).to.be.equal('Room "invalid-room" could not be found');
+					expect((err as { error?: any }).error).to.have.a.property('text');
+					expect((err as { error?: any }).error.text).to.be.equal('Room "invalid-room" could not be found');
 				})
 				.end(done);
 		});
 		it('should return an error when the user is not found', (done) => {
-			request
+			void request
 				.post(apps(`/public/${app.id}/send-message-as-user?userId=invalid-user`))
 				.send({
 					roomId: 'GENERAL',
 				})
 				.set(credentials)
 				.expect(404)
-				.expect((err, res) => {
+				.expect((err: unknown, res: undefined) => {
 					expect(err).to.have.a.property('error');
 					expect(res).to.be.equal(undefined);
-					expect(err.error).to.have.a.property('text');
-					expect(err.error.text).to.be.equal('User with id "invalid-user" could not be found');
+					expect((err as { error?: any }).error).to.have.a.property('text');
+					expect((err as { error?: any }).error.text).to.be.equal('User with id "invalid-user" could not be found');
 				})
 				.end(done);
 		});
 		describe('Send to a Public Channel', () => {
-			let publicMessageId;
+			let publicMessageId: IMessage['_id'];
 			it('should send a message as app user', (done) => {
-				request
+				void request
 					.post(apps(`/public/${app.id}/send-message-as-user?userId=${adminUsername}`))
 					.set(credentials)
 					.send({
@@ -77,10 +80,10 @@ describe('Apps - Send Messages As User', function () {
 			});
 		});
 		describe('Send to a Private Channel', () => {
-			let privateMessageId;
-			let group;
-			let user;
-			let userCredentials;
+			let privateMessageId: IMessage['_id'];
+			let group: IRoom;
+			let user: TestUser<IUser>;
+			let userCredentials: Credentials;
 
 			before(async () => {
 				group = (
@@ -96,7 +99,7 @@ describe('Apps - Send Messages As User', function () {
 			after(() => Promise.all([deleteRoom({ type: 'p', roomId: group._id }), deleteUser(user)]));
 
 			it('should return 500 when sending a message as user that has no permissions', (done) => {
-				request
+				void request
 					.post(apps(`/public/${app.id}/send-message-as-user?userId=${user._id}`))
 					.set(userCredentials)
 					.send({
@@ -106,7 +109,7 @@ describe('Apps - Send Messages As User', function () {
 					.end(done);
 			});
 			it('should send a message as app user', (done) => {
-				request
+				void request
 					.post(apps(`/public/${app.id}/send-message-as-user?userId=${adminUsername}`))
 					.set(credentials)
 					.send({
@@ -126,8 +129,8 @@ describe('Apps - Send Messages As User', function () {
 			});
 		});
 		describe('Send to a DM Channel', () => {
-			let DMMessageId;
-			let dmRoom;
+			let DMMessageId: IMessage['_id'];
+			let dmRoom: IRoom;
 
 			before(async () => {
 				dmRoom = (
@@ -141,7 +144,7 @@ describe('Apps - Send Messages As User', function () {
 			after(() => deleteRoom({ type: 'd', roomId: dmRoom._id }));
 
 			it('should send a message as app user', (done) => {
-				request
+				void request
 					.post(apps(`/public/${app.id}/send-message-as-user?userId=${adminUsername}`))
 					.set(credentials)
 					.send({

@@ -1,3 +1,4 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
@@ -18,7 +19,7 @@ describe('Apps - Slash Command "test-with-arguments"', function () {
 	describe('[Slash command "test-with-arguments"]', () => {
 		const params = 'argument';
 		it('should execute the slash command successfully', (done) => {
-			request
+			void request
 				.post(api('commands.run'))
 				.send({
 					roomId: 'GENERAL',
@@ -34,7 +35,7 @@ describe('Apps - Slash Command "test-with-arguments"', function () {
 		});
 		it('should have sent the message correctly', (done) => {
 			const searchText = `Slashcommand \'test-with-arguments\' successfully executed with arguments: "${params}"`;
-			request
+			void request
 				.get(api('chat.search'))
 				.query({
 					roomId: 'GENERAL',
@@ -43,7 +44,7 @@ describe('Apps - Slash Command "test-with-arguments"', function () {
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
-					const message = res.body.messages.find((message) => message.msg === searchText);
+					const message = (res.body.messages as IMessage[]).find((message) => message.msg === searchText);
 					expect(message).to.not.be.equal(undefined);
 				})
 				.end(done);

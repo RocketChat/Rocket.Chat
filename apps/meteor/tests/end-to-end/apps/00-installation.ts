@@ -18,8 +18,8 @@ describe('Apps - Installation', function () {
 
 	describe('[Installation]', () => {
 		it('should throw an error when trying to install an app and the apps framework is enabled but the user does not have the permission', (done) => {
-			updatePermission('manage-apps', []).then(() => {
-				request
+			void updatePermission('manage-apps', []).then(() => {
+				void request
 					.post(apps())
 					.set(credentials)
 					.send({
@@ -35,8 +35,8 @@ describe('Apps - Installation', function () {
 			});
 		});
 		it('should install the app successfully from a URL', (done) => {
-			updatePermission('manage-apps', ['admin']).then(() => {
-				request
+			void updatePermission('manage-apps', ['admin']).then(() => {
+				void request
 					.post(apps())
 					.set(credentials)
 					.send({
@@ -55,7 +55,7 @@ describe('Apps - Installation', function () {
 			});
 		});
 		it('should have created the app user successfully', (done) => {
-			getUserByUsername(APP_USERNAME)
+			void getUserByUsername(APP_USERNAME)
 				.then((user) => {
 					expect(user.username).to.be.equal(APP_USERNAME);
 				})
@@ -63,7 +63,7 @@ describe('Apps - Installation', function () {
 		});
 		describe('Slash commands registration', () => {
 			it('should have created the "test-simple" slash command successfully', (done) => {
-				request
+				void request
 					.get(api('commands.get?command=test-simple'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
@@ -76,7 +76,7 @@ describe('Apps - Installation', function () {
 					.end(done);
 			});
 			it('should have created the "test-with-arguments" slash command successfully', (done) => {
-				request
+				void request
 					.get(api('commands.get?command=test-with-arguments'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
@@ -91,7 +91,7 @@ describe('Apps - Installation', function () {
 		});
 		describe('Video Conf Provider registration', () => {
 			it('should have created two video conf provider successfully', (done) => {
-				request
+				void request
 					.get(api('video-conference.providers'))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')

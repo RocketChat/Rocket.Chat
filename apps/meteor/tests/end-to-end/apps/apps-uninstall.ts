@@ -1,3 +1,4 @@
+import type { App } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
@@ -7,7 +8,7 @@ import { installTestApp, cleanupApps } from '../../data/apps/helper';
 
 describe('Apps - Uninstall', function () {
 	this.retries(0);
-	let app;
+	let app: App;
 
 	before((done) => getCredentials(done));
 
@@ -20,7 +21,7 @@ describe('Apps - Uninstall', function () {
 
 	describe('[Uninstall]', () => {
 		it('should throw an error when trying to uninstall an invalid app', (done) => {
-			request
+			void request
 				.delete(apps('/invalid-id'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -32,7 +33,7 @@ describe('Apps - Uninstall', function () {
 				.end(done);
 		});
 		it('should remove the app successfully', (done) => {
-			request
+			void request
 				.delete(apps(`/${app.id}`))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
