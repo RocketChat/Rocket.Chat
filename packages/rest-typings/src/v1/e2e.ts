@@ -8,6 +8,7 @@ const ajv = new Ajv({
 type E2eSetUserPublicAndPrivateKeysProps = {
 	public_key: string;
 	private_key: string;
+	force?: boolean;
 };
 
 const E2eSetUserPublicAndPrivateKeysSchema = {
