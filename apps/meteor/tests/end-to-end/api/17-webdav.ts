@@ -10,7 +10,7 @@ describe('[Webdav]', function () {
 
 	describe('/webdav.getMyAccounts', () => {
 		it('should return my webdav accounts', (done) => {
-			request
+			void request
 				.get(api('webdav.getMyAccounts'))
 				.set(credentials)
 				.expect(200)
@@ -24,7 +24,7 @@ describe('[Webdav]', function () {
 
 	describe('/webdav.removeWebdavAccount', () => {
 		it('should return an error when send an invalid request', (done) => {
-			request
+			void request
 				.post(api('webdav.removeWebdavAccount'))
 				.set(credentials)
 				.send({})
@@ -36,7 +36,7 @@ describe('[Webdav]', function () {
 				.end(done);
 		});
 		it('should return an error when using an invalid account id', (done) => {
-			request
+			void request
 				.post(api('webdav.removeWebdavAccount'))
 				.set(credentials)
 				.send({

@@ -10,7 +10,7 @@ describe('[CustomUserStatus]', function () {
 
 	describe('[/custom-user-status.list]', () => {
 		it('should return custom user status', (done) => {
-			request
+			void request
 				.get(api('custom-user-status.list'))
 				.set(credentials)
 				.expect(200)
@@ -23,7 +23,7 @@ describe('[CustomUserStatus]', function () {
 				.end(done);
 		});
 		it('should return custom user status even requested with count and offset params', (done) => {
-			request
+			void request
 				.get(api('custom-user-status.list'))
 				.set(credentials)
 				.expect(200)

@@ -14,7 +14,7 @@ describe('[CustomSounds]', function () {
 
 	describe('[/custom-sounds.list]', () => {
 		it('should return custom sounds', (done) => {
-			request
+			void request
 				.get(api('custom-sounds.list'))
 				.set(credentials)
 				.expect(200)
@@ -27,7 +27,7 @@ describe('[CustomSounds]', function () {
 				.end(done);
 		});
 		it('should return custom sounds even requested with count and offset params', (done) => {
-			request
+			void request
 				.get(api('custom-sounds.list'))
 				.set(credentials)
 				.expect(200)
@@ -46,13 +46,13 @@ describe('[CustomSounds]', function () {
 	});
 
 	describe('Accessing custom sounds', () => {
-		let fileId;
+		let fileId: string;
 		const fileName = `test-file-${randomUUID()}`;
-		let uploadDate;
+		let uploadDate: unknown;
 
 		before(async () => {
 			const data = readFileSync(path.resolve(__dirname, '../../mocks/files/audio_mock.wav'));
-			const binary = Buffer.from(data, 'base64').toString('binary');
+			const binary = data.toString('binary');
 			await request
 				.post(api('method.call/insertOrUpdateSound'))
 				.set(credentials)
@@ -97,7 +97,7 @@ describe('[CustomSounds]', function () {
 		);
 
 		it('should return forbidden if the there is no fileId on the url', (done) => {
-			request
+			void request
 				.get('/custom-sounds/')
 				.set(credentials)
 				.expect(403)
@@ -108,7 +108,7 @@ describe('[CustomSounds]', function () {
 		});
 
 		it('should return not found if the the requested file does not exists', (done) => {
-			request
+			void request
 				.get('/custom-sounds/invalid.mp3')
 				.set(credentials)
 				.expect(404)
@@ -119,7 +119,7 @@ describe('[CustomSounds]', function () {
 		});
 
 		it('should return success if the the requested exists', (done) => {
-			request
+			void request
 				.get(`/custom-sounds/${fileId}.wav`)
 				.set(credentials)
 				.expect(200)
@@ -134,7 +134,7 @@ describe('[CustomSounds]', function () {
 		});
 
 		it('should return not modified if the the requested file contains a valid-since equal to the upload date', (done) => {
-			request
+			void request
 				.get(`/custom-sounds/${fileId}.wav`)
 				.set(credentials)
 				.set({
