@@ -3,9 +3,7 @@ import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 
-describe('[Webdav]', function () {
-	this.retries(0);
-
+describe('[Webdav]', () => {
 	before((done) => getCredentials(done));
 
 	describe('/webdav.getMyAccounts', () => {

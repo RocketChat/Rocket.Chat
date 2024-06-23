@@ -7,9 +7,7 @@ import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 
-describe('[CustomSounds]', function () {
-	this.retries(0);
-
+describe('[CustomSounds]', () => {
 	before((done) => getCredentials(done));
 
 	describe('[/custom-sounds.list]', () => {

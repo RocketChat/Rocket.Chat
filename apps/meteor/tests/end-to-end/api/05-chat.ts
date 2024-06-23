@@ -23,8 +23,7 @@ const pinMessage = ({ msgId }: { msgId: IMessage['_id'] }) => {
 	});
 };
 
-describe('[Chat]', function () {
-	this.retries(0);
+describe('[Chat]', () => {
 	let testChannel: IRoom;
 	let message: { _id: IMessage['_id'] };
 

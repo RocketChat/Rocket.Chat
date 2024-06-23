@@ -5,9 +5,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { imgURL } from '../../data/interactions';
 import { updatePermission } from '../../data/permissions.helper';
 
-describe('[Assets]', function () {
-	this.retries(0);
-
+describe('[Assets]', () => {
 	before((done) => getCredentials(done));
 
 	before(() => updatePermission('manage-assets', ['admin']));

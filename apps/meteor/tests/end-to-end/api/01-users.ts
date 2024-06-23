@@ -178,10 +178,9 @@ const updateUserInDb = async (userId: IUser['_id'], userData: Partial<IUser>) =>
 	await connection.close();
 };
 
-describe('[Users]', function () {
+describe('[Users]', () => {
 	let targetUser: { _id: IUser['_id']; username: string };
 	let userCredentials: Credentials;
-	this.retries(0);
 
 	before((done) => getCredentials(done));
 

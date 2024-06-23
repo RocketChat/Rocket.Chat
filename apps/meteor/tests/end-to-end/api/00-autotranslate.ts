@@ -24,9 +24,7 @@ const resetE2EDefaults = async () => {
 	await Promise.all([updateSetting('E2E_Enabled_Default_PrivateRooms', false), updateSetting('E2E_Enable', false)]);
 };
 
-describe('AutoTranslate', function () {
-	this.retries(0);
-
+describe('AutoTranslate', () => {
 	before((done) => getCredentials(done));
 
 	describe('[AutoTranslate]', () => {

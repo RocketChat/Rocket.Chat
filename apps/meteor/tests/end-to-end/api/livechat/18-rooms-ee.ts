@@ -23,9 +23,7 @@ import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - rooms', function () {
-	this.retries(0);
-
+(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - rooms', () => {
 	before((done) => getCredentials(done));
 
 	let agent2: { user: IUser; credentials: Credentials };

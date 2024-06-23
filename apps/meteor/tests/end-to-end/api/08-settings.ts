@@ -5,9 +5,7 @@ import { before, describe, it, after } from 'mocha';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updateSetting } from '../../data/permissions.helper';
 
-describe('[Settings]', function () {
-	this.retries(0);
-
+describe('[Settings]', () => {
 	before((done) => getCredentials(done));
 
 	describe('[/settings.public]', () => {

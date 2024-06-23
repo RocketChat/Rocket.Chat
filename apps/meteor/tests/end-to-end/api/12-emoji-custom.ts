@@ -5,12 +5,10 @@ import { before, describe, it, after } from 'mocha';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { imgURL } from '../../data/interactions';
 
-describe('[EmojiCustom]', function () {
+describe('[EmojiCustom]', () => {
 	const customEmojiName = `my-custom-emoji-${Date.now()}`;
 
 	let withoutAliases: ICustomEmojiDescriptor;
-
-	this.retries(0);
 
 	before((done) => getCredentials(done));
 

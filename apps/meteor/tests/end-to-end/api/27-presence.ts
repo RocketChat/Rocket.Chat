@@ -7,9 +7,8 @@ import { updatePermission } from '../../data/permissions.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
-describe('[Presence]', function () {
+describe('[Presence]', () => {
 	let createdUser: any;
-	this.retries(0);
 
 	before((done) => getCredentials(done));
 

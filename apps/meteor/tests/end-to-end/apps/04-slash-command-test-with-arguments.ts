@@ -5,9 +5,7 @@ import { after, before, describe, it } from 'mocha';
 import { getCredentials, request, credentials, api } from '../../data/api-data';
 import { cleanupApps, installTestApp } from '../../data/apps/helper';
 
-describe('Apps - Slash Command "test-with-arguments"', function () {
-	this.retries(0);
-
+describe('Apps - Slash Command "test-with-arguments"', () => {
 	before((done) => getCredentials(done));
 	before(async () => {
 		await cleanupApps();

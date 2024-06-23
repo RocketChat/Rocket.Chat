@@ -25,8 +25,7 @@ const getLicenseInfo = (loadValues = false) => {
 	return request.get(api('licenses.info')).set(credentials).query({ loadValues }).expect(200);
 };
 
-describe('LIVECHAT - visitors', function () {
-	this.retries(0);
+describe('LIVECHAT - visitors', () => {
 	let visitor: ILivechatVisitor;
 
 	before((done) => getCredentials(done));

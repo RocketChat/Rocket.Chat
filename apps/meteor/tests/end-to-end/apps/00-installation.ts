@@ -9,9 +9,7 @@ import { getUserByUsername } from '../../data/users.helper';
 
 const APP_USERNAME = 'appsrocketchattester.bot';
 
-describe('Apps - Installation', function () {
-	this.retries(0);
-
+describe('Apps - Installation', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => cleanupApps());

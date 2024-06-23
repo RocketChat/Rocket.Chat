@@ -13,9 +13,7 @@ import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
-describe('Meteor.methods', function () {
-	this.retries(0);
-
+describe('Meteor.methods', () => {
 	before((done) => getCredentials(done));
 
 	describe('[@getThreadMessages]', () => {

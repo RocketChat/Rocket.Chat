@@ -6,8 +6,7 @@ import { getCredentials, request, credentials } from '../../data/api-data';
 import { apps } from '../../data/apps/apps-data';
 import { installTestApp, cleanupApps } from '../../data/apps/helper';
 
-describe('Apps - Uninstall', function () {
-	this.retries(0);
+describe('Apps - Uninstall', () => {
 	let app: App;
 
 	before((done) => getCredentials(done));

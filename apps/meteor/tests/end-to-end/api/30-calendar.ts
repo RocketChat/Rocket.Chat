@@ -8,9 +8,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
-describe('[Calendar Events]', function () {
-	this.retries(0);
-
+describe('[Calendar Events]', () => {
 	let user2: IUser;
 	let userCredentials: Credentials;
 

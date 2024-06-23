@@ -11,9 +11,7 @@ import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
-describe('[Incoming Integrations]', function () {
-	this.retries(0);
-
+describe('[Incoming Integrations]', () => {
 	let integration: IIntegration;
 	let integrationCreatedByAnUser: IIntegration;
 	let user: TestUser<IUser>;

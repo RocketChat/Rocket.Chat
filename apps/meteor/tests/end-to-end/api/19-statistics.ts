@@ -4,9 +4,7 @@ import { before, describe, it, after } from 'mocha';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
 
-describe('[Statistics]', function () {
-	this.retries(0);
-
+describe('[Statistics]', () => {
 	before((done) => getCredentials(done));
 
 	after(() => updatePermission('view-statistics', ['admin']));

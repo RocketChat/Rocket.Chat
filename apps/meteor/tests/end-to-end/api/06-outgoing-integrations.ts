@@ -10,9 +10,7 @@ import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
-describe('[Outgoing Integrations]', function () {
-	this.retries(0);
-
+describe('[Outgoing Integrations]', () => {
 	let integrationCreatedByAnUser: IIntegration;
 	let user: TestUser<IUser>;
 	let userCredentials: Credentials;

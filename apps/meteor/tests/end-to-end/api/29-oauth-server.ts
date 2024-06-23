@@ -4,9 +4,7 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 
-describe('[OAuth Server]', function () {
-	this.retries(0);
-
+describe('[OAuth Server]', () => {
 	let oAuthAppId: string;
 	let clientId: string;
 	let clientSecret: string;

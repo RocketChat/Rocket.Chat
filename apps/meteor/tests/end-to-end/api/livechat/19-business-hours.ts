@@ -32,9 +32,7 @@ import type { TestUser } from '../../../data/users.helper';
 import { setUserActiveStatus, createUser, deleteUser, getMe, getUserByUsername, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe('LIVECHAT - business hours', function () {
-	this.retries(0);
-
+describe('LIVECHAT - business hours', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {

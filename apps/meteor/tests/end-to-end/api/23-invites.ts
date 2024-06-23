@@ -4,9 +4,8 @@ import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 
-describe('Invites', function () {
+describe('Invites', () => {
 	let testInviteID: IInvite['_id'];
-	this.retries(0);
 
 	before((done) => getCredentials(done));
 	describe('POST [/findOrCreateInvite]', () => {

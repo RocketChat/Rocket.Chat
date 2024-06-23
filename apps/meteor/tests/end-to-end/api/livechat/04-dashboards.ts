@@ -22,7 +22,6 @@ import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting }
 import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - dashboards', function () {
-	this.retries(0);
 	// This test is expected to take more time since we're simulating real time conversations to verify analytics
 	this.timeout(60000);
 

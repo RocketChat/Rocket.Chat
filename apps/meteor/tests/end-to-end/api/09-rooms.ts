@@ -23,9 +23,7 @@ const drawioURL = './tests/e2e/fixtures/files/diagram.drawio';
 const svgLogoURL = './public/images/logo/logo.svg';
 const svgLogoFileName = 'logo.svg';
 
-describe('[Rooms]', function () {
-	this.retries(0);
-
+describe('[Rooms]', () => {
 	before((done) => getCredentials(done));
 
 	it('/rooms.get', (done) => {

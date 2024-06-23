@@ -22,8 +22,7 @@ import { updatePermission, updateSetting } from '../../../data/permissions.helpe
 import { password } from '../../../data/user';
 import { createUser, deleteUser, getMe, login, setUserStatus } from '../../../data/users.helper';
 
-describe('LIVECHAT - Agents', function () {
-	this.retries(0);
+describe('LIVECHAT - Agents', () => {
 	let agent: ILivechatAgent;
 	let manager: ILivechatAgent;
 

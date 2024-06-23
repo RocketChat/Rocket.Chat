@@ -10,9 +10,7 @@ import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
-describe('[Commands]', function () {
-	this.retries(0);
-
+describe('[Commands]', () => {
 	before((done) => getCredentials(done));
 
 	describe('[/commands.get]', () => {

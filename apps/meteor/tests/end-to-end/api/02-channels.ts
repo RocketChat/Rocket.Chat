@@ -28,11 +28,9 @@ function getRoomInfo(roomId: IRoom['_id']) {
 	});
 }
 
-describe('[Channels]', function () {
+describe('[Channels]', () => {
 	let channel: Pick<IRoom, '_id' | 'name'>;
 	const apiPublicChannelName = `api-channel-test-${Date.now()}`;
-
-	this.retries(0);
 
 	before((done) => getCredentials(done));
 

@@ -5,9 +5,8 @@ import { before, describe, it, after } from 'mocha';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
 
-describe('[OAuthApps]', function () {
+describe('[OAuthApps]', () => {
 	const createdAppsIds: IOAuthApps['_id'][] = [];
-	this.retries(0);
 
 	before((done) => getCredentials(done));
 

@@ -6,9 +6,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { password } from '../../data/user';
 import { createUser, login, deleteUser } from '../../data/users.helper';
 
-describe('Imports', function () {
-	this.retries(0);
-
+describe('Imports', () => {
 	before((done) => getCredentials(done));
 
 	describe('[/getCurrentImportOperation]', () => {

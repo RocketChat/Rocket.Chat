@@ -9,9 +9,7 @@ import { adminUsername } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
-describe('[Subscriptions]', function () {
-	this.retries(0);
-
+describe('[Subscriptions]', () => {
 	before((done) => getCredentials(done));
 
 	let testChannel: IRoom;

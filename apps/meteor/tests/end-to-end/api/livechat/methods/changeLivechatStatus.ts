@@ -11,9 +11,7 @@ import { updatePermission, updateSetting } from '../../../../data/permissions.he
 import { password } from '../../../../data/user';
 import { createUser, deleteUser, getMe, login } from '../../../../data/users.helper';
 
-describe('livechat:changeLivechatStatus', function () {
-	this.retries(0);
-
+describe('livechat:changeLivechatStatus', () => {
 	let agent: { user: IUser; credentials: Credentials };
 
 	before((done) => getCredentials(done));

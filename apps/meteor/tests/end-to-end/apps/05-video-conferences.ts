@@ -8,9 +8,7 @@ import { updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { adminUsername } from '../../data/user';
 
-describe('Apps - Video Conferences', function () {
-	this.retries(0);
-
+describe('Apps - Video Conferences', () => {
 	before((done) => getCredentials(done));
 
 	const roomName = `apps-e2etest-room-${Date.now()}-videoconf`;

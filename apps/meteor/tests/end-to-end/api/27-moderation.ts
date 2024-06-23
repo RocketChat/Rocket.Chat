@@ -26,9 +26,7 @@ const reportUser = (userId: string, reason: string) => makeModerationApiRequest(
 
 const getUsersReports = (userId: string) => makeModerationApiRequest('moderation.user.reportsByUserId', 'get', { userId });
 
-describe('[Moderation]', function () {
-	this.retries(0);
-
+describe('[Moderation]', () => {
 	before((done) => getCredentials(done));
 
 	describe('[/moderation.reportsByUsers]', () => {

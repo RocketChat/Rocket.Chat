@@ -22,9 +22,7 @@ import { password } from '../../../data/user';
 import { createUser, login, deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe('LIVECHAT - inquiries', function () {
-	this.retries(0);
-
+describe('LIVECHAT - inquiries', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {

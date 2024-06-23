@@ -3,9 +3,7 @@ import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 
-describe('[CustomUserStatus]', function () {
-	this.retries(0);
-
+describe('[CustomUserStatus]', () => {
 	before((done) => getCredentials(done));
 
 	describe('[/custom-user-status.list]', () => {

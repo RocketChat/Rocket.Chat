@@ -17,9 +17,7 @@ import { createBotAgent, getRandomVisitorToken } from '../../../data/livechat/us
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe('LIVECHAT - Utils', function () {
-	this.retries(0);
-
+describe('LIVECHAT - Utils', () => {
 	before((done) => getCredentials(done));
 
 	after(async () => {

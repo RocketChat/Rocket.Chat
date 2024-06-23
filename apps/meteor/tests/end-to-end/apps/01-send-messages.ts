@@ -8,8 +8,7 @@ import { cleanupApps, installTestApp } from '../../data/apps/helper';
 import { getMessageById } from '../../data/chat.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 
-describe('Apps - Send Messages As APP User', function () {
-	this.retries(0);
+describe('Apps - Send Messages As APP User', () => {
 	let app: App;
 
 	before((done) => getCredentials(done));

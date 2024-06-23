@@ -12,8 +12,7 @@ import { adminUsername, password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
-describe('Apps - Send Messages As User', function () {
-	this.retries(0);
+describe('Apps - Send Messages As User', () => {
 	let app: App;
 
 	before((done) => getCredentials(done));

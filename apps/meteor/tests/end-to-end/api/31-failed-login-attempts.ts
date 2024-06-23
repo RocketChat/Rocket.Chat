@@ -9,9 +9,7 @@ import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser } from '../../data/users.helper';
 
-describe('[Failed Login Attempts]', function () {
-	this.retries(0);
-
+describe('[Failed Login Attempts]', () => {
 	const maxAttemptsByUser = 2;
 	const maxAttemptsByIp = 4;
 	const userBlockSeconds = 3;

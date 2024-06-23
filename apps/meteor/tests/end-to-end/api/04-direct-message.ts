@@ -11,9 +11,7 @@ import { password, adminUsername } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
-describe('[Direct Messages]', function () {
-	this.retries(0);
-
+describe('[Direct Messages]', () => {
 	let directMessage: { _id: IRoom['_id'] };
 
 	before((done) => getCredentials(done));

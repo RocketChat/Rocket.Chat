@@ -8,9 +8,8 @@ import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
-describe('licenses', function () {
+describe('licenses', () => {
 	let createdUser: TestUser<IUser>;
-	this.retries(0);
 
 	before((done) => getCredentials(done));
 	let unauthorizedUserCredentials: Credentials;

@@ -13,7 +13,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import type { SuccessResult } from '../../../../app/api/server/definition';
@@ -64,8 +64,7 @@ const getSubscriptionForRoom = async (roomId: string, overrideCredential?: Crede
 	return subscription;
 };
 
-describe('LIVECHAT - rooms', function () {
-	this.retries(0);
+describe('LIVECHAT - rooms', () => {
 	let visitor: ILivechatVisitor;
 	let room: IOmnichannelRoom;
 
@@ -1995,7 +1994,7 @@ describe('LIVECHAT - rooms', function () {
 	(IS_EE ? describe : describe.skip)('livechat/room/:rid/priority', async () => {
 		let priorities: ILivechatPriority[];
 		let chosenPriority: ILivechatPriority;
-		this.afterAll(async () => {
+		after(async () => {
 			await updateEEPermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
 			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
 		});

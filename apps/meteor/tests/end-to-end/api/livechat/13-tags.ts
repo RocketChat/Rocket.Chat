@@ -12,9 +12,7 @@ import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('[EE] Livechat - Tags', function () {
-	this.retries(0);
-
+(IS_EE ? describe : describe.skip)('[EE] Livechat - Tags', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {

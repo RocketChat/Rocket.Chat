@@ -28,13 +28,11 @@ function getRoomInfo(roomId: IRoom['_id']) {
 	});
 }
 
-describe('[Groups]', function () {
+describe('[Groups]', () => {
 	let group: {
 		_id: string;
 		name: string;
 	};
-
-	this.retries(0);
 
 	before((done) => getCredentials(done));
 
