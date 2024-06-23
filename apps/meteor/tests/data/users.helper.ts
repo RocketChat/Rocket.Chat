@@ -63,7 +63,8 @@ export const deleteUser = async (user: Pick<IUser, '_id'>, extraData = {}) =>
 export const getUserByUsername = <TUser extends IUser>(username: string) =>
 	new Promise<TestUser<TUser>>((resolve) => {
 		void request
-			.get(api(`users.info?username=${username}`))
+			.get(api('users.info'))
+			.query({ username })
 			.set(credentials)
 			.end((_err, res) => {
 				resolve(res.body.user);

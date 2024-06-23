@@ -1658,7 +1658,8 @@ describe('[Rooms]', function () {
 		});
 		it('should return the rooms to fill auto complete', (done) => {
 			void request
-				.get(api('rooms.autocomplete.channelAndPrivate?selector={}'))
+				.get(api('rooms.autocomplete.channelAndPrivate'))
+				.query({ selector: '{}' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -1686,7 +1687,8 @@ describe('[Rooms]', function () {
 		});
 		it('should return the rooms to fill auto complete', (done) => {
 			void request
-				.get(api('rooms.autocomplete.channelAndPrivate.withPagination?selector={}'))
+				.get(api('rooms.autocomplete.channelAndPrivate.withPagination'))
+				.query({ selector: '{}' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -1699,7 +1701,8 @@ describe('[Rooms]', function () {
 		});
 		it('should return the rooms to fill auto complete even requested with count and offset params', (done) => {
 			void request
-				.get(api('rooms.autocomplete.channelAndPrivate.withPagination?selector={}'))
+				.get(api('rooms.autocomplete.channelAndPrivate.withPagination'))
+				.query({ selector: '{}' })
 				.set(credentials)
 				.query({
 					count: 5,
@@ -1731,7 +1734,8 @@ describe('[Rooms]', function () {
 		});
 		it('should return the filtered rooms to fill auto complete', (done) => {
 			void request
-				.get(api('rooms.autocomplete.availableForTeams?name=group'))
+				.get(api('rooms.autocomplete.availableForTeams'))
+				.query({ name: 'group' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -1780,7 +1784,8 @@ describe('[Rooms]', function () {
 		});
 		it('should return the rooms to fill auto complete', (done) => {
 			void request
-				.get(api('rooms.autocomplete.adminRooms?selector={}'))
+				.get(api('rooms.autocomplete.adminRooms'))
+				.query({ selector: '{}' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -1792,7 +1797,7 @@ describe('[Rooms]', function () {
 		});
 		it('should return the rooms to fill auto complete', (done) => {
 			void request
-				.get(api('rooms.autocomplete.adminRooms?'))
+				.get(api('rooms.autocomplete.adminRooms'))
 				.set(credentials)
 				.query({
 					selector: JSON.stringify(name),

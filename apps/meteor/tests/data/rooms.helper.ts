@@ -37,7 +37,8 @@ export const createRoom = ({
 		 * is handled separately here.
 		 */
 		return request
-			.get(api(`voip/room?token=${token}&agentId=${agentId}&direction=${voipCallDirection}`))
+			.get(api('voip/room'))
+			.query({ token, agentId, direction: voipCallDirection })
 			.set(customCredentials || credentials)
 			.send();
 	}
@@ -50,7 +51,7 @@ export const createRoom = ({
 		c: 'channels.create',
 		p: 'groups.create',
 		d: 'im.create',
-	};
+	} as const;
 	const params = type === 'd' ? { username } : { name };
 
 	// Safe assertion because we already checked the type is not 'v'
@@ -87,10 +88,15 @@ export function actionRoom({ action, type, roomId, overrideCredentials = credent
 		c: 'channels',
 		p: 'groups',
 		d: 'im',
-	};
+	} as const;
+
+	const path = `${endpoints[type]}.${action}` as const;
+
+	if (path === 'im.addOwner' || path === 'im.removeOwner') throw new Error(`invalid path ("${path}")`);
+
 	return new Promise((resolve) => {
 		void request
-			.post(api(`${endpoints[type]}.${action}`))
+			.post(api(path))
 			.set(overrideCredentials)
 			.send({
 				roomId,

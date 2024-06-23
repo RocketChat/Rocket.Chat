@@ -215,7 +215,8 @@ describe('[EmojiCustom]', function () {
 		});
 		it('should return emojis when use "query" query parameter', (done) => {
 			void request
-				.get(api(`emoji-custom.list?query={"_updatedAt": {"$gt": { "$date": "${new Date().toISOString()}" } } }`))
+				.get(api('emoji-custom.list'))
+				.query({ query: `{ "_updatedAt": { "$gt": { "$date": "${new Date().toISOString()}" } } }` })
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
@@ -228,7 +229,8 @@ describe('[EmojiCustom]', function () {
 		});
 		it('should return emojis when use "updateSince" query parameter', (done) => {
 			void request
-				.get(api(`emoji-custom.list?updatedSince=${new Date().toISOString()}`))
+				.get(api('emoji-custom.list'))
+				.query({ updatedSince: new Date().toISOString() })
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
@@ -241,11 +243,8 @@ describe('[EmojiCustom]', function () {
 		});
 		it('should return emojis when use both, "updateSince" and "query" query parameter', (done) => {
 			void request
-				.get(
-					api(
-						`emoji-custom.list?query={"_updatedAt": {"$gt": { "$date": "${new Date().toISOString()}" } }}&updatedSince=${new Date().toISOString()}`,
-					),
-				)
+				.get(api('emoji-custom.list'))
+				.query({ query: `{"_updatedAt": {"$gt": { "$date": "${new Date().toISOString()}" } }}`, updatedSince: new Date().toISOString() })
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
@@ -258,7 +257,8 @@ describe('[EmojiCustom]', function () {
 		});
 		it('should return an error when the "updateSince" query parameter is a invalid date', (done) => {
 			void request
-				.get(api('emoji-custom.list?updatedSince=invalid-date'))
+				.get(api('emoji-custom.list'))
+				.query({ updatedSince: 'invalid-date' })
 				.set(credentials)
 				.expect(400)
 				.expect((res) => {

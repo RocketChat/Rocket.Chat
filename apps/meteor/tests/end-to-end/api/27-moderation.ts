@@ -6,7 +6,11 @@ import type { Response } from 'supertest';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createUser, deleteUser } from '../../data/users.helper';
 
-const makeModerationApiRequest = async (url: string, method: 'get' | 'post', data?: any) => {
+const makeModerationApiRequest = async (
+	url: 'moderation.reportUser' | 'moderation.user.reportsByUserId',
+	method: 'get' | 'post',
+	data?: any,
+) => {
 	let res: any;
 
 	if (method === 'get') {

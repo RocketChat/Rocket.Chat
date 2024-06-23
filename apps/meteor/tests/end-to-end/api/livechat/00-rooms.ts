@@ -158,7 +158,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an error when the "agents" query parameter is not valid', async () => {
 			await request
-				.get(api('livechat/rooms?agents=invalid'))
+				.get(api('livechat/rooms'))
+				.query({ agents: 'invalid' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -168,7 +169,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an error when the "roomName" query parameter is not valid', async () => {
 			await request
-				.get(api('livechat/rooms?roomName[]=invalid'))
+				.get(api('livechat/rooms'))
+				.query({ 'roomName[]': 'invalid' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -178,7 +180,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an error when the "departmentId" query parameter is not valid', async () => {
 			await request
-				.get(api('livechat/rooms?departmentId[]=marcos'))
+				.get(api('livechat/rooms'))
+				.query({ 'departmentId[]': 'marcos' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -188,7 +191,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an error when the "open" query parameter is not valid', async () => {
 			await request
-				.get(api('livechat/rooms?open[]=true'))
+				.get(api('livechat/rooms'))
+				.query({ 'open[]': 'true' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -198,7 +202,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an error when the "tags" query parameter is not valid', async () => {
 			await request
-				.get(api('livechat/rooms?tags=invalid'))
+				.get(api('livechat/rooms'))
+				.query({ tags: 'invalid' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -208,7 +213,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an error when the "createdAt" query parameter is not valid', async () => {
 			await request
-				.get(api('livechat/rooms?createdAt=invalid'))
+				.get(api('livechat/rooms'))
+				.query({ createdAt: 'invalid' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -218,7 +224,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an error when the "closedAt" query parameter is not valid', async () => {
 			await request
-				.get(api('livechat/rooms?closedAt=invalid'))
+				.get(api('livechat/rooms'))
+				.query({ closedAt: 'invalid' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -228,7 +235,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an error when the "customFields" query parameter is not valid', async () => {
 			await request
-				.get(api('livechat/rooms?customFields=invalid'))
+				.get(api('livechat/rooms'))
+				.query({ customFields: 'invalid' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -385,10 +393,7 @@ describe('LIVECHAT - rooms', function () {
 				agent: agent.credentials,
 			});
 
-			const { body } = await request
-				.get(api(`livechat/rooms?agents[]=${agent.user._id}`))
-				.set(credentials)
-				.expect(200);
+			const { body } = await request.get(api('livechat/rooms')).query({ 'agents[]': agent.user._id }).set(credentials).expect(200);
 
 			expect(body.rooms.length).to.be.equal(1);
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
@@ -399,10 +404,7 @@ describe('LIVECHAT - rooms', function () {
 			const { room: expectedRoom } = await startANewLivechatRoomAndTakeIt();
 			await closeOmnichannelRoom(expectedRoom._id, [tag.name]);
 
-			const { body } = await request
-				.get(api(`livechat/rooms?tags[]=${tag.name}`))
-				.set(credentials)
-				.expect(200);
+			const { body } = await request.get(api('livechat/rooms')).query({ 'tags[]': tag.name }).set(credentials).expect(200);
 
 			expect(body.rooms.length).to.be.equal(1);
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;

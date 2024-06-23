@@ -20,7 +20,7 @@ import type { IUserWithCredentials } from '../../data/user';
 import { adminEmail, password, adminUsername } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, login, deleteUser, getUserByUsername } from '../../data/users.helper';
-import { URL_MONGODB } from '../../e2e/config/constants';
+import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
@@ -123,6 +123,9 @@ const preferences = {
 		idleTimeLimit: 3600,
 		notifyCalendarEvents: false,
 		enableMobileRinging: false,
+		...(IS_EE && {
+			omnichannelTranscriptPDF: false,
+		}),
 	},
 };
 
@@ -134,7 +137,8 @@ const getUserStatus = (userId: IUser['_id']) =>
 		connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
 	}>((resolve) => {
 		void request
-			.get(api(`users.getStatus?userId=${userId}`))
+			.get(api('users.getStatus'))
+			.query({ userId })
 			.set(credentials)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -901,7 +905,8 @@ describe('[Users]', function () {
 
 			it('should return no online users updated after now', (done) => {
 				void request
-					.get(api(`users.presence?from=${new Date().toISOString()}`))
+					.get(api('users.presence'))
+					.query({ from: new Date().toISOString() })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -918,7 +923,8 @@ describe('[Users]', function () {
 				date.setMinutes(date.getMinutes() - 11);
 
 				void request
-					.get(api(`users.presence?from=${date.toISOString()}`))
+					.get(api('users.presence'))
+					.query({ from: date.toISOString() })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -3517,7 +3523,8 @@ describe('[Users]', function () {
 		});
 		it('should return the request data with fullExport false when the fullExport query parameter is false', (done) => {
 			void request
-				.get(api('users.requestDataDownload?fullExport=false'))
+				.get(api('users.requestDataDownload'))
+				.query({ fullExport: 'false' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -3531,7 +3538,8 @@ describe('[Users]', function () {
 		});
 		it('should return the request data with fullExport true when the fullExport query parameter is true', (done) => {
 			void request
-				.get(api('users.requestDataDownload?fullExport=true'))
+				.get(api('users.requestDataDownload'))
+				.query({ fullExport: 'true' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -3626,7 +3634,8 @@ describe('[Users]', function () {
 
 			it('should return an empty list when the user does not have any subscription', (done) => {
 				void request
-					.get(api('users.autocomplete?selector={}'))
+					.get(api('users.autocomplete'))
+					.query({ selector: '{}' })
 					.set(userCredentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -3641,7 +3650,8 @@ describe('[Users]', function () {
 				await joinChannel({ overrideCredentials: user2Credentials, roomId });
 
 				void request
-					.get(api('users.autocomplete?selector={}'))
+					.get(api('users.autocomplete'))
+					.query({ selector: '{}' })
 					.set(userCredentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -3658,8 +3668,8 @@ describe('[Users]', function () {
 			it('should return an error when the required parameter "selector" is not provided', () => {
 				void request
 					.get(api('users.autocomplete'))
-					.set(credentials)
 					.query({})
+					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
 					.expect((res) => {
@@ -3668,7 +3678,8 @@ describe('[Users]', function () {
 			});
 			it('should return the users to fill auto complete', (done) => {
 				void request
-					.get(api('users.autocomplete?selector={}'))
+					.get(api('users.autocomplete'))
+					.query({ selector: '{}' })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -3754,7 +3765,8 @@ describe('[Users]', function () {
 		});
 		it('should return other user status', (done) => {
 			void request
-				.get(api('users.getStatus?userId=rocket.cat'))
+				.get(api('users.getStatus'))
+				.query({ userId: 'rocket.cat' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

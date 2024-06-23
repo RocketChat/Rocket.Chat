@@ -66,7 +66,8 @@ describe('Apps - Installation', function () {
 		describe('Slash commands registration', () => {
 			it('should have created the "test-simple" slash command successfully', (done) => {
 				void request
-					.get(api('commands.get?command=test-simple'))
+					.get(api('commands.get'))
+					.query({ command: 'test-simple' })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -79,7 +80,8 @@ describe('Apps - Installation', function () {
 			});
 			it('should have created the "test-with-arguments" slash command successfully', (done) => {
 				void request
-					.get(api('commands.get?command=test-with-arguments'))
+					.get(api('commands.get'))
+					.query({ command: 'test-with-arguments' })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)

@@ -28,7 +28,8 @@ describe('[Permissions]', function () {
 
 		it('should return an array with update and remov properties when search by "updatedSince" query parameter', (done) => {
 			void request
-				.get(api('permissions.listAll?updatedSince=2018-11-27T13:52:01Z'))
+				.get(api('permissions.listAll'))
+				.query({ updatedSince: '2018-11-27T13:52:01Z' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -42,7 +43,8 @@ describe('[Permissions]', function () {
 
 		it('should return an error when updatedSince query parameter is not a valid ISODate string', (done) => {
 			void request
-				.get(api('permissions.listAll?updatedSince=fsafdf'))
+				.get(api('permissions.listAll'))
+				.query({ updatedSince: 'fsafdf' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)

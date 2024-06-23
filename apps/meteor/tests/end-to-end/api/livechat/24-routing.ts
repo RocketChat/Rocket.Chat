@@ -96,7 +96,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await makeAgentUnavailable(testUser.credentials);
 
 			const visitor = await createVisitor(testDepartment._id);
-			const { body } = await request.get(api(`livechat/room?token=${visitor.token}`)).expect(400);
+			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token }).expect(400);
 			expect(body.error).to.be.equal('Sorry, no online agents [no-agent-online]');
 		});
 		it('should accept a conversation but not route to anyone when Livechat_accept_chats_with_no_agents is true', async () => {

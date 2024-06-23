@@ -2135,7 +2135,8 @@ describe('Meteor.methods', function () {
 				});
 
 			await request
-				.get(api(`chat.getMessage?msgId=${messageId}`))
+				.get(api('chat.getMessage'))
+				.query({ msgId: messageId })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2168,7 +2169,8 @@ describe('Meteor.methods', function () {
 				});
 
 			await request
-				.get(api(`chat.getMessage?msgId=${messageId}`))
+				.get(api('chat.getMessage'))
+				.query({ msgId: messageId })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2202,7 +2204,8 @@ describe('Meteor.methods', function () {
 				});
 
 			await request
-				.get(api(`chat.getMessage?msgId=${messageId}`))
+				.get(api('chat.getMessage'))
+				.query({ msgId: messageId })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2235,7 +2238,8 @@ describe('Meteor.methods', function () {
 				});
 
 			await request
-				.get(api(`chat.getMessage?msgId=${messageId}`))
+				.get(api('chat.getMessage'))
+				.query({ msgId: messageId })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2271,7 +2275,8 @@ describe('Meteor.methods', function () {
 				});
 
 			await request
-				.get(api(`chat.getMessage?msgId=${messageId}`))
+				.get(api('chat.getMessage'))
+				.query({ msgId: messageId })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2315,7 +2320,8 @@ describe('Meteor.methods', function () {
 				})
 				.then(() => {
 					void request
-						.get(api(`chat.getMessage?msgId=${messageWithMarkdownId}`))
+						.get(api('chat.getMessage'))
+						.query({ msgId: messageWithMarkdownId })
 						.set(credentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)

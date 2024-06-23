@@ -677,7 +677,8 @@ describe('miscellaneous', function () {
 
 		it('should fail if no token is invalid format', (done) => {
 			void request
-				.get(api('pw.getPolicyReset?token=123'))
+				.get(api('pw.getPolicyReset'))
+				.query({ token: '123' })
 				.expect('Content-Type', 'application/json')
 				.expect(403)
 				.expect((res) => {
@@ -690,7 +691,8 @@ describe('miscellaneous', function () {
 		// not sure we have a way to get the reset token, looks like it is only sent via email by Meteor
 		it.skip('should return policies if correct token is provided', (done) => {
 			void request
-				.get(api('pw.getPolicyReset?token'))
+				.get(api('pw.getPolicyReset'))
+				.query({ token: '' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403)

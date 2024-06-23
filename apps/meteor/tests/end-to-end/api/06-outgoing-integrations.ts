@@ -373,7 +373,8 @@ describe('[Outgoing Integrations]', function () {
 		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to get an outgoing integration', (done) => {
 			void updatePermission('manage-outgoing-integrations', []).then(() => {
 				void request
-					.get(api(`integrations.get?integrationId=${integration._id}`))
+					.get(api('integrations.get'))
+					.query({ integrationId: integration._id })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -388,7 +389,8 @@ describe('[Outgoing Integrations]', function () {
 		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to get an outgoing integration created by another user', (done) => {
 			void updatePermission('manage-outgoing-integrations', []).then(() => {
 				void request
-					.get(api(`integrations.get?integrationId=${integrationCreatedByAnUser._id}`))
+					.get(api('integrations.get'))
+					.query({ integrationId: integrationCreatedByAnUser._id })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -403,7 +405,8 @@ describe('[Outgoing Integrations]', function () {
 		it('should return an error when the user sends an invalid integration', (done) => {
 			void updatePermission('manage-outgoing-integrations', ['admin']).then(() => {
 				void request
-					.get(api('integrations.get?integrationId=invalid'))
+					.get(api('integrations.get'))
+					.query({ integrationId: 'invalid' })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -420,7 +423,8 @@ describe('[Outgoing Integrations]', function () {
 				.then(() => updatePermission('manage-own-outgoing-integrations', ['user']))
 				.then(() => {
 					void request
-						.get(api(`integrations.get?integrationId=${integrationCreatedByAnUser._id}`))
+						.get(api('integrations.get'))
+						.query({ integrationId: integrationCreatedByAnUser._id })
 						.set(userCredentials)
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -436,7 +440,8 @@ describe('[Outgoing Integrations]', function () {
 		it('should return the integration successfully', (done) => {
 			void updatePermission('manage-outgoing-integrations', ['admin']).then(() => {
 				void request
-					.get(api(`integrations.get?integrationId=${integration._id}`))
+					.get(api('integrations.get'))
+					.query({ integrationId: integration._id })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)

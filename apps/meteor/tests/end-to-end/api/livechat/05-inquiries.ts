@@ -80,7 +80,8 @@ describe('LIVECHAT - inquiries', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('view-l-room', []);
 			await request
-				.get(api('livechat/inquiries.getOne?roomId=room-id'))
+				.get(api('livechat/inquiries.getOne'))
+				.query({ roomId: 'room-id' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -88,7 +89,8 @@ describe('LIVECHAT - inquiries', function () {
 		it('should return a inquiry', async () => {
 			await updatePermission('view-l-room', ['admin']);
 			await request
-				.get(api('livechat/inquiries.getOne?roomId=room-id'))
+				.get(api('livechat/inquiries.getOne'))
+				.query({ roomId: 'room-id' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -105,7 +107,8 @@ describe('LIVECHAT - inquiries', function () {
 			const room = await createLivechatRoom(visitor.token);
 			const inquiry = await fetchInquiry(room._id);
 			await request
-				.get(api(`livechat/inquiries.getOne?roomId=${room._id}`))
+				.get(api(`livechat/inquiries.getOne`))
+				.query({ roomId: room._id })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

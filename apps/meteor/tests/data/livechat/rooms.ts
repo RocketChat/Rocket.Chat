@@ -28,10 +28,7 @@ export const createLivechatRoom = async (visitorToken: string, extraRoomParams?:
 		}
 	}
 
-	const response = await request
-		.get(api(`livechat/room?${urlParams.toString()}`))
-		.set(credentials)
-		.expect(200);
+	const response = await request.get(api('livechat/room')).query(urlParams.toString()).set(credentials).expect(200);
 
 	return response.body.room;
 };
@@ -84,7 +81,8 @@ export const takeInquiry = async (inquiryId: string, agentCredentials?: Credenti
 export const fetchInquiry = (roomId: string): Promise<ILivechatInquiryRecord> => {
 	return new Promise((resolve, reject) => {
 		void request
-			.get(api(`livechat/inquiries.getOne?roomId=${roomId}`))
+			.get(api('livechat/inquiries.getOne'))
+			.query({ roomId })
 			.set(credentials)
 			.end((err: Error, res: DummyResponse<ILivechatInquiryRecord>) => {
 				if (err) {

@@ -43,7 +43,8 @@ describe('[Statistics]', function () {
 		});
 		it('should update the statistics when is provided the "refresh:true" query parameter', (done) => {
 			void request
-				.get(api('statistics?refresh=true'))
+				.get(api('statistics'))
+				.query({ refresh: 'true' })
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {

@@ -143,7 +143,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/conversation-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/conversation-totalizers'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -151,7 +155,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an array of conversation totalizers', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/conversation-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/conversation-totalizers'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -207,7 +215,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/productivity-totalizers'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -215,7 +227,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an array of productivity totalizers', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/productivity-totalizers'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -263,7 +279,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/chats-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/chats-totalizers'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -271,7 +291,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an array of chats totalizers', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/chats-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/chats-totalizers'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -323,9 +347,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
-				.get(
-					api('livechat/analytics/dashboards/agents-productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'),
-				)
+				.get(api('livechat/analytics/dashboards/agents-productivity-totalizers'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -333,9 +359,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an array of agents productivity totalizers', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
-				.get(
-					api('livechat/analytics/dashboards/agents-productivity-totalizers?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'),
-				)
+				.get(api('livechat/analytics/dashboards/agents-productivity-totalizers'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -382,7 +410,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/charts/chats?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/charts/chats'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -390,7 +422,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an array of productivity totalizers', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/charts/chats?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/charts/chats'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -431,7 +467,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/charts/chats-per-agent?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/charts/chats-per-agent'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -439,7 +479,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an object with open and closed chats by agent', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/charts/chats-per-agent?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/charts/chats-per-agent'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -532,7 +576,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/charts/chats-per-department?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/charts/chats-per-department'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -540,7 +588,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an object with open and closed chats by department', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/charts/chats-per-department?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/charts/chats-per-department'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -577,7 +629,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/charts/timings?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/charts/timings'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -585,7 +641,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should return an object with open and closed chats by department', async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
-				.get(api('livechat/analytics/dashboards/charts/timings?start=2019-10-25T15:08:17.248Z&end=2019-12-08T15:08:17.248Z'))
+				.get(api('livechat/analytics/dashboards/charts/timings'))
+				.query({
+					start: '2019-10-25T15:08:17.248Z',
+					end: '2019-12-08T15:08:17.248Z',
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)

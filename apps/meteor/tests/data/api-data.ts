@@ -1,4 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
+import type { Path } from '@rocket.chat/rest-typings';
 import type { CallbackHandler, Response } from 'supertest';
 import supertest from 'supertest';
 
@@ -40,7 +41,9 @@ export const credentials: Credentials = {
 	'X-User-Id': undefined,
 } as unknown as Credentials; // FIXME
 
-export function api<TPath extends string>(path: TPath) {
+type PathWithoutPrefix<TPath> = TPath extends `/v1/${infer U}` ? U : never;
+
+export function api<TPath extends PathWithoutPrefix<Path>>(path: TPath) {
 	return `${prefix}${path}` as const;
 }
 

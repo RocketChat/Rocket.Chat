@@ -54,7 +54,8 @@ describe('[OAuthApps]', function () {
 	describe('[/oauth-apps.get]', () => {
 		it('should return a single oauthApp by id', (done) => {
 			void request
-				.get(api('oauth-apps.get?appId=zapier'))
+				.get(api('oauth-apps.get'))
+				.query({ appId: 'zapier' })
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
@@ -66,7 +67,8 @@ describe('[OAuthApps]', function () {
 		});
 		it('should return a single oauthApp by client id', (done) => {
 			void request
-				.get(api('oauth-apps.get?clientId=zapier'))
+				.get(api('oauth-apps.get'))
+				.query({ clientId: 'zapier' })
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
@@ -79,7 +81,8 @@ describe('[OAuthApps]', function () {
 		it('should return a 403 Forbidden error when the user does not have the necessary permission by client id', (done) => {
 			void updatePermission('manage-oauth-apps', []).then(() => {
 				void request
-					.get(api('oauth-apps.get?clientId=zapier'))
+					.get(api('oauth-apps.get'))
+					.query({ clientId: 'zapier' })
 					.set(credentials)
 					.expect(403)
 					.expect((res) => {
@@ -92,7 +95,8 @@ describe('[OAuthApps]', function () {
 		it('should return a 403 Forbidden error when the user does not have the necessary permission by app id', (done) => {
 			void updatePermission('manage-oauth-apps', []).then(() => {
 				void request
-					.get(api('oauth-apps.get?appId=zapier'))
+					.get(api('oauth-apps.get'))
+					.query({ appId: 'zapier' })
 					.set(credentials)
 					.expect(403)
 					.expect((res) => {

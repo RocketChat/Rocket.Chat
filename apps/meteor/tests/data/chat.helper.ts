@@ -50,7 +50,8 @@ export const getMessageById = ({ msgId }: { msgId: IMessage['_id'] }) => {
 
 	return new Promise<IMessage>((resolve) => {
 		void request
-			.get(api(`chat.getMessage?msgId=${msgId}`))
+			.get(api(`chat.getMessage`))
+			.query({ msgId })
 			.set(credentials)
 			.end((_err, res) => {
 				resolve(res.body.message);

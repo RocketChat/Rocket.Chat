@@ -2402,7 +2402,8 @@ describe('[Chat]', function () {
 
 		it('should return an error when the roomId is invalid', (done) => {
 			void request
-				.get(api('chat.getMentionedMessages?roomId=invalid-room'))
+				.get(api('chat.getMentionedMessages'))
+				.query({ roomId: 'invalid-room' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -2415,7 +2416,8 @@ describe('[Chat]', function () {
 
 		it('should return the mentioned messages', (done) => {
 			void request
-				.get(api(`chat.getMentionedMessages?roomId=${testChannel._id}`))
+				.get(api('chat.getMentionedMessages'))
+				.query({ roomId: testChannel._id })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2459,7 +2461,8 @@ describe('[Chat]', function () {
 
 		it('should return an error when the roomId is invalid', (done) => {
 			void request
-				.get(api('chat.getStarredMessages?roomId=invalid-room'))
+				.get(api('chat.getStarredMessages'))
+				.query({ roomId: 'invalid-room' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -2472,7 +2475,8 @@ describe('[Chat]', function () {
 
 		it('should return the starred messages', (done) => {
 			void request
-				.get(api(`chat.getStarredMessages?roomId=${testChannel._id}`))
+				.get(api('chat.getStarredMessages'))
+				.query({ roomId: testChannel._id })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -2533,7 +2537,8 @@ describe('[Chat]', function () {
 
 		it('should return an error when the roomId is invalid', (done) => {
 			void request
-				.get(api('chat.getDiscussions?roomId=invalid-room'))
+				.get(api('chat.getDiscussions'))
+				.query({ roomId: 'invalid-room' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -2546,7 +2551,8 @@ describe('[Chat]', function () {
 
 		it('should return the discussions of a room', (done) => {
 			void request
-				.get(api(`chat.getDiscussions?roomId=${testChannel._id}`))
+				.get(api('chat.getDiscussions'))
+				.query({ roomId: testChannel._id })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
