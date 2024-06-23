@@ -8,6 +8,7 @@ import React, { useCallback } from 'react';
 
 import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import { useFormatDate } from '/client/hooks/useFormatDate';
 
 const roomTypeI18nMap = {
 	l: 'Omnichannel',
@@ -21,10 +22,11 @@ const getRoomDisplayName = (room: Pick<IRoom, RoomAdminFieldsType>): string | un
 
 const RoomRow = ({ room }: { room: Pick<IRoom, RoomAdminFieldsType> }) => {
 	const t = useTranslation();
+	const formatDate= useFormatDate();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 	const router = useRouter();
 
-	const { _id, t: type, usersCount, msgs, default: isDefault, featured, ...args } = room;
+	const { _id, t: type, usersCount, msgs, default: isDefault, featured,ts, ...args } = room;
 	const icon = roomCoordinator.getRoomDirectives(room.t).getIcon?.(room);
 	const roomName = getRoomDisplayName(room);
 
@@ -83,6 +85,7 @@ const RoomRow = ({ room }: { room: Pick<IRoom, RoomAdminFieldsType> }) => {
 			{mediaQuery && <GenericTableCell withTruncatedText>{msgs}</GenericTableCell>}
 			{mediaQuery && <GenericTableCell withTruncatedText>{isDefault ? t('True') : t('False')}</GenericTableCell>}
 			{mediaQuery && <GenericTableCell withTruncatedText>{featured ? t('True') : t('False')}</GenericTableCell>}
+			{mediaQuery && ts && <GenericTableCell withTruncatedText>{formatDate(ts)}</GenericTableCell>}
 		</GenericTableRow>
 	);
 };
