@@ -3,6 +3,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { KonchatNotification } from '../../../../app/ui/client/lib/KonchatNotification';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
+import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 import { processMessageEditing } from './processMessageEditing';
@@ -28,6 +29,8 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 	if (isSlashCommandAllowed && (await processSlashCommand(chat, message))) {
 		return;
 	}
+
+	message = (await onClientBeforeSendMessage(message)) as IMessage;
 
 	await sdk.call('sendMessage', message, previewUrls);
 };

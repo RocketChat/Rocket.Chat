@@ -67,4 +67,12 @@ export class HomeFlextab {
 	get userInfoUsername(): Locator {
 		return this.page.locator('[data-qa="UserInfoUserName"]');
 	}
+
+	get btnPinnedMessagesList(): Locator {
+		return this.page.locator('[data-key="pinned-messages"]');
+	}
+
+	get btnStarredMessageList(): Locator {
+		return this.page.locator('[data-key="starred-messages"]');
+	}
 }

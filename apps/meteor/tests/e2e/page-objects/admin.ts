@@ -224,7 +224,7 @@ export class Admin {
 	}
 
 	get btnUsersInRole(): Locator {
-		return this.page.getByRole('dialog').getByRole('button', { name: 'Users in role' });
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Users in role', exact: true });
 	}
 
 	get inputRoom(): Locator {
@@ -236,7 +236,7 @@ export class Admin {
 	}
 
 	get btnAdd(): Locator {
-		return this.page.getByRole('button', { name: 'Add' });
+		return this.page.getByRole('button', { name: 'Add', exact: true });
 	}
 
 	getUserRowByUsername(username: string): Locator {
@@ -244,19 +244,19 @@ export class Admin {
 	}
 
 	get btnBack(): Locator {
-		return this.page.getByRole('button', { name: 'Back' });
+		return this.page.getByRole('button', { name: 'Back', exact: true });
 	}
 
 	get btnNew(): Locator {
-		return this.page.getByRole('button', { name: 'New' });
+		return this.page.getByRole('button', { name: 'New', exact: true });
 	}
 
 	get btnDelete(): Locator {
-		return this.page.getByRole('button', { name: 'Delete' });
+		return this.page.getByRole('button', { name: 'Delete', exact: true });
 	}
 
 	get btnInstructions(): Locator {
-		return this.page.getByRole('button', { name: 'Instructions' });
+		return this.page.getByRole('button', { name: 'Instructions', exact: true });
 	}
 
 	get inputName(): Locator {
@@ -284,11 +284,11 @@ export class Admin {
 	}
 
 	getAccordionBtnByName(name: string): Locator {
-		return this.page.getByRole('button', { name });
+		return this.page.getByRole('button', { name, exact: true });
 	}
 
 	get btnFullScreen(): Locator {
-		return this.page.getByRole('button', { name: 'Full Screen' });
+		return this.page.getByRole('button', { name: 'Full Screen', exact: true });
 	}
 
 	async dropdownFilterRoomType(text = 'All rooms'): Promise<Locator> {
