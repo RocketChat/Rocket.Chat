@@ -11,7 +11,8 @@ import {
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
 } from '../../../components/Contextualbar';
-import { UserInfoAvatar, UserInfoLabel, UserInfoText, UserInfoUsername } from '../../../components/UserInfo';
+import { InfoPanelLabel, InfoPanelText } from '../../../components/InfoPanel';
+import { UserInfoAvatar, UserInfoUsername } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { MaxChatsPerAgentDisplay } from '../additionalForms';
 import AgentInfoAction from './AgentInfoAction';
@@ -69,8 +70,8 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 					</Box>
 					{statusLivechat && (
 						<>
-							<UserInfoLabel data-qa='AgentInfoUserInfoLabel'>{t('Livechat_status')}</UserInfoLabel>
-							<UserInfoText>{t(statusLivechat === 'available' ? 'Available' : 'Not_Available')}</UserInfoText>
+							<InfoPanelLabel data-qa='AgentInfoUserInfoLabel'>{t('Livechat_status')}</InfoPanelLabel>
+							<InfoPanelText>{t(statusLivechat === 'available' ? 'Available' : 'Not_Available')}</InfoPanelText>
 						</>
 					)}
 					{MaxChatsPerAgentDisplay && <MaxChatsPerAgentDisplay maxNumberSimultaneousChat={data.user.livechat?.maxNumberSimultaneousChat} />}

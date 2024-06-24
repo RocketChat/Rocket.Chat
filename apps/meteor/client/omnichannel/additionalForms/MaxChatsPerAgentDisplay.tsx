@@ -1,7 +1,7 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { UserInfoLabel, UserInfoText } from '../../components/UserInfo';
+import { InfoPanelLabel, InfoPanelText } from '../../components/InfoPanel';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 const MaxChatsPerAgentDisplay = ({ maxNumberSimultaneousChat = 0 }) => {
@@ -14,8 +14,8 @@ const MaxChatsPerAgentDisplay = ({ maxNumberSimultaneousChat = 0 }) => {
 
 	return (
 		<>
-			<UserInfoLabel>{t('Max_number_of_chats_per_agent')}</UserInfoLabel>
-			<UserInfoText>{maxNumberSimultaneousChat}</UserInfoText>
+			<InfoPanelLabel>{t('Max_number_of_chats_per_agent')}</InfoPanelLabel>
+			<InfoPanelText>{maxNumberSimultaneousChat}</InfoPanelText>
 		</>
 	);
 };
