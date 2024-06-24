@@ -28,7 +28,6 @@ to: ee/apps/<%= name %>/package.json
 		"@types/node": "^14.18.51",
 		"ejson": "^2.2.3",
 		"eventemitter3": "^4.0.7",
-		"fibers": "^5.0.3",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.29",
 		"mongodb": "^4.12.1",
