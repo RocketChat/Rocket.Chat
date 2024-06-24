@@ -61,6 +61,10 @@ export class HomeSidenav {
 		return this.sidebarSearchSection.getByRole('searchbox');
 	}
 
+	get navbarSettingsGroup() {
+		return this.page.getByRole('navigation', { name: 'header' }).getByRole('group', { name: 'Workspace and user settings' });
+	}
+
 	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
 		await this.sidebarSearchSection.getByRole('button', { name: 'Display', exact: true }).click();
 		await this.sidebarSearchSection.getByRole('menuitemcheckbox', { name: mode }).click();
@@ -88,8 +92,8 @@ export class HomeSidenav {
 	}
 
 	async openAdministrationByLabel(text: string): Promise<void> {
-		await this.page.locator('role=button[name="Manage"]').click();
-		await this.page.locator(`role=menuitem[name="${text}"]`).click();
+		await this.navbarSettingsGroup.getByRole('button', { name: 'Manage', exact: true }).click();
+		await this.navbarSettingsGroup.getByRole('menuitem', { name: text }).click();
 	}
 
 	async openInstalledApps(): Promise<void> {

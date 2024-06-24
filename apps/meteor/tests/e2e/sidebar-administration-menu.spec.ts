@@ -32,8 +32,9 @@ test.describe.serial('sidebar-administration-menu', () => {
 	test.describe('regular user', () => {
 		test.use({ storageState: Users.user1.state });
 
-		test('expect to not render administration menu when no permission', async ({ page }) => {
-			await expect(page.locator('role=button[name="Administration"]')).not.toBeVisible();
+		test('expect to not render administration menu when no permission', async () => {
+			await expect(poHomeDiscussion.sidenav.navbarSettingsGroup).toBeVisible();
+			await expect(poHomeDiscussion.sidenav.navbarSettingsGroup.getByRole('button', { name: 'Manage' })).not.toBeVisible();
 		});
 	});
 });
