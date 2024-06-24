@@ -1,4 +1,4 @@
-import type { IAuditLog } from '@rocket.chat/core-typings';
+import type { IAuditLog, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -16,9 +16,10 @@ import UsersTab from './tabs/UsersTab';
 type AuditFormProps = {
 	type: IAuditLog['fields']['type'];
 	onSubmit?: (payload: { type: IAuditLog['fields']['type'] } & AuditFields) => void;
+	setSelectedRoom: React.Dispatch<React.SetStateAction<IRoom | undefined>>;
 };
 
-const AuditForm = ({ type, onSubmit }: AuditFormProps) => {
+const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 	const t = useTranslation();
 
 	const form = useAuditForm();
@@ -55,7 +56,7 @@ const AuditForm = ({ type, onSubmit }: AuditFormProps) => {
 				</Field>
 			</Box>
 			<Box display='flex' flexDirection='row' alignItems='flex-start'>
-				{type === '' && <RoomsTab form={form} />}
+				{type === '' && <RoomsTab form={form} setSelectedRoom={setSelectedRoom} />}
 				{type === 'u' && <UsersTab form={form} />}
 				{type === 'd' && <DirectTab form={form} />}
 				{type === 'l' && <OmnichannelTab form={form} />}
