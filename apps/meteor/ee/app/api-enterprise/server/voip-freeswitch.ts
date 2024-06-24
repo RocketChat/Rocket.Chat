@@ -1,5 +1,12 @@
 import { VoipFreeSwitch } from '@rocket.chat/core-services';
 import type { FreeSwitchExtension } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
+import {
+	isVoipFreeSwitchExtensionListProps,
+	isVoipFreeSwitchExtensionAssignProps,
+	type VoipFreeSwitchExtensionListProps,
+	type VoipFreeSwitchExtensionAssignProps,
+} from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 
 import { API } from '../../../../app/api/server';
@@ -8,24 +15,86 @@ declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/voip-freeswitch.extension.list': {
-			GET: () => { extensions: FreeSwitchExtension[] };
+			GET: (params: VoipFreeSwitchExtensionListProps) => { extensions: FreeSwitchExtension[] };
 		};
 		'/v1/voip-freeswitch.extension.getDetails': {
-			GET: (params: { extension: string; group?: string }) => FreeSwitchExtension;
+			GET: (params: { extension: string; group?: string }) => FreeSwitchExtension & { userId?: string; username?: string };
+		};
+		'/v1/voip-freeswitch.extension.assign': {
+			POST: (params: VoipFreeSwitchExtensionAssignProps) => void;
 		};
 	}
 }
 
 API.v1.addRoute(
 	'voip-freeswitch.extension.list',
-	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'] },
+	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'], isValidType: isVoipFreeSwitchExtensionListProps },
 	{
 		async get() {
+			const { username, type = 'all' } = this.queryParams;
+
 			const extensions = await wrapExceptions(() => VoipFreeSwitch.getExtensionList()).catch(() => {
 				throw new Error('Failed to load extension list.');
 			});
 
+			if (type === 'all') {
+				return API.v1.success({ extensions });
+			}
+
+			const assignedExtensions = await Users.findAssignedFreeSwitchExtensions().toArray();
+
+			switch (type) {
+				case 'free':
+					const freeExtensions = extensions.filter(({ extension }) => !assignedExtensions.includes(extension));
+					return API.v1.success({ extensions: freeExtensions });
+				case 'allocated':
+					// Extensions that are already assigned to some user
+					const allocatedExtensions = extensions.filter(({ extension }) => assignedExtensions.includes(extension));
+					return API.v1.success({ extensions: allocatedExtensions });
+				case 'available':
+					// Extensions that are free or assigned to the specified user
+					const user = (username && (await Users.findOneByUsername(username, { projection: { freeSwitchExtension: 1 } }))) || undefined;
+					const currentExtension = user?.freeSwitchExtension;
+
+					const availableExtensions = extensions.filter(
+						({ extension }) => extension === currentExtension || !assignedExtensions.includes(extension),
+					);
+
+					return API.v1.success({ extensions: availableExtensions });
+			}
+
 			return API.v1.success({ extensions });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'voip-freeswitch.extension.assign',
+	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'], isValidType: isVoipFreeSwitchExtensionAssignProps },
+	{
+		async post() {
+			const { extension, username } = this.bodyParams;
+
+			if (!username) {
+				return API.v1.notFound();
+			}
+
+			const user = await Users.findOneByUsername(username, { projection: { freeSwitchExtension: 1 } });
+			if (!user) {
+				return API.v1.notFound();
+			}
+
+			const existingUser = extension && (await Users.findOneByFreeSwitchExtension(extension, { projection: { _id: 1 } }));
+			if (existingUser && existingUser._id !== user._id) {
+				throw new Error('Extension not available.');
+			}
+
+			if (extension && user.freeSwitchExtension === extension) {
+				return API.v1.success();
+			}
+
+			await Users.setFreeSwitchExtension(user._id, extension);
+			return API.v1.success();
 		},
 	},
 );
@@ -46,7 +115,12 @@ API.v1.addRoute(
 				return API.v1.notFound();
 			}
 
-			return API.v1.success(extensionData);
+			const existingUser = await Users.findOneByFreeSwitchExtension(extensionData.extension, { projection: { username: 1 } });
+
+			return API.v1.success({
+				...extensionData,
+				...(existingUser && { userId: existingUser._id, username: existingUser.username }),
+			});
 		},
 	},
 );
