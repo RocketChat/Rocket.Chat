@@ -9436,7 +9436,7 @@ __metadata:
     "@types/bcrypt": ^5.0.1
     "@types/body-parser": ^1.19.4
     "@types/busboy": ^1.5.2
-    "@types/chai": ^4.3.9
+    "@types/chai": ~4.3.16
     "@types/chai-as-promised": ^7.1.7
     "@types/chai-datetime": 0.0.38
     "@types/chai-dom": 1.11.2
@@ -9870,7 +9870,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/password-policies@workspace:packages/password-policies"
   dependencies:
-    "@types/chai": ^4.3.9
+    "@types/chai": ~4.3.16
     "@types/jest": ~29.5.7
     chai: ^4.3.10
     eslint: ~8.45.0
@@ -12994,10 +12994,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai@npm:*, @types/chai@npm:^4.3.9":
-  version: 4.3.9
-  resolution: "@types/chai@npm:4.3.9"
-  checksum: 2300a2c7abd4cb590349927a759b3d0172211a69f363db06e585faf7874a47f125ef3b364cce4f6190e3668147587fc11164c791c9560cf9bce8478fb7019610
+"@types/chai@npm:*, @types/chai@npm:~4.3.16":
+  version: 4.3.16
+  resolution: "@types/chai@npm:4.3.16"
+  checksum: bb5f52d1b70534ed8b4bf74bd248add003ffe1156303802ea367331607c06b494da885ffbc2b674a66b4f90c9ee88759790a5f243879f6759f124f22328f5e95
   languageName: node
   linkType: hard
 
@@ -18321,9 +18321,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001109, caniuse-lite@npm:^1.0.30001541":
-  version: 1.0.30001577
-  resolution: "caniuse-lite@npm:1.0.30001577"
-  checksum: 26d2b4a498a2a6ad5a33c44c18a32497b59a3bb1963b8b9221ddcbfe166ed7f7a1f75a3de040870cdc2467ce35199c643cfe8c45e7208d8bc033e7877214b0f9
+  version: 1.0.30001636
+  resolution: "caniuse-lite@npm:1.0.30001636"
+  checksum: b0347fd2c8d346680a64d98b061c59cb8fbf149cdd03005a447fae4d21e6286d5bd161b43eefe3221c6624aacb3cda4e838ae83c95ff5313a547f84ca93bcc70
   languageName: node
   linkType: hard
 
