@@ -309,7 +309,7 @@ describe('[Incoming Integrations]', function () {
 	});
 
 	describe('[/integrations.history]', () => {
-		it('should return an error when trying to get history of incoming integrations', (done) => {
+		it('should return an error when trying to get history of incoming integrations if user does NOT have enough permissions', (done) => {
 			request
 				.get(api('integrations.history'))
 				.set(credentials)
@@ -320,7 +320,7 @@ describe('[Incoming Integrations]', function () {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				})
 				.end(done);
 		});
@@ -395,25 +395,22 @@ describe('[Incoming Integrations]', function () {
 			});
 		});
 
-		it('should return unauthorized error when the user does not have any integrations permissions', (done) => {
-			updatePermission('manage-incoming-integrations', []).then(() => {
-				updatePermission('manage-own-incoming-integrations', []).then(() => {
-					updatePermission('manage-outgoing-integrations', []).then(() => {
-						updatePermission('manage-outgoing-integrations', []).then(() => {
-							request
-								.get(api('integrations.list'))
-								.set(credentials)
-								.expect('Content-Type', 'application/json')
-								.expect(403)
-								.expect((res) => {
-									expect(res.body).to.have.property('success', false);
-									expect(res.body).to.have.property('error', 'unauthorized');
-								})
-								.end(done);
-						});
-					});
+		it('should return unauthorized error when the user does not have any integrations permissions', async () => {
+			await Promise.all([
+				updatePermission('manage-incoming-integrations', []),
+				updatePermission('manage-own-incoming-integrations', []),
+				updatePermission('manage-outgoing-integrations', []),
+				updatePermission('manage-outgoing-integrations', []),
+			]);
+			await request
+				.get(api('integrations.list'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				});
-			});
 		});
 	});
 
@@ -570,7 +567,7 @@ describe('[Incoming Integrations]', function () {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'unauthorized');
+						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 					})
 					.end(done);
 			});
@@ -589,7 +586,7 @@ describe('[Incoming Integrations]', function () {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'unauthorized');
+						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 					})
 					.end(done);
 			});

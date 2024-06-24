@@ -44,13 +44,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.listAll',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-all-teams'] },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'view-all-teams'))) {
-				return API.v1.unauthorized();
-			}
-
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const { records, total } = await Team.listAll({ offset, count });
@@ -67,13 +63,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.create',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['create-team'] },
 	{
 		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'create-team'))) {
-				return API.v1.unauthorized();
-			}
-
 			check(
 				this.bodyParams,
 				Match.ObjectIncluding({
@@ -285,10 +277,7 @@ API.v1.addRoute(
 
 			const allowPrivateTeam: boolean = await hasPermissionAsync(this.userId, 'view-all-teams', team.roomId);
 
-			let getAllRooms = false;
-			if (await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId)) {
-				getAllRooms = true;
-			}
+			const getAllRooms = await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId);
 
 			const listFilter = {
 				name: filter ?? undefined,
