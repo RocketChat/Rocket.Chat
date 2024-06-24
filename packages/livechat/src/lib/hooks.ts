@@ -15,8 +15,6 @@ const evaluateChangesAndLoadConfigByFields = async (fn: () => Promise<void>) => 
 	const oldStore = JSON.parse(
 		JSON.stringify({
 			user: store.state.user || {},
-			department: store.state.department,
-			iframeDepartment: store.state.iframe?.guest?.department,
 			token: store.state.token,
 		}),
 	);
@@ -38,18 +36,6 @@ const evaluateChangesAndLoadConfigByFields = async (fn: () => Promise<void>) => 
 		return;
 	}
 
-	if (oldStore.department !== store.state.department) {
-		await loadConfig();
-		await loadMessages();
-		return;
-	}
-
-	if (oldStore.iframeDepartment !== store.state.iframe?.guest?.department) {
-		await loadConfig();
-		await loadMessages();
-		return;
-	}
-
 	if (oldStore.token !== store.state.token) {
 		await loadConfig();
 		await loadMessages();
@@ -64,9 +50,11 @@ const createOrUpdateGuest = async (guest: StoreState['guest']) => {
 	const { token } = guest;
 	token && (await store.setState({ token }));
 
-	const { department } = store.state;
-	if (department && !guest.department) {
-		guest.department = department;
+	const {
+		iframe: { defaultDepartment },
+	} = store.state;
+	if (defaultDepartment && !guest.department) {
+		guest.department = defaultDepartment;
 	}
 
 	const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...guest } });
@@ -148,18 +136,12 @@ const api = {
 	},
 
 	setDepartment: async (value: string) => {
-		await evaluateChangesAndLoadConfigByFields(async () => api._setDepartment(value));
-	},
-
-	_setDepartment: async (value: string) => {
 		const {
 			user,
 			config: { departments = [] },
 			defaultAgent,
-			room,
 		} = store.state;
 
-		updateIframeData({ defaultDepartment: value });
 		const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
 
 		if (!department) {
@@ -168,14 +150,10 @@ const api = {
 			);
 		}
 
-		store.setState({ department });
+		updateIframeData({ defaultDepartment: department });
 
 		if (!user) {
 			return;
-		}
-
-		if (room) {
-			await Livechat.transferChat({ rid: room._id, department });
 		}
 
 		if (defaultAgent && defaultAgent.department !== department) {
@@ -260,12 +238,12 @@ const api = {
 			if (!data.token) {
 				data.token = createToken();
 			}
-			const { department } = store.state;
+			const {
+				iframe: { defaultDepartment },
+			} = store.state;
 
-			if (data.department) {
-				await api._setDepartment(data.department);
-			} else if (department) {
-				await api._setDepartment(department);
+			if (defaultDepartment && !data.department) {
+				data.department = defaultDepartment;
 			}
 
 			Livechat.unsubscribeAll();

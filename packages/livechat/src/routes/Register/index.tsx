@@ -47,7 +47,6 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 		token,
 		dispatch,
 		user,
-		department: currentDepartment,
 	} = useContext(StoreContext);
 
 	const {
@@ -83,14 +82,14 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 		department?: string;
 		customFields: FormPayloadCustomField;
 	}) => {
-		const guestDepartment = department || currentDepartment;
+		const guestDepartment = department || defaultDepartment;
 		const fields = {
 			name,
 			email,
 			...(guestDepartment && { department: guestDepartment }),
 		};
 
-		dispatch({ loading: true, department: guestDepartment });
+		dispatch({ loading: true });
 
 		try {
 			const { visitor: user } = await Livechat.grantVisitor({ visitor: { ...fields, token } });
