@@ -1,20 +1,42 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Omnichannel } from '@rocket.chat/core-services';
-import type { ILivechatInquiryRecord, ILivechatVisitor, IMessage, IOmnichannelRoom, SelectedAgent } from '@rocket.chat/core-typings';
+import {
+	LivechatInquiryStatus,
+	type ILivechatInquiryRecord,
+	type ILivechatVisitor,
+	type IMessage,
+	type IOmnichannelRoom,
+	type SelectedAgent,
+} from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
+import {
+	notifyOnLivechatInquiryChangedById,
+	notifyOnLivechatInquiryChanged,
+	notifyOnSettingChanged,
+} from '../../../lib/server/lib/notifyListener';
 import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('QueueManager');
 
 export const saveQueueInquiry = async (inquiry: ILivechatInquiryRecord) => {
-	await LivechatInquiry.queueInquiry(inquiry._id);
-	await callbacks.run('livechat.afterInquiryQueued', inquiry);
+	const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id);
+	if (!queuedInquiry) {
+		return;
+	}
+
+	await callbacks.run('livechat.afterInquiryQueued', queuedInquiry);
+
+	void notifyOnLivechatInquiryChanged(queuedInquiry, 'updated', {
+		status: LivechatInquiryStatus.QUEUED,
+		queuedAt: new Date(),
+		takenAt: undefined,
+	});
 };
 
 export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent?: SelectedAgent) => {
@@ -106,7 +128,11 @@ export const QueueManager: queueManager = {
 		}
 
 		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
-		await LivechatRooms.updateRoomCount();
+
+		const livechatSetting = await LivechatRooms.updateRoomCount();
+		if (livechatSetting) {
+			void notifyOnSettingChanged(livechatSetting);
+		}
 
 		await queueInquiry(inquiry, agent);
 		logger.debug(`Inquiry ${inquiry._id} queued`);
@@ -137,6 +163,7 @@ export const QueueManager: queueManager = {
 		if (oldInquiry) {
 			logger.debug(`Removing old inquiry (${oldInquiry._id}) for room ${rid}`);
 			await LivechatInquiry.removeByRoomId(rid);
+			void notifyOnLivechatInquiryChangedById(oldInquiry._id, 'removed');
 		}
 
 		const guest = {

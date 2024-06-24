@@ -23,7 +23,7 @@ import {
 } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminEmail, preferences, password, adminUsername } from '../../data/user';
-import { createUser, login, deleteUser, getUserStatus, getUserByUsername, registerUser } from '../../data/users.helper.js';
+import { createUser, login, deleteUser, getUserStatus, getUserByUsername, registerUser, updateUserInDb } from '../../data/users.helper.js';
 
 const targetUser = {};
 
@@ -70,6 +70,22 @@ describe('[Users]', function () {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('public_key', 'test');
 				expect(res.body).to.have.property('private_key', 'test');
+			});
+	});
+
+	it('should fail when trying to set keys for a user with keys already set', async () => {
+		await request
+			.post(api('e2e.setUserPublicAndPrivateKeys'))
+			.set(userCredentials)
+			.send({
+				private_key: 'test',
+				public_key: 'test',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'Keys already set [error-keys-already-set]');
 			});
 	});
 
@@ -1651,6 +1667,34 @@ describe('[Users]', function () {
 						.end(done);
 				});
 			});
+		});
+
+		it('should delete requirePasswordChangeReason when requirePasswordChange is set to false', async () => {
+			const user = await createUser({
+				requirePasswordChange: true,
+			});
+
+			await updateUserInDb(user._id, { requirePasswordChangeReason: 'any_data' });
+
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: user._id,
+					data: {
+						requirePasswordChange: false,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('user');
+					expect(res.body.user).to.have.property('requirePasswordChange', false);
+					expect(res.body.user).to.not.have.property('requirePasswordChangeReason');
+				});
+
+			await deleteUser(user);
 		});
 
 		function failUpdateUser(name) {
@@ -3837,21 +3881,7 @@ describe('[Users]', function () {
 				.then(() => done());
 		});
 
-		after(() =>
-			Promise.all([
-				[teamName1, teamName2].map((team) =>
-					request
-						.post(api('teams.delete'))
-						.set(credentials)
-						.send({
-							teamName: team,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200),
-				),
-				deleteUser(testUser),
-			]),
-		);
+		after(() => Promise.all([...[teamName1, teamName2].map((team) => deleteTeam(credentials, team)), deleteUser(testUser)]));
 
 		it('should list both channels', (done) => {
 			request

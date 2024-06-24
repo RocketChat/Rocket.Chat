@@ -9,12 +9,12 @@ import { useDeleteRoom } from '../../../hooks/roomActions/useDeleteRoom';
 import { useRemoveRoomFromTeam } from './hooks/useRemoveRoomFromTeam';
 import { useToggleAutoJoin } from './hooks/useToggleAutoJoin';
 
-const TeamsChannelItemMenu = ({ room, reload }: { room: IRoom; reload?: () => void }) => {
+const TeamsChannelItemMenu = ({ room, mainRoom, reload }: { room: IRoom; mainRoom: IRoom; reload?: () => void }) => {
 	const t = useTranslation();
 
 	const { handleRemoveRoom, canRemoveTeamChannel } = useRemoveRoomFromTeam(room, { reload });
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload });
-	const { handleToggleAutoJoin, canEditTeamChannel } = useToggleAutoJoin(room, { reload });
+	const { handleToggleAutoJoin, canEditTeamChannel } = useToggleAutoJoin(room, { reload, mainRoom });
 
 	const toggleAutoJoin = {
 		id: 'toggleAutoJoin',

@@ -1,5 +1,7 @@
 import { Users } from '@rocket.chat/models';
 
+import { notifyOnUserChange } from '../../../../lib/server/lib/notifyListener';
+
 export default async function handleNickChanged(args) {
 	const user = await Users.findOne({
 		'profile.irc.nick': args.nick,
@@ -21,4 +23,6 @@ export default async function handleNickChanged(args) {
 			},
 		},
 	);
+
+	void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: { name: args.newNick } });
 }

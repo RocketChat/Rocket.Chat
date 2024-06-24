@@ -35,7 +35,7 @@ const GenericFileAttachment = ({
 	const handleTitleClick = (event: UIEvent): void => {
 		if (openDocumentViewer && link && format === 'PDF') {
 			event.preventDefault();
-			openDocumentViewer(getURL(link), format, '');
+			openDocumentViewer(`${getURL(link)}?contentDisposition=inline`, format, '');
 		}
 	};
 
@@ -55,7 +55,12 @@ const GenericFileAttachment = ({
 					<MessageGenericPreviewContent
 						thumb={<MessageGenericPreviewIcon name='attachment-file' type={format || getFileExtension(title)} />}
 					>
-						<MessageGenericPreviewTitle externalUrl={getExternalUrl()} onClick={handleTitleClick} data-qa-type='attachment-title-link'>
+						<MessageGenericPreviewTitle
+							download={!!openDocumentViewer}
+							externalUrl={getExternalUrl()}
+							onClick={handleTitleClick}
+							data-qa-type='attachment-title-link'
+						>
 							{title}
 						</MessageGenericPreviewTitle>
 						{size && (

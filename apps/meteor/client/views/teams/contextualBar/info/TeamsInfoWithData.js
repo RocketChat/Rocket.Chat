@@ -3,7 +3,6 @@ import {
 	useSetModal,
 	useToastMessageDispatch,
 	useUserId,
-	useSetting,
 	usePermission,
 	useMethod,
 	useTranslation,
@@ -23,32 +22,11 @@ import ConvertToChannelModal from '../../ConvertToChannelModal';
 import LeaveTeam from './LeaveTeam';
 import TeamsInfo from './TeamsInfo';
 
-const retentionPolicyMaxAge = {
-	c: 'RetentionPolicy_MaxAge_Channels',
-	p: 'RetentionPolicy_MaxAge_Groups',
-	d: 'RetentionPolicy_MaxAge_DMs',
-};
-
-const retentionPolicyAppliesTo = {
-	c: 'RetentionPolicy_AppliesToChannels',
-	p: 'RetentionPolicy_AppliesToGroups',
-	d: 'RetentionPolicy_AppliesToDMs',
-};
-
 const TeamsInfoWithLogic = ({ openEditing }) => {
 	const room = useRoom();
 	const { openTab, closeTab } = useRoomToolbox();
 	const t = useTranslation();
 	const userId = useUserId();
-
-	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
-	const retentionPolicy = {
-		retentionPolicyEnabled,
-		maxAgeDefault: useSetting(retentionPolicyMaxAge[room.t]) || 30,
-		retentionEnabledDefault: useSetting(retentionPolicyAppliesTo[room.t]),
-		excludePinnedDefault: useSetting('RetentionPolicy_DoNotPrunePinned'),
-		filesOnlyDefault: useSetting('RetentionPolicy_FilesOnly'),
-	};
 
 	const dontAskHideRoom = useDontAskAgain('hideRoom');
 
@@ -153,7 +131,6 @@ const TeamsInfoWithLogic = ({ openEditing }) => {
 	return (
 		<TeamsInfo
 			room={room}
-			retentionPolicy={retentionPolicyEnabled && retentionPolicy}
 			onClickEdit={canEdit && openEditing}
 			onClickClose={closeTab}
 			onClickDelete={canDeleteRoom && handleDelete}

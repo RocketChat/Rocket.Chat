@@ -112,6 +112,7 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();
 	const [zoomScale, setZoomScale] = useState(1);
+	const [gridSize, setGridSize] = useState(images.length);
 
 	const handleZoom = (ratio: number) => {
 		if (swiperRef.current?.swiper.zoom) {
@@ -174,16 +175,21 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 						onKeyPress={(_, keyCode) => String(keyCode) === '27' && onClose()}
 						modules={[Navigation, Zoom, Keyboard, A11y]}
 						onInit={(swiper) => setSwiperInst(swiper)}
-						onReachEnd={loadMore}
+						onSlidesGridLengthChange={(swiper) => {
+							swiper.slideTo(images.length - gridSize, 0);
+							setGridSize(images.length);
+						}}
+						onReachBeginning={loadMore}
+						initialSlide={images.length - 1}
 					>
-						{images?.map(({ _id, url }) => (
+						{[...images].reverse().map(({ _id, path, url }) => (
 							<SwiperSlide key={_id}>
 								<div className='swiper-zoom-container'>
 									{/* eslint-disable-next-line
 										jsx-a11y/no-noninteractive-element-interactions,
-									 	jsx-a11y/click-events-have-key-events
-									 */}
-									<img src={url} loading='lazy' alt='' data-qa-zoom-scale={zoomScale} onClick={preventPropagation} />
+										jsx-a11y/click-events-have-key-events
+									*/}
+									<img src={path || url} loading='lazy' alt='' data-qa-zoom-scale={zoomScale} onClick={preventPropagation} />
 									<div className='rcx-lazy-preloader'>
 										<Throbber inheritColor />
 									</div>

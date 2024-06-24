@@ -264,12 +264,14 @@ export class FederationHomeContent {
 	async openLastThreadMessageMenu(): Promise<void> {
 		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().hover();
 		await this.page
-			.getByRole('dialog').locator('[data-qa-type="message"]')
+			.getByRole('dialog')
+			.locator('[data-qa-type="message"]')
 			.last()
 			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
 			.waitFor();
 		await this.page
-			.getByRole('dialog').locator('[data-qa-type="message"]')
+			.getByRole('dialog')
+			.locator('[data-qa-type="message"]')
 			.last()
 			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
 			.click();
