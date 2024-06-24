@@ -1,6 +1,6 @@
 import { api, credentials, request } from './api-data';
 
-export const sendSimpleMessage = ({ roomId, text = 'test message', tmid }) => {
+export const sendSimpleMessage = ({ roomId, text = 'test message', tmid = undefined }) => {
 	if (!roomId) {
 		throw new Error('"roomId" is required in "sendSimpleMessage" test helper');
 	}

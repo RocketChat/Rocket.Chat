@@ -413,18 +413,25 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	getChannelsWithNumberOfMessagesBetweenDateQuery({
+		types,
 		start,
 		end,
 		startOfLastWeek,
 		endOfLastWeek,
 		options,
 	}: {
+		types: Array<IRoom['t']>;
 		start: number;
 		end: number;
 		startOfLastWeek: number;
 		endOfLastWeek: number;
 		options?: any;
 	}) {
+		const typeMatch = {
+			$match: {
+				t: { $in: types },
+			},
+		};
 		const lookup = {
 			$lookup: {
 				from: 'rocketchat_analytics',
@@ -504,30 +511,32 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				diffFromLastWeek: { $subtract: ['$messages', '$lastWeekMessages'] },
 			},
 		};
-		const firstParams = [
-			lookup,
-			messagesProject,
-			messagesUnwind,
-			messagesGroup,
-			lastWeekMessagesUnwind,
-			lastWeekMessagesGroup,
-			presentationProject,
-		];
+		const firstParams = [typeMatch, lookup, messagesProject, messagesUnwind, messagesGroup];
+		const lastParams = [lastWeekMessagesUnwind, lastWeekMessagesGroup, presentationProject];
+
 		const sort = { $sort: options?.sort || { messages: -1 } };
-		const params: Exclude<Parameters<Collection<IRoom>['aggregate']>[0], undefined> = [...firstParams, sort];
+		const sortAndPaginationParams: Exclude<Parameters<Collection<IRoom>['aggregate']>[0], undefined> = [sort];
 
 		if (options?.offset) {
-			params.push({ $skip: options.offset });
+			sortAndPaginationParams.push({ $skip: options.offset });
 		}
 
 		if (options?.count) {
-			params.push({ $limit: options.count });
+			sortAndPaginationParams.push({ $limit: options.count });
+		}
+		const params: Exclude<Parameters<Collection<IRoom>['aggregate']>[0], undefined> = [...firstParams];
+
+		if (options?.sort) {
+			params.push(...lastParams, ...sortAndPaginationParams);
+		} else {
+			params.push(...sortAndPaginationParams, ...lastParams, sort);
 		}
 
 		return params;
 	}
 
-	findChannelsWithNumberOfMessagesBetweenDate(params: {
+	findChannelsByTypesWithNumberOfMessagesBetweenDate(params: {
+		types: Array<IRoom['t']>;
 		start: number;
 		end: number;
 		startOfLastWeek: number;
@@ -536,22 +545,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}): AggregationCursor<IChannelsWithNumberOfMessagesBetweenDate> {
 		const aggregationParams = this.getChannelsWithNumberOfMessagesBetweenDateQuery(params);
 		return this.col.aggregate<IChannelsWithNumberOfMessagesBetweenDate>(aggregationParams, {
-			allowDiskUse: true,
-			readPreference: readSecondaryPreferred(),
-		});
-	}
-
-	countChannelsWithNumberOfMessagesBetweenDate(params: {
-		start: number;
-		end: number;
-		startOfLastWeek: number;
-		endOfLastWeek: number;
-		options?: any;
-	}): AggregationCursor<{ total: number }> {
-		const aggregationParams = this.getChannelsWithNumberOfMessagesBetweenDateQuery(params);
-		aggregationParams.push({ $count: 'total' });
-
-		return this.col.aggregate<{ total: number }>(aggregationParams, {
 			allowDiskUse: true,
 			readPreference: readSecondaryPreferred(),
 		});
