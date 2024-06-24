@@ -4,7 +4,7 @@ import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import React, { memo, useState } from 'react';
+import React, { memo } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
@@ -62,23 +62,24 @@ const RoomMessage = ({
 
 	const messageRef = useJumpToMessage(message._id);
 
-	// Add a new state variable for controlling the visibility of the GenericMenu
-	const [isToolbarMenuOpen, setIsToolbarMenuOpen] = useState(false);
-
-
 	// Add a new function for handling double click events
-	const handleDoubleClick = () => {
-		//open the toolbar menu
-		setIsToolbarMenuOpen(true);
+	const handleRightClick = async (e: React.MouseEvent) => {
+		e.preventDefault();
 
 		//get the button that oppens the menu
-		const menu = document.querySelector('[title="More"]');
-		if (!menu) return; 
+		const moreButton = document.querySelector('[title="More"]');
+		if (!moreButton) return;
 
+		//hide the button
+		moreButton.setAttribute("style", `position: fixed; top: ${e.clientY}px; left: ${e.clientX}px; visibility: hidden;`);
+		
 		//simulate click on the element
-		menu.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-	};
+		moreButton.dispatchEvent(new MouseEvent('click', {
+			bubbles: true,
+		}));
 
+	};
+	
 	return (
 		<Message
 			ref={messageRef}
@@ -88,7 +89,7 @@ const RoomMessage = ({
 			tabIndex={0}
 			aria-labelledby={`${message._id}-displayName ${message._id}-time ${message._id}-content ${message._id}-read-status`}
 			onClick={selecting ? toggleSelected : undefined}
-			onDoubleClick={handleDoubleClick}
+			onContextMenu={handleRightClick}
 			isSelected={selected}
 			isEditing={editing}
 			isPending={message.temp}
@@ -128,7 +129,7 @@ const RoomMessage = ({
 					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
 				)}
 			</MessageContainer>
-			{!message.private && <MessageToolbarHolder message={message} context={context} isToolbarMenuOpen={isToolbarMenuOpen} setIsToolbarMenuOpen={setIsToolbarMenuOpen} />}
+			{!message.private && <MessageToolbarHolder message={message} context={context} />}
 		</Message>
 	);
 
