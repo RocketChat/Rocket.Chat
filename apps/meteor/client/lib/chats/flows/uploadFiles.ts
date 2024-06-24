@@ -90,7 +90,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					// encrypt attachment description
 					const e2eRoom = await e2e.getInstanceByRoomId(room._id);
 
-					if (!e2eRoom) {
+					if (!e2eRoom?.isReady()) {
 						uploadFile(file, { description });
 						return;
 					}
