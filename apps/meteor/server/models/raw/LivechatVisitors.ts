@@ -17,6 +17,7 @@ import type {
 	ModifyResult,
 	FindOneAndUpdateOptions,
 } from 'mongodb';
+import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -292,23 +293,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.updateOne({ _id }, update);
 	}
 
-	async findOneByEmailPhoneToken(
-		email?: string,
-		phone?: string,
-		token?: ILivechatVisitor['token'],
-		options?: FindOptions<ILivechatVisitor>,
-	): Promise<ILivechatVisitor | null> {
-		const query: Filter<ILivechatVisitor> = {
-			$or: [
-				...(email ? [{ 'visitorEmails.address': email }] : []),
-				...(phone ? [{ 'phone.phoneNumber': phone }] : []),
-				...(token ? [{ token }] : []),
-			],
-		};
-
-		return this.findOne(query, options);
-	}
-
 	async updateOneByIdOrToken(
 		update: Partial<ILivechatVisitor>,
 		options?: FindOneAndUpdateOptions,
@@ -319,6 +303,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			query = { _id: update._id };
 		} else if (update.token) {
 			query = { token: update.token };
+			update._id = new ObjectId().toHexString();
 		}
 
 		return this.findOneAndUpdate(query, { $set: update }, options);

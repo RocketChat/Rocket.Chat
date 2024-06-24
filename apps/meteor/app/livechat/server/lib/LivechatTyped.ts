@@ -722,6 +722,8 @@ class LivechatClass {
 
 		visitorDataToUpdate.token = livechatVisitor?.token || token;
 
+		Livechat.logger.debug(visitorDataToUpdate);
+
 		const upsertedLivechatVisitor = await LivechatVisitors.updateOneByIdOrToken(visitorDataToUpdate, {
 			upsert: true,
 			returnDocument: 'after',
@@ -732,7 +734,9 @@ class LivechatClass {
 			return null;
 		}
 
-		return { ...upsertedLivechatVisitor.value, _id: upsertedLivechatVisitor.value._id.toString() };
+		Livechat.logger.debug(`Visitor ${upsertedLivechatVisitor.value._id} created/updated`);
+
+		return upsertedLivechatVisitor.value;
 	}
 
 	private async getBotAgents(department?: string) {

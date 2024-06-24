@@ -57,13 +57,6 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	updateById(_id: string, update: UpdateFilter<ILivechatVisitor>): Promise<Document | UpdateResult>;
 
-	findOneByEmailPhoneToken(
-		email?: string,
-		phone?: string,
-		token?: ILivechatVisitor['token'],
-		options?: FindOptions<ILivechatVisitor>,
-	): Promise<ILivechatVisitor | null>;
-
 	updateOneByIdOrToken(update: UpdateFilter<ILivechatVisitor>, options?: FindOneAndUpdateOptions): Promise<ModifyResult<ILivechatVisitor>>;
 
 	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void>;
