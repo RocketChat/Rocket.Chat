@@ -1,17 +1,13 @@
 import { isIE11 } from '../../../client/lib/utils/isIE11';
 import { emoji } from './lib';
 
-/*
+/**
  * emojiParser is a function that will replace emojis
- * @param {Object} message - The message object
+ * @param {{ html: string }} message - The message object
+ * @return {{ html: string }}
  */
-
-const emojiParser = (message) => {
-	if (!message.html?.trim()) {
-		return message;
-	}
-
-	let html = message.html.trim();
+export const emojiParser = ({ html }) => {
+	html = html.trim();
 
 	// &#39; to apostrophe (') for emojis such as :')
 	html = html.replace(/&#39;/g, "'");
@@ -64,7 +60,5 @@ const emojiParser = (message) => {
 	// line breaks ' <br> ' back to '<br>'
 	html = html.replace(/ <br> /g, '<br>');
 
-	return { ...message, html };
+	return { html };
 };
-
-export { emojiParser };
