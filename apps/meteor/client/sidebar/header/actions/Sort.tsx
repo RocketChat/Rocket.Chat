@@ -12,15 +12,7 @@ const Sort: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
 	const sections = useSortMenu();
 
 	return (
-		<GenericMenu
-			detached
-			icon='sort'
-			sections={sections}
-			title={t('Display')}
-			selectionMode='multiple'
-			is={Sidebar.TopBar.Action}
-			{...props}
-		/>
+		<GenericMenu icon='sort' sections={sections} title={t('Display')} selectionMode='multiple' is={Sidebar.TopBar.Action} {...props} />
 	);
 };
 

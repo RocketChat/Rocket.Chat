@@ -11,7 +11,7 @@ const CreateRoom: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
 
 	const sections = useCreateRoom();
 
-	return <GenericMenu detached icon='edit-rounded' sections={sections} title={t('Create_new')} is={Sidebar.TopBar.Action} {...props} />;
+	return <GenericMenu icon='edit-rounded' sections={sections} title={t('Create_new')} is={Sidebar.TopBar.Action} {...props} />;
 };
 
 export default CreateRoom;
