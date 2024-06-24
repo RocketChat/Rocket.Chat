@@ -97,7 +97,7 @@
 		"@types/bcrypt": "^5.0.1",
 		"@types/body-parser": "^1.19.4",
 		"@types/busboy": "^1.5.2",
-		"@types/chai": "^4.3.9",
+		"@types/chai": "~4.3.16",
 		"@types/chai-as-promised": "^7.1.7",
 		"@types/chai-datetime": "0.0.38",
 		"@types/chai-dom": "1.11.2",
