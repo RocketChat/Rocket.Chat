@@ -1,5 +1,5 @@
 import { Button } from '@rocket.chat/fuselage';
-import { useToggle } from '@rocket.chat/fuselage-hooks';
+import { useOutsideClick, useToggle } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, FormEvent, ReactElement, RefObject } from 'react';
 import { useCallback, useRef } from 'react';
@@ -60,6 +60,7 @@ export const MultiSelectCustom = ({
 	...props
 }: DropDownProps): ReactElement => {
 	const reference = useRef<HTMLInputElement>(null);
+	const target = useRef<HTMLElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
 	const onClose = useCallback(
@@ -73,6 +74,8 @@ export const MultiSelectCustom = ({
 		},
 		[toggleCollapsed],
 	);
+
+	useOutsideClick([target], onClose);
 
 	const onSelect = (item: OptionProp, e?: FormEvent<HTMLElement>): void => {
 		e?.stopPropagation();
@@ -103,7 +106,7 @@ export const MultiSelectCustom = ({
 				{...props}
 			/>
 			{collapsed && (
-				<MultiSelectCustomListWrapper ref={reference} onClose={onClose}>
+				<MultiSelectCustomListWrapper ref={reference}>
 					<MultiSelectCustomList options={dropdownOptions} onSelected={onSelect} searchBarText={searchBarText} />
 				</MultiSelectCustomListWrapper>
 			)}
