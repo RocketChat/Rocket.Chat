@@ -102,8 +102,8 @@ export class HomeSidenav {
 	}
 
 	async openNewByLabel(text: string): Promise<void> {
-		await this.page.locator('role=button[name="Create new"]').click();
-		await this.page.locator(`role=menuitem[name="${text}"]`).click();
+		await this.sidebarSearchSection.getByRole('button', { name: 'Create new', exact: true }).click();
+		await this.sidebarSearchSection.getByRole('menuitem', { name: text, exact: true }).click();
 	}
 
 	async typeSearch(text: string): Promise<void> {

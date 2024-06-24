@@ -65,8 +65,10 @@ export class FederationSidenav {
 	}
 
 	async openNewByLabel(text: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-create"]').click();
-		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
+		// await this.page.locator('[data-qa="sidebar-create"]').click();
+		// await this.page.locator(`li.rcx-option >> text="${text}"`).click();
+		await this.sidebarSearchSection.getByRole('button', { name: 'Create new', exact: true }).click();
+		await this.sidebarSearchSection.getByRole('menuitem', { name: text, exact: true }).click();
 	}
 
 	async openChat(name: string): Promise<void> {
