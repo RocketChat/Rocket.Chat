@@ -35,6 +35,14 @@ export class FederationSidenav {
 		return this.page.locator('role=button[name="Create"]');
 	}
 
+	get sidebarSearchSection() {
+		return this.page.getByRole('navigation', { name: 'sidebar' }).getByRole('search');
+	}
+
+	get sidebarSearchBox() {
+		return this.sidebarSearchSection.getByRole('searchbox');
+	}
+
 	async logout(): Promise<void> {
 		await this.page.getByRole('button', { name: 'User menu' }).click();
 		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
@@ -45,6 +53,10 @@ export class FederationSidenav {
 		await this.autocompleteUser.type(username);
 		await this.page.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).waitFor();
 		await this.page.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).click();
+	}
+
+	async typeSearch(text: string): Promise<void> {
+		await this.sidebarSearchBox.fill(text);
 	}
 
 	async openAdministrationByLabel(text: string): Promise<void> {
@@ -58,11 +70,8 @@ export class FederationSidenav {
 	}
 
 	async openChat(name: string): Promise<void> {
-		await this.page.locator('role=navigation >> role=button[name=Search]').click();
-		await this.page.locator('role=search >> role=searchbox').focus();
-		await this.page.locator('role=search >> role=searchbox').type(name);
-		await this.page.locator(`role=search >> role=listbox >> role=link`).first().waitFor();
-		await this.page.locator(`role=search >> role=listbox >> role=link`).first().click();
+		await this.typeSearch(name);
+		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
 	}
 
 	async countFilteredChannelsOnDirectory(name: string): Promise<number> {
