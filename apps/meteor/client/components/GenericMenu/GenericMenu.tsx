@@ -13,6 +13,7 @@ type GenericMenuCommonProps = {
 	disabled?: boolean;
 	button?: ReactElement;
 	is?: ElementType;
+	callbackAction?: () => void;
 };
 type GenericMenuConditionalProps =
 	| {
@@ -30,7 +31,7 @@ type GenericMenuConditionalProps =
 
 type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof MenuV2>, 'children'>;
 
-const GenericMenu = ({ title, icon = 'menu', disabled, onAction, button, ...props }: GenericMenuProps) => {
+const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction, button, ...props }: GenericMenuProps) => {
 	const t = useTranslation();
 
 	const sections = 'sections' in props && props.sections;
@@ -39,7 +40,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, button, ...prop
 	const itemsList = sections ? sections.reduce((acc, { items }) => [...acc, ...items], [] as GenericMenuItemProps[]) : items || [];
 
 	const disabledKeys = itemsList.filter(({ disabled }) => disabled).map(({ id }) => id);
-	const handleAction = useHandleMenuAction(itemsList || []);
+	const handleAction = useHandleMenuAction(itemsList || [], callbackAction);
 
 	const hasIcon = itemsList.some(({ icon }) => icon);
 	const handleItems = (items: GenericMenuItemProps[]) =>

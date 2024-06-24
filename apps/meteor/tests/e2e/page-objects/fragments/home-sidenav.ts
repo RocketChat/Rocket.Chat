@@ -34,7 +34,7 @@ export class HomeSidenav {
 	}
 
 	get userProfileMenu(): Locator {
-		return this.page.getByRole('button', { name: 'User menu' });
+		return this.page.getByRole('button', { name: 'User menu', exact: true });
 	}
 
 	get homeButton(): Locator {
@@ -62,7 +62,7 @@ export class HomeSidenav {
 	}
 
 	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
-		await this.sidebarSearchSection.getByRole('button', { name: 'Display' }).click();
+		await this.sidebarSearchSection.getByRole('button', { name: 'Display', exact: true }).click();
 		await this.sidebarSearchSection.getByRole('menuitemcheckbox', { name: mode }).click();
 		await this.sidebarSearchSection.click();
 	}

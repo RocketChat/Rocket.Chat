@@ -4,6 +4,7 @@ import { Settings } from '@rocket.chat/models';
 import yaml from 'js-yaml';
 import { v4 as uuidv4 } from 'uuid';
 
+import { notifyOnSettingChangedById } from '../../../../../../app/lib/server/lib/notifyListener';
 import { settings, settingsRegistry } from '../../../../../../app/settings/server';
 import type { IFederationBridgeRegistrationFile } from '../../../domain/IFederationBridge';
 
@@ -55,7 +56,8 @@ export class RocketChatSettingsAdapter {
 	}
 
 	public async disableFederation(): Promise<void> {
-		await Settings.updateValueById('Federation_Matrix_enabled', false);
+		(await Settings.updateValueById('Federation_Matrix_enabled', false)).modifiedCount &&
+			void notifyOnSettingChangedById('Federation_Matrix_enabled');
 	}
 
 	public isFederationEnabled(): boolean {
