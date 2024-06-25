@@ -21,7 +21,7 @@ export class OmnichannelContacts {
 	}
 
 	get inputSearch(): Locator {
-		return this.page.locator('input[placeholder="Search"]');
+		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	findRowByName(contactName: string) {
