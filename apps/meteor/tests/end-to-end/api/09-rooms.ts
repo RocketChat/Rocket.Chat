@@ -2860,9 +2860,9 @@ describe('[Rooms]', () => {
 		});
 	});
 	describe('/rooms.isMember', () => {
-		let testChannel;
-		let testGroup;
-		let testDM;
+		let testChannel: IRoom;
+		let testGroup: IRoom;
+		let testDM: IRoom;
 
 		const fakeRoomId = `room.test.${Date.now()}-${Math.random()}`;
 		const fakeUserId = `user.test.${Date.now()}-${Math.random()}`;
@@ -2870,11 +2870,11 @@ describe('[Rooms]', () => {
 		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
 		const testGroupName = `group.test.${Date.now()}-${Math.random()}`;
 
-		let testUser1;
-		let testUser2;
-		let testUserNonMember;
-		let testUser1Credentials;
-		let testUserNonMemberCredentials;
+		let testUser1: TestUser<IUser>;
+		let testUser2: TestUser<IUser>;
+		let testUserNonMember: TestUser<IUser>;
+		let testUser1Credentials: Credentials;
+		let testUserNonMemberCredentials: Credentials;
 
 		before(async () => {
 			testUser1 = await createUser();
