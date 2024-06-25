@@ -698,7 +698,7 @@ API.v1.addRoute(
 
 			if (await canAccessRoomAsync(room, { _id: this.user._id })) {
 				return API.v1.success({
-					exists: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0,
+					isMember: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0,
 				});
 			}
 			return API.v1.unauthorized();

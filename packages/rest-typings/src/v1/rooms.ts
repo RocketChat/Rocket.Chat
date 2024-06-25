@@ -682,7 +682,7 @@ export type RoomsEndpoints = {
 	};
 
 	'/v1/rooms.isMember': {
-		GET: (params: RoomsIsMemberProps) => { exists: boolean };
+		GET: (params: RoomsIsMemberProps) => { isMember: boolean };
 	};
 
 	'/v1/rooms.muteUser': {
