@@ -1,5 +1,20 @@
-import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatVisitors, Users, LivechatRooms, LivechatCustomField, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
+import type {
+	ILivechatContact,
+	ILivechatContactChannel,
+	ILivechatCustomField,
+	ILivechatVisitor,
+	IOmnichannelRoom,
+} from '@rocket.chat/core-typings';
+import {
+	LivechatContacts,
+	LivechatVisitors,
+	Users,
+	LivechatRooms,
+	LivechatCustomField,
+	LivechatInquiry,
+	Rooms,
+	Subscriptions,
+} from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
@@ -21,6 +36,94 @@ type RegisterContactProps = {
 		username: string;
 	};
 };
+
+type CreateContactParams = {
+	name: string;
+	emails: string[];
+	phones: string[];
+	unknown: boolean;
+	customFields?: Record<string, string | unknown>;
+	contactManager?: string;
+	channels?: ILivechatContactChannel[];
+};
+
+export async function createContact(params: CreateContactParams): Promise<string> {
+	const { name, emails, phones, customFields = {}, contactManager, channels, unknown } = params;
+
+	if (contactManager) {
+		const contactManagerUser = await Users.findOneById(contactManager);
+		if (!contactManagerUser) {
+			throw new Meteor.Error('error-contact-manager-not-found', `No user found with id ${contactManager}`);
+		}
+		if (!contactManagerUser.roles || !Array.isArray(contactManagerUser.roles) || !contactManagerUser.roles.includes('livechat-agent')) {
+			throw new Meteor.Error('error-invalid-contact-manager', 'The contact manager must have the role "livechat-agent"');
+		}
+	}
+
+	await validateCustomFields(customFields);
+
+	const { insertedId } = await LivechatContacts.insertOne({
+		name,
+		emails,
+		phones,
+		contactManager,
+		channels,
+		customFields,
+		unknown,
+	});
+
+	return insertedId;
+}
+
+export async function getContact(contactId: string): Promise<ILivechatContact> {
+	const contact = await LivechatContacts.findOneById(contactId);
+
+	if (!contact) {
+		throw new Meteor.Error('error-contact-not-found', `No contact found with id ${contactId}`);
+	}
+
+	return contact;
+}
+
+async function validateCustomFields(customFields: Record<string, string | unknown>) {
+	const allowedCustomFields = LivechatCustomField.findByScope<
+		Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required' | 'visibility'>
+	>(
+		'visitor',
+		{
+			projection: { _id: 1, label: 1, regexp: 1, required: 1 },
+		},
+		false,
+	);
+
+	const livechatData: Record<string, string> = {};
+
+	for await (const cf of allowedCustomFields) {
+		if (!customFields.hasOwnProperty(cf._id)) {
+			if (cf.required) {
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+			}
+			continue;
+		}
+		const cfValue: string = trim(customFields[cf._id]);
+
+		if (!cfValue || typeof cfValue !== 'string') {
+			if (cf.required) {
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+			}
+			continue;
+		}
+
+		if (cf.regexp) {
+			const regex = new RegExp(cf.regexp);
+			if (!regex.test(cfValue)) {
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+			}
+		}
+
+		livechatData[cf._id] = cfValue;
+	}
+}
 
 export const Contacts = {
 	async registerContact({

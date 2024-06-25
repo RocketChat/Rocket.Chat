@@ -22,6 +22,7 @@ import './Integrations';
 import './Invites';
 import './LivechatAgentActivity';
 import './LivechatBusinessHours';
+import './LivechatContacts';
 import './LivechatCustomField';
 import './LivechatDepartment';
 import './LivechatDepartmentAgents';

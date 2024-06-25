@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
-import { Contacts } from '../../lib/Contacts';
+import { createContact, getContact } from '../../lib/Contacts';
 
 API.v1.addRoute(
 	'omnichannel/contact',
@@ -12,28 +12,24 @@ API.v1.addRoute(
 	{
 		async post() {
 			check(this.bodyParams, {
-				_id: Match.Maybe(String),
-				token: String,
 				name: String,
-				email: Match.Maybe(String),
-				phone: Match.Maybe(String),
-				username: Match.Maybe(String),
+				emails: [String],
+				phones: [String],
 				customFields: Match.Maybe(Object),
-				contactManager: Match.Maybe({
-					username: String,
-				}),
+				contactManager: Match.Maybe(String),
 			});
 
-			const contact = await Contacts.registerContact(this.bodyParams);
+			const contactId = await createContact({ ...this.bodyParams, unknown: false });
 
-			return API.v1.success({ contact });
+			return API.v1.success({ contactId });
 		},
+
 		async get() {
 			check(this.queryParams, {
 				contactId: String,
 			});
 
-			const contact = await LivechatVisitors.findOneEnabledById(this.queryParams.contactId);
+			const contact = await getContact(this.queryParams.contactId);
 
 			return API.v1.success({ contact });
 		},

@@ -12,6 +12,7 @@ import { EmailInboxRaw } from '../../../server/models/raw/EmailInbox';
 import { InstanceStatusRaw } from '../../../server/models/raw/InstanceStatus';
 import { IntegrationHistoryRaw } from '../../../server/models/raw/IntegrationHistory';
 import { IntegrationsRaw } from '../../../server/models/raw/Integrations';
+import { LivechatContactsRaw } from '../../../server/models/raw/LivechatContacts';
 import { LivechatDepartmentAgentsRaw } from '../../../server/models/raw/LivechatDepartmentAgents';
 import { LivechatInquiryRaw } from '../../../server/models/raw/LivechatInquiry';
 import { LivechatRoomsRaw } from '../../../server/models/raw/LivechatRooms';
@@ -62,5 +63,6 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
 	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
+	registerModel('ILivechatContactsModel', () => new LivechatContactsRaw(db));
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
 }

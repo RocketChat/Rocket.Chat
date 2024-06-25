@@ -27,6 +27,7 @@ import type {
 	ReportWithUnmatchingElements,
 	SMSProviderResponse,
 	ILivechatTriggerActionResponse,
+	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
@@ -1155,57 +1156,35 @@ const CreateOrUpdateLivechatSlaPropsSchema = {
 export const isCreateOrUpdateLivechatSlaProps = ajv.compile<CreateOrUpdateLivechatSlaProps>(CreateOrUpdateLivechatSlaPropsSchema);
 
 type POSTOmnichannelContactProps = {
-	_id?: string;
-	token: string;
 	name: string;
-	username?: string;
-	email?: string;
-	phone?: string;
+	emails: string[];
+	phones: string[];
 	customFields?: Record<string, unknown>;
-	contactManager?: {
-		username: string;
-	};
+	contactManager?: string;
 };
 
 const POSTOmnichannelContactSchema = {
 	type: 'object',
 	properties: {
-		_id: {
-			type: 'string',
-			nullable: true,
-		},
-		token: {
-			type: 'string',
-		},
 		name: {
 			type: 'string',
 		},
-		username: {
-			type: 'string',
+		emails: {
+			type: 'array',
 		},
-		email: {
-			type: 'string',
-			nullable: true,
-		},
-		phone: {
-			type: 'string',
-			nullable: true,
+		phones: {
+			type: 'array',
 		},
 		customFields: {
 			type: 'object',
 			nullable: true,
 		},
 		contactManager: {
-			type: 'object',
+			type: 'string',
 			nullable: true,
-			properties: {
-				username: {
-					type: 'string',
-				},
-			},
 		},
 	},
-	required: ['token', 'name', 'username'],
+	required: ['name', 'emails', 'phones'],
 	additionalProperties: false,
 };
 
@@ -3637,9 +3616,9 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETLivechatVisitorsSearch) => PaginatedResult<{ visitors: (ILivechatVisitor & { fname?: string })[] }>;
 	};
 	'/v1/omnichannel/contact': {
-		POST: (params: POSTOmnichannelContactProps) => { contact: string };
+		POST: (params: POSTOmnichannelContactProps) => { contactId: string };
 
-		GET: (params: GETOmnichannelContactProps) => { contact: ILivechatVisitor | null };
+		GET: (params: GETOmnichannelContactProps) => { contact: ILivechatContact | null };
 	};
 
 	'/v1/omnichannel/contact.search': {
