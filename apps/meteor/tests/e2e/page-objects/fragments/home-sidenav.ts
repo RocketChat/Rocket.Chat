@@ -112,7 +112,7 @@ export class HomeSidenav {
 
 	async logout(): Promise<void> {
 		await this.userProfileMenu.click();
-		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
+		await this.navbarSettingsGroup.getByRole('menuitemcheckbox', { name: 'Logout' }).click();
 	}
 
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {

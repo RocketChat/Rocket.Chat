@@ -43,9 +43,13 @@ export class FederationSidenav {
 		return this.sidebarSearchSection.getByRole('searchbox');
 	}
 
+	get navbarSettingsGroup() {
+		return this.page.getByRole('navigation', { name: 'header' }).getByRole('group', { name: 'Workspace and user settings' });
+	}
+
 	async logout(): Promise<void> {
 		await this.page.getByRole('button', { name: 'User menu' }).click();
-		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
+		await this.navbarSettingsGroup.getByRole('menuitemcheckbox', { name: 'Logout' }).click();
 	}
 
 	async inviteUserToChannel(username: string) {
@@ -65,8 +69,6 @@ export class FederationSidenav {
 	}
 
 	async openNewByLabel(text: string): Promise<void> {
-		// await this.page.locator('[data-qa="sidebar-create"]').click();
-		// await this.page.locator(`li.rcx-option >> text="${text}"`).click();
 		await this.sidebarSearchSection.getByRole('button', { name: 'Create new', exact: true }).click();
 		await this.sidebarSearchSection.getByRole('menuitem', { name: text, exact: true }).click();
 	}
