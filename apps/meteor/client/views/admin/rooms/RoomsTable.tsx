@@ -123,7 +123,6 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 			)}
 		</>
 	);
-	console.log(data);
 
 	return (
 		<>
