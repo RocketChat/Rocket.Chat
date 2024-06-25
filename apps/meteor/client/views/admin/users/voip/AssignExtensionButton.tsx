@@ -13,7 +13,7 @@ const AssignExtensionButton: FC<{ username: string }> = ({ username }) => {
 
 	const handleAssociation = useMutableCallback((e) => {
 		e.stopPropagation();
-		setModal(<AssignExtensionModal existingUser={username} closeModal={(): void => setModal()}/>);
+		setModal(<AssignExtensionModal existingUser={username} closeModal={(): void => setModal()} />);
 	});
 
 	return (

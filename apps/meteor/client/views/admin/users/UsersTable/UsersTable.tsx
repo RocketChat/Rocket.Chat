@@ -42,7 +42,7 @@ const UsersTable = ({
 	const t = useTranslation();
 	const router = useRouter();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
-	const isVoIPEnabled = useSetting<boolean>('VoIP_TeamCollab_Enabled');
+	const isVoIPEnabled = useSetting<boolean>('VoIP_TeamCollab_Enabled') || false;
 
 	const { data, isLoading, isError, isSuccess } = filteredUsersQueryResult;
 

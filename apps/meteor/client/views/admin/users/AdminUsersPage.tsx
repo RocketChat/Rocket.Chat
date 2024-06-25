@@ -30,7 +30,7 @@ export type UsersFilters = {
 	text: string;
 };
 
-export type UsersTableSortingOptions = 'name' | 'username' | 'emails.address' | 'status';
+export type UsersTableSortingOptions = 'name' | 'username' | 'emails.address' | 'status' | 'freeSwitchExtension';
 
 const AdminUsersPage = (): ReactElement => {
 	const t = useTranslation();
@@ -47,7 +47,7 @@ const AdminUsersPage = (): ReactElement => {
 	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
 
 	const paginationData = usePagination();
-	const sortData = useSort<'name' | 'username' | 'emails.address' | 'status'>('name');
+	const sortData = useSort<'name' | 'username' | 'emails.address' | 'status' | 'freeSwitchExtension'>('name');
 
 	const [tab, setTab] = useState<IAdminUserTabs>('all');
 	const [userFilters, setUserFilters] = useState<UsersFilters>({ text: '' });
