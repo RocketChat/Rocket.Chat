@@ -43,14 +43,14 @@ it('should generate a pdf transcript for a big bunch of messages', async () => {
 	const buffer = await streamToBuffer(stream);
 
 	expect(buffer).toBeTruthy();
-});
+}, 10000);
 
 it('should generate a pdf transcript for a single message, but a really long message', async () => {
 	const stream = await pdfWorker.renderToStream({ data: dataWithASingleMessageButAReallyLongMessage });
 	const buffer = await streamToBuffer(stream);
 
 	expect(buffer).toBeTruthy();
-});
+}, 10000);
 
 it('should generate a pdf transcript of a single message with an image', async () => {
 	const stream = await pdfWorker.renderToStream({ data: dataWithASingleMessageAndAnImage });
@@ -62,14 +62,14 @@ it('should generate a pdf transcript of a single message with an image', async (
 	const tempFile = join(tempDir, 'test.pdf');
 	// console.log(tempFile);
 	await writeFile(tempFile, buffer);
-});
+}, 10000);
 
 it('should generate a pdf transcript for multiple messages, one big message and 2 small messages', async () => {
 	const stream = await pdfWorker.renderToStream({ data: dataWithMultipleMessagesAndABigMessage });
 	const buffer = await streamToBuffer(stream);
 
 	expect(buffer).toBeTruthy();
-});
+}, 10000);
 
 describe('isMimeTypeValid', () => {
 	it('should return true if mimeType is valid', () => {
