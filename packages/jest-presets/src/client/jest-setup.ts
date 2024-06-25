@@ -30,6 +30,14 @@ globalThis.ResizeObserver = jest.fn().mockImplementation(() => ({
 	disconnect: jest.fn(),
 }));
 
+Object.defineProperty(global.navigator, 'serviceWorker', {
+	value: {
+		register: jest.fn(),
+		addEventListener: jest.fn(),
+		removeEventListener: jest.fn(),
+	},
+});
+
 globalThis.IntersectionObserver = class IntersectionObserver {
 	root = null;
 

@@ -5,12 +5,6 @@ import React from 'react';
 import { TIMEUNIT } from '../../../../lib/convertTimeUnit';
 import { default as TimespanSettingInput, getHighestTimeUnit } from './TimespanSettingInput';
 
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-	observe: jest.fn(),
-	unobserve: jest.fn(),
-	disconnect: jest.fn(),
-}));
-
 describe('getHighestTimeUnit function', () => {
 	it('should return minutes if milliseconds cannot be evenly divided into hours or days', () => {
 		expect(getHighestTimeUnit(900000)).toBe(TIMEUNIT.minutes); // 15 min
@@ -40,7 +34,7 @@ describe('TimespanSettingInput component', () => {
 		jest.clearAllMocks();
 	});
 
-	it('should call onChangeValue with the correct value when inputting a value and changing time unit', () => {
+	it('should call onChangeValue with the correct value when inputting a value and changing time unit', async () => {
 		render(
 			<TimespanSettingInput
 				disabled={false}
@@ -52,16 +46,17 @@ describe('TimespanSettingInput component', () => {
 				placeholder='Enter timespan'
 				onChangeValue={onChangeValueMock}
 			/>,
+			{ legacyRoot: true },
 		);
 
 		const numberInput = screen.getByRole('spinbutton');
-		userEvent.clear(numberInput); // Change value to 2
-		userEvent.type(numberInput, '2');
+		await userEvent.clear(numberInput); // Change value to 2
+		await userEvent.type(numberInput, '2');
 
 		expect(onChangeValueMock).toHaveBeenCalledWith(2 * 24 * 60 * 60 * 1000); // 2 days in milliseconds
 	});
 
-	it('should update value to minutes when changing time unit to minutes', () => {
+	it('should update value to minutes when changing time unit to minutes', async () => {
 		render(
 			<TimespanSettingInput
 				disabled={false}
@@ -73,19 +68,20 @@ describe('TimespanSettingInput component', () => {
 				placeholder='Enter timespan'
 				onChangeValue={onChangeValueMock}
 			/>,
+			{ legacyRoot: true },
 		);
 
 		const selectInput = screen.getByRole('button', { name: 'hours' });
-		userEvent.click(selectInput);
+		await userEvent.click(selectInput);
 		const minutesOption = screen.getByRole('option', { name: 'minutes' });
-		userEvent.click(minutesOption);
+		await userEvent.click(minutesOption);
 
 		expect(onChangeValueMock).toHaveBeenCalledWith(60000); // 1 min in milliseconds
 
 		expect(screen.getByDisplayValue('1')).toBeTruthy();
 	});
 
-	it('should update value to hours when changing time unit to hours', () => {
+	it('should update value to hours when changing time unit to hours', async () => {
 		render(
 			<TimespanSettingInput
 				disabled={false}
@@ -97,19 +93,20 @@ describe('TimespanSettingInput component', () => {
 				placeholder='Enter timespan'
 				onChangeValue={onChangeValueMock}
 			/>,
+			{ legacyRoot: true },
 		);
 
 		const selectInput = screen.getByRole('button', { name: 'days' });
-		userEvent.click(selectInput);
+		await userEvent.click(selectInput);
 		const hoursOption = screen.getByRole('option', { name: 'hours' });
-		userEvent.click(hoursOption);
+		await userEvent.click(hoursOption);
 
 		expect(onChangeValueMock).toHaveBeenCalledWith(3600000); // 1 hour in milliseconds
 
 		expect(screen.getByDisplayValue('1')).toBeTruthy();
 	});
 
-	it('should update value to days when changing time unit to days', () => {
+	it('should update value to days when changing time unit to days', async () => {
 		render(
 			<TimespanSettingInput
 				disabled={false}
@@ -121,19 +118,20 @@ describe('TimespanSettingInput component', () => {
 				placeholder='Enter timespan'
 				onChangeValue={onChangeValueMock}
 			/>,
+			{ legacyRoot: true },
 		);
 
 		const selectInput = screen.getByRole('button', { name: 'hours' });
-		userEvent.click(selectInput);
+		await userEvent.click(selectInput);
 		const daysOption = screen.getByRole('option', { name: 'days' });
-		userEvent.click(daysOption);
+		await userEvent.click(daysOption);
 
 		expect(onChangeValueMock).toHaveBeenCalledWith(1036800000); // 12 days in milliseconds
 
 		expect(screen.getByDisplayValue('12')).toBeTruthy();
 	});
 
-	it('should call onResetButtonClick when reset button is clicked', () => {
+	it('should call onResetButtonClick when reset button is clicked', async () => {
 		render(
 			<TimespanSettingInput
 				disabled={false}
@@ -146,10 +144,11 @@ describe('TimespanSettingInput component', () => {
 				hasResetButton
 				onResetButtonClick={onResetButtonClickMock}
 			/>,
+			{ legacyRoot: true },
 		);
 
 		const resetButton = screen.getByTitle('Reset');
-		userEvent.click(resetButton);
+		await userEvent.click(resetButton);
 
 		expect(onResetButtonClickMock).toHaveBeenCalled();
 		expect(screen.getByDisplayValue('30')).toBeTruthy();
