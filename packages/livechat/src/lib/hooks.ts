@@ -137,7 +137,6 @@ const api = {
 
 	setDepartment: async (value: string) => {
 		const {
-			user,
 			config: { departments = [] },
 			defaultAgent,
 		} = store.state;
@@ -151,10 +150,6 @@ const api = {
 		}
 
 		updateIframeData({ defaultDepartment: department });
-
-		if (!user) {
-			return;
-		}
 
 		if (defaultAgent && defaultAgent.department !== department) {
 			store.setState({ defaultAgent: undefined });
