@@ -70,7 +70,7 @@ export class FederationSidenav {
 
 	async openNewByLabel(text: string): Promise<void> {
 		await this.sidebarSearchSection.getByRole('button', { name: 'Create new', exact: true }).click();
-		await this.sidebarSearchSection.getByRole('menuitem', { name: text, exact: true }).click();
+		await this.sidebarSearchSection.getByRole('menu').getByRole('menuitem', { name: text, exact: true }).click();
 	}
 
 	async openChat(name: string): Promise<void> {
