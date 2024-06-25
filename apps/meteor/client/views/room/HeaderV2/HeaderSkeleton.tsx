@@ -6,14 +6,11 @@ const HeaderSkeleton = () => {
 	return (
 		<Header>
 			<HeaderAvatar>
-				<Skeleton variant='rect' width={36} height={36} />
+				<Skeleton variant='rect' width={28} height={28} />
 			</HeaderAvatar>
 			<HeaderContent>
 				<HeaderContentRow>
-					<Skeleton width='10%' />
-				</HeaderContentRow>
-				<HeaderContentRow>
-					<Skeleton width='30%' />
+					<Skeleton width='25%' />
 				</HeaderContentRow>
 			</HeaderContent>
 		</Header>

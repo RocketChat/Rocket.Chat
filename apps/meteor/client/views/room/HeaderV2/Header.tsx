@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isDirectMessageRoom, isVoipRoom } from '@rocket.chat/core-typings';
+import { isVoipRoom } from '@rocket.chat/core-typings';
 import { HeaderToolbar } from '@rocket.chat/ui-client';
 import { useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -10,7 +10,6 @@ import SidebarToggler from '../../../components/SidebarToggler';
 const OmnichannelRoomHeader = lazy(() => import('./Omnichannel/OmnichannelRoomHeader'));
 const VoipRoomHeader = lazy(() => import('./Omnichannel/VoipRoomHeader'));
 const RoomHeaderE2EESetup = lazy(() => import('./RoomHeaderE2EESetup'));
-const DirectRoomHeader = lazy(() => import('./DirectRoomHeader'));
 const RoomHeader = lazy(() => import('./RoomHeader'));
 
 type HeaderProps<T> = {
@@ -47,14 +46,10 @@ const Header = ({ room }: HeaderProps<IRoom>): ReactElement | null => {
 	}
 
 	if (shouldDisplayE2EESetup) {
-		return <RoomHeaderE2EESetup room={room} topic={room.topic} slots={slots} />;
+		return <RoomHeaderE2EESetup room={room} slots={slots} />;
 	}
 
-	if (isDirectMessageRoom(room) && (room.uids?.length ?? 0) < 3) {
-		return <DirectRoomHeader slots={slots} room={room} />;
-	}
-
-	return <RoomHeader room={room} topic={room.topic} slots={slots} />;
+	return <RoomHeader slots={slots} room={room} />;
 };
 
 export default memo(Header);

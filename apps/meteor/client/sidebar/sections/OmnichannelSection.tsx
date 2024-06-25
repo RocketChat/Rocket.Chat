@@ -1,5 +1,6 @@
-import { Sidebar } from '@rocket.chat/fuselage';
+import { Sidebar, SidebarDivider, SidebarSection } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useLayout, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
@@ -39,25 +40,51 @@ const OmnichannelSection = () => {
 		<>
 			{isWorkspaceOverMacLimit && <OverMacLimitSection />}
 
-			<Sidebar.TopBar.Section aria-label={t('Omnichannel_actions')} className='omnichannel-sidebar'>
-				<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
-				<SidebarHeaderToolbar>
-					{showOmnichannelQueueLink && (
-						<Sidebar.TopBar.Action icon='queue' data-tooltip={t('Queue')} onClick={(): void => handleRoute('queue')} />
-					)}
-					{isCallEnabled && <OmnichannelCallToggle />}
-					<OmnichannelLivechatToggle />
-					{hasPermissionToSeeContactCenter && (
-						<Sidebar.TopBar.Action
-							data-tooltip={t('Contact_Center')}
-							aria-label={t('Contact_Center')}
-							icon='address-book'
-							onClick={(): void => handleRoute('directory')}
-						/>
-					)}
-					{isCallReady && <OmniChannelCallDialPad />}
-				</SidebarHeaderToolbar>
-			</Sidebar.TopBar.Section>
+			<FeaturePreview feature='newNavigation'>
+				<FeaturePreviewOff>
+					<Sidebar.TopBar.Section aria-label={t('Omnichannel_actions')} className='omnichannel-sidebar'>
+						<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
+						<SidebarHeaderToolbar>
+							{showOmnichannelQueueLink && (
+								<Sidebar.TopBar.Action icon='queue' data-tooltip={t('Queue')} onClick={(): void => handleRoute('queue')} />
+							)}
+							{isCallEnabled && <OmnichannelCallToggle />}
+							<OmnichannelLivechatToggle />
+							{hasPermissionToSeeContactCenter && (
+								<Sidebar.TopBar.Action
+									data-tooltip={t('Contact_Center')}
+									aria-label={t('Contact_Center')}
+									icon='address-book'
+									onClick={(): void => handleRoute('directory')}
+								/>
+							)}
+							{isCallReady && <OmniChannelCallDialPad />}
+						</SidebarHeaderToolbar>
+					</Sidebar.TopBar.Section>
+				</FeaturePreviewOff>
+				<FeaturePreviewOn>
+					<SidebarSection aria-label={t('Omnichannel_actions')}>
+						<Sidebar.TopBar.Title>{t('Omnichannel')}</Sidebar.TopBar.Title>
+						<SidebarHeaderToolbar>
+							{showOmnichannelQueueLink && (
+								<Sidebar.TopBar.Action icon='queue' data-tooltip={t('Queue')} onClick={(): void => handleRoute('queue')} />
+							)}
+							{isCallEnabled && <OmnichannelCallToggle />}
+							<OmnichannelLivechatToggle />
+							{hasPermissionToSeeContactCenter && (
+								<Sidebar.TopBar.Action
+									data-tooltip={t('Contact_Center')}
+									aria-label={t('Contact_Center')}
+									icon='address-book'
+									onClick={(): void => handleRoute('directory')}
+								/>
+							)}
+							{isCallReady && <OmniChannelCallDialPad />}
+						</SidebarHeaderToolbar>
+					</SidebarSection>
+					<SidebarDivider />
+				</FeaturePreviewOn>
+			</FeaturePreview>
 		</>
 	);
 };
