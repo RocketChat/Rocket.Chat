@@ -72,7 +72,7 @@ type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'depa
 	id?: string;
 	connectionData?: any;
 	email?: string;
-	phone?: string;
+	phone?: { number: string };
 };
 
 type GenericCloseRoomParams = {
@@ -665,7 +665,7 @@ class LivechatClass {
 		const visitorDataToUpdate: Partial<ILivechatVisitor> & { userAgent?: string; ip?: string; host?: string } = {
 			token,
 			status,
-			...(phone ? { phone: [{ phoneNumber: phone }] } : {}),
+			...(phone?.number ? { phone: [{ phoneNumber: phone.number }] } : {}),
 			...(name ? { name } : {}),
 		};
 
@@ -693,7 +693,7 @@ class LivechatClass {
 		if (livechatVisitor) {
 			Livechat.logger.debug('Found matching user by token');
 			visitorDataToUpdate._id = livechatVisitor._id;
-		} else if (phone && (existingUser = await LivechatVisitors.findOneVisitorByPhone(phone))) {
+		} else if (phone?.number && (existingUser = await LivechatVisitors.findOneVisitorByPhone(phone.number))) {
 			Livechat.logger.debug('Found matching user by phone number');
 			visitorDataToUpdate._id = existingUser._id;
 			// Don't change token when matching by phone number, use current visitor token
