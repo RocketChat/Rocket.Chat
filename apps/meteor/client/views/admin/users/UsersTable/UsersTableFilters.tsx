@@ -58,7 +58,7 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 	);
 
 	const breakpoints = useBreakpoints();
-	const fixFiltersSize = breakpoints.includes('lg') ? { maxWidth: 'x200', minWidth: 'x200' } : null;
+	const fixFiltersSize = breakpoints.includes('lg') ? { maxWidth: 'x224', minWidth: 'x224' } : null;
 
 	return (
 		<FilterByText shouldAutoFocus placeholder={t('Search_Users')} onChange={handleSearchTextChange}>

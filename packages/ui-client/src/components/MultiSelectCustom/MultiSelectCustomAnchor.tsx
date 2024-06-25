@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Icon, Palette } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
@@ -27,7 +27,6 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 
 	return (
 		<Box
-			is='button'
 			ref={ref}
 			role='button'
 			tabIndex={0}
@@ -35,13 +34,8 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 			justifyContent='space-between'
 			alignItems='center'
 			h='x40'
-			className={['rcx-input-box__wrapper', customStyle].filter(Boolean)}
-			w='full'
-			pb={10}
-			pi={16}
-			color={isDirty ? Palette.text['font-default'].toString() : Palette.text['font-annotation'].toString()}
-			rcx-input-box
 			{...props}
+			className={['rcx-input-box__wrapper', customStyle].filter(Boolean)}
 		>
 			{isDirty ? `${t(selectedOptionsTitle)} (${selectedOptionsCount})` : t(defaultTitle)}
 			<Icon name={collapsed ? 'chevron-up' : 'chevron-down'} fontSize='x20' color='hint' />

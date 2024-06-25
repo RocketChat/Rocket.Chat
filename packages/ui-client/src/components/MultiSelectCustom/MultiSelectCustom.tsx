@@ -1,4 +1,4 @@
-import { Button } from '@rocket.chat/fuselage';
+import { Box, Button } from '@rocket.chat/fuselage';
 import { useOutsideClick, useToggle } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, FormEvent, ReactElement, RefObject } from 'react';
@@ -93,7 +93,7 @@ export const MultiSelectCustom = ({
 	const count = dropdownOptions.filter((option) => option.checked).length;
 
 	return (
-		<>
+		<Box display='flex' position='relative'>
 			<MultiSelectCustomAnchor
 				ref={reference}
 				collapsed={collapsed}
@@ -106,10 +106,10 @@ export const MultiSelectCustom = ({
 				{...props}
 			/>
 			{collapsed && (
-				<MultiSelectCustomListWrapper ref={reference}>
+				<MultiSelectCustomListWrapper ref={target}>
 					<MultiSelectCustomList options={dropdownOptions} onSelected={onSelect} searchBarText={searchBarText} />
 				</MultiSelectCustomListWrapper>
 			)}
-		</>
+		</Box>
 	);
 };
