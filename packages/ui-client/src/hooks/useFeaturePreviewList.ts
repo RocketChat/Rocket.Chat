@@ -58,7 +58,7 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		description: 'New_navigation_description',
 		group: 'Navigation',
 		value: false,
-		enabled: false,
+		enabled: true,
 	},
 ];
 
