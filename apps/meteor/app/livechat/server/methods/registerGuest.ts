@@ -93,7 +93,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		return {
-			userId: livechatVisitor?._id.toString() ?? '',
+			userId: livechatVisitor?._id ?? '',
 			visitor,
 		};
 	},
