@@ -3,7 +3,6 @@ import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it } from 'mocha';
 import moment from 'moment';
-import { C } from 'sip.js/lib/core';
 import { type Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -17,7 +16,6 @@ import {
 	startANewLivechatRoomAndTakeIt,
 	closeOmnichannelRoom,
 } from '../../../data/livechat/rooms';
-import { getRandomVisitorToken } from '../../../data/livechat/users';
 import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
 import { updatePermission, updateSetting, removePermissionFromAllRoles, restorePermissionToRoles } from '../../../data/permissions.helper';
 // import { adminUsername } from '../../../data/user';
@@ -1045,7 +1043,7 @@ describe('LIVECHAT - visitors', function () {
 			expect(res.body.visitors[0]).to.have.property('visitorEmails');
 		});
 	});
-	describe.only('omnichannel/contact', () => {
+	describe('omnichannel/contact', () => {
 		it('should fail if user doesnt have view-l-room permission', async () => {
 			await removePermissionFromAllRoles('view-l-room');
 			const res = await request.get(api(`omnichannel/contact?contactId=123`)).set(credentials).send();
