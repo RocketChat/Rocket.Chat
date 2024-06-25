@@ -1,9 +1,9 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { HeaderState } from '@rocket.chat/ui-client';
 import { useSetting, useMethod, useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
+import { HeaderState } from '../../../../components/Header';
 import { useUserIsSubscribed } from '../../contexts/RoomContext';
 
 const Favorite = ({ room: { _id, f: favorite = false, t: type, name } }: { room: IRoom & { f?: ISubscription['f'] } }) => {
