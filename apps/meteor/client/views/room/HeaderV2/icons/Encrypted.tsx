@@ -1,10 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors';
-import { HeaderState } from '@rocket.chat/ui-client';
 import { useSetting, usePermission, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
+import { HeaderState } from '../../../../components/Header';
 import { dispatchToastMessage } from '../../../../lib/toast';
 
 const Encrypted = ({ room }: { room: IRoom }) => {

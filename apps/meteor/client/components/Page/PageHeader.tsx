@@ -1,9 +1,10 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import { HeaderToolbar, useDocumentTitle } from '@rocket.chat/ui-client';
+import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, ComponentProps, ReactNode } from 'react';
 import React, { useContext } from 'react';
 
+import { HeaderToolbar } from '../Header';
 import SidebarToggler from '../SidebarToggler';
 import PageContext from './PageContext';
 
