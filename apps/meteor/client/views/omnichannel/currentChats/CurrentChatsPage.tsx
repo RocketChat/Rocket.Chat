@@ -1,11 +1,12 @@
 import { Callout, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
-import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
 import moment from 'moment';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useCallback, useMemo, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
 
 import GenericNoResults from '../../../components/GenericNoResults';
 import {
@@ -127,7 +128,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 	);
 	const [customFields, setCustomFields] = useState<{ [key: string]: string }>();
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
@@ -297,6 +298,15 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 			<Page>
 				<PageHeader title={t('Current_Chats')} />
 				<PageContent>
+					<Callout type='warning' title={t('This_page_will_be_deprecated_soon')}>
+						<Trans i18nKey='Manage_conversations_in_the_contact_center'>
+							Manage conversations in the
+							<a target='_blank' href='https://go.rocket.chat/i/omnichannel-docs'>
+								contact center
+							</a>
+							.
+						</Trans>
+					</Callout>
 					{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && (
 						<FilterByText
 							setFilter={onFilter as ComponentProps<typeof FilterByText>['setFilter']}
