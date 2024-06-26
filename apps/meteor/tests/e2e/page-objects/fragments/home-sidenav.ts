@@ -38,7 +38,7 @@ export class HomeSidenav {
 	}
 
 	get userProfileMenu(): Locator {
-		return this.page.getByRole('button', { name: 'User menu' });
+		return this.page.getByRole('button', { name: 'User menu', exact: true });
 	}
 
 	get sidebarChannelsList(): Locator {
@@ -50,7 +50,7 @@ export class HomeSidenav {
 	}
 
 	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
-		await this.sidebarToolbar.getByRole('button', { name: 'Display' }).click();
+		await this.sidebarToolbar.getByRole('button', { name: 'Display', exact: true }).click();
 		await this.sidebarToolbar.getByRole('menuitemcheckbox', { name: mode }).click();
 		await this.sidebarToolbar.click();
 	}

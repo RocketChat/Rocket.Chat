@@ -32,7 +32,7 @@ test.describe.serial('channel-management', () => {
 		await page.keyboard.press('ArrowRight');
 		await page.keyboard.press('ArrowRight');
 
-		await expect(poHomeChannel.roomHeaderToolbar.getByRole('button', { name: 'Threads' })).toBeFocused();
+		await expect(poHomeChannel.roomHeaderToolbar.getByRole('button', { name: 'Threads', exact: true })).toBeFocused();
 	});
 
 	test('should move the focus away from toolbar using tab key', async ({ page }) => {

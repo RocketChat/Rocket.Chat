@@ -6,7 +6,7 @@ const MultiSelectCustomListWrapper = forwardRef<Element, ComponentProps<typeof B
 	ref,
 ) {
 	return (
-		<Box ref={ref} zIndex='2' w='full' position='absolute' mbs={40} pbs={4}>
+		<Box ref={ref} zIndex={99} w='full' position='absolute' mbs={40} pbs={4}>
 			{children}
 		</Box>
 	);

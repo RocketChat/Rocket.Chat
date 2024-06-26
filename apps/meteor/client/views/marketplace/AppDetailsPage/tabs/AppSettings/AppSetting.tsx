@@ -81,6 +81,7 @@ const AppSetting = ({ id, type, i18nLabel, i18nDescription, values, value, packa
 			control={control}
 			render={({ field: { onChange, value } }) => (
 				<MemoizedSetting
+					packageValue={packageValue}
 					type={type}
 					label={label}
 					hint={hint}

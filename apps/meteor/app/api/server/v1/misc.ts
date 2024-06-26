@@ -24,6 +24,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { getLogs } from '../../../../server/stream/stdout';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { passwordPolicy } from '../../../lib/server';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
@@ -687,27 +688,49 @@ API.v1.addRoute(
 				setDeploymentAs: String,
 			});
 
+			const settingsIds: string[] = [];
+
 			if (this.bodyParams.setDeploymentAs === 'new-workspace') {
-				await Promise.all([
-					Settings.resetValueById('uniqueID', process.env.DEPLOYMENT_ID || uuidv4()),
-					// Settings.resetValueById('Cloud_Url'),
-					Settings.resetValueById('Cloud_Service_Agree_PrivacyTerms'),
-					Settings.resetValueById('Cloud_Workspace_Id'),
-					Settings.resetValueById('Cloud_Workspace_Name'),
-					Settings.resetValueById('Cloud_Workspace_Client_Id'),
-					Settings.resetValueById('Cloud_Workspace_Client_Secret'),
-					Settings.resetValueById('Cloud_Workspace_Client_Secret_Expires_At'),
-					Settings.resetValueById('Cloud_Workspace_Registration_Client_Uri'),
-					Settings.resetValueById('Cloud_Workspace_PublicKey'),
-					Settings.resetValueById('Cloud_Workspace_License'),
-					Settings.resetValueById('Cloud_Workspace_Had_Trial'),
-					Settings.resetValueById('Cloud_Workspace_Access_Token'),
-					Settings.resetValueById('Cloud_Workspace_Access_Token_Expires_At', new Date(0)),
-					Settings.resetValueById('Cloud_Workspace_Registration_State'),
-				]);
+				settingsIds.push(
+					'Cloud_Service_Agree_PrivacyTerms',
+					'Cloud_Workspace_Id',
+					'Cloud_Workspace_Name',
+					'Cloud_Workspace_Client_Id',
+					'Cloud_Workspace_Client_Secret',
+					'Cloud_Workspace_Client_Secret_Expires_At',
+					'Cloud_Workspace_Registration_Client_Uri',
+					'Cloud_Workspace_PublicKey',
+					'Cloud_Workspace_License',
+					'Cloud_Workspace_Had_Trial',
+					'Cloud_Workspace_Access_Token',
+					'uniqueID',
+					'Cloud_Workspace_Access_Token_Expires_At',
+				);
 			}
 
-			await Settings.updateValueById('Deployment_FingerPrint_Verified', true);
+			settingsIds.push('Deployment_FingerPrint_Verified');
+
+			const promises = settingsIds.map((settingId) => {
+				if (settingId === 'uniqueID') {
+					return Settings.resetValueById('uniqueID', process.env.DEPLOYMENT_ID || uuidv4());
+				}
+
+				if (settingId === 'Cloud_Workspace_Access_Token_Expires_At') {
+					return Settings.resetValueById('Cloud_Workspace_Access_Token_Expires_At', new Date(0));
+				}
+
+				if (settingId === 'Deployment_FingerPrint_Verified') {
+					return Settings.updateValueById('Deployment_FingerPrint_Verified', true);
+				}
+
+				return Settings.resetValueById(settingId);
+			});
+
+			(await Promise.all(promises)).forEach((value, index) => {
+				if (value?.modifiedCount) {
+					void notifyOnSettingChangedById(settingsIds[index]);
+				}
+			});
 
 			return API.v1.success({});
 		},
