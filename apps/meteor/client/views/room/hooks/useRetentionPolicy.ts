@@ -1,13 +1,16 @@
 import type { IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 
+import { TIMEUNIT, isValidTimespan, timeUnitToMs } from '../../../lib/convertTimeUnit';
+
 const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>
-	'retention' in room && room.retention !== undefined;
+	'retention' in room && room.retention !== undefined && 'overrideGlobal' in room.retention && isValidTimespan(room.retention.maxAge);
 
 type RetentionPolicySettings = {
 	enabled: boolean;
 	filesOnly: boolean;
 	doNotPrunePinned: boolean;
+	ignoreThreads: boolean;
 	appliesToChannels: boolean;
 	maxAgeChannels: number;
 	appliesToGroups: boolean;
@@ -15,8 +18,6 @@ type RetentionPolicySettings = {
 	appliesToDMs: boolean;
 	maxAgeDMs: number;
 };
-
-export const getMaxAgeInMS = (maxAge: number) => maxAge * 24 * 60 * 60 * 1000;
 
 const isActive = (room: IRoom, { enabled, appliesToChannels, appliesToGroups, appliesToDMs }: RetentionPolicySettings): boolean => {
 	if (!enabled) {
@@ -55,9 +56,17 @@ const extractExcludePinned = (room: IRoom, { doNotPrunePinned }: RetentionPolicy
 	return doNotPrunePinned;
 };
 
+const extractIgnoreThreads = (room: IRoom, { ignoreThreads }: RetentionPolicySettings): boolean => {
+	if (hasRetentionPolicy(room) && room.retention.overrideGlobal) {
+		return room.retention.ignoreThreads;
+	}
+
+	return ignoreThreads;
+};
+
 const getMaxAge = (room: IRoom, { maxAgeChannels, maxAgeGroups, maxAgeDMs }: RetentionPolicySettings): number => {
 	if (hasRetentionPolicy(room) && room.retention.overrideGlobal) {
-		return room.retention.maxAge;
+		return timeUnitToMs(TIMEUNIT.days, room.retention.maxAge);
 	}
 
 	if (room.t === 'c') {
@@ -81,6 +90,7 @@ export const useRetentionPolicy = (
 			isActive: boolean;
 			filesOnly: boolean;
 			excludePinned: boolean;
+			ignoreThreads: boolean;
 			maxAge: number;
 	  }
 	| undefined => {
@@ -88,12 +98,13 @@ export const useRetentionPolicy = (
 		enabled: useSetting('RetentionPolicy_Enabled') as boolean,
 		filesOnly: useSetting('RetentionPolicy_FilesOnly') as boolean,
 		doNotPrunePinned: useSetting('RetentionPolicy_DoNotPrunePinned') as boolean,
+		ignoreThreads: useSetting('RetentionPolicy_DoNotPruneThreads') as boolean,
 		appliesToChannels: useSetting('RetentionPolicy_AppliesToChannels') as boolean,
-		maxAgeChannels: useSetting('RetentionPolicy_MaxAge_Channels') as number,
+		maxAgeChannels: useSetting('RetentionPolicy_TTL_Channels') as number,
 		appliesToGroups: useSetting('RetentionPolicy_AppliesToGroups') as boolean,
-		maxAgeGroups: useSetting('RetentionPolicy_MaxAge_Groups') as number,
+		maxAgeGroups: useSetting('RetentionPolicy_TTL_Groups') as number,
 		appliesToDMs: useSetting('RetentionPolicy_AppliesToDMs') as boolean,
-		maxAgeDMs: useSetting('RetentionPolicy_MaxAge_DMs') as number,
+		maxAgeDMs: useSetting('RetentionPolicy_TTL_DMs') as number,
 	} as const;
 
 	if (!room) {
@@ -105,6 +116,7 @@ export const useRetentionPolicy = (
 		isActive: isActive(room, settings),
 		filesOnly: extractFilesOnly(room, settings),
 		excludePinned: extractExcludePinned(room, settings),
+		ignoreThreads: extractIgnoreThreads(room, settings),
 		maxAge: getMaxAge(room, settings),
 	};
 };

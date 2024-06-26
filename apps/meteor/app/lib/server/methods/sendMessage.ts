@@ -82,7 +82,7 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 		const room = await canSendMessageAsync(rid, { uid, username: user.username, type: user.type });
 
 		if (room.encrypted && settings.get<boolean>('E2E_Enable') && !settings.get<boolean>('E2E_Allow_Unencrypted_Messages')) {
-			if (message.t !== 'e2e' || message.e2e !== 'pending') {
+			if (message.t !== 'e2e') {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed to send un-encrypted messages in an encrypted room', {
 					method: 'sendMessage',
 				});
