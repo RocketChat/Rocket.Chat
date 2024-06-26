@@ -98,7 +98,7 @@ export class HomeContent {
 		await this.page.locator('[data-qa-type="message"]').last().hover();
 		await this.page.locator('role=button[name="Forward message"]').click();
 
-		await this.page.getByRole('textbox', { name: 'Person or Channel' }).click();
+		await this.page.getByRole('textbox', { name: 'Person or Channel', exact: true }).click();
 		await this.page.keyboard.type(chatName);
 		await this.page.locator('#position-container').getByText(chatName).waitFor();
 		await this.page.locator('#position-container').getByText(chatName).click();
@@ -141,6 +141,10 @@ export class HomeContent {
 
 	get lastThreadMessageTextAttachmentEqualsText(): Locator {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
+	}
+
+	get mainThreadMessageText(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').first();
 	}
 
 	get lastThreadMessageText(): Locator {
@@ -188,7 +192,7 @@ export class HomeContent {
 	}
 
 	get btnMenuMoreActions() {
-		return this.page.getByRole('button', { name: 'More actions' });
+		return this.page.getByRole('button', { name: 'More actions', exact: true });
 	}
 
 	get userCard(): Locator {
@@ -232,7 +236,7 @@ export class HomeContent {
 	}
 
 	get imageGallery(): Locator {
-		return this.page.getByRole('dialog', { name: 'Image gallery' });
+		return this.page.getByRole('dialog', { name: 'Image gallery', exact: true });
 	}
 
 	get imageGalleryImage(): Locator {

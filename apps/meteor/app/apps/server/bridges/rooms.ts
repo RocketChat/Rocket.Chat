@@ -209,4 +209,12 @@ export class AppRoomBridge extends RoomBridge {
 		const userConverter = this.orch.getConverters().get('users');
 		return users.map((user: ICoreUser) => userConverter.convertToApp(user));
 	}
+
+	protected getMessages(
+		_roomId: string,
+		_options: { limit: number; skip?: number; sort?: Record<string, 1 | -1> },
+		_appId: string,
+	): Promise<IMessage[]> {
+		throw new Error('Method not implemented.');
+	}
 }
