@@ -73,7 +73,7 @@ const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
 		throw new Meteor.Error('error-invalid-visitor', 'Invalid visitor');
 	}
 
-	return LivechatVisitors.findOneEnabledById(livechatVisitor._id);
+	return livechatVisitor;
 };
 
 const normalizeLocationSharing = (payload: ServiceData) => {

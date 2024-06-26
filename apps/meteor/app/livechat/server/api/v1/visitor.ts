@@ -1,4 +1,4 @@
-import type { ILivechatCustomField, ILivechatVisitor, IRoom } from '@rocket.chat/core-typings';
+import type { ILivechatCustomField, IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -47,31 +47,28 @@ API.v1.addRoute('livechat/visitor', {
 			connectionData: normalizeHttpHeaderData(this.request.headers),
 		};
 
-		const livechatVisitor = await LivechatTyped.registerGuest(guest);
-		if (!livechatVisitor) {
+		const visitor = await LivechatTyped.registerGuest(guest);
+		if (!visitor) {
 			throw new Meteor.Error('error-livechat-visitor-registration', 'Error registering visitor', {
 				method: 'livechat/visitor',
 			});
 		}
 
-		let visitor: ILivechatVisitor | null = await VisitorsRaw.findOneEnabledById(livechatVisitor._id, {});
-		if (visitor) {
-			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
-			// If it's updating an existing visitor, it must also update the roomInfo
-			const rooms = await LivechatRooms.findOpenByVisitorToken(visitor?.token, {}, extraQuery).toArray();
-			await Promise.all(
-				rooms.map(
-					(room: IRoom) =>
-						visitor &&
-						LivechatTyped.saveRoomInfo(room, {
-							_id: visitor._id,
-							name: visitor.name,
-							phone: visitor.phone?.[0]?.phoneNumber,
-							livechatData: visitor.livechatData as { [k: string]: string },
-						}),
-				),
-			);
-		}
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		// If it's updating an existing visitor, it must also update the roomInfo
+		const rooms = await LivechatRooms.findOpenByVisitorToken(visitor?.token, {}, extraQuery).toArray();
+		await Promise.all(
+			rooms.map(
+				(room: IRoom) =>
+					visitor &&
+					LivechatTyped.saveRoomInfo(room, {
+						_id: visitor._id,
+						name: visitor.name,
+						phone: visitor.phone?.[0]?.phoneNumber,
+						livechatData: visitor.livechatData as { [k: string]: string },
+					}),
+			),
+		);
 
 		if (customFields && Array.isArray(customFields) && customFields.length > 0) {
 			const keys = customFields.map((field) => field.key);
@@ -101,7 +98,7 @@ API.v1.addRoute('livechat/visitor', {
 			if (processedKeys.length !== keys.length) {
 				LivechatTyped.logger.warn({
 					msg: 'Some custom fields were not processed',
-					visitorId: livechatVisitor._id,
+					visitorId: visitor._id,
 					missingKeys: keys.filter((key) => !processedKeys.includes(key)),
 				});
 			}
@@ -109,13 +106,13 @@ API.v1.addRoute('livechat/visitor', {
 			if (errors.length > 0) {
 				LivechatTyped.logger.error({
 					msg: 'Error updating custom fields',
-					visitorId: livechatVisitor._id,
+					visitorId: visitor._id,
 					errors,
 				});
 				throw new Error('error-updating-custom-fields');
 			}
 
-			visitor = await VisitorsRaw.findOneEnabledById(livechatVisitor._id);
+			return API.v1.success({ visitor: await VisitorsRaw.findOneEnabledById(visitor._id) });
 		}
 
 		if (!visitor) {

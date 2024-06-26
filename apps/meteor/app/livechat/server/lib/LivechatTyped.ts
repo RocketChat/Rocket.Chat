@@ -722,8 +722,6 @@ class LivechatClass {
 			}
 		}
 
-		Livechat.logger.debug(visitorDataToUpdate);
-
 		const upsertedLivechatVisitor = await LivechatVisitors.updateOneByIdOrToken(visitorDataToUpdate, {
 			upsert: true,
 			returnDocument: 'after',
@@ -733,8 +731,6 @@ class LivechatClass {
 			Livechat.logger.debug(`No visitor found after upsert`);
 			return null;
 		}
-
-		Livechat.logger.debug(`Visitor ${upsertedLivechatVisitor.value._id} created/updated`);
 
 		return upsertedLivechatVisitor.value;
 	}

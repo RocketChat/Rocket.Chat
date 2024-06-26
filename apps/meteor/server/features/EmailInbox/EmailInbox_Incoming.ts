@@ -51,14 +51,7 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 		throw new Error('Error getting guest');
 	}
 
-	const newGuest = await LivechatVisitors.findOneEnabledById(livechatVisitor._id);
-	logger.debug(`Guest ${livechatVisitor._id} for visitor ${email} created`);
-
-	if (newGuest) {
-		return newGuest;
-	}
-
-	throw new Error('Error getting guest');
+	return livechatVisitor;
 }
 
 async function uploadAttachment(attachmentParam: Attachment, rid: string, visitorToken: string): Promise<Partial<FileAttachment>> {
