@@ -344,7 +344,7 @@ test.describe('OC - Livechat API', () => {
 
 			await test.step('Expect registered guest to be in dep1', async () => {
 				await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
-				expect(poAuxContext.poHomeOmnichannel.content.channelHeader).toContainText(registerGuestVisitor.name);
+				await expect(poAuxContext.poHomeOmnichannel.content.channelHeader).toContainText(registerGuestVisitor.name);
 			});
 
 			const depId = departmentB._id;
@@ -361,7 +361,7 @@ test.describe('OC - Livechat API', () => {
 
 			await test.step('Expect registered guest to still be in dep1', async () => {
 				await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
-				expect(poAuxContext.poHomeOmnichannel.content.channelHeader).toContainText(registerGuestVisitor.name);
+				await expect(poAuxContext.poHomeOmnichannel.content.channelHeader).toContainText(registerGuestVisitor.name);
 			});
 		});
 
