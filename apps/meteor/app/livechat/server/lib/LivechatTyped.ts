@@ -688,6 +688,8 @@ class LivechatClass {
 
 		const livechatVisitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 
+		visitorDataToUpdate.token = livechatVisitor?.token || token;
+
 		let existingUser = null;
 
 		if (livechatVisitor) {
@@ -719,8 +721,6 @@ class LivechatClass {
 				}
 			}
 		}
-
-		visitorDataToUpdate.token = livechatVisitor?.token || token;
 
 		Livechat.logger.debug(visitorDataToUpdate);
 
