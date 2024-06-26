@@ -6,16 +6,16 @@ import type { ComponentMeta } from '@storybook/react';
 import { ComponentProps } from 'react';
 
 import {
-	Header,
-	HeaderAvatar,
-	HeaderContent,
-	HeaderContentRow,
-	HeaderIcon,
-	HeaderToolbar,
-	HeaderToolbarAction,
-	HeaderToolbarActionBadge,
-	HeaderTitle,
-	HeaderState,
+	HeaderV2 as Header,
+	HeaderV2Avatar as HeaderAvatar,
+	HeaderV2Content as HeaderContent,
+	HeaderV2ContentRow as HeaderContentRow,
+	HeaderV2Icon as HeaderIcon,
+	HeaderV2Toolbar as HeaderToolbar,
+	HeaderV2ToolbarAction as HeaderToolbarAction,
+	HeaderV2ToolbarActionBadge as HeaderToolbarActionBadge,
+	HeaderV2Title as HeaderTitle,
+	HeaderV2State as HeaderState,
 } from '.';
 import { RoomBanner } from '../RoomBanner';
 import { RoomBannerContent } from '../RoomBanner/RoomBannerContent';
