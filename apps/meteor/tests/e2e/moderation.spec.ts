@@ -1,3 +1,5 @@
+import { faker } from '@faker-js/faker';
+
 import { Users } from './fixtures/userStates';
 import { Moderation, HomeChannel } from './page-objects';
 import { createTargetChannel, deleteChannel } from './utils';
@@ -9,7 +11,7 @@ test.describe.serial('moderation-console', () => {
 	let poModeration: Moderation;
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
-	const singleMessage = 'Message to report';
+	const singleMessage = faker.lorem.text();
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
@@ -37,15 +39,38 @@ test.describe.serial('moderation-console', () => {
 		await deleteChannel(api, targetChannel);
 	});
 
-	test('should admin be able to see the reported messages', async ({ page }) => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.openLastMessageMenu();
-		await poModeration.reportMsgButton.click();
-		await poModeration.reportMessageReasonText.fill('Reason to report');
-		await poModeration.reportMessageReasonSubmit.click();
+	// test('should admin be able to see the reported messages', async ({ page }) => {
+	// 	await poHomeChannel.sidenav.openChat(targetChannel);
+	// 	await poHomeChannel.content.openLastMessageMenu();
+	// 	await poModeration.reportMsgButton.click();
+	// 	await poModeration.reportMessageReasonText.fill('Reason to report');
+	// 	await poModeration.reportMessageReasonSubmit.click();
 
-		await page.goto('/admin/moderation/messages');
-		await poModeration.findRowByName(targetChannel).click();
-		await expect(poModeration.findLastReportedMessage(singleMessage)).toBeVisible();
+	// 	await page.goto('/admin/moderation/messages');
+	// 	await poModeration.findRowByName(targetChannel).click();
+	// 	await expect(poModeration.findLastReportedMessage(singleMessage)).toBeVisible();
+	// });
+
+	test.describe('reported messages', () => {
+		test.beforeEach(async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.content.openLastMessageMenu();
+			await poModeration.reportMsgButton.click();
+			await poModeration.reportMessageReasonText.fill('Reason to report');
+			await poModeration.reportMessageReasonSubmit.click();
+		});
+
+		test('should admin be able to see the reported messages', async ({ page }) => {
+			await page.goto('/admin/moderation/messages');
+			await poModeration.findRowByName(targetChannel).click();
+			await expect(poModeration.findLastReportedMessage(singleMessage)).toBeVisible();
+		});
+
+		test('should admin be able to dismiss a report from a user', async ({ page }) => {
+			await page.goto('/admin/moderation/messages');
+			await poModeration.findRowByName(targetChannel).click();
+			await poModeration.findReportedMessage(singleMessage).hover();
+			await poModeration.findReportedMessage(singleMessage).locator(poModeration.dismissReportsButton).click();
+		});
 	});
 });

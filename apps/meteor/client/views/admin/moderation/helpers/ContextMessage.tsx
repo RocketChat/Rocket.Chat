@@ -1,6 +1,6 @@
 import type { IMessage, MessageReport } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
-import { Message, MessageName, MessageToolbarItem, MessageToolbarWrapper, MessageUsername } from '@rocket.chat/fuselage';
+import { Box, Message, MessageName, MessageToolbarItem, MessageToolbarWrapper, MessageUsername } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -48,7 +48,7 @@ const ContextMessage = ({
 	const displayName = useUserDisplayName({ name, username });
 
 	return (
-		<>
+		<Box data-qa-id='reported-message'>
 			<Message.Divider>{formatDate(message._updatedAt)}</Message.Divider>
 			<Message>
 				<Message.LeftContainer>
@@ -95,7 +95,7 @@ const ContextMessage = ({
 					</Message.Toolbar>
 				</MessageToolbarWrapper>
 			</Message>
-		</>
+		</Box>
 	);
 };
 
