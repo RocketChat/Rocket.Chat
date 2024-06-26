@@ -1,15 +1,15 @@
-import { ContextualbarV2Action, ContextualbarAction as ContextualbarActionComponent } from '@rocket.chat/fuselage';
+import { ContextualbarV2Actions, ContextualbarActions as ContextualbarActionsComponent } from '@rocket.chat/fuselage';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
 
-const ContextualbarAction = (props: ComponentProps<typeof ContextualbarActionComponent>) => (
+const ContextualbarAction = (props: ComponentProps<typeof ContextualbarActionsComponent>) => (
 	<FeaturePreview feature='newNavigation'>
 		<FeaturePreviewOff>
-			<ContextualbarActionComponent {...props} />
+			<ContextualbarActionsComponent {...props} />
 		</FeaturePreviewOff>
 		<FeaturePreviewOn>
-			<ContextualbarV2Action {...props} />
+			<ContextualbarV2Actions {...props} />
 		</FeaturePreviewOn>
 	</FeaturePreview>
 );
