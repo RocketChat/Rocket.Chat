@@ -1,5 +1,236 @@
 # @rocket.chat/core-services
 
+## 0.3.17
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.2
+  - @rocket.chat/rest-typings@6.9.2
+  - @rocket.chat/models@0.0.41
+  </details>
+
+## 0.3.16
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.1
+  - @rocket.chat/rest-typings@6.9.1
+  - @rocket.chat/models@0.0.40
+  </details>
+
+## 0.3.15
+
+### Patch Changes
+
+- ([#32311](https://github.com/RocketChat/Rocket.Chat/pull/32311)) Fixed multiple issues with PDF generation logic when a quoted message was too big to fit in one single page. This was causing an internal infinite loop within the library (as it tried to make it fit, failing and then trying to fit on next page where the same happened thus causing a loop).
+  The library was not able to break down some nested views and thus was trying to fit the whole quote on one single page. Logic was updated to allow wrapping of the contents when messages are quoted (so they can span multiple lines) and removed a bunch of unnecesary views from the code.
+- ([#32318](https://github.com/RocketChat/Rocket.Chat/pull/32318)) Fixed error handling for files bigger than NATS max allowed payload. This should prevent PDFs from erroring out when generating from rooms that contain heavy images.
+
+- <details><summary>Updated dependencies [ff4e396416, f83bd56cc5, ee5cdfc367, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/core-typings@6.9.0
+  - @rocket.chat/rest-typings@6.9.0
+  - @rocket.chat/ui-kit@0.34.0
+  - @rocket.chat/models@0.0.39
+  </details>
+
+## 0.3.15-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.2
+  - @rocket.chat/rest-typings@6.9.0-rc.2
+  - @rocket.chat/models@0.0.39-rc.2
+  </details>
+
+## 0.3.15-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.1
+  - @rocket.chat/rest-typings@6.9.0-rc.1
+  - @rocket.chat/models@0.0.39-rc.1
+  </details>
+
+## 0.3.15-rc.0
+
+### Patch Changes
+
+- ([#32311](https://github.com/RocketChat/Rocket.Chat/pull/32311)) Fixed multiple issues with PDF generation logic when a quoted message was too big to fit in one single page. This was causing an internal infinite loop within the library (as it tried to make it fit, failing and then trying to fit on next page where the same happened thus causing a loop).
+  The library was not able to break down some nested views and thus was trying to fit the whole quote on one single page. Logic was updated to allow wrapping of the contents when messages are quoted (so they can span multiple lines) and removed a bunch of unnecesary views from the code.
+- ([#32318](https://github.com/RocketChat/Rocket.Chat/pull/32318)) Fixed error handling for files bigger than NATS max allowed payload. This should prevent PDFs from erroring out when generating from rooms that contain heavy images.
+
+- <details><summary>Updated dependencies [ff4e396416, f83bd56cc5, ee5cdfc367, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.0
+  - @rocket.chat/rest-typings@6.9.0-rc.0
+  - @rocket.chat/ui-kit@0.34.0-rc.0
+  - @rocket.chat/models@0.0.39-rc.0
+  </details>
+
+## 0.3.14
+
+### Patch Changes
+
+- ([#32374](https://github.com/RocketChat/Rocket.Chat/pull/32374)) Fixed an issue with some apps that didn't implement executeViewCloseHandler. This causes opened modals to be open forever on UI (unless Esc was clicked). This is because when the UI attempts to close it, it calls the aforementioned handler, and since it didn't exist, apps engine errored out.
+
+  This returned an empty response to the UI, which ignored the response and continued to show the view.
+
+- ([#32230](https://github.com/RocketChat/Rocket.Chat/pull/32230)) Fixed a problem that caused OTR Session messages' to not being transmitted from one peer to another when running Rocket.Chat as microservices. This was caused by a legacy streamer that tried to use the websocket directly, which works on monolith but doesn't on microservices, cause these events are routed through DDP Streamer service.
+
+- <details><summary>Updated dependencies [845fd64f45, c47a8e3514, 9a6a7d0a40, 845fd64f45, b94ca7c30b, 9902554388, 4aba7c8a26]:</summary>
+
+  - @rocket.chat/rest-typings@6.8.0
+  - @rocket.chat/core-typings@6.8.0
+  - @rocket.chat/models@0.0.38
+  - @rocket.chat/message-parser@0.31.29
+  - @rocket.chat/ui-kit@0.33.0
+  </details>
+
+## 0.3.14-rc.2
+
+### Patch Changes
+
+- ([#32374](https://github.com/RocketChat/Rocket.Chat/pull/32374)) Fixed an issue with some apps that didn't implement executeViewCloseHandler. This causes opened modals to be open forever on UI (unless Esc was clicked). This is because when the UI attempts to close it, it calls the aforementioned handler, and since it didn't exist, apps engine errored out.
+
+  This returned an empty response to the UI, which ignored the response and continued to show the view.
+
+- <details><summary>Updated dependencies [b94ca7c30b]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.2
+  - @rocket.chat/rest-typings@6.8.0-rc.2
+  - @rocket.chat/models@0.0.38-rc.2
+  </details>
+
+## 0.3.14-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.1
+  - @rocket.chat/rest-typings@6.8.0-rc.1
+  - @rocket.chat/models@0.0.37-rc.1
+  </details>
+
+## 0.3.14-rc.0
+
+### Patch Changes
+
+- ([#32230](https://github.com/RocketChat/Rocket.Chat/pull/32230)) Fixed a problem that caused OTR Session messages' to not being transmitted from one peer to another when running Rocket.Chat as microservices. This was caused by a legacy streamer that tried to use the websocket directly, which works on monolith but doesn't on microservices, cause these events are routed through DDP Streamer service.
+
+- <details><summary>Updated dependencies [845fd64f45, c47a8e3514, 9a6a7d0a40, 845fd64f45, 9902554388, 4aba7c8a26]:</summary>
+
+  - @rocket.chat/rest-typings@6.8.0-rc.0
+  - @rocket.chat/core-typings@6.8.0-rc.0
+  - @rocket.chat/models@0.0.36-rc.0
+  - @rocket.chat/message-parser@0.31.29
+  - @rocket.chat/ui-kit@0.33.0
+
+## 0.3.13
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.2
+  - @rocket.chat/rest-typings@6.7.2
+  - @rocket.chat/models@0.0.37
+  </details>
+
+## 0.3.12
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.1
+  - @rocket.chat/rest-typings@6.7.1
+  - @rocket.chat/models@0.0.36
+  </details>
+
+## 0.3.11
+
+### Patch Changes
+
+- ([#31927](https://github.com/RocketChat/Rocket.Chat/pull/31927)) `stopped` lifecycle method was unexpectedly synchronous when using microservices, causing our code to create race conditions.
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, d1b1ffe9e5, b9e897a8f5, 5ad65ff3da, e203c40471]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0
+  - @rocket.chat/rest-typings@6.7.0
+  - @rocket.chat/message-parser@0.31.29
+  - @rocket.chat/models@0.0.35
+  - @rocket.chat/ui-kit@0.33.0
+  </details>
+
+## 0.3.11-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.4
+  - @rocket.chat/rest-typings@6.7.0-rc.4
+  - @rocket.chat/models@0.0.35-rc.4
+  </details>
+
+## 0.3.11-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.3
+  - @rocket.chat/rest-typings@6.7.0-rc.3
+  - @rocket.chat/models@0.0.35-rc.3
+  </details>
+
+## 0.3.11-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.2
+  - @rocket.chat/rest-typings@6.7.0-rc.2
+  - @rocket.chat/models@0.0.35-rc.2
+  </details>
+
+## 0.3.11-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.1
+  - @rocket.chat/rest-typings@6.7.0-rc.1
+  - @rocket.chat/models@0.0.35-rc.1
+  </details>
+
+## 0.3.11-rc.0
+
+### Patch Changes
+
+- ([#31927](https://github.com/RocketChat/Rocket.Chat/pull/31927)) `stopped` lifecycle method was unexpectedly synchronous when using microservices, causing our code to create race conditions.
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, d1b1ffe9e5, b9e897a8f5, 5ad65ff3da, e203c40471]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.0
+  - @rocket.chat/rest-typings@6.7.0-rc.0
+  - @rocket.chat/message-parser@0.31.29-rc.0
+  - @rocket.chat/models@0.0.35-rc.0
+  - @rocket.chat/ui-kit@0.33.0
+  </details>
+
 ## 0.3.10
 
 ### Patch Changes

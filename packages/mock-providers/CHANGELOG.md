@@ -1,5 +1,59 @@
 # @rocket.chat/mock-providers
 
+## 0.0.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ff4e396416, bc50dd54a2, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/i18n@0.4.0
+  </details>
+
+## 0.0.7-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ff4e396416, bc50dd54a2, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/i18n@0.4.0-rc.0
+  </details>
+
+## 0.0.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c47a8e3514, da45cb6998, 4aba7c8a26, c4e58afd8b, c9a92e6ea2]:</summary>
+
+  - @rocket.chat/i18n@0.3.0
+  </details>
+
+## 0.0.6-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c47a8e3514, da45cb6998, 4aba7c8a26, c4e58afd8b, c9a92e6ea2]:</summary>
+
+  - @rocket.chat/i18n@0.3.0-rc.0
+  </details>
+
+## 0.0.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [939a6fa35f]:</summary>
+
+  - @rocket.chat/i18n@0.2.0
+  </details>
+
+## 0.0.5-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [939a6fa35f]:</summary>
+
+  - @rocket.chat/i18n@0.2.0-rc.0
+  </details>
+
 ## 0.0.4
 
 ### Patch Changes

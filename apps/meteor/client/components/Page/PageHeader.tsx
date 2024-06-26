@@ -4,7 +4,7 @@ import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, ComponentProps, ReactNode } from 'react';
 import React, { useContext } from 'react';
 
-import BurgerMenu from '../BurgerMenu';
+import SidebarToggler from '../SidebarToggler';
 import PageContext from './PageContext';
 
 type PageHeaderProps = {
@@ -24,15 +24,23 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 		<Box
 			is='header'
 			borderBlockEndWidth='default'
-			minHeight='x64'
 			pb={8}
 			borderBlockEndColor={borderBlockEndColor ?? border ? 'extra-light' : 'transparent'}
 			{...props}
 		>
-			<Box height='100%' marginInline={24} display='flex' flexDirection='row' flexWrap='wrap' alignItems='center' color='default'>
+			<Box
+				height='100%'
+				marginInline={24}
+				minHeight='x64'
+				display='flex'
+				flexDirection='row'
+				flexWrap='wrap'
+				alignItems='center'
+				color='default'
+			>
 				{isMobile && (
 					<HeaderToolbar>
-						<BurgerMenu />
+						<SidebarToggler />
 					</HeaderToolbar>
 				)}
 				{onClickBack && <IconButton small mie={8} icon='arrow-back' onClick={onClickBack} title={t('Back')} />}

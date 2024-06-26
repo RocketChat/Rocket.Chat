@@ -123,12 +123,14 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 								{item.type === 'image' && <img src={item.value} alt={item._id} />}
 								{item.type === 'audio' && (
 									<audio controls>
+										<track kind='captions' />
 										<source src={item.value} />
 										Your browser does not support the audio element.
 									</audio>
 								)}
 								{item.type === 'video' && (
 									<video controls className='inline-video'>
+										<track kind='captions' />
 										<source src={item.value} />
 										Your browser does not support the video element.
 									</video>

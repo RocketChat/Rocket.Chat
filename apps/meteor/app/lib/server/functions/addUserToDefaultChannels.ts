@@ -4,6 +4,7 @@ import { Subscriptions } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
+import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getDefaultChannels } from './getDefaultChannels';
 
 export const addUserToDefaultChannels = async function (user: IUser, silenced?: boolean): Promise<void> {
@@ -23,6 +24,7 @@ export const addUserToDefaultChannels = async function (user: IUser, silenced?: 
 				groupMentions: 0,
 				...(room.favorite && { f: true }),
 				...autoTranslateConfig,
+				...getDefaultSubscriptionPref(user),
 			});
 
 			// Insert user joined message

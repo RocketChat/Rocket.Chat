@@ -85,6 +85,8 @@ export interface IBaseModel<
 
 	removeById(_id: T['_id']): Promise<DeleteResult>;
 
+	removeByIds(ids: T['_id'][]): Promise<DeleteResult>;
+
 	deleteOne(filter: Filter<T>, options?: DeleteOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteResult>;
 
 	deleteMany(filter: Filter<T>, options?: DeleteOptions): Promise<DeleteResult>;

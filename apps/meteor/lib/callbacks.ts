@@ -21,6 +21,7 @@ import type {
 	UserStatus,
 	ILivechatDepartment,
 	MessageMention,
+	OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
 import type { FilterOperators } from 'mongodb';
 
@@ -124,7 +125,7 @@ type ChainedCallbackSignatures = {
 
 	'livechat.onLoadConfigApi': (config: { room: IOmnichannelRoom }) => Record<string, unknown>;
 
-	'afterCreateUser': (user: IUser) => IUser;
+	'afterCreateUser': (user: AtLeast<IUser, '_id' | 'username' | 'roles'>) => IUser;
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
 	'livechat:afterOnHold': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
 	'livechat:afterOnHoldChatResumed': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
@@ -199,7 +200,15 @@ type ChainedCallbackSignatures = {
 			options: { forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any }; clientAction?: boolean };
 		},
 	) => Promise<(IOmnichannelRoom & { chatQueued: boolean }) | undefined>;
-	'livechat.beforeInquiry': (data: Pick<ILivechatInquiryRecord, 'source'>) => Pick<ILivechatInquiryRecord, 'source'>;
+	'livechat.beforeInquiry': (
+		data: Pick<ILivechatInquiryRecord, 'source'> & { sla?: string; priority?: string; [other: string]: unknown } & {
+			customFields?: Record<string, unknown>;
+			source?: OmnichannelSourceType;
+		},
+	) => Pick<ILivechatInquiryRecord, 'source'> & { sla?: string; priority?: string; [other: string]: unknown } & {
+		customFields?: Record<string, unknown>;
+		source?: OmnichannelSourceType;
+	};
 	'roomNameChanged': (room: IRoom) => void;
 	'roomTopicChanged': (room: IRoom) => void;
 	'roomAnnouncementChanged': (room: IRoom) => void;
@@ -223,7 +232,6 @@ export type Hook =
 	| 'beforeRemoveFromRoom'
 	| 'beforeValidateLogin'
 	| 'livechat.beforeForwardRoomToDepartment'
-	| 'livechat.beforeRoom'
 	| 'livechat.beforeRouteChat'
 	| 'livechat.chatQueued'
 	| 'livechat.checkAgentBeforeTakeInquiry'

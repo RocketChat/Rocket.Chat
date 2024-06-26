@@ -27,8 +27,8 @@ import type { ComponentProps, ReactElement } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
 import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescription';
 
@@ -66,7 +66,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const federationEnabled = useSetting<boolean>('Federation_Matrix_enabled') || false;
-	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms');
+	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 
 	const canCreateChannel = usePermission('create-c');
 	const canCreatePrivateChannel = usePermission('create-p');

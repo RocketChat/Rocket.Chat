@@ -29,6 +29,7 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 							isPromptButton(featuredFormatter) ? featuredFormatter.prompt(composer) : composer.wrapSelection(featuredFormatter.pattern)
 						}
 						icon={featuredFormatter.icon}
+						title={t(featuredFormatter.label)}
 						disabled={disabled}
 					/>
 				)}

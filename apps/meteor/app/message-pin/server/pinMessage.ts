@@ -12,6 +12,7 @@ import { broadcastMessageFromData } from '../../../server/modules/watchers/lib/m
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
+import { notifyOnRoomChangedById } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
 import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
@@ -116,6 +117,7 @@ Meteor.methods<ServerMethods>({
 		}
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
+			void notifyOnRoomChangedById(room._id);
 		}
 
 		const attachments: MessageAttachment[] = [];
@@ -131,7 +133,9 @@ Meteor.methods<ServerMethods>({
 		// App IPostMessagePinned event hook
 		await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
 
-		const msgId = await Message.saveSystemMessage('message_pinned', originalMessage.rid, '', me, {
+		const pinMessageType = originalMessage.t === 'e2e' ? 'message_pinned_e2e' : 'message_pinned';
+
+		const msgId = await Message.saveSystemMessage(pinMessageType, originalMessage.rid, '', me, {
 			attachments: [
 				{
 					text: originalMessage.msg,
@@ -213,6 +217,7 @@ Meteor.methods<ServerMethods>({
 
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
+			void notifyOnRoomChangedById(room._id);
 		}
 
 		// App IPostMessagePinned event hook

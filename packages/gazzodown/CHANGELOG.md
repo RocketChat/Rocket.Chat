@@ -1,5 +1,206 @@
 # @rocket.chat/gazzodown
 
+## 7.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.2
+  - @rocket.chat/ui-contexts@7.0.2
+  - @rocket.chat/ui-client@7.0.2
+  </details>
+
+## 7.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.1
+  - @rocket.chat/ui-contexts@7.0.1
+  - @rocket.chat/ui-client@7.0.1
+  </details>
+
+## 7.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ff4e396416, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/core-typings@6.9.0
+  - @rocket.chat/ui-contexts@7.0.0
+  - @rocket.chat/ui-client@7.0.0
+  </details>
+
+## 7.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.2
+  - @rocket.chat/ui-contexts@7.0.0-rc.2
+  - @rocket.chat/ui-client@7.0.0-rc.2
+  </details>
+
+## 7.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.1
+  - @rocket.chat/ui-contexts@7.0.0-rc.1
+  - @rocket.chat/ui-client@7.0.0-rc.1
+  </details>
+
+## 7.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ff4e396416, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.0
+  - @rocket.chat/ui-contexts@7.0.0-rc.0
+  - @rocket.chat/ui-client@7.0.0-rc.0
+  </details>
+
+## 6.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c47a8e3514, b94ca7c30b, 4aba7c8a26, c0d54d742a]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0
+  - @rocket.chat/ui-contexts@6.0.0
+  - @rocket.chat/message-parser@0.31.29
+  - @rocket.chat/ui-client@6.0.0
+  </details>
+
+## 6.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b94ca7c30b]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.2
+  - @rocket.chat/ui-contexts@6.0.0-rc.2
+  - @rocket.chat/ui-client@6.0.0-rc.2
+  </details>
+
+## 6.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.1
+  - @rocket.chat/ui-contexts@6.0.0-rc.1
+  - @rocket.chat/ui-client@6.0.0-rc.1
+  </details>
+
+## 6.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c47a8e3514, 4aba7c8a26, c0d54d742a]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.0
+  - @rocket.chat/ui-contexts@6.0.0-rc.0
+  - @rocket.chat/message-parser@0.31.29
+  - @rocket.chat/ui-client@6.0.0-rc.0
+
+## 5.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.2
+  - @rocket.chat/ui-contexts@5.0.2
+  - @rocket.chat/ui-client@5.0.2
+  </details>
+
+## 5.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.1
+  - @rocket.chat/ui-contexts@5.0.1
+  - @rocket.chat/ui-client@5.0.1
+  </details>
+
+## 5.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5, 5ad65ff3da]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0
+  - @rocket.chat/message-parser@0.31.29
+  - @rocket.chat/ui-contexts@5.0.0
+  - @rocket.chat/ui-client@5.0.0
+  </details>
+
+## 5.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.4
+  - @rocket.chat/ui-contexts@5.0.0-rc.4
+  - @rocket.chat/ui-client@5.0.0-rc.4
+  </details>
+
+## 5.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.3
+  - @rocket.chat/ui-contexts@5.0.0-rc.3
+  - @rocket.chat/ui-client@5.0.0-rc.3
+  </details>
+
+## 5.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.2
+  - @rocket.chat/ui-contexts@5.0.0-rc.2
+  - @rocket.chat/ui-client@5.0.0-rc.2
+  </details>
+
+## 5.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.1
+  - @rocket.chat/ui-contexts@5.0.0-rc.1
+  - @rocket.chat/ui-client@5.0.0-rc.1
+  </details>
+
+## 5.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5, 5ad65ff3da]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.0
+  - @rocket.chat/message-parser@0.31.29-rc.0
+  - @rocket.chat/ui-contexts@5.0.0-rc.0
+  - @rocket.chat/ui-client@5.0.0-rc.0
+  </details>
+
 ## 4.0.6
 
 ### Patch Changes

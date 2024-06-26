@@ -5,11 +5,11 @@ import {
 	useAllPermissions,
 	usePermission,
 	useSetModal,
-	useMethod,
 	useToastMessageDispatch,
 	useTranslation,
 	useUserRoom,
 	useUserSubscription,
+	useEndpoint,
 } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
@@ -62,7 +62,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 
 	const mutedMessage = isMuted ? 'User__username__unmuted_in_room__roomName__' : 'User__username__muted_in_room__roomName__';
 
-	const muteUser = useMethod(isMuted ? 'unmuteUserInRoom' : 'muteUserInRoom');
+	const muteUser = useEndpoint('POST', isMuted ? '/v1/rooms.unmuteUser' : '/v1/rooms.muteUser');
 
 	const muteUserOption = useMemo(() => {
 		const action = (): Promise<void> | void => {
@@ -72,7 +72,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 						throw new Error('User without username');
 					}
 
-					await muteUser({ rid, username: user.username });
+					await muteUser({ roomId: rid, username: user.username });
 
 					return dispatchToastMessage({
 						type: 'success',

@@ -6,7 +6,7 @@ type FilesMessage = Omit<IUpload, 'rid'> & Required<Pick<IUpload, 'rid'>>;
 
 export type ImagesListOptions = {
 	roomId: Required<IUpload>['rid'];
-	startingFromId: string;
+	startingFromId?: string;
 	count?: number;
 	offset?: number;
 };

@@ -92,6 +92,7 @@ export type MessageTypesValues =
 	| 'command'
 	| 'videoconf'
 	| 'message_pinned'
+	| 'message_pinned_e2e'
 	| 'new-moderator'
 	| 'moderator-removed'
 	| 'new-owner'
@@ -126,6 +127,8 @@ export type MessageMention = {
 	username?: string;
 	fname?: string; // incase of channel mentions
 };
+
+export interface IMessageCustomFields {}
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
@@ -218,6 +221,13 @@ export interface IMessage extends IRocketChatRecord {
 	priorityData?: {
 		definedBy: Pick<IUser, '_id' | 'username'>;
 		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>;
+	};
+
+	customFields?: IMessageCustomFields;
+
+	content?: {
+		algorithm: string; // 'rc.v1.aes-sha2'
+		ciphertext: string; // Encrypted subset JSON of IMessage
 	};
 }
 
@@ -355,6 +365,10 @@ export type IE2EEMessage = IMessage & {
 	e2e: 'pending' | 'done';
 };
 
+export type IE2EEPinnedMessage = IMessage & {
+	t: 'message_pinned_e2e';
+};
+
 export interface IOTRMessage extends IMessage {
 	t: 'otr';
 	otrAck?: string;
@@ -369,6 +383,7 @@ export type IVideoConfMessage = IMessage & {
 };
 
 export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
+export const isE2EEPinnedMessage = (message: IMessage): message is IE2EEPinnedMessage => message.t === 'message_pinned_e2e';
 export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr';
 export const isOTRAckMessage = (message: IMessage): message is IOTRAckMessage => message.t === 'otr-ack';
 export const isVideoConfMessage = (message: IMessage): message is IVideoConfMessage => message.t === 'videoconf';

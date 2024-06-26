@@ -1,5 +1,257 @@
 # Change Log
 
+## 7.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.2
+  - @rocket.chat/gazzodown@7.0.2
+  - @rocket.chat/ui-contexts@7.0.2
+  - @rocket.chat/ui-avatar@3.0.2
+  - @rocket.chat/ui-video-conf@7.0.2
+  </details>
+
+## 7.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.1
+  - @rocket.chat/gazzodown@7.0.1
+  - @rocket.chat/ui-contexts@7.0.1
+  - @rocket.chat/ui-avatar@3.0.1
+  - @rocket.chat/ui-video-conf@7.0.1
+  </details>
+
+## 7.0.0
+
+### Minor Changes
+
+- ([#31918](https://github.com/RocketChat/Rocket.Chat/pull/31918)) Introduced new elements for apps to select channels
+
+### Patch Changes
+
+- ([#32327](https://github.com/RocketChat/Rocket.Chat/pull/32327)) Fix translation param on video conf joined message
+
+- <details><summary>Updated dependencies [ff4e396416, ee5cdfc367, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/core-typings@6.9.0
+  - @rocket.chat/ui-kit@0.34.0
+  - @rocket.chat/gazzodown@7.0.0
+  - @rocket.chat/ui-contexts@7.0.0
+  - @rocket.chat/ui-avatar@3.0.0
+  - @rocket.chat/ui-video-conf@7.0.0
+  </details>
+
+## 7.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.2
+  - @rocket.chat/gazzodown@7.0.0-rc.2
+  - @rocket.chat/ui-contexts@7.0.0-rc.2
+  - @rocket.chat/ui-avatar@3.0.0-rc.2
+  - @rocket.chat/ui-video-conf@7.0.0-rc.2
+  </details>
+
+## 7.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.1
+  - @rocket.chat/gazzodown@7.0.0-rc.1
+  - @rocket.chat/ui-contexts@7.0.0-rc.1
+  - @rocket.chat/ui-avatar@3.0.0-rc.1
+  - @rocket.chat/ui-video-conf@7.0.0-rc.1
+  </details>
+
+## 7.0.0-rc.0
+
+### Minor Changes
+
+- ([#31918](https://github.com/RocketChat/Rocket.Chat/pull/31918)) Introduced new elements for apps to select channels
+
+### Patch Changes
+
+- ([#32327](https://github.com/RocketChat/Rocket.Chat/pull/32327)) Fix translation param on video conf joined message
+
+- <details><summary>Updated dependencies [ff4e396416, ee5cdfc367, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.0
+  - @rocket.chat/ui-kit@0.34.0-rc.0
+  - @rocket.chat/gazzodown@7.0.0-rc.0
+  - @rocket.chat/ui-contexts@7.0.0-rc.0
+  - @rocket.chat/ui-avatar@3.0.0-rc.0
+  - @rocket.chat/ui-video-conf@7.0.0-rc.0
+  </details>
+
+## 6.0.0
+
+### Patch Changes
+
+- ([#32374](https://github.com/RocketChat/Rocket.Chat/pull/32374)) Fixed an issue with some apps that didn't implement executeViewCloseHandler. This causes opened modals to be open forever on UI (unless Esc was clicked). This is because when the UI attempts to close it, it calls the aforementioned handler, and since it didn't exist, apps engine errored out.
+
+  This returned an empty response to the UI, which ignored the response and continued to show the view.
+
+- <details><summary>Updated dependencies [b7f5035442, c0d54d742a]:</summary>
+
+  - @rocket.chat/eslint-config@0.7.0
+  - @rocket.chat/ui-contexts@6.0.0
+  - @rocket.chat/gazzodown@6.0.0
+  - @rocket.chat/ui-kit@0.33.0
+  - @rocket.chat/ui-video-conf@6.0.0
+  - @rocket.chat/ui-avatar@2.0.0
+  </details>
+
+## 6.0.0-rc.2
+
+### Patch Changes
+
+- ([#32374](https://github.com/RocketChat/Rocket.Chat/pull/32374)) Fixed an issue with some apps that didn't implement executeViewCloseHandler. This causes opened modals to be open forever on UI (unless Esc was clicked). This is because when the UI attempts to close it, it calls the aforementioned handler, and since it didn't exist, apps engine errored out.
+
+  This returned an empty response to the UI, which ignored the response and continued to show the view.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@6.0.0-rc.2
+  - @rocket.chat/ui-contexts@6.0.0-rc.2
+  - @rocket.chat/ui-avatar@2.0.0-rc.2
+  - @rocket.chat/ui-video-conf@6.0.0-rc.2
+  </details>
+
+## 6.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@6.0.0-rc.1
+  - @rocket.chat/ui-contexts@6.0.0-rc.1
+  - @rocket.chat/ui-avatar@2.0.0-rc.1
+  - @rocket.chat/ui-video-conf@6.0.0-rc.1
+  </details>
+
+## 6.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b7f5035442, c0d54d742a]:</summary>
+
+  - @rocket.chat/eslint-config@0.7.0-rc.0
+  - @rocket.chat/ui-contexts@6.0.0-rc.0
+  - @rocket.chat/gazzodown@6.0.0-rc.0
+  - @rocket.chat/ui-kit@0.33.0
+  - @rocket.chat/ui-video-conf@6.0.0-rc.0
+  - @rocket.chat/ui-avatar@2.0.0-rc.0
+
+## 5.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/gazzodown@5.0.2
+  - @rocket.chat/ui-contexts@5.0.2
+  - @rocket.chat/ui-avatar@1.0.2
+  - @rocket.chat/ui-video-conf@5.0.2
+  </details>
+
+> > > > > > > origin/master
+
+## 5.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.1
+  - @rocket.chat/ui-contexts@5.0.1
+  - @rocket.chat/ui-avatar@1.0.1
+  - @rocket.chat/ui-video-conf@5.0.1
+  </details>
+
+## 5.0.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7ac473df7a]:</summary>
+
+  - @rocket.chat/eslint-config@0.6.2
+  - @rocket.chat/gazzodown@5.0.0
+  - @rocket.chat/ui-contexts@5.0.0
+  - @rocket.chat/ui-kit@0.33.0
+  - @rocket.chat/ui-video-conf@5.0.0
+  - @rocket.chat/ui-avatar@1.0.0
+  </details>
+
+## 5.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.0-rc.4
+  - @rocket.chat/ui-contexts@5.0.0-rc.4
+  - @rocket.chat/ui-avatar@1.0.0-rc.4
+  - @rocket.chat/ui-video-conf@5.0.0-rc.4
+  </details>
+
+## 5.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.0-rc.3
+  - @rocket.chat/ui-contexts@5.0.0-rc.3
+  - @rocket.chat/ui-avatar@1.0.0-rc.3
+  - @rocket.chat/ui-video-conf@5.0.0-rc.3
+  </details>
+
+## 5.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.0-rc.2
+  - @rocket.chat/ui-contexts@5.0.0-rc.2
+  - @rocket.chat/ui-avatar@1.0.0-rc.2
+  - @rocket.chat/ui-video-conf@5.0.0-rc.2
+  </details>
+
+## 5.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.0-rc.1
+  - @rocket.chat/ui-contexts@5.0.0-rc.1
+  - @rocket.chat/ui-avatar@1.0.0-rc.1
+  - @rocket.chat/ui-video-conf@5.0.0-rc.1
+  </details>
+
+## 5.0.0-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7ac473df7a]:</summary>
+
+  - @rocket.chat/eslint-config@0.6.2-rc.0
+  - @rocket.chat/gazzodown@5.0.0-rc.0
+  - @rocket.chat/ui-contexts@5.0.0-rc.0
+  - @rocket.chat/ui-kit@0.33.0
+  - @rocket.chat/ui-video-conf@5.0.0-rc.0
+  - @rocket.chat/ui-avatar@1.0.0-rc.0
+  </details>
+
 ## 4.0.6
 
 ### Patch Changes

@@ -4,6 +4,7 @@ import { isPOSTLivechatAppearanceParams } from '@rocket.chat/rest-typings';
 
 import { isTruthy } from '../../../../../lib/isTruthy';
 import { API } from '../../../../api/server';
+import { notifyOnSettingChangedById } from '../../../../lib/server/lib/notifyListener';
 import { findAppearance } from '../../../server/api/lib/appearance';
 
 API.v1.addRoute(
@@ -58,7 +59,7 @@ API.v1.addRoute(
 				throw new Error('invalid-setting');
 			}
 
-			const dbSettings = await Settings.findByIds(validSettingList, { projection: { _id: 1, value: 1, type: 1 } })
+			const dbSettings = await Settings.findByIds(validSettingList, { projection: { _id: 1, value: 1, type: 1, values: 1 } })
 				.map((dbSetting) => {
 					const setting = settings.find(({ _id }) => _id === dbSetting._id);
 					if (!setting || dbSetting.value === setting.value) {
@@ -89,11 +90,13 @@ API.v1.addRoute(
 				})
 				.toArray();
 
-			await Promise.all(
-				dbSettings.filter(isTruthy).map((setting) => {
-					return Settings.updateValueById(setting._id, setting.value);
-				}),
-			);
+			const eligibleSettings = dbSettings.filter(isTruthy);
+			const promises = eligibleSettings.map(({ _id, value }) => Settings.updateValueById(_id, value));
+			(await Promise.all(promises)).forEach((value, index) => {
+				if (value?.modifiedCount) {
+					void notifyOnSettingChangedById(eligibleSettings[index]._id);
+				}
+			});
 
 			return API.v1.success();
 		},
