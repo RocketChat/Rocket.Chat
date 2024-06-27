@@ -575,7 +575,7 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.createDiscussion': {
 		POST: (params: RoomsCreateDiscussionProps) => {
-			discussion: IRoom;
+			discussion: IRoom & { rid: IRoom['_id'] };
 		};
 	};
 

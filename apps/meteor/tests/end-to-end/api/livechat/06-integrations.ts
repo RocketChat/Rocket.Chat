@@ -6,9 +6,7 @@ import type { Response } from 'supertest';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
-describe('LIVECHAT - Integrations', function () {
-	this.retries(0);
-
+describe('LIVECHAT - Integrations', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {

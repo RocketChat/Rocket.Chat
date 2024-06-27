@@ -12,9 +12,7 @@ import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 import { updatePredictedVisitorAbandonment } from '/ee/app/livechat-enterprise/server/lib/Helper';
 
-(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Units', function () {
-	this.retries(0);
-
+(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Units', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
