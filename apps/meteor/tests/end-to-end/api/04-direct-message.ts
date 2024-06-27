@@ -9,19 +9,38 @@ import { deleteRoom } from '../../data/rooms.helper';
 import { testFileUploads } from '../../data/uploads.helper';
 import { password, adminUsername } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
-import { createUser, deleteUser, login } from '../../data/users.helper';
+import { createUser, deleteUser, login, setUserStatus } from '../../data/users.helper';
 
 describe('[Direct Messages]', () => {
+	let testDM: IRoom & { rid: IRoom['_id'] };
+	let user: TestUser<IUser>;
 	let directMessage: { _id: IRoom['_id'] };
 
 	before((done) => getCredentials(done));
+
+	before(async () => {
+		user = await createUser();
+		const cred = await login(user.username, password);
+		await setUserStatus(cred);
+		await request
+			.post(api('im.create'))
+			.set(credentials)
+			.send({
+				username: user.username,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				testDM = res.body.room;
+			});
+	});
 
 	before('/chat.postMessage', (done) => {
 		void request
 			.post(api('chat.postMessage'))
 			.set(credentials)
 			.send({
-				channel: 'rocket.cat',
+				roomId: testDM.rid,
 				text: 'This message was sent using the API',
 			})
 			.expect('Content-Type', 'application/json')
@@ -35,6 +54,8 @@ describe('[Direct Messages]', () => {
 			.end(done);
 	});
 
+	after(() => deleteUser(user));
+
 	describe('/im.setTopic', () => {
 		it('should set the topic of the DM with a string', (done) => {
 			void request
@@ -42,13 +63,13 @@ describe('[Direct Messages]', () => {
 				.set(credentials)
 				.send({
 					roomId: directMessage._id,
-					topic: 'a direct message with rocket.cat',
+					topic: `a direct message with ${user.username}`,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.nested.property('topic', 'a direct message with rocket.cat');
+					expect(res.body).to.have.nested.property('topic', `a direct message with ${user.username}`);
 				})
 				.end(done);
 		});
@@ -71,22 +92,8 @@ describe('[Direct Messages]', () => {
 	});
 
 	describe('Testing DM info', () => {
-		let testDM: IRoom;
 		let dmMessage: IMessage;
-		it('creating new DM...', (done) => {
-			void request
-				.post(api('im.create'))
-				.set(credentials)
-				.send({
-					username: 'rocket.cat',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					testDM = res.body.room;
-				})
-				.end(done);
-		});
+
 		it('sending a message...', (done) => {
 			void request
 				.post(api('chat.sendMessage'))
@@ -193,10 +200,10 @@ describe('[Direct Messages]', () => {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count', 1);
-				expect(res.body).to.have.property('total', 1);
+				expect(res.body).to.have.property('count');
+				expect(res.body).to.have.property('total');
 				expect(res.body).to.have.property('ims').and.to.be.an('array');
-				const im = res.body.ims[0];
+				const im = (res.body.ims as IRoom[]).find((dm) => dm._id === testDM._id);
 				expect(im).to.have.property('_id');
 				expect(im).to.have.property('t').and.to.be.eq('d');
 				expect(im).to.have.property('msgs').and.to.be.a('number');
@@ -217,10 +224,10 @@ describe('[Direct Messages]', () => {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count', 1);
-				expect(res.body).to.have.property('total', 1);
+				expect(res.body).to.have.property('count');
+				expect(res.body).to.have.property('total');
 				expect(res.body).to.have.property('ims').and.to.be.an('array');
-				const im = res.body.ims[0];
+				const im = (res.body.ims as IRoom[]).find((dm) => dm._id === testDM._id);
 				expect(im).to.have.property('_id');
 				expect(im).to.have.property('t').and.to.be.eq('d');
 				expect(im).to.have.property('msgs').and.to.be.a('number');
@@ -246,11 +253,11 @@ describe('[Direct Messages]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count', 1);
-					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('ims').and.to.be.an('array');
 
-					const im = res.body.ims[0];
+					const im = (res.body.ims as IRoom[]).find((dm) => dm._id === testDM._id) as IRoom;
 
 					expect(im).to.have.property('_id');
 					expect(im).to.have.property('t').and.to.be.eq('d');
@@ -276,10 +283,10 @@ describe('[Direct Messages]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count', 1);
-					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('ims').and.to.be.an('array');
-					const im = res.body.ims[0];
+					const im = (res.body.ims as IRoom[]).find((dm) => dm._id === testDM._id) as IRoom;
 					expect(im).to.have.property('_id');
 					expect(im).to.have.property('t').and.to.be.eq('d');
 					expect(im).to.have.property('msgs').and.to.be.a('number');
@@ -424,7 +431,7 @@ describe('[Direct Messages]', () => {
 			.set(credentials)
 			.send({
 				roomId: directMessage._id,
-				userId: 'rocket.cat',
+				userId: user._id,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
@@ -560,7 +567,7 @@ describe('[Direct Messages]', () => {
 				.get(api('im.members'))
 				.set(credentials)
 				.query({
-					username: 'rocket.cat',
+					username: user.username,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -791,7 +798,7 @@ describe('[Direct Messages]', () => {
 				.post(api('im.create'))
 				.set(credentials)
 				.send({
-					username: 'rocket.cat',
+					username: user.username,
 				})
 				.expect(200)
 				.expect('Content-Type', 'application/json')
@@ -806,7 +813,7 @@ describe('[Direct Messages]', () => {
 				.post(api('im.delete'))
 				.set(credentials)
 				.send({
-					username: 'rocket.cat',
+					username: user.username,
 				})
 				.expect(200)
 				.expect('Content-Type', 'application/json')

@@ -9,7 +9,7 @@ import { createVisitor } from './livechat/rooms';
 import { updateSetting } from './permissions.helper';
 import { createRoom, deleteRoom } from './rooms.helper';
 import { password } from './user';
-import { createUser, login } from './users.helper';
+import { createUser, login, deleteUser } from './users.helper';
 
 export async function testFileUploads(
 	filesEndpoint: 'channels.files' | 'groups.files' | 'im.files',
@@ -22,14 +22,16 @@ export async function testFileUploads(
 		p: 'group',
 		d: 'room',
 	};
+	let user: any;
 
 	before(async () => {
 		await Promise.all([updateSetting('VoIP_Enabled', true), updateSetting('Message_KeepHistory', true)]);
+		user = await createUser();
 
 		testRoom = (
 			await createRoom({
 				type: roomType,
-				...(roomType === 'd' ? { username: 'rocket.cat' } : { name: `channel-files-${Date.now()}` }),
+				...(roomType === 'd' ? { username: user.username } : { name: `channel-files-${Date.now()}` }),
 			} as any)
 		).body[propertyMap[roomType]];
 	});
@@ -39,6 +41,7 @@ export async function testFileUploads(
 			deleteRoom({ type: 'c' as const, roomId: testRoom._id }),
 			updateSetting('VoIP_Enabled', false),
 			updateSetting('Message_KeepHistory', false),
+			deleteUser(user),
 		]),
 	);
 

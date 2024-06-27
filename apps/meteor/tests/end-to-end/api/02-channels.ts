@@ -2189,21 +2189,21 @@ describe('[Channels]', () => {
 			]);
 		});
 
-		it('/channels.list', (done) => {
+		it('should return the last message user real name', (done) => {
 			void request
-				.get(api('channels.list'))
+				.get(api('channels.info'))
+				.query({
+					roomId: testChannel._id,
+				})
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('channels').and.to.be.an('array');
+					const { channel } = res.body;
 
-					const retChannel = (res.body.channels as IRoom[]).find(({ _id }) => _id === testChannel._id);
-
-					expect(retChannel).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
+					expect(channel._id).to.be.equal(testChannel._id);
+					expect(channel).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})
 				.end(done);
 		});

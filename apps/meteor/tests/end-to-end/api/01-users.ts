@@ -8,7 +8,7 @@ import { assert, expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
-import { getCredentials, api, request, credentials, apiEmail, apiUsername, log, wait, reservedWords } from '../../data/api-data';
+import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data';
 import { imgURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
@@ -1091,16 +1091,18 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
-		it.skip('should query all users in the system by name', (done) => {
+		it('should query all users in the system by name', (done) => {
 			// filtering user list
 			void request
 				.get(api('users.list'))
 				.set(credentials)
 				.query({
 					name: { $regex: 'g' },
+					sort: JSON.stringify({
+						createdAt: -1,
+					}),
 				})
 				.field('username', 1)
-				.expect(log)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
@@ -4146,6 +4148,7 @@ describe('[Users]', () => {
 		it('should list all users', async () => {
 			await request
 				.get(api('users.listByStatus'))
+				.query({ searchTerm: user.name })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -4165,7 +4168,7 @@ describe('[Users]', () => {
 			await request
 				.get(api('users.listByStatus'))
 				.set(credentials)
-				.query({ hasLoggedIn: true, status: 'active' })
+				.query({ hasLoggedIn: true, status: 'active', searchTerm: user.name })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
