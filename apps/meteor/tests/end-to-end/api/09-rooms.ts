@@ -1046,7 +1046,7 @@ describe('[Rooms]', () => {
 		];
 		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
 		const testGroupName = `group.test.${Date.now()}-${Math.random()}`;
-		let user;
+		let user: TestUser<IUser>;
 
 		before(async () => {
 			user = await createUser();
@@ -2000,7 +2000,7 @@ describe('[Rooms]', () => {
 	describe('update group dms name', () => {
 		let testUser: TestUser<IUser>;
 		let roomId: IRoom['_id'];
-		let testUser2;
+		let testUser2: TestUser<IUser>;
 
 		before(async () => {
 			testUser = await createUser();
@@ -2045,7 +2045,8 @@ describe('[Rooms]', () => {
 				.query({ roomId })
 				.send()
 				.expect((res) => {
-					const { subscription } = res.body;expect(subscription.name).to.equal(`changed.username.${testUser.username},${testUser2.username}`);
+					const { subscription } = res.body;
+					expect(subscription.name).to.equal(`changed.username.${testUser.username},${testUser2.username}`);
 				});
 		});
 

@@ -72,13 +72,13 @@ describe('[Subscriptions]', () => {
 		let testChannel: IRoom;
 		let testGroup: IRoom;
 		let testDM: IRoom;
-		let user;
+		let user: TestUser<IUser>;
 
 		before(async () => {
 			user = await createUser();
 			testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}` })).body.channel;
 			testGroup = (await createRoom({ type: 'p', name: `group.test.${Date.now()}` })).body.group;
-			testDM = (await createRoom({ type: 'd', username: user.username })).body.room;			
+			testDM = (await createRoom({ type: 'd', username: user.username })).body.room;
 		});
 
 		after(() =>

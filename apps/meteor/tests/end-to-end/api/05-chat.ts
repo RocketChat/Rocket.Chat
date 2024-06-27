@@ -2205,8 +2205,8 @@ describe('[Chat]', () => {
 	});
 
 	describe('[/chat.ignoreUser]', () => {
-		let user;
-		let testDM;
+		let user: IUser;
+		let testDM: IRoom & { rid: IRoom['_id'] };
 
 		before(async () => {
 			user = await createUser();

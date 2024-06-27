@@ -28,7 +28,12 @@ export async function testFileUploads(
 		await Promise.all([updateSetting('VoIP_Enabled', true), updateSetting('Message_KeepHistory', true)]);
 		user = await createUser();
 
-		testRoom = (await createRoom({ type: roomType, ...(roomType === 'd' ? { username: user.username } : { name: `channel-files-${Date.now()}` }) } as any)).body[propertyMap[roomType]];
+		testRoom = (
+			await createRoom({
+				type: roomType,
+				...(roomType === 'd' ? { username: user.username } : { name: `channel-files-${Date.now()}` }),
+			} as any)
+		).body[propertyMap[roomType]];
 	});
 
 	after(() =>

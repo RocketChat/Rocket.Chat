@@ -4167,7 +4167,8 @@ describe('[Users]', () => {
 			await login(user.username, password);
 			await request
 				.get(api('users.listByStatus'))
-				.set(credentials).query({ hasLoggedIn: true, status: 'active', searchTerm: user.name })
+				.set(credentials)
+				.query({ hasLoggedIn: true, status: 'active', searchTerm: user.name })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
