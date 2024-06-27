@@ -18,8 +18,8 @@ import RetentionPolicyCallout from '../../../../../components/InfoPanel/Retentio
 import MarkdownText from '../../../../../components/MarkdownText';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 import { useRoomActions } from '../hooks/useRoomActions';
-import RoomInfoActions from './RoomInfoActions';
 import { useSplitRoomActions } from '../hooks/useSplitRoomActions';
+import RoomInfoActions from './RoomInfoActions';
 
 type RoomInfoProps = {
 	room: IRoom;
