@@ -10,15 +10,14 @@ to: packages/<%= name %>/package.json
 		"@types/jest": "~29.5.3",
 		"eslint": "~8.45.0",
 		"jest": "~29.6.1",
-		"ts-jest": "~29.0.5",
 		"typescript": "~5.1.6"
 	},
 	"scripts": {
+		"build": "rm -rf dist && tsc",
+		"dev": "tsc --watch --preserveWatchOutput",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"test": "jest",
-		"build": "rm -rf dist && tsc -p tsconfig.json",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
+		"test": "jest"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

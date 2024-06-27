@@ -1,6 +1,5 @@
 import moment from 'moment-timezone';
 
-import '@testing-library/jest-dom';
 import { invalidData, validData, newDayData, sameDayData, translationsData } from '../templates/ChatTranscript/ChatTranscript.fixtures';
 import { ChatTranscript } from './ChatTranscript';
 

@@ -32,7 +32,7 @@ export class OmnichannelTranscript {
 		return this.page.locator('[placeholder="Search"]');
 	}
 
-	get firstRow(): Locator {
+	get firstCell(): Locator {
 		return this.page.locator('//tr[1]//td[1]');
 	}
 

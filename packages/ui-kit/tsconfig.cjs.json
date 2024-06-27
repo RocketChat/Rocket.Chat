@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+		"rootDir": "./src",
+    "outDir": "./dist/cjs/",
+    "module": "CommonJS",
+    "plugins": [{ "transform": "typia/lib/transform" }]
+  },
+	"include": ["./src/**/*"],
+	"exclude": ["./src/**/*.spec.ts"],
+}

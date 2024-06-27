@@ -69,13 +69,13 @@ const contextValue = {
 	getStream,
 };
 
-type ServerProviderProps = {
+type ServerProviderMockProps = {
 	callEndpoint?: ContextType<typeof ServerContext>['callEndpoint'];
 };
 
-const ServerProvider: FC<ServerProviderProps> = ({ children, callEndpoint }) => {
+const ServerProviderMock: FC<ServerProviderMockProps> = ({ children, callEndpoint }) => {
 	const value = useMemo(() => ({ ...contextValue, callEndpoint: callEndpoint ?? contextValue.callEndpoint }), [callEndpoint]);
 	return <ServerContext.Provider children={children} value={value} />;
 };
 
-export default ServerProvider;
+export default ServerProviderMock;

@@ -66,7 +66,10 @@ describe('UiKit ChannelsSelect Element', () => {
           context={BlockContext.FORM}
           surfaceRenderer={contextualBarParser}
         />
-      </MockedServerContext>
+      </MockedServerContext>,
+      {
+        legacyRoot: true,
+      }
     );
   });
 
