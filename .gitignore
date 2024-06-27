@@ -50,3 +50,5 @@ yarn-error.log*
 *.sublime-workspace
 
 **/.vim/
+
+.env
