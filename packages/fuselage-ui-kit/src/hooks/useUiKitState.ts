@@ -57,7 +57,11 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
   const { values, errors } = useContext(UiKitContext);
 
   const _value = getElementValueFromState(actionId, values, initialValue);
-  const error = errors?.[actionId];
+  const error = Array.isArray(errors)
+    ? errors.find((error) =>
+        Object.keys(error).find((key) => key === actionId)
+      )?.[actionId]
+    : errors?.[actionId];
 
   const [value, setValue] = useSafely(useState(_value));
   const [loading, setLoading] = useSafely(useState(false));

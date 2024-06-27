@@ -20,7 +20,7 @@ type UiKitModalProps = {
 const UiKitModal = ({ initialView }: UiKitModalProps) => {
 	const actionManager = useUiKitActionManager();
 	const { view, errors, values, updateValues, state } = useUiKitView(initialView);
-	const contextValue = useModalContextValue({ view, values, updateValues });
+	const contextValue = useModalContextValue({ view, errors, values, updateValues });
 
 	const handleSubmit = useEffectEvent((e: FormEvent) => {
 		preventSyntheticEvent(e);

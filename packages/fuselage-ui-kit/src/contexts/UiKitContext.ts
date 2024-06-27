@@ -26,7 +26,7 @@ type UiKitContextValue = {
     event: Parameters<React.MouseEventHandler<HTMLElement>>[0]
   ) => Promise<void> | void;
   appId?: string;
-  errors?: Record<string, string>;
+  errors?: { [field: string]: string }[] | { [field: string]: string };
   values: Record<ActionId, { value: unknown } | undefined>;
   viewId?: string;
   rid?: string;
