@@ -1080,7 +1080,7 @@ API.v1.addRoute(
 			);
 			const { status, filter } = this.queryParams;
 
-			const { cursor, totalCount } = await findUsersOfRoom({
+			const { cursor, totalCount } = findUsersOfRoom({
 				rid: findResult._id,
 				...(status && { status: { $in: status } }),
 				skip,
