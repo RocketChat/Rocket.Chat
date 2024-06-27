@@ -45,6 +45,8 @@ export const sendNotification = async ({
 	room,
 	mentionIds,
 	disableAllMessageNotifications,
+	reaction,
+	reactionWithTranslation,
 }: {
 	subscription: SubscriptionAggregation;
 	sender: Pick<IUser, '_id' | 'name' | 'username'>;
@@ -57,6 +59,8 @@ export const sendNotification = async ({
 	room: IRoom;
 	mentionIds: string[];
 	disableAllMessageNotifications: boolean;
+	reaction: string;
+	reactionWithTranslation: string;
 }) => {
 	if (settings.get<boolean>('Troubleshoot_Disable_Notifications') === true) {
 		return;
@@ -125,6 +129,7 @@ export const sendNotification = async ({
 			hasReplyToThread,
 			roomType,
 			isThread,
+			reaction,
 		})
 	) {
 		await notifyDesktopUser({
@@ -133,6 +138,8 @@ export const sendNotification = async ({
 			user: sender,
 			message,
 			room,
+			reaction,
+			reactionWithTranslation,
 		});
 	}
 
@@ -261,12 +268,13 @@ const lookup = {
 	},
 } as const;
 
-export async function sendMessageNotifications(message: IMessage, room: IRoom, usersInThread: string[] = []) {
+export async function sendMessageNotifications(message: IMessage, room: IRoom, usersInThread: string[] = [], reaction = '', user?: IUser, reactionWithTranslation?: string) {
 	if (settings.get<boolean>('Troubleshoot_Disable_Notifications') === true) {
 		return;
 	}
 
-	const sender = await roomCoordinator.getRoomDirectives(room.t).getMsgSender(message.u._id);
+	const sender = user || (await roomCoordinator.getRoomDirectives(room.t).getMsgSender(message.u._id));
+
 	if (!sender) {
 		return message;
 	}
@@ -308,6 +316,11 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 
 		query.$or.push({
 			[notificationField]: 'all',
+			...(disableAllMessageNotifications ? { [`${kind}PrefOrigin`]: { $ne: 'user' } } : {}),
+		});
+
+		query.$or.push({
+			[notificationField]: 'allAndReaction',
 			...(disableAllMessageNotifications ? { [`${kind}PrefOrigin`]: { $ne: 'user' } } : {}),
 		});
 
@@ -359,6 +372,8 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 				mentionIds,
 				disableAllMessageNotifications,
 				hasReplyToThread: usersInThread?.includes(subscription.u._id),
+				reaction,
+				reactionWithTranslation: reactionWithTranslation || '',
 			}),
 	);
 

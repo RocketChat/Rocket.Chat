@@ -28,7 +28,7 @@ import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
 type EmojiPickerProps = {
 	reference: Element;
 	onClose: () => void;
-	onPickEmoji: (emoji: string) => void;
+	onPickEmoji: (emoji: string, reactionWithTranslation?: string) => void;
 };
 
 const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {

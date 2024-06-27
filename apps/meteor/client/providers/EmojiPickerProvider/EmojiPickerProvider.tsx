@@ -1,4 +1,5 @@
 import { useDebouncedState, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement, ContextType } from 'react';
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 
@@ -11,6 +12,7 @@ import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
 const DEFAULT_ITEMS_LIMIT = 90;
 
 const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElement => {
+	const t = useTranslation();
 	const [emojiPicker, setEmojiPicker] = useState<ReactElement | null>(null);
 	const [emojiToPreview, setEmojiToPreview] = useDebouncedState<{ emoji: string; name: string } | null>(null, 100);
 	const [recentEmojis, setRecentEmojis] = useLocalStorage<string[]>('emoji.recent', []);
@@ -96,9 +98,9 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 		[recentEmojis, setRecentEmojis, updateEmojiListByCategory, addFrequentEmojis],
 	);
 
-	const open = useCallback((ref: Element, callback: (emoji: string) => void) => {
-		return setEmojiPicker(<EmojiPicker reference={ref} onClose={() => setEmojiPicker(null)} onPickEmoji={(emoji) => callback(emoji)} />);
-	}, []);
+	const open = useCallback((ref: Element, callback: (emoji: string, reactionWithTranslation: string) => void) => {
+		return setEmojiPicker(<EmojiPicker reference={ref} onClose={() => setEmojiPicker(null)} onPickEmoji={(emoji) => callback(emoji, t('Reacted_with'))} />,);
+	}, [t]);
 
 	const handlePreview = useCallback((emoji: string, name: string) => setEmojiToPreview({ emoji, name }), [setEmojiToPreview]);
 

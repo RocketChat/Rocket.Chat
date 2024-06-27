@@ -14,7 +14,7 @@ Meteor.startup(() => {
 		action(event, props) {
 			const { message = messageArgs(this).msg, chat } = props;
 			event?.stopPropagation();
-			chat?.emojiPicker.open(event?.currentTarget as Element, (emoji) => sdk.call('setReaction', `:${emoji}:`, message._id));
+			chat?.emojiPicker.open(event?.currentTarget as Element, (emoji , reactionWithTranslation) => sdk.call('setReaction', emoji, message._id, undefined, reactionWithTranslation));
 		},
 		condition({ message, user, room, subscription }) {
 			if (!room) {

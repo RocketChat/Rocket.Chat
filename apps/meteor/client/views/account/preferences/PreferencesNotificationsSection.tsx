@@ -11,6 +11,7 @@ import { KonchatNotification } from '../../../../app/ui/client/lib/KonchatNotifi
 
 const notificationOptionsLabelMap = {
 	all: 'All_messages',
+	allAndReaction: 'All_messages_and_Reactions',
 	mentions: 'Mentions',
 	nothing: 'Nothing',
 };
@@ -57,7 +58,8 @@ const PreferencesNotificationsSection = () => {
 	}, []);
 
 	const notificationOptions = useMemo(
-		() => Object.entries(notificationOptionsLabelMap).map(([key, val]) => t.has(val) && [key, t(val)]),
+		// () => Object.entries(notificationOptionsLabelMap).map(([key, val]) => t.has(val) && [key, t(val)]),
+		() => Object.entries(notificationOptionsLabelMap).map(([key, val]) => [key, val]),
 		[t],
 	) as SelectOption[];
 

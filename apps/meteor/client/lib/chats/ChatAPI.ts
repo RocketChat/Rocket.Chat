@@ -131,7 +131,7 @@ export type ChatAPI = {
 		| undefined;
 
 	readonly emojiPicker: {
-		open(el: Element, cb: (emoji: string) => void): void;
+		open(el: Element, cb: (emoji: string, reactionWithTranslation?: string) => void): void;
 		close(): void;
 	};
 

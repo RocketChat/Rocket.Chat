@@ -14,6 +14,7 @@ import { hasPermissionAsync } from '../../authorization/server/functions/hasPerm
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
 import { notifyOnRoomChangedById } from '../../lib/server/lib/notifyListener';
+import { sendMessageNotifications } from '../../lib/server/lib/sendNotificationsOnMessage';
 
 const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
 	if (!message.reactions) {
@@ -27,7 +28,7 @@ const removeUserReaction = (message: IMessage, reaction: string, username: strin
 	return message;
 };
 
-async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction: string, shouldReact?: boolean) {
+async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction: string , shouldReact?: boolean, reactionWithTranslation?: string) {
 	reaction = `:${reaction.replace(/:/g, '')}:`;
 
 	if (!emoji.list[reaction] && (await EmojiCustom.findByNameOrAlias(reaction, {}).count()) === 0) {
@@ -103,6 +104,9 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 			await Rooms.setReactionsInLastMessage(room._id, message.reactions);
 			void notifyOnRoomChangedById(room._id);
 		}
+
+		await sendMessageNotifications(message, room, undefined, reaction, user, reactionWithTranslation);
+
 		await callbacks.run('setReaction', message._id, reaction);
 		await callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
 
@@ -116,7 +120,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 	});
 }
 
-export async function executeSetReaction(userId: string, reaction: string, messageId: IMessage['_id'], shouldReact?: boolean) {
+export async function executeSetReaction(userId: string, reaction: string, messageId: IMessage['_id'], shouldReact?: boolean, reactionWithTranslation?: string) {
 	const user = await Users.findOneById(userId);
 
 	if (!user) {
@@ -137,25 +141,25 @@ export async function executeSetReaction(userId: string, reaction: string, messa
 		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'setReaction' });
 	}
 
-	return setReaction(room, user, message, reaction, shouldReact);
+	return setReaction(room, user, message, reaction, shouldReact, reactionWithTranslation);
 }
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		setReaction(reaction: string, messageId: IMessage['_id'], shouldReact?: boolean): boolean | undefined;
+		setReaction(reaction: string, messageId: IMessage['_id'], shouldReact?: boolean, reactionWithTranslation?: string): boolean | undefined;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	async setReaction(reaction, messageId, shouldReact) {
+	async setReaction(reaction, messageId, shouldReact, reactionWithTranslation) {
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
 		}
 
 		try {
-			await executeSetReaction(uid, reaction, messageId, shouldReact);
+			await executeSetReaction(uid, reaction, messageId, shouldReact, reactionWithTranslation);
 		} catch (e: any) {
 			if (e.error === 'error-not-allowed' && e.reason && e.details && e.details.rid) {
 				void api.broadcast('notify.ephemeralMessage', uid, e.details.rid, {

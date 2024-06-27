@@ -1,5 +1,5 @@
 import { isThreadMainMessage } from '@rocket.chat/core-typings';
-import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { VFC, ReactNode } from 'react';
 import React, { useMemo, memo } from 'react';
 
@@ -23,6 +23,7 @@ type MessageListProviderProps = {
 };
 
 const MessageListProvider: VFC<MessageListProviderProps> = ({ children, messageListRef, attachmentDimension }) => {
+	const t = useTranslation();
 	const room = useRoom();
 
 	if (!room) {
@@ -99,7 +100,7 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, messageL
 				? (message) =>
 						(e): void => {
 							e.nativeEvent.stopImmediatePropagation();
-							chat?.emojiPicker.open(e.currentTarget, (emoji: string) => reactToMessage({ messageId: message._id, reaction: emoji }));
+							chat?.emojiPicker.open(e.currentTarget, (emoji: string) => reactToMessage({ messageId: message._id, reaction: emoji, reactionWithTranslation: t('Reacted_with') }));
 						}
 				: () => (): void => undefined,
 			username,

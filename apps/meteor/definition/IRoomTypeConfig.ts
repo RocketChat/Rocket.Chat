@@ -105,6 +105,7 @@ export interface IRoomTypeServerDirectives {
 		sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 		notificationMessage: string,
 		userId: string,
+		reaction: string,
 	) => Promise<{ title: string | undefined; text: string; name: string | undefined }>;
 	getMsgSender: (senderId: IUser['_id']) => Promise<IUser | null>;
 	includeInRoomSearch: () => boolean;
