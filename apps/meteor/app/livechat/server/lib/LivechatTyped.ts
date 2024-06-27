@@ -1879,7 +1879,7 @@ class LivechatClass {
 	 * @param {string|null} _id - The department id
 	 * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
 	 * @param {{upsert?: { agentId: string; count?: number; order?: number; }[], remove?: { agentId: string; count?: number; order?: number; }}} [departmentAgents] - The department agents
-	 * @param {string|undefined} departmentUnitId - The department's unit id
+	 * @param {{_id?: string}} [departmentUnit] - The department's unit id
 	 */
 	async saveDepartment(
 		userId: string,
