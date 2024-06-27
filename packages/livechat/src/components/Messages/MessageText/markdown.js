@@ -2,7 +2,6 @@ import MarkdownIt from 'markdown-it';
 
 const md = new MarkdownIt({
 	html: true,
-	breaks: true,
 	linkify: true,
 	typographer: true,
 });
@@ -72,11 +71,14 @@ md.use((md) => {
 				close: scanned.can_close,
 			});
 		}
-
 		state.pos += scanned.length;
-
 		return true;
 	});
 });
 
-export const renderMarkdown = (...args) => md.render(...args);
+md.renderer.rules.softbreak = () => '<br>';
+md.renderer.rules.hardbreak = () => '<br>';
+
+export const renderMarkdown = (...args) => {
+	return `<p>${md.renderer.render(md.parseInline(...args))}</p>`;
+};
