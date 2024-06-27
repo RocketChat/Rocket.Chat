@@ -3,4 +3,5 @@ export interface IOmnichannelQueue {
 	shouldStart(): void;
 	stop(): Promise<void>;
 	isRunning(): boolean;
+	execute(): Promise<void>;
 }
