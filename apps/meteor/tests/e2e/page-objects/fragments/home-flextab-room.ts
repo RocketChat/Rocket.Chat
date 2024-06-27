@@ -11,11 +11,11 @@ export class HomeFlextabRoom {
 		return this.page.locator('role=button[name="Edit"]');
 	}
 
-	get kebab(): Locator {
+	get btnMore(): Locator {
 		return this.page.locator('role=button[name="More"]');
 	}
 
-	get itemDelete(): Locator {
+	get optionDelete(): Locator {
 		return this.page.locator('label[data-key="delete"]');
 	}
 
