@@ -2,7 +2,7 @@ import type { ILivechatDepartment, IOmnichannelBusinessUnit } from '@rocket.chat
 import { expect } from 'chai';
 import { before, after, describe, it, afterEach } from 'mocha';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
 import { deleteDepartment } from '../../../data/livechat/department';
 import { createDepartment } from '../../../data/livechat/rooms';
 import { createMonitor, createUnit, deleteUnit } from '../../../data/livechat/units';
@@ -10,6 +10,7 @@ import { updatePermission, updateSetting } from '../../../data/permissions.helpe
 import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
+import { Credentials } from '@rocket.chat/api-client';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Units', () => {
 	before((done) => getCredentials(done));
@@ -772,6 +773,175 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await testDepartmentsInUnit(unit._id, unit.name, 0);
 
 			await testDepartmentAncestors(department._id, updatedName, null);
+		});
+	});
+
+	describe('[POST] livechat:saveDepartment', () => {
+		let monitor1: Awaited<ReturnType<typeof createUser>>;
+		let monitor1Credentials: Awaited<ReturnType<typeof login>>;
+		let monitor2: Awaited<ReturnType<typeof createUser>>;
+		let monitor2Credentials: Awaited<ReturnType<typeof login>>;
+		let unit: IOmnichannelBusinessUnit;
+		const departmentName = 'Test-Department-Livechat-Method';
+		let testDepartmentId = '';
+
+		const createDepartmentWithLivechatMethod = (
+			userCredentials: Credentials,
+			departmentId: string,
+			departmentName: string,
+			departmentUnitId?: string,
+		) => {
+			return request
+				.post(methodCall('livechat:saveDepartment'))
+				.set(userCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'livechat:saveDepartment',
+						params: [
+							departmentId,
+							{ name: departmentName, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
+							[],
+							{ _id: departmentUnitId },
+						],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message').that.is.a('string');
+
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.property('result').that.is.an('object');
+					expect(data.result).to.have.property('name', departmentName);
+					expect(data.result).to.have.property('type', 'd');
+					expect(data.result).to.have.property('_id');
+					testDepartmentId = data.result._id;
+				});
+		};
+
+		before(async () => {
+			monitor1 = await createUser();
+			monitor2 = await createUser();
+			await createMonitor(monitor1.username);
+			monitor1Credentials = await login(monitor1.username, password);
+			await createMonitor(monitor2.username);
+			monitor2Credentials = await login(monitor2.username, password);
+			unit = await createUnit(monitor1._id, monitor1.username, []);
+		});
+
+		after(async () => Promise.all([deleteUser(monitor1), deleteUser(monitor2), deleteUnit(unit), deleteDepartment(testDepartmentId)]));
+
+		it('should fail creating department when providing an invalid property in the department unit object', () => {
+			return request
+				.post(methodCall('livechat:saveDepartment'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'livechat:saveDepartment',
+						params: [
+							'',
+							{ name: 'Fail-Test', enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
+							[],
+							{ invalidProperty: true },
+						],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message').that.is.a('string');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.property('error').that.is.an('object');
+					expect(data.error).to.have.property('errorType', 'Match.Error');
+				});
+		});
+
+		it('should fail creating department when providing an invalid _id type in the department unit object', () => {
+			return request
+				.post(methodCall('livechat:saveDepartment'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'livechat:saveDepartment',
+						params: [
+							'',
+							{ name: 'Fail-Test', enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
+							[],
+							{ _id: true },
+						],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message').that.is.a('string');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.property('error').that.is.an('object');
+					expect(data.error).to.have.property('errorType', 'Match.Error');
+				});
+		});
+
+		it('should fail creating a department into an existing unit that a monitor does not supervise', async () => {
+			const departmentName = 'Fail-Test';
+
+			await createDepartmentWithLivechatMethod(monitor2Credentials, '', departmentName, unit._id);
+			await testDepartmentsInUnit(unit._id, unit.name, 0);
+			await testDepartmentAncestors(testDepartmentId, departmentName);
+			await deleteDepartment(testDepartmentId);
+		});
+
+		it('should succesfully create a department into an existing unit as a livechat manager', async () => {
+			await createDepartmentWithLivechatMethod(credentials, '', departmentName, unit._id);
+			await testDepartmentsInUnit(unit._id, unit.name, 1);
+			await testDepartmentAncestors(testDepartmentId, departmentName, unit._id);
+		});
+
+		it('should succesfully remove an existing department from a unit as a livechat manager', async () => {
+			await createDepartmentWithLivechatMethod(credentials, testDepartmentId, departmentName);
+			await testDepartmentsInUnit(unit._id, unit.name, 0);
+			await testDepartmentAncestors(testDepartmentId, departmentName, null);
+		});
+
+		it('should succesfully add an existing department to a unit as a livechat manager', async () => {
+			await createDepartmentWithLivechatMethod(credentials, testDepartmentId, departmentName, unit._id);
+			await testDepartmentsInUnit(unit._id, unit.name, 1);
+			await testDepartmentAncestors(testDepartmentId, departmentName, unit._id);
+		});
+
+		it('should succesfully remove a department from a unit that a monitor supervises', async () => {
+			await createDepartmentWithLivechatMethod(monitor1Credentials, testDepartmentId, departmentName);
+			await testDepartmentsInUnit(unit._id, unit.name, 0);
+			await testDepartmentAncestors(testDepartmentId, departmentName, null);
+		});
+
+		it('should succesfully add an existing department to a unit that a monitor supervises', async () => {
+			await createDepartmentWithLivechatMethod(monitor1Credentials, testDepartmentId, departmentName, unit._id);
+			await testDepartmentsInUnit(unit._id, unit.name, 1);
+			await testDepartmentAncestors(testDepartmentId, departmentName, unit._id);
+		});
+
+		it('should fail removing a department from a unit that a monitor does not supervise', async () => {
+			await createDepartmentWithLivechatMethod(monitor2Credentials, testDepartmentId, departmentName);
+			await testDepartmentsInUnit(unit._id, unit.name, 1);
+			await testDepartmentAncestors(testDepartmentId, departmentName, unit._id);
+			await deleteDepartment(testDepartmentId);
+		});
+
+		it('should succesfully create a department in a unit that a monitor supervises', async () => {
+			await createDepartmentWithLivechatMethod(monitor1Credentials, '', departmentName, unit._id);
+
+			// Deleting a department currently does not decrease its unit's counter. We must adjust this check when this is fixed
+			await testDepartmentsInUnit(unit._id, unit.name, 2);
+			await testDepartmentAncestors(testDepartmentId, departmentName, unit._id);
 		});
 	});
 });
