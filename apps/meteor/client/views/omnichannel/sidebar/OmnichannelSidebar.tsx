@@ -12,14 +12,16 @@ const OmnichannelSidebar: FC = () => {
 	const items = useSyncExternalStore(subscribeToOmnichannelSidebarItems, getOmnichannelSidebarItems);
 	const t = useTranslation();
 
-	const { sidebar } = useLayout();
+	const { sidebar, isMobile } = useLayout();
 
 	const currentPath = useCurrentRoutePath();
 
 	return (
 		<SettingsProvider privileged>
 			<Sidebar>
-				<Sidebar.Header onClose={sidebar.close} title={t('Omnichannel')} />
+				<Sidebar.Header onClose=
+				{isMobile ? sidebar.toggle : sidebar.close}
+				title={t('Omnichannel')} />
 				<Sidebar.Content>
 					<SidebarItemsAssemblerProps items={items} currentPath={currentPath} />
 				</Sidebar.Content>
