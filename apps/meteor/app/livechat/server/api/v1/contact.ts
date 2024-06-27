@@ -82,3 +82,15 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'omnichannel/contacts',
+	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isPOSTOmnichannelContactsProps },
+	{
+		async post() {
+			const contactId = await createContact({ ...this.bodyParams, unknown: false });
+
+			return API.v1.success({ contactId });
+		},
+	},
+);
