@@ -1,11 +1,11 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
-import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom } from '@rocket.chat/core-typings';
-import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
 
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
@@ -100,6 +100,43 @@ export class AppRoomBridge extends RoomBridge {
 		}
 
 		return this.orch.getConverters()?.get('users').convertById(room.u._id);
+	}
+
+	protected async getMessages(
+		roomId: string,
+		options: {
+			limit: number;
+			skip?: number;
+			sort?: Record<string, 1 | -1>;
+		},
+		appId: string,
+	): Promise<IMessageRaw[]> {
+		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}" with options:`, options);
+
+		const { limit, skip = 0, sort } = options;
+
+		const messageConverter = this.orch.getConverters()?.get('messages');
+		if (!messageConverter) {
+			throw new Error('Message converter not found');
+		}
+
+		const messageQueryOptions = {
+			limit,
+			skip,
+			sort,
+		};
+
+		const query = {
+			rid: roomId,
+			_hidden: { $ne: true },
+			t: { $exists: false },
+		};
+
+		const cursor = Messages.find(query, messageQueryOptions);
+
+		const messagePromises: Promise<IMessageRaw>[] = await cursor.map((message) => messageConverter.convertMessageRaw(message)).toArray();
+
+		return Promise.all(messagePromises);
 	}
 
 	protected async getMembers(roomId: string, appId: string): Promise<Array<IUser>> {
