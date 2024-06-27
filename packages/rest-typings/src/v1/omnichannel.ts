@@ -1232,7 +1232,7 @@ const POSTOmnichannelContactsSchema = {
 			},
 			uniqueItems: true,
 		},
-		phone: {
+		phones: {
 			type: 'array',
 			items: {
 				type: 'string',
