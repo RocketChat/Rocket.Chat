@@ -1,3 +1,4 @@
+import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, after, describe, it, afterEach } from 'mocha';
@@ -10,7 +11,6 @@ import { updatePermission, updateSetting } from '../../../data/permissions.helpe
 import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
-import { Credentials } from '@rocket.chat/api-client';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Units', () => {
 	before((done) => getCredentials(done));
@@ -465,6 +465,26 @@ import { Credentials } from '@rocket.chat/api-client';
 		let monitor2Credentials: Awaited<ReturnType<typeof login>>;
 		let unit: IOmnichannelBusinessUnit;
 
+		const createDepartmentInUnit = (userCredentials: Credentials, departmentName: string, unitId: string) => {
+			return request
+				.post(api('livechat/department'))
+				.set(userCredentials)
+				.send({
+					department: { name: departmentName, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
+					departmentUnit: { _id: unitId },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('department').that.is.an('object');
+					expect(res.body.department).to.have.property('name', departmentName);
+					expect(res.body.department).to.have.property('type', 'd');
+					expect(res.body.department).to.have.property('_id');
+					departmentId = res.body.department._id;
+				});
+		};
+
 		before(async () => {
 			monitor1 = await createUser();
 			monitor2 = await createUser();
@@ -501,77 +521,27 @@ import { Credentials } from '@rocket.chat/api-client';
 
 		it('should fail creating a department into an existing unit that a monitor does not supervise', async () => {
 			const departmentName = 'Test-Department-Unit2';
-			await request
-				.post(api('livechat/department'))
-				.set(monitor2Credentials)
-				.send({
-					department: { name: departmentName, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
-					departmentUnit: { _id: unit._id },
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department').that.is.an('object');
-					expect(res.body.department).to.have.property('name', departmentName);
-					expect(res.body.department).to.have.property('type', 'd');
-					expect(res.body.department).to.have.property('_id');
-					departmentId = res.body.department._id;
-				});
 
+			await createDepartmentInUnit(monitor2Credentials, departmentName, unit._id);
 			await testDepartmentsInUnit(unit._id, unit.name, 0);
-
 			await testDepartmentAncestors(departmentId, departmentName);
 		});
 
 		it('should succesfully create a department into an existing unit as a livechat manager', async () => {
 			const departmentName = 'Test-Department-Unit';
-			await request
-				.post(api('livechat/department'))
-				.set(credentials)
-				.send({
-					department: { name: departmentName, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
-					departmentUnit: { _id: unit._id },
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department').that.is.an('object');
-					expect(res.body.department).to.have.property('name', departmentName);
-					expect(res.body.department).to.have.property('type', 'd');
-					expect(res.body.department).to.have.property('_id');
-					departmentId = res.body.department._id;
-				});
 
+			await createDepartmentInUnit(credentials, departmentName, unit._id);
 			await testDepartmentsInUnit(unit._id, unit.name, 1);
-
 			await testDepartmentAncestors(departmentId, departmentName, unit._id);
 		});
 
 		it('should succesfully create a department into an existing unit that a monitor supervises', async () => {
 			const departmentName = 'Test-Department-Unit3';
-			await request
-				.post(api('livechat/department'))
-				.set(monitor1Credentials)
-				.send({
-					department: { name: departmentName, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
-					departmentUnit: { _id: unit._id },
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department').that.is.an('object');
-					expect(res.body.department).to.have.property('name', departmentName);
-					expect(res.body.department).to.have.property('type', 'd');
-					expect(res.body.department).to.have.property('_id');
-					departmentId = res.body.department._id;
-				});
+
+			await createDepartmentInUnit(monitor1Credentials, departmentName, unit._id);
 
 			// Deleting a department currently does not decrease its unit's counter. We must adjust this check when this is fixed
 			await testDepartmentsInUnit(unit._id, unit.name, 2);
-
 			await testDepartmentAncestors(departmentId, departmentName, unit._id);
 		});
 	});
@@ -583,6 +553,25 @@ import { Credentials } from '@rocket.chat/api-client';
 		let monitor2Credentials: Awaited<ReturnType<typeof login>>;
 		let unit: IOmnichannelBusinessUnit;
 		let department: ILivechatDepartment;
+
+		const updateDepartment = (userCredentials: Credentials, departmentId: string, updatedName: string, unitId?: string) => {
+			return request
+				.put(api(`livechat/department/${departmentId}`))
+				.set(userCredentials)
+				.send({
+					department: { name: updatedName, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
+					departmentUnit: { _id: unitId },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('department').that.is.an('object');
+					expect(res.body.department).to.have.property('name', updatedName);
+					expect(res.body.department).to.have.property('type', 'd');
+					expect(res.body.department).to.have.property('_id', departmentId);
+				});
+		};
 
 		before(async () => {
 			monitor1 = await createUser();
@@ -633,145 +622,49 @@ import { Credentials } from '@rocket.chat/api-client';
 
 		it('should succesfully add an existing department to a unit as a livechat manager', async () => {
 			const updatedName = 'updated-department-name';
-			await request
-				.put(api(`livechat/department/${department._id}`))
-				.set(credentials)
-				.send({
-					department: { name: updatedName, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
-					departmentUnit: { _id: unit._id },
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department').that.is.an('object');
-					expect(res.body.department).to.have.property('name', updatedName);
-					expect(res.body.department).to.have.property('type', 'd');
-					expect(res.body.department).to.have.property('_id', department._id);
-				});
 
+			await updateDepartment(credentials, department._id, updatedName, unit._id);
 			await testDepartmentsInUnit(unit._id, unit.name, 1);
-
 			await testDepartmentAncestors(department._id, updatedName, unit._id);
 		});
 
 		it('should succesfully remove an existing department from a unit as a livechat manager', async () => {
 			const updatedName = 'updated-department-name';
-			await request
-				.put(api(`livechat/department/${department._id}`))
-				.set(credentials)
-				.send({
-					department: { name: updatedName, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
-					departmentUnit: {},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department').that.is.an('object');
-					expect(res.body.department).to.have.property('name', updatedName);
-					expect(res.body.department).to.have.property('type', 'd');
-					expect(res.body.department).to.have.property('_id', department._id);
-				});
 
+			await updateDepartment(credentials, department._id, updatedName);
 			await testDepartmentsInUnit(unit._id, unit.name, 0);
-
 			await testDepartmentAncestors(department._id, updatedName, null);
 		});
 
 		it('should fail adding a department into an existing unit that a monitor does not supervise', async () => {
 			const updatedName = 'updated-department-name2';
-			await request
-				.put(api(`livechat/department/${department._id}`))
-				.set(monitor2Credentials)
-				.send({
-					department: { name: updatedName, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
-					departmentUnit: { _id: unit._id },
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department').that.is.an('object');
-					expect(res.body.department).to.have.property('name', updatedName);
-					expect(res.body.department).to.have.property('type', 'd');
-					expect(res.body.department).to.have.property('_id');
-				});
 
+			await updateDepartment(monitor2Credentials, department._id, updatedName, unit._id);
 			await testDepartmentsInUnit(unit._id, unit.name, 0);
-
 			await testDepartmentAncestors(department._id, updatedName, null);
 		});
 
 		it('should succesfully add a department into an existing unit that a monitor supervises', async () => {
 			const updatedName = 'updated-department-name3';
-			await request
-				.put(api(`livechat/department/${department._id}`))
-				.set(monitor1Credentials)
-				.send({
-					department: { name: updatedName, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
-					departmentUnit: { _id: unit._id },
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department').that.is.an('object');
-					expect(res.body.department).to.have.property('name', updatedName);
-					expect(res.body.department).to.have.property('type', 'd');
-					expect(res.body.department).to.have.property('_id');
-				});
 
+			await updateDepartment(monitor1Credentials, department._id, updatedName, unit._id);
 			await testDepartmentsInUnit(unit._id, unit.name, 1);
-
 			await testDepartmentAncestors(department._id, updatedName, unit._id);
 		});
 
 		it('should fail removing a department from a unit that a monitor does not supervise', async () => {
 			const updatedName = 'updated-department-name4';
-			await request
-				.put(api(`livechat/department/${department._id}`))
-				.set(monitor2Credentials)
-				.send({
-					department: { name: updatedName, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
-					departmentUnit: {},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department').that.is.an('object');
-					expect(res.body.department).to.have.property('name', updatedName);
-					expect(res.body.department).to.have.property('type', 'd');
-					expect(res.body.department).to.have.property('_id');
-				});
 
+			await updateDepartment(monitor2Credentials, department._id, updatedName);
 			await testDepartmentsInUnit(unit._id, unit.name, 1);
-
 			await testDepartmentAncestors(department._id, updatedName, unit._id);
 		});
 
 		it('should succesfully remove a department from a unit that a monitor supervises', async () => {
 			const updatedName = 'updated-department-name5';
-			await request
-				.put(api(`livechat/department/${department._id}`))
-				.set(monitor1Credentials)
-				.send({
-					department: { name: updatedName, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
-					departmentUnit: {},
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department').that.is.an('object');
-					expect(res.body.department).to.have.property('name', updatedName);
-					expect(res.body.department).to.have.property('type', 'd');
-					expect(res.body.department).to.have.property('_id');
-				});
 
+			await updateDepartment(monitor1Credentials, department._id, updatedName);
 			await testDepartmentsInUnit(unit._id, unit.name, 0);
-
 			await testDepartmentAncestors(department._id, updatedName, null);
 		});
 	});
