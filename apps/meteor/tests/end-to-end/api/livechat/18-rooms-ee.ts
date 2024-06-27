@@ -17,7 +17,6 @@ import {
 	closeOmnichannelRoom,
 	fetchMessages,
 } from '../../../data/livechat/rooms';
-import { sleep } from '../../../data/livechat/utils';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
@@ -298,9 +297,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await sendAgentMessage(room._id);
 			await placeRoomOnHold(room._id);
 			await sendMessage(room._id, 'test', visitor.token);
-
-			// wait for the room to be resumed since that logic is within callbacks
-			await sleep(500);
 
 			const updatedRoom = await getLivechatRoomInfo(room._id);
 			expect(updatedRoom).to.not.have.property('onHold');

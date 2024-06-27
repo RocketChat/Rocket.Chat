@@ -583,9 +583,6 @@ describe('LIVECHAT - rooms', () => {
 					})
 					.expect(200);
 
-				// Give time for the setting to be on the user's preferences
-				await sleep(500);
-
 				await request.post(api('livechat/room.close')).send({ rid: roomId, token: visitor.token }).expect(200);
 
 				const latestRoom = await getLivechatRoomInfo(roomId);

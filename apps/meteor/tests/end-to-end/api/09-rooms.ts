@@ -6,7 +6,6 @@ import type { IMessage, IRoom, ITeam, IUpload, IUser, ImageAttachmentProps, Sett
 import { assert, expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
-import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
@@ -2023,9 +2022,6 @@ describe('[Rooms]', () => {
 					},
 				});
 
-			// need to wait for the username update finish
-			await sleep(300);
-
 			await request
 				.get(api('subscriptions.getOne'))
 				.set(credentials)
@@ -2048,9 +2044,6 @@ describe('[Rooms]', () => {
 						name: `changed.name.${testUser.username}`,
 					},
 				});
-
-			// need to wait for the name update finish
-			await sleep(300);
 
 			await request
 				.get(api('subscriptions.getOne'))
