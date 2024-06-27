@@ -1,3 +1,4 @@
+import type { Renderer } from 'markdown-it';
 import MarkdownIt from 'markdown-it';
 
 const md = new MarkdownIt({
@@ -7,7 +8,7 @@ const md = new MarkdownIt({
 	typographer: true,
 });
 
-const defaultRender = md.renderer.rules.link_open || ((tokens, idx, options, env, self) => self.renderToken(tokens, idx, options));
+const defaultRender = md.renderer.rules.link_open || ((tokens, idx, options, _env, self) => self.renderToken(tokens, idx, options));
 
 md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
 	const targetAttrIndex = tokens[idx].attrIndex('target');
@@ -16,20 +17,28 @@ md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
 	if (targetAttrIndex < 0) {
 		tokens[idx].attrPush(['target', '_blank']);
 	} else {
-		tokens[idx].attrs[targetAttrIndex][1] = '_blank';
+		const { attrs } = tokens[idx];
+
+		if (attrs) {
+			attrs[targetAttrIndex][1] = '_blank';
+		}
 	}
 
 	if (relAttrIndex < 0) {
 		tokens[idx].attrPush(['rel', 'noopener noreferrer']);
 	} else {
-		tokens[idx].attrs[relAttrIndex][1] = 'noopener noreferrer';
+		const { attrs } = tokens[idx];
+
+		if (attrs) {
+			attrs[relAttrIndex][1] = 'noopener noreferrer';
+		}
 	}
 
 	return defaultRender(tokens, idx, options, env, self);
 };
 
 md.use((md) => {
-	const renderStrong = (tokens, idx, opts, _, slf) => {
+	const renderStrong: Renderer.RenderRule = (tokens, idx, opts, _, slf) => {
 		const token = tokens[idx];
 		if (token.markup === '*') {
 			token.tag = 'strong';
@@ -79,4 +88,4 @@ md.use((md) => {
 	});
 });
 
-export const renderMarkdown = (...args) => md.render(...args);
+export const renderMarkdown = (...args: Parameters<typeof md.render>) => md.render(...args);
