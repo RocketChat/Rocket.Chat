@@ -1,0 +1,40 @@
+{
+	"link": {
+		"privateApp": "Private Apps",
+		"dataLossEnabled": "Data Loss Prevention Enabled",
+		"regressionEnabled": "regression Enabled",
+		"facebookEnabled": "Facebook Messenger Enabled ",
+		"dataLossDisabled": "Data Loss Prevention Disabled",
+		"facebookDisabled": "Facebook Messenger Disabled",
+		"regressionDisabled": "regression Disabled",
+		"appInstalled": "Installed"
+	},
+	"button": {
+		"uploadPrivateApp": "Upload Private App",
+		"browseFiles": "Browse Files",
+		"install": "Install",
+		"agree": "Agree",
+		"yes": "Yes",
+		"menu": "ol[role='listbox']",
+		"disable": "li[value='disable']",
+		"enable": "li[value='enable']"
+	},
+	"text": {
+		"dataLoss": "Data Loss Prevention",
+		"facebook": "Facebook Messenger",
+		"uninstall": "Uninstall",
+		"disable": "Disable",
+		"enable": "Enable",
+		"regression": "regression"
+	},
+	"placeholder": {
+		"searchInstalledApp": "Search installed apps",
+		"searchPrivateApp": "Search private apps"
+	},
+	"testId": {
+		"menuSingleApp": "menu"
+	},
+	"class": {
+		"toast": "div[class='rcx-toastbar_content']"
+	}
+}

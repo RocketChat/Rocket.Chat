@@ -95,6 +95,7 @@ export const test = baseTest.extend<BaseTest>({
 			return newContext(json.data.authToken, json.data.userId);
 		};
 
+		apiContext = apiContext ?? (await login(ADMIN_CREDENTIALS));
 		const recreateContext = async () => {
 			apiContext = await login(ADMIN_CREDENTIALS);
 		};
