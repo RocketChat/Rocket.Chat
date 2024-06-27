@@ -16,6 +16,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
+		await updatePermission('manage-livechat-departments', ['livechat-manager', 'livechat-monitor', 'admin']);
 	});
 
 	describe('[GET] livechat/units', () => {
@@ -412,6 +413,49 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 	});
 
+	const testDepartmentsInUnit = (unitId: string, unitName: string, numDepartments: number) => {
+		return request
+			.get(api(`livechat/units/${unitId}`))
+			.set(credentials)
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('_id', unitId);
+				expect(res.body).to.have.property('name', unitName);
+				expect(res.body).to.have.property('numMonitors', 1);
+				expect(res.body).to.have.property('numDepartments', numDepartments);
+				expect(res.body).to.have.property('type', 'u');
+			});
+	};
+
+	const testDepartmentAncestors = (departmentId: string, departmentName: string, ancestor?: string | null) => {
+		return request
+			.get(api(`livechat/department/${departmentId}`))
+			.set(credentials)
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('department');
+				expect(res.body.department).to.have.property('_id', departmentId);
+				expect(res.body.department).to.have.property('name', departmentName);
+				if (ancestor) {
+					expect(res.body.department).to.have.property('parentId', ancestor);
+					expect(res.body.department).to.have.property('ancestors').that.is.an('array').with.lengthOf(1);
+					expect(res.body.department.ancestors[0]).to.equal(ancestor);
+				}
+
+				if (ancestor === null) {
+					expect(res.body.department).to.have.property('parentId').that.is.null;
+					expect(res.body.department).to.have.property('ancestors').that.is.null;
+				}
+
+				if (ancestor === undefined) {
+					expect(res.body.department).to.not.have.property('parentId');
+					expect(res.body.department).to.not.have.property('ancestors');
+				}
+			});
+	};
+
 	describe('[POST] livechat/department', () => {
 		let departmentId: string;
 		let monitor1: Awaited<ReturnType<typeof createUser>>;
@@ -474,31 +518,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 					departmentId = res.body.department._id;
 				});
 
-			await request
-				.get(api(`livechat/units/${unit._id}`))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('_id', unit._id);
-					expect(res.body).to.have.property('name', unit.name);
-					expect(res.body).to.have.property('numMonitors', 1);
-					expect(res.body).to.have.property('numDepartments', 0);
-					expect(res.body).to.have.property('type', 'u');
-				});
+			await testDepartmentsInUnit(unit._id, unit.name, 0);
 
-			return request
-				.get(api(`livechat/department/${departmentId}`))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department');
-					expect(res.body.department).to.have.property('_id', departmentId);
-					expect(res.body.department).to.have.property('name', departmentName);
-					expect(res.body.department).to.not.have.property('parentId');
-					expect(res.body.department).to.not.have.property('ancestors');
-				});
+			await testDepartmentAncestors(departmentId, departmentName);
 		});
 
 		it('should succesfully create a department into an existing unit as a livechat manager', async () => {
@@ -521,32 +543,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 					departmentId = res.body.department._id;
 				});
 
-			await request
-				.get(api(`livechat/units/${unit._id}`))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('_id', unit._id);
-					expect(res.body).to.have.property('name', unit.name);
-					expect(res.body).to.have.property('numMonitors', 1);
-					expect(res.body).to.have.property('numDepartments', 1);
-					expect(res.body).to.have.property('type', 'u');
-				});
+			await testDepartmentsInUnit(unit._id, unit.name, 1);
 
-			return request
-				.get(api(`livechat/department/${departmentId}`))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department');
-					expect(res.body.department).to.have.property('_id', departmentId);
-					expect(res.body.department).to.have.property('name', departmentName);
-					expect(res.body.department).to.have.property('parentId', unit._id);
-					expect(res.body.department).to.have.property('ancestors').that.is.an('array').with.lengthOf(1);
-					expect(res.body.department.ancestors[0]).to.equal(unit._id);
-				});
+			await testDepartmentAncestors(departmentId, departmentName, unit._id);
 		});
 
 		it('should succesfully create a department into an existing unit that a monitor supervises', async () => {
@@ -569,32 +568,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 					departmentId = res.body.department._id;
 				});
 
-			await request
-				.get(api(`livechat/units/${unit._id}`))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('_id', unit._id);
-					expect(res.body).to.have.property('name', unit.name);
-					expect(res.body).to.have.property('numMonitors', 1);
-					expect(res.body).to.have.property('numDepartments', 2);
-					expect(res.body).to.have.property('type', 'u');
-				});
+			// Deleting a department currently does not decrease its unit's counter. We must adjust this check when this is fixed
+			await testDepartmentsInUnit(unit._id, unit.name, 2);
 
-			return request
-				.get(api(`livechat/department/${departmentId}`))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department');
-					expect(res.body.department).to.have.property('_id', departmentId);
-					expect(res.body.department).to.have.property('name', departmentName);
-					expect(res.body.department).to.have.property('parentId', unit._id);
-					expect(res.body.department).to.have.property('ancestors').that.is.an('array').with.lengthOf(1);
-					expect(res.body.department.ancestors[0]).to.equal(unit._id);
-				});
+			await testDepartmentAncestors(departmentId, departmentName, unit._id);
 		});
 	});
 
@@ -672,32 +649,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 					expect(res.body.department).to.have.property('_id', department._id);
 				});
 
-			await request
-				.get(api(`livechat/units/${unit._id}`))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('_id', unit._id);
-					expect(res.body).to.have.property('name', unit.name);
-					expect(res.body).to.have.property('numMonitors', 1);
-					expect(res.body).to.have.property('numDepartments', 1);
-					expect(res.body).to.have.property('type', 'u');
-				});
+			await testDepartmentsInUnit(unit._id, unit.name, 1);
 
-			return request
-				.get(api(`livechat/department/${department._id}`))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department');
-					expect(res.body.department).to.have.property('_id', department._id);
-					expect(res.body.department).to.have.property('name', updatedName);
-					expect(res.body.department).to.have.property('parentId', unit._id);
-					expect(res.body.department).to.have.property('ancestors').that.is.an('array').with.lengthOf(1);
-					expect(res.body.department.ancestors[0]).to.equal(unit._id);
-				});
+			await testDepartmentAncestors(department._id, updatedName, unit._id);
 		});
 
 		it('should succesfully remove an existing department from a unit as a livechat manager', async () => {
@@ -719,31 +673,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 					expect(res.body.department).to.have.property('_id', department._id);
 				});
 
-			await request
-				.get(api(`livechat/units/${unit._id}`))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('_id', unit._id);
-					expect(res.body).to.have.property('name', unit.name);
-					expect(res.body).to.have.property('numMonitors', 1);
-					expect(res.body).to.have.property('numDepartments', 0);
-					expect(res.body).to.have.property('type', 'u');
-				});
+			await testDepartmentsInUnit(unit._id, unit.name, 0);
 
-			return request
-				.get(api(`livechat/department/${department._id}`))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department');
-					expect(res.body.department).to.have.property('_id', department._id);
-					expect(res.body.department).to.have.property('name', updatedName);
-					expect(res.body.department).to.have.property('parentId').that.is.null;
-					expect(res.body.department).to.have.property('ancestors').that.is.null;
-				});
+			await testDepartmentAncestors(department._id, updatedName, null);
 		});
 
 		it('should fail adding a department into an existing unit that a monitor does not supervise', async () => {
@@ -765,31 +697,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 					expect(res.body.department).to.have.property('_id');
 				});
 
-			await request
-				.get(api(`livechat/units/${unit._id}`))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('_id', unit._id);
-					expect(res.body).to.have.property('name', unit.name);
-					expect(res.body).to.have.property('numMonitors', 1);
-					expect(res.body).to.have.property('numDepartments', 0);
-					expect(res.body).to.have.property('type', 'u');
-				});
+			await testDepartmentsInUnit(unit._id, unit.name, 0);
 
-			return request
-				.get(api(`livechat/department/${department._id}`))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department');
-					expect(res.body.department).to.have.property('_id', department._id);
-					expect(res.body.department).to.have.property('name', updatedName);
-					expect(res.body.department).to.have.property('parentId').that.is.null;
-					expect(res.body.department).to.have.property('ancestors').that.is.null;
-				});
+			await testDepartmentAncestors(department._id, updatedName, null);
 		});
 
 		it('should succesfully add a department into an existing unit that a monitor supervises', async () => {
@@ -811,32 +721,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 					expect(res.body.department).to.have.property('_id');
 				});
 
-			await request
-				.get(api(`livechat/units/${unit._id}`))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('_id', unit._id);
-					expect(res.body).to.have.property('name', unit.name);
-					expect(res.body).to.have.property('numMonitors', 1);
-					expect(res.body).to.have.property('numDepartments', 1);
-					expect(res.body).to.have.property('type', 'u');
-				});
+			await testDepartmentsInUnit(unit._id, unit.name, 1);
 
-			return request
-				.get(api(`livechat/department/${department._id}`))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department');
-					expect(res.body.department).to.have.property('_id', department._id);
-					expect(res.body.department).to.have.property('name', updatedName);
-					expect(res.body.department).to.have.property('parentId', unit._id);
-					expect(res.body.department).to.have.property('ancestors').that.is.an('array').with.lengthOf(1);
-					expect(res.body.department.ancestors[0]).to.equal(unit._id);
-				});
+			await testDepartmentAncestors(department._id, updatedName, unit._id);
 		});
 
 		it('should fail removing a department from a unit that a monitor does not supervise', async () => {
@@ -858,32 +745,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 					expect(res.body.department).to.have.property('_id');
 				});
 
-			await request
-				.get(api(`livechat/units/${unit._id}`))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('_id', unit._id);
-					expect(res.body).to.have.property('name', unit.name);
-					expect(res.body).to.have.property('numMonitors', 1);
-					expect(res.body).to.have.property('numDepartments', 1);
-					expect(res.body).to.have.property('type', 'u');
-				});
+			await testDepartmentsInUnit(unit._id, unit.name, 1);
 
-			return request
-				.get(api(`livechat/department/${department._id}`))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department');
-					expect(res.body.department).to.have.property('_id', department._id);
-					expect(res.body.department).to.have.property('name', updatedName);
-					expect(res.body.department).to.have.property('parentId', unit._id);
-					expect(res.body.department).to.have.property('ancestors').that.is.an('array').with.lengthOf(1);
-					expect(res.body.department.ancestors[0]).to.equal(unit._id);
-				});
+			await testDepartmentAncestors(department._id, updatedName, unit._id);
 		});
 
 		it('should succesfully remove a department from a unit that a monitor supervises', async () => {
@@ -905,31 +769,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 					expect(res.body.department).to.have.property('_id');
 				});
 
-			await request
-				.get(api(`livechat/units/${unit._id}`))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('_id', unit._id);
-					expect(res.body).to.have.property('name', unit.name);
-					expect(res.body).to.have.property('numMonitors', 1);
-					expect(res.body).to.have.property('numDepartments', 0);
-					expect(res.body).to.have.property('type', 'u');
-				});
+			await testDepartmentsInUnit(unit._id, unit.name, 0);
 
-			return request
-				.get(api(`livechat/department/${department._id}`))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department');
-					expect(res.body.department).to.have.property('_id', department._id);
-					expect(res.body.department).to.have.property('name', updatedName);
-					expect(res.body.department).to.have.property('parentId').that.is.null;
-					expect(res.body.department).to.have.property('ancestors').that.is.null;
-				});
+			await testDepartmentAncestors(department._id, updatedName, null);
 		});
 	});
 });
