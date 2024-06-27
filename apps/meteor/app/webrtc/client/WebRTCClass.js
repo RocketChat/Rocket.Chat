@@ -23,12 +23,11 @@ class WebRTCTransportClass extends Emitter {
 			this.emit(type, data);
 		});
 	}
-
-	log(...args) {
-		if (this.debug === true) {
-			console.log(...args);
-		}
-	}
+                log(...args) {
+                   if (this.debug) {
+             console.log(...args);
+         }
+   }
 
 	onUserStream(type, data) {
 		if (data.room !== this.webrtcInstance.room) {
