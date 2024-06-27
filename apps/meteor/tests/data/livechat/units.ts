@@ -60,7 +60,7 @@ export const createUnit = async (
 
 export const deleteUnit = async (unit: IOmnichannelBusinessUnit): Promise<IOmnichannelBusinessUnit> => {
 	return new Promise((resolve, reject) => {
-		request
+		void request
 			.post(methodCall(`livechat:removeUnit`))
 			.set(credentials)
 			.send({
