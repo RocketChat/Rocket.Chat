@@ -4,6 +4,8 @@ import { createContext } from 'react';
 export type ModalContextValue = {
 	modal: {
 		setModal(modal?: ReactNode): void;
+		onDismissModal(cb: () => void): void;
+		dismissAction?: () => void;
 	};
 	currentModal: { component: ReactNode; region?: symbol };
 	region?: symbol;

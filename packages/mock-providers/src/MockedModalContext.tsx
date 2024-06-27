@@ -4,12 +4,15 @@ import React from 'react';
 
 export const MockedModalContext = ({ children }: { children: React.ReactNode }) => {
 	const [currentModal, setCurrentModal] = React.useState<ReactNode>(null);
+	const [dismissAction, setDismissAction] = React.useState<() => void>(() => null);
 
 	return (
 		<ModalContext.Provider
 			value={{
 				modal: {
 					setModal: setCurrentModal,
+					onDismissModal: setDismissAction,
+					dismissAction,
 				},
 				currentModal: { component: currentModal },
 			}}

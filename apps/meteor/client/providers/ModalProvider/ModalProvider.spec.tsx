@@ -2,7 +2,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { render, screen } from '@testing-library/react';
-import { expect } from 'chai';
+import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import React, { Suspense, createContext, useContext, useEffect } from 'react';
 
@@ -12,18 +12,20 @@ import ModalRegion from '../../views/modal/ModalRegion';
 import ModalProvider from './ModalProvider';
 import ModalProviderWithRegion from './ModalProviderWithRegion';
 
+type TestModalProps = { emitterEvent: string; modalFunc?: () => ReactNode; onClose?: () => void };
+
 const TestContext = createContext({ title: 'default' });
 const emitter = new Emitter();
 
-const TestModal = ({ emitterEvent, modalFunc }: { emitterEvent: string; modalFunc?: () => ReactNode }) => {
+const TestModal = ({ emitterEvent, modalFunc, onClose = () => undefined }: TestModalProps) => {
 	const setModal = useSetModal();
 	const { title } = useContext(TestContext);
 
 	useEffect(() => {
-		emitter.on(emitterEvent, () => {
-			setModal(modalFunc || <GenericModal title={title} onClose={() => undefined}></GenericModal>);
+		return emitter.on(emitterEvent, () => {
+			setModal(modalFunc || <GenericModal title={title} onClose={onClose}></GenericModal>);
 		});
-	}, [emitterEvent, setModal, title, modalFunc]);
+	}, [emitterEvent, setModal, title, modalFunc, onClose]);
 
 	return <></>;
 };
@@ -38,7 +40,8 @@ describe('Modal Provider', () => {
 			</Suspense>,
 		);
 		emitter.emit('open');
-		expect(await screen.findByText('default')).to.exist;
+
+		expect(await screen.findByText('default')).toBeTruthy();
 	});
 
 	it('should render a modal that is passed as a function', async () => {
@@ -50,33 +53,31 @@ describe('Modal Provider', () => {
 			</Suspense>,
 		);
 		emitter.emit('open');
-		expect(await screen.findByText('function modal')).to.exist;
+		expect(await screen.findByText('function modal')).toBeTruthy();
 	});
 
-	it('should render a modal through imperative modal', () => {
-		async () => {
-			render(
-				<Suspense fallback={null}>
-					<ModalProvider>
-						<ModalRegion />
-					</ModalProvider>
-				</Suspense>,
-			);
+	it('should render a modal through imperative modal', async () => {
+		render(
+			<Suspense fallback={null}>
+				<ModalProvider>
+					<ModalRegion />
+				</ModalProvider>
+			</Suspense>,
+		);
 
-			const { close } = imperativeModal.open({
-				component: GenericModal,
-				props: { title: 'imperativeModal' },
-			});
+		const { close } = imperativeModal.open({
+			component: GenericModal,
+			props: { title: 'imperativeModal' },
+		});
 
-			expect(await screen.findByText('imperativeModal')).to.exist;
+		expect(await screen.findByText('imperativeModal')).toBeTruthy();
 
-			close();
+		close();
 
-			expect(screen.queryByText('imperativeModal')).to.not.exist;
-		};
+		expect(screen.queryByText('imperativeModal')).toBeFalsy();
 	});
 
-	it('should not render a modal if no corresponding region exists', async () => {
+	it('should not render a modal if no corresponding region exists', () => {
 		// ModalProviderWithRegion will always have a region identifier set
 		// and imperativeModal will only render modals in the default region (e.g no region identifier)
 		render(
@@ -90,10 +91,10 @@ describe('Modal Provider', () => {
 			props: { title: 'imperativeModal' },
 		});
 
-		expect(screen.queryByText('imperativeModal')).to.not.exist;
+		expect(screen.queryByText('imperativeModal')).toBeFalsy();
 	});
 
-	it('should render a modal in another region', () => {
+	it('should render a modal in another region', async () => {
 		render(
 			<TestContext.Provider value={{ title: 'modal1' }}>
 				<ModalProviderWithRegion>
@@ -108,8 +109,29 @@ describe('Modal Provider', () => {
 		);
 
 		emitter.emit('openModal1');
-		expect(screen.getByText('modal1')).to.exist;
+		expect(await screen.findByText('modal1')).toBeTruthy();
 		emitter.emit('openModal2');
-		expect(screen.getByText('modal2')).to.exist;
+		expect(await screen.findByText('modal2')).toBeTruthy();
+	});
+
+	it('should call onClose function when modal dismissed', () => {
+		const mockCallback = jest.fn();
+
+		render(
+			<Suspense fallback={null}>
+				<ModalProviderWithRegion>
+					<TestModal emitterEvent='open' onClose={mockCallback} />
+				</ModalProviderWithRegion>
+			</Suspense>,
+		);
+
+		emitter.emit('open');
+
+		expect(mockCallback.mock.calls).toHaveLength(0);
+
+		userEvent.keyboard('{Escape}');
+
+		expect(screen.queryByText('default')).toBeFalsy();
+		expect(mockCallback.mock.calls).toHaveLength(1);
 	});
 });

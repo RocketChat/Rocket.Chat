@@ -1,4 +1,4 @@
-import { useModal, useCurrentModal } from '@rocket.chat/ui-contexts';
+import { useCurrentModal, useModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { lazy, useCallback } from 'react';
 
@@ -9,8 +9,8 @@ const FocusScope = lazy(() => import('react-aria').then((module) => ({ default: 
 
 const ModalRegion = (): ReactElement | null => {
 	const currentModal = useCurrentModal();
-	const { setModal } = useModal();
-	const handleDismiss = useCallback(() => setModal(null), [setModal]);
+	const { setModal, dismissAction } = useModal();
+	const handleDismiss = useCallback(() => (dismissAction ? dismissAction() : setModal(null)), [dismissAction, setModal]);
 
 	if (!currentModal) {
 		return null;
