@@ -136,7 +136,13 @@ settings.watchMultiple(['Email_Header', 'Email_Footer'], () => {
 });
 
 export const checkAddressFormat = (adresses: string | string[]): boolean =>
-	([] as string[]).concat(adresses).every((address) => validateEmail(address));
+	([] as string[]).concat(adresses).every((address) => {
+		const parts = address.split('<');
+		if (parts.length < 2) {
+			return validateEmail(address);
+		}
+		return validateEmail(parts[1].replace(/>/g, ''));
+	});
 
 export const sendNoWrap = async ({
 	to,
