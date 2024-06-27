@@ -5,40 +5,18 @@ import { callbacks } from '../../../../lib/callbacks';
 import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 
-const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<void> => {
-	const { value: parentMessage } = await Messages.refreshDiscussionMetadata(room);
-	if (!parentMessage) {
-		return;
-	}
-	void broadcastMessageFromData({
-		id: parentMessage._id,
-		data: parentMessage,
-	});
-};
-
 /**
  * We need to propagate the writing of new message in a discussion to the linking
  * system message
  */
 callbacks.add(
 	'afterSaveMessage',
-	async (message, { _id, prid }) => {
-		if (!prid) {
+	async (message, room) => {
+		if (!room.prid) {
 			return message;
 		}
 
-		const room = await Rooms.findOneById(_id, {
-			projection: {
-				msgs: 1,
-				lm: 1,
-			},
-		});
-
-		if (!room) {
-			return message;
-		}
-
-		await updateAndNotifyParentRoomWithParentMessage(room);
+		await Messages.refreshDiscussionMetadata(room);
 
 		return message;
 	},
@@ -58,7 +36,7 @@ callbacks.add(
 			});
 
 			if (room) {
-				await updateAndNotifyParentRoomWithParentMessage(room);
+				await Messages.refreshDiscussionMetadata(room);
 			}
 		}
 		if (message.drid) {
