@@ -46,3 +46,25 @@ export const createUnit = async (monitorId: string, username: string, department
             });
     });
 };
+
+export const deleteUnit = async (unit: IOmnichannelBusinessUnit): Promise<IOmnichannelBusinessUnit> => {
+    return new Promise((resolve, reject) => {
+        request
+            .post(methodCall(`livechat:removeUnit`))
+            .set(credentials)
+            .send({
+                message: JSON.stringify({
+                    method: 'livechat:removeUnit',
+                    params: [unit._id],
+                    id: '101',
+                    msg: 'method',
+                }),
+            })
+            .end((err: Error, res: DummyResponse<string, 'wrapped'>) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(JSON.parse(res.body.message).result);
+            });
+    });
+};
