@@ -8,9 +8,10 @@ type Action = {
 	content: string;
 	icon: IconKeys;
 	onClick: () => void;
+	variant?: string;
 };
 
-type RoomInfoActionsProps = {
+export type RoomInfoActionsProps = {
 	actions: { items: Action[] };
 	className?: string;
 };

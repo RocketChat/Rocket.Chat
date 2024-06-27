@@ -12,17 +12,10 @@ type UseRoomActionsOptions = {
 	onClickEnterRoom?: () => void;
 	onClickEdit?: () => void;
 	resetState?: () => void;
-	size?: number;
 };
 
-/**
- *
- * @param room
- * @param options
- * @returns If more than two room actions are enabled `menu.regular` will be a non-empty array
- */
 export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
-	const { onClickEnterRoom, onClickEdit, resetState, size = 2 } = options;
+	const { onClickEnterRoom, onClickEdit, resetState } = options;
 
 	const t = useTranslation();
 	const handleHide = useRoomHide(room);
@@ -91,19 +84,8 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 							},
 					  ]
 					: []),
-			],
-		};
-
-		if (memoizedActions.items.length <= size) {
-			return { actions: memoizedActions };
-		}
-
-		const buttons = memoizedActions.items.slice(0, size);
-		const regular = memoizedActions.items.slice(size);
-		const danger = canDeleteRoom
-			? [
-					{
-						items: [
+				...(canDeleteRoom
+					? [
 							{
 								id: 'delete',
 								content: t('Delete'),
@@ -111,14 +93,11 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 								onClick: handleDelete,
 								variant: 'danger',
 							},
-						],
-					},
-			  ]
-			: [];
+					  ]
+					: []),
+			],
+		};
 
-		const menu = [{ items: regular }, ...danger];
-		const actions = { items: buttons };
-
-		return { actions, menu };
-	}, [canDeleteRoom, handleConvertToTeam, handleDelete, handleHide, handleLeave, handleMoveToTeam, onClickEdit, onClickEnterRoom, size, t]);
+		return memoizedActions;
+	}, [canDeleteRoom, handleConvertToTeam, handleDelete, handleHide, handleLeave, handleMoveToTeam, onClickEdit, onClickEnterRoom, t]);
 };

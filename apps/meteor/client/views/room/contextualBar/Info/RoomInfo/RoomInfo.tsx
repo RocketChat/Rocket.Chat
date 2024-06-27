@@ -19,6 +19,7 @@ import MarkdownText from '../../../../../components/MarkdownText';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 import { useRoomActions } from '../hooks/useRoomActions';
 import RoomInfoActions from './RoomInfoActions';
+import { useSplitRoomActions } from '../hooks/useSplitRoomActions';
 
 type RoomInfoProps = {
 	room: IRoom;
@@ -37,7 +38,8 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 	const isDiscussion = 'prid' in room;
 
 	const retentionPolicy = useRetentionPolicy(room);
-	const { actions: actionsDefinition, menu: menuActions } = useRoomActions(room, { onClickEnterRoom, onClickEdit, resetState });
+	const actions = useRoomActions(room, { onClickEnterRoom, onClickEdit, resetState });
+	const { buttons, menu } = useSplitRoomActions(actions);
 
 	return (
 		<>
@@ -55,13 +57,13 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 						</InfoPanel.Avatar>
 
 						<InfoPanel.ActionGroup>
-							<RoomInfoActions actions={actionsDefinition} />
-							{menuActions && (
+							<RoomInfoActions actions={buttons} />
+							{menu && (
 								<GenericMenu
 									title={t('More')}
 									placement='bottom-end'
 									button={<IconButton icon='kebab' secondary flexShrink={0} flexGrow={0} maxHeight='initial' />}
-									sections={menuActions}
+									sections={menu}
 								/>
 							)}
 						</InfoPanel.ActionGroup>
