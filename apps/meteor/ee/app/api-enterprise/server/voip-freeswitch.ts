@@ -23,6 +23,9 @@ declare module '@rocket.chat/rest-typings' {
 		'/v1/voip-freeswitch.extension.assign': {
 			POST: (params: VoipFreeSwitchExtensionAssignProps) => void;
 		};
+		'/v1/voip-freeswitch.extension.getRegistrationInfoByUserId': {
+			GET: (params: { userId: string }) => { extension: FreeSwitchExtension; credentials: { password: string } };
+		};
 	}
 }
 
@@ -120,6 +123,44 @@ API.v1.addRoute(
 			return API.v1.success({
 				...extensionData,
 				...(existingUser && { userId: existingUser._id, username: existingUser.username }),
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'voip-freeswitch.extension.getRegistrationInfoByUserId',
+	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'] },
+	{
+		async get() {
+			const { userId } = this.queryParams;
+
+			if (!userId) {
+				throw new Error('Invalid params.');
+			}
+
+			const user = await Users.findOneById(userId, { projection: { freeSwitchExtension: 1 } });
+			if (!user) {
+				throw new Error('User not found.');
+			}
+
+			const { freeSwitchExtension: extension } = user;
+
+			if (!extension) {
+				throw new Error('Extension not assigned.');
+			}
+
+			const extensionData = await wrapExceptions(() => VoipFreeSwitch.getExtensionDetails({ extension })).suppress(() => undefined);
+			if (!extensionData) {
+				return API.v1.notFound();
+			}
+			const password = await wrapExceptions(() => VoipFreeSwitch.getUserPassword(extension)).suppress(() => undefined);
+
+			return API.v1.success({
+				extension: extensionData,
+				credentials: {
+					password,
+				},
 			});
 		},
 	},

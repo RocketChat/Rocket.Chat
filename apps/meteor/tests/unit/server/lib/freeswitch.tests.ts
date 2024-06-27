@@ -21,5 +21,17 @@ describe.skip('VoIP', () => {
 			expect(result).to.be.an('object');
 			expect(result.extension).to.be.equal('1001');
 		});
+
+		it('Should load user domain from FreeSwitch', async () => {
+			const result = await VoipFreeSwitch.getDomain();
+
+			expect(result).to.be.a('string').equal('rocket.chat');
+		});
+
+		it('Should load user password from FreeSwitch', async () => {
+			const result = await VoipFreeSwitch.getUserPassword('1000');
+
+			expect(result).to.be.a('string');
+		});
 	});
 });
