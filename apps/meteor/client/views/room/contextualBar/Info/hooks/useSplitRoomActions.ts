@@ -10,7 +10,7 @@ type UseSplitRoomActionsOptions = {
  * @param options
  * @returns If more than two room actions are enabled `menu.regular` will be a non-empty array
  */
-export const useSplitRoomActions = (actions: RoomInfoActionsProps['actions'], options?: useSplitRoomActionsOptions) => {
+export const useSplitRoomActions = (actions: RoomInfoActionsProps['actions'], options?: UseSplitRoomActionsOptions) => {
 	const size = options?.size || 2;
 
 	if (actions.items.length <= size) {
