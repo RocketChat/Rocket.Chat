@@ -138,16 +138,21 @@ export class SettingsRegistry {
 
 		const settingFromCodeOverwritten = overwriteSetting(settingFromCode);
 
+		const settingOverwrittenDefault = overrideSetting(settingFromCode);
+
 		const settingStored = this.store.getSetting(_id);
+
 		const settingStoredOverwritten = settingStored && overwriteSetting(settingStored);
+
+		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
+
+		const updatedSettingAfterApplyingOverwrite = isOverwritten ? settingFromCodeOverwritten : settingOverwrittenDefault;
 
 		try {
 			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
 		} catch (e) {
 			IS_DEVELOPMENT && SystemLogger.error(`Invalid setting code ${_id}: ${(e as Error).message}`);
 		}
-
-		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
 
 		const { _id: _, ...settingProps } = settingFromCodeOverwritten;
 
@@ -166,6 +171,9 @@ export class SettingsRegistry {
 			})();
 
 			await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
+
+			this.store.set(updatedSettingAfterApplyingOverwrite);
+
 			return;
 		}
 
@@ -175,6 +183,8 @@ export class SettingsRegistry {
 				const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
 				await this.saveUpdatedSetting(_id, settingProps, removedKeys);
+
+				this.store.set(updatedSettingAfterApplyingOverwrite);
 			}
 			return;
 		}
@@ -188,13 +198,9 @@ export class SettingsRegistry {
 			return;
 		}
 
-		const settingOverwrittenDefault = overrideSetting(settingFromCode);
+		await this.model.insertOne(updatedSettingAfterApplyingOverwrite); // no need to emit unless we remove the oplog
 
-		const setting = isOverwritten ? settingFromCodeOverwritten : settingOverwrittenDefault;
-
-		await this.model.insertOne(setting); // no need to emit unless we remove the oplog
-
-		this.store.set(setting);
+		this.store.set(updatedSettingAfterApplyingOverwrite);
 	}
 
 	/*
