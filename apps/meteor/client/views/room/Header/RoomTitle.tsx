@@ -5,10 +5,25 @@ import type { KeyboardEvent, ReactElement } from 'react';
 import React from 'react';
 
 import { useRoomToolbox } from '../contexts/RoomToolboxContext';
+import { useSession } from '@rocket.chat/ui-contexts';
 import HeaderIconWithRoom from './HeaderIconWithRoom';
 
 const RoomTitle = ({ room }: { room: IRoom }): ReactElement => {
-	useDocumentTitle(room.name, false);
+	
+	const getTotalUnreaddMessages = (): number => {
+		const unreadMessages = useSession('unread') as number | '' | '999+' | '•';
+		if (typeof unreadMessages !== 'number') {
+			return 0;
+		}
+		return unreadMessages;
+	};
+
+	const totalUnread = getTotalUnreaddMessages();
+	const roomUnread = room.unread === undefined ? 0 : room.unread;
+	useDocumentTitle(
+		// [total unread] (room unread) Room Name
+		(totalUnread > 0 ? '[' + totalUnread + '] ' : '') + (roomUnread > 0 ? '(' + roomUnread + ') ' : '') + room.name, false);
+
 	const { openTab } = useRoomToolbox();
 
 	const handleOpenRoomInfo = useEffectEvent(() => {
