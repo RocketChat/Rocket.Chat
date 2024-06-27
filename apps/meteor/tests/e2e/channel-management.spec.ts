@@ -186,7 +186,7 @@ test.describe.serial('channel-management', () => {
 		await expect(poHomeChannel.tabs.notificationPreferences.getPreferenceByDevice('Email')).toContainText('Mentions');
 	});
 
-	test.describe('cross user tests', () => {
+	test.describe.serial('cross user tests', () => {
 		let user1Page: Page;
 		test.beforeEach(async ({ browser }) => {
 			user1Page = await browser.newPage({ storageState: Users.user1.state });
@@ -208,6 +208,20 @@ test.describe.serial('channel-management', () => {
 			await user1Page.goto(`/channel/${targetChannel}`);
 			await user1Channel.waitForChannel();
 			await expect(user1Channel.readOnlyFooter).toBeVisible();
+		});
+
+		test('should unmuteUser user1', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.tabs.btnTabMembers.click();
+			await poHomeChannel.tabs.members.showAllUsers();
+			await poHomeChannel.tabs.members.unmuteUser('user1');
+
+			await expect(poHomeChannel.getSystemMessageByText('unmuted user1')).toBeVisible();
+
+			const user1Channel = new HomeChannel(user1Page);
+			await user1Page.goto(`/channel/${targetChannel}`);
+			await user1Channel.waitForChannel();
+			await expect(user1Channel.composer).toBeVisible();
 		});
 
 		test('should set user1 as moderator', async () => {
