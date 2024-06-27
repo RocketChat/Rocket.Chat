@@ -10,7 +10,6 @@ import { updatePermission, updateSetting } from '../../../data/permissions.helpe
 import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
-import { updatePredictedVisitorAbandonment } from '/ee/app/livechat-enterprise/server/lib/Helper';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Units', () => {
 	before((done) => getCredentials(done));
@@ -415,10 +414,10 @@ import { updatePredictedVisitorAbandonment } from '/ee/app/livechat-enterprise/s
 
 	describe('[POST] livechat/department', () => {
 		let departmentId: string;
-		let monitor1: Awaited<ReturnType<typeof createUser>> | undefined;
-		let monitor1Credentials: Awaited<ReturnType<typeof login>> | undefined;
-		let monitor2: Awaited<ReturnType<typeof createUser>> | undefined;
-		let monitor2Credentials: Awaited<ReturnType<typeof login>> | undefined;
+		let monitor1: Awaited<ReturnType<typeof createUser>>;
+		let monitor1Credentials: Awaited<ReturnType<typeof login>>;
+		let monitor2: Awaited<ReturnType<typeof createUser>>;
+		let monitor2Credentials: Awaited<ReturnType<typeof login>>;
 		let unit: IOmnichannelBusinessUnit;
 
 		before(async () => {
@@ -600,10 +599,10 @@ import { updatePredictedVisitorAbandonment } from '/ee/app/livechat-enterprise/s
 	});
 
 	describe('[PUT] livechat/department', () => {
-		let monitor1: Awaited<ReturnType<typeof createUser>> | undefined;
-		let monitor1Credentials: Awaited<ReturnType<typeof login>> | undefined;
-		let monitor2: Awaited<ReturnType<typeof createUser>> | undefined;
-		let monitor2Credentials: Awaited<ReturnType<typeof login>> | undefined;
+		let monitor1: Awaited<ReturnType<typeof createUser>>;
+		let monitor1Credentials: Awaited<ReturnType<typeof login>>;
+		let monitor2: Awaited<ReturnType<typeof createUser>>;
+		let monitor2Credentials: Awaited<ReturnType<typeof login>>;
 		let unit: IOmnichannelBusinessUnit;
 		let department: ILivechatDepartment;
 

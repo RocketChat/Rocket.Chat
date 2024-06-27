@@ -3,7 +3,6 @@ import { LivechatDepartment, LivechatUnit } from '@rocket.chat/models';
 
 import { hasAnyRoleAsync } from '../../../../../app/authorization/server/functions/hasRole';
 import { callbacks } from '../../../../../lib/callbacks';
-import { cbLogger } from '../lib/logger';
 import { getUnitsFromUser } from '../methods/getUnitsFromUserRoles';
 
 callbacks.add(
