@@ -1,6 +1,6 @@
 import type { RoomInfoActionsProps } from '../RoomInfo/RoomInfoActions';
 
-type useSplitRoomActionsOptions = {
+type UseSplitRoomActionsOptions = {
 	size?: number;
 };
 
