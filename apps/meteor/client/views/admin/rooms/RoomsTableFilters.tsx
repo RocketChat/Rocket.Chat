@@ -9,7 +9,6 @@ const initialRoomTypeFilterStructure = [
 	{
 		id: 'filter_by_room',
 		text: 'Filter_by_room',
-		isGroupTitle: true,
 	},
 	{
 		id: 'd',
@@ -71,7 +70,7 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 			setRoomTypeSelectedOptions(options);
 		},
 		[text, setFilters],
-	) as Dispatch<SetStateAction<OptionProp[]>>;
+	);
 
 	return (
 		<Box

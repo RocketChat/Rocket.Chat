@@ -34,8 +34,8 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 			justifyContent='space-between'
 			alignItems='center'
 			h='x40'
-			className={['rcx-input-box__wrapper', customStyle].filter(Boolean)}
 			{...props}
+			className={['rcx-input-box__wrapper', customStyle].filter(Boolean)}
 		>
 			{isDirty ? `${t(selectedOptionsTitle)} (${selectedOptionsCount})` : t(defaultTitle)}
 			<Icon name={collapsed ? 'chevron-up' : 'chevron-down'} fontSize='x20' color='hint' />
