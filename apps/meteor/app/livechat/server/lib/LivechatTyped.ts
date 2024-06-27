@@ -21,6 +21,7 @@ import type {
 	IOmnichannelAgent,
 	ILivechatDepartmentAgents,
 	LivechatDepartmentDTO,
+	OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -383,7 +384,13 @@ class LivechatClass {
 		}
 	}
 
-	async getRoom(
+	async getRoom<
+		E extends Record<string, unknown> & {
+			sla?: string;
+			customFields?: Record<string, unknown>;
+			source?: OmnichannelSourceType;
+		},
+	>(
 		guest: ILivechatVisitor,
 		message: Pick<IMessage, 'rid' | 'msg' | 'token'>,
 		roomInfo: {
@@ -391,7 +398,7 @@ class LivechatClass {
 			[key: string]: unknown;
 		},
 		agent?: SelectedAgent,
-		extraData?: Record<string, unknown>,
+		extraData?: E,
 	) {
 		if (!this.enabled()) {
 			throw new Meteor.Error('error-omnichannel-is-disabled');
