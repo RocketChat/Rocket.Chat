@@ -1,5 +1,5 @@
 import path from 'path';
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import fs from 'fs';
 
 import UglifyJS from 'uglify-js';
@@ -17,7 +17,7 @@ const options = {
 };
 
 if (process.platform === 'win32') {
-	execSync(`${pluginPath}/build.bat`, options);
+	execFileSync(`${pluginPath}/build.bat`, [], options);
 } else {
-	execSync(`sh ${pluginPath}/build.sh`, options);
+	execFileSync('sh', [`${pluginPath}/build.sh`], options);
 }
