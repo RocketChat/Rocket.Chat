@@ -1,6 +1,5 @@
-import debounce from 'lodash.debounce';
-
 import { settings } from '../../app/settings/server/cached';
+import { debounce } from '../../app/utils/debounce';
 import { initCustomOAuthServices } from '../lib/oauth/initCustomOAuthServices';
 import { removeOAuthService } from '../lib/oauth/removeOAuthService';
 import { updateOAuthServices } from '../lib/oauth/updateOAuthServices';

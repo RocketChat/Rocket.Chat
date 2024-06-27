@@ -1,7 +1,6 @@
 import type { IRole, IUser } from '@rocket.chat/core-typings';
 import type { FindPaginated } from '@rocket.chat/model-typings';
 import { Roles, Subscriptions, Users } from '@rocket.chat/models';
-import { compact } from 'lodash';
 import type { Document, FindCursor, FindOptions } from 'mongodb';
 
 export function getUsersInRole(roleId: IRole['_id'], scope?: string): Promise<FindCursor<IUser>>;
@@ -43,7 +42,7 @@ export async function getUsersInRolePaginated(
 				.map((subscription) => subscription.u?._id)
 				.toArray();
 
-			return Users.findPaginated({ _id: { $in: compact(subscriptions) } }, options || {});
+			return Users.findPaginated({ _id: { $in: subscriptions.filter(Boolean) } }, options || {});
 		case 'Users':
 		default:
 			return Users.findPaginatedUsersInRoles([role._id], options);

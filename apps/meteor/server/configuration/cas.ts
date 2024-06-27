@@ -1,9 +1,9 @@
 import type { Awaited } from '@rocket.chat/core-typings';
-import debounce from 'lodash.debounce';
 import { RoutePolicy } from 'meteor/routepolicy';
 import { WebApp } from 'meteor/webapp';
 
 import { settings } from '../../app/settings/server/cached';
+import { debounce } from '../../app/utils/debounce';
 import { loginHandlerCAS } from '../lib/cas/loginHandler';
 import { middlewareCAS } from '../lib/cas/middleware';
 import { updateCasServices } from '../lib/cas/updateCasService';

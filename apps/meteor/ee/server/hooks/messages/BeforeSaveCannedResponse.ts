@@ -1,8 +1,9 @@
 import { isILivechatVisitor, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users } from '@rocket.chat/models';
-import get from 'lodash.get';
 import mem from 'mem';
+
+type User = Pick<IUser, '_id' | 'username' | 'name' | 'emails' | 'language'>;
 
 const placeholderFields = {
 	'contact.name': {
@@ -27,6 +28,16 @@ const placeholderFields = {
 	},
 };
 
+const get = <T>(obj: T, path: string, defValue: string) => {
+	if (!path) return undefined;
+
+	const pathArray = path.match(/([^[.\]])+/g);
+
+	const result = pathArray?.reduce((prevObj: any, key) => prevObj?.[key], obj);
+
+	return result === undefined ? defValue : result;
+};
+
 export class BeforeSaveCannedResponse {
 	static enabled = false;
 
@@ -38,15 +49,7 @@ export class BeforeSaveCannedResponse {
 		maxAge: 1000 * 30,
 	});
 
-	async replacePlaceholders({
-		message,
-		room,
-		user,
-	}: {
-		message: IMessage;
-		room: IRoom;
-		user: Pick<IUser, '_id' | 'username' | 'name' | 'emails' | 'language'>;
-	}): Promise<IMessage> {
+	async replacePlaceholders({ message, room, user }: { message: IMessage; room: IRoom; user: User }): Promise<IMessage> {
 		// If the feature is disabled, return the message as is
 		if (!BeforeSaveCannedResponse.enabled) {
 			return message;
