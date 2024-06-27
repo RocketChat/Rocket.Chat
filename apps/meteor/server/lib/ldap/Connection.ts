@@ -660,6 +660,11 @@ export class LDAPConnection {
 		this.client._updateIdle(override);
 	}
 
+	public async forceBindDN(): Promise<void> {
+		this.usingAuthentication = false;
+		await this.maybeBindDN();
+	}
+
 	protected async maybeBindDN(): Promise<void> {
 		if (this.usingAuthentication) {
 			return;
