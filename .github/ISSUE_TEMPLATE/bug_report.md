@@ -35,6 +35,8 @@ If you are experiencing a bug please search our issues to be sure it is not alre
 ### Server Setup Information:
 
 - Version of Rocket.Chat Server: 
+- License Type:
+- Number of Users: 
 - Operating System: 
 - Deployment Method: <!-- snap/docker/tar/etc -->
 - Number of Running Instances: 
