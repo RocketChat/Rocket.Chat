@@ -53,7 +53,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ key: { 'editedBy._id': 1 }, sparse: true },
 			{ key: { 'rid': 1, 't': 1, 'u._id': 1 } },
 			{ key: { expireAt: 1 }, expireAfterSeconds: 0 },
-			{ key: { msg: 'text' } },
+			{ key: { 'msg': 'text', 'attachments.description': 'text' } },
 			{ key: { 'file._id': 1 }, sparse: true },
 			{ key: { 'mentions.username': 1 }, sparse: true },
 			{ key: { pinned: 1 }, sparse: true },
