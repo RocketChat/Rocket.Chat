@@ -186,7 +186,7 @@ function SideBarItemTemplateWithData({
 				!selected && sidebar.toggle();
 			}}
 			aria-label={title}
-			title={title}
+			title={((((room.uids)?.length ?? 0) > 1) && room.uids) ? (title) : (room.t == "d" ? (title + " (You)") : title)}
 			time={lastMessage?.ts}
 			subtitle={subtitle}
 			icon={icon}
