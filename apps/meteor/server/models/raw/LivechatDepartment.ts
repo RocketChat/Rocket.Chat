@@ -222,6 +222,14 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.updateOne({ _id }, { $set: { archived: true, enabled: false } });
 	}
 
+	addDepartmentToUnit(_id: string, unitId: string, ancestors: string[]): Promise<Document | UpdateResult> {
+		return this.updateOne({ _id }, { $set: { parentId: unitId, ancestors } });
+	}
+
+	removeDepartmentFromUnit(_id: string): Promise<Document | UpdateResult> {
+		return this.updateOne({ _id }, { $set: { parentId: null, ancestors: null } });
+	}
+
 	async createOrUpdateDepartment(
 		_id: string | null,
 		data: {

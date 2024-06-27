@@ -1872,16 +1872,20 @@ class LivechatClass {
 	 * @param {string|null} _id - The department id
 	 * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
 	 * @param {{upsert?: { agentId: string; count?: number; order?: number; }[], remove?: { agentId: string; count?: number; order?: number; }}} [departmentAgents] - The department agents
+	 * @param {string|undefined} departmentUnitId - The department's unit id
 	 */
 	async saveDepartment(
+		userId: string,
 		_id: string | null,
 		departmentData: LivechatDepartmentDTO,
 		departmentAgents?: {
 			upsert?: { agentId: string; count?: number; order?: number }[];
 			remove?: { agentId: string; count?: number; order?: number };
 		},
+		departmentUnit?: { _id?: string },
 	) {
 		check(_id, Match.Maybe(String));
+		check(departmentUnit, Match.Maybe({ _id: Match.Optional(String) }));
 
 		const department = _id ? await LivechatDepartment.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1 } }) : null;
 
@@ -1968,6 +1972,10 @@ class LivechatClass {
 		// Disable event
 		if (department?.enabled && !departmentDB?.enabled) {
 			await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
+		}
+
+		if (departmentUnit) {
+			await callbacks.run('livechat.manageDepartmentUnit', { userId, departmentId: departmentDB._id, unitId: departmentUnit._id });
 		}
 
 		return departmentDB;
