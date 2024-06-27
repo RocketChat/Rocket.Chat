@@ -28,7 +28,10 @@ const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 	badge: Badge,
 }) => {
 	const path = pathSection;
-	const isActive = !!path && currentPath?.includes(path as string);
+	let isActive = !!path && currentPath?.includes(path as string);
+	if (!isActive && currentPath === '/admin/workspace') {
+		isActive = path === '/admin/info';
+	}
 
 	if (permissionGranted === false || (typeof permissionGranted === 'function' && !permissionGranted())) {
 		return null;
