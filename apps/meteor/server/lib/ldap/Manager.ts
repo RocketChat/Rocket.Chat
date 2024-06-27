@@ -44,6 +44,8 @@ export class LDAPManager {
 			const slugifiedUsername = this.slugifyUsername(ldapUser, username);
 			const user = await this.findExistingUser(ldapUser, slugifiedUsername);
 
+			// Bind connection to the admin user so that RC has full access to groups in the next steps
+			await ldap.bindAuthenticationUser();
 			if (user) {
 				return await this.loginExistingUser(ldap, user, ldapUser, password);
 			}
