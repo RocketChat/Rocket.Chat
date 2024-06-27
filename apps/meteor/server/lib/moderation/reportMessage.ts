@@ -25,11 +25,18 @@ export const reportMessage = async (messageId: IMessage['_id'], description: str
 		throw new Error('error-invalid-user');
 	}
 
+	const isAppUser = user?.type === 'app';
+
 	const { rid } = message;
 	// If the user can't access the room where the message is, report that the message id is invalid
 	const room = await Rooms.findOneById(rid);
-	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
-		throw new Error('error-invalid-message_id');
+
+	if (!room) {
+		throw new Error('error-invalid-room');
+	}
+
+	if (!isAppUser && !(await canAccessRoomAsync(room, { _id: uid }))) {
+		throw new Error('error-not-allowed');
 	}
 
 	const reportedBy = {
