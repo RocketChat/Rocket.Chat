@@ -9,7 +9,7 @@ const fileInputProps = { type: 'file', multiple: true };
 
 export const useFileUploadAction = (disabled: boolean): GenericMenuItemProps => {
 	const t = useTranslation();
-	const fileUploadEnabled = useSetting('FileUpload_Enabled');
+	const fileUploadEnabled = useSetting<boolean>('FileUpload_Enabled');
 	const fileInputRef = useFileInput(fileInputProps);
 	const chat = useChat();
 
@@ -23,10 +23,10 @@ export const useFileUploadAction = (disabled: boolean): GenericMenuItemProps => 
 		};
 
 		const handleUploadChange = async () => {
-			const { mime } = await import('../../../../../../../app/utils/lib/mimeTypes');
+			const { getMimeType } = await import('../../../../../../../app/utils/lib/mimeTypes');
 			const filesToUpload = Array.from(fileInputRef?.current?.files ?? []).map((file) => {
 				Object.defineProperty(file, 'type', {
-					value: mime.lookup(file.name),
+					value: getMimeType(file.name),
 				});
 				return file;
 			});

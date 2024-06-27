@@ -2,11 +2,9 @@ import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 
-describe('[Roles]', function () {
-	this.retries(0);
-
+describe('[Roles]', () => {
 	const isEnterprise = Boolean(process.env.IS_EE);
 
 	before((done) => getCredentials(done));

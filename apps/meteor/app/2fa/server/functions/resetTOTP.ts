@@ -4,6 +4,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { isUserIdFederated } from '../../../../server/lib/isUserIdFederated';
+import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 
@@ -68,6 +69,14 @@ export async function resetTOTP(userId: string, notifyUser = false): Promise<boo
 
 	if (result?.modifiedCount === 1) {
 		await Users.unsetLoginTokens(userId);
+
+		void notifyOnUserChange({
+			clientAction: 'updated',
+			id: userId,
+			diff: {
+				'services.resume.loginTokens': [],
+			},
+		});
 		return true;
 	}
 

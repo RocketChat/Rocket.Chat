@@ -1,5 +1,5 @@
 import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
-import type { IMessage, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, SettingValue, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Messages, Settings, Users } from '@rocket.chat/models';
 import mem from 'mem';
 
@@ -13,7 +13,7 @@ const getUserNameCached = mem(
 	{ maxAge: 10000 },
 );
 
-const getSettingCached = mem(Settings.getValueById, { maxAge: 10000 });
+const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
 
 export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<IMessage | void> {
 	const message = data ?? (await Messages.findOneById(id));

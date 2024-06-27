@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
@@ -575,7 +575,7 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.createDiscussion': {
 		POST: (params: RoomsCreateDiscussionProps) => {
-			discussion: IRoom;
+			discussion: IRoom & { rid: IRoom['_id'] };
 		};
 	};
 
@@ -618,6 +618,25 @@ export type RoomsEndpoints = {
 			msg?: string;
 			tmid?: string;
 			customFields?: string;
+		}) => { message: IMessage | null };
+	};
+
+	'/v1/rooms.media/:rid': {
+		POST: (params: { file: File }) => { file: { url: string } };
+	};
+
+	'/v1/rooms.mediaConfirm/:rid/:fileId': {
+		POST: (params: {
+			description?: string;
+			avatar?: string;
+			emoji?: string;
+			alias?: string;
+			groupable?: boolean;
+			msg?: string;
+			tmid?: string;
+			customFields?: string;
+			t?: IMessage['t'];
+			content?: IE2EEMessage['content'];
 		}) => { message: IMessage | null };
 	};
 

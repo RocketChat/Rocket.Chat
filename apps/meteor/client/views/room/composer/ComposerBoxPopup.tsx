@@ -9,6 +9,7 @@ export type ComposerBoxPopupProps<
 	T extends {
 		_id: string;
 		sort?: number;
+		disabled?: boolean;
 	},
 > = {
 	title?: string;
@@ -22,6 +23,7 @@ function ComposerBoxPopup<
 	T extends {
 		_id: string;
 		sort?: number;
+		disabled?: boolean;
 	},
 >({
 	title,
@@ -37,7 +39,9 @@ function ComposerBoxPopup<
 
 	const variant = popupSizes && popupSizes.inlineSize < 480 ? 'small' : 'large';
 
-	const getOptionTitle = <T extends { _id: string; sort?: number; outside?: boolean; suggestion?: boolean }>(item: T) => {
+	const getOptionTitle = <T extends { _id: string; sort?: number; outside?: boolean; suggestion?: boolean; disabled?: boolean }>(
+		item: T,
+	) => {
 		if (variant !== 'small') {
 			return undefined;
 		}
@@ -48,6 +52,10 @@ function ComposerBoxPopup<
 
 		if (item.suggestion) {
 			return t('Suggestion_from_recent_messages');
+		}
+
+		if (item.disabled) {
+			return t('Unavailable_in_encrypted_channels');
 		}
 	};
 
@@ -96,6 +104,7 @@ function ComposerBoxPopup<
 								id={`popup-item-${item._id}`}
 								tabIndex={item === focused ? 0 : -1}
 								aria-selected={item === focused}
+								disabled={item.disabled}
 							>
 								{renderItem({ item: { ...item, variant } })}
 							</Option>

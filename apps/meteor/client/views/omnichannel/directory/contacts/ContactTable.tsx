@@ -26,7 +26,7 @@ import { useCurrentContacts } from './hooks/useCurrentContacts';
 
 function ContactTable(): ReactElement {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
-	const { sortBy, sortDirection, setSort } = useSort<'username' | 'phone' | 'name' | 'visitorEmails.address' | 'lastchat'>('username');
+	const { sortBy, sortDirection, setSort } = useSort<'username' | 'phone' | 'name' | 'visitorEmails.address' | 'lastChat.ts'>('username');
 	const isCallReady = useIsCallReady();
 
 	const [term, setTerm] = useDebouncedState('', 500);
@@ -90,7 +90,13 @@ function ContactTable(): ReactElement {
 			>
 				{t('Email')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='lastchat' direction={sortDirection} active={sortBy === 'lastchat'} onClick={setSort} sort='lastchat'>
+			<GenericTableHeaderCell
+				key='lastchat'
+				direction={sortDirection}
+				active={sortBy === 'lastChat.ts'}
+				onClick={setSort}
+				sort='lastChat.ts'
+			>
 				{t('Last_Chat')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='call' width={44} />

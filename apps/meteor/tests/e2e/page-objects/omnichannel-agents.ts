@@ -23,7 +23,7 @@ export class OmnichannelAgents {
 	}
 
 	get inputSearch(): Locator {
-		return this.page.locator('[placeholder="Search"]');
+		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	get btnAdd(): Locator {

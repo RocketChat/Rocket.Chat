@@ -17,7 +17,7 @@ import { setSettingValueById } from './utils/setSettingValueById';
 import type { BaseTest } from './utils/test';
 import { test, expect } from './utils/test';
 
-const resetTestData = async (cleanupOnly = false) => {
+const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupOnly?: boolean } = {}) => {
 	// Reset saml users' data on mongo in the beforeAll hook to allow re-running the tests within the same playwright session
 	// This is needed because those tests will modify this data and running them a second time would trigger different code paths
 	const connection = await MongoClient.connect(constants.URL_MONGODB);
@@ -45,43 +45,21 @@ const resetTestData = async (cleanupOnly = false) => {
 		),
 	);
 
-	await Promise.all(
-		[
-			{
-				_id: 'Accounts_AllowAnonymousRead',
-				value: false,
-			},
-			{
-				_id: 'SAML_Custom_Default_logout_behaviour',
-				value: 'SAML',
-			},
-			{
-				_id: 'SAML_Custom_Default_immutable_property',
-				value: 'EMail',
-			},
-			{
-				_id: 'SAML_Custom_Default_mail_overwrite',
-				value: false,
-			},
-			{
-				_id: 'SAML_Custom_Default',
-				value: false,
-			},
-			{
-				_id: 'SAML_Custom_Default_role_attribute_sync',
-				value: true,
-			},
-			{
-				_id: 'SAML_Custom_Default_role_attribute_name',
-				value: 'role',
-			},
-		].map((setting) =>
-			connection
-				.db()
-				.collection('rocketchat_settings')
-				.updateOne({ _id: setting._id }, { $set: { value: setting.value } }),
-		),
-	);
+	const settings = [
+		{ _id: 'Accounts_AllowAnonymousRead', value: false },
+		{ _id: 'SAML_Custom_Default_logout_behaviour', value: 'SAML' },
+		{ _id: 'SAML_Custom_Default_immutable_property', value: 'EMail' },
+		{ _id: 'SAML_Custom_Default_mail_overwrite', value: false },
+		{ _id: 'SAML_Custom_Default', value: false },
+		{ _id: 'SAML_Custom_Default_role_attribute_sync', value: true },
+		{ _id: 'SAML_Custom_Default_role_attribute_name', value: 'role' },
+		{ _id: 'SAML_Custom_Default_provider', value: 'test-sp' },
+		{ _id: 'SAML_Custom_Default_issuer', value: 'http://localhost:3000/_saml/metadata/test-sp' },
+		{ _id: 'SAML_Custom_Default_entry_point', value: 'http://localhost:8080/simplesaml/saml2/idp/SSOService.php' },
+		{ _id: 'SAML_Custom_Default_idp_slo_redirect_url', value: 'http://localhost:8080/simplesaml/saml2/idp/SingleLogoutService.php' },
+	];
+
+	await Promise.all(settings.map(({ _id, value }) => setSettingValueById(api, _id, value)));
 };
 
 const setupCustomRole = async (api: BaseTest['api']) => {
@@ -102,7 +80,7 @@ test.describe('SAML', () => {
 	const containerPath = path.join(__dirname, 'containers', 'saml');
 
 	test.beforeAll(async ({ api }) => {
-		await resetTestData();
+		await resetTestData({ api });
 
 		// Only one setting updated through the API to avoid refreshing the service configurations several times
 		await expect((await setSettingValueById(api, 'SAML_Custom_Default', true)).status()).toBe(200);
@@ -149,7 +127,7 @@ test.describe('SAML', () => {
 		}
 
 		// Remove saml test users so they don't interfere with other tests
-		await resetTestData(true);
+		await resetTestData({ cleanupOnly: true });
 
 		// Remove created custom role
 		if (constants.IS_EE) {

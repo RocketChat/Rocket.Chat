@@ -4,18 +4,20 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import { useExternalLink } from '../../../hooks/useExternalLink';
-import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
 import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
 import SeatsCapUsage from './SeatsCapUsage';
 
 type UserPageHeaderContentWithSeatsCapProps = {
 	activeUsers: number;
 	maxActiveUsers: number;
+	isSeatsCapExceeded: boolean;
 };
 
-const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: UserPageHeaderContentWithSeatsCapProps): ReactElement => {
-	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
-
+const UserPageHeaderContentWithSeatsCap = ({
+	isSeatsCapExceeded,
+	activeUsers,
+	maxActiveUsers,
+}: UserPageHeaderContentWithSeatsCapProps): ReactElement => {
 	const t = useTranslation();
 	const router = useRouter();
 
@@ -36,13 +38,13 @@ const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: User
 				<SeatsCapUsage members={activeUsers} limit={maxActiveUsers} />
 			</Margins>
 			<ButtonGroup>
-				<Button icon='mail' onClick={handleInviteButtonClick}>
+				<Button icon='mail' onClick={handleInviteButtonClick} disabled={isSeatsCapExceeded}>
 					{t('Invite')}
 				</Button>
-				<Button icon='user-plus' onClick={handleNewButtonClick}>
+				<Button icon='user-plus' onClick={handleNewButtonClick} disabled={isSeatsCapExceeded}>
 					{t('New_user')}
 				</Button>
-				{isCreateUserDisabled && (
+				{isSeatsCapExceeded && (
 					<Button primary role='link' onClick={() => openExternalLink(manageSubscriptionUrl)}>
 						{t('Buy_more_seats')}
 					</Button>

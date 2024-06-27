@@ -42,17 +42,17 @@ WithCallout.args = {
 
 export const types = () => (
 	<FieldGroup>
-		<Setting.Memoized _id='setting-id-1' label='Label' type='action' actionText='Action text' />
-		<Setting.Memoized _id='setting-id-2' label='Label' type='asset' />
-		<Setting.Memoized _id='setting-id-3' label='Label' type='boolean' />
-		<Setting.Memoized _id='setting-id-4' label='Label' type='code' />
-		<Setting.Memoized _id='setting-id-5' label='Label' type='font' />
-		<Setting.Memoized _id='setting-id-6' label='Label' type='int' />
-		<Setting.Memoized _id='setting-id-7' label='Label' type='language' />
-		<Setting.Memoized _id='setting-id-8' label='Label' type='password' />
-		<Setting.Memoized _id='setting-id-9' label='Label' type='relativeUrl' />
-		<Setting.Memoized _id='setting-id-10' label='Label' type='select' />
-		<Setting.Memoized _id='setting-id-11' label='Label' type='string' />
+		<Setting.Memoized packageValue _id='setting-id-1' label='Label' type='action' actionText='Action text' />
+		<Setting.Memoized packageValue='' _id='setting-id-2' label='Label' type='asset' />
+		<Setting.Memoized packageValue _id='setting-id-3' label='Label' type='boolean' />
+		<Setting.Memoized packageValue='' _id='setting-id-4' label='Label' type='code' />
+		<Setting.Memoized packageValue='' _id='setting-id-5' label='Label' type='font' />
+		<Setting.Memoized packageValue={1} _id='setting-id-6' label='Label' type='int' />
+		<Setting.Memoized packageValue='' _id='setting-id-7' label='Label' type='language' />
+		<Setting.Memoized packageValue='' _id='setting-id-8' label='Label' type='password' />
+		<Setting.Memoized packageValue='' _id='setting-id-9' label='Label' type='relativeUrl' />
+		<Setting.Memoized packageValue='' _id='setting-id-10' label='Label' type='select' />
+		<Setting.Memoized packageValue='' _id='setting-id-11' label='Label' type='string' />
 	</FieldGroup>
 );
 

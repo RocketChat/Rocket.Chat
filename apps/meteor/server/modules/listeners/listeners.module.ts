@@ -157,6 +157,16 @@ export class ListenersModule {
 				return;
 			}
 
+			notifications.notifyUserInThisInstance(_id, 'userData', {
+				type: 'updated',
+				id: _id,
+				diff: {
+					status,
+					...(statusText && { statusText }),
+				},
+				unset: {},
+			});
+
 			notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText, name, roles]);
 
 			if (_id) {

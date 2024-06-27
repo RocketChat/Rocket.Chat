@@ -12,11 +12,11 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	findOneQueuedByRoomId(rid: string): Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null>;
 	findOneByRoomId<T extends Document = ILivechatInquiryRecord>(
 		rid: string,
-		options: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
+		options?: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
 	): Promise<T | null>;
 	getDistinctQueuedDepartments(options: DistinctOptions): Promise<(string | undefined)[]>;
 	setDepartmentByInquiryId(inquiryId: string, department: string): Promise<ILivechatInquiryRecord | null>;
-	setLastMessageByRoomId(rid: string, message: IMessage): Promise<UpdateResult>;
+	setLastMessageByRoomId(rid: ILivechatInquiryRecord['rid'], message: IMessage): Promise<ILivechatInquiryRecord | null>;
 	findNextAndLock(queueSortBy: OmnichannelSortingMechanismSettingType, department?: string): Promise<ILivechatInquiryRecord | null>;
 	unlock(inquiryId: string): Promise<UpdateResult>;
 	unlockAndQueue(inquiryId: string): Promise<UpdateResult>;
@@ -30,7 +30,7 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	getQueuedInquiries(options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord>;
 	takeInquiry(inquiryId: string): Promise<void>;
 	openInquiry(inquiryId: string): Promise<UpdateResult>;
-	queueInquiry(inquiryId: string): Promise<UpdateResult>;
+	queueInquiry(inquiryId: string): Promise<ILivechatInquiryRecord | null>;
 	queueInquiryAndRemoveDefaultAgent(inquiryId: string): Promise<UpdateResult>;
 	readyInquiry(inquiryId: string): Promise<UpdateResult>;
 	changeDepartmentIdByRoomId(rid: string, department: string): Promise<void>;
@@ -41,5 +41,6 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 	findOneByToken(token: string): Promise<ILivechatInquiryRecord | null>;
 	removeDefaultAgentById(inquiryId: string): Promise<UpdateResult | Document>;
 	removeByVisitorToken(token: string): Promise<void>;
-	markInquiryActiveForPeriod(rid: string, period: string): Promise<UpdateResult>;
+	markInquiryActiveForPeriod(rid: ILivechatInquiryRecord['rid'], period: string): Promise<ILivechatInquiryRecord | null>;
+	findIdsByVisitorToken(token: ILivechatInquiryRecord['v']['token']): FindCursor<ILivechatInquiryRecord>;
 }

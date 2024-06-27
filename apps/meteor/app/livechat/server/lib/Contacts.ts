@@ -6,7 +6,7 @@ import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
-import { notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnLivechatInquiryChangedByRoom } from '../../../lib/server/lib/notifyListener';
 import { i18n } from '../../../utils/lib/i18n';
 
 type RegisterContactProps = {
@@ -144,6 +144,7 @@ export const Contacts = {
 					Subscriptions.updateDisplayNameByRoomId(rid, name),
 				]);
 
+				void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
 				void notifyOnRoomChangedById(rid);
 			}
 		}

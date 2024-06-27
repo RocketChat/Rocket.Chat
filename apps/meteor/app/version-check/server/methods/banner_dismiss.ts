@@ -2,6 +2,8 @@ import { Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
+import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
+
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
@@ -17,5 +19,13 @@ Meteor.methods<ServerMethods>({
 		}
 
 		await Users.setBannerReadById(userId, id);
+
+		void notifyOnUserChange({
+			id: userId,
+			clientAction: 'updated',
+			diff: {
+				[`banners.${id}.read`]: true,
+			},
+		});
 	},
 });

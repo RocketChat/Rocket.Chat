@@ -3,7 +3,7 @@
 	"version": "0.0.2",
 	"private": true,
 	"devDependencies": {
-		"@types/chai": "^4.3.9",
+		"@types/chai": "~4.3.16",
 		"@types/jest": "~29.5.7",
 		"chai": "^4.3.10",
 		"eslint": "~8.45.0",

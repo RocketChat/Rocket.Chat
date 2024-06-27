@@ -2,6 +2,7 @@ import { Settings } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import Bridge from '../irc-bridge';
 
@@ -16,29 +17,15 @@ Meteor.methods<ServerMethods>({
 	async resetIrcConnection() {
 		const ircEnabled = Boolean(settings.get('IRC_Enabled'));
 
-		await Settings.updateOne(
-			{ _id: 'IRC_Bridge_Last_Ping' },
-			{
-				$set: {
-					value: new Date(0),
-				},
-			},
-			{
-				upsert: true,
-			},
-		);
+		const updatedLastPingValue = await Settings.updateValueById('IRC_Bridge_Last_Ping', new Date(0), { upsert: true });
+		if (updatedLastPingValue.modifiedCount || updatedLastPingValue.upsertedCount) {
+			void notifyOnSettingChangedById('IRC_Bridge_Last_Ping');
+		}
 
-		await Settings.updateOne(
-			{ _id: 'IRC_Bridge_Reset_Time' },
-			{
-				$set: {
-					value: new Date(),
-				},
-			},
-			{
-				upsert: true,
-			},
-		);
+		const updatedResetTimeValue = await Settings.updateValueById('IRC_Bridge_Reset_Time', new Date(), { upsert: true });
+		if (updatedResetTimeValue.modifiedCount || updatedResetTimeValue.upsertedCount) {
+			void notifyOnSettingChangedById('IRC_Bridge_Last_Ping');
+		}
 
 		if (!ircEnabled) {
 			return {

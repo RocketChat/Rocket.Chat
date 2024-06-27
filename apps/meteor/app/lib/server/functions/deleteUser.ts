@@ -19,7 +19,12 @@ import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { notifyOnRoomChangedById, notifyOnIntegrationChangedByUserId, notifyOnLivechatDepartmentAgentChanged } from '../lib/notifyListener';
+import {
+	notifyOnRoomChangedById,
+	notifyOnIntegrationChangedByUserId,
+	notifyOnLivechatDepartmentAgentChanged,
+	notifyOnUserChange,
+} from '../lib/notifyListener';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
@@ -155,6 +160,8 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 	// Refresh the servers list
 	await FederationServers.refreshServers();
+
+	void notifyOnUserChange({ clientAction: 'removed', id: user._id });
 
 	await callbacks.run('afterDeleteUser', user);
 }

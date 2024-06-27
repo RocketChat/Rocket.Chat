@@ -3,6 +3,7 @@ import type { IUser, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typin
 import { Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
+import { notifyOnUserChange } from '../../../../lib/server/lib/notifyListener';
 import { API } from '../../api';
 import { getPaginationItems } from '../../helpers/getPaginationItems';
 import { logger } from './logger';
@@ -79,6 +80,15 @@ API.v1.addRoute(
 
 			try {
 				await Users.setExtension(user._id, extension);
+
+				void notifyOnUserChange({
+					clientAction: 'updated',
+					id: user._id,
+					diff: {
+						extension,
+					},
+				});
+
 				return API.v1.success();
 			} catch (e) {
 				logger.error({ msg: 'Extension already in use' });
@@ -150,6 +160,15 @@ API.v1.addRoute(
 
 			logger.debug(`Removing extension association for user ${user._id} (extension was ${user.extension})`);
 			await Users.unsetExtension(user._id);
+
+			void notifyOnUserChange({
+				clientAction: 'updated',
+				id: user._id,
+				diff: {
+					extension: null,
+				},
+			});
+
 			return API.v1.success();
 		},
 	},

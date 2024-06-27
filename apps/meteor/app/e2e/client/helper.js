@@ -53,6 +53,10 @@ export async function encryptAES(vector, key, data) {
 	return crypto.subtle.encrypt({ name: 'AES-CBC', iv: vector }, key, data);
 }
 
+export async function encryptAESCTR(vector, key, data) {
+	return crypto.subtle.encrypt({ name: 'AES-CTR', counter: vector, length: 64 }, key, data);
+}
+
 export async function decryptRSA(key, data) {
 	return crypto.subtle.decrypt({ name: 'RSA-OAEP' }, key, data);
 }
@@ -63,6 +67,10 @@ export async function decryptAES(vector, key, data) {
 
 export async function generateAESKey() {
 	return crypto.subtle.generateKey({ name: 'AES-CBC', length: 128 }, true, ['encrypt', 'decrypt']);
+}
+
+export async function generateAESCTRKey() {
+	return crypto.subtle.generateKey({ name: 'AES-CTR', length: 256 }, true, ['encrypt', 'decrypt']);
 }
 
 export async function generateRSAKey() {

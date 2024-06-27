@@ -1,3 +1,4 @@
+import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatAgent, ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourBehaviors, LivechatBusinessHourTypes, ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
@@ -26,14 +27,12 @@ import {
 import { createAgent, createManager, makeAgentAvailable } from '../../../data/livechat/rooms';
 import { removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting, updateEESetting } from '../../../data/permissions.helper';
-import type { IUserCredentialsHeader } from '../../../data/user';
 import { password } from '../../../data/user';
+import type { TestUser } from '../../../data/users.helper';
 import { setUserActiveStatus, createUser, deleteUser, getMe, getUserByUsername, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe('LIVECHAT - business hours', function () {
-	this.retries(0);
-
+describe('LIVECHAT - business hours', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
@@ -317,7 +316,7 @@ describe('LIVECHAT - business hours', function () {
 			const { department, agent } = await createDepartmentWithAnOnlineAgent();
 			await createCustomBusinessHour([department._id], false);
 
-			const latestAgent: ILivechatAgent = await getMe(agent.credentials as any);
+			const latestAgent = await getMe<ILivechatAgent>(agent.credentials);
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(0);
 			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
@@ -434,7 +433,7 @@ describe('LIVECHAT - business hours', function () {
 			// archive department
 			await archiveDepartment(deptLinkedToCustomBH._id);
 
-			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials as any);
+			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials);
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
 			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(defaultBusinessHour._id);
@@ -479,7 +478,7 @@ describe('LIVECHAT - business hours', function () {
 			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(customBusinessHour._id);
 
 			// verify if other agent still has BH within his cache
-			const otherAgent: ILivechatAgent = await getMe(agent.credentials as any);
+			const otherAgent: ILivechatAgent = await getMe(agent.credentials);
 			expect(otherAgent).to.be.an('object');
 			expect(otherAgent.openBusinessHours).to.be.an('array').of.length(1);
 			expect(otherAgent?.openBusinessHours?.[0]).to.be.equal(customBusinessHour._id);
@@ -579,7 +578,7 @@ describe('LIVECHAT - business hours', function () {
 			// disable department
 			await disableDepartment(deptLinkedToCustomBH);
 
-			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials as any);
+			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials);
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
 			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(defaultBusinessHour._id);
@@ -617,13 +616,13 @@ describe('LIVECHAT - business hours', function () {
 			expect(latestCustomBH?.departments?.[0]?._id).to.be.equal(department._id);
 
 			// verify if overlapping agent still has BH within his cache
-			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials as any);
+			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials);
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
 			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(customBusinessHour._id);
 
 			// verify if other agent still has BH within his cache
-			const otherAgent: ILivechatAgent = await getMe(agent.credentials as any);
+			const otherAgent: ILivechatAgent = await getMe(agent.credentials);
 			expect(otherAgent).to.be.an('object');
 			expect(otherAgent.openBusinessHours).to.be.an('array').of.length(1);
 			expect(otherAgent?.openBusinessHours?.[0]).to.be.equal(customBusinessHour._id);
@@ -710,7 +709,7 @@ describe('LIVECHAT - business hours', function () {
 
 			await deleteDepartment(deptLinkedToCustomBH._id);
 
-			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials as any);
+			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials);
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
 			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(defaultBusinessHour._id);
@@ -742,13 +741,13 @@ describe('LIVECHAT - business hours', function () {
 			expect(latestCustomBH?.departments?.[0]?._id).to.be.equal(department._id);
 
 			// verify if overlapping agent still has BH within his cache
-			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials as any);
+			const latestAgent: ILivechatAgent = await getMe(agentLinkedToDept.credentials);
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
 			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(customBusinessHour._id);
 
 			// verify if other agent still has BH within his cache
-			const otherAgent: ILivechatAgent = await getMe(agent.credentials as any);
+			const otherAgent: ILivechatAgent = await getMe(agent.credentials);
 			expect(otherAgent).to.be.an('object');
 			expect(otherAgent.openBusinessHours).to.be.an('array').of.length(1);
 			expect(otherAgent?.openBusinessHours?.[0]).to.be.equal(customBusinessHour._id);
@@ -765,7 +764,7 @@ describe('LIVECHAT - business hours', function () {
 	describe('[CE][BH] On Agent created/removed', () => {
 		let defaultBH: ILivechatBusinessHour;
 		let agent: ILivechatAgent;
-		let agentCredentials: IUserCredentialsHeader;
+		let agentCredentials: Credentials;
 
 		before(async () => {
 			await updateSetting('Livechat_enable_business_hours', true);
@@ -787,7 +786,7 @@ describe('LIVECHAT - business hours', function () {
 		it('should create a new agent and verify if it is assigned to the default business hour which is open', async () => {
 			agent = await createAgent(agent.username);
 
-			const latestAgent: ILivechatAgent = await getMe(agentCredentials as any);
+			const latestAgent: ILivechatAgent = await getMe(agentCredentials);
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
 			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(defaultBH._id);
@@ -811,7 +810,7 @@ describe('LIVECHAT - business hours', function () {
 
 		it('should verify if agent is assigned to BH when it is opened', async () => {
 			// first verify if agent is not assigned to any BH
-			let latestAgent: ILivechatAgent = await getMe(agentCredentials as any);
+			let latestAgent: ILivechatAgent = await getMe(agentCredentials);
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(0);
 			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
@@ -820,7 +819,7 @@ describe('LIVECHAT - business hours', function () {
 			await openOrCloseBusinessHour(defaultBH, true);
 
 			// verify if agent is assigned to BH
-			latestAgent = await getMe(agentCredentials as any);
+			latestAgent = await getMe(agentCredentials);
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
 			expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(defaultBH._id);
@@ -832,7 +831,7 @@ describe('LIVECHAT - business hours', function () {
 		it('should verify if BH related props are cleared when an agent is deleted', async () => {
 			await removeAgent(agent._id);
 
-			const latestAgent: ILivechatAgent = await getMe(agentCredentials as any);
+			const latestAgent: ILivechatAgent = await getMe(agentCredentials);
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.openBusinessHours).to.be.undefined;
 			expect(latestAgent.statusLivechat).to.be.undefined;
@@ -840,7 +839,7 @@ describe('LIVECHAT - business hours', function () {
 
 		describe('Special Case - Agent created, BH already enabled', () => {
 			let newAgent: ILivechatAgent;
-			let newAgentCredentials: IUserCredentialsHeader;
+			let newAgentCredentials: Credentials;
 			before(async () => {
 				newAgent = await createUser({ roles: ['user', 'livechat-agent'] });
 				newAgentCredentials = await login(newAgent.username, password);
@@ -849,7 +848,7 @@ describe('LIVECHAT - business hours', function () {
 				await deleteUser(newAgent);
 			});
 			it('should verify a newly created agent to be assigned to the default business hour', async () => {
-				const latestAgent: ILivechatAgent = await getMe(newAgentCredentials as any);
+				const latestAgent: ILivechatAgent = await getMe(newAgentCredentials);
 				expect(latestAgent).to.be.an('object');
 				expect(latestAgent.openBusinessHours).to.be.an('array').of.length(1);
 				expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(defaultBH._id);
@@ -857,13 +856,13 @@ describe('LIVECHAT - business hours', function () {
 		});
 
 		after(async () => {
-			await deleteUser(agent._id);
+			await deleteUser(agent);
 		});
 	});
 
 	describe('[CE][BH] On Agent deactivated/activated', () => {
 		let defaultBH: ILivechatBusinessHour;
-		let agent: ILivechatAgent;
+		let agent: TestUser<ILivechatAgent>;
 
 		before(async () => {
 			await updateSetting('Livechat_enable_business_hours', true);
@@ -887,7 +886,7 @@ describe('LIVECHAT - business hours', function () {
 			await makeAgentAvailable(await login(agent.username, password));
 			await setUserActiveStatus(agent._id, false);
 
-			const latestAgent = await getUserByUsername(agent.username);
+			const latestAgent = await getUserByUsername<ILivechatAgent>(agent.username);
 
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);
@@ -898,7 +897,7 @@ describe('LIVECHAT - business hours', function () {
 
 			await setUserActiveStatus(agent._id, true);
 
-			const latestAgent = await getUserByUsername(agent.username);
+			const latestAgent = await getUserByUsername<ILivechatAgent>(agent.username);
 
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.AVAILABLE);
@@ -909,7 +908,7 @@ describe('LIVECHAT - business hours', function () {
 			await setUserActiveStatus(agent._id, false);
 			await setUserActiveStatus(agent._id, true);
 
-			const latestAgent = await getUserByUsername(agent.username);
+			const latestAgent = await getUserByUsername<ILivechatAgent>(agent.username);
 
 			expect(latestAgent).to.be.an('object');
 			expect(latestAgent.statusLivechat).to.be.equal(ILivechatAgentStatus.NOT_AVAILABLE);

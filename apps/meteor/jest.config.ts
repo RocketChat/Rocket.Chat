@@ -33,6 +33,7 @@ const config: Config = {
 				'<rootDir>/app/livechat/server/business-hour/**/*.spec.ts?(x)',
 				'<rootDir>/app/livechat/server/api/**/*.spec.ts',
 				'<rootDir>/ee/app/authorization/server/validateUserRoles.spec.ts',
+				'<rootDir>/app/cloud/server/functions/supportedVersionsToken/**.spec.ts',
 			],
 			transformIgnorePatterns: ['!/node_modules/jose'],
 			errorOnDeprecated: true,

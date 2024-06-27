@@ -1,3 +1,4 @@
+import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatInquiryRecord, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
@@ -17,14 +18,11 @@ import {
 } from '../../../data/livechat/rooms';
 import { parseMethodResponse } from '../../../data/livechat/utils';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
-import type { IUserCredentialsHeader } from '../../../data/user';
 import { password } from '../../../data/user';
 import { createUser, login, deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe('LIVECHAT - inquiries', function () {
-	this.retries(0);
-
+describe('LIVECHAT - inquiries', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
@@ -80,7 +78,8 @@ describe('LIVECHAT - inquiries', function () {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('view-l-room', []);
 			await request
-				.get(api('livechat/inquiries.getOne?roomId=room-id'))
+				.get(api('livechat/inquiries.getOne'))
+				.query({ roomId: 'room-id' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
@@ -88,7 +87,8 @@ describe('LIVECHAT - inquiries', function () {
 		it('should return a inquiry', async () => {
 			await updatePermission('view-l-room', ['admin']);
 			await request
-				.get(api('livechat/inquiries.getOne?roomId=room-id'))
+				.get(api('livechat/inquiries.getOne'))
+				.query({ roomId: 'room-id' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -105,7 +105,8 @@ describe('LIVECHAT - inquiries', function () {
 			const room = await createLivechatRoom(visitor.token);
 			const inquiry = await fetchInquiry(room._id);
 			await request
-				.get(api(`livechat/inquiries.getOne?roomId=${room._id}`))
+				.get(api(`livechat/inquiries.getOne`))
+				.query({ roomId: room._id })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -231,7 +232,7 @@ describe('LIVECHAT - inquiries', function () {
 		});
 		after(async () => {
 			await updateSetting('Livechat_accept_chats_with_no_agents', false);
-			await deleteUser(testUser.user._id);
+			await deleteUser(testUser.user);
 		});
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('view-l-room', []);
@@ -316,7 +317,7 @@ describe('LIVECHAT - inquiries', function () {
 	});
 
 	describe('livechat:returnAsInquiry', () => {
-		let testUser: { user: IUser; credentials: IUserCredentialsHeader };
+		let testUser: { user: IUser; credentials: Credentials };
 		before(async () => {
 			const user = await createUser();
 			await createAgent(user.username);
@@ -329,7 +330,7 @@ describe('LIVECHAT - inquiries', function () {
 			};
 		});
 		after(async () => {
-			await deleteUser(testUser.user._id);
+			await deleteUser(testUser.user);
 		});
 
 		it('should throw an error if user doesnt have view-l-room permission', async () => {

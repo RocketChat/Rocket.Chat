@@ -16,6 +16,7 @@ import { settings } from '../../../settings/server';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { validateEmailDomain } from '../lib';
 import { generatePassword } from '../lib/generatePassword';
+import { notifyOnUserChangeById, notifyOnUserChange } from '../lib/notifyListener';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { checkEmailAvailability } from './checkEmailAvailability';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
@@ -329,6 +330,8 @@ const saveNewUser = async function (userData, sendPassword) {
 		}
 	}
 
+	void notifyOnUserChangeById({ clientAction: 'inserted', id: _id });
+
 	return _id;
 };
 
@@ -432,7 +435,7 @@ export const saveUser = async function (userId, userData) {
 	await Users.updateOne({ _id: userData._id }, updateUser);
 
 	// App IPostUserUpdated event hook
-	const userUpdated = await Users.findOneById(userId);
+	const userUpdated = await Users.findOneById(userData._id);
 
 	await callbacks.run('afterSaveUser', {
 		user: userUpdated,
@@ -448,6 +451,18 @@ export const saveUser = async function (userId, userData) {
 	if (sendPassword) {
 		await _sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
 	}
+
+	if (typeof userData.verified === 'boolean') {
+		delete userData.verified;
+	}
+	void notifyOnUserChange({
+		clientAction: 'updated',
+		id: userData._id,
+		diff: {
+			...userData,
+			emails: userUpdated.emails,
+		},
+	});
 
 	return true;
 };

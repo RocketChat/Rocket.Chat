@@ -81,6 +81,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 					render={({ field: { value, onChange } }): ReactElement => (
 						<StringSettingInput
 							_id=''
+							packageValue={defaultName}
 							disabled={isSaving}
 							error={errors.name?.message}
 							label={`${t('Name')}*`}
