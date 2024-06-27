@@ -10,6 +10,7 @@ import { beforeLeaveRoomCallback } from '../../../lib/callbacks/beforeLeaveRoomC
 import { i18n } from '../../../server/lib/i18n';
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { notifyOnUserChange } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
@@ -64,29 +65,47 @@ Meteor.startup(async () => {
 	});
 	await createDefaultBusinessHourIfNotExists();
 
-	settings.watch<boolean>('Livechat_enable_business_hours', async (value) => {
-		logger.debug(`Starting business hour manager ${value}`);
-		if (value) {
-			await businessHourManager.startManager();
-			return;
-		}
-		await businessHourManager.stopManager();
-	});
+	settings.watch<boolean>(
+		'Livechat_enable_business_hours',
+		async (value) => {
+			logger.debug(`Starting business hour manager ${value}`);
+			if (value) {
+				await businessHourManager.startManager();
+				return;
+			}
+			await businessHourManager.stopManager();
+		},
+		process.env.TEST_MODE === 'true'
+			? {
+					debounce: 10,
+			  }
+			: undefined,
+	);
 
 	settings.watch<string>('Livechat_Routing_Method', () => {
 		void RoutingManager.startQueue();
 	});
 
 	// Remove when accounts.onLogout is async
-	Accounts.onLogout(
-		({ user }: { user: IUser }) =>
-			user?.roles?.includes('livechat-agent') &&
-			!user?.roles?.includes('bot') &&
-			void LivechatTyped.setUserStatusLivechatIf(
-				user._id,
-				ILivechatAgentStatus.NOT_AVAILABLE,
-				{},
-				{ livechatStatusSystemModified: true },
-			).catch(),
-	);
+	Accounts.onLogout(({ user }: { user: IUser }) => {
+		if (!user?.roles?.includes('livechat-agent') || user?.roles?.includes('bot')) {
+			return;
+		}
+
+		void LivechatTyped.setUserStatusLivechatIf(
+			user._id,
+			ILivechatAgentStatus.NOT_AVAILABLE,
+			{},
+			{ livechatStatusSystemModified: true },
+		).catch();
+
+		void notifyOnUserChange({
+			id: user._id,
+			clientAction: 'updated',
+			diff: {
+				statusLivechat: ILivechatAgentStatus.NOT_AVAILABLE,
+				livechatStatusSystemModified: true,
+			},
+		});
+	});
 });
