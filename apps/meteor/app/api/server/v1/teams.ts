@@ -14,8 +14,8 @@ import {
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
+import { eraseRoom } from '../../../../server/methods/eraseRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
@@ -138,7 +138,7 @@ API.v1.addRoute(
 
 			if (rooms.length) {
 				for await (const room of rooms) {
-					await Meteor.callAsync('eraseRoom', room);
+					await eraseRoom(room, this.userId);
 				}
 			}
 
@@ -619,7 +619,7 @@ API.v1.addRoute(
 			// If we got a list of rooms to delete along with the team, remove them first
 			if (rooms.length) {
 				for await (const room of rooms) {
-					await Meteor.callAsync('eraseRoom', room);
+					await eraseRoom(room, this.userId);
 				}
 			}
 
@@ -627,7 +627,7 @@ API.v1.addRoute(
 			await Team.unsetTeamIdOfRooms(this.userId, team._id);
 
 			// Remove the team's main room
-			await Meteor.callAsync('eraseRoom', team.roomId);
+			await eraseRoom(team.roomId, this.userId);
 
 			// Delete all team memberships
 			await Team.removeAllMembersFromTeam(team._id);

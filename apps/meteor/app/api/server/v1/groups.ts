@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { eraseRoom } from '../../../../server/methods/eraseRoom';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
@@ -368,7 +369,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			await Meteor.callAsync('eraseRoom', findResult.rid);
+			await eraseRoom(findResult.rid, this.userId);
 
 			return API.v1.success();
 		},
