@@ -1,12 +1,12 @@
-import { ContextualbarV2Icon, ContextualbarIcon as ContextualbarFooterComponent } from '@rocket.chat/fuselage';
+import { ContextualbarV2Icon, ContextualbarIcon as ContextualbarIconComponent } from '@rocket.chat/fuselage';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
 
-const ContextualbarIcon = (props: ComponentProps<typeof ContextualbarFooterComponent>) => (
+const ContextualbarIcon = (props: ComponentProps<typeof ContextualbarIconComponent>) => (
 	<FeaturePreview feature='newNavigation'>
 		<FeaturePreviewOff>
-			<ContextualbarFooterComponent {...props} />
+			<ContextualbarIconComponent {...props} />
 		</FeaturePreviewOff>
 		<FeaturePreviewOn>
 			<ContextualbarV2Icon {...props} />

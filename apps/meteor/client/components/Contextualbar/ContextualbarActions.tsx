@@ -3,7 +3,7 @@ import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.cha
 import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
 
-const ContextualbarAction = (props: ComponentProps<typeof ContextualbarActionsComponent>) => (
+const ContextualbarActions = (props: ComponentProps<typeof ContextualbarActionsComponent>) => (
 	<FeaturePreview feature='newNavigation'>
 		<FeaturePreviewOff>
 			<ContextualbarActionsComponent {...props} />
@@ -14,4 +14,4 @@ const ContextualbarAction = (props: ComponentProps<typeof ContextualbarActionsCo
 	</FeaturePreview>
 );
 
-export default memo(ContextualbarAction);
+export default memo(ContextualbarActions);
