@@ -876,6 +876,13 @@ describe('[Users]', function () {
 			).body._id;
 		});
 
+		after('Remove invite link', async () =>
+			request
+				.delete(api(`removeInvite/${inviteToken}`))
+				.set(credentials)
+				.send(),
+		);
+
 		after(() =>
 			Promise.all([
 				clearCustomFields(),
