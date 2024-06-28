@@ -92,6 +92,7 @@ test.describe('OC - Livechat Triggers - SetDepartment', () => {
 		await Promise.all([...agents.map((agent) => agent.delete())]);
 		await Promise.all([...departments.map((department) => department.delete())]);
 		expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status()).toBe(200);
+		await api.post('/settings/Livechat_registration_form', { value: true });
 	});
 
 	test('OC - Livechat Triggers - setDepartment should affect agent.next call', async () => {
