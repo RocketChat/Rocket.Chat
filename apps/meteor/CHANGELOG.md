@@ -1,5 +1,43 @@
 # @rocket.chat/meteor
 
+## 6.8.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#32684](https://github.com/RocketChat/Rocket.Chat/pull/32684) by [@dionisio-bot](https://github.com/dionisio-bot)) livechat `setDepartment` livechat api fixes:
+  - Changing department didn't reflect on the registration form in real time
+  - Changing the department mid conversation didn't transfer the chat
+  - Depending on the state of the department, it couldn't be set as default
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.8.3
+  - @rocket.chat/rest-typings@6.8.3
+  - @rocket.chat/api-client@0.1.35
+  - @rocket.chat/license@0.1.17
+  - @rocket.chat/omnichannel-services@0.1.17
+  - @rocket.chat/pdf-worker@0.0.41
+  - @rocket.chat/presence@0.1.17
+  - @rocket.chat/apps@0.0.8
+  - @rocket.chat/core-services@0.3.17
+  - @rocket.chat/cron@0.0.37
+  - @rocket.chat/gazzodown@6.0.3
+  - @rocket.chat/model-typings@0.4.3
+  - @rocket.chat/ui-contexts@6.0.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/fuselage-ui-kit@6.0.3
+  - @rocket.chat/models@0.0.41
+  - @rocket.chat/ui-theming@0.1.2
+  - @rocket.chat/ui-avatar@2.0.3
+  - @rocket.chat/ui-client@6.0.3
+  - @rocket.chat/ui-video-conf@6.0.3
+  - @rocket.chat/web-ui-registration@6.0.3
+  - @rocket.chat/instance-status@0.0.41
+  </details>
+
 ## 6.8.2
 
 ### Patch Changes
