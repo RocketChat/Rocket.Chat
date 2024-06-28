@@ -1,17 +1,17 @@
-import { ContextualbarV2Action, ContextualbarAction as ContextualbarActionComponent } from '@rocket.chat/fuselage';
+import { ContextualbarV2Button, ContextualbarButton as ContextualbarButtonComponent } from '@rocket.chat/fuselage';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
 
-const ContextualbarAction = (props: ComponentProps<typeof ContextualbarActionComponent>) => (
+const ContextualbarButton = (props: ComponentProps<typeof ContextualbarButtonComponent>) => (
 	<FeaturePreview feature='newNavigation'>
 		<FeaturePreviewOff>
-			<ContextualbarActionComponent {...props} />
+			<ContextualbarButtonComponent {...props} />
 		</FeaturePreviewOff>
 		<FeaturePreviewOn>
-			<ContextualbarV2Action {...props} />
+			<ContextualbarV2Button {...props} />
 		</FeaturePreviewOn>
 	</FeaturePreview>
 );
 
-export default memo(ContextualbarAction);
+export default memo(ContextualbarButton);
