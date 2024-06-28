@@ -48,7 +48,7 @@ const GenericFileAttachment = ({
 				return;
 			}
 
-			registerDownloadForUid(uid, title, t);
+			registerDownloadForUid(uid, t, title);
 			forAttachmentDownload(uid, link);
 		}
 	};

@@ -15,7 +15,7 @@ navigator.serviceWorker.addEventListener('message', (event) => {
 	}
 });
 
-export const registerDownloadForUid = (uid: string, title?: string, t: ReturnType<typeof useTranslation>['t']) => {
+export const registerDownloadForUid = (uid: string, t: ReturnType<typeof useTranslation>['t'], title?: string) => {
 	ee.once(uid, ({ result }) => {
 		downloadAs({ data: [new Blob([result])] }, title ?? t('Download'));
 	});
@@ -39,7 +39,7 @@ export const useDownloadFromServiceWorker = (href: string, title?: string) => {
 
 	const { t } = useTranslation();
 
-	useEffect(() => registerDownloadForUid(uid, title, t), [title, t, uid]);
+	useEffect(() => registerDownloadForUid(uid, t, title), [title, t, uid]);
 
 	return {
 		disabled: !controller,
