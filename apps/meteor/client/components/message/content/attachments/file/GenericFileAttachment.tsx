@@ -35,7 +35,9 @@ const GenericFileAttachment = ({
 	const handleTitleClick = (event: UIEvent): void => {
 		if (openDocumentViewer && link && format === 'PDF') {
 			event.preventDefault();
-			openDocumentViewer(`${getURL(link)}?contentDisposition=inline`, format, '');
+			const url = new URL(getURL(link));
+			url.searchParams.set('contentDisposition', 'inline');
+			openDocumentViewer(url.toString(), format, '');
 		}
 	};
 
