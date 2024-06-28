@@ -84,6 +84,14 @@ class ChatContainer extends Component {
 			return user;
 		}
 
+		const {
+			iframe: { defaultDepartment },
+		} = store.state;
+
+		if (!guest?.department && defaultDepartment) {
+			guest.department = defaultDepartment;
+		}
+
 		const visitor = { token, ...guest };
 		const { visitor: newUser } = await Livechat.grantVisitor({ visitor });
 		await dispatch({ user: newUser });
