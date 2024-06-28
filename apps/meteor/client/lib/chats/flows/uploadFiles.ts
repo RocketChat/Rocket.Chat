@@ -8,19 +8,6 @@ import { imperativeModal } from '../../imperativeModal';
 import { prependReplies } from '../../utils/prependReplies';
 import type { ChatAPI } from '../ChatAPI';
 
-if ('serviceWorker' in navigator) {
-	navigator.serviceWorker
-		.register('/enc.js', {
-			scope: '/',
-		})
-		.then((reg) => {
-			if (reg.active) console.log('service worker installed');
-		})
-		.catch((err) => {
-			console.log(`registration failed: ${err}`);
-		});
-}
-
 const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
 	return new Promise((resolve) => {
 		const img = new Image();
