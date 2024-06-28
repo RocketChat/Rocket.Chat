@@ -21,7 +21,7 @@ Meteor.startup(() => {
 	});
 });
 
-async function getEmailContent({ message, user, room }) {
+export async function getEmailContent({ message, user, room }) {
 	const lng = (user && user.language) || settings.get('Language') || 'en';
 
 	const roomName = escapeHTML(`#${await roomCoordinator.getRoomName(room.t, room)}`);
