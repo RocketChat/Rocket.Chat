@@ -35,6 +35,10 @@ export class OmnichannelLiveChatEmbedded {
 		return this.page.frameLocator('#rocketchat-iframe').locator('div >> text="Chat Finished"');
 	}
 
+	get headerTitle(): Locator {
+		return this.page.frameLocator('#rocketchat-iframe').locator('[data-qa="header-title"]');
+	}
+
 	get btnChatNow(): Locator {
 		return this.page.frameLocator('#rocketchat-iframe').locator('[type="button"] >> text="Chat now"');
 	}
