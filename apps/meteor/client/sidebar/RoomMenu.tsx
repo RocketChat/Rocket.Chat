@@ -200,10 +200,14 @@ const RoomMenu = ({
 	const menuOptions = useMemo(
 		() => ({
 			...(!hideDefaultOptions && {
-				hideRoom: {
-					label: { label: t('Hide'), icon: 'eye-off' },
-					action: handleHide,
-				},
+				...(isOmnichannelRoom
+					? {}
+					: {
+							hideRoom: {
+								label: { label: t('Hide'), icon: 'eye-off' },
+								action: handleHide,
+							},
+					  }),
 				toggleRead: {
 					label: { label: isUnread ? t('Mark_read') : t('Mark_unread'), icon: 'flag' },
 					action: handleToggleRead,
