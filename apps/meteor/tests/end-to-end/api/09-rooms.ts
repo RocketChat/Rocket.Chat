@@ -2997,7 +2997,7 @@ describe('[Rooms]', () => {
 				.set(testUser1Credentials)
 				.query({
 					roomId: testChannel._id,
-					userId: testUser2.username,
+					username: testUser2.username,
 				})
 				.expect(200)
 				.expect((res) => {
@@ -3042,7 +3042,7 @@ describe('[Rooms]', () => {
 				.set(testUser1Credentials)
 				.query({
 					roomId: testGroup._id,
-					userId: testUser2.username,
+					username: testUser2.username,
 				})
 				.expect(200)
 				.expect((res) => {
@@ -3102,7 +3102,7 @@ describe('[Rooms]', () => {
 				.set(testUser1Credentials)
 				.query({
 					roomId: testDM._id,
-					userId: testUser2.username,
+					username: testUser2.username,
 				})
 				.expect(200)
 				.expect((res) => {
