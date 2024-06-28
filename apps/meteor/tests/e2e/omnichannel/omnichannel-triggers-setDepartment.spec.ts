@@ -73,11 +73,6 @@ test.describe('OC - Livechat Triggers - SetDepartment', () => {
 		poHomeOmnichannelAgent2 = new HomeOmnichannel(agent2Page);
 
 		poLiveChat = new OmnichannelLiveChatEmbedded(page);
-		await page.goto('/packages/rocketchat_livechat/assets/demo.html');
-
-		const depId = departmentB._id;
-
-		await page.evaluate((depId) => window.RocketChat.livechat.setDepartment(depId), depId);
 	});
 
 	test.afterEach(async ({ page }) => {
@@ -100,6 +95,28 @@ test.describe('OC - Livechat Triggers - SetDepartment', () => {
 	});
 
 	test('OC - Livechat Triggers - setDepartment should affect agent.next call', async () => {
+		await poLiveChat.page.goto('/packages/rocketchat_livechat/assets/demo.html');
+
+		const depId = departmentB._id;
+
+		await poLiveChat.page.evaluate((depId) => window.RocketChat.livechat.setDepartment(depId), depId);
+
+		await poLiveChat.openLiveChat();
+
+		await expect(poLiveChat.txtChatMessage('This is a trigger message open by visitor')).toBeVisible();
+
+		await expect(poLiveChat.headerTitle).toContainText(agent2.username);
+	});
+
+	test('OC - Livechat Triggers - setDepartment should affect agent.next call - Register Form Disabled', async ({ api }) => {
+		await api.post('/settings/Livechat_registration_form', { value: false });
+
+		await poLiveChat.page.goto('/packages/rocketchat_livechat/assets/demo.html');
+
+		const depId = departmentB._id;
+
+		await poLiveChat.page.evaluate((depId) => window.RocketChat.livechat.setDepartment(depId), depId);
+
 		await poLiveChat.openLiveChat();
 
 		await expect(poLiveChat.txtChatMessage('This is a trigger message open by visitor')).toBeVisible();
