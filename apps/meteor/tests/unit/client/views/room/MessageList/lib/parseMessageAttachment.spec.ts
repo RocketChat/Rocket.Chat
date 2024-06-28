@@ -70,6 +70,7 @@ const quoteMessage = {
 	author_name: 'authorName',
 	author_link: 'link',
 	author_icon: 'icon',
+	message_link: 'http://localhost/any_link',
 	text: 'message **bold** _italic_ and ~strike~',
 	md: messageParserTokenMessage,
 };

@@ -1,4 +1,4 @@
-import type { IMessage, ITranslatedMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import {
 	isFileAttachment,
 	isE2EEMessage,
