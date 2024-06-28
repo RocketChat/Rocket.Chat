@@ -6,4 +6,4 @@
 "@rocket.chat/rest-typings": minor
 ---
 
-Introduce contacts to the omnichannel
+Introduce create contacts endpoint to the omnichannel
