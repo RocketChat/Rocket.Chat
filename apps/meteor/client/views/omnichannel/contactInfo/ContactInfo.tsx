@@ -12,7 +12,7 @@ import {
 	useRouteParameter,
 } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useCallback, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import { ContextualbarHeader, ContextualbarIcon, ContextualbarTitle, ContextualbarClose } from '../../../components/Contextualbar';
 import GenericMenu from '../../../components/GenericMenu/GenericMenu';
@@ -36,35 +36,22 @@ import ContactInfoHistory from './tabs/ContactInfoHistory';
 
 type ContactInfoProps = {
 	id: string;
+	onClose: () => void;
 	rid?: string;
 	route?: RouteName;
 };
 
-type contactInfoTabs = 'details' | 'channels' | 'history' | 'edit';
+type ContactInfoTabs = 'details' | 'channels' | 'history' | 'edit';
 
-const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProps) => {
+const ContactInfo = ({ id: contactId, onClose, rid: roomId = '', route }: ContactInfoProps) => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const { closeTab } = useRoomToolbox();
-	const context = useRouteParameter('context');
+	const [contactTab, setContactTab] = useState<ContactInfoTabs>('details');
 
 	const liveRoute = useRoute('live');
 
-	const { navigate, getRouteName, getRouteParameters } = useRouter();
+	const { getRouteName } = useRouter();
 	const currentRouteName = getRouteName();
-	const handleNavigate = useContactRoute(currentRouteName);
-	const { id, tab } = getRouteParameters();
-
-	console.log(getRouteParameters());
-
-	const handleSetContext = useCallback((context: contactInfoTabs) => handleNavigate?.({ id, tab, context }), [handleNavigate, id, tab]);
-
-	useEffect(() => {
-		// console.log('CONTEXT', context);
-		// if (!context) {
-		// 	handleSetContext('details');
-		// }
-	}, [context, id, tab, handleSetContext]);
+	const handleNavigate = useContactRoute();
 
 	const formatDate = useFormatDate();
 	// const isCallReady = useIsCallReady();
@@ -82,12 +69,6 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 		isError,
 	} = useQuery(['/v1/omnichannel/contact', contactId], () => getContact({ contactId }), {
 		enabled: canViewCustomFields && !!contactId,
-	});
-
-	const onEditButtonClick = useEffectEvent(() => {
-		if (!canEditContact) {
-			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
-		}
 	});
 
 	if (isInitialLoading) {
@@ -130,7 +111,7 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 		id: 'edit',
 		icon: 'pencil',
 		content: 'Edit',
-		onClick: () => handleSetContext?.('edit'),
+		onClick: () => handleNavigate('edit'),
 		disabled: !canEditContact,
 	};
 
@@ -145,7 +126,7 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 			<ContextualbarHeader>
 				<ContextualbarIcon name='info-circled' />
 				<ContextualbarTitle>{t('Contact')}</ContextualbarTitle>
-				<ContextualbarClose onClick={closeTab} />
+				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<Box display='flex' pi={24}>
 				{username && (
@@ -162,21 +143,21 @@ const ContactInfo = ({ id: contactId, rid: roomId = '', route }: ContactInfoProp
 				)}
 			</Box>
 			<Tabs>
-				<TabsItem onClick={() => handleSetContext('details')} selected={context === 'details'}>
+				<TabsItem onClick={() => setContactTab('details')} selected={contactTab === 'details'}>
 					Details
 				</TabsItem>
-				<TabsItem onClick={() => handleSetContext('channels')} selected={context === 'channels'}>
+				<TabsItem onClick={() => setContactTab('channels')} selected={contactTab === 'channels'}>
 					Channels
 				</TabsItem>
 				{showContactHistory && (
-					<TabsItem onClick={() => handleSetContext('history')} selected={context === 'history'}>
+					<TabsItem onClick={() => setContactTab('history')} selected={contactTab === 'history'}>
 						History
 					</TabsItem>
 				)}
 			</Tabs>
-			{context === 'details' && <ContactInfoDetails phoneNumber={phoneNumber} email={email} customFieldEntries={customFieldEntries} />}
-			{context === 'channels' && <ContactInfoChannels />}
-			{context === 'history' && showContactHistory && <ContactInfoHistory />}
+			{contactTab === 'details' && <ContactInfoDetails phoneNumber={phoneNumber} email={email} customFieldEntries={customFieldEntries} />}
+			{contactTab === 'channels' && <ContactInfoChannels />}
+			{contactTab === 'history' && showContactHistory && <ContactInfoHistory />}
 			{/* <Divider /> */}
 
 			{/* {isCallReady && (

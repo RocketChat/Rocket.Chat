@@ -75,7 +75,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 				return;
 			}
 
-			if (app.getStatus() === status) {
+			if ((await app.getStatus()) === status) {
 				Apps.self?.getRocketChatLogger().info(`"apps.statusUpdate" event received for app "${appId}", but the status is the same`);
 				return;
 			}
@@ -116,10 +116,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 	}
 
 	async getApps(query: IGetAppsFilter): Promise<IAppInfo[] | undefined> {
-		return Apps.self
-			?.getManager()
-			?.get(query)
-			.map((app) => app.getApp().getInfo());
+		return (await Apps.self?.getManager()?.get(query))?.map((app) => app.getInfo());
 	}
 
 	async getAppStorageItemById(appId: string): Promise<IAppStorageItem | undefined> {

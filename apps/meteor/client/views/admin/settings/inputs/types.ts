@@ -4,6 +4,7 @@ export type SettingInputProps<V = string, R = V> = {
 	_id: string;
 	label: ReactNode;
 	value?: V;
+	packageValue: V;
 	placeholder?: string;
 	readonly?: boolean;
 	autocomplete?: boolean;

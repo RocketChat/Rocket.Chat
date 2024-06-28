@@ -10,6 +10,7 @@ import { crowdIntervalValuesToCronMap } from '../../../server/settings/crowd';
 import { deleteUser } from '../../lib/server/functions/deleteUser';
 import { _setRealName } from '../../lib/server/functions/setRealName';
 import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
+import { notifyOnUserChange, notifyOnUserChangeById, notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
 import { logger } from './logger';
 
@@ -215,6 +216,15 @@ export class CROWD {
 			},
 		);
 
+		void notifyOnUserChange({
+			clientAction: 'updated',
+			id,
+			diff: {
+				...user,
+				...(crowdUser.displayname && { name: crowdUser.displayname }),
+			},
+		});
+
 		await setUserActiveStatus(id, crowdUser.active);
 	}
 
@@ -312,6 +322,21 @@ export class CROWD {
 				},
 			);
 
+			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
+			// instead of having to listen to every watch.users event
+			void notifyOnUserChangeAsync(async () => {
+				const userTokens = await Users.findOneById(crowdUser._id, { projection: { 'services.resume.loginTokens': 1 } });
+				if (!userTokens) {
+					return;
+				}
+
+				return {
+					clientAction: 'updated',
+					id: crowdUser._id,
+					diff: { 'services.resume.loginTokens': userTokens.services?.resume?.loginTokens },
+				};
+			});
+
 			await this.syncDataToUser(crowdUser, user._id);
 
 			return {
@@ -323,6 +348,8 @@ export class CROWD {
 		// Attempt to create the new user
 		try {
 			crowdUser._id = await Accounts.createUserAsync(crowdUser);
+
+			void notifyOnUserChangeById({ clientAction: 'inserted', id: crowdUser._id });
 
 			// sync the user data
 			await this.syncDataToUser(crowdUser, crowdUser._id);

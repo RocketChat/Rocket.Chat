@@ -1,10 +1,12 @@
 import type { IUpload } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import { Box, Menu, Icon } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 
 import { getURL } from '../../../../../../app/utils/client';
-import { download } from '../../../../../lib/download';
+import { download, downloadAs } from '../../../../../lib/download';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useMessageDeletionIsAllowed } from '../hooks/useMessageDeletionIsAllowed';
 
@@ -13,11 +15,33 @@ type FileItemMenuProps = {
 	onClickDelete: (id: IUpload['_id']) => void;
 };
 
+const ee = new Emitter<Record<string, { result: ArrayBuffer; id: string }>>();
+
+navigator.serviceWorker.addEventListener('message', (event) => {
+	if (event.data.type === 'attachment-download-result') {
+		const { result } = event.data as { result: ArrayBuffer; id: string };
+
+		ee.emit(event.data.id, { result, id: event.data.id });
+	}
+});
+
 const FileItemMenu = ({ fileData, onClickDelete }: FileItemMenuProps) => {
 	const t = useTranslation();
 	const room = useRoom();
-	const uid = useUserId();
-	const isDeletionAllowed = useMessageDeletionIsAllowed(room._id, fileData, uid);
+	const userId = useUserId();
+	const isDeletionAllowed = useMessageDeletionIsAllowed(room._id, fileData, userId);
+
+	const { controller } = navigator.serviceWorker;
+
+	const uid = useUniqueId();
+
+	useEffect(
+		() =>
+			ee.once(uid, ({ result }) => {
+				downloadAs({ data: [new Blob([result])] }, fileData.name ?? t('Download'));
+			}),
+		[fileData, t, uid],
+	);
 
 	const menuOptions = {
 		downLoad: {
@@ -28,6 +52,15 @@ const FileItemMenu = ({ fileData, onClickDelete }: FileItemMenuProps) => {
 				</Box>
 			),
 			action: () => {
+				if (fileData.path?.includes('/file-decrypt/')) {
+					controller?.postMessage({
+						type: 'attachment-download',
+						url: fileData.path,
+						id: uid,
+					});
+					return;
+				}
+
 				if (fileData.url && fileData.name) {
 					const URL = window.webkitURL ?? window.URL;
 					const href = getURL(fileData.url);

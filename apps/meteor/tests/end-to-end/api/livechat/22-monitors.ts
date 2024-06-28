@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, it, describe, after } from 'mocha';
@@ -19,7 +20,7 @@ import { password } from '../../../data/user';
 import { createUser, deleteUser, login, setUserActiveStatus } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };
+type TestUser = { user: IUser; credentials: Credentials };
 
 (IS_EE ? describe : describe.skip)('Omnichannel - Monitors', () => {
 	let manager: TestUser;
@@ -35,7 +36,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 		await makeAgentAvailable();
 	});
 	before(async () => {
-		const user: IUser = await createUser();
+		const user = await createUser();
 		const userCredentials = await login(user.username, password);
 		if (!user.username) {
 			throw new Error('user not created');
@@ -48,7 +49,7 @@ type TestUser = { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id
 		};
 	});
 	before(async () => {
-		const user: IUser = await createUser();
+		const user = await createUser();
 		const userCredentials = await login(user.username, password);
 		if (!user.username) {
 			throw new Error('user not created');

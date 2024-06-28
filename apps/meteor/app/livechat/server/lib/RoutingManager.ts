@@ -11,6 +11,7 @@ import type {
 	InquiryWithAgentInfo,
 	TransferData,
 } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
@@ -18,6 +19,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import {
 	createLivechatSubscription,
@@ -182,7 +184,15 @@ export const RoutingManager: Routing = {
 		const { servedBy } = room;
 
 		if (shouldQueue) {
-			await LivechatInquiry.queueInquiry(inquiry._id);
+			const queuedInquiry = await LivechatInquiry.queueInquiry(inquiry._id);
+			if (queuedInquiry) {
+				inquiry = queuedInquiry;
+				void notifyOnLivechatInquiryChanged(inquiry, 'updated', {
+					status: LivechatInquiryStatus.QUEUED,
+					queuedAt: new Date(),
+					takenAt: undefined,
+				});
+			}
 		}
 
 		if (servedBy) {
@@ -192,6 +202,7 @@ export const RoutingManager: Routing = {
 		}
 
 		await dispatchInquiryQueued(inquiry);
+
 		return true;
 	},
 
@@ -250,10 +261,19 @@ export const RoutingManager: Routing = {
 		}
 
 		await LivechatInquiry.takeInquiry(_id);
+
 		const inq = await this.assignAgent(inquiry as InquiryWithAgentInfo, agent);
 		logger.info(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
 
 		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);
+
+		void notifyOnLivechatInquiryChangedById(inquiry._id, 'updated', {
+			status: LivechatInquiryStatus.TAKEN,
+			takenAt: new Date(),
+			defaultAgent: undefined,
+			estimatedInactivityCloseTimeAt: undefined,
+			queuedAt: undefined,
+		});
 
 		return LivechatRooms.findOneById(rid);
 	},
@@ -282,6 +302,7 @@ export const RoutingManager: Routing = {
 		if (defaultAgent) {
 			logger.debug(`Delegating Inquiry ${inquiry._id} to agent ${defaultAgent.username}`);
 			await LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
+			void notifyOnLivechatInquiryChanged(inquiry, 'updated', { defaultAgent });
 		}
 
 		logger.debug(`Queueing inquiry ${inquiry._id}`);

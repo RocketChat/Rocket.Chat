@@ -1,6 +1,7 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
+import { notifyOnLivechatInquiryChanged } from '../../../../../app/lib/server/lib/notifyListener';
 import { online } from '../../../../../app/livechat/server/api/lib/livechat';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
@@ -30,13 +31,22 @@ callbacks.add(
 				cbLogger.info(
 					`Inquiry ${inquiry._id} will be moved from department ${department._id} to fallback department ${department.fallbackForwardDepartment}`,
 				);
+
 				// update visitor
 				await Livechat.setDepartmentForGuest({
 					token: inquiry?.v?.token,
 					department: department.fallbackForwardDepartment,
 				});
+
 				// update inquiry
-				inquiry = (await LivechatInquiry.setDepartmentByInquiryId(inquiry._id, department.fallbackForwardDepartment)) ?? inquiry;
+				const updatedLivechatInquiry = await LivechatInquiry.setDepartmentByInquiryId(inquiry._id, department.fallbackForwardDepartment);
+
+				if (updatedLivechatInquiry) {
+					void notifyOnLivechatInquiryChanged(updatedLivechatInquiry, 'updated', { department: updatedLivechatInquiry.department });
+				}
+
+				inquiry = updatedLivechatInquiry ?? inquiry;
+
 				// update room
 				await LivechatRooms.setDepartmentByRoomId(inquiry.rid, department.fallbackForwardDepartment);
 			}

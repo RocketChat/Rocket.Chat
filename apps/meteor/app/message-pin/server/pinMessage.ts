@@ -133,7 +133,9 @@ Meteor.methods<ServerMethods>({
 		// App IPostMessagePinned event hook
 		await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
 
-		const msgId = await Message.saveSystemMessage('message_pinned', originalMessage.rid, '', me, {
+		const pinMessageType = originalMessage.t === 'e2e' ? 'message_pinned_e2e' : 'message_pinned';
+
+		const msgId = await Message.saveSystemMessage(pinMessageType, originalMessage.rid, '', me, {
 			attachments: [
 				{
 					text: originalMessage.msg,

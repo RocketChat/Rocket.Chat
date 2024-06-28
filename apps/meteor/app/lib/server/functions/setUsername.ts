@@ -10,6 +10,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { RateLimiter } from '../lib';
+import { notifyOnUserChange } from '../lib/notifyListener';
 import { addUserToRoom } from './addUserToRoom';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
@@ -67,6 +68,8 @@ export const setUsernameWithValidation = async (userId: string, username: string
 		await joinDefaultChannels(user._id, joinDefaultChannelsSilenced);
 		setImmediate(async () => callbacks.run('afterCreateUser', user));
 	}
+
+	void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: { username } });
 };
 
 export const _setUsername = async function (userId: string, u: string, fullUser: IUser): Promise<unknown> {

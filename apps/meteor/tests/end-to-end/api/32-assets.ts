@@ -1,10 +1,8 @@
 import { describe, it } from 'mocha';
 
-import { request } from '../../data/api-data.js';
+import { request } from '../../data/api-data';
 
-describe('assets', function () {
-	this.retries(0);
-
+describe('assets', () => {
 	it('should always have CORS headers for assets', async () => {
 		await request.get('/assets/favicon.svg').expect('Content-Type', 'image/svg+xml').expect('Access-Control-Allow-Origin', '*').expect(200);
 

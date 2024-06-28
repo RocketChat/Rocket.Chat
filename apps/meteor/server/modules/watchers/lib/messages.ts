@@ -1,9 +1,9 @@
 import { api, dbWatchersDisabled } from '@rocket.chat/core-services';
-import type { IMessage, SettingValue, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, SettingValue, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Messages, Settings, Users } from '@rocket.chat/models';
 import mem from 'mem';
 
-const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
+import { shouldHideSystemMessage } from '../../../lib/systemMessage/hideSystemMessage';
 
 const getUserNameCached = mem(
 	async (userId: string): Promise<string | undefined> => {
@@ -13,10 +13,21 @@ const getUserNameCached = mem(
 	{ maxAge: 10000 },
 );
 
+const getSettingCached = mem(async (setting: string): Promise<SettingValue> => Settings.getValueById(setting), { maxAge: 10000 });
+
 export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<IMessage | void> {
 	const message = data ?? (await Messages.findOneById(id));
 	if (!message) {
 		return;
+	}
+
+	if (message.t) {
+		const hiddenSystemMessages = (await getSettingCached('Hide_System_Messages')) as MessageTypesValues[];
+		const shouldHide = shouldHideSystemMessage(message.t, hiddenSystemMessages);
+
+		if (shouldHide) {
+			return;
+		}
 	}
 
 	if (message._hidden || message.imported != null) {

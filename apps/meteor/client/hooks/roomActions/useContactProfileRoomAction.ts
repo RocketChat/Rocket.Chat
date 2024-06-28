@@ -1,6 +1,5 @@
 import { lazy, useMemo } from 'react';
 
-import { useOmnichannelRoom } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const ContactInfoRouter = lazy(() => import('../../views/omnichannel/contactInfo/ContactInfoRouter'));

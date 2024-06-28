@@ -111,7 +111,7 @@ export async function cleanRoomHistory({
 	}
 
 	if (count) {
-		const lastMessage = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(rid);
+		const lastMessage = await Messages.getLastVisibleUserMessageSentByRoomId(rid);
 
 		await Rooms.resetLastMessageById(rid, lastMessage, -count);
 

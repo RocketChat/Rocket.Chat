@@ -157,13 +157,23 @@ export function addSettings(): Promise<void> {
 						invalidValue: false,
 					});
 
-					await this.add('LDAP_Sync_User_Data_Roles_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', {
+					await this.add('LDAP_Sync_User_Data_Roles_BaseDN', '', {
 						type: 'string',
 						enableQuery: syncRolesQuery,
 						invalidValue: '',
 					});
 
-					await this.add('LDAP_Sync_User_Data_Roles_BaseDN', '', {
+					await this.add('LDAP_Sync_User_Data_Roles_GroupMembershipValidationStrategy', 'each_group', {
+						type: 'select',
+						values: [
+							{ key: 'each_group', i18nLabel: 'LDAP_Sync_User_Data_GroupMembershipValidationStrategy_EachGroup' },
+							{ key: 'once', i18nLabel: 'LDAP_Sync_User_Data_GroupMembershipValidationStrategy_Once' },
+						],
+						enableQuery: syncRolesQuery,
+						invalidValue: 'each_group',
+					});
+
+					await this.add('LDAP_Sync_User_Data_Roles_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', {
 						type: 'string',
 						enableQuery: syncRolesQuery,
 						invalidValue: '',
@@ -194,13 +204,23 @@ export function addSettings(): Promise<void> {
 						invalidValue: 'rocket.cat',
 					});
 
-					await this.add('LDAP_Sync_User_Data_Channels_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', {
+					await this.add('LDAP_Sync_User_Data_Channels_BaseDN', '', {
 						type: 'string',
 						enableQuery: syncChannelsQuery,
 						invalidValue: '',
 					});
 
-					await this.add('LDAP_Sync_User_Data_Channels_BaseDN', '', {
+					await this.add('LDAP_Sync_User_Data_Channels_GroupMembershipValidationStrategy', 'each_group', {
+						type: 'select',
+						values: [
+							{ key: 'each_group', i18nLabel: 'LDAP_Sync_User_Data_GroupMembershipValidationStrategy_EachGroup' },
+							{ key: 'once', i18nLabel: 'LDAP_Sync_User_Data_GroupMembershipValidationStrategy_Once' },
+						],
+						enableQuery: syncChannelsQuery,
+						invalidValue: 'each_group',
+					});
+
+					await this.add('LDAP_Sync_User_Data_Channels_Filter', '(&(cn=#{groupName})(memberUid=#{username}))', {
 						type: 'string',
 						enableQuery: syncChannelsQuery,
 						invalidValue: '',

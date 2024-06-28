@@ -138,7 +138,8 @@ export {
 	IUserService,
 };
 
-export const dbWatchersDisabled = ['yes', 'true'].includes(String(process.env.DISABLE_DB_WATCHERS).toLowerCase());
+export const dbWatchersDisabled =
+	['yes', 'true'].includes(String(process.env.DISABLE_DB_WATCHERS).toLowerCase()) || process.env.NODE_ENV !== 'production';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');

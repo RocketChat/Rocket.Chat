@@ -1,8 +1,9 @@
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
-import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 import moment from 'moment';
 
+import { notifyOnUserChangeAsync } from '../../../lib/server/lib/notifyListener';
 import { businessHourLogger } from '../lib/logger';
 import { createDefaultBusinessHourRow } from './LivechatBusinessHours';
 import { filterBusinessHoursThatMustBeOpened } from './filterBusinessHoursThatMustBeOpened';
@@ -32,13 +33,14 @@ export const openBusinessHourDefault = async (): Promise<void> => {
 			active: 1,
 		},
 	});
+
 	const businessHoursToOpenIds = (await filterBusinessHoursThatMustBeOpened(activeBusinessHours)).map((businessHour) => businessHour._id);
 	businessHourLogger.debug({ msg: 'Opening default business hours', businessHoursToOpenIds });
 	await Users.openAgentsBusinessHoursByBusinessHourId(businessHoursToOpenIds);
 	if (businessHoursToOpenIds.length) {
-		await Users.makeAgentsWithinBusinessHourAvailable();
+		await makeOnlineAgentsAvailable();
 	}
-	await Users.updateLivechatStatusBasedOnBusinessHours();
+	await makeAgentsUnavailableBasedOnBusinessHour();
 };
 
 export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {
@@ -46,3 +48,55 @@ export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {
 		await LivechatBusinessHours.insertOne(createDefaultBusinessHourRow());
 	}
 };
+
+export async function makeAgentsUnavailableBasedOnBusinessHour(agentIds: string[] | null = null) {
+	const results = await Users.findAgentsAvailableWithoutBusinessHours(agentIds).toArray();
+
+	const update = await Users.updateLivechatStatusByAgentIds(
+		results.map(({ _id }) => _id),
+		ILivechatAgentStatus.NOT_AVAILABLE,
+	);
+
+	if (update.modifiedCount === 0) {
+		return;
+	}
+
+	void notifyOnUserChangeAsync(async () =>
+		results.map(({ _id, openBusinessHours }) => {
+			return {
+				id: _id,
+				clientAction: 'updated',
+				diff: {
+					statusLivechat: 'not-available',
+					openBusinessHours,
+				},
+			};
+		}),
+	);
+}
+
+export async function makeOnlineAgentsAvailable(agentIds: string[] | null = null) {
+	const results = await Users.findOnlineButNotAvailableAgents(agentIds).toArray();
+
+	const update = await Users.updateLivechatStatusByAgentIds(
+		results.map(({ _id }) => _id),
+		ILivechatAgentStatus.AVAILABLE,
+	);
+
+	if (update.modifiedCount === 0) {
+		return;
+	}
+
+	void notifyOnUserChangeAsync(async () =>
+		results.map(({ _id, openBusinessHours }) => {
+			return {
+				id: _id,
+				clientAction: 'updated',
+				diff: {
+					statusLivechat: 'available',
+					openBusinessHours,
+				},
+			};
+		}),
+	);
+}

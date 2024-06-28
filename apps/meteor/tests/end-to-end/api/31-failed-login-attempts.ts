@@ -1,15 +1,15 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, beforeEach, afterEach, describe, it } from 'mocha';
 
 import { sleep } from '../../../lib/utils/sleep';
-import { getCredentials, api, request, credentials } from '../../data/api-data.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updateSetting, updatePermission } from '../../data/permissions.helper';
 import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser } from '../../data/users.helper';
 
-describe('[Failed Login Attempts]', function () {
-	this.retries(0);
-
+describe('[Failed Login Attempts]', () => {
 	const maxAttemptsByUser = 2;
 	const maxAttemptsByIp = 4;
 	const userBlockSeconds = 3;
@@ -103,7 +103,7 @@ describe('[Failed Login Attempts]', function () {
 	}
 
 	describe('[Block by User]', () => {
-		let user: Awaited<ReturnType<typeof createUser>> | undefined;
+		let user: TestUser<IUser>;
 
 		before(async () => {
 			await updateSetting('Block_Multiple_Failed_Logins_By_Ip', false);
@@ -159,9 +159,9 @@ describe('[Failed Login Attempts]', function () {
 	});
 
 	describe('[Block by IP]', () => {
-		let user: Awaited<ReturnType<typeof createUser>> | undefined;
-		let user2: Awaited<ReturnType<typeof createUser>> | undefined;
-		let userLogin: Awaited<ReturnType<typeof createUser>> | undefined;
+		let user: TestUser<IUser>;
+		let user2: TestUser<IUser>;
+		let userLogin: TestUser<IUser>;
 
 		beforeEach(async () => {
 			user = await createUser();

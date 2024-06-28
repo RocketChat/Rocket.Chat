@@ -54,6 +54,7 @@ const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function Fi
 					value={text}
 					flexGrow={2}
 					minWidth='x220'
+					aria-label={placeholder ?? t('Search')}
 				/>
 			</Box>
 			{isFilterByTextPropsWithButton(props) ? (

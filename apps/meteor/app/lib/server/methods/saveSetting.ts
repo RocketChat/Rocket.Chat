@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { notifyOnSettingChanged } from '../lib/notifyListener';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -56,7 +57,10 @@ Meteor.methods<ServerMethods>({
 				break;
 		}
 
-		await Settings.updateValueAndEditorById(_id, value as SettingValue, editor);
+		(await Settings.updateValueAndEditorById(_id, value as SettingValue, editor)).modifiedCount &&
+			setting &&
+			void notifyOnSettingChanged({ ...setting, editor, value: value as SettingValue });
+
 		return true;
 	}),
 });

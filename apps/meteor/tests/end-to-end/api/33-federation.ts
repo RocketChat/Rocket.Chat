@@ -4,9 +4,7 @@ import { after, before, describe, it } from 'mocha';
 import { getCredentials, request } from '../../data/api-data';
 import { updateSetting } from '../../data/permissions.helper';
 
-describe('federation', function () {
-	this.retries(0);
-
+describe('federation', () => {
 	before((done) => getCredentials(done));
 
 	describe('well-known', () => {

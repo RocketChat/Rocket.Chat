@@ -5,6 +5,7 @@ import type {
 	ILivechatVisitor,
 	IOmnichannelRoom,
 	SelectedAgent,
+	OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
@@ -104,7 +105,13 @@ export async function findOpenRoom(token: string, departmentId?: string): Promis
 		return rooms[0];
 	}
 }
-export function getRoom({
+export function getRoom<
+	E extends Record<string, unknown> & {
+		sla?: string;
+		customFields?: Record<string, unknown>;
+		source?: OmnichannelSourceType;
+	},
+>({
 	guest,
 	rid,
 	roomInfo,
@@ -117,7 +124,7 @@ export function getRoom({
 		source?: IOmnichannelRoom['source'];
 	};
 	agent?: SelectedAgent;
-	extraParams?: Record<string, any>;
+	extraParams?: E;
 }): Promise<{ room: IOmnichannelRoom; newRoom: boolean }> {
 	const token = guest?.token;
 

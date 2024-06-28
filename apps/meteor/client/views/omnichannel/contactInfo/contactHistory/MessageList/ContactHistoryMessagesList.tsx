@@ -34,7 +34,7 @@ import { isMessageSequential } from '../../../../room/MessageList/lib/isMessageS
 import ContactHistoryMessage from './ContactHistoryMessage';
 import { useHistoryMessageList } from './useHistoryMessageList';
 
-const ContactHistoryMessagesList = ({ chatId }: { chatId: string }): ReactElement => {
+const ContactHistoryMessagesList = ({ chatId, onClose }: { chatId: string; onClose: () => void }): ReactElement => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
 
@@ -58,7 +58,7 @@ const ContactHistoryMessagesList = ({ chatId }: { chatId: string }): ReactElemen
 				<ContextualbarAction onClick={() => navigate(`/live/${id}/${tab}/history`)} title={t('Back')} name='arrow-back' />
 				<ContextualbarIcon name='history' />
 				<ContextualbarTitle>{t('Chat_History')}</ContextualbarTitle>
-				<ContextualbarClose onClick={close} />
+				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 
 			<ContextualbarContent paddingInline={0}>

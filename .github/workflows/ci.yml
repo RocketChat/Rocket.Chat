@@ -35,10 +35,12 @@ jobs:
       # to avoid this, we are using a dummy license, expiring at 2024-06-30
       enterprise-license: WMa5i+/t/LZbYOj8u3XUkivRhWBtWO6ycUjaZoVAw2DxMfdyBIAa2gMMI4x7Z2BrTZIZhFEImfOxcXcgD0QbXHGBJaMI+eYG+eofnVWi2VA7RWbpvWTULgPFgyJ4UEFeCOzVjcBLTQbmMSam3u0RlekWJkfAO0KnmLtsaEYNNA2rz1U+CLI/CdNGfdqrBu5PZZbGkH0KEzyIZMaykOjzvX+C6vd7fRxh23HecwhkBbqE8eQsCBt2ad0qC4MoVXsDaSOmSzGW+aXjuXt/9zjvrLlsmWQTSlkrEHdNkdywm0UkGxqz3+CP99n0WggUBioUiChjMuNMoceWvDvmxYP9Ml2NpYU7SnfhjmMFyXOah8ofzv8w509Y7XODvQBz+iB4Co9YnF3vT96HDDQyAV5t4jATE+0t37EAXmwjTi3qqyP7DLGK/revl+mlcwJ5kS4zZBsm1E4519FkXQOZSyWRnPdjqvh4mCLqoispZ49wKvklDvjPxCSP9us6cVXLDg7NTJr/4pfxLPOkvv7qCgugDvlDx17bXpQFPSDxmpw66FLzvb5Id0dkWjOzrRYSXb0bFWoUQjtHFzmcpFkyVhOKrQ9zA9+Zm7vXmU9Y2l2dK79EloOuHMSYAqsPEag8GMW6vI/cT4iIjHGGDePKnD0HblvTEKzql11cfT/abf2IiaY=
     steps:
-      - uses: Bhacaz/checkout-files@v2
+      - uses: actions/checkout@v4
         with:
-          files: package.json
-          branch: ${{ github.ref }}
+          sparse-checkout: |
+            package.json
+          sparse-checkout-cone-mode: false
+          ref: ${{ github.ref }}
 
       - id: var
         run: |
@@ -85,10 +87,12 @@ jobs:
     runs-on: ubuntu-20.04
     needs: [release-versions]
     steps:
-      - uses: Bhacaz/checkout-files@v2
+      - uses: actions/checkout@v4
         with:
-          files: package.json
-          branch: ${{ github.ref }}
+          sparse-checkout: |
+            package.json
+          sparse-checkout-cone-mode: false
+          ref: ${{ github.ref }}
 
       - name: Register release on cloud as Draft
         if: github.event_name == 'release'
@@ -168,6 +172,12 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
+        with:
+          theme: dark
+          job_summary: true
+          comment_on_pr: false
       - name: Github Info
         run: |
           echo "GITHUB_ACTION: $GITHUB_ACTION"
@@ -192,6 +202,12 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
+        with:
+          theme: dark
+          job_summary: true
+          comment_on_pr: false
       - name: Github Info
         run: |
           echo "GITHUB_ACTION: $GITHUB_ACTION"
@@ -337,6 +353,7 @@ jobs:
       QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+      REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
   test-api-ee:
     name: 🔨 Test API (EE)
@@ -388,6 +405,7 @@ jobs:
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
   test-ui-ee-no-watcher:
     name: 🔨 Test UI (EE)
@@ -418,6 +436,7 @@ jobs:
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
   tests-done:
     name: ✅ Tests Done
@@ -436,10 +455,12 @@ jobs:
     needs: [build-gh-docker, release-versions]
 
     steps:
-      - uses: Bhacaz/checkout-files@v2
+      - uses: actions/checkout@v4
         with:
-          files: package.json
-          branch: ${{ github.ref }}
+          sparse-checkout: |
+            package.json
+          sparse-checkout-cone-mode: false
+          ref: ${{ github.ref }}
 
       - name: Restore build
         uses: actions/download-artifact@v3
@@ -719,10 +740,12 @@ jobs:
       - docker-image-publish
       - release-versions
     steps:
-      - uses: Bhacaz/checkout-files@v2
+      - uses: actions/checkout@v4
         with:
-          files: package.json
-          branch: ${{ github.ref }}
+          sparse-checkout: |
+            package.json
+          sparse-checkout-cone-mode: false
+          ref: ${{ github.ref }}
 
       - name: Releases service
         env:

@@ -8,14 +8,14 @@ import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { useOmnichannelRoom } from '../../../room/contexts/RoomContext';
 
 const ContactInfoHistoryItem = ({ name, description, time, ...props }) => {
-	const room = useOmnichannelRoom();
+	// const room = useOmnichannelRoom();
 	const formatDate = useFormatDate();
 	const timeAgo = useTimeAgo();
 
 	return (
 		<Box display='flex' alignItems='center' {...props}>
 			<Box p={8} backgroundColor='tint' borderRadius={4}>
-				<OmnichannelRoomIcon room={room} size='x20' placement='default' />
+				{/* <OmnichannelRoomIcon room={room} size='x20' placement='default' /> */}
 			</Box>
 			<Box mis={4} display='flex' flexDirection='column'>
 				<Box display='flex' alignItems='center'>

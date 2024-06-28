@@ -38,7 +38,7 @@ export class HomeSidenav {
 	}
 
 	get userProfileMenu(): Locator {
-		return this.page.getByRole('button', { name: 'User menu' });
+		return this.page.getByRole('button', { name: 'User menu', exact: true });
 	}
 
 	get sidebarChannelsList(): Locator {
@@ -47,6 +47,12 @@ export class HomeSidenav {
 
 	get sidebarToolbar(): Locator {
 		return this.page.getByRole('toolbar', { name: 'Sidebar actions' });
+	}
+
+	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
+		await this.sidebarToolbar.getByRole('button', { name: 'Display', exact: true }).click();
+		await this.sidebarToolbar.getByRole('menuitemcheckbox', { name: mode }).click();
+		await this.sidebarToolbar.click();
 	}
 
 	// Note: this is different from openChat because queued chats are not searchable

@@ -43,7 +43,7 @@ async function getEmailContent({ message, user, room }) {
 		let messageContent = escapeHTML(message.msg);
 
 		if (message.t === 'e2e') {
-			messageContent = i18n.t('Encrypted_message', { lng });
+			messageContent = i18n.t('Encrypted_message_preview_unavailable', { lng });
 		}
 
 		message = await callbacks.run('renderMessage', message);

@@ -15,6 +15,12 @@ import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { type ILivechatMessage, Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
 import { settings } from '../../../settings/server';
 
+declare module '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator' {
+	interface IExtraRoomParams {
+		customFields?: Record<string, any>;
+	}
+}
+
 export class AppLivechatBridge extends LivechatBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
@@ -79,16 +85,13 @@ export class AppLivechatBridge extends LivechatBridge {
 		await LivechatTyped.updateMessage(data);
 	}
 
-	protected async createRoom(visitor: IVisitor, agent: IUser, appId: string, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
+	protected async createRoom(
+		visitor: IVisitor,
+		agent: IUser,
+		appId: string,
+		{ source, customFields }: IExtraRoomParams = {},
+	): Promise<ILivechatRoom> {
 		this.orch.debugLog(`The App ${appId} is creating a livechat room.`);
-
-		const { source } = extraParams || {};
-		// `source` will likely have the properties below, so we tell TS it's alright
-		const { sidebarIcon, defaultIcon, label } = (source || {}) as {
-			sidebarIcon?: string;
-			defaultIcon?: string;
-			label?: string;
-		};
 
 		let agentRoom: SelectedAgent | undefined;
 		if (agent?.id) {
@@ -108,12 +111,15 @@ export class AppLivechatBridge extends LivechatBridge {
 					type: OmnichannelSourceType.APP,
 					id: appId,
 					alias: this.orch.getManager()?.getOneById(appId)?.getName(),
-					label,
-					sidebarIcon,
-					defaultIcon,
+					...(source &&
+						source.type === 'app' && {
+							sidebarIcon: source.sidebarIcon,
+							defaultIcon: source.defaultIcon,
+							label: source.label,
+						}),
 				},
 			},
-			extraParams: undefined,
+			extraParams: customFields && { customFields },
 		});
 
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
@@ -195,7 +201,33 @@ export class AppLivechatBridge extends LivechatBridge {
 			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
 		};
 
-		return LivechatTyped.registerGuest(registerData);
+		const livechatVisitor = await LivechatTyped.registerGuest(registerData);
+
+		if (!livechatVisitor) {
+			throw new Error('Invalid visitor, cannot create');
+		}
+
+		return livechatVisitor._id;
+	}
+
+	protected async createAndReturnVisitor(visitor: IVisitor, appId: string): Promise<IVisitor | undefined> {
+		this.orch.debugLog(`The App ${appId} is creating a livechat visitor.`);
+
+		const registerData = {
+			department: visitor.department,
+			username: visitor.username,
+			name: visitor.name,
+			token: visitor.token,
+			email: '',
+			connectionData: undefined,
+			id: visitor.id,
+			...(visitor.phone?.length && { phone: { number: visitor.phone[0].phoneNumber } }),
+			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
+		};
+
+		const livechatVisitor = await LivechatTyped.registerGuest(registerData);
+
+		return this.orch.getConverters()?.get('visitors').convertVisitor(livechatVisitor);
 	}
 
 	protected async transferVisitor(visitor: IVisitor, transferData: ILivechatTransferData, appId: string): Promise<boolean> {

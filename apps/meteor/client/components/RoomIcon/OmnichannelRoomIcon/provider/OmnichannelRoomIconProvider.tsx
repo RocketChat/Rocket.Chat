@@ -23,58 +23,58 @@ export const OmnichannelRoomIconProvider: FC = ({ children }) => {
 		(): string[] => icons,
 	);
 
-	const contextValue = useMemo(() => {
-		const extractSnapshot = (app: string, iconName: string): AsyncState<string> => {
-			const icon = OmnichannelRoomIcon.get(app, iconName);
+	return (
+		<OmnichannelRoomIconContext.Provider
+			value={useMemo(() => {
+				const extractSnapshot = (app: string, iconName: string): AsyncState<string> => {
+					const icon = OmnichannelRoomIcon.get(app, iconName);
 
-			if (icon) {
-				return {
-					phase: AsyncStatePhase.RESOLVED,
-					value: icon,
-					error: undefined,
-				};
-			}
-
-			return {
-				phase: AsyncStatePhase.LOADING,
-				value: undefined,
-				error: undefined,
-			};
-		};
-
-		// We cache all the icons here, so that we can use them in the OmnichannelRoomIcon component
-		const snapshots = new Map<string, AsyncState<string>>();
-
-		return {
-			queryIcon: (
-				app: string,
-				iconName: string,
-			): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => AsyncState<string>] => [
-				(callback): (() => void) =>
-					OmnichannelRoomIcon.on(`${app}-${iconName}`, () => {
-						snapshots.set(`${app}-${iconName}`, extractSnapshot(app, iconName));
-
-						// Then we call the callback (onStoreChange), signaling React to re-render
-						callback();
-					}),
-
-				// No problem here, because it's return value is a cached in the snapshots map on subsequent calls
-				(): AsyncState<string> => {
-					let snapshot = snapshots.get(`${app}-${iconName}`);
-
-					if (!snapshot) {
-						snapshot = extractSnapshot(app, iconName);
-						snapshots.set(`${app}-${iconName}`, snapshot);
+					if (icon) {
+						return {
+							phase: AsyncStatePhase.RESOLVED,
+							value: icon,
+							error: undefined,
+						};
 					}
 
-					return snapshot;
-				},
-			],
-		};
-	}, []);
+					return {
+						phase: AsyncStatePhase.LOADING,
+						value: undefined,
+						error: undefined,
+					};
+				};
 
-	return (
-		<OmnichannelRoomIconContext.Provider value={contextValue}>
+				// We cache all the icons here, so that we can use them in the OmnichannelRoomIcon component
+				const snapshots = new Map<string, AsyncState<string>>();
+
+				return {
+					queryIcon: (
+						app: string,
+						iconName: string,
+					): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => AsyncState<string>] => [
+						(callback): (() => void) =>
+							OmnichannelRoomIcon.on(`${app}-${iconName}`, () => {
+								snapshots.set(`${app}-${iconName}`, extractSnapshot(app, iconName));
+
+								// Then we call the callback (onStoreChange), signaling React to re-render
+								callback();
+							}),
+
+						// No problem here, because it's return value is a cached in the snapshots map on subsequent calls
+						(): AsyncState<string> => {
+							let snapshot = snapshots.get(`${app}-${iconName}`);
+
+							if (!snapshot) {
+								snapshot = extractSnapshot(app, iconName);
+								snapshots.set(`${app}-${iconName}`, snapshot);
+							}
+
+							return snapshot;
+						},
+					],
+				};
+			}, [])}
+		>
 			{createPortal(
 				<svg
 					xmlns='http://www.w3.org/2000/svg'

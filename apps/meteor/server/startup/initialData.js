@@ -8,6 +8,7 @@ import { FileUpload } from '../../app/file-upload/server';
 import { RocketChatFile } from '../../app/file/server';
 import { addUserToDefaultChannels } from '../../app/lib/server/functions/addUserToDefaultChannels';
 import { checkUsernameAvailability } from '../../app/lib/server/functions/checkUsernameAvailability';
+import { notifyOnSettingChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { validateEmail } from '../../lib/emailValidator';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
@@ -126,7 +127,8 @@ Meteor.startup(async () => {
 			});
 		}
 
-		Settings.updateValueById('Initial_Channel_Created', true);
+		(await Settings.updateValueById('Initial_Channel_Created', true)).modifiedCount &&
+			void notifyOnSettingChangedById('Initial_Channel_Created');
 	}
 
 	try {
@@ -198,7 +200,9 @@ Meteor.startup(async () => {
 	if ((await (await getUsersInRole('admin')).count()) !== 0) {
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
 			console.log('Setting Setup Wizard to "in_progress" because, at least, one admin was found');
-			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+
+			(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount &&
+				void notifyOnSettingChangedById('Show_Setup_Wizard');
 		}
 	}
 
@@ -244,7 +248,8 @@ Meteor.startup(async () => {
 		await addUserRolesAsync(adminUser._id, ['admin']);
 
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+			(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount &&
+				void notifyOnSettingChangedById('Show_Setup_Wizard');
 		}
 
 		return addUserToDefaultChannels(adminUser, true);

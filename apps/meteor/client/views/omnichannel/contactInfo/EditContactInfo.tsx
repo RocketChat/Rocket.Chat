@@ -19,15 +19,15 @@ import {
 	ContextualbarHeader,
 } from '../../../components/Contextualbar';
 import { createToken } from '../../../lib/utils/createToken';
-import { useRoomToolbox } from '../../room/contexts/RoomToolboxContext';
 import { ContactManager as ContactManagerForm } from '../additionalForms';
 import { FormSkeleton } from '../directory/components/FormSkeleton';
 import { useCustomFieldsMetadata } from '../directory/hooks/useCustomFieldsMetadata';
 
 type EditContactInfoProps = {
-	id: string;
+	id?: string;
 	data?: { contact: Serialized<ILivechatVisitor> | null };
-	close: () => void;
+	onClose: () => void;
+	onCancel: () => void;
 };
 
 type ContactFormData = {
@@ -65,14 +65,12 @@ const getInitialValues = (data: EditContactInfoProps['data']): ContactFormData =
 	};
 };
 
-const EditContactInfo = ({ id, data, close }: EditContactInfoProps): ReactElement => {
+const EditContactInfo = ({ id, data, onClose, onCancel }: EditContactInfoProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
 
 	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
-
-	const { closeTab } = useRoomToolbox();
 
 	const [userId, setUserId] = useState('no-agent-selected');
 	const saveContact = useEndpoint('POST', '/v1/omnichannel/contact');
@@ -178,7 +176,7 @@ const EditContactInfo = ({ id, data, close }: EditContactInfoProps): ReactElemen
 			await saveContact(payload);
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			await queryClient.invalidateQueries({ queryKey: ['current-contacts'] });
-			close();
+			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -196,8 +194,8 @@ const EditContactInfo = ({ id, data, close }: EditContactInfoProps): ReactElemen
 		<>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='pencil' />
-				<ContextualbarTitle>{t('Edit_Contact_Profile')}</ContextualbarTitle>
-				<ContextualbarClose onClick={closeTab} />
+				<ContextualbarTitle>{id ? t('Edit_Contact_Profile') : t('New_contact')}</ContextualbarTitle>
+				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
 				<Field>
@@ -250,7 +248,7 @@ const EditContactInfo = ({ id, data, close }: EditContactInfoProps): ReactElemen
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button onClick={close}>{t('Cancel')}</Button>
+					<Button onClick={onCancel}>{t('Cancel')}</Button>
 					<Button type='submit' onClick={handleSubmit(handleSave)} loading={isSubmitting} primary>
 						{t('Save')}
 					</Button>
