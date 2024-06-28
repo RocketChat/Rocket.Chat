@@ -283,7 +283,7 @@
   "API_EmbedCacheExpirationDays": "Einbetten von Cache-Ablauftagen",
   "API_Enable_CORS": "Aktivieren Sie CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Aktivieren Sie den Direktnachrichtenverlaufsendpunkt",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Dies ermöglicht die Datei \"/ api / v1 / im.history.others\", die das Anzeigen von direkten Nachrichten ermöglicht, die von anderen Benutzern gesendet werden, an denen der Anrufer nicht beteiligt ist.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Dies ermöglicht die Datei \"/ api / v1 / im.messages.others\", die das Anzeigen von direkten Nachrichten ermöglicht, die von anderen Benutzern gesendet werden, an denen der Anrufer nicht beteiligt ist.",
   "API_Enable_Shields": "Schilde aktivieren",
   "API_Enable_Shields_Description": "Aktivieren Sie die verfügbaren Schilde unter `/ api / v1 / shield.svg`",
   "API_GitHub_Enterprise_URL": "Server-URL",

@@ -380,7 +380,7 @@
   "API_EmbedCacheExpirationDays": "キャッシュ有効期限の埋め込み",
   "API_Enable_CORS": "CORSを有効にする",
   "API_Enable_Direct_Message_History_EndPoint": "ダイレクトメッセージ履歴エンドポイントを有効にする",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "これにより「/api/v1/im.history.others」が有効になり、呼び出し元が含まれていない他のユーザーから送信されたダイレクトメッセージを表示できます。",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "これにより「/api/v1/im.messages.others」が有効になり、呼び出し元が含まれていない他のユーザーから送信されたダイレクトメッセージを表示できます。",
   "API_Enable_Personal_Access_Tokens": "REST APIへのパーソナルアクセストークンを有効にする",
   "API_Enable_Personal_Access_Tokens_Description": "REST APIで使用できるようにパーソナルアクセストークンを有効にする",
   "API_Enable_Rate_Limiter": "レート制限を有効にする",

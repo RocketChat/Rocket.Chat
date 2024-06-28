@@ -399,7 +399,7 @@
   "API_EmbedCacheExpirationDays": "Incrustar días de caducidad de caché",
   "API_Enable_CORS": "Habilitar CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Habilitar historial de mensajes directos para punto final",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Esta opción habilita \"/api/v1/im.history.others\", que permite la visualización de mensajes directos enviados por otros usuarios de los que el llamador no forma parte.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Esta opción habilita \"/api/v1/im.messages.others\", que permite la visualización de mensajes directos enviados por otros usuarios de los que el llamador no forma parte.",
   "API_Enable_Personal_Access_Tokens": "Habilitar tokens de acceso personal en la API REST",
   "API_Enable_Personal_Access_Tokens_Description": "Habilita los tokens de acceso personal para su uso con la API REST.",
   "API_Enable_Rate_Limiter": "Habilitar limitador de frecuencia",

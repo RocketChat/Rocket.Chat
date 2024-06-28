@@ -348,7 +348,7 @@
   "API_EmbedCacheExpirationDays": "Вставити термін дії кешу (днів)",
   "API_Enable_CORS": "Увімкнути CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Увімкнути кінцеву точку історії прямих повідомлень",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Вмикає  `/api/v1/ im.history.otherers', що дозволяє переглядати прямі повідомлення, надіслані іншими користувачами, в яких не бере учать користувач, що викликає.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Вмикає  `/api/v1/ im.messages.otherers', що дозволяє переглядати прямі повідомлення, надіслані іншими користувачами, в яких не бере учать користувач, що викликає.",
   "API_Enable_Personal_Access_Tokens": "Увімкнути токени особистого доступу до API REST",
   "API_Enable_Personal_Access_Tokens_Description": "Увімкніть персональні токени для використання з API REST",
   "API_Enable_Rate_Limiter": "Увімкнути обмеження швидкості",

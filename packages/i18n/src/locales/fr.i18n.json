@@ -383,7 +383,7 @@
   "API_EmbedCacheExpirationDays": "Intégrer le nombre de jours avant l'expiration du cache",
   "API_Enable_CORS": "Activer CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Activer le point de terminaison de l'historique des messages directs",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Cela active `/api/v1/im.history.others` qui permet de visualiser les messages directs envoyés par d'autres utilisateurs dont l'appelant ne fait pas partie.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Cela active `/api/v1/im.messages.others` qui permet de visualiser les messages directs envoyés par d'autres utilisateurs dont l'appelant ne fait pas partie.",
   "API_Enable_Personal_Access_Tokens": "Activer les jetons d'accès personnels à l'API REST",
   "API_Enable_Personal_Access_Tokens_Description": "Activer les jetons d'accès personnels utilisés avec l'API REST",
   "API_Enable_Rate_Limiter": "Activer le limiteur de débit",

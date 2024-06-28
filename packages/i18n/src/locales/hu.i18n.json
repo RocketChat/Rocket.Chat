@@ -418,7 +418,7 @@
   "API_EmbedCacheExpirationDays": "Beágyazási gyorsítótár lejárati napjai",
   "API_Enable_CORS": "CORS engedélyezése",
   "API_Enable_Direct_Message_History_EndPoint": "Közvetlen üzenet előzményei végpontjának engedélyezése",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Ez engedélyezi az „/api/v1/im.history.others” végpontot, amely lehetővé teszi a többi felhasználó által küldött közvetlen üzenetek megtekintését, amelynek a hívó nem része.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Ez engedélyezi az „/api/v1/im.messages.others” végpontot, amely lehetővé teszi a többi felhasználó által küldött közvetlen üzenetek megtekintését, amelynek a hívó nem része.",
   "API_Enable_Personal_Access_Tokens": "Személyes hozzáférési tokenek engedélyezése a REST API-hoz",
   "API_Enable_Personal_Access_Tokens_Description": "Személyes hozzáférési tokenek engedélyezése a REST API-val való használathoz",
   "API_Enable_Rate_Limiter": "Sebességkorlátozó engedélyezése",

@@ -283,7 +283,7 @@
   "API_EmbedCacheExpirationDays": "தற்காலிக சேமிப்பு முடக்கம் நாட்கள்",
   "API_Enable_CORS": "CORS ஐ இயக்கு",
   "API_Enable_Direct_Message_History_EndPoint": "நேரடி செய்தி வரலாறு முடிவுக்கு இயக்கு",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "இது அழைப்பவர் ஒரு பகுதியாக இல்லை என்று மற்ற பயனர்கள் அனுப்பிய நேரடி செய்திகளை பார்க்க அனுமதிக்கும் `/ api / v1 / im.history.others` ஐ செயல்படுத்துகிறது.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "இது அழைப்பவர் ஒரு பகுதியாக இல்லை என்று மற்ற பயனர்கள் அனுப்பிய நேரடி செய்திகளை பார்க்க அனுமதிக்கும் `/ api / v1 / im.messages.others` ஐ செயல்படுத்துகிறது.",
   "API_Enable_Shields": "ஷீல்ட்ஸ் இயக்கவும்",
   "API_Enable_Shields_Description": "`/ Api / v1 / shield.svg` இல் கிடைக்கும் கவசங்களை இயக்கு",
   "API_GitHub_Enterprise_URL": "சேவையக URL",

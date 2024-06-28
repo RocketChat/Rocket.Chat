@@ -283,7 +283,7 @@
   "API_EmbedCacheExpirationDays": "Вграждане на дни на изтичане на кеша",
   "API_Enable_CORS": "Активирайте CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Активирайте крайната точка на историята на директните съобщения",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Това дава възможност на \"/ api / v1 / im.history.others\", който позволява преглеждането на директни съобщения, изпратени от други потребители, от които повикващият не е част.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Това дава възможност на \"/ api / v1 / im.messages.others\", който позволява преглеждането на директни съобщения, изпратени от други потребители, от които повикващият не е част.",
   "API_Enable_Shields": "Активирайте щитовете",
   "API_Enable_Shields_Description": "Активиране на щитове на разположение на \"/ api / v1 / shield.svg\"",
   "API_GitHub_Enterprise_URL": "URL адрес на сървъра",

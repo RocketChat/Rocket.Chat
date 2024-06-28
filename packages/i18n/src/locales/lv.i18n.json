@@ -288,7 +288,7 @@
   "API_EmbedCacheExpirationDays": "Iegulta kešatmiņas beigu dienas",
   "API_Enable_CORS": "Aktivizēt CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Iespējot ziņojumu vēstures beigu punktu",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Tas aktivizē `/ api / v1 / im.history.otherers ', kas ļauj skatīt citu lietotāju sūtītīos tiešos ziņojumus kur zvanītājs nav daļa no tiem.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Tas aktivizē `/ api / v1 / im.messages.otherers ', kas ļauj skatīt citu lietotāju sūtītīos tiešos ziņojumus kur zvanītājs nav daļa no tiem.",
   "API_Enable_Shields": "Aktivizēt Shields",
   "API_Enable_Shields_Description": "Aktivizēt shields, kas pieejami pie / / api / v1 / shield.svg \"",
   "API_GitHub_Enterprise_URL": "Servera URL",

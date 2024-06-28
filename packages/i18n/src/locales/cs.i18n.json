@@ -348,7 +348,7 @@
   "API_EmbedCacheExpirationDays": "Počet dní expirace cache embed",
   "API_Enable_CORS": "Povolit CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Povolit Endpoint přímých zpráv",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Povolí endpoint `/api/v1/im.history.others` přes který lze stahovat přímé zprávy mezi všemi uživateli.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Povolí endpoint `/api/v1/im.messages.others` přes který lze stahovat přímé zprávy mezi všemi uživateli.",
   "API_Enable_Personal_Access_Tokens": "Povolit tokeny osobního přístupu pro rozhraní REST API",
   "API_Enable_Personal_Access_Tokens_Description": "Povolit tokeny osobního přístupu pro použití s rozhraním REST API",
   "API_Enable_Rate_Limiter": "Povolit rychlostní limit",

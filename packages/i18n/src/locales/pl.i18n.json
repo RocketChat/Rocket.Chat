@@ -416,7 +416,7 @@
   "API_EmbedCacheExpirationDays": "Osadź dni ważności pamięci podręcznej",
   "API_Enable_CORS": "Włącz CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Włącz punkt końcowy historii wiadomości bezpośrednich",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Umożliwia to korzystanie z funkcji „/api/v1/im.history.others”, która pozwala na przeglądanie bezpośrednich wiadomości wysłanych przez innych użytkowników, do których rozmówca nie należy.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Umożliwia to korzystanie z funkcji „/api/v1/im.messages.others”, która pozwala na przeglądanie bezpośrednich wiadomości wysłanych przez innych użytkowników, do których rozmówca nie należy.",
   "API_Enable_Personal_Access_Tokens": "Włącz osobiste tokeny dostępu do interfejsu REST API",
   "API_Enable_Personal_Access_Tokens_Description": "Włącz osobiste tokeny dostępu na potrzeby interfejsu REST API",
   "API_Enable_Rate_Limiter": "Włącz limit żądań",

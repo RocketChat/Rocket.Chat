@@ -361,7 +361,7 @@
   "API_EmbedCacheExpirationDays": "링크 미리보기 캐시 만료일",
   "API_Enable_CORS": "CORS 사용",
   "API_Enable_Direct_Message_History_EndPoint": "1:1 대화방 History Endpoint 사용",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "소속되지 않은 다른 유저로 부터 보내진 다이렉트메시지를 보기를 허용하는 'api/v1/im.history.others' 를 활성화 합니다.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "소속되지 않은 다른 유저로 부터 보내진 다이렉트메시지를 보기를 허용하는 'api/v1/im.messages.others' 를 활성화 합니다.",
   "API_Enable_Personal_Access_Tokens": "REST API에 개인 액세스 토큰 사용",
   "API_Enable_Personal_Access_Tokens_Description": "REST API를 위한 개인 액세스 토큰 사용",
   "API_Enable_Rate_Limiter": "Rate Limiter 사용",

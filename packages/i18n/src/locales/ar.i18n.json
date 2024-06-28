@@ -384,7 +384,7 @@
   "API_EmbedCacheExpirationDays": "تضمين أيام انتهاء صلاحية ذاكرة التخزين المؤقت",
   "API_Enable_CORS": "تمكين CORS",
   "API_Enable_Direct_Message_History_EndPoint": "تمكين نقطة نهاية محفوظات الرسائل المباشرة",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "يمكّن ذلك ‎`/api/v1/im.history.others`‎ الذي يسمح بعرض الرسائل المباشرة المرسلة من قِبل المستخدمين الآخرين الذين لا يكون المتصل جزءًا منهم.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "يمكّن ذلك ‎`/api/v1/im.messages.others`‎ الذي يسمح بعرض الرسائل المباشرة المرسلة من قِبل المستخدمين الآخرين الذين لا يكون المتصل جزءًا منهم.",
   "API_Enable_Personal_Access_Tokens": "تمكين الرموز المميزة للوصول الشخصي إلى واجهة برمجة تطبيقات REST",
   "API_Enable_Personal_Access_Tokens_Description": "تمكين الرموز المميزة للوصول الشخصي للاستخدام مع واجهة برمجة تطبيقات REST",
   "API_Enable_Rate_Limiter": "تمكين محدد المعدل",

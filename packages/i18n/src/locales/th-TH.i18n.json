@@ -282,7 +282,7 @@
   "API_EmbedCacheExpirationDays": "ฝังวันหมดอายุของแคช",
   "API_Enable_CORS": "เปิดใช้งาน CORS",
   "API_Enable_Direct_Message_History_EndPoint": "เปิดใช้งาน Endpoint ปลายทางของ Message Message โดยตรง",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "ซึ่งช่วยให้สามารถเรียกดู `/ api / v1 / im.history.others` ซึ่งช่วยให้สามารถดูข้อความโดยตรงที่ส่งโดยผู้ใช้อื่น ๆ ที่ผู้โทรไม่ได้เป็นส่วนหนึ่งของ",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "ซึ่งช่วยให้สามารถเรียกดู `/ api / v1 / im.messages.others` ซึ่งช่วยให้สามารถดูข้อความโดยตรงที่ส่งโดยผู้ใช้อื่น ๆ ที่ผู้โทรไม่ได้เป็นส่วนหนึ่งของ",
   "API_Enable_Shields": "เปิดใช้โล่",
   "API_Enable_Shields_Description": "เปิดใช้งานโล่ที่ `/ api / v1 / shield.svg`",
   "API_GitHub_Enterprise_URL": "URL ของเซิร์ฟเวอร์",

@@ -283,7 +283,7 @@
   "API_EmbedCacheExpirationDays": "Cache Expiration Günləri Embed",
   "API_Enable_CORS": "CORS'i aktiv edin",
   "API_Enable_Direct_Message_History_EndPoint": "Birbaşa mesaj tarixinin son nöqtəsini aktiv edin",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Bu, digər istifadəçilər tərəfindən göndərilən birbaşa mesajların bir hissəsi olmadığını göstərən \"/ api / v1 / im.history.others\" a imkan verir.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Bu, digər istifadəçilər tərəfindən göndərilən birbaşa mesajların bir hissəsi olmadığını göstərən \"/ api / v1 / im.messages.others\" a imkan verir.",
   "API_Enable_Shields": "Qalxanları aktiv edin",
   "API_Enable_Shields_Description": "'/ Api / v1 / shield.svg` səhifəsində mövcud olan qalxanları aktiv edin",
   "API_GitHub_Enterprise_URL": "Server URL",

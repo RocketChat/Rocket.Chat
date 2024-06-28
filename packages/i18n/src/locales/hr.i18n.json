@@ -298,7 +298,7 @@
   "API_EmbedCacheExpirationDays": "Ugradite Dani isteka predmemorije",
   "API_Enable_CORS": "Omogući CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Omogući završnu točku izravne poruke",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "To omogućuje `/ api / v1 / im.history.others` koji omogućuje gledanje izravnih poruka koje su drugi korisnici poslali da pozivatelj nije dio.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "To omogućuje `/ api / v1 / im.messages.others` koji omogućuje gledanje izravnih poruka koje su drugi korisnici poslali da pozivatelj nije dio.",
   "API_Enable_Personal_Access_Tokens": "Omogući osobne pristupne tokene za REST API",
   "API_Enable_Personal_Access_Tokens_Description": "Omogući osobne pristupne tokene za upotrebu s REST API-jem",
   "API_Enable_Rate_Limiter_Dev": "Omogući ograničenje upita u razvoju",

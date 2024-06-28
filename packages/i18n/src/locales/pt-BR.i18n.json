@@ -416,7 +416,7 @@
   "API_EmbedCacheExpirationDays": "Incorporar dias para expiração do cache",
   "API_Enable_CORS": "Ativar CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Habilitar o endpoint de histórico de mensagens diretas",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Habilita o `/api/ v1/im.history.others`, que permite a visualização de mensagens diretas enviadas por outros usuários do qual o chamador não faz parte.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Habilita o `/api/ v1/im.messages.others`, que permite a visualização de mensagens diretas enviadas por outros usuários do qual o chamador não faz parte.",
   "API_Enable_Personal_Access_Tokens": "Ativar Códigos de Acesso Pessoal para a API REST",
   "API_Enable_Personal_Access_Tokens_Description": "Ativar Códigos de Acesso Pessoal para uso com a API REST",
   "API_Enable_Rate_Limiter": "Ativar limitador de taxa",

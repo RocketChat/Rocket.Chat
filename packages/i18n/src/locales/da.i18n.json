@@ -415,7 +415,7 @@
   "API_EmbedCacheExpirationDays": "Indkludér antal dage til cachen udløber",
   "API_Enable_CORS": "Aktivér CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Aktivér slutpunkt for direkte beskedhistorik",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Dette aktiverer `/api/v1/im.history.others`, som gør det muligt at se direkte beskeder i samtaler, man ikke har været del af.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Dette aktiverer `/api/v1/im.messages.others`, som gør det muligt at se direkte beskeder i samtaler, man ikke har været del af.",
   "API_Enable_Personal_Access_Tokens": "Aktivér personlige adgangs-tokens for REST API",
   "API_Enable_Personal_Access_Tokens_Description": "Aktivér brugen af personlige adgangs-tokens i REST API'en",
   "API_Enable_Rate_Limiter": "Aktivér rate-begrænser",

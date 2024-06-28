@@ -382,7 +382,7 @@
   "API_EmbedCacheExpirationDays": "Caducitat de la memòria cau de les incrustacions (en dies)",
   "API_Enable_CORS": "Activa CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Activa la consulta de l'historial de missatges directes",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Això activa el `/api/v1/im.history.others` que permet veure missatges directes enviats per altres usuaris tot i no formar-ne part.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Això activa el `/api/v1/im.messages.others` que permet veure missatges directes enviats per altres usuaris tot i no formar-ne part.",
   "API_Enable_Personal_Access_Tokens": "Habilitar els tokens d'accés personal a l'API REST",
   "API_Enable_Personal_Access_Tokens_Description": "Habiliteu tokens d'accés personal per al seu ús amb l'API REST",
   "API_Enable_Rate_Limiter": "Habilitar limitador de freqüència",

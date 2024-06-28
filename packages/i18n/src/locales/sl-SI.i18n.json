@@ -281,7 +281,7 @@
   "API_EmbedCacheExpirationDays": "Vgradi dneve poteka predpomnilnika",
   "API_Enable_CORS": "Omogoči CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Omogoči Končno točko zgodovine Neposrednih sporočil",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "To omogoča `/api/v1/im.history.others`, ki dovoljuje ogled neposrednih sporočil, ki jih pošljejo drugi uporabniki, v katere uporabnik ni vključen. ",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "To omogoča `/api/v1/im.messages.others`, ki dovoljuje ogled neposrednih sporočil, ki jih pošljejo drugi uporabniki, v katere uporabnik ni vključen. ",
   "API_Enable_Shields": "Omogoči ščite",
   "API_Enable_Shields_Description": "Omogoči ščite, razpoložljive na `/api/v1/shields.svg`",
   "API_GitHub_Enterprise_URL": "Strežniški URL",

@@ -283,7 +283,7 @@
   "API_EmbedCacheExpirationDays": "Mbushe Ditët e Përfundimit të Cache",
   "API_Enable_CORS": "Aktivizo CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Aktivizo fundin e historikut të mesazhit të drejtpërdrejtë",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Kjo mundëson `/ api / v1 / im.history.others` që lejon shikimin e mesazheve të drejtpërdrejta të dërguara nga përdorues të tjerë se telefonuesi nuk është pjesë e tij.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Kjo mundëson `/ api / v1 / im.messages.others` që lejon shikimin e mesazheve të drejtpërdrejta të dërguara nga përdorues të tjerë se telefonuesi nuk është pjesë e tij.",
   "API_Enable_Shields": "Aktivizo Shields",
   "API_Enable_Shields_Description": "Aktivizo mburojat në dispozicion në `/ api / v1 / shield.svg`",
   "API_GitHub_Enterprise_URL": "server URL",
