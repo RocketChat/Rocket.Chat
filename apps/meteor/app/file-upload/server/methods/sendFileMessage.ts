@@ -205,6 +205,7 @@ export const sendFileMessage = async (
 			),
 		}),
 	);
+
 	const data = {
 		rid: roomId,
 		ts: new Date(),
@@ -213,6 +214,7 @@ export const sendFileMessage = async (
 		msg: msgData?.msg ?? '',
 		groupable: msgData?.groupable ?? false,
 	};
+
 	if (parseAttachmentsForE2EE || msgData?.t !== 'e2e') {
 		const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
 		data.file = files[0];

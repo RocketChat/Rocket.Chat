@@ -9,10 +9,11 @@ import type {
 } from '@rocket.chat/rest-typings';
 import { stringify } from 'query-string';
 
+import type { Credentials } from './Credentials';
 import type { Middleware, RestClientInterface } from './RestClientInterface';
 import { hasRequiredTwoFactorMethod, isTotpInvalidError, isTotpRequiredError } from './errors';
 
-export { RestClientInterface };
+export { RestClientInterface, Credentials };
 
 const pipe =
 	<T extends (...args: any[]) => any>(fn: T) =>
@@ -60,25 +61,9 @@ export class RestClient implements RestClientInterface {
 
 	private headers: Record<string, string> = {};
 
-	private credentials:
-		| {
-				'X-User-Id': string;
-				'X-Auth-Token': string;
-		  }
-		| undefined;
+	private credentials: Credentials | undefined;
 
-	constructor({
-		baseUrl,
-		credentials,
-		headers = {},
-	}: {
-		baseUrl: string;
-		credentials?: {
-			'X-User-Id': string;
-			'X-Auth-Token': string;
-		};
-		headers?: Record<string, string>;
-	}) {
+	constructor({ baseUrl, credentials, headers = {} }: { baseUrl: string; credentials?: Credentials; headers?: Record<string, string> }) {
 		this.baseUrl = `${baseUrl}/api`;
 		this.setCredentials(credentials);
 		this.headers = headers;

@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, ISubscription, IE2EEMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
 
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';

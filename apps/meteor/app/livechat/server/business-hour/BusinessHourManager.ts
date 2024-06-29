@@ -5,6 +5,7 @@ import { LivechatBusinessHours, LivechatDepartment, Users } from '@rocket.chat/m
 import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { businessHourLogger } from '../lib/logger';
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
@@ -126,7 +127,12 @@ export class BusinessHourManager {
 			return this.behavior.changeAgentActiveStatus(agentId, 'available');
 		}
 
-		return Users.setLivechatStatusActiveBasedOnBusinessHours(agentId);
+		const result = await Users.setLivechatStatusActiveBasedOnBusinessHours(agentId);
+		if (result.updatedCount > 0) {
+			void notifyOnUserChange({ clientAction: 'updated', id: agentId, diff: { statusLivechat: 'available ' } });
+		}
+
+		return result;
 	}
 
 	async restartCronJobsIfNecessary(): Promise<void> {
