@@ -1,4 +1,5 @@
 import type { LayoutBlockType } from '../LayoutBlockType';
+import type { LayoutBlockish } from '../LayoutBlockish';
 import type { TextObject } from '../TextObject';
 import type { ContextBlock } from './ContextBlock';
 
@@ -28,7 +29,7 @@ export type PreviewBlockWithPreview = PreviewBlockBase & {
 	thumb: undefined;
 };
 
-export type PreviewBlock = PreviewBlockBase | PreviewBlockWithThumb | PreviewBlockWithPreview;
+export type PreviewBlock = LayoutBlockish<PreviewBlockBase | PreviewBlockWithThumb | PreviewBlockWithPreview>;
 
 export const isPreviewBlockWithThumb = (previewBlock: PreviewBlock): previewBlock is PreviewBlockWithThumb => 'thumb' in previewBlock;
 
