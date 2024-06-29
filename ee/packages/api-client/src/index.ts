@@ -221,7 +221,6 @@ export class RestClient implements RestClientInterface {
 	}
 
 	send(endpoint: string, method: string, { headers, ...options }: Omit<RequestInit, 'method'> = {}): Promise<Response> {
-		console.log(`hello ${this.baseUrl}${`/${endpoint}`.replace(/\/+/, '/')}`);
 		return fetch(`${this.baseUrl}${`/${endpoint}`.replace(/\/+/, '/')}`, {
 			...options,
 			headers: { ...this.getCredentialsAsHeaders(), ...this.headers, ...headers },
@@ -276,13 +275,21 @@ export class RestClient implements RestClientInterface {
 		const data = new FormData();
 
 		Object.entries(params as any).forEach(([key, value]) => {
-			if (value instanceof File) {
+			if (Array.isArray(value)) {
+				value.forEach((file) => {
+					if (file instanceof File) {
+						data.append(key, file, file.name);
+						return;
+					}
+					file && data.append(key, file as any);
+				});
+			} else if (value instanceof File) {
 				data.append(key, value, value.name);
-				return;
+			} else {
+				value && data.append(key, value as any);
 			}
-			value && data.append(key, value as any);
 		});
-		console.log(`hello from file ${this.baseUrl}${`/${endpoint}`.replace(/\/+/, '/')}`);
+
 		xhr.open('POST', `${this.baseUrl}${`/${endpoint}`.replace(/\/+/, '/')}`, true);
 		Object.entries({ ...this.getCredentialsAsHeaders(), ...options.headers }).forEach(([key, value]) => {
 			xhr.setRequestHeader(key, value);

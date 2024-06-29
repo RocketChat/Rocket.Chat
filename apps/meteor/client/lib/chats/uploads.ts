@@ -30,7 +30,7 @@ const wipeFailedOnes = (): void => {
 };
 
 const send = async (
-	file: File,
+	file: File[] | File,
 	{
 		description,
 		msg,
@@ -44,16 +44,18 @@ const send = async (
 		tmid?: string;
 		t?: IMessage['t'];
 	},
-	getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
+	getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
 	fileContent?: IE2EEMessage['content'],
 ): Promise<void> => {
+	if (!Array.isArray(file)) {
+		file = [file];
+	}
 	const id = Random.id();
-
 	updateUploads((uploads) => [
 		...uploads,
 		{
 			id,
-			name: file.name,
+			name: file[0].name || file[0]?.file?.name,
 			percentage: 0,
 		},
 	]);
@@ -116,17 +118,21 @@ const send = async (
 			xhr.onload = async () => {
 				if (xhr.readyState === xhr.DONE && xhr.status === 200) {
 					const result = JSON.parse(xhr.responseText);
-					let content;
+					let content: IE2EEMessage['content'];
+					let fileIds: string[] = result.file._id.map((file: any) => file._id);
+					let fileUrlarray: string[] = result.file.url;
+
 					if (getContent) {
-						content = await getContent(result.file._id, result.file.url);
+						content = await getContent(fileIds, fileUrlarray);
 					}
 
-					await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${result.file._id}`, {
+					await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${fileIds[0]}`, {
 						msg,
 						tmid,
 						description,
 						t,
 						content,
+						fileIds,
 					});
 				}
 			};
@@ -169,9 +175,9 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 	wipeFailedOnes,
 	cancel,
 	send: (
-		file: File,
+		file: File[] | File,
 		{ description, msg, t }: { description?: string; msg?: string; t?: IMessage['t'] },
-		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
+		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
 		fileContent?: IE2EEMessage['content'],
 	): Promise<void> => send(file, { description, msg, rid, tmid, t }, getContent, fileContent),
 });

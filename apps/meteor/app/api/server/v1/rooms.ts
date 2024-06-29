@@ -205,62 +205,68 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const file = await getUploadFormData(
+			const file1 = await getUploadFormData(
 				{
 					request: this.request,
 				},
 				{ field: 'file', sizeLimit: settings.get<number>('FileUpload_MaxFileSize') },
 			);
+			let file = file1[0];
+			let uploadedfilearray = [];
+			let uploadedfileurlarray = [];
 
-			if (!file) {
-				throw new Meteor.Error('invalid-field');
-			}
-
-			let { fileBuffer } = file;
-
-			const expiresAt = new Date();
-			expiresAt.setHours(expiresAt.getHours() + 24);
-
-			const { fields } = file;
-
-			let content;
-
-			if (fields.content) {
-				try {
-					content = JSON.parse(fields.content);
-				} catch (e) {
-					console.error(e);
-					throw new Meteor.Error('invalid-field-content');
+			for (let i = 0; i < file1.length; i++) {
+				file = file1[i];
+				if (!file) {
+					throw new Meteor.Error('invalid-field');
 				}
+
+				let { fileBuffer } = file;
+
+				const expiresAt = new Date();
+				expiresAt.setHours(expiresAt.getHours() + 24);
+
+				const { fields } = file;
+
+				let content;
+
+				if (fields.content) {
+					try {
+						content = JSON.parse(fields.content);
+					} catch (e) {
+						throw new Meteor.Error('invalid-field-content');
+					}
+				}
+
+				const details = {
+					name: file.filename,
+					size: fileBuffer.length,
+					type: file.mimetype,
+					rid: this.urlParams.rid,
+					userId: this.userId,
+					content,
+					expiresAt,
+				};
+
+				const stripExif = settings.get('Message_Attachments_Strip_Exif');
+				if (stripExif) {
+					// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
+					fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
+				}
+
+				const fileStore = FileUpload.getStore('Uploads');
+				const uploadedFile = await fileStore.insert(details, fileBuffer);
+				uploadedfilearray.push(uploadedFile);
+
+				uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
+				uploadedfileurlarray.push(uploadedFile.path);
+
+				await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
 			}
-
-			const details = {
-				name: file.filename,
-				size: fileBuffer.length,
-				type: file.mimetype,
-				rid: this.urlParams.rid,
-				userId: this.userId,
-				content,
-				expiresAt,
-			};
-
-			const stripExif = settings.get('Message_Attachments_Strip_Exif');
-			if (stripExif) {
-				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
-				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
-			}
-
-			const fileStore = FileUpload.getStore('Uploads');
-			const uploadedFile = await fileStore.insert(details, fileBuffer);
-
-			uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
-
-			await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
-
 			return API.v1.success({
 				file: {
-					_id: uploadedFile._id,
-					url: uploadedFile.path,
+					_id: uploadedfilearray,
+					url: uploadedfileurlarray,
 				},
 			});
 		},
@@ -275,25 +281,38 @@ API.v1.addRoute(
 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
 				return API.v1.unauthorized();
 			}
-
-			const file = await Uploads.findOneById(this.urlParams.fileId);
-
-			if (!file) {
+			const filesarray: Partial<IUpload>[] = [];
+			if (this.bodyParams.fileIds != undefined) {
+				for (let i = 0; i < this.bodyParams.fileIds.length; i++) {
+					const fileid = this.bodyParams?.fileIds && this.bodyParams?.fileIds[i];
+					const file = await Uploads.findOneById(fileid || this.urlParams.fileId);
+					if (!file) {
+						throw new Meteor.Error('invalid-file');
+					}
+					filesarray.push(file);
+				}
+			} else {
 				throw new Meteor.Error('invalid-file');
 			}
-
-			file.description = this.bodyParams.description;
-			delete this.bodyParams.description;
-
+			if (filesarray[0] != null) {
+				const file = await filesarray[0];
+				file.description = this.bodyParams?.description;
+				delete this.bodyParams.description;
+			}
+			delete this.bodyParams.fileIds;
 			await sendFileMessage(
 				this.userId,
-				{ roomId: this.urlParams.rid, file, msgData: this.bodyParams },
+				{ roomId: this.urlParams.rid, file: filesarray, msgData: this.bodyParams },
 				{ parseAttachmentsForE2EE: false },
 			);
 
-			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
-
-			const message = await Messages.getMessageByFileIdAndUsername(file._id, this.userId);
+			for (let i = 0; i < this.urlParams.fileId.length; i++) {
+				await Uploads.confirmTemporaryFile(this.urlParams.fileId[i], this.userId);
+			}
+			let message;
+			if (filesarray[0] != null && filesarray[0]._id != undefined) {
+				message = await Messages.getMessageByFileIdAndUsername(filesarray[0]._id, this.userId);
+			}
 
 			return API.v1.success({
 				message,

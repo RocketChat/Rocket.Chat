@@ -41,16 +41,23 @@ const shouldShowMediaPreview = (file: File, fileType: FilePreviewType | undefine
 
 type FilePreviewProps = {
 	file: File;
+	key: number;
+	index: number;
+	onRemove: (index: number) => void;
 };
 
-const FilePreview = ({ file }: FilePreviewProps): ReactElement => {
+const FilePreview = ({ file, index, onRemove }: FilePreviewProps): ReactElement => {
 	const fileType = getFileType(file.type);
+
+	const handleRemove = () => {
+		onRemove(index);
+	};
 
 	if (shouldShowMediaPreview(file, fileType)) {
 		return <MediaPreview file={file} fileType={fileType as FilePreviewType} />;
 	}
 
-	return <GenericPreview file={file} />;
+	return <GenericPreview file={file} onRemove={handleRemove} index={index} />;
 };
 
 export default FilePreview;

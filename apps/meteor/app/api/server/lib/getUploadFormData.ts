@@ -28,9 +28,9 @@ export async function getUploadFormData<
 		validate?: V;
 		sizeLimit?: number;
 	} = {},
-): Promise<UploadResult<K>> {
+): Promise<(UploadResult<K> | undefined)[]> {
 	const limits = {
-		files: 1,
+		files: 6,
 		...(options.sizeLimit && options.sizeLimit > -1 && { fileSize: options.sizeLimit }),
 	};
 
@@ -38,8 +38,9 @@ export async function getUploadFormData<
 	const fields = Object.create(null) as K;
 
 	let uploadedFile: UploadResult<K> | undefined;
+	let uploadedArray: (UploadResult<K> | undefined)[] = [];
 
-	let returnResult = (_value: UploadResult<K>) => {
+	let returnResult = (_values: (UploadResult<K> | undefined)[]) => {
 		// noop
 	};
 	let returnError = (_error?: Error | string | null | undefined) => {
@@ -51,13 +52,21 @@ export async function getUploadFormData<
 	}
 
 	function onEnd() {
+		uploadedArray.forEach((file) => {
+			if (!file) {
+				return returnError(new MeteorError('No file uploaded'));
+			}
+			if (options.validate !== undefined && !options.validate(fields)) {
+				return returnError(new MeteorError(`Invalid fields ${options.validate.errors?.join(', ')}`));
+			}
+		});
 		if (!uploadedFile) {
 			return returnError(new MeteorError('No file uploaded'));
 		}
-		if (options.validate !== undefined && !options.validate(fields)) {
-			return returnError(new MeteorError(`Invalid fields ${options.validate.errors?.join(', ')}`));
+		if (uploadedArray.length < 1) {
+			return returnError(new MeteorError('No file uploaded'));
 		}
-		return returnResult(uploadedFile);
+		return returnResult(uploadedArray);
 	}
 
 	function onFile(
@@ -90,6 +99,7 @@ export async function getUploadFormData<
 				fields,
 				fileBuffer: Buffer.concat(fileChunks),
 			};
+			uploadedArray.push(uploadedFile);
 		});
 	}
 

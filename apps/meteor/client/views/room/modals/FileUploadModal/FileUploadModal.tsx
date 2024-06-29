@@ -1,4 +1,17 @@
-import { Modal, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldError, TextInput, Button } from '@rocket.chat/fuselage';
+import {
+	Modal,
+	Box,
+	Field,
+	FieldGroup,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	TextInput,
+	Button,
+	Scrollable,
+	Tile,
+	Icon,
+} from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
@@ -9,8 +22,10 @@ import FilePreview from './FilePreview';
 
 type FileUploadModalProps = {
 	onClose: () => void;
+	queue?: File[];
 	onSubmit: (name: string, description?: string) => void;
 	file: File;
+	updateQueue: (queue: File[]) => void;
 	fileName: string;
 	fileDescription?: string;
 	invalidContentType: boolean;
@@ -19,6 +34,8 @@ type FileUploadModalProps = {
 
 const FileUploadModal = ({
 	onClose,
+	queue = [],
+	updateQueue,
 	file,
 	fileName,
 	fileDescription,
@@ -26,7 +43,6 @@ const FileUploadModal = ({
 	invalidContentType,
 	showDescription = true,
 }: FileUploadModalProps): ReactElement => {
-	const [name, setName] = useState<string>(fileName);
 	const [description, setDescription] = useState<string>(fileDescription || '');
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -34,35 +50,84 @@ const FileUploadModal = ({
 
 	const ref = useAutoFocus<HTMLInputElement>();
 
-	const handleName = (e: ChangeEvent<HTMLInputElement>): void => {
-		setName(e.currentTarget.value);
-	};
-
 	const handleDescription = (e: ChangeEvent<HTMLInputElement>): void => {
 		setDescription(e.currentTarget.value);
 	};
+	const [queue1, setQueue1] = useState<File[]>(queue);
 
-	const handleSubmit: FormEventHandler<HTMLFormElement> = (e): void => {
-		e.preventDefault();
-		if (!name) {
-			return dispatchToastMessage({
-				type: 'error',
-				message: t('error-the-field-is-required', { field: t('Name') }),
-			});
-		}
-
-		// -1 maxFileSize means there is no limit
-		if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
-			onClose();
-			return dispatchToastMessage({
-				type: 'error',
-				message: t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) }),
-			});
-		}
-
-		onSubmit(name, description);
+	const handleremove = (index: number) => {
+		const temp = queue1.filter((_, i) => {
+			return i !== index;
+		});
+		setQueue1(temp);
 	};
 
+	const handleAddfile = () => {
+		const input = document.createElement('input');
+		input.type = 'file';
+		input.multiple = true;
+		input.click();
+		input.onchange = (e) => {
+			const target = e.target as HTMLInputElement;
+			const files = Array.from(target.files as FileList);
+			setQueue1([...queue1, ...files]);
+			updateQueue([...queue1, ...files]);
+		};
+	};
+
+	const handleSubmit: FormEventHandler<HTMLFormElement> = async (e): Promise<void> => {
+		e.preventDefault();
+		if (queue.length > 6) {
+			dispatchToastMessage({
+				type: 'error',
+				message: "You can't upload more than 6 files at once",
+			});
+			onClose();
+			return;
+		}
+
+		// Iterate over each file in the queue
+		for (const queuedFile of queue) {
+			const { name: queuedFileName, size: queuedFileSize, type: queuedFileType } = queuedFile;
+			if (!queuedFileName) {
+				dispatchToastMessage({
+					type: 'error',
+					message: t('error-the-field-is-required', { field: t('Name') }),
+				});
+				return;
+			}
+
+			// Validate file size
+			if (maxFileSize > -1 && (queuedFileSize || 0) > maxFileSize) {
+				onClose();
+				dispatchToastMessage({
+					type: 'error',
+					message: `${t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })}+" hello testing"`,
+				});
+				return;
+			}
+
+			// Validate file content type
+			if (invalidContentType) {
+				dispatchToastMessage({
+					type: 'error',
+					message: t('FileUpload_MediaType_NotAccepted__type__', { type: queuedFileType }),
+				});
+				onClose();
+				return;
+			}
+		}
+		// 	description,
+		// 	msg, // Assuming msg is defined elsewhere
+		// });
+
+		// Clear the composer after each file submission
+		// chat.composer?.clear();
+		onSubmit(fileName, description);
+
+		// Close the modal after all files are submitted
+		// imperativeModal.close();
+	};
 	useEffect(() => {
 		if (invalidContentType) {
 			dispatchToastMessage({
@@ -90,17 +155,13 @@ const FileUploadModal = ({
 					<Modal.Close onClick={onClose} />
 				</Modal.Header>
 				<Modal.Content>
-					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>
-						<FilePreview file={file} />
-					</Box>
+					<Scrollable vertical>
+						<Tile padding='none'>
+							{queue1.length > 0 &&
+								queue1.map((file, index) => <FilePreview key={index} file={file} index={index} onRemove={handleremove} />)}
+						</Tile>
+					</Scrollable>
 					<FieldGroup>
-						<Field>
-							<FieldLabel>{t('Upload_file_name')}</FieldLabel>
-							<FieldRow>
-								<TextInput value={name} onChange={handleName} />
-							</FieldRow>
-							{!name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
-						</Field>
 						{showDescription && (
 							<Field>
 								<FieldLabel>{t('Upload_file_description')}</FieldLabel>
@@ -111,12 +172,19 @@ const FileUploadModal = ({
 						)}
 					</FieldGroup>
 				</Modal.Content>
-				<Modal.Footer>
+				<Modal.Footer justifyContent='space-between'>
+					<Modal.FooterAnnotation>
+						<Button secondary onClick={handleAddfile}>
+							<Icon name='plus-small' size='x20' />
+							<input style={{ display: 'none' }} onChange={handleAddfile} type='file' id='fileInput' />
+							Add File
+						</Button>
+					</Modal.FooterAnnotation>
 					<Modal.FooterControllers>
 						<Button secondary onClick={onClose}>
 							{t('Cancel')}
 						</Button>
-						<Button primary type='submit' disabled={!name}>
+						<Button primary type='submit'>
 							{t('Send')}
 						</Button>
 					</Modal.FooterControllers>

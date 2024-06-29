@@ -101,9 +101,9 @@ export type UploadsAPI = {
 	wipeFailedOnes(): void;
 	cancel(id: Upload['id']): void;
 	send(
-		file: File,
+		file: File[] | File,
 		{ description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] },
-		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
+		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
 		fileContent?: IE2EEMessage['content'],
 	): Promise<void>;
 };
