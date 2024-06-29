@@ -622,7 +622,7 @@ export type RoomsEndpoints = {
 	};
 
 	'/v1/rooms.media/:rid': {
-		POST: (params: { file: File }) => { file: { url: string } };
+		POST: (params: { file: File | File[] }) => { file: { url: string } };
 	};
 
 	'/v1/rooms.mediaConfirm/:rid/:fileId': {
@@ -637,6 +637,7 @@ export type RoomsEndpoints = {
 			customFields?: string;
 			t?: IMessage['t'];
 			content?: IE2EEMessage['content'];
+			fileIds?: string[];
 		}) => { message: IMessage | null };
 	};
 
