@@ -79,7 +79,7 @@ export interface IRoom extends IRocketChatRecord {
 	unmuted?: string[];
 
 	usernames?: string[];
-	ts?: Date;
+	ts?: Date | string;
 
 	cl?: boolean;
 	ro?: boolean;
@@ -367,7 +367,8 @@ export type RoomAdminFieldsType =
 	| 'description'
 	| 'broadcast'
 	| 'uids'
-	| 'avatarETag';
+	| 'avatarETag'
+	| 'ts';
 
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {

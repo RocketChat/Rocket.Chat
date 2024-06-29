@@ -20,7 +20,7 @@ const roomTypeI18nMap = {
 const getRoomDisplayName = (room: Pick<IRoom, RoomAdminFieldsType>): string | undefined =>
 	room.t === 'd' ? room.usernames?.join(' x ') : roomCoordinator.getRoomName(room.t, room);
 
-const RoomRow = ({ room }: { room: Pick<IRoom, RoomAdminFieldsType> &{ts ?: Date}}) => {
+const RoomRow = ({ room }: { room: Pick<IRoom, RoomAdminFieldsType>}) => {
 	const t = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 	const router = useRouter();
