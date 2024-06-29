@@ -55,7 +55,7 @@ const send = async (
 		...uploads,
 		{
 			id,
-			name: fileContent?.raw.name || file[0].name || file[0]?.file?.name,
+			name: file[0].name || fileContent?.raw.name || file[0]?.file?.name,
 			percentage: 0,
 		},
 	]);
