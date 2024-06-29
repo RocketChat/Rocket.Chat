@@ -24,7 +24,7 @@ const RoomRow = ({ room }: { room: Pick<IRoom, RoomAdminFieldsType>}) => {
 	const t = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 	const router = useRouter();
-	const formatDate=useFormatDate();
+	const formatDate = useFormatDate();
 
 	const { _id, t: type, usersCount, msgs, default: isDefault, featured, ts, ...args } = room;
 	const icon = roomCoordinator.getRoomDirectives(room.t).getIcon?.(room);
