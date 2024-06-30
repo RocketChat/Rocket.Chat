@@ -227,4 +227,8 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 	public async markConfigurationInvalid() {
 		return super.markConfigurationInvalid();
 	}
+
+	public async configurationStatus() {
+		return super.configurationStatus();
+	}
 }

@@ -1,7 +1,7 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IFederationService, IFederationConfigurationStatus } from '@rocket.chat/core-services';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { parse as urlParse } from 'node:url';
+import { URL } from 'node:url';
 
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
 import type { FederationUserServiceSender } from './application/user/sender/UserServiceSender';
@@ -196,6 +196,23 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		this.internalQueueInstance.setHandler(federationEventsHandler.handleEvent.bind(federationEventsHandler), this.PROCESSING_CONCURRENCY);
 	}
 
+	private canOtherHomeserversFederate(): Promise<boolean> {
+		const url = new URL(`https://${this.internalSettingsAdapter.getHomeServerDomain()}`);
+
+		let domain = url.hostname;
+
+		if (url.port) {
+			domain += ':' + url.port;
+		}
+
+		return new Promise((resolve, reject) =>
+			fetch(`${federationTesterHost}/api/federation-ok?server_name=${domain}`)
+				.then((response) => response.text())
+				.then((text) => resolve(text === 'GOOD'))
+				.catch(reject),
+		);
+	}
+
 	protected getInternalSettingsAdapter(): RocketChatSettingsAdapter {
 		return this.internalSettingsAdapter;
 	}
@@ -253,23 +270,6 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 
 	protected async verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>> {
 		return this.bridge.verifyInviteeIds(matrixIds);
-	}
-
-	protected canOtherHomeserversFederate(): Promise<boolean> {
-		const url = urlParse(this.internalSettingsAdapter.getHomeServerDomain());
-
-		let domain = url.hostname;
-
-		if (url.port) {
-			domain += ':' + url.port;
-		}
-
-		return new Promise((resolve, reject) =>
-			fetch(`${federationTesterHost}/api/federation-ok?server_name=${domain}`)
-				.then((response) => response.text())
-				.then((text) => resolve(text === 'GOOD'))
-				.catch(reject),
-		);
 	}
 
 	public async configurationStatus() {
@@ -439,5 +439,9 @@ export class FederationService extends AbstractBaseFederationService implements 
 
 	public async markConfigurationInvalid() {
 		return super.markConfigurationInvalid();
+	}
+
+	public async configurationStatus() {
+		return super.configurationStatus();
 	}
 }
