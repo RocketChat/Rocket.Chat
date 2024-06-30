@@ -1,5 +1,7 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { IFederationService } from '@rocket.chat/core-services';
+import type { IFederationService, IFederationConfigurationStatus } from '@rocket.chat/core-services';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { parse as urlParse } from 'node:url';
 
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
 import type { FederationUserServiceSender } from './application/user/sender/UserServiceSender';
@@ -16,6 +18,19 @@ import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/conv
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
 
 import './infrastructure/rocket-chat/well-known';
+
+function extractError(e: unknown) {
+	if (e instanceof Error || (typeof e === 'object' && e && 'toString' in e)) {
+		return e.toString();
+	}
+
+	console.log(e);
+
+	return 'Unknown error';
+}
+
+// for airgapped deployments, use environment variable to override a local instance of federationtester
+const federationTesterHost = process.env.FEDERATION_TESTER_HOST?.trim()?.replace(/\/$/, '') || 'https://federationtester.matrix.org';
 
 export abstract class AbstractFederationService extends ServiceClassInternal {
 	private cancelSettingsObserver: () => void;
@@ -53,6 +68,14 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	protected abstract onEnableFederation(): Promise<void>;
 
 	protected abstract onDisableFederation(): Promise<void>;
+
+	public abstract configurationStatus(): Promise<IFederationConfigurationStatus>;
+
+	public abstract verifyConfiguration(): Promise<void>;
+
+	public abstract markConfigurationValid(): Promise<void>;
+
+	public abstract markConfigurationInvalid(): Promise<void>;
 
 	constructor(
 		federationBridge: IFederationBridge,
@@ -126,7 +149,8 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 
 		if (isFederationEnabled) {
 			await this.onDisableFederation();
-			return this.onEnableFederation();
+			await this.onEnableFederation();
+			await this.verifyConfiguration();
 		}
 
 		return this.onDisableFederation();
@@ -239,8 +263,74 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		return this.bridge.verifyInviteeIds(matrixIds);
 	}
 
-	public async verifyConfiguration() {
-		return this.bridge.ping()
+	protected canOtherHomeserversFederate(): Promise<boolean> {
+		const url = urlParse(this.internalSettingsAdapter.getHomeServerDomain());
+
+		let domain = url.hostname;
+
+		if (url.port) {
+			domain += ':' + url.port;
+		}
+
+		return new Promise((resolve, reject) =>
+			fetch(`${federationTesterHost}/api/federation-ok?server_name=${domain}`)
+				.then((response) => response.text())
+				.then((text) => resolve(text === 'GOOD'))
+				.catch(reject),
+		);
+	}
+
+	protected async _configurationStatus() {
+		const status = {
+			appservice: {
+				roundTrip: { durationMs: -1 },
+				ok: false,
+			},
+			externalReachability: {
+				ok: false,
+			},
+		} satisfies IFederationConfigurationStatus;
+
+		try {
+			const pingResponse = await this.bridge.ping();
+			status.appservice.roundTrip.durationMs = pingResponse.duration_ms;
+			status.appservice.ok = true;
+		} catch (error) {
+			status.appservice.error = extractError(error);
+		}
+
+		try {
+			status.externalReachability.ok = await this.canOtherHomeserversFederate();
+		} catch (error) {
+			status.externalReachability.error = extractError(error);
+		}
+
+		return status;
+	}
+
+	protected async _markConfigurationValid() {
+		return this.internalSettingsAdapter.setConfigurationStatus('Valid');
+	}
+
+	protected async _markConfigurationInvalid() {
+		return this.internalSettingsAdapter.setConfigurationStatus('Invalid');
+	}
+
+	protected async _verifyConfiguration() {
+		try {
+			await this.bridge?.ping(); // throws error if fails
+
+			if (!(await this.canOtherHomeserversFederate())) {
+				throw new Error('External reachability could not be verified');
+			}
+
+			void this.markConfigurationValid();
+		} catch (error) {
+			// FIXME use federation logger
+			console.error(error);
+
+			void this.markConfigurationInvalid();
+		}
 	}
 }
 
@@ -348,6 +438,14 @@ export class FederationService extends AbstractBaseFederationService implements 
 	}
 
 	public async verifyConfiguration() {
-		return super.verifyConfiguration()
+		return this._verifyConfiguration();
+	}
+
+	public async markConfigurationValid() {
+		return this._markConfigurationValid();
+	}
+
+	public async markConfigurationInvalid() {
+		return this._markConfigurationInvalid();
 	}
 }

@@ -217,6 +217,14 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 	}
 
 	public async verifyConfiguration() {
-		return super.verifyConfiguration()
+		return this._verifyConfiguration();
+	}
+
+	public async markConfigurationValid() {
+		return this._markConfigurationValid();
+	}
+
+	public async markConfigurationInvalid() {
+		return this._markConfigurationInvalid();
 	}
 }

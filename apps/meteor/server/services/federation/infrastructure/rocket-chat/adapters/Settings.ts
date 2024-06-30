@@ -68,6 +68,14 @@ export class RocketChatSettingsAdapter {
 		return settings.get('Federation_Matrix_enable_ephemeral_events') === true;
 	}
 
+	public isConfigurationValid(): boolean {
+		return settings.get('Federation_Matrix_configuration_status') === 'Valid';
+	}
+
+	public async setConfigurationStatus(status: 'Valid' | 'Invalid'): Promise<void> {
+		await Settings.updateOne({ _id: 'Federation_Matrix_configuration_status' }, { $set: { value: status } });
+	}
+
 	public onFederationEnabledStatusChanged(
 		callback: (
 			enabled: boolean,
@@ -291,7 +299,8 @@ export class RocketChatSettingsAdapter {
 		await settingsRegistry.add('Federation_Matrix_configuration_status', 'Invalid', {
 			readonly: true,
 			type: 'string',
-			actionText: 'Federation_Matrix_configuration_status',
+			i18nLabel: 'Federation_Matrix_configuration_status',
+			i18nDescription: 'Federation_Matrix_configuration_status_desc',
 			public: false,
 			enterprise: false,
 			invalidValue: '',

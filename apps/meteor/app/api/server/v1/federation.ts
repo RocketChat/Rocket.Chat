@@ -46,47 +46,19 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'federation.verifyConfiguration',
-	{ authRequired: false },
+	'federation/configuration.verify',
+	{ authRequired: true },
 	{
 		async get() {
-			const federationService = License.hasValidLicense() ? FederationEE : Federation;
+			const service = License.hasValidLicense() ? FederationEE : Federation;
 
-			const response = {
-				appservice: { duration_ms: -1, ok: false },
-				federation: {
-					ok: false,
-				},
-			};
+			const status = await service.configurationStatus();
 
-			try {
-				response.federation.ok = await checkFederation();
-			} catch (error) {
-				return API.v1.failure({
-					federation: {
-						ok: false,
-						error: String(error),
-					},
-				});
+			if (!status.externalReachability.ok || !status.appservice.ok) {
+				return API.v1.failure(status);
 			}
 
-			try {
-				response.appservice = await federationService.verifyConfiguration();
-				response.appservice.ok = true;
-			} catch (error) {
-				return API.v1.failure({
-					federation: response.federation,
-					appservice: {
-						error: String(error),
-					},
-				});
-			}
-
-			if (response.federation.ok) {
-				return API.v1.success(response);
-			} else {
-				return API.v1.failure(response);
-			}
+			return API.v1.success(status);
 		},
 	},
 );
