@@ -41,13 +41,24 @@ const ComposerMessage = ({ tmid, readOnly, onSend, ...props }: ComposerMessagePr
 				}
 			},
 
-			onSend: async ({ value: text, tshow, previewUrls }: { value: string; tshow?: boolean; previewUrls?: string[] }): Promise<void> => {
+			onSend: async ({
+				value: text,
+				tshow,
+				previewUrls,
+				isSlashCommandAllowed,
+			}: {
+				value: string;
+				tshow?: boolean;
+				previewUrls?: string[];
+				isSlashCommandAllowed?: boolean;
+			}): Promise<void> => {
 				try {
 					await chat?.action.stop('typing');
 					const newMessageSent = await chat?.flows.sendMessage({
 						text,
 						tshow,
 						previewUrls,
+						isSlashCommandAllowed,
 					});
 					if (newMessageSent) onSend?.();
 				} catch (error) {

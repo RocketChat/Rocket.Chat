@@ -85,16 +85,6 @@ const ModerationConsoleTable: FC = () => {
 			>
 				{t('User')}
 			</GenericTableHeaderCell>,
-
-			<GenericTableHeaderCell
-				key='reportedMessage'
-				direction={sortDirection}
-				active={sortBy === 'reports.description'}
-				onClick={setSort}
-				sort='reports.description'
-			>
-				{t('Moderation_Reported_message')}
-			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key='room' direction={sortDirection}>
 				{t('Room')}
 			</GenericTableHeaderCell>,

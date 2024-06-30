@@ -55,15 +55,17 @@ type FCMError = {
 };
 
 /**
- * Set at least a 10 second timeout on send requests before retrying.
- * Most of FCM's internal Remote Procedure Calls use a 10 second timeout.
+ * Send a push notification using Firebase Cloud Messaging (FCM).
+ * implements the Firebase Cloud Messaging HTTP v1 API, and all of its retry logic,
+ * see: https://firebase.google.com/docs/reference/fcm/rest/v1/ErrorCode
  *
  * Errors:
- * - For 400, 401, 403, 404 errors: abort, and do not retry.
+ * - For 400, 401, 403 errors: abort, and do not retry.
+ * - For 404 errors: remove the token from the database.
  * - For 429 errors: retry after waiting for the duration set in the retry-after header. If no retry-after header is set, default to 60 seconds.
  * - For 500 errors: retry with exponential backoff.
  */
-async function fetchWithRetry(url: string, options: RequestInit, retries = 0): Promise<Response> {
+async function fetchWithRetry(url: string, _removeToken: () => void, options: RequestInit, retries = 0): Promise<Response> {
 	const MAX_RETRIES = 5;
 	const response = await fetch(url, options);
 
@@ -79,15 +81,20 @@ async function fetchWithRetry(url: string, options: RequestInit, retries = 0): P
 	const retryAfter = response.headers.get('retry-after');
 	const retryAfterSeconds = retryAfter ? parseInt(retryAfter, 10) : 60;
 
+	if (response.status === 404) {
+		_removeToken();
+		return response;
+	}
+
 	if (response.status === 429) {
 		await new Promise((resolve) => setTimeout(resolve, retryAfterSeconds * 1000));
-		return fetchWithRetry(url, options, retries + 1);
+		return fetchWithRetry(url, _removeToken, options, retries + 1);
 	}
 
 	if (response.status >= 500 && response.status < 600) {
 		const backoff = Math.pow(2, retries) * 10000;
 		await new Promise((resolve) => setTimeout(resolve, backoff));
-		return fetchWithRetry(url, options, retries + 1);
+		return fetchWithRetry(url, _removeToken, options, retries + 1);
 	}
 
 	const error: FCMError = await response.json();
@@ -145,12 +152,7 @@ function getFCMMessagesFromPushData(userTokens: string[], notification: PendingP
 	return userTokens.map((token) => ({ message: { ...message, token } }));
 }
 
-export const sendFCM = function ({ userTokens, notification, _replaceToken, _removeToken, options }: NativeNotificationParameters): void {
-	// We don't use these parameters, but we need to keep them to keep the function signature
-	// TODO: Remove them when we remove the old sendGCM function
-	_replaceToken;
-	_removeToken;
-
+export const sendFCM = function ({ userTokens, notification, _removeToken, options }: NativeNotificationParameters): void {
 	const tokens = typeof userTokens === 'string' ? [userTokens] : userTokens;
 	if (!tokens.length) {
 		logger.log('sendFCM no push tokens found');
@@ -173,9 +175,15 @@ export const sendFCM = function ({ userTokens, notification, _replaceToken, _rem
 
 	const url = `https://fcm.googleapis.com/v1/projects/${options.gcm.projectNumber}/messages:send`;
 
-	for (const message of messages) {
-		logger.debug('sendFCM message', message);
-		const response = fetchWithRetry(url, { method: 'POST', headers, body: JSON.stringify(message) });
+	for (const fcmRequest of messages) {
+		logger.debug('sendFCM message', fcmRequest);
+
+		const removeToken = () => {
+			const { token } = fcmRequest.message;
+			token && _removeToken({ gcm: token });
+		};
+
+		const response = fetchWithRetry(url, removeToken, { method: 'POST', headers, body: JSON.stringify(fcmRequest) });
 
 		response.catch((err) => {
 			logger.error('sendFCM error', err);
