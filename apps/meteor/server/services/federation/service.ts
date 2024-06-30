@@ -69,14 +69,6 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 
 	protected abstract onDisableFederation(): Promise<void>;
 
-	public abstract configurationStatus(): Promise<IFederationConfigurationStatus>;
-
-	public abstract verifyConfiguration(): Promise<void>;
-
-	public abstract markConfigurationValid(): Promise<void>;
-
-	public abstract markConfigurationInvalid(): Promise<void>;
-
 	constructor(
 		federationBridge: IFederationBridge,
 		internalQueueInstance: InMemoryQueue,
@@ -280,7 +272,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		);
 	}
 
-	protected async _configurationStatus() {
+	public async configurationStatus() {
 		const status = {
 			appservice: {
 				roundTrip: { durationMs: -1 },
@@ -308,15 +300,15 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		return status;
 	}
 
-	protected async _markConfigurationValid() {
+	public async markConfigurationValid() {
 		return this.internalSettingsAdapter.setConfigurationStatus('Valid');
 	}
 
-	protected async _markConfigurationInvalid() {
+	public async markConfigurationInvalid() {
 		return this.internalSettingsAdapter.setConfigurationStatus('Invalid');
 	}
 
-	protected async _verifyConfiguration() {
+	public async verifyConfiguration() {
 		try {
 			await this.bridge?.ping(); // throws error if fails
 
@@ -438,14 +430,14 @@ export class FederationService extends AbstractBaseFederationService implements 
 	}
 
 	public async verifyConfiguration() {
-		return this._verifyConfiguration();
+		return super.verifyConfiguration();
 	}
 
 	public async markConfigurationValid() {
-		return this._markConfigurationValid();
+		return super.markConfigurationValid();
 	}
 
 	public async markConfigurationInvalid() {
-		return this._markConfigurationInvalid();
+		return super.markConfigurationInvalid();
 	}
 }
