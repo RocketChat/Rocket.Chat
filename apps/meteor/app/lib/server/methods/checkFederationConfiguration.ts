@@ -1,8 +1,7 @@
-import { Federation, FederationEE } from '@rocket.chat/core-services';
+import { Federation, FederationEE, Authorization } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/license';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import { Authorization } from '@rocket.chat/core-services';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

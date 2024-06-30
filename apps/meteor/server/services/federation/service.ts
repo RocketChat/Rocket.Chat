@@ -1,8 +1,9 @@
+import { IncomingMessage } from 'node:http';
+import { URL } from 'node:url';
+
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IFederationService, IFederationConfigurationStatus } from '@rocket.chat/core-services';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { URL } from 'node:url';
-import { IncomingMessage } from 'node:http';
 
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
 import type { FederationUserServiceSender } from './application/user/sender/UserServiceSender';
@@ -203,7 +204,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		let domain = url.hostname;
 
 		if (url.port) {
-			domain += ':' + url.port;
+			domain += `:${url.port}`;
 		}
 
 		return new Promise((resolve, reject) =>
@@ -291,7 +292,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		} catch (error) {
 			if (error instanceof IncomingMessage) {
 				if (error.statusCode === 404) {
-					status.appservice.error = "homeserver version must be >=1.84.x";
+					status.appservice.error = 'homeserver version must be >=1.84.x';
 				} else {
 					status.appservice.error = `received unknown status from homeserver, message: ${error.statusMessage}`;
 				}

@@ -32,7 +32,7 @@ export class MatrixBridge implements IFederationBridge {
 
 	protected isUpdatingBridgeStatus = false;
 
-	constructor(protected internalSettings: RocketChatSettingsAdapter, protected eventHandler: (event: AbstractMatrixEvent) => void) { } // eslint-disable-line no-empty-function
+	constructor(protected internalSettings: RocketChatSettingsAdapter, protected eventHandler: (event: AbstractMatrixEvent) => void) {} // eslint-disable-line no-empty-function
 
 	public async start(): Promise<void> {
 		if (this.isUpdatingBridgeStatus) {
@@ -84,8 +84,8 @@ export class MatrixBridge implements IFederationBridge {
 				displayName: externalInformation.displayname || '',
 				...(externalInformation.avatar_url
 					? {
-						avatarUrl: externalInformation.avatar_url,
-					}
+							avatarUrl: externalInformation.avatar_url,
+					  }
 					: {}),
 			};
 		} catch (err) {
@@ -742,11 +742,11 @@ export class MatrixBridge implements IFederationBridge {
 				},
 				...(this.internalSettings.getAppServiceRegistrationObject().enableEphemeralEvents
 					? {
-						onEphemeralEvent: (request) => {
-							const event = request.getData() as unknown as AbstractMatrixEvent;
-							this.eventHandler(event);
-						},
-					}
+							onEphemeralEvent: (request) => {
+								const event = request.getData() as unknown as AbstractMatrixEvent;
+								this.eventHandler(event);
+							},
+					  }
 					: {}),
 			},
 		});
