@@ -284,6 +284,7 @@ abstract class AbstractBaseFederationService extends AbstractFederationService {
 
 	protected async onDisableFederation(): Promise<void> {
 		await this.stopFederation();
+		await this.bridge.stop();
 	}
 
 	private async startFederation(): Promise<void> {
