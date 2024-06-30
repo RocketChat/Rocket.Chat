@@ -1,30 +1,8 @@
 import { Federation, FederationEE } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/license';
 import { isFederationVerifyMatrixIdProps } from '@rocket.chat/rest-typings';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { parse as urlParse } from 'node:url';
 
 import { API } from '../api';
-import { settings } from '../../../settings/server';
-
-const federationTesterHost = process.env.FEDERATION_TESTER_HOST?.trim()?.replace(/\/$/, '') || 'https://federationtester.matrix.org';
-
-function checkFederation(): Promise<boolean> {
-	const url = urlParse(settings.get('Site_Url'));
-
-	let domain = url.hostname;
-
-	if (url.port) {
-		domain += ':' + url.port;
-	}
-
-	return new Promise((resolve, reject) =>
-		fetch(`${federationTesterHost}/api/federation-ok?server_name=${domain}`)
-			.then((response) => response.text())
-			.then((text) => resolve(text === 'GOOD'))
-			.catch(reject),
-	);
-}
 
 API.v1.addRoute(
 	'federation/matrixIds.verify',
