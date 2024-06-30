@@ -44,28 +44,16 @@ export class MatrixBridge implements IFederationBridge {
 			await this.createInstance();
 
 			if (!this.isRunning) {
-				const { AppService } = await import('@rocket.chat/forked-matrix-appservice-bridge');
+				await this.bridgeInstance.run(this.internalSettings.getBridgePort());
 
-				const appservice = new AppService({ homeserverToken: this.internalSettings.getAppServiceRegistrationObject().homeserverToken });
-
-				const pinghandler = function(this: typeof appservice, req: Request, res: Response) {
-					const self = this as unknown as { config: { homeserverToken: string } };
-
-					// NOTE(debdut): should we do something here?
-
-					if (req.headers.authorization?.split(/\s+/)[1] !== self.config.homeserverToken) {
-						res.status(401);
-						res.end();
-						return;
-					}
-
-					res.status(200);
-					res.json(req.body);
-				};
-
-				appservice.expressApp.post('/_matrix/app/v1/ping', pinghandler.bind(appservice));
-
-				await this.bridgeInstance.run(this.internalSettings.getBridgePort(), appservice);
+				this.bridgeInstance.addAppServicePath({
+					method: 'POST',
+					path: '/_matrix/app/v1/ping',
+					checkToken: true,
+					handler: (req, res, _next) => {
+						res.status(200).json(req.body);
+					},
+				});
 
 				this.isRunning = true;
 			}

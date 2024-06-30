@@ -2,6 +2,7 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IFederationService, IFederationConfigurationStatus } from '@rocket.chat/core-services';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { URL } from 'node:url';
+import { IncomingMessage } from 'node:http';
 
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
 import type { FederationUserServiceSender } from './application/user/sender/UserServiceSender';
@@ -288,7 +289,15 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			status.appservice.roundTrip.durationMs = pingResponse.duration_ms;
 			status.appservice.ok = true;
 		} catch (error) {
-			status.appservice.error = extractError(error);
+			if (error instanceof IncomingMessage) {
+				if (error.statusCode === 404) {
+					status.appservice.error = "homeserver version must be >=1.84.x";
+				} else {
+					status.appservice.error = `received unknown status from homeserver, message: ${error.statusMessage}`;
+				}
+			} else {
+				status.appservice.error = extractError(error);
+			}
 		}
 
 		try {
