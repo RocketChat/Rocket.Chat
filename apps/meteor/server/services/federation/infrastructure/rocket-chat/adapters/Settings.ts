@@ -73,7 +73,10 @@ export class RocketChatSettingsAdapter {
 	}
 
 	public async setConfigurationStatus(status: 'Valid' | 'Invalid'): Promise<void> {
-		await Settings.updateOne({ _id: 'Federation_Matrix_configuration_status' }, { $set: { value: status } });
+		const { modifiedCount } = await Settings.updateOne({ _id: 'Federation_Matrix_configuration_status' }, { $set: { value: status } });
+		if (modifiedCount) {
+			void notifyOnSettingChangedById('Federation_Matrix_configuration_status');
+		}
 	}
 
 	public onFederationEnabledStatusChanged(
