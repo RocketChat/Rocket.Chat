@@ -15,7 +15,7 @@ import {
 } from '../../../../components/Contextualbar';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import { UserCardRole } from '../../../../components/UserCard';
-import UserInfo from '../../../../components/UserInfo';
+import { UserInfo } from '../../../../components/UserInfo';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../hooks/useEndpointData';

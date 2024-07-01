@@ -29,7 +29,7 @@ import {
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
 } from '../../../components/Contextualbar';
-import UserInfo from '../../../components/UserInfo';
+import { UserInfoAvatar } from '../../../components/UserInfo';
 import { MaxChatsPerAgent } from '../additionalForms';
 
 type AgentEditProps = {
@@ -123,7 +123,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 					<form id={formId} onSubmit={handleSubmit(handleSave)}>
 						{username && (
 							<Box display='flex' flexDirection='column' alignItems='center'>
-								<UserInfo.Avatar data-qa-id='agent-edit-avatar' username={username} />
+								<UserInfoAvatar data-qa-id='agent-edit-avatar' username={username} />
 							</Box>
 						)}
 						<FieldGroup>

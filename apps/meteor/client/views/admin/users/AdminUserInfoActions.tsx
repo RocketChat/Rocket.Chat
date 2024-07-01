@@ -4,7 +4,7 @@ import { useRoute, usePermission, useTranslation } from '@rocket.chat/ui-context
 import type { ReactElement } from 'react';
 import React, { useCallback, useMemo } from 'react';
 
-import UserInfo from '../../../components/UserInfo';
+import { UserInfoAction } from '../../../components/UserInfo';
 import { useActionSpread } from '../../hooks/useActionSpread';
 import { useChangeAdminStatusAction } from './hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from './hooks/useChangeUserStatusAction';
@@ -126,7 +126,7 @@ const AdminUserInfoActions = ({
 	// TODO: sanitize Action type to avoid any
 	const actions = useMemo(() => {
 		const mapAction = ([key, { label, icon, action, disabled, title }]: any): ReactElement => (
-			<UserInfo.Action key={key} title={title} label={label} onClick={action} disabled={disabled} icon={icon} />
+			<UserInfoAction key={key} title={title} label={label} onClick={action} disabled={disabled} icon={icon} />
 		);
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);

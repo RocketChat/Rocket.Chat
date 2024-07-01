@@ -11,7 +11,8 @@ import {
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
 } from '../../../components/Contextualbar';
-import UserInfo from '../../../components/UserInfo';
+import { InfoPanelLabel, InfoPanelText } from '../../../components/InfoPanel';
+import { UserInfoAvatar, UserInfoUsername } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { MaxChatsPerAgentDisplay } from '../additionalForms';
 import AgentInfoAction from './AgentInfoAction';
@@ -50,7 +51,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 			<ContextualbarScrollableContent>
 				{username && (
 					<Box alignSelf='center'>
-						<UserInfo.Avatar data-qa='AgentUserInfoAvatar' username={username} />
+						<UserInfoAvatar data-qa='AgentUserInfoAvatar' username={username} />
 					</Box>
 				)}
 				<ButtonGroup align='center'>
@@ -65,12 +66,12 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 				</ButtonGroup>
 				<Margins block={4}>
 					<Box mb={2}>
-						<UserInfo.Username data-qa='AgentInfoUserInfoUserName' username={username} status={<UserStatus status={userStatus} />} />
+						<UserInfoUsername data-qa='AgentInfoUserInfoUserName' username={username} status={<UserStatus status={userStatus} />} />
 					</Box>
 					{statusLivechat && (
 						<>
-							<UserInfo.Label data-qa='AgentInfoUserInfoLabel'>{t('Livechat_status')}</UserInfo.Label>
-							<UserInfo.Info>{t(statusLivechat === 'available' ? 'Available' : 'Not_Available')}</UserInfo.Info>
+							<InfoPanelLabel data-qa='AgentInfoUserInfoLabel'>{t('Livechat_status')}</InfoPanelLabel>
+							<InfoPanelText>{t(statusLivechat === 'available' ? 'Available' : 'Not_Available')}</InfoPanelText>
 						</>
 					)}
 					{MaxChatsPerAgentDisplay && <MaxChatsPerAgentDisplay maxNumberSimultaneousChat={data.user.livechat?.maxNumberSimultaneousChat} />}
