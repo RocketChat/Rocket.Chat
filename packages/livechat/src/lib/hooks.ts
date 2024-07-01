@@ -247,6 +247,27 @@ const api = {
 		});
 	},
 
+	transferChat: async (department: string) => {
+		const {
+			config: { departments = [] },
+			room,
+		} = store.state;
+
+		const dep = departments.find((dep) => dep._id === department || dep.name === department)?._id || '';
+
+		if (!dep) {
+			throw new Error(
+				'The selected department is invalid. Check departments configuration to ensure the department exists, is enabled and has at least 1 agent',
+			);
+		}
+		if (!room) {
+			throw new Error("Conversation has not been started yet, can't transfer");
+		}
+
+		const { _id: rid } = room;
+		await Livechat.transferChat({ rid, department: dep });
+	},
+
 	setLanguage: async (language: StoreState['iframe']['language']) => {
 		const { iframe } = store.state;
 		await store.setState({ iframe: { ...iframe, language } });
