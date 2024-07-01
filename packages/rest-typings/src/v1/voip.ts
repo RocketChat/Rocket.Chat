@@ -588,4 +588,6 @@ export type VoipEndpoints = {
 };
 
 export * from './voip/VoipFreeSwitchExtensionAssignProps';
+export * from './voip/VoipFreeSwitchExtensionGetDetailsProps';
+export * from './voip/VoipFreeSwitchExtensionGetInfoProps';
 export * from './voip/VoipFreeSwitchExtensionListProps';
