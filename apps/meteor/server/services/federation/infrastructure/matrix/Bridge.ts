@@ -1,7 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appservice-bridge';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { type Request, type Response } from 'express';
 
 import type { IExternalUserProfileInformation, IFederationBridge, IFederationBridgeRegistrationFile } from '../../domain/IFederationBridge';
 import type { RocketChatSettingsAdapter } from '../rocket-chat/adapters/Settings';
