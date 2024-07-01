@@ -22,15 +22,15 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 		return;
 	}
 
-	if (await processMessageEditing(chat, message, previewUrls)) {
-		return;
-	}
-
 	if (isSlashCommandAllowed && (await processSlashCommand(chat, message))) {
 		return;
 	}
 
 	message = (await onClientBeforeSendMessage(message)) as IMessage;
+
+	if (await processMessageEditing(chat, message, previewUrls)) {
+		return;
+	}
 
 	await sdk.call('sendMessage', message, previewUrls);
 };
