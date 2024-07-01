@@ -493,15 +493,15 @@ export const updateChatDepartment = async ({
 	newDepartmentId: string;
 	oldDepartmentId?: string;
 }) => {
-	await Promise.all([
+	const responses = await Promise.all([
 		LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId),
 		LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId),
 		Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId),
-	]).then((data) => {
-		if (data[2].modifiedCount) {
-			void notifyOnSubscriptionChangedByRoomId(rid);
-		}
-	});
+	]);
+
+	if (responses[2].modifiedCount) {
+		void notifyOnSubscriptionChangedByRoomId(rid);
+	}
 
 	setImmediate(() => {
 		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {

@@ -17,15 +17,15 @@ const onCloseLivechat = async (params: LivechatCloseCallbackParams) => {
 		room: { _id: roomId },
 	} = params;
 
-	await Promise.all([
+	const responses = await Promise.all([
 		LivechatRooms.unsetOnHoldByRoomId(roomId),
 		Subscriptions.unsetOnHoldByRoomId(roomId),
 		AutoCloseOnHoldScheduler.unscheduleRoom(roomId),
-	]).then((data) => {
-		if (data[1].modifiedCount) {
-			void notifyOnSubscriptionChangedByRoomId(roomId);
-		}
-	});
+	]);
+
+	if (responses[1].modifiedCount) {
+		void notifyOnSubscriptionChangedByRoomId(roomId);
+	}
 
 	if (!settings.get('Livechat_waiting_queue')) {
 		return params;
