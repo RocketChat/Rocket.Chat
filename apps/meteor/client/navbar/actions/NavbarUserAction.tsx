@@ -4,8 +4,8 @@ import type { AllHTMLAttributes } from 'react';
 import React from 'react';
 
 import { NavbarAction } from '../../components/Navbar';
-import UserAvatarWithStatusUnstable from '../../sidebarv1/header/UserAvatarWithStatusUnstable';
-import UserMenu from '../../sidebarv1/header/UserMenu';
+import UserAvatarWithStatusUnstable from '../../sidebar/header/UserAvatarWithStatusUnstable';
+import UserMenu from '../../sidebar/header/UserMenu';
 
 const NavbarUserAction = (props: AllHTMLAttributes<HTMLLIElement>) => {
 	const user = useUser();

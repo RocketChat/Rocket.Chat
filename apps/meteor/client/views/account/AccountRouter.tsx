@@ -3,7 +3,7 @@ import type { ReactElement, ReactNode } from 'react';
 import React, { Suspense, useEffect } from 'react';
 
 import PageSkeleton from '../../components/PageSkeleton';
-import SidebarPortal from '../../sidebarv1/SidebarPortal';
+import SidebarPortal from '../../sidebar/SidebarPortal';
 import AccountSidebar from './AccountSidebar';
 
 type AccountRouterProps = {

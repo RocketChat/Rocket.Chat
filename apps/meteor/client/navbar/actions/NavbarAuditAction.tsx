@@ -5,7 +5,7 @@ import React from 'react';
 import GenericMenu from '../../components/GenericMenu/GenericMenu';
 import { useHandleMenuAction } from '../../components/GenericMenu/hooks/useHandleMenuAction';
 import { NavbarAction } from '../../components/Navbar';
-import { useAuditItems } from '../../sidebarv1/header/actions/hooks/useAuditItems';
+import { useAuditItems } from '../../sidebar/header/actions/hooks/useAuditItems';
 
 const NavbarAuditAction = (props: AllHTMLAttributes<HTMLLIElement>) => {
 	const t = useTranslation();

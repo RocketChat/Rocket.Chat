@@ -4,7 +4,7 @@ import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
-import CreateChannelWithData from '../../../sidebarv1/header/CreateChannel';
+import CreateChannelWithData from '../../../sidebar/header/CreateChannel';
 
 const CreateChannelsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
 	const t = useTranslation();
