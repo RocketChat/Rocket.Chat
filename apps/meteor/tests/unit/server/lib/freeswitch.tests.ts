@@ -1,9 +1,10 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 
-import { VoipFreeSwitchService } from '../../../../server/services/voip-freeswitch/service';
+import { settings } from '../../../../app/settings/server/cached';
+import { VoipFreeSwitchService } from '../../../../ee/server/local-services/voip-freeswitch/service';
 
-const VoipFreeSwitch = new VoipFreeSwitchService();
+const VoipFreeSwitch = new VoipFreeSwitchService((id) => settings.get(id));
 
 describe.skip('VoIP', () => {
 	describe('FreeSwitch', () => {
