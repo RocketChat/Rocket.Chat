@@ -751,7 +751,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 					expect(res.body).to.have.property('message').that.is.a('string');
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.property('error').that.is.an('object');
-					expect(data.error).to.have.property('errorType', 'Match.Error');
+					expect(data.error).to.have.property('errorType', 'Meteor.Error');
+					expect(data.error).to.have.property('error', 'error-invalid-department-unit');
 				});
 		});
 
