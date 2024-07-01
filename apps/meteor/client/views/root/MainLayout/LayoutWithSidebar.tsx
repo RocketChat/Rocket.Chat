@@ -3,7 +3,7 @@ import { useLayout, useSetting, useCurrentModal, useRoute, useCurrentRoutePath }
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useRef } from 'react';
 
-import Sidebar from '../../../sidebar';
+import Sidebar from '../../../sidebarv1';
 import AccessibilityShortcut from './AccessibilityShortcut';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
 

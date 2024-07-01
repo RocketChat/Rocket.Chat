@@ -5,7 +5,7 @@ import React from 'react';
 import GenericMenu from '../../components/GenericMenu/GenericMenu';
 import { useHandleMenuAction } from '../../components/GenericMenu/hooks/useHandleMenuAction';
 import { NavbarAction } from '../../components/Navbar';
-import { useAdministrationItems } from '../../sidebar/header/actions/hooks/useAdministrationItems';
+import { useAdministrationItems } from '../../sidebarv1/header/actions/hooks/useAdministrationItems';
 
 const NavbarAdministrationAction = (props: AllHTMLAttributes<HTMLLIElement>) => {
 	const t = useTranslation();

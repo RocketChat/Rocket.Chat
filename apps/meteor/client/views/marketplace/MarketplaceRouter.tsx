@@ -3,7 +3,7 @@ import type { ReactElement, ReactNode } from 'react';
 import React, { Suspense, useEffect } from 'react';
 
 import PageSkeleton from '../../components/PageSkeleton';
-import SidebarPortal from '../../sidebar/SidebarPortal';
+import SidebarPortal from '../../sidebarv1/SidebarPortal';
 import NotFoundPage from '../notFound/NotFoundPage';
 import MarketPlaceSidebar from './MarketplaceSidebar';
 
