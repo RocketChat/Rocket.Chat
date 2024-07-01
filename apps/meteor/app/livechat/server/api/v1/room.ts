@@ -182,11 +182,16 @@ API.v1.addRoute(
 				throw new Error('error-invalid-room');
 			}
 
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, this.userId, { projection: { _id: 1 } });
+			if (!room.open && subscription) {
+				await Subscriptions.removeByRoomId(rid);
+				return API.v1.success();
+			}
+
 			if (!room.open) {
 				throw new Error('error-room-already-closed');
 			}
 
-			const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, this.userId, { projection: { _id: 1 } });
 			if (!subscription && !(await hasPermissionAsync(this.userId, 'close-others-livechat-room'))) {
 				throw new Error('error-not-authorized');
 			}
