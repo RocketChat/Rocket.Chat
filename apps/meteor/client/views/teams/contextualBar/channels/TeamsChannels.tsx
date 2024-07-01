@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, Dispatch, SetStateAction, SyntheticEvent } from 'react';
@@ -15,6 +15,7 @@ import {
 	ContextualbarContent,
 	ContextualbarFooter,
 	ContextualbarEmptyContent,
+	ContextualbarSection,
 } from '../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
@@ -85,23 +86,13 @@ const TeamsChannels = ({
 				<ContextualbarTitle>{t('Team_Channels')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-			<ContextualbarContent p={12}>
-				<Box display='flex' flexDirection='row' p={12} flexShrink={0}>
-					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
-						<Margins inline={4}>
-							<TextInput
-								placeholder={t('Search')}
-								value={text}
-								ref={inputRef}
-								onChange={setText}
-								addon={<Icon name='magnifier' size='x20' />}
-							/>
-							<Box w='x144'>
-								<Select onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
-							</Box>
-						</Margins>
-					</Box>
+			<ContextualbarSection>
+				<TextInput placeholder={t('Search')} value={text} ref={inputRef} onChange={setText} addon={<Icon name='magnifier' size='x20' />} />
+				<Box w='x144' mis={8}>
+					<Select onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
 				</Box>
+			</ContextualbarSection>
+			<ContextualbarContent p={12}>
 				{loading && (
 					<Box pi={24} pb={12}>
 						<Throbber size='x12' />

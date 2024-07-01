@@ -37,7 +37,7 @@ const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string
 		}, [rid, tmid]),
 	);
 	return (
-		<Box h='24px' className='rc-message-box__activity-wrapper' fontScale='p2' color='annotation' aria-live='polite'>
+		<Box h='20px' className='rc-message-box__activity-wrapper' fontScale='c1' color='annotation' aria-live='polite'>
 			{actions.map(({ action, users }, index) => (
 				<Fragment key={action}>
 					{index > 0 && ', '}

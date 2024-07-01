@@ -3,8 +3,8 @@ import { useCallback, useRef, useState } from 'react';
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 
-export const useLeaderBanner = () => {
-	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
+export const useBannerSection = () => {
+	const [hideSection, setHideSection] = useState(false);
 
 	const wrapperBoxRef = useRef<HTMLDivElement>(null);
 
@@ -14,15 +14,20 @@ export const useLeaderBanner = () => {
 		}
 		let lastScrollTopRef = 0;
 
+		wrapperBoxRef.current?.addEventListener('mouseover', () => setHideSection(false));
+
 		node.addEventListener(
 			'scroll',
 			withThrottling({ wait: 100 })((event) => {
-				const roomLeader = wrapperBoxRef.current?.querySelector('.room-leader');
+				const roomLeader = wrapperBoxRef.current?.querySelector('.rcx-header-section');
+
 				if (roomLeader) {
-					if (event.target.scrollTop < lastScrollTopRef) {
-						setHideLeaderHeader(false);
-					} else if (isAtBottom(node, 100) === false && event.target.scrollTop > parseFloat(getComputedStyle(roomLeader).height)) {
-						setHideLeaderHeader(true);
+					if (isAtBottom(node, 0)) {
+						setHideSection(false);
+					} else if (event.target.scrollTop < lastScrollTopRef) {
+						setHideSection(true);
+					} else if (!isAtBottom(node, 100) && event.target.scrollTop > parseFloat(getComputedStyle(roomLeader).height)) {
+						setHideSection(true);
 					}
 				}
 				lastScrollTopRef = event.target.scrollTop;
@@ -33,7 +38,7 @@ export const useLeaderBanner = () => {
 
 	return {
 		wrapperRef: wrapperBoxRef,
-		hideLeaderHeader,
+		hideSection,
 		innerRef: innerScrollRef,
 	};
 };

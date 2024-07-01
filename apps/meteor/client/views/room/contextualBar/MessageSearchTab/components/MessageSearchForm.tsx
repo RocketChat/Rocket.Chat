@@ -1,5 +1,5 @@
 import type { IMessageSearchProvider } from '@rocket.chat/core-typings';
-import { Box, Field, FieldLabel, FieldRow, FieldHint, Icon, TextInput, ToggleSwitch, Callout } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldHint, Icon, TextInput, ToggleSwitch, Callout } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -48,38 +48,23 @@ const MessageSearchForm = ({ provider, onSearch }: MessageSearchFormProps) => {
 	const t = useTranslation();
 
 	return (
-		<Box
-			display='flex'
-			flexGrow={0}
-			flexShrink={1}
-			flexDirection='column'
-			p={24}
-			borderBlockEndWidth={2}
-			borderBlockEndStyle='solid'
-			borderBlockEndColor='extra-light'
-		>
-			<Box is='form' onSubmit={submitHandler}>
+		<Box is='form' onSubmit={submitHandler} w='full'>
+			<Field>
+				<TextInput
+					addon={<Icon name='magnifier' size='x20' />}
+					placeholder={t('Search_Messages')}
+					aria-label={t('Search_Messages')}
+					autoComplete='off'
+					{...register('searchText')}
+				/>
+				{provider.description && <FieldHint dangerouslySetInnerHTML={{ __html: t(provider.description as TranslationKey) }} />}
+			</Field>
+			{globalSearchEnabled && (
 				<Field>
-					<FieldRow>
-						<TextInput
-							addon={<Icon name='magnifier' size='x20' />}
-							placeholder={t('Search_Messages')}
-							aria-label={t('Search_Messages')}
-							autoComplete='off'
-							{...register('searchText')}
-						/>
-					</FieldRow>
-					{provider.description && <FieldHint dangerouslySetInnerHTML={{ __html: t(provider.description as TranslationKey) }} />}
+					<FieldLabel htmlFor={globalSearchToggleId}>{t('Global_Search')}</FieldLabel>
+					<ToggleSwitch id={globalSearchToggleId} {...register('globalSearch')} />
 				</Field>
-				{globalSearchEnabled && (
-					<Field>
-						<FieldRow>
-							<FieldLabel htmlFor={globalSearchToggleId}>{t('Global_Search')}</FieldLabel>
-							<ToggleSwitch id={globalSearchToggleId} {...register('globalSearch')} />
-						</FieldRow>
-					</Field>
-				)}
-			</Box>
+			)}
 			{room.encrypted && (
 				<Callout type='warning' mbs={12} icon='circle-exclamation'>
 					<Box fontScale='p2b'>{t('Encrypted_RoomType', { roomType: getRoomTypeTranslation(room).toLowerCase() })}</Box>

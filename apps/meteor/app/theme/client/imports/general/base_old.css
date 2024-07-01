@@ -777,7 +777,7 @@
 	}
 
 	& .start {
-		margin-top: 12px;
+		margin-top: 44px;
 
 		text-align: center;
 
@@ -793,12 +793,6 @@
 
 	& .editing .body {
 		border-radius: var(--border-radius);
-	}
-
-	&.has-leader {
-		& .wrapper {
-			padding-top: 57px;
-		}
 	}
 }
 
