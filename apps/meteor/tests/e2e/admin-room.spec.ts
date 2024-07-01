@@ -17,16 +17,8 @@ test.describe.serial('admin-rooms', () => {
 		await page.goto('/admin/rooms');
 	});
 
-	test.beforeAll(async ({ browser, api }) => {
-		[channel, privateRoom] = await Promise.all([
-			createTargetChannel(api),
-			createTargetPrivateChannel(api),
-			browser.newPage({ storageState: Users.admin.state }).then(async (page) => {
-				await page.goto('/home');
-				await page.waitForSelector('[data-qa-id="home-header"]');
-				return page;
-			}),
-		]);
+	test.beforeAll(async ({ api }) => {
+		[channel, privateRoom] = await Promise.all([createTargetChannel(api), createTargetPrivateChannel(api)]);
 	});
 
 	test('should display the Rooms Table', async ({ page }) => {
