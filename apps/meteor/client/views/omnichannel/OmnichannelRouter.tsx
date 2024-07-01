@@ -3,7 +3,7 @@ import type { ReactNode, ReactElement } from 'react';
 import React, { Suspense, useEffect } from 'react';
 
 import PageSkeleton from '../../components/PageSkeleton';
-import SidebarPortal from '../../sidebar/SidebarPortal';
+import SidebarPortal from '../../sidebarv1/SidebarPortal';
 import OmnichannelSidebar from './sidebar/OmnichannelSidebar';
 
 type OmnichannelRouterProps = {

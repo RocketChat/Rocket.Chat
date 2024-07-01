@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import React from 'react';
 
-import SidebarPortal from '../../sidebar/SidebarPortal';
+import SidebarPortal from '../../sidebarv1/SidebarPortal';
 import AdminSidebar from './sidebar/AdminSidebar';
 
 const AdministrationLayout: FC = ({ children }) => {

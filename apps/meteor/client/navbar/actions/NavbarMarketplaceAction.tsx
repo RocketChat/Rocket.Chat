@@ -6,7 +6,7 @@ import React from 'react';
 import GenericMenu from '../../components/GenericMenu/GenericMenu';
 import { useHandleMenuAction } from '../../components/GenericMenu/hooks/useHandleMenuAction';
 import { NavbarAction } from '../../components/Navbar';
-import { useAppsItems } from '../../sidebar/header/actions/hooks/useAppsItems';
+import { useAppsItems } from '../../sidebarv1/header/actions/hooks/useAppsItems';
 
 const NavbarMarketplaceAction = (props: AllHTMLAttributes<HTMLLIElement>) => {
 	const t = useTranslation();
