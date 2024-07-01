@@ -40,6 +40,7 @@ declare const window: Window & {
 			setParentUrl: (url: string) => void;
 			setTheme: (theme: { color?: string; fontColor?: string; iconColor?: string; title?: string; offlineTitle?: string }) => void;
 			setLanguage: (language: string) => void;
+			transferChat: (department: string) => void;
 			onChatMaximized: (callback: () => void) => void;
 			onChatMinimized: (callback: () => void) => void;
 			onChatStarted: (callback: () => void) => void;
@@ -402,6 +403,60 @@ test.describe('OC - Livechat API', () => {
 					await expect(
 						poAuxContext.page.locator(`role=search >> role=listbox >> role=link >> text="${registerGuestVisitor.name}"`),
 					).not.toBeVisible();
+				});
+			});
+		});
+
+		test.describe('OC - Livechat API - transferChat', () => {
+			let poAuxContext2: { page: Page; poHomeOmnichannel: HomeOmnichannel };
+
+			test.beforeEach(async ({ browser }) => {
+				const { page: pageCtx2 } = await createAuxContext(browser, Users.user2);
+				poAuxContext2 = { page: pageCtx2, poHomeOmnichannel: new HomeOmnichannel(pageCtx2) };
+			});
+
+			test.afterEach(async () => {
+				await poAuxContext2.page.close();
+			});
+
+			test('transferChat - Called during ongoing conversation', async () => {
+				const [departmentA, departmentB] = departments.map(({ data }) => data);
+				const registerGuestVisitor = {
+					name: faker.person.firstName(),
+					email: faker.internet.email(),
+					token: faker.string.uuid(),
+					department: departmentA._id,
+				};
+
+				// Start Chat
+				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
+				await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
+
+				await poLiveChat.page.evaluate(
+					(registerGuestVisitor) => window.RocketChat.livechat.registerGuest(registerGuestVisitor),
+					registerGuestVisitor,
+				);
+
+				await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).not.toBeVisible();
+
+				await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
+				await poLiveChat.btnSendMessageToOnlineAgent.click();
+
+				await test.step('Expect registered guest to be in dep1', async () => {
+					await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor.name);
+					await expect(poAuxContext.poHomeOmnichannel.content.channelHeader).toContainText(registerGuestVisitor.name);
+				});
+
+				const depId = departmentB._id;
+
+				await test.step('Expect chat to be transferred', async () => {
+					await poLiveChat.page.evaluate((depId) => window.RocketChat.livechat.transferChat(depId), depId);
+
+					await poAuxContext2.page.locator('role=navigation >> role=button[name=Search]').click();
+					await poAuxContext2.page.locator('role=search >> role=searchbox').fill(registerGuestVisitor.name);
+					await expect(
+						poAuxContext2.page.locator(`role=search >> role=listbox >> role=link >> text="${registerGuestVisitor.name}"`),
+					).toBeVisible();
 				});
 			});
 		});
