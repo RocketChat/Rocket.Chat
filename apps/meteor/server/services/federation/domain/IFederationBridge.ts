@@ -110,4 +110,5 @@ export interface IFederationBridge {
 		externalUserId: string,
 		externalRoomId: string,
 	): Promise<{ creator: { id: string; username: string }; name: string; joinedMembers: string[] } | undefined>;
+	ping(): Promise<{ duration_ms: number }>;
 }

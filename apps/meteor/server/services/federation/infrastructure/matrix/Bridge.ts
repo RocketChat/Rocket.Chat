@@ -44,6 +44,16 @@ export class MatrixBridge implements IFederationBridge {
 
 			if (!this.isRunning) {
 				await this.bridgeInstance.run(this.internalSettings.getBridgePort());
+
+				this.bridgeInstance.addAppServicePath({
+					method: 'POST',
+					path: '/_matrix/app/v1/ping',
+					checkToken: true,
+					handler: (req, res, _next) => {
+						res.status(200).json(req.body);
+					},
+				});
+
 				this.isRunning = true;
 			}
 		} catch (err) {
@@ -724,6 +734,11 @@ export class MatrixBridge implements IFederationBridge {
 			controller: {
 				onEvent: (request) => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
+
+					if (event.type === 'm.room.message' && this.extractHomeserverOrigin(event.sender) === (new URL(this.internalSettings.getHomeServerDomain())).hostname) {
+						return;
+					}
+
 					this.eventHandler(event);
 				},
 				onLog: (line, isError) => {
@@ -751,5 +766,21 @@ export class MatrixBridge implements IFederationBridge {
 			'namespaces': registrationFile.listenTo,
 			'de.sorunome.msc2409.push_ephemeral': registrationFile.enableEphemeralEvents,
 		};
+	}
+
+	public async ping(): Promise<{ duration_ms: number }> {
+		if (!this.isRunning || !this.bridgeInstance) {
+			throw new Error("matrix bridge isn't yet running");
+		}
+
+		return this.bridgeInstance
+			.getIntent()
+			.matrixClient.doRequest(
+				'POST',
+				`/_matrix/client/v1/appservice/${this.internalSettings.getApplicationServiceId()}/ping`,
+				{},
+				{ transaction_id: 'meow' },
+				DEFAULT_TIMEOUT_IN_MS_FOR_JOINING_ROOMS,
+			);
 	}
 }

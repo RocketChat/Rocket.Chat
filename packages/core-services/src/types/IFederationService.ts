@@ -1,9 +1,30 @@
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
 
+export interface IFederationConfigurationStatus {
+	appservice: {
+		error?: string;
+		ok: boolean;
+		roundTrip: {
+			durationMs: number;
+		};
+	};
+
+	externalReachability: {
+		error?: string;
+		ok: boolean;
+	};
+}
+
 export interface IFederationService {
 	createDirectMessageRoomAndInviteUser(internalInviterId: string, internalRoomId: string, externalInviteeId: string): Promise<void>;
 
 	verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>>;
+
+	configurationStatus(): Promise<IFederationConfigurationStatus>;
+
+	markConfigurationValid(): Promise<void>;
+
+	markConfigurationInvalid(): Promise<void>;
 }
 
 export interface IFederationJoinExternalPublicRoomInput {
@@ -13,7 +34,7 @@ export interface IFederationJoinExternalPublicRoomInput {
 	pageToken?: string;
 }
 
-export interface IFederationServiceEE {
+export interface IFederationServiceEE extends IFederationService {
 	createDirectMessageRoom(internalUserId: string, invitees: string[]): Promise<void>;
 
 	searchPublicRooms(
