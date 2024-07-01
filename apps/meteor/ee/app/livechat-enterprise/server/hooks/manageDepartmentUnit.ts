@@ -8,20 +8,23 @@ import { getUnitsFromUser } from '../methods/getUnitsFromUserRoles';
 callbacks.add(
 	'livechat.manageDepartmentUnit',
 	async ({ userId, departmentId, unitId }) => {
-		const units = await getUnitsFromUser(userId);
+		const accessibleUnits = await getUnitsFromUser(userId);
 		const isLivechatManager = await hasAnyRoleAsync(userId, ['admin', 'livechat-manager']);
 		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'ancestors' | 'parentId'>>(departmentId, {
 			projection: { ancestors: 1, parentId: 1 },
 		});
 
-		if (!department || (unitId && department.ancestors?.includes(unitId))) {
+		const isDepartmentAlreadyInUnit = unitId && department?.ancestors?.includes(unitId);
+		if (!department || isDepartmentAlreadyInUnit) {
 			return;
 		}
 
 		const currentDepartmentUnitId = department.parentId;
-		const canManageNewUnit = !unitId || isLivechatManager || (Array.isArray(units) && units.includes(unitId));
+		const canManageNewUnit = !unitId || isLivechatManager || (Array.isArray(accessibleUnits) && accessibleUnits.includes(unitId));
 		const canManageCurrentUnit =
-			!currentDepartmentUnitId || isLivechatManager || (Array.isArray(units) && units.includes(currentDepartmentUnitId));
+			!currentDepartmentUnitId ||
+			isLivechatManager ||
+			(Array.isArray(accessibleUnits) && accessibleUnits.includes(currentDepartmentUnitId));
 		if (!canManageNewUnit || !canManageCurrentUnit) {
 			return;
 		}
