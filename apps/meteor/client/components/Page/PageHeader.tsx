@@ -30,7 +30,7 @@ const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickB
 		>
 			<Box
 				height='100%'
-				marginInline={24}
+				mi={isMobile ? 16 : 24}
 				minHeight='x64'
 				display='flex'
 				flexDirection='row'

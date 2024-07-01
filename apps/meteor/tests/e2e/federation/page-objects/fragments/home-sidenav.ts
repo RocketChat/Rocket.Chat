@@ -35,9 +35,21 @@ export class FederationSidenav {
 		return this.page.locator('role=button[name="Create"]');
 	}
 
+	get sidebarSearchSection() {
+		return this.page.getByRole('navigation', { name: 'sidebar' }).getByRole('search');
+	}
+
+	get sidebarSearchBox() {
+		return this.sidebarSearchSection.getByRole('searchbox');
+	}
+
+	get navbarSettingsGroup() {
+		return this.page.getByRole('navigation', { name: 'header' }).getByRole('group', { name: 'Workspace and user settings' });
+	}
+
 	async logout(): Promise<void> {
 		await this.page.getByRole('button', { name: 'User menu' }).click();
-		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
+		await this.navbarSettingsGroup.getByRole('menuitemcheckbox', { name: 'Logout' }).click();
 	}
 
 	async inviteUserToChannel(username: string) {
@@ -47,22 +59,23 @@ export class FederationSidenav {
 		await this.page.locator('[data-qa-type="autocomplete-user-option"]', { hasText: username }).click();
 	}
 
+	async typeSearch(text: string): Promise<void> {
+		await this.sidebarSearchBox.fill(text);
+	}
+
 	async openAdministrationByLabel(text: string): Promise<void> {
 		await this.page.locator('role=button[name="Administration"]').click();
 		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
 	}
 
 	async openNewByLabel(text: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-create"]').click();
-		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
+		await this.sidebarSearchSection.getByRole('button', { name: 'Create new', exact: true }).click();
+		await this.sidebarSearchSection.getByRole('menu').getByRole('menuitem', { name: text, exact: true }).click();
 	}
 
 	async openChat(name: string): Promise<void> {
-		await this.page.locator('role=navigation >> role=button[name=Search]').click();
-		await this.page.locator('role=search >> role=searchbox').focus();
-		await this.page.locator('role=search >> role=searchbox').type(name);
-		await this.page.locator(`role=search >> role=listbox >> role=link`).first().waitFor();
-		await this.page.locator(`role=search >> role=listbox >> role=link`).first().click();
+		await this.typeSearch(name);
+		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
 	}
 
 	async countFilteredChannelsOnDirectory(name: string): Promise<number> {

@@ -33,12 +33,16 @@ export class HomeSidenav {
 		return this.page.locator('role=button[name="Create"]');
 	}
 
-	get inputSearch(): Locator {
-		return this.page.locator('[placeholder="Search (Ctrl+K)"]').first();
-	}
-
 	get userProfileMenu(): Locator {
 		return this.page.getByRole('button', { name: 'User menu', exact: true });
+	}
+
+	get homeButton(): Locator {
+		return this.page.getByRole('toolbar', { name: 'Pages' }).getByRole('button', { name: 'Home' });
+	}
+
+	get directoryButton(): Locator {
+		return this.page.getByRole('toolbar', { name: 'Pages' }).getByRole('button', { name: 'Directory' });
 	}
 
 	get sidebarChannelsList(): Locator {
@@ -49,10 +53,22 @@ export class HomeSidenav {
 		return this.page.getByRole('toolbar', { name: 'Sidebar actions' });
 	}
 
+	get sidebarSearchSection() {
+		return this.page.getByRole('navigation', { name: 'sidebar' }).getByRole('search');
+	}
+
+	get sidebarSearchBox() {
+		return this.sidebarSearchSection.getByRole('searchbox');
+	}
+
+	get navbarSettingsGroup() {
+		return this.page.getByRole('navigation', { name: 'header' }).getByRole('group', { name: 'Workspace and user settings' });
+	}
+
 	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
-		await this.sidebarToolbar.getByRole('button', { name: 'Display', exact: true }).click();
-		await this.sidebarToolbar.getByRole('menuitemcheckbox', { name: mode }).click();
-		await this.sidebarToolbar.click();
+		await this.sidebarSearchSection.getByRole('button', { name: 'Display', exact: true }).click();
+		await this.sidebarSearchSection.getByRole('menuitemcheckbox', { name: mode }).click();
+		await this.sidebarSearchSection.click();
 	}
 
 	// Note: this is different from openChat because queued chats are not searchable
@@ -76,8 +92,8 @@ export class HomeSidenav {
 	}
 
 	async openAdministrationByLabel(text: string): Promise<void> {
-		await this.page.locator('role=button[name="Administration"]').click();
-		await this.page.locator(`role=menuitem[name="${text}"]`).click();
+		await this.navbarSettingsGroup.getByRole('button', { name: 'Manage', exact: true }).click();
+		await this.navbarSettingsGroup.getByRole('menuitem', { name: text }).click();
 	}
 
 	async openInstalledApps(): Promise<void> {
@@ -86,17 +102,17 @@ export class HomeSidenav {
 	}
 
 	async openNewByLabel(text: string): Promise<void> {
-		await this.page.locator('role=button[name="Create new"]').click();
-		await this.page.locator(`role=menuitem[name="${text}"]`).click();
+		await this.sidebarSearchSection.getByRole('button', { name: 'Create new', exact: true }).click();
+		await this.sidebarSearchSection.getByRole('menu').getByRole('menuitem', { name: text, exact: true }).click();
 	}
 
-	async openSearch(): Promise<void> {
-		await this.page.locator('role=button[name="Search"]').click();
+	async typeSearch(text: string): Promise<void> {
+		await this.sidebarSearchBox.fill(text);
 	}
 
 	async logout(): Promise<void> {
 		await this.userProfileMenu.click();
-		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
+		await this.navbarSettingsGroup.getByRole('menuitemcheckbox', { name: 'Logout' }).click();
 	}
 
 	async switchStatus(status: 'offline' | 'online'): Promise<void> {
@@ -105,8 +121,7 @@ export class HomeSidenav {
 	}
 
 	async openChat(name: string): Promise<void> {
-		await this.page.locator('role=navigation >> role=button[name=Search]').click();
-		await this.page.locator('role=search >> role=searchbox').fill(name);
+		await this.typeSearch(name);
 		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
 		await this.waitForChannel();
 	}

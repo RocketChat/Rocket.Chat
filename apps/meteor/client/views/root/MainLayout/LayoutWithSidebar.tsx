@@ -3,6 +3,7 @@ import { useLayout, useSetting, useCurrentModal, useRoute, useCurrentRoutePath }
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useRef } from 'react';
 
+import { NavBar } from '../../../NavBar';
 import Sidebar from '../../../sidebar';
 import AccessibilityShortcut from './AccessibilityShortcut';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
@@ -40,22 +41,25 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 	}, [channelRoute, currentRoutePath, firstChannelAfterLogin]);
 
 	return (
-		<Box
-			bg='surface-light'
-			id='rocket-chat'
-			className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
-			aria-hidden={Boolean(modal)}
-		>
+		<>
 			<AccessibilityShortcut />
-			<MainLayoutStyleTags />
-			{!removeSidenav && <Sidebar />}
-			<main
-				id='main-content'
-				className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}
+			<NavBar />
+			<Box
+				bg='surface-light'
+				id='rocket-chat'
+				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
+				aria-hidden={Boolean(modal)}
 			>
-				{children}
-			</main>
-		</Box>
+				<MainLayoutStyleTags />
+				{!removeSidenav && <Sidebar />}
+				<main
+					id='main-content'
+					className={['rc-old', 'main-content', readReceiptsEnabled ? 'read-receipts-enabled' : undefined].filter(Boolean).join(' ')}
+				>
+					{children}
+				</main>
+			</Box>
+		</>
 	);
 };
 

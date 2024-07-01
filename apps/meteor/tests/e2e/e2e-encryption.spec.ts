@@ -749,9 +749,7 @@ test.describe.serial('e2ee room setup', () => {
 		await injectInitialData();
 		await restoreState(page, Users.admin);
 
-		await page.locator('role=navigation >> role=button[name=Search]').click();
-		await page.locator('role=search >> role=searchbox').fill(channelName);
-		await page.locator(`role=search >> role=listbox >> role=link >> text="${channelName}"`).click();
+		await poHomeChannel.sidenav.openChat(channelName);
 
 		await page.locator('role=button[name="Save E2EE password"]').click();
 		await page.locator('#modal-root >> button:has-text("I saved my password")').click();

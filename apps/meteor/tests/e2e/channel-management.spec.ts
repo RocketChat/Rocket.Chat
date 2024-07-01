@@ -139,7 +139,7 @@ test.describe.serial('channel-management', () => {
 		await page.setViewportSize({ width: 640, height: 460 });
 		await page.getByRole('button', { name: 'Open sidebar' }).click();
 
-		await expect(page.getByRole('navigation')).toBeVisible();
+		await expect(page.getByRole('navigation', { name: 'sidebar' })).toBeVisible();
 	});
 
 	test('should open room info when clicking on roomName', async ({ page }) => {

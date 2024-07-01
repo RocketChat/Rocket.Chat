@@ -20,6 +20,6 @@ export class OmnichannelSection {
 	}
 
 	get btnContactCenter(): Locator {
-		return this.page.locator('role=button[name="Contact Center"]');
+		return this.page.getByRole('toolbar', { name: 'Omnichannel', exact: true }).getByRole('button', { name: 'Contacts', exact: true });
 	}
 }
