@@ -139,13 +139,7 @@ const eventHandlers = {
 				if (persistedSubscription) {
 					// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed
 					if (!persistedSubscription.federation) {
-						const { modifiedCount } = await Subscriptions.updateOne(
-							{ _id: persistedSubscription._id },
-							{ $set: { federation: subscription.federation } },
-						);
-						if (modifiedCount) {
-							void notifyOnSubscriptionChangedById(persistedSubscription._id);
-						}
+						await Subscriptions.updateOne({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
 						federationAltered = true;
 					}
 				} else {
