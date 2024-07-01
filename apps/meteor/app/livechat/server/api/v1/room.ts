@@ -28,6 +28,7 @@ import type { CloseRoomParams } from '../../lib/LivechatTyped';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { findVisitorInfo } from '../lib/visitors';
+import { Subscription } from 'sip.js';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: boolean }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
@@ -182,11 +183,16 @@ API.v1.addRoute(
 				throw new Error('error-invalid-room');
 			}
 
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, this.userId, { projection: { _id: 1 } });
+			if (!room.open && subscription) {
+				await Subscriptions.removeByRoomId(rid);
+				return API.v1.success();
+			}
+
 			if (!room.open) {
 				throw new Error('error-room-already-closed');
 			}
 
-			const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, this.userId, { projection: { _id: 1 } });
 			if (!subscription && !(await hasPermissionAsync(this.userId, 'close-others-livechat-room'))) {
 				throw new Error('error-not-authorized');
 			}
