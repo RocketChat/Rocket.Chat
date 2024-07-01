@@ -734,6 +734,11 @@ export class MatrixBridge implements IFederationBridge {
 			controller: {
 				onEvent: (request) => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
+
+					if (event.type === 'm.room.message' && this.extractHomeserverOrigin(event.sender) === (new URL(this.internalSettings.getHomeServerDomain())).hostname) {
+						return;
+					}
+
 					this.eventHandler(event);
 				},
 				onLog: (line, isError) => {
