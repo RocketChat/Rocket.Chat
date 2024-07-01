@@ -4,7 +4,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, useRef } from 'react';
 
 import { HeaderToolbarAction } from '../../../../../components/Header';
-import { useDropdownVisibility } from '../../../../../sidebarv1/header/hooks/useDropdownVisibility';
+import { useDropdownVisibility } from '../../../../../sidebar/header/hooks/useDropdownVisibility';
 import type { QuickActionsActionOptions } from '../../../lib/quickActions';
 
 type QuickActionOptionsProps = {

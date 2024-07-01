@@ -6,7 +6,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import CreateChannelWithData from '../../../../sidebarv1/header/CreateChannel';
+import CreateChannelWithData from '../../../../sidebar/header/CreateChannel';
 import { useRoom } from '../../../room/contexts/RoomContext';
 import { useRoomToolbox } from '../../../room/contexts/RoomToolboxContext';
 import AddExistingModal from './AddExistingModal';
