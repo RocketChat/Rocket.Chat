@@ -37,6 +37,12 @@ export function addSettings(): Promise<void> {
 					public: true,
 					invalidValue: 3000,
 				});
+
+				await this.add('VoIP_TeamCollab_FreeSwitch_WebSocket_Path', '', {
+					type: 'string',
+					public: true,
+					invalidValue: '',
+				});
 			},
 		);
 	});

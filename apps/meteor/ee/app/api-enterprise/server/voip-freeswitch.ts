@@ -14,6 +14,7 @@ import {
 import { wrapExceptions } from '@rocket.chat/tools';
 
 import { API } from '../../../../app/api/server';
+import { settings } from '../../../../app/settings/server/cached';
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -163,6 +164,7 @@ API.v1.addRoute(
 			return API.v1.success({
 				extension: extensionData,
 				credentials: {
+					websocketPath: settings.get<string>('VoIP_TeamCollab_FreeSwitch_WebSocket_Path'),
 					password,
 				},
 			});
