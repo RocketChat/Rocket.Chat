@@ -1,0 +1,12 @@
+export { default as HeaderV2 } from './Header';
+export { default as HeaderV2Avatar } from './HeaderAvatar';
+export { default as HeaderV2Content } from './HeaderContent';
+export { default as HeaderV2ContentRow } from './HeaderContentRow';
+export { default as HeaderV2Divider } from './HeaderDivider';
+export { default as HeaderV2Icon } from './HeaderIcon';
+export { default as HeaderV2State } from './HeaderState';
+export { default as HeaderV2Subtitle } from './HeaderSubtitle';
+export * from './HeaderTag';
+export { default as HeaderV2Title } from './HeaderTitle';
+export { default as HeaderV2TitleButton } from './HeaderTitleButton';
+export * from './HeaderToolbar';
