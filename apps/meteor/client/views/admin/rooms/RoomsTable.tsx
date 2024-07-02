@@ -109,14 +109,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 					>
 						{t('Featured')}
 					</GenericTableHeaderCell>
-					<GenericTableHeaderCell
-						key='ts'
-						direction={sortDirection}
-						active={sortBy === 'ts'}
-						onClick={setSort}
-						sort='ts'
-						w='x120'
-					>
+					<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts' w='x120'>
 						{t('Created_at')}
 					</GenericTableHeaderCell>
 				</>

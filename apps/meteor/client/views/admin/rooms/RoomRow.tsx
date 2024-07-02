@@ -7,6 +7,7 @@ import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import { GenericTableCell, GenericTableRow } from '../../../components/GenericTable';
+import { useFormatDate } from '../../../hooks/useFormatDate';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
 const roomTypeI18nMap = {
@@ -23,6 +24,7 @@ const RoomRow = ({ room }: { room: Pick<IRoom, RoomAdminFieldsType> }) => {
 	const t = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 	const router = useRouter();
+	const formatDate = useFormatDate();
 
 	const { _id, t: type, usersCount, msgs, default: isDefault, featured, ts, ...args } = room;
 	const icon = roomCoordinator.getRoomDirectives(room.t).getIcon?.(room);
@@ -83,11 +85,7 @@ const RoomRow = ({ room }: { room: Pick<IRoom, RoomAdminFieldsType> }) => {
 			{mediaQuery && <GenericTableCell withTruncatedText>{msgs}</GenericTableCell>}
 			{mediaQuery && <GenericTableCell withTruncatedText>{isDefault ? t('True') : t('False')}</GenericTableCell>}
 			{mediaQuery && <GenericTableCell withTruncatedText>{featured ? t('True') : t('False')}</GenericTableCell>}
-			{mediaQuery && (
-				<GenericTableCell withTruncatedText>
-					{ts ? new Date(ts).toLocaleDateString() : ''}
-				</GenericTableCell>
-			)}
+			{mediaQuery && <GenericTableCell withTruncatedText>{ts ? formatDate(ts) : ''}</GenericTableCell>}
 		</GenericTableRow>
 	);
 };
