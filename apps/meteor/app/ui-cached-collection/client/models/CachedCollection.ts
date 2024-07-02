@@ -183,7 +183,7 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 			}
 
 			const { _id } = newRecord;
-			this.collection.upsert({ _id } as Mongo.Selector<T>, newRecord);
+			this.collection.update({ _id } as Mongo.Selector<T>, { $set: newRecord } as unknown as Mongo.Modifier<T>, { upsert: true });
 			this.emit('changed', newRecord as any); // TODO: investigate why this is needed
 
 			if (hasUpdatedAt(newRecord) && newRecord._updatedAt > this.updatedAt) {
@@ -250,7 +250,7 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 				if (!_id) {
 					return;
 				}
-				this.collection.upsert({ _id } as any, newRecord);
+				this.collection.update({ _id } as Mongo.Selector<T>, { $set: newRecord } as unknown as Mongo.Modifier<T>, { upsert: true });
 			}
 			await this.save();
 		}) as (...args: unknown[]) => void);
@@ -294,7 +294,7 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 				changes.push({
 					action: () => {
 						const { _id } = newRecord;
-						this.collection.upsert({ _id } as Mongo.Selector<T>, newRecord);
+						this.collection.update({ _id } as Mongo.Selector<T>, { $set: newRecord } as unknown as Mongo.Modifier<T>, { upsert: true });
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
