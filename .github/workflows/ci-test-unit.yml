@@ -6,6 +6,9 @@ on:
       node-version:
         required: true
         type: string
+      enterprise-license:
+        required: false
+        type: string
     secrets:
       CODECOV_TOKEN:
         required: false
@@ -13,6 +16,7 @@ on:
 env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+  ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
 
 jobs:
   test:
