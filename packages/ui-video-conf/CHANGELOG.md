@@ -42,6 +42,15 @@
 
   - @rocket.chat/ui-contexts@8.0.0-rc.0
   - @rocket.chat/ui-avatar@4.0.0-rc.0
+
+## 7.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@7.0.3
+  - @rocket.chat/ui-avatar@3.0.3
   </details>
 
 ## 7.0.2

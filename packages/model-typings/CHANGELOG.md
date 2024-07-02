@@ -42,6 +42,14 @@
 - <details><summary>Updated dependencies [1240c874a5, 5f95c4ec6b, f75a2cb4bb, 4f72d62aa7, dfa49bdbb2]:</summary>
 
   - @rocket.chat/core-typings@6.10.0-rc.0
+
+## 0.4.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.3
   </details>
 
 ## 0.4.3

@@ -3,6 +3,7 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { e2e } from '../../../../app/e2e/client';
 import { fileUploadIsValidContentType } from '../../../../app/utils/client';
+import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import FileUploadModal from '../../../views/room/modals/FileUploadModal';
 import { imperativeModal } from '../../imperativeModal';
 import { prependReplies } from '../../utils/prependReplies';
@@ -137,7 +138,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 								attachments.push({
 									...attachment,
 									size: file.size,
-									// format: getFileExtension(file.name),
+									format: getFileExtension(file.name),
 								});
 							}
 

@@ -1,3 +1,4 @@
+import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
@@ -388,6 +389,135 @@ describe('[Commands]', function () {
 						expect(res.body).to.have.property('success', true);
 					});
 			});
+		});
+	});
+
+	describe('Command "invite-all-from"', function () {
+		let group;
+		let group1;
+		let channel;
+		let user1;
+		let user2;
+		let user1Credentials;
+		let user2Credentials;
+
+		this.beforeAll(async () => {
+			user1 = await createUser();
+			user2 = await createUser();
+
+			[user1Credentials, user2Credentials] = await Promise.all([login(user1.username, password), login(user2.username, password)]);
+		});
+
+		this.beforeAll(async () => {
+			const [response1, response2, response3] = await Promise.all([
+				createRoom({ type: 'p', name: `room1-${Date.now()}.${Random.id()}`, credentials: user1Credentials }),
+				createRoom({ type: 'c', name: `room2-${Date.now()}.${Random.id()}`, credentials: user2Credentials }),
+				createRoom({ type: 'p', name: `room3-${Date.now()}.${Random.id()}` }),
+			]);
+			group = response1.body.group;
+			channel = response2.body.channel;
+			group1 = response3.body.group;
+		});
+
+		this.afterAll(async () => {
+			await Promise.all([
+				deleteRoom({ type: 'p', roomId: group._id }),
+				deleteRoom({ type: 'c', roomId: channel._id }),
+				deleteRoom({ type: 'p', roomId: group1._id }),
+			]);
+			await Promise.all([deleteUser(user1), deleteUser(user2)]);
+		});
+
+		it('should not add users from group which is not accessible by current user', async () => {
+			await request
+				.post(api('commands.run'))
+				.set(user2Credentials)
+				.send({
+					roomId: channel._id,
+					command: 'invite-all-from',
+					params: `#${group.name}`,
+					msg: {
+						_id: Random.id(),
+						rid: channel._id,
+						msg: `invite-all-from #${group.name}`,
+					},
+					triggerId: Random.id(),
+				})
+				.expect(200)
+				.expect(async (res) => {
+					expect(res.body).to.have.a.property('success', true);
+				});
+
+			await request
+				.get(api('channels.members'))
+				.query({ roomId: channel._id })
+				.set(user2Credentials)
+				.expect(200)
+				.expect((res) => {
+					const isUser1Added = res.body.members.some((member) => member.username === user1.username);
+					expect(isUser1Added).to.be.false;
+				});
+		});
+
+		it('should not add users to a room that is not accessible by the current user', async () => {
+			await request
+				.post(api('commands.run'))
+				.set(user1Credentials)
+				.send({
+					roomId: group1._id,
+					command: 'invite-all-from',
+					params: `#${group.name}`,
+					msg: {
+						_id: Random.id(),
+						rid: group1._id,
+						msg: `invite-all-from #${group.name}`,
+					},
+					triggerId: Random.id(),
+				})
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('error', 'unauthorized');
+				});
+		});
+
+		it('should add users from group which is accessible by current user', async () => {
+			await request
+				.post(api('groups.invite'))
+				.set(user1Credentials)
+				.send({
+					roomId: group._id,
+					userId: user2._id,
+				})
+				.expect(200);
+
+			await request
+				.post(api('commands.run'))
+				.set(user2Credentials)
+				.send({
+					roomId: channel._id,
+					command: 'invite-all-from',
+					params: `#${group.name}`,
+					msg: {
+						_id: Random.id(),
+						rid: channel._id,
+						msg: `invite-all-from #${group.name}`,
+					},
+					triggerId: Random.id(),
+				})
+				.expect(200)
+				.expect(async (res) => {
+					expect(res.body).to.have.a.property('success', true);
+				});
+
+			await request
+				.get(api('channels.members'))
+				.set(user2Credentials)
+				.query({ roomId: channel._id })
+				.expect(200)
+				.expect((res) => {
+					const isUser1Added = res.body.members.some((member) => member.username === user1.username);
+					expect(isUser1Added).to.be.true;
+				});
 		});
 	});
 });

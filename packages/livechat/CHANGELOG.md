@@ -39,6 +39,20 @@
 
   - @rocket.chat/ui-kit@0.35.0-rc.0
   - @rocket.chat/gazzodown@8.0.0-rc.0
+
+  </details>
+
+## 1.17.3
+
+### Patch Changes
+
+- ([#32683](https://github.com/RocketChat/Rocket.Chat/pull/32683) by [@dionisio-bot](https://github.com/dionisio-bot)) livechat `setDepartment` livechat api fixes:
+  - Changing department didn't reflect on the registration form in real time
+  - Changing the department mid conversation didn't transfer the chat
+  - Depending on the state of the department, it couldn't be set as default
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@7.0.3
   </details>
 
 ## 1.17.2

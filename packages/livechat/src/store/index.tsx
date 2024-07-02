@@ -113,7 +113,6 @@ export type StoreState = {
 	room?: { _id: string };
 	noMoreMessages?: boolean;
 	loading?: boolean;
-	department?: string;
 	lastReadMessageId?: any;
 	triggerAgent?: any;
 	queueInfo?: any;

@@ -3,7 +3,7 @@ import type { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import type { Options, Root } from '@rocket.chat/message-parser';
 import { expect } from 'chai';
 
-import { parseMessageQuoteAttachment } from '../../../../../../../client/lib/parseMessageTextToAstMarkdown';
+import { parseMessageAttachment } from '../../../../../../../client/lib/parseMessageTextToAstMarkdown';
 
 const parseOptions: Options = {
 	colors: true,
@@ -70,22 +70,20 @@ const quoteMessage = {
 	author_name: 'authorName',
 	author_link: 'link',
 	author_icon: 'icon',
+	message_link: 'http://localhost/any_link',
 	text: 'message **bold** _italic_ and ~strike~',
 	md: messageParserTokenMessage,
 };
 
-describe('parseMessageQuoteAttachment', () => {
+describe('parseMessageAttachment', () => {
 	it('should return md property populated if the quote is parsed', () => {
-		expect(parseMessageQuoteAttachment(quoteMessage, parseOptions, autoTranslateOptions).md).to.deep.equal(messageParserTokenMessage);
+		expect(parseMessageAttachment(quoteMessage, parseOptions, autoTranslateOptions).md).to.deep.equal(messageParserTokenMessage);
 	});
 
 	it('should return md property populated if the quote is not parsed', () => {
 		expect(
-			parseMessageQuoteAttachment(
-				{ ...quoteMessage, md: undefined } as unknown as MessageQuoteAttachment,
-				parseOptions,
-				autoTranslateOptions,
-			).md,
+			parseMessageAttachment({ ...quoteMessage, md: undefined } as unknown as MessageQuoteAttachment, parseOptions, autoTranslateOptions)
+				.md,
 		).to.deep.equal(messageParserTokenMessage);
 	});
 
@@ -115,15 +113,12 @@ describe('parseMessageQuoteAttachment', () => {
 			autoTranslateLanguage: 'en',
 		};
 		it('should return correct quote translated parsed md when translate is active', () => {
-			expect(parseMessageQuoteAttachment(translatedQuote, parseOptions, enabledAutoTranslatedOptions).md).to.deep.equal(
-				translatedMessageParsed,
-			);
+			expect(parseMessageAttachment(translatedQuote, parseOptions, enabledAutoTranslatedOptions).md).to.deep.equal(translatedMessageParsed);
 		});
 
 		it('should return text parsed md when translate is active and autoTranslateLanguage is undefined', () => {
 			expect(
-				parseMessageQuoteAttachment(translatedQuote, parseOptions, { ...enabledAutoTranslatedOptions, autoTranslateLanguage: undefined })
-					.md,
+				parseMessageAttachment(translatedQuote, parseOptions, { ...enabledAutoTranslatedOptions, autoTranslateLanguage: undefined }).md,
 			).to.deep.equal([
 				{
 					type: 'PARAGRAPH',
@@ -190,7 +185,7 @@ describe('parseMessageQuoteAttachment', () => {
 				],
 			};
 
-			expect(parseMessageQuoteAttachment(multipleQuotes, parseOptions, enabledAutoTranslatedOptions)).to.deep.equal(multipleQuotesParsed);
+			expect(parseMessageAttachment(multipleQuotes, parseOptions, enabledAutoTranslatedOptions)).to.deep.equal(multipleQuotesParsed);
 		});
 	});
 });
