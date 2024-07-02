@@ -46,6 +46,10 @@ export function methodCall(methodName) {
 	return api(`method.call/${methodName}`);
 }
 
+export function methodCallAnon(methodName) {
+	return api(`method.callAnon/${methodName}`);
+}
+
 export function log(res) {
 	console.log(res.req.path);
 	console.log({

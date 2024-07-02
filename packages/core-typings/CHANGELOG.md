@@ -1,5 +1,9 @@
 # @rocket.chat/core-typings
 
+## 6.10.0-rc.4
+
+## 6.10.0-rc.3
+
 ## 6.10.0-rc.2
 
 ## 6.10.0-rc.1
@@ -25,6 +29,8 @@
 
   - @rocket.chat/ui-kit@0.35.0-rc.0
   </details>
+
+## 6.9.3
 
 ## 6.9.2
 

@@ -1,5 +1,25 @@
 # @rocket.chat/ui-video-conf
 
+## 8.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.4
+  - @rocket.chat/ui-avatar@4.0.0-rc.4
+  </details>
+
+## 8.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.3
+  - @rocket.chat/ui-avatar@4.0.0-rc.3
+  </details>
+
 ## 8.0.0-rc.2
 
 ### Patch Changes
@@ -32,6 +52,15 @@
 
   - @rocket.chat/ui-contexts@8.0.0-rc.0
   - @rocket.chat/ui-avatar@4.0.0-rc.0
+
+## 7.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@7.0.3
+  - @rocket.chat/ui-avatar@3.0.3
   </details>
 
 ## 7.0.2

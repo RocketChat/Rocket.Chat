@@ -3,23 +3,11 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { e2e } from '../../../../app/e2e/client';
 import { fileUploadIsValidContentType } from '../../../../app/utils/client';
+import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import FileUploadModal from '../../../views/room/modals/FileUploadModal';
 import { imperativeModal } from '../../imperativeModal';
 import { prependReplies } from '../../utils/prependReplies';
 import type { ChatAPI } from '../ChatAPI';
-
-if ('serviceWorker' in navigator) {
-	navigator.serviceWorker
-		.register('/enc.js', {
-			scope: '/',
-		})
-		.then((reg) => {
-			if (reg.active) console.log('service worker installed');
-		})
-		.catch((err) => {
-			console.log(`registration failed: ${err}`);
-		});
-}
 
 const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
 	return new Promise((resolve) => {
@@ -150,7 +138,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 								attachments.push({
 									...attachment,
 									size: file.size,
-									// format: getFileExtension(file.name),
+									format: getFileExtension(file.name),
 								});
 							}
 

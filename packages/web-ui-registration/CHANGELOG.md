@@ -1,5 +1,23 @@
 # @rocket.chat/web-ui-registration
 
+## 8.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.4
+  </details>
+
+## 8.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.3
+  </details>
+
 ## 8.0.0-rc.2
 
 ### Patch Changes
@@ -29,6 +47,14 @@
 - <details><summary>Updated dependencies [4f72d62aa7]:</summary>
 
   - @rocket.chat/ui-contexts@8.0.0-rc.0
+
+## 7.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@7.0.3
   </details>
 
 ## 7.0.2

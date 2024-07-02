@@ -8509,8 +8509,8 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/apps-engine@npm:alpha":
-  version: 1.43.0-alpha.765
-  resolution: "@rocket.chat/apps-engine@npm:1.43.0-alpha.765"
+  version: 1.43.0-alpha.784
+  resolution: "@rocket.chat/apps-engine@npm:1.43.0-alpha.784"
   dependencies:
     "@msgpack/msgpack": 3.0.0-beta2
     adm-zip: ^0.5.9
@@ -8526,7 +8526,7 @@ __metadata:
     uuid: ~8.3.2
   peerDependencies:
     "@rocket.chat/ui-kit": "*"
-  checksum: 97fb5773c8d99e63e8c1d6f6002956d35b031cbe60d640d637b28a65ebbc37b89366e91f5c8bda254f634987a66fef37b70716c20d9a75bae86171447d477bb6
+  checksum: b86ec5cf809dc06658be0ae24b72b746f373bf83e7ee381e4fe83d7a5f4754359004cdf4d0f89723861bf4a3c7841d5f78bbe280ee863e2c833e64f73f16b124
   languageName: node
   linkType: hard
 
@@ -8967,10 +8967,10 @@ __metadata:
     "@rocket.chat/icons": "*"
     "@rocket.chat/prettier-config": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-avatar": 4.0.0-rc.1
-    "@rocket.chat/ui-contexts": 8.0.0-rc.1
+    "@rocket.chat/ui-avatar": 4.0.0-rc.3
+    "@rocket.chat/ui-contexts": 8.0.0-rc.3
     "@rocket.chat/ui-kit": 0.35.0-rc.0
-    "@rocket.chat/ui-video-conf": 8.0.0-rc.1
+    "@rocket.chat/ui-video-conf": 8.0.0-rc.3
     "@tanstack/react-query": "*"
     react: "*"
     react-dom: "*"
@@ -9059,8 +9059,8 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "*"
     "@rocket.chat/message-parser": 0.31.29
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-client": 8.0.0-rc.1
-    "@rocket.chat/ui-contexts": 8.0.0-rc.1
+    "@rocket.chat/ui-client": 8.0.0-rc.3
+    "@rocket.chat/ui-contexts": 8.0.0-rc.3
     katex: "*"
     react: "*"
   languageName: unknown
@@ -10278,7 +10278,7 @@ __metadata:
     typescript: ~5.3.3
   peerDependencies:
     "@rocket.chat/fuselage": "*"
-    "@rocket.chat/ui-contexts": 8.0.0-rc.1
+    "@rocket.chat/ui-contexts": 8.0.0-rc.3
     react: ~17.0.2
   languageName: unknown
   linkType: soft
@@ -10331,7 +10331,7 @@ __metadata:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/ui-contexts": 8.0.0-rc.1
+    "@rocket.chat/ui-contexts": 8.0.0-rc.3
     react: ~17.0.2
   languageName: unknown
   linkType: soft
@@ -10507,8 +10507,8 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-avatar": 4.0.0-rc.1
-    "@rocket.chat/ui-contexts": 8.0.0-rc.1
+    "@rocket.chat/ui-avatar": 4.0.0-rc.3
+    "@rocket.chat/ui-contexts": 8.0.0-rc.3
     react: ^17.0.2
     react-dom: ^17.0.2
   languageName: unknown
@@ -10598,7 +10598,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.2.1
-    "@rocket.chat/ui-contexts": 8.0.0-rc.1
+    "@rocket.chat/ui-contexts": 8.0.0-rc.3
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
