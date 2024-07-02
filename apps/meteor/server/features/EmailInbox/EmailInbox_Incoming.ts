@@ -40,21 +40,18 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 		return guest;
 	}
 
-	const userId = await LivechatTyped.registerGuest({
+	const livechatVisitor = await LivechatTyped.registerGuest({
 		token: Random.id(),
 		name: name || email,
 		email,
 		department,
 	});
 
-	const newGuest = await LivechatVisitors.findOneEnabledById(userId);
-	logger.debug(`Guest ${userId} for visitor ${email} created`);
-
-	if (newGuest) {
-		return newGuest;
+	if (!livechatVisitor) {
+		throw new Error('Error getting guest');
 	}
 
-	throw new Error('Error getting guest');
+	return livechatVisitor;
 }
 
 async function uploadAttachment(attachmentParam: Attachment, rid: string, visitorToken: string): Promise<Partial<FileAttachment>> {

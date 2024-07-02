@@ -7,6 +7,7 @@ import {
 	type IMessage,
 	type IOmnichannelRoom,
 	type SelectedAgent,
+	type OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
@@ -65,7 +66,13 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 };
 
 type queueManager = {
-	requestRoom: (params: {
+	requestRoom: <
+		E extends Record<string, unknown> & {
+			sla?: string;
+			customFields?: Record<string, unknown>;
+			source?: OmnichannelSourceType;
+		},
+	>(params: {
 		guest: ILivechatVisitor;
 		message: Pick<IMessage, 'rid' | 'msg'>;
 		roomInfo: {
@@ -73,13 +80,13 @@ type queueManager = {
 			[key: string]: unknown;
 		};
 		agent?: SelectedAgent;
-		extraData?: Record<string, unknown>;
+		extraData?: E;
 	}) => Promise<IOmnichannelRoom>;
 	unarchiveRoom: (archivedRoom?: IOmnichannelRoom) => Promise<IOmnichannelRoom>;
 };
 
 export const QueueManager: queueManager = {
-	async requestRoom({ guest, message, roomInfo, agent, extraData }) {
+	async requestRoom({ guest, message, roomInfo, agent, extraData: { customFields, ...extraData } = {} }) {
 		logger.debug(`Requesting a room for guest ${guest._id}`);
 		check(
 			message,
@@ -106,7 +113,12 @@ export const QueueManager: queueManager = {
 		const { rid } = message;
 		const name = (roomInfo?.fname as string) || guest.name || guest.username;
 
-		const room = await LivechatRooms.findOneById(await createLivechatRoom(rid, name, guest, roomInfo, extraData));
+		const room = await LivechatRooms.findOneById(
+			await createLivechatRoom(rid, name, guest, roomInfo, {
+				...(Boolean(customFields) && { customFields }),
+				...extraData,
+			}),
+		);
 		if (!room) {
 			logger.error(`Room for visitor ${guest._id} not found`);
 			throw new Error('room-not-found');

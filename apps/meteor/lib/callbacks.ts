@@ -21,6 +21,7 @@ import type {
 	UserStatus,
 	ILivechatDepartment,
 	MessageMention,
+	OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
 import type { FilterOperators } from 'mongodb';
 
@@ -199,7 +200,15 @@ type ChainedCallbackSignatures = {
 			options: { forwardingToDepartment?: { oldDepartmentId?: string; transferData?: any }; clientAction?: boolean };
 		},
 	) => Promise<(IOmnichannelRoom & { chatQueued: boolean }) | undefined>;
-	'livechat.beforeInquiry': (data: Pick<ILivechatInquiryRecord, 'source'>) => Pick<ILivechatInquiryRecord, 'source'>;
+	'livechat.beforeInquiry': (
+		data: Pick<ILivechatInquiryRecord, 'source'> & { sla?: string; priority?: string; [other: string]: unknown } & {
+			customFields?: Record<string, unknown>;
+			source?: OmnichannelSourceType;
+		},
+	) => Pick<ILivechatInquiryRecord, 'source'> & { sla?: string; priority?: string; [other: string]: unknown } & {
+		customFields?: Record<string, unknown>;
+		source?: OmnichannelSourceType;
+	};
 	'roomNameChanged': (room: IRoom) => void;
 	'roomTopicChanged': (room: IRoom) => void;
 	'roomAnnouncementChanged': (room: IRoom) => void;
@@ -223,7 +232,6 @@ export type Hook =
 	| 'beforeRemoveFromRoom'
 	| 'beforeValidateLogin'
 	| 'livechat.beforeForwardRoomToDepartment'
-	| 'livechat.beforeRoom'
 	| 'livechat.beforeRouteChat'
 	| 'livechat.chatQueued'
 	| 'livechat.checkAgentBeforeTakeInquiry'
