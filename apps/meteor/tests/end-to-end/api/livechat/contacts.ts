@@ -159,5 +159,100 @@ describe('LIVECHAT - contacts', () => {
 				expect(res.body.error).to.include('Invalid value for Custom Field 1 field');
 			});
 		});
+
+		describe('Fields Validation', () => {
+			it('should return an error if name is missing', async () => {
+				const res = await request
+					.post(api('omnichannel/contacts'))
+					.set(credentials)
+					.send({
+						emails: [faker.internet.email().toLowerCase()],
+						phones: [faker.phone.number()],
+					});
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error');
+				expect(res.body.error).to.be.equal("must have required property 'name' [invalid-params]");
+				expect(res.body.errorType).to.be.equal('invalid-params');
+			});
+
+			it('should return an error if emails is missing', async () => {
+				const res = await request
+					.post(api('omnichannel/contacts'))
+					.set(credentials)
+					.send({
+						name: faker.person.fullName(),
+						phones: [faker.phone.number()],
+					});
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error');
+				expect(res.body.error).to.be.equal("must have required property 'emails' [invalid-params]");
+				expect(res.body.errorType).to.be.equal('invalid-params');
+			});
+
+			it('should return an error if phones is missing', async () => {
+				const res = await request
+					.post(api('omnichannel/contacts'))
+					.set(credentials)
+					.send({
+						name: faker.person.fullName(),
+						emails: [faker.internet.email().toLowerCase()],
+					});
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error');
+				expect(res.body.error).to.be.equal("must have required property 'phones' [invalid-params]");
+				expect(res.body.errorType).to.be.equal('invalid-params');
+			});
+
+			it('should return an error if emails is not an array', async () => {
+				const res = await request
+					.post(api('omnichannel/contacts'))
+					.set(credentials)
+					.send({
+						name: faker.person.fullName(),
+						emails: 'invalid',
+						phones: [faker.phone.number()],
+					});
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error');
+				expect(res.body.error).to.be.equal('must be array [invalid-params]');
+				expect(res.body.errorType).to.be.equal('invalid-params');
+			});
+
+			it('should return an error if emails is not an array of strings', async () => {
+				const res = await request
+					.post(api('omnichannel/contacts'))
+					.set(credentials)
+					.send({
+						name: faker.person.fullName(),
+						emails: [{ invalid: true }],
+						phones: [faker.phone.number()],
+					});
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error');
+				expect(res.body.error).to.be.equal('must be string [invalid-params]');
+				expect(res.body.errorType).to.be.equal('invalid-params');
+			});
+
+			it('should return an error if phones is not an array of strings', async () => {
+				const res = await request
+					.post(api('omnichannel/contacts'))
+					.set(credentials)
+					.send({
+						name: faker.person.fullName(),
+						emails: [faker.internet.email().toLowerCase()],
+						phones: [{ invalid: true }],
+					});
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error');
+				expect(res.body.error).to.be.equal('must be string [invalid-params]');
+				expect(res.body.errorType).to.be.equal('invalid-params');
+			});
+		});
 	});
 });
