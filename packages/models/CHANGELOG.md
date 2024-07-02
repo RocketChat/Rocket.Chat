@@ -38,6 +38,14 @@
 - <details><summary>Updated dependencies [eaf2f11a6c, f75a2cb4bb, 4f72d62aa7]:</summary>
 
   - @rocket.chat/model-typings@0.5.0-rc.0
+
+## 0.0.42
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.4.4
   </details>
 
 ## 0.0.41

@@ -45,6 +45,14 @@
 
   - @rocket.chat/ui-kit@0.35.0-rc.0
   - @rocket.chat/core-typings@6.10.0-rc.0
+
+## 6.9.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.3
   </details>
 
 ## 6.9.2
