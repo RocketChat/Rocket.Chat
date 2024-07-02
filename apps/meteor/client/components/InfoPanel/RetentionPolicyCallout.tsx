@@ -4,6 +4,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { usePruneWarningMessage } from '../../hooks/usePruneWarningMessage';
+import { withErrorBoundary } from '../withErrorBoundary';
 
 const RetentionPolicyCallout = ({ room }: { room: IRoom }) => {
 	const message = usePruneWarningMessage(room);
@@ -18,4 +19,4 @@ const RetentionPolicyCallout = ({ room }: { room: IRoom }) => {
 	);
 };
 
-export default RetentionPolicyCallout;
+export default withErrorBoundary(RetentionPolicyCallout);
