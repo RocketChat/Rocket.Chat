@@ -89,7 +89,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'omnichannel/contacts',
-	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isPOSTOmnichannelContactsProps },
+	{ authRequired: true, permissionsRequired: ['create-livechat-contact'], validateParams: isPOSTOmnichannelContactsProps },
 	{
 		async post() {
 			const contactId = await createContact({ ...this.bodyParams, unknown: false });

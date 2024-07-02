@@ -13,11 +13,11 @@ describe('LIVECHAT - contacts', () => {
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
-		await updatePermission('view-l-room', ['admin']);
+		await updatePermission('create-livechat-contact', ['admin']);
 	});
 
 	after(async () => {
-		await restorePermissionToRoles('view-l-room');
+		await restorePermissionToRoles('create-livechat-contact');
 		await updateSetting('Livechat_enabled', false);
 	});
 
@@ -37,8 +37,8 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.contactId).to.be.an('string');
 		});
 
-		it("should return an error if user doesn't have view-l-room permission", async () => {
-			await removePermissionFromAllRoles('view-l-room');
+		it("should return an error if user doesn't have 'create-livechat-contact' permission", async () => {
+			await removePermissionFromAllRoles('create-livechat-contact');
 
 			const res = await request
 				.post(api('omnichannel/contacts'))
@@ -52,7 +52,7 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body).to.have.property('success', false);
 			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 
-			await restorePermissionToRoles('view-l-room');
+			await restorePermissionToRoles('create-livechat-contact');
 		});
 
 		it('should return an error if contact manager not exists', async () => {
