@@ -1,8 +1,8 @@
 import type { IIntegrationHistory, OutgoingIntegrationEvent, IIntegration, IMessage, AtLeast } from '@rocket.chat/core-typings';
 import { IntegrationHistory } from '@rocket.chat/models';
-import { Random } from '@rocket.chat/random';
 
 import { omit } from '../../../../lib/utils/omit';
+import { notifyOnIntegrationHistoryChangedById, notifyOnIntegrationHistoryChanged } from '../../../lib/server/lib/notifyListener';
 
 export const updateHistory = async ({
 	historyId,
@@ -77,7 +77,12 @@ export const updateHistory = async ({
 	};
 
 	if (historyId) {
-		await IntegrationHistory.updateOne({ _id: historyId }, { $set: history });
+		// Projecting just integration field to comply with existing listener behaviour
+		const integrationHistory = await IntegrationHistory.updateById(historyId, history, { projection: { 'integration._id': 1 } });
+		if (!integrationHistory) {
+			throw new Error('error-updating-integration-history');
+		}
+		void notifyOnIntegrationHistoryChanged(integrationHistory, 'updated', history);
 		return historyId;
 	}
 
@@ -86,11 +91,15 @@ export const updateHistory = async ({
 		throw new Error('error-invalid-integration');
 	}
 
-	history._createdAt = new Date();
+	// TODO: Had to force type cast here because of function's signature
+	// It would be easier if we separate into create and update functions
+	const { insertedId } = await IntegrationHistory.create(history as IIntegrationHistory);
 
-	const _id = Random.id();
+	if (!insertedId) {
+		throw new Error('error-creating-integration-history');
+	}
 
-	await IntegrationHistory.insertOne({ _id, ...history } as IIntegrationHistory);
+	void notifyOnIntegrationHistoryChangedById(insertedId, 'inserted');
 
-	return _id;
+	return insertedId;
 };

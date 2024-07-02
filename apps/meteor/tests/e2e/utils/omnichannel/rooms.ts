@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 
-import { BaseTest } from '../test';
+import type { BaseTest } from '../test';
 
 type UpdateRoomParams = { roomId: string; visitorId: string; tags: string[] };
 

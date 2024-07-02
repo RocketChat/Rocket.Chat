@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
-import { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
+import type { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 
 import { parseMeteorResponse } from '../parseMeteorResponse';
-import { BaseTest } from '../test';
+import type { BaseTest } from '../test';
 
 type CreateUnitParams = {
 	id?: string | null;

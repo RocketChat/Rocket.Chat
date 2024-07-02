@@ -1,4 +1,4 @@
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import type { BaseTest } from './test';
 
@@ -12,4 +12,4 @@ export const getUserInfo = async (api: BaseTest['api'], username: string): Promi
 	const data = await response.json();
 
 	return data.user;
-}
+};

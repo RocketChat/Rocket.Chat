@@ -9,7 +9,7 @@ export const useMessageDeletionIsAllowed = (rid: IRoom['_id'], file: IUpload, ui
 	const deletionIsEnabled = useSetting('Message_AllowDeleting');
 	const userHasPermissionToDeleteAny = usePermission('delete-message', rid);
 	const userHasPermissionToDeleteOwn = usePermission('delete-own-message');
-	const bypassBlockTimeLimit = usePermission('bypass-time-limit-edit-and-delete');
+	const bypassBlockTimeLimit = usePermission('bypass-time-limit-edit-and-delete', rid);
 	const blockDeleteInMinutes = useSetting<number>('Message_AllowDeleting_BlockDeleteInMinutes');
 
 	const isDeletionAllowed = useMemo(() => {

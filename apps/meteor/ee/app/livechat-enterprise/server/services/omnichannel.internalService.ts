@@ -1,11 +1,11 @@
 import { ServiceClassInternal, Message } from '@rocket.chat/core-services';
 import type { IOmnichannelEEService } from '@rocket.chat/core-services';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { IOmnichannelRoom, IUser, ILivechatInquiryRecord, IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, Subscriptions, LivechatInquiry } from '@rocket.chat/models';
 
-import { notifyOnRoomChangedById } from '../../../../../app/lib/server/lib/notifyListener';
+import { notifyOnLivechatInquiryChangedById, notifyOnRoomChangedById } from '../../../../../app/lib/server/lib/notifyListener';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
@@ -177,6 +177,13 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			LivechatInquiry.queueInquiryAndRemoveDefaultAgent(inquiryId),
 			RoutingManager.removeAllRoomSubscriptions(room),
 		]);
+
+		void notifyOnLivechatInquiryChangedById(inquiryId, 'updated', {
+			status: LivechatInquiryStatus.QUEUED,
+			queuedAt: new Date(),
+			takenAt: undefined,
+			defaultAgent: undefined,
+		});
 
 		await dispatchAgentDelegated(roomId);
 

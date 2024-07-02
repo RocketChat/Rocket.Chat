@@ -28,6 +28,6 @@ apps/meteor/server/startup/migrations @RocketChat/Architecture
 /apps/meteor/ee/app/canned-responses @RocketChat/omnichannel
 /apps/meteor/ee/app/livechat @RocketChat/omnichannel
 /apps/meteor/ee/app/livechat-enterprise @RocketChat/omnichannel
-/apps/meteor/ee/client/omnichannel @RocketChat/omnichannel
+/apps/meteor/client/omnichannel @RocketChat/omnichannel
 /apps/meteor/client/components/omnichannel @RocketChat/omnichannel
 /apps/meteor/client/components/voip @RocketChat/omnichannel

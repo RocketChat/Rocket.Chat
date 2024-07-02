@@ -1,6 +1,16 @@
 import type { IUpload } from '@rocket.chat/core-typings';
 import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
-import type { DeleteResult, IndexDescription, UpdateResult, Document, InsertOneResult, WithId, Filter } from 'mongodb';
+import type {
+	DeleteResult,
+	IndexDescription,
+	UpdateResult,
+	Document,
+	InsertOneResult,
+	WithId,
+	Filter,
+	FindOptions,
+	FindCursor,
+} from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -11,6 +21,7 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return [
 			{ key: { name: 1 }, sparse: true },
 			{ key: { rid: 1 }, sparse: true },
+			{ key: { expiresAt: 1 }, sparse: true },
 		];
 	}
 
@@ -61,12 +72,42 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 		return this.updateOne(filter, update);
 	}
 
+	confirmTemporaryFile(fileId: string, userId: string): Promise<Document | UpdateResult> | undefined {
+		if (!fileId) {
+			return;
+		}
+
+		const filter = {
+			_id: fileId,
+			userId,
+		};
+
+		const update: Filter<T> = {
+			$unset: {
+				expiresAt: 1,
+			},
+		};
+
+		return this.updateOne(filter, update);
+	}
+
 	async findOneByName(name: string): Promise<T | null> {
 		return this.findOne({ name });
 	}
 
 	async findOneByRoomId(rid: string): Promise<T | null> {
 		return this.findOne({ rid });
+	}
+
+	findExpiredTemporaryFiles(options?: FindOptions<T>): FindCursor<T> {
+		return this.find(
+			{
+				expiresAt: {
+					$lte: new Date(),
+				},
+			},
+			options,
+		);
 	}
 
 	async updateFileNameById(fileId: string, name: string): Promise<Document | UpdateResult> {

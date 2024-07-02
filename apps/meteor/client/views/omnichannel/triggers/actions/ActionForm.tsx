@@ -18,7 +18,7 @@ import React, { useCallback, useMemo } from 'react';
 import type { Control, UseFormTrigger } from 'react-hook-form';
 import { Controller, useWatch } from 'react-hook-form';
 
-import { useHasLicenseModule } from '../../../../../ee/client/hooks/useHasLicenseModule';
+import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import { type TriggersPayload } from '../EditTrigger';
 import { getActionFormFields } from '../utils';
 

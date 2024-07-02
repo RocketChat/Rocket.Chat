@@ -2,7 +2,7 @@ import { Box, FieldGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import type { ISettings } from '../../../../../../ee/client/apps/@types/IOrchestrator';
+import type { ISettings } from '../../../../../apps/@types/IOrchestrator';
 import AppSetting from './AppSetting';
 
 const AppSettings = ({ settings }: { settings: ISettings }) => {

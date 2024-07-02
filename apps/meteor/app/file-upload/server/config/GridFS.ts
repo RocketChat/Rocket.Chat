@@ -9,6 +9,7 @@ import { Logger } from '@rocket.chat/logger';
 import { UploadFS } from '../../../../server/ufs';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
+import { getContentDisposition } from './helper';
 
 const logger = new Logger('FileUpload');
 
@@ -161,7 +162,7 @@ new FileUploadClass({
 	async get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
 
-		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
+		res.setHeader('Content-Disposition', `${getContentDisposition(req)}; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
 		file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 		res.setHeader('Content-Type', file.type || 'application/octet-stream');
 		res.setHeader('Content-Length', file.size || 0);

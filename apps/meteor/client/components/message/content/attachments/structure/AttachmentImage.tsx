@@ -86,6 +86,7 @@ const AttachmentImage: FC<AttachmentImageProps> = ({ id, previewUrl, dataSrc, lo
 						alt=''
 						width={dimensions.width}
 						height={dimensions.height}
+						loading='lazy'
 					/>
 				</ImageBox>
 			</Box>

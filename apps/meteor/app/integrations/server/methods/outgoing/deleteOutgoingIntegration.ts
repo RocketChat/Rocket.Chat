@@ -41,6 +41,7 @@ export const deleteOutgoingIntegration = async (integrationId: string, userId: s
 	}
 
 	await Integrations.removeById(integrationId);
+	// Don't sending to IntegrationHistory listener since it don't waits for 'removed' events.
 	await IntegrationHistory.removeByIntegrationId(integrationId);
 	void notifyOnIntegrationChangedById(integrationId, 'removed');
 };

@@ -41,6 +41,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		// Don't sending to IntegrationHistory listener since it don't waits for 'removed' events.
 		await IntegrationHistory.removeByIntegrationId(integrationId);
 
 		notifications.streamIntegrationHistory.emit(integrationId, { type: 'removed', id: integrationId });

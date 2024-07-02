@@ -1,6 +1,8 @@
+import { Base64 } from '@rocket.chat/base64';
 import { useUserRoom, useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { e2e } from '../../../../../../app/e2e/client/rocketchat.e2e';
 import { useScrollableRecordList } from '../../../../../hooks/lists/useScrollableRecordList';
 import { useStreamUpdatesForMessageList } from '../../../../../hooks/lists/useStreamUpdatesForMessageList';
 import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
@@ -59,12 +61,32 @@ export const useFilesList = (
 				}),
 			});
 
+			const items = files.map((file) => ({
+				...file,
+				uploadedAt: file.uploadedAt ? new Date(file.uploadedAt) : undefined,
+				modifiedAt: file.modifiedAt ? new Date(file.modifiedAt) : undefined,
+			}));
+
+			for await (const file of items) {
+				if (file.rid && file.content) {
+					const e2eRoom = await e2e.getInstanceByRoomId(file.rid);
+					if (e2eRoom?.shouldConvertReceivedMessages()) {
+						const decrypted = await e2e.decryptFileContent(file);
+						const key = Base64.encode(
+							JSON.stringify({
+								...decrypted.encryption,
+								name: String.fromCharCode(...new TextEncoder().encode(decrypted.name)),
+								type: decrypted.type,
+							}),
+						);
+						decrypted.path = `/file-decrypt${decrypted.path}?key=${key}`;
+						Object.assign(file, decrypted);
+					}
+				}
+			}
+
 			return {
-				items: files.map((file) => ({
-					...file,
-					uploadedAt: file.uploadedAt ? new Date(file.uploadedAt) : undefined,
-					modifiedAt: file.modifiedAt ? new Date(file.modifiedAt) : undefined,
-				})),
+				items,
 				itemCount: total,
 			};
 		},

@@ -7,7 +7,7 @@ import type { ReactElement } from 'react';
 import React, { useMemo, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { useAppInfo } from '../hooks/useAppInfo';

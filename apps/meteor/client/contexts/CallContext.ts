@@ -3,7 +3,7 @@ import type { Device } from '@rocket.chat/ui-contexts';
 import { createContext, useContext, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
+import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 import type { VoIPUser } from '../lib/voip/VoIPUser';
 
 export type CallContextValue = CallContextDisabled | CallContextReady | CallContextError | CallContextEnabled;

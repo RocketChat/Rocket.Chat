@@ -50,7 +50,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const blockEditInMinutes = Number(settings.get('Message_AllowEditing_BlockEditInMinutes') as number | undefined);
-		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete');
+		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
 
 		if (!bypassBlockTimeLimit && blockEditInMinutes !== 0) {
 			if (originalMessage.ts) {

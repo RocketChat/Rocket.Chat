@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
@@ -43,13 +43,15 @@ test.describe('OC - Manual Selection', () => {
 	test.afterAll(async ({ api }) => {
 		await Promise.all([
 			agentB.page.close(),
-			...agents.map(agent => agent.delete()),
+			...agents.map((agent) => agent.delete()),
 			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
 		]);
 	});
 
 	test('OC - Manual Selection - Queue', async ({ page, api }) => {
-		const { data: { room } } = await createConversation(api);
+		const {
+			data: { room },
+		} = await createConversation(api);
 
 		await test.step('expect not be able to see queue when livechat is disabled', async () => {
 			await poOmnichannel.sidenav.switchOmnichannelStatus('offline');

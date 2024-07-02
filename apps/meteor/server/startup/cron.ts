@@ -6,6 +6,7 @@ import { npsCron } from '../cron/nps';
 import { oembedCron } from '../cron/oembed';
 import { startCron } from '../cron/start';
 import { statsCron } from '../cron/statistics';
+import { temporaryUploadCleanupCron } from '../cron/temporaryUploadsCleanup';
 import { userDataDownloadsCron } from '../cron/userDataDownloads';
 import { videoConferencesCron } from '../cron/videoConferences';
 
@@ -17,6 +18,7 @@ Meteor.defer(async () => {
 	await oembedCron();
 	await statsCron(logger);
 	await npsCron();
+	await temporaryUploadCleanupCron();
 	await federationCron();
 	await videoConferencesCron();
 	await userDataDownloadsCron();

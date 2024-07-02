@@ -52,7 +52,7 @@ test.describe.serial('message-composer', () => {
 
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
-		
+
 		await expect(poHomeChannel.composerToolbar.getByRole('button', { name: 'Emoji' })).not.toBeFocused();
 	});
 
@@ -63,10 +63,10 @@ test.describe.serial('message-composer', () => {
 		await page.keyboard.type('hello composer');
 		await page.keyboard.press('Control+A'); // on Windows and Linux
 		await page.keyboard.press('Meta+A'); // on macOS
-		await poHomeChannel.composerToolbar.getByRole('button', { name: 'Link' }).click()
+		await poHomeChannel.composerToolbar.getByRole('button', { name: 'Link' }).click();
 		await page.keyboard.type(url);
 		await page.keyboard.press('Enter');
-		
+
 		await expect(poHomeChannel.composer).toHaveValue(`[hello composer](${url})`);
 	});
 });

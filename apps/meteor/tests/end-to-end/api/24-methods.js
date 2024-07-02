@@ -3108,4 +3108,69 @@ describe('Meteor.methods', function () {
 			});
 		});
 	});
+
+	describe('[@saveSettings]', () => {
+		it('should return an error when trying to save a "NaN" value', () => {
+			request
+				.post(api('method.call/saveSettings'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '13',
+						method: 'saveSettings',
+						params: [[{ _id: 'Message_AllowEditing_BlockEditInMinutes', value: { $InfNaN: 0 } }]],
+					}),
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const parsedBody = JSON.parse(res.body.message);
+					expect(parsedBody).to.have.property('error');
+					expect(parsedBody.error).to.have.property('error', 'Invalid setting value NaN');
+				});
+		});
+
+		it('should return an error when trying to save a "Infinity" value', () => {
+			request
+				.post(api('method.call/saveSettings'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '13',
+						method: 'saveSettings',
+						params: [[{ _id: 'Message_AllowEditing_BlockEditInMinutes', value: { $InfNaN: 1 } }]],
+					}),
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const parsedBody = JSON.parse(res.body.message);
+					expect(parsedBody).to.have.property('error');
+					expect(parsedBody.error).to.have.property('error', 'Invalid setting value Infinity');
+				});
+		});
+
+		it('should return an error when trying to save a "-Infinity" value', () => {
+			request
+				.post(api('method.call/saveSettings'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '13',
+						method: 'saveSettings',
+						params: [[{ _id: 'Message_AllowEditing_BlockEditInMinutes', value: { $InfNaN: -1 } }]],
+					}),
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const parsedBody = JSON.parse(res.body.message);
+					expect(parsedBody).to.have.property('error');
+					expect(parsedBody.error).to.have.property('error', 'Invalid setting value -Infinity');
+				});
+		});
+	});
 });

@@ -1,6 +1,6 @@
 import type { IIntegrationHistory } from '@rocket.chat/core-typings';
 import type { IIntegrationHistoryModel } from '@rocket.chat/model-typings';
-import type { Db, IndexDescription } from 'mongodb';
+import type { Db, IndexDescription, InsertOneResult, FindOneAndUpdateOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -22,5 +22,18 @@ export class IntegrationHistoryRaw extends BaseRaw<IIntegrationHistory> implemen
 
 	findOneByIntegrationIdAndHistoryId(integrationId: string, historyId: string): Promise<IIntegrationHistory | null> {
 		return this.findOne({ 'integration._id': integrationId, '_id': historyId });
+	}
+
+	async create(integrationHistory: IIntegrationHistory): Promise<InsertOneResult<IIntegrationHistory>> {
+		return this.insertOne({ ...integrationHistory, _createdAt: new Date() });
+	}
+
+	async updateById(
+		_id: IIntegrationHistory['_id'],
+		data: Partial<IIntegrationHistory>,
+		options?: FindOneAndUpdateOptions,
+	): Promise<IIntegrationHistory | null> {
+		const response = await this.findOneAndUpdate({ _id }, { $set: data }, { returnDocument: 'after', ...options });
+		return response.value;
 	}
 }

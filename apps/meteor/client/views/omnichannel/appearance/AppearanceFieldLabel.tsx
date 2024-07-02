@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React from 'react';
 
-import { useHasLicenseModule } from '../../../../ee/client/hooks/useHasLicenseModule';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 type FieldLabelProps = ComponentProps<typeof BaseFieldLabel> & {
 	premium?: boolean;

@@ -81,7 +81,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 
 	// update last message
 	if (settings.get('Store_Last_Message') && (!room?.lastMessage || room.lastMessage._id === message._id)) {
-		const lastMessageNotDeleted = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(message.rid);
+		const lastMessageNotDeleted = await Messages.getLastVisibleUserMessageSentByRoomId(message.rid);
 		await Rooms.resetLastMessageById(message.rid, lastMessageNotDeleted, -1);
 	} else {
 		// decrease message count

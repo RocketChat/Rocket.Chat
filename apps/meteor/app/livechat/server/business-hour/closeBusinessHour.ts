@@ -3,6 +3,7 @@ import { Users } from '@rocket.chat/models';
 import { makeFunction } from '@rocket.chat/patch-injection';
 
 import { businessHourLogger } from '../lib/logger';
+import { makeAgentsUnavailableBasedOnBusinessHour } from './Helper';
 import { getAgentIdsForBusinessHour } from './getAgentIdsForBusinessHour';
 
 export const closeBusinessHourByAgentIds = async (
@@ -16,7 +17,8 @@ export const closeBusinessHourByAgentIds = async (
 		top10AgentIds: agentIds.slice(0, 10),
 	});
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHourId);
-	await Users.updateLivechatStatusBasedOnBusinessHours();
+
+	await makeAgentsUnavailableBasedOnBusinessHour();
 };
 
 export const closeBusinessHour = makeFunction(async (businessHour: Pick<ILivechatBusinessHour, '_id' | 'type'>): Promise<void> => {

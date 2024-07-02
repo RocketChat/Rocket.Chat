@@ -8,7 +8,7 @@ const BusinessHoursMultiplePage = () => {
 	const t = useTranslation();
 	const router = useRouter();
 
-	const BusinessHoursTable = useMemo(() => lazy(() => import('../../../../ee/client/omnichannel/businessHours/BusinessHoursTable')), []);
+	const BusinessHoursTable = useMemo(() => lazy(() => import('../../../omnichannel/businessHours/BusinessHoursTable')), []);
 
 	return (
 		<Page>

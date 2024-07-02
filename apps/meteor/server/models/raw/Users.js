@@ -968,9 +968,9 @@ export class UsersRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	makeAgentsWithinBusinessHourAvailable(agentIds) {
+	findOnlineButNotAvailableAgents(userIds) {
 		const query = {
-			...(agentIds && { _id: { $in: agentIds } }),
+			...(userIds && { _id: { $in: userIds } }),
 			roles: 'livechat-agent',
 			// Exclude away users
 			status: 'online',
@@ -978,13 +978,7 @@ export class UsersRaw extends BaseRaw {
 			statusLivechat: 'not-available',
 		};
 
-		const update = {
-			$set: {
-				statusLivechat: 'available',
-			},
-		};
-
-		return this.updateMany(query, update);
+		return this.find(query);
 	}
 
 	removeBusinessHourByAgentIds(agentIds = [], businessHourId) {
@@ -1044,24 +1038,21 @@ export class UsersRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	updateLivechatStatusBasedOnBusinessHours(userIds = []) {
-		const query = {
-			$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
-			$and: [{ roles: 'livechat-agent' }, { roles: { $ne: 'bot' } }],
-			// exclude deactivated users
-			active: true,
-			// Avoid unnecessary updates
-			statusLivechat: 'available',
-			...(Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } }),
-		};
-
-		const update = {
-			$set: {
-				statusLivechat: 'not-available',
+	findAgentsAvailableWithoutBusinessHours(userIds = []) {
+		return this.find(
+			{
+				$or: [{ openBusinessHours: { $exists: false } }, { openBusinessHours: { $size: 0 } }],
+				$and: [{ roles: 'livechat-agent' }, { roles: { $ne: 'bot' } }],
+				// exclude deactivated users
+				active: true,
+				// Avoid unnecessary updates
+				statusLivechat: 'available',
+				...(Array.isArray(userIds) && userIds.length > 0 && { _id: { $in: userIds } }),
 			},
-		};
-
-		return this.updateMany(query, update);
+			{
+				projection: { openBusinessHours: 1 },
+			},
+		);
 	}
 
 	setLivechatStatusActiveBasedOnBusinessHours(userId) {
@@ -3073,5 +3064,18 @@ export class UsersRaw extends BaseRaw {
 
 	countByRole(role) {
 		return this.col.countDocuments({ roles: role });
+	}
+
+	updateLivechatStatusByAgentIds(userIds, status) {
+		return this.updateMany(
+			{
+				_id: { $in: userIds },
+			},
+			{
+				$set: {
+					statusLivechat: status,
+				},
+			},
+		);
 	}
 }

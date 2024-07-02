@@ -69,8 +69,17 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			return null;
 		}
 
-		return <GenericMenu title={t('More')} key='menu' data-qa-id='menu' sections={menuOptions} placement='bottom-start' />;
-	}, [menuOptions, t]);
+		return (
+			<GenericMenu
+				title={t('More')}
+				key='menu'
+				data-qa-id='menu'
+				sections={menuOptions}
+				placement='bottom-start'
+				callbackAction={onClose}
+			/>
+		);
+	}, [menuOptions, onClose, t]);
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { content, icon, onClick }]: any): ReactElement => (

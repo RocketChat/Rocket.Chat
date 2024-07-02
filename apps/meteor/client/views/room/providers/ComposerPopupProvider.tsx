@@ -7,11 +7,11 @@ import React, { useMemo } from 'react';
 import type { ReactNode } from 'react';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
+import { CannedResponse } from '../../../../app/canned-responses/client/collections/CannedResponse';
 import { emoji } from '../../../../app/emoji/client';
 import { Subscriptions } from '../../../../app/models/client';
 import { usersFromRoomMessages } from '../../../../app/ui-message/client/popup/messagePopupConfig';
 import { slashCommands } from '../../../../app/utils/client';
-import { CannedResponse } from '../../../../ee/app/canned-responses/client/collections/CannedResponse';
 import ComposerBoxPopupCannedResponse from '../composer/ComposerBoxPopupCannedResponse';
 import type { ComposerBoxPopupEmojiProps } from '../composer/ComposerBoxPopupEmoji';
 import ComposerBoxPopupEmoji from '../composer/ComposerBoxPopupEmoji';
@@ -25,7 +25,7 @@ import type { ComposerPopupContextValue } from '../contexts/ComposerPopupContext
 import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/ComposerPopupContext';
 
 const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: IRoom }) => {
-	const { _id: rid } = room;
+	const { _id: rid, encrypted: isRoomEncrypted } = room;
 	const userSpotlight = useMethod('spotlight');
 	const suggestionsCount = useSetting<number>('Number_of_users_autocomplete_suggestions');
 	const cannedResponseEnabled = useSetting<boolean>('Canned_Responses_Enable');
@@ -33,6 +33,9 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 	const isOmnichannel = isOmnichannelRoom(room);
 	const useEmoji = useUserPreference('useEmojis');
 	const t = useTranslation();
+	const e2eEnabled = useSetting<boolean>('E2E_Enable');
+	const unencryptedMessagesAllowed = useSetting<boolean>('E2E_Allow_Unencrypted_Messages');
+	const encrypted = isRoomEncrypted && e2eEnabled && !unencryptedMessagesAllowed;
 
 	const call = useMethod('getSlashCommandPreviews');
 	const value: ComposerPopupContextValue = useMemo(() => {
@@ -278,6 +281,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				trigger: '/',
 				suffix: ' ',
 				triggerAnywhere: false,
+				disabled: encrypted,
 				renderItem: ({ item }) => <ComposerBoxPopupSlashCommand {...item} />,
 				getItemsFromLocal: async (filter: string) => {
 					return Object.keys(slashCommands.commands)
@@ -288,6 +292,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 								params: item.params && t.has(item.params) ? t(item.params) : item.params ?? '',
 								description: item.description && t.has(item.description) ? t(item.description) : item.description,
 								permission: item.permission,
+								...(encrypted && { disabled: encrypted }),
 							};
 						})
 						.filter((command) => {
@@ -360,7 +365,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				},
 			}),
 		].filter(Boolean);
-	}, [t, cannedResponseEnabled, isOmnichannel, recentEmojis, suggestionsCount, userSpotlight, rid, call, useEmoji]);
+	}, [t, cannedResponseEnabled, isOmnichannel, recentEmojis, suggestionsCount, userSpotlight, rid, call, useEmoji, encrypted]);
 
 	return <ComposerPopupContext.Provider value={value} children={children} />;
 };
