@@ -7,10 +7,10 @@ import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import { queryClient } from '../../../lib/queryClient';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
-import ContextualBar from './ContextualBar';
 import CallTab from './calls/CallTab';
 import ChatTab from './chats/ChatTab';
 import ContactTab from './contacts/ContactTab';
+import ContextualBarRouter from './contextualBar/ContextualBarRouter';
 
 const DEFAULT_TAB = 'contacts';
 
@@ -65,7 +65,7 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 			</Page>
 			{bar && (
 				<ContextualbarDialog>
-					<ContextualBar chatReload={chatReload} />
+					<ContextualBarRouter chatReload={chatReload} />
 				</ContextualbarDialog>
 			)}
 		</Page>

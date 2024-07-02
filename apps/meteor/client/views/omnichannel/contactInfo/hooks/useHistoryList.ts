@@ -2,10 +2,10 @@ import type { VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
-import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
-import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
-import { RecordList } from '../../../lib/lists/RecordList';
-import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
+import { useScrollableRecordList } from '../../../../hooks/lists/useScrollableRecordList';
+import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
+import { RecordList } from '../../../../lib/lists/RecordList';
+import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
 
 type HistoryListOptions = {
 	filter: string;

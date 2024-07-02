@@ -10,12 +10,12 @@ import {
 	ContextualbarTitle,
 	ContextualbarAction,
 	ContextualbarClose,
-} from '../../../components/Contextualbar';
-import Chat from './chats/Chat';
-import ChatInfoDirectory from './chats/contextualBar/ChatInfoDirectory';
-import { RoomEditWithData } from './chats/contextualBar/RoomEdit';
-import { FormSkeleton } from './components';
-import { useOmnichannelRoomInfo } from './hooks/useOmnichannelRoomInfo';
+} from '../../../../components/Contextualbar';
+import Chat from '../chats/Chat';
+import ChatInfoDirectory from '../chats/contextualBar/ChatInfoDirectory';
+import { RoomEditWithData } from '../chats/contextualBar/RoomEdit';
+import { FormSkeleton } from '../components';
+import { useOmnichannelRoomInfo } from '../hooks/useOmnichannelRoomInfo';
 
 const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => {
 	const directoryRoute = useRoute('omnichannel-directory');

@@ -16,27 +16,32 @@ import {
 	MessageSystemName,
 	MessageSystemBody,
 	MessageSystemTimestamp,
+	Bubble,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React, { memo } from 'react';
 
-import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
-import MessageContentBody from '../../../../components/message/MessageContentBody';
-import StatusIndicators from '../../../../components/message/StatusIndicators';
-import Attachments from '../../../../components/message/content/Attachments';
-import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
-import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useFormatTime } from '../../../../hooks/useFormatTime';
-import { useUserCard } from '../../../room/contexts/UserCardContext';
+import { getUserDisplayName } from '../../../../../../lib/getUserDisplayName';
+import MessageContentBody from '../../../../../components/message/MessageContentBody';
+import StatusIndicators from '../../../../../components/message/StatusIndicators';
+import Attachments from '../../../../../components/message/content/Attachments';
+import UiKitMessageBlock from '../../../../../components/message/uikit/UiKitMessageBlock';
+import { useFormatDate } from '../../../../../hooks/useFormatDate';
+import { useFormatTime } from '../../../../../hooks/useFormatTime';
+import { useUserCard } from '../../../../room/contexts/UserCardContext';
 
-const ContactHistoryMessage: FC<{
+const ContactHistoryMessage = ({
+	message,
+	sequential,
+	isNewDay,
+	showUserAvatar,
+}: {
 	message: IMessage;
 	sequential: boolean;
 	isNewDay: boolean;
 	showUserAvatar: boolean;
-}> = ({ message, sequential, isNewDay, showUserAvatar }) => {
+}) => {
 	const t = useTranslation();
 	const { triggerProps, openUserCard } = useUserCard();
 
@@ -78,7 +83,13 @@ const ContactHistoryMessage: FC<{
 
 	return (
 		<>
-			{isNewDay && <MessageDivider>{format(message.ts)}</MessageDivider>}
+			{isNewDay && (
+				<MessageDivider>
+					<Bubble small secondary>
+						{format(message.ts)}
+					</Bubble>
+				</MessageDivider>
+			)}
 			<MessageTemplate isPending={message.temp} sequential={sequential} role='listitem' data-qa='chat-history-message'>
 				<MessageLeftContainer>
 					{!sequential && message.u.username && showUserAvatar && (
@@ -94,7 +105,6 @@ const ContactHistoryMessage: FC<{
 					)}
 					{sequential && <StatusIndicators message={message} />}
 				</MessageLeftContainer>
-
 				<MessageContainer>
 					{!sequential && (
 						<MessageHeaderTemplate>

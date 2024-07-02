@@ -4,8 +4,8 @@ import type { RoomCoordinator } from '../coordinator';
 declare module '@rocket.chat/ui-contexts' {
 	export interface IRouterPaths {
 		live: {
-			pathname: `/live/${string}${`/${string}` | ''}${`/${string}` | ''}`;
-			pattern: '/live/:id/:tab?/:context?';
+			pathname: `/live/${string}${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/live/:id/:tab?/:context?/:contextId?';
 		};
 	}
 }
@@ -15,7 +15,7 @@ export function getLivechatRoomType(_coordinator: RoomCoordinator): IRoomTypeCon
 		identifier: 'l',
 		route: {
 			name: 'live',
-			path: '/live/:id/:tab?/:context?',
+			path: '/live/:id/:tab?/:context?/:contextId?',
 			link({ rid, tab }): Record<string, string> {
 				return { id: rid || '', tab: tab ?? 'room-info' };
 			},

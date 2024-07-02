@@ -4,12 +4,12 @@ import { useRoute, useRouteParameter, useSearchParameter, useTranslation } from 
 import type { FC } from 'react';
 import React, { useMemo } from 'react';
 
-import { Contextualbar } from '../../../components/Contextualbar';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import Call from './calls/Call';
-import { VoipInfo } from './calls/contextualBar/VoipInfo';
-import { FormSkeleton } from './components/FormSkeleton';
+import { Contextualbar } from '../../../../components/Contextualbar';
+import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../../hooks/useEndpointData';
+import Call from '../calls/Call';
+import { VoipInfo } from '../calls/contextualBar/VoipInfo';
+import { FormSkeleton } from '../components/FormSkeleton';
 
 const CallsContextualBarDirectory: FC = () => {
 	const directoryRoute = useRoute('omnichannel-directory');
@@ -50,7 +50,8 @@ const CallsContextualBarDirectory: FC = () => {
 		return <Box mbs={16}>{t('Room_not_found')}</Box>;
 	}
 
-	const room = data.room as unknown as IVoipRoom; // TODO Check why types are incompatible even though the endpoint returns an IVoipRooms
+	// TODO Check why types are incompatible even though the endpoint returns an IVoipRooms
+	const room = data.room as unknown as IVoipRoom;
 
 	return <Contextualbar>{bar === 'info' && <VoipInfo room={room} onClickClose={handleClose} />}</Contextualbar>;
 };

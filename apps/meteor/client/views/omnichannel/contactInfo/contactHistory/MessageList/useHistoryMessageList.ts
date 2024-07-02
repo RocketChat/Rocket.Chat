@@ -1,9 +1,9 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
-import { useScrollableMessageList } from '../../../../hooks/lists/useScrollableMessageList';
-import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
-import { MessageList } from '../../../../lib/lists/MessageList';
+import { useScrollableMessageList } from '../../../../../hooks/lists/useScrollableMessageList';
+import { useComponentDidUpdate } from '../../../../../hooks/useComponentDidUpdate';
+import { MessageList } from '../../../../../lib/lists/MessageList';
 
 type HistoryMessageListOptions = {
 	filter: string;
