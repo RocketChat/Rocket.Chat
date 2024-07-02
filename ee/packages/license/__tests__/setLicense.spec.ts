@@ -37,11 +37,11 @@ describe('License set license procedures', () => {
 		it('should throw an error if the license is expired', async () => {
 			const license = await getReadyLicenseManager();
 
-			const mocked = await new MockedLicenseBuilder();
+			const mocked = new MockedLicenseBuilder();
 			const token = await mocked.withExpiredDate().sign();
 
 			await license.setLicense(token);
-			await expect(license.hasValidLicense()).toBe(false);
+			expect(license.hasValidLicense()).toBe(false);
 		});
 
 		describe('license that is not not started yet is applied', () => {
@@ -52,19 +52,19 @@ describe('License set license procedures', () => {
 				const token = await mocked.withNotStartedDate().sign();
 
 				await license.setLicense(token);
-				await expect(license.hasValidLicense()).toBe(false);
+				expect(license.hasValidLicense()).toBe(false);
 			});
 
 			it('should be allowed to set the same license again if the license is not started yet', async () => {
 				const license = await getReadyLicenseManager();
 
-				const mocked = await new MockedLicenseBuilder();
-				const as = await mocked.resetValidPeriods().withNotStartedDate();
+				const mocked = new MockedLicenseBuilder();
+				const as = mocked.resetValidPeriods().withNotStartedDate();
 				const token = await as.sign();
 
 				await license.setLicense(token);
 
-				await expect(license.hasValidLicense()).toBe(false);
+				expect(license.hasValidLicense()).toBe(false);
 
 				// 5 minutes in the future
 
@@ -79,7 +79,7 @@ describe('License set license procedures', () => {
 
 				jest.useRealTimers();
 
-				await expect(license.hasValidLicense()).toBe(true);
+				expect(license.hasValidLicense()).toBe(true);
 			});
 		});
 	});
@@ -95,10 +95,10 @@ describe('License set license procedures', () => {
 		const license = await getReadyLicenseManager();
 
 		await expect(license.setLicense(VALID_LICENSE)).resolves.toBe(true);
-		await expect(license.hasValidLicense()).toBe(true);
+		expect(license.hasValidLicense()).toBe(true);
 
 		await expect(license.setLicense('invalid')).rejects.toThrow(InvalidLicenseError);
-		await expect(license.hasValidLicense()).toBe(true);
+		expect(license.hasValidLicense()).toBe(true);
 	});
 
 	describe('Pending cases', () => {
@@ -115,14 +115,14 @@ describe('License set license procedures', () => {
 
 			await expect(license.setLicense(VALID_LICENSE)).rejects.toThrow(NotReadyForValidation);
 
-			await expect(license.hasValidLicense()).toBe(false);
+			expect(license.hasValidLicense()).toBe(false);
 		});
 
 		it('should return a valid license if the license is ready for validation', async () => {
 			const license = await getReadyLicenseManager();
 
 			await expect(license.setLicense(VALID_LICENSE)).resolves.toBe(true);
-			await expect(license.hasValidLicense()).toBe(true);
+			expect(license.hasValidLicense()).toBe(true);
 		});
 	});
 
@@ -132,24 +132,24 @@ describe('License set license procedures', () => {
 			const token = await new MockedLicenseBuilder().sign();
 
 			await expect(license.setLicense(token)).resolves.toBe(true);
-			await expect(license.hasValidLicense()).toBe(true);
+			expect(license.hasValidLicense()).toBe(true);
 		});
 
 		it('should accept new licenses', async () => {
 			const license = await getReadyLicenseManager();
-			const mocked = await new MockedLicenseBuilder();
+			const mocked = new MockedLicenseBuilder();
 			const oldToken = await mocked.sign();
 
 			const newToken = await mocked.withGratedModules(['livechat-enterprise']).sign();
 
 			await expect(license.setLicense(oldToken)).resolves.toBe(true);
-			await expect(license.hasValidLicense()).toBe(true);
+			expect(license.hasValidLicense()).toBe(true);
 
-			await expect(license.hasModule('livechat-enterprise')).toBe(false);
+			expect(license.hasModule('livechat-enterprise')).toBe(false);
 
 			await expect(license.setLicense(newToken)).resolves.toBe(true);
-			await expect(license.hasValidLicense()).toBe(true);
-			await expect(license.hasModule('livechat-enterprise')).toBe(true);
+			expect(license.hasValidLicense()).toBe(true);
+			expect(license.hasModule('livechat-enterprise')).toBe(true);
 		});
 
 		it('should call a validated event after set a valid license', async () => {
@@ -157,7 +157,7 @@ describe('License set license procedures', () => {
 			const validateCallback = jest.fn();
 			license.onValidateLicense(validateCallback);
 			await expect(license.setLicense(VALID_LICENSE)).resolves.toBe(true);
-			await expect(license.hasValidLicense()).toBe(true);
+			expect(license.hasValidLicense()).toBe(true);
 			expect(validateCallback).toBeCalledTimes(1);
 		});
 
@@ -167,7 +167,7 @@ describe('License set license procedures', () => {
 					const invalidationCallback = jest.fn();
 
 					const licenseManager = await getReadyLicenseManager();
-					const mocked = await new MockedLicenseBuilder();
+					const mocked = new MockedLicenseBuilder();
 					const oldToken = await mocked
 						.withLimits('activeUsers', [
 							{
@@ -191,12 +191,12 @@ describe('License set license procedures', () => {
 					licenseManager.setLicenseLimitCounter('activeUsers', () => 5);
 
 					await expect(licenseManager.setLicense(oldToken)).resolves.toBe(true);
-					await expect(licenseManager.hasValidLicense()).toBe(true);
+					expect(licenseManager.hasValidLicense()).toBe(true);
 
 					await expect(licenseManager.setLicense(newToken)).resolves.toBe(true);
-					await expect(licenseManager.hasValidLicense()).toBe(false);
+					expect(licenseManager.hasValidLicense()).toBe(false);
 
-					await expect(invalidationCallback).toBeCalledTimes(1);
+					expect(invalidationCallback).toBeCalledTimes(1);
 				});
 			});
 		});
