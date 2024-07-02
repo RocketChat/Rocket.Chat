@@ -4,6 +4,7 @@ import { before, after, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
+import { createAgent } from '../../../data/livechat/rooms';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser } from '../../../data/users.helper';
 
@@ -86,6 +87,24 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error');
 			expect(res.body.error).to.be.equal('The contact manager must have the role "livechat-agent" [error-invalid-contact-manager]');
+		});
+
+		it('should be able to create a new contact with a contact manager', async () => {
+			const livechatAgent = await createAgent();
+
+			const res = await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({
+					name: faker.person.fullName(),
+					emails: [faker.internet.email().toLowerCase()],
+					phones: [faker.phone.number()],
+					contactManager: livechatAgent._id,
+				});
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('contactId');
+			expect(res.body.contactId).to.be.an('string');
 		});
 
 		describe('Custom Fields', () => {
