@@ -106,6 +106,9 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 									key: encryptedFile.key,
 									iv: encryptedFile.iv,
 								},
+								hashes: {
+									sha256: encryptedFile.hash,
+								},
 							};
 
 							if (/^image\/.+/.test(file.type)) {
@@ -166,6 +169,9 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 							encryption: {
 								key: encryptedFile.key,
 								iv: encryptedFile.iv,
+							},
+							hashes: {
+								sha256: encryptedFile.hash,
 							},
 						};
 
