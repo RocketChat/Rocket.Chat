@@ -23,6 +23,8 @@ import { canEnableApp } from '../../app/license/server/canEnableApp';
 import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
 import { AppRealLogStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 
+import './signals.ts';
+
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
 }
