@@ -138,7 +138,7 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.include('Invalid value for Custom Field 1 field');
+				expect(res.body.error).to.be.equal('Invalid value for Custom Field 1 field');
 			});
 
 			it('should return an error for invalid custom field value', async () => {
@@ -156,7 +156,7 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.include('Invalid value for Custom Field 1 field');
+				expect(res.body.error).to.be.equal('Invalid value for Custom Field 1 field');
 			});
 		});
 
