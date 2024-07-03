@@ -77,7 +77,8 @@ export const sendMessage = async (
 			const originalMessage = await chat.data.findMessageByID(chat.currentEditing.mid);
 
 			if (
-				originalMessage?.attachments &&
+				originalMessage?.t === 'e2e' &&
+				originalMessage.attachments &&
 				originalMessage.attachments.length > 0 &&
 				originalMessage.attachments[0].description !== undefined
 			) {
