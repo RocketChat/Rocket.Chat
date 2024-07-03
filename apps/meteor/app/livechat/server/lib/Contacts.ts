@@ -176,12 +176,12 @@ export async function createContact(params: CreateContactParams): Promise<string
 	const { name, emails, phones, customFields = {}, contactManager, channels, unknown } = params;
 
 	if (contactManager) {
-		const contactManagerUser = await Users.findOneById(contactManager);
+		const contactManagerUser = await Users.findOneById(contactManager, { projection: { roles: 1 } });
 		if (!contactManagerUser) {
-			throw new Meteor.Error('error-contact-manager-not-found', `No user found with id ${contactManager}`);
+			throw new Error('error-contact-manager-not-found');
 		}
 		if (!contactManagerUser.roles || !Array.isArray(contactManagerUser.roles) || !contactManagerUser.roles.includes('livechat-agent')) {
-			throw new Meteor.Error('error-invalid-contact-manager', 'The contact manager must have the role "livechat-agent"');
+			throw new Error('error-invalid-contact-manager');
 		}
 	}
 

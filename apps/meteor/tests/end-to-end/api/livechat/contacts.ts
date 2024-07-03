@@ -68,7 +68,7 @@ describe('LIVECHAT - contacts', () => {
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error');
-			expect(res.body.error).to.be.equal('No user found with id invalid [error-contact-manager-not-found]');
+			expect(res.body.error).to.be.equal('error-contact-manager-not-found');
 		});
 
 		it('should return an error if contact manager is not a livechat-agent', async () => {
@@ -86,7 +86,7 @@ describe('LIVECHAT - contacts', () => {
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error');
-			expect(res.body.error).to.be.equal('The contact manager must have the role "livechat-agent" [error-invalid-contact-manager]');
+			expect(res.body.error).to.be.equal('error-invalid-contact-manager');
 		});
 
 		it('should be able to create a new contact with a contact manager', async () => {
