@@ -77,19 +77,11 @@ function ChatInfoDirectory({ id, route = undefined, room }) {
 			return dispatchToastMessage({ type: 'error', message: t('Not_authorized') });
 		}
 
-		routePath.push(
-			route
-				? {
-						tab: 'room-info',
-						context: 'edit',
-						id,
-				  }
-				: {
-						page: 'chats',
-						id,
-						bar: 'edit',
-				  },
-		);
+		routePath.push({
+			tab: route ? 'room-info' : 'chats',
+			context: 'edit',
+			id,
+		});
 	});
 
 	return (

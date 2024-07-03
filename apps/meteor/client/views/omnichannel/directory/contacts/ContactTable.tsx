@@ -51,17 +51,17 @@ function ContactTable(): ReactElement {
 
 	const onButtonNewClick = useMutableCallback(() =>
 		directoryRoute.push({
-			page: 'contacts',
-			bar: 'new',
+			tab: 'contacts',
+			context: 'new',
 		}),
 	);
 
 	const onRowClick = useMutableCallback(
 		(id) => (): void =>
 			directoryRoute.push({
-				page: 'contacts',
 				id,
-				bar: 'info',
+				tab: 'contacts',
+				context: 'info',
 			}),
 	);
 

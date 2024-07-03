@@ -1,7 +1,6 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, useSearchParameter, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React, { useMemo } from 'react';
 
 import { Contextualbar } from '../../../components/Contextualbar';
@@ -11,17 +10,17 @@ import Call from './calls/Call';
 import { VoipInfo } from './calls/contextualBar/VoipInfo';
 import { FormSkeleton } from './components/FormSkeleton';
 
-const CallsContextualBarDirectory: FC = () => {
-	const directoryRoute = useRoute('omnichannel-directory');
-
-	const bar = useRouteParameter('bar') || 'info';
-	const id = useRouteParameter('id');
-	const token = useSearchParameter('token');
-
+const CallsContextualBarDirectory = () => {
 	const t = useTranslation();
 
+	const id = useRouteParameter('id');
+	const token = useSearchParameter('token');
+	const context = useRouteParameter('context');
+
+	const directoryRoute = useRoute('omnichannel-directory');
+
 	const handleClose = (): void => {
-		directoryRoute.push({ page: 'calls' });
+		directoryRoute.push({ tab: 'calls' });
 	};
 
 	const query = useMemo(
@@ -34,7 +33,7 @@ const CallsContextualBarDirectory: FC = () => {
 
 	const { value: data, phase: state, error } = useEndpointData(`/v1/voip/room`, { params: query });
 
-	if (bar === 'view' && id) {
+	if (context === 'view' && id) {
 		return <Call rid={id} />;
 	}
 
@@ -52,7 +51,7 @@ const CallsContextualBarDirectory: FC = () => {
 
 	const room = data.room as unknown as IVoipRoom; // TODO Check why types are incompatible even though the endpoint returns an IVoipRooms
 
-	return <Contextualbar>{bar === 'info' && <VoipInfo room={room} onClickClose={handleClose} />}</Contextualbar>;
+	return <Contextualbar>{context === 'info' && <VoipInfo room={room} onClickClose={handleClose} />}</Contextualbar>;
 };
 
 export default CallsContextualBarDirectory;
