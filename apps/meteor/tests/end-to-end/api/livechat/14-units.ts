@@ -458,32 +458,11 @@ import { IS_EE } from '../../../e2e/config/constants';
 	};
 
 	describe('[POST] livechat/department', () => {
-		let departmentId: string;
 		let monitor1: Awaited<ReturnType<typeof createUser>>;
 		let monitor1Credentials: Awaited<ReturnType<typeof login>>;
 		let monitor2: Awaited<ReturnType<typeof createUser>>;
 		let monitor2Credentials: Awaited<ReturnType<typeof login>>;
 		let unit: IOmnichannelBusinessUnit;
-
-		const createDepartmentInUnit = (userCredentials: Credentials, departmentName: string, unitId: string) => {
-			return request
-				.post(api('livechat/department'))
-				.set(userCredentials)
-				.send({
-					department: { name: departmentName, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
-					departmentUnit: { _id: unitId },
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department').that.is.an('object');
-					expect(res.body.department).to.have.property('name', departmentName);
-					expect(res.body.department).to.have.property('type', 'd');
-					expect(res.body.department).to.have.property('_id');
-					departmentId = res.body.department._id;
-				});
-		};
 
 		before(async () => {
 			monitor1 = await createUser();
@@ -514,32 +493,28 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 
 		it('should fail creating a department into an existing unit that a monitor does not supervise', async () => {
-			const departmentName = 'Test-Department-Unit2';
+			const department = await createDepartment(undefined, undefined, undefined, undefined, { _id: unit._id }, monitor2Credentials);
 
-			await createDepartmentInUnit(monitor2Credentials, departmentName, unit._id);
 			await testDepartmentsInUnit(unit._id, unit.name, 0);
-			await testDepartmentAncestors(departmentId, departmentName);
-			await deleteDepartment(departmentId);
+			await testDepartmentAncestors(department._id, department.name);
+			await deleteDepartment(department._id);
 		});
 
 		it('should succesfully create a department into an existing unit as a livechat manager', async () => {
-			const departmentName = 'Test-Department-Unit';
+			const department = await createDepartment(undefined, undefined, undefined, undefined, { _id: unit._id });
 
-			await createDepartmentInUnit(credentials, departmentName, unit._id);
 			await testDepartmentsInUnit(unit._id, unit.name, 1);
-			await testDepartmentAncestors(departmentId, departmentName, unit._id);
-			await deleteDepartment(departmentId);
+			await testDepartmentAncestors(department._id, department.name, unit._id);
+			await deleteDepartment(department.name);
 		});
 
 		it('should succesfully create a department into an existing unit that a monitor supervises', async () => {
-			const departmentName = 'Test-Department-Unit3';
-
-			await createDepartmentInUnit(monitor1Credentials, departmentName, unit._id);
+			const department = await createDepartment(undefined, undefined, undefined, undefined, { _id: unit._id }, monitor1Credentials);
 
 			// Deleting a department currently does not decrease its unit's counter. We must adjust this check when this is fixed
 			await testDepartmentsInUnit(unit._id, unit.name, 2);
-			await testDepartmentAncestors(departmentId, departmentName, unit._id);
-			await deleteDepartment(departmentId);
+			await testDepartmentAncestors(department._id, department.name, unit._id);
+			await deleteDepartment(department._id);
 		});
 	});
 
