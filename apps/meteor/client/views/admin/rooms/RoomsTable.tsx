@@ -135,7 +135,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.rooms?.map((room) => (
-								<RoomRow key={room._id} room={{ ...room, ts: room.ts ? new Date(room.ts) : undefined }} />
+								<RoomRow key={room._id} room={room} />
 							))}
 						</GenericTableBody>
 					</GenericTable>
