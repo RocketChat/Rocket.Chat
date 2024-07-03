@@ -201,7 +201,33 @@ export class AppLivechatBridge extends LivechatBridge {
 			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
 		};
 
-		return LivechatTyped.registerGuest(registerData);
+		const livechatVisitor = await LivechatTyped.registerGuest(registerData);
+
+		if (!livechatVisitor) {
+			throw new Error('Invalid visitor, cannot create');
+		}
+
+		return livechatVisitor._id;
+	}
+
+	protected async createAndReturnVisitor(visitor: IVisitor, appId: string): Promise<IVisitor | undefined> {
+		this.orch.debugLog(`The App ${appId} is creating a livechat visitor.`);
+
+		const registerData = {
+			department: visitor.department,
+			username: visitor.username,
+			name: visitor.name,
+			token: visitor.token,
+			email: '',
+			connectionData: undefined,
+			id: visitor.id,
+			...(visitor.phone?.length && { phone: { number: visitor.phone[0].phoneNumber } }),
+			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
+		};
+
+		const livechatVisitor = await LivechatTyped.registerGuest(registerData);
+
+		return this.orch.getConverters()?.get('visitors').convertVisitor(livechatVisitor);
 	}
 
 	protected async transferVisitor(visitor: IVisitor, transferData: ILivechatTransferData, appId: string): Promise<boolean> {
