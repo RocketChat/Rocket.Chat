@@ -1892,7 +1892,7 @@ class LivechatClass {
 		departmentUnit?: { _id?: string },
 	) {
 		check(_id, Match.Maybe(String));
-		if (departmentUnit && !(departmentUnit._id === undefined || typeof departmentUnit._id === 'string')) {
+		if (departmentUnit?._id !== undefined && typeof departmentUnit._id !== 'string') {
 			throw new Meteor.Error('error-invalid-department-unit', 'Invalid department unit id provided', {
 				method: 'livechat:saveDepartment',
 			});
