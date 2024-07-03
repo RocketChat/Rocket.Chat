@@ -1,9 +1,9 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import { useModal, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, ComponentProps, ReactElement, ReactNode } from 'react';
-import React, { useEffect } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import type { RequiredModalProps } from './withDoNotAskAgain';
 import { withDoNotAskAgain } from './withDoNotAskAgain';
@@ -58,7 +58,7 @@ const renderIcon = (icon: GenericModalProps['icon'], variant: VariantType): Reac
 	return icon;
 };
 
-const GenericModal: FC<GenericModalProps> = ({
+const GenericModal = ({
 	variant = 'info',
 	children,
 	cancelText,
@@ -74,16 +74,34 @@ const GenericModal: FC<GenericModalProps> = ({
 	wrapperFunction,
 	annotation,
 	...props
-}) => {
+}: GenericModalProps) => {
 	const t = useTranslation();
 	const genericModalId = useUniqueId();
-	const { onDismissModal } = useModal();
+
+	const dismissedRef = useRef(true);
+
+	const handleConfirm = useEffectEvent(() => {
+		dismissedRef.current = false;
+		onConfirm?.();
+	});
+
+	const handleCancel = useEffectEvent(() => {
+		dismissedRef.current = false;
+		onCancel?.();
+	});
+
+	const handleCloseButtonClick = useEffectEvent(() => {
+		dismissedRef.current = true;
+		onClose?.();
+	});
 
 	useEffect(() => {
-		if (onClose) {
-			return onDismissModal(onClose);
-		}
-	}, [onClose, onDismissModal]);
+		if (!dismissedRef.current) return;
+
+		return () => {
+			onClose?.();
+		};
+	}, [onClose]);
 
 	return (
 		<Modal aria-labelledby={`${genericModalId}-title`} wrapperFunction={wrapperFunction} {...props}>
@@ -93,7 +111,7 @@ const GenericModal: FC<GenericModalProps> = ({
 					{tagline && <Modal.Tagline>{tagline}</Modal.Tagline>}
 					<Modal.Title id={`${genericModalId}-title`}>{title ?? t('Are_you_sure')}</Modal.Title>
 				</Modal.HeaderText>
-				<Modal.Close aria-label={t('Close')} onClick={onClose} />
+				<Modal.Close aria-label={t('Close')} onClick={handleCloseButtonClick} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>{children}</Modal.Content>
 			<Modal.Footer justifyContent={dontAskAgain ? 'space-between' : 'end'}>
@@ -101,7 +119,7 @@ const GenericModal: FC<GenericModalProps> = ({
 				{annotation && !dontAskAgain && <Modal.FooterAnnotation>{annotation}</Modal.FooterAnnotation>}
 				<Modal.FooterControllers>
 					{onCancel && (
-						<Button secondary onClick={onCancel}>
+						<Button secondary onClick={handleCancel}>
 							{cancelText ?? t('Cancel')}
 						</Button>
 					)}
@@ -111,7 +129,7 @@ const GenericModal: FC<GenericModalProps> = ({
 						</Button>
 					)}
 					{!wrapperFunction && onConfirm && (
-						<Button {...getButtonProps(variant)} onClick={onConfirm} disabled={confirmDisabled}>
+						<Button {...getButtonProps(variant)} onClick={handleConfirm} disabled={confirmDisabled}>
 							{confirmText ?? t('Ok')}
 						</Button>
 					)}

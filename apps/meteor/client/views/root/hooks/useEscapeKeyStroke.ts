@@ -31,7 +31,7 @@ export const useEscapeKeyStroke = () => {
 				component: GenericModal,
 				props: {
 					children: t('Are_you_sure_you_want_to_clear_all_unread_messages'),
-					variant: 'warning',
+					variant: 'warning' as const,
 					title: t('Clear_all_unreads_question'),
 					confirmText: t('Yes_clear_all'),
 					onClose: imperativeModal.close,
