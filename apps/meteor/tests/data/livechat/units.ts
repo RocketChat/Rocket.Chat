@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 
-import { methodCall, credentials, request } from '../api-data';
+import { methodCall, credentials, request, api } from '../api-data';
 import type { DummyResponse } from './utils';
 
 export const createMonitor = async (username: string): Promise<{ _id: string; username: string }> => {
@@ -76,6 +76,20 @@ export const deleteUnit = async (unit: IOmnichannelBusinessUnit): Promise<IOmnic
 					return reject(err);
 				}
 				resolve(JSON.parse(res.body.message).result);
+			});
+	});
+};
+
+export const getUnit = (unitId: string): Promise<IOmnichannelBusinessUnit> => {
+	return new Promise((resolve, reject) => {
+		void request
+			.get(api(`livechat/units/${unitId}`))
+			.set(credentials)
+			.end((err: Error, res: DummyResponse<IOmnichannelBusinessUnit, 'not-wrapped'>) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body);
 			});
 	});
 };
