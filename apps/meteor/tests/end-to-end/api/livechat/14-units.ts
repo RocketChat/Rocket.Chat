@@ -1,7 +1,7 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, after, describe, it, afterEach } from 'mocha';
+import { before, after, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
 import { deleteDepartment } from '../../../data/livechat/department';
@@ -497,12 +497,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 		after(async () => Promise.all([deleteUser(monitor1), deleteUser(monitor2), deleteUnit(unit)]));
 
-		afterEach(() => {
-			if (departmentId) {
-				return deleteDepartment(departmentId);
-			}
-		});
-
 		it('should fail creating department when providing an invalid property in the department unit object', () => {
 			return request
 				.post(api('livechat/department'))
@@ -525,6 +519,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await createDepartmentInUnit(monitor2Credentials, departmentName, unit._id);
 			await testDepartmentsInUnit(unit._id, unit.name, 0);
 			await testDepartmentAncestors(departmentId, departmentName);
+			await deleteDepartment(departmentId);
 		});
 
 		it('should succesfully create a department into an existing unit as a livechat manager', async () => {
@@ -533,6 +528,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await createDepartmentInUnit(credentials, departmentName, unit._id);
 			await testDepartmentsInUnit(unit._id, unit.name, 1);
 			await testDepartmentAncestors(departmentId, departmentName, unit._id);
+			await deleteDepartment(departmentId);
 		});
 
 		it('should succesfully create a department into an existing unit that a monitor supervises', async () => {
@@ -543,6 +539,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			// Deleting a department currently does not decrease its unit's counter. We must adjust this check when this is fixed
 			await testDepartmentsInUnit(unit._id, unit.name, 2);
 			await testDepartmentAncestors(departmentId, departmentName, unit._id);
+			await deleteDepartment(departmentId);
 		});
 	});
 
