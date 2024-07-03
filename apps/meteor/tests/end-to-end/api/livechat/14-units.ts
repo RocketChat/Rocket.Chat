@@ -5,7 +5,7 @@ import { before, after, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
 import { deleteDepartment } from '../../../data/livechat/department';
-import { createDepartment } from '../../../data/livechat/rooms';
+import { createDepartment, updateDepartment } from '../../../data/livechat/rooms';
 import { createMonitor, createUnit, deleteUnit } from '../../../data/livechat/units';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
@@ -526,25 +526,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 		let unit: IOmnichannelBusinessUnit;
 		let department: ILivechatDepartment;
 
-		const updateDepartment = (userCredentials: Credentials, departmentId: string, updatedName: string, unitId?: string) => {
-			return request
-				.put(api(`livechat/department/${departmentId}`))
-				.set(userCredentials)
-				.send({
-					department: { name: updatedName, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
-					departmentUnit: { _id: unitId },
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('department').that.is.an('object');
-					expect(res.body.department).to.have.property('name', updatedName);
-					expect(res.body.department).to.have.property('type', 'd');
-					expect(res.body.department).to.have.property('_id', departmentId);
-				});
-		};
-
 		before(async () => {
 			monitor1 = await createUser();
 			monitor2 = await createUser();
@@ -595,7 +576,16 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should succesfully add an existing department to a unit as a livechat manager', async () => {
 			const updatedName = 'updated-department-name';
 
-			await updateDepartment(credentials, department._id, updatedName, unit._id);
+			const updatedDepartment = await updateDepartment({
+				userCredentials: credentials,
+				departmentId: department._id,
+				name: updatedName,
+				departmentUnit: { _id: unit._id },
+			});
+			expect(updatedDepartment).to.have.property('name', updatedName);
+			expect(updatedDepartment).to.have.property('type', 'd');
+			expect(updatedDepartment).to.have.property('_id', department._id);
+
 			await testDepartmentsInUnit(unit._id, unit.name, 1);
 			await testDepartmentAncestors(department._id, updatedName, unit._id);
 		});
@@ -603,7 +593,16 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should succesfully remove an existing department from a unit as a livechat manager', async () => {
 			const updatedName = 'updated-department-name';
 
-			await updateDepartment(credentials, department._id, updatedName);
+			const updatedDepartment = await updateDepartment({
+				userCredentials: credentials,
+				departmentId: department._id,
+				name: updatedName,
+				departmentUnit: {},
+			});
+			expect(updatedDepartment).to.have.property('name', updatedName);
+			expect(updatedDepartment).to.have.property('type', 'd');
+			expect(updatedDepartment).to.have.property('_id', department._id);
+
 			await testDepartmentsInUnit(unit._id, unit.name, 0);
 			await testDepartmentAncestors(department._id, updatedName, null);
 		});
@@ -611,7 +610,16 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should fail adding a department into an existing unit that a monitor does not supervise', async () => {
 			const updatedName = 'updated-department-name2';
 
-			await updateDepartment(monitor2Credentials, department._id, updatedName, unit._id);
+			const updatedDepartment = await updateDepartment({
+				userCredentials: monitor2Credentials,
+				departmentId: department._id,
+				name: updatedName,
+				departmentUnit: { _id: unit._id },
+			});
+			expect(updatedDepartment).to.have.property('name', updatedName);
+			expect(updatedDepartment).to.have.property('type', 'd');
+			expect(updatedDepartment).to.have.property('_id', department._id);
+
 			await testDepartmentsInUnit(unit._id, unit.name, 0);
 			await testDepartmentAncestors(department._id, updatedName, null);
 		});
@@ -619,7 +627,16 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should succesfully add a department into an existing unit that a monitor supervises', async () => {
 			const updatedName = 'updated-department-name3';
 
-			await updateDepartment(monitor1Credentials, department._id, updatedName, unit._id);
+			const updatedDepartment = await updateDepartment({
+				userCredentials: monitor1Credentials,
+				departmentId: department._id,
+				name: updatedName,
+				departmentUnit: { _id: unit._id },
+			});
+			expect(updatedDepartment).to.have.property('name', updatedName);
+			expect(updatedDepartment).to.have.property('type', 'd');
+			expect(updatedDepartment).to.have.property('_id', department._id);
+
 			await testDepartmentsInUnit(unit._id, unit.name, 1);
 			await testDepartmentAncestors(department._id, updatedName, unit._id);
 		});
@@ -627,7 +644,16 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should fail removing a department from a unit that a monitor does not supervise', async () => {
 			const updatedName = 'updated-department-name4';
 
-			await updateDepartment(monitor2Credentials, department._id, updatedName);
+			const updatedDepartment = await updateDepartment({
+				userCredentials: monitor2Credentials,
+				departmentId: department._id,
+				name: updatedName,
+				departmentUnit: {},
+			});
+			expect(updatedDepartment).to.have.property('name', updatedName);
+			expect(updatedDepartment).to.have.property('type', 'd');
+			expect(updatedDepartment).to.have.property('_id', department._id);
+
 			await testDepartmentsInUnit(unit._id, unit.name, 1);
 			await testDepartmentAncestors(department._id, updatedName, unit._id);
 		});
@@ -635,7 +661,16 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should succesfully remove a department from a unit that a monitor supervises', async () => {
 			const updatedName = 'updated-department-name5';
 
-			await updateDepartment(monitor1Credentials, department._id, updatedName);
+			const updatedDepartment = await updateDepartment({
+				userCredentials: monitor1Credentials,
+				departmentId: department._id,
+				name: updatedName,
+				departmentUnit: {},
+			});
+			expect(updatedDepartment).to.have.property('name', updatedName);
+			expect(updatedDepartment).to.have.property('type', 'd');
+			expect(updatedDepartment).to.have.property('_id', department._id);
+
 			await testDepartmentsInUnit(unit._id, unit.name, 0);
 			await testDepartmentAncestors(department._id, updatedName, null);
 		});
