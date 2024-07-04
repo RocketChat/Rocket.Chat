@@ -61,7 +61,7 @@ function ContactTable(): ReactElement {
 			directoryRoute.push({
 				id,
 				tab: 'contacts',
-				context: 'info',
+				context: 'details',
 			}),
 	);
 
