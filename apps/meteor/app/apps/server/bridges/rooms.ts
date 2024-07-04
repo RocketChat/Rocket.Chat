@@ -217,20 +217,9 @@ export class AppRoomBridge extends RoomBridge {
 			throw new Error('roomId was not provided.');
 		}
 
-		const room = await Rooms.findOneById(roomId);
-		if (!roomId || !room) {
-			throw new Error('A room must exist to update.');
-		}
-
-		for await (const username of usernames) {
-			const member = await Users.findOneByUsername(username, {});
-
-			if (!member) {
-				continue;
-			}
-
-			await removeUserFromRoom(room._id, member);
-		}
+		// not sure what the limit should be here, but we have to limit it
+		const members = await Users.findUsersByUsernames(usernames, { limit: 50 }).toArray();
+		await Promise.all(members.map((user) => removeUserFromRoom(roomId, user)));
 	}
 
 	protected getMessages(
