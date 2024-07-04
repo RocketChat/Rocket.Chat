@@ -92,6 +92,19 @@ describe('hooks/manageDepartmentUnit', () => {
 		expect(livechatUnitStub.incrementDepartmentsCount.notCalled).to.be.true;
 	});
 
+	it('should not perform any operation if user is an admin/manager but an invalid unit is provided', async () => {
+		livechatDepartmentStub.findOneById.resolves({ _id: 'department-id', ancestors: ['unit-id'], parentId: 'unit-id' });
+		livechatUnitStub.findOneById.resolves(undefined);
+		hasAnyRoleStub.resolves(true);
+		getUnitsFromUserStub.resolves(undefined);
+
+		await manageDepartmentUnit({ userId: 'user-id', departmentId: 'department-id', unitId: 'new-unit-id' });
+		expect(livechatDepartmentStub.addDepartmentToUnit.notCalled).to.be.true;
+		expect(livechatDepartmentStub.removeDepartmentFromUnit.notCalled).to.be.true;
+		expect(livechatUnitStub.decrementDepartmentsCount.notCalled).to.be.true;
+		expect(livechatUnitStub.incrementDepartmentsCount.notCalled).to.be.true;
+	});
+
 	it('should remove department from its current unit if user is an admin/manager', async () => {
 		livechatDepartmentStub.findOneById.resolves({ _id: 'department-id', ancestors: ['unit-id'], parentId: 'unit-id' });
 		hasAnyRoleStub.resolves(true);
@@ -106,6 +119,7 @@ describe('hooks/manageDepartmentUnit', () => {
 
 	it('should add department to a unit if user is an admin/manager', async () => {
 		livechatDepartmentStub.findOneById.resolves({ _id: 'department-id' });
+		livechatUnitStub.findOneById.resolves({ _id: 'unit-id' });
 		hasAnyRoleStub.resolves(true);
 		getUnitsFromUserStub.resolves(undefined);
 
@@ -118,13 +132,14 @@ describe('hooks/manageDepartmentUnit', () => {
 
 	it('should move department to a new unit if user is an admin/manager', async () => {
 		livechatDepartmentStub.findOneById.resolves({ _id: 'department-id', ancestors: ['unit-id'], parentId: 'unit-id' });
+		livechatUnitStub.findOneById.resolves({ _id: 'new-unit-id' });
 		hasAnyRoleStub.resolves(true);
 		getUnitsFromUserStub.resolves(undefined);
 
 		await manageDepartmentUnit({ userId: 'user-id', departmentId: 'department-id', unitId: 'new-unit-id' });
 		expect(livechatDepartmentStub.addDepartmentToUnit.calledOnceWith('department-id', 'new-unit-id', ['new-unit-id'])).to.be.true;
 		expect(livechatUnitStub.incrementDepartmentsCount.calledOnceWith('new-unit-id')).to.be.true;
-		expect(livechatDepartmentStub.removeDepartmentFromUnit.calledOnceWith('department-id')).to.be.true;
+		expect(livechatDepartmentStub.removeDepartmentFromUnit.notCalled).to.be.true;
 		expect(livechatUnitStub.decrementDepartmentsCount.calledOnceWith('unit-id')).to.be.true;
 	});
 
@@ -142,6 +157,7 @@ describe('hooks/manageDepartmentUnit', () => {
 
 	it('should add department to a unit if user is a monitor that supervises the new unit', async () => {
 		livechatDepartmentStub.findOneById.resolves({ _id: 'department-id' });
+		livechatUnitStub.findOneById.resolves({ _id: 'unit-id' });
 		hasAnyRoleStub.resolves(false);
 		getUnitsFromUserStub.resolves(['unit-id']);
 
@@ -154,13 +170,14 @@ describe('hooks/manageDepartmentUnit', () => {
 
 	it('should move department to a new unit if user is a monitor that supervises the current and new units', async () => {
 		livechatDepartmentStub.findOneById.resolves({ _id: 'department-id', ancestors: ['unit-id'], parentId: 'unit-id' });
+		livechatUnitStub.findOneById.resolves({ _id: 'unit-id' });
 		hasAnyRoleStub.resolves(false);
-		getUnitsFromUserStub.resolves(['unit-id', 'new-unit']);
+		getUnitsFromUserStub.resolves(['unit-id', 'new-unit-id']);
 
 		await manageDepartmentUnit({ userId: 'user-id', departmentId: 'department-id', unitId: 'new-unit-id' });
 		expect(livechatDepartmentStub.addDepartmentToUnit.calledOnceWith('department-id', 'new-unit-id', ['new-unit-id'])).to.be.true;
 		expect(livechatUnitStub.incrementDepartmentsCount.calledOnceWith('new-unit-id')).to.be.true;
-		expect(livechatDepartmentStub.removeDepartmentFromUnit.calledOnceWith('department-id')).to.be.true;
+		expect(livechatDepartmentStub.removeDepartmentFromUnit.notCalled).to.be.true;
 		expect(livechatUnitStub.decrementDepartmentsCount.calledOnceWith('unit-id')).to.be.true;
 	});
 });
