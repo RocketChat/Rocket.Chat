@@ -43,8 +43,8 @@ const ChatTable = () => {
 
 	const onRowClick = useMutableCallback((id) =>
 		directoryRoute.push({
-			page: 'chats',
-			bar: 'info',
+			tab: 'chats',
+			context: 'info',
 			id,
 		}),
 	);

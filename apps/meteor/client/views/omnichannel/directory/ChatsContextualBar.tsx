@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React from 'react';
 
 import {
@@ -17,29 +16,23 @@ import { RoomEditWithData } from './chats/contextualBar/RoomEdit';
 import { FormSkeleton } from './components';
 import { useOmnichannelRoomInfo } from './hooks/useOmnichannelRoomInfo';
 
-const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => {
-	const directoryRoute = useRoute('omnichannel-directory');
-
-	const bar = useRouteParameter('bar') || 'info';
-	const id = useRouteParameter('id') || '';
-
+const ChatsContextualBar = ({ chatReload }: { chatReload?: () => void }) => {
 	const t = useTranslation();
 
-	const openInRoom = (): void => {
-		id && directoryRoute.push({ page: 'chats', id, bar: 'view' });
-	};
+	const directoryRoute = useRoute('omnichannel-directory');
 
-	const handleChatsContextualbarCloseButtonClick = (): void => {
-		directoryRoute.push({ page: 'chats' });
-	};
+	const context = useRouteParameter('context');
+	const id = useRouteParameter('id') || '';
 
-	const handleChatsContextualbarBackButtonClick = (): void => {
-		id && directoryRoute.push({ page: 'chats', id, bar: 'info' });
-	};
+	const openInRoom = () => id && directoryRoute.push({ tab: 'chats', id, context: 'view' });
+
+	const handleClose = () => directoryRoute.push({ tab: 'chats' });
+
+	const handleCancel = () => id && directoryRoute.push({ tab: 'chats', id, context: 'info' });
 
 	const { data: room, isLoading, isError, refetch: reloadInfo } = useOmnichannelRoomInfo(id);
 
-	if (bar === 'view' && id) {
+	if (context === 'view' && id) {
 		return <Chat rid={id} />;
 	}
 
@@ -58,25 +51,23 @@ const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => 
 	return (
 		<Contextualbar>
 			<ContextualbarHeader expanded>
-				{bar === 'info' && (
+				{context === 'info' && (
 					<>
 						<ContextualbarIcon name='info-circled' />
 						<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
 						<ContextualbarAction title={t('View_full_conversation')} name='new-window' onClick={openInRoom} />
 					</>
 				)}
-				{bar === 'edit' && (
+				{context === 'edit' && (
 					<>
 						<ContextualbarIcon name='pencil' />
 						<ContextualbarTitle>{t('edit-room')}</ContextualbarTitle>
 					</>
 				)}
-				<ContextualbarClose onClick={handleChatsContextualbarCloseButtonClick} />
+				<ContextualbarClose onClick={handleClose} />
 			</ContextualbarHeader>
-			{bar === 'info' && <ChatInfoDirectory id={id} room={room} />}
-			{bar === 'edit' && (
-				<RoomEditWithData id={id} reload={chatReload} reloadInfo={reloadInfo} onClose={handleChatsContextualbarBackButtonClick} />
-			)}
+			{context === 'info' && <ChatInfoDirectory id={id} room={room} />}
+			{context === 'edit' && id && <RoomEditWithData id={id} reload={chatReload} reloadInfo={reloadInfo} onClose={handleCancel} />}
 		</Contextualbar>
 	);
 };
