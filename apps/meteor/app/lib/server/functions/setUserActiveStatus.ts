@@ -11,7 +11,7 @@ import { settings } from '../../../settings/server';
 import {
 	notifyOnRoomChangedById,
 	notifyOnRoomChangedByUserDM,
-	notifyOnSubscriptionChangedByUserIdAndRoomType,
+	notifySubscriptionsOnUserArchived,
 	notifyOnUserChange,
 } from '../lib/notifyListener';
 import { closeOmnichannelConversations } from './closeOmnichannelConversations';
@@ -110,7 +110,7 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 	if (user.username) {
 		const setArchivedResponse = await Subscriptions.setArchivedByUsername(user.username, !active);
 		if (setArchivedResponse.modifiedCount) {
-			void notifyOnSubscriptionChangedByUserIdAndRoomType(user._id, 'd');
+			void notifySubscriptionsOnUserArchived(user._id, 'd');
 		}
 	}
 

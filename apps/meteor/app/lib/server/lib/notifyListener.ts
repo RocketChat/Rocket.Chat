@@ -632,6 +632,22 @@ export async function notifyOnSubscriptionChangedByAutoTranslateAndUserId(
 	}
 }
 
+export async function notifySubscriptionsOnUserArchived(
+	uid: ISubscription['u']['_id'],
+	t: ISubscription['t'],
+	clientAction: ClientAction = 'updated',
+): Promise<void> {
+	if (!dbWatchersDisabled) {
+		return;
+	}
+
+	const subscriptions = Subscriptions.findByUserIdAndRoomType(uid, t, { projection: subscriptionFields });
+
+	for await (const subscription of subscriptions) {
+		void api.broadcast('watch.subscriptions', { clientAction, subscription });
+	}
+}
+
 export async function notifyOnSubscriptionChangedByUserIdAndRoomType(
 	uid: ISubscription['u']['_id'],
 	t: ISubscription['t'],
