@@ -95,13 +95,13 @@ const GenericModal = ({
 		onClose?.();
 	});
 
-	useEffect(() => {
-		if (!dismissedRef.current) return;
-
-		return () => {
+	useEffect(
+		() => () => {
+			if (!dismissedRef.current) return;
 			onClose?.();
-		};
-	}, [onClose]);
+		},
+		[onClose],
+	);
 
 	return (
 		<Modal aria-labelledby={`${genericModalId}-title`} wrapperFunction={wrapperFunction} {...props}>
