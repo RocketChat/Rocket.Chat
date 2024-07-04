@@ -19,8 +19,10 @@ const RoomToolboxE2EESetup = () => {
 	const actions = useStableArray(
 		roomActionHooksForE2EESetup
 			.map((roomActionHook) => roomActionHook())
-			.filter((roomAction): roomAction is RoomToolboxActionConfig => !!roomAction)
-			.filter((action) => !action.groups || action.groups.includes(getRoomGroup(room))),
+			.filter(
+				(roomAction): roomAction is RoomToolboxActionConfig =>
+					!!roomAction && (!roomAction.groups || roomAction.groups.includes(getRoomGroup(room))),
+			),
 	);
 
 	return (
