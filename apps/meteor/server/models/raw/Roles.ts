@@ -3,7 +3,7 @@ import type { IRolesModel } from '@rocket.chat/model-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { Collection, FindCursor, Db, Filter, FindOptions, Document } from 'mongodb';
 
-import { notifyOnSubscriptionChangedByUserAndRoomId } from '../../../app/lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 import { BaseRaw } from './BaseRaw';
 
 export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
@@ -40,7 +40,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 			if (role.scope === 'Subscriptions' && scope) {
 				const addRolesResponse = await Subscriptions.addRolesByUserId(userId, [role._id], scope);
 				if (addRolesResponse.modifiedCount) {
-					void notifyOnSubscriptionChangedByUserAndRoomId(userId, scope);
+					void notifyOnSubscriptionChangedByRoomIdAndUserId(scope, userId);
 				}
 			} else {
 				await Users.addRolesByUserId(userId, [role._id]);
@@ -92,7 +92,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 			if (role.scope === 'Subscriptions' && scope) {
 				const removeRolesResponse = await Subscriptions.removeRolesByUserId(userId, [roleId], scope);
 				if (removeRolesResponse.modifiedCount) {
-					void notifyOnSubscriptionChangedByUserAndRoomId(userId, scope);
+					void notifyOnSubscriptionChangedByRoomIdAndUserId(scope, userId);
 				}
 			} else {
 				await Users.removeRolesByUserId(userId, [roleId]);

@@ -2,7 +2,7 @@ import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 
-import { notifyOnSubscriptionChangedByUserAndRoomId } from '../../../../../app/lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../../../app/lib/server/lib/notifyListener';
 import { callbacks } from '../../../../../lib/callbacks';
 import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadReceipt';
 
@@ -18,7 +18,7 @@ callbacks.add(
 			// set subscription as read right after message was sent
 			const setAsReadResponse = await Subscriptions.setAsReadByRoomIdAndUserId(room._id, message.u._id);
 			if (setAsReadResponse.modifiedCount) {
-				void notifyOnSubscriptionChangedByUserAndRoomId(message.u._id, room._id);
+				void notifyOnSubscriptionChangedByRoomIdAndUserId(room._id, message.u._id);
 			}
 		}
 

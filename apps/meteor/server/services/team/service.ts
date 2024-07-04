@@ -32,7 +32,7 @@ import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { checkUsernameAvailability } from '../../../app/lib/server/functions/checkUsernameAvailability';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
-import { notifyOnSubscriptionChangedByUserAndRoomId } from '../../../app/lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
@@ -756,7 +756,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		]);
 
 		if (responses[1].modifiedCount) {
-			void notifyOnSubscriptionChangedByUserAndRoomId(member.userId, team.roomId);
+			void notifyOnSubscriptionChangedByRoomIdAndUserId(team.roomId, member.userId);
 		}
 	}
 

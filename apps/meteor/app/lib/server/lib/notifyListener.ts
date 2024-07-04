@@ -504,9 +504,9 @@ export async function notifyOnUserChangeById({ clientAction, id }: { id: IUser['
 	void notifyOnUserChange({ id, clientAction, data: user });
 }
 
-export async function notifyOnSubscriptionChangedByUserAndRoomId(
-	uid: ISubscription['u']['_id'],
+export async function notifyOnSubscriptionChangedByRoomIdAndUserId(
 	rid: ISubscription['rid'],
+	uid: ISubscription['u']['_id'],
 	clientAction: ClientAction = 'updated',
 ): Promise<void> {
 	if (!dbWatchersDisabled) {

@@ -11,7 +11,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByUserAndRoomId } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../lib/notifyListener';
 
 const generateSubscription = (
 	fname: string,
@@ -147,7 +147,7 @@ export async function createDirectRoom(
 			{ upsert: true },
 		);
 		if (modifiedCount || upsertedCount) {
-			void notifyOnSubscriptionChangedByUserAndRoomId(roomMembers[0]._id, rid, modifiedCount ? 'updated' : 'inserted');
+			void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, roomMembers[0]._id, modifiedCount ? 'updated' : 'inserted');
 		}
 	} else {
 		const memberIds = roomMembers.map((member) => member._id);
@@ -170,7 +170,7 @@ export async function createDirectRoom(
 				{ upsert: true },
 			);
 			if (modifiedCount || upsertedCount) {
-				void notifyOnSubscriptionChangedByUserAndRoomId(member._id, rid, modifiedCount ? 'updated' : 'inserted');
+				void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, member._id, modifiedCount ? 'updated' : 'inserted');
 			}
 		}
 	}

@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 import { beforeLeaveRoomCallback } from '../../../../lib/callbacks/beforeLeaveRoomCallback';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByUserAndRoomId } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../lib/notifyListener';
 
 export const removeUserFromRoom = async function (
 	rid: string,
@@ -62,7 +62,7 @@ export const removeUserFromRoom = async function (
 	const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(rid, user._id);
 
 	if (deletedSubscription) {
-		void notifyOnSubscriptionChangedByUserAndRoomId(user._id, rid, 'removed');
+		void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, user._id, 'removed');
 	}
 
 	if (room.teamId && room.teamMain) {

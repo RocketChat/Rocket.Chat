@@ -11,7 +11,7 @@ import {
 	notifyOnRoomChanged,
 	notifyOnRoomChangedById,
 	notifyOnSubscriptionChangedById,
-	notifyOnSubscriptionChangedByUserAndRoomId,
+	notifyOnSubscriptionChangedByRoomIdAndUserId,
 } from '../../../lib/server/lib/notifyListener';
 import { notifyUsersOnMessage } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendAllNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
@@ -188,7 +188,7 @@ const eventHandlers = {
 			const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 
 			if (deletedSubscription) {
-				void notifyOnSubscriptionChangedByUserAndRoomId(user._id, roomId, 'removed');
+				void notifyOnSubscriptionChangedByRoomIdAndUserId(roomId, user._id, 'removed');
 			}
 
 			// Refresh the servers list
@@ -220,7 +220,7 @@ const eventHandlers = {
 			const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 
 			if (deletedSubscription) {
-				void notifyOnSubscriptionChangedByUserAndRoomId(user._id, roomId, 'removed');
+				void notifyOnSubscriptionChangedByRoomIdAndUserId(roomId, user._id, 'removed');
 			}
 
 			// Refresh the servers list

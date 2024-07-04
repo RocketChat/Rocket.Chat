@@ -4,7 +4,7 @@ import { Messages, Subscriptions, ReadReceipts, NotificationQueue } from '@rocke
 
 import {
 	notifyOnSubscriptionChangedByRoomIdAndUserIds,
-	notifyOnSubscriptionChangedByUserAndRoomId,
+	notifyOnSubscriptionChangedByRoomIdAndUserId,
 } from '../../lib/server/lib/notifyListener';
 import { getMentions, getUserIdsFromHighlights } from '../../lib/server/lib/notifyUsersOnMessage';
 
@@ -70,7 +70,7 @@ export async function unfollow({ tmid, rid, uid }: { tmid: string; rid: string; 
 
 	const removeUnreadThreadResponse = await Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, uid, tmid);
 	if (removeUnreadThreadResponse.modifiedCount) {
-		void notifyOnSubscriptionChangedByUserAndRoomId(uid, rid);
+		void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, uid);
 	}
 
 	await Messages.removeThreadFollowerByThreadId(tmid, uid);
@@ -87,7 +87,7 @@ export const readThread = async ({ userId, rid, tmid }: { userId: string; rid: s
 
 	const removeUnreadThreadResponse = await Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid, clearAlert);
 	if (removeUnreadThreadResponse.modifiedCount) {
-		void notifyOnSubscriptionChangedByUserAndRoomId(userId, rid);
+		void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, userId);
 	}
 
 	await NotificationQueue.clearQueueByUserId(userId);

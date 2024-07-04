@@ -3,7 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { notifyOnSubscriptionChangedByUserAndRoomId } from '../../app/lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../app/lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -24,7 +24,7 @@ export const hideRoomMethod = async (userId: string, rid: string): Promise<numbe
 	const { modifiedCount } = await Subscriptions.hideByRoomIdAndUserId(rid, userId);
 
 	if (modifiedCount) {
-		void notifyOnSubscriptionChangedByUserAndRoomId(userId, rid);
+		void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, userId);
 	}
 
 	return modifiedCount;

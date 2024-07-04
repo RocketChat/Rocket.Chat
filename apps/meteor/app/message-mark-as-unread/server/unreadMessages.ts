@@ -3,7 +3,7 @@ import { Messages, Subscriptions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { notifyOnSubscriptionChangedByUserAndRoomId } from '../../lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../lib/server/lib/notifyListener';
 import logger from './logger';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -39,7 +39,7 @@ Meteor.methods<ServerMethods>({
 
 			const setAsUnreadResponse = await Subscriptions.setAsUnreadByRoomIdAndUserId(lastMessage.rid, userId, lastMessage.ts);
 			if (setAsUnreadResponse.modifiedCount) {
-				void notifyOnSubscriptionChangedByUserAndRoomId(userId, lastMessage.rid);
+				void notifyOnSubscriptionChangedByRoomIdAndUserId(lastMessage.rid, userId);
 			}
 
 			return;
@@ -81,7 +81,7 @@ Meteor.methods<ServerMethods>({
 		logger.debug(`Updating unread message of ${originalMessage.ts} as the first unread`);
 		const setAsUnreadResponse = await Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, userId, originalMessage.ts);
 		if (setAsUnreadResponse.modifiedCount) {
-			void notifyOnSubscriptionChangedByUserAndRoomId(userId, originalMessage.rid);
+			void notifyOnSubscriptionChangedByRoomIdAndUserId(originalMessage.rid, userId);
 		}
 	},
 });

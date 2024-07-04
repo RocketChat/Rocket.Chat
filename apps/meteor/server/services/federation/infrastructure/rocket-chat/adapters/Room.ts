@@ -10,7 +10,7 @@ import { removeUserFromRoom } from '../../../../../../app/lib/server/functions/r
 import {
 	notifyOnSubscriptionChangedById,
 	notifyOnSubscriptionChangedByRoomId,
-	notifyOnSubscriptionChangedByUserAndRoomId,
+	notifyOnSubscriptionChangedByRoomIdAndUserId,
 } from '../../../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../../../app/settings/server';
 import { getDefaultSubscriptionPref } from '../../../../../../app/utils/lib/getDefaultSubscriptionPref';
@@ -301,7 +301,7 @@ export class RocketChatRoomAdapter {
 		if (toAdd.length > 0) {
 			const addRolesResponse = await Subscriptions.addRolesByUserId(uid, toAdd, rid);
 			if (addRolesResponse.modifiedCount) {
-				void notifyOnSubscriptionChangedByUserAndRoomId(uid, rid);
+				void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, uid);
 			}
 
 			if (notifyChannel) {
@@ -322,7 +322,7 @@ export class RocketChatRoomAdapter {
 		if (toRemove.length > 0) {
 			const removeRolesResponse = await Subscriptions.removeRolesByUserId(uid, toRemove, rid);
 			if (removeRolesResponse.modifiedCount) {
-				void notifyOnSubscriptionChangedByUserAndRoomId(uid, rid);
+				void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, uid);
 			}
 
 			if (notifyChannel) {
