@@ -463,7 +463,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await deleteDepartment(department._id);
 		});
 
-		it('should succesfully create a department into an existing unit as a livechat manager', async () => {
+		it('should succesfully create a department into an existing unit as an admin', async () => {
 			const department = await createDepartment(undefined, undefined, undefined, undefined, { _id: unit._id });
 
 			const updatedUnit = await getUnit(unit._id);
@@ -552,7 +552,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				});
 		});
 
-		it('should succesfully add an existing department to a unit as a livechat manager', async () => {
+		it('should succesfully add an existing department to a unit as an admin', async () => {
 			const updatedName = 'updated-department-name';
 
 			const updatedDepartment = await updateDepartment({
@@ -576,7 +576,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(fullDepartment.ancestors?.[0]).to.equal(unit._id);
 		});
 
-		it('should succesfully remove an existing department from a unit as a livechat manager', async () => {
+		it('should succesfully remove an existing department from a unit as an admin', async () => {
 			const updatedName = 'updated-department-name';
 
 			const updatedDepartment = await updateDepartment({
@@ -769,7 +769,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await deleteDepartment(testDepartmentId);
 		});
 
-		it('should succesfully create a department into an existing unit as a livechat manager', async () => {
+		it('should succesfully create a department into an existing unit as an admin', async () => {
 			const testDepartment = await createDepartmentWithMethod({ name: departmentName, departmentUnit: { _id: unit._id } });
 			testDepartmentId = testDepartment._id;
 
@@ -784,7 +784,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(fullDepartment.ancestors?.[0]).to.equal(unit._id);
 		});
 
-		it('should succesfully remove an existing department from a unit as a livechat manager', async () => {
+		it('should succesfully remove an existing department from a unit as an admin', async () => {
 			await createDepartmentWithMethod({ name: departmentName, departmentUnit: {}, departmentId: testDepartmentId });
 
 			const updatedUnit = await getUnit(unit._id);
@@ -797,7 +797,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(fullDepartment).to.have.property('ancestors').that.is.null;
 		});
 
-		it('should succesfully add an existing department to a unit as a livechat manager', async () => {
+		it('should succesfully add an existing department to a unit as an admin', async () => {
 			await createDepartmentWithMethod({ name: departmentName, departmentUnit: { _id: unit._id }, departmentId: testDepartmentId });
 
 			const updatedUnit = await getUnit(unit._id);
