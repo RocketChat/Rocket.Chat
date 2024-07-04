@@ -25,10 +25,6 @@ export const manageDepartmentUnit = async ({ userId, departmentId, unitId }: { u
 		return;
 	}
 
-	if (currentDepartmentUnitId) {
-		await LivechatUnit.decrementDepartmentsCount(currentDepartmentUnitId);
-	}
-
 	if (unitId) {
 		const unit = await LivechatUnit.findOneById<Pick<IOmnichannelBusinessUnit, '_id' | 'ancestors'>>(unitId, {
 			projection: { ancestors: 1 },
@@ -38,9 +34,17 @@ export const manageDepartmentUnit = async ({ userId, departmentId, unitId }: { u
 			return;
 		}
 
+		if (currentDepartmentUnitId) {
+			await LivechatUnit.decrementDepartmentsCount(currentDepartmentUnitId);
+		}
+
 		await LivechatDepartment.addDepartmentToUnit(departmentId, unitId, [unitId, ...(unit.ancestors || [])]);
 		await LivechatUnit.incrementDepartmentsCount(unitId);
 		return;
+	}
+
+	if (currentDepartmentUnitId) {
+		await LivechatUnit.decrementDepartmentsCount(currentDepartmentUnitId);
 	}
 
 	await LivechatDepartment.removeDepartmentFromUnit(departmentId);
