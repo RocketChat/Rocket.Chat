@@ -5,50 +5,45 @@ import { hasAnyRoleAsync } from '../../../../../app/authorization/server/functio
 import { callbacks } from '../../../../../lib/callbacks';
 import { getUnitsFromUser } from '../methods/getUnitsFromUserRoles';
 
-callbacks.add(
-	'livechat.manageDepartmentUnit',
-	async ({ userId, departmentId, unitId }) => {
-		const accessibleUnits = await getUnitsFromUser(userId);
-		const isLivechatManager = await hasAnyRoleAsync(userId, ['admin', 'livechat-manager']);
-		const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'ancestors' | 'parentId'>>(departmentId, {
-			projection: { ancestors: 1, parentId: 1 },
+export const manageDepartmentUnit = async ({ userId, departmentId, unitId }: { userId: string; departmentId: string; unitId: string }) => {
+	const accessibleUnits = await getUnitsFromUser(userId);
+	const isLivechatManager = await hasAnyRoleAsync(userId, ['admin', 'livechat-manager']);
+	const department = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'ancestors' | 'parentId'>>(departmentId, {
+		projection: { ancestors: 1, parentId: 1 },
+	});
+
+	const isDepartmentAlreadyInUnit = unitId && department?.ancestors?.includes(unitId);
+	if (!department || isDepartmentAlreadyInUnit) {
+		return;
+	}
+
+	const currentDepartmentUnitId = department.parentId;
+	const canManageNewUnit = !unitId || isLivechatManager || (Array.isArray(accessibleUnits) && accessibleUnits.includes(unitId));
+	const canManageCurrentUnit =
+		!currentDepartmentUnitId || isLivechatManager || (Array.isArray(accessibleUnits) && accessibleUnits.includes(currentDepartmentUnitId));
+	if (!canManageNewUnit || !canManageCurrentUnit) {
+		return;
+	}
+
+	if (currentDepartmentUnitId) {
+		await LivechatUnit.decrementDepartmentsCount(currentDepartmentUnitId);
+	}
+
+	if (unitId) {
+		const unit = await LivechatUnit.findOneById<Pick<IOmnichannelBusinessUnit, '_id' | 'ancestors'>>(unitId, {
+			projection: { ancestors: 1 },
 		});
 
-		const isDepartmentAlreadyInUnit = unitId && department?.ancestors?.includes(unitId);
-		if (!department || isDepartmentAlreadyInUnit) {
+		if (!unit) {
 			return;
 		}
 
-		const currentDepartmentUnitId = department.parentId;
-		const canManageNewUnit = !unitId || isLivechatManager || (Array.isArray(accessibleUnits) && accessibleUnits.includes(unitId));
-		const canManageCurrentUnit =
-			!currentDepartmentUnitId ||
-			isLivechatManager ||
-			(Array.isArray(accessibleUnits) && accessibleUnits.includes(currentDepartmentUnitId));
-		if (!canManageNewUnit || !canManageCurrentUnit) {
-			return;
-		}
+		await LivechatDepartment.addDepartmentToUnit(departmentId, unitId, [unitId, ...(unit.ancestors || [])]);
+		await LivechatUnit.incrementDepartmentsCount(unitId);
+		return;
+	}
 
-		if (currentDepartmentUnitId) {
-			await LivechatUnit.decrementDepartmentsCount(currentDepartmentUnitId);
-		}
+	await LivechatDepartment.removeDepartmentFromUnit(departmentId);
+};
 
-		if (unitId) {
-			const unit = await LivechatUnit.findOneById<Pick<IOmnichannelBusinessUnit, '_id' | 'ancestors'>>(unitId, {
-				projection: { ancestors: 1 },
-			});
-
-			if (!unit) {
-				return;
-			}
-
-			await LivechatDepartment.addDepartmentToUnit(departmentId, unitId, [unitId, ...(unit.ancestors || [])]);
-			await LivechatUnit.incrementDepartmentsCount(unitId);
-			return;
-		}
-
-		await LivechatDepartment.removeDepartmentFromUnit(departmentId);
-	},
-	callbacks.priority.HIGH,
-	'livechat-manage-department-unit',
-);
+callbacks.add('livechat.manageDepartmentUnit', manageDepartmentUnit, callbacks.priority.HIGH, 'livechat-manage-department-unit');
