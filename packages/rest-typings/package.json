@@ -9,9 +9,10 @@
 		"jest-environment-jsdom": "~29.6.4",
 		"mongodb": "^4.17.2",
 		"ts-jest": "~29.1.1",
-		"typescript": "~5.3.3"
+		"ts-node": "^10.9.2"
 	},
 	"scripts": {
+		"start": "ts-node ./src/scripts/schemaGenerator.ts",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",
@@ -27,9 +28,11 @@
 		"@rocket.chat/apps-engine": "alpha",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/message-parser": "workspace:^",
-		"@rocket.chat/ui-kit": "workspace:~",
+		"@rocket.chat/ui-kit": "workspace:^",
 		"ajv": "^8.11.0",
-		"ajv-formats": "^2.1.1"
+		"ajv-formats": "^2.1.1",
+		"openapi3-ts": "^4.3.3",
+		"typescript": "^5.5.2"
 	},
 	"volta": {
 		"extends": "../../package.json"
