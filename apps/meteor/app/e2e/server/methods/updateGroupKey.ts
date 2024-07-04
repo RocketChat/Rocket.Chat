@@ -2,6 +2,7 @@ import { Subscriptions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { notifyOnSubscriptionChangedById } from '../../../lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -13,6 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'e2e.updateGroupKey'(rid, uid, key) {
+		methodDeprecationLogger.method('e2e.updateGroupKey', '8.0.0');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'e2e.acceptSuggestedGroupKey' });
@@ -31,13 +33,11 @@ Meteor.methods<ServerMethods>({
 				return;
 			}
 
-			// uid also has subscription to this room
 			const userSub = await Subscriptions.findOneByRoomIdAndUserId(rid, uid);
 			if (userSub) {
-				const setGroupE2ESuggestedKeyResponse = await Subscriptions.setGroupE2ESuggestedKey(userSub._id, key);
-				if (setGroupE2ESuggestedKeyResponse.modifiedCount) {
-					void notifyOnSubscriptionChangedById(userSub._id);
-				}
+				// uid also has subscription to this room
+				await Subscriptions.setGroupE2ESuggestedKey(uid, rid, key);
+				void notifyOnSubscriptionChangedById(userSub._id);
 			}
 		}
 	},

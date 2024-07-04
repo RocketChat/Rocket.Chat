@@ -2,17 +2,18 @@ import fs from 'fs';
 import path from 'path';
 
 import { faker } from '@faker-js/faker';
+import type { Credentials } from '@rocket.chat/api-client';
 import type {
 	IOmnichannelRoom,
 	ILivechatVisitor,
-	IUser,
 	IOmnichannelSystemMessage,
 	ILivechatPriority,
 	ILivechatDepartment,
+	ISubscription,
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import type { SuccessResult } from '../../../../app/api/server/definition';
@@ -46,13 +47,24 @@ import {
 	updatePermission,
 	updateSetting,
 } from '../../../data/permissions.helper';
-import { getSubscriptionForRoom } from '../../../data/subscriptions';
 import { adminUsername, password } from '../../../data/user';
-import { createUser, deleteUser, login } from '../../../data/users.helper.js';
+import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe('LIVECHAT - rooms', function () {
-	this.retries(0);
+const getSubscriptionForRoom = async (roomId: string, overrideCredential?: Credentials): Promise<ISubscription> => {
+	const response = await request
+		.get(api('subscriptions.getOne'))
+		.set(overrideCredential || credentials)
+		.query({ roomId })
+		.expect('Content-Type', 'application/json')
+		.expect(200);
+
+	const { subscription } = response.body;
+
+	return subscription;
+};
+
+describe('LIVECHAT - rooms', () => {
 	let visitor: ILivechatVisitor;
 	let room: IOmnichannelRoom;
 
@@ -145,7 +157,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an error when the "agents" query parameter is not valid', async () => {
 			await request
-				.get(api('livechat/rooms?agents=invalid'))
+				.get(api('livechat/rooms'))
+				.query({ agents: 'invalid' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -155,7 +168,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an error when the "roomName" query parameter is not valid', async () => {
 			await request
-				.get(api('livechat/rooms?roomName[]=invalid'))
+				.get(api('livechat/rooms'))
+				.query({ 'roomName[]': 'invalid' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -165,7 +179,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an error when the "departmentId" query parameter is not valid', async () => {
 			await request
-				.get(api('livechat/rooms?departmentId[]=marcos'))
+				.get(api('livechat/rooms'))
+				.query({ 'departmentId[]': 'marcos' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -175,7 +190,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an error when the "open" query parameter is not valid', async () => {
 			await request
-				.get(api('livechat/rooms?open[]=true'))
+				.get(api('livechat/rooms'))
+				.query({ 'open[]': 'true' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -185,7 +201,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an error when the "tags" query parameter is not valid', async () => {
 			await request
-				.get(api('livechat/rooms?tags=invalid'))
+				.get(api('livechat/rooms'))
+				.query({ tags: 'invalid' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -195,7 +212,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an error when the "createdAt" query parameter is not valid', async () => {
 			await request
-				.get(api('livechat/rooms?createdAt=invalid'))
+				.get(api('livechat/rooms'))
+				.query({ createdAt: 'invalid' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -205,7 +223,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an error when the "closedAt" query parameter is not valid', async () => {
 			await request
-				.get(api('livechat/rooms?closedAt=invalid'))
+				.get(api('livechat/rooms'))
+				.query({ closedAt: 'invalid' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -215,7 +234,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return an error when the "customFields" query parameter is not valid', async () => {
 			await request
-				.get(api('livechat/rooms?customFields=invalid'))
+				.get(api('livechat/rooms'))
+				.query({ customFields: 'invalid' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -372,10 +392,7 @@ describe('LIVECHAT - rooms', function () {
 				agent: agent.credentials,
 			});
 
-			const { body } = await request
-				.get(api(`livechat/rooms?agents[]=${agent.user._id}`))
-				.set(credentials)
-				.expect(200);
+			const { body } = await request.get(api('livechat/rooms')).query({ 'agents[]': agent.user._id }).set(credentials).expect(200);
 
 			expect(body.rooms.length).to.be.equal(1);
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
@@ -386,10 +403,7 @@ describe('LIVECHAT - rooms', function () {
 			const { room: expectedRoom } = await startANewLivechatRoomAndTakeIt();
 			await closeOmnichannelRoom(expectedRoom._id, [tag.name]);
 
-			const { body } = await request
-				.get(api(`livechat/rooms?tags[]=${tag.name}`))
-				.set(credentials)
-				.expect(200);
+			const { body } = await request.get(api('livechat/rooms')).query({ 'tags[]': tag.name }).set(credentials).expect(200);
 
 			expect(body.rooms.length).to.be.equal(1);
 			expect(body.rooms.some((room: IOmnichannelRoom) => room._id === expectedRoom._id)).to.be.true;
@@ -488,7 +502,7 @@ describe('LIVECHAT - rooms', function () {
 				room: { _id: roomId },
 			} = await startANewLivechatRoomAndTakeIt();
 
-			const manager: IUser = await createUser();
+			const manager = await createUser();
 			const managerCredentials = await login(manager.username, password);
 			await createManager(manager.username);
 
@@ -659,7 +673,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 
 		it('should return a success message when transferred successfully to agent', async () => {
-			const initialAgentAssignedToChat: IUser = await createUser();
+			const initialAgentAssignedToChat = await createUser();
 			const initialAgentCredentials = await login(initialAgentAssignedToChat.username, password);
 			await createAgent(initialAgentAssignedToChat.username);
 			await makeAgentAvailable(initialAgentCredentials);
@@ -668,7 +682,7 @@ describe('LIVECHAT - rooms', function () {
 			// at this point, the chat will get transferred to agent "user"
 			const newRoom = await createLivechatRoom(newVisitor.token);
 
-			const forwardChatToUser: IUser = await createUser();
+			const forwardChatToUser = await createUser();
 			const forwardChatToUserCredentials = await login(forwardChatToUser.username, password);
 			await createAgent(forwardChatToUser.username);
 			await makeAgentAvailable(forwardChatToUserCredentials);
@@ -839,7 +853,7 @@ describe('LIVECHAT - rooms', function () {
 
 			await makeAgentUnavailable(offlineAgent.credentials);
 
-			const manager: IUser = await createUser();
+			const manager = await createUser();
 			const managerCredentials = await login(manager.username, password);
 			await createManager(manager.username);
 
@@ -1544,7 +1558,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 		it('should return the transfer history for a room', async () => {
 			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
-			const initialAgentAssignedToChat: IUser = await createUser();
+			const initialAgentAssignedToChat = await createUser();
 			const initialAgentCredentials = await login(initialAgentAssignedToChat.username, password);
 			await createAgent(initialAgentAssignedToChat.username);
 			await makeAgentAvailable(initialAgentCredentials);
@@ -1553,7 +1567,7 @@ describe('LIVECHAT - rooms', function () {
 			// at this point, the chat will get transferred to agent "user"
 			const newRoom = await createLivechatRoom(newVisitor.token);
 
-			const forwardChatToUser: IUser = await createUser();
+			const forwardChatToUser = await createUser();
 			const forwardChatToUserCredentials = await login(forwardChatToUser.username, password);
 			await createAgent(forwardChatToUser.username);
 			await makeAgentAvailable(forwardChatToUserCredentials);
@@ -1980,7 +1994,7 @@ describe('LIVECHAT - rooms', function () {
 	(IS_EE ? describe : describe.skip)('livechat/room/:rid/priority', async () => {
 		let priorities: ILivechatPriority[];
 		let chosenPriority: ILivechatPriority;
-		this.afterAll(async () => {
+		after(async () => {
 			await updateEEPermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
 			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
 		});

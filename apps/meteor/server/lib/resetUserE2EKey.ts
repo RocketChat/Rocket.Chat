@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { notifyOnSubscriptionChangedByUserId } from '../../app/lib/server/lib/notifyListener';
@@ -69,7 +69,7 @@ export async function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean
 	// force logout the live sessions
 	await api.broadcast('user.forceLogout', uid);
 
-	const responses = await Promise.all([Users.resetE2EKey(uid), Subscriptions.resetUserE2EKey(uid)]);
+	const responses = await Promise.all([Users.resetE2EKey(uid), Subscriptions.resetUserE2EKey(uid), Rooms.removeUserFromE2EEQueue(uid)]);
 
 	if (responses[1]?.modifiedCount) {
 		void notifyOnSubscriptionChangedByUserId(uid);

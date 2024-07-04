@@ -1,4 +1,4 @@
-import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { notifyOnSubscriptionChangedById } from '../../../lib/server/lib/notifyListener';

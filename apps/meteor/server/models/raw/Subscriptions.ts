@@ -27,6 +27,7 @@ import type {
 	UpdateFilter,
 	InsertOneResult,
 	InsertManyResult,
+	AggregationCursor,
 } from 'mongodb';
 
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
@@ -552,8 +553,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
-	setGroupE2ESuggestedKey(_id: string, key: string): Promise<UpdateResult | Document> {
-		const query = { _id };
+	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<UpdateResult> {
+		const query = { rid, 'u._id': uid };
 		const update = { $set: { E2ESuggestedKey: key } };
 		return this.updateOne(query, update);
 	}
@@ -701,6 +702,61 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		return this.find(query, options);
+	}
+
+	findUsersWithPublicE2EKeyByRids(
+		rids: IRoom['_id'][],
+		excludeUserId: IUser['_id'],
+		usersLimit = 50,
+	): AggregationCursor<{ rid: IRoom['_id']; users: { _id: IUser['_id']; public_key: string }[] }> {
+		return this.col.aggregate([
+			{
+				$match: {
+					'rid': {
+						$in: rids,
+					},
+					'E2EKey': {
+						$exists: false,
+					},
+					'u._id': {
+						$ne: excludeUserId,
+					},
+				},
+			},
+			{
+				$lookup: {
+					from: 'users',
+					localField: 'u._id',
+					foreignField: '_id',
+					as: 'user',
+				},
+			},
+			{
+				$unwind: '$user',
+			},
+			{
+				$match: {
+					'user.e2e.public_key': {
+						$exists: 1,
+					},
+				},
+			},
+			{
+				$group: {
+					_id: {
+						rid: '$rid',
+					},
+					users: { $push: { _id: '$user._id', public_key: '$user.e2e.public_key' } },
+				},
+			},
+			{
+				$project: {
+					rid: '$_id.rid',
+					users: { $slice: ['$users', usersLimit] },
+					_id: 0,
+				},
+			},
+		]);
 	}
 
 	updateAudioNotificationValueById(_id: string, audioNotificationValue: string): Promise<UpdateResult> {
@@ -900,6 +956,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{
 				$unset: {
 					E2EKey: '',
+					E2ESuggestedKey: 1,
 				},
 			},
 		);

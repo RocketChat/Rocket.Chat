@@ -60,12 +60,18 @@ export const allowAgentSkipQueue = (agent: SelectedAgent) => {
 
 	return hasRoleAsync(agent.agentId, 'bot');
 };
-export const createLivechatRoom = async (
+export const createLivechatRoom = async <
+	E extends Record<string, unknown> & {
+		sla?: string;
+		customFields?: Record<string, unknown>;
+		source?: OmnichannelSourceType;
+	},
+>(
 	rid: string,
 	name: string,
 	guest: ILivechatVisitor,
 	roomInfo: Partial<IOmnichannelRoom> = {},
-	extraData = {},
+	extraData?: E,
 ) => {
 	check(rid, String);
 	check(name, String);
@@ -89,39 +95,38 @@ export const createLivechatRoom = async (
 		visitor: { _id, username, departmentId, status, activity },
 	});
 
-	const room: InsertionModel<IOmnichannelRoom> = Object.assign(
-		{
-			_id: rid,
-			msgs: 0,
-			usersCount: 1,
-			lm: newRoomAt,
-			fname: name,
-			t: 'l' as const,
-			ts: newRoomAt,
-			departmentId,
-			v: {
-				_id,
-				username,
-				token,
-				status,
-				...(activity?.length && { activity }),
-			},
-			cl: false,
-			open: true,
-			waitingResponse: true,
-			// this should be overriden by extraRoomInfo when provided
-			// in case it's not provided, we'll use this "default" type
-			source: {
-				type: OmnichannelSourceType.OTHER,
-				alias: 'unknown',
-			},
-			queuedAt: newRoomAt,
-
-			priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
-			estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+	// TODO: Solve `u` missing issue
+	const room: InsertionModel<IOmnichannelRoom> = {
+		_id: rid,
+		msgs: 0,
+		usersCount: 1,
+		lm: newRoomAt,
+		fname: name,
+		t: 'l' as const,
+		ts: newRoomAt,
+		departmentId,
+		v: {
+			_id,
+			username,
+			token,
+			status,
+			...(activity?.length && { activity }),
 		},
-		extraRoomInfo,
-	);
+		cl: false,
+		open: true,
+		waitingResponse: true,
+		// this should be overridden by extraRoomInfo when provided
+		// in case it's not provided, we'll use this "default" type
+		source: {
+			type: OmnichannelSourceType.OTHER,
+			alias: 'unknown',
+		},
+		queuedAt: newRoomAt,
+		livechatData: undefined,
+		priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
+		estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+		...extraRoomInfo,
+	} as InsertionModel<IOmnichannelRoom>;
 
 	const roomId = (await Rooms.insertOne(room)).insertedId;
 
