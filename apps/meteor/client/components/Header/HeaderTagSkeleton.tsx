@@ -5,16 +5,15 @@ import {
 	HeaderV2TagSkeleton,
 	HeaderTagSkeleton as HeaderTagSkeletonComponent,
 } from '@rocket.chat/ui-client';
-import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
 
-const HeaderTagSkeleton = (props: ComponentProps<typeof HeaderTagSkeletonComponent>) => (
+const HeaderTagSkeleton = () => (
 	<FeaturePreview feature='newNavigation'>
 		<FeaturePreviewOff>
-			<HeaderTagSkeletonComponent {...props} />
+			<HeaderTagSkeletonComponent />
 		</FeaturePreviewOff>
 		<FeaturePreviewOn>
-			<HeaderV2TagSkeleton {...props} />
+			<HeaderV2TagSkeleton />
 		</FeaturePreviewOn>
 	</FeaturePreview>
 );
