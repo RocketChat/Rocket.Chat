@@ -12,7 +12,7 @@ const ContactInfoCallButton = ({ phoneNumber }: { phoneNumber: string }) => {
 
 	return (
 		<IconButton
-			onClick={() => openDialModal()}
+			onClick={() => openDialModal({ initialValue: phoneNumber })}
 			tiny
 			disabled={!outBoundCallsEnabledForUser || !phoneNumber}
 			title={outBoundCallsAllowed ? t('Call_number') : t('Call_number_premium_only')}

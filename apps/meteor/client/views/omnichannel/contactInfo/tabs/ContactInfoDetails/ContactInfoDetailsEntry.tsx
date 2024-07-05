@@ -30,7 +30,7 @@ const ContactInfoDetailsEntry = ({ type, label, value }: ContactInfoDetailsEntry
 						{value}
 					</Box>
 					<Box display='flex' alignItems='center'>
-						{isCallReady && <ContactInfoCallButton phoneNumber={value} />}
+						{isCallReady && type === 'phone' && <ContactInfoCallButton phoneNumber={value} />}
 						<IconButton onClick={() => copy()} tiny title={t('Copy')} icon='copy' />
 					</Box>
 				</Box>
