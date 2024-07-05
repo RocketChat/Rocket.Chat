@@ -1,4 +1,10 @@
-import type { ILivechatContactChannel, ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type {
+	ILivechatContact,
+	ILivechatContactChannel,
+	ILivechatCustomField,
+	ILivechatVisitor,
+	IOmnichannelRoom,
+} from '@rocket.chat/core-typings';
 import {
 	LivechatVisitors,
 	Users,
@@ -37,6 +43,16 @@ type CreateContactParams = {
 	phones: string[];
 	unknown: boolean;
 	customFields?: Record<string, string | unknown>;
+	contactManager?: string;
+	channels?: ILivechatContactChannel[];
+};
+
+type UpdateContactParams = {
+	contactId: string;
+	name?: string;
+	emails?: string[];
+	phones?: string[];
+	customFields?: Record<string, unknown>;
 	contactManager?: string;
 	channels?: ILivechatContactChannel[];
 };
@@ -176,13 +192,7 @@ export async function createContact(params: CreateContactParams): Promise<string
 	const { name, emails, phones, customFields = {}, contactManager, channels, unknown } = params;
 
 	if (contactManager) {
-		const contactManagerUser = await Users.findOneById(contactManager, { projection: { roles: 1 } });
-		if (!contactManagerUser) {
-			throw new Error('error-contact-manager-not-found');
-		}
-		if (!contactManagerUser.roles || !Array.isArray(contactManagerUser.roles) || !contactManagerUser.roles.includes('livechat-agent')) {
-			throw new Error('error-invalid-contact-manager');
-		}
+		await validateContactManager(contactManager);
 	}
 
 	await validateCustomFields(customFields);
@@ -198,6 +208,40 @@ export async function createContact(params: CreateContactParams): Promise<string
 	});
 
 	return insertedId;
+}
+
+export async function updateContact(params: UpdateContactParams): Promise<ILivechatContact> {
+	const { contactId, name, emails, phones, customFields, contactManager, channels } = params;
+
+	const contact = await LivechatContacts.findOneById(contactId, { projection: { _id: 1 } });
+
+	if (!contact) {
+		throw new Error('error-contact-not-found');
+	}
+
+	if (contactManager) {
+		await validateContactManager(contactManager);
+	}
+
+	if (customFields) {
+		await validateCustomFields(customFields);
+	}
+
+	const updateContact: { $set: MatchKeysAndValues<ILivechatContact> } = {
+		$set: {
+			name,
+			emails,
+			phones,
+			contactManager,
+			channels,
+			customFields,
+			unknown: true,
+		},
+	};
+
+	await LivechatContacts.updateOne({ _id: contactId }, updateContact);
+
+	return LivechatContacts.findOneById(contactId) as Promise<ILivechatContact>;
 }
 
 async function validateCustomFields(customFields: Record<string, string | unknown>) {
@@ -237,5 +281,15 @@ async function validateCustomFields(customFields: Record<string, string | unknow
 		}
 
 		livechatData[cf._id] = cfValue;
+	}
+}
+
+async function validateContactManager(contactManager: string) {
+	const user = await Users.findOneById(contactManager, { projection: { roles: 1 } });
+	if (!user) {
+		throw new Error('error-contact-manager-not-found');
+	}
+	if (!user.roles || !Array.isArray(user.roles) || !user.roles.includes('livechat-agent')) {
+		throw new Error('error-invalid-contact-manager');
 	}
 }
