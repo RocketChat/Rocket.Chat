@@ -53,6 +53,10 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const confirmAction = useCallback<AppInstallationHandlerParams['onSuccess']>(
 		async (action, permissionsGranted) => {
 			if (action) {
+				if (action === 'purchase' || action === 'install') {
+					setPurchased(true);
+				}
+
 				if (action !== 'request') {
 					await marketplaceActions[action]({ ...app, permissionsGranted });
 				} else {
@@ -62,7 +66,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 			setLoading(false);
 		},
-		[app, marketplaceActions, setLoading],
+		[app, marketplaceActions, setLoading, setPurchased],
 	);
 
 	const cancelAction = useCallback(() => {
@@ -80,9 +84,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const handleAcquireApp = useCallback(() => {
 		setLoading(true);
-		setPurchased(true);
 		appInstallationHandler();
-	}, [appInstallationHandler, setLoading, setPurchased]);
+	}, [appInstallationHandler, setLoading]);
 
 	// @TODO we should refactor this to not use the label to determine the variant
 	const getStatusVariant = (status: appStatusSpanResponseProps) => {
