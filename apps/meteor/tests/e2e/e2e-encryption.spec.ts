@@ -660,6 +660,8 @@ test.describe.serial('e2ee room setup', () => {
 			await poAccountProfile.securityE2EEncryptionSection.click();
 			await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
 
+			await page.reload();
+
 			await page.locator('role=button[name="Login"]').waitFor();
 			await injectInitialData();
 			await restoreState(page, Users.admin);
