@@ -60,7 +60,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const subscription = await SubscriptionRaw.findOneByRoomIdAndUserId(roomId, user._id, {
+		const subscription = await SubscriptionRaw.findOneByRoomIdAndUserId(roomId, userId, {
 			projection: {
 				_id: 1,
 			},
