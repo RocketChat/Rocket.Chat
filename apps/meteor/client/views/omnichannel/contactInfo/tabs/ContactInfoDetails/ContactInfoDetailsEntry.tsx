@@ -26,7 +26,7 @@ const ContactInfoDetailsEntry = ({ type, label, value }: ContactInfoDetailsEntry
 			<Box display='flex' alignItems='center'>
 				<Icon size='x18' name={type === 'phone' ? 'phone' : 'mail'} />
 				<Box display='flex' flexGrow={1} alignItems='center' justifyContent='space-between'>
-					<Box mi={4} fontScale='p2'>
+					<Box data-qa-id={type === 'phone' ? 'contactInfo-phone' : 'contactInfo-email'} mi={4} fontScale='p2'>
 						{value}
 					</Box>
 					<Box display='flex' alignItems='center'>
