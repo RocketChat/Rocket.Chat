@@ -1,13 +1,7 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import { ComponentPropsWithoutRef, forwardRef } from 'react';
+import { forwardRef } from 'react';
 
-interface HeaderToolbarActionProps extends Omit<ComponentPropsWithoutRef<typeof IconButton>, 'action'> {
-	'action': (id?: string) => void;
-	'index'?: unknown;
-	'data-tooltip'?: string;
-}
-
-const HeaderToolbarAction = forwardRef<HTMLButtonElement, HeaderToolbarActionProps>(function HeaderToolbarAction(
+const HeaderToolbarAction = forwardRef<HTMLButtonElement, any>(function HeaderToolbarAction(
 	{ id, icon, action, index, title, 'data-tooltip': tooltip, ...props },
 	ref,
 ) {
