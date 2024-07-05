@@ -10,7 +10,7 @@ const ContactInfoHistory = () => {
 		return null;
 	}
 
-	return <ContextualbarEmptyContent icon='balloon' title={t('No_history_yet')} subtitle={t('No_history_yet_description')} />;
+	return <ContextualbarEmptyContent icon='history' title={t('No_history_yet')} subtitle={t('No_history_yet_description')} />;
 };
 
 export default ContactInfoHistory;
