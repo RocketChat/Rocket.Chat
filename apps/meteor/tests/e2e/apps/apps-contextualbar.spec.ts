@@ -1,13 +1,18 @@
-import { Users } from './fixtures/userStates';
-import { HomeChannel } from './page-objects';
-import { expect, test } from './utils/test';
+import type { Page } from '@playwright/test';
+
+import { Users } from '../fixtures/userStates';
+import { HomeChannel } from '../page-objects';
+import { expect, test } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });
 
-test.describe.serial('Apps', () => {
+test.describe.serial('Apps > ContextualBar', () => {
 	let poHomeChannel: HomeChannel;
 
-	test.beforeEach(async ({ page }) => {
+	let page: Page;
+
+	test.beforeAll(async ({ browser }) => {
+		page = await browser.newPage();
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
@@ -20,7 +25,6 @@ test.describe.serial('Apps', () => {
 	});
 
 	test('expect app contextualbar to be closed', async () => {
-		await poHomeChannel.content.dispatchSlashCommand('/contextualbar');
 		await poHomeChannel.btnContextualbarClose.click();
 		await expect(poHomeChannel.btnContextualbarClose).toBeHidden();
 	});
