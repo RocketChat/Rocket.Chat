@@ -42,7 +42,7 @@ const GenericFileAttachment = ({
 			event.preventDefault();
 
 			if (format === 'PDF') {
-				const url = new URL(getURL(link));
+				const url = new URL(getURL(link), window.location.origin);
 				url.searchParams.set('contentDisposition', 'inline');
 				openDocumentViewer(url.toString(), format, '');
 				return;
@@ -57,7 +57,7 @@ const GenericFileAttachment = ({
 		if (!hasDownload || !link) return undefined;
 
 		if (openDocumentViewer) {
-			const url = new URL(getURL(link), window.location.host);
+			const url = new URL(getURL(link), window.location.origin);
 			url.searchParams.set('download', '');
 			return url.toString();
 		}
