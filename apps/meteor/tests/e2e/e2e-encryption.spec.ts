@@ -672,7 +672,9 @@ test.describe.serial('e2ee room setup', () => {
 		await test.step('expect create a new DM', async () => {
 			expect((await api.post('/dm.create', { username: 'user2' })).status()).toBe(200);
 
-			await poHomeChannel.sidenav.openChat('user2');
+			await page.locator('role=navigation >> role=button[name=Search]').click();
+			await page.locator('role=search >> role=searchbox').fill('user2');
+			await page.locator('role=search >> role=listbox >> role=link >> text="user2"').click();
 
 			await expect(page).toHaveURL(`/direct/rocketchat.internal.admin.testuser2`);
 		});
