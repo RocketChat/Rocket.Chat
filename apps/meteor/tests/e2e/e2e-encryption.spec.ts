@@ -655,65 +655,72 @@ test.describe.serial('e2ee room setup', () => {
 	});
 
 	test('expect save password state on encrypted DM', async ({ page }) => {
-		await page.goto('/account/security');
-		await poAccountProfile.securityE2EEncryptionSection.click();
-		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
+		await test.step('expect reset E2EE password and login again with save e2ee password state', async () => {
+			await page.goto('/account/security');
+			await poAccountProfile.securityE2EEncryptionSection.click();
+			await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
 
-		await page.locator('role=button[name="Login"]').waitFor();
+			await page.locator('role=button[name="Login"]').waitFor();
+			await injectInitialData();
+			await restoreState(page, Users.admin);
 
-		await page.reload();
+			await page.goto('/home');
 
-		await page.locator('role=button[name="Login"]').waitFor();
+			await expect(page.locator('role=banner >> text="Save your encryption password"')).toBeVisible();
+		});
 
-		await injectInitialData();
-		await restoreState(page, Users.admin);
+		await test.step('expect create a new DM', async () => {
+			await poHomeChannel.sidenav.openNewByLabel('Direct message');
+			await poHomeChannel.sidenav.inputDirectUsername.click();
+			await page.keyboard.type('user2');
+			await page.locator('role=listbox >> role=option[name="user2 (user2)"]').waitFor();
+			await page.keyboard.press('Enter');
+			await poHomeChannel.sidenav.btnCreate.click();
 
-		await page.goto('/home');
+			await expect(page).toHaveURL(`/direct/rocketchat.internal.admin.testuser2`);
+		});
 
-		await page.locator('role=banner >> text="Save your encryption password"').waitFor();
-		await expect(page.locator('role=banner >> text="Save your encryption password"')).toBeVisible();
+		await test.step('expect to enable encryption in new DM room', async () => {
+			await poHomeChannel.tabs.kebab.click();
+			await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
+			await poHomeChannel.tabs.btnEnableE2E.click();
 
-		await poHomeChannel.sidenav.openNewByLabel('Direct message');
-		await poHomeChannel.sidenav.inputDirectUsername.click();
-		await page.keyboard.type('user2');
-		await page.waitForTimeout(1000);
-		await page.keyboard.press('Enter');
-		await poHomeChannel.sidenav.btnCreate.click();
+			await expect(poHomeChannel.content.encryptedRoomHeaderIcon.first()).toBeVisible();
+		});
 
-		await expect(page).toHaveURL(`/direct/rocketchat.internal.admin.testuser2`);
+		const savePasswordButton = await page.locator('role=button[name="Save E2EE password"]');
 
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
-		await poHomeChannel.tabs.btnEnableE2E.click({ force: true });
+		await test.step('expect e2ee room setup state is shown for save e2ee password', async () => {
+			await savePasswordButton.waitFor();
+			await expect(savePasswordButton).toBeVisible();
 
-		await poHomeChannel.content.encryptedRoomHeaderIcon.first().waitFor();
-		await expect(poHomeChannel.content.encryptedRoomHeaderIcon.first()).toBeVisible();
+			await poHomeChannel.tabs.btnE2EERoomSetupDisableE2E.waitFor();
+			await expect(poHomeChannel.tabs.btnE2EERoomSetupDisableE2E).toBeVisible();
+			await expect(poHomeChannel.tabs.btnTabMembers).not.toBeVisible();
+			await expect(poHomeChannel.tabs.btnRoomInfo).not.toBeVisible();
 
-		await page.locator('role=button[name="Save E2EE password"]').waitFor();
-		await expect(page.locator('role=button[name="Save E2EE password"]')).toBeVisible();
+			await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
+		});
 
-		await poHomeChannel.tabs.btnE2EERoomSetupDisableE2E.waitFor();
-		await expect(poHomeChannel.tabs.btnE2EERoomSetupDisableE2E).toBeVisible();
-		await expect(poHomeChannel.tabs.btnTabMembers).not.toBeVisible();
-		await expect(poHomeChannel.tabs.btnRoomInfo).not.toBeVisible();
+		await test.step('expect save e2ee password', async () => {
+			await savePasswordButton.click();
 
-		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
+			e2eePassword = (await page.evaluate(() => localStorage.getItem('e2e.randomPassword'))) || 'undefined';
 
-		await page.locator('role=button[name="Save E2EE password"]').click();
+			const SavePasswordModal = page.locator('role=dialog[name="Save your encryption password"]');
+			await expect(SavePasswordModal).toBeVisible();
+			await expect(SavePasswordModal).toContainText(e2eePassword);
 
-		e2eePassword = (await page.evaluate(() => localStorage.getItem('e2e.randomPassword'))) || 'undefined';
+			await page.locator('role=dialog[name="Save your encryption password"] >> role=button[name="I saved my password"]').click();
+			await expect(poHomeChannel.content.inputMessage).toBeVisible();
+		});
 
-		await expect(page.locator('role=dialog[name="Save your encryption password"]')).toBeVisible();
-		await expect(page.locator('#modal-root')).toContainText(e2eePassword);
+		await test.step('expect send encrypted message in DM', async () => {
+			await poHomeChannel.content.sendMessage('hello world');
 
-		await page.locator('#modal-root >> button:has-text("I saved my password")').click();
-
-		await poHomeChannel.content.inputMessage.waitFor();
-
-		await poHomeChannel.content.sendMessage('hello world');
-
-		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+		});
 	});
 
 	test('expect enter password state on encrypted room', async ({ page }) => {
