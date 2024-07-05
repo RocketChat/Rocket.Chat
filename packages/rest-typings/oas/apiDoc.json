@@ -14,7 +14,7 @@
     "/v1/assets.setAsset": {
       "post": {
         "tags": [
-          "assetsEndpoints"
+          "ASSETS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -55,7 +55,7 @@
     "/v1/assets.unsetAsset": {
       "post": {
         "tags": [
-          "assetsEndpoints"
+          "ASSETS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -94,7 +94,7 @@
     "/v1/login": {
       "post": {
         "tags": [
-          "authEndpoints"
+          "AUTH ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -125,7 +125,7 @@
     "/v1/logout": {
       "post": {
         "tags": [
-          "authEndpoints"
+          "AUTH ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -145,7 +145,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": {}
+                  "properties": {
+                    "message": {
+                      "$ref": "string"
+                    }
+                  }
                 }
               }
             }
@@ -154,28 +158,7 @@
       },
       "get": {
         "tags": [
-          "authEndpoints"
-        ],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {}
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/autotranslate.getSupportedLanguages": {
-      "get": {
-        "tags": [
-          "autoTranslateEndpoints"
+          "AUTH ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -186,8 +169,42 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "message": {
+                      "$ref": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/autotranslate.getSupportedLanguages": {
+      "get": {
+        "tags": [
+          "AUTOTRANSLATE ENDPOINTS"
+        ],
+        "parameters": [
+          {
+            "name": "targetLanguage",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
                     "languages": {
-                      "$ref": "ISupportedLanguage[]"
+                      "$ref": "#/components/schemas/ISupportedLanguage"
                     }
                   }
                 }
@@ -200,15 +217,29 @@
     "/v1/autotranslate.saveSettings": {
       "post": {
         "tags": [
-          "autoTranslateEndpoints"
+          "AUTOTRANSLATE ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "roomId": {
+                    "type": "string"
+                  },
+                  "field": {},
+                  "value": {},
+                  "defaultLanguage": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "roomId",
+                  "field",
+                  "value",
+                  "defaultLanguage"
+                ]
               }
             }
           }
@@ -231,15 +262,25 @@
     "/v1/autotranslate.translateMessage": {
       "post": {
         "tags": [
-          "autoTranslateEndpoints"
+          "AUTOTRANSLATE ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "messageId": {
+                    "type": "string"
+                  },
+                  "targetLanguage": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "messageId",
+                  "targetLanguage"
+                ]
               }
             }
           }
@@ -253,7 +294,7 @@
                   "type": "object",
                   "properties": {
                     "message": {
-                      "$ref": "IMessage"
+                      "$ref": "#/components/schemas/IMessage"
                     }
                   }
                 }
@@ -266,7 +307,7 @@
     "/v1/banners.getNew": {
       "get": {
         "tags": [
-          "bannersEndpoints"
+          "BANNERS ENDPOINTS"
         ],
         "parameters": [
           {
@@ -291,7 +332,7 @@
                   "type": "object",
                   "properties": {
                     "banners": {
-                      "$ref": "IBanner[]"
+                      "$ref": "#/components/schemas/IBanner"
                     }
                   }
                 }
@@ -304,7 +345,7 @@
     "/v1/banners/:id": {
       "get": {
         "tags": [
-          "bannersEndpoints"
+          "BANNERS ENDPOINTS"
         ],
         "parameters": [
           {
@@ -323,7 +364,7 @@
                   "type": "object",
                   "properties": {
                     "banners": {
-                      "$ref": "IBanner[]"
+                      "$ref": "#/components/schemas/IBanner"
                     }
                   }
                 }
@@ -336,7 +377,7 @@
     "/v1/banners": {
       "get": {
         "tags": [
-          "bannersEndpoints"
+          "BANNERS ENDPOINTS"
         ],
         "parameters": [
           {
@@ -355,7 +396,7 @@
                   "type": "object",
                   "properties": {
                     "banners": {
-                      "$ref": "IBanner[]"
+                      "$ref": "#/components/schemas/IBanner"
                     }
                   }
                 }
@@ -368,7 +409,7 @@
     "/v1/banners.dismiss": {
       "post": {
         "tags": [
-          "bannersEndpoints"
+          "BANNERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -405,7 +446,7 @@
     "/v1/chat.sendMessage": {
       "post": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -416,9 +457,7 @@
                   "message": {},
                   "previewUrls": {
                     "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
+                    "items": {}
                   }
                 },
                 "required": [
@@ -438,7 +477,7 @@
                   "type": "object",
                   "properties": {
                     "message": {
-                      "$ref": "IMessage"
+                      "$ref": "#/components/schemas/IMessage"
                     }
                   }
                 }
@@ -451,7 +490,7 @@
     "/v1/chat.getMessage": {
       "get": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "parameters": [
           {
@@ -470,7 +509,7 @@
                   "type": "object",
                   "properties": {
                     "message": {
-                      "$ref": "IMessage"
+                      "$ref": "#/components/schemas/IMessage"
                     }
                   }
                 }
@@ -483,7 +522,7 @@
     "/v1/chat.followMessage": {
       "post": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -518,7 +557,7 @@
     "/v1/chat.unfollowMessage": {
       "post": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -553,7 +592,7 @@
     "/v1/chat.starMessage": {
       "post": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -588,7 +627,7 @@
     "/v1/chat.unStarMessage": {
       "post": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -623,7 +662,7 @@
     "/v1/chat.pinMessage": {
       "post": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -649,7 +688,7 @@
                   "type": "object",
                   "properties": {
                     "message": {
-                      "$ref": "IMessage"
+                      "$ref": "#/components/schemas/IMessage"
                     }
                   }
                 }
@@ -662,7 +701,7 @@
     "/v1/chat.unPinMessage": {
       "post": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -697,7 +736,7 @@
     "/v1/chat.reportMessage": {
       "post": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -736,7 +775,7 @@
     "/v1/chat.getDiscussions": {
       "get": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "parameters": [
           {
@@ -748,7 +787,7 @@
           {
             "name": "text",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -763,7 +802,7 @@
                   "type": "object",
                   "properties": {
                     "messages": {
-                      "$ref": "IMessage[]"
+                      "$ref": "#/components/schemas/IMessage"
                     },
                     "total": {
                       "$ref": "number"
@@ -779,7 +818,7 @@
     "/v1/chat.getThreadsList": {
       "get": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "parameters": [
           {
@@ -797,7 +836,7 @@
           {
             "name": "text",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -812,7 +851,7 @@
                   "type": "object",
                   "properties": {
                     "threads": {
-                      "$ref": "IMessage[]"
+                      "$ref": "#/components/schemas/IMessage"
                     },
                     "total": {
                       "$ref": "number"
@@ -828,7 +867,7 @@
     "/v1/chat.syncThreadsList": {
       "get": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "parameters": [
           {
@@ -855,7 +894,10 @@
                   "type": "object",
                   "properties": {
                     "threads": {
-                      "$ref": "{\n\t\t\t\tupdate: IMessage[];\n\t\t\t\tremove: IMessage[];\n\t\t\t}"
+                      "$ref": {
+                        "update": "IMessage[]",
+                        "remove": "IMessage[]"
+                      }
                     }
                   }
                 }
@@ -868,7 +910,7 @@
     "/v1/chat.delete": {
       "post": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -906,7 +948,7 @@
                       "$ref": "string"
                     },
                     "message": {
-                      "$ref": "Pick<IMessage, '_id' | 'rid' | 'u'>"
+                      "$ref": "Pick<IMessage, \"_id\" | \"rid\" | \"u\">"
                     }
                   }
                 }
@@ -919,15 +961,56 @@
     "/v1/chat.react": {
       "post": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "unionTypes": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "emoji": {
+                            "type": "string"
+                          },
+                          "messageId": {},
+                          "shouldReact": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "emoji",
+                          "messageId",
+                          "shouldReact"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "reaction": {
+                            "type": "string"
+                          },
+                          "messageId": {},
+                          "shouldReact": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "reaction",
+                          "messageId",
+                          "shouldReact"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "unionTypes"
+                ]
               }
             }
           }
@@ -950,7 +1033,7 @@
     "/v1/chat.ignoreUser": {
       "get": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "parameters": [
           {
@@ -996,7 +1079,7 @@
     "/v1/chat.search": {
       "get": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "parameters": [
           {
@@ -1023,7 +1106,7 @@
                   "type": "object",
                   "properties": {
                     "messages": {
-                      "$ref": "IMessage[]"
+                      "$ref": "#/components/schemas/IMessage"
                     }
                   }
                 }
@@ -1036,7 +1119,7 @@
     "/v1/chat.update": {
       "post": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -1053,9 +1136,7 @@
                   },
                   "previewUrls": {
                     "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
+                    "items": {}
                   },
                   "customFields": {}
                 },
@@ -1079,7 +1160,7 @@
                   "type": "object",
                   "properties": {
                     "message": {
-                      "$ref": "IMessage"
+                      "$ref": "#/components/schemas/IMessage"
                     }
                   }
                 }
@@ -1092,7 +1173,7 @@
     "/v1/chat.getMessageReadReceipts": {
       "get": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "parameters": [
           {
@@ -1124,7 +1205,7 @@
     "/v1/chat.getStarredMessages": {
       "get": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "parameters": [
           {
@@ -1136,25 +1217,23 @@
           {
             "name": "count",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "integer"
             }
           },
           {
             "name": "offset",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "integer"
             }
           },
           {
             "name": "sort",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -1169,7 +1248,7 @@
                   "type": "object",
                   "properties": {
                     "messages": {
-                      "$ref": "IMessage[]"
+                      "$ref": "#/components/schemas/IMessage"
                     },
                     "count": {
                       "$ref": "number"
@@ -1191,7 +1270,7 @@
     "/v1/chat.getPinnedMessages": {
       "get": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "parameters": [
           {
@@ -1203,25 +1282,23 @@
           {
             "name": "count",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "integer"
             }
           },
           {
             "name": "offset",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "integer"
             }
           },
           {
             "name": "sort",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -1236,7 +1313,7 @@
                   "type": "object",
                   "properties": {
                     "messages": {
-                      "$ref": "IMessage[]"
+                      "$ref": "#/components/schemas/IMessage"
                     },
                     "count": {
                       "$ref": "number"
@@ -1258,7 +1335,7 @@
     "/v1/chat.getMentionedMessages": {
       "get": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "parameters": [
           {
@@ -1270,25 +1347,23 @@
           {
             "name": "count",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "integer"
             }
           },
           {
             "name": "offset",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "integer"
             }
           },
           {
             "name": "sort",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -1303,7 +1378,7 @@
                   "type": "object",
                   "properties": {
                     "messages": {
-                      "$ref": "IMessage[]"
+                      "$ref": "#/components/schemas/IMessage"
                     },
                     "count": {
                       "$ref": "number"
@@ -1325,7 +1400,7 @@
     "/v1/chat.syncMessages": {
       "get": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "parameters": [
           {
@@ -1352,7 +1427,10 @@
                   "type": "object",
                   "properties": {
                     "result": {
-                      "$ref": "{\n\t\t\t\tupdated: IMessage[];\n\t\t\t\tdeleted: IMessage[];\n\t\t\t}"
+                      "$ref": {
+                        "updated": "IMessage[]",
+                        "deleted": "IMessage[]"
+                      }
                     }
                   }
                 }
@@ -1365,15 +1443,92 @@
     "/v1/chat.postMessage": {
       "post": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "unionTypes": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "roomId": {
+                            "type": "array",
+                            "items": {}
+                          },
+                          "text": {
+                            "type": "string"
+                          },
+                          "alias": {
+                            "type": "string"
+                          },
+                          "emoji": {
+                            "type": "string"
+                          },
+                          "avatar": {
+                            "type": "string"
+                          },
+                          "attachments": {
+                            "type": "array",
+                            "items": {}
+                          },
+                          "customFields": {}
+                        },
+                        "required": [
+                          "roomId",
+                          "text",
+                          "alias",
+                          "emoji",
+                          "avatar",
+                          "attachments",
+                          "customFields"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "channel": {
+                            "type": "array",
+                            "items": {}
+                          },
+                          "text": {
+                            "type": "string"
+                          },
+                          "alias": {
+                            "type": "string"
+                          },
+                          "emoji": {
+                            "type": "string"
+                          },
+                          "avatar": {
+                            "type": "string"
+                          },
+                          "attachments": {
+                            "type": "array",
+                            "items": {}
+                          },
+                          "customFields": {}
+                        },
+                        "required": [
+                          "channel",
+                          "text",
+                          "alias",
+                          "emoji",
+                          "avatar",
+                          "attachments",
+                          "customFields"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "unionTypes"
+                ]
               }
             }
           }
@@ -1393,7 +1548,7 @@
                       "$ref": "#/components/schemas/IRoom"
                     },
                     "message": {
-                      "$ref": "IMessage"
+                      "$ref": "#/components/schemas/IMessage"
                     }
                   }
                 }
@@ -1406,7 +1561,7 @@
     "/v1/chat.syncThreadMessages": {
       "get": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "parameters": [
           {
@@ -1435,7 +1590,10 @@
                   "type": "object",
                   "properties": {
                     "messages": {
-                      "$ref": "{\n\t\t\t\tupdate: IMessage[];\n\t\t\t\tremove: IMessage[];\n\t\t\t}"
+                      "$ref": {
+                        "update": "IMessage[]",
+                        "remove": "IMessage[]"
+                      }
                     }
                   }
                 }
@@ -1448,7 +1606,7 @@
     "/v1/chat.getThreadMessages": {
       "get": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "parameters": [
           {
@@ -1469,7 +1627,7 @@
                   "type": "object",
                   "properties": {
                     "messages": {
-                      "$ref": "IMessage[]"
+                      "$ref": "#/components/schemas/IMessage"
                     },
                     "count": {
                       "$ref": "number"
@@ -1491,7 +1649,7 @@
     "/v1/chat.getDeletedMessages": {
       "get": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "parameters": [
           {
@@ -1518,7 +1676,7 @@
                   "type": "object",
                   "properties": {
                     "messages": {
-                      "$ref": "IMessage[]"
+                      "$ref": "#/components/schemas/IMessage"
                     },
                     "count": {
                       "$ref": "number"
@@ -1540,7 +1698,7 @@
     "/v1/chat.otr": {
       "post": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -1579,7 +1737,7 @@
     "/v1/chat.getURLPreview": {
       "get": {
         "tags": [
-          "chatEndpoints"
+          "CHAT ENDPOINTS"
         ],
         "parameters": [
           {
@@ -1619,7 +1777,7 @@
     "/v1/cloud.manualRegister": {
       "post": {
         "tags": [
-          "cloudEndpoints"
+          "CLOUD ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -1656,7 +1814,7 @@
     "/v1/cloud.createRegistrationIntent": {
       "post": {
         "tags": [
-          "cloudEndpoints"
+          "CLOUD ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -1701,7 +1859,7 @@
     "/v1/cloud.registerPreIntent": {
       "post": {
         "tags": [
-          "cloudEndpoints"
+          "CLOUD ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -1736,7 +1894,7 @@
     "/v1/cloud.confirmationPoll": {
       "get": {
         "tags": [
-          "cloudEndpoints"
+          "CLOUD ENDPOINTS"
         ],
         "parameters": [
           {
@@ -1750,7 +1908,7 @@
           {
             "name": "resend",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -1778,7 +1936,7 @@
     "/v1/cloud.registrationStatus": {
       "get": {
         "tags": [
-          "cloudEndpoints"
+          "CLOUD ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -1803,7 +1961,7 @@
     "/v1/cloud.syncWorkspace": {
       "post": {
         "tags": [
-          "cloudEndpoints"
+          "CLOUD ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -1838,7 +1996,7 @@
     "/v1/cloud.removeLicense": {
       "post": {
         "tags": [
-          "cloudEndpoints"
+          "CLOUD ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -1873,7 +2031,7 @@
     "/v1/commands.get": {
       "get": {
         "tags": [
-          "commandsEndpoints"
+          "COMMANDS ENDPOINTS"
         ],
         "parameters": [
           {
@@ -1894,7 +2052,7 @@
                   "type": "object",
                   "properties": {
                     "command": {
-                      "$ref": "Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview'>"
+                      "$ref": "Pick<SlashCommand, \"clientOnly\" | \"command\" | \"description\" | \"params\" | \"providesPreview\">"
                     }
                   }
                 }
@@ -1907,9 +2065,18 @@
     "/v1/commands.list": {
       "get": {
         "tags": [
-          "commandsEndpoints"
+          "COMMANDS ENDPOINTS"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -1917,7 +2084,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": {}
+                  "properties": {
+                    "commands": {
+                      "$ref": "Pick<SlashCommand, \"clientOnly\" | \"command\" | \"description\" | \"params\" | \"providesPreview\" | \"appId\">[]"
+                    }
+                  }
                 }
               }
             }
@@ -1928,7 +2099,7 @@
     "/v1/commands.run": {
       "post": {
         "tags": [
-          "commandsEndpoints"
+          "COMMANDS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -1985,7 +2156,7 @@
     "/v1/commands.preview": {
       "get": {
         "tags": [
-          "commandsEndpoints"
+          "COMMANDS ENDPOINTS"
         ],
         "parameters": [
           {
@@ -1999,7 +2170,7 @@
           {
             "name": "params",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -2033,7 +2204,7 @@
       },
       "post": {
         "tags": [
-          "commandsEndpoints"
+          "COMMANDS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -2050,7 +2221,25 @@
                   "roomId": {
                     "type": "string"
                   },
-                  "previewItem": {},
+                  "previewItem": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "type",
+                      "value"
+                    ]
+                  },
                   "triggerId": {
                     "type": "string"
                   },
@@ -2088,7 +2277,7 @@
     "/v1/custom-user-status.list": {
       "get": {
         "tags": [
-          "customUserStatusEndpoints"
+          "CUSTOMUSERSTATUS ENDPOINTS"
         ],
         "parameters": [
           {
@@ -2107,7 +2296,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": {}
+                  "properties": {
+                    "statuses": {
+                      "$ref": "#/components/schemas/IUserStatus"
+                    }
+                  }
                 }
               }
             }
@@ -2118,7 +2311,7 @@
     "/v1/custom-user-status.create": {
       "post": {
         "tags": [
-          "customUserStatusEndpoints"
+          "CUSTOMUSERSTATUS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -2150,7 +2343,7 @@
                   "type": "object",
                   "properties": {
                     "customUserStatus": {
-                      "$ref": "ICustomUserStatus"
+                      "$ref": "#/components/schemas/ICustomUserStatus"
                     }
                   }
                 }
@@ -2163,7 +2356,7 @@
     "/v1/custom-user-status.delete": {
       "post": {
         "tags": [
-          "customUserStatusEndpoints"
+          "CUSTOMUSERSTATUS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -2200,7 +2393,7 @@
     "/v1/custom-user-status.update": {
       "post": {
         "tags": [
-          "customUserStatusEndpoints"
+          "CUSTOMUSERSTATUS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -2236,7 +2429,7 @@
                   "type": "object",
                   "properties": {
                     "customUserStatus": {
-                      "$ref": "ICustomUserStatus"
+                      "$ref": "#/components/schemas/ICustomUserStatus"
                     }
                   }
                 }
@@ -2249,7 +2442,7 @@
     "/v1/dns.resolve.srv": {
       "get": {
         "tags": [
-          "dnsEndpoints"
+          "DNS ENDPOINTS"
         ],
         "parameters": [
           {
@@ -2283,7 +2476,7 @@
     "/v1/dns.resolve.txt": {
       "post": {
         "tags": [
-          "dnsEndpoints"
+          "DNS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -2324,7 +2517,7 @@
     "/v1/e2e.setUserPublicAndPrivateKeys": {
       "post": {
         "tags": [
-          "e2eEndpoints"
+          "E2E ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -2369,7 +2562,7 @@
     "/v1/e2e.getUsersOfRoomWithoutKey": {
       "get": {
         "tags": [
-          "e2eEndpoints"
+          "E2E ENDPOINTS"
         ],
         "parameters": [
           {
@@ -2390,7 +2583,7 @@
                   "type": "object",
                   "properties": {
                     "users": {
-                      "$ref": "Pick<IUser, '_id' | 'e2e'>[]"
+                      "$ref": "Pick<IUser, \"_id\" | \"e2e\">[]"
                     }
                   }
                 }
@@ -2403,7 +2596,7 @@
     "/v1/e2e.updateGroupKey": {
       "post": {
         "tags": [
-          "e2eEndpoints"
+          "E2E ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -2448,7 +2641,7 @@
     "/v1/e2e.acceptSuggestedGroupKey": {
       "post": {
         "tags": [
-          "e2eEndpoints"
+          "E2E ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -2485,7 +2678,7 @@
     "/v1/e2e.rejectSuggestedGroupKey": {
       "post": {
         "tags": [
-          "e2eEndpoints"
+          "E2E ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -2522,7 +2715,7 @@
     "/v1/e2e.setRoomKeyID": {
       "post": {
         "tags": [
-          "e2eEndpoints"
+          "E2E ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -2563,7 +2756,7 @@
     "/v1/e2e.fetchMyKeys": {
       "get": {
         "tags": [
-          "e2eEndpoints"
+          "E2E ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -2591,7 +2784,7 @@
     "/v1/e2e.fetchUsersWaitingForGroupKey": {
       "get": {
         "tags": [
-          "e2eEndpoints"
+          "E2E ENDPOINTS"
         ],
         "parameters": [
           {
@@ -2615,7 +2808,7 @@
                   "type": "object",
                   "properties": {
                     "usersWaitingForE2EKeys": {
-                      "$ref": "Record<IRoom['_id'], { _id: IUser['_id']; public_key: string }[]>"
+                      "$ref": "Record<IRoom, { _id: IUser; public_key: string; }[]>"
                     }
                   }
                 }
@@ -2628,7 +2821,7 @@
     "/v1/e2e.provideUsersSuggestedGroupKeys": {
       "post": {
         "tags": [
-          "e2eEndpoints"
+          "E2E ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -2663,13 +2856,13 @@
     "/v1/email-inbox.list": {
       "get": {
         "tags": [
-          "email-inboxEndpoints"
+          "EMAIL-INBOX ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "query",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -2682,7 +2875,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": {}
+                  "properties": {
+                    "emailInboxes": {
+                      "$ref": "#/components/schemas/IEmailInbox"
+                    }
+                  }
                 }
               }
             }
@@ -2693,7 +2890,7 @@
     "/v1/email-inbox": {
       "post": {
         "tags": [
-          "email-inboxEndpoints"
+          "EMAIL-INBOX ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -2722,8 +2919,60 @@
                   "department": {
                     "type": "string"
                   },
-                  "smtp": {},
-                  "imap": {}
+                  "smtp": {
+                    "type": "object",
+                    "properties": {
+                      "password": {
+                        "type": "string"
+                      },
+                      "port": {
+                        "type": "integer"
+                      },
+                      "secure": {
+                        "type": "boolean"
+                      },
+                      "server": {
+                        "type": "string"
+                      },
+                      "username": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "password",
+                      "port",
+                      "secure",
+                      "server",
+                      "username"
+                    ]
+                  },
+                  "imap": {
+                    "type": "object",
+                    "properties": {
+                      "password": {
+                        "type": "string"
+                      },
+                      "port": {
+                        "type": "integer"
+                      },
+                      "secure": {
+                        "type": "boolean"
+                      },
+                      "server": {
+                        "type": "string"
+                      },
+                      "username": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "password",
+                      "port",
+                      "secure",
+                      "server",
+                      "username"
+                    ]
+                  }
                 },
                 "required": [
                   "_id",
@@ -2762,7 +3011,7 @@
     "/v1/email-inbox/:_id": {
       "get": {
         "tags": [
-          "email-inboxEndpoints"
+          "EMAIL-INBOX ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -2773,11 +3022,11 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "0": {
-                      "$ref": "IEmailInbox"
-                    },
-                    "1": {
-                      "$ref": "null"
+                    "unionTypes": {
+                      "$ref": [
+                        {},
+                        {}
+                      ]
                     }
                   }
                 }
@@ -2788,19 +3037,9 @@
       },
       "delete": {
         "tags": [
-          "email-inboxEndpoints"
+          "EMAIL-INBOX ENDPOINTS"
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {},
-                "required": []
-              }
-            }
-          }
-        },
+        "parameters": [],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -2823,7 +3062,7 @@
     "/v1/email-inbox.search": {
       "get": {
         "tags": [
-          "email-inboxEndpoints"
+          "EMAIL-INBOX ENDPOINTS"
         ],
         "parameters": [
           {
@@ -2844,7 +3083,7 @@
                   "type": "object",
                   "properties": {
                     "emailInbox": {
-                      "$ref": "IEmailInbox | null"
+                      "$ref": "any"
                     }
                   }
                 }
@@ -2857,7 +3096,7 @@
     "/v1/email-inbox.send-test/:_id": {
       "post": {
         "tags": [
-          "email-inboxEndpoints"
+          "EMAIL-INBOX ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -2892,40 +3131,11 @@
     "/v1/emoji-custom.all": {
       "get": {
         "tags": [
-          "emojiCustomEndpoints"
-        ],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {}
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/v1/emoji-custom.list": {
-      "get": {
-        "tags": [
-          "emojiCustomEndpoints"
+          "EMOJICUSTOM ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "query",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "updatedSince",
             "in": "query",
             "required": true,
             "schema": {
@@ -2942,7 +3152,52 @@
                   "type": "object",
                   "properties": {
                     "emojis": {
-                      "$ref": "{\n\t\t\t\tupdate: IEmojiCustom[];\n\t\t\t\tremove: IEmojiCustom[];\n\t\t\t}"
+                      "$ref": "#/components/schemas/IEmojiCustom"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/emoji-custom.list": {
+      "get": {
+        "tags": [
+          "EMOJICUSTOM ENDPOINTS"
+        ],
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "updatedSince",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "emojis": {
+                      "$ref": {
+                        "update": "IEmojiCustom[]",
+                        "remove": "IEmojiCustom[]"
+                      }
                     }
                   }
                 }
@@ -2955,7 +3210,7 @@
     "/v1/emoji-custom.delete": {
       "post": {
         "tags": [
-          "emojiCustomEndpoints"
+          "EMOJICUSTOM ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -2990,7 +3245,7 @@
     "/v1/emoji-custom.create": {
       "post": {
         "tags": [
-          "emojiCustomEndpoints"
+          "EMOJICUSTOM ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -3025,7 +3280,7 @@
     "/v1/emoji-custom.update": {
       "post": {
         "tags": [
-          "emojiCustomEndpoints"
+          "EMOJICUSTOM ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -3060,7 +3315,7 @@
     "/v1/instances.get": {
       "get": {
         "tags": [
-          "instancesEndpoints"
+          "INSTANCES ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -3072,7 +3327,7 @@
                   "type": "object",
                   "properties": {
                     "instances": {
-                      "$ref": "IInstance[]"
+                      "$ref": "#/components/schemas/IInstance"
                     }
                   }
                 }
@@ -3085,7 +3340,7 @@
     "/v1/listInvites": {
       "get": {
         "tags": [
-          "invitesEndpoints"
+          "INVITES ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -3106,19 +3361,9 @@
     "/v1/removeInvite/:_id": {
       "delete": {
         "tags": [
-          "invitesEndpoints"
+          "INVITES ENDPOINTS"
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {},
-                "required": []
-              }
-            }
-          }
-        },
+        "parameters": [],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -3137,7 +3382,7 @@
     "/v1/useInviteToken": {
       "post": {
         "tags": [
-          "invitesEndpoints"
+          "INVITES ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -3165,7 +3410,13 @@
                   "type": "object",
                   "properties": {
                     "room": {
-                      "$ref": "{\n\t\t\t\trid: IRoom['_id'];\n\t\t\t\tprid: IRoom['prid'];\n\t\t\t\tfname: IRoom['fname'];\n\t\t\t\tname: IRoom['name'];\n\t\t\t\tt: IRoom['t'];\n\t\t\t}"
+                      "$ref": {
+                        "rid": "IRoom",
+                        "prid": "IRoom",
+                        "fname": "IRoom",
+                        "name": "IRoom",
+                        "t": "IRoom"
+                      }
                     }
                   }
                 }
@@ -3178,7 +3429,7 @@
     "/v1/validateInviteToken": {
       "post": {
         "tags": [
-          "invitesEndpoints"
+          "INVITES ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -3219,7 +3470,7 @@
     "/v1/findOrCreateInvite": {
       "post": {
         "tags": [
-          "invitesEndpoints"
+          "INVITES ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -3229,12 +3480,10 @@
                 "properties": {
                   "rid": {},
                   "days": {
-                    "type": "integer",
-                    "format": "int32"
+                    "type": "integer"
                   },
                   "maxUses": {
-                    "type": "integer",
-                    "format": "int32"
+                    "type": "integer"
                   }
                 },
                 "required": [
@@ -3264,7 +3513,7 @@
     "/v1/sendInvitationEmail": {
       "post": {
         "tags": [
-          "invitesEndpoints"
+          "INVITES ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -3274,9 +3523,7 @@
                 "properties": {
                   "emails": {
                     "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
+                    "items": {}
                   }
                 },
                 "required": [
@@ -3308,7 +3555,7 @@
     "/v1/ldap.testConnection": {
       "post": {
         "tags": [
-          "ldapEndpoints"
+          "LDAP ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -3343,7 +3590,7 @@
     "/v1/ldap.testSearch": {
       "post": {
         "tags": [
-          "ldapEndpoints"
+          "LDAP ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -3384,7 +3631,7 @@
     "/v1/ldap.syncNow": {
       "post": {
         "tags": [
-          "ldapEndpoints"
+          "LDAP ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -3419,7 +3666,7 @@
     "/v1/licenses.get": {
       "get": {
         "tags": [
-          "licensesEndpoints"
+          "LICENSES ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -3431,7 +3678,7 @@
                   "type": "object",
                   "properties": {
                     "licenses": {
-                      "$ref": "Array<ILicenseV2 | (ILicenseV3 & { modules: string[] })>"
+                      "$ref": "any[]"
                     }
                   }
                 }
@@ -3444,13 +3691,13 @@
     "/v1/licenses.info": {
       "get": {
         "tags": [
-          "licensesEndpoints"
+          "LICENSES ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "loadValues",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "boolean"
             }
@@ -3478,7 +3725,7 @@
     "/v1/licenses.add": {
       "post": {
         "tags": [
-          "licensesEndpoints"
+          "LICENSES ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -3515,7 +3762,7 @@
     "/v1/licenses.maxActiveUsers": {
       "get": {
         "tags": [
-          "licensesEndpoints"
+          "LICENSES ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -3527,7 +3774,7 @@
                   "type": "object",
                   "properties": {
                     "maxActiveUsers": {
-                      "$ref": "number | null"
+                      "$ref": "number"
                     },
                     "activeUsers": {
                       "$ref": "number"
@@ -3543,7 +3790,7 @@
     "/v1/licenses.requestSeatsLink": {
       "get": {
         "tags": [
-          "licensesEndpoints"
+          "LICENSES ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -3568,7 +3815,7 @@
     "/v1/licenses.isEnterprise": {
       "get": {
         "tags": [
-          "licensesEndpoints"
+          "LICENSES ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -3593,15 +3840,37 @@
     "/v1/mailer": {
       "post": {
         "tags": [
-          "mailerEndpoints"
+          "MAILER ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "from": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "type": "string"
+                  },
+                  "body": {
+                    "type": "string"
+                  },
+                  "dryrun": {
+                    "type": "boolean"
+                  },
+                  "query": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "from",
+                  "subject",
+                  "body",
+                  "dryrun",
+                  "query"
+                ]
               }
             }
           }
@@ -3624,15 +3893,25 @@
     "/v1/mailer.unsubscribe": {
       "post": {
         "tags": [
-          "mailerEndpoints"
+          "MAILER ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "_id": {
+                    "type": "string"
+                  },
+                  "createdAt": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "_id",
+                  "createdAt"
+                ]
               }
             }
           }
@@ -3655,7 +3934,7 @@
     "/v1/me": {
       "get": {
         "tags": [
-          "meEndpoints"
+          "ME ENDPOINTS"
         ],
         "parameters": [
           {
@@ -3689,7 +3968,7 @@
     "/v1/stdout.queue": {
       "get": {
         "tags": [
-          "miscEndpoints"
+          "MISC ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -3701,7 +3980,7 @@
                   "type": "object",
                   "properties": {
                     "queue": {
-                      "$ref": "{\n\t\t\t\tid: string;\n\t\t\t\tstring: string;\n\t\t\t\tts: Date;\n\t\t\t}[]"
+                      "$ref": "{ id: string; string: string; ts: Date; }[]"
                     }
                   }
                 }
@@ -3714,13 +3993,13 @@
     "/v1/shield.svg": {
       "get": {
         "tags": [
-          "miscEndpoints"
+          "MISC ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "type",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -3728,7 +4007,7 @@
           {
             "name": "icon",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {}
           },
           {
@@ -3750,7 +4029,7 @@
           {
             "name": "userId",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -3758,7 +4037,7 @@
           {
             "name": "username",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -3766,7 +4045,7 @@
           {
             "name": "user",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -3794,7 +4073,7 @@
     "/v1/spotlight": {
       "get": {
         "tags": [
-          "miscEndpoints"
+          "MISC ENDPOINTS"
         ],
         "parameters": [
           {
@@ -3815,10 +4094,10 @@
                   "type": "object",
                   "properties": {
                     "users": {
-                      "$ref": "Pick<Required<IUser>, 'name' | 'status' | 'statusText' | 'avatarETag' | '_id' | 'username'>[]"
+                      "$ref": "Pick<IUser, \"_id\" | \"name\" | \"username\" | \"status\" | \"statusText\" | \"avatarETag\">[]"
                     },
                     "rooms": {
-                      "$ref": "Pick<Required<IRoom>, 't' | 'name' | 'lastMessage' | '_id'>[]"
+                      "$ref": "Pick<IRoom, \"_id\" | \"name\" | \"t\" | \"lastMessage\">[]"
                     }
                   }
                 }
@@ -3831,7 +4110,7 @@
     "/v1/pw.getPolicy": {
       "get": {
         "tags": [
-          "miscEndpoints"
+          "MISC ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -3859,7 +4138,7 @@
     "/v1/pw.getPolicyReset": {
       "get": {
         "tags": [
-          "miscEndpoints"
+          "MISC ENDPOINTS"
         ],
         "parameters": [
           {
@@ -3896,7 +4175,7 @@
     "/v1/method.call/:method": {
       "post": {
         "tags": [
-          "miscEndpoints"
+          "MISC ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -3937,7 +4216,7 @@
     "/v1/method.callAnon/:method": {
       "post": {
         "tags": [
-          "miscEndpoints"
+          "MISC ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -3978,7 +4257,7 @@
     "/v1/fingerprint": {
       "post": {
         "tags": [
-          "miscEndpoints"
+          "MISC ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -4017,7 +4296,7 @@
     "/v1/smtp.check": {
       "get": {
         "tags": [
-          "miscEndpoints"
+          "MISC ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -4042,13 +4321,13 @@
     "/v1/permissions.listAll": {
       "get": {
         "tags": [
-          "permissionsEndpoints"
+          "PERMISSIONS ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "updatedSince",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -4063,10 +4342,10 @@
                   "type": "object",
                   "properties": {
                     "update": {
-                      "$ref": "IPermission[]"
+                      "$ref": "#/components/schemas/IPermission"
                     },
                     "remove": {
-                      "$ref": "IPermission[]"
+                      "$ref": "#/components/schemas/IPermission"
                     }
                   }
                 }
@@ -4079,7 +4358,7 @@
     "/v1/permissions.update": {
       "post": {
         "tags": [
-          "permissionsEndpoints"
+          "PERMISSIONS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -4108,7 +4387,7 @@
                   "type": "object",
                   "properties": {
                     "permissions": {
-                      "$ref": "IPermission[]"
+                      "$ref": "#/components/schemas/IPermission"
                     }
                   }
                 }
@@ -4121,7 +4400,7 @@
     "/v1/presence.getConnections": {
       "get": {
         "tags": [
-          "presenceEndpoints"
+          "PRESENCE ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -4149,7 +4428,7 @@
     "/v1/presence.enableBroadcast": {
       "post": {
         "tags": [
-          "presenceEndpoints"
+          "PRESENCE ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -4180,7 +4459,7 @@
     "/v1/push.token": {
       "post": {
         "tags": [
-          "pushEndpoints"
+          "PUSH ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -4218,7 +4497,7 @@
                   "type": "object",
                   "properties": {
                     "result": {
-                      "$ref": "IPushToken"
+                      "$ref": "#/components/schemas/IPushToken"
                     }
                   }
                 }
@@ -4229,25 +4508,18 @@
       },
       "delete": {
         "tags": [
-          "pushEndpoints"
+          "PUSH ENDPOINTS"
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "token": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "token"
-                ]
-              }
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -4266,7 +4538,7 @@
     "/v1/push.get": {
       "get": {
         "tags": [
-          "pushEndpoints"
+          "PUSH ENDPOINTS"
         ],
         "parameters": [
           {
@@ -4287,7 +4559,10 @@
                   "type": "object",
                   "properties": {
                     "data": {
-                      "$ref": "{\n\t\t\t\tmessage: IMessage;\n\t\t\t\tnotification: IPushNotificationConfig;\n\t\t\t}"
+                      "$ref": {
+                        "message": "IMessage",
+                        "notification": "IPushNotificationConfig"
+                      }
                     }
                   }
                 }
@@ -4300,7 +4575,7 @@
     "/v1/push.info": {
       "get": {
         "tags": [
-          "pushEndpoints"
+          "PUSH ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -4328,7 +4603,7 @@
     "/v1/push.test": {
       "post": {
         "tags": [
-          "pushEndpoints"
+          "PUSH ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -4363,7 +4638,7 @@
     "/v1/roles.list": {
       "get": {
         "tags": [
-          "rolesEndpoints"
+          "ROLES ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -4375,7 +4650,7 @@
                   "type": "object",
                   "properties": {
                     "roles": {
-                      "$ref": "IRole[]"
+                      "$ref": "#/components/schemas/IRole"
                     }
                   }
                 }
@@ -4388,13 +4663,13 @@
     "/v1/roles.sync": {
       "get": {
         "tags": [
-          "rolesEndpoints"
+          "ROLES ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "updatedSince",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -4409,7 +4684,10 @@
                   "type": "object",
                   "properties": {
                     "roles": {
-                      "$ref": "{\n\t\t\t\tupdate: IRole[];\n\t\t\t\tremove: RocketChatRecordDeleted<IRole>[];\n\t\t\t}"
+                      "$ref": {
+                        "update": "IRole[]",
+                        "remove": "RocketChatRecordDeleted<IRole>[]"
+                      }
                     }
                   }
                 }
@@ -4422,7 +4700,7 @@
     "/v1/roles.addUserToRole": {
       "post": {
         "tags": [
-          "rolesEndpoints"
+          "ROLES ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -4462,7 +4740,7 @@
                   "type": "object",
                   "properties": {
                     "role": {
-                      "$ref": "IRole"
+                      "$ref": "#/components/schemas/IRole"
                     }
                   }
                 }
@@ -4475,13 +4753,13 @@
     "/v1/roles.getUsersInRole": {
       "get": {
         "tags": [
-          "rolesEndpoints"
+          "ROLES ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "roomId",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -4504,7 +4782,7 @@
                   "type": "object",
                   "properties": {
                     "users": {
-                      "$ref": "IUserInRole[]"
+                      "$ref": "#/components/schemas/IUserInRole"
                     },
                     "total": {
                       "$ref": "number"
@@ -4520,7 +4798,7 @@
     "/v1/roles.delete": {
       "post": {
         "tags": [
-          "rolesEndpoints"
+          "ROLES ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -4555,7 +4833,7 @@
     "/v1/roles.removeUserFromRole": {
       "post": {
         "tags": [
-          "rolesEndpoints"
+          "ROLES ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -4599,7 +4877,7 @@
                   "type": "object",
                   "properties": {
                     "role": {
-                      "$ref": "IRole"
+                      "$ref": "#/components/schemas/IRole"
                     }
                   }
                 }
@@ -4612,7 +4890,7 @@
     "/v1/rooms.autocomplete.channelAndPrivate": {
       "get": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "parameters": [
           {
@@ -4646,7 +4924,7 @@
     "/v1/rooms.autocomplete.channelAndPrivate.withPagination": {
       "get": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "parameters": [
           {
@@ -4683,7 +4961,7 @@
     "/v1/rooms.autocomplete.availableForTeams": {
       "get": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "parameters": [
           {
@@ -4717,7 +4995,7 @@
     "/v1/rooms.autocomplete.adminRooms": {
       "get": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "parameters": [
           {
@@ -4751,9 +5029,41 @@
     "/v1/rooms.info": {
       "get": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "unionTypes",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "roomId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "roomId"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "roomName": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "roomName"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -4763,7 +5073,7 @@
                   "type": "object",
                   "properties": {
                     "room": {
-                      "$ref": "IRoom | undefined"
+                      "$ref": "any"
                     }
                   }
                 }
@@ -4776,7 +5086,7 @@
     "/v1/rooms.cleanHistory": {
       "post": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -4784,9 +5094,7 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "roomId": {
-                    "type": "string"
-                  },
+                  "roomId": {},
                   "latest": {
                     "type": "string"
                   },
@@ -4807,8 +5115,7 @@
                     "items": {}
                   },
                   "limit": {
-                    "type": "integer",
-                    "format": "int32"
+                    "type": "integer"
                   },
                   "ignoreDiscussion": {
                     "type": "boolean"
@@ -4842,7 +5149,7 @@
                   "type": "object",
                   "properties": {
                     "_id": {
-                      "$ref": "IRoom['_id']"
+                      "$ref": "#/components/schemas/IRoom"
                     },
                     "count": {
                       "$ref": "number"
@@ -4861,7 +5168,7 @@
     "/v1/rooms.createDiscussion": {
       "post": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -4910,7 +5217,7 @@
                   "type": "object",
                   "properties": {
                     "discussion": {
-                      "$ref": "IRoom & { rid: IRoom['_id'] }"
+                      "$ref": "any"
                     }
                   }
                 }
@@ -4923,15 +5230,77 @@
     "/v1/rooms.export": {
       "post": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "unionTypes": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "rid": {},
+                          "type": {},
+                          "format": {},
+                          "dateFrom": {
+                            "type": "string"
+                          },
+                          "dateTo": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "rid",
+                          "type",
+                          "format",
+                          "dateFrom",
+                          "dateTo"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "rid": {},
+                          "type": {},
+                          "toUsers": {
+                            "type": "array",
+                            "items": {}
+                          },
+                          "toEmails": {
+                            "type": "array",
+                            "items": {}
+                          },
+                          "additionalEmails": {
+                            "type": "string"
+                          },
+                          "subject": {
+                            "type": "string"
+                          },
+                          "messages": {
+                            "type": "array",
+                            "items": {}
+                          }
+                        },
+                        "required": [
+                          "rid",
+                          "type",
+                          "toUsers",
+                          "toEmails",
+                          "additionalEmails",
+                          "subject",
+                          "messages"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "unionTypes"
+                ]
               }
             }
           }
@@ -4944,14 +5313,14 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "0": {
-                      "$ref": {
-                        "missing": "string[]",
-                        "success": "boolean"
-                      }
-                    },
-                    "1": {
-                      "$ref": "void"
+                    "unionTypes": {
+                      "$ref": [
+                        {
+                          "missing?": "string[]",
+                          "success": "boolean"
+                        },
+                        {}
+                      ]
                     }
                   }
                 }
@@ -4964,13 +5333,13 @@
     "/v1/rooms.adminRooms": {
       "get": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "filter",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -4978,7 +5347,7 @@
           {
             "name": "types",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "array",
               "items": {
@@ -4994,7 +5363,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": {}
+                  "properties": {
+                    "rooms": {
+                      "$ref": "Pick<IRoom, RoomAdminFieldsType>[]"
+                    }
+                  }
                 }
               }
             }
@@ -5005,13 +5378,13 @@
     "/v1/rooms.adminRooms.getRoom": {
       "get": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "rid",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -5035,7 +5408,7 @@
     "/v1/rooms.saveRoomSettings": {
       "post": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -5077,7 +5450,21 @@
                   "encrypted": {
                     "type": "boolean"
                   },
-                  "favorite": {}
+                  "favorite": {
+                    "type": "object",
+                    "properties": {
+                      "defaultValue": {
+                        "type": "boolean"
+                      },
+                      "favorite": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "defaultValue",
+                      "favorite"
+                    ]
+                  }
                 },
                 "required": [
                   "rid",
@@ -5091,7 +5478,8 @@
                   "readOnly",
                   "reactWhenReadOnly",
                   "default",
-                  "encrypted"
+                  "encrypted",
+                  "favorite"
                 ]
               }
             }
@@ -5122,7 +5510,7 @@
     "/v1/rooms.changeArchivationState": {
       "post": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -5167,7 +5555,7 @@
     "/v1/rooms.upload/:rid": {
       "post": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -5225,7 +5613,7 @@
                   "type": "object",
                   "properties": {
                     "message": {
-                      "$ref": "IMessage | null"
+                      "$ref": "any"
                     }
                   }
                 }
@@ -5238,7 +5626,7 @@
     "/v1/rooms.media/:rid": {
       "post": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -5264,7 +5652,9 @@
                   "type": "object",
                   "properties": {
                     "file": {
-                      "$ref": "{ url: string }"
+                      "$ref": {
+                        "url": "string"
+                      }
                     }
                   }
                 }
@@ -5277,7 +5667,7 @@
     "/v1/rooms.mediaConfirm/:rid/:fileId": {
       "post": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -5337,7 +5727,7 @@
                   "type": "object",
                   "properties": {
                     "message": {
-                      "$ref": "IMessage | null"
+                      "$ref": "any"
                     }
                   }
                 }
@@ -5350,7 +5740,7 @@
     "/v1/rooms.saveNotification": {
       "post": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -5389,15 +5779,52 @@
     "/v1/rooms.favorite": {
       "post": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "unionTypes": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "roomId": {
+                            "type": "string"
+                          },
+                          "favorite": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "roomId",
+                          "favorite"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "roomName": {
+                            "type": "string"
+                          },
+                          "favorite": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "roomName",
+                          "favorite"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "unionTypes"
+                ]
               }
             }
           }
@@ -5420,7 +5847,7 @@
     "/v1/rooms.nameExists": {
       "get": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "parameters": [
           {
@@ -5454,7 +5881,7 @@
     "/v1/rooms.delete": {
       "post": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -5491,7 +5918,7 @@
     "/v1/rooms.get": {
       "get": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "parameters": [
           {
@@ -5528,15 +5955,44 @@
     "/v1/rooms.leave": {
       "post": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "unionTypes": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "roomId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "roomId"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "roomName": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "roomName"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "unionTypes"
+                ]
               }
             }
           }
@@ -5559,9 +6015,41 @@
     "/v1/rooms.getDiscussions": {
       "get": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "unionTypes",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "roomId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "roomId"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "roomName": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "roomName"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -5569,7 +6057,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": {}
+                  "properties": {
+                    "discussions": {
+                      "$ref": "#/components/schemas/IRoom"
+                    }
+                  }
                 }
               }
             }
@@ -5580,15 +6072,52 @@
     "/v1/rooms.muteUser": {
       "post": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "unionTypes": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "userId": {
+                            "type": "string"
+                          },
+                          "roomId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "userId",
+                          "roomId"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "username": {
+                            "type": "string"
+                          },
+                          "roomId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "username",
+                          "roomId"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "unionTypes"
+                ]
               }
             }
           }
@@ -5611,15 +6140,52 @@
     "/v1/rooms.unmuteUser": {
       "post": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "unionTypes": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "userId": {
+                            "type": "string"
+                          },
+                          "roomId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "userId",
+                          "roomId"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "username": {
+                            "type": "string"
+                          },
+                          "roomId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "username",
+                          "roomId"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "unionTypes"
+                ]
               }
             }
           }
@@ -5642,7 +6208,7 @@
     "/v1/rooms.images": {
       "get": {
         "tags": [
-          "roomsEndpoints"
+          "ROOMS ENDPOINTS"
         ],
         "parameters": [
           {
@@ -5656,7 +6222,7 @@
           {
             "name": "startingFromId",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -5664,19 +6230,17 @@
           {
             "name": "count",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "integer"
             }
           },
           {
             "name": "offset",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "integer"
             }
           }
         ],
@@ -5687,7 +6251,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": {}
+                  "properties": {
+                    "files": {
+                      "$ref": "#/components/schemas/IUpload"
+                    }
+                  }
                 }
               }
             }
@@ -5698,7 +6266,7 @@
     "/v1/settings.public": {
       "get": {
         "tags": [
-          "settingsEndpoints"
+          "SETTINGS ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -5719,7 +6287,7 @@
     "/v1/settings.oauth": {
       "get": {
         "tags": [
-          "settingsEndpoints"
+          "SETTINGS ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -5731,7 +6299,7 @@
                   "type": "object",
                   "properties": {
                     "services": {
-                      "$ref": "Partial<LoginServiceConfiguration>[]"
+                      "$ref": "LoginServiceConfiguration[]"
                     }
                   }
                 }
@@ -5744,7 +6312,7 @@
     "/v1/settings.addCustomOAuth": {
       "post": {
         "tags": [
-          "settingsEndpoints"
+          "SETTINGS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -5781,7 +6349,7 @@
     "/v1/settings": {
       "get": {
         "tags": [
-          "settingsEndpoints"
+          "SETTINGS ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -5793,7 +6361,7 @@
                   "type": "object",
                   "properties": {
                     "settings": {
-                      "$ref": "ISetting[]"
+                      "$ref": "#/components/schemas/ISetting"
                     }
                   }
                 }
@@ -5806,7 +6374,7 @@
     "/v1/settings/:_id": {
       "get": {
         "tags": [
-          "settingsEndpoints"
+          "SETTINGS ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -5825,15 +6393,53 @@
       },
       "post": {
         "tags": [
-          "settingsEndpoints"
+          "SETTINGS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "unionTypes": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "value": {}
+                        },
+                        "required": [
+                          "value"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "execute": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "execute"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "editor": {},
+                          "value": {}
+                        },
+                        "required": [
+                          "editor",
+                          "value"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "unionTypes"
+                ]
               }
             }
           }
@@ -5856,7 +6462,7 @@
     "/v1/service.configurations": {
       "get": {
         "tags": [
-          "settingsEndpoints"
+          "SETTINGS ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -5868,7 +6474,7 @@
                   "type": "object",
                   "properties": {
                     "configurations": {
-                      "$ref": "Array<LoginServiceConfiguration>"
+                      "$ref": "LoginServiceConfiguration[]"
                     }
                   }
                 }
@@ -5881,13 +6487,13 @@
     "/v1/statistics": {
       "get": {
         "tags": [
-          "statisticsEndpoints"
+          "STATISTICS ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "refresh",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {}
           }
         ],
@@ -5909,13 +6515,13 @@
     "/v1/statistics.list": {
       "get": {
         "tags": [
-          "statisticsEndpoints"
+          "STATISTICS ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "fields",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -5930,7 +6536,7 @@
                   "type": "object",
                   "properties": {
                     "statistics": {
-                      "$ref": "IStats[]"
+                      "$ref": "#/components/schemas/IStats"
                     },
                     "count": {
                       "$ref": "number"
@@ -5952,7 +6558,7 @@
     "/v1/statistics.telemetry": {
       "post": {
         "tags": [
-          "statisticsEndpoints"
+          "STATISTICS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -5990,13 +6596,13 @@
     "/v1/subscriptions.get": {
       "get": {
         "tags": [
-          "subscriptionsEndpointsEndpoints"
+          "SUBSCRIPTIONSENDPOINTS ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "updatedSince",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -6011,10 +6617,10 @@
                   "type": "object",
                   "properties": {
                     "update": {
-                      "$ref": "ISubscription[]"
+                      "$ref": "#/components/schemas/ISubscription"
                     },
                     "remove": {
-                      "$ref": "(Pick<ISubscription, '_id'> & { _deletedAt: Date })[]"
+                      "$ref": "(Pick<ISubscription, \"_id\"> & { _deletedAt: Date; })[]"
                     }
                   }
                 }
@@ -6027,7 +6633,7 @@
     "/v1/subscriptions.getOne": {
       "get": {
         "tags": [
-          "subscriptionsEndpointsEndpoints"
+          "SUBSCRIPTIONSENDPOINTS ENDPOINTS"
         ],
         "parameters": [
           {
@@ -6046,7 +6652,7 @@
                   "type": "object",
                   "properties": {
                     "subscription": {
-                      "$ref": "ISubscription | null"
+                      "$ref": "any"
                     }
                   }
                 }
@@ -6059,15 +6665,48 @@
     "/v1/subscriptions.read": {
       "post": {
         "tags": [
-          "subscriptionsEndpointsEndpoints"
+          "SUBSCRIPTIONSENDPOINTS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "unionTypes": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "rid": {},
+                          "readThreads": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "rid",
+                          "readThreads"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "roomId": {},
+                          "readThreads": {
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "roomId",
+                          "readThreads"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "unionTypes"
+                ]
               }
             }
           }
@@ -6090,15 +6729,40 @@
     "/v1/subscriptions.unread": {
       "post": {
         "tags": [
-          "subscriptionsEndpointsEndpoints"
+          "SUBSCRIPTIONSENDPOINTS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "unionTypes": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "roomId": {}
+                        },
+                        "required": [
+                          "roomId"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "firstUnreadMessage": {}
+                        },
+                        "required": [
+                          "firstUnreadMessage"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "unionTypes"
+                ]
               }
             }
           }
@@ -6121,7 +6785,7 @@
     "/v1/users.2fa.enableEmail": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -6152,7 +6816,7 @@
     "/v1/users.2fa.disableEmail": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -6183,7 +6847,7 @@
     "/v1/users.2fa.sendEmailCode": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -6220,15 +6884,21 @@
     "/v1/users.sendConfirmationEmail": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
               }
             }
           }
@@ -6251,9 +6921,16 @@
     "/v1/users.listTeams": {
       "get": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {}
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -6263,7 +6940,7 @@
                   "type": "object",
                   "properties": {
                     "teams": {
-                      "$ref": "ITeam[]"
+                      "$ref": "#/components/schemas/ITeam"
                     }
                   }
                 }
@@ -6276,9 +6953,18 @@
     "/v1/users.autocomplete": {
       "get": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "selector",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -6288,7 +6974,7 @@
                   "type": "object",
                   "properties": {
                     "items": {
-                      "$ref": "Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[]"
+                      "$ref": "Required<Pick<IUser, \"_id\" | \"name\" | \"username\" | \"nickname\" | \"status\" | \"avatarETag\">>[]"
                     }
                   }
                 }
@@ -6301,9 +6987,18 @@
     "/v1/users.list": {
       "get": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "fields",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -6311,7 +7006,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": {}
+                  "properties": {
+                    "users": {
+                      "$ref": "DefaultUserInfo[]"
+                    }
+                  }
                 }
               }
             }
@@ -6322,9 +7021,51 @@
     "/v1/users.listByStatus": {
       "get": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {}
+          },
+          {
+            "name": "hasLoggedIn",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "roles",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "searchTerm",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -6332,7 +7073,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": {}
+                  "properties": {
+                    "users": {
+                      "$ref": "DefaultUserInfo[]"
+                    }
+                  }
                 }
               }
             }
@@ -6343,15 +7088,21 @@
     "/v1/users.sendWelcomeEmail": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
               }
             }
           }
@@ -6374,7 +7125,7 @@
     "/v1/users.setAvatar": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -6415,7 +7166,7 @@
     "/v1/users.resetAvatar": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -6452,13 +7203,13 @@
     "/v1/users.requestDataDownload": {
       "get": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "fullExport",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {}
           }
         ],
@@ -6474,7 +7225,7 @@
                       "$ref": "boolean"
                     },
                     "exportOperation": {
-                      "$ref": "IExportOperation"
+                      "$ref": "#/components/schemas/IExportOperation"
                     }
                   }
                 }
@@ -6487,7 +7238,7 @@
     "/v1/users.logoutOtherClients": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -6525,7 +7276,7 @@
     "/v1/users.removeOtherTokens": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -6556,15 +7307,55 @@
     "/v1/users.resetE2EKey": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "unionTypes": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "userId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "userId"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "username": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "username"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "user": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "user"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "unionTypes"
+                ]
               }
             }
           }
@@ -6587,15 +7378,55 @@
     "/v1/users.resetTOTP": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "unionTypes": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "userId": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "userId"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "username": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "username"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "user": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "user"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "unionTypes"
+                ]
               }
             }
           }
@@ -6618,13 +7449,13 @@
     "/v1/users.presence": {
       "get": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "from",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -6646,7 +7477,14 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": {}
+                  "properties": {
+                    "users": {
+                      "$ref": "Readonly<Partial<Pick<IUser, \"name\" | \"username\" | \"status\" | \"statusText\" | \"utcOffset\" | \"roles\" | \"avatarETag\">> & Required<Pick<IUser, \"_id\">>>[]"
+                    },
+                    "full": {
+                      "$ref": "boolean"
+                    }
+                  }
                 }
               }
             }
@@ -6657,7 +7495,7 @@
     "/v1/users.removePersonalAccessToken": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -6694,7 +7532,7 @@
     "/v1/users.getPersonalAccessTokens": {
       "get": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -6719,7 +7557,7 @@
     "/v1/users.regeneratePersonalAccessToken": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -6760,7 +7598,7 @@
     "/v1/users.generatePersonalAccessToken": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -6805,7 +7643,7 @@
     "/v1/users.getUsernameSuggestion": {
       "get": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -6830,7 +7668,7 @@
     "/v1/users.getAvatarSuggestion": {
       "get": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -6842,7 +7680,7 @@
                   "type": "object",
                   "properties": {
                     "suggestions": {
-                      "$ref": "Record<\n\t\t\t\tstring,\n\t\t\t\t{\n\t\t\t\t\tblob: string;\n\t\t\t\t\tcontentType: string;\n\t\t\t\t\tservice: string;\n\t\t\t\t\turl: string;\n\t\t\t\t}\n\t\t\t>"
+                      "$ref": "Record<string, { blob: string; contentType: string; service: string; url: string; }>"
                     }
                   }
                 }
@@ -6855,7 +7693,7 @@
     "/v1/users.checkUsernameAvailability": {
       "get": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "parameters": [
           {
@@ -6889,7 +7727,7 @@
     "/v1/users.forgotPassword": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -6926,7 +7764,7 @@
     "/v1/users.getPreferences": {
       "get": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -6938,7 +7776,7 @@
                   "type": "object",
                   "properties": {
                     "preferences": {
-                      "$ref": "Required<IUser>['settings']['preferences']"
+                      "$ref": "#/components/schemas/IUser"
                     }
                   }
                 }
@@ -6951,7 +7789,7 @@
     "/v1/users.createToken": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -6987,7 +7825,10 @@
                   "type": "object",
                   "properties": {
                     "data": {
-                      "$ref": "{\n\t\t\t\tuserId: string;\n\t\t\t\tauthToken: string;\n\t\t\t}"
+                      "$ref": {
+                        "userId": "string",
+                        "authToken": "string"
+                      }
                     }
                   }
                 }
@@ -7000,15 +7841,80 @@
     "/v1/users.create": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "active": {
+                    "type": "boolean"
+                  },
+                  "bio": {
+                    "type": "string"
+                  },
+                  "nickname": {
+                    "type": "string"
+                  },
+                  "statusText": {
+                    "type": "string"
+                  },
+                  "roles": {
+                    "type": "array",
+                    "items": {}
+                  },
+                  "joinDefaultChannels": {
+                    "type": "boolean"
+                  },
+                  "requirePasswordChange": {
+                    "type": "boolean"
+                  },
+                  "setRandomPassword": {
+                    "type": "boolean"
+                  },
+                  "sendWelcomeEmail": {
+                    "type": "boolean"
+                  },
+                  "verified": {
+                    "type": "boolean"
+                  },
+                  "customFields": {},
+                  "fields": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email",
+                  "name",
+                  "password",
+                  "username",
+                  "active",
+                  "bio",
+                  "nickname",
+                  "statusText",
+                  "roles",
+                  "joinDefaultChannels",
+                  "requirePasswordChange",
+                  "setRandomPassword",
+                  "sendWelcomeEmail",
+                  "verified",
+                  "customFields",
+                  "fields"
+                ]
               }
             }
           }
@@ -7035,15 +7941,96 @@
     "/v1/users.update": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "userId": {
+                    "type": "string"
+                  },
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "email": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "password": {
+                        "type": "string"
+                      },
+                      "username": {
+                        "type": "string"
+                      },
+                      "active": {
+                        "type": "boolean"
+                      },
+                      "bio": {
+                        "type": "string"
+                      },
+                      "nickname": {
+                        "type": "string"
+                      },
+                      "statusText": {
+                        "type": "string"
+                      },
+                      "roles": {
+                        "type": "array",
+                        "items": {}
+                      },
+                      "joinDefaultChannels": {
+                        "type": "boolean"
+                      },
+                      "requirePasswordChange": {
+                        "type": "boolean"
+                      },
+                      "setRandomPassword": {
+                        "type": "boolean"
+                      },
+                      "sendWelcomeEmail": {
+                        "type": "boolean"
+                      },
+                      "verified": {
+                        "type": "boolean"
+                      },
+                      "customFields": {},
+                      "status": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "email",
+                      "name",
+                      "password",
+                      "username",
+                      "active",
+                      "bio",
+                      "nickname",
+                      "statusText",
+                      "roles",
+                      "joinDefaultChannels",
+                      "requirePasswordChange",
+                      "setRandomPassword",
+                      "sendWelcomeEmail",
+                      "verified",
+                      "customFields",
+                      "status"
+                    ]
+                  },
+                  "confirmRelinquish": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "userId",
+                  "data",
+                  "confirmRelinquish"
+                ]
               }
             }
           }
@@ -7070,15 +8057,29 @@
     "/v1/users.setActiveStatus": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "userId": {
+                    "type": "string"
+                  },
+                  "activeStatus": {
+                    "type": "boolean"
+                  },
+                  "confirmRelinquish": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "userId",
+                  "activeStatus",
+                  "confirmRelinquish"
+                ]
               }
             }
           }
@@ -7105,15 +8106,25 @@
     "/v1/users.deactivateIdle": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "daysIdle": {
+                    "type": "integer"
+                  },
+                  "role": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "daysIdle",
+                  "role"
+                ]
               }
             }
           }
@@ -7140,9 +8151,52 @@
     "/v1/users.getPresence": {
       "get": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "unionTypes",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "userId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "userId"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "user"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -7154,10 +8208,10 @@
                     "presence": {
                       "$ref": "UserStatus"
                     },
-                    "connectionStatus": {
-                      "$ref": "'online' | 'offline' | 'away' | 'busy'"
+                    "connectionStatus?": {
+                      "$ref": "\"online\" | \"offline\" | \"away\" | \"busy\""
                     },
-                    "lastLogin": {
+                    "lastLogin?": {
                       "$ref": "string"
                     }
                   }
@@ -7171,7 +8225,7 @@
     "/v1/users.setStatus": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -7222,7 +8276,7 @@
     "/v1/users.getStatus": {
       "get": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -7234,16 +8288,16 @@
                   "type": "object",
                   "properties": {
                     "status": {
-                      "$ref": "'online' | 'offline' | 'away' | 'busy'"
+                      "$ref": "\"online\" | \"offline\" | \"away\" | \"busy\""
                     },
-                    "message": {
+                    "message?": {
                       "$ref": "string"
                     },
-                    "_id": {
+                    "_id?": {
                       "$ref": "string"
                     },
-                    "connectionStatus": {
-                      "$ref": "'online' | 'offline' | 'away' | 'busy'"
+                    "connectionStatus?": {
+                      "$ref": "\"online\" | \"offline\" | \"away\" | \"busy\""
                     }
                   }
                 }
@@ -7256,7 +8310,7 @@
     "/v1/users.info": {
       "get": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -7268,7 +8322,7 @@
                   "type": "object",
                   "properties": {
                     "user": {
-                      "$ref": "IUser & { rooms?: Pick<ISubscription, 'rid' | 'name' | 't' | 'roles' | 'unread'>[] }"
+                      "$ref": "any"
                     }
                   }
                 }
@@ -7281,15 +8335,43 @@
     "/v1/users.register": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "pass": {
+                    "type": "string"
+                  },
+                  "secret": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  },
+                  "customFields": {}
+                },
+                "required": [
+                  "username",
+                  "name",
+                  "email",
+                  "pass",
+                  "secret",
+                  "reason",
+                  "customFields"
+                ]
               }
             }
           }
@@ -7303,7 +8385,7 @@
                   "type": "object",
                   "properties": {
                     "user": {
-                      "$ref": "Partial<IUser>"
+                      "$ref": "#/components/schemas/IUser"
                     }
                   }
                 }
@@ -7316,15 +8398,21 @@
     "/v1/users.logout": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "userId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "userId"
+                ]
               }
             }
           }
@@ -7351,15 +8439,198 @@
     "/v1/users.setPreferences": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "userId": {
+                    "type": "string"
+                  },
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "newRoomNotification": {
+                        "type": "string"
+                      },
+                      "newMessageNotification": {
+                        "type": "string"
+                      },
+                      "clockMode": {
+                        "type": "integer"
+                      },
+                      "useEmojis": {
+                        "type": "boolean"
+                      },
+                      "convertAsciiEmoji": {
+                        "type": "boolean"
+                      },
+                      "saveMobileBandwidth": {
+                        "type": "boolean"
+                      },
+                      "collapseMediaByDefault": {
+                        "type": "boolean"
+                      },
+                      "autoImageLoad": {
+                        "type": "boolean"
+                      },
+                      "emailNotificationMode": {
+                        "type": "string"
+                      },
+                      "unreadAlert": {
+                        "type": "boolean"
+                      },
+                      "notificationsSoundVolume": {
+                        "type": "integer"
+                      },
+                      "desktopNotifications": {
+                        "type": "string"
+                      },
+                      "pushNotifications": {
+                        "type": "string"
+                      },
+                      "enableAutoAway": {
+                        "type": "boolean"
+                      },
+                      "highlights": {
+                        "type": "array",
+                        "items": {}
+                      },
+                      "alsoSendThreadToChannel": {},
+                      "desktopNotificationRequireInteraction": {
+                        "type": "boolean"
+                      },
+                      "showThreadsInMainChannel": {
+                        "type": "boolean"
+                      },
+                      "hideUsernames": {
+                        "type": "boolean"
+                      },
+                      "hideRoles": {
+                        "type": "boolean"
+                      },
+                      "displayAvatars": {
+                        "type": "boolean"
+                      },
+                      "hideFlexTab": {
+                        "type": "boolean"
+                      },
+                      "sendOnEnter": {
+                        "type": "string"
+                      },
+                      "language": {
+                        "type": "string"
+                      },
+                      "sidebarShowFavorites": {
+                        "type": "boolean"
+                      },
+                      "sidebarShowUnread": {
+                        "type": "boolean"
+                      },
+                      "sidebarSortby": {
+                        "type": "string"
+                      },
+                      "sidebarViewMode": {
+                        "type": "string"
+                      },
+                      "sidebarDisplayAvatar": {
+                        "type": "boolean"
+                      },
+                      "sidebarGroupByType": {
+                        "type": "boolean"
+                      },
+                      "muteFocusedConversations": {
+                        "type": "boolean"
+                      },
+                      "dontAskAgainList": {
+                        "type": "array",
+                        "items": {}
+                      },
+                      "featuresPreview": {
+                        "type": "array",
+                        "items": {}
+                      },
+                      "themeAppearence": {},
+                      "fontSize": {},
+                      "receiveLoginDetectionEmail": {
+                        "type": "boolean"
+                      },
+                      "notifyCalendarEvents": {
+                        "type": "boolean"
+                      },
+                      "idleTimeLimit": {
+                        "type": "integer"
+                      },
+                      "omnichannelTranscriptEmail": {
+                        "type": "boolean"
+                      },
+                      "omnichannelTranscriptPDF": {
+                        "type": "boolean"
+                      },
+                      "omnichannelHideConversationAfterClosing": {
+                        "type": "boolean"
+                      },
+                      "enableMobileRinging": {
+                        "type": "boolean"
+                      },
+                      "mentionsWithSymbol": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "newRoomNotification",
+                      "newMessageNotification",
+                      "clockMode",
+                      "useEmojis",
+                      "convertAsciiEmoji",
+                      "saveMobileBandwidth",
+                      "collapseMediaByDefault",
+                      "autoImageLoad",
+                      "emailNotificationMode",
+                      "unreadAlert",
+                      "notificationsSoundVolume",
+                      "desktopNotifications",
+                      "pushNotifications",
+                      "enableAutoAway",
+                      "highlights",
+                      "alsoSendThreadToChannel",
+                      "desktopNotificationRequireInteraction",
+                      "showThreadsInMainChannel",
+                      "hideUsernames",
+                      "hideRoles",
+                      "displayAvatars",
+                      "hideFlexTab",
+                      "sendOnEnter",
+                      "language",
+                      "sidebarShowFavorites",
+                      "sidebarShowUnread",
+                      "sidebarSortby",
+                      "sidebarViewMode",
+                      "sidebarDisplayAvatar",
+                      "sidebarGroupByType",
+                      "muteFocusedConversations",
+                      "dontAskAgainList",
+                      "featuresPreview",
+                      "themeAppearence",
+                      "fontSize",
+                      "receiveLoginDetectionEmail",
+                      "notifyCalendarEvents",
+                      "idleTimeLimit",
+                      "omnichannelTranscriptEmail",
+                      "omnichannelTranscriptPDF",
+                      "omnichannelHideConversationAfterClosing",
+                      "enableMobileRinging",
+                      "mentionsWithSymbol"
+                    ]
+                  }
+                },
+                "required": [
+                  "userId",
+                  "data"
+                ]
               }
             }
           }
@@ -7373,7 +8644,7 @@
                   "type": "object",
                   "properties": {
                     "user": {
-                      "$ref": "Required<Pick<IUser, '_id' | 'settings'>>"
+                      "$ref": "Required<Pick<IUser, \"_id\" | \"settings\">>"
                     }
                   }
                 }
@@ -7386,7 +8657,7 @@
     "/v1/users.delete": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -7425,13 +8696,13 @@
     "/v1/users.getAvatar": {
       "get": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "userId",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -7439,7 +8710,7 @@
           {
             "name": "username",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -7447,7 +8718,7 @@
           {
             "name": "user",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -7471,15 +8742,63 @@
     "/v1/users.updateOwnBasicInfo": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "properties": {
+                      "email": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "username": {
+                        "type": "string"
+                      },
+                      "nickname": {
+                        "type": "string"
+                      },
+                      "bio": {
+                        "type": "string"
+                      },
+                      "statusText": {
+                        "type": "string"
+                      },
+                      "statusType": {
+                        "type": "string"
+                      },
+                      "currentPassword": {
+                        "type": "string"
+                      },
+                      "newPassword": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "email",
+                      "name",
+                      "username",
+                      "nickname",
+                      "bio",
+                      "statusText",
+                      "statusType",
+                      "currentPassword",
+                      "newPassword"
+                    ]
+                  },
+                  "customFields": {}
+                },
+                "required": [
+                  "data",
+                  "customFields"
+                ]
               }
             }
           }
@@ -7506,7 +8825,7 @@
     "/v1/users.deleteOwnAccount": {
       "post": {
         "tags": [
-          "usersEndpoints"
+          "USERS ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -7547,7 +8866,7 @@
     "/v1/connector.extension.getRegistrationInfoByUserId": {
       "get": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
         "parameters": [
           {
@@ -7567,13 +8886,13 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "0": {
-                      "$ref": "IRegistrationInfo"
-                    },
-                    "1": {
-                      "$ref": {
-                        "result": "string"
-                      }
+                    "unionTypes": {
+                      "$ref": [
+                        {},
+                        {
+                          "result": "string"
+                        }
+                      ]
                     }
                   }
                 }
@@ -7586,7 +8905,7 @@
     "/v1/voip/queues.getSummary": {
       "get": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -7598,7 +8917,7 @@
                   "type": "object",
                   "properties": {
                     "summary": {
-                      "$ref": "IQueueSummary[]"
+                      "$ref": "#/components/schemas/IQueueSummary"
                     }
                   }
                 }
@@ -7611,7 +8930,7 @@
     "/v1/voip/queues.getQueuedCallsForThisExtension": {
       "get": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
         "parameters": [
           {
@@ -7641,7 +8960,7 @@
     "/v1/voip/queues.getMembershipSubscription": {
       "get": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
         "parameters": [
           {
@@ -7671,13 +8990,13 @@
     "/v1/omnichannel/extensions": {
       "get": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "status",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -7685,7 +9004,7 @@
           {
             "name": "agentId",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -7693,7 +9012,7 @@
           {
             "name": "queues",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "array",
               "items": {
@@ -7704,7 +9023,7 @@
           {
             "name": "extension",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -7717,7 +9036,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": {}
+                  "properties": {
+                    "extensions": {
+                      "$ref": "#/components/schemas/IVoipExtensionWithAgentInfo"
+                    }
+                  }
                 }
               }
             }
@@ -7728,9 +9051,45 @@
     "/v1/omnichannel/extension": {
       "get": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "unionTypes",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "userId": {
+                      "type": "string"
+                    },
+                    "type": {}
+                  },
+                  "required": [
+                    "userId",
+                    "type"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "type": {}
+                  },
+                  "required": [
+                    "username",
+                    "type"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -7753,15 +9112,52 @@
     "/v1/omnichannel/agent/extension": {
       "post": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {},
-                "required": []
+                "properties": {
+                  "unionTypes": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "userId": {
+                            "type": "string"
+                          },
+                          "extension": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "userId",
+                          "extension"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "username": {
+                            "type": "string"
+                          },
+                          "extension": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "username",
+                          "extension"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "unionTypes"
+                ]
               }
             }
           }
@@ -7784,7 +9180,7 @@
     "/v1/omnichannel/agent/extension/:username": {
       "get": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -7796,7 +9192,7 @@
                   "type": "object",
                   "properties": {
                     "extension": {
-                      "$ref": "Pick<IUser, '_id' | 'username' | 'extension'>"
+                      "$ref": "Pick<IUser, \"_id\" | \"username\" | \"extension\">"
                     }
                   }
                 }
@@ -7807,19 +9203,9 @@
       },
       "delete": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {},
-                "required": []
-              }
-            }
-          }
-        },
+        "parameters": [],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -7838,13 +9224,13 @@
     "/v1/omnichannel/agents/available": {
       "get": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "text",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -7852,7 +9238,7 @@
           {
             "name": "includeExtension",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -7865,7 +9251,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": {}
+                  "properties": {
+                    "agents": {
+                      "$ref": "#/components/schemas/ILivechatAgent"
+                    }
+                  }
                 }
               }
             }
@@ -7876,7 +9266,7 @@
     "/v1/voip/events": {
       "post": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -7919,9 +9309,49 @@
     "/v1/voip/room": {
       "get": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "unionTypes",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "agentId": {},
+                    "direction": {}
+                  },
+                  "required": [
+                    "token",
+                    "agentId",
+                    "direction"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "rid": {
+                      "type": "string"
+                    },
+                    "token": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "rid",
+                    "token"
+                  ]
+                }
+              ]
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response",
@@ -7931,7 +9361,7 @@
                   "type": "object",
                   "properties": {
                     "room": {
-                      "$ref": "IVoipRoom"
+                      "$ref": "#/components/schemas/IVoipRoom"
                     },
                     "newRoom": {
                       "$ref": "boolean"
@@ -7947,7 +9377,7 @@
     "/v1/voip/managementServer/checkConnection": {
       "get": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
         "parameters": [
           {
@@ -8001,7 +9431,7 @@
     "/v1/voip/callServer/checkConnection": {
       "get": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
         "parameters": [
           {
@@ -8055,13 +9485,13 @@
     "/v1/voip/rooms": {
       "get": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
         "parameters": [
           {
             "name": "agents",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "array",
               "items": {
@@ -8072,13 +9502,13 @@
           {
             "name": "open",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {}
           },
           {
             "name": "createdAt",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -8086,7 +9516,7 @@
           {
             "name": "closedAt",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -8094,7 +9524,7 @@
           {
             "name": "tags",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "array",
               "items": {
@@ -8105,7 +9535,7 @@
           {
             "name": "queue",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -8113,7 +9543,7 @@
           {
             "name": "visitorId",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -8121,7 +9551,7 @@
           {
             "name": "roomName",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -8129,7 +9559,7 @@
           {
             "name": "direction",
             "in": "query",
-            "required": true,
+            "required": false,
             "schema": {}
           }
         ],
@@ -8140,7 +9570,11 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": {}
+                  "properties": {
+                    "rooms": {
+                      "$ref": "#/components/schemas/IVoipRoom"
+                    }
+                  }
                 }
               }
             }
@@ -8151,7 +9585,7 @@
     "/v1/voip/room.close": {
       "post": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -8165,11 +9599,27 @@
                   "token": {
                     "type": "string"
                   },
-                  "options": {}
+                  "options": {
+                    "type": "object",
+                    "properties": {
+                      "comment": {
+                        "type": "string"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {}
+                      }
+                    },
+                    "required": [
+                      "comment",
+                      "tags"
+                    ]
+                  }
                 },
                 "required": [
                   "rid",
-                  "token"
+                  "token",
+                  "options"
                 ]
               }
             }
@@ -8197,7 +9647,7 @@
     "/v1/connector.extension.getDetails": {
       "get": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
         "parameters": [
           {
@@ -8227,7 +9677,7 @@
     "/v1/connector.extension.getRegistrationInfoByExtension": {
       "get": {
         "tags": [
-          "voipEndpoints"
+          "VOIP ENDPOINTS"
         ],
         "parameters": [
           {
@@ -8257,7 +9707,7 @@
     "/v1/webdav.getMyAccounts": {
       "get": {
         "tags": [
-          "webdavEndpoints"
+          "WEBDAV ENDPOINTS"
         ],
         "parameters": [],
         "responses": {
@@ -8269,7 +9719,7 @@
                   "type": "object",
                   "properties": {
                     "accounts": {
-                      "$ref": "IWebdavAccountIntegration[]"
+                      "$ref": "#/components/schemas/IWebdavAccountIntegration"
                     }
                   }
                 }
@@ -8282,7 +9732,7 @@
     "/v1/webdav.removeWebdavAccount": {
       "post": {
         "tags": [
-          "webdavEndpoints"
+          "WEBDAV ENDPOINTS"
         ],
         "requestBody": {
           "content": {
@@ -9313,6 +10763,251 @@
           "roomId",
           "createdBy",
           "createdAt"
+        ]
+      },
+      "IProviderMetadata": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "settings": {
+            "type": "object",
+            "properties": {
+              "apiKey": {
+                "type": "string"
+              },
+              "apiEndPointUrl": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "apiKey",
+              "apiEndPointUrl"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "displayName",
+          "settings"
+        ]
+      },
+      "IDeepLTranslation": {
+        "type": "object",
+        "properties": {
+          "detected_source_language": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "detected_source_language",
+          "text"
+        ]
+      },
+      "IGoogleTranslation": {
+        "type": "object",
+        "properties": {
+          "translatedText": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "translatedText"
+        ]
+      },
+      "ISupportedLanguage": {
+        "type": "object",
+        "properties": {
+          "language": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "language",
+          "name"
+        ]
+      },
+      "ISupportedLanguages": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/ISupportedLanguage"
+          }
+        }
+      },
+      "ITranslationResult": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "string"
+        }
+      },
+      "Token": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "user",
+              "team"
+            ]
+          },
+          "noHtml": {
+            "type": "string"
+          },
+          "highlight": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "token",
+          "text"
+        ],
+        "additionalProperties": true
+      },
+      "TokenExtra": {
+        "type": "object",
+        "properties": {
+          "highlight": {
+            "type": "boolean"
+          },
+          "noHtml": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true
+      },
+      "MessageMention": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "user",
+              "team"
+            ]
+          },
+          "_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "fname": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "_id"
+        ],
+        "additionalProperties": true
+      },
+      "IMessageCustomFields": {
+        "type": "object",
+        "additionalProperties": true
+      },
+      "IEditedMessage": {
+        "type": "object",
+        "properties": {
+          "editedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "editedBy": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "_id",
+              "username"
+            ]
+          }
+        },
+        "required": [
+          "editedAt",
+          "editedBy"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/IMessage"
+          }
+        ]
+      },
+      "IInvite": {
+        "type": "object",
+        "properties": {
+          "days": {
+            "type": "number"
+          },
+          "maxUses": {
+            "type": "number"
+          },
+          "rid": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expires": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "uses": {
+            "type": "number"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "days",
+          "maxUses",
+          "rid",
+          "userId",
+          "createdAt",
+          "uses",
+          "url"
+        ],
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/IRocketChatRecord"
+          }
         ]
       }
     }

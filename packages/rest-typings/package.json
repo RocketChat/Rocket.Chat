@@ -12,7 +12,8 @@
 		"ts-node": "^10.9.2"
 	},
 	"scripts": {
-		"start": "ts-node ./src/scripts/schemaGenerator.ts",
+		"start": "ts-node ./src/scripts/convertor.ts",
+		"serve-docs": "yarn start && docker run -p 8080:8080 -e SWAGGER_JSON=/foo/apiDoc.json -v \"$(pwd)/oas:/foo\" swaggerapi/swagger-ui",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",

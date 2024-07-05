@@ -2,10 +2,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import type { oas31 } from 'openapi3-ts';
-import type { SchemaObjectType } from 'openapi3-ts/dist/oas30';
 
 import apiData from './compiler';
 import { schemas } from './schemas';
+
+const IsArrayREGEX = /\[\]$/;
 
 export interface IMethodData {
 	params?: Record<string, string>;
@@ -42,52 +43,72 @@ const createBasicTemplate = (): oas31.OpenAPIObject => ({
 });
 
 // Type mapping
-const paramTypeMap: { [key: string]: SchemaObjectType } = {
-	"IRoom['_id']": 'string',
-	'string': 'string',
-	'boolean': 'boolean',
-	"IUser['username'][]": 'array',
-	'number': 'integer',
+const paramTypeMap: { [key: string]: oas31.SchemaObjectType } = {
+	string: 'string',
+	boolean: 'boolean',
+	number: 'integer',
 };
 
-const paramFormatMap: { [key: string]: string | undefined } = {
-	integer: 'int32',
-};
+const createParameterObject = (name: string, type: any, isRequired: boolean): oas31.ParameterObject => {
+	const isArray = IsArrayREGEX.test(type);
+	const isUnion = name === 'unionTypes';
 
-// Helper function to create a parameter object
-const createParameterObject = (name: string, type: string, isRequired: boolean): oas31.ParameterObject => {
-	const isArray = type.endsWith('[]');
+	if (/\?$/.test(name)) {
+		name = name.slice(0, -1);
+		isRequired = false;
+	}
+
 	return {
 		name,
 		in: 'query',
 		required: isRequired,
 		schema: {
 			type: isArray ? 'array' : paramTypeMap[type],
-			format: paramFormatMap[paramTypeMap[type]],
+			oneOf: isUnion ? type.map((childType: Record<string, string>) => createRequestBodySchema(childType)) : undefined,
 			...(isArray ? { items: { type: paramTypeMap[type.slice(0, -2)] } } : {}),
 		},
 	};
 };
 
-// Helper function to create a schema object for requestBody
-const createRequestBodySchema = (params: Record<string, string>): oas31.SchemaObject => {
+const createRequestBodySchema = (params: Record<string, any>): oas31.SchemaObject => {
 	const schema: oas31.SchemaObject = { type: 'object', properties: {}, required: [] };
-	for (const [key, value] of Object.entries(params)) {
-		const isArray = value.endsWith('[]');
-		const type = paramTypeMap[isArray ? value.slice(0, -2) : value];
-		schema.properties![key] = {
-			type: isArray ? 'array' : type,
-			format: paramFormatMap[type],
-			...(isArray ? { items: { type } } : {}),
-		};
-		if (!value.includes('?')) {
-			schema.required!.push(key);
+
+	for (let [key, value] of Object.entries(params)) {
+		value = value;
+		if (/\?$/.test(key)) {
+			key = key.slice(0, -1);
+		}
+
+		const isArray = IsArrayREGEX.test(value);
+		const isUnion = key === 'unionTypes';
+		const type = paramTypeMap[value];
+
+		if (typeof value === 'object' && !isUnion) {
+			const nestedSchema = createRequestBodySchema(value);
+			schema.properties![key] = {
+				type: 'object',
+				properties: nestedSchema.properties,
+				required: nestedSchema.required,
+			};
+			if (nestedSchema.required && nestedSchema.required.length > 0) {
+				schema.required!.push(key);
+			}
+		} else {
+			schema.properties![key] = {
+				// key name is set to "UnionTypes" which may be changed later accordingly! //
+				type: isArray ? 'array' : type,
+				oneOf: isUnion ? value.map((childType: Record<string, string>) => createRequestBodySchema(childType)) : undefined,
+				...(isArray ? { items: { type } } : {}),
+			};
+
+			if (!/\?$/.test(key)) {
+				schema.required!.push(key);
+			}
 		}
 	}
 	return schema;
 };
 
-// Helper function to create a schema object for responses
 const createResponseSchema = (response: Record<string, any>): oas31.SchemaObject => {
 	const responseSchema: oas31.SchemaObject = {
 		type: 'object',
@@ -96,46 +117,54 @@ const createResponseSchema = (response: Record<string, any>): oas31.SchemaObject
 
 	for (const [key, value] of Object.entries(response || {})) {
 		let $ref = value;
-		// use logic here: If it starts with "I" the use appropriate schema, if it has ["id"] parse it as string //
-		if (['IRoom[]', 'IRoom'].includes(value)) {
-			$ref = '#/components/schemas/IRoom';
-		} else if (['IUser[]', 'IUser'].includes(value)) {
-			$ref = '#/components/schemas/IUser';
+		const regex = /^I[A-Z]/u;
+		if (regex.test(value)) {
+			const stringRegex = /\[\s*'[^']*'\s*\]/;
+			if (stringRegex.test(value)) {
+				$ref = 'string';
+			} else {
+				$ref = `#/components/schemas/${value}`;
+				if ($ref.endsWith('[]')) {
+					$ref = $ref.slice(0, -2);
+				}
+
+				const unwantedPattern = /\s*\|\s*(null|undefined)/g; // if | null exists then it is not in required //
+				if (unwantedPattern.test($ref)) $ref = $ref.replace(unwantedPattern, '');
+			}
 		}
+
 		responseSchema.properties![key] = { $ref };
 	}
 
 	return responseSchema;
 };
 
-// Function to process and add endpoints to the OpenAPI spec
 const processEndpoints = (endpoints: IEndpoints, tag: string): Record<string, oas31.PathItemObject> => {
 	const paths: Record<string, oas31.PathItemObject> = {};
 
 	for (const [endpoint, methods] of Object.entries(endpoints)) {
 		const pathItem: oas31.PathItemObject = {};
 
-		// handle delete also //
 		for (const [method, methodData] of Object.entries(methods)) {
-			const isGetMethod = method === 'GET';
-			const parameters = isGetMethod
-				? Object.entries(methodData.params || {}).map(([key, value]) => createParameterObject(key, value, !value.includes('?')))
-				: undefined;
+			const isPostMethod = method === 'POST';
+			const parameters = isPostMethod
+				? undefined
+				: Object.entries(methodData.params || {}).map(([key, value]) => createParameterObject(key, value, true));
 
-			const requestBodySchema = isGetMethod ? undefined : createRequestBodySchema(methodData.params || {});
+			const requestBodySchema = isPostMethod ? createRequestBodySchema(methodData.params || {}) : undefined;
 			const responseSchema = createResponseSchema(methodData.response || {});
 
 			const operation: oas31.OperationObject = {
 				tags: [tag],
-				requestBody: isGetMethod
-					? undefined
-					: {
+				requestBody: isPostMethod
+					? {
 							content: {
 								'application/json': {
 									schema: requestBodySchema,
 								},
 							},
-					  },
+					  }
+					: undefined,
 				parameters,
 				responses: {
 					'200': {
@@ -158,7 +187,7 @@ const processEndpoints = (endpoints: IEndpoints, tag: string): Record<string, oa
 	return paths;
 };
 
-// Generate the OpenAPI document
+// main()
 const generateApiDoc = (apiData: IApiData): oas31.OpenAPIObject => {
 	const openApiTemplate = createBasicTemplate();
 
