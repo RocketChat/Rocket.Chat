@@ -1,6 +1,7 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { forwardRef } from 'react';
 
+// TODO: remove any and type correctly
 const HeaderToolbarAction = forwardRef<HTMLButtonElement, any>(function HeaderToolbarAction(
 	{ id, icon, action, index, title, 'data-tooltip': tooltip, ...props },
 	ref,
