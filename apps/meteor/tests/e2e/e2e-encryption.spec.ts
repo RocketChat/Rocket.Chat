@@ -681,8 +681,9 @@ test.describe.serial('e2ee room setup', () => {
 
 		await test.step('expect to enable encryption in new DM room', async () => {
 			await poHomeChannel.tabs.kebab.click();
-			await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
-			await poHomeChannel.tabs.btnEnableE2E.click();
+			const btnEnableE2EE = poHomeChannel.tabs.btnEnableE2E;
+			await expect(btnEnableE2EE).toBeVisible();
+			await btnEnableE2EE.click();
 
 			await expect(page.locator('role=button[name="Encrypted"]')).toBeVisible();
 		});
@@ -693,8 +694,9 @@ test.describe.serial('e2ee room setup', () => {
 			await savePasswordButton.waitFor();
 			await expect(savePasswordButton).toBeVisible();
 
-			await poHomeChannel.tabs.btnE2EERoomSetupDisableE2E.waitFor();
-			await expect(poHomeChannel.tabs.btnE2EERoomSetupDisableE2E).toBeVisible();
+			const btnE2EERoomSetupDisableE2E = poHomeChannel.tabs.btnE2EERoomSetupDisableE2E
+			await btnE2EERoomSetupDisableE2E.waitFor();
+			await expect(btnE2EERoomSetupDisableE2E).toBeVisible();
 			await expect(poHomeChannel.tabs.btnTabMembers).not.toBeVisible();
 			await expect(poHomeChannel.tabs.btnRoomInfo).not.toBeVisible();
 
