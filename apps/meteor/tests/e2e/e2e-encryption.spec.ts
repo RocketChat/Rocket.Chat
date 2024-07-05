@@ -660,8 +660,6 @@ test.describe.serial('e2ee room setup', () => {
 			await poAccountProfile.securityE2EEncryptionSection.click();
 			await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
 
-			await page.reload();
-
 			await page.locator('role=button[name="Login"]').waitFor();
 			await injectInitialData();
 			await restoreState(page, Users.admin);
@@ -694,9 +692,9 @@ test.describe.serial('e2ee room setup', () => {
 			await savePasswordButton.waitFor();
 			await expect(savePasswordButton).toBeVisible();
 
-			const btnE2EERoomSetupDisableE2E = poHomeChannel.tabs.btnE2EERoomSetupDisableE2E
-			await btnE2EERoomSetupDisableE2E.waitFor();
-			await expect(btnE2EERoomSetupDisableE2E).toBeVisible();
+			const disableE2EEButton = poHomeChannel.tabs.btnE2EERoomSetupDisableE2E;
+			await disableE2EEButton.waitFor();
+			await expect(disableE2EEButton).toBeVisible();
 			await expect(poHomeChannel.tabs.btnTabMembers).not.toBeVisible();
 			await expect(poHomeChannel.tabs.btnRoomInfo).not.toBeVisible();
 
