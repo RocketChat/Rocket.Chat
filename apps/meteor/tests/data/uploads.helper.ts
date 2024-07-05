@@ -1,37 +1,46 @@
-import type { Response } from 'supertest';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, it } from 'mocha';
+import type { Response } from 'supertest';
 
-import { api, request, credentials } from './api-data.js';
-import { password } from './user';
-import { createUser, login } from './users.helper';
+import { api, request, credentials } from './api-data';
 import { imgURL } from './interactions';
+import { createVisitor } from './livechat/rooms';
 import { updateSetting } from './permissions.helper';
 import { createRoom, deleteRoom } from './rooms.helper';
-import { createVisitor } from './livechat/rooms';
+import { password } from './user';
+import { createUser, login } from './users.helper';
 
-export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.files' | 'im.files', roomType: 'c' | 'd' | 'p', invalidRoomError = 'error-room-not-found') {
-	let testRoom: Record<string, any>;
+export async function testFileUploads(
+	filesEndpoint: 'channels.files' | 'groups.files' | 'im.files',
+	roomType: 'c' | 'd' | 'p',
+	invalidRoomError = 'error-room-not-found',
+) {
+	let testRoom: IRoom;
 	const propertyMap = {
-		'c': 'channel',
-		'p': 'group',
-		'd': 'room',
+		c: 'channel',
+		p: 'group',
+		d: 'room',
 	};
 
-	before(async function () {
-		await updateSetting('VoIP_Enabled', true);
-		await updateSetting('Message_KeepHistory', true);
+	before(async () => {
+		await Promise.all([updateSetting('VoIP_Enabled', true), updateSetting('Message_KeepHistory', true)]);
 
-		testRoom = (await createRoom({ type: roomType, ...(roomType === 'd' ? { username: 'rocket.cat' } : { name: `channel-files-${Date.now()}` }) } as any)).body[propertyMap[roomType]];
+		testRoom = (
+			await createRoom({
+				type: roomType,
+				...(roomType === 'd' ? { username: 'rocket.cat' } : { name: `channel-files-${Date.now()}` }),
+			} as any)
+		).body[propertyMap[roomType]];
 	});
 
-	after(async function () {
-		await Promise.all([
-			deleteRoom({ type: 'c', roomId: testRoom._id }),
+	after(() =>
+		Promise.all([
+			deleteRoom({ type: 'c' as const, roomId: testRoom._id }),
 			updateSetting('VoIP_Enabled', false),
 			updateSetting('Message_KeepHistory', false),
-		]);
-	});
+		]),
+	);
 
 	const createVoipRoom = async function () {
 		const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
@@ -42,17 +51,13 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			type: 'v',
 			agentId: testUser._id,
 			credentials: testUserCredentials,
-			name: null,
-			username: null,
-			members: null,
-			extraData: null,
 		});
 
 		return roomResponse.body.room;
 	};
 
-	it('should fail if invalid channel', function (done) {
-		request
+	it('should fail if invalid channel', (done) => {
+		void request
 			.get(api(filesEndpoint))
 			.set(credentials)
 			.query({
@@ -60,16 +65,16 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(400)
-			.expect(function (res: Response) {
+			.expect((res: Response) => {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('errorType', invalidRoomError);
 			})
 			.end(done);
 	});
 
-	it('should fail for room type v', async function () {
+	it('should fail for room type v', async () => {
 		const { _id } = await createVoipRoom();
-		request
+		void request
 			.get(api(filesEndpoint))
 			.set(credentials)
 			.query({
@@ -77,14 +82,14 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(400)
-			.expect(function (res: Response) {
+			.expect((res: Response) => {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('errorType', 'error-room-not-found');
 			});
 	});
 
-	it('should succeed when searching by roomId', function (done) {
-		request
+	it('should succeed when searching by roomId', (done) => {
+		void request
 			.get(api(filesEndpoint))
 			.set(credentials)
 			.query({
@@ -92,15 +97,15 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.expect(function (res: Response) {
+			.expect((res: Response) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array');
 			})
 			.end(done);
 	});
 
-	it('should succeed when searching by roomId even requested with count and offset params', function (done) {
-		request
+	it('should succeed when searching by roomId even requested with count and offset params', (done) => {
+		void request
 			.get(api(filesEndpoint))
 			.set(credentials)
 			.query({
@@ -110,7 +115,7 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.expect(function (res: Response) {
+			.expect((res: Response) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array');
 			})
@@ -121,7 +126,7 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 		if (!testRoom.name) {
 			this.skip();
 		}
-		request
+		void request
 			.get(api(filesEndpoint))
 			.set(credentials)
 			.query({
@@ -129,7 +134,7 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.expect(function (res: Response) {
+			.expect((res: Response) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array');
 			})
@@ -140,7 +145,7 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 		if (!testRoom.name) {
 			this.skip();
 		}
-		request
+		void request
 			.get(api(filesEndpoint))
 			.set(credentials)
 			.query({
@@ -150,21 +155,21 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.expect(function (res: Response) {
+			.expect((res: Response) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array');
 			})
 			.end(done);
 	});
 
-	it('should not return thumbnails', async function () {
+	it('should not return thumbnails', async () => {
 		await request
 			.post(api(`rooms.upload/${testRoom._id}`))
 			.set(credentials)
 			.attach('file', imgURL)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.expect(function (res: Response) {
+			.expect((res: Response) => {
 				expect(res.body).to.have.property('success', true);
 			});
 
@@ -176,19 +181,19 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.expect(function (res: Response) {
+			.expect((res: Response) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array').with.lengthOf(1);
 
 				const { files } = res.body;
 
-				files.forEach(function (file: unknown) {
+				files.forEach((file: unknown) => {
 					expect(file).to.not.have.property('originalFileId');
 				});
 			});
 	});
 
-	it('should not return hidden files', async function () {
+	it('should not return hidden files', async () => {
 		let msgId;
 		let fileId: string;
 
@@ -198,7 +203,7 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			.attach('file', imgURL)
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.expect(function (res: Response) {
+			.expect((res: Response) => {
 				expect(res.body).to.have.property('success', true);
 
 				msgId = res.body.message._id;
@@ -223,12 +228,12 @@ export async function testFileUploads(filesEndpoint: 'channels.files' | 'groups.
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.expect(function (res: Response) {
+			.expect((res: Response) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('files').and.to.be.an('array').with.lengthOf(1);
 
 				const { files } = res.body;
-				files.forEach(function (file: unknown) {
+				files.forEach((file: unknown) => {
 					expect(file).to.have.property('_id').to.not.be.equal(fileId);
 				});
 			});

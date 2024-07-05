@@ -23,6 +23,7 @@ import TeamsChannelItem from './TeamsChannelItem';
 type TeamsChannelsProps = {
 	loading: boolean;
 	channels: IRoom[];
+	mainRoom: IRoom;
 	text: string;
 	type: 'all' | 'autoJoin';
 	setType: Dispatch<SetStateAction<'all' | 'autoJoin'>>;
@@ -39,6 +40,7 @@ type TeamsChannelsProps = {
 const TeamsChannels = ({
 	loading,
 	channels = [],
+	mainRoom,
 	text,
 	type,
 	setText,
@@ -123,7 +125,9 @@ const TeamsChannels = ({
 								data={channels}
 								// eslint-disable-next-line react/no-multi-comp
 								components={{ Scroller: VirtuosoScrollbars, Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
-								itemContent={(index, data) => <TeamsChannelItem onClickView={onClickView} room={data} reload={reload} key={index} />}
+								itemContent={(index, data) => (
+									<TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} key={index} />
+								)}
 							/>
 						</Box>
 					</>
