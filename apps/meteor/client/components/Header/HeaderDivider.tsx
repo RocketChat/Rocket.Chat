@@ -5,16 +5,15 @@ import {
 	HeaderV2Divider,
 	HeaderDivider as HeaderDividerComponent,
 } from '@rocket.chat/ui-client';
-import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
 
-const HeaderDivider = (props: ComponentProps<typeof HeaderDividerComponent>) => (
+const HeaderDivider = () => (
 	<FeaturePreview feature='newNavigation'>
 		<FeaturePreviewOff>
-			<HeaderDividerComponent {...props} />
+			<HeaderDividerComponent />
 		</FeaturePreviewOff>
 		<FeaturePreviewOn>
-			<HeaderV2Divider {...props} />
+			<HeaderV2Divider />
 		</FeaturePreviewOn>
 	</FeaturePreview>
 );

@@ -1,3 +1,3 @@
-export { default as HeaderV2Tag } from './HeaderTag';
-export { default as HeaderV2TagIcon } from './HeaderTagIcon';
-export { default as HeaderV2TagSkeleton } from './HeaderTagSkeleton';
+export { default as HeaderTag } from './HeaderTag';
+export { default as HeaderTagIcon } from './HeaderTagIcon';
+export { default as HeaderTagSkeleton } from './HeaderTagSkeleton';
