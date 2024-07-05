@@ -65,7 +65,6 @@ test.describe.serial('message-mentions', () => {
 				await expect(page).toHaveURL(`/group/${targetChannel2}`);
 			});
 			await test.step('receive notify message', async () => {
-				await adminPage.sidenav.openChat(targetChannel2);
 				await adminPage.content.dispatchSlashCommand('@all');
 				await expect(adminPage.content.lastUserMessage).toContainText('Notify all in this room is not allowed');
 			});
@@ -100,7 +99,6 @@ test.describe.serial('message-mentions', () => {
 				await expect(page).toHaveURL(`/group/${targetChannel2}`);
 			});
 			await test.step('receive notify message', async () => {
-				await adminPage.sidenav.openChat(targetChannel2);
 				await adminPage.content.dispatchSlashCommand('@here');
 				await expect(adminPage.content.lastUserMessage).toContainText('Notify all in this room is not allowed');
 			});
