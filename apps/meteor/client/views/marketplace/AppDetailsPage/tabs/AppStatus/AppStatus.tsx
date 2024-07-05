@@ -53,10 +53,6 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const confirmAction = useCallback<AppInstallationHandlerParams['onSuccess']>(
 		async (action, permissionsGranted) => {
 			if (action) {
-				if (action === 'purchase' || action === 'install') {
-					setPurchased(true);
-				}
-
 				if (action !== 'request') {
 					await marketplaceActions[action]({ ...app, permissionsGranted });
 				} else {
@@ -66,7 +62,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 			setLoading(false);
 		},
-		[app, marketplaceActions, setLoading, setPurchased],
+		[app, marketplaceActions, setLoading],
 	);
 
 	const cancelAction = useCallback(() => {
@@ -80,6 +76,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		isAppPurchased,
 		onDismiss: cancelAction,
 		onSuccess: confirmAction,
+		setIsPurchased: setPurchased,
 	});
 
 	const handleAcquireApp = useCallback(() => {
