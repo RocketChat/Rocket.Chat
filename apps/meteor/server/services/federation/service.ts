@@ -2,7 +2,7 @@ import { IncomingMessage } from 'node:http';
 import { URL } from 'node:url';
 
 import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { IFederationService, FederationConfigurationStatus } from '@rocket.chat/core-services';
+import type { IFederationService } from '@rocket.chat/core-services';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
@@ -36,6 +36,11 @@ function extractError(e: unknown) {
 
 	return 'Unknown error';
 }
+
+// FIXME(debdut): for some reason FederationConfigurationStatus isn't getting exported from core-services.
+// Instead it is inline imported for each interface property.
+// I don't know why. It's just a simple `export type FederationConfigurationStatus = { ... }` -_-
+type FederationConfigurationStatus = Awaited<ReturnType<IFederationService['configurationStatus']>>;
 
 // for airgapped deployments, use environment variable to override a local instance of federationtester
 const federationTesterHost = process.env.FEDERATION_TESTER_HOST?.trim()?.replace(/\/$/, '') || 'https://federationtester.matrix.org';
