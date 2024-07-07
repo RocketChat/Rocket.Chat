@@ -15,9 +15,7 @@ export interface IFederationConfigurationStatus {
 	};
 }
 
-export interface IFederationService {
-	createDirectMessageRoomAndInviteUser(internalInviterId: string, internalRoomId: string, externalInviteeId: string): Promise<void>;
-
+interface IFederationBaseService {
 	verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>>;
 
 	configurationStatus(): Promise<IFederationConfigurationStatus>;
@@ -27,6 +25,10 @@ export interface IFederationService {
 	markConfigurationInvalid(): Promise<void>;
 }
 
+export interface IFederationService extends IFederationBaseService {
+	createDirectMessageRoomAndInviteUser(internalInviterId: string, internalRoomId: string, externalInviteeId: string): Promise<void>;
+}
+
 export interface IFederationJoinExternalPublicRoomInput {
 	internalUserId: string;
 	externalRoomId: string;
@@ -34,7 +36,7 @@ export interface IFederationJoinExternalPublicRoomInput {
 	pageToken?: string;
 }
 
-export interface IFederationServiceEE extends IFederationService {
+export interface IFederationServiceEE extends IFederationBaseService {
 	createDirectMessageRoom(internalUserId: string, invitees: string[]): Promise<void>;
 
 	searchPublicRooms(

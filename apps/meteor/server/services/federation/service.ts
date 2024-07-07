@@ -20,13 +20,19 @@ import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/conv
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
 
 import './infrastructure/rocket-chat/well-known';
+import { federationServiceLogger } from './infrastructure/rocket-chat/adapters/logger';
 
 function extractError(e: unknown) {
 	if (e instanceof Error || (typeof e === 'object' && e && 'toString' in e)) {
+		if ("name" in e && e.name === "AbortError") {
+			return 'Operation timed out';
+		}
+
 		return e.toString();
 	}
 
-	console.log(e);
+
+	federationServiceLogger.error(e);
 
 	return 'Unknown error';
 }
@@ -328,8 +334,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 
 			void this.markConfigurationValid();
 		} catch (error) {
-			// FIXME use federation logger
-			console.error(error);
+			federationServiceLogger.error(error);
 
 			void this.markConfigurationInvalid();
 		}
