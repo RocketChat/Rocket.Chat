@@ -37,7 +37,7 @@ const { FederationHooks } = proxyquire
 		},
 		'./util': {
 			isServiceReady,
-		}
+		},
 	});
 
 describe('Federation - Infrastructure - RocketChat - Hooks', () => {
