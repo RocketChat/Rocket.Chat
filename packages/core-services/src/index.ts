@@ -59,7 +59,7 @@ export { IBroker, IBrokerNode, BaseMetricOptions, IServiceMetrics } from './type
 
 export { IServiceContext, ServiceClass, IServiceClass, ServiceClassInternal } from './types/ServiceClass';
 
-export { IFederationService, IFederationServiceEE, IFederationJoinExternalPublicRoomInput } from './types/IFederationService';
+export { IFederationService, IFederationServiceEE, IFederationJoinExternalPublicRoomInput, FederationConfigurationStatus } from './types/IFederationService';
 
 export {
 	ConversationData,
