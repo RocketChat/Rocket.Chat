@@ -25,7 +25,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'federation/configuration.verify',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['view-privileged-setting'] },
 	{
 		async get() {
 			const service = License.hasValidLicense() ? FederationEE : Federation;
