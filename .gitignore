@@ -52,5 +52,4 @@ yarn-error.log*
 **/.vim/
 
 data/
-docker-compose-synapse.yaml
 registration.yaml
