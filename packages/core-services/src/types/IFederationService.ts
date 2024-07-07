@@ -13,7 +13,7 @@ export type FederationConfigurationStatus = {
 		error?: string;
 		ok: boolean;
 	};
-}
+};
 
 interface IFederationBaseService {
 	verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>>;
