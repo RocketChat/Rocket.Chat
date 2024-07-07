@@ -211,14 +211,8 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	private canOtherHomeserversFederate(): Promise<boolean> {
 		const url = new URL(`https://${this.internalSettingsAdapter.getHomeServerDomain()}`);
 
-		let domain = url.hostname;
-
-		if (url.port) {
-			domain += `:${url.port}`;
-		}
-
 		return new Promise((resolve, reject) =>
-			fetch(`${federationTesterHost}/api/federation-ok?server_name=${domain}`)
+			fetch(`${federationTesterHost}/api/federation-ok?server_name=${url.host}`)
 				.then((response) => response.text())
 				.then((text) => resolve(text === 'GOOD'))
 				.catch(reject),
