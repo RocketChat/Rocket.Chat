@@ -1,6 +1,6 @@
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
 
-export interface IFederationConfigurationStatus {
+export type FederationConfigurationStatus = {
 	appservice: {
 		error?: string;
 		ok: boolean;
@@ -18,7 +18,7 @@ export interface IFederationConfigurationStatus {
 interface IFederationBaseService {
 	verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>>;
 
-	configurationStatus(): Promise<IFederationConfigurationStatus>;
+	configurationStatus(): Promise<FederationConfigurationStatus>;
 
 	markConfigurationValid(): Promise<void>;
 

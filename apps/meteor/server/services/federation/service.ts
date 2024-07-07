@@ -2,7 +2,7 @@ import { IncomingMessage } from 'node:http';
 import { URL } from 'node:url';
 
 import { ServiceClassInternal } from '@rocket.chat/core-services';
-import type { IFederationService, IFederationConfigurationStatus } from '@rocket.chat/core-services';
+import type { IFederationService, FederationConfigurationStatus } from '@rocket.chat/core-services';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
@@ -281,7 +281,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	}
 
 	public async configurationStatus() {
-		const status = {
+		const status: FederationConfigurationStatus = {
 			appservice: {
 				roundTrip: { durationMs: -1 },
 				ok: false,
@@ -289,7 +289,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			externalReachability: {
 				ok: false,
 			},
-		} satisfies IFederationConfigurationStatus;
+		};
 
 		try {
 			const pingResponse = await this.bridge.ping();
