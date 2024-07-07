@@ -24,13 +24,12 @@ import { federationServiceLogger } from './infrastructure/rocket-chat/adapters/l
 
 function extractError(e: unknown) {
 	if (e instanceof Error || (typeof e === 'object' && e && 'toString' in e)) {
-		if ("name" in e && e.name === "AbortError") {
+		if ('name' in e && e.name === 'AbortError') {
 			return 'Operation timed out';
 		}
 
 		return e.toString();
 	}
-
 
 	federationServiceLogger.error(e);
 
