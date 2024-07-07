@@ -123,7 +123,9 @@ const FileUploadModal = ({
 
 		// Clear the composer after each file submission
 		// chat.composer?.clear();
-		onSubmit(fileName, description);
+		const msg = description;
+		console.log('hello testing from send msg here ', msg);
+		onSubmit(fileName, msg);
 
 		// Close the modal after all files are submitted
 		// imperativeModal.close();

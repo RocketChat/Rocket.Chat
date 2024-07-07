@@ -211,73 +211,143 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const file1 = await getUploadFormData(
+			const file = await getUploadFormData(
 				{
 					request: this.request,
 				},
 				{ field: 'file', sizeLimit: settings.get<number>('FileUpload_MaxFileSize') },
 			);
-			let file = file1[0];
-			let uploadedfilearray = [];
-			let uploadedfileurlarray = [];
 
-			for (let i = 0; i < file1.length; i++) {
-				file = file1[i];
-				if (!file) {
-					throw new Meteor.Error('invalid-field');
-				}
-
-				let { fileBuffer } = file;
-
-				const expiresAt = new Date();
-				expiresAt.setHours(expiresAt.getHours() + 24);
-
-				const { fields } = file;
-
-				let content;
-
-				if (fields.content) {
-					try {
-						content = JSON.parse(fields.content);
-					} catch (e) {
-						throw new Meteor.Error('invalid-field-content');
-					}
-				}
-
-				const details = {
-					name: file.filename,
-					size: fileBuffer.length,
-					type: file.mimetype,
-					rid: this.urlParams.rid,
-					userId: this.userId,
-					content,
-					expiresAt,
-				};
-
-				const stripExif = settings.get('Message_Attachments_Strip_Exif');
-				if (stripExif) {
-					// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
-					fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
-				}
-
-				const fileStore = FileUpload.getStore('Uploads');
-				const uploadedFile = await fileStore.insert(details, fileBuffer);
-				uploadedfilearray.push(uploadedFile);
-
-				uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
-				uploadedfileurlarray.push(uploadedFile.path);
-
-				await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
+			if (!file) {
+				throw new Meteor.Error('invalid-field');
 			}
+
+			let { fileBuffer } = file;
+
+			const expiresAt = new Date();
+			expiresAt.setHours(expiresAt.getHours() + 24);
+
+			const { fields } = file;
+
+			let content;
+
+			if (fields.content) {
+				try {
+					content = JSON.parse(fields.content);
+				} catch (e) {
+					console.error(e);
+					throw new Meteor.Error('invalid-field-content');
+				}
+			}
+
+			const details = {
+				name: file.filename,
+				size: fileBuffer.length,
+				type: file.mimetype,
+				rid: this.urlParams.rid,
+				userId: this.userId,
+				content,
+				expiresAt,
+			};
+
+			const stripExif = settings.get('Message_Attachments_Strip_Exif');
+			if (stripExif) {
+				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
+				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
+			}
+
+			const fileStore = FileUpload.getStore('Uploads');
+			const uploadedFile = await fileStore.insert(details, fileBuffer);
+
+			uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
+
+			await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
+
 			return API.v1.success({
 				file: {
-					_id: uploadedfilearray,
-					url: uploadedfileurlarray,
+					_id: uploadedFile._id,
+					url: uploadedFile.path,
 				},
 			});
 		},
 	},
 );
+// API.v1.addRoute(
+// 	'rooms.media/:rid',
+// 	{ authRequired: true },
+// 	{
+// 		async post() {
+// 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
+// 				return API.v1.unauthorized();
+// 			}
+
+// 			const file1 = await getUploadFormData(
+// 				{
+// 					request: this.request,
+// 				},
+// 				{ field: 'file', sizeLimit: settings.get<number>('FileUpload_MaxFileSize') },
+// 			);
+// 			let file = file1[0];
+// 			let uploadedfilearray = [];
+// 			let uploadedfileurlarray = [];
+
+// 			for (let i = 0; i < file1.length; i++) {
+// 				file = file1[i];
+// 				if (!file) {
+// 					throw new Meteor.Error('invalid-field');
+// 				}
+
+// 				let { fileBuffer } = file;
+
+// 				const expiresAt = new Date();
+// 				expiresAt.setHours(expiresAt.getHours() + 24);
+
+// 				const { fields } = file;
+
+// 				let content;
+
+// 				if (fields.content) {
+// 					try {
+// 						content = JSON.parse(fields.content);
+// 					} catch (e) {
+// 						throw new Meteor.Error('invalid-field-content');
+// 					}
+// 				}
+
+// 				const details = {
+// 					name: file.filename,
+// 					size: fileBuffer.length,
+// 					type: file.mimetype,
+// 					rid: this.urlParams.rid,
+// 					userId: this.userId,
+// 					content,
+// 					expiresAt,
+// 				};
+
+// 				const stripExif = settings.get('Message_Attachments_Strip_Exif');
+// 				if (stripExif) {
+// 					// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
+// 					fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
+// 				}
+
+// 				const fileStore = FileUpload.getStore('Uploads');
+// 				const uploadedFile = await fileStore.insert(details, fileBuffer);
+// 				uploadedfilearray.push(uploadedFile);
+
+// 				uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
+// 				uploadedfileurlarray.push(uploadedFile.path);
+
+// 				await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
+// 			}
+// 			return API.v1.success({
+// 				file: {
+// 					_id: uploadedfilearray,
+// 					url: uploadedfileurlarray,
+// 				},
+// 			});
+// 		},
+// 	},
+// );
 
 API.v1.addRoute(
 	'rooms.mediaConfirm/:rid/:fileId',
@@ -305,6 +375,7 @@ API.v1.addRoute(
 				file.description = this.bodyParams?.description;
 				delete this.bodyParams.description;
 			}
+			// this.bodyParams.msg = '@test1 @test2 File(s) uploaded successfully';
 			delete this.bodyParams.fileIds;
 			await sendFileMessage(
 				this.userId,

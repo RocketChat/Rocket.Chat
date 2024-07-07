@@ -60,27 +60,30 @@ const send = async (
 		},
 	]);
 
-	try {
-		await new Promise((resolve, reject) => {
+	var fileIds: string[] = [];
+	var fileUrls: string[] = [];
+	const promisearray: Promise<void>[] = [];
+
+	file.map((f) => {
+		new Promise<void>((resolve, reject) => {
 			const xhr = sdk.rest.upload(
 				`/v1/rooms.media/${rid}`,
 				{
-					file,
+					file: f,
 					...(fileContent && {
 						content: JSON.stringify(fileContent.encrypted),
 					}),
 				},
 				{
-					load: (event) => {
-						resolve(event);
-					},
+					// load: () => resolve(),
 					progress: (event) => {
 						if (!event.lengthComputable) {
 							return;
 						}
 						const progress = (event.loaded / event.total) * 100;
 						if (progress === 100) {
-							return;
+							resolve();
+							// return;
 						}
 
 						updateUploads((uploads) =>
@@ -118,55 +121,56 @@ const send = async (
 			xhr.onload = async () => {
 				if (xhr.readyState === xhr.DONE && xhr.status === 200) {
 					const result = JSON.parse(xhr.responseText);
-					let content: IE2EEMessage['content'];
-					let fileIds: string[] = result.file._id.map((file: any) => file._id);
-					let fileUrlarray: string[] = result.file.url;
+					fileIds.push(result.file._id);
+					fileUrls.push(result.file.url);
+					if (fileIds.length === file.length) {
+						try {
+							let content;
+							if (getContent) {
+								content = await getContent(fileIds, fileUrls);
+							}
 
-					if (getContent) {
-						content = await getContent(fileIds, fileUrlarray);
+							await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${fileIds[0]}`, {
+								msg,
+								tmid,
+								description,
+								t,
+								content,
+								fileIds,
+							});
+
+							updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
+						} catch (error) {
+							updateUploads((uploads) =>
+								uploads.map((upload) => {
+									if (upload.id !== id) {
+										return upload;
+									}
+
+									return {
+										...upload,
+										percentage: 0,
+										error: new Error(getErrorMessage(error)),
+									};
+								}),
+							);
+						} finally {
+							if (!uploads.length) {
+								UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
+							}
+						}
 					}
-
-					await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${fileIds[0]}`, {
-						msg,
-						tmid,
-						description,
-						t,
-						content,
-						fileIds,
-					});
+					// resolve();
 				}
 			};
-
-			if (uploads.length) {
-				UserAction.performContinuously(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
-			}
 
 			emitter.once(`cancelling-${id}`, () => {
 				xhr.abort();
 				updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
+				reject(new Error('Upload cancelled'));
 			});
 		});
-
-		updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
-	} catch (error: unknown) {
-		updateUploads((uploads) =>
-			uploads.map((upload) => {
-				if (upload.id !== id) {
-					return upload;
-				}
-
-				return {
-					...upload,
-					percentage: 0,
-					error: new Error(getErrorMessage(error)),
-				};
-			}),
-		);
-	} finally {
-		if (!uploads.length) {
-			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
-		}
-	}
+	});
 };
 
 export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): UploadsAPI => ({

@@ -87,7 +87,8 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 				onClose: (): void => {
 					imperativeModal.close();
 				},
-				onSubmit: async (fileName: string, description?: string): Promise<void> => {
+				// onSubmit: async (fileName: string, description?: string): Promise<void> => {
+				onSubmit: async (fileName: string, msg?: string): Promise<void> => {
 					Object.defineProperty(file, 'name', {
 						writable: true,
 						value: fileName,
@@ -96,25 +97,28 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					const e2eRoom = await e2e.getInstanceByRoomId(room._id);
 
 					if (!e2eRoom) {
-						uploadFile(queue, { description });
+						uploadFile(queue, { msg });
 						return;
 					}
 
 					const shouldConvertSentMessages = e2eRoom.shouldConvertSentMessages({ msg });
 
 					if (!shouldConvertSentMessages) {
-						uploadFile(queue, { description });
+						uploadFile(queue, { msg });
 						return;
 					}
-
+					console.log('uploading file', file);
+					console.log('message ', msg);
 					const encryptedFilesarray: any = await Promise.all(
 						queue.map(async (file) => {
 							return await e2eRoom.encryptFile(file);
 						}),
 					);
+					console.log('encryptedFilesarray', encryptedFilesarray);
 					const filesarray = encryptedFilesarray.map((file: any) => {
 						return file?.file;
 					});
+					console.log('filesarray', filesarray);
 					if (encryptedFilesarray[0]) {
 						const getContent = async (_id: string[], fileUrl: string[]): Promise<IE2EEMessage['content']> => {
 							const attachments = [];
@@ -123,7 +127,6 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 								const attachment: FileAttachmentProps = {
 									title: queue[i].name,
 									type: 'file',
-									description,
 									title_link: fileUrl[i],
 									title_link_download: true,
 									encryption: {
@@ -187,6 +190,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 							type: queue[0].type,
 							typeGroup: queue[0].type.split('/')[0],
 							name: fileName,
+							msg: msg || '',
 							encryption: {
 								key: encryptedFilesarray[0].key,
 								iv: encryptedFilesarray[0].iv,
@@ -194,6 +198,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 						};
 
 						const fileContent = await e2eRoom.encryptMessageContent(fileContentData);
+						console.log('fileContent', fileContent);
 
 						uploadFile(
 							filesarray,
