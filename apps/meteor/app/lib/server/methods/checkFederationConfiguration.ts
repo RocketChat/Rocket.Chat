@@ -45,7 +45,7 @@ Meteor.methods<ServerMethods>({
 
 			const { error } = status.externalReachability;
 			if (error) {
-				err += `error: ${error}`;
+				err += `, error: ${error}`;
 			}
 
 			errors.push(err);
