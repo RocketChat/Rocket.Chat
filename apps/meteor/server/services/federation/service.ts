@@ -16,11 +16,11 @@ import type { RocketChatNotificationAdapter } from './infrastructure/rocket-chat
 import type { RocketChatRoomAdapter } from './infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from './infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from './infrastructure/rocket-chat/adapters/User';
+import { federationServiceLogger } from './infrastructure/rocket-chat/adapters/logger';
 import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/converters/RoomSender';
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
 
 import './infrastructure/rocket-chat/well-known';
-import { federationServiceLogger } from './infrastructure/rocket-chat/adapters/logger';
 
 function extractError(e: unknown) {
 	if (e instanceof Error || (typeof e === 'object' && e && 'toString' in e)) {
