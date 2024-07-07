@@ -19,8 +19,13 @@ const AppErrorPage = (_props: AppErrorPageProps): ReactElement => {
 				<StatesActions>
 					<StatesAction
 						onClick={() => {
-							indexedDB.deleteDatabase('MeteorDynamicImportCache');
-							window.location.reload();
+							const result = indexedDB.deleteDatabase('MeteorDynamicImportCache');
+							result.onsuccess = () => {
+								window.location.reload();
+							};
+							result.onerror = () => {
+								window.location.reload();
+							};
 						}}
 					>
 						Reload Application
