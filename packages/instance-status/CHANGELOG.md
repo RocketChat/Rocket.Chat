@@ -1,5 +1,14 @@
 # @rocket.chat/instance-status
 
+## 0.1.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.1.0-rc.6
+  </details>
+
 ## 0.1.0-rc.5
 
 ### Patch Changes
