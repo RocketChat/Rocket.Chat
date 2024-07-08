@@ -138,15 +138,13 @@ export class SettingsRegistry {
 
 		const settingFromCodeOverwritten = overwriteSetting(settingFromCode);
 
-		const settingOverwrittenDefault = overrideSetting(settingFromCode);
-
 		const settingStored = this.store.getSetting(_id);
 
 		const settingStoredOverwritten = settingStored && overwriteSetting(settingStored);
 
 		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
 
-		const updatedSettingAfterApplyingOverwrite = isOverwritten ? settingFromCodeOverwritten : settingOverwrittenDefault;
+		const updatedSettingAfterApplyingOverwrite = isOverwritten ? settingFromCodeOverwritten : settingFromCode;
 
 		try {
 			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
