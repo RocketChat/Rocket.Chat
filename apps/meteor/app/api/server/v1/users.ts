@@ -43,6 +43,7 @@ import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
 import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
+import { validateUsername } from '../../../lib/server/functions/validateUsername';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../lib/server/lib/notifyListener';
 import { generateAccessToken } from '../../../lib/server/methods/createToken';
 import { settings } from '../../../settings/server';
@@ -633,6 +634,10 @@ API.v1.addRoute(
 
 			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
 				return API.v1.failure('Username is already in use');
+			}
+
+			if (!validateUsername(this.bodyParams.username)) {
+				return API.v1.failure('Invalid username');
 			}
 
 			const { secret: secretURL, ...params } = this.bodyParams;
