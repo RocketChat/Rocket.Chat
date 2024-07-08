@@ -3955,6 +3955,7 @@
   "OAuth": "OAuth",
   "OAuth_Description": "Configure authentication methods beyond just username and password.",
   "OAuth_Application": "OAuth Application",
+  "OAuth_button_colors_alert": "Changing the color may result in non-compliance with WCAG (Web Content Accessibility Guidelines) requirements. Please ensure that the new colors meet the recommended contrast and readability standards to maintain accessibility for all users.",
   "Objects": "Objects",
   "Off": "Off",
   "Off_the_record_conversation": "Off-the-Record Conversation",
