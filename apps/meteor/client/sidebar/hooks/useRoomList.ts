@@ -12,12 +12,39 @@ const query = { open: { $ne: false } };
 
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
+const order: (
+	| 'Incoming Calls'
+	| 'Incoming_Livechats'
+	| 'Open_Livechats'
+	| 'On_Hold_Chats'
+	| 'Unread'
+	| 'Favorites'
+	| 'Teams'
+	| 'Discussions'
+	| 'Channels'
+	| 'Direct_Messages'
+	| 'Conversations'
+)[] = [
+	'Incoming Calls',
+	'Incoming_Livechats',
+	'Open_Livechats',
+	'On_Hold_Chats',
+	'Unread',
+	'Favorites',
+	'Teams',
+	'Discussions',
+	'Channels',
+	'Direct_Messages',
+	'Conversations',
+];
+
 export const useRoomList = (): Array<ISubscription & IRoom> => {
 	const [roomList, setRoomList] = useDebouncedState<(ISubscription & IRoom)[]>([], 150);
 
 	const showOmnichannel = useOmnichannelEnabled();
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
+	const sidebarOrder = useUserPreference<typeof order>('sidebarSectionsOrder') ?? order;
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 
@@ -103,7 +130,16 @@ export const useRoomList = (): Array<ISubscription & IRoom> => {
 			sidebarGroupByType && channels.size && groups.set('Channels', channels);
 			sidebarGroupByType && direct.size && groups.set('Direct_Messages', direct);
 			!sidebarGroupByType && groups.set('Conversations', conversation);
-			return [...groups.entries()].flatMap(([key, group]) => [key, ...group]);
+			return sidebarOrder
+				.map((key) => {
+					const group = groups.get(key);
+					if (!group) {
+						return [];
+					}
+
+					return [key, ...group];
+				})
+				.flat();
 		});
 	}, [
 		rooms,
@@ -116,6 +152,7 @@ export const useRoomList = (): Array<ISubscription & IRoom> => {
 		sidebarGroupByType,
 		setRoomList,
 		isDiscussionEnabled,
+		sidebarOrder,
 	]);
 
 	return roomList;
