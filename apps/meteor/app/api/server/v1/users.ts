@@ -637,7 +637,7 @@ API.v1.addRoute(
 			}
 
 			if (!validateUsername(this.bodyParams.username)) {
-				return API.v1.failure('Invalid username');
+				return API.v1.failure(`The username provided is not valid. Use only letters, numbers, dots, hyphens and underscores`);
 			}
 
 			const { secret: secretURL, ...params } = this.bodyParams;
