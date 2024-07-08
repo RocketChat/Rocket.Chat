@@ -1,9 +1,10 @@
 import stream from 'stream';
 
+import { GetObjectCommand, S3 } from '@aws-sdk/client-s3';
+import type { S3ClientConfig } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { GetObjectCommand, S3, S3ClientConfig } from '@aws-sdk/client-s3';
 import { check } from 'meteor/check';
 import type { OptionalId } from 'mongodb';
 import _ from 'underscore';
@@ -34,6 +35,7 @@ class AmazonS3Store extends UploadFS.Store {
 		Bucket: string;
 		ACL: string;
 	};
+
 	protected getPath: (file: IUpload) => string;
 
 	constructor(options: S3Options) {
