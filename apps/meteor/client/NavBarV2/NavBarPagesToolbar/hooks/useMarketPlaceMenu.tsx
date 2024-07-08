@@ -1,5 +1,5 @@
 import { Badge, Skeleton } from '@rocket.chat/fuselage';
-import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-contexts';
+import { useTranslation, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
@@ -16,8 +16,7 @@ export const useMarketPlaceMenu = () => {
 
 	const showMarketplace = hasAccessMarketplacePermission || hasManageAppsPermission;
 
-	const marketplaceRoute = useRoute('marketplace');
-	const page = 'list';
+	const router = useRouter();
 
 	const appRequestStats = useAppRequestStats();
 
@@ -26,13 +25,13 @@ export const useMarketPlaceMenu = () => {
 			id: 'explore',
 			icon: 'compass',
 			content: t('Explore'),
-			onClick: () => marketplaceRoute.push({ context: 'explore', page }),
+			onClick: () => router.navigate('/marketplace/explore/list'),
 		},
 		{
 			id: 'installed',
 			icon: 'circle-arrow-down',
 			content: t('Installed'),
-			onClick: () => marketplaceRoute.push({ context: 'installed', page }),
+			onClick: () => router.navigate('/marketplace/installed/list'),
 		},
 	];
 
@@ -41,7 +40,7 @@ export const useMarketPlaceMenu = () => {
 		icon: 'cube',
 		content: t('Requested'),
 		onClick: () => {
-			marketplaceRoute.push({ context: 'requested', page });
+			router.navigate('/marketplace/requested/list');
 		},
 		addon: (
 			<>

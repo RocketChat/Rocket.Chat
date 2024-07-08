@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useLayout, useSetting, useCurrentModal, useRoute, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
+import type { IRouterPaths } from '@rocket.chat/ui-contexts';
+import { useLayout, useSetting, useCurrentModal, useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useEffect, useRef } from 'react';
 
@@ -13,7 +14,7 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 
 	const modal = useCurrentModal();
 	const currentRoutePath = useCurrentRoutePath();
-	const channelRoute = useRoute('channel');
+	const router = useRouter();
 	const removeSidenav = embeddedLayout && !currentRoutePath?.startsWith('/admin');
 	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Store_Users');
 
@@ -37,8 +38,8 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 		}
 		redirected.current = true;
 
-		channelRoute.push({ name: firstChannelAfterLogin });
-	}, [channelRoute, currentRoutePath, firstChannelAfterLogin]);
+		router.navigate({ name: firstChannelAfterLogin as keyof IRouterPaths });
+	}, [router, currentRoutePath, firstChannelAfterLogin]);
 
 	return (
 		<>
