@@ -4,7 +4,7 @@ import { OmnichannelAdministration } from './omnichannel-administration';
 
 export class OmnichannelUnits extends OmnichannelAdministration {
 	get inputSearch() {
-		return this.page.locator('[placeholder="Search"]');
+		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	async search(text: string) {
