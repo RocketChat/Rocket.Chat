@@ -1,4 +1,4 @@
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { serverFetch as fetch, ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 import EJSON from 'ejson';
 import type { Response } from 'node-fetch';
 
@@ -54,8 +54,6 @@ type FCMError = {
 	};
 };
 
-type FetchOptions = NonNullable<Parameters<typeof fetch>[1]>;
-
 /**
  * Send a push notification using Firebase Cloud Messaging (FCM).
  * implements the Firebase Cloud Messaging HTTP v1 API, and all of its retry logic,
@@ -67,7 +65,7 @@ type FetchOptions = NonNullable<Parameters<typeof fetch>[1]>;
  * - For 429 errors: retry after waiting for the duration set in the retry-after header. If no retry-after header is set, default to 60 seconds.
  * - For 500 errors: retry with exponential backoff.
  */
-async function fetchWithRetry(url: string, _removeToken: () => void, options: FetchOptions, retries = 0): Promise<Response> {
+async function fetchWithRetry(url: string, _removeToken: () => void, options: ExtendedFetchOptions, retries = 0): Promise<Response> {
 	const MAX_RETRIES = 5;
 	const response = await fetch(url, options);
 
