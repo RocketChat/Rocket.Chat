@@ -484,7 +484,7 @@ describe('LIVECHAT - contacts', () => {
 				expect(res.body.errorType).to.be.equal('invalid-params');
 			});
 
-			it('should return an error if emails is not an array', async () => {
+			it('should return an error if phones is not an array', async () => {
 				const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
 					contactId,
 					phones: 'invalid',
