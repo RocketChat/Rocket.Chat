@@ -19,9 +19,16 @@ export const GenericTableHeaderCell = <T extends string = string>({
 	onClick,
 	...props
 }: GenericTableHeaderCellProps<T>): ReactElement => {
-	const fn = useCallback(() => onClick && sort && onClick(sort), [sort, onClick]);
+	const handleClick = useCallback(
+		(e) => {
+			e.stopPropagation();
+			onClick && sort && onClick(sort);
+		},
+		[sort, onClick],
+	);
+
 	return (
-		<TableCell clickable={!!sort} onClick={fn} {...props}>
+		<TableCell clickable={!!sort} onClick={handleClick} {...props}>
 			<Box display='flex' alignItems='center' wrap='no-wrap'>
 				{children}
 				{sort && <SortIcon direction={active ? direction : undefined} />}

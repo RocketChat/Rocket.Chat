@@ -1,8 +1,20 @@
-import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box } from '@rocket.chat/fuselage';
-import { useDebouncedState, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import {
+	Pagination,
+	States,
+	StatesAction,
+	StatesActions,
+	StatesIcon,
+	StatesTitle,
+	Box,
+	CheckBox,
+	TableSelection,
+	TableSelectionButton,
+	Divider,
+	ButtonGroup,
+} from '@rocket.chat/fuselage';
+import { useDebouncedState, useDebouncedValue, useEffectEvent, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useRoute, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
@@ -20,18 +32,25 @@ import { usePagination } from '../../../../components/GenericTable/hooks/usePagi
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import { useIsCallReady } from '../../../../contexts/CallContext';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { parseOutboundPhoneNumber } from '../../../../lib/voip/parseOutboundPhoneNumber';
 import { CallDialpadButton } from '../components/CallDialpadButton';
+import ContactGroupModal from './ContactGroupModal';
+import { useContactsTableSelection } from './hooks/useContactsTableSelection';
 import { useCurrentContacts } from './hooks/useCurrentContacts';
 
-function ContactTable(): ReactElement {
+const ContactTable = () => {
+	const t = useTranslation();
+	const setModal = useSetModal();
+	const formatDate = useFormatDate();
+	const preventPropagation = usePreventPropagation();
+
+	const isCallReady = useIsCallReady();
+	const [term, setTerm] = useDebouncedState('', 500);
+	const directoryRoute = useRoute('omnichannel-directory');
+
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'username' | 'phone' | 'name' | 'visitorEmails.address' | 'lastChat.ts'>('username');
-	const isCallReady = useIsCallReady();
-
-	const [term, setTerm] = useDebouncedState('', 500);
-
-	const t = useTranslation();
 
 	const query = useDebouncedValue(
 		useMemo(
@@ -46,9 +65,6 @@ function ContactTable(): ReactElement {
 		500,
 	);
 
-	const directoryRoute = useRoute('omnichannel-directory');
-	const formatDate = useFormatDate();
-
 	const onButtonNewClick = useMutableCallback(() =>
 		directoryRoute.push({
 			tab: 'contacts',
@@ -56,27 +72,46 @@ function ContactTable(): ReactElement {
 		}),
 	);
 
-	const onRowClick = useMutableCallback(
-		(id) => (): void =>
-			directoryRoute.push({
-				id,
-				tab: 'contacts',
-				context: 'info',
-			}),
-	);
+	const onRowClick = useEffectEvent((id) => {
+		directoryRoute.push({
+			id,
+			tab: 'contacts',
+			context: 'details',
+		});
+	});
 
 	const { data, isLoading, isError, isSuccess, refetch } = useCurrentContacts(query);
 
 	const [defaultQuery] = useState(hashQueryKey([query]));
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
 
+	const {
+		indeterminate,
+		checked,
+		selectedContacts,
+		selectedContactsLength,
+		handleToggleAllContacts,
+		handleChangeContactSelection,
+		setSelectedContacts,
+	} = useContactsTableSelection(data?.visitors || []);
+
+	// TODO: To be implemented
+	const handleConfirmGroupCreation = () => console.log('created');
+
+	const handleCreateGroup = () => {
+		setModal(<ContactGroupModal onCancel={() => setModal(null)} onConfirm={handleConfirmGroupCreation} />);
+	};
+
 	const headers = (
 		<>
-			<GenericTableHeaderCell key='username' direction={sortDirection} active={sortBy === 'username'} onClick={setSort} sort='username'>
+			{/* <GenericTableHeaderCell key='username' direction={sortDirection} active={sortBy === 'username'} onClick={setSort} sort='username'>
 				{t('Username')}
-			</GenericTableHeaderCell>
+			</GenericTableHeaderCell> */}
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
-				{t('Name')}
+				<CheckBox indeterminate={indeterminate} checked={checked} onChange={handleToggleAllContacts} />
+				<Box is='span' mis={8}>
+					{t('Name')}
+				</Box>
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='phone' direction={sortDirection} active={sortBy === 'phone'} onClick={setSort} sort='phone'>
 				{t('Phone')}
@@ -105,14 +140,7 @@ function ContactTable(): ReactElement {
 
 	return (
 		<>
-			{((isSuccess && data?.visitors.length > 0) || queryHasChanged) && (
-				<FilterByText
-					displayButton
-					textButton={t('New_contact')}
-					onButtonClick={onButtonNewClick}
-					onChange={({ text }): void => setTerm(text)}
-				/>
-			)}
+			{((isSuccess && data?.visitors.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setTerm(text)} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -138,7 +166,8 @@ function ContactTable(): ReactElement {
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{data?.visitors.map(({ _id, username, fname, name, visitorEmails, phone, lastChat }) => {
+							{data?.visitors.map((visitor) => {
+								const { _id, fname, name, visitorEmails, phone, lastChat } = visitor;
 								const phoneNumber = (phone?.length && phone[0].phoneNumber) || '';
 								const visitorEmail = visitorEmails?.length && visitorEmails[0].address;
 
@@ -151,10 +180,15 @@ function ContactTable(): ReactElement {
 										height='40px'
 										qa-user-id={_id}
 										rcx-show-call-button-on-hover
-										onClick={onRowClick(_id)}
+										onClick={() => onRowClick(_id)}
 									>
-										<GenericTableCell withTruncatedText>{username}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(fname || name)}</GenericTableCell>
+										{/* <GenericTableCell withTruncatedText>{username}</GenericTableCell> */}
+										<GenericTableCell onClick={preventPropagation} withTruncatedText>
+											<CheckBox checked={!!selectedContacts[_id]} onChange={() => handleChangeContactSelection(visitor)} />
+											<Box is='span' mis={8}>
+												{parseOutboundPhoneNumber(fname || name)}
+											</Box>
+										</GenericTableCell>
 										<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(phoneNumber)}</GenericTableCell>
 										<GenericTableCell withTruncatedText>{visitorEmail}</GenericTableCell>
 										<GenericTableCell withTruncatedText>{lastChat && formatDate(lastChat.ts)}</GenericTableCell>
@@ -164,6 +198,16 @@ function ContactTable(): ReactElement {
 							})}
 						</GenericTableBody>
 					</GenericTable>
+					{selectedContactsLength > 0 && (
+						<TableSelection text={`${selectedContactsLength} Items selected`}>
+							<ButtonGroup>
+								<TableSelectionButton onClick={handleCreateGroup}>Create group</TableSelectionButton>
+								<TableSelectionButton>Delete</TableSelectionButton>
+								<Divider vertical />
+								<TableSelectionButton onClick={() => setSelectedContacts({})}>Cancel</TableSelectionButton>
+							</ButtonGroup>
+						</TableSelection>
+					)}
 					<Pagination
 						divider
 						current={current}
@@ -190,6 +234,6 @@ function ContactTable(): ReactElement {
 			)}
 		</>
 	);
-}
+};
 
 export default ContactTable;
