@@ -272,6 +272,23 @@ describe('LIVECHAT - contacts', () => {
 				expect(res.body.error).to.be.equal('must be string [invalid-params]');
 				expect(res.body.errorType).to.be.equal('invalid-params');
 			});
+
+			it('should return an error if additional fields are provided', async () => {
+				const res = await request
+					.post(api('omnichannel/contacts'))
+					.set(credentials)
+					.send({
+						name: faker.person.fullName(),
+						emails: [faker.internet.email().toLowerCase()],
+						phones: [faker.phone.number()],
+						additional: 'invalid',
+					});
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error');
+				expect(res.body.error).to.be.equal('must NOT have additional properties [invalid-params]');
+				expect(res.body.errorType).to.be.equal('invalid-params');
+			});
 		});
 	});
 });
