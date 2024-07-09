@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 
@@ -11,16 +11,19 @@ import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermissio
 import { createUser, deleteUser } from '../../../data/users.helper';
 
 describe('LIVECHAT - contacts', () => {
+	let agentUser: IUser;
 	let livechatAgent: ILivechatAgent;
 	before((done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
-		livechatAgent = await createAgent();
+		agentUser = await createUser();
+		livechatAgent = await createAgent(agentUser.username);
 	});
 
 	after(async () => {
 		await removeAgent(livechatAgent._id);
+		await deleteUser(agentUser);
 		await restorePermissionToRoles('create-livechat-contact');
 		await updateSetting('Livechat_enabled', true);
 	});
@@ -104,9 +107,6 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should be able to create a new contact with a contact manager', async () => {
-			const user = await createUser();
-			const livechatAgent = await createAgent(user.username);
-
 			const res = await request
 				.post(api('omnichannel/contacts'))
 				.set(credentials)
@@ -120,8 +120,6 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body).to.have.property('success', true);
 			expect(res.body).to.have.property('contactId');
 			expect(res.body.contactId).to.be.an('string');
-
-			await deleteUser(user);
 		});
 
 		describe('Custom Fields', () => {
