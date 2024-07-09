@@ -1,4 +1,4 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
 
@@ -37,15 +37,15 @@ const send = async (
 		rid,
 		tmid,
 		t,
-		e2e,
 	}: {
 		description?: string;
 		msg?: string;
 		rid: string;
 		tmid?: string;
 		t?: IMessage['t'];
-		e2e?: IMessage['e2e'];
 	},
+	getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
+	fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
 ): Promise<void> => {
 	const id = Random.id();
 
@@ -53,7 +53,7 @@ const send = async (
 		...uploads,
 		{
 			id,
-			name: file.name,
+			name: fileContent?.raw.name || file.name,
 			percentage: 0,
 		},
 	]);
@@ -61,14 +61,12 @@ const send = async (
 	try {
 		await new Promise((resolve, reject) => {
 			const xhr = sdk.rest.upload(
-				`/v1/rooms.upload/${rid}`,
+				`/v1/rooms.media/${rid}`,
 				{
-					msg,
-					tmid,
 					file,
-					description,
-					t,
-					e2e,
+					...(fileContent && {
+						content: JSON.stringify(fileContent.encrypted),
+					}),
 				},
 				{
 					load: (event) => {
@@ -115,6 +113,24 @@ const send = async (
 				},
 			);
 
+			xhr.onload = async () => {
+				if (xhr.readyState === xhr.DONE && xhr.status === 200) {
+					const result = JSON.parse(xhr.responseText);
+					let content;
+					if (getContent) {
+						content = await getContent(result.file._id, result.file.url);
+					}
+
+					await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${result.file._id}`, {
+						msg,
+						tmid,
+						description,
+						t,
+						content,
+					});
+				}
+			};
+
 			if (uploads.length) {
 				UserAction.performContinuously(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
 			}
@@ -154,6 +170,8 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 	cancel,
 	send: (
 		file: File,
-		{ description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] },
-	): Promise<void> => send(file, { description, msg, rid, tmid, t, e2e }),
+		{ description, msg, t }: { description?: string; msg?: string; t?: IMessage['t'] },
+		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
+		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
+	): Promise<void> => send(file, { description, msg, rid, tmid, t }, getContent, fileContent),
 });

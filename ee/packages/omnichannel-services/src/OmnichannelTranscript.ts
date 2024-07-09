@@ -232,8 +232,21 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 					continue;
 				}
 
-				const fileBuffer = await uploadService.getFileBuffer({ file: uploadedFile });
-				files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.extension });
+				try {
+					const fileBuffer = await uploadService.getFileBuffer({ file: uploadedFile });
+					files.push({ name: file.name, buffer: fileBuffer, extension: uploadedFile.extension });
+				} catch (e: unknown) {
+					this.log.error(`Failed to get file ${file._id}`, e);
+					// Push empty buffer so parser processes this as "unsupported file"
+					files.push({ name: file.name, buffer: null });
+
+					// TODO: this is a NATS error message, even when we shouldn't tie it, since it's the only way we have right now we'll live with it for a while
+					if ((e as Error).message === 'MAX_PAYLOAD_EXCEEDED') {
+						this.log.error(
+							`File is too big to be processed by NATS. See NATS config for allowing bigger messages to be sent between services`,
+						);
+					}
+				}
 			}
 
 			// When you send a file message, the things you type in the modal are not "msg", they're in "description" of the attachment
@@ -323,22 +336,15 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		const outBuff = await streamToBuffer(stream as Readable);
 
 		try {
-			const file = await uploadService.uploadFile({
-				userId: details.userId,
+			const { rid } = await roomService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
+			const [rocketCatFile, transcriptFile] = await this.uploadFiles({
+				details,
 				buffer: outBuff,
-				details: {
-					// transcript_{company-name)_{date}_{hour}.pdf
-					name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date())}_${
-						data.visitor?.name || data.visitor?.username || 'Visitor'
-					}.pdf`,
-					type: 'application/pdf',
-					rid: details.rid,
-					// Rocket.cat is the goat
-					userId: 'rocket.cat',
-					size: outBuff.length,
-				},
+				roomIds: [rid, details.rid],
+				data,
+				transcriptText,
 			});
-			await this.pdfComplete({ details, file });
+			await this.pdfComplete({ details, transcriptFile, rocketCatFile });
 		} catch (e: any) {
 			this.pdfFailed({ details, e });
 		}
@@ -367,7 +373,49 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		});
 	}
 
-	private async pdfComplete({ details, file }: { details: WorkDetailsWithSource; file: IUpload }): Promise<void> {
+	private async uploadFiles({
+		details,
+		buffer,
+		roomIds,
+		data,
+		transcriptText,
+	}: {
+		details: WorkDetailsWithSource;
+		buffer: Buffer;
+		roomIds: string[];
+		data: any;
+		transcriptText: string;
+	}): Promise<IUpload[]> {
+		return Promise.all(
+			roomIds.map((roomId) => {
+				return uploadService.uploadFile({
+					userId: details.userId,
+					buffer,
+					details: {
+						// transcript_{company-name}_{date}_{hour}.pdf
+						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date())}_${
+							data.visitor?.name || data.visitor?.username || 'Visitor'
+						}.pdf`,
+						type: 'application/pdf',
+						rid: roomId,
+						// Rocket.cat is the goat
+						userId: 'rocket.cat',
+						size: buffer.length,
+					},
+				});
+			}),
+		);
+	}
+
+	private async pdfComplete({
+		details,
+		transcriptFile,
+		rocketCatFile,
+	}: {
+		details: WorkDetailsWithSource;
+		transcriptFile: IUpload;
+		rocketCatFile: IUpload;
+	}): Promise<void> {
 		this.log.info(`Transcript for room ${details.rid} by user ${details.userId} - Complete`);
 		const user = await Users.findOneById(details.userId);
 		if (!user) {
@@ -375,17 +423,14 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 		// Send the file to the livechat room where this was requested, to keep it in context
 		try {
-			const [, { rid }] = await Promise.all([
-				LivechatRooms.setPdfTranscriptFileIdById(details.rid, file._id),
-				roomService.createDirectMessage({ to: details.userId, from: 'rocket.cat' }),
-			]);
+			await LivechatRooms.setPdfTranscriptFileIdById(details.rid, transcriptFile._id);
 
 			this.log.info(`Transcript for room ${details.rid} by user ${details.userId} - Sending success message to user`);
 			const result = await Promise.allSettled([
 				uploadService.sendFileMessage({
 					roomId: details.rid,
 					userId: 'rocket.cat',
-					file,
+					file: transcriptFile,
 					message: {
 						// Translate from service
 						msg: await translationService.translateToServerLanguage('pdf_success_message'),
@@ -393,9 +438,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				}),
 				// Send the file to the user who requested it, so they can download it
 				uploadService.sendFileMessage({
-					roomId: rid,
+					roomId: rocketCatFile.rid || '',
 					userId: 'rocket.cat',
-					file,
+					file: rocketCatFile,
 					message: {
 						// Translate from service
 						msg: await translationService.translate('pdf_success_message', user),

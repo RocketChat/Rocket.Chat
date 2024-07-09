@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.34.0
+
+### Minor Changes
+
+- ([#31918](https://github.com/RocketChat/Rocket.Chat/pull/31918)) Introduced new elements for apps to select channels
+
+## 0.34.0-rc.0
+
+### Minor Changes
+
+- ([#31918](https://github.com/RocketChat/Rocket.Chat/pull/31918)) Introduced new elements for apps to select channels
+
 ## 0.33.0
 
 ### Minor Changes

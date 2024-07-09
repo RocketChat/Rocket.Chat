@@ -1,5 +1,131 @@
 # @rocket.chat/livechat Change Log
 
+## 1.17.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@7.0.2
+  </details>
+
+## 1.17.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@7.0.1
+  </details>
+
+## 1.17.0
+
+### Minor Changes
+
+- ([#32233](https://github.com/RocketChat/Rocket.Chat/pull/32233)) Makes the triggers fired by the condition `after-guest-registration` persist on the livechat client, it will persist through reloads and pagination, only reseting when a conversation is closed (no changes were done on the agent side of the conversation)
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ee5cdfc367]:</summary>
+
+  - @rocket.chat/ui-kit@0.34.0
+  - @rocket.chat/gazzodown@7.0.0
+  </details>
+
+## 1.17.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@7.0.0-rc.2
+  </details>
+
+## 1.17.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@7.0.0-rc.1
+  </details>
+
+## 1.17.0-rc.0
+
+### Minor Changes
+
+- ([#32233](https://github.com/RocketChat/Rocket.Chat/pull/32233)) Makes the triggers fired by the condition `after-guest-registration` persist on the livechat client, it will persist through reloads and pagination, only reseting when a conversation is closed (no changes were done on the agent side of the conversation)
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ee5cdfc367]:</summary>
+
+  - @rocket.chat/ui-kit@0.34.0-rc.0
+  - @rocket.chat/gazzodown@7.0.0-rc.0
+  </details>
+
+## 1.16.0
+
+### Patch Changes
+
+- ([#31765](https://github.com/RocketChat/Rocket.Chat/pull/31765)) Fixes the livechat client ignoring the `livechat_fileuploads_enabled` setting when uploading files
+
+- ([#32069](https://github.com/RocketChat/Rocket.Chat/pull/32069)) Livechat: A registered user loses their messages if 'registerGuest' is called using the same token.
+
+- ([#32135](https://github.com/RocketChat/Rocket.Chat/pull/32135)) Fixes issue causing a desync in different browser windows when a chat is closed and started again
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@6.0.0
+  - @rocket.chat/message-parser@0.31.29
+  - @rocket.chat/random@1.2.2
+  - @rocket.chat/ui-kit@0.33.0
+  </details>
+
+## 1.16.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@6.0.0-rc.2
+  </details>
+
+## 1.16.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@6.0.0-rc.1
+  </details>
+
+## 1.16.0-rc.0
+
+### Patch Changes
+
+- ([#31765](https://github.com/RocketChat/Rocket.Chat/pull/31765)) Fixes the livechat client ignoring the `livechat_fileuploads_enabled` setting when uploading files
+
+- ([#32069](https://github.com/RocketChat/Rocket.Chat/pull/32069)) Livechat: A registered user loses their messages if 'registerGuest' is called using the same token.
+
+- ([#32135](https://github.com/RocketChat/Rocket.Chat/pull/32135)) Fixes issue causing a desync in different browser windows when a chat is closed and started again
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@6.0.0-rc.0
+  - @rocket.chat/message-parser@0.31.29
+  - @rocket.chat/random@1.2.2
+  - @rocket.chat/ui-kit@0.33.0
+
+## 1.15.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@5.0.2
+  </details>
+
 ## 1.15.1
 
 ### Patch Changes
