@@ -27,7 +27,7 @@ test.describe('Omnichannel close inquiry', () => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
 
 		const { page: auxPage } = await createAuxContext(browser, Users.user1);
-		agent = { page: auxPage, poHomeOmnichannel: new HomeOmnichannel(page) };
+		agent = { page: auxPage, poHomeOmnichannel: new HomeOmnichannel(auxPage) };
 	});
 
 	test.afterAll(async ({ api }) => {
