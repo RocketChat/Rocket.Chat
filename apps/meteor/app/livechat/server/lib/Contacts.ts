@@ -4,6 +4,7 @@ import type {
 	ILivechatCustomField,
 	ILivechatVisitor,
 	IOmnichannelRoom,
+	IUser,
 } from '@rocket.chat/core-typings';
 import {
 	LivechatVisitors,
@@ -192,7 +193,8 @@ export async function createContact(params: CreateContactParams): Promise<string
 	const { name, emails, phones, customFields = {}, contactManager, channels, unknown } = params;
 
 	if (contactManager) {
-		await validateContactManager(contactManager);
+		const contactManagerUser = await Users.findOneById(contactManager, { projection: { roles: 1 } });
+		await validateContactManager(contactManagerUser);
 	}
 
 	const allowedCustomFields = await getAllowedCustomFields();
@@ -221,7 +223,8 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 	}
 
 	if (contactManager) {
-		await validateContactManager(contactManager);
+		const contactManagerUser = await Users.findOneById(contactManager, { projection: { roles: 1 } });
+		await validateContactManager(contactManagerUser);
 	}
 
 	if (customFields) {
@@ -282,8 +285,7 @@ export function validateCustomFields(allowedCustomFields: ILivechatCustomField[]
 	}
 }
 
-async function validateContactManager(contactManager: string) {
-	const user = await Users.findOneById(contactManager, { projection: { roles: 1 } });
+export async function validateContactManager(user: IUser | null) {
 	if (!user) {
 		throw new Error('error-contact-manager-not-found');
 	}
