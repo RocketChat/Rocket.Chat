@@ -1239,7 +1239,6 @@ const POSTOmnichannelContactsSchema = {
 				type: 'string',
 			},
 			uniqueItems: true,
-			nullable: true,
 		},
 		customFields: {
 			type: 'object',

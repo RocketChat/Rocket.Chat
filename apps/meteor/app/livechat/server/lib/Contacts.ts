@@ -195,7 +195,8 @@ export async function createContact(params: CreateContactParams): Promise<string
 		await validateContactManager(contactManager);
 	}
 
-	await validateCustomFields(customFields);
+	const allowedCustomFields = await getAllowedCustomFields();
+	validateCustomFields(allowedCustomFields, customFields);
 
 	const { insertedId } = await LivechatContacts.insertOne({
 		name,
@@ -224,7 +225,8 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 	}
 
 	if (customFields) {
-		await validateCustomFields(customFields);
+		const allowedCustomFields = await getAllowedCustomFields();
+		validateCustomFields(allowedCustomFields, customFields);
 	}
 
 	const updateContact: { $set: MatchKeysAndValues<ILivechatContact> } = {
@@ -244,20 +246,18 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 	return LivechatContacts.findOneById(contactId) as Promise<ILivechatContact>;
 }
 
-async function validateCustomFields(customFields: Record<string, string | unknown>) {
-	const allowedCustomFields = LivechatCustomField.findByScope<
-		Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required' | 'visibility'>
-	>(
+async function getAllowedCustomFields(): Promise<ILivechatCustomField[]> {
+	return LivechatCustomField.findByScope(
 		'visitor',
 		{
 			projection: { _id: 1, label: 1, regexp: 1, required: 1 },
 		},
 		false,
-	);
+	).toArray();
+}
 
-	const livechatData: Record<string, string> = {};
-
-	for await (const cf of allowedCustomFields) {
+export function validateCustomFields(allowedCustomFields: ILivechatCustomField[], customFields: Record<string, string | unknown>) {
+	for (const cf of allowedCustomFields) {
 		if (!customFields.hasOwnProperty(cf._id)) {
 			if (cf.required) {
 				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
@@ -279,8 +279,6 @@ async function validateCustomFields(customFields: Record<string, string | unknow
 				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
 			}
 		}
-
-		livechatData[cf._id] = cfValue;
 	}
 }
 

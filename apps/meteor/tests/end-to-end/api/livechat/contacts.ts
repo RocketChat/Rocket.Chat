@@ -8,7 +8,7 @@ import { createCustomField, deleteCustomField } from '../../../data/livechat/cus
 import { createAgent } from '../../../data/livechat/rooms';
 import { removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { createUser } from '../../../data/users.helper';
+import { createUser, deleteUser } from '../../../data/users.helper';
 
 describe('LIVECHAT - contacts', () => {
 	let livechatAgent: ILivechatAgent;
@@ -20,8 +20,9 @@ describe('LIVECHAT - contacts', () => {
 	});
 
 	after(async () => {
-		await updateSetting('Livechat_enabled', false);
 		await removeAgent(livechatAgent._id);
+		await restorePermissionToRoles('create-livechat-contact');
+		await updateSetting('Livechat_enabled', true);
 	});
 
 	describe('[POST] omnichannel/contacts', () => {
@@ -98,9 +99,14 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error');
 			expect(res.body.error).to.be.equal('error-invalid-contact-manager');
+
+			await deleteUser(normalUser);
 		});
 
 		it('should be able to create a new contact with a contact manager', async () => {
+			const user = await createUser();
+			const livechatAgent = await createAgent(user.username);
+
 			const res = await request
 				.post(api('omnichannel/contacts'))
 				.set(credentials)
@@ -114,6 +120,8 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body).to.have.property('success', true);
 			expect(res.body).to.have.property('contactId');
 			expect(res.body.contactId).to.be.an('string');
+
+			await deleteUser(user);
 		});
 
 		describe('Custom Fields', () => {
@@ -279,6 +287,23 @@ describe('LIVECHAT - contacts', () => {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
 				expect(res.body.error).to.be.equal('must be string [invalid-params]');
+				expect(res.body.errorType).to.be.equal('invalid-params');
+			});
+
+			it('should return an error if additional fields are provided', async () => {
+				const res = await request
+					.post(api('omnichannel/contacts'))
+					.set(credentials)
+					.send({
+						name: faker.person.fullName(),
+						emails: [faker.internet.email().toLowerCase()],
+						phones: [faker.phone.number()],
+						additional: 'invalid',
+					});
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error');
+				expect(res.body.error).to.be.equal('must NOT have additional properties [invalid-params]');
 				expect(res.body.errorType).to.be.equal('invalid-params');
 			});
 		});
