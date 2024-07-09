@@ -4,23 +4,26 @@ import type { HTMLAttributes } from 'react';
 import React from 'react';
 
 import GenericMenu from '../../components/GenericMenu/GenericMenu';
-import { useMarketPlaceMenu } from './hooks/useMarketPlaceMenu';
+import { useAuditMenu } from './hooks/useAuditMenu';
 
-export const NavBarItemMarketPlaceMenu = (props: Omit<HTMLAttributes<HTMLElement>, 'is'>) => {
+type NavBarItemAuditMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+
+const NavBarItemAuditMenu = (props: NavBarItemAuditMenuProps) => {
 	const t = useTranslation();
-	const sections = useMarketPlaceMenu();
-
+	const sections = useAuditMenu();
 	const currentRoute = useCurrentRoutePath();
 
 	return (
 		<GenericMenu
 			sections={sections}
-			title={t('Marketplace')}
+			title={t('Audit')}
 			is={NavBarItem}
 			placement='bottom-start'
-			icon='store'
-			pressed={currentRoute?.includes('/marketplace')}
+			icon='document-eye'
+			pressed={currentRoute?.includes('/audit')}
 			{...props}
 		/>
 	);
 };
+
+export default NavBarItemAuditMenu;

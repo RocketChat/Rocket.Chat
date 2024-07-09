@@ -5,10 +5,12 @@ import React, { memo, useState } from 'react';
 import GenericMenu from '../../../components/GenericMenu/GenericMenu';
 import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 import { useHandleMenuAction } from '../../../components/GenericMenu/hooks/useHandleMenuAction';
-import { UserMenuButton } from './UserMenuButton';
+import UserMenuButton from './UserMenuButton';
 import { useUserMenu } from './hooks/useUserMenu';
 
-export const UserMenu = memo(function UserMenu({ user }: { user: IUser; className?: string }) {
+type UserMenuProps = { user: IUser; className?: string };
+
+const UserMenu = function UserMenu({ user }: UserMenuProps) {
 	const t = useTranslation();
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -30,4 +32,6 @@ export const UserMenu = memo(function UserMenu({ user }: { user: IUser; classNam
 			aria-label={t('User_menu')}
 		/>
 	);
-});
+};
+
+export default memo(UserMenu);

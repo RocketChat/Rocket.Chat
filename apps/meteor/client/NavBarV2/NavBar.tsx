@@ -17,7 +17,7 @@ import {
 import { NavBarItemMarketPlaceMenu, NavBarItemAuditMenu, NavBarItemDirectoryPage, NavBarItemHomePage } from './NavBarPagesToolbar';
 import { NavBarItemLoginPage, NavBarItemAdministrationMenu, UserMenu } from './NavBarSettingsToolbar';
 
-export const NavBar = () => {
+const NavBar = () => {
 	const t = useTranslation();
 	const user = useUser();
 
@@ -69,3 +69,5 @@ export const NavBar = () => {
 		</NavBarComponent>
 	);
 };
+
+export default NavBar;

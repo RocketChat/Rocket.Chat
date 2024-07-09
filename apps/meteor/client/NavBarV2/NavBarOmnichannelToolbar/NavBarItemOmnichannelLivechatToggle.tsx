@@ -6,7 +6,9 @@ import React from 'react';
 
 import { useOmnichannelAgentAvailable } from '../../hooks/omnichannel/useOmnichannelAgentAvailable';
 
-export const NavBarItemOmnichannelLivechatToggle = (props: Omit<ComponentProps<typeof Sidebar.TopBar.Action>, 'icon'>): ReactElement => {
+type NavBarItemOmnichannelLivechatToggleProps = Omit<ComponentProps<typeof Sidebar.TopBar.Action>, 'icon'>;
+
+const NavBarItemOmnichannelLivechatToggle = (props: NavBarItemOmnichannelLivechatToggleProps): ReactElement => {
 	const t = useTranslation();
 	const agentAvailable = useOmnichannelAgentAvailable();
 	const changeAgentStatus = useEndpoint('POST', '/v1/livechat/agent.status');
@@ -31,3 +33,5 @@ export const NavBarItemOmnichannelLivechatToggle = (props: Omit<ComponentProps<t
 		/>
 	);
 };
+
+export default NavBarItemOmnichannelLivechatToggle;

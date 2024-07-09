@@ -4,7 +4,9 @@ import { useRouter, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
 import React from 'react';
 
-export const NavBarItemDirectoryPage = (props: Omit<HTMLAttributes<HTMLElement>, 'is'>) => {
+type NavBarItemDirectoryPageProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+
+const NavBarItemDirectoryPage = (props: NavBarItemDirectoryPageProps) => {
 	const router = useRouter();
 	const handleDirectory = useEffectEvent(() => {
 		router.navigate('/directory');
@@ -13,3 +15,5 @@ export const NavBarItemDirectoryPage = (props: Omit<HTMLAttributes<HTMLElement>,
 
 	return <NavBarItem {...props} icon='notebook-hashtag' onClick={handleDirectory} pressed={currentRoute?.includes('/directory')} />;
 };
+
+export default NavBarItemDirectoryPage;

@@ -3,9 +3,9 @@ import { useRouter, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
 import React from 'react';
 
-type OmnichannelProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+type NavBarItemOmnichannelContactProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-export const NavBarItemOmnichannelContact = (props: OmnichannelProps) => {
+const NavBarItemOmnichannelContact = (props: NavBarItemOmnichannelContactProps) => {
 	const router = useRouter();
 	const currentRoute = useCurrentRoutePath();
 
@@ -18,3 +18,5 @@ export const NavBarItemOmnichannelContact = (props: OmnichannelProps) => {
 		/>
 	);
 };
+
+export default NavBarItemOmnichannelContact;

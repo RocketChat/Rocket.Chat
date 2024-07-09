@@ -8,7 +8,9 @@ import MarkdownText from '../../../components/MarkdownText';
 import { UserStatus } from '../../../components/UserStatus';
 import { useUserDisplayName } from '../../../hooks/useUserDisplayName';
 
-const UserMenuHeader = ({ user }: { user: IUser }) => {
+type UserMenuHeaderProps = { user: IUser };
+
+const UserMenuHeader = ({ user }: UserMenuHeaderProps) => {
 	const t = useTranslation();
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
 	const displayName = useUserDisplayName(user);

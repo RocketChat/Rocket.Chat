@@ -1,12 +1,14 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import React from 'react';
 
 import { useVoipOutboundStates } from '../../contexts/CallContext';
 import { useDialModal } from '../../hooks/useDialModal';
 
-export const NavBarItemOmniChannelCallDialPad = ({ ...props }): ReactElement => {
+type NavBarItemOmniChannelCallDialPadProps = ComponentPropsWithoutRef<typeof NavBarItem>;
+
+const NavBarItemOmniChannelCallDialPad = (props: NavBarItemOmniChannelCallDialPadProps) => {
 	const t = useTranslation();
 
 	const { openDialModal } = useDialModal();
@@ -24,3 +26,5 @@ export const NavBarItemOmniChannelCallDialPad = ({ ...props }): ReactElement => 
 		/>
 	);
 };
+
+export default NavBarItemOmniChannelCallDialPad;

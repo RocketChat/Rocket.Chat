@@ -4,7 +4,9 @@ import { useRouter, useLayout, useSetting, useCurrentRoutePath } from '@rocket.c
 import type { HTMLAttributes } from 'react';
 import React from 'react';
 
-export const NavBarItemHomePage = (props: Omit<HTMLAttributes<HTMLElement>, 'is'>) => {
+type NavBarItemHomePageProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+
+const NavBarItemHomePage = (props: NavBarItemHomePageProps) => {
 	const router = useRouter();
 	const { sidebar } = useLayout();
 	const showHome = useSetting('Layout_Show_Home_Button');
@@ -16,3 +18,5 @@ export const NavBarItemHomePage = (props: Omit<HTMLAttributes<HTMLElement>, 'is'
 
 	return showHome ? <NavBarItem {...props} icon='home' onClick={handleHome} pressed={currentRoute?.includes('/home')} /> : null;
 };
+
+export default NavBarItemHomePage;

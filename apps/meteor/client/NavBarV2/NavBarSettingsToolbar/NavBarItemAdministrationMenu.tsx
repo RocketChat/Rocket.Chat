@@ -6,7 +6,9 @@ import React from 'react';
 import GenericMenu from '../../components/GenericMenu/GenericMenu';
 import { useAdministrationMenu } from './hooks/useAdministrationMenu';
 
-export const NavBarItemAdministrationMenu = (props: Omit<HTMLAttributes<HTMLElement>, 'is'>) => {
+type NavBarItemAdministrationMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+
+const NavBarItemAdministrationMenu = (props: NavBarItemAdministrationMenuProps) => {
 	const t = useTranslation();
 	const currentRoute = useCurrentRoutePath();
 
@@ -27,3 +29,5 @@ export const NavBarItemAdministrationMenu = (props: Omit<HTMLAttributes<HTMLElem
 		/>
 	);
 };
+
+export default NavBarItemAdministrationMenu;
