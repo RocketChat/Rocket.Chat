@@ -72,11 +72,13 @@ describe('[Subscriptions]', () => {
 		let testChannel: IRoom;
 		let testGroup: IRoom;
 		let testDM: IRoom;
+		let user: TestUser<IUser>;
 
 		before(async () => {
+			user = await createUser();
 			testChannel = (await createRoom({ type: 'c', name: `channel.test.${Date.now()}` })).body.channel;
 			testGroup = (await createRoom({ type: 'p', name: `group.test.${Date.now()}` })).body.group;
-			testDM = (await createRoom({ type: 'd', username: 'rocket.cat' })).body.room;
+			testDM = (await createRoom({ type: 'd', username: user.username })).body.room;
 		});
 
 		after(() =>
@@ -84,6 +86,7 @@ describe('[Subscriptions]', () => {
 				deleteRoom({ type: 'd', roomId: testDM._id }),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
 				deleteRoom({ type: 'p', roomId: testGroup._id }),
+				deleteUser(user),
 			]),
 		);
 
