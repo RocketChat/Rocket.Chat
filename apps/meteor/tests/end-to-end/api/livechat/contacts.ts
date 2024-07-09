@@ -6,7 +6,7 @@ import { getCredentials, api, request, credentials } from '../../../data/api-dat
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 import { createAgent } from '../../../data/livechat/rooms';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { createUser } from '../../../data/users.helper';
+import { createUser, deleteUser } from '../../../data/users.helper';
 
 describe('LIVECHAT - contacts', () => {
 	before((done) => getCredentials(done));
@@ -87,10 +87,13 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error');
 			expect(res.body.error).to.be.equal('error-invalid-contact-manager');
+
+			await deleteUser(normalUser);
 		});
 
 		it('should be able to create a new contact with a contact manager', async () => {
-			const livechatAgent = await createAgent();
+			const user = await createUser();
+			const livechatAgent = await createAgent(user.username);
 
 			const res = await request
 				.post(api('omnichannel/contacts'))
@@ -105,6 +108,8 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body).to.have.property('success', true);
 			expect(res.body).to.have.property('contactId');
 			expect(res.body.contactId).to.be.an('string');
+
+			await deleteUser(user);
 		});
 
 		describe('Custom Fields', () => {
