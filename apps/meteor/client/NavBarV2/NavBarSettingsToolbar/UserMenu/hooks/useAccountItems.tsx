@@ -1,5 +1,5 @@
 import { Badge } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { defaultFeaturesPreview, useFeaturePreviewList } from '@rocket.chat/ui-client';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -12,16 +12,16 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 
 	const { unseenFeatures, featurePreviewEnabled } = useFeaturePreviewList();
 
-	const handleMyAccount = useMutableCallback(() => {
+	const handleMyAccount = useEffectEvent(() => {
 		router.navigate('/account');
 	});
-	const handlePreferences = useMutableCallback(() => {
+	const handlePreferences = useEffectEvent(() => {
 		router.navigate('/account/preferences');
 	});
-	const handleFeaturePreview = useMutableCallback(() => {
+	const handleFeaturePreview = useEffectEvent(() => {
 		router.navigate('/account/feature-preview');
 	});
-	const handleAccessibility = useMutableCallback(() => {
+	const handleAccessibility = useEffectEvent(() => {
 		router.navigate('/account/accessibility-and-appearance');
 	});
 

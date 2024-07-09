@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useLogout, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -15,7 +15,7 @@ export const useUserMenu = (user: IUser) => {
 	const accountItems = useAccountItems();
 
 	const logout = useLogout();
-	const handleLogout = useMutableCallback(() => {
+	const handleLogout = useEffectEvent(() => {
 		logout();
 	});
 
