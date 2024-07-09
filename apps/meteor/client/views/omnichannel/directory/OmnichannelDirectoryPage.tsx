@@ -1,4 +1,5 @@
-import { Tabs } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Tabs } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useCallback } from 'react';
 
@@ -33,6 +34,10 @@ const OmnichannelDirectoryPage = () => {
 		[router],
 	);
 
+	const handleNewContact = useEffectEvent(() =>
+		router.navigate({ name: 'omnichannel-directory', params: { tab: 'contacts', context: 'new' } }),
+	);
+
 	const handleTabClick = useCallback((tab) => router.navigate({ name: 'omnichannel-directory', params: { tab } }), [router]);
 
 	const chatReload = () => queryClient.invalidateQueries({ queryKey: ['current-chats'] });
@@ -40,7 +45,15 @@ const OmnichannelDirectoryPage = () => {
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<PageHeader title={t('Omnichannel_Contact_Center')} />
+				<PageHeader title={t('Omnichannel_Contact_Center')}>
+					{tab === 'contacts' && (
+						<ButtonGroup>
+							<Button primary onClick={handleNewContact}>
+								{t('New_contact')}
+							</Button>
+						</ButtonGroup>
+					)}
+				</PageHeader>
 				<Tabs flexShrink={0}>
 					<Tabs.Item selected={tab === 'contacts'} onClick={() => handleTabClick('contacts')}>
 						{t('Contacts')}
