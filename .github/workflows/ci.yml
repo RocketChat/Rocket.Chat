@@ -443,10 +443,38 @@ jobs:
     name: ✅ Tests Done
     runs-on: ubuntu-20.04
     needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-no-watcher]
-
+    if: always()
     steps:
       - name: Test finish aggregation
         run: |
+          if [[ '${{ needs.checks.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-unit.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-api.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-ui.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-api-ee.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-ui-ee.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-ui-ee-no-watcher.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
           echo finished
 
   deploy:
