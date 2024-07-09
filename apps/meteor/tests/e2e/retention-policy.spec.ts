@@ -31,6 +31,10 @@ test.describe.serial('retention-policy', () => {
 	});
 
 	test.describe('retention policy disabled', () => {
+		test.beforeAll(async ({ api }) => {
+			await setSettingValueById(api, 'RetentionPolicy_Enabled', false);
+		});
+
 		test('should not show prune banner in channel', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 

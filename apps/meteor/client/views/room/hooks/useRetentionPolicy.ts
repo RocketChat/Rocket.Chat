@@ -1,10 +1,10 @@
 import type { IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 
-import { TIMEUNIT, timeUnitToMs } from '../../../lib/convertTimeUnit';
+import { TIMEUNIT, isValidTimespan, timeUnitToMs } from '../../../lib/convertTimeUnit';
 
 const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>
-	'retention' in room && room.retention !== undefined;
+	'retention' in room && room.retention !== undefined && 'overrideGlobal' in room.retention && isValidTimespan(room.retention.maxAge);
 
 type RetentionPolicySettings = {
 	enabled: boolean;

@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
+import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -43,6 +44,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 	const t = useTranslation();
 
 	const normalizedMessage = useNormalizedMessage(message);
+	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
 
 	const quotes = normalizedMessage?.attachments?.filter(isQuoteAttachment) || [];
 
@@ -50,7 +52,10 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 
 	return (
 		<>
+			{isMessageEncrypted && <MessageBody>{t('E2E_message_encrypted_placeholder')}</MessageBody>}
+
 			{!!quotes?.length && <Attachments attachments={quotes} />}
+
 			{!normalizedMessage.blocks?.length && !!normalizedMessage.md?.length && (
 				<>
 					{(!encrypted || normalizedMessage.e2e === 'done') && (
@@ -62,7 +67,6 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 							searchText={searchText}
 						/>
 					)}
-					{encrypted && normalizedMessage.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 				</>
 			)}
 
