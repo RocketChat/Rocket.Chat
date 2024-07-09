@@ -18,7 +18,7 @@ describe('LIVECHAT - contacts', () => {
 
 	after(async () => {
 		await restorePermissionToRoles('create-livechat-contact');
-		await updateSetting('Livechat_enabled', false);
+		await updateSetting('Livechat_enabled', true);
 	});
 
 	describe('[POST] omnichannel/contacts', () => {
