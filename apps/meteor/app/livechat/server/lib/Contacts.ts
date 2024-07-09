@@ -232,21 +232,9 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		validateCustomFields(allowedCustomFields, customFields);
 	}
 
-	const updateContact: { $set: MatchKeysAndValues<ILivechatContact> } = {
-		$set: {
-			name,
-			emails,
-			phones,
-			contactManager,
-			channels,
-			customFields,
-			unknown: true,
-		},
-	};
+	const updatedContact = await LivechatContacts.updateContact(contactId, { name, emails, phones, contactManager, channels, customFields });
 
-	await LivechatContacts.updateOne({ _id: contactId }, updateContact);
-
-	return LivechatContacts.findOneById(contactId) as Promise<ILivechatContact>;
+	return updatedContact;
 }
 
 async function getAllowedCustomFields(): Promise<ILivechatCustomField[]> {
