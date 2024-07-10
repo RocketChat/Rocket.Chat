@@ -12,7 +12,7 @@ import { test, expect } from '../utils/test';
 test.use({ storageState: Users.admin.state });
 
 test.describe('OC - Manage Tags', () => {
-  test.skip(!IS_EE, 'OC - Manage Tags > Enterprise Edition Only');
+	test.skip(!IS_EE, 'OC - Manage Tags > Enterprise Edition Only');
 
 	let poOmnichannelTags: OmnichannelTags;
 
@@ -34,17 +34,17 @@ test.describe('OC - Manage Tags', () => {
 		await agent.delete();
 	});
 
-  test.beforeEach(async ({ page }: { page: Page }) => {
+	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannelTags = new OmnichannelTags(page);
 	});
 
-  test('OC - Manage Tags - Create Tag', async ({ page }) => {
-    const tagName = faker.string.uuid();
+	test('OC - Manage Tags - Create Tag', async ({ page }) => {
+		const tagName = faker.string.uuid();
 
-    await page.goto('/omnichannel');
+		await page.goto('/omnichannel');
 		await poOmnichannelTags.sidenav.linkTags.click();
 
-    await test.step('expect correct form default state', async () => {
+		await test.step('expect correct form default state', async () => {
 			await poOmnichannelTags.btnCreateTag.click();
 			await expect(poOmnichannelTags.contextualBar).toBeVisible();
 			await expect(poOmnichannelTags.btnSave).toBeDisabled();
@@ -53,7 +53,7 @@ test.describe('OC - Manage Tags', () => {
 			await expect(poOmnichannelTags.contextualBar).not.toBeVisible();
 		});
 
-    await test.step('expect to create new tag', async () => {
+		await test.step('expect to create new tag', async () => {
 			await poOmnichannelTags.btnCreateTag.click();
 			await poOmnichannelTags.inputName.fill(tagName);
 			await poOmnichannelTags.selectDepartment(department.data);
@@ -66,7 +66,7 @@ test.describe('OC - Manage Tags', () => {
 			});
 		});
 
-    await test.step('expect to delete tag', async () => {
+		await test.step('expect to delete tag', async () => {
 			await test.step('expect to be able to cancel delete', async () => {
 				await poOmnichannelTags.btnDeleteByName(tagName).click();
 				await expect(poOmnichannelTags.confirmDeleteModal).toBeVisible();
@@ -82,9 +82,9 @@ test.describe('OC - Manage Tags', () => {
 				await expect(page.locator('h3 >> text="No results found"')).toBeVisible();
 			});
 		});
-  });
+	});
 
-  test('OC - Manage Tags - Edit tag departments', async ({ api, page }) => {
+	test('OC - Manage Tags - Edit tag departments', async ({ api, page }) => {
 		const tag = await test.step('expect to create new tag', async () => {
 			const { data: tag } = await createTag(api, {
 				name: faker.string.uuid(),
@@ -94,7 +94,7 @@ test.describe('OC - Manage Tags', () => {
 			return tag;
 		});
 
-    await page.goto('/omnichannel');
+		await page.goto('/omnichannel');
 		await poOmnichannelTags.sidenav.linkTags.click();
 
 		await test.step('expect to add tag departments', async () => {
@@ -128,7 +128,7 @@ test.describe('OC - Manage Tags', () => {
 			await expect(page.getByRole('option', { name: department2.data.name })).toBeHidden();
 		});
 
-    await test.step('expect to delete tag', async () => {
+		await test.step('expect to delete tag', async () => {
 			await poOmnichannelTags.btnDeleteByName(tag.name).click();
 			await expect(poOmnichannelTags.confirmDeleteModal).toBeVisible();
 			await poOmnichannelTags.btnConfirmDeleteModal.click();

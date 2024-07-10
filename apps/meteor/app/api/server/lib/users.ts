@@ -154,6 +154,7 @@ export async function findPaginatedUsersByStatus({
 		lastLogin: 1,
 		type: 1,
 		reason: 1,
+		federated: 1,
 	};
 
 	const actualSort: Record<string, 1 | -1> = sort || { username: 1 };
@@ -204,6 +205,7 @@ export async function findPaginatedUsersByStatus({
 			skip: offset,
 			limit: count,
 			projection,
+			allowDiskUse: true,
 		},
 	);
 	const [users, total] = await Promise.all([cursor.toArray(), totalCount]);

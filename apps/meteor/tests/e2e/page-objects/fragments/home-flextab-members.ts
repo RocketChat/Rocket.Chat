@@ -46,7 +46,6 @@ export class HomeFlextabMembers {
 		await this.page.getByRole('dialog').getByRole('button').first().click();
 	}
 
-
 	async setUserAsModerator(username: string) {
 		await this.openMemberOptionMoreActions(username);
 		await this.getMenuItemAction('Set as moderator').click();

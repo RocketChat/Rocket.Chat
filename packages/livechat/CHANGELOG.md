@@ -1,5 +1,83 @@
 # @rocket.chat/livechat Change Log
 
+## 1.18.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.0-rc.7
+  </details>
+
+## 1.18.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.0-rc.6
+  </details>
+
+## 1.18.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.0-rc.5
+  </details>
+
+## 1.18.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.0-rc.4
+  </details>
+
+## 1.18.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.0-rc.3
+  </details>
+
+## 1.18.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.0-rc.2
+  </details>
+
+## 1.18.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.0-rc.1
+  </details>
+
+## 1.18.0-rc.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a565999ae0, 59df102d0c, 4f72d62aa7]:</summary>
+
+  - @rocket.chat/ui-kit@0.35.0-rc.0
+  - @rocket.chat/gazzodown@8.0.0-rc.0
+
+  </details>
+
 ## 1.17.3
 
 ### Patch Changes

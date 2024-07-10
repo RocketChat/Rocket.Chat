@@ -2,6 +2,7 @@ import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
+import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 
@@ -31,9 +32,10 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
 				retentionPolicy?.enabled && {
 					retentionEnabled: retention?.enabled ?? retentionPolicy.isActive,
 					retentionOverrideGlobal: !!retention?.overrideGlobal,
-					retentionMaxAge: retention?.maxAge ?? retentionPolicy.maxAge,
+					retentionMaxAge: retention?.maxAge ?? msToTimeUnit(TIMEUNIT.days, retentionPolicy.maxAge),
 					retentionExcludePinned: retention?.excludePinned ?? retentionPolicy.excludePinned,
 					retentionFilesOnly: retention?.filesOnly ?? retentionPolicy.filesOnly,
+					retentionIgnoreThreads: retention?.ignoreThreads ?? retentionPolicy.ignoreThreads,
 				}),
 		}),
 		[

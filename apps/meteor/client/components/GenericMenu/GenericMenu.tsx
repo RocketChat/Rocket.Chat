@@ -11,6 +11,7 @@ type GenericMenuCommonProps = {
 	title: string;
 	icon?: ComponentProps<typeof IconButton>['icon'];
 	disabled?: boolean;
+	callbackAction?: () => void;
 };
 type GenericMenuConditionalProps =
 	| {
@@ -28,7 +29,7 @@ type GenericMenuConditionalProps =
 
 type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof MenuV2>, 'children'>;
 
-const GenericMenu = ({ title, icon = 'menu', disabled, onAction, ...props }: GenericMenuProps) => {
+const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction, ...props }: GenericMenuProps) => {
 	const t = useTranslation();
 
 	const sections = 'sections' in props && props.sections;
@@ -37,11 +38,11 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, ...props }: Gen
 	const itemsList = sections ? sections.reduce((acc, { items }) => [...acc, ...items], [] as GenericMenuItemProps[]) : items || [];
 
 	const disabledKeys = itemsList.filter(({ disabled }) => disabled).map(({ id }) => id);
-	const handleAction = useHandleMenuAction(itemsList || []);
+	const handleAction = useHandleMenuAction(itemsList || [], callbackAction);
 
 	const hasIcon = itemsList.some(({ icon }) => icon);
 	const handleItems = (items: GenericMenuItemProps[]) =>
-		hasIcon ? items.map((item) => ({ ...item, gap: !item.icon && !item.status })) : items;
+		hasIcon ? items.map((item) => ({ ...item, gap: item.gap ?? (!item.icon && !item.status) })) : items;
 
 	const isMenuEmpty = !(sections && sections.length > 0) && !(items && items.length > 0);
 

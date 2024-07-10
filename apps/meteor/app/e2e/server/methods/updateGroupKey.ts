@@ -2,6 +2,8 @@ import { Subscriptions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
@@ -11,6 +13,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'e2e.updateGroupKey'(rid, uid, key) {
+		methodDeprecationLogger.method('e2e.updateGroupKey', '8.0.0');
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'e2e.acceptSuggestedGroupKey' });
@@ -27,10 +30,7 @@ Meteor.methods<ServerMethods>({
 			}
 
 			// uid also has subscription to this room
-			const userSub = await Subscriptions.findOneByRoomIdAndUserId(rid, uid);
-			if (userSub) {
-				await Subscriptions.setGroupE2ESuggestedKey(userSub._id, key);
-			}
+			await Subscriptions.setGroupE2ESuggestedKey(uid, rid, key);
 		}
 	},
 });
