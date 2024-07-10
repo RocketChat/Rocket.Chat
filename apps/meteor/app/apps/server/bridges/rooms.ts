@@ -217,9 +217,11 @@ export class AppRoomBridge extends RoomBridge {
 			throw new Error('roomId was not provided.');
 		}
 
+		await Users.findUsersByUsernames(usernames, { batchSize: 50 }).forEach((user) => (removeUserFromRoom(roomId, user), true));
+
 		// not sure what the limit should be here, but we have to limit it
-		const members = await Users.findUsersByUsernames(usernames, { limit: 50 }).toArray();
-		await Promise.all(members.map((user) => removeUserFromRoom(roomId, user)));
+		// const members = await Users.findUsersByUsernames(usernames, { limit: 50 }).toArray();
+		// await Promise.all(members.map((user) => removeUserFromRoom(roomId, user)));
 	}
 
 	protected getMessages(
