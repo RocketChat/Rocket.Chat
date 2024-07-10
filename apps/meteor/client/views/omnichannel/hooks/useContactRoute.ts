@@ -37,7 +37,7 @@ export const useContactRoute = () => {
 
 	useEffect(() => {
 		if (!currentParams.context) {
-			handleNavigate({ context: 'info' });
+			handleNavigate({ context: 'details' });
 		}
 	}, [currentParams.context, handleNavigate]);
 
