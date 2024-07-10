@@ -6,7 +6,16 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useUserPreference, useUserSubscriptions, useSetting, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement, MutableRefObject, SetStateAction, Dispatch, FormEventHandler, Ref, MouseEventHandler } from 'react';
+import type {
+	ReactElement,
+	MutableRefObject,
+	SetStateAction,
+	Dispatch,
+	FormEventHandler,
+	Ref,
+	MouseEventHandler,
+	ForwardedRef,
+} from 'react';
 import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
 import type { VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
@@ -183,15 +192,11 @@ const toggleSelectionState = (next: HTMLElement, current: HTMLElement | undefine
 	}
 };
 
-/**
- * @type import('react').ForwardRefExoticComponent<{ onClose: unknown } & import('react').RefAttributes<HTMLElement>>
- */
-
 type SearchListProps = {
 	onClose: () => void;
 };
 
-const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, ref): ReactElement {
+const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, ref: ForwardedRef<any>) {
 	const listId = useUniqueId();
 	const t = useTranslation();
 	const { setValue: setFilterValue, ...filter } = useInput('');

@@ -27,10 +27,10 @@ import type { ComponentProps, ReactElement } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
-import UserAutoCompleteMultipleFederated from '../../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
-import { goToRoomById } from '../../../lib/utils/goToRoomById';
-import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescription';
+import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
+import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
+import { goToRoomById } from '../../lib/utils/goToRoomById';
+import { useEncryptedRoomDescription } from './hooks/useEncryptedRoomDescription';
 
 type CreateChannelModalProps = {
 	teamId?: string;
@@ -59,7 +59,7 @@ const getFederationHintKey = (licenseModule: ReturnType<typeof useHasLicenseModu
 	return 'Federation_Matrix_Federated_Description';
 };
 
-const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModalProps): ReactElement => {
+const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModalProps) => {
 	const t = useTranslation();
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 	const e2eEnabled = useSetting('E2E_Enable');

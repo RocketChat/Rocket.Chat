@@ -26,9 +26,9 @@ import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useEffect, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
-import { goToRoomById } from '../../../lib/utils/goToRoomById';
-import { useEncryptedRoomDescription } from '../hooks/useEncryptedRoomDescription';
+import UserAutoCompleteMultiple from '../../components/UserAutoCompleteMultiple';
+import { goToRoomById } from '../../lib/utils/goToRoomById';
+import { useEncryptedRoomDescription } from './hooks/useEncryptedRoomDescription';
 
 type CreateTeamModalInputs = {
 	name: string;
@@ -40,7 +40,9 @@ type CreateTeamModalInputs = {
 	members?: string[];
 };
 
-const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => {
+type CreateTeamModalProps = { onClose: () => void };
+
+const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 	const t = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms');

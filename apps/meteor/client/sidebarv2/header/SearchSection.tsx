@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import tinykeys from 'tinykeys';
 
-import { SearchList } from './SearchList';
+import SearchList from './SearchList';
 import CreateRoom from './actions/CreateRoom';
 import Sort from './actions/Sort';
 
@@ -22,7 +22,7 @@ const wrapperStyle = css`
 	background-color: ${Palette.surface['surface-sidebar']};
 `;
 
-export const SearchSection = () => {
+const SearchSection = () => {
 	const t = useTranslation();
 	const user = useUser();
 
@@ -100,3 +100,5 @@ export const SearchSection = () => {
 		</Box>
 	);
 };
+
+export default SearchSection;

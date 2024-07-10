@@ -12,7 +12,9 @@ import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import Row from '../search/Row';
 import { useSearchItems } from './hooks/useSearchItems';
 
-export const SearchList = ({ filterText, onEscSearch }: { filterText: string; onEscSearch: () => void }) => {
+type SearchListProps = { filterText: string; onEscSearch: () => void };
+
+const SearchList = ({ filterText, onEscSearch }: SearchListProps) => {
 	const t = useTranslation();
 
 	const boxRef = useRef<HTMLDivElement>(null);
@@ -73,3 +75,5 @@ export const SearchList = ({ filterText, onEscSearch }: { filterText: string; on
 		</Box>
 	);
 };
+
+export default SearchList;

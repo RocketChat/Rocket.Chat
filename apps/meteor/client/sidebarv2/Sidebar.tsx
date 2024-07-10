@@ -6,7 +6,7 @@ import React, { memo } from 'react';
 
 import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';
-import { SearchSection } from './header/SearchSection';
+import SearchSection from './header/SearchSection';
 import StatusDisabledSection from './sections/StatusDisabledSection';
 
 const Sidebar = () => {

@@ -9,7 +9,9 @@ import { useForm, Controller } from 'react-hook-form';
 import UserAutoCompleteMultipleFederated from '../../components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
 
-const CreateDirectMessage = ({ onClose }: { onClose: () => void }) => {
+type CreateDirectMessageProps = { onClose: () => void };
+
+const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 	const t = useTranslation();
 	const directMaxUsers = useSetting<number>('DirectMesssage_maxUsers') || 1;
 	const membersFieldId = useUniqueId();
