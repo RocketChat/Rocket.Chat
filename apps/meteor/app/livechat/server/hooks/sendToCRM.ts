@@ -185,13 +185,6 @@ callbacks.add(
 			return inquiry;
 		}
 
-		// const { rid } = inquiry;
-		// const room = await LivechatRooms.findOneById(rid);
-
-		// if (!room) {
-		// 	return inquiry;
-		// }
-
 		return sendToCRM('LivechatSessionTaken', room);
 	},
 	callbacks.priority.MEDIUM,
