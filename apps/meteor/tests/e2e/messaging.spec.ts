@@ -49,15 +49,28 @@ test.describe.serial('Messaging', () => {
 		await expect(page.locator('[data-qa-type="message"]:has-text("msg1")')).toBeFocused();
 
 		// move focus to the message toolbar
-		await page.locator('[data-qa-type="message"]:has-text("msg1")').locator('[role=toolbar][aria-label="Message actions"]').getByRole('button', { name: 'Add reaction' }).waitFor();
-		
+		await page
+			.locator('[data-qa-type="message"]:has-text("msg1")')
+			.locator('[role=toolbar][aria-label="Message actions"]')
+			.getByRole('button', { name: 'Add reaction' })
+			.waitFor();
+
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
-		await expect(page.locator('[data-qa-type="message"]:has-text("msg1")').locator('[role=toolbar][aria-label="Message actions"]').getByRole('button', { name: 'Add reaction' })).toBeFocused();
-		
+		await expect(
+			page
+				.locator('[data-qa-type="message"]:has-text("msg1")')
+				.locator('[role=toolbar][aria-label="Message actions"]')
+				.getByRole('button', { name: 'Add reaction' }),
+		).toBeFocused();
+
 		// move focus to the composer
 		await page.keyboard.press('Tab');
-		await page.locator('[data-qa-type="message"]:has-text("msg2")').locator('[role=toolbar][aria-label="Message actions"]').getByRole('button', { name: 'Add reaction' }).waitFor();
+		await page
+			.locator('[data-qa-type="message"]:has-text("msg2")')
+			.locator('[role=toolbar][aria-label="Message actions"]')
+			.getByRole('button', { name: 'Add reaction' })
+			.waitFor();
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 		await expect(poHomeChannel.composer).toBeFocused();
@@ -87,11 +100,11 @@ test.describe.serial('Messaging', () => {
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Space');
 		await expect(poHomeChannel.userCardToolbar).not.toBeVisible();
-	})
+	});
 
 	test('should not restore focus on the last focused if it was triggered by click', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		await page.locator('[data-qa-type="message"]:has-text("msg1")').click();	
+		await page.locator('[data-qa-type="message"]:has-text("msg1")').click();
 		await poHomeChannel.composer.click();
 		await page.keyboard.press('Shift+Tab');
 
@@ -100,12 +113,12 @@ test.describe.serial('Messaging', () => {
 
 	test('should not focus on the last message when focusing by click', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		await page.locator('[data-qa-type="message"]:has-text("msg1")').click();	
+		await page.locator('[data-qa-type="message"]:has-text("msg1")').click();
 
 		await expect(page.locator('[data-qa-type="message"]').last()).not.toBeFocused();
 	});
 
-	test('should focus on the recent message when moving the focus on the list and theres no previous focus', async ({ page }) => {
+	test('should focus the latest message when moving the focus on the list and theres no previous focus', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await page.getByRole('button', { name: targetChannel }).first().focus();
 
@@ -115,7 +128,7 @@ test.describe.serial('Messaging', () => {
 		await page.keyboard.press('Tab');
 		await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
 
-		await page.getByRole('button', { name: targetChannel }).first().click();
+		await page.getByRole('button', { name: targetChannel }).first().focus();
 
 		// move focus to the list again
 		await page.keyboard.press('Tab');

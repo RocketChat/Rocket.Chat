@@ -9,7 +9,7 @@ import { test, expect } from '../utils/test';
 test.describe('OC - Livechat - Cross Tab Communication', () => {
 	let pageLivechat1: OmnichannelLiveChat;
 	let pageLivechat2: OmnichannelLiveChat;
-	
+
 	let poHomeOmnichannel: HomeOmnichannel;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
 
@@ -35,6 +35,8 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 	test.afterAll(async () => {
 		await poHomeOmnichannel.page?.close();
 		await agent.delete();
+		await pageLivechat1.page.close();
+		await pageLivechat2.page.close();
 	});
 
 	test('OC - Livechat - Send messages, close chat and start again 2 tabs', async () => {
@@ -51,7 +53,7 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 			await pageLivechat1.btnSendMessageToOnlineAgent.click();
 
 			await expect(pageLivechat1.page.locator('div >> text="this_a_test_message_from_user"')).toBeVisible();
-			
+
 			await expect(pageLivechat2.page.locator('div >> text="this_a_test_message_from_user"')).toBeVisible();
 		});
 
@@ -70,11 +72,9 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 			await pageLivechat1.onlineAgentMessage.fill('this_a_test_message_from_user_after_close');
 			await pageLivechat1.btnSendMessageToOnlineAgent.click();
 
-			
 			await pageLivechat1.page.locator('div >> text="this_a_test_message_from_user"').waitFor({ state: 'hidden' });
 			await pageLivechat2.page.locator('div >> text="this_a_test_message_from_user"').waitFor({ state: 'hidden' });
-			
-			
+
 			await expect(pageLivechat1.page.locator('div >> text="this_a_test_message_from_user"')).not.toBeVisible();
 			await expect(pageLivechat2.page.locator('div >> text="this_a_test_message_from_user"')).not.toBeVisible();
 

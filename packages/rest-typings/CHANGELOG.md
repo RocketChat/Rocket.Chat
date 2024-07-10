@@ -1,5 +1,145 @@
 # @rocket.chat/rest-typings
 
+## 6.9.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.2
+  </details>
+
+## 6.9.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.1
+  </details>
+
+## 6.9.0
+
+### Minor Changes
+
+- ([#32364](https://github.com/RocketChat/Rocket.Chat/pull/32364)) Fixed issue with "Export room as file" feature (`rooms.export` endpoint) generating an empty export when given an invalid date
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ff4e396416, ee5cdfc367, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/core-typings@6.9.0
+  - @rocket.chat/ui-kit@0.34.0
+  </details>
+
+## 6.9.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.2
+  </details>
+
+## 6.9.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.1
+  </details>
+
+## 6.9.0-rc.0
+
+### Minor Changes
+
+- ([#32364](https://github.com/RocketChat/Rocket.Chat/pull/32364)) Fixed issue with "Export room as file" feature (`rooms.export` endpoint) generating an empty export when given an invalid date
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ff4e396416, ee5cdfc367, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.0
+  - @rocket.chat/ui-kit@0.34.0-rc.0
+  </details>
+
+## 6.8.0
+
+### Minor Changes
+
+- ([#31898](https://github.com/RocketChat/Rocket.Chat/pull/31898)) Created a new endpoint to get a filtered and paginated list of users.
+
+- ([#31811](https://github.com/RocketChat/Rocket.Chat/pull/31811)) Convert mute/unmute meteor methods to endpoints
+
+- ([#31898](https://github.com/RocketChat/Rocket.Chat/pull/31898)) Created a new endpoint to resend the welcome email to a given user
+
+### Patch Changes
+
+- ([#32374](https://github.com/RocketChat/Rocket.Chat/pull/32374)) Fixed an issue with some apps that didn't implement executeViewCloseHandler. This causes opened modals to be open forever on UI (unless Esc was clicked). This is because when the UI attempts to close it, it calls the aforementioned handler, and since it didn't exist, apps engine errored out.
+
+  This returned an empty response to the UI, which ignored the response and continued to show the view.
+
+- ([#32141](https://github.com/RocketChat/Rocket.Chat/pull/32141)) Deprecate `channels.images` in favor of `rooms.images`. `Rooms` endpoints are more broad and should interact with all types of rooms. `Channels` on the other hand are specific to public channels.
+  This change is to keep the semantics and conventions of the endpoints
+- <details><summary>Updated dependencies [c47a8e3514, b94ca7c30b, 4aba7c8a26]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0
+  - @rocket.chat/message-parser@0.31.29
+  - @rocket.chat/ui-kit@0.33.0
+  </details>
+
+## 6.8.0-rc.2
+
+### Patch Changes
+
+- ([#32374](https://github.com/RocketChat/Rocket.Chat/pull/32374)) Fixed an issue with some apps that didn't implement executeViewCloseHandler. This causes opened modals to be open forever on UI (unless Esc was clicked). This is because when the UI attempts to close it, it calls the aforementioned handler, and since it didn't exist, apps engine errored out.
+
+  This returned an empty response to the UI, which ignored the response and continued to show the view.
+
+- <details><summary>Updated dependencies [b94ca7c30b]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.2
+  </details>
+
+## 6.8.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.1
+  </details>
+
+## 6.8.0-rc.0
+
+### Minor Changes
+
+- ([#31898](https://github.com/RocketChat/Rocket.Chat/pull/31898)) Created a new endpoint to get a filtered and paginated list of users.
+
+- ([#31811](https://github.com/RocketChat/Rocket.Chat/pull/31811)) Convert mute/unmute meteor methods to endpoints
+
+- ([#31898](https://github.com/RocketChat/Rocket.Chat/pull/31898)) Created a new endpoint to resend the welcome email to a given user
+
+### Patch Changes
+
+- ([#32141](https://github.com/RocketChat/Rocket.Chat/pull/32141)) Deprecate `channels.images` in favor of `rooms.images`. `Rooms` endpoints are more broad and should interact with all types of rooms. `Channels` on the other hand are specific to public channels.
+  This change is to keep the semantics and conventions of the endpoints
+- <details><summary>Updated dependencies [c47a8e3514, 4aba7c8a26]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.0
+  - @rocket.chat/message-parser@0.31.29
+  - @rocket.chat/ui-kit@0.33.0
+
+## 6.7.2
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.2
+  </details>
+
+> > > > > > > origin/master
+
 ## 6.7.1
 
 ### Patch Changes

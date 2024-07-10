@@ -81,14 +81,23 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 	try {
 		const room = await canSendMessageAsync(rid, { uid, username: user.username, type: user.type });
 
+		if (room.encrypted && settings.get<boolean>('E2E_Enable') && !settings.get<boolean>('E2E_Allow_Unencrypted_Messages')) {
+			if (message.t !== 'e2e') {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed to send un-encrypted messages in an encrypted room', {
+					method: 'sendMessage',
+				});
+			}
+		}
+
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return await sendMessage(user, message, room, false, previewUrls);
 	} catch (err: any) {
 		SystemLogger.error({ msg: 'Error sending message:', err });
 
 		const errorMessage = typeof err === 'string' ? err : err.error || err.message;
+		const errorContext = err.details ?? {};
 		void api.broadcast('notify.ephemeralMessage', uid, message.rid, {
-			msg: i18n.t(errorMessage, { lng: user.language }),
+			msg: i18n.t(errorMessage, errorContext, user.language),
 		});
 
 		if (typeof err === 'string') {

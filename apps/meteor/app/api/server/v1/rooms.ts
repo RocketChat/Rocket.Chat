@@ -2,10 +2,11 @@ import { Media } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
-import { isGETRoomsNameExists, isRoomsImagesProps, isRoomsMuteUnmuteUserProps } from '@rocket.chat/rest-typings';
+import { isGETRoomsNameExists, isRoomsImagesProps, isRoomsMuteUnmuteUserProps, isRoomsExportProps } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
+import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/methods/eraseRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
@@ -141,7 +142,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.upload/:rid',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		deprecation: {
+			version: '8.0.0',
+			alternatives: ['rooms.media'],
+		},
+	},
 	{
 		async post() {
 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
@@ -186,6 +193,112 @@ API.v1.addRoute(
 			await sendFileMessage(this.userId, { roomId: this.urlParams.rid, file: uploadedFile, msgData: fields });
 
 			const message = await Messages.getMessageByFileIdAndUsername(uploadedFile._id, this.userId);
+
+			return API.v1.success({
+				message,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.media/:rid',
+	{ authRequired: true },
+	{
+		async post() {
+			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
+				return API.v1.unauthorized();
+			}
+
+			const file = await getUploadFormData(
+				{
+					request: this.request,
+				},
+				{ field: 'file', sizeLimit: settings.get<number>('FileUpload_MaxFileSize') },
+			);
+
+			if (!file) {
+				throw new Meteor.Error('invalid-field');
+			}
+
+			let { fileBuffer } = file;
+
+			const expiresAt = new Date();
+			expiresAt.setHours(expiresAt.getHours() + 24);
+
+			const { fields } = file;
+
+			let content;
+
+			if (fields.content) {
+				try {
+					content = JSON.parse(fields.content);
+				} catch (e) {
+					console.error(e);
+					throw new Meteor.Error('invalid-field-content');
+				}
+			}
+
+			const details = {
+				name: file.filename,
+				size: fileBuffer.length,
+				type: file.mimetype,
+				rid: this.urlParams.rid,
+				userId: this.userId,
+				content,
+				expiresAt,
+			};
+
+			const stripExif = settings.get('Message_Attachments_Strip_Exif');
+			if (stripExif) {
+				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
+				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
+			}
+
+			const fileStore = FileUpload.getStore('Uploads');
+			const uploadedFile = await fileStore.insert(details, fileBuffer);
+
+			uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
+
+			await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
+
+			return API.v1.success({
+				file: {
+					_id: uploadedFile._id,
+					url: uploadedFile.path,
+				},
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.mediaConfirm/:rid/:fileId',
+	{ authRequired: true },
+	{
+		async post() {
+			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
+				return API.v1.unauthorized();
+			}
+
+			const file = await Uploads.findOneById(this.urlParams.fileId);
+
+			if (!file) {
+				throw new Meteor.Error('invalid-file');
+			}
+
+			file.description = this.bodyParams.description;
+			delete this.bodyParams.description;
+
+			await sendFileMessage(
+				this.userId,
+				{ roomId: this.urlParams.rid, file, msgData: this.bodyParams },
+				{ parseAttachmentsForE2EE: false },
+			);
+
+			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
+
+			const message = await Messages.getMessageByFileIdAndUsername(file._id, this.userId);
 
 			return API.v1.success({
 				message,
@@ -599,14 +712,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.export',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomsExportProps },
 	{
 		async post() {
 			const { rid, type } = this.bodyParams;
-
-			if (!rid || !type || !['email', 'file'].includes(type)) {
-				throw new Meteor.Error('error-invalid-params');
-			}
 
 			if (!(await hasPermissionAsync(this.userId, 'mail-messages', rid))) {
 				throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed');
@@ -627,12 +736,8 @@ API.v1.addRoute(
 				const { dateFrom, dateTo } = this.bodyParams;
 				const { format } = this.bodyParams;
 
-				if (!['html', 'json'].includes(format || '')) {
-					throw new Meteor.Error('error-invalid-format');
-				}
-
-				const convertedDateFrom = new Date(dateFrom || '');
-				const convertedDateTo = new Date(dateTo || '');
+				const convertedDateFrom = dateFrom ? new Date(dateFrom) : new Date(0);
+				const convertedDateTo = dateTo ? new Date(dateTo) : new Date();
 				convertedDateTo.setDate(convertedDateTo.getDate() + 1);
 
 				if (convertedDateFrom > convertedDateTo) {
@@ -656,10 +761,6 @@ API.v1.addRoute(
 
 				if ((!toUsers || toUsers.length === 0) && (!toEmails || toEmails.length === 0)) {
 					throw new Meteor.Error('error-invalid-recipient');
-				}
-
-				if (messages?.length === 0) {
-					throw new Meteor.Error('error-invalid-messages');
 				}
 
 				const result = await dataExport.sendViaEmail(

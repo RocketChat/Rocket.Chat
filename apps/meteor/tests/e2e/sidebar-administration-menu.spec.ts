@@ -18,17 +18,17 @@ test.describe.serial('sidebar-administration-menu', () => {
 		test('should open workspace page', async ({ page }) => {
 			test.skip(!IS_EE, 'Enterprise only');
 			await poHomeDiscussion.sidenav.openAdministrationByLabel('Workspace');
-	
+
 			await expect(page).toHaveURL('admin/info');
 		});
-	
+
 		test('should open omnichannel page', async ({ page }) => {
 			await poHomeDiscussion.sidenav.openAdministrationByLabel('Omnichannel');
-	
+
 			await expect(page).toHaveURL('omnichannel/current');
 		});
 	});
-	
+
 	test.describe('regular user', () => {
 		test.use({ storageState: Users.user1.state });
 

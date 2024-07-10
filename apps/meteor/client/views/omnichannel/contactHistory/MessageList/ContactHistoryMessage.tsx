@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import { isQuoteAttachment, type IMessage, type MessageAttachment } from '@rocket.chat/core-typings';
 import {
 	Message as MessageTemplate,
 	MessageLeftContainer,
@@ -42,6 +42,10 @@ const ContactHistoryMessage: FC<{
 
 	const format = useFormatDate();
 	const formatTime = useFormatTime();
+
+	const quotes = message?.attachments?.filter(isQuoteAttachment) || [];
+
+	const attachments = message?.attachments?.filter((attachment: MessageAttachment) => !isQuoteAttachment(attachment)) || [];
 
 	if (message.t === 'livechat-close') {
 		return (
@@ -104,13 +108,14 @@ const ContactHistoryMessage: FC<{
 							<StatusIndicators message={message} />
 						</MessageHeaderTemplate>
 					)}
+					{!!quotes?.length && <Attachments attachments={quotes} />}
 					{!message.blocks && message.md && (
 						<MessageBody data-qa-type='message-body' dir='auto'>
 							<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
 						</MessageBody>
 					)}
 					{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
-					{message.attachments && <Attachments attachments={message.attachments} />}
+					{!!attachments && <Attachments attachments={attachments} />}
 				</MessageContainer>
 			</MessageTemplate>
 		</>

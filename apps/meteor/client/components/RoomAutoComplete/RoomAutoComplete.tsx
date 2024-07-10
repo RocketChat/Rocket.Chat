@@ -1,12 +1,11 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement, ComponentProps } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useState } from 'react';
-
-import Avatar from './Avatar';
 
 const generateQuery = (
 	term = '',
@@ -14,23 +13,44 @@ const generateQuery = (
 	selector: string;
 } => ({ selector: JSON.stringify({ name: term }) });
 
-type RoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
+type RoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
+	scope?: 'admin' | 'regular';
+	renderRoomIcon?: (props: { encrypted: IRoom['encrypted']; type: IRoom['t'] }) => ReactElement | null;
+	setSelectedRoom?: React.Dispatch<React.SetStateAction<IRoom | undefined>>;
+};
 
-const RoomAutoComplete = ({ value, onChange, ...props }: RoomAutoCompleteProps): ReactElement => {
+const AVATAR_SIZE = 'x20';
+
+const ROOM_AUTOCOMPLETE_PARAMS = {
+	admin: {
+		endpoint: '/v1/rooms.autocomplete.adminRooms',
+		key: 'roomsAutoCompleteAdmin',
+	},
+	regular: {
+		endpoint: '/v1/rooms.autocomplete.channelAndPrivate',
+		key: 'roomsAutoCompleteRegular',
+	},
+} as const;
+
+const RoomAutoComplete = ({ value, onChange, scope = 'regular', renderRoomIcon, setSelectedRoom, ...props }: RoomAutoCompleteProps) => {
 	const [filter, setFilter] = useState('');
 	const filterDebounced = useDebouncedValue(filter, 300);
-	const autocomplete = useEndpoint('GET', '/v1/rooms.autocomplete.channelAndPrivate');
+	const roomsAutoCompleteEndpoint = useEndpoint('GET', ROOM_AUTOCOMPLETE_PARAMS[scope].endpoint);
 
-	const result = useQuery(['rooms.autocomplete.channelAndPrivate', filterDebounced], () => autocomplete(generateQuery(filterDebounced)), {
-		keepPreviousData: true,
-	});
+	const result = useQuery(
+		[ROOM_AUTOCOMPLETE_PARAMS[scope].key, filterDebounced],
+		() => roomsAutoCompleteEndpoint(generateQuery(filterDebounced)),
+		{
+			keepPreviousData: true,
+		},
+	);
 
 	const options = useMemo(
 		() =>
 			result.isSuccess
-				? result.data.items.map(({ name, _id, avatarETag, t }) => ({
+				? result.data.items.map(({ name, fname, _id, avatarETag, t, encrypted }) => ({
 						value: _id,
-						label: { name, avatarETag, type: t },
+						label: { name: fname || name, avatarETag, type: t, encrypted },
 				  }))
 				: [],
 		[result.data?.items, result.isSuccess],
@@ -40,21 +60,29 @@ const RoomAutoComplete = ({ value, onChange, ...props }: RoomAutoCompleteProps):
 		<AutoComplete
 			{...props}
 			value={value}
-			onChange={onChange}
+			onChange={(val) => {
+				onChange(val);
+
+				if (setSelectedRoom && typeof setSelectedRoom === 'function') {
+					const selectedRoom = result?.data?.items.find(({ _id }) => _id === val) as unknown as IRoom;
+					setSelectedRoom(selectedRoom);
+				}
+			}}
 			filter={filter}
 			setFilter={setFilter}
-			renderSelected={({ selected: { value, label } }): ReactElement => (
+			renderSelected={({ selected: { value, label } }) => (
 				<>
 					<Box margin='none' mi={2}>
-						<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />
+						<RoomAvatar size={AVATAR_SIZE} room={{ type: label?.type || 'c', _id: value, ...label }} />
 					</Box>
 					<Box margin='none' mi={2}>
 						{label?.name}
 					</Box>
+					{renderRoomIcon?.({ ...label })}
 				</>
 			)}
-			renderItem={({ value, label, ...props }): ReactElement => (
-				<Option key={value} {...props} label={label.name} avatar={<Avatar value={value} {...label} />} />
+			renderItem={({ value, label, ...props }) => (
+				<Option {...props} label={label.name} avatar={<RoomAvatar size={AVATAR_SIZE} room={{ _id: value, ...label }} />} />
 			)}
 			options={options}
 		/>
