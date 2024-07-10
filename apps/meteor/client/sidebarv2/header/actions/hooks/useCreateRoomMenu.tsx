@@ -2,7 +2,7 @@ import { useAtLeastOnePermission, useSetting, useTranslation } from '@rocket.cha
 
 import { useIsEnterprise } from '../../../../hooks/useIsEnterprise';
 import { useCreateRoomItems } from './useCreateRoomItems';
-import { useMatrixFederationItems } from './useMatrixFederationItems.tsx';
+import { useMatrixFederationItems } from './useMatrixFederationItems';
 
 const CREATE_ROOM_PERMISSIONS = ['create-c', 'create-p', 'create-d', 'start-discussion', 'start-discussion-other-user'];
 
