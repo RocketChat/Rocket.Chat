@@ -1,5 +1,4 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { ReactElement } from 'react';
 import React from 'react';
 
 import { HeaderTag, HeaderTagIcon } from '../../../components/Header';
@@ -10,7 +9,7 @@ type ParentRoomProps = {
 	room: Pick<IRoom, '_id' | 't' | 'name' | 'fname' | 'prid' | 'u'>;
 };
 
-const ParentRoom = ({ room }: ParentRoomProps): ReactElement => {
+const ParentRoom = ({ room }: ParentRoomProps) => {
 	const icon = useRoomIcon(room);
 
 	const handleRedirect = (): void => roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room });

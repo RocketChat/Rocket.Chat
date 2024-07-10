@@ -12,11 +12,11 @@ const VoipRoomHeader = lazy(() => import('./Omnichannel/VoipRoomHeader'));
 const RoomHeaderE2EESetup = lazy(() => import('./RoomHeaderE2EESetup'));
 const RoomHeader = lazy(() => import('./RoomHeader'));
 
-type HeaderProps<T> = {
-	room: T;
+type HeaderProps = {
+	room: IRoom;
 };
 
-const Header = ({ room }: HeaderProps<IRoom>): ReactElement | null => {
+const Header = ({ room }: HeaderProps): ReactElement | null => {
 	const { isMobile, isEmbedded, showTopNavbarEmbeddedLayout } = useLayout();
 	const encrypted = Boolean(room.encrypted);
 	const unencryptedMessagesAllowed = useSetting<boolean>('E2E_Allow_Unencrypted_Messages');

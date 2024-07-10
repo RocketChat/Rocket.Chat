@@ -3,7 +3,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, UIEvent } from 'react';
+import type { UIEvent } from 'react';
 import React, { useCallback, useMemo } from 'react';
 
 import { HeaderSubtitle } from '../../../components/Header';
@@ -17,7 +17,7 @@ type RoomLeaderProps = {
 	username?: IUser['username'];
 };
 
-export const RoomLeader = ({ _id, name, username }: RoomLeaderProps): ReactElement => {
+const RoomLeader = ({ _id, name, username }: RoomLeaderProps) => {
 	const t = useTranslation();
 
 	const { openUserCard, triggerProps } = useUserCard();
@@ -60,3 +60,5 @@ export const RoomLeader = ({ _id, name, username }: RoomLeaderProps): ReactEleme
 		</Box>
 	);
 };
+
+export default RoomLeader;

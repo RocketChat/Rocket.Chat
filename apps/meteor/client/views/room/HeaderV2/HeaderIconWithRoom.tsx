@@ -19,4 +19,5 @@ const HeaderIconWithRoom = ({ room }: HeaderIconWithRoomProps): ReactElement => 
 
 	return <HeaderIcon icon={icon} />;
 };
+
 export default HeaderIconWithRoom;
