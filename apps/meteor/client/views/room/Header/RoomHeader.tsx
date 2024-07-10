@@ -1,10 +1,11 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderToolbar } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { Suspense } from 'react';
 
+import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderSubtitle, HeaderToolbar } from '../../../components/Header';
+import MarkdownText from '../../../components/MarkdownText';
 import FederatedRoomOriginServer from './FederatedRoomOriginServer';
 import ParentRoomWithData from './ParentRoomWithData';
 import ParentTeam from './ParentTeam';
@@ -16,6 +17,7 @@ import Translate from './icons/Translate';
 
 export type RoomHeaderProps = {
 	room: IRoom;
+	topic?: string;
 	slots: {
 		start?: unknown;
 		preContent?: unknown;
@@ -31,14 +33,14 @@ export type RoomHeaderProps = {
 	roomToolbox?: JSX.Element;
 };
 
-const RoomHeader = ({ room, slots = {}, roomToolbox }: RoomHeaderProps) => {
+const RoomHeader = ({ room, topic = '', slots = {}, roomToolbox }: RoomHeaderProps) => {
 	const t = useTranslation();
 
 	return (
 		<Header>
 			{slots?.start}
 			<HeaderAvatar>
-				<RoomAvatar room={room} size='x28' />
+				<RoomAvatar room={room} />
 			</HeaderAvatar>
 			{slots?.preContent}
 			<HeaderContent>
@@ -52,6 +54,13 @@ const RoomHeader = ({ room, slots = {}, roomToolbox }: RoomHeaderProps) => {
 					<Translate room={room} />
 					{slots?.insideContent}
 				</HeaderContentRow>
+				{topic && (
+					<HeaderContentRow>
+						<HeaderSubtitle is='h2'>
+							<MarkdownText pi={2} parseEmoji={true} variant='inlineWithoutBreaks' withTruncatedText content={topic} />
+						</HeaderSubtitle>
+					</HeaderContentRow>
+				)}
 			</HeaderContent>
 			{slots?.posContent}
 			<Suspense fallback={null}>

@@ -76,7 +76,7 @@ test.describe.serial('channel-management', () => {
 
 		await poHomeChannel.dismissToast();
 		await poHomeChannel.tabs.btnRoomInfo.click();
-		await expect(page.locator('[role="note"]', { hasText: 'hello-topic-edited' })).toBeVisible();
+		await expect(page.getByRole('heading', { name: 'hello-topic-edited' })).toBeVisible();
 		await expect(page.getByRole('dialog', { name: 'Channel info' })).toContainText('hello-topic-edited');
 		await expect(poHomeChannel.getSystemMessageByText('changed room topic to hello-topic-edited')).toBeVisible();
 	});
@@ -90,7 +90,7 @@ test.describe.serial('channel-management', () => {
 
 		await poHomeChannel.dismissToast();
 		await poHomeChannel.tabs.btnRoomInfo.click();
-		await expect(page.locator('[role="button"]', { hasText: 'hello-announcement-edited' })).toBeVisible();
+		await expect(page.getByRole('dialog', { name: 'Channel info' })).toContainText('hello-announcement-edited');
 		await expect(poHomeChannel.getSystemMessageByText('changed room announcement to: hello-announcement-edited')).toBeVisible();
 	});
 
@@ -131,7 +131,7 @@ test.describe.serial('channel-management', () => {
 		targetChannel = hugeName;
 
 		await page.setViewportSize({ width: 640, height: 460 });
-		await expect(page.getByRole('heading', { name: hugeName })).toHaveCSS('width', '417px');
+		await expect(page.getByRole('heading', { name: hugeName })).toHaveCSS('width', '419px');
 	});
 
 	test('should open sidebar clicking on sidebar toggler', async ({ page }) => {

@@ -33,7 +33,7 @@ export const RoomBanner = ({ onClick, className, ...props }: ComponentProps<type
 				is={onClick ? 'button' : 'div'}
 				{...props}
 			/>
-			<Divider mbs={-1} mbe={0} />
+			<Divider mbs={-2} mbe={0} />
 		</>
 	);
 };
