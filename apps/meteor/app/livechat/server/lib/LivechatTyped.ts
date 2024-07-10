@@ -69,6 +69,7 @@ import {
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
+import { MessageTypes } from '../../../ui-utils/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { businessHourManager } from '../business-hour';
 import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
@@ -619,10 +620,22 @@ class LivechatClass {
 				author = showAgentInfo ? message.u.name || message.u.username : i18n.t('Agent', { lng: userLanguage });
 			}
 
+			const isSystemMessage = MessageTypes.isSystemMessage(message);
+			const messageType = isSystemMessage && MessageTypes.getType(message);
+
+			// eslint-disable-next-line no-nested-ternary
+			const messageContent = messageType
+				? `<i>${
+						messageType.render
+							? messageType.render(message)
+							: i18n.t(messageType.message, messageType.data ? messageType.data(message) : {})
+				  }</i>`
+				: message.msg;
+
 			const datetime = moment.tz(message.ts, timezone).locale(userLanguage).format('LLL');
 			const singleMessage = `
 				<p><strong>${author}</strong>  <em>${datetime}</em></p>
-				<p>${message.msg}</p>
+				<p>${messageContent}</p>
 			`;
 			html += singleMessage;
 		});
