@@ -285,7 +285,7 @@
   "API_EmbedCacheExpirationDays": "Vložiť počet dní expirácie vyrovnávacej pamäte",
   "API_Enable_CORS": "Povoliť CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Povoliť koncový bod histórie priamych správ",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Toto povolí súbor \"/api/v1/im.history.others\", ktorý umožňuje zobrazenie priamych správ posielaných inými používateľmi, ktorých volajúci nie je súčasťou.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Toto povolí súbor \"/api/v1/im.messages.others\", ktorý umožňuje zobrazenie priamych správ posielaných inými používateľmi, ktorých volajúci nie je súčasťou.",
   "API_Enable_Shields": "Aktivovať štíty",
   "API_Enable_Shields_Description": "Aktivovať štíty dostupné v súbore `/api/v1/shield.svg`",
   "API_GitHub_Enterprise_URL": "URL adresa servera",
