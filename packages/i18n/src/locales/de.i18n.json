@@ -423,7 +423,7 @@
   "API_EmbedCacheExpirationDays": "Cache-Verfalltage einbetten",
   "API_Enable_CORS": "CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Endpunkt für den Verlauf von Direktnachrichten",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Dies aktiviert die Datei \"/ api / v1 / im.history.others\", die das Anzeigen von direkten Nachrichten ermöglicht, die von anderen Benutzern gesendet werden, an denen der Anrufer nicht beteiligt ist.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Dies aktiviert die Datei \"/ api / v1 / im.messages.others\", die das Anzeigen von direkten Nachrichten ermöglicht, die von anderen Benutzern gesendet werden, an denen der Anrufer nicht beteiligt ist.",
   "API_Enable_Personal_Access_Tokens": "Persönlichem Zugangsschlüssel zur REST Schnittstelle aktivieren",
   "API_Enable_Personal_Access_Tokens_Description": "Zugriff auf die REST-Schnittstelle mit dem persönlichen Zugangsschlüssel aktivieren",
   "API_Enable_Rate_Limiter": "Ratenbegrenzung aktivieren",

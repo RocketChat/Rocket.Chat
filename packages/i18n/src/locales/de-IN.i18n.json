@@ -297,7 +297,7 @@
   "API_EmbedCacheExpirationDays": "Tage bis zum Ablauf den eingebetteten Caches",
   "API_Enable_CORS": "CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Endpunkt für den Verlauf von Direktnachrichten",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Aktiviere `/api/v1/im.history.others`. Hierüber ist es möglich, Direktnachrichten einzusehen, an denen der Benutzer nicht beteiligt ist.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Aktiviere `/api/v1/im.messages.others`. Hierüber ist es möglich, Direktnachrichten einzusehen, an denen der Benutzer nicht beteiligt ist.",
   "API_Enable_Personal_Access_Tokens": "Aktiviere den persönlichem Zugangsschlüssel zur REST Schnittstelle.",
   "API_Enable_Personal_Access_Tokens_Description": "Ermöglicht den Zugriff auf die REST-Schnittstelle mit dem persönlichen Zugangsschlüssel.",
   "API_Enable_Rate_Limiter_Dev": "Begrenzung der Umgehungsrate für die REST-API während der Entwicklung aktivieren.",
