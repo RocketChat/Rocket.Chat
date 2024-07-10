@@ -4,4 +4,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-`Header` and `Contextualbar` size improvements
+Feature Preview: New Navigation - `Header` and `Contextualbar` size improvements consistent with the new global `NavBar`
