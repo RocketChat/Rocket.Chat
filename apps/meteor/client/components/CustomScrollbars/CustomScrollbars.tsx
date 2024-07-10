@@ -12,17 +12,27 @@ export type CustomScrollbarsProps = {
 	renderView?: typeof Scrollbars.defaultProps.renderView;
 	renderTrackHorizontal?: typeof Scrollbars.defaultProps.renderTrackHorizontal;
 	autoHide?: boolean;
-	direction?: 'rtl' | 'ltr';
 };
 
 const styleDefault: CSSProperties = {
 	flexGrow: 1,
 	willChange: 'transform',
-	overflowY: 'hidden',
+	overflowY: 'hidden'
 };
 
-const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function CustomScrollbars(
-	{ children, style, onScroll, overflowX, renderView, direction, ...props },
+// Styles to hide the default scrollbar
+const hideScrollbarStyle = `
+	[dir="rtl"] {
+		overflow: hidden;
+	}
+
+	[dir="rtl"] ::-webkit-scrollbar {
+		display: none;
+	}
+`;
+
+const CustomScrollbars = forwardRef<HTMLDivElement, CustomScrollbarsProps>(function CustomScrollbars(
+	{ children, style, onScroll, overflowX, renderView, ...props },
 	ref,
 ) {
 	const scrollbarsStyle = useMemo(() => ({ ...style, ...styleDefault }), [style]);
@@ -34,19 +44,21 @@ const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function
 					ref(scrollbarRef.view ?? null);
 					return;
 				}
-
-				(ref as MutableRefObject<HTMLElement | undefined>).current = scrollbarRef.view;
+				(ref as MutableRefObject<HTMLDivElement | undefined>).current = scrollbarRef.view;
 			}
 		},
 		[ref],
 	);
 
-	// Apply styles to hide the default scrollbar when the component mounts
+	// Dynamically using the hide scrollbar style to hide default scrollbar
+
 	useEffect(() => {
-		const root = document.documentElement;
-		root.style.overflow = 'hidden';
+		const styleElement = document.createElement('style');
+		styleElement.innerHTML = hideScrollbarStyle;
+		document.head.appendChild(styleElement);
+
 		return () => {
-			root.style.overflow = ''; // Reset when component unmounts
+			document.head.removeChild(styleElement);
 		};
 	}, []);
 
@@ -56,10 +68,10 @@ const CustomScrollbars = forwardRef<HTMLElement, CustomScrollbarsProps>(function
 			autoHide
 			autoHideTimeout={2000}
 			autoHideDuration={500}
-			style={{ ...scrollbarsStyle, direction: direction || 'ltr' }} // Apply direction style
+			style={scrollbarsStyle}
 			onScrollFrame={onScroll}
 			renderView={renderView}
-			renderTrackHorizontal={overflowX ? undefined : (props) => <div {...props} className='track-horizontal' style={{ display: 'none' }} />}
+			renderTrackHorizontal={overflowX ? undefined : (trackProps) => <div {...trackProps} className='track-horizontal' style={{ display: 'none' }} />}
 			renderThumbVertical={({ style, ...props }) => (
 				<div {...props} style={{ ...style, backgroundColor: Palette.stroke['stroke-dark'].toString(), borderRadius: '4px' }} />
 			)}
