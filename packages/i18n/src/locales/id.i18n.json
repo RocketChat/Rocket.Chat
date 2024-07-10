@@ -283,7 +283,7 @@
   "API_EmbedCacheExpirationDays": "Sematkan Kadaluarsa Hari Cache",
   "API_Enable_CORS": "Aktifkan CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Aktifkan Endpoint Riwayat Pesan Langsung",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Hal ini memungkinkan `/ api / v1 / im.history.others` yang memungkinkan tampilan pesan langsung yang dikirim oleh pengguna lain sehingga pemanggil bukan bagian dari.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Hal ini memungkinkan `/ api / v1 / im.messages.others` yang memungkinkan tampilan pesan langsung yang dikirim oleh pengguna lain sehingga pemanggil bukan bagian dari.",
   "API_Enable_Shields": "Aktifkan Shields",
   "API_Enable_Shields_Description": "Aktifkan perisai yang tersedia di `/ api / v1 / shield.svg`",
   "API_GitHub_Enterprise_URL": "Server URL",
