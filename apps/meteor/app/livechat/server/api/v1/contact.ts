@@ -12,7 +12,11 @@ import { Contacts, createContact, updateContact } from '../../lib/Contacts';
  */
 API.v1.addRoute(
 	'omnichannel/contact',
-	{ authRequired: true, permissionsRequired: ['view-l-room'], deprecationVersion: '8.0.0' },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-l-room'],
+		deprecation: { version: '8.0.0', message: 'Use the omnichannel/contacts endpoint instead' },
+	},
 	{
 		async post() {
 			check(this.bodyParams, {

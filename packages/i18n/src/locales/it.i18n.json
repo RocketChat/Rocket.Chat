@@ -359,7 +359,7 @@
   "API_EmbedCacheExpirationDays": "Giorni per la scadenza della cache degli embed",
   "API_Enable_CORS": "Abilita CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Abilita l'endpoint per lo storico dei messaggi diretti",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Questo abilita `/api/v1/im.history.others` che permette di vedere i messaggi diretti inviati dagli altri utenti di cui il chiamante non è parte.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Questo abilita `/api/v1/im.messages.others` che permette di vedere i messaggi diretti inviati dagli altri utenti di cui il chiamante non è parte.",
   "API_Enable_Shields": "Abilita Shield",
   "API_Enable_Shields_Description": "Abilita gli shield disponibili a `/api/v1/shield.svg`",
   "API_GitHub_Enterprise_URL": "URL del server",
