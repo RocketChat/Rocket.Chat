@@ -335,7 +335,7 @@
   "API_EmbedCacheExpirationDays": "Nhúng số ngày hết hạn trong bộ nhớ Cache",
   "API_Enable_CORS": "Bật CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Bật điểm cuối của Lịch sử tin nhắn trực tiếp",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Điều này cho phép `/api/v1/im.history.others` xem tin nhắn trực tiếp được gửi bởi những người dùng khác mà người gọi không phải là thành viên.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Điều này cho phép `/api/v1/im.messages.others` xem tin nhắn trực tiếp được gửi bởi những người dùng khác mà người gọi không phải là thành viên.",
   "API_Enable_Shields": "Bật Shield",
   "API_Enable_Shields_Description": "Bật shield có sẵn tại `/api/v1/shield.svg`",
   "API_GitHub_Enterprise_URL": "URL Máy chủ",
