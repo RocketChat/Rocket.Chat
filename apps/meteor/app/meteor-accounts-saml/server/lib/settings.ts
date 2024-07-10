@@ -106,7 +106,7 @@ const configureSamlService = function (samlConfigs: Record<string, any>): IServi
 	};
 };
 
-export const loadSamlServiceProviders = async function (): Promise<void> {
+export const loadSamlServiceProviders = async function (shouldNotify = true): Promise<void> {
 	const serviceName = 'saml';
 	const services = settings.getByRegexp(/^(SAML_Custom_)[a-z]+$/i);
 
@@ -121,7 +121,9 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 					const samlConfigs = getSamlConfigs(key);
 					SAMLUtils.log(key);
 					await LoginServiceConfiguration.createOrUpdateService(serviceName, samlConfigs);
-					void notifyOnLoginServiceConfigurationChangedByService(serviceName);
+					if (shouldNotify) {
+						void notifyOnLoginServiceConfigurationChangedByService(serviceName);
+					}
 					return configureSamlService(samlConfigs);
 				}
 
@@ -135,7 +137,9 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 					return false;
 				}
 
-				void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
+				if (shouldNotify) {
+					void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
+				}
 
 				return false;
 			}),
