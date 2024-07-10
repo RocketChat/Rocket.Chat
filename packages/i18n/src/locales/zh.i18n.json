@@ -356,7 +356,7 @@
   "API_EmbedCacheExpirationDays": "嵌入缓存有效天数",
   "API_Enable_CORS": "启用 CORS",
   "API_Enable_Direct_Message_History_EndPoint": "启用私聊消息历史端点",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "这会启用 `/api/v1/im.history.others` ，它允许查看调用者未参与的其他用户私聊消息。",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "这会启用 `/api/v1/im.messages.others` ，它允许查看调用者未参与的其他用户私聊消息。",
   "API_Enable_Personal_Access_Tokens": "允许使用个人访问令牌访问 REST API",
   "API_Enable_Personal_Access_Tokens_Description": "允许使用个人访问令牌使用 REST API",
   "API_Enable_Rate_Limiter": "启用速率限制器",

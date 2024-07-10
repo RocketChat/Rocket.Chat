@@ -1,5 +1,21 @@
 # Change Log
 
+## 0.35.0
+
+### Minor Changes
+
+- ([#31455](https://github.com/RocketChat/Rocket.Chat/pull/31455)) Introduced new elements for apps to select users
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+## 0.35.0-rc.0
+
+### Minor Changes
+
+- ([#31455](https://github.com/RocketChat/Rocket.Chat/pull/31455)) Introduced new elements for apps to select users
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
 ## 0.34.0
 
 ### Minor Changes
