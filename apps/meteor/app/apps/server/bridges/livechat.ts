@@ -87,7 +87,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		visitor: IVisitor,
 		agent: IUser,
 		appId: string,
-		{ source, ...extraData }: IExtraRoomParams = {},
+		{ source, customFields }: IExtraRoomParams = {},
 	): Promise<ILivechatRoom> {
 		this.orch.debugLog(`The App ${appId} is creating a livechat room.`);
 
@@ -116,7 +116,7 @@ export class AppLivechatBridge extends LivechatBridge {
 				},
 			},
 			agent: agentRoom,
-			extraData,
+			extraData: customFields && { customFields },
 		});
 
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
