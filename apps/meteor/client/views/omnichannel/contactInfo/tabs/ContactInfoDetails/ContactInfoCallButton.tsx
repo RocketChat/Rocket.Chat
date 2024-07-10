@@ -5,7 +5,9 @@ import React from 'react';
 import { useVoipOutboundStates } from '../../../../../contexts/CallContext';
 import { useDialModal } from '../../../../../hooks/useDialModal';
 
-const ContactInfoCallButton = ({ phoneNumber }: { phoneNumber: string }) => {
+type ContactInfoCallButtonProps = { phoneNumber: string };
+
+const ContactInfoCallButton = ({ phoneNumber }: ContactInfoCallButtonProps) => {
 	const t = useTranslation();
 	const { openDialModal } = useDialModal();
 	const { outBoundCallsAllowed, outBoundCallsEnabledForUser } = useVoipOutboundStates();

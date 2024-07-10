@@ -6,7 +6,9 @@ import React from 'react';
 
 import { UserStatus } from '../../../../../components/UserStatus';
 
-const ContactManagerInfo = ({ username }: { username: string }) => {
+type ContactManagerInfoProps = { username: string };
+
+const ContactManagerInfo = ({ username }: ContactManagerInfoProps) => {
 	const t = useTranslation();
 
 	const getContactManagerByUsername = useEndpoint('GET', '/v1/users.info');
