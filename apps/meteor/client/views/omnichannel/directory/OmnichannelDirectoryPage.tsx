@@ -1,4 +1,4 @@
-import { Tabs } from '@rocket.chat/fuselage';
+import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useCallback } from 'react';
 
@@ -9,6 +9,7 @@ import ContextualBarRouter from './ContextualBarRouter';
 import CallTab from './calls/CallTab';
 import ChatTab from './chats/ChatTab';
 import ContactTab from './contacts/ContactTab';
+import ContactGroupsTab from './groups/ContactGroupsTab';
 
 const DEFAULT_TAB = 'contacts';
 
@@ -42,20 +43,24 @@ const OmnichannelDirectoryPage = () => {
 			<Page>
 				<PageHeader title={t('Omnichannel_Contact_Center')} />
 				<Tabs flexShrink={0}>
-					<Tabs.Item selected={tab === 'contacts'} onClick={() => handleTabClick('contacts')}>
+					<TabsItem selected={tab === 'contacts'} onClick={() => handleTabClick('contacts')}>
 						{t('Contacts')}
-					</Tabs.Item>
-					<Tabs.Item selected={tab === 'chats'} onClick={() => handleTabClick('chats')}>
+					</TabsItem>
+					<TabsItem selected={tab === 'chats'} onClick={() => handleTabClick('chats')}>
 						{t('Chats' as any /* TODO: this is going to change to Conversations */)}
-					</Tabs.Item>
-					<Tabs.Item selected={tab === 'calls'} onClick={() => handleTabClick('calls')}>
+					</TabsItem>
+					<TabsItem selected={tab === 'calls'} onClick={() => handleTabClick('calls')}>
 						{t('Calls')}
-					</Tabs.Item>
+					</TabsItem>
+					<TabsItem selected={tab === 'groups'} onClick={() => handleTabClick('groups')}>
+						{t('Groups')}
+					</TabsItem>
 				</Tabs>
 				<PageContent>
 					{tab === 'contacts' && <ContactTab />}
 					{tab === 'chats' && <ChatTab />}
 					{tab === 'calls' && <CallTab />}
+					{tab === 'groups' && <ContactGroupsTab />}
 				</PageContent>
 			</Page>
 			{context && (

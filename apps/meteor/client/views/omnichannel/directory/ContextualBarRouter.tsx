@@ -4,6 +4,7 @@ import React from 'react';
 import CallsContextualBarDirectory from './CallsContextualBarDirectory';
 import ChatsContextualBar from './ChatsContextualBar';
 import ContactContextualBar from './ContactContextualBar';
+import ContactGroupsContextualBar from './groups/contextualBar/ContactGroupsContextualBar';
 
 const ContextualBarRouter = ({ chatReload }: { chatReload?: () => void }) => {
 	const tab = useRouteParameter('tab');
@@ -15,6 +16,8 @@ const ContextualBarRouter = ({ chatReload }: { chatReload?: () => void }) => {
 			return <ChatsContextualBar chatReload={chatReload} />;
 		case 'calls':
 			return <CallsContextualBarDirectory />;
+		case 'groups':
+			return <ContactGroupsContextualBar />;
 		default:
 			return null;
 	}

@@ -10,13 +10,13 @@ import {
 	IconButton,
 	OptionSkeleton,
 } from '@rocket.chat/fuselage';
-import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import type { ReactElement, MouseEvent } from 'react';
-import React, { useState } from 'react';
+import type { MouseEvent } from 'react';
+import React from 'react';
 
 import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
+import { useOptionMenuVisibility } from '../../../../hooks/useOptionMenuVisibility';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import UserActions from './RoomMembersActions';
 
@@ -27,20 +27,13 @@ type RoomMembersItemProps = {
 	useRealName: boolean;
 } & Pick<IUser, 'federated' | 'username' | 'name' | '_id'>;
 
-const RoomMembersItem = ({ _id, name, username, federated, onClickView, rid, reload, useRealName }: RoomMembersItemProps): ReactElement => {
-	const [showButton, setShowButton] = useState();
-
-	const isReduceMotionEnabled = usePrefersReducedMotion();
-	const handleMenuEvent = {
-		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: setShowButton,
-	};
-
+const RoomMembersItem = ({ _id, name, username, federated, onClickView, rid, reload, useRealName }: RoomMembersItemProps) => {
 	const preventPropagation = usePreventPropagation();
-
+	const { optionMenuEvent, showMenu } = useOptionMenuVisibility();
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(name, username, useRealName);
 
 	return (
-		<Option data-username={username} data-userid={_id} onClick={onClickView} {...handleMenuEvent}>
+		<Option data-username={username} data-userid={_id} onClick={onClickView} {...optionMenuEvent}>
 			<OptionAvatar>
 				<UserAvatar username={username || ''} size='x28' />
 			</OptionAvatar>
@@ -49,11 +42,7 @@ const RoomMembersItem = ({ _id, name, username, federated, onClickView, rid, rel
 				{nameOrUsername} {displayUsername && <OptionDescription>({displayUsername})</OptionDescription>}
 			</OptionContent>
 			<OptionMenu onClick={preventPropagation}>
-				{showButton ? (
-					<UserActions username={username} name={name} rid={rid} _id={_id} reload={reload} />
-				) : (
-					<IconButton tiny icon='kebab' />
-				)}
+				{showMenu ? <UserActions username={username} name={name} rid={rid} _id={_id} reload={reload} /> : <IconButton tiny icon='kebab' />}
 			</OptionMenu>
 		</Option>
 	);
