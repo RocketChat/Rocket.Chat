@@ -321,7 +321,7 @@
   "API_EmbedCacheExpirationDays": " قراردادن روز های انقضا",
   "API_Enable_CORS": "فعال کردن CORS",
   "API_Enable_Direct_Message_History_EndPoint": "فعال کردن انتهای تاریخچه پیام مستقیم",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "این را قادر می سازد `/ api / v1 / im.history.others 'که به مشاهده پیام های مستقیم فرستاده شده توسط سایر کاربران اجازه می دهد که تماس گیرنده بخشی از آن نباشد.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "این را قادر می سازد `/ api / v1 / im.messages.others 'که به مشاهده پیام های مستقیم فرستاده شده توسط سایر کاربران اجازه می دهد که تماس گیرنده بخشی از آن نباشد.",
   "API_Enable_Personal_Access_Tokens": "فعال کردن توکن دسترسی شخصی به API REST",
   "API_Enable_Personal_Access_Tokens_Description": "فعال کردن توکن دسترسی شخصی برای استفاده با REST API",
   "API_Enable_Rate_Limiter": "فعال کردن محدودیت نرخ",

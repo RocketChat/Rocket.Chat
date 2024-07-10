@@ -317,7 +317,7 @@
   "API_EmbedCacheExpirationDays": "Önbellek Sona Erme Günlerini Göm",
   "API_Enable_CORS": "CORS'u etkinleştir",
   "API_Enable_Direct_Message_History_EndPoint": "Doğrudan İleti Geçmişi Noktası Etkin",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Bu, `/ api / v1 / im.history.others` aygıtının, diğer kullanıcıların gönderdikleri ve doğrudan arayan kişinin parçası olmadığı doğrudan iletileri görüntülemesini sağlar.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Bu, `/ api / v1 / im.messages.others` aygıtının, diğer kullanıcıların gönderdikleri ve doğrudan arayan kişinin parçası olmadığı doğrudan iletileri görüntülemesini sağlar.",
   "API_Enable_Personal_Access_Tokens": "REST API'ye Kişisel Erişim belirteçlerini  etkinleştir",
   "API_Enable_Personal_Access_Tokens_Description": "REST API'sı ile kullanmak için kişisel erişim belirteçlerini etkinleştirin",
   "API_Enable_Rate_Limiter": "Hız Sınırlayıcısını Etkinleştir",

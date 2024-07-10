@@ -283,7 +283,7 @@
   "API_EmbedCacheExpirationDays": "Voeg die Cache Vervaldatums in",
   "API_Enable_CORS": "Aktiveer KORS",
   "API_Enable_Direct_Message_History_EndPoint": "Aktiveer Direkte Boodskap Geskiedenis Eindpunt",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Dit stel die `/ api / v1 / im.history.others` in staat wat die aanskouing van direkte boodskappe wat deur ander gebruikers gestuur word, waarna die beller nie deel is nie, toelaat.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Dit stel die `/ api / v1 / im.messages.others` in staat wat die aanskouing van direkte boodskappe wat deur ander gebruikers gestuur word, waarna die beller nie deel is nie, toelaat.",
   "API_Enable_Shields": "Aktiveer skilde",
   "API_Enable_Shields_Description": "Aktiveer skilde beskikbaar by `/ api / v1 / shield.svg`",
   "API_GitHub_Enterprise_URL": "Bediener-URL",
