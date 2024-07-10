@@ -7,17 +7,15 @@ import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/Livechat
 import type { ILivechatDepartment, IOmnichannelRoom, SelectedAgent, IMessage, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
-import { Random } from '@rocket.chat/random';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
-import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { type ILivechatMessage, Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
 import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator' {
 	interface IExtraRoomParams {
-		customFields?: Record<string, any>;
+		customFields?: Record<string, unknown>;
 	}
 }
 
@@ -102,10 +100,8 @@ export class AppLivechatBridge extends LivechatBridge {
 			agentRoom = { agentId: user._id, username: user.username };
 		}
 
-		const result = await getRoom({
-			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
-			agent: agentRoom,
-			rid: Random.id(),
+		const room = await LivechatTyped.createRoom({
+			visitor: this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			roomInfo: {
 				source: {
 					type: OmnichannelSourceType.APP,
@@ -119,11 +115,12 @@ export class AppLivechatBridge extends LivechatBridge {
 						}),
 				},
 			},
-			extraParams: customFields && { customFields },
+			agent: agentRoom,
+			extraData: customFields && { customFields },
 		});
 
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
-		return this.orch.getConverters()?.get('rooms').convertRoom(result.room) as Promise<ILivechatRoom>;
+		return this.orch.getConverters()?.get('rooms').convertRoom(room) as Promise<ILivechatRoom>;
 	}
 
 	protected async closeRoom(room: ILivechatRoom, comment: string, closer: IUser | undefined, appId: string): Promise<boolean> {
