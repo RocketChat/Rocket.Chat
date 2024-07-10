@@ -283,7 +283,7 @@
   "API_EmbedCacheExpirationDays": "Embed Diwrnodau Terfynu Cache",
   "API_Enable_CORS": "Galluogi CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Galluogi Endpoint Hanes Negeseuon Uniongyrchol",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Mae hyn yn galluogi'r `/ api / v1 / im.history.others` sy'n caniatáu gwylio negeseuon uniongyrchol a anfonir gan ddefnyddwyr eraill nad yw'r galwr yn rhan ohoni.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Mae hyn yn galluogi'r `/ api / v1 / im.messages.others` sy'n caniatáu gwylio negeseuon uniongyrchol a anfonir gan ddefnyddwyr eraill nad yw'r galwr yn rhan ohoni.",
   "API_Enable_Shields": "Galluogi Shields",
   "API_Enable_Shields_Description": "Galluogi darnau ar gael yn `/ api / v1 / shield.svg`",
   "API_GitHub_Enterprise_URL": "URL Gweinyddwr",
