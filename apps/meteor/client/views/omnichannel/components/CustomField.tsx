@@ -3,7 +3,7 @@ import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
-import InfoPanel from '../../../components/InfoPanel';
+import { InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../components/InfoPanel';
 import { FormSkeleton } from '../directory/components/FormSkeleton';
 
 type CustomFieldProps = {
@@ -31,10 +31,10 @@ const CustomField = ({ id, value }: CustomFieldProps) => {
 	}
 
 	return (
-		<InfoPanel.Field>
-			<InfoPanel.Label>{label}</InfoPanel.Label>
-			<InfoPanel.Text>{value}</InfoPanel.Text>
-		</InfoPanel.Field>
+		<InfoPanelField>
+			<InfoPanelLabel>{label}</InfoPanelLabel>
+			<InfoPanelText>{value}</InfoPanelText>
+		</InfoPanelField>
 	);
 };
 
