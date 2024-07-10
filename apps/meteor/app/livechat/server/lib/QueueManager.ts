@@ -46,7 +46,7 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 	logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
 
 	await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
-	const room = await LivechatRooms.findOneById(inquiry.rid, { projection: { v: 1 } });
+	const room = await LivechatRooms.findOneById(inquiry.rid);
 	if (!room || !(await Omnichannel.isWithinMACLimit(room))) {
 		logger.error({ msg: 'MAC limit reached, not routing inquiry', inquiry });
 		// We'll queue these inquiries so when new license is applied, they just start rolling again
@@ -62,7 +62,7 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 
 	if (dbInquiry.status === 'ready') {
 		logger.debug(`Inquiry with id ${inquiry._id} is ready. Delegating to agent ${inquiryAgent?.username}`);
-		return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent);
+		return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent, undefined, room);
 	}
 };
 
