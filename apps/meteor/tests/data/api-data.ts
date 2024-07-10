@@ -51,6 +51,10 @@ export function methodCall<TMethodName extends string>(methodName: TMethodName) 
 	return api(`method.call/${methodName}`);
 }
 
+export function methodCallAnon<TMethodName extends string>(methodName: TMethodName) {
+	return api(`method.callAnon/${methodName}`);
+}
+
 export function log(res: Response) {
 	console.log((res as { req?: any }).req.path); // FIXME
 	console.log({
