@@ -37,7 +37,7 @@ const URL = {
 		return `${this.contactCenter}/edit/${NEW_CONTACT.id}`;
 	},
 	get contactInfo() {
-		return `${this.contactCenter}/info/${NEW_CONTACT.id}`;
+		return `${this.contactCenter}/details/${NEW_CONTACT.id}`;
 	},
 };
 
