@@ -57,7 +57,7 @@ const ChatsContextualBar: FC<{ chatReload?: () => void }> = ({ chatReload }) => 
 
 	return (
 		<Contextualbar>
-			<ContextualbarHeader>
+			<ContextualbarHeader expanded>
 				{bar === 'info' && (
 					<>
 						<ContextualbarIcon name='info-circled' />

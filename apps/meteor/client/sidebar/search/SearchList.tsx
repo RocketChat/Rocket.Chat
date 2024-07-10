@@ -338,7 +338,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 			role='search'
 		>
 			<Sidebar.TopBar.Section {...({ flexShrink: 0 } as any)} is='form'>
-				<Box mb='x8' w='full'>
+				<Box mb='x12' w='full'>
 					<TextInput
 						aria-owns={listId}
 						data-qa='sidebar-search-input'
