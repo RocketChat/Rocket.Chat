@@ -412,6 +412,13 @@ export const createOmniSettings = () =>
 			enableQuery: omnichannelEnabledQuery,
 		});
 
+		await this.add('Livechat_transcript_show_system_messages', false, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			public: true,
+			enableQuery: omnichannelEnabledQuery,
+		});
+
 		await this.add('Livechat_transcript_message', '', {
 			type: 'string',
 			group: 'Omnichannel',
