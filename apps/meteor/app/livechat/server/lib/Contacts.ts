@@ -223,7 +223,7 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 	}
 
 	if (contactManager) {
-		const contactManagerUser = await Users.findOneById(contactManager, { projection: { roles: 1 } });
+		const contactManagerUser = await Users.findOneById<Pick<IUser, 'roles'>>(contactManager, { projection: { roles: 1 } });
 		await validateContactManager(contactManagerUser);
 	}
 
@@ -273,7 +273,7 @@ export function validateCustomFields(allowedCustomFields: ILivechatCustomField[]
 	}
 }
 
-export async function validateContactManager(user: IUser | null) {
+export async function validateContactManager(user: Pick<IUser, 'roles'> | null) {
 	if (!user) {
 		throw new Error('error-contact-manager-not-found');
 	}
