@@ -4,8 +4,8 @@ import { loadSamlServiceProviders } from '../../app/meteor-accounts-saml/server/
 import { updateCasServices } from './cas/updateCasService';
 import { updateOAuthServices } from './oauth/updateOAuthServices';
 
-export async function refreshLoginServices(): Promise<void> {
+export async function refreshLoginServices(shouldNotify = true): Promise<void> {
 	await ServiceConfiguration.configurations.removeAsync({});
 
-	await Promise.allSettled([updateOAuthServices(), loadSamlServiceProviders(), updateCasServices()]);
+	await Promise.allSettled([updateOAuthServices(shouldNotify), loadSamlServiceProviders(shouldNotify), updateCasServices()]);
 }
