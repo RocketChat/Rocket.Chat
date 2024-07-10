@@ -4,7 +4,9 @@ import React from 'react';
 
 import { useStatusDisabledModal } from '../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 
-const StatusDisabledSection = ({ onDismiss }: { onDismiss: () => void }) => {
+type StatusDisabledSectionProps = { onDismiss: () => void };
+
+const StatusDisabledSection = ({ onDismiss }: StatusDisabledSectionProps) => {
 	const t = useTranslation();
 	const handleStatusDisabledModal = useStatusDisabledModal();
 

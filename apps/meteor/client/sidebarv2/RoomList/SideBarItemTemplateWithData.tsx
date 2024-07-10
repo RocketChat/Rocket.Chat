@@ -97,7 +97,7 @@ type RoomListRowProps = {
 	};
 };
 
-function SideBarItemTemplateWithData({
+const SideBarItemTemplateWithData = ({
 	room,
 	id,
 	selected,
@@ -108,7 +108,7 @@ function SideBarItemTemplateWithData({
 	t,
 	isAnonymous,
 	videoConfActions,
-}: RoomListRowProps): ReactElement {
+}: RoomListRowProps) => {
 	const { sidebar } = useLayout();
 
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
@@ -213,7 +213,7 @@ function SideBarItemTemplateWithData({
 			}
 		/>
 	);
-}
+};
 
 function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | undefined): boolean {
 	if (!a || !b) {

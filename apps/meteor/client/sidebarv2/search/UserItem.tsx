@@ -1,6 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Sidebar } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import { ReactiveUserStatus } from '../../components/UserStatus';
@@ -20,7 +19,8 @@ type UserItemProps = {
 	style?: CSSStyleRule;
 	useRealName?: boolean;
 };
-const UserItem = ({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName }: UserItemProps): ReactElement => {
+
+const UserItem = ({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName }: UserItemProps) => {
 	const title = useRealName ? item.fname || item.name : item.name || item.fname;
 	const icon = (
 		<Sidebar.Item.Icon icon={'' as any}>

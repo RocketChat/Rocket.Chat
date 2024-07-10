@@ -20,7 +20,7 @@ import RoomListWrapper from './RoomListWrapper';
 
 const computeItemKey = (index: number, room: IRoom): IRoom['_id'] | number => room._id || index;
 
-const RoomList = (): ReactElement => {
+const RoomList = () => {
 	const t = useTranslation();
 	const isAnonymous = !useUserId();
 	const roomsList = useRoomList();

@@ -1,7 +1,9 @@
-import type { HTMLAttributes, Ref } from 'react';
+import type { ForwardedRef, HTMLAttributes } from 'react';
 import React, { forwardRef } from 'react';
 
-const RoomListRoomWrapper = forwardRef(function RoomListRoomWrapper(props: HTMLAttributes<HTMLDivElement>, ref: Ref<HTMLDivElement>) {
+type RoomListRoomWrapperProps = HTMLAttributes<HTMLDivElement>;
+
+const RoomListRoomWrapper = forwardRef(function RoomListRoomWrapper(props: RoomListRoomWrapperProps, ref: ForwardedRef<HTMLDivElement>) {
 	return <div role='listitem' ref={ref} {...props} />;
 });
 
