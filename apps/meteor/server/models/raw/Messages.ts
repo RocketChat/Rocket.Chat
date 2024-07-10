@@ -428,7 +428,8 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(
 			{
 				rid,
-				t: { $exists: false },
+				// t: { $exists: false },
+				t: { $ne: 'command' as MessageTypesValues },
 			},
 			options,
 		);

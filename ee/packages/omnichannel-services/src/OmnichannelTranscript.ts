@@ -87,7 +87,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		// Closing message should not appear :)
 		return Messages.findLivechatMessagesWithoutClosing(rid, {
 			sort: { ts: 1 },
-			projection: { _id: 1, msg: 1, u: 1, t: 1, ts: 1, attachments: 1, files: 1, md: 1 },
+			projection: { _id: 1, msg: 1, u: 1, t: 1, ts: 1, attachments: 1, files: 1, md: 1, navigation: 1 },
 		}).toArray();
 	}
 
@@ -165,13 +165,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			if (!message.attachments?.length) {
 				// If there's no attachment and no message, what was sent? lol
 				messagesData.push({
-					_id: message._id,
+					...message,
 					files: [],
 					quotes: [],
-					ts: message.ts,
-					u: message.u,
-					msg: message.msg,
-					md: message.md,
 				});
 				continue;
 			}
@@ -280,6 +276,10 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		);
 	}
 
+	shareTranslationService() {
+		return translationService.translateToServerLanguage;
+	}
+
 	async workOnPdf({ details }: { details: WorkDetailsWithSource }): Promise<void> {
 		this.log.info(`Processing transcript for room ${details.rid} by user ${details.userId} - Received from queue`);
 		if (this.maxNumberOfConcurrentJobs <= this.currentJobNumber) {
@@ -293,6 +293,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				throw new Error('room-not-found');
 			}
 			const messages = await this.getMessagesFromRoom({ rid: room._id });
+
+			console.log({ messages });
 
 			const visitor =
 				room.v &&
