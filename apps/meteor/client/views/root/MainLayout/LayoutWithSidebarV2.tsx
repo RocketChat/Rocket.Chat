@@ -38,7 +38,7 @@ const LayoutWithSidebarV2 = ({ children }: { children: ReactNode }): ReactElemen
 		}
 		redirected.current = true;
 
-		router.navigate({ name: firstChannelAfterLogin as keyof IRouterPaths });
+		router.navigate({ name: `/channel/${firstChannelAfterLogin}` as keyof IRouterPaths });
 	}, [router, currentRoutePath, firstChannelAfterLogin]);
 
 	return (
