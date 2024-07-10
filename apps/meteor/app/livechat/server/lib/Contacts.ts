@@ -1,4 +1,4 @@
-import type { ILivechatContactChannel, ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatContactChannel, ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import {
 	LivechatVisitors,
 	Users,
