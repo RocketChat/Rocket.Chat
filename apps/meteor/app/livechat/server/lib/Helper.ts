@@ -4,7 +4,6 @@ import { api, Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatVisitor,
 	IOmnichannelRoom,
-	IMessage,
 	SelectedAgent,
 	ISubscription,
 	ILivechatInquiryRecord,
@@ -145,7 +144,7 @@ export const createLivechatInquiry = async ({
 	rid: string;
 	name?: string;
 	guest?: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'department' | 'name' | 'token' | 'activity'>;
-	message?: Pick<IMessage, 'msg'>;
+	message?: string;
 	initialStatus?: LivechatInquiryStatus;
 	extraData?: Pick<ILivechatInquiryRecord, 'source'>;
 }) => {
@@ -161,17 +160,11 @@ export const createLivechatInquiry = async ({
 			activity: Match.Maybe([String]),
 		}),
 	);
-	check(
-		message,
-		Match.ObjectIncluding({
-			msg: String,
-		}),
-	);
 
 	const extraInquiryInfo = await callbacks.run('livechat.beforeInquiry', extraData);
 
 	const { _id, username, token, department, status = UserStatus.ONLINE, activity } = guest;
-	const { msg } = message;
+
 	const ts = new Date();
 
 	logger.debug({
@@ -179,28 +172,28 @@ export const createLivechatInquiry = async ({
 		visitor: { _id, username, department, status, activity },
 	});
 
-	const inquiry: InsertionModel<ILivechatInquiryRecord> = {
-		rid,
-		name,
-		ts,
-		department,
-		message: msg,
-		status: initialStatus || LivechatInquiryStatus.READY,
-		v: {
-			_id,
-			username,
-			token,
-			status,
-			...(activity?.length && { activity }),
-		},
-		t: 'l',
-		priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
-		estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+	const result = (
+		await LivechatInquiry.insertOne({
+			rid,
+			name,
+			ts,
+			department,
+			message: message ?? '',
+			status: initialStatus || LivechatInquiryStatus.READY,
+			v: {
+				_id,
+				username,
+				token,
+				status,
+				...(activity?.length && { activity }),
+			},
+			t: 'l',
+			priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
+			estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 
-		...extraInquiryInfo,
-	};
-
-	const result = (await LivechatInquiry.insertOne(inquiry)).insertedId;
+			...extraInquiryInfo,
+		})
+	).insertedId;
 	logger.debug(`Inquiry ${result} created for visitor ${_id}`);
 
 	return result;
@@ -658,16 +651,6 @@ export const normalizeTransferredByData = (transferredBy: TransferByData, room: 
 		...(name && { name }),
 		type,
 	};
-};
-
-export const checkServiceStatus = async ({ guest, agent }: { guest: Pick<ILivechatVisitor, 'department'>; agent?: SelectedAgent }) => {
-	if (!agent) {
-		return LivechatTyped.online(guest.department);
-	}
-
-	const { agentId } = agent;
-	const users = await Users.countOnlineAgents(agentId);
-	return users > 0;
 };
 
 const parseFromIntOrStr = (value: string | number) => {
