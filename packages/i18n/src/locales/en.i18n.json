@@ -6479,6 +6479,6 @@
   "You_cant_take_chats_unavailable": "You cannot take new conversations because you're unavailable",
   "You_cant_take_chats_offline": "You cannot take new conversations because you're offline",
   "New_navigation": "New navigation",
-  "New_navigation_description": "Activate the new navigation UI with sidebar and sidepanel.",
+  "New_navigation_description": "Activate the new navigation UI.",
   "Workspace_and_user_settings": "Workspace and user settings"
 }
