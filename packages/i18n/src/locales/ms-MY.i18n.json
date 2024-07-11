@@ -282,7 +282,7 @@
   "API_EmbedCacheExpirationDays": "Hari Tamat Tempoh Cache",
   "API_Enable_CORS": "Dayakan CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Dayakan Endpoint Sejarah Mesej Langsung",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Ini membolehkan `/ api / v1 / im.history.others` yang membenarkan tontonan mesej langsung dihantar oleh pengguna lain bahawa pemanggil bukan sebahagian daripada.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Ini membolehkan `/ api / v1 / im.messages.others` yang membenarkan tontonan mesej langsung dihantar oleh pengguna lain bahawa pemanggil bukan sebahagian daripada.",
   "API_Enable_Shields": "Dayakan Shields",
   "API_Enable_Shields_Description": "Dayakan perisai yang terdapat pada `/ api / v1 / shield.svg`",
   "API_GitHub_Enterprise_URL": "URL Server",

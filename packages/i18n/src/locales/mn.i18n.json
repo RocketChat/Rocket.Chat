@@ -282,7 +282,7 @@
   "API_EmbedCacheExpirationDays": "Cache хугацаа дуусна",
   "API_Enable_CORS": "CORS-г идэвхжүүлэх",
   "API_Enable_Direct_Message_History_EndPoint": "Шууд мессежийн түүх төгсгөлийг идэвхжүүлэх",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Энэ нь `/ api / v1 / im.history.others` файлыг идэвхжүүлдэг бөгөөд энэ нь дуудагчийн хэсэг биш бусад хэрэглэгчид илгээсэн шууд мессежийг харах боломжийг олгодог.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Энэ нь `/ api / v1 / im.messages.others` файлыг идэвхжүүлдэг бөгөөд энэ нь дуудагчийн хэсэг биш бусад хэрэглэгчид илгээсэн шууд мессежийг харах боломжийг олгодог.",
   "API_Enable_Shields": "Shields-ийг идэвхжүүлнэ",
   "API_Enable_Shields_Description": "`/ Api / v1 / shield.svg дээр бамбайг идэвхжүүлнэ",
   "API_GitHub_Enterprise_URL": "Сервер URL",

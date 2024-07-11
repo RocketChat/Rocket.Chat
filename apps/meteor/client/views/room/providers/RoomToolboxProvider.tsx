@@ -1,4 +1,3 @@
-import type { RoomType, IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback, useStableArray } from '@rocket.chat/fuselage-hooks';
 import { useUserId, useSetting, useRouter, useRouteParameter, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
@@ -6,29 +5,10 @@ import React, { useMemo } from 'react';
 
 import { useRoom } from '../contexts/RoomContext';
 import { RoomToolboxContext } from '../contexts/RoomToolboxContext';
-import type { RoomToolboxContextValue, RoomToolboxActionConfig } from '../contexts/RoomToolboxContext';
+import type { RoomToolboxContextValue } from '../contexts/RoomToolboxContext';
+import { getRoomGroup } from '../lib/getRoomGroup';
 import { useAppsRoomActions } from './hooks/useAppsRoomActions';
 import { useCoreRoomActions } from './hooks/useCoreRoomActions';
-
-const groupsDict = {
-	l: 'live',
-	v: 'voip',
-	d: 'direct',
-	p: 'group',
-	c: 'channel',
-} as const satisfies Record<RoomType, RoomToolboxActionConfig['groups'][number]>;
-
-const getGroup = (room: IRoom) => {
-	if (room.teamMain) {
-		return 'team';
-	}
-
-	if (room.t === 'd' && (room.uids?.length ?? 0) > 2) {
-		return 'direct_multiple';
-	}
-
-	return groupsDict[room.t];
-};
 
 type RoomToolboxProviderProps = { children: ReactNode };
 
@@ -92,7 +72,7 @@ const RoomToolboxProvider = ({ children }: RoomToolboxProviderProps) => {
 	const actions = useStableArray(
 		[...coreRoomActions, ...appsRoomActions]
 			.filter((action) => uid || (allowAnonymousRead && 'anonymous' in action && action.anonymous))
-			.filter((action) => !action.groups || action.groups.includes(getGroup(room)))
+			.filter((action) => !action.groups || action.groups.includes(getRoomGroup(room)))
 			.filter((action) => !hiddenActions.includes(action.id))
 			.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
 	);

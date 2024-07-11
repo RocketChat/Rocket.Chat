@@ -323,7 +323,7 @@
   "API_EmbedCacheExpirationDays": "បង្កប់ថ្ងៃផុតកំណត់ឃ្លាំងសម្ងាត់",
   "API_Enable_CORS": "បើកដំណើរការ CORS",
   "API_Enable_Direct_Message_History_EndPoint": "បើកដំណើរការ Endpoint ប្រវត្តិសាស្រ្តសារផ្ទាល់",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "វាអនុញ្ញាតឱ្យ `/ api / v1 / im.history.others` ដែលអនុញ្ញាតឱ្យមើលសារផ្ទាល់ដែលផ្ញើដោយអ្នកប្រើផ្សេងទៀតដែលអ្នកហៅចូលមិនមែនជាផ្នែកមួយ។",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "វាអនុញ្ញាតឱ្យ `/ api / v1 / im.messages.others` ដែលអនុញ្ញាតឱ្យមើលសារផ្ទាល់ដែលផ្ញើដោយអ្នកប្រើផ្សេងទៀតដែលអ្នកហៅចូលមិនមែនជាផ្នែកមួយ។",
   "API_Enable_Personal_Access_Tokens": "បើកនិមិត្តសញ្ញាផ្ទាល់ខ្លួនដើម្បី REST API",
   "API_Enable_Personal_Access_Tokens_Description": "បើកនិមិត្តសញ្ញាផ្ទាល់ខ្លួនសំរាប់ប្រើប្រាស់ជាមួយ REST API",
   "API_Enable_Rate_Limiter": "បើកដំណើរការកំណត់កំរិតកំណត់",
