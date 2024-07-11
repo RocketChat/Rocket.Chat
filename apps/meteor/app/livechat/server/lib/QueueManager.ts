@@ -4,13 +4,13 @@ import {
 	LivechatInquiryStatus,
 	type ILivechatInquiryRecord,
 	type ILivechatVisitor,
-	type IMessage,
 	type IOmnichannelRoom,
 	type SelectedAgent,
 	type OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -20,7 +20,8 @@ import {
 	notifyOnLivechatInquiryChanged,
 	notifyOnSettingChanged,
 } from '../../../lib/server/lib/notifyListener';
-import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
+import { createLivechatRoom, createLivechatInquiry } from './Helper';
+import { Livechat as LivechatTyped } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('QueueManager');
@@ -45,7 +46,7 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 	logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
 
 	await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
-	const room = await LivechatRooms.findOneById(inquiry.rid, { projection: { v: 1 } });
+	const room = await LivechatRooms.findOneById(inquiry.rid);
 	if (!room || !(await Omnichannel.isWithinMACLimit(room))) {
 		logger.error({ msg: 'MAC limit reached, not routing inquiry', inquiry });
 		// We'll queue these inquiries so when new license is applied, they just start rolling again
@@ -61,11 +62,11 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 
 	if (dbInquiry.status === 'ready') {
 		logger.debug(`Inquiry with id ${inquiry._id} is ready. Delegating to agent ${inquiryAgent?.username}`);
-		return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent);
+		return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent, undefined, room);
 	}
 };
 
-type queueManager = {
+interface IQueueManager {
 	requestRoom: <
 		E extends Record<string, unknown> & {
 			sla?: string;
@@ -74,7 +75,8 @@ type queueManager = {
 		},
 	>(params: {
 		guest: ILivechatVisitor;
-		message: Pick<IMessage, 'rid' | 'msg'>;
+		rid?: string;
+		message?: string;
 		roomInfo: {
 			source?: IOmnichannelRoom['source'];
 			[key: string]: unknown;
@@ -83,17 +85,44 @@ type queueManager = {
 		extraData?: E;
 	}) => Promise<IOmnichannelRoom>;
 	unarchiveRoom: (archivedRoom?: IOmnichannelRoom) => Promise<IOmnichannelRoom>;
-};
+}
 
-export const QueueManager: queueManager = {
-	async requestRoom({ guest, message, roomInfo, agent, extraData: { customFields, ...extraData } = {} }) {
+export const QueueManager = new (class implements IQueueManager {
+	private async checkServiceStatus({ guest, agent }: { guest: Pick<ILivechatVisitor, 'department'>; agent?: SelectedAgent }) {
+		if (!agent) {
+			return LivechatTyped.online(guest.department);
+		}
+
+		const { agentId } = agent;
+		const users = await Users.countOnlineAgents(agentId);
+		return users > 0;
+	}
+
+	async requestRoom<
+		E extends Record<string, unknown> & {
+			sla?: string;
+			customFields?: Record<string, unknown>;
+			source?: OmnichannelSourceType;
+		},
+	>({
+		guest,
+		rid = Random.id(),
+		message,
+		roomInfo,
+		agent,
+		extraData: { customFields, ...extraData } = {} as E,
+	}: {
+		guest: ILivechatVisitor;
+		rid?: string;
+		message?: string;
+		roomInfo: {
+			source?: IOmnichannelRoom['source'];
+			[key: string]: unknown;
+		};
+		agent?: SelectedAgent;
+		extraData?: E;
+	}) {
 		logger.debug(`Requesting a room for guest ${guest._id}`);
-		check(
-			message,
-			Match.ObjectIncluding({
-				rid: String,
-			}),
-		);
 		check(
 			guest,
 			Match.ObjectIncluding({
@@ -106,11 +135,10 @@ export const QueueManager: queueManager = {
 			}),
 		);
 
-		if (!(await checkServiceStatus({ guest, agent }))) {
+		if (!(await this.checkServiceStatus({ guest, agent }))) {
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 		}
 
-		const { rid } = message;
 		const name = (roomInfo?.fname as string) || guest.name || guest.username;
 
 		const room = await LivechatRooms.findOneById(
@@ -156,9 +184,9 @@ export const QueueManager: queueManager = {
 		}
 
 		return newRoom;
-	},
+	}
 
-	async unarchiveRoom(archivedRoom) {
+	async unarchiveRoom(archivedRoom?: IOmnichannelRoom) {
 		if (!archivedRoom) {
 			throw new Error('no-room-to-unarchive');
 		}
@@ -193,7 +221,15 @@ export const QueueManager: queueManager = {
 		if (!room) {
 			throw new Error('room-not-found');
 		}
-		const inquiry = await LivechatInquiry.findOneById(await createLivechatInquiry({ rid, name, guest, message, extraData: { source } }));
+		const inquiry = await LivechatInquiry.findOneById(
+			await createLivechatInquiry({
+				rid,
+				name,
+				guest,
+				message: message?.msg,
+				extraData: { source },
+			}),
+		);
 		if (!inquiry) {
 			throw new Error('inquiry-not-found');
 		}
@@ -202,5 +238,5 @@ export const QueueManager: queueManager = {
 		logger.debug(`Inquiry ${inquiry._id} queued`);
 
 		return room;
-	},
-};
+	}
+})();
