@@ -10,4 +10,4 @@
 "rocketchat-services": patch
 ---
 
-Pass `user` param to apps engine during app update. This allows app engine's new `onUpdate` hook tou see the user performing the action.
+Pass `user` param to apps-engine during app update, allowing apps' new `onUpdate` hook to know who triggered the update.
