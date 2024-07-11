@@ -431,7 +431,7 @@
   "API_EmbedCacheExpirationDays": "Bädda in Cache Expiration Days",
   "API_Enable_CORS": "Aktivera CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Aktivera ändpunkt för direktmeddelandens historik",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Detta möjliggör `/api/v1/im.history.others` som tillåter visning av direktmeddelanden som skickats av andra användare som den som ringer inte är en del av.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Detta möjliggör `/api/v1/im.messages.others` som tillåter visning av direktmeddelanden som skickats av andra användare som den som ringer inte är en del av.",
   "API_Enable_Personal_Access_Tokens": "Aktivera personliga åtkomsttokens till REST API",
   "API_Enable_Personal_Access_Tokens_Description": "Slå på personliga åtkomsttokens för REST API:et",
   "API_Enable_Rate_Limiter": "Aktivera antalsbegränsning",

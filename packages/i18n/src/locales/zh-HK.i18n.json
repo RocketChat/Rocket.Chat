@@ -297,7 +297,7 @@
   "API_EmbedCacheExpirationDays": "嵌入缓存到期天数",
   "API_Enable_CORS": "启用CORS",
   "API_Enable_Direct_Message_History_EndPoint": "启用直接消息历史记录端点",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "这使得`/ api / v1 / im.history.others`能够查看其他用户发送的呼叫者不属于的直接消息。",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "这使得`/ api / v1 / im.messages.others`能够查看其他用户发送的呼叫者不属于的直接消息。",
   "API_Enable_Shields": "启用盾牌",
   "API_Enable_Shields_Description": "在`/ api / v1 / shield.svg`中启用屏蔽",
   "API_GitHub_Enterprise_URL": "服务器URL",

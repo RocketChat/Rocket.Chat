@@ -283,7 +283,7 @@
   "API_EmbedCacheExpirationDays": "Porniți zilele de expirare a cache-ului",
   "API_Enable_CORS": "Activați CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Activați punctul final al istoricului mesajelor",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Aceasta permite \"/ api / v1 / im.history.others\" care permite vizualizarea mesajelor directe trimise de alți utilizatori de care apelantul nu face parte.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Aceasta permite \"/ api / v1 / im.messages.others\" care permite vizualizarea mesajelor directe trimise de alți utilizatori de care apelantul nu face parte.",
   "API_Enable_Shields": "Activați scuturile",
   "API_Enable_Shields_Description": "Activați scuturile disponibile la \"/ api / v1 / shield.svg\"",
   "API_GitHub_Enterprise_URL": "URL-ul serverului",
