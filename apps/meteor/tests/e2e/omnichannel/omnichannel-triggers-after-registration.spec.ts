@@ -47,18 +47,15 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 
 		await Promise.all(ids.map((id) => api.delete(`/livechat/triggers/${id}`)));
 
-		await Promise.all([
-			api.delete('/livechat/users/agent/user1'),
-			api.delete('/livechat/users/manager/user1'),
-		]);
-	
+		await Promise.all([api.delete('/livechat/users/agent/user1'), api.delete('/livechat/users/manager/user1')]);
+
 		await agent.page.close();
 		await poLiveChat.page.close();
 	});
 
 	test.afterAll(async ({ api }) => {
 		expect((await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false })).status()).toBe(200);
-	})
+	});
 
 	test.describe('OC - Livechat New Chat Triggers - After Registration', async () => {
 		await test('expect trigger message after registration', async () => {
