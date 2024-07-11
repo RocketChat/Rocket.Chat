@@ -98,7 +98,7 @@ API.v1.addRoute(
 				throw new Error('invalid-room');
 			}
 
-			let message = await Messages.findOneById(_id);
+			let message = await Messages.findOneByRoomIdAndMessageId(rid, _id);
 			if (!message) {
 				throw new Error('invalid-message');
 			}
@@ -251,7 +251,7 @@ API.v1.addRoute(
 		async post() {
 			const visitorToken = this.bodyParams.visitor.token;
 
-			let visitor = await LivechatVisitors.getVisitorByToken(visitorToken, {});
+			const visitor = await LivechatVisitors.getVisitorByToken(visitorToken, {});
 			let rid: string;
 			if (visitor) {
 				const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
@@ -267,8 +267,10 @@ API.v1.addRoute(
 				const guest: typeof this.bodyParams.visitor & { connectionData?: unknown } = this.bodyParams.visitor;
 				guest.connectionData = normalizeHttpHeaderData(this.request.headers);
 
-				const visitorId = await LivechatTyped.registerGuest(guest);
-				visitor = await LivechatVisitors.findOneEnabledById(visitorId);
+				const visitor = await LivechatTyped.registerGuest(guest);
+				if (!visitor) {
+					throw new Error('error-livechat-visitor-registration');
+				}
 			}
 
 			const guest = visitor;
