@@ -20,7 +20,7 @@ export class ChatTranscript implements IStrategy {
 				}
 
 				const systemMessageDefinition = getSystemMessage(message.t);
-				console.log({ systemMessageDefinition });
+
 				if (!systemMessageDefinition) {
 					return message;
 				}
@@ -29,7 +29,7 @@ export class ChatTranscript implements IStrategy {
 					systemMessageDefinition.data && (await systemMessageDefinition?.data(message, translationService.translateToServerLanguage));
 
 				const systemMessage = await translationService.translateToServerLanguage(systemMessageDefinition.message, args);
-				console.log({ systemMessage });
+
 				return {
 					...message,
 					msg: systemMessage,
@@ -44,9 +44,8 @@ export class ChatTranscript implements IStrategy {
 		timeAndDateFormat: string,
 		timezone: string,
 	): Promise<PDFMessage[]> {
-		console.log('messages before parse', messages);
 		const systemMessagesParsed = await this.parseSystemMessage(messages);
-		console.log({ systemMessagesParsed });
+
 		return systemMessagesParsed.map((message, index, arr) => {
 			const previousMessage = arr[index - 1];
 			const { ts, ...rest } = message;

@@ -310,8 +310,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			}
 			const messages = await this.getMessagesFromRoom({ rid: room._id });
 
-			console.log({ messages });
-
 			const visitor =
 				room.v &&
 				(await LivechatVisitors.findOneEnabledById(room.v._id, { projection: { _id: 1, name: 1, username: 1, visitorEmails: 1 } }));
