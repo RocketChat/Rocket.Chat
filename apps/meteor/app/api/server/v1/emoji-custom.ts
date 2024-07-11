@@ -3,6 +3,8 @@ import { EmojiCustom } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { insertOrUpdateEmoji } from '../../../emoji-custom/server/lib/insertOrUpdateEmoji';
+import { uploadEmojiCustomWithBuffer } from '../../../emoji-custom/server/lib/uploadEmojiCustom';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -117,29 +119,31 @@ API.v1.addRoute(
 				{
 					request: this.request,
 				},
-				{ field: 'emoji', sizeLimit: settings.get('FileUpload_MaxFileSize') },
+				{ field: 'emoji', sizeLimit: settings.get('FileUpload_MaxFileSize'), optional: true },
 			);
 
 			const { fields, fileBuffer, mimetype } = emoji;
 
 			if (!fields._id) {
-				throw new Meteor.Error('The required "_id" query param is missing.');
+				throw new Error('The required "_id" query param is missing.');
 			}
 
 			const emojiToUpdate = await EmojiCustom.findOneById(fields._id);
 			if (!emojiToUpdate) {
-				throw new Meteor.Error('Emoji not found.');
+				throw new Error('Emoji not found.');
 			}
 
 			fields.previousName = emojiToUpdate.name;
 			fields.previousExtension = emojiToUpdate.extension;
 			fields.aliases = fields.aliases || '';
-			const newFile = Boolean(emoji && fileBuffer.length);
 
-			if (fields.newFile) {
+			let newFile = false;
+
+			if (fileBuffer?.length) {
+				newFile = true;
 				const isUploadable = await Media.isImage(fileBuffer);
 				if (!isUploadable) {
-					throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
+					throw new Error("Emoji file provided cannot be uploaded since it's not an image");
 				}
 
 				const [, extension] = mimetype.split('/');
@@ -148,9 +152,10 @@ API.v1.addRoute(
 				fields.extension = emojiToUpdate.extension;
 			}
 
-			await Meteor.callAsync('insertOrUpdateEmoji', { ...fields, newFile });
-			if (fields.newFile) {
-				await Meteor.callAsync('uploadEmojiCustom', fileBuffer, mimetype, { ...fields, newFile });
+			const newEmojiData = await insertOrUpdateEmoji(this.userId, { ...fields, newFile } as any);
+
+			if (newFile && fileBuffer) {
+				await uploadEmojiCustomWithBuffer(this.userId, fileBuffer, mimetype, newEmojiData);
 			}
 			return API.v1.success();
 		},

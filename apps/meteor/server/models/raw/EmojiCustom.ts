@@ -68,6 +68,16 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 		return this.updateOne({ _id }, update);
 	}
 
+	setETagByIdOrName(idOrName: string, etag: string): Promise<UpdateResult> {
+		const update = {
+			$set: {
+				etag,
+			},
+		};
+
+		return this.updateOne({ $or: [{ _id: idOrName }, { name: idOrName }] }, update);
+	}
+
 	// INSERT
 	create(data: InsertionModel<IEmojiCustom>): Promise<InsertOneResult<WithId<IEmojiCustom>>> {
 		return this.insertOne(data);
