@@ -83,9 +83,11 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 	}
 
-	private getMessagesFromRoom({ rid }: { rid: string }): Promise<IMessage[]> {
+	private async getMessagesFromRoom({ rid }: { rid: string }): Promise<IMessage[]> {
+		const showSystemMessages = await settingsService.get<boolean>('Livechat_transcript_show_system_messages');
+
 		// Closing message should not appear :)
-		return Messages.findLivechatMessagesWithoutClosing(rid, {
+		return Messages.findLivechatMessagesWithoutTypes(rid, ['command'], showSystemMessages, {
 			sort: { ts: 1 },
 			projection: { _id: 1, msg: 1, u: 1, t: 1, ts: 1, attachments: 1, files: 1, md: 1, navigation: 1 },
 		}).toArray();

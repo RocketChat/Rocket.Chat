@@ -71,7 +71,12 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
 	findLivechatMessages(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage>;
-	findLivechatMessagesWithoutClosing(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage>;
+	findLivechatMessagesWithoutTypes(
+		rid: IRoom['_id'],
+		ignoredTypes: IMessage['t'][],
+		showSystemMessages: boolean,
+		options?: FindOptions<IMessage>,
+	): FindCursor<IMessage>;
 	countRoomsWithStarredMessages(options: AggregateOptions): Promise<number>;
 
 	countRoomsWithPinnedMessages(options: AggregateOptions): Promise<number>;

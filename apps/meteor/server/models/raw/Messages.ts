@@ -429,15 +429,25 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findLivechatMessagesWithoutClosing(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		return this.find(
-			{
-				rid,
-				// t: { $exists: false },
-				t: { $ne: 'command' as MessageTypesValues },
-			},
-			options,
-		);
+	findLivechatMessagesWithoutTypes(
+		rid: IRoom['_id'],
+		ignoredTypes: IMessage['t'][],
+		showSystemMessages: boolean,
+		options?: FindOptions<IMessage>,
+	): FindCursor<IMessage> {
+		const query: Filter<IMessage> = {
+			rid,
+		};
+
+		if (ignoredTypes.length > 0) {
+			query.t = { $nin: ignoredTypes };
+		}
+
+		if (!showSystemMessages) {
+			query.t = { $exists: false };
+		}
+
+		return this.find(query, options);
 	}
 
 	async setBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void> {
