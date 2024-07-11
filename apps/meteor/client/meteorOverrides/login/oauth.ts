@@ -1,3 +1,4 @@
+import type { OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
@@ -5,7 +6,6 @@ import { OAuth } from 'meteor/oauth';
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
 import { loginServices } from '../../lib/loginServices';
-import { OAuthConfiguration } from '@rocket.chat/core-typings';
 
 const isLoginCancelledError = (error: unknown): error is Meteor.Error =>
 	error instanceof Meteor.Error && error.error === Accounts.LoginCancelledError.numericError;
