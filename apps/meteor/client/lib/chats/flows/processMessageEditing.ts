@@ -17,7 +17,7 @@ export const processMessageEditing = async (
 		return false;
 	}
 
-	if (!message.msg && !message.attachments?.length) {
+	if (!message.msg && !message.attachments?.length && !message.content) {
 		return false;
 	}
 

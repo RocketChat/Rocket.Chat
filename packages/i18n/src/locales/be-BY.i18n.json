@@ -290,7 +290,7 @@
   "API_EmbedCacheExpirationDays": "Уставіць кэш Заканчэнне дзён",
   "API_Enable_CORS": "ўключэнне CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Enable Direct Message History Конточка",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Гэта дазваляе `/ API / v1 / im.history.others`, якая дазваляе праглядаць прамыя паведамленні, адпраўленыя іншымі карыстальнікамі, што абанент не з'яўляецца часткай.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Гэта дазваляе `/ API / v1 / im.messages.others`, якая дазваляе праглядаць прамыя паведамленні, адпраўленыя іншымі карыстальнікамі, што абанент не з'яўляецца часткай.",
   "API_Enable_Shields": "ўключыць Шылдс",
   "API_Enable_Shields_Description": "Ўключыць экраны, даступныя ў `/ API / v1 / shield.svg`",
   "API_GitHub_Enterprise_URL": "URL-адрас сервера",

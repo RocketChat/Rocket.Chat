@@ -339,7 +339,7 @@
   "API_EmbedCacheExpirationDays": "cache ამოწურვის დღეების რაოდენობა",
   "API_Enable_CORS": "ჩართეთ CORS",
   "API_Enable_Direct_Message_History_EndPoint": "ჩართეთ პირდაპირი შეტყობინებების ისტორიის ბოლო წერტილი",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "ეს საშუალებას აძლევს `/api/v1/im.history.others`, რაც საშუალებას აძლევს სხვა მომხმარებლების მიერ გაგზავნილ პირდაპირი შეტყობინებების ნახვას, რომლის მონაწილეც დამრეკი არ არის",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "ეს საშუალებას აძლევს `/api/v1/im.messages.others`, რაც საშუალებას აძლევს სხვა მომხმარებლების მიერ გაგზავნილ პირდაპირი შეტყობინებების ნახვას, რომლის მონაწილეც დამრეკი არ არის",
   "API_Enable_Personal_Access_Tokens": "ჩართეთ პერსონალური წვდომის ტოკენები REST API– ზე",
   "API_Enable_Personal_Access_Tokens_Description": "ჩართეთ პერსონალური წვდომის ტოკენები REST API–სთან გამოსაყენებლად",
   "API_Enable_Rate_Limiter": "ჩართეთ სიჩქარის ლიმიტი",

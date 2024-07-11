@@ -382,7 +382,7 @@
   "API_EmbedCacheExpirationDays": "Sluit Cache-verloopdagen in",
   "API_Enable_CORS": "Schakel CORS in",
   "API_Enable_Direct_Message_History_EndPoint": "Eindpunt privéberichtgeschiedenis inschakelen",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Dit activeert de `/api/v1/im.history.others` waarmee directe berichten kunnen worden bekeken die zijn verzonden door andere gebruikers, waar de beller geen deel van uitmaakt.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Dit activeert de `/api/v1/im.messages.others` waarmee directe berichten kunnen worden bekeken die zijn verzonden door andere gebruikers, waar de beller geen deel van uitmaakt.",
   "API_Enable_Personal_Access_Tokens": "Schakel persoonlijke toegangstokens voor de REST API in",
   "API_Enable_Personal_Access_Tokens_Description": "Schakel persoonlijke toegangstoken in voor gebruik met de REST API",
   "API_Enable_Rate_Limiter": "Rate Limiter inschakelen",
