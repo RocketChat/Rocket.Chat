@@ -55,7 +55,6 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 		// We'll queue these inquiries so when new license is applied, they just start rolling again
 		// Minimizing disruption
 		await saveQueueInquiry(inquiry);
-		await QueueManager.dispatchInquiryPosition(inquiry);
 		return;
 	}
 	const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
@@ -73,8 +72,6 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 		 */
 		return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent, undefined, room);
 	}
-
-	await QueueManager.dispatchInquiryPosition(dbInquiry);
 };
 
 export const QueueManager = class {
