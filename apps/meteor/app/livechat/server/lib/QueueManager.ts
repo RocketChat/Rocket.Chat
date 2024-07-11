@@ -132,8 +132,6 @@ export class QueueManager {
 	}
 
 	static async queueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
-		await callbacks.run('livechat.new-beforeRouteChat', inquiry);
-
 		if (inquiry.status === 'ready') {
 			return RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, room);
 		}
