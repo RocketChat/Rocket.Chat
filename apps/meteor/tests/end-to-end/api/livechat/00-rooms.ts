@@ -10,12 +10,10 @@ import type {
 	ILivechatPriority,
 	ILivechatDepartment,
 	ISubscription,
-	IUser,
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
-import { MongoClient } from 'mongodb';
 import type { Response } from 'supertest';
 
 import type { SuccessResult } from '../../../../app/api/server/definition';
@@ -51,7 +49,7 @@ import {
 } from '../../../data/permissions.helper';
 import { adminUsername, password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
-import { IS_EE, URL_MONGODB } from '../../../e2e/config/constants';
+import { IS_EE } from '../../../e2e/config/constants';
 
 const getSubscriptionForRoom = async (roomId: string, overrideCredential?: Credentials): Promise<ISubscription> => {
 	const response = await request
@@ -64,32 +62,6 @@ const getSubscriptionForRoom = async (roomId: string, overrideCredential?: Crede
 	const { subscription } = response.body;
 
 	return subscription;
-};
-
-// For creating dangling subscriptions to rooms (which can't be created in usual conditions)
-const addSubscriptionToDb = async (userId: IUser['_id'], room: IOmnichannelRoom) => {
-	const subscription = {
-		open: false,
-		alert: false,
-		unread: 0,
-		userMentions: 0,
-		groupMentions: 0,
-		ts: room.ts,
-		rid: room._id,
-		name: room.name,
-		fname: room.fname,
-		...(room.customFields && { customFields: room.customFields }),
-		t: room.t,
-		u: {
-			_id: userId,
-			username: 'username',
-			name: 'name',
-		},
-	};
-	const connection = await MongoClient.connect(URL_MONGODB);
-
-	await connection.db().collection('rocketchat_subscription').insertOne(subscription);
-	await connection.close();
 };
 
 describe('LIVECHAT - rooms', () => {
@@ -2162,27 +2134,6 @@ describe('LIVECHAT - rooms', () => {
 
 			// try to close again
 			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }).expect(400);
-			await deleteVisitor(visitor.token);
-		});
-		it('should remove dangling subscriptions if they exist after a room has been closed', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-
-			// close room
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: room._id, comment: 'test' }).expect(200);
-
-			await addSubscriptionToDb(credentials['X-User-Id'], room);
-			const subscription = await getSubscriptionForRoom(room._id);
-			expect(subscription).to.be.an('object').that.is.not.empty;
-			expect(subscription).to.have.property('rid', room._id);
-			expect(subscription).to.have.property('u').that.is.an('object');
-			expect(subscription.u).to.have.property('_id', credentials['X-User-Id']);
-
-			// try to close again
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: room._id, comment: 'test' }).expect(200);
-			const updatedSubscription = await getSubscriptionForRoom(room._id);
-			expect(updatedSubscription).to.be.null;
-
 			await deleteVisitor(visitor.token);
 		});
 

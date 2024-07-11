@@ -28,7 +28,6 @@ export const addUserToRoom = async function (
 		});
 	}
 
-	const userToBeAdded = typeof user === 'string' ? await Users.findOneByUsername(user.replace('@', '')) : await Users.findOneById(user._id);
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 
 	if (!userToBeAdded) {
@@ -49,12 +48,6 @@ export const addUserToRoom = async function (
 	}
 
 	await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter: userToBeAdded });
-
-	// Check if user is already in room
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
-	if (subscription || !userToBeAdded) {
-		return;
-	}
 
 	try {
 		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter);
