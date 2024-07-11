@@ -62,33 +62,17 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 
 	if (dbInquiry.status === 'ready') {
 		logger.debug(`Inquiry with id ${inquiry._id} is ready. Delegating to agent ${inquiryAgent?.username}`);
+		/**
+		 * There is no need to call QueueManager.dispatchInquiryPosition
+		 * because the method is called on afterTakeInquiry anyway
+		 *
+		 */
 		return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent, undefined, room);
 	}
 };
 
-interface IQueueManager {
-	requestRoom: <
-		E extends Record<string, unknown> & {
-			sla?: string;
-			customFields?: Record<string, unknown>;
-			source?: OmnichannelSourceType;
-		},
-	>(params: {
-		guest: ILivechatVisitor;
-		rid?: string;
-		message?: string;
-		roomInfo: {
-			source?: IOmnichannelRoom['source'];
-			[key: string]: unknown;
-		};
-		agent?: SelectedAgent;
-		extraData?: E;
-	}) => Promise<IOmnichannelRoom>;
-	unarchiveRoom: (archivedRoom?: IOmnichannelRoom) => Promise<IOmnichannelRoom>;
-}
-
-export const QueueManager = new (class implements IQueueManager {
-	private async checkServiceStatus({ guest, agent }: { guest: Pick<ILivechatVisitor, 'department'>; agent?: SelectedAgent }) {
+export const QueueManager = class {
+	private static async checkServiceStatus({ guest, agent }: { guest: Pick<ILivechatVisitor, 'department'>; agent?: SelectedAgent }) {
 		if (!agent) {
 			return LivechatTyped.online(guest.department);
 		}
@@ -98,7 +82,7 @@ export const QueueManager = new (class implements IQueueManager {
 		return users > 0;
 	}
 
-	async requestRoom<
+	static async requestRoom<
 		E extends Record<string, unknown> & {
 			sla?: string;
 			customFields?: Record<string, unknown>;
@@ -186,7 +170,7 @@ export const QueueManager = new (class implements IQueueManager {
 		return newRoom;
 	}
 
-	async unarchiveRoom(archivedRoom?: IOmnichannelRoom) {
+	static async unarchiveRoom(archivedRoom: IOmnichannelRoom) {
 		if (!archivedRoom) {
 			throw new Error('no-room-to-unarchive');
 		}
@@ -239,4 +223,4 @@ export const QueueManager = new (class implements IQueueManager {
 
 		return room;
 	}
-})();
+};
