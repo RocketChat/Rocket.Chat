@@ -23,13 +23,13 @@ describe('Strategies/ChatTranscript', () => {
 		}).toThrow('Invalid data');
 	});
 
-	it('should creates a divider for a first message', () => {
-		const result = chatTranscript.parseTemplateData(validData);
+	it('should creates a divider for a first message', async () => {
+		const result = await chatTranscript.parseTemplateData(validData);
 		expect(result.messages[0]).toHaveProperty('divider');
 	});
 
-	it('should creates a divider if message is from a new day', () => {
-		const result = chatTranscript.parseTemplateData(newDayData);
+	it('should creates a divider if message is from a new day', async () => {
+		const result = await chatTranscript.parseTemplateData(newDayData);
 		expect(result.messages[0]).toHaveProperty('divider');
 		expect(result.messages[1]).toHaveProperty(
 			'divider',
@@ -37,15 +37,15 @@ describe('Strategies/ChatTranscript', () => {
 		);
 	});
 
-	it('should not create a divider if message is from the same day', () => {
-		const result = chatTranscript.parseTemplateData(sameDayData);
+	it('should not create a divider if message is from the same day', async () => {
+		const result = await chatTranscript.parseTemplateData(sameDayData);
 		expect(result.messages[0]).toHaveProperty('divider');
 		expect(result.messages[1]).not.toHaveProperty('divider');
 	});
 
-	it('should returns the correct translation value for a given key', () => {
+	it('should returns the correct translation value for a given key', async () => {
 		const data = { ...validData, translations: translationsData.translations };
-		const result = chatTranscript.parseTemplateData(data);
+		const result = await chatTranscript.parseTemplateData(data);
 		expect(result.t('transcript')).toEqual('Transcript');
 		expect(result.t('visitor')).toEqual('Visitor');
 		expect(result.t('agent')).toEqual('Agent');
@@ -53,9 +53,9 @@ describe('Strategies/ChatTranscript', () => {
 		expect(result.t('time')).toEqual('Time');
 	});
 
-	it('should throws an error if translation not found', () => {
+	it('should throws an error if translation not found', async () => {
 		const data = { ...validData, translations: translationsData.translations };
-		const result = chatTranscript.parseTemplateData(data);
+		const result = await chatTranscript.parseTemplateData(data);
 		expect(() => {
 			result.t('invalidKey');
 		}).toThrow('Translation not found for key: invalidKey');
