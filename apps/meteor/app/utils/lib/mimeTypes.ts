@@ -12,7 +12,11 @@ const getExtension = (param: string): string => {
 	return !extension || typeof extension === 'boolean' ? '' : extension;
 };
 
-const getMimeType = (fileName: string): string => {
+const getMimeType = (mimetype: string, fileName: string): string => {
+	if (mimetype && mimetype !== 'application/octet-stream') {
+		return mimetype;
+	}
+
 	const fileMimeType = mime.lookup(fileName);
 	return typeof fileMimeType === 'string' ? fileMimeType : 'application/octet-stream';
 };
