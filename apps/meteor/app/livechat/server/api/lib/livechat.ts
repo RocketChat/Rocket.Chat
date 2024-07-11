@@ -1,15 +1,6 @@
-import type {
-	ILivechatAgent,
-	ILivechatDepartment,
-	ILivechatTrigger,
-	ILivechatVisitor,
-	IOmnichannelRoom,
-	SelectedAgent,
-	OmnichannelSourceType,
-} from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatDepartment, ILivechatTrigger, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
-import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
@@ -104,39 +95,6 @@ export async function findOpenRoom(token: string, departmentId?: string): Promis
 	if (rooms && rooms.length > 0) {
 		return rooms[0];
 	}
-}
-export function getRoom<
-	E extends Record<string, unknown> & {
-		sla?: string;
-		customFields?: Record<string, unknown>;
-		source?: OmnichannelSourceType;
-	},
->({
-	guest,
-	rid,
-	roomInfo,
-	agent,
-	extraParams,
-}: {
-	guest: ILivechatVisitor;
-	rid: string;
-	roomInfo: {
-		source?: IOmnichannelRoom['source'];
-	};
-	agent?: SelectedAgent;
-	extraParams?: E;
-}): Promise<{ room: IOmnichannelRoom; newRoom: boolean }> {
-	const token = guest?.token;
-
-	const message = {
-		_id: Random.id(),
-		rid,
-		msg: '',
-		token,
-		ts: new Date(),
-	};
-
-	return LivechatTyped.getRoom(guest, message, roomInfo, agent, extraParams);
 }
 
 export async function findAgent(agentId?: string): Promise<void | { hiddenInfo: boolean } | ILivechatAgent> {
