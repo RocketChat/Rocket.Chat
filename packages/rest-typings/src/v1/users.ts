@@ -114,7 +114,7 @@ export type UserPersonalTokens = Pick<IPersonalAccessToken, 'name' | 'lastTokenP
 
 export type DefaultUserInfo = Pick<
 	IUser,
-	'_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag' | 'lastLogin' | 'type'
+	'_id' | 'username' | 'name' | 'status' | 'roles' | 'emails' | 'active' | 'avatarETag' | 'lastLogin' | 'type' | 'federated'
 >;
 
 export type UsersEndpoints = {

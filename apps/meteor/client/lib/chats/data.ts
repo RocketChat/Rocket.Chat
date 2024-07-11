@@ -7,7 +7,6 @@ import { Messages, ChatRoom, ChatSubscription } from '../../../app/models/client
 import { settings } from '../../../app/settings/client';
 import { MessageTypes } from '../../../app/ui-utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { onClientBeforeSendMessage } from '../onClientBeforeSendMessage';
 import { prependReplies } from '../utils/prependReplies';
 import type { DataAPI } from './ChatAPI';
 
@@ -21,7 +20,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		const effectiveRID = originalMessage?.rid ?? rid;
 		const effectiveTMID = originalMessage ? originalMessage.tmid : tmid;
 
-		return (await onClientBeforeSendMessage({
+		return {
 			_id: originalMessage?._id ?? Random.id(),
 			rid: effectiveRID,
 			...(effectiveTMID && {
@@ -29,7 +28,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 				...(sendToChannel && { tshow: sendToChannel }),
 			}),
 			msg,
-		})) as IMessage;
+		} as IMessage;
 	};
 
 	const findMessageByID = async (mid: IMessage['_id']): Promise<IMessage | null> =>
@@ -95,7 +94,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		}
 
 		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes') as number | undefined;
-		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete');
+		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
 
 		const elapsedMinutes = moment().diff(message.ts, 'minutes');
 		if (!bypassBlockTimeLimit && elapsedMinutes && blockEditInMinutes && elapsedMinutes > blockEditInMinutes) {
@@ -208,7 +207,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		}
 
 		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes') as number | undefined;
-		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete');
+		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
 		const elapsedMinutes = moment().diff(message.ts, 'minutes');
 		const onTimeForDelete = bypassBlockTimeLimit || !blockDeleteInMinutes || !elapsedMinutes || elapsedMinutes <= blockDeleteInMinutes;
 

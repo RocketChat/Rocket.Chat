@@ -1,5 +1,7 @@
 import { Users } from '@rocket.chat/models';
 
+import { notifyOnUserChange } from '../../../../lib/server/lib/notifyListener';
+
 export default async function handleUserRegistered(args) {
 	// Check if there is an user with the given username
 	let user = await Users.findOne({
@@ -28,6 +30,8 @@ export default async function handleUserRegistered(args) {
 		};
 
 		user = await Users.create(userToInsert);
+
+		void notifyOnUserChange({ id: user._id, clientAction: 'inserted', data: user });
 	} else {
 		// ...otherwise, log the user in and update the information
 		this.log(`Logging in ${args.username} with nick: ${args.nick}`);
@@ -43,5 +47,7 @@ export default async function handleUserRegistered(args) {
 				},
 			},
 		);
+
+		void notifyOnUserChange({ id: user._id, clientAction: 'updated', diff: { status: 'online' } });
 	}
 }

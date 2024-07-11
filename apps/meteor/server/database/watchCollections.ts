@@ -29,19 +29,13 @@ const onlyCollections = DBWATCHER_ONLY_COLLECTIONS.split(',')
 	.filter(Boolean);
 
 export function getWatchCollections(): string[] {
-	const collections = [
-		Users.getCollectionName(),
-		LivechatInquiry.getCollectionName(),
-		LivechatDepartmentAgents.getCollectionName(),
-		InstanceStatus.getCollectionName(),
-		EmailInbox.getCollectionName(),
-		Settings.getCollectionName(),
-		Subscriptions.getCollectionName(),
-	];
+	const collections = [InstanceStatus.getCollectionName(), Subscriptions.getCollectionName()];
 
 	// add back to the list of collections in case db watchers are enabled
 	if (!dbWatchersDisabled) {
+		collections.push(Users.getCollectionName());
 		collections.push(Messages.getCollectionName());
+		collections.push(LivechatInquiry.getCollectionName());
 		collections.push(Roles.getCollectionName());
 		collections.push(Rooms.getCollectionName());
 		collections.push(PbxEvents.getCollectionName());
@@ -49,7 +43,10 @@ export function getWatchCollections(): string[] {
 		collections.push(Permissions.getCollectionName());
 		collections.push(LivechatPriority.getCollectionName());
 		collections.push(LoginServiceConfiguration.getCollectionName());
+		collections.push(EmailInbox.getCollectionName());
 		collections.push(IntegrationHistory.getCollectionName());
+		collections.push(Settings.getCollectionName());
+		collections.push(LivechatDepartmentAgents.getCollectionName());
 	}
 
 	if (onlyCollections.length > 0) {

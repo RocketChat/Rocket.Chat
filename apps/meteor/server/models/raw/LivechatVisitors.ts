@@ -1,4 +1,4 @@
-import type { ILivechatVisitor, ISetting, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
 import { Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -14,8 +14,12 @@ import type {
 	IndexDescription,
 	DeleteResult,
 	UpdateFilter,
+	ModifyResult,
+	FindOneAndUpdateOptions,
 } from 'mongodb';
+import { ObjectId } from 'mongodb';
 
+import { notifyOnSettingChanged } from '../../../app/lib/server/lib/notifyListener';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements ILivechatVisitorsModel {
@@ -115,23 +119,14 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	}
 
 	async getNextVisitorUsername(): Promise<string> {
-		const query = {
-			_id: 'Livechat_guest_count',
-		};
-
-		const update: UpdateFilter<ISetting> = {
-			$inc: {
-				// @ts-expect-error looks like the typings of ISetting.value conflict with this type of update
-				value: 1,
-			},
-		};
-
 		// TODO remove dependency from another model - this logic should be inside a service/function
-		const livechatCount = await Settings.findOneAndUpdate(query, update, { returnDocument: 'after' });
+		const livechatCount = await Settings.incrementValueById('Livechat_guest_count', 1, { returnDocument: 'after' });
 
 		if (!livechatCount.value) {
 			throw new Error("Can't find Livechat_guest_count setting");
 		}
+
+		void notifyOnSettingChanged(livechatCount.value);
 
 		return `guest-${livechatCount.value.value}`;
 	}
@@ -288,6 +283,22 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 
 	updateById(_id: string, update: UpdateFilter<ILivechatVisitor>): Promise<Document | UpdateResult> {
 		return this.updateOne({ _id }, update);
+	}
+
+	async updateOneByIdOrToken(
+		update: Partial<ILivechatVisitor>,
+		options?: FindOneAndUpdateOptions,
+	): Promise<ModifyResult<ILivechatVisitor>> {
+		let query: Filter<ILivechatVisitor> = {};
+
+		if (update._id) {
+			query = { _id: update._id };
+		} else if (update.token) {
+			query = { token: update.token };
+			update._id = new ObjectId().toHexString();
+		}
+
+		return this.findOneAndUpdate(query, { $set: update }, options);
 	}
 
 	saveGuestById(

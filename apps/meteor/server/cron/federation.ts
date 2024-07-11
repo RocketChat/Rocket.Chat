@@ -6,6 +6,7 @@ import { Users, Settings } from '@rocket.chat/models';
 import { resolveSRV, resolveTXT } from '../../app/federation/server/functions/resolveDNS';
 import { dispatchEvent } from '../../app/federation/server/handler';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
+import { notifyOnSettingChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings, settingsRegistry } from '../../app/settings/server';
 
 async function updateSetting(id: string, value: SettingValue | null): Promise<void> {
@@ -15,7 +16,7 @@ async function updateSetting(id: string, value: SettingValue | null): Promise<vo
 		if (setting === undefined) {
 			await settingsRegistry.add(id, value);
 		} else {
-			await Settings.updateValueById(id, value);
+			(await Settings.updateValueById(id, value)).modifiedCount && void notifyOnSettingChangedById(id);
 		}
 	} else {
 		await Settings.updateValueById(id, null);
