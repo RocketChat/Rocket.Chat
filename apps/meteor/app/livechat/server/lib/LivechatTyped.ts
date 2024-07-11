@@ -593,6 +593,7 @@ class LivechatClass {
 		}
 
 		const showAgentInfo = settings.get<boolean>('Livechat_show_agent_info');
+		const showSystemMessages = settings.get<boolean>('Livechat_transcript_show_system_messages');
 		const closingMessage = await Messages.findLivechatClosingMessage(rid, { projection: { ts: 1 } });
 		const ignoredMessageTypes: MessageTypesValues[] = [
 			'livechat_navigation_history',
@@ -606,6 +607,7 @@ class LivechatClass {
 			rid,
 			ignoredMessageTypes,
 			closingMessage?.ts ? new Date(closingMessage.ts) : new Date(),
+			showSystemMessages,
 			{
 				sort: { ts: 1 },
 			},

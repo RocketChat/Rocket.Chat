@@ -364,6 +364,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		roomId: IRoom['_id'],
 		types: IMessage['t'][],
 		ts: Date,
+		showSystemMessages: boolean,
 		options?: FindOptions<IMessage>,
 		showThreadMessages = true,
 	): FindCursor<IMessage> {
@@ -387,6 +388,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		if (types.length > 0) {
 			query.t = { $nin: types };
+		}
+
+		if (!showSystemMessages) {
+			query.t = { $exists: false };
 		}
 
 		return this.find(query, options);
