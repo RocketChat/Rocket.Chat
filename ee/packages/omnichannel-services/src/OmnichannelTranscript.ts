@@ -89,7 +89,21 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		// Closing message should not appear :)
 		return Messages.findLivechatMessagesWithoutTypes(rid, ['command'], showSystemMessages, {
 			sort: { ts: 1 },
-			projection: { _id: 1, msg: 1, u: 1, t: 1, ts: 1, attachments: 1, files: 1, md: 1, navigation: 1 },
+			projection: {
+				_id: 1,
+				msg: 1,
+				u: 1,
+				t: 1,
+				ts: 1,
+				attachments: 1,
+				files: 1,
+				md: 1,
+				navigation: 1,
+				requestData: 1,
+				transferData: 1,
+				webRtcCallEndTs: 1,
+				comment: 1,
+			},
 		}).toArray();
 	}
 

@@ -9923,6 +9923,7 @@ __metadata:
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/fuselage-tokens": ^0.33.1
+    "@rocket.chat/string-helpers": ~0.31.25
     "@storybook/addon-essentials": ~6.5.16
     "@storybook/react": ~6.5.16
     "@testing-library/jest-dom": ^5.16.5
@@ -9932,6 +9933,7 @@ __metadata:
     "@types/react": ~17.0.69
     "@types/react-dom": ~17.0.22
     "@types/testing-library__jest-dom": ~5.14.9
+    date-fns: ^2.28.0
     emoji-assets: ^7.0.1
     emoji-toolkit: ^7.0.1
     eslint: ~8.45.0

@@ -15,7 +15,13 @@ export type PDFFile = { name?: string; buffer: Buffer | null; extension?: 'png' 
 export type Quote = { md: Root; name: string; ts: string };
 
 export type PDFMessage = Serialized<
-	Omit<Pick<IOmnichannelSystemMessage, 'msg' | 'u' | 'ts' | 'md' | 't' | 'navigation' | 'transferData'>, 'files'>
+	Omit<
+		Pick<
+			IOmnichannelSystemMessage,
+			'msg' | 'u' | 'ts' | 'md' | 't' | 'navigation' | 'transferData' | 'requestData' | 'webRtcCallEndTs' | 'comment'
+		>,
+		'files'
+	>
 > & {
 	files?: PDFFile[];
 } & { divider?: string } & { quotes?: Quote[] };
