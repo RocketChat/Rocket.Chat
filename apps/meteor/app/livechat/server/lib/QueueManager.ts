@@ -14,15 +14,18 @@ import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import {
 	notifyOnLivechatInquiryChangedById,
 	notifyOnLivechatInquiryChanged,
 	notifyOnSettingChanged,
 } from '../../../lib/server/lib/notifyListener';
+import { settings } from '../../../settings/server';
 import { createLivechatRoom, createLivechatInquiry } from './Helper';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
+import { getInquirySortMechanismSetting } from './settings';
 
 const logger = new Logger('QueueManager');
 
@@ -52,6 +55,7 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 		// We'll queue these inquiries so when new license is applied, they just start rolling again
 		// Minimizing disruption
 		await saveQueueInquiry(inquiry);
+		await QueueManager.dispatchInquiryPosition(inquiry);
 		return;
 	}
 	const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
@@ -62,33 +66,48 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 
 	if (dbInquiry.status === 'ready') {
 		logger.debug(`Inquiry with id ${inquiry._id} is ready. Delegating to agent ${inquiryAgent?.username}`);
+		/**
+		 * There is no need to call QueueManager.dispatchInquiryPosition
+		 * because the method is called on afterTakeInquiry anyway
+		 *
+		 */
 		return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent, undefined, room);
 	}
+
+	await QueueManager.dispatchInquiryPosition(dbInquiry);
 };
 
-interface IQueueManager {
-	requestRoom: <
-		E extends Record<string, unknown> & {
-			sla?: string;
-			customFields?: Record<string, unknown>;
-			source?: OmnichannelSourceType;
-		},
-	>(params: {
-		guest: ILivechatVisitor;
-		rid?: string;
-		message?: string;
-		roomInfo: {
-			source?: IOmnichannelRoom['source'];
-			[key: string]: unknown;
-		};
-		agent?: SelectedAgent;
-		extraData?: E;
-	}) => Promise<IOmnichannelRoom>;
-	unarchiveRoom: (archivedRoom?: IOmnichannelRoom) => Promise<IOmnichannelRoom>;
-}
+export const QueueManager = class {
+	/**
+	 * It should be used when a inquiry is moved to queue(created|enabled|etc)
+	 * mainly used to inform visitors when they value is set for the first time
+	 *
+	 * @param inquiry
+	 *
+	 */
+	static async dispatchInquiryPosition(inquiry: ILivechatInquiryRecord) {
+		const { _id, status, department } = inquiry;
 
-export const QueueManager = new (class implements IQueueManager {
-	private async checkServiceStatus({ guest, agent }: { guest: Pick<ILivechatVisitor, 'department'>; agent?: SelectedAgent }) {
+		if (status !== 'ready') {
+			throw new Error('inquiry-not-ready');
+		}
+
+		if (settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
+			const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
+				inquiryId: _id,
+				department,
+				queueSortBy: getInquirySortMechanismSetting(),
+			});
+
+			if (!inq) {
+				throw new Error('inquiry-not-in-queue');
+			}
+
+			await dispatchInquiryPosition(inq);
+		}
+	}
+
+	private static async checkServiceStatus({ guest, agent }: { guest: Pick<ILivechatVisitor, 'department'>; agent?: SelectedAgent }) {
 		if (!agent) {
 			return LivechatTyped.online(guest.department);
 		}
@@ -98,7 +117,7 @@ export const QueueManager = new (class implements IQueueManager {
 		return users > 0;
 	}
 
-	async requestRoom<
+	static async requestRoom<
 		E extends Record<string, unknown> & {
 			sla?: string;
 			customFields?: Record<string, unknown>;
@@ -186,7 +205,7 @@ export const QueueManager = new (class implements IQueueManager {
 		return newRoom;
 	}
 
-	async unarchiveRoom(archivedRoom?: IOmnichannelRoom) {
+	static async unarchiveRoom(archivedRoom: IOmnichannelRoom) {
 		if (!archivedRoom) {
 			throw new Error('no-room-to-unarchive');
 		}
@@ -239,4 +258,4 @@ export const QueueManager = new (class implements IQueueManager {
 
 		return room;
 	}
-})();
+};
