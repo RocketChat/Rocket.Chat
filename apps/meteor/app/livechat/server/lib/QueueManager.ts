@@ -14,18 +14,15 @@ import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import {
 	notifyOnLivechatInquiryChangedById,
 	notifyOnLivechatInquiryChanged,
 	notifyOnSettingChanged,
 } from '../../../lib/server/lib/notifyListener';
-import { settings } from '../../../settings/server';
 import { createLivechatRoom, createLivechatInquiry } from './Helper';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
-import { getInquirySortMechanismSetting } from './settings';
 
 const logger = new Logger('QueueManager');
 
@@ -75,35 +72,6 @@ export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent
 };
 
 export const QueueManager = class {
-	/**
-	 * It should be used when a inquiry is moved to queue(created|enabled|etc)
-	 * mainly used to inform visitors when they value is set for the first time
-	 *
-	 * @param inquiry
-	 *
-	 */
-	static async dispatchInquiryPosition(inquiry: ILivechatInquiryRecord) {
-		const { _id, status, department } = inquiry;
-
-		if (status !== 'ready') {
-			throw new Error('inquiry-not-ready');
-		}
-
-		if (settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
-			const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
-				inquiryId: _id,
-				department,
-				queueSortBy: getInquirySortMechanismSetting(),
-			});
-
-			if (!inq) {
-				throw new Error('inquiry-not-in-queue');
-			}
-
-			await dispatchInquiryPosition(inq);
-		}
-	}
-
 	private static async checkServiceStatus({ guest, agent }: { guest: Pick<ILivechatVisitor, 'department'>; agent?: SelectedAgent }) {
 		if (!agent) {
 			return LivechatTyped.online(guest.department);
