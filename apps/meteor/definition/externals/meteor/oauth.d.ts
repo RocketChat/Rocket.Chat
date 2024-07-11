@@ -42,5 +42,7 @@ declare module 'meteor/oauth' {
 		): string;
 
 		function _loginStyle(serviceName: string, config: { loginStyle?: string }, options?: Meteor.LoginWithExternalServiceOptions): string;
+
+		function getDataAfterRedirect(): { loginService: string; credentialToken: string; credentialSecret: string | null } | null;
 	}
 }

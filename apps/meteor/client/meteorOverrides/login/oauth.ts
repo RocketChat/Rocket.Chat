@@ -4,6 +4,8 @@ import { OAuth } from 'meteor/oauth';
 
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import { loginServices } from '../../lib/loginServices';
+import { OAuthConfiguration } from '@rocket.chat/core-typings';
 
 const isLoginCancelledError = (error: unknown): error is Meteor.Error =>
 	error instanceof Meteor.Error && error.error === Accounts.LoginCancelledError.numericError;
@@ -15,6 +17,37 @@ export const convertError = <T>(error: T): Accounts.LoginCancelledError | T => {
 
 	return error;
 };
+
+// NOTE: this is a hack to avoid reactivity issues when the login type is redirect
+// On redirect flow, the UI requests for some endpoints _before_ the user logs in with a resume (our) token
+// This causes the UI to sometimes not show the data appropiately, like permissions, avatar & the user status
+// So, what this does is to force a full page refresh whenever the login type is redirect so everything works normally
+// Ideally, we'll remove this when we investigate in deep the reactivity problem
+Meteor.startup(async () => {
+	const oauthData = OAuth.getDataAfterRedirect();
+	if (!oauthData) {
+		return;
+	}
+	const redirectRefreshState = localStorage.getItem('oauth_redirect_refresh_state');
+	const service = await loginServices.loadLoginService<OAuthConfiguration>(oauthData.loginService);
+	if (!service) {
+		return;
+	}
+	if (redirectRefreshState === 'complete' || service.loginStyle !== 'redirect') {
+		localStorage.removeItem('oauth_redirect_refresh_state');
+		return;
+	}
+
+	localStorage.setItem('oauth_redirect_refresh_state', 'pending');
+});
+
+Accounts.onLogin((login: any) => {
+	const oauthData = localStorage.getItem('oauth_redirect_refresh_state');
+	if (oauthData === 'pending' && login.type === 'resume') {
+		localStorage.setItem('oauth_redirect_refresh_state', 'complete');
+		location.reload();
+	}
+});
 
 let lastCredentialToken: string | null = null;
 let lastCredentialSecret: string | null | undefined = null;
