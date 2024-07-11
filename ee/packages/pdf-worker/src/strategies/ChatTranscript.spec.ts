@@ -60,4 +60,10 @@ describe('Strategies/ChatTranscript', () => {
 			result.t('invalidKey');
 		}).toThrow('Translation not found for key: invalidKey');
 	});
+
+	it('should parse the system message', async () => {
+		const data = { ...validData, translations: translationsData.translations };
+		const result = await chatTranscript.parseTemplateData(data);
+		expect(result.messages[2]).toHaveProperty('t', 'livechat-started');
+	});
 });

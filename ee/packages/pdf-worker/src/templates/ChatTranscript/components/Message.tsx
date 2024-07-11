@@ -19,13 +19,14 @@ const styles = StyleSheet.create({
 		fontSize: fontScales.p2.fontSize,
 	},
 	systemMessage: {
-		marginTop: 1,
-		fontSize: fontScales.p2.fontSize,
 		fontStyle: 'italic',
 	},
 });
 
-const messageLongerThanPage = (message: string) => message.length > 1200;
+const messageLongerThanPage = (message: string) => {
+	console.log(message);
+	return message.length > 1200;
+};
 
 const isSystemMessage = (message: PDFMessage) => !!message.t;
 
@@ -34,11 +35,9 @@ const Message = ({ message, invalidFileMessage }: { message: PDFMessage; invalid
 		<View wrap={!!message.quotes || messageLongerThanPage(message.msg)}>
 			{message.divider && <Divider divider={message.divider} />}
 			<MessageHeader name={message.u.name || message.u.username} time={message.ts} />
-			{isSystemMessage(message) ? (
-				<Text style={styles.systemMessage}>{message.msg}</Text>
-			) : (
-				<View style={styles.message}>{message.md ? <Markup tokens={message.md} /> : <Text>{message.msg}</Text>}</View>
-			)}
+			<View style={{ ...styles.message, ...(isSystemMessage(message) && styles.systemMessage) }}>
+				{message.md ? <Markup tokens={message.md} /> : <Text>{message.msg}</Text>}
+			</View>
 			{message.quotes && <Quotes quotes={message.quotes} />}
 		</View>
 
