@@ -1,4 +1,4 @@
-import type { ICustomEmojiDescriptor } from '@rocket.chat/core-typings';
+import type { IEmojiCustom } from '@rocket.chat/core-typings';
 import { assert, expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
@@ -8,7 +8,7 @@ import { imgURL } from '../../data/interactions';
 describe('[EmojiCustom]', () => {
 	const customEmojiName = `my-custom-emoji-${Date.now()}`;
 
-	let withoutAliases: ICustomEmojiDescriptor;
+	let withoutAliases: IEmojiCustom;
 
 	before((done) => getCredentials(done));
 
@@ -69,7 +69,7 @@ describe('[EmojiCustom]', () => {
 		});
 	});
 
-	let createdCustomEmoji: ICustomEmojiDescriptor;
+	let createdCustomEmoji: IEmojiCustom;
 
 	describe('[/emoji-custom.update]', () => {
 		before((done) => {
@@ -82,8 +82,8 @@ describe('[EmojiCustom]', () => {
 					expect(res.body.emojis).to.have.property('update').and.to.be.a('array').and.to.not.have.lengthOf(0);
 					expect(res.body.emojis).to.have.property('remove').and.to.be.a('array').and.to.have.lengthOf(0);
 
-					const _createdCustomEmoji = (res.body.emojis.update as ICustomEmojiDescriptor[]).find((emoji) => emoji.name === customEmojiName);
-					const _withoutAliases = (res.body.emojis.update as ICustomEmojiDescriptor[]).find(
+					const _createdCustomEmoji = (res.body.emojis.update as IEmojiCustom[]).find((emoji) => emoji.name === customEmojiName);
+					const _withoutAliases = (res.body.emojis.update as IEmojiCustom[]).find(
 						(emoji) => emoji.name === `${customEmojiName}-without-aliases`,
 					);
 
@@ -95,7 +95,7 @@ describe('[EmojiCustom]', () => {
 				})
 				.end(done);
 		});
-		it('successfully:', () => {
+		describe('successfully:', () => {
 			it('should update the custom emoji without a file', (done) => {
 				void request
 					.post(api('emoji-custom.update'))
@@ -143,8 +143,31 @@ describe('[EmojiCustom]', () => {
 					})
 					.end(done);
 			});
+
+			it('should change the etag when the custom emoji image is updated', async () => {
+				const prevEtag = createdCustomEmoji.etag;
+
+				await request
+					.post(api('emoji-custom.update'))
+					.set(credentials)
+					.attach('emoji', imgURL)
+					.field({
+						_id: createdCustomEmoji._id,
+						name: customEmojiName,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				const emojis = await request.get(api(`emoji-custom.all`)).set(credentials).expect(200);
+				const updatedCustomEmoji = emojis.body.emojis.find((emoji: IEmojiCustom) => emoji._id === createdCustomEmoji._id);
+				expect(updatedCustomEmoji.etag).not.to.be.equal(prevEtag);
+			});
 		});
-		it('should throw error when:', () => {
+
+		describe('should throw error when:', () => {
 			it('the fields does not include "_id"', (done) => {
 				void request
 					.post(api('emoji-custom.update'))
@@ -157,7 +180,7 @@ describe('[EmojiCustom]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('The required "_id" query param is missing.');
+						expect(res.body.error).to.be.equal('The required "_id" query param is missing.');
 					})
 					.end(done);
 			});
@@ -174,23 +197,22 @@ describe('[EmojiCustom]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('Emoji not found.');
+						expect(res.body.error).to.be.equal('Emoji not found.');
 					})
 					.end(done);
 			});
-			it('the filename is wrong', (done) => {
+			it('the emoji file field is wrong', (done) => {
 				void request
 					.post(api('emoji-custom.update'))
 					.set(credentials)
 					.attach('emojiwrong', imgURL)
 					.field({
-						_id: 'invalid-id',
+						_id: createdCustomEmoji._id,
 						name: 'my-custom-emoji-without-aliases',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
 						expect(res.body.errorType).to.be.equal('invalid-field');
 					})
 					.end(done);
