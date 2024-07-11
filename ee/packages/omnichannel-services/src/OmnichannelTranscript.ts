@@ -292,10 +292,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		);
 	}
 
-	shareTranslationService() {
-		return translationService.translateToServerLanguage;
-	}
-
 	async workOnPdf({ details }: { details: WorkDetailsWithSource }): Promise<void> {
 		this.log.info(`Processing transcript for room ${details.rid} by user ${details.userId} - Received from queue`);
 		if (this.maxNumberOfConcurrentJobs <= this.currentJobNumber) {
