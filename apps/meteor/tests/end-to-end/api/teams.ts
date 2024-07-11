@@ -572,8 +572,8 @@ describe('[Teams]', () => {
 		after(() =>
 			Promise.all([
 				deleteTeam(credentials, teamName),
-				deleteTeam(testUser1Credentials, testTeam1.name),
-				deleteTeam(credentials, testTeamAdmin.name),
+				deleteTeam(testUser1Credentials, testTeam1.name!),
+				deleteTeam(credentials, testTeamAdmin.name!),
 			]),
 		);
 
@@ -621,9 +621,9 @@ describe('[Teams]', () => {
 					expect(res.body.teams)
 						.to.be.an('array')
 						.and.to.satisfy(
-							(teams) => teams.every((team) => team.createdBy._id === testUser1._id),
+							(teams: ITeam[]) => teams.every((team) => team.createdBy._id === testUser1._id),
 							`Expected only user's own teams to be returned, but found unowned teams.\n${JSON.stringify(
-								res.body.teams.filter((team) => team.createdBy._id !== testUser1._id),
+								res.body.teams.filter((team: ITeam) => team.createdBy._id !== testUser1._id),
 								null,
 								2,
 							)}`,
@@ -645,9 +645,9 @@ describe('[Teams]', () => {
 					expect(res.body.teams)
 						.to.be.an('array')
 						.and.to.satisfy(
-							(teams) => teams.every((team) => team.createdBy._id === credentials['X-User-Id']),
+							(teams: ITeam[]) => teams.every((team) => team.createdBy._id === credentials['X-User-Id']),
 							`Expected only admin's own teams to be returned, but found unowned teams.\n${JSON.stringify(
-								res.body.teams.filter((team) => team.createdBy._id !== credentials['X-User-Id']),
+								res.body.teams.filter((team: ITeam) => team.createdBy._id !== credentials['X-User-Id']),
 								null,
 								2,
 							)}`,
