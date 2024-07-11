@@ -80,17 +80,7 @@ const getDepartment = async (department: string): Promise<string | undefined> =>
 	}
 };
 
-export const QueueManager = class {
-	private static async checkServiceStatus({ department, agent }: { department?: string; agent?: SelectedAgent }) {
-		if (agent) {
-			const { agentId } = agent;
-			const users = await Users.countOnlineAgents(agentId);
-			return users > 0;
-		}
-
-		return Livechat.online(department);
-	}
-
+export class QueueManager {
 	static async requeueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent) {
 		if (!(await Omnichannel.isWithinMACLimit(room))) {
 			logger.error({ msg: 'MAC limit reached, not routing inquiry', inquiry });
@@ -111,7 +101,7 @@ export const QueueManager = class {
 
 		if (dbInquiry.status === 'ready') {
 			logger.debug(`Inquiry with id ${inquiry._id} is ready. Delegating to agent ${inquiryAgent?.username}`);
-			return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent);
+			return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent, undefined, room);
 		}
 	}
 
@@ -145,7 +135,7 @@ export const QueueManager = class {
 		await callbacks.run('livechat.new-beforeRouteChat', inquiry);
 
 		if (inquiry.status === 'ready') {
-			return RoutingManager.delegateInquiry(inquiry, defaultAgent);
+			return RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, room);
 		}
 
 		await callbacks.run('livechat.afterInquiryQueued', inquiry);
@@ -235,8 +225,8 @@ export const QueueManager = class {
 
 		const room = await LivechatRooms.findOneById(
 			await createLivechatRoom(rid, name, guest, roomInfo, {
-				...(Boolean(customFields) && { customFields }),
 				...extraData,
+				...(Boolean(customFields) && { customFields }),
 			}),
 		);
 		if (!room) {
@@ -379,4 +369,4 @@ export const QueueManager = class {
 			});
 		}
 	};
-};
+}
