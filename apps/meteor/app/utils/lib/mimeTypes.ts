@@ -4,6 +4,7 @@ mime.types.wav = 'audio/wav';
 mime.types.lst = 'text/plain';
 mime.define('image/vnd.microsoft.icon', { source: '', extensions: ['ico'] }, mime.dupAppend);
 mime.define('image/x-icon', { source: '', extensions: ['ico'] }, mime.dupAppend);
+mime.define('audio/aac', { source: '', extensions: ['aac'] }, mime.dupOverwrite);
 mime.types.ico = 'image/x-icon';
 
 const getExtension = (param: string): string => {
