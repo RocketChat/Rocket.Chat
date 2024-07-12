@@ -1,8 +1,9 @@
 import { Box, Avatar } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
 import React, { memo } from 'react';
 
-const AttachmentThumb: FC<{ url: string }> = ({ url }) => (
+type AttachmentThumbProps = { url: string };
+
+const AttachmentThumb = ({ url }: AttachmentThumbProps) => (
 	<Box mis={8}>
 		<Avatar {...({ url, size: 'x48' } as any)} />
 	</Box>

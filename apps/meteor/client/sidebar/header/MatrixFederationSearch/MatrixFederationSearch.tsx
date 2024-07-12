@@ -1,7 +1,6 @@
 import { Modal, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
-import type { VFC } from 'react';
 
 import MatrixFederationSearchModalContent from './MatrixFederationSearchModalContent';
 import { useMatrixServerList } from './useMatrixServerList';
@@ -11,7 +10,7 @@ type MatrixFederationSearchProps = {
 	defaultSelectedServer?: string;
 };
 
-const MatrixFederationSearch: VFC<MatrixFederationSearchProps> = ({ onClose, defaultSelectedServer }) => {
+const MatrixFederationSearch = ({ onClose, defaultSelectedServer }: MatrixFederationSearchProps) => {
 	const t = useTranslation();
 	const { data, isLoading } = useMatrixServerList();
 
