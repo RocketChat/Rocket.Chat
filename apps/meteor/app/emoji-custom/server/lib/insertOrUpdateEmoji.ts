@@ -118,7 +118,7 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 			encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`),
 		);
 
-		if (rs !== null) {
+		if (!rs) {
 			await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
 			const ws = RocketChatFileEmojiCustomInstance.createWriteStream(
 				encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`),
