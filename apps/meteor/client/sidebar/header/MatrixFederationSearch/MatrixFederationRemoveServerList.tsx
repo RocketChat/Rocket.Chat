@@ -2,7 +2,6 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Option, Icon } from '@rocket.chat/fuselage';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { VFC } from 'react';
 import React from 'react';
 
 type MatrixFederationRemoveServerListProps = {
@@ -24,7 +23,7 @@ const style = css`
 	}
 `;
 
-const MatrixFederationRemoveServerList: VFC<MatrixFederationRemoveServerListProps> = ({ servers }) => {
+const MatrixFederationRemoveServerList = ({ servers }: MatrixFederationRemoveServerListProps) => {
 	const removeMatrixServer = useEndpoint('POST', '/v1/federation/removeServerByUser');
 
 	const queryClient = useQueryClient();

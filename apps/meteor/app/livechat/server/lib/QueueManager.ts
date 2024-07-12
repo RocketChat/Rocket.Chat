@@ -1,5 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Omnichannel } from '@rocket.chat/core-services';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import {
 	LivechatInquiryStatus,
 	type ILivechatInquiryRecord,
@@ -9,19 +10,22 @@ import {
 	type OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { sendNotification } from '../../../lib/server';
 import {
 	notifyOnLivechatInquiryChangedById,
 	notifyOnLivechatInquiryChanged,
 	notifyOnSettingChanged,
 } from '../../../lib/server/lib/notifyListener';
-import { createLivechatRoom, createLivechatInquiry } from './Helper';
-import { Livechat as LivechatTyped } from './LivechatTyped';
+import { settings } from '../../../settings/server';
+import { i18n } from '../../../utils/lib/i18n';
+import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
+import { Livechat } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('QueueManager');
@@ -41,64 +45,105 @@ export const saveQueueInquiry = async (inquiry: ILivechatInquiryRecord) => {
 	});
 };
 
+/**
+ *  @deprecated
+ */
 export const queueInquiry = async (inquiry: ILivechatInquiryRecord, defaultAgent?: SelectedAgent) => {
-	const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
-	logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
+	const room = await LivechatRooms.findOneById(inquiry.rid, { projection: { v: 1 } });
 
-	await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
-	const room = await LivechatRooms.findOneById(inquiry.rid);
-	if (!room || !(await Omnichannel.isWithinMACLimit(room))) {
-		logger.error({ msg: 'MAC limit reached, not routing inquiry', inquiry });
-		// We'll queue these inquiries so when new license is applied, they just start rolling again
-		// Minimizing disruption
+	if (!room) {
 		await saveQueueInquiry(inquiry);
 		return;
 	}
-	const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
 
-	if (!dbInquiry) {
-		throw new Error('inquiry-not-found');
+	return QueueManager.requeueInquiry(inquiry, room, defaultAgent);
+};
+
+const getDepartment = async (department: string): Promise<string | undefined> => {
+	if (!department) {
+		return;
 	}
 
-	if (dbInquiry.status === 'ready') {
-		logger.debug(`Inquiry with id ${inquiry._id} is ready. Delegating to agent ${inquiryAgent?.username}`);
-		return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent, undefined, room);
+	if (await LivechatDepartmentAgents.checkOnlineForDepartment(department)) {
+		return department;
+	}
+
+	const departmentDocument = await LivechatDepartment.findOneById<Pick<ILivechatDepartment, '_id' | 'fallbackForwardDepartment'>>(
+		department,
+		{
+			projection: { fallbackForwardDepartment: 1 },
+		},
+	);
+
+	if (departmentDocument?.fallbackForwardDepartment) {
+		return getDepartment(departmentDocument.fallbackForwardDepartment);
 	}
 };
 
-interface IQueueManager {
-	requestRoom: <
-		E extends Record<string, unknown> & {
-			sla?: string;
-			customFields?: Record<string, unknown>;
-			source?: OmnichannelSourceType;
-		},
-	>(params: {
-		guest: ILivechatVisitor;
-		rid?: string;
-		message?: string;
-		roomInfo: {
-			source?: IOmnichannelRoom['source'];
-			[key: string]: unknown;
-		};
-		agent?: SelectedAgent;
-		extraData?: E;
-	}) => Promise<IOmnichannelRoom>;
-	unarchiveRoom: (archivedRoom?: IOmnichannelRoom) => Promise<IOmnichannelRoom>;
-}
-
-export const QueueManager = new (class implements IQueueManager {
-	private async checkServiceStatus({ guest, agent }: { guest: Pick<ILivechatVisitor, 'department'>; agent?: SelectedAgent }) {
-		if (!agent) {
-			return LivechatTyped.online(guest.department);
+export class QueueManager {
+	static async requeueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent) {
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			logger.error({ msg: 'MAC limit reached, not routing inquiry', inquiry });
+			// We'll queue these inquiries so when new license is applied, they just start rolling again
+			// Minimizing disruption
+			await saveQueueInquiry(inquiry);
+			return;
 		}
 
-		const { agentId } = agent;
-		const users = await Users.countOnlineAgents(agentId);
-		return users > 0;
+		const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
+		logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
+		await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
+		const dbInquiry = await LivechatInquiry.findOneById(inquiry._id);
+
+		if (!dbInquiry) {
+			throw new Error('inquiry-not-found');
+		}
+
+		if (dbInquiry.status === 'ready') {
+			logger.debug(`Inquiry with id ${inquiry._id} is ready. Delegating to agent ${inquiryAgent?.username}`);
+			return RoutingManager.delegateInquiry(dbInquiry, inquiryAgent, undefined, room);
+		}
 	}
 
-	async requestRoom<
+	private static fnQueueInquiryStatus: (typeof QueueManager)['getInquiryStatus'] | undefined;
+
+	public static patchInquiryStatus(fn: (typeof QueueManager)['getInquiryStatus']) {
+		this.fnQueueInquiryStatus = fn;
+	}
+
+	static async getInquiryStatus({ room, agent }: { room: IOmnichannelRoom; agent?: SelectedAgent }): Promise<LivechatInquiryStatus> {
+		if (this.fnQueueInquiryStatus) {
+			return this.fnQueueInquiryStatus({ room, agent });
+		}
+
+		if (!(await Omnichannel.isWithinMACLimit(room))) {
+			return LivechatInquiryStatus.QUEUED;
+		}
+
+		if (RoutingManager.getConfig()?.autoAssignAgent) {
+			return LivechatInquiryStatus.READY;
+		}
+
+		if (!agent || !(await allowAgentSkipQueue(agent))) {
+			return LivechatInquiryStatus.QUEUED;
+		}
+
+		return LivechatInquiryStatus.READY;
+	}
+
+	static async queueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
+		if (inquiry.status === 'ready') {
+			return RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, room);
+		}
+
+		await callbacks.run('livechat.afterInquiryQueued', inquiry);
+
+		void callbacks.run('livechat.chatQueued', room);
+
+		await this.dispatchInquiryQueued(inquiry, room, defaultAgent);
+	}
+
+	static async requestRoom<
 		E extends Record<string, unknown> & {
 			sla?: string;
 			customFields?: Record<string, unknown>;
@@ -135,16 +180,51 @@ export const QueueManager = new (class implements IQueueManager {
 			}),
 		);
 
-		if (!(await this.checkServiceStatus({ guest, agent }))) {
-			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+		const defaultAgent =
+			(await callbacks.run('livechat.beforeDelegateAgent', agent, {
+				department: guest.department,
+			})) || undefined;
+
+		const department = guest.department && (await getDepartment(guest.department));
+
+		/**
+		 * we have 4 cases here
+		 * 1. agent and no department
+		 * 2. no agent and no department
+		 * 3. no agent and department
+		 * 4. agent and department informed
+		 *
+		 * in case 1, we check if the agent is online
+		 * in case 2, we check if there is at least one online agent in the whole service
+		 * in case 3, we check if there is at least one online agent in the department
+		 *
+		 * the case 4 is weird, but we are not throwing an error, just because the application works in some mysterious way
+		 * we don't have explicitly defined what to do in this case so we just kept the old behavior
+		 * it seems that agent has priority over department
+		 * but some cases department is handled before agent
+		 *
+		 */
+
+		if (!settings.get('Livechat_accept_chats_with_no_agents')) {
+			if (agent && !defaultAgent) {
+				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+			}
+
+			if (!defaultAgent && guest.department && !department) {
+				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+			}
+
+			if (!agent && !guest.department && !(await Livechat.checkOnlineAgents())) {
+				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
+			}
 		}
 
 		const name = (roomInfo?.fname as string) || guest.name || guest.username;
 
 		const room = await LivechatRooms.findOneById(
 			await createLivechatRoom(rid, name, guest, roomInfo, {
-				...(Boolean(customFields) && { customFields }),
 				...extraData,
+				...(Boolean(customFields) && { customFields }),
 			}),
 		);
 		if (!room) {
@@ -157,6 +237,7 @@ export const QueueManager = new (class implements IQueueManager {
 			await createLivechatInquiry({
 				rid,
 				name,
+				initialStatus: await this.getInquiryStatus({ room, agent: defaultAgent }),
 				guest,
 				message,
 				extraData: { ...extraData, source: roomInfo.source },
@@ -174,10 +255,7 @@ export const QueueManager = new (class implements IQueueManager {
 			void notifyOnSettingChanged(livechatSetting);
 		}
 
-		await queueInquiry(inquiry, agent);
-		logger.debug(`Inquiry ${inquiry._id} queued`);
-
-		const newRoom = await LivechatRooms.findOneById(rid);
+		const newRoom = (await this.queueInquiry(inquiry, room, defaultAgent)) ?? (await LivechatRooms.findOneById(rid));
 		if (!newRoom) {
 			logger.error(`Room with id ${rid} not found`);
 			throw new Error('room-not-found');
@@ -186,7 +264,7 @@ export const QueueManager = new (class implements IQueueManager {
 		return newRoom;
 	}
 
-	async unarchiveRoom(archivedRoom?: IOmnichannelRoom) {
+	static async unarchiveRoom(archivedRoom: IOmnichannelRoom) {
 		if (!archivedRoom) {
 			throw new Error('no-room-to-unarchive');
 		}
@@ -234,9 +312,59 @@ export const QueueManager = new (class implements IQueueManager {
 			throw new Error('inquiry-not-found');
 		}
 
-		await queueInquiry(inquiry, defaultAgent);
+		await this.requeueInquiry(inquiry, room, defaultAgent);
 		logger.debug(`Inquiry ${inquiry._id} queued`);
 
 		return room;
 	}
-})();
+
+	private static dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, agent?: SelectedAgent | null) => {
+		logger.debug(`Notifying agents of new inquiry ${inquiry._id} queued`);
+
+		const { department, rid, v } = inquiry;
+		// Alert only the online agents of the queued request
+		const onlineAgents = await Livechat.getOnlineAgents(department, agent);
+
+		if (!onlineAgents) {
+			logger.debug('Cannot notify agents of queued inquiry. No online agents found');
+			return;
+		}
+
+		logger.debug(`Notifying ${await onlineAgents.count()} agents of new inquiry`);
+		const notificationUserName = v && (v.name || v.username);
+
+		for await (const agent of onlineAgents) {
+			const { _id, active, emails, language, status, statusConnection, username } = agent;
+			await sendNotification({
+				// fake a subscription in order to make use of the function defined above
+				subscription: {
+					rid,
+					u: {
+						_id,
+					},
+					receiver: [
+						{
+							active,
+							emails,
+							language,
+							status,
+							statusConnection,
+							username,
+						},
+					],
+					name: '',
+				},
+				sender: v,
+				hasMentionToAll: true, // consider all agents to be in the room
+				hasReplyToThread: false,
+				disableAllMessageNotifications: false,
+				hasMentionToHere: false,
+				message: { _id: '', u: v, msg: '' },
+				// we should use server's language for this type of messages instead of user's
+				notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName }, language),
+				room: { ...room, name: i18n.t('New_chat_in_queue', {}, language) },
+				mentionIds: [],
+			});
+		}
+	};
+}

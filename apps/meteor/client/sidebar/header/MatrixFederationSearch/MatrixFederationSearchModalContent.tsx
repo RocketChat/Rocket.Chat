@@ -2,7 +2,7 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Select, TextInput } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
-import type { VFC, FormEvent } from 'react';
+import type { FormEvent } from 'react';
 import React, { useCallback, useState, useMemo } from 'react';
 
 import FederatedRoomList from './FederatedRoomList';
@@ -19,7 +19,7 @@ type MatrixFederationSearchModalContentProps = {
 	defaultSelectedServer?: string;
 };
 
-const MatrixFederationSearchModalContent: VFC<MatrixFederationSearchModalContentProps> = ({ defaultSelectedServer, servers }) => {
+const MatrixFederationSearchModalContent = ({ defaultSelectedServer, servers }: MatrixFederationSearchModalContentProps) => {
 	const [serverName, setServerName] = useState(() => {
 		const defaultServer = servers.find((server) => server.name === defaultSelectedServer);
 		return defaultServer?.name ?? servers[0].name;
