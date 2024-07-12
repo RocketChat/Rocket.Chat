@@ -15,6 +15,7 @@ import {
 import { check } from 'meteor/check';
 
 import { callbacks } from '../../../../../lib/callbacks';
+import { client } from '../../../../../server/database/utils';
 import { i18n } from '../../../../../server/lib/i18n';
 import { API } from '../../../../api/server';
 import { isWidget } from '../../../../api/server/helpers/isWidget';
@@ -178,52 +179,64 @@ API.v1.addRoute(
 		async post() {
 			const { rid, comment, tags, generateTranscriptPdf, transcriptEmail } = this.bodyParams;
 
-			const room = await LivechatRooms.findOneById(rid);
-			if (!room || !isOmnichannelRoom(room)) {
-				throw new Error('error-invalid-room');
-			}
+			const session = client.startSession();
 
-			if (!room.open) {
-				throw new Error('error-room-already-closed');
-			}
+			try {
+				session.startTransaction();
+				const room = await LivechatRooms.findOneById(rid, { session });
+				if (!room || !isOmnichannelRoom(room)) {
+					throw new Error('error-invalid-room');
+				}
 
-			const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, this.userId, { projection: { _id: 1 } });
-			if (!subscription && !(await hasPermissionAsync(this.userId, 'close-others-livechat-room'))) {
-				throw new Error('error-not-authorized');
-			}
+				if (!room.open) {
+					throw new Error('error-room-already-closed');
+				}
 
-			const options: CloseRoomParams['options'] = {
-				clientAction: true,
-				tags,
-				...(generateTranscriptPdf && { pdfTranscript: { requestedBy: this.userId } }),
-				...(transcriptEmail && {
-					...(transcriptEmail.sendToVisitor
-						? {
-								emailTranscript: {
-									sendToVisitor: true,
-									requestData: {
-										email: transcriptEmail.requestData.email,
-										subject: transcriptEmail.requestData.subject,
-										requestedAt: new Date(),
-										requestedBy: this.user,
+				const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, this.userId, { projection: { _id: 1 }, session });
+				if (!subscription && !(await hasPermissionAsync(this.userId, 'close-others-livechat-room'))) {
+					throw new Error('error-not-authorized');
+				}
+
+				const options: CloseRoomParams['options'] = {
+					clientAction: true,
+					tags,
+					...(generateTranscriptPdf && { pdfTranscript: { requestedBy: this.userId } }),
+					...(transcriptEmail && {
+						...(transcriptEmail.sendToVisitor
+							? {
+									emailTranscript: {
+										sendToVisitor: true,
+										requestData: {
+											email: transcriptEmail.requestData.email,
+											subject: transcriptEmail.requestData.subject,
+											requestedAt: new Date(),
+											requestedBy: this.user,
+										},
 									},
-								},
-						  }
-						: {
-								emailTranscript: {
-									sendToVisitor: false,
-								},
-						  }),
-				}),
-			};
+							  }
+							: {
+									emailTranscript: {
+										sendToVisitor: false,
+									},
+							  }),
+					}),
+				};
 
-			await LivechatTyped.closeRoom({
-				room,
-				user: this.user,
-				options,
-				comment,
-			});
+				await LivechatTyped.closeRoom({
+					room,
+					user: this.user,
+					options,
+					comment,
+					session,
+				});
+			} catch (e) {
+				console.log('The transaction was aborted', e);
+				await session.abortTransaction();
 
+				return API.v1.failure('Cannot close room right now, try again later');
+			} finally {
+				await session.endSession();
+			}
 			return API.v1.success();
 		},
 	},

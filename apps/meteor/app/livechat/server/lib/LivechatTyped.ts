@@ -42,7 +42,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment-timezone';
-import type { Filter, FindCursor } from 'mongodb';
+import type { ClientSession, Filter, FindCursor } from 'mongodb';
 import UAParser from 'ua-parser-js';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -100,6 +100,7 @@ type GenericCloseRoomParams = {
 			requestedBy: string;
 		};
 	};
+	session?: ClientSession;
 };
 
 export type CloseRoomParamsByUser = {
@@ -248,8 +249,7 @@ class LivechatClass {
 	}
 
 	async closeRoom(params: CloseRoomParams): Promise<void> {
-		const { comment } = params;
-		const { room } = params;
+		const { comment, room, session } = params;
 
 		this.logger.debug(`Attempting to close room ${room._id}`);
 		if (!room || !isOmnichannelRoom(room) || !room.open) {
@@ -307,9 +307,9 @@ class LivechatClass {
 
 		this.logger.debug(`Updating DB for room ${room._id} with close data`);
 
-		const inquiry = await LivechatInquiry.findOneByRoomId(rid);
+		const inquiry = await LivechatInquiry.findOneByRoomId(rid, { session });
 
-		const removedInquiry = await LivechatInquiry.removeByRoomId(rid);
+		const removedInquiry = await LivechatInquiry.removeByRoomId(rid, { session });
 		if (removedInquiry && removedInquiry.deletedCount !== 1) {
 			throw new Error('Error removing inquiry');
 		}
@@ -317,12 +317,19 @@ class LivechatClass {
 			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
 		}
 
-		const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData);
+		const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData, { session });
 		if (!updatedRoom || updatedRoom.modifiedCount !== 1) {
 			throw new Error('Error closing room');
 		}
 
-		await Subscriptions.removeByRoomId(rid);
+		const subsOnRoom = await Subscriptions.countByRoomId(rid, { session });
+
+		if (subsOnRoom) {
+			const deletedSubs = await Subscriptions.removeByRoomId(rid, { session });
+			if (deletedSubs !== subsOnRoom) {
+				throw new Error('Error closing room');
+			}
+		}
 
 		this.logger.debug(`DB updated for room ${room._id}`);
 
@@ -334,7 +341,7 @@ class LivechatClass {
 		};
 
 		// Retrieve the closed room
-		const newRoom = await LivechatRooms.findOneById(rid);
+		const newRoom = await LivechatRooms.findOneById(rid, { session });
 
 		if (!newRoom) {
 			throw new Error('Error: Room not found');

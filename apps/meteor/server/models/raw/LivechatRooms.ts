@@ -25,6 +25,7 @@ import type {
 	FindCursor,
 	UpdateResult,
 	AggregationCursor,
+	UpdateOptions,
 } from 'mongodb';
 
 import { getValue } from '../../../app/settings/server/raw';
@@ -1576,7 +1577,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		);
 	}
 
-	closeRoomById(roomId: string, closeInfo: IOmnichannelRoomClosingInfo) {
+	closeRoomById(roomId: string, closeInfo: IOmnichannelRoomClosingInfo, options?: UpdateOptions) {
 		const { closer, closedBy, closedAt, chatDuration, serviceTimeDuration, tags } = closeInfo;
 
 		return this.updateOne(
@@ -1598,6 +1599,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					open: 1,
 				},
 			},
+			options,
 		);
 	}
 
