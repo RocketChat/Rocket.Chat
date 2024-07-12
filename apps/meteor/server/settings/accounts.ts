@@ -711,7 +711,7 @@ export const createAccountSettings = () =>
 			});
 
 			const defaultUserPreferencesSidebarSectionsOrder = [
-				'Incoming Calls',
+				'Incoming_Calls',
 				'Incoming_Livechats',
 				'Open_Livechats',
 				'On_Hold_Chats',
@@ -729,6 +729,7 @@ export const createAccountSettings = () =>
 				public: true,
 				values: defaultUserPreferencesSidebarSectionsOrder.map((key) => ({ key, i18nLabel: key })),
 				i18nLabel: 'Sidebar_Sections_Order',
+				i18nDescription: 'Sidebar_Sections_Order_Description',
 			});
 		});
 
