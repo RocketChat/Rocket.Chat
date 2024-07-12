@@ -2,7 +2,6 @@ import { MessageDivider, Message, Avatar, Box } from '@rocket.chat/fuselage';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import type { ReactElement } from 'react';
 
-import '@rocket.chat/icons/dist/rocketchat.css';
 import { VideoConfMessage, VideoConfMessageIcon, VideoConfMessageRow, VideoConfMessageText } from '.';
 import VideoConfMessageAction from './VideoConfMessageAction';
 import VideoConfMessageActions from './VideoConfMessageActions';
@@ -22,7 +21,7 @@ export default {
 				<MessageDivider>May, 24, 2020</MessageDivider>
 				<Message className='customclass'>
 					<Message.LeftContainer>
-						<Avatar url={avatarUrl} size='x36' />
+						<Avatar alt='' url={avatarUrl} size='x36' />
 					</Message.LeftContainer>
 					<Message.Container>
 						<Message.Header>
@@ -54,7 +53,7 @@ export const CallingDM: ComponentStory<typeof VideoConfMessage> = () => (
 				<VideoConfMessageText>Calling...</VideoConfMessageText>
 			</VideoConfMessageContent>
 			<VideoConfMessageActions>
-				<VideoConfMessageAction icon='info' />
+				<VideoConfMessageAction aria-label='info' icon='info' />
 			</VideoConfMessageActions>
 		</VideoConfMessageRow>
 		<VideoConfMessageFooter>
@@ -72,7 +71,7 @@ export const CallEndedDM: ComponentStory<typeof VideoConfMessage> = () => (
 				<VideoConfMessageText>Call ended</VideoConfMessageText>
 			</VideoConfMessageContent>
 			<VideoConfMessageActions>
-				<VideoConfMessageAction icon='info' />
+				<VideoConfMessageAction aria-label='info' icon='info' />
 			</VideoConfMessageActions>
 		</VideoConfMessageRow>
 		<VideoConfMessageFooter>
@@ -90,7 +89,7 @@ export const CallOngoing: ComponentStory<typeof VideoConfMessage> = () => (
 				<VideoConfMessageText>Call ongoing</VideoConfMessageText>
 			</VideoConfMessageContent>
 			<VideoConfMessageActions>
-				<VideoConfMessageAction icon='info' />
+				<VideoConfMessageAction aria-label='info' icon='info' />
 			</VideoConfMessageActions>
 		</VideoConfMessageRow>
 		<VideoConfMessageFooter>
@@ -109,7 +108,7 @@ export const CallEnded: ComponentStory<typeof VideoConfMessage> = () => (
 				<VideoConfMessageText>Call ended</VideoConfMessageText>
 			</VideoConfMessageContent>
 			<VideoConfMessageActions>
-				<VideoConfMessageAction icon='info' />
+				<VideoConfMessageAction aria-label='info' icon='info' />
 			</VideoConfMessageActions>
 		</VideoConfMessageRow>
 		<VideoConfMessageFooter>

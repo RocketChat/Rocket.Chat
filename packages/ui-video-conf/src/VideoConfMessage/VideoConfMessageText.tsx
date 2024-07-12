@@ -1,6 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement, ComponentProps } from 'react';
+import type { ReactElement, AllHTMLAttributes } from 'react';
 
-const VideoConfMessageText = ({ ...props }: ComponentProps<typeof Box>): ReactElement => <Box fontScale='c2' mis={8} {...props} />;
+const VideoConfMessageText = (props: AllHTMLAttributes<HTMLParagraphElement>): ReactElement => (
+	<Box {...props} is='p' fontScale='c2' mis={8} />
+);
 
 export default VideoConfMessageText;

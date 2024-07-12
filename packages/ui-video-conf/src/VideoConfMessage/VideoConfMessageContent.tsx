@@ -1,6 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import type { AllHTMLAttributes, ReactElement } from 'react';
 
-const VideoConfMessageContent = ({ ...props }): ReactElement => <Box display='flex' alignItems='center' {...props} />;
+const VideoConfMessageContent = (props: Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>): ReactElement => (
+	<Box display='flex' alignItems='center' {...props} />
+);
 
 export default VideoConfMessageContent;
