@@ -1,13 +1,14 @@
 import { Chip, ButtonGroup } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
 import React from 'react';
 
 import type { CategoryDropdownItem, CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
 
-const TagList: FC<{
+type TagListProps = {
 	categories: (CategoryDropdownItem & { checked: true })[];
 	onClick: CategoryDropDownListProps['onSelected'];
-}> = ({ categories, onClick }) => (
+};
+
+const TagList = ({ categories, onClick }: TagListProps) => (
 	<ButtonGroup wrap small>
 		{categories.map((category) => (
 			<Chip flexShrink={0} key={category.id} onClick={(): void => onClick(category)} disabled={undefined} mbe={8}>
