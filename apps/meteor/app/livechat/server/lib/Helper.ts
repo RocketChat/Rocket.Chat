@@ -144,7 +144,7 @@ export const createLivechatRoom = async <
 
 	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
 
-	return roomId;
+	return result.value;
 };
 
 export const createLivechatInquiry = async ({
