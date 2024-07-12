@@ -1,5 +1,5 @@
 import type { MeteorError } from './IMeteorError';
-import type { IMethodConnection } from './IMethodConnection';
+import type { IMethodConnection } from './IMethodThisType';
 import type { IUser } from './IUser';
 
 interface IMethodArgument {
