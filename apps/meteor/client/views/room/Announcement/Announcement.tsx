@@ -1,19 +1,19 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, MouseEvent } from 'react';
+import type { MouseEvent } from 'react';
 import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import MarkdownText from '../../../components/MarkdownText';
 import AnnouncementComponent from './AnnouncementComponent';
 
-type AnnouncementParams = {
+type AnnouncementProps = {
 	announcement: string;
 	announcementDetails?: () => void;
 };
 
-const Announcement: FC<AnnouncementParams> = ({ announcement, announcementDetails }) => {
+const Announcement = ({ announcement, announcementDetails }: AnnouncementProps) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal(null));

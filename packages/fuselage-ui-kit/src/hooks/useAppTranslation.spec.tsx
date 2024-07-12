@@ -1,7 +1,5 @@
 import { renderHook } from '@testing-library/react-hooks';
 import * as i18next from 'i18next';
-import type { FunctionComponent } from 'react';
-import { Suspense } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 import { AppIdProvider } from '../contexts/AppIdContext';
@@ -94,46 +92,34 @@ describe('with suspense', () => {
   });
 
   it('should work with normal app ID (`test`)', async () => {
-    const FakeFallback: FunctionComponent = jest.fn(() => null);
-
-    const { result, waitForNextUpdate } = renderHook(
+    const { result, waitFor } = renderHook(
       () => useAppTranslation().t('test'),
       {
         wrapper: ({ children }) => (
           <I18nextProvider i18n={i18n}>
-            <Suspense fallback={<FakeFallback />}>
-              <AppIdProvider appId='test'>{children}</AppIdProvider>
-            </Suspense>
+            <AppIdProvider appId='test'>{children}</AppIdProvider>
           </I18nextProvider>
         ),
       }
     );
 
-    await waitForNextUpdate();
-
-    expect(result.current).toBe('jumped over the lazy dog');
-    expect(FakeFallback).toHaveBeenCalled();
+    await waitFor(() =>
+      expect(result.current).toBe('jumped over the lazy dog')
+    );
   });
 
   it('should work with core app ID (`test-core`)', async () => {
-    const FakeFallback: FunctionComponent = jest.fn(() => null);
-
-    const { result, waitForNextUpdate } = renderHook(
+    const { result, waitFor } = renderHook(
       () => useAppTranslation().t('test'),
       {
         wrapper: ({ children }) => (
           <I18nextProvider i18n={i18n}>
-            <Suspense fallback={<FakeFallback />}>
-              <AppIdProvider appId='test-core'>{children}</AppIdProvider>
-            </Suspense>
+            <AppIdProvider appId='test-core'>{children}</AppIdProvider>
           </I18nextProvider>
         ),
       }
     );
 
-    await waitForNextUpdate();
-
-    expect(result.current).toBe('a quick brown fox');
-    expect(FakeFallback).toHaveBeenCalled();
+    await waitFor(() => expect(result.current).toBe('a quick brown fox'));
   });
 });

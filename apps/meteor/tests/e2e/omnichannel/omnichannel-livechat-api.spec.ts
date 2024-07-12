@@ -482,8 +482,10 @@ test.describe('OC - Livechat API', () => {
 				await poLiveChat.btnSendMessageToOnlineAgent.click();
 
 				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor_1')).toBeVisible();
-				// wait for load messages to happen
-				await page.waitForResponse((response) => response.url().includes(`token=${registerGuestVisitor1.token}`));
+
+				await poAuxContext.poHomeOmnichannel.sidenav.openChat(registerGuestVisitor1.name);
+				await poAuxContext.poHomeOmnichannel.content.sendMessage('this_is_a_test_message_from_agent');
+				await expect(poLiveChat.txtChatMessage('this_is_a_test_message_from_agent')).toBeVisible();
 			});
 
 			await test.step('Expect registerGuest to create guest 2', async () => {
