@@ -2,6 +2,7 @@ import type { Control, FieldErrors, FieldValues } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import type { RegisterFormValues } from '../../../routes/Register';
 import { FormField } from '../FormField';
 import { SelectInput } from '../SelectInput';
 import { TextInput } from '../TextInput';
@@ -19,7 +20,7 @@ export type CustomField = {
 type RenderCustomFieldsProps = {
 	customFields: CustomField[];
 	loading: boolean;
-	control: Control;
+	control: Control<RegisterFormValues>;
 	errors: FieldErrors<FieldValues>;
 };
 

@@ -205,6 +205,7 @@ export async function findPaginatedUsersByStatus({
 			skip: offset,
 			limit: count,
 			projection,
+			allowDiskUse: true,
 		},
 	);
 	const [users, total] = await Promise.all([cursor.toArray(), totalCount]);

@@ -1,12 +1,13 @@
 import { faker } from '@faker-js/faker';
 import { ModalContext } from '@rocket.chat/ui-contexts';
+import type { WrapperComponent } from '@testing-library/react-hooks';
 import { renderHook } from '@testing-library/react-hooks';
 import React from 'react';
 
 import { useVideoConfOpenCall } from './useVideoConfOpenCall';
 
 describe('with window.RocketChatDesktop set', () => {
-	const wrapper: React.FC = ({ children }) => (
+	const wrapper: WrapperComponent<unknown> = ({ children }) => (
 		<ModalContext.Provider
 			children={children}
 			value={{
@@ -53,7 +54,7 @@ describe('with window.RocketChatDesktop set', () => {
 
 describe('with window.RocketChatDesktop unset', () => {
 	const setModal = jest.fn();
-	const wrapper: React.FC = ({ children }) => (
+	const wrapper: WrapperComponent<unknown> = ({ children }) => (
 		<ModalContext.Provider
 			children={children}
 			value={{

@@ -1,7 +1,6 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Field, Button, TextInput, Modal, Box, FieldGroup, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React, { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -14,15 +13,7 @@ type TranscriptModalProps = {
 	onDiscard: () => void;
 };
 
-const TranscriptModal: FC<TranscriptModalProps> = ({
-	email: emailDefault = '',
-	room,
-	onRequest,
-	onSend,
-	onCancel,
-	onDiscard,
-	...props
-}) => {
+const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, onCancel, onDiscard, ...props }: TranscriptModalProps) => {
 	const t = useTranslation();
 
 	const {
