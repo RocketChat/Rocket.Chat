@@ -1,4 +1,4 @@
-import type { OAuthConfiguration } from '@rocket.chat/core-typings';
+import type { OAuthConfiguration, ILoginAttempt } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
@@ -41,7 +41,7 @@ Meteor.startup(async () => {
 	localStorage.setItem('oauth_redirect_refresh_state', 'pending');
 });
 
-Accounts.onLogin((login: any) => {
+Accounts.onLogin((login: ILoginAttempt) => {
 	const oauthData = localStorage.getItem('oauth_redirect_refresh_state');
 	if (oauthData === 'pending' && login.type === 'resume') {
 		localStorage.setItem('oauth_redirect_refresh_state', 'complete');
