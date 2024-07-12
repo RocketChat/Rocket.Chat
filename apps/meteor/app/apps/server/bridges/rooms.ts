@@ -217,4 +217,8 @@ export class AppRoomBridge extends RoomBridge {
 	): Promise<IMessage[]> {
 		throw new Error('Method not implemented.');
 	}
+
+	protected removeUsers(_roomId: string, _usernames: Array<string>, _appId: string): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
 }
