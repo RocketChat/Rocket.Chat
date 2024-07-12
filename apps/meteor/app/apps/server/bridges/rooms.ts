@@ -11,6 +11,7 @@ import { createDirectMessage } from '../../../../server/methods/createDirectMess
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
+import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
 
@@ -210,15 +211,21 @@ export class AppRoomBridge extends RoomBridge {
 		return users.map((user: ICoreUser) => userConverter.convertToApp(user));
 	}
 
+	protected async removeUsers(roomId: string, usernames: Array<string>, appId: string): Promise<void> {
+		this.orch.debugLog(`The App ${appId} is removing users ${usernames} from room id: ${roomId}`);
+		if (!roomId) {
+			throw new Error('roomId was not provided.');
+		}
+
+		const members = await Users.findUsersByUsernames(usernames, { limit: 50 }).toArray();
+		await Promise.all(members.map((user) => removeUserFromRoom(roomId, user)));
+	}
+
 	protected getMessages(
 		_roomId: string,
 		_options: { limit: number; skip?: number; sort?: Record<string, 1 | -1> },
 		_appId: string,
 	): Promise<IMessage[]> {
-		throw new Error('Method not implemented.');
-	}
-
-	protected removeUsers(_roomId: string, _usernames: Array<string>, _appId: string): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 }
