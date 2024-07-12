@@ -12,14 +12,16 @@ const MarketplaceSidebar = (): ReactElement => {
 	const items = useSyncExternalStore(subscribeToMarketplaceSidebarItems, getMarketplaceSidebarItems);
 	const t = useTranslation();
 
-	const { sidebar } = useLayout();
+	const { sidebar, isMobile } = useLayout();
 
 	const currentPath = useCurrentRoutePath();
 
 	return (
 		<SettingsProvider privileged>
 			<Sidebar>
-				<Sidebar.Header onClose={sidebar.close} title={t('Marketplace')} />
+				<Sidebar.Header onClose=
+				{isMobile ? sidebar.toggle : sidebar.close}
+				title={t('Marketplace')} />
 				<Sidebar.Content>
 					<SidebarItemsAssembler items={items} currentPath={currentPath} />
 				</Sidebar.Content>
