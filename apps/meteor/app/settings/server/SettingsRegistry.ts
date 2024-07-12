@@ -144,7 +144,7 @@ export class SettingsRegistry {
 
 		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
 
-		const updatedSettingAfterApplyingOverwrite = isOverwritten ? settingFromCodeOverwritten : settingFromCode;
+		const updatedSettingAfterApplyingOverwrite = isOverwritten ? settingFromCodeOverwritten : settingStored ?? settingFromCode;
 
 		try {
 			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
@@ -196,9 +196,11 @@ export class SettingsRegistry {
 			return;
 		}
 
-		await this.model.insertOne(updatedSettingAfterApplyingOverwrite); // no need to emit unless we remove the oplog
+		const setting = isOverwritten ? updatedSettingAfterApplyingOverwrite : overrideSetting(settingFromCode);
 
-		this.store.set(updatedSettingAfterApplyingOverwrite);
+		await this.model.insertOne(setting); // no need to emit unless we remove the oplog
+
+		this.store.set(setting);
 	}
 
 	/*
