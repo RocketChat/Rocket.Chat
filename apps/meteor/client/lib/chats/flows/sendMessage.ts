@@ -22,15 +22,18 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 		return;
 	}
 
-	if (await processMessageEditing(chat, message, previewUrls)) {
-		return;
-	}
-
 	if (isSlashCommandAllowed && (await processSlashCommand(chat, message))) {
 		return;
 	}
 
 	message = (await onClientBeforeSendMessage(message)) as IMessage;
+
+	// e2e should be a client property only
+	delete message.e2e;
+
+	if (await processMessageEditing(chat, message, previewUrls)) {
+		return;
+	}
 
 	await sdk.call('sendMessage', message, previewUrls);
 };
@@ -69,6 +72,21 @@ export const sendMessage = async (
 			quotedMessages: chat.composer?.quotedMessages.get() ?? [],
 			originalMessage: chat.currentEditing ? await chat.data.findMessageByID(chat.currentEditing.mid) : null,
 		});
+
+		if (chat.currentEditing) {
+			const originalMessage = await chat.data.findMessageByID(chat.currentEditing.mid);
+
+			if (
+				originalMessage?.t === 'e2e' &&
+				originalMessage.attachments &&
+				originalMessage.attachments.length > 0 &&
+				originalMessage.attachments[0].description !== undefined
+			) {
+				originalMessage.attachments[0].description = message.msg;
+				message.attachments = originalMessage.attachments;
+				message.msg = originalMessage.msg;
+			}
+		}
 
 		try {
 			await process(chat, message, previewUrls, isSlashCommandAllowed);
