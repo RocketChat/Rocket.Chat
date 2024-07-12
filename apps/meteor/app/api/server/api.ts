@@ -1,3 +1,4 @@
+import { asyncMethodCallContextStore } from '@rocket.chat/core-services';
 import type { IMethodConnection, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
@@ -645,8 +646,15 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 							this.queryFields = options.queryFields;
 							this.parseJsonQuery = api.parseJsonQuery.bind(this as PartialThis);
 
-							result =
-								(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success();
+							// TODO: UUID
+							const store = [{ type: 'rest', route: this.request.route, method: this.request.method, userId: this.userId }];
+
+							result = await asyncMethodCallContextStore.run(store, async () => {
+								return (
+									(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success()
+								);
+							});
+							console.log('api', this.request.route, { result }, store);
 
 							log.http({
 								status: result.statusCode,
