@@ -3,7 +3,7 @@ import type { Method, PathPattern, OperationParams, UrlParams, OperationResult }
 import type { EndpointFunction } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
-import type { FC, ContextType } from 'react';
+import type { ContextType, ReactNode } from 'react';
 
 type RegisterEndpoint = <TMethod extends Method, TPathPattern extends PathPattern>(
 	method: TMethod,
@@ -70,10 +70,11 @@ const contextValue = {
 };
 
 type ServerProviderProps = {
+	children?: ReactNode;
 	callEndpoint?: ContextType<typeof ServerContext>['callEndpoint'];
 };
 
-const ServerProvider: FC<ServerProviderProps> = ({ children, callEndpoint }) => {
+const ServerProvider = ({ children, callEndpoint }: ServerProviderProps) => {
 	const value = useMemo(() => ({ ...contextValue, callEndpoint: callEndpoint ?? contextValue.callEndpoint }), [callEndpoint]);
 	return <ServerContext.Provider children={children} value={value} />;
 };

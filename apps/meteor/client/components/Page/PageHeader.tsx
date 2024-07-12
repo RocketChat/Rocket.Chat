@@ -1,7 +1,7 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, ComponentProps, ReactNode } from 'react';
+import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import React, { useContext } from 'react';
 
 import { HeaderToolbar } from '../Header';
@@ -12,9 +12,9 @@ type PageHeaderProps = {
 	title: ReactNode;
 	onClickBack?: () => void;
 	borderBlockEndColor?: string;
-} & Omit<ComponentProps<typeof Box>, 'title'>;
+} & Omit<ComponentPropsWithoutRef<typeof Box>, 'title'>;
 
-const PageHeader: FC<PageHeaderProps> = ({ children = undefined, title, onClickBack, borderBlockEndColor, ...props }) => {
+const PageHeader = ({ children = undefined, title, onClickBack, borderBlockEndColor, ...props }: PageHeaderProps) => {
 	const t = useTranslation();
 	const [border] = useContext(PageContext);
 	const { isMobile } = useLayout();

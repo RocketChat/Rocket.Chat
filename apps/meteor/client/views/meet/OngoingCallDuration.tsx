@@ -1,12 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
 import React, { useEffect, useState } from 'react';
 
 type OngoingCallDurationProps = {
 	counter: number;
 };
 
-const OngoingCallDuration: FC<OngoingCallDurationProps> = ({ counter: defaultCounter = 0 }) => {
+const OngoingCallDuration = ({ counter: defaultCounter = 0 }: OngoingCallDurationProps) => {
 	const [counter, setCounter] = useState(defaultCounter);
 	useEffect(() => {
 		setTimeout(() => setCounter(counter + 1), 1000);

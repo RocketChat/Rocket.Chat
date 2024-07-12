@@ -2,7 +2,6 @@ import { Throbber, Box } from '@rocket.chat/fuselage';
 import type { IFederationPublicRooms } from '@rocket.chat/rest-typings';
 import { useSetModal, useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { VFC } from 'react';
 import React from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -19,7 +18,7 @@ type FederatedRoomListProps = {
 	count?: number;
 };
 
-const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, count }) => {
+const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListProps) => {
 	const joinExternalPublicRoom = useEndpoint('POST', '/v1/federation/joinExternalPublicRoom');
 
 	const setModal = useSetModal();
