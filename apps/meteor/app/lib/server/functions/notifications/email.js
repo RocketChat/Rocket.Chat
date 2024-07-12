@@ -21,7 +21,7 @@ Meteor.startup(() => {
 	});
 });
 
-async function getEmailContent({ message, user, room }) {
+export async function getEmailContent({ message, user, room }) {
 	const lng = (user && user.language) || settings.get('Language') || 'en';
 
 	const roomName = escapeHTML(`#${await roomCoordinator.getRoomName(room.t, room)}`);
@@ -35,16 +35,16 @@ async function getEmailContent({ message, user, room }) {
 		lng,
 	});
 
+	if (message.t === 'e2e' && !message.file) {
+		return settings.get('Email_notification_show_message') ? i18n.t('Encrypted_message_preview_unavailable', { lng }) : header;
+	}
+
 	if (message.msg !== '') {
 		if (!settings.get('Email_notification_show_message')) {
 			return header;
 		}
 
 		let messageContent = escapeHTML(message.msg);
-
-		if (message.t === 'e2e') {
-			messageContent = i18n.t('Encrypted_message_preview_unavailable', { lng });
-		}
 
 		message = await callbacks.run('renderMessage', message);
 		if (message.tokens && message.tokens.length > 0) {

@@ -1,17 +1,17 @@
 import { Box, Select, Label } from '@rocket.chat/fuselage';
 import { useMutableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { Dispatch, FC, SetStateAction } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 import React, { useEffect } from 'react';
 
 import AutoCompleteAgent from '../../../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 
-type QueueListFilterPropsType = FC<{
+type QueueListFilterProps = {
 	setFilter: Dispatch<SetStateAction<any>>;
-}>;
+};
 
-export const QueueListFilter: QueueListFilterPropsType = ({ setFilter, ...props }) => {
+export const QueueListFilter = ({ setFilter, ...props }: QueueListFilterProps) => {
 	const t = useTranslation();
 
 	const statusOptions: [string, string][] = [

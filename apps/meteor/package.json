@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "6.10.0-develop",
+	"version": "6.11.0-develop",
 	"private": true,
 	"author": {
 		"name": "Rocket.Chat",
@@ -231,7 +231,7 @@
 		"@rocket.chat/agenda": "workspace:^",
 		"@rocket.chat/api-client": "workspace:^",
 		"@rocket.chat/apps": "workspace:^",
-		"@rocket.chat/apps-engine": "^1.43.0-alpha.773",
+		"@rocket.chat/apps-engine": "1.43.0",
 		"@rocket.chat/base64": "workspace:^",
 		"@rocket.chat/cas-validate": "workspace:^",
 		"@rocket.chat/core-services": "workspace:^",
