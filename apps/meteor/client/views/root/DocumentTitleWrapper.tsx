@@ -5,8 +5,6 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useEffect, useCallback } from 'react';
 
-import { useUnreadMessages } from './hooks/useUnreadMessages';
-
 const useRouteTitleFocus = () => {
 	return useCallback((node: HTMLElement | null) => {
 		if (!node) {
@@ -18,8 +16,7 @@ const useRouteTitleFocus = () => {
 };
 
 const DocumentTitleWrapper: FC = ({ children }) => {
-	useDocumentTitle(useSetting<string>('Site_Name') || '', false);
-	const { title, key } = useDocumentTitle(useUnreadMessages(), false);
+	const { title, key } = useDocumentTitle(useSetting<string>('Site_Name') || '', false);
 
 	const refocusRef = useRouteTitleFocus();
 
