@@ -626,16 +626,14 @@ class LivechatClass {
 		);
 
 		let html = '<div> <hr>';
-		const InvalidFileMessage = `<div style="background-color: #f0f0f0; text-align: center; border-color: #cccccc; border-width: 1px; border-style: solid; border-radius: 4px; padding-top: 8px; padding-bottom: 8px; margin-top: 4px;">${i18n.t(
+		const InvalidFileMessage = `<div style="background-color: ${colors.n100}; text-align: center; border-color: ${
+			colors.n250
+		}; border-width: 1px; border-style: solid; border-radius: 4px; padding-top: 8px; padding-bottom: 8px; margin-top: 4px;">${i18n.t(
 			'This_attachment_is_not_supported',
 			{ lng: userLanguage },
 		)}</div>`;
 
-		console.log('colors - ', colors.n100, colors.n250);
-
 		for await (const message of messages) {
-			console.log({ message });
-			console.log('attachment - ', message?.attachments, message?.files);
 			let author;
 			if (message.u._id === visitor._id) {
 				author = i18n.t('You', { lng: userLanguage });
