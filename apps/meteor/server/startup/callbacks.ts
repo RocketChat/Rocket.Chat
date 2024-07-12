@@ -4,7 +4,10 @@ import { performance } from 'universal-perf-hooks';
 import { metrics, StatsTracker } from '../../app/metrics/server';
 import { callbacks } from '../../lib/callbacks';
 
-callbacks.setLogger(new Logger('Callbacks'));
+callbacks.setLogger({
+	debug: (...args: unknown[]): void => console.log(...args),
+	log: (...args: unknown[]): void => console.log(...args),
+});
 
 callbacks.setMetricsTrackers({
 	trackCallback: ({ hook, id }) => {

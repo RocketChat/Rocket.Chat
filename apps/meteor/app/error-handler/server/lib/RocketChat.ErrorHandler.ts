@@ -117,6 +117,10 @@ process.on('unhandledRejection', (error) => {
 });
 
 process.on('uncaughtException', async (error) => {
-	incException();
-	void errorHandler.trackError(error.message, error.stack);
+	try {
+		await incException();
+		void errorHandler.trackError(error.message, error.stack);
+	} catch (e) {
+		console.error(e);
+	}
 });

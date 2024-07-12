@@ -133,14 +133,20 @@ export class QueueManager {
 
 	static async queueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
 		if (inquiry.status === 'ready') {
+			console.log('queueInquiry(): delegating to agent');
 			return RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, room);
 		}
 
+		console.log('queueInquiry(): livechat.afterInquiryQueued');
 		await callbacks.run('livechat.afterInquiryQueued', inquiry);
 
+		console.log('queueInquiry(): livechat.chatQueued');
 		void callbacks.run('livechat.chatQueued', room);
 
+		console.log('queueInquiry(): dispatchInquiryQueued');
 		await this.dispatchInquiryQueued(inquiry, room, defaultAgent);
+
+		console.log('queueInquiry(): done');
 	}
 
 	static async requestRoom<
@@ -167,6 +173,7 @@ export class QueueManager {
 		agent?: SelectedAgent;
 		extraData?: E;
 	}) {
+		console.log('requestRoom(): called');
 		logger.debug(`Requesting a room for guest ${guest._id}`);
 		check(
 			guest,
@@ -218,6 +225,7 @@ export class QueueManager {
 				throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 			}
 		}
+		console.log('requestRoom(): calling createLivechatRoom()');
 
 		const name = (roomInfo?.fname as string) || guest.name || guest.username;
 
@@ -230,6 +238,7 @@ export class QueueManager {
 			logger.error(`Room for visitor ${guest._id} not found`);
 			throw new Error('room-not-found');
 		}
+		console.log('requestRoom(): calling createLivechatInquiry()');
 		logger.debug(`Room for visitor ${guest._id} created with id ${room._id}`);
 
 		const inquiry = await createLivechatInquiry({
@@ -246,6 +255,7 @@ export class QueueManager {
 			throw new Error('inquiry-not-found');
 		}
 
+		console.log('requestRoom(): calling Apps.triggerEvent()');
 		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
 
 		const livechatSetting = await LivechatRooms.updateRoomCount();
@@ -253,11 +263,14 @@ export class QueueManager {
 			void notifyOnSettingChanged(livechatSetting);
 		}
 
+		console.log('requestRoom(): calling queueInquiry()');
 		const newRoom = (await this.queueInquiry(inquiry, room, defaultAgent)) ?? (await LivechatRooms.findOneById(rid));
 		if (!newRoom) {
 			logger.error(`Room with id ${rid} not found`);
 			throw new Error('room-not-found');
 		}
+
+		console.log('requestRoom(): finish');
 
 		return newRoom;
 	}

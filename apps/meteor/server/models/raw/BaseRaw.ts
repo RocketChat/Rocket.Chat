@@ -27,6 +27,7 @@ import type {
 	DeleteOptions,
 } from 'mongodb';
 
+import { log } from '../../lib/log';
 import { setUpdatedAt } from './setUpdatedAt';
 
 const warnFields =
@@ -152,6 +153,7 @@ export abstract class BaseRaw<
 		};
 	}
 
+	@log('collectionName')
 	public findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>> {
 		this.setUpdatedAt(update);
 		return this.col.findOneAndUpdate(query, update, options || {});
@@ -173,6 +175,7 @@ export abstract class BaseRaw<
 
 	async findOne<P extends Document = T>(query: Filter<T> | T['_id'], options?: FindOptions<P extends T ? T : P>): Promise<P | null>;
 
+	@log('collectionName')
 	async findOne<P>(query: Filter<T> | T['_id'] = {}, options?: any): Promise<WithId<T> | WithId<P> | null> {
 		const q: Filter<T> = typeof query === 'string' ? ({ _id: query } as Filter<T>) : query;
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
@@ -186,6 +189,7 @@ export abstract class BaseRaw<
 
 	find<P extends Document = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindCursor<P>;
 
+	// @log('collectionName')
 	find<P extends Document>(
 		query: Filter<T> = {},
 		options?: FindOptions<P extends T ? T : P>,
@@ -221,6 +225,7 @@ export abstract class BaseRaw<
 		return this[operation](filter, update, options);
 	}
 
+	@log('collectionName')
 	updateOne(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<UpdateResult> {
 		this.setUpdatedAt(update);
 		if (options) {
@@ -229,6 +234,7 @@ export abstract class BaseRaw<
 		return this.col.updateOne(filter, update);
 	}
 
+	@log('collectionName')
 	updateMany(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<Document | UpdateResult> {
 		this.setUpdatedAt(update);
 		if (options) {
@@ -251,6 +257,7 @@ export abstract class BaseRaw<
 		return this.col.insertMany(docs as unknown as OptionalUnlessRequiredId<T>[], options || {});
 	}
 
+	@log('collectionName')
 	insertOne(doc: InsertionModel<T>, options?: InsertOneOptions): Promise<InsertOneResult<T>> {
 		if (!doc._id || typeof doc._id !== 'string') {
 			const oid = new ObjectId();
