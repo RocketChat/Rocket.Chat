@@ -1,6 +1,5 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React from 'react';
 
 type ReturnChatQueueModalProps = {
@@ -8,7 +7,7 @@ type ReturnChatQueueModalProps = {
 	onCancel: () => void;
 };
 
-const ReturnChatQueueModal: FC<ReturnChatQueueModalProps> = ({ onCancel, onMoveChat, ...props }) => {
+const ReturnChatQueueModal = ({ onCancel, onMoveChat, ...props }: ReturnChatQueueModalProps) => {
 	const t = useTranslation();
 
 	return (

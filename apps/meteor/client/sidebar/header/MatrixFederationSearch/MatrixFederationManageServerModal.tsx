@@ -2,7 +2,7 @@ import { Divider, Modal, ButtonGroup, Button, Field, TextInput, FieldLabel, Fiel
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { VFC, FormEvent } from 'react';
+import type { FormEvent } from 'react';
 import React, { useState } from 'react';
 
 import MatrixFederationRemoveServerList from './MatrixFederationRemoveServerList';
@@ -25,7 +25,7 @@ const getErrorKey = (error: any): TranslationKey | undefined => {
 	}
 };
 
-const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> = ({ onClickClose }) => {
+const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddServerModalProps) => {
 	const t = useTranslation();
 	const addMatrixServer = useEndpoint('POST', '/v1/federation/addServerByUser');
 	const [serverName, setServerName] = useState('');

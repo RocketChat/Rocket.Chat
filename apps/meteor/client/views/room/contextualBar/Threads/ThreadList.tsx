@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Select, Margins, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
-import type { FormEvent, ReactElement, VFC } from 'react';
+import type { FormEvent, ReactElement } from 'react';
 import React, { useMemo, useState, useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -26,7 +26,7 @@ import { useThreadsList } from './hooks/useThreadsList';
 
 type ThreadType = 'all' | 'following' | 'unread';
 
-const ThreadList: VFC = () => {
+const ThreadList = () => {
 	const t = useTranslation();
 
 	const { closeTab } = useRoomToolbox();

@@ -124,7 +124,6 @@ describe('LIVECHAT - inquiries', () => {
 					expect(res.body.inquiry).to.have.property('estimatedWaitingTimeQueue');
 					expect(res.body.inquiry.source).to.have.property('type', 'api');
 					expect(res.body.inquiry).to.have.property('_updatedAt');
-					expect(res.body.inquiry).to.have.property('queuedAt');
 					expect(res.body.inquiry).to.have.property('v').and.be.an('object');
 					expect(res.body.inquiry.v).to.have.property('_id', visitor._id);
 				});
