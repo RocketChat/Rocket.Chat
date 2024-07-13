@@ -37,7 +37,7 @@ describe('SettingsRegistry operations', () => {
 			expect(settings.get(testSetting._id)).to.be.equal(testSetting.packageValue);
 		});
 
-		it('should NOT set the setting value from code when nothing is loaded into the cache and no overwrite available', async () => {
+		it('should NOT set the setting value from code when setting is loaded into the cache and no overwrite available', async () => {
 			settings.set(testSetting as any);
 
 			const settingFromCodeFaked = { ...testSetting, value: 'new value' };
@@ -75,7 +75,7 @@ describe('SettingsRegistry operations', () => {
 			expect(settings.get(testSetting._id)).to.be.equal('new value');
 		});
 
-		it('should update cached value with OVERWRITE_SETTING value even if both with-prefixed and without-prefixed variabled exist', async () => {
+		it('should update cached value with OVERWRITE_SETTING value even if both with-prefixed and without-prefixed variables exist', async () => {
 			process.env[`OVERWRITE_SETTING_${testSetting._id}`] = 'overwritten';
 			process.env[testSetting._id] = 'overriden';
 
