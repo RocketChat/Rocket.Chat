@@ -1,7 +1,6 @@
+import type { ISettingsModel } from '@rocket.chat/model-typings';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import type { ISettingsModel } from '@rocket.chat/model-typings';
 
 import { SettingsRegistry } from '../../../../../app/settings/server/SettingsRegistry';
 import { settings } from '../../../../../app/settings/server/cached';
