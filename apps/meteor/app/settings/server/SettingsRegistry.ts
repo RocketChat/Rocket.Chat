@@ -196,6 +196,12 @@ export class SettingsRegistry {
 			return;
 		}
 
+		/*
+		 * At this point setting is not in db, so we either respect OVERWRITE_SETTING_ prefix
+		 * if it exists, or
+		 * Use the first startup overriden default value, the setting-id environment variable.
+		 */
+
 		const setting = isOverwritten ? updatedSettingAfterApplyingOverwrite : overrideSetting(settingFromCode);
 
 		await this.model.insertOne(setting); // no need to emit unless we remove the oplog
