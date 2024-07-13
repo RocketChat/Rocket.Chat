@@ -1,8 +1,9 @@
-import type { IOAuthApps, IUser } from '@rocket.chat/core-typings';
+import type { IOAuthApps, IOAuthAppsInfo, IUser } from '@rocket.chat/core-typings';
 
 import type { DeleteOAuthAppParams } from './oauthapps/DeleteOAuthAppParamsDELETE';
 import type { OauthAppsAddParams } from './oauthapps/OAuthAppsAddParamsPOST';
 import type { OauthAppsGetParams } from './oauthapps/OAuthAppsGetParamsGET';
+import type { OauthAppsInfoParams } from './oauthapps/OAuthAppsInfoParamsGET';
 import type { UpdateOAuthAppParams } from './oauthapps/UpdateOAuthAppParamsPOST';
 
 export type OAuthAppsEndpoint = {
@@ -15,6 +16,12 @@ export type OAuthAppsEndpoint = {
 	'/v1/oauth-apps.get': {
 		GET: (params: OauthAppsGetParams) => {
 			oauthApp: IOAuthApps;
+		};
+	};
+
+	'/v1/oauth-apps.info': {
+		GET: (params: OauthAppsInfoParams) => {
+			oauthApp: IOAuthAppsInfo;
 		};
 	};
 

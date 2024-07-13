@@ -107,6 +107,24 @@ describe('[OAuthApps]', () => {
 		});
 	});
 
+	describe('[/oauth-apps.info]', () => {
+		it('should return a single oauthApp with only client id and name attributes', (done) => {
+			void request
+				.get(api('oauth-apps.info'))
+				.query({ clientId: 'zapier' })
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('oauthApp');
+					expect(res.body.oauthApp.clientId).to.be.equal('zapier');
+					expect(res.body.oauthApp).to.have.keys(['clientId', 'name']);
+					expect(Object.keys(res.body.oauthApp)).to.have.length(2);
+				})
+				.end(done);
+		});
+	});
+
 	describe('[/oauth-apps.create]', () => {
 		it('should return an error when the user does not have the necessary permission', async () => {
 			await updatePermission('manage-oauth-apps', []);

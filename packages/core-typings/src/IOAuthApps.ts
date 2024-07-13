@@ -1,8 +1,11 @@
-export interface IOAuthApps {
-	_id: string;
-	name: string;
-	active: boolean;
+export interface IOAuthAppsInfo {
 	clientId: string;
+	name: string;
+}
+
+export interface IOAuthApps extends IOAuthAppsInfo {
+	_id: string;
+	active: boolean;
 	clientSecret: string;
 	redirectUri: string;
 	_createdAt: Date;

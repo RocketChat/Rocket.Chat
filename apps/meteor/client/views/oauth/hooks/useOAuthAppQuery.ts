@@ -1,15 +1,15 @@
-import type { IOAuthApps } from '@rocket.chat/core-typings';
+import type { IOAuthAppsInfo } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
 type UseOAuthAppQueryOptions = Omit<
-	UseQueryOptions<IOAuthApps, unknown, IOAuthApps, readonly ['oauth-app', { readonly clientId: string | undefined }]>,
+	UseQueryOptions<IOAuthAppsInfo, unknown, IOAuthAppsInfo, readonly ['oauth-app', { readonly clientId: string | undefined }]>,
 	'queryKey' | 'queryFn'
 >;
 
 export const useOAuthAppQuery = (clientId: string | undefined, options?: UseOAuthAppQueryOptions) => {
-	const getOAuthApp = useEndpoint('GET', '/v1/oauth-apps.get');
+	const getOAuthApp = useEndpoint('GET', '/v1/oauth-apps.info');
 
 	return useQuery(
 		['oauth-app', { clientId }] as const,
@@ -19,11 +19,7 @@ export const useOAuthAppQuery = (clientId: string | undefined, options?: UseOAut
 			}
 
 			const { oauthApp } = await getOAuthApp({ clientId });
-			return {
-				...oauthApp,
-				_createdAt: new Date(oauthApp._createdAt),
-				_updatedAt: new Date(oauthApp._updatedAt),
-			};
+			return oauthApp;
 		},
 		options,
 	);

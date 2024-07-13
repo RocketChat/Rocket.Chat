@@ -1,5 +1,11 @@
 import { OAuthApps } from '@rocket.chat/models';
-import { isUpdateOAuthAppParams, isOauthAppsGetParams, isOauthAppsAddParams, isDeleteOAuthAppParams } from '@rocket.chat/rest-typings';
+import {
+	isDeleteOAuthAppParams,
+	isOauthAppsAddParams,
+	isOauthAppsGetParams,
+	isOauthInfoInfoParams,
+	isUpdateOAuthAppParams,
+} from '@rocket.chat/rest-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
@@ -43,6 +49,24 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				oauthApp,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'oauth-apps.info',
+	{ authRequired: true, validateParams: isOauthInfoInfoParams },
+	{
+		async get() {
+			const oauthApp = await OAuthApps.findOneAuthAppByIdOrClientId(this.queryParams);
+
+			if (!oauthApp) {
+				return API.v1.failure('OAuth app not found.');
+			}
+
+			return API.v1.success({
+				oauthApp: { clientId: oauthApp.clientId, name: oauthApp.name },
 			});
 		},
 	},
