@@ -136,15 +136,15 @@ export class SettingsRegistry {
 			throw new Error(`Enterprise setting ${_id} is missing the invalidValue option`);
 		}
 
-		const settingFromCodeOverwritten = overwriteSetting(settingFromCode);
-
 		const settingStored = this.store.getSetting(_id);
 
-		const settingStoredOverwritten = settingStored && overwriteSetting(settingStored);
+		const settingOverwritten = overwriteSetting(settingStored ?? settingFromCode);
 
-		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
+		const settingOverwrittenDefault = overrideSetting(settingStored ?? settingFromCode);
 
-		const updatedSettingAfterApplyingOverwrite = isOverwritten ? settingFromCodeOverwritten : settingStored ?? settingFromCode;
+		const isOverwritten = settingFromCode !== settingOverwritten || (settingStored && settingStored !== settingOverwritten);
+
+		const updatedSettingAfterApplyingOverwrite = isOverwritten ? settingOverwritten : settingOverwrittenDefault;
 
 		try {
 			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
@@ -152,19 +152,18 @@ export class SettingsRegistry {
 			IS_DEVELOPMENT && SystemLogger.error(`Invalid setting code ${_id}: ${(e as Error).message}`);
 		}
 
-		const { _id: _, ...settingProps } = settingFromCodeOverwritten;
+		const { _id: _, ...settingProps } = settingOverwritten;
 
-		if (settingStored && !compareSettings(settingStored, settingFromCodeOverwritten)) {
-			const { value: _value, ...settingOverwrittenProps } = settingFromCodeOverwritten;
+		if (settingStored && !compareSettings(settingStored, settingOverwritten)) {
+			const { value: _value, ...settingOverwrittenProps } = settingOverwritten;
 
-			const overwrittenKeys = Object.keys(settingFromCodeOverwritten);
+			const overwrittenKeys = Object.keys(settingOverwritten);
 			const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
 			const updatedProps = (() => {
 				return {
 					...settingOverwrittenProps,
-					...(settingStoredOverwritten &&
-						settingStored.value !== settingStoredOverwritten.value && { value: settingStoredOverwritten.value }),
+					...(settingStored.value !== settingOverwritten.value && { value: settingOverwritten.value }),
 				};
 			})();
 
@@ -176,8 +175,8 @@ export class SettingsRegistry {
 		}
 
 		if (settingStored && isOverwritten) {
-			if (settingStored.value !== settingFromCodeOverwritten.value) {
-				const overwrittenKeys = Object.keys(settingFromCodeOverwritten);
+			if (settingStored.value !== settingOverwritten.value) {
+				const overwrittenKeys = Object.keys(settingOverwritten);
 				const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
 				await this.saveUpdatedSetting(_id, settingProps, removedKeys);
@@ -196,17 +195,9 @@ export class SettingsRegistry {
 			return;
 		}
 
-		/*
-		 * At this point setting is not in db, so we either respect OVERWRITE_SETTING_ prefix
-		 * if it exists, or
-		 * Use the first startup overriden default value, the setting-id environment variable.
-		 */
+		await this.model.insertOne(updatedSettingAfterApplyingOverwrite); // no need to emit unless we remove the oplog
 
-		const setting = isOverwritten ? updatedSettingAfterApplyingOverwrite : overrideSetting(settingFromCode);
-
-		await this.model.insertOne(setting); // no need to emit unless we remove the oplog
-
-		this.store.set(setting);
+		this.store.set(updatedSettingAfterApplyingOverwrite);
 	}
 
 	/*
