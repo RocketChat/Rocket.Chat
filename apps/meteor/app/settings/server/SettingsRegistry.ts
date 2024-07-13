@@ -136,15 +136,10 @@ export class SettingsRegistry {
 			throw new Error(`Enterprise setting ${_id} is missing the invalidValue option`);
 		}
 
+		const settingFromCodeOverwritten = overwriteSetting(settingFromCode);
+
 		const settingStored = this.store.getSetting(_id);
-
-		const settingOverwritten = overwriteSetting(settingStored ?? settingFromCode);
-
-		const settingOverwrittenDefault = overrideSetting(settingStored ?? settingFromCode);
-
-		const isOverwritten = settingFromCode !== settingOverwritten || (settingStored && settingStored !== settingOverwritten);
-
-		const updatedSettingAfterApplyingOverwrite = isOverwritten ? settingOverwritten : settingOverwrittenDefault;
+		const settingStoredOverwritten = settingStored && overwriteSetting(settingStored);
 
 		try {
 			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
@@ -152,36 +147,34 @@ export class SettingsRegistry {
 			IS_DEVELOPMENT && SystemLogger.error(`Invalid setting code ${_id}: ${(e as Error).message}`);
 		}
 
-		const { _id: _, ...settingProps } = settingOverwritten;
+		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
 
-		if (settingStored && !compareSettings(settingStored, settingOverwritten)) {
-			const { value: _value, ...settingOverwrittenProps } = settingOverwritten;
+		const { _id: _, ...settingProps } = settingFromCodeOverwritten;
 
-			const overwrittenKeys = Object.keys(settingOverwritten);
+		if (settingStored && !compareSettings(settingStored, settingFromCodeOverwritten)) {
+			const { value: _value, ...settingOverwrittenProps } = settingFromCodeOverwritten;
+
+			const overwrittenKeys = Object.keys(settingFromCodeOverwritten);
 			const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
 			const updatedProps = (() => {
 				return {
 					...settingOverwrittenProps,
-					...(settingStored.value !== settingOverwritten.value && { value: settingOverwritten.value }),
+					...(settingStoredOverwritten &&
+						settingStored.value !== settingStoredOverwritten.value && { value: settingStoredOverwritten.value }),
 				};
 			})();
 
 			await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
-
-			this.store.set(updatedSettingAfterApplyingOverwrite);
-
 			return;
 		}
 
 		if (settingStored && isOverwritten) {
-			if (settingStored.value !== settingOverwritten.value) {
-				const overwrittenKeys = Object.keys(settingOverwritten);
+			if (settingStored.value !== settingFromCodeOverwritten.value) {
+				const overwrittenKeys = Object.keys(settingFromCodeOverwritten);
 				const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
 				await this.saveUpdatedSetting(_id, settingProps, removedKeys);
-
-				this.store.set(updatedSettingAfterApplyingOverwrite);
 			}
 			return;
 		}
@@ -195,9 +188,13 @@ export class SettingsRegistry {
 			return;
 		}
 
-		await this.model.insertOne(updatedSettingAfterApplyingOverwrite); // no need to emit unless we remove the oplog
+		const settingOverwrittenDefault = overrideSetting(settingFromCode);
 
-		this.store.set(updatedSettingAfterApplyingOverwrite);
+		const setting = isOverwritten ? settingFromCodeOverwritten : settingOverwrittenDefault;
+
+		await this.model.insertOne(setting); // no need to emit unless we remove the oplog
+
+		this.store.set(setting);
 	}
 
 	/*
