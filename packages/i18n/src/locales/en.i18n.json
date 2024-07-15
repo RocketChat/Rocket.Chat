@@ -2699,7 +2699,7 @@
   "Inclusive": "Inclusive",
   "Incoming": "Incoming",
   "Incoming_call_from": "Incoming call from",
-  "Incoming_Livechats": "Queued Chats",
+  "Incoming_Livechats": "Queued chats",
   "Incoming_WebHook": "Incoming WebHook",
   "Industry": "Industry",
   "Info": "Info",
@@ -4016,7 +4016,7 @@
   "on-hold-others-livechat-room": "On Hold Others Omnichannel Room",
   "on-hold-others-livechat-room_description": "Permission to on hold others omnichannel room",
   "On_Hold": "On hold",
-  "On_Hold_Chats": "On Hold",
+  "On_Hold_Chats": "On hold",
   "On_Hold_conversations": "On hold conversations",
   "online": "online",
   "Online": "Online",
@@ -4040,7 +4040,7 @@
   "Open_days_of_the_week": "Open Days of the Week",
   "Open_Dialpad": "Open Dialpad",
   "Open_directory": "Open directory",
-  "Open_Livechats": "Chats in Progress",
+  "Open_Livechats": "Chats in progress",
   "Open_Outlook": "Open Outlook",
   "Open_settings": "Open settings",
   "Open_sidebar": "Open sidebar",
@@ -6480,5 +6480,8 @@
   "You_cant_take_chats_offline": "You cannot take new conversations because you're offline",
   "New_navigation": "Enhanced navigation experience",
   "New_navigation_description": "Explore our improved navigation, designed with clear scopes for easy access to what you need. This change serves as the foundation for future advancements in navigation management.",
-  "Workspace_and_user_settings": "Workspace and user settings"
+  "Workspace_and_user_settings": "Workspace and user settings",
+  "Sidebar_Sections_Order": "Sidebar sections order",
+  "Sidebar_Sections_Order_Description": "Select the categories in your preferred order",
+  "Incoming_Calls": "Incoming calls"
 }
