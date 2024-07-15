@@ -33,16 +33,16 @@ export const closeLivechatRoom = async (
 		throw new Error('error-invalid-room');
 	}
 
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { projection: { _id: 1 } });
-	if (!room.open && subscription) {
-		await Subscriptions.removeByRoomId(roomId);
-		return;
-	}
-
 	if (!room.open) {
+		const subscriptionsLeft = await Subscriptions.countByRoomId(roomId);
+		if (subscriptionsLeft) {
+			await Subscriptions.removeByRoomId(roomId);
+			return;
+		}
 		throw new Error('error-room-already-closed');
 	}
 
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { projection: { _id: 1 } });
 	if (!subscription && !(await hasPermissionAsync(user._id, 'close-others-livechat-room'))) {
 		throw new Error('error-not-authorized');
 	}
