@@ -221,28 +221,26 @@ export class QueueManager {
 
 		const name = (roomInfo?.fname as string) || guest.name || guest.username;
 
-		const room = await LivechatRooms.findOneById(
-			await createLivechatRoom(rid, name, guest, roomInfo, {
-				...extraData,
-				...(Boolean(customFields) && { customFields }),
-			}),
-		);
+		const room = await createLivechatRoom(rid, name, guest, roomInfo, {
+			...extraData,
+			...(Boolean(customFields) && { customFields }),
+		});
+
 		if (!room) {
 			logger.error(`Room for visitor ${guest._id} not found`);
 			throw new Error('room-not-found');
 		}
 		logger.debug(`Room for visitor ${guest._id} created with id ${room._id}`);
 
-		const inquiry = await LivechatInquiry.findOneById(
-			await createLivechatInquiry({
-				rid,
-				name,
-				initialStatus: await this.getInquiryStatus({ room, agent: defaultAgent }),
-				guest,
-				message,
-				extraData: { ...extraData, source: roomInfo.source },
-			}),
-		);
+		const inquiry = await createLivechatInquiry({
+			rid,
+			name,
+			initialStatus: await this.getInquiryStatus({ room, agent: defaultAgent }),
+			guest,
+			message,
+			extraData: { ...extraData, source: roomInfo.source },
+		});
+
 		if (!inquiry) {
 			logger.error(`Inquiry for visitor ${guest._id} not found`);
 			throw new Error('inquiry-not-found');
@@ -299,15 +297,13 @@ export class QueueManager {
 		if (!room) {
 			throw new Error('room-not-found');
 		}
-		const inquiry = await LivechatInquiry.findOneById(
-			await createLivechatInquiry({
-				rid,
-				name,
-				guest,
-				message: message?.msg,
-				extraData: { source },
-			}),
-		);
+		const inquiry = await createLivechatInquiry({
+			rid,
+			name,
+			guest,
+			message: message?.msg,
+			extraData: { source },
+		});
 		if (!inquiry) {
 			throw new Error('inquiry-not-found');
 		}

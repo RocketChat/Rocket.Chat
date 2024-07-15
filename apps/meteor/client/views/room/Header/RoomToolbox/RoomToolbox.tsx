@@ -1,12 +1,12 @@
 import type { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { HeaderToolbarAction, HeaderToolbarDivider } from '@rocket.chat/ui-client';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { memo } from 'react';
 
 import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
+import { HeaderToolbarAction, HeaderToolbarDivider } from '../../../../components/Header';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext';
 
