@@ -96,7 +96,7 @@ describe('closeLivechatRoom', () => {
 		expect(livechatRoomsStub.findOneById.calledOnceWith(room._id)).to.be.true;
 		expect(subscriptionsStub.findOneByRoomIdAndUserId.notCalled).to.be.true;
 		expect(subscriptionsStub.countByRoomId.calledOnceWith(room._id)).to.be.true;
-		expect(subscriptionsStub.removeByRoomId.notCalled).to.be.true;
+		expect(subscriptionsStub.removeByRoomId.calledOnceWith(room._id)).to.be.true;
 	});
 
 	it('should remove dangling subscription when a closed room is provided but the user is still subscribed to it', async () => {
@@ -113,7 +113,7 @@ describe('closeLivechatRoom', () => {
 		expect(subscriptionsStub.removeByRoomId.calledOnceWith(room._id)).to.be.true;
 	});
 
-	it('should not perform any operation when the caller is not subscribed to the room and does not have the permission to close others rooms', async () => {
+	it('should not perform any operation when the caller is not subscribed to an open room and does not have the permission to close others rooms', async () => {
 		livechatRoomsStub.findOneById.resolves(room);
 		subscriptionsStub.findOneByRoomIdAndUserId.resolves(null);
 		subscriptionsStub.countByRoomId.resolves(1);
