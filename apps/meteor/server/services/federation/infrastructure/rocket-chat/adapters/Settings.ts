@@ -216,7 +216,7 @@ export class RocketChatSettingsAdapter {
 		const siteUrl = settings.get<string>('Site_Url');
 
 		await settingsRegistry.add('Federation_Matrix_id', `rocketchat_${uniqueId}`, {
-			readonly: true,
+			readonly: process.env.NODE_ENV === 'production',
 			type: 'string',
 			i18nLabel: 'Federation_Matrix_id',
 			i18nDescription: 'Federation_Matrix_id_desc',
@@ -225,7 +225,7 @@ export class RocketChatSettingsAdapter {
 		});
 
 		await settingsRegistry.add('Federation_Matrix_hs_token', homeserverToken, {
-			readonly: true,
+			readonly: process.env.NODE_ENV === 'production',
 			type: 'string',
 			i18nLabel: 'Federation_Matrix_hs_token',
 			i18nDescription: 'Federation_Matrix_hs_token_desc',
@@ -234,7 +234,7 @@ export class RocketChatSettingsAdapter {
 		});
 
 		await settingsRegistry.add('Federation_Matrix_as_token', applicationServiceToken, {
-			readonly: true,
+			readonly: process.env.NODE_ENV === 'production',
 			type: 'string',
 			i18nLabel: 'Federation_Matrix_as_token',
 			i18nDescription: 'Federation_Matrix_as_token_desc',

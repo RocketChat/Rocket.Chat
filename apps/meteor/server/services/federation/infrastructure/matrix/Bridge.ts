@@ -686,7 +686,7 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	private getMyHomeServerOrigin() {
-		return new URL(this.internalSettings.getHomeServerDomain()).hostname;
+		return new URL(`https://${this.internalSettings.getHomeServerDomain()}`).hostname;
 	}
 
 	public async uploadContent(
@@ -756,6 +756,8 @@ export class MatrixBridge implements IFederationBridge {
 			controller: {
 				onEvent: (request) => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
+
+					console.log('event', event);
 
 					// TODO(debdut): can we ignore all events from out homeserver?
 					// This was added particularly to avoid duplicating messages.

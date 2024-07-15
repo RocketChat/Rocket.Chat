@@ -19,6 +19,7 @@ import { BeforeSaveMarkdownParser } from './hooks/BeforeSaveMarkdownParser';
 import { mentionServer } from './hooks/BeforeSaveMentions';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
+import { verifyFederationReady as isFederationServiceReady } from '../federation/infrastructure/rocket-chat/hooks/util';
 
 const disableMarkdownParser = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_PARSER).toLowerCase());
 
@@ -139,6 +140,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	}): Promise<IMessage> {
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
+
+		if (room.federated) {
+			isFederationServiceReady();
+		}
 
 		message = await mentionServer.execute(message);
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
