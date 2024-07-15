@@ -1,4 +1,4 @@
-import type { IEditedMessage, IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
+import type { IEditedMessage, IMessage, IUser, AtLeast, Optional } from '@rocket.chat/core-typings';
 import { Messages, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
@@ -12,7 +12,11 @@ import { updateMessage } from '../functions/updateMessage';
 
 const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg', 'customFields', 'content'];
 
-export async function executeUpdateMessage(uid: IUser['_id'], message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>, previewUrls?: string[]) {
+export async function executeUpdateMessage(
+	uid: IUser['_id'],
+	message: AtLeast<IMessage, '_id' | 'rid'> & Optional<Pick<IMessage, 'msg' | 'customFields'>, 'msg' | 'customFields'>,
+	previewUrls?: string[],
+) {
 	const originalMessage = await Messages.findOneById(message._id);
 	if (!originalMessage?._id) {
 		return;
@@ -26,8 +30,11 @@ export async function executeUpdateMessage(uid: IUser['_id'], message: AtLeast<I
 		}
 	});
 
+	// IF the message has custom fields, always update
+	// Ideally, we'll compare the custom fields to check for change, but since we don't know the shape of
+	// custom fields, as it's user defined, we're gonna update
 	const msgText = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
-	if (msgText === message.msg && !previewUrls) {
+	if (msgText === message.msg && !previewUrls && !message.customFields) {
 		return;
 	}
 

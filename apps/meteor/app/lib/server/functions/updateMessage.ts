@@ -1,6 +1,6 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, AtLeast, Optional } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -12,7 +12,7 @@ import { validateCustomMessageFields } from '../lib/validateCustomMessageFields'
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 export const updateMessage = async function (
-	message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>,
+	message: AtLeast<IMessage, '_id' | 'rid'> & Optional<Pick<IMessage, 'msg' | 'customFields'>, 'msg' | 'customFields'>,
 	user: IUser,
 	originalMsg?: IMessage,
 	previewUrls?: string[],
