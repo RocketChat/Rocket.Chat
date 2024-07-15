@@ -1523,6 +1523,24 @@ describe('[Chat]', () => {
 					expect(res.body.message).to.have.property('customFields').that.is.an('object').that.deep.equals({ test: 'test 2' });
 				});
 		});
+
+		it('should update message custom fields without text property', async () => {
+			await request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					msgId: message._id,
+					customFields: { test: 'test 2' },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API 2');
+					expect(res.body.message).to.have.property('customFields').that.is.an('object').that.deep.equals({ test: 'test 2' });
+				});
+		});
 	});
 
 	describe('[/chat.delete]', () => {
