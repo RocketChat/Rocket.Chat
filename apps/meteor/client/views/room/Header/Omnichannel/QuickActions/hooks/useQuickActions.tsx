@@ -332,7 +332,7 @@ export const useQuickActions = (): {
 			case QuickActionsEnum.TranscriptPDF:
 				return hasLicense && !isRoomOverMacLimit && canSendTranscriptPDF;
 			case QuickActionsEnum.CloseChat:
-				return (subscription && canCloseRoom) || (!!roomOpen && canCloseOthersRoom);
+				return (subscription && (canCloseRoom || canCloseOthersRoom)) || (!!roomOpen && canCloseOthersRoom);
 			case QuickActionsEnum.OnHoldChat:
 				return !!roomOpen && canPlaceChatOnHold;
 			default:
