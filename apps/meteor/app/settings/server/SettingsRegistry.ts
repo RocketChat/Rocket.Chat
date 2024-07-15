@@ -2,6 +2,7 @@ import type { ISetting, ISettingGroup, Optional, SettingValue } from '@rocket.ch
 import { isSettingEnterprise } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
+import { type ModifyResult } from 'mongodb';
 import { isEqual } from 'underscore';
 
 import { SystemLogger } from '../../../server/lib/logger/system';
@@ -73,7 +74,8 @@ const compareSettingsIgnoringKeys =
 			.filter((key) => !keys.includes(key as keyof ISetting))
 			.every((key) => isEqual(a[key as keyof ISetting], b[key as keyof ISetting]));
 
-const compareSettings = compareSettingsIgnoringKeys([
+// NOTE(debdut): not really "metadata" - but yeah. I don't have a better name
+export const compareSettingsMetadata = compareSettingsIgnoringKeys([
 	'value',
 	'ts',
 	'createdAt',
@@ -139,6 +141,7 @@ export class SettingsRegistry {
 		const settingFromCodeOverwritten = overwriteSetting(settingFromCode);
 
 		const settingStored = this.store.getSetting(_id);
+
 		const settingStoredOverwritten = settingStored && overwriteSetting(settingStored);
 
 		try {
@@ -149,32 +152,48 @@ export class SettingsRegistry {
 
 		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
 
-		const { _id: _, ...settingProps } = settingFromCodeOverwritten;
+		if (settingStored && !compareSettingsMetadata(settingStored, settingFromCodeOverwritten)) {
+			// we need to update the setting metadata here
 
-		if (settingStored && !compareSettings(settingStored, settingFromCodeOverwritten)) {
-			const { value: _value, ...settingOverwrittenProps } = settingFromCodeOverwritten;
+			const { value: _value, ...settingOverwrittenProps } = settingFromCodeOverwritten; // settingStoredOverwrite not used since we need the updated props, that is in code not db
 
 			const overwrittenKeys = Object.keys(settingFromCodeOverwritten);
 			const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
-			const updatedProps = (() => {
-				return {
-					...settingOverwrittenProps,
-					...(settingStoredOverwritten &&
-						settingStored.value !== settingStoredOverwritten.value && { value: settingStoredOverwritten.value }),
-				};
-			})();
+			const updatedProps = {
+				...settingOverwrittenProps,
+				...(settingStoredOverwritten &&
+					settingStored.value !== settingStoredOverwritten.value && { value: settingStoredOverwritten.value }),
+			};
 
-			await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
+			const { value: settingForCache } = await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
+
+			if (!settingForCache) {
+				// unreachable
+				throw new Error('No document returned after setting was updated due to metadata change, something is wrong with code');
+			}
+
+			this.store.set(settingForCache);
+
 			return;
 		}
+
+		const { _id: _, ...settingProps } = settingFromCodeOverwritten;
 
 		if (settingStored && isOverwritten) {
 			if (settingStored.value !== settingFromCodeOverwritten.value) {
 				const overwrittenKeys = Object.keys(settingFromCodeOverwritten);
 				const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
-				await this.saveUpdatedSetting(_id, settingProps, removedKeys);
+				const { value: settingForCache } = await this.saveUpdatedSetting(_id, settingProps, removedKeys);
+
+				if (!settingForCache) {
+					// unreachable
+					throw new Error('No document returned due to an OVERWRITE, something is wrong with the code');
+				}
+
+				// settingStored exists, so will overwritten
+				this.store.set(settingForCache);
 			}
 			return;
 		}
@@ -269,8 +288,8 @@ export class SettingsRegistry {
 		_id: string,
 		settingProps: Omit<Optional<ISetting, 'value'>, '_id'>,
 		removedKeys?: string[],
-	): Promise<void> {
-		await this.model.updateOne(
+	): Promise<ModifyResult<ISetting>> {
+		return this.model.findOneAndUpdate(
 			{ _id },
 			{
 				$set: settingProps,
@@ -278,7 +297,7 @@ export class SettingsRegistry {
 					$unset: removedKeys.reduce((unset, key) => ({ ...unset, [key]: 1 }), {}),
 				}),
 			},
-			{ upsert: true },
+			{ upsert: true, returnDocument: 'after' },
 		);
 	}
 }
