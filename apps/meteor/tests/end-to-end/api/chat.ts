@@ -1505,7 +1505,7 @@ describe('[Chat]', () => {
 				});
 		});
 
-		it('should update message custom fields without msg', async () => {
+		it('should update message custom fields without changes to msg', async () => {
 			await request
 				.post(api('chat.update'))
 				.set(credentials)
