@@ -13,6 +13,7 @@ import {
 	ContextualbarClose,
 	ContextualbarEmptyContent,
 	ContextualbarTitle,
+	ContextualbarSection,
 } from '../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
@@ -61,25 +62,16 @@ function DiscussionsList({
 				<ContextualbarTitle>{t('Discussions')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
+			<ContextualbarSection>
+				<TextInput
+					placeholder={t('Search_Messages')}
+					value={text}
+					onChange={onChangeFilter}
+					ref={inputRef as RefObject<HTMLInputElement>}
+					addon={<Icon name='magnifier' size='x20' />}
+				/>
+			</ContextualbarSection>
 			<ContextualbarContent paddingInline={0} ref={ref}>
-				<Box
-					display='flex'
-					flexDirection='row'
-					p={24}
-					borderBlockEndWidth='default'
-					borderBlockEndStyle='solid'
-					borderBlockEndColor='extra-light'
-					flexShrink={0}
-				>
-					<TextInput
-						placeholder={t('Search_Messages')}
-						value={text}
-						onChange={onChangeFilter}
-						ref={inputRef as RefObject<HTMLInputElement>}
-						addon={<Icon name='magnifier' size='x20' />}
-					/>
-				</Box>
-
 				{loading && (
 					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
