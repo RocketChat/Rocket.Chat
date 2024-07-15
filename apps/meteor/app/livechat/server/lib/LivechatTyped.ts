@@ -242,7 +242,7 @@ class LivechatClass {
 				return;
 			}
 
-			return Users.findByIds<ILivechatAgent>(agentIds);
+			return Users.findByIds<ILivechatAgent>([...new Set(agentIds)]);
 		}
 		return Users.findOnlineAgents();
 	}

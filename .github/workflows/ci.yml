@@ -823,10 +823,15 @@ jobs:
           repository: RocketChat/Release.Distributions
           client-payload: '{"tag": "${{ github.ref_name }}"}'
 
-      - name: Update docs
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          token: ${{ secrets.DOCS_PAT }}
-          event-type: new_release
-          repository: RocketChat/docs
-          client-payload: '{"tag": "${{ github.ref_name }}"}'
+  docs-update:
+    name: Update Version Durability
+
+    if: github.event_name == 'release'
+    needs:
+      - services-docker-image-publish
+      - docker-image-publish
+
+    uses: ./.github/workflows/update-version-durability.yml
+    secrets:
+      CI_PAT: ${{ secrets.CI_PAT }}
+      D360_TOKEN: ${{ secrets.D360_TOKEN }}
