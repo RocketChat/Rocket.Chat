@@ -663,7 +663,7 @@ class LivechatClass {
 						continue;
 					}
 
-					// Image attachment and can be rendered in email body
+					// Image attachment can be rendered in email body
 					const file = message.files?.find((file) => file.name === attachment.title);
 
 					if (!file) {
