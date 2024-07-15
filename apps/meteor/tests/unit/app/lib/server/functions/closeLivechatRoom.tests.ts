@@ -80,7 +80,7 @@ describe('closeLivechatRoom', () => {
 		await expect(closeLivechatRoom(user, room._id, {})).to.be.rejectedWith('error-room-already-closed');
 		expect(livechatStub.closeRoom.notCalled).to.be.true;
 		expect(livechatRoomsStub.findOneById.calledOnceWith(room._id)).to.be.true;
-		expect(subscriptionsStub.findOneByRoomIdAndUserId.calledOnceWith(room._id, user._id)).to.be.true;
+		expect(subscriptionsStub.findOneByRoomIdAndUserId.notCalled).to.be.true;
 		expect(subscriptionsStub.countByRoomId.calledOnceWith(room._id)).to.be.true;
 		expect(subscriptionsStub.removeByRoomId.notCalled).to.be.true;
 	});
@@ -94,7 +94,7 @@ describe('closeLivechatRoom', () => {
 		await closeLivechatRoom(user, room._id, {});
 		expect(livechatStub.closeRoom.notCalled).to.be.true;
 		expect(livechatRoomsStub.findOneById.calledOnceWith(room._id)).to.be.true;
-		expect(subscriptionsStub.findOneByRoomIdAndUserId.calledOnceWith(room._id, user._id)).to.be.true;
+		expect(subscriptionsStub.findOneByRoomIdAndUserId.notCalled).to.be.true;
 		expect(subscriptionsStub.countByRoomId.calledOnceWith(room._id)).to.be.true;
 		expect(subscriptionsStub.removeByRoomId.notCalled).to.be.true;
 	});
@@ -108,7 +108,8 @@ describe('closeLivechatRoom', () => {
 		await closeLivechatRoom(user, room._id, {});
 		expect(livechatStub.closeRoom.notCalled).to.be.true;
 		expect(livechatRoomsStub.findOneById.calledOnceWith(room._id)).to.be.true;
-		expect(subscriptionsStub.findOneByRoomIdAndUserId.calledOnceWith(room._id, user._id)).to.be.true;
+		expect(subscriptionsStub.findOneByRoomIdAndUserId.notCalled).to.be.true;
+		expect(subscriptionsStub.countByRoomId.calledOnceWith(room._id)).to.be.true;
 		expect(subscriptionsStub.removeByRoomId.calledOnceWith(room._id)).to.be.true;
 	});
 
