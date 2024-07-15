@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Messages, Rooms } from '@rocket.chat/models';
+import { Messages, Rooms, VideoConference } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
@@ -61,7 +61,7 @@ callbacks.add(
 				await updateAndNotifyParentRoomWithParentMessage(room);
 			}
 		}
-		if (message.drid) {
+		if (message.drid && message.t !== 'videoconf') {
 			await deleteRoom(message.drid);
 		}
 		return message;
@@ -108,6 +108,8 @@ callbacks.add(
 				},
 			},
 		);
+
+		await VideoConference.unsetDiscussionRid(drid);
 		return drid;
 	},
 	callbacks.priority.LOW,

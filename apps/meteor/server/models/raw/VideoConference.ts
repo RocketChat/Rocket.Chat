@@ -21,6 +21,7 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		return [
 			{ key: { rid: 1, createdAt: 1 }, unique: false },
 			{ key: { type: 1, status: 1 }, unique: false },
+			{ key: { discussionRid: 1 }, unique: false },
 		];
 	}
 
@@ -259,6 +260,30 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			{
 				$inc: {
 					anonymousUsers: 1,
+				},
+			},
+		);
+	}
+
+	public async setDiscussionRidById(callId: string, discussionRid: IRoom['_id']): Promise<void> {
+		await this.updateOne(
+			{ _id: callId },
+			{
+				$set: {
+					discussionRid,
+				},
+			},
+		);
+	}
+
+	public async unsetDiscussionRid(discussionRid: IRoom['_id']): Promise<void> {
+		await this.updateMany(
+			{
+				discussionRid,
+			},
+			{
+				$unset: {
+					discussionRid: 1,
 				},
 			},
 		);

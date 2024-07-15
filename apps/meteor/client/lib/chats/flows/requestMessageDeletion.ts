@@ -12,7 +12,7 @@ export const requestMessageDeletion = async (chat: ChatAPI, message: IMessage): 
 		return;
 	}
 
-	const room = message.drid ? await chat.data.getDiscussionByID(message.drid) : undefined;
+	const room = message.drid && message.t !== 'videoconf' ? await chat.data.getDiscussionByID(message.drid) : undefined;
 
 	await new Promise<void>((resolve, reject) => {
 		const onConfirm = async (): Promise<void> => {

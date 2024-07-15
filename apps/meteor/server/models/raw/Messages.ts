@@ -143,6 +143,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			rid,
 			drid: { $exists: true },
 			msg: new RegExp(escapeRegExp(text), 'i'),
+			t: { $ne: 'videoconf' },
 		};
 
 		return this.findPaginated(query, options);
