@@ -679,7 +679,9 @@ class LivechatClass {
 					}
 
 					const uploadedFileBuffer = await FileUpload.getBuffer(uploadedFile);
-					filesHTML += `<div>${file.name}<img src="data:${attachment.image_type};base64,${uploadedFileBuffer.toString(
+					filesHTML += `<div styles="color: ${colors.n700}; margin-top: 4px;">${file.name}<img src="data:${
+						attachment.image_type
+					};base64,${uploadedFileBuffer.toString(
 						'base64',
 					)}" style="width: 400px; max-height: 240px; object-fit: contain; object-position: 0;"/></div>`;
 				}
