@@ -1,8 +1,10 @@
-import type { ComponentProps, FC } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import React from 'react';
 
 import Field from './Field';
 
-const ShortField: FC<ComponentProps<typeof Field>> = (props) => <Field {...props} flexGrow={1} width='50%' flexBasis={1} />;
+type ShortFieldProps = ComponentPropsWithoutRef<typeof Field>;
+
+const ShortField = (props: ShortFieldProps) => <Field {...props} flexGrow={1} width='50%' flexBasis={1} />;
 
 export default ShortField;

@@ -235,7 +235,6 @@ export type Hook =
 	| 'beforeRemoveFromRoom'
 	| 'beforeValidateLogin'
 	| 'livechat.beforeForwardRoomToDepartment'
-	| 'livechat.beforeRouteChat'
 	| 'livechat.chatQueued'
 	| 'livechat.checkAgentBeforeTakeInquiry'
 	| 'livechat.sendTranscript'
