@@ -13,7 +13,7 @@ const query = { open: { $ne: false } };
 const emptyQueue: ILivechatInquiryRecord[] = [];
 
 const order: (
-	| 'Incoming Calls'
+	| 'Incoming_Calls'
 	| 'Incoming_Livechats'
 	| 'Open_Livechats'
 	| 'On_Hold_Chats'
@@ -25,7 +25,7 @@ const order: (
 	| 'Direct_Messages'
 	| 'Conversations'
 )[] = [
-	'Incoming Calls',
+	'Incoming_Calls',
 	'Incoming_Livechats',
 	'Open_Livechats',
 	'On_Hold_Chats',
@@ -119,7 +119,7 @@ export const useRoomList = (): Array<ISubscription & IRoom> => {
 			});
 
 			const groups = new Map();
-			incomingCall.size && groups.set('Incoming Calls', incomingCall);
+			incomingCall.size && groups.set('Incoming_Calls', incomingCall);
 			showOmnichannel && inquiries.enabled && queue.length && groups.set('Incoming_Livechats', queue);
 			showOmnichannel && omnichannel.size && groups.set('Open_Livechats', omnichannel);
 			showOmnichannel && onHold.size && groups.set('On_Hold_Chats', onHold);
