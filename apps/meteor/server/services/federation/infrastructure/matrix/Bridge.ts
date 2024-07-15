@@ -68,7 +68,7 @@ export class MatrixBridge implements IFederationBridge {
 						 * https://github.com/element-hq/synapse/blob/cb6f4a84a6a8f2b79b80851f37eb5fa4c7c5264a/synapse/rest/client/appservice_ping.py#L80 - nothing done on return
 						 * https://github.com/element-hq/synapse/blob/cb6f4a84a6a8f2b79b80851f37eb5fa4c7c5264a/synapse/appservice/api.py#L321-L332 - not even returning the response, caring for just the http status code - https://github.com/element-hq/synapse/blob/cb6f4a84a6a8f2b79b80851f37eb5fa4c7c5264a/synapse/http/client.py#L532-L537
 						 */
-						res.status(200).end();
+						res.status(200).json({});
 					},
 				});
 
