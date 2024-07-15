@@ -1,6 +1,5 @@
 import type { IMessage, IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatRooms } from '@rocket.chat/models';
 
 import type { CloseRoomParams } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { settings } from '../../../../../app/settings/server';
@@ -14,31 +13,6 @@ type LivechatCloseCallbackParams = {
 };
 
 let autoTransferTimeout = 0;
-
-const handleAfterTakeInquiryCallback = async (inquiry: any = {}): Promise<any> => {
-	const { rid } = inquiry;
-	if (!rid?.trim()) {
-		return;
-	}
-
-	if (!autoTransferTimeout || autoTransferTimeout <= 0) {
-		return inquiry;
-	}
-
-	const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, autoTransferredAt: 1, autoTransferOngoing: 1 } });
-	if (!room) {
-		return inquiry;
-	}
-
-	if (room.autoTransferredAt || room.autoTransferOngoing) {
-		return inquiry;
-	}
-
-	cbLogger.info(`Room ${room._id} will be scheduled to be auto transfered after ${autoTransferTimeout} seconds`);
-	await AutoTransferChatScheduler.scheduleRoom(rid, autoTransferTimeout as number);
-
-	return inquiry;
-};
 
 const handleAfterSaveMessage = async (message: IMessage, room: IRoom | undefined): Promise<IMessage> => {
 	if (!room || !isOmnichannelRoom(room)) {
@@ -106,7 +80,21 @@ settings.watch('Livechat_auto_transfer_chat_timeout', (value) => {
 
 	callbacks.add(
 		'livechat.afterTakeInquiry',
-		handleAfterTakeInquiryCallback,
+		async ({ inquiry, room }): Promise<any> => {
+			const { rid } = inquiry;
+			if (!rid?.trim()) {
+				return;
+			}
+
+			if (room.autoTransferredAt || room.autoTransferOngoing) {
+				return inquiry;
+			}
+
+			cbLogger.info(`Room ${room._id} will be scheduled to be auto transfered after ${autoTransferTimeout} seconds`);
+			await AutoTransferChatScheduler.scheduleRoom(rid, autoTransferTimeout as number);
+
+			return inquiry;
+		},
 		callbacks.priority.MEDIUM,
 		'livechat-auto-transfer-job-inquiry',
 	);

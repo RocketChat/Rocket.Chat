@@ -318,7 +318,7 @@
   "API_EmbedCacheExpirationDays": "Įterpti talpyklos pabaigos dienas",
   "API_Enable_CORS": "Įgalinti CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Įgalinti tiesioginių žinučių istorijos baigtį",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Tai įgalina \"/ api / v1 / im.history.otherers\", leidžiančią peržiūrėti kitų naudotojų siunčiamus tiesioginius pranešimus, kurie nėra skambinančiojo dalis.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Tai įgalina \"/ api / v1 / im.messages.otherers\", leidžiančią peržiūrėti kitų naudotojų siunčiamus tiesioginius pranešimus, kurie nėra skambinančiojo dalis.",
   "API_Enable_Shields": "Įjungti skydus",
   "API_Enable_Shields_Description": "Įjungti skydus, esančius \"/ api / v1 / shield.svg\"",
   "API_GitHub_Enterprise_URL": "Serverio URL",
