@@ -42,6 +42,7 @@
   "Accounts_AvatarCacheTime_description": "Anzahl der Sekunden, die das HTTP-Protokoll zum Zwischenspeichern der Avatarbilder benötigt.",
   "Accounts_AvatarExternalProviderUrl": "Adresse des externen Avatar-Dienstanbieters",
   "Accounts_AvatarExternalProviderUrl_Description": "Beispiel: `https://acme.com/api/v1/{username}`",
+  "Accounts_AvatarExternalProviderProxy": "Proxy-Zugriff auf Avatare",
   "Accounts_AvatarResize": "Größe des Profilbilds anpassen",
   "Accounts_AvatarSize": "Größe des Profilbilds",
   "Accounts_BlockedDomainsList": "Liste geblockter Domains",
