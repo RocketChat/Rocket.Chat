@@ -193,7 +193,7 @@ export async function createContact(params: CreateContactParams): Promise<string
 	const { name, emails, phones, customFields = {}, contactManager, channels, unknown } = params;
 
 	if (contactManager) {
-		const contactManagerUser = await Users.findOneById<Pick<IUser, 'roles'>>(contactManager, { projection: { roles: 1 } });
+		const contactManagerUser = await Users.findOneAgentById<Pick<IUser, 'roles'>>(contactManager, { projection: { roles: 1 } });
 		await validateContactManager(contactManagerUser);
 	}
 
@@ -276,8 +276,5 @@ export function validateCustomFields(allowedCustomFields: ILivechatCustomField[]
 export async function validateContactManager(user: Pick<IUser, 'roles'> | null) {
 	if (!user) {
 		throw new Error('error-contact-manager-not-found');
-	}
-	if (!user.roles || !Array.isArray(user.roles) || !user.roles.includes('livechat-agent')) {
-		throw new Error('error-invalid-contact-manager');
 	}
 }

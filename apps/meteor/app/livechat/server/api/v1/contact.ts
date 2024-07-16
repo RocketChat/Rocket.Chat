@@ -15,7 +15,7 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		permissionsRequired: ['view-l-room'],
-		deprecation: { version: '8.0.0', message: 'Use the omnichannel/contacts endpoint instead' },
+		deprecation: { version: '8.0.0', alternatives: ['omnichannel/contacts'] },
 	},
 	{
 		async post() {

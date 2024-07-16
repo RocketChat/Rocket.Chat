@@ -101,7 +101,7 @@ describe('LIVECHAT - contacts', () => {
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error');
-			expect(res.body.error).to.be.equal('error-invalid-contact-manager');
+			expect(res.body.error).to.be.equal('error-contact-manager-not-found');
 
 			await deleteUser(normalUser);
 		});
