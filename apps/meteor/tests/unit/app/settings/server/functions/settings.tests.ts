@@ -3,20 +3,32 @@ import { beforeEach, describe, it } from 'mocha';
 
 import { CachedSettings } from '../../../../../../app/settings/server/CachedSettings';
 import { SettingsRegistry } from '../../../../../../app/settings/server/SettingsRegistry';
+import { getSettingDefaults } from '../../../../../../app/settings/server/functions/getSettingDefaults';
 import { Settings } from '../../../../../../app/settings/server/functions/settings.mocks';
+
+const testSetting = getSettingDefaults({
+	_id: 'my_dummy_setting',
+	type: 'string',
+	value: 'dummy',
+});
+
+const settings = new CachedSettings();
+settings.initialized();
+
+Settings.settings = settings;
+
+const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
 describe('Settings', () => {
 	beforeEach(() => {
+		settings.store.clear();
 		Settings.insertCalls = 0;
 		Settings.upsertCalls = 0;
+		Settings.data.clear();
 		process.env = {};
 	});
 
 	it('should not insert the same setting twice', async () => {
-		const settings = new CachedSettings();
-		Settings.settings = settings;
-		settings.initialized();
-		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 		await settingsRegistry.addGroup('group', async function () {
 			await this.section('section', async function () {
 				await this.add('my_setting', true, {
@@ -76,11 +88,6 @@ describe('Settings', () => {
 	});
 
 	it('should respect override via environment as int', async () => {
-		const settings = new CachedSettings();
-		Settings.settings = settings;
-		settings.initialized();
-		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
-
 		process.env.OVERWRITE_SETTING_my_setting = '1';
 
 		await settingsRegistry.addGroup('group', async function () {
@@ -136,10 +143,6 @@ describe('Settings', () => {
 	it('should respect override via environment as boolean', async () => {
 		process.env.OVERWRITE_SETTING_my_setting_bool = 'true';
 
-		const settings = new CachedSettings();
-		Settings.settings = settings;
-		settings.initialized();
-		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 		await settingsRegistry.addGroup('group', async function () {
 			await this.section('section', async function () {
 				await this.add('my_setting_bool', false, {
@@ -193,10 +196,6 @@ describe('Settings', () => {
 	it('should respect override via environment as string', async () => {
 		process.env.OVERWRITE_SETTING_my_setting_str = 'hey';
 
-		const settings = new CachedSettings();
-		Settings.settings = settings;
-		settings.initialized();
-		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 		await settingsRegistry.addGroup('group', async function () {
 			await this.section('section', async function () {
 				await this.add('my_setting_str', '', {
@@ -249,10 +248,6 @@ describe('Settings', () => {
 	});
 
 	it('should work with a setting type multiSelect with a default value', async () => {
-		const settings = new CachedSettings();
-		Settings.settings = settings;
-		settings.initialized();
-		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 		await settingsRegistry.addGroup('group', async function () {
 			await this.section('section', async function () {
 				await this.add('my_setting_multiselect', ['a'], {
@@ -273,11 +268,6 @@ describe('Settings', () => {
 	});
 	it('should respect override via environment as multiSelect', async () => {
 		process.env.OVERWRITE_SETTING_my_setting_multiselect = '["a","b"]';
-
-		const settings = new CachedSettings();
-		Settings.settings = settings;
-		settings.initialized();
-		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
 		await settingsRegistry.addGroup('group', async function () {
 			await this.section('section', async function () {
@@ -303,11 +293,6 @@ describe('Settings', () => {
 	it('should ignore override via environment as multiSelect if value is invalid', async () => {
 		process.env.OVERWRITE_SETTING_my_setting_multiselect = '[INVALID_ARRAY]';
 
-		const settings = new CachedSettings();
-		Settings.settings = settings;
-		settings.initialized();
-		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
-
 		await settingsRegistry.addGroup('group', async function () {
 			await this.section('section', async function () {
 				await this.add('my_setting_multiselect', ['a'], {
@@ -331,10 +316,6 @@ describe('Settings', () => {
 
 	it('should respect initial value via environment', async () => {
 		process.env.my_setting = '1';
-		const settings = new CachedSettings();
-		Settings.settings = settings;
-		settings.initialized();
-		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
 		await settingsRegistry.addGroup('group', async function () {
 			await this.section('section', async function () {
@@ -381,11 +362,6 @@ describe('Settings', () => {
 	});
 
 	it('should respect override via environment when changing settings props', async () => {
-		const settings = new CachedSettings();
-		Settings.settings = settings;
-		settings.initialized();
-		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
-
 		await settingsRegistry.addGroup('group', async function () {
 			await this.section('section', async function () {
 				await this.add('my_setting', 0, {
@@ -440,13 +416,38 @@ describe('Settings', () => {
 			.to.not.have.any.keys('section');
 	});
 
+	it('should ignore setting object from code if only value changes and setting already stored', async () => {
+		settings.set(testSetting);
+
+		const settingFromCodeFaked = { ...testSetting, value: Date.now().toString() };
+
+		await settingsRegistry.add(settingFromCodeFaked._id, settingFromCodeFaked.value, settingFromCodeFaked);
+
+		expect(Settings.insertCalls).to.be.equal(0);
+		expect(Settings.upsertCalls).to.be.equal(0);
+	});
+
+	it('should ignore value from environment if setting is already stored in cache', async () => {
+		settings.set(testSetting);
+
+		process.env[testSetting._id] = Date.now().toString();
+
+		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
+
+		expect(settings.get(testSetting._id)).to.be.equal(testSetting.value);
+	});
+
+	it('should update cached value with OVERWRITE_SETTING value even if both with-prefixed and without-prefixed variables exist', async () => {
+		process.env[`OVERWRITE_SETTING_${testSetting._id}`] = Date.now().toString();
+		process.env[testSetting._id] = Date.now().toString();
+
+		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
+
+		expect(Settings.findOne({ _id: testSetting._id }).value).to.be.equal(process.env[`OVERWRITE_SETTING_${testSetting._id}`]);
+	});
+
 	it('should call `settings.get` callback on setting added', async () => {
 		return new Promise(async (resolve) => {
-			const settings = new CachedSettings();
-			Settings.settings = settings;
-			settings.initialized();
-			const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
-
 			const spiedCallback1 = spy();
 			const spiedCallback2 = spy();
 
@@ -475,9 +476,6 @@ describe('Settings', () => {
 		return new Promise(async (resolve) => {
 			const spiedCallback1 = spy();
 			const spiedCallback2 = spy();
-			const settings = new CachedSettings();
-			Settings.settings = settings;
-			const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
 			settings.watch('setting_callback', spiedCallback1, { debounce: 1 });
 			settings.watchByRegex(/setting_callback/gi, spiedCallback2, { debounce: 1 });
