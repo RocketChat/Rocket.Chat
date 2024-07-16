@@ -24,10 +24,9 @@ accounts-oauth@1.4.4
 accounts-password@2.4.0
 accounts-twitter@1.5.0
 
-pauli:accounts-linkedin
-google-oauth@1.4.4
-oauth@2.2.1
-oauth2@1.3.2
+google-oauth@1.4.5
+oauth@3.0.0
+oauth2@1.3.3
 
 check@1.4.1
 ddp-rate-limiter@1.2.1
