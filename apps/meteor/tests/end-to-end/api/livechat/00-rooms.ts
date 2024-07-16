@@ -386,7 +386,7 @@ describe('LIVECHAT - rooms', () => {
 				const visitor = await createVisitor();
 				const room2 = await createLivechatRoom(visitor.token);
 
-				const { body } = await request.get(api('livechat/rooms')).query({ queued: true, onHold: true }).set(credentials).expect(200);
+				const { body } = await request.get(api('livechat/rooms')).query({ queued: true, onhold: true }).set(credentials).expect(200);
 
 				expect(body.rooms.every((room: IOmnichannelRoom) => room.open)).to.be.true;
 				expect(body.rooms.every((room: IOmnichannelRoom) => !room.servedBy)).to.be.true;
