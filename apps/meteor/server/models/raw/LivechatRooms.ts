@@ -1285,6 +1285,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (queued) {
 			query.servedBy = { $exists: false };
 			query.open = true;
+			query.onHold = { $ne: true };
 		}
 
 		return this.findPaginated(query, {
