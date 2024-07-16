@@ -168,7 +168,7 @@ export class SettingsRegistry {
 
 			const { value: settingForCache } = await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
 
-			if (settingForCache === undefined || settingForCache === null) {
+			if (!settingForCache) {
 				// unreachable
 				throw new Error('No document returned after setting was updated due to metadata change, something is wrong with code');
 			}
@@ -187,7 +187,7 @@ export class SettingsRegistry {
 
 				const { value: settingForCache } = await this.saveUpdatedSetting(_id, settingProps, removedKeys);
 
-				if (settingForCache === undefined || settingForCache === null) {
+				if (!settingForCache) {
 					// unreachable
 					throw new Error('No document returned due to an OVERWRITE, something is wrong with the code');
 				}

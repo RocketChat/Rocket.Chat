@@ -77,7 +77,7 @@ class SettingsClass {
 
 	findOneAndUpdate({ _id }: { _id: string }, value: any, options?: any) {
 		this.updateOne({ _id }, value, options);
-		return { value: this.settings.get(_id) };
+		return { value: this.findOne({ _id }) };
 	}
 
 	updateValueById(id: string, value: any): void {
