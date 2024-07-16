@@ -3,8 +3,8 @@ import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { sendSimpleMessage } from '../../data/chat.helper.js';
+import { getCredentials, api, request, credentials } from '../../data/api-data.ts';
+import { sendSimpleMessage } from '../../data/chat.helper.ts';
 import { updatePermission } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 
