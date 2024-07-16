@@ -69,7 +69,7 @@ ENV NODE_ENV=production \
 WORKDIR /app/apps/meteor/ee/server/services
 
 RUN apk update && \
-    apk --no-cache --virtual build-dependencies add g++ python3 make && \
+    apk --no-cache --virtual build-dependencies add g++ python3 make py3-setuptools && \
     yarn workspaces focus --production && \
     rm -rf /var/cache/apk/* && \
     apk del build-dependencies

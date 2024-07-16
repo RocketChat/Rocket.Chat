@@ -70,7 +70,7 @@ ENV DEPLOY_METHOD=docker \
     Accounts_AvatarStorePath=/app/uploads
 
 RUN set -x \
-    && apk add --no-cache --virtual .fetch-deps python3 make g++ \
+    && apk add --no-cache --virtual .fetch-deps python3 make g++ py3-setuptools \
     && cd /app/bundle/programs/server \
     && npm install --omit=dev --unsafe-perm \
     # Start hack for sharp...
