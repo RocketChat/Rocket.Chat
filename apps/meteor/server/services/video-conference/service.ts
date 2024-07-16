@@ -892,19 +892,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		const title = isGroupVideoConference(call) ? call.title || (await this.getRoomName(call.rid)) : '';
 
-		return (await this.getProviderManager())
-			.generateUrl(call.providerName, {
-				_id: call._id,
-				type: call.type,
-				rid: call.rid,
-				createdBy: call.createdBy as Required<VideoConference['createdBy']>,
-				title,
-				providerData: call.providerData,
-				discussionRid: call.discussionRid,
-			})
-			.catch((e) => {
-				throw new Error(e);
-			});
+		return (await this.getProviderManager()).generateUrl(call.providerName, {
+			_id: call._id,
+			type: call.type,
+			rid: call.rid,
+			createdBy: call.createdBy as Required<VideoConference['createdBy']>,
+			title,
+			providerData: call.providerData,
+			discussionRid: call.discussionRid,
+		});
 	}
 
 	private async getCallTitleForUser(call: VideoConference, userId?: IUser['_id']): Promise<string> {
