@@ -1,7 +1,7 @@
 import { Omnichannel } from '@rocket.chat/core-services';
 import type { ILivechatAgent, IUser, SelectedAgent, TransferByData } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatVisitors, Users, LivechatRooms, Subscriptions, Messages } from '@rocket.chat/models';
+import { LivechatVisitors, Users, LivechatRooms, Messages } from '@rocket.chat/models';
 import {
 	isLiveChatRoomForwardProps,
 	isPOSTLivechatRoomCloseParams,
@@ -21,6 +21,7 @@ import { isWidget } from '../../../../api/server/helpers/isWidget';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../../authorization/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../../../../lib/server/functions/addUserToRoom';
+import { closeLivechatRoom } from '../../../../lib/server/functions/closeLivechatRoom';
 import { settings as rcSettings } from '../../../../settings/server';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import type { CloseRoomParams } from '../../lib/LivechatTyped';
@@ -178,51 +179,7 @@ API.v1.addRoute(
 		async post() {
 			const { rid, comment, tags, generateTranscriptPdf, transcriptEmail } = this.bodyParams;
 
-			const room = await LivechatRooms.findOneById(rid);
-			if (!room || !isOmnichannelRoom(room)) {
-				throw new Error('error-invalid-room');
-			}
-
-			if (!room.open) {
-				throw new Error('error-room-already-closed');
-			}
-
-			const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, this.userId, { projection: { _id: 1 } });
-			if (!subscription && !(await hasPermissionAsync(this.userId, 'close-others-livechat-room'))) {
-				throw new Error('error-not-authorized');
-			}
-
-			const options: CloseRoomParams['options'] = {
-				clientAction: true,
-				tags,
-				...(generateTranscriptPdf && { pdfTranscript: { requestedBy: this.userId } }),
-				...(transcriptEmail && {
-					...(transcriptEmail.sendToVisitor
-						? {
-								emailTranscript: {
-									sendToVisitor: true,
-									requestData: {
-										email: transcriptEmail.requestData.email,
-										subject: transcriptEmail.requestData.subject,
-										requestedAt: new Date(),
-										requestedBy: this.user,
-									},
-								},
-						  }
-						: {
-								emailTranscript: {
-									sendToVisitor: false,
-								},
-						  }),
-				}),
-			};
-
-			await LivechatTyped.closeRoom({
-				room,
-				user: this.user,
-				options,
-				comment,
-			});
+			await closeLivechatRoom(this.user, rid, { comment, tags, generateTranscriptPdf, transcriptEmail });
 
 			return API.v1.success();
 		},
