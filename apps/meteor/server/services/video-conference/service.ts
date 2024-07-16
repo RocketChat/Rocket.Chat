@@ -891,8 +891,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		const title = isGroupVideoConference(call) ? call.title || (await this.getRoomName(call.rid)) : '';
-
-		return (await this.getProviderManager()).generateUrl(call.providerName, {
+		const callData = {
 			_id: call._id,
 			type: call.type,
 			rid: call.rid,
@@ -900,7 +899,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			title,
 			providerData: call.providerData,
 			discussionRid: call.discussionRid,
-		});
+		};
+
+		return (await this.getProviderManager()).generateUrl(call.providerName, callData);
 	}
 
 	private async getCallTitleForUser(call: VideoConference, userId?: IUser['_id']): Promise<string> {
