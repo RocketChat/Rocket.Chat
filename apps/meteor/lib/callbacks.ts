@@ -60,7 +60,10 @@ interface EventLikeCallbackSignatures {
 	'livechat.afterTakeInquiry': (inq: InquiryWithAgentInfo, agent: { agentId: string; username: string }) => void;
 	'livechat.afterAgentRemoved': (params: { agent: Pick<IUser, '_id' | 'username'> }) => void;
 	'afterAddedToRoom': (params: { user: IUser; inviter?: IUser }, room: IRoom) => void;
-	'beforeAddedToRoom': (params: { user: AtLeast<IUser, '_id' | 'federated' | 'roles'>; inviter: IUser }) => void;
+	'beforeAddedToRoom': (params: {
+		user: AtLeast<IUser, '_id' | 'federated' | 'roles'>;
+		inviter: AtLeast<IUser, '_id' | 'username'>;
+	}) => void;
 	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[]; creatorId: IUser['_id'] }) => void;
 	'beforeDeleteRoom': (params: IRoom) => void;
 	'beforeJoinDefaultChannels': (user: IUser) => void;

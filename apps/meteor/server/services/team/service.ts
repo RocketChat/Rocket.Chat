@@ -718,7 +718,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		for await (const member of members) {
 			const user = (await Users.findOneById(member.userId, { projection: { username: 1 } })) as Pick<IUser, '_id' | 'username'>;
-			await addUserToRoom(team.roomId, user, createdBy, false);
+			await addUserToRoom(team.roomId, user, createdBy, { skipSystemMessage: false });
 
 			if (member.roles) {
 				await this.addRolesToMember(teamId, member.userId, member.roles);
@@ -826,7 +826,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					return;
 				}
 
-				await addUserToRoom(team.roomId, user, inviter, false);
+				await addUserToRoom(team.roomId, user, inviter, { skipSystemMessage: false });
 			}),
 		);
 	}
@@ -977,7 +977,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			// at this point, users are already part of the team so we won't check for membership
 			for await (const user of users) {
 				// add each user to the default room
-				await addUserToRoom(room._id, user, inviter, false);
+				await addUserToRoom(room._id, user, inviter, { skipSystemMessage: false });
 			}
 		});
 	}

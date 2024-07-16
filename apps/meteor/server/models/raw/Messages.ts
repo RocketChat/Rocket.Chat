@@ -1757,4 +1757,11 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 		return this.updateOne(query, update);
 	}
+
+	setDiscussionRidById(messageId: string, drid: string | undefined): Promise<UpdateResult> {
+		const query = { _id: messageId };
+		const update: UpdateFilter<IMessage> = drid === undefined ? { $unset: { drid: true } } : { $set: { drid } };
+
+		return this.updateOne(query, update);
+	}
 }

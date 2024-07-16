@@ -1,7 +1,7 @@
 import { Apps } from '@rocket.chat/apps';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, Room } from '@rocket.chat/core-services';
 import type {
 	IDirectVideoConference,
 	ILivechatVideoConference,
@@ -1035,6 +1035,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		call: Optional<VideoConference, 'providerData'>,
 		{ _id, username, name, avatarETag, ts }: AtLeast<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'> & { ts?: Date },
 	): Promise<void> {
+		// If the call has a discussion, ensure the user is subscribed to it;
+		// This is done even if the user has already joined the call before, so they can be added back if they had left the discussion.
+		if (call.discussionRid) {
+			await this.addUserToDiscussion(call.discussionRid, _id);
+		}
+
 		if (call.users.find((user) => user._id === _id)) {
 			return;
 		}
@@ -1098,7 +1104,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('invalid-video-conference');
 		}
 
-		// If there's already a discusison assigned to it, do not create a new one
+		// If there's already a discussion assigned to it, do not create a new one
 		if (call.discussionRid) {
 			return;
 		}
@@ -1164,8 +1170,40 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	private async assignDiscussionToConference(rid: IRoom['_id'], callId: VideoConference['_id']): Promise<void> {
 		await VideoConferenceModel.setDiscussionRidById(callId, rid);
 
-		// const call = await VideoConferenceModel.findOneById(callId, { projection: { users: 1 } });
-		// #ToDo: Automatically add users to the discussion
-		// If the call already has a message, update that message too
+		const call = await VideoConferenceModel.findOneById(callId, { projection: { users: 1, messages: 1 } });
+		if (!call) {
+			return;
+		}
+
+		// If the call already has a message, set the discussion id to it
+		if (call.messages?.started) {
+			try {
+				await Messages.setDiscussionRidById(call.messages.started, rid);
+			} catch (error) {
+				logger.error({
+					name: 'Error trying to assign discussion to videoconf message',
+					error,
+					rid,
+					callId,
+					call,
+				});
+			}
+		}
+
+		await Promise.all(call.users.map(({ _id }) => this.addUserToDiscussion(rid, _id)));
+	}
+
+	private async addUserToDiscussion(rid: IRoom['_id'], uid: IUser['_id']): Promise<void> {
+		try {
+			await Room.addUserToRoom(rid, { _id: uid }, undefined, { skipAlertSound: true });
+		} catch (error) {
+			// Ignore any errors here so that the subscription doesn't block the user from participating in the conference.
+			logger.error({
+				name: 'Error trying to subscribe user to discussion',
+				error,
+				rid,
+				uid,
+			});
+		}
 	}
 }
