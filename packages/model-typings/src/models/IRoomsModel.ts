@@ -276,6 +276,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	removeById(rid: string): Promise<DeleteResult>;
 	removeByIds(rids: string[]): Promise<DeleteResult>;
 	removeDirectRoomContainingUsername(username: string): Promise<DeleteResult>;
+	removeUsernameFromMutedAndUnmutedByRoomId(_id: string, username: string): Promise<UpdateResult>;
 	countDiscussions(): Promise<number>;
 	setOTRForDMByRoomID(rid: string): Promise<UpdateResult>;
 	addUserIdToE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult>;
