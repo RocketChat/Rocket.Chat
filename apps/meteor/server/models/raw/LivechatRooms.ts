@@ -3,7 +3,6 @@ import type {
 	RocketChatRecordDeleted,
 	IOmnichannelRoomClosingInfo,
 	DeepWritable,
-	ISetting,
 	IMessage,
 	ILivechatPriority,
 	IOmnichannelServiceLevelAgreements,
@@ -1853,18 +1852,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	async updateRoomCount() {
-		const query: Filter<ISetting> = {
-			_id: 'Livechat_Room_Count',
-		};
-
-		const update: UpdateFilter<ISetting> = {
-			$inc: {
-				// @ts-expect-error - Caused by `OnlyFieldsOfType` on mongo which excludes `SettingValue` from $inc
-				value: 1,
-			},
-		};
-
-		const livechatCount = await Settings.findOneAndUpdate(query, update, { returnDocument: 'after' });
+		const livechatCount = await Settings.incrementValueById('Livechat_Room_Count', 1, { returnDocument: 'after' });
 		return livechatCount.value;
 	}
 
@@ -2296,14 +2284,10 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				servedBy: {
 					_id: newAgent.agentId,
 					username: newAgent.username,
-					ts: new Date(),
+					ts: newAgent.ts ?? new Date(),
 				},
 			},
 		};
-
-		if (newAgent.ts) {
-			update.$set.servedBy.ts = newAgent.ts;
-		}
 
 		return this.updateOne(query, update);
 	}

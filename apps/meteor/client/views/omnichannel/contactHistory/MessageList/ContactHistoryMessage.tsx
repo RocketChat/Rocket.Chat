@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import { isQuoteAttachment, type IMessage, type MessageAttachment } from '@rocket.chat/core-typings';
 import {
 	Message as MessageTemplate,
 	MessageLeftContainer,
@@ -19,7 +19,6 @@ import {
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React, { memo } from 'react';
 
 import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
@@ -31,17 +30,23 @@ import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
 import { useUserCard } from '../../../room/contexts/UserCardContext';
 
-const ContactHistoryMessage: FC<{
+type ContactHistoryMessageProps = {
 	message: IMessage;
 	sequential: boolean;
 	isNewDay: boolean;
 	showUserAvatar: boolean;
-}> = ({ message, sequential, isNewDay, showUserAvatar }) => {
+};
+
+const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }: ContactHistoryMessageProps) => {
 	const t = useTranslation();
 	const { triggerProps, openUserCard } = useUserCard();
 
 	const format = useFormatDate();
 	const formatTime = useFormatTime();
+
+	const quotes = message?.attachments?.filter(isQuoteAttachment) || [];
+
+	const attachments = message?.attachments?.filter((attachment: MessageAttachment) => !isQuoteAttachment(attachment)) || [];
 
 	if (message.t === 'livechat-close') {
 		return (
@@ -104,13 +109,14 @@ const ContactHistoryMessage: FC<{
 							<StatusIndicators message={message} />
 						</MessageHeaderTemplate>
 					)}
+					{!!quotes?.length && <Attachments attachments={quotes} />}
 					{!message.blocks && message.md && (
 						<MessageBody data-qa-type='message-body' dir='auto'>
 							<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
 						</MessageBody>
 					)}
 					{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
-					{message.attachments && <Attachments attachments={message.attachments} />}
+					{!!attachments && <Attachments attachments={attachments} />}
 				</MessageContainer>
 			</MessageTemplate>
 		</>

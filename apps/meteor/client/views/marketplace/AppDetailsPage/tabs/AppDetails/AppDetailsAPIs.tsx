@@ -1,7 +1,6 @@
 import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import { Box } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React, { Fragment } from 'react';
 
 import { apiCurlGetter } from '../../../helpers/apiCurlGetter';
@@ -10,7 +9,7 @@ type AppDetailsAPIsProps = {
 	apis: IApiEndpointMetadata[];
 };
 
-const AppDetailsAPIs: FC<AppDetailsAPIsProps> = ({ apis }) => {
+const AppDetailsAPIs = ({ apis }: AppDetailsAPIsProps) => {
 	const t = useTranslation();
 	const absoluteUrl = useAbsoluteUrl();
 	const getApiCurl = apiCurlGetter(absoluteUrl);

@@ -2,7 +2,7 @@ import { Button, Modal } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, ComponentProps, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
 import React from 'react';
 
 import type { RequiredModalProps } from './withDoNotAskAgain';
@@ -22,7 +22,7 @@ type GenericModalProps = RequiredModalProps & {
 	onCancel?: () => Promise<void> | void;
 	onClose?: () => Promise<void> | void;
 	annotation?: ReactNode;
-} & Omit<ComponentProps<typeof Modal>, 'title'>;
+} & Omit<ComponentPropsWithoutRef<typeof Modal>, 'title'>;
 
 const iconMap: Record<string, IconName> = {
 	danger: 'modal-warning',
@@ -58,7 +58,7 @@ const renderIcon = (icon: GenericModalProps['icon'], variant: VariantType): Reac
 	return icon;
 };
 
-const GenericModal: FC<GenericModalProps> = ({
+const GenericModal = ({
 	variant = 'info',
 	children,
 	cancelText,
@@ -74,7 +74,7 @@ const GenericModal: FC<GenericModalProps> = ({
 	wrapperFunction,
 	annotation,
 	...props
-}) => {
+}: GenericModalProps) => {
 	const t = useTranslation();
 	const genericModalId = useUniqueId();
 
