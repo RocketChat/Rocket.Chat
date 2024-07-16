@@ -75,6 +75,11 @@ class SettingsClass {
 		this.upsertCalls++;
 	}
 
+	findOneAndUpdate({ _id }: { _id: string }, value: any, options?: any) {
+		this.updateOne({ _id }, value, options);
+		return { value: this.settings.get(_id) };
+	}
+
 	updateValueById(id: string, value: any): void {
 		this.data.set(id, { ...this.data.get(id), value });
 
