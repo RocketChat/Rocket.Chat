@@ -23,7 +23,7 @@ import {
 	useSetModal,
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React, { useMemo, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { OutgoingByeRequest } from 'sip.js/lib/core';
@@ -40,7 +40,11 @@ import { useVoipSounds } from './hooks/useVoipSounds';
 
 type NetworkState = 'online' | 'offline';
 
-export const CallProvider: FC = ({ children }) => {
+type CallProviderProps = {
+	children?: ReactNode;
+};
+
+export const CallProvider = ({ children }: CallProviderProps) => {
 	const [clientState, setClientState] = useState<'registered' | 'unregistered'>('unregistered');
 
 	const voipEnabled = useSetting('VoIP_Enabled');

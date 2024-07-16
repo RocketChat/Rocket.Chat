@@ -1,3 +1,5 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team } from '@rocket.chat/core-services';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
@@ -75,6 +77,16 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		}
 	}
 
+	try {
+		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserLeave, room, removedUser, fromUser);
+	} catch (error: any) {
+		if (error.name === AppsEngineException.name) {
+			throw new Meteor.Error('error-app-prevented', error.message);
+		}
+
+		throw error;
+	}
+
 	await callbacks.run('beforeRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 
 	await Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
@@ -98,6 +110,8 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		void afterRemoveFromRoomCallback.run({ removedUser, userWhoRemoved: fromUser }, room);
 		void notifyOnRoomChanged(room);
 	});
+
+	await Apps.self?.triggerEvent(AppEvents.IPostRoomUserLeave, room, removedUser, fromUser);
 
 	return true;
 };

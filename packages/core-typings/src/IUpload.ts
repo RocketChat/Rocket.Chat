@@ -56,6 +56,9 @@ export interface IUpload {
 		iv: string;
 		key: JsonWebKey;
 	};
+	hashes?: {
+		sha256: string;
+	};
 }
 
 export type IUploadWithUser = IUpload & { user?: Pick<IUser, '_id' | 'name' | 'username'> };

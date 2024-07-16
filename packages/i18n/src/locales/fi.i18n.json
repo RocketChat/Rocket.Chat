@@ -431,7 +431,7 @@
   "API_EmbedCacheExpirationDays": "Upota välimuistin vanhenemispäivät",
   "API_Enable_CORS": "Ota käyttöön CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Ota käyttöön suorien viestien historian päätepiste",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Tämä sallii kohteen `/api/v1/im.history.others`, jonka avulla voidaan tarkastella muiden käyttäjien kuin soittajan suoria viestejä.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Tämä sallii kohteen `/api/v1/im.messages.others`, jonka avulla voidaan tarkastella muiden käyttäjien kuin soittajan suoria viestejä.",
   "API_Enable_Personal_Access_Tokens": "Salli henkilökohtaiset käyttöoikeustietueet REST APIssa",
   "API_Enable_Personal_Access_Tokens_Description": "Salli henkilökohtaisten käyttöoikeustietueiden käyttö REST APIssa",
   "API_Enable_Rate_Limiter": "Ota käyttöön nopeudenrajoitin",
