@@ -425,7 +425,7 @@ export const createOmniSettings = () =>
 			group: 'Omnichannel',
 			public: true,
 			enableQuery: [{ _id: 'Livechat_enable_transcript', value: true }, omnichannelEnabledQuery],
-		})
+		});
 
 		await this.add('Omnichannel_enable_department_removal', false, {
 			type: 'boolean',
