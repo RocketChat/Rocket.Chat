@@ -102,7 +102,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				error: e,
 			});
 			throw e;
-		})
+		});
 	}
 
 	// VideoConference.start: Detect the desired type and provider then start a video conference using them
@@ -133,7 +133,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				error: e,
 			});
 			throw e;
-		})
+		});
 	}
 
 	public async join(uid: IUser['_id'] | undefined, callId: VideoConference['_id'], options: VideoConferenceJoinOptions): Promise<string> {
@@ -900,6 +900,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				createdBy: call.createdBy as Required<VideoConference['createdBy']>,
 				title,
 				providerData: call.providerData,
+				discussionRid: call.discussionRid,
 			})
 			.catch((e) => {
 				throw new Error(e);
@@ -970,6 +971,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				...{ customCallTitle: await this.getCallTitleForUser(call, user?._id) },
 			},
 			title: await this.getCallTitle(call),
+			discussionRid: call.discussionRid,
 		};
 
 		const userData = user && {
@@ -978,9 +980,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			name: user.name as string,
 		};
 
-		return (await this.getProviderManager()).customizeUrl(call.providerName, callData, userData, options).catch((e) => {
-			throw new Error(e);
-		});
+		return (await this.getProviderManager()).customizeUrl(call.providerName, callData, userData, options);
 	}
 
 	private async runNewVideoConferenceEvent(callId: VideoConference['_id']): Promise<void> {
@@ -994,9 +994,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
-		(await this.getProviderManager()).onNewVideoConference(call.providerName, call).catch((e) => {
-			throw new Error(e);
-		});
+		return (await this.getProviderManager()).onNewVideoConference(call.providerName, call);
 	}
 
 	private async runVideoConferenceChangedEvent(callId: VideoConference['_id']): Promise<void> {
@@ -1010,9 +1008,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
-		(await this.getProviderManager()).onVideoConferenceChanged(call.providerName, call).catch((e) => {
-			throw new Error(e);
-		});
+		return (await this.getProviderManager()).onVideoConferenceChanged(call.providerName, call);
 	}
 
 	private async runOnUserJoinEvent(callId: VideoConference['_id'], user?: IVideoConferenceUser): Promise<void> {
@@ -1026,9 +1022,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
-		(await this.getProviderManager()).onUserJoin(call.providerName, call, user).catch((e) => {
-			throw new Error(e);
-		});
+		return (await this.getProviderManager()).onUserJoin(call.providerName, call, user);
 	}
 
 	private async addUserToCall(
@@ -1081,17 +1075,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async isPersistentChatEnabled(): Promise<boolean> {
-		if (!settings.get<boolean>('VideoConf_Enable_Persistent_Chat')) {
-			return false;
-		}
-
-		if (!settings.get<boolean>('Discussion_enabled')) {
-			return false;
-		}
-
-		// #TODO: Check if the provider app supports the persitent chat capability
-
-		return true;
+		return settings.get<boolean>('VideoConf_Enable_Persistent_Chat') && settings.get<boolean>('Discussion_enabled');
 	}
 
 	private async maybeCreateDiscussion(callId: VideoConference['_id'], createdBy?: IUser): Promise<void> {
@@ -1099,7 +1083,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, createdBy: 1, discussionRid: 1 } });
+		const call = await VideoConferenceModel.findOneById(callId, {
+			projection: { rid: 1, createdBy: 1, discussionRid: 1, providerName: 1 },
+		});
 		if (!call) {
 			throw new Error('invalid-video-conference');
 		}
@@ -1109,13 +1095,21 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
+		// If the call provider does not explicitly support persistent chat, do not create discussions
+		if (!videoConfProviders.getProviderCapabilities(call.providerName)?.persistentChat) {
+			return;
+		}
+
 		const name = settings.get<string>('VideoConf_Persistent_Chat_Discussion_Name') || i18n.t('Conference Call Chat History');
 		const displayName = `${name} - ${new Date().toISOString().substring(0, 10)}`;
 
 		await this.createDiscussionForConference(displayName, call, createdBy);
 	}
 
-	private async getRoomForDiscussion(baseRoom: IRoom['_id'], childRoomIds: IRoom['_id'][] = []): Promise<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>> {
+	private async getRoomForDiscussion(
+		baseRoom: IRoom['_id'],
+		childRoomIds: IRoom['_id'][] = [],
+	): Promise<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>> {
 		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>>(baseRoom, {
 			projection: { t: 1, teamId: 1, prid: 1 },
 		});
@@ -1164,19 +1158,27 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			},
 		);
 
-		return this.assignDiscussionToConference(discussion._id, call._id);
+		return this.assignDiscussionToConference(call._id, discussion._id);
 	}
 
-	private async assignDiscussionToConference(rid: IRoom['_id'], callId: VideoConference['_id']): Promise<void> {
-		await VideoConferenceModel.setDiscussionRidById(callId, rid);
+	public async assignDiscussionToConference(callId: VideoConference['_id'], rid: IRoom['_id'] | undefined): Promise<void> {
+		// Ensures the specified rid is a valid room
+		const room = rid ? await Rooms.findOneById<Pick<IRoom, '_id' | 'prid'>>(rid, { projection: { prid: 1 } }) : null;
+		if (rid && !room) {
+			throw new Error('invalid-room-id');
+		}
 
 		const call = await VideoConferenceModel.findOneById(callId, { projection: { users: 1, messages: 1 } });
 		if (!call) {
 			return;
 		}
 
+		await VideoConferenceModel.setDiscussionRidById(callId, rid);
+
 		// If the call already has a message, set the discussion id to it
-		if (call.messages?.started) {
+		// Only assign the discussion to the message if the conference is on the discussion's parent room.
+		// Otherwise the message count would never get updated in that message.
+		if (call.messages?.started && (!rid || room?.prid === call.rid)) {
 			try {
 				await Messages.setDiscussionRidById(call.messages.started, rid);
 			} catch (error) {
@@ -1190,7 +1192,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 		}
 
-		await Promise.all(call.users.map(({ _id }) => this.addUserToDiscussion(rid, _id)));
+		if (room) {
+			await Promise.all(call.users.map(({ _id }) => this.addUserToDiscussion(room._id, _id)));
+		}
 	}
 
 	private async addUserToDiscussion(rid: IRoom['_id'], uid: IUser['_id']): Promise<void> {

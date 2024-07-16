@@ -265,15 +265,8 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 		);
 	}
 
-	public async setDiscussionRidById(callId: string, discussionRid: IRoom['_id']): Promise<void> {
-		await this.updateOne(
-			{ _id: callId },
-			{
-				$set: {
-					discussionRid,
-				},
-			},
-		);
+	public async setDiscussionRidById(callId: string, discussionRid: IRoom['_id'] | undefined): Promise<void> {
+		await this.updateOne({ _id: callId }, discussionRid === undefined ? { $unset: { discussionRid: true } } : { $set: { discussionRid } });
 	}
 
 	public async unsetDiscussionRid(discussionRid: IRoom['_id']): Promise<void> {

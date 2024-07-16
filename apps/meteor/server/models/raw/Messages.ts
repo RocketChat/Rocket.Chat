@@ -1759,9 +1759,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	setDiscussionRidById(messageId: string, drid: string | undefined): Promise<UpdateResult> {
-		const query = { _id: messageId };
-		const update: UpdateFilter<IMessage> = drid === undefined ? { $unset: { drid: true } } : { $set: { drid } };
-
-		return this.updateOne(query, update);
+		return this.updateOne({ _id: messageId }, drid === undefined ? { $unset: { drid: true } } : { $set: { drid } });
 	}
 }
