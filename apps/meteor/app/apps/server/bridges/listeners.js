@@ -143,10 +143,11 @@ export class AppListenerBridge {
 					};
 				case AppInterface.IPreRoomUserLeave:
 				case AppInterface.IPostRoomUserLeave:
-					const [leavingUser] = payload;
+					const [leavingUser, removedBy] = payload;
 					return {
 						room: rm,
 						leavingUser: this.orch.getConverters().get('users').convertToApp(leavingUser),
+						removedBy: this.orch.getConverters().get('users').convertToApp(removedBy),
 					};
 				default:
 					return rm;
