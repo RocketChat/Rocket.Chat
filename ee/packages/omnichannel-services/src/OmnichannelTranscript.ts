@@ -10,7 +10,16 @@ import {
 	Settings as settingsService,
 } from '@rocket.chat/core-services';
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
-import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IUser,
+	IRoom,
+	IUpload,
+	ILivechatVisitor,
+	ILivechatAgent,
+	IOmnichannelRoom,
+	IOmnichannelSystemMessage,
+} from '@rocket.chat/core-typings';
 import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
@@ -18,6 +27,8 @@ import type { Root } from '@rocket.chat/message-parser';
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
 import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
+
+import { getSystemMessage } from './livechatSystemMessages';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result.status === 'rejected';
 
@@ -32,7 +43,10 @@ type WorkDetailsWithSource = WorkDetails & {
 
 type Quote = { name: string; ts?: Date; md: Root };
 
-type MessageData = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg' | 'md'> & {
+export type MessageData = Pick<
+	IOmnichannelSystemMessage,
+	'msg' | '_id' | 'u' | 'ts' | 'md' | 't' | 'navigation' | 'transferData' | 'requestData' | 'webRtcCallEndTs' | 'comment'
+> & {
 	files: ({ name?: string; buffer: Buffer | null; extension?: string } | undefined)[];
 	quotes: (Quote | undefined)[];
 };
@@ -175,9 +189,40 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		return quotes;
 	}
 
+	private async getSystemMessage(message: MessageData): Promise<false | MessageData> {
+		if (!message.t) {
+			return false;
+		}
+
+		const systemMessageDefinition = getSystemMessage(message.t);
+
+		if (!systemMessageDefinition) {
+			return false;
+		}
+
+		const args =
+			systemMessageDefinition.data && (await systemMessageDefinition?.data(message, translationService.translateToServerLanguage));
+
+		const systemMessage = await translationService.translateToServerLanguage(systemMessageDefinition.message, args);
+
+		return {
+			...message,
+			msg: systemMessage,
+			files: [],
+			quotes: [],
+		};
+	}
+
 	private async getMessagesData(messages: IMessage[]): Promise<MessageData[]> {
 		const messagesData: MessageData[] = [];
 		for await (const message of messages) {
+			const systemMessage = await this.getSystemMessage(message as unknown as MessageData);
+
+			if (systemMessage) {
+				messagesData.push(systemMessage);
+				continue;
+			}
+
 			if (!message.attachments?.length) {
 				// If there's no attachment and no message, what was sent? lol
 				messagesData.push({
@@ -187,6 +232,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				});
 				continue;
 			}
+
 			const files = [];
 			const quotes = [];
 

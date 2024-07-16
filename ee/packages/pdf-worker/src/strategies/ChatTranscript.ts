@@ -1,7 +1,5 @@
-import { Translation as translationService } from '@rocket.chat/core-services';
 import moment from 'moment-timezone';
 
-import { getSystemMessage } from '../livechatSystemMessages';
 import exportChatTranscript from '../templates/ChatTranscript';
 import type { ChatTranscriptData, PDFMessage } from '../templates/ChatTranscript';
 import type { Data } from '../types/Data';
@@ -12,41 +10,8 @@ export class ChatTranscript implements IStrategy {
 		return !previous || !moment(current.ts).tz(timezone).isSame(previous.ts, 'day');
 	}
 
-	private async parseSystemMessage(messages: PDFMessage[]): Promise<PDFMessage[]> {
-		return Promise.all(
-			messages.map(async (message: PDFMessage) => {
-				if (!message.t) {
-					return message;
-				}
-
-				const systemMessageDefinition = getSystemMessage(message.t);
-
-				if (!systemMessageDefinition) {
-					return message;
-				}
-
-				const args =
-					systemMessageDefinition.data && (await systemMessageDefinition?.data(message, translationService.translateToServerLanguage));
-
-				const systemMessage = await translationService.translateToServerLanguage(systemMessageDefinition.message, args);
-
-				return {
-					...message,
-					msg: systemMessage,
-				};
-			}),
-		);
-	}
-
-	private async parserMessages(
-		messages: PDFMessage[],
-		dateFormat: string,
-		timeAndDateFormat: string,
-		timezone: string,
-	): Promise<PDFMessage[]> {
-		const systemMessagesParsed = await this.parseSystemMessage(messages);
-
-		return systemMessagesParsed.map((message, index, arr) => {
+	private parserMessages(messages: PDFMessage[], dateFormat: string, timeAndDateFormat: string, timezone: string): PDFMessage[] {
+		return messages.map((message, index, arr) => {
 			const previousMessage = arr[index - 1];
 			const { ts, ...rest } = message;
 			const formattedTs = moment(ts).tz(timezone).format(timeAndDateFormat);
