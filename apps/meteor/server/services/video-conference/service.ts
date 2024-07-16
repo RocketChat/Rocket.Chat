@@ -1172,10 +1172,8 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		await VideoConferenceModel.setDiscussionRidById(callId, rid);
 
-		// If the call already has a message, set the discussion id to it
-		// Only assign the discussion to the message if the conference is on the discussion's parent room.
-		// Otherwise the message count would never get updated in that message.
-		if (call.messages?.started && (!rid || room?.prid === call.rid)) {
+		// If the call already has a message, set the discussion id to it too
+		if (call.messages?.started) {
 			try {
 				await Messages.setDiscussionRidById(call.messages.started, rid);
 			} catch (error) {
