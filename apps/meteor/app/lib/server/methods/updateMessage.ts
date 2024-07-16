@@ -1,4 +1,4 @@
-import type { IEditedMessage, IMessage, IUser, AtLeast, Optional } from '@rocket.chat/core-typings';
+import type { IEditedMessage, IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
@@ -14,7 +14,7 @@ const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji',
 
 export async function executeUpdateMessage(
 	uid: IUser['_id'],
-	message: AtLeast<IMessage, '_id' | 'rid'> & Optional<Pick<IMessage, 'msg' | 'customFields'>, 'msg' | 'customFields'>,
+	message: AtLeast<IMessage, '_id' | 'rid' | 'msg' | 'customFields'>,
 	previewUrls?: string[],
 ) {
 	const originalMessage = await Messages.findOneById(message._id);

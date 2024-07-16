@@ -311,7 +311,7 @@ API.v1.addRoute(
 				Match.ObjectIncluding({
 					roomId: String,
 					msgId: String,
-					text: Match.Maybe(String), // Using text to be consistant with chat.postMessage
+					text: String, // Using text to be consistant with chat.postMessage
 					customFields: Match.Maybe(Object),
 					previewUrls: Match.Maybe([String]),
 				}),
