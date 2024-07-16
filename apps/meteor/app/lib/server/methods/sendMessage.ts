@@ -1,6 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
-import { Messages, Users } from '@rocket.chat/models';
+import { Messages, Uploads, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -14,6 +14,10 @@ import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { sendMessage } from '../functions/sendMessage';
 import { RateLimiter } from '../lib';
+import { canAccessRoomIdAsync } from '/app/authorization/server/functions/canAccessRoom';
+import { API } from '/app/api/server';
+import { IUpload } from '@rocket.chat/core-typings';
+import { sendFileMessage } from '/app/file-upload/server/methods/sendFileMessage';
 
 export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>, previewUrls?: string[]) {
 	if (message.tshow && !message.tmid) {
@@ -111,18 +115,46 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		sendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>, previewUrls?: string[]): any;
+		sendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>, previewUrls?: string[], filesToConfirm?: string[], msgData?: any): any;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	async sendMessage(message, previewUrls) {
+	async sendMessage(message, previewUrls, filesToConfirm, msgData) {
 		check(message, Object);
 
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'sendMessage',
+			});
+		}
+
+		if (filesToConfirm != undefined) {
+			if (!(await canAccessRoomIdAsync(message.rid, uid))) {
+				return API.v1.unauthorized();
+			}
+			const filesarray: Partial<IUpload>[] = [];
+			for (let i = 0; i < filesToConfirm.length; i++) {
+				const fileid = filesToConfirm[i];
+				const file = await Uploads.findOneById(fileid);
+				if (!file) {
+					throw new Meteor.Error('invalid-file');
+				}
+				filesarray.push(file);
+			}
+			await sendFileMessage(uid, { roomId: message.rid, file: filesarray, msgData }, { parseAttachmentsForE2EE: false });
+
+			for (let i = 0; i < filesToConfirm.length; i++) {
+				await Uploads.confirmTemporaryFile(filesToConfirm[i], uid);
+			}
+			let resmessage;
+			if (filesarray[0] != null && filesarray[0]._id != undefined) {
+				resmessage = await Messages.getMessageByFileIdAndUsername(filesarray[0]._id, uid);
+			}
+
+			return API.v1.success({
+				resmessage,
 			});
 		}
 

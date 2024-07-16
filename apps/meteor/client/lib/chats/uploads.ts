@@ -124,20 +124,36 @@ const send = async (
 					fileIds.push(result.file._id);
 					fileUrls.push(result.file.url);
 					if (fileIds.length === file.length) {
+						if (msg == undefined) {
+							msg = '';
+						}
+						const text: IMessage = {
+							rid,
+							msg,
+							_id: id,
+						};
 						try {
 							let content;
 							if (getContent) {
 								content = await getContent(fileIds, fileUrls);
 							}
-
-							await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${fileIds[0]}`, {
+							const msgData = {
 								msg,
 								tmid,
 								description,
 								t,
 								content,
-								fileIds,
-							});
+							};
+							// await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${fileIds[0]}`, {
+							await sdk.call('sendMessage', text, fileUrls, fileIds, msgData);
+							// await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${fileIds[0]}`, {
+							// 	msg,
+							// 	tmid,
+							// 	description,
+							// 	t,
+							// 	content,
+							// 	fileIds,
+							// });
 
 							updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
 						} catch (error) {
