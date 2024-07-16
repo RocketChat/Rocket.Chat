@@ -5,6 +5,7 @@ import { t } from '../../../app/utils/lib/i18n';
 import { getPermaLink } from '../../lib/getPermaLink';
 import { dispatchToastMessage } from '../../lib/toast';
 import { messageArgs } from '../../lib/utils/messageArgs';
+import { isE2EEMessage } from '@rocket.chat/core-typings';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
@@ -32,5 +33,8 @@ Meteor.startup(() => {
 		},
 		order: 10,
 		group: 'menu',
+		disabled({ message }) {
+			return isE2EEMessage(message);
+		},
 	});
 });
