@@ -15,6 +15,7 @@ import {
 	ContextualbarContent,
 	ContextualbarFooter,
 	ContextualbarEmptyContent,
+	ContextualbarSection,
 } from '../../../../components/Contextualbar';
 import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
@@ -92,20 +93,19 @@ const RoomMembers = ({
 				<ContextualbarTitle>{isTeam ? t('Teams_members') : t('Members')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-			<ContextualbarContent p={12}>
-				<Box display='flex' flexDirection='row' p={12} flexShrink={0}>
-					<TextInput
-						placeholder={t('Search_by_username')}
-						value={text}
-						ref={inputRef}
-						onChange={setText}
-						addon={<Icon name='magnifier' size='x20' />}
-					/>
-					<Box w='x144' mis={8}>
-						<Select onChange={(value): void => setType(value as 'online' | 'all')} value={type} options={options} />
-					</Box>
+			<ContextualbarSection>
+				<TextInput
+					placeholder={t('Search_by_username')}
+					value={text}
+					ref={inputRef}
+					onChange={setText}
+					addon={<Icon name='magnifier' size='x20' />}
+				/>
+				<Box w='x144' mis={8}>
+					<Select onChange={(value): void => setType(value as 'online' | 'all')} value={type} options={options} />
 				</Box>
-
+			</ContextualbarSection>
+			<ContextualbarContent p={12}>
 				{loading && (
 					<Box pi={24} pb={12}>
 						<Throbber size='x12' />

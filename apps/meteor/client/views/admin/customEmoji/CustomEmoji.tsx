@@ -3,7 +3,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { FC, MutableRefObject } from 'react';
+import type { MutableRefObject } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
@@ -25,7 +25,7 @@ type CustomEmojiProps = {
 	onClick: (emoji: string) => () => void;
 };
 
-const CustomEmoji: FC<CustomEmojiProps> = ({ onClick, reload }) => {
+const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 	const t = useTranslation();
 
 	const [text, setText] = useState('');
