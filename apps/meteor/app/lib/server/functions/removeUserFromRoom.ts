@@ -10,11 +10,7 @@ import { beforeLeaveRoomCallback } from '../../../../lib/callbacks/beforeLeaveRo
 import { settings } from '../../../settings/server';
 import { notifyOnRoomChangedById } from '../lib/notifyListener';
 
-export const removeUserFromRoom = async function (
-	rid: string,
-	user: IUser,
-	options?: { byUser: Pick<IUser, '_id' | 'username'> },
-): Promise<void> {
+export const removeUserFromRoom = async function (rid: string, user: IUser, options?: { byUser: IUser }): Promise<void> {
 	const room = await Rooms.findOneById(rid);
 
 	if (!room) {
@@ -22,7 +18,7 @@ export const removeUserFromRoom = async function (
 	}
 
 	try {
-		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserLeave, room, user);
+		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserLeave, room, user, options?.byUser);
 	} catch (error: any) {
 		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
@@ -75,5 +71,5 @@ export const removeUserFromRoom = async function (
 
 	void notifyOnRoomChangedById(rid);
 
-	await Apps.self?.triggerEvent(AppEvents.IPostRoomUserLeave, room, user);
+	await Apps.self?.triggerEvent(AppEvents.IPostRoomUserLeave, room, user, options?.byUser);
 };

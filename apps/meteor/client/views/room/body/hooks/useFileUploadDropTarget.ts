@@ -54,7 +54,7 @@ export const useFileUploadDropTarget = (): readonly [
 		const uniqueFiles = getUniqueFiles();
 
 		const uploads = Array.from(uniqueFiles).map((file) => {
-			Object.defineProperty(file, 'type', { value: getMimeType(file.name) });
+			Object.defineProperty(file, 'type', { value: getMimeType(file.type, file.name) });
 			return file;
 		});
 

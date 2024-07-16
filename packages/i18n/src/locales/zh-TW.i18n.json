@@ -380,7 +380,7 @@
   "API_EmbedCacheExpirationDays": "嵌入緩存到期天數",
   "API_Enable_CORS": "啟用CORS",
   "API_Enable_Direct_Message_History_EndPoint": "啟用直接消息歷史記錄端點",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "這使得`/api/v1/im.history.others`能夠查看其他用戶發送的呼叫者不屬於的直接消息。",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "這使得`/api/v1/im.messages.others`能夠查看其他用戶發送的呼叫者不屬於的直接消息。",
   "API_Enable_Personal_Access_Tokens": "啟用個人存取 Token 到 REST API",
   "API_Enable_Personal_Access_Tokens_Description": "在使用 REST API 時啟用個人存取 Token",
   "API_Enable_Rate_Limiter": "啟用頻率限制器",

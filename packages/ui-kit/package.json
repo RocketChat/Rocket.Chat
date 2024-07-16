@@ -1,6 +1,6 @@
 {
   "name": "@rocket.chat/ui-kit",
-  "version": "0.34.0",
+  "version": "0.35.0",
   "description": "Interactive UI elements for Rocket.Chat Apps",
   "homepage": "https://rocket.chat",
   "author": {
@@ -28,8 +28,9 @@
     "build": "run-s .:build:prepare .:build:clean .:build:esm .:build:cjs",
     ".:build:prepare": "ts-patch install && typia patch",
     ".:build:clean": "rimraf dist",
-    ".:build:esm": "tsc -p tsconfig.json",
-    ".:build:cjs": "tsc -p tsconfig-cjs.json",
+    ".:build:esm": "tsc -p tsconfig.esm.json",
+    ".:build:cjs": "tsc -p tsconfig.cjs.json",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.tsx",
     "test": "jest"
   },
