@@ -72,7 +72,7 @@ export class ChatTranscript implements IStrategy {
 		return exportChatTranscript(data);
 	}
 
-	async parseTemplateData(data: Record<string, unknown | unknown[]>): Promise<Data> {
+	parseTemplateData(data: Record<string, unknown | unknown[]>): Data {
 		return {
 			header: {
 				visitor: data.visitor,
@@ -86,7 +86,7 @@ export class ChatTranscript implements IStrategy {
 					.format('H:mm:ss')} ${data.timezone}`,
 			},
 			messages: Array.isArray(data.messages)
-				? await this.parserMessages(data.messages, data.dateFormat as string, data.timeAndDateFormat as string, data.timezone as string)
+				? this.parserMessages(data.messages, data.dateFormat as string, data.timeAndDateFormat as string, data.timezone as string)
 				: [],
 			t: this.getTranslations(data.translations as Record<string, unknown>[]),
 		};
