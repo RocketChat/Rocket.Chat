@@ -12,6 +12,7 @@ import { canSendMessageAsync } from '../../../authorization/server/functions/can
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
+import { MessageTypes } from '../../../ui-utils/server';
 import { sendMessage } from '../functions/sendMessage';
 import { RateLimiter } from '../lib';
 
@@ -63,6 +64,8 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 	}
 
 	let { rid } = message;
+
+	check(rid, String);
 
 	// do not allow nested threads
 	if (message.tmid) {
@@ -124,6 +127,10 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'sendMessage',
 			});
+		}
+
+		if (MessageTypes.isSystemMessage(message)) {
+			throw new Error("Cannot send system messages using 'sendMessage'");
 		}
 
 		try {
