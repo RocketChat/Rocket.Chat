@@ -54,6 +54,7 @@ type CurrentChatQuery = {
 	customFields?: string;
 	sort: string;
 	count?: number;
+	queued?: boolean;
 };
 
 type useQueryType = (
@@ -95,8 +96,9 @@ const currentChatQuery: useQueryType = (
 	}
 
 	if (status !== 'all') {
-		query.open = status === 'opened' || status === 'onhold';
+		query.open = status === 'opened' || status === 'onhold' || status === 'queued';
 		query.onhold = status === 'onhold';
+		query.queued = status === 'queued';
 	}
 	if (servedBy && servedBy !== 'all') {
 		query.agents = [servedBy];
