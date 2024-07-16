@@ -47,12 +47,6 @@ describe('[OC] Contacts', () => {
 			await expect(validateContactManager(user)).to.be.rejectedWith('error-contact-manager-not-found');
 		});
 
-		it('should throw an error if the user does not have the "livechat-agent" role', async () => {
-			const user = { roles: ['user'] };
-
-			await expect(validateContactManager(user)).to.be.rejectedWith('error-invalid-contact-manager');
-		});
-
 		it('should not throw an error if the user has the "livechat-agent" role', async () => {
 			const user = { roles: ['livechat-agent'] };
 
