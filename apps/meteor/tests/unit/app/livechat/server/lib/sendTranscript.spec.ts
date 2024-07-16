@@ -20,11 +20,22 @@ const modelsMock = {
 
 const checkMock = sinon.stub();
 
-const mockLogger = {
-	debug: sinon.stub(),
-	info: sinon.stub(),
-	error: sinon.stub(),
-	warn: sinon.stub(),
+const mockLogger = class {
+	debug() {
+		return null;
+	}
+
+	error() {
+		return null;
+	}
+
+	warn() {
+		return null;
+	}
+
+	info() {
+		return null;
+	}
 };
 
 const mockSettingValues: Record<string, any> = {
@@ -45,6 +56,7 @@ const tStub = sinon.stub();
 
 const { sendTranscript } = p.noCallThru().load('../../../../../../app/livechat/server/lib/sendTranscript', {
 	'@rocket.chat/models': modelsMock,
+	'@rocket.chat/logger': { Logger: mockLogger },
 	'meteor/check': { check: checkMock },
 	'../../../../lib/callbacks': {
 		callbacks: {
@@ -86,7 +98,6 @@ describe('Send transcript', () => {
 			rid: 'rid',
 			token: 'token',
 			email: 'email',
-			logger: mockLogger,
 			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' },
 		});
 
@@ -112,7 +123,6 @@ describe('Send transcript', () => {
 			rid: 'rid',
 			token: 'token',
 			email: 'email',
-			logger: mockLogger,
 			subject: 'A custom subject',
 			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' },
 		});
@@ -140,7 +150,6 @@ describe('Send transcript', () => {
 			rid: 'rid',
 			token: 'token',
 			email: 'email',
-			logger: mockLogger,
 			user: { _id: 'x', name: 'x', utcOffset: '-6', username: 'x' },
 		});
 
@@ -168,15 +177,15 @@ describe('Send transcript', () => {
 		modelsMock.LivechatRooms.findOneById.returns({ t: 'c' });
 		modelsMock.LivechatVisitors.getVisitorByToken.returns({ language: null });
 
-		await expect(sendTranscript({ rid: 'rid', email: 'email', logger: mockLogger })).to.be.rejectedWith(Error);
+		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
 
 		modelsMock.LivechatRooms.findOneById.returns({ t: 'l' });
-		await expect(sendTranscript({ rid: 'rid', email: 'email', logger: mockLogger })).to.be.rejectedWith(Error);
+		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
 
 		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { otherProp: 'xxx' } });
-		await expect(sendTranscript({ rid: 'rid', email: 'email', logger: mockLogger })).to.be.rejectedWith(Error);
+		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
 
 		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { token: 'xxx' } });
-		await expect(sendTranscript({ rid: 'rid', email: 'email', token: 'xveasdf', logger: mockLogger })).to.be.rejectedWith(Error);
+		await expect(sendTranscript({ rid: 'rid', email: 'email', token: 'xveasdf' })).to.be.rejectedWith(Error);
 	});
 });

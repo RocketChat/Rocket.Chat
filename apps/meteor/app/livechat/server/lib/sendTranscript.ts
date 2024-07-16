@@ -1,6 +1,6 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IUser, MessageTypesValues, IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
-import type { Logger } from '@rocket.chat/logger';
+import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, LivechatVisitors, Messages, Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import moment from 'moment-timezone';
@@ -11,20 +11,20 @@ import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 
+const logger = new Logger('Livechat-SendTranscript');
+
 export async function sendTranscript({
 	token,
 	rid,
 	email,
 	subject,
 	user,
-	logger,
 }: {
 	token: string;
 	rid: string;
 	email: string;
 	subject?: string;
 	user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
-	logger: Logger;
 }): Promise<boolean> {
 	check(rid, String);
 	check(email, String);

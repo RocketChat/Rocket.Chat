@@ -1874,9 +1874,8 @@ class LivechatClass {
 		email: string;
 		subject?: string;
 		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
-		logger: Logger;
 	}): Promise<boolean> {
-		return sendTranscriptFunc({ token, rid, email, subject, user, logger: this.logger });
+		return sendTranscriptFunc({ token, rid, email, subject, user });
 	}
 }
 
