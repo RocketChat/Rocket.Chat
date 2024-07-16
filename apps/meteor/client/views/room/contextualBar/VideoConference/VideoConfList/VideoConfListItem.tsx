@@ -17,7 +17,7 @@ const VideoConfListItem = ({
 	reload,
 	...props
 }: {
-	videoConfData: IGroupVideoConference;
+	videoConfData: VideoConference;
 	className?: string[];
 	reload: () => void;
 }): ReactElement => {
