@@ -36,7 +36,7 @@ export class PdfWorker {
 	}
 
 	async renderToStream({ data }: { data: Record<string, unknown | unknown[]> }): Promise<NodeJS.ReadableStream> {
-		const parsedData = await this.worker.parseTemplateData(data);
+		const parsedData = this.worker.parseTemplateData(data);
 		return this.worker.renderTemplate(parsedData);
 	}
 }
