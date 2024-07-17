@@ -1,3 +1,4 @@
+import type { RoomType } from '@rocket.chat/core-typings';
 import type { ReactNode } from 'react';
 import { createContext } from 'react';
 
@@ -65,6 +66,12 @@ export type RouterContextValue = {
 	defineRoutes(routes: RouteObject[]): () => void;
 	getRoutes(): RouteObject[];
 	subscribeToRoutesChange(onRoutesChange: () => void): () => void;
+	getRoomRoute(
+		roomType: RoomType,
+		rid: string,
+	): {
+		path: LocationPathname;
+	};
 };
 
 export const RouterContext = createContext<RouterContextValue>({
@@ -90,6 +97,9 @@ export const RouterContext = createContext<RouterContextValue>({
 	navigate: () => undefined,
 	defineRoutes: () => () => undefined,
 	getRoutes: () => {
+		throw new Error('not implemented');
+	},
+	getRoomRoute: () => {
 		throw new Error('not implemented');
 	},
 	subscribeToRoutesChange: () => () => undefined,
