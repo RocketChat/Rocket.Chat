@@ -1,4 +1,8 @@
-import { useGoToRoom, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import {
+  useGoToRoom,
+  useTranslation,
+  useUserId,
+} from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import {
   VideoConfMessageSkeleton,
