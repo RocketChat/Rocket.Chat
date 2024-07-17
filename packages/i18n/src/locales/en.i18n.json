@@ -3267,6 +3267,8 @@
   "Livechat_email_transcript_has_been_requested": "The transcript has been requested. It may take a few seconds.",
   "Livechat_transcript_request_has_been_canceled": "The chat transcription request has been canceled.",
   "Livechat_transcript_sent": "Omnichannel transcript sent",
+  "Livechat_transcript_send_always": "Always send email transcript to visitors",
+  "Livechat_transcript_send_always_Description": "Send email transcript to visitors automatically without asking visitor. This setting bypasses agent's preferences regarding email transcripts.",
   "Livechat_transfer_return_to_the_queue": "{{from}} returned the chat to the queue",
   "Livechat_transfer_return_to_the_queue_with_a_comment": "{{from}} returned the chat to the queue with a comment: {{comment}}",
   "Livechat_transfer_return_to_the_queue_auto_transfer_unanswered_chat": "{{from}} returned the chat to the queue since it was unanswered for {{duration}} seconds",
