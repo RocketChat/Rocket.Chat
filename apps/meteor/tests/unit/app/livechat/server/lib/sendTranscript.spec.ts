@@ -178,15 +178,6 @@ describe('Send transcript', () => {
 		modelsMock.LivechatVisitors.getVisitorByToken.returns({ language: null });
 
 		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
-
-		modelsMock.LivechatRooms.findOneById.returns({ t: 'l' });
-		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
-
-		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { otherProp: 'xxx' } });
-		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
-
-		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { token: 'xxx' } });
-		await expect(sendTranscript({ rid: 'rid', email: 'email', token: 'xveasdf' })).to.be.rejectedWith(Error);
 	});
 
 	it('should fail if room is of valid type, but doesnt doesnt have `v` property', async () => {
@@ -194,12 +185,6 @@ describe('Send transcript', () => {
 		modelsMock.LivechatRooms.findOneById.returns({ t: 'l' });
 
 		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
-
-		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { otherProp: 'xxx' } });
-		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
-
-		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { token: 'xxx' } });
-		await expect(sendTranscript({ rid: 'rid', email: 'email', token: 'xveasdf' })).to.be.rejectedWith(Error);
 	});
 
 	it('should fail if room is of valid type, has `v` prop, but it doesnt contain `token`', async () => {
