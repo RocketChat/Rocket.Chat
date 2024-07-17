@@ -97,9 +97,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						<MessageSystemBody
 							data-qa-type='system-message-body'
 							dangerouslySetInnerHTML={{
-								__html: messageType.render
-									? messageType.render(message)
-									: t(messageType.message, messageType.data ? messageType.data(message) : {}),
+								__html: t(messageType.message, messageType.data ? messageType.data(message) : {}),
 							}}
 						/>
 					)}
