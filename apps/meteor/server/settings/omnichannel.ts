@@ -404,12 +404,23 @@ export const createOmniSettings = () =>
 			enableQuery: [{ _id: 'FileUpload_Enabled', value: true }, omnichannelEnabledQuery],
 		});
 
+		// Making these 2 settings "depend" on each other
+		// Prevents us from having both as true and then asking visitor if it wants a Transcript
+		// But send it anyways because of send_always being enabled. So one can only be turned on
+		// if the other is off.
 		await this.add('Livechat_enable_transcript', false, {
 			type: 'boolean',
 			group: 'Omnichannel',
 			public: true,
 			i18nLabel: 'Transcript_Enabled',
-			enableQuery: omnichannelEnabledQuery,
+			enableQuery: [{ _id: 'Livechat_transcript_send_always', value: false }, omnichannelEnabledQuery],
+		});
+
+		await this.add('Livechat_transcript_send_always', false, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			public: true,
+			enableQuery: [{ _id: 'Livechat_enable_transcript', value: false }, omnichannelEnabledQuery],
 		});
 
 		await this.add('Livechat_transcript_message', '', {

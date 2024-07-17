@@ -74,6 +74,8 @@ import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normaliz
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
+import { parseTranscriptRequest } from './parseTranscriptRequest';
+import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes'
 
 type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
 	id?: string;
@@ -81,36 +83,6 @@ type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'depa
 	email?: string;
 	phone?: { number: string };
 };
-
-type GenericCloseRoomParams = {
-	room: IOmnichannelRoom;
-	comment?: string;
-	options?: {
-		clientAction?: boolean;
-		tags?: string[];
-		emailTranscript?:
-			| {
-					sendToVisitor: false;
-			  }
-			| {
-					sendToVisitor: true;
-					requestData: NonNullable<IOmnichannelRoom['transcriptRequest']>;
-			  };
-		pdfTranscript?: {
-			requestedBy: string;
-		};
-	};
-};
-
-export type CloseRoomParamsByUser = {
-	user: IUser | null;
-} & GenericCloseRoomParams;
-
-export type CloseRoomParamsByVisitor = {
-	visitor: ILivechatVisitor;
-} & GenericCloseRoomParams;
-
-export type CloseRoomParams = CloseRoomParamsByUser | CloseRoomParamsByVisitor;
 
 type OfflineMessageData = {
 	message: string;
@@ -326,11 +298,12 @@ class LivechatClass {
 
 		this.logger.debug(`DB updated for room ${room._id}`);
 
+		const transcriptRequested = !!transcriptRequest || (!settings.get('Livechat_enable_transcript') && settings.get('Livechat_transcript_send_always'));
 		const message = {
 			t: 'livechat-close',
 			msg: comment,
 			groupable: false,
-			transcriptRequested: !!transcriptRequest,
+			transcriptRequested,
 		};
 
 		// Retrieve the closed room
@@ -355,15 +328,18 @@ class LivechatClass {
 			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
 			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
 		});
+
+		const visitor = isRoomClosedByVisitorParams(params) ? params.visitor : undefined;
+		const opts = await parseTranscriptRequest(params.room, options, visitor);
 		if (process.env.TEST_MODE) {
 			await callbacks.run('livechat.closeRoom', {
 				room: newRoom,
-				options,
+				options: opts,
 			});
 		} else {
 			callbacks.runAsync('livechat.closeRoom', {
 				room: newRoom,
-				options,
+				options: opts,
 			});
 		}
 
@@ -1987,3 +1963,5 @@ class LivechatClass {
 }
 
 export const Livechat = new LivechatClass();
+export * from './localTypes'
+
