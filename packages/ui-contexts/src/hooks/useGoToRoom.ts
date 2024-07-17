@@ -8,14 +8,14 @@ export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}): ((
 	const router = useRouter();
 	const getRoomById = useEndpoint('GET', '/v1/rooms.info');
 
-	return useEffectEvent(async (rid) => {
-		const { room } = await getRoomById({ roomId: rid });
+	return useEffectEvent(async (roomId) => {
+		const { room } = await getRoomById({ roomId });
 
 		if (!room) {
 			return;
 		}
 
-		const { t, name } = room;
+		const { t, name, _id: rid } = room;
 
 		const { path } = router.getRoomRoute(t, ['c', 'p'].includes(t) ? { name } : { rid });
 
