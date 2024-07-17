@@ -231,9 +231,9 @@ export interface IMessage extends IRocketChatRecord {
 	};
 }
 
-export type MessageSystem = {
-	t: 'system';
-};
+export interface ISystemMessage extends IMessage {
+	t: MessageTypesValues;
+}
 
 export interface IEditedMessage extends IMessage {
 	editedAt: Date;
@@ -248,6 +248,8 @@ export const isEditedMessage = (message: IMessage): message is IEditedMessage =>
 	(message as { editedBy?: unknown }).editedBy !== null &&
 	'_id' in (message as IEditedMessage).editedBy &&
 	typeof (message as IEditedMessage).editedBy._id === 'string';
+
+export const isSystemMessage = (message: IMessage): message is ISystemMessage => 't' in message;
 
 export const isDeletedMessage = (message: IMessage): message is IEditedMessage => isEditedMessage(message) && message.t === 'rm';
 export const isMessageFromMatrixFederation = (message: IMessage): boolean =>

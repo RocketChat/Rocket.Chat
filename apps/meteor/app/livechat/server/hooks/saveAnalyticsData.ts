@@ -1,4 +1,4 @@
-import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isEditedMessage, isOmnichannelRoom, isSystemMessage } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -12,8 +12,8 @@ callbacks.add(
 			return message;
 		}
 
-		// skips this callback if the message was edited
-		if (!message || isEditedMessage(message)) {
+		// skips this callback if the message was edited or if it is a system message
+		if (!message || isEditedMessage(message) || isSystemMessage(message)) {
 			return message;
 		}
 
