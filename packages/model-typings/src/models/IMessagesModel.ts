@@ -285,5 +285,4 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	findThreadsByRoomId(rid: string, skip: number, limit: number): FindCursor<IMessage>;
 	decreaseReplyCountById(_id: string, inc?: number): Promise<UpdateResult>;
-	setDiscussionRidById(messageId: string, drid: string | undefined): Promise<UpdateResult>;
 }

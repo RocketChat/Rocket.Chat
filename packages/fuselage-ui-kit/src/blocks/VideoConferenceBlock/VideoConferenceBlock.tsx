@@ -85,6 +85,10 @@ const VideoConferenceBlock = ({
     );
   };
 
+  const openDiscussion: MouseEventHandler<HTMLButtonElement> = (_e) => {
+    // #TODO: Open the discussion
+  };
+
   if (result.isLoading || result.isError) {
     // TODO: error handling
     return <VideoConfMessageSkeleton />;
@@ -92,6 +96,19 @@ const VideoConferenceBlock = ({
 
   const { data } = result;
   const isUserCaller = data.createdBy._id === userId;
+
+  const actions = (
+    <VideoConfMessageActions>
+      {data.discussionRid && (
+        <VideoConfMessageAction
+          icon='discussion'
+          title={t('Join_discussion')}
+          onClick={openDiscussion}
+        />
+      )}
+      <VideoConfMessageAction icon='info' onClick={openCallInfo} />
+    </VideoConfMessageActions>
+  );
 
   if ('endedAt' in data) {
     return (
@@ -101,9 +118,7 @@ const VideoConferenceBlock = ({
             <VideoConfMessageIcon />
             <VideoConfMessageText>{t('Call_ended')}</VideoConfMessageText>
           </VideoConfMessageContent>
-          <VideoConfMessageActions>
-            <VideoConfMessageAction icon='info' onClick={openCallInfo} />
-          </VideoConfMessageActions>
+          {actions}
         </VideoConfMessageRow>
         <VideoConfMessageFooter>
           {data.type === 'direct' && (
@@ -146,9 +161,7 @@ const VideoConferenceBlock = ({
             <VideoConfMessageIcon variant='incoming' />
             <VideoConfMessageText>{t('Calling')}</VideoConfMessageText>
           </VideoConfMessageContent>
-          <VideoConfMessageActions>
-            <VideoConfMessageAction icon='info' onClick={openCallInfo} />
-          </VideoConfMessageActions>
+          {actions}
         </VideoConfMessageRow>
         <VideoConfMessageFooter>
           <VideoConfMessageFooterText>
@@ -166,9 +179,7 @@ const VideoConferenceBlock = ({
           <VideoConfMessageIcon variant='outgoing' />
           <VideoConfMessageText>{t('Call_ongoing')}</VideoConfMessageText>
         </VideoConfMessageContent>
-        <VideoConfMessageActions>
-          <VideoConfMessageAction icon='info' onClick={openCallInfo} />
-        </VideoConfMessageActions>
+        {actions}
       </VideoConfMessageRow>
       <VideoConfMessageFooter>
         <VideoConfMessageButton primary onClick={joinHandler}>

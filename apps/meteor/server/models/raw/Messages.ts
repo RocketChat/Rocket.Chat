@@ -143,7 +143,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			rid,
 			drid: { $exists: true },
 			msg: new RegExp(escapeRegExp(text), 'i'),
-			t: { $ne: 'videoconf' },
 		};
 
 		return this.findPaginated(query, options);
@@ -1756,9 +1755,5 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 		return this.updateOne(query, update);
-	}
-
-	setDiscussionRidById(messageId: string, drid: string | undefined): Promise<UpdateResult> {
-		return this.updateOne({ _id: messageId }, drid === undefined ? { $unset: { drid: true } } : { $set: { drid } });
 	}
 }

@@ -532,7 +532,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			msg: '',
 			groupable: false,
 			blocks: customBlocks || [this.buildVideoConfBlock(call._id)],
-			...(call.discussionRid ? { drid: call.discussionRid } : {}),
 		} satisfies Partial<IMessage>;
 
 		const room = await Rooms.findOneById(call.rid);
@@ -1172,21 +1171,6 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		await VideoConferenceModel.setDiscussionRidById(callId, rid);
-
-		// If the call already has a message, set the discussion id to it too
-		if (call.messages?.started) {
-			try {
-				await Messages.setDiscussionRidById(call.messages.started, rid);
-			} catch (error) {
-				logger.error({
-					name: 'Error trying to assign discussion to videoconf message',
-					error,
-					rid,
-					callId,
-					call,
-				});
-			}
-		}
 
 		if (room) {
 			await Promise.all(call.users.map(({ _id }) => this.addUserToDiscussion(room._id, _id)));

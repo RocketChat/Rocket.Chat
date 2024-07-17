@@ -61,7 +61,7 @@ callbacks.add(
 				await updateAndNotifyParentRoomWithParentMessage(room);
 			}
 		}
-		if (message.drid && message.t !== 'videoconf') {
+		if (message.drid) {
 			await deleteRoom(message.drid);
 		}
 		return message;
