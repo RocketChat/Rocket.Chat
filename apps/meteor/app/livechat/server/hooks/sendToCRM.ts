@@ -180,15 +180,8 @@ callbacks.add(
 
 callbacks.add(
 	'livechat.afterTakeInquiry',
-	async (inquiry) => {
+	async ({ inquiry, room }) => {
 		if (!settings.get('Livechat_webhook_on_chat_taken')) {
-			return inquiry;
-		}
-
-		const { rid } = inquiry;
-		const room = await LivechatRooms.findOneById(rid);
-
-		if (!room) {
 			return inquiry;
 		}
 

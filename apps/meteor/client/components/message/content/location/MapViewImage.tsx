@@ -1,6 +1,5 @@
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React from 'react';
 
 type MapViewImageProps = {
@@ -8,7 +7,7 @@ type MapViewImageProps = {
 	imageUrl: string;
 };
 
-const MapViewImage: FC<MapViewImageProps> = ({ linkUrl, imageUrl }) => {
+const MapViewImage = ({ linkUrl, imageUrl }: MapViewImageProps) => {
 	const t = useTranslation();
 
 	return (
