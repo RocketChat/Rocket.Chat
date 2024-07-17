@@ -526,9 +526,7 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(page.getByRole('dialog', { name: 'Pinned Messages' })).toBeVisible();
 
 		const lastPinnedMessage = page.getByRole('dialog', { name: 'Pinned Messages' }).locator('[data-qa-type="message"]').last();
-		await expect(lastPinnedMessage).toContainText(
-			'This message should be pinned and stared.',
-		);
+		await expect(lastPinnedMessage).toContainText('This message should be pinned and stared.');
 		await lastPinnedMessage.hover();
 		await lastPinnedMessage.locator('role=button[name="More"]').waitFor();
 		await lastPinnedMessage.locator('role=button[name="More"]').click();
@@ -539,11 +537,9 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.tabs.kebab.click();
 		await poHomeChannel.tabs.btnStarredMessageList.click();
 
-		const lastStarredMessage = page.getByRole('dialog', { name: 'Starred Messages' }).locator('[data-qa-type="message"]').last()
+		const lastStarredMessage = page.getByRole('dialog', { name: 'Starred Messages' }).locator('[data-qa-type="message"]').last();
 		await expect(page.getByRole('dialog', { name: 'Starred Messages' })).toBeVisible();
-		await expect(lastStarredMessage).toContainText(
-			'This message should be pinned and stared.',
-		);
+		await expect(lastStarredMessage).toContainText('This message should be pinned and stared.');
 		await lastStarredMessage.hover();
 		await lastStarredMessage.locator('role=button[name="More"]').waitFor();
 		await lastStarredMessage.locator('role=button[name="More"]').click();
