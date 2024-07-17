@@ -69,6 +69,7 @@
 		"moleculer@^0.14.34": "patch:moleculer@npm%3A0.14.34#./.yarn/patches/moleculer-npm-0.14.34-440e26767d.patch"
 	},
 	"dependencies": {
+		"@rocket.chat/apps-engine": "1.45.0-alpha.868",
 		"node-gyp": "^9.4.1"
 	}
 }
