@@ -14,7 +14,7 @@ type MultiSelectCustomAnchorProps = {
 } & ComponentProps<typeof Box>;
 
 const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorProps>(function MultiSelectCustomAnchor(
-	{ collapsed, selectedOptionsCount, selectedOptionsTitle, defaultTitle, maxCount, ...props },
+	{ className, collapsed, selectedOptionsCount, selectedOptionsTitle, defaultTitle, maxCount, ...props },
 	ref,
 ) {
 	const t = useTranslation();
@@ -34,7 +34,7 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 			justifyContent='space-between'
 			alignItems='center'
 			h='x40'
-			className={['rcx-input-box__wrapper', customStyle].filter(Boolean)}
+			className={['rcx-input-box__wrapper', customStyle, ...(Array.isArray(className) ? className : [className])].filter(Boolean)}
 			{...props}
 		>
 			{isDirty ? `${t(selectedOptionsTitle)} (${selectedOptionsCount})` : t(defaultTitle)}

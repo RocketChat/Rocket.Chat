@@ -15,6 +15,23 @@ navigator.serviceWorker.addEventListener('message', (event) => {
 	}
 });
 
+export const registerDownloadForUid = (uid: string, t: ReturnType<typeof useTranslation>['t'], title?: string) => {
+	ee.once(uid, ({ result }) => {
+		downloadAs({ data: [new Blob([result])] }, title ?? t('Download'));
+	});
+};
+
+export const forAttachmentDownload = (uid: string, href: string, controller?: ServiceWorker | null) => {
+	if (!controller) {
+		controller = navigator.serviceWorker.controller;
+	}
+	controller?.postMessage({
+		type: 'attachment-download',
+		url: href,
+		id: uid,
+	});
+};
+
 export const useDownloadFromServiceWorker = (href: string, title?: string) => {
 	const { controller } = navigator.serviceWorker;
 
@@ -22,13 +39,7 @@ export const useDownloadFromServiceWorker = (href: string, title?: string) => {
 
 	const { t } = useTranslation();
 
-	useEffect(
-		() =>
-			ee.once(uid, ({ result }) => {
-				downloadAs({ data: [new Blob([result])] }, title ?? t('Download'));
-			}),
-		[title, t, uid],
-	);
+	useEffect(() => registerDownloadForUid(uid, t, title), [title, t, uid]);
 
 	return {
 		disabled: !controller,
@@ -37,11 +48,7 @@ export const useDownloadFromServiceWorker = (href: string, title?: string) => {
 			(e: React.MouseEvent<HTMLElement, MouseEvent>) => {
 				e.preventDefault();
 
-				controller?.postMessage({
-					type: 'attachment-download',
-					url: href,
-					id: uid,
-				});
+				forAttachmentDownload(uid, href, controller);
 			},
 			[href, uid, controller],
 		),

@@ -13,7 +13,16 @@ import {
 	ContextualbarTitle,
 } from '../../../../../components/Contextualbar';
 import GenericMenu from '../../../../../components/GenericMenu/GenericMenu';
-import InfoPanel from '../../../../../components/InfoPanel';
+import {
+	InfoPanel,
+	InfoPanelActionGroup,
+	InfoPanelAvatar,
+	InfoPanelField,
+	InfoPanelLabel,
+	InfoPanelSection,
+	InfoPanelText,
+	InfoPanelTitle,
+} from '../../../../../components/InfoPanel';
 import RetentionPolicyCallout from '../../../../../components/InfoPanel/RetentionPolicyCallout';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
@@ -51,12 +60,11 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 
 			<ContextualbarScrollableContent p={24}>
 				<InfoPanel>
-					<InfoPanel.Section maxWidth='x332' mi='auto'>
-						<InfoPanel.Avatar>
+					<InfoPanelSection maxWidth='x332' mi='auto'>
+						<InfoPanelAvatar>
 							<RoomAvatar size='x332' room={room} />
-						</InfoPanel.Avatar>
-
-						<InfoPanel.ActionGroup>
+						</InfoPanelAvatar>
+						<InfoPanelActionGroup>
 							<RoomInfoActions actions={buttons} />
 							{menu && (
 								<GenericMenu
@@ -66,61 +74,61 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 									sections={menu}
 								/>
 							)}
-						</InfoPanel.ActionGroup>
-					</InfoPanel.Section>
+						</InfoPanelActionGroup>
+					</InfoPanelSection>
 
 					{archived && (
-						<InfoPanel.Section>
+						<InfoPanelSection>
 							<Box mb={16}>
 								<Callout type='warning'>{t('Room_archived')}</Callout>
 							</Box>
-						</InfoPanel.Section>
+						</InfoPanelSection>
 					)}
 
 					{roomTitle && (
-						<InfoPanel.Section>
-							<InfoPanel.Title title={roomTitle} icon={icon} />
-						</InfoPanel.Section>
+						<InfoPanelSection>
+							<InfoPanelTitle title={roomTitle} icon={icon} />
+						</InfoPanelSection>
 					)}
 
-					<InfoPanel.Section>
+					<InfoPanelSection>
 						{broadcast && (
-							<InfoPanel.Field>
-								<InfoPanel.Label>
+							<InfoPanelField>
+								<InfoPanelLabel>
 									<b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}
-								</InfoPanel.Label>
-							</InfoPanel.Field>
+								</InfoPanelLabel>
+							</InfoPanelField>
 						)}
 
 						{description && description !== '' && (
-							<InfoPanel.Field>
-								<InfoPanel.Label>{t('Description')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>
+							<InfoPanelField>
+								<InfoPanelLabel>{t('Description')}</InfoPanelLabel>
+								<InfoPanelText withTruncatedText={false}>
 									<MarkdownText variant='inline' content={description} />
-								</InfoPanel.Text>
-							</InfoPanel.Field>
+								</InfoPanelText>
+							</InfoPanelField>
 						)}
 
 						{announcement && announcement !== '' && (
-							<InfoPanel.Field>
-								<InfoPanel.Label>{t('Announcement')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>
+							<InfoPanelField>
+								<InfoPanelLabel>{t('Announcement')}</InfoPanelLabel>
+								<InfoPanelText withTruncatedText={false}>
 									<MarkdownText variant='inline' content={announcement} />
-								</InfoPanel.Text>
-							</InfoPanel.Field>
+								</InfoPanelText>
+							</InfoPanelField>
 						)}
 
 						{topic && topic !== '' && (
-							<InfoPanel.Field>
-								<InfoPanel.Label>{t('Topic')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>
+							<InfoPanelField>
+								<InfoPanelLabel>{t('Topic')}</InfoPanelLabel>
+								<InfoPanelText withTruncatedText={false}>
 									<MarkdownText variant='inline' content={topic} />
-								</InfoPanel.Text>
-							</InfoPanel.Field>
+								</InfoPanelText>
+							</InfoPanelField>
 						)}
 
 						{retentionPolicy?.isActive && <RetentionPolicyCallout room={room} />}
-					</InfoPanel.Section>
+					</InfoPanelSection>
 				</InfoPanel>
 			</ContextualbarScrollableContent>
 		</>

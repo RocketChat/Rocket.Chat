@@ -1,10 +1,9 @@
-import type { FC } from 'react';
 import React, { memo } from 'react';
 
 import ComposerSkeleton from '../ComposerSkeleton';
 import RoomComposer from './RoomComposer';
 
-const RoomComposerSkeleton: FC = () => (
+const RoomComposerSkeleton = () => (
 	<RoomComposer>
 		<ComposerSkeleton />
 	</RoomComposer>

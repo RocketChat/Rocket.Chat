@@ -76,8 +76,8 @@ test.describe.serial('channel-management', () => {
 
 		await poHomeChannel.dismissToast();
 		await poHomeChannel.tabs.btnRoomInfo.click();
-		await expect(page.getByRole('dialog', { name: 'Channel info' })).toContainText('hello-topic-edited');
 		await expect(page.getByRole('heading', { name: 'hello-topic-edited' })).toBeVisible();
+		await expect(page.getByRole('dialog', { name: 'Channel info' })).toContainText('hello-topic-edited');
 		await expect(poHomeChannel.getSystemMessageByText('changed room topic to hello-topic-edited')).toBeVisible();
 	});
 
@@ -122,7 +122,7 @@ test.describe.serial('channel-management', () => {
 	});
 
 	test('should truncate the room name for small screens', async ({ page }) => {
-		const hugeName = faker.string.alpha(100);
+		const hugeName = faker.string.alpha(200);
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.tabs.btnRoomInfo.click();
 		await poHomeChannel.tabs.room.btnEdit.click();

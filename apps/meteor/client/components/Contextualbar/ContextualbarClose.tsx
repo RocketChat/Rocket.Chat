@@ -1,7 +1,8 @@
-import { ContextualbarAction } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo } from 'react';
+
+import ContextualbarAction from './ContextualbarAction';
 
 type ContextualbarCloseProps = Partial<ComponentProps<typeof ContextualbarAction>>;
 
