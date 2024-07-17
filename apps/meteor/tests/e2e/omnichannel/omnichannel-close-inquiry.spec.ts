@@ -12,21 +12,22 @@ test.describe('Omnichannel close inquiry', () => {
 
 	let agent: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 
-	test.beforeAll(async ({ api, browser }) => {
+	test.beforeAll(async ({ api }) => {
 		newUser = {
 			name: faker.person.firstName(),
 			email: faker.internet.email(),
 		};
 
+		await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }).then((res) => expect(res.status()).toBe(200));
 		await api.post('/livechat/users/manager', { username: 'user1' });
 		await api.post('/livechat/users/agent', { username: 'user1' });
-		await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }).then((res) => expect(res.status()).toBe(200));
-
-		const { page } = await createAuxContext(browser, Users.user1);
-		agent = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
 	});
-	test.beforeEach(async ({ page, api }) => {
+
+	test.beforeEach(async ({ page, api, browser }) => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
+
+		const { page: auxPage } = await createAuxContext(browser, Users.user1);
+		agent = { page: auxPage, poHomeOmnichannel: new HomeOmnichannel(auxPage) };
 	});
 
 	test.afterAll(async ({ api }) => {
