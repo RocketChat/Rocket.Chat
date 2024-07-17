@@ -1,4 +1,4 @@
-import type { RoomType } from '@rocket.chat/core-typings';
+import type { RoomType, RoomRouteData, DirectRoomRouteData, OmnichannelRoomRouteData, ChannelRouteData } from '@rocket.chat/core-typings';
 import type { ReactNode } from 'react';
 import { createContext } from 'react';
 
@@ -66,9 +66,12 @@ export type RouterContextValue = {
 	defineRoutes(routes: RouteObject[]): () => void;
 	getRoutes(): RouteObject[];
 	subscribeToRoutesChange(onRoutesChange: () => void): () => void;
+	getRoomRoute(roomType: 'd', routeData: DirectRoomRouteData): { path: LocationPathname };
+	getRoomRoute(roomType: 'l' | 'v', routeData: OmnichannelRoomRouteData): { path: LocationPathname };
+	getRoomRoute(roomType: 'p' | 'c', routeData: ChannelRouteData): { path: LocationPathname };
 	getRoomRoute(
 		roomType: RoomType,
-		rid: string,
+		routeData: RoomRouteData,
 	): {
 		path: LocationPathname;
 	};

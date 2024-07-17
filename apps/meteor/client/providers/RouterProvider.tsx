@@ -1,4 +1,4 @@
-import type { RoomType } from '@rocket.chat/core-typings';
+import type { RoomType, RoomRouteData } from '@rocket.chat/core-typings';
 import type {
 	RouterContextValue,
 	RouteName,
@@ -197,8 +197,8 @@ export const router: RouterContextValue = {
 	defineRoutes,
 	getRoutes,
 	subscribeToRoutesChange,
-	getRoomRoute(roomType: RoomType, rid: string) {
-		return { path: roomCoordinator.getRouteLink(roomType, { rid }) || '/' };
+	getRoomRoute(roomType: RoomType, routeData: RoomRouteData) {
+		return { path: roomCoordinator.getRouteLink(roomType, routeData) || '/' };
 	},
 };
 

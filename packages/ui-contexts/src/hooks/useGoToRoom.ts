@@ -15,7 +15,9 @@ export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}): ((
 			return;
 		}
 
-		const { path } = router.getRoomRoute(room.t, rid);
+		const { t, name } = room;
+
+		const { path } = router.getRoomRoute(t, ['c', 'p'].includes(t) ? { name } : { rid });
 
 		router.navigate(
 			{
