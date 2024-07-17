@@ -8,6 +8,7 @@ import {
 	ContextualbarHeader,
 	ContextualbarTitle,
 	ContextualbarIcon,
+	ContextualbarSection,
 } from '../../../../components/Contextualbar';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 import MessageSearch from './components/MessageSearch';
@@ -30,13 +31,13 @@ const MessageSearchTab = () => {
 				<ContextualbarTitle>{t('Search_Messages')}</ContextualbarTitle>
 				<ContextualbarClose onClick={closeTab} />
 			</ContextualbarHeader>
+			{providerQuery.data && (
+				<ContextualbarSection>
+					<MessageSearchForm provider={providerQuery.data} onSearch={handleSearch} />
+				</ContextualbarSection>
+			)}
 			<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0}>
-				{providerQuery.isSuccess && (
-					<>
-						<MessageSearchForm provider={providerQuery.data} onSearch={handleSearch} />
-						<MessageSearch searchText={searchText} globalSearch={globalSearch} />
-					</>
-				)}
+				{providerQuery.isSuccess && <MessageSearch searchText={searchText} globalSearch={globalSearch} />}
 				{providerQuery.isError && (
 					<Callout m={24} type='danger'>
 						{t('Search_current_provider_not_active')}

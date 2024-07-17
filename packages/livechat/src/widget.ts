@@ -368,6 +368,10 @@ function setParentUrl(url: string) {
 	callHook('setParentUrl', url);
 }
 
+function transferChat(department: string) {
+	callHook('transferChat', department);
+}
+
 function setGuestMetadata(metadata: StoreState['iframe']['guestMetadata']) {
 	if (typeof metadata !== 'object') {
 		throw new Error('Invalid metadata');
@@ -550,6 +554,7 @@ const livechatWidgetAPI = {
 	setGuestMetadata,
 	clearAllCallbacks,
 	setHiddenSystemMessages,
+	transferChat,
 
 	// callbacks
 	onChatMaximized(fn: () => void) {
