@@ -770,21 +770,17 @@ describe('[Chat]', () => {
 		});
 
 		describe('Bad words filter', () => {
-			before(async () => {
-				await updateSetting('Message_AllowBadWordsFilter', true);
-				await updateSetting('Message_BadWordsFilterList', 'badword');
-			});
+			before(() =>
+				Promise.all([updateSetting('Message_AllowBadWordsFilter', true), updateSetting('Message_BadWordsFilterList', 'badword,badword2')]),
+			);
 
-			after(async () => {
-				await updateSetting('Message_AllowBadWordsFilter', false);
-				await updateSetting('Message_BadWordsFilterList', '');
-			});
+			after(() => Promise.all([updateSetting('Message_AllowBadWordsFilter', false), updateSetting('Message_BadWordsFilterList', '')]));
 
 			it('should censor bad words on send', async () => {
 				const badMessage = {
 					_id: Random.id(),
 					rid: testChannel._id,
-					msg: 'badword',
+					msg: 'This message has badword badword2',
 				};
 
 				await request
@@ -797,12 +793,12 @@ describe('[Chat]', () => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('message');
 						const { message } = res.body;
-						expect(message).to.have.property('msg', '*******');
+						expect(message).to.have.property('msg', 'This message has ******* ********');
 						expect(message).to.have.property('md').to.be.an('array').that.has.lengthOf(1);
 						const para = message.md[0];
 						expect(para).to.have.property('value').to.be.an('array').that.has.lengthOf(1);
 						const text = para.value[0];
-						expect(text).to.have.property('value', '*******');
+						expect(text).to.have.property('value', 'This message has ******* ********');
 					});
 			});
 		});
@@ -1501,15 +1497,11 @@ describe('[Chat]', () => {
 		});
 
 		describe('Bad words filter', () => {
-			before(async () => {
-				await updateSetting('Message_AllowBadWordsFilter', true);
-				await updateSetting('Message_BadWordsFilterList', 'badword');
-			});
+			before(() =>
+				Promise.all([updateSetting('Message_AllowBadWordsFilter', true), updateSetting('Message_BadWordsFilterList', 'badword,badword2')]),
+			);
 
-			after(async () => {
-				await updateSetting('Message_AllowBadWordsFilter', false);
-				await updateSetting('Message_BadWordsFilterList', '');
-			});
+			after(() => Promise.all([updateSetting('Message_AllowBadWordsFilter', false), updateSetting('Message_BadWordsFilterList', '')]));
 
 			it('should censor bad words on update', async () => {
 				await request
@@ -1518,7 +1510,7 @@ describe('[Chat]', () => {
 					.send({
 						roomId: testChannel._id,
 						msgId: message._id,
-						text: 'badword',
+						text: 'This message has badword badword2',
 					})
 					.expect(200)
 					.expect('Content-Type', 'application/json')
@@ -1526,12 +1518,12 @@ describe('[Chat]', () => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('message');
 						const { message } = res.body;
-						expect(message).to.have.property('msg', '*******');
+						expect(message).to.have.property('msg', 'This message has ******* ********');
 						expect(message).to.have.property('md').to.be.an('array').that.has.lengthOf(1);
 						const para = message.md[0];
 						expect(para).to.have.property('value').to.be.an('array').that.has.lengthOf(1);
 						const text = para.value[0];
-						expect(text).to.have.property('value', '*******');
+						expect(text).to.have.property('value', 'This message has ******* ********');
 					});
 			});
 		});
