@@ -1,14 +1,14 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, Palette } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, FC } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import React from 'react';
 
 import ImageBox from './ImageBox';
 
-type LoadProps = ComponentProps<typeof Box> & { load: () => void };
+type LoadProps = ComponentPropsWithoutRef<typeof Box> & { load: () => void };
 
-const Load: FC<LoadProps> = ({ load, ...props }) => {
+const Load = ({ load, ...props }: LoadProps) => {
 	const t = useTranslation();
 	const clickable = css`
 		cursor: pointer;

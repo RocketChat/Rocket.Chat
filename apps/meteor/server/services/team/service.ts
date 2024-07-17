@@ -771,7 +771,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const usersToRemove = await Users.findByIds(membersIds, {
 			projection: { _id: 1, username: 1 },
 		}).toArray();
-		const byUser = (await Users.findOneById(uid, { projection: { _id: 1, username: 1 } })) as Pick<IUser, '_id' | 'username'>;
+		const byUser = await Users.findOneById(uid);
 
 		for await (const member of members) {
 			if (!member.userId) {
@@ -802,7 +802,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				await removeUserFromRoom(
 					team.roomId,
 					removedUser,
-					uid !== member.userId
+					uid !== member.userId && byUser
 						? {
 								byUser,
 						  }
