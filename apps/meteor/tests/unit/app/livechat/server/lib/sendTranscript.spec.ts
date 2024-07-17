@@ -207,9 +207,6 @@ describe('Send transcript', () => {
 		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { otherProp: 'xxx' } });
 
 		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
-
-		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { token: 'xxx' } });
-		await expect(sendTranscript({ rid: 'rid', email: 'email', token: 'xveasdf' })).to.be.rejectedWith(Error);
 	});
 
 	it('should fail if room is of valid type, has `v.token`, but its different from the one on param (room from another visitor)', async () => {
