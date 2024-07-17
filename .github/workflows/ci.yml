@@ -35,10 +35,12 @@ jobs:
       # to avoid this, we are using a dummy license, expiring at 2025-06-31
       enterprise-license: X/XumwIkgwQuld0alWKt37lVA90XjKOrfiMvMZ0/RtqsMtrdL9GoAk+4jXnaY1b2ePoG7XSzGhuxEDxFKIWJK3hIKGNTvrd980LgH5sM5+1T4P42ivSpd8UZi0bwjJkCFLIu9RozzYwslGG0IehMxe0S6VjcO0UYlUJtbMCBHuR2WmTAmO6YVU3ln+pZCbrPFaTPSS1RovhKaNCNkZwIx/CLWW8UTXUuFV/ML4PbKKVoa5nvvJwPeatgL7UCnlSD90lfCiiuikpzj/Y/JLkIL6velFbwNxsrxg9iRJ2k0sKheMMSmlTiGzSvZUm+na5WQq91aKGncih+DmaEZA7QGrjp4eoA0dqTk6OmItsy0fHmQhvZIOKNMeO7vNQiLbaSV6rqibrzu7WPpeIvsvL57T1h37USoCSB6+jDqkzdfoqIpz8BxTiJDj1d8xGPJFVrgxoqQqkj9qIP/gCaEz5DF39QFv5sovk4yK2O8fEQYod2d14V9yECYl4szZPMk1IBfCAC2w7czWGHHFonhL+CQGT403y5wmDmnsnjlCqMKF72odqfTPTI8XnCvJDriPMWohnQEAGtTTyciAhNokx/mjAVJ4NeZPcsbm4BjhvJvnjxx/BhYhBBTNWPaCSZzocfrGUj9Z+ZA7BEz+xAFQyGDx3xRzqIXfT0G7w8fvgYJMU=
     steps:
-      - uses: Bhacaz/checkout-files@v2
+      - uses: actions/checkout@v4
         with:
-          files: package.json
-          branch: ${{ github.ref }}
+          sparse-checkout: |
+            package.json
+          sparse-checkout-cone-mode: false
+          ref: ${{ github.ref }}
 
       - id: var
         run: |
@@ -85,10 +87,12 @@ jobs:
     runs-on: ubuntu-20.04
     needs: [release-versions]
     steps:
-      - uses: Bhacaz/checkout-files@v2
+      - uses: actions/checkout@v4
         with:
-          files: package.json
-          branch: ${{ github.ref }}
+          sparse-checkout: |
+            package.json
+          sparse-checkout-cone-mode: false
+          ref: ${{ github.ref }}
 
       - name: Register release on cloud as Draft
         if: github.event_name == 'release'
@@ -350,6 +354,7 @@ jobs:
       QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+      REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
   test-api-ee:
     name: 🔨 Test API (EE)
@@ -401,6 +406,7 @@ jobs:
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
   test-ui-ee-no-watcher:
     name: 🔨 Test UI (EE)
@@ -431,15 +437,44 @@ jobs:
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-20.04
     needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-ui-ee-no-watcher]
-
+    if: always()
     steps:
       - name: Test finish aggregation
         run: |
+          if [[ '${{ needs.checks.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-unit.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-api.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-ui.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-api-ee.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-ui-ee.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-ui-ee-no-watcher.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
           echo finished
 
   deploy:
@@ -449,10 +484,12 @@ jobs:
     needs: [build-gh-docker, release-versions]
 
     steps:
-      - uses: Bhacaz/checkout-files@v2
+      - uses: actions/checkout@v4
         with:
-          files: package.json
-          branch: ${{ github.ref }}
+          sparse-checkout: |
+            package.json
+          sparse-checkout-cone-mode: false
+          ref: ${{ github.ref }}
 
       - name: Restore build
         uses: actions/download-artifact@v3
@@ -732,10 +769,12 @@ jobs:
       - docker-image-publish
       - release-versions
     steps:
-      - uses: Bhacaz/checkout-files@v2
+      - uses: actions/checkout@v4
         with:
-          files: package.json
-          branch: ${{ github.ref }}
+          sparse-checkout: |
+            package.json
+          sparse-checkout-cone-mode: false
+          ref: ${{ github.ref }}
 
       - name: Releases service
         env:
@@ -784,10 +823,15 @@ jobs:
           repository: RocketChat/Release.Distributions
           client-payload: '{"tag": "${{ github.ref_name }}"}'
 
-      - name: Update docs
-        uses: peter-evans/repository-dispatch@v2
-        with:
-          token: ${{ secrets.DOCS_PAT }}
-          event-type: new_release
-          repository: RocketChat/docs
-          client-payload: '{"tag": "${{ github.ref_name }}"}'
+  docs-update:
+    name: Update Version Durability
+
+    if: github.event_name == 'release'
+    needs:
+      - services-docker-image-publish
+      - docker-image-publish
+
+    uses: ./.github/workflows/update-version-durability.yml
+    secrets:
+      CI_PAT: ${{ secrets.CI_PAT }}
+      D360_TOKEN: ${{ secrets.D360_TOKEN }}

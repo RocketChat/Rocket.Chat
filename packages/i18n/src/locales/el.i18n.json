@@ -289,7 +289,7 @@
   "API_EmbedCacheExpirationDays": "Ενσωματώστε τις ημέρες λήξης της προσωρινής μνήμης",
   "API_Enable_CORS": "Ενεργοποίηση CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Ενεργοποίηση τελικού σημείου ιστορικού άμεσων μηνυμάτων",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Αυτό επιτρέπει στο αρχείο `/ api / v1 / im.history.others` το οποίο επιτρέπει την προβολή των άμεσων μηνυμάτων που αποστέλλονται από άλλους χρήστες που δεν ανήκει στον καλούντα.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Αυτό επιτρέπει στο αρχείο `/ api / v1 / im.messages.others` το οποίο επιτρέπει την προβολή των άμεσων μηνυμάτων που αποστέλλονται από άλλους χρήστες που δεν ανήκει στον καλούντα.",
   "API_Enable_Shields": "Ενεργοποίηση Ασπίδων",
   "API_Enable_Shields_Description": "Ενεργοποίησε τις ασπίδες που είναι διαθέσιμες στο `/api/v1/shield.svg`",
   "API_GitHub_Enterprise_URL": "URL Διακομιστή",

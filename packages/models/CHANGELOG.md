@@ -1,5 +1,27 @@
 # @rocket.chat/models
 
+## 0.1.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [eaf2f11a6c, f75a2cb4bb, 4f72d62aa7]:</summary>
+
+  - @rocket.chat/model-typings@0.5.0
+  </details>
+
+## 0.1.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.5.0-rc.7
+  </details>
+
 ## 0.1.0-rc.6
 
 ### Patch Changes

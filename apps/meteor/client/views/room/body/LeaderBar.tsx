@@ -19,7 +19,9 @@ type LeaderBarProps = {
 	onAvatarClick?: (event: UIEvent, username: IUser['username']) => void;
 	triggerProps: AriaButtonProps<'button'>;
 };
-
+/**
+ * @deprecated on newNavigation feature. Remove after full migration.
+ */
 const LeaderBar = ({ _id, name, username, visible, onAvatarClick, triggerProps }: LeaderBarProps): ReactElement => {
 	const t = useTranslation();
 

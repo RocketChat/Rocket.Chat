@@ -1,6 +1,6 @@
 import { ToastBarProvider, useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { ToastMessagesContext } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React, { useEffect } from 'react';
 
 import { getErrorMessage } from '../lib/errorHandling';
@@ -10,7 +10,11 @@ const contextValue = {
 	dispatch: dispatchToastMessage,
 };
 
-const ToastMessageInnerProvider: FC = ({ children }) => {
+type ToastMessageInnerProviderProps = {
+	children?: ReactNode;
+};
+
+const ToastMessageInnerProvider = ({ children }: ToastMessageInnerProviderProps) => {
 	const dispatchToastBar = useToastBarDispatch();
 
 	useEffect(
@@ -37,8 +41,12 @@ const ToastMessageInnerProvider: FC = ({ children }) => {
 	return <ToastMessagesContext.Provider children={children} value={contextValue} />;
 };
 
+type ToastMessagesProviderProps = {
+	children?: ReactNode;
+};
+
 // eslint-disable-next-line react/no-multi-comp
-const ToastMessagesProvider: FC = ({ children }) => (
+const ToastMessagesProvider = ({ children }: ToastMessagesProviderProps) => (
 	<ToastBarProvider>
 		<ToastMessageInnerProvider children={children} />
 	</ToastBarProvider>
