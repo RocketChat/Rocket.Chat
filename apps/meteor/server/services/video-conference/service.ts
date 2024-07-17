@@ -1,4 +1,5 @@
 import { Apps } from '@rocket.chat/apps';
+import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal, Room } from '@rocket.chat/core-services';
@@ -891,7 +892,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		const title = isGroupVideoConference(call) ? call.title || (await this.getRoomName(call.rid)) : '';
-		const callData = {
+		const callData: VideoConfData = {
 			_id: call._id,
 			type: call.type,
 			rid: call.rid,
@@ -957,7 +958,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await VideoConferenceModel.setUrlById(call._id, call.url);
 		}
 
-		const callData = {
+		const callData: VideoConfDataExtended = {
 			_id: call._id,
 			type: call.type,
 			rid: call.rid,
