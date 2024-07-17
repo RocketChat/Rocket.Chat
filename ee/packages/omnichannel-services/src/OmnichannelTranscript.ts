@@ -201,7 +201,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		return quotes;
 	}
 
-	private async getSystemMessage(message: MessageData): Promise<false | MessageData> {
+	private getSystemMessage(message: MessageData): false | MessageData {
 		if (!message.t) {
 			return false;
 		}
