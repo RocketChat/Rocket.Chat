@@ -74,8 +74,8 @@ import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normaliz
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
+import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
-import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes'
 
 type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
 	id?: string;
@@ -298,7 +298,8 @@ class LivechatClass {
 
 		this.logger.debug(`DB updated for room ${room._id}`);
 
-		const transcriptRequested = !!transcriptRequest || (!settings.get('Livechat_enable_transcript') && settings.get('Livechat_transcript_send_always'));
+		const transcriptRequested =
+			!!transcriptRequest || (!settings.get('Livechat_enable_transcript') && settings.get('Livechat_transcript_send_always'));
 		const message = {
 			t: 'livechat-close',
 			msg: comment,
@@ -1965,5 +1966,4 @@ class LivechatClass {
 }
 
 export const Livechat = new LivechatClass();
-export * from './localTypes'
-
+export * from './localTypes';
