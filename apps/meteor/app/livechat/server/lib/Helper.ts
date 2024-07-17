@@ -4,7 +4,6 @@ import { api, Message, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	ILivechatVisitor,
 	IOmnichannelRoom,
-	IMessage,
 	SelectedAgent,
 	ISubscription,
 	ILivechatInquiryRecord,
@@ -30,6 +29,7 @@ import {
 } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+import { ObjectId } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
@@ -57,12 +57,18 @@ export const allowAgentSkipQueue = (agent: SelectedAgent) => {
 
 	return hasRoleAsync(agent.agentId, 'bot');
 };
-export const createLivechatRoom = async (
+export const createLivechatRoom = async <
+	E extends Record<string, unknown> & {
+		sla?: string;
+		customFields?: Record<string, unknown>;
+		source?: OmnichannelSourceType;
+	},
+>(
 	rid: string,
 	name: string,
 	guest: ILivechatVisitor,
 	roomInfo: Partial<IOmnichannelRoom> = {},
-	extraData = {},
+	extraData?: E,
 ) => {
 	check(rid, String);
 	check(name, String);
@@ -86,47 +92,59 @@ export const createLivechatRoom = async (
 		visitor: { _id, username, departmentId, status, activity },
 	});
 
-	const room: InsertionModel<IOmnichannelRoom> = Object.assign(
-		{
-			_id: rid,
-			msgs: 0,
-			usersCount: 1,
-			lm: newRoomAt,
-			fname: name,
-			t: 'l' as const,
-			ts: newRoomAt,
-			departmentId,
-			v: {
-				_id,
-				username,
-				token,
-				status,
-				...(activity?.length && { activity }),
-			},
-			cl: false,
-			open: true,
-			waitingResponse: true,
-			// this should be overriden by extraRoomInfo when provided
-			// in case it's not provided, we'll use this "default" type
-			source: {
-				type: OmnichannelSourceType.OTHER,
-				alias: 'unknown',
-			},
-			queuedAt: newRoomAt,
-
-			priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
-			estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+	// TODO: Solve `u` missing issue
+	const room: InsertionModel<IOmnichannelRoom> = {
+		_id: rid,
+		msgs: 0,
+		usersCount: 1,
+		lm: newRoomAt,
+		fname: name,
+		t: 'l' as const,
+		ts: newRoomAt,
+		departmentId,
+		v: {
+			_id,
+			username,
+			token,
+			status,
+			...(activity?.length && { activity }),
 		},
-		extraRoomInfo,
+		cl: false,
+		open: true,
+		waitingResponse: true,
+		// this should be overridden by extraRoomInfo when provided
+		// in case it's not provided, we'll use this "default" type
+		source: {
+			type: OmnichannelSourceType.OTHER,
+			alias: 'unknown',
+		},
+		queuedAt: newRoomAt,
+		livechatData: undefined,
+		priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
+		estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+		...extraRoomInfo,
+	} as InsertionModel<IOmnichannelRoom>;
+
+	const result = await Rooms.findOneAndUpdate(
+		room,
+		{
+			$set: {},
+		},
+		{
+			upsert: true,
+			returnDocument: 'after',
+		},
 	);
 
-	const roomId = (await Rooms.insertOne(room)).insertedId;
+	if (!result.value) {
+		throw new Error('Room not created');
+	}
 
 	await callbacks.run('livechat.newRoom', room);
 
 	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
 
-	return roomId;
+	return result.value as IOmnichannelRoom;
 };
 
 export const createLivechatInquiry = async ({
@@ -140,7 +158,7 @@ export const createLivechatInquiry = async ({
 	rid: string;
 	name?: string;
 	guest?: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'department' | 'name' | 'token' | 'activity'>;
-	message?: Pick<IMessage, 'msg'>;
+	message?: string;
 	initialStatus?: LivechatInquiryStatus;
 	extraData?: Pick<ILivechatInquiryRecord, 'source'>;
 }) => {
@@ -156,17 +174,11 @@ export const createLivechatInquiry = async ({
 			activity: Match.Maybe([String]),
 		}),
 	);
-	check(
-		message,
-		Match.ObjectIncluding({
-			msg: String,
-		}),
-	);
 
 	const extraInquiryInfo = await callbacks.run('livechat.beforeInquiry', extraData);
 
 	const { _id, username, token, department, status = UserStatus.ONLINE, activity } = guest;
-	const { msg } = message;
+
 	const ts = new Date();
 
 	logger.debug({
@@ -174,31 +186,44 @@ export const createLivechatInquiry = async ({
 		visitor: { _id, username, department, status, activity },
 	});
 
-	const inquiry: InsertionModel<ILivechatInquiryRecord> = {
-		rid,
-		name,
-		ts,
-		department,
-		message: msg,
-		status: initialStatus || LivechatInquiryStatus.READY,
-		v: {
-			_id,
-			username,
-			token,
-			status,
-			...(activity?.length && { activity }),
+	const result = await LivechatInquiry.findOneAndUpdate(
+		{
+			rid,
+			name,
+			ts,
+			department,
+			message: message ?? '',
+			status: initialStatus || LivechatInquiryStatus.READY,
+			v: {
+				_id,
+				username,
+				token,
+				status,
+				...(activity?.length && { activity }),
+			},
+			t: 'l',
+			priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
+			estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+
+			...extraInquiryInfo,
 		},
-		t: 'l',
-		priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
-		estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
-
-		...extraInquiryInfo,
-	};
-
-	const result = (await LivechatInquiry.insertOne(inquiry)).insertedId;
+		{
+			$set: {
+				_id: new ObjectId().toHexString(),
+			},
+		},
+		{
+			upsert: true,
+			returnDocument: 'after',
+		},
+	);
 	logger.debug(`Inquiry ${result} created for visitor ${_id}`);
 
-	return result;
+	if (!result.value) {
+		throw new Error('Inquiry not created');
+	}
+
+	return result.value as ILivechatInquiryRecord;
 };
 
 export const createLivechatSubscription = async (
@@ -337,6 +362,10 @@ export const dispatchAgentDelegated = async (rid: string, agentId?: string) => {
 	});
 };
 
+/**
+ * @deprecated
+ */
+
 export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, agent?: SelectedAgent | null) => {
 	if (!inquiry?._id) {
 		return;
@@ -355,9 +384,11 @@ export const dispatchInquiryQueued = async (inquiry: ILivechatInquiryRecord, age
 		return;
 	}
 
-	if (!agent || !(await allowAgentSkipQueue(agent))) {
-		await saveQueueInquiry(inquiry);
+	if (agent && (await allowAgentSkipQueue(agent))) {
+		return;
 	}
+
+	await saveQueueInquiry(inquiry);
 
 	// Alert only the online agents of the queued request
 	const onlineAgents = await LivechatTyped.getOnlineAgents(department, agent);
@@ -439,9 +470,14 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 	// There are some Enterprise features that may interrupt the forwarding process
 	// Due to that we need to check whether the agent has been changed or not
 	logger.debug(`Forwarding inquiry ${inquiry._id} to agent ${agent.agentId}`);
-	const roomTaken = await RoutingManager.takeInquiry(inquiry, agent, {
-		...(clientAction && { clientAction }),
-	});
+	const roomTaken = await RoutingManager.takeInquiry(
+		inquiry,
+		agent,
+		{
+			...(clientAction && { clientAction }),
+		},
+		room,
+	);
 	if (!roomTaken) {
 		logger.debug(`Cannot forward inquiry ${inquiry._id}`);
 		return false;
@@ -566,10 +602,15 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	// Fake the department to forward the inquiry - Case the forward process does not success
 	// the inquiry will stay in the same original department
 	inquiry.department = departmentId;
-	const roomTaken = await RoutingManager.delegateInquiry(inquiry, agent, {
-		forwardingToDepartment: { oldDepartmentId },
-		...(clientAction && { clientAction }),
-	});
+	const roomTaken = await RoutingManager.delegateInquiry(
+		inquiry,
+		agent,
+		{
+			forwardingToDepartment: { oldDepartmentId },
+			...(clientAction && { clientAction }),
+		},
+		room,
+	);
 	if (!roomTaken) {
 		logger.debug(`Cannot forward room ${room._id}. Unable to delegate inquiry`);
 		return false;
@@ -653,16 +694,6 @@ export const normalizeTransferredByData = (transferredBy: TransferByData, room: 
 		...(name && { name }),
 		type,
 	};
-};
-
-export const checkServiceStatus = async ({ guest, agent }: { guest: Pick<ILivechatVisitor, 'department'>; agent?: SelectedAgent }) => {
-	if (!agent) {
-		return LivechatTyped.online(guest.department);
-	}
-
-	const { agentId } = agent;
-	const users = await Users.countOnlineAgents(agentId);
-	return users > 0;
 };
 
 const parseFromIntOrStr = (value: string | number) => {

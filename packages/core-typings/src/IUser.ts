@@ -152,7 +152,6 @@ export interface IUser extends IRocketChatRecord {
 		private_key: string;
 		public_key: string;
 	};
-	requirePasswordChange?: boolean;
 	customFields?: {
 		[key: string]: any;
 	};
@@ -184,6 +183,8 @@ export interface IUser extends IRocketChatRecord {
 	};
 	importIds?: string[];
 	_pendingAvatarUrl?: string;
+	requirePasswordChange?: boolean;
+	requirePasswordChangeReason?: string;
 }
 
 export interface IRegisterUser extends IUser {

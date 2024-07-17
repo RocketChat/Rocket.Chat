@@ -94,8 +94,6 @@ export interface IRoom extends IRocketChatRecord {
 	/* @deprecated */
 	customFields?: Record<string, any>;
 
-	channel?: { _id: string };
-
 	usersWaitingForE2EKeys?: { userId: IUser['_id']; ts: Date }[];
 }
 
@@ -152,7 +150,7 @@ export enum OmnichannelSourceType {
 	OTHER = 'other', // catch-all source type
 }
 
-export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
+export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast'> {
 	t: 'l' | 'v';
 	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity'> & {
 		lastMessageTs?: Date;
@@ -333,7 +331,7 @@ export const isOmnichannelRoom = (room: Pick<IRoom, 't'>): room is IOmnichannelR
 
 export const isVoipRoom = (room: IRoom): room is IVoipRoom & IRoom => room.t === 'v';
 
-export const isOmnichannelRoomFromAppSource = (room: IRoom): room is IOmnichannelRoomFromAppSource => {
+export const isOmnichannelRoomFromAppSource = (room: IOmnichannelRoom): room is IOmnichannelRoomFromAppSource => {
 	if (!isOmnichannelRoom(room)) {
 		return false;
 	}
