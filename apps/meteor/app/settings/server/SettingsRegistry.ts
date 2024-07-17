@@ -151,8 +151,7 @@ export class SettingsRegistry {
 
 		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
 
-		if (settingStored && !compareSettingsMetadata(settingStored, settingFromCodeOverwritten)) {
-			// we need to update the setting metadata here
+		if (settingStored && !compareSettings(settingStored, settingFromCodeOverwritten)) {
 
 			const { value: _value, ...settingOverwrittenProps } = settingFromCodeOverwritten; // settingStoredOverwrite not used since we need the updated props, that is in code not db
 
