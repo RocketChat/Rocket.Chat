@@ -18,5 +18,3 @@ export class MeteorError extends Error {
 		};
 	}
 }
-
-export const isMeteorError = (error: any): error is MeteorError => error?.errorType === 'Meteor.Error';
