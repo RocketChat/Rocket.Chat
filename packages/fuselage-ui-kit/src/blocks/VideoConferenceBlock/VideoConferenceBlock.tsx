@@ -1,4 +1,4 @@
-import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useGoToRoom, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import {
   VideoConfMessageSkeleton,
@@ -33,6 +33,7 @@ const VideoConferenceBlock = ({
   const { callId, appId = 'videoconf-core' } = block;
   const surfaceType = useSurfaceType();
   const userId = useUserId();
+  const goToRoom = useGoToRoom();
 
   const { action, viewId = undefined, rid } = useContext(UiKitContext);
 
@@ -86,7 +87,9 @@ const VideoConferenceBlock = ({
   };
 
   const openDiscussion: MouseEventHandler<HTMLButtonElement> = (_e) => {
-    // #TODO: Open the discussion
+    if (data.discussionRid) {
+      goToRoom(data.discussionRid);
+    }
   };
 
   if (result.isLoading || result.isError) {
