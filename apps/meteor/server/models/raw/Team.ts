@@ -45,10 +45,10 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 		query?: Filter<ITeam>,
 	): FindCursor<P> | FindCursor<ITeam> {
 		if (options === undefined) {
-			return this.find({ _id: { $in: ids }, ...query });
+			return this.find({ ...query, _id: { $in: ids } });
 		}
 
-		return this.find({ _id: { $in: ids }, ...query }, options);
+		return this.find({ ...query, _id: { $in: ids } }, options);
 	}
 
 	findByIdsPaginated(
@@ -57,10 +57,10 @@ export class TeamRaw extends BaseRaw<ITeam> implements ITeamModel {
 		query?: Filter<ITeam>,
 	): FindPaginated<FindCursor<ITeam>> {
 		if (options === undefined) {
-			return this.findPaginated({ _id: { $in: ids }, ...query });
+			return this.findPaginated({ ...query, _id: { $in: ids } });
 		}
 
-		return this.findPaginated({ _id: { $in: ids }, ...query }, options);
+		return this.findPaginated({ ...query, _id: { $in: ids } }, options);
 	}
 
 	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE): FindCursor<ITeam>;

@@ -1,3 +1,4 @@
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useLayout, useUser, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { lazy, useCallback } from 'react';
@@ -5,6 +6,7 @@ import React, { lazy, useCallback } from 'react';
 import { Roles } from '../../../../app/models/client';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import LayoutWithSidebar from './LayoutWithSidebar';
+import LayoutWithSidebarV2 from './LayoutWithSidebarV2';
 
 const AccountSecurityPage = lazy(() => import('../../account/security/AccountSecurityPage'));
 
@@ -34,7 +36,16 @@ const TwoFactorAuthSetupCheck = ({ children }: { children: ReactNode }): ReactEl
 		);
 	}
 
-	return <LayoutWithSidebar>{children}</LayoutWithSidebar>;
+	return (
+		<FeaturePreview feature='newNavigation'>
+			<FeaturePreviewOff>
+				<LayoutWithSidebar>{children}</LayoutWithSidebar>
+			</FeaturePreviewOff>
+			<FeaturePreviewOn>
+				<LayoutWithSidebarV2>{children}</LayoutWithSidebarV2>
+			</FeaturePreviewOn>
+		</FeaturePreview>
+	);
 };
 
 export default TwoFactorAuthSetupCheck;

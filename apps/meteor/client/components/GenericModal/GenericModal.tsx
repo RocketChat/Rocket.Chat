@@ -2,7 +2,7 @@ import { Button, Modal } from '@rocket.chat/fuselage';
 import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
 import React, { useEffect, useRef } from 'react';
 
 import type { RequiredModalProps } from './withDoNotAskAgain';
@@ -22,7 +22,7 @@ type GenericModalProps = RequiredModalProps & {
 	onCancel?: () => Promise<void> | void;
 	onClose?: () => Promise<void> | void;
 	annotation?: ReactNode;
-} & Omit<ComponentProps<typeof Modal>, 'title'>;
+} & Omit<ComponentPropsWithoutRef<typeof Modal>, 'title'>;
 
 const iconMap: Record<string, IconName> = {
 	danger: 'modal-warning',
