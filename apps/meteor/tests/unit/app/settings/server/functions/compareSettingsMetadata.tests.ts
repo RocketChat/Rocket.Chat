@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { compareSettingsMetadata } from '../../../../../../app/settings/server/SettingsRegistry';
+import { compareSettings } from '../../../../../../app/settings/server/SettingsRegistry';
 import { getSettingDefaults } from '../../../../../../app/settings/server/functions/getSettingDefaults';
 
 const testSetting = getSettingDefaults({
@@ -9,7 +9,7 @@ const testSetting = getSettingDefaults({
 	value: 'dummy',
 });
 
-describe('#compareSettingsMetadata', () => {
+describe('#compareSettings', () => {
 	const ignoredKeys = ['value', 'ts', 'createdAt', 'valueSource', 'packageValue', 'processEnvValue', '_updatedAt'];
 
 	ignoredKeys.forEach((key) =>
@@ -22,7 +22,7 @@ describe('#compareSettingsMetadata', () => {
 				copiedSetting[key] = 'random';
 			}
 
-			expect(compareSettingsMetadata(testSetting, copiedSetting)).to.be.true;
+			expect(compareSettings(testSetting, copiedSetting)).to.be.true;
 		}),
 	);
 });
