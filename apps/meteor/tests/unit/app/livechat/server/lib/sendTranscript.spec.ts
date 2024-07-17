@@ -140,7 +140,7 @@ describe('Send transcript', () => {
 			}),
 		).to.be.true;
 	});
-	it('should use subject from setting when no subject provided', async () => {
+	it('should use subject from setting (when configured) when no subject provided', async () => {
 		modelsMock.LivechatVisitors.getVisitorByToken.returns({ language: null });
 		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { token: 'token' } });
 		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.returns([]);
