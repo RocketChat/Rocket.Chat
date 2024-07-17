@@ -28,7 +28,7 @@ import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rock
 import { PdfWorker } from '@rocket.chat/pdf-worker';
 import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
 
-import { getSystemMessage } from './livechatSystemMessages';
+import { getAllSystemMessagesKeys, getSystemMessage } from './livechatSystemMessages';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result.status === 'rejected';
 
@@ -63,12 +63,20 @@ type WorkerData = {
 	translations: { key: string; value: string }[];
 };
 
+const customSprintfInterpolation = (template: string, values: Record<string, string>) => {
+	return template.replace(/{{(\w+)}}/g, (match, key) => {
+		return typeof values[key] !== 'undefined' ? values[key] : match;
+	});
+};
+
 export class OmnichannelTranscript extends ServiceClass implements IOmnichannelTranscriptService {
 	protected name = 'omnichannel-transcript';
 
 	private worker: PdfWorker;
 
 	private log: Logger;
+
+	private translations?: Array<{ key: string; value: string }> = undefined;
 
 	maxNumberOfConcurrentJobs = 25;
 
@@ -79,6 +87,10 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		this.worker = new PdfWorker('chat-transcript');
 		// eslint-disable-next-line new-cap
 		this.log = new loggerClass('OmnichannelTranscript');
+
+		// this is initialized as undefined and will be set when the first pdf is requested.
+		// if we try to initialize it at the start of the service using IIAFE, for some reason i18next doesn't return translations, maybe i18n isn't initialised yet
+		this.translations = undefined;
 	}
 
 	async getTimezone(user?: { utcOffset?: string | number }): Promise<string> {
@@ -200,10 +212,9 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			return false;
 		}
 
-		const args =
-			systemMessageDefinition.data && (await systemMessageDefinition?.data(message, translationService.translateToServerLanguage));
+		const args = systemMessageDefinition.data && systemMessageDefinition?.data(message, this.getTranslation.bind(this));
 
-		const systemMessage = await translationService.translateToServerLanguage(systemMessageDefinition.message, args);
+		const systemMessage = this.getTranslation(systemMessageDefinition.message, args);
 
 		return {
 			...message,
@@ -325,17 +336,47 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		return messagesData;
 	}
 
-	private async getTranslations(): Promise<Array<{ key: string; value: string }>> {
-		const keys: string[] = ['Agent', 'Date', 'Customer', 'Not_assigned', 'Time', 'Chat_transcript', 'This_attachment_is_not_supported'];
+	private async getAllTranslations(): Promise<Array<{ key: string; value: string }>> {
+		const keys: string[] = [
+			'Agent',
+			'Date',
+			'Customer',
+			'Not_assigned',
+			'Time',
+			'Chat_transcript',
+			'This_attachment_is_not_supported',
+			'Livechat_transfer_to_agent',
+			'Livechat_transfer_to_agent_with_a_comment',
+			'Livechat_transfer_to_department',
+			'Livechat_transfer_to_department_with_a_comment',
+			'Livechat_transfer_return_to_the_queue',
+			'Livechat_transfer_return_to_the_queue_with_a_comment',
+			'Livechat_transfer_to_agent_auto_transfer_unanswered_chat',
+			'Livechat_transfer_return_to_the_queue_auto_transfer_unanswered_chat',
+			'Livechat_visitor_transcript_request',
+			'Livechat_user_sent_chat_transcript_to_visitor',
+			'WebRTC_call_ended_message',
+			'WebRTC_call_declined_message',
+			...getAllSystemMessagesKeys(),
+		];
 
-		return Promise.all(
-			keys.map(async (key) => {
-				return {
-					key,
-					value: await translationService.translateToServerLanguage(key),
-				};
-			}),
-		);
+		return translationService.translateMultipleToServerLanguage(keys);
+	}
+
+	private getTranslation(translationKey: string, args?: Record<string, string>): string {
+		const translationValue = this.translations?.find(({ key }) => key === translationKey)?.value;
+
+		if (!translationValue) {
+			return translationKey;
+		}
+
+		if (!args) {
+			return translationValue;
+		}
+
+		const translation = customSprintfInterpolation(translationValue, args);
+
+		return translation;
 	}
 
 	async workOnPdf({ details }: { details: WorkDetailsWithSource }): Promise<void> {
@@ -358,14 +399,16 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const agent =
 				room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1, utcOffset: 1 } }));
 
+			const translations = this.translations ?? (await this.getAllTranslations());
+			this.translations = translations;
+
 			const messagesData = await this.getMessagesData(messages);
 
-			const [siteName, dateFormat, timeAndDateFormat, timezone, translations] = await Promise.all([
+			const [siteName, dateFormat, timeAndDateFormat, timezone] = await Promise.all([
 				settingsService.get<string>('Site_Name'),
 				settingsService.get<string>('Message_DateFormat'),
 				settingsService.get<string>('Message_TimeAndDateFormat'),
 				this.getTimezone(agent),
-				this.getTranslations(),
 			]);
 			const data = {
 				visitor,

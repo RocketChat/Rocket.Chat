@@ -9,7 +9,7 @@ const livechatSystemMessagesMap = new Map<
 	MessageTypesValues,
 	{
 		message: string;
-		data?: (message: MessageData, t: (k: string, obj?: Record<string, string>) => Promise<string>) => Promise<Record<string, string>>;
+		data?: (message: MessageData, t: (k: string, obj?: Record<string, string>) => string) => Record<string, string>;
 	}
 >();
 
@@ -17,17 +17,19 @@ const addType = (
 	id: MessageTypesValues,
 	options: {
 		message: string;
-		data?: (message: MessageData, t: (k: string, obj?: Record<string, string>) => Promise<string>) => Promise<Record<string, string>>;
+		data?: (message: MessageData, t: (k: string, obj?: Record<string, string>) => string) => Record<string, string>;
 	},
 ) => livechatSystemMessagesMap.set(id, options);
 
 export const getSystemMessage = (t: MessageTypesValues) => livechatSystemMessagesMap.get(t);
 
+export const getAllSystemMessagesKeys = () => Array.from(livechatSystemMessagesMap.values()).map((item) => item.message);
+
 addType('livechat-started', { message: 'Chat_started' });
 
 addType('uj', {
 	message: 'User_joined_the_channel',
-	async data(message) {
+	data(message) {
 		return {
 			user: message.u.username,
 		};
@@ -40,7 +42,7 @@ addType('livechat_video_call', {
 
 addType('livechat-close', {
 	message: 'Conversation_closed',
-	async data(message) {
+	data(message) {
 		return {
 			comment: message.msg,
 		};
@@ -49,7 +51,7 @@ addType('livechat-close', {
 
 addType('livechat_navigation_history', {
 	message: 'New_visitor_navigation',
-	async data(message: MessageData) {
+	data(message: MessageData) {
 		return {
 			history: message.navigation
 				? `${(message.navigation.page.title ? `${message.navigation.page.title} - ` : '') + message.navigation.page.location.href}`
@@ -60,7 +62,7 @@ addType('livechat_navigation_history', {
 
 addType('livechat_transfer_history', {
 	message: 'New_chat_transfer',
-	async data(message: MessageData, t) {
+	data(message: MessageData, t) {
 		if (!message.transferData) {
 			return {
 				transfer: '',
@@ -72,44 +74,44 @@ addType('livechat_transfer_history', {
 		const from =
 			message.transferData.transferredBy && (message.transferData.transferredBy.name || message.transferData.transferredBy.username);
 		const transferTypes = {
-			agent: (): Promise<string> =>
+			agent: (): string =>
 				t(`Livechat_transfer_to_agent${commentLabel}`, {
 					from,
 					to: message?.transferData?.transferredTo?.name || message?.transferData?.transferredTo?.username || '',
 					...(comment && { comment }),
 				}),
-			department: (): Promise<string> =>
+			department: (): string =>
 				t(`Livechat_transfer_to_department${commentLabel}`, {
 					from,
 					to: message?.transferData?.nextDepartment?.name || '',
 					...(comment && { comment }),
 				}),
-			queue: (): Promise<string> =>
+			queue: (): string =>
 				t(`Livechat_transfer_return_to_the_queue${commentLabel}`, {
 					from,
 					...(comment && { comment }),
 				}),
-			autoTransferUnansweredChatsToAgent: (): Promise<string> =>
+			autoTransferUnansweredChatsToAgent: (): string =>
 				t(`Livechat_transfer_to_agent_auto_transfer_unanswered_chat`, {
 					from,
 					to: message?.transferData?.transferredTo?.name || message?.transferData?.transferredTo?.username || '',
 					duration: comment,
 				}),
-			autoTransferUnansweredChatsToQueue: (): Promise<string> =>
+			autoTransferUnansweredChatsToQueue: (): string =>
 				t(`Livechat_transfer_return_to_the_queue_auto_transfer_unanswered_chat`, {
 					from,
 					duration: comment,
 				}),
 		};
 		return {
-			transfer: await transferTypes[message.transferData.scope](),
+			transfer: transferTypes[message.transferData.scope](),
 		};
 	},
 });
 
 addType('livechat_transcript_history', {
 	message: 'Livechat_chat_transcript_sent',
-	async data(message: MessageData, t) {
+	data(message: MessageData, t) {
 		if (!message.requestData) {
 			return {
 				transcript: '',
@@ -118,11 +120,11 @@ addType('livechat_transcript_history', {
 
 		const { requestData: { type, visitor, user } = { type: 'user' } } = message;
 		const requestTypes = {
-			visitor: (): Promise<string> =>
+			visitor: (): string =>
 				t('Livechat_visitor_transcript_request', {
 					guest: visitor?.name || visitor?.username || '',
 				}),
-			user: (): Promise<string> =>
+			user: (): string =>
 				t('Livechat_user_sent_chat_transcript_to_visitor', {
 					agent: user?.name || user?.username || '',
 					guest: visitor?.name || visitor?.username || '',
@@ -130,17 +132,17 @@ addType('livechat_transcript_history', {
 		};
 
 		return {
-			transcript: await requestTypes[type](),
+			transcript: requestTypes[type](),
 		};
 	},
 });
 
 addType('livechat_webrtc_video_call', {
 	message: 'room_changed_type',
-	async data(message: MessageData, t) {
+	data(message: MessageData, t) {
 		if (message.msg === 'ended' && message.webRtcCallEndTs && message.ts) {
 			return {
-				message: await t('WebRTC_call_ended_message', {
+				message: t('WebRTC_call_ended_message', {
 					callDuration: formatDistance(new Date(message.webRtcCallEndTs), new Date(message.ts)),
 					endTime: moment(message.webRtcCallEndTs).format('h:mm A'),
 				}),
@@ -148,7 +150,7 @@ addType('livechat_webrtc_video_call', {
 		}
 		if (message.msg === 'declined' && message.webRtcCallEndTs) {
 			return {
-				message: await t('WebRTC_call_declined_message'),
+				message: t('WebRTC_call_declined_message'),
 			};
 		}
 		return {
@@ -159,7 +161,7 @@ addType('livechat_webrtc_video_call', {
 
 addType('omnichannel_placed_chat_on_hold', {
 	message: 'Omnichannel_placed_chat_on_hold',
-	async data(message: MessageData) {
+	data(message: MessageData) {
 		return {
 			comment: message.comment ? message.comment : 'No comment provided',
 		};
@@ -168,7 +170,7 @@ addType('omnichannel_placed_chat_on_hold', {
 
 addType('omnichannel_on_hold_chat_resumed', {
 	message: 'Omnichannel_on_hold_chat_resumed',
-	async data(message: MessageData) {
+	data(message: MessageData) {
 		return {
 			comment: message.comment ? message.comment : 'No comment provided',
 		};
