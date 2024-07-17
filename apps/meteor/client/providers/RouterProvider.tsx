@@ -198,7 +198,7 @@ export const router: RouterContextValue = {
 	getRoutes,
 	subscribeToRoutesChange,
 	getRoomRoute(roomType: RoomType, rid: string) {
-		return roomCoordinator.getRouteLink(roomType, { rid });
+		return { path: roomCoordinator.getRouteLink(roomType, { rid }) || '/' };
 	},
 };
 
