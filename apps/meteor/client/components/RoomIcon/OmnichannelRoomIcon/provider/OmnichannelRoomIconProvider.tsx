@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React, { useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
@@ -10,7 +10,11 @@ import OmnichannelRoomIcon from '../lib/OmnichannelRoomIcon';
 
 let icons = Array.from(OmnichannelRoomIcon.icons.values());
 
-export const OmnichannelRoomIconProvider: FC = ({ children }) => {
+type OmnichannelRoomIconProviderProps = {
+	children?: ReactNode;
+};
+
+export const OmnichannelRoomIconProvider = ({ children }: OmnichannelRoomIconProviderProps) => {
 	const svgIcons = useSyncExternalStore(
 		useCallback(
 			(callback): (() => void) =>
