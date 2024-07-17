@@ -25,8 +25,13 @@ export const registerDownloadForUid = (uid: string, t: ReturnType<typeof useTran
 
 export const forAttachmentDownload = (uid: string, href: string, controller?: ServiceWorker | null) => {
 	if (!controller) {
-		controller = navigator.serviceWorker.controller;
+		controller = navigator?.serviceWorker?.controller;
 	}
+
+	if (!controller) {
+		return;
+	}
+
 	controller?.postMessage({
 		type: 'attachment-download',
 		url: href,

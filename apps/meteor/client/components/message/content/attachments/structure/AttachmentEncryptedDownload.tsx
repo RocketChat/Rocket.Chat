@@ -9,10 +9,6 @@ type AttachmentDownloadProps = ComponentProps<typeof AttachmentDownloadBase>;
 const AttachmentEncryptedDownload = ({ title, href, ...props }: AttachmentDownloadProps) => {
 	const encryptedAnchorProps = useDownloadFromServiceWorker(href, title);
 
-	if (encryptedAnchorProps.disabled) {
-		return null;
-	}
-
 	return <AttachmentDownloadBase {...props} {...encryptedAnchorProps} title={title} href={href} />;
 };
 
