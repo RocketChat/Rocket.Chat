@@ -39,6 +39,12 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	private checkMAC: BeforeSaveCheckMAC;
 
+	constructor() {
+		super();
+
+		this.onEvent('message.new', this.afterSave.bind(this));
+	}
+
 	async created() {
 		this.preventMention = new BeforeSavePreventMention();
 		this.badWords = new BeforeSaveBadWords();
@@ -189,6 +195,30 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	private isEditedOrOld(message: IMessage): boolean {
 		return isEditedMessage(message) || !message.ts || Math.abs(Date.now() - message.ts.getTime()) > 60000;
+	}
+
+	private async afterSave({ room }: { message: IMessage; room: IRoom; user: IUser }) {
+		await this.propagateDiscussionMessage(room);
+	}
+
+	/**
+	 * We need to propagate the writing of new message in a discussion to the linking
+	 * system message
+	 */
+	private async propagateDiscussionMessage(room: IRoom) {
+		if (!room.prid) {
+			return;
+		}
+
+		const { value: parentMessage } = await Messages.refreshDiscussionMetadata(room);
+		if (!parentMessage) {
+			return;
+		}
+
+		void broadcastMessageFromData({
+			id: parentMessage._id,
+			data: parentMessage,
+		});
 	}
 
 	// joinDiscussionOnMessage

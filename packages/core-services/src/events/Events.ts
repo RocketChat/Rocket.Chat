@@ -155,6 +155,7 @@ export type EventSignatures = {
 		previousStatus: UserStatus | undefined;
 	}): void;
 	'watch.messages'(data: { message: IMessage }): void;
+	'message.new': (data: { message: IMessage; room: IRoom; user: IUser }) => void;
 	'watch.roles'(
 		data:
 			| { clientAction: Exclude<ClientAction, 'removed'>; role: IRole }

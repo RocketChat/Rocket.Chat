@@ -290,13 +290,26 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
 	}
 
-	await callbacks.run('afterSaveMessage', message, room);
+	/* Defer other updates as their return is not interesting to the user */
 
-	void broadcastMessageFromData({
-		id: message._id,
+	// Execute all callbacks
+
+	setImmediate(async () => {
+		await callbacks.run('afterSaveMessage', message, room);
+
+		void api.broadcast('message.new', {
+			message,
+			room,
+			user,
+		});
+
+		void broadcastMessageFromData({
+			id: msg._id,
+			data: message,
+		});
+
+		void notifyOnRoomChangedById(message.rid);
 	});
-
-	void notifyOnRoomChangedById(message.rid);
 
 	return message;
 };
