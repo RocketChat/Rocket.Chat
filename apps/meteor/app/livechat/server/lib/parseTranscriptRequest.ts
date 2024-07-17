@@ -1,15 +1,15 @@
-import type { ILivechatVisitor, IOmnichannelRoom, IOmnichannelRoomClosingInfo, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users } from '@rocket.chat/models';
-import type { CloseRoomParams } from './localTypes';
 
 import { settings } from '../../../settings/server';
+import type { CloseRoomParams } from './localTypes';
 
 export const parseTranscriptRequest = async (
 	room: IOmnichannelRoom,
 	options: CloseRoomParams['options'],
 	visitor?: ILivechatVisitor,
 	user?: IUser,
-): Promise<CloseRoomParams['options']=> {
+): Promise<CloseRoomParams['options']> => {
 	const visitorDecideTranscript = settings.get<boolean>('Livechat_enable_transcript');
 	// visitor decides, no changes
 	if (visitorDecideTranscript) {
