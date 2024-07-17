@@ -37,7 +37,7 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 	async translateMultipleToServerLanguage(keys: string[]): Promise<Array<{ key: string; value: string }>> {
 		const language = await this.getServerLanguageCached();
 
-		return await Promise.all(
+		return Promise.all(
 			keys.map(async (key) => {
 				return {
 					key,
