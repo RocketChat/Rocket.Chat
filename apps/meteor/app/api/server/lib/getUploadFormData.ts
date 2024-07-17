@@ -63,7 +63,7 @@ export async function getUploadFormData<
 	function onFile(
 		fieldname: string,
 		file: Readable & { truncated: boolean },
-		{ filename, encoding }: { filename: string; encoding: string },
+		{ filename, encoding, mimeType: mimetype }: { filename: string; encoding: string; mimeType: string },
 	) {
 		if (options.field && fieldname !== options.field) {
 			file.resume();
@@ -85,7 +85,7 @@ export async function getUploadFormData<
 				file,
 				filename,
 				encoding,
-				mimetype: getMimeType(filename),
+				mimetype: getMimeType(mimetype, filename),
 				fieldname,
 				fields,
 				fileBuffer: Buffer.concat(fileChunks),
