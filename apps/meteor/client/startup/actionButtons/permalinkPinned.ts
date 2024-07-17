@@ -1,3 +1,4 @@
+import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { MessageAction } from '../../../app/ui-utils/client';
@@ -5,7 +6,6 @@ import { t } from '../../../app/utils/lib/i18n';
 import { getPermaLink } from '../../lib/getPermaLink';
 import { dispatchToastMessage } from '../../lib/toast';
 import { messageArgs } from '../../lib/utils/messageArgs';
-import { isE2EEMessage } from '@rocket.chat/core-typings';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
