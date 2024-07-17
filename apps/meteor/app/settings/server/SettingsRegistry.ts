@@ -74,7 +74,6 @@ const compareSettingsIgnoringKeys =
 			.filter((key) => !keys.includes(key as keyof ISetting))
 			.every((key) => isEqual(a[key as keyof ISetting], b[key as keyof ISetting]));
 
-// NOTE(debdut): not really "metadata" - but yeah. I don't have a better name
 export const compareSettingsMetadata = compareSettingsIgnoringKeys([
 	'value',
 	'ts',
