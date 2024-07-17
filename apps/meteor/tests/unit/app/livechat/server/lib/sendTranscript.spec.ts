@@ -173,7 +173,7 @@ describe('Send transcript', () => {
 		await expect(sendTranscript({ rid: 'rid', email: 'email', logger: mockLogger })).to.be.rejectedWith(Error);
 	});
 
-	it('should fail if room doesnt have valid information', async () => {
+	it('should fail if room provided is of different type', async () => {
 		modelsMock.LivechatRooms.findOneById.returns({ t: 'c' });
 		modelsMock.LivechatVisitors.getVisitorByToken.returns({ language: null });
 
@@ -186,6 +186,36 @@ describe('Send transcript', () => {
 		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
 
 		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { token: 'xxx' } });
+		await expect(sendTranscript({ rid: 'rid', email: 'email', token: 'xveasdf' })).to.be.rejectedWith(Error);
+	});
+
+	it('should fail if room is of valid type, but doesnt doesnt have `v` property', async () => {
+		modelsMock.LivechatVisitors.getVisitorByToken.returns({ language: null });
+		modelsMock.LivechatRooms.findOneById.returns({ t: 'l' });
+
+		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
+
+		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { otherProp: 'xxx' } });
+		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
+
+		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { token: 'xxx' } });
+		await expect(sendTranscript({ rid: 'rid', email: 'email', token: 'xveasdf' })).to.be.rejectedWith(Error);
+	});
+
+	it('should fail if room is of valid type, has `v` prop, but it doesnt contain `token`', async () => {
+		modelsMock.LivechatVisitors.getVisitorByToken.returns({ language: null });
+		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { otherProp: 'xxx' } });
+
+		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
+
+		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { token: 'xxx' } });
+		await expect(sendTranscript({ rid: 'rid', email: 'email', token: 'xveasdf' })).to.be.rejectedWith(Error);
+	});
+
+	it('should fail if room is of valid type, has `v.token`, but its different from the one on param (room from another visitor)', async () => {
+		modelsMock.LivechatVisitors.getVisitorByToken.returns({ language: null });
+		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { token: 'xxx' } });
+
 		await expect(sendTranscript({ rid: 'rid', email: 'email', token: 'xveasdf' })).to.be.rejectedWith(Error);
 	});
 });
