@@ -198,7 +198,6 @@ export class SettingsRegistry {
 					throw new Error('No document returned due to an OVERWRITE, something is wrong with the code');
 				}
 
-				// settingStored exists, so will overwritten
 				this.store.set(settingForCache);
 			}
 			return;
