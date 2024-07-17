@@ -166,6 +166,12 @@ export class SettingsRegistry {
 					settingStored.value !== settingStoredOverwritten.value && { value: settingStoredOverwritten.value }),
 			};
 
+			if (!('value' in updatedProps)) {
+				// cache can only update if value changes
+				await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
+				return;
+			}
+
 			const { value: settingForCache } = await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
 
 			if (!settingForCache) {

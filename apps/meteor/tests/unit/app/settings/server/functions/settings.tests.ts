@@ -417,7 +417,10 @@ describe('Settings', () => {
 	});
 
 	it('should ignore setting object from code if only value changes and setting already stored', async () => {
-		settings.set(testSetting);
+		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
+
+		expect(Settings.insertCalls).to.be.equal(1);
+		Settings.insertCalls = 0;
 
 		const settingFromCodeFaked = { ...testSetting, value: Date.now().toString() };
 
@@ -427,14 +430,22 @@ describe('Settings', () => {
 		expect(Settings.upsertCalls).to.be.equal(0);
 	});
 
-	it('should ignore value from environment if setting is already stored in cache', async () => {
-		settings.set(testSetting);
+	it('should ignore value from environment if setting is already stored', async () => {
+		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
 
 		process.env[testSetting._id] = Date.now().toString();
 
 		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
 
-		expect(settings.get(testSetting._id)).to.be.equal(testSetting.value);
+		expect(Settings.findOne({ _id: testSetting._id }).value).to.be.equal(testSetting.value);
+	});
+
+	it('should update setting cache synchronously if overwrite is available in enviornment', async () => {
+		process.env[`OVERWRITE_SETTING_${testSetting._id}`] = Date.now().toString();
+
+		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
+
+		expect(settings.get(testSetting._id)).to.be.equal(process.env[`OVERWRITE_SETTING_${testSetting._id}`]);
 	});
 
 	it('should update cached value with OVERWRITE_SETTING value even if both with-prefixed and without-prefixed variables exist', async () => {
