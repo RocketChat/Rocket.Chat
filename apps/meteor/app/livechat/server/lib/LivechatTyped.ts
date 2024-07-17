@@ -316,7 +316,9 @@ class LivechatClass {
 		this.logger.debug(`Sending closing message to room ${room._id}`);
 		await sendMessage(chatCloser, message, newRoom);
 
-		await Message.saveSystemMessage('command', rid, 'promptTranscript', closeData.closedBy);
+		if (settings.get('Livechat_enable_transcript') && !settings.get('Livechat_transcript_send_always')) {
+			await Message.saveSystemMessage('command', rid, 'promptTranscript', closeData.closedBy);
+		}
 
 		this.logger.debug(`Running callbacks for room ${newRoom._id}`);
 
