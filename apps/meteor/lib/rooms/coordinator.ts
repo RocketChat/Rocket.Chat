@@ -1,4 +1,4 @@
-import type { RoomType, RoomRouteData } from '@rocket.chat/core-typings';
+import type { RoomType } from '@rocket.chat/core-typings';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
 
 import type {
@@ -41,7 +41,7 @@ export abstract class RoomCoordinator {
 		return this.roomTypes[identifier].config;
 	}
 
-	public getRouteLink(roomType: string, subData: RoomRouteData): LocationPathname | false {
+	public getRouteLink(roomType: string, subData: RoomIdentification): LocationPathname | false {
 		const config = this.getRoomTypeConfig(roomType);
 		if (!config?.route) {
 			return false;
