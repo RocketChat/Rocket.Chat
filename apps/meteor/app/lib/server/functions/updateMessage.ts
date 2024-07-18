@@ -102,7 +102,7 @@ export const updateMessage = async function (
 		// so we wait for it to run before broadcasting
 		const data = await callbacks.run('afterSaveMessage', msg, room);
 
-		void api.broadcast('message.save', {
+		void api.broadcastLocal('message.save', {
 			message: data as any, // TODO move "afterSaveMessage" type definition to specify a return value
 			room,
 			user,

@@ -292,7 +292,7 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 
 	await callbacks.run('afterSaveMessage', message, room);
 
-	void api.broadcast('message.save', {
+	void api.broadcastLocal('message.save', {
 		message,
 		room,
 		user,
