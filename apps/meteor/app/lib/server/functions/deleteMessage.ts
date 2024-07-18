@@ -43,7 +43,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		}
 	}
 
-	const room = await Rooms.findOneById(message.rid);
+	const room = await Rooms.findOneById(message.rid, { projection: { lastMessage: 1, prid: 1, mid: 1, federated: 1 } });
 
 	await Message.beforeDelete(deletedMsg, room, user);
 

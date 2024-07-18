@@ -20,9 +20,9 @@ export const saveRoomTopic = async function (
 		});
 	}
 
-	const room = Rooms.findOneById(rid);
+	const room = await Rooms.findOneById(rid);
 
-	await Room.beforeTopicChange(room);
+	await Room.beforeTopicChange(room!);
 
 	const update = await Rooms.setTopicById(rid, roomTopic);
 	if (update && sendMessage) {
