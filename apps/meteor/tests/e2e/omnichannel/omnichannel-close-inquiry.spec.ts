@@ -30,13 +30,16 @@ test.describe('Omnichannel close inquiry', () => {
 		agent = { page: auxPage, poHomeOmnichannel: new HomeOmnichannel(auxPage) };
 	});
 
+	test.afterEach(async () => {
+		await agent.page.close();
+	});
+
 	test.afterAll(async ({ api }) => {
 		await Promise.all([
 			await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
 			await api.delete('/livechat/users/agent/user1'),
 			await api.delete('/livechat/users/manager/user1'),
 		]);
-		await agent.page.close();
 	});
 
 	test('Receiving a message from visitor', async ({ page }) => {
