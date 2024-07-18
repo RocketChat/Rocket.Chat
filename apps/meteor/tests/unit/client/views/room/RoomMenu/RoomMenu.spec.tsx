@@ -1,5 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 
 import RoomMenu from '../../../../../../client/sidebar/RoomMenu';
@@ -17,7 +18,7 @@ describe('RoomMenu component', () => {
 
 	it('displays menu options', () => {
 		render(<RoomMenu {...defaultProps} />);
-		fireEvent.click(screen.getByTitle('Options'));
+		userEvent.click(screen.getByTitle('Options'));
 		expect(screen.getByText('Hide')).toBeInTheDocument();
 		expect(screen.getByText('Mark_read')).toBeInTheDocument();
 		expect(screen.getByText('Favorite')).toBeInTheDocument();
@@ -25,11 +26,11 @@ describe('RoomMenu component', () => {
 	});
 
 	it('displays menu options when omnichannel conversation', () => {
-		render(<RoomMenu {...defaultProps} />);
-		fireEvent.click(screen.getByTitle('Options'));
-		expect(screen.getByText('Hide')).not.toBeInTheDocument();
+		render(<RoomMenu {...defaultProps} type='l' />);
+		userEvent.click(screen.getByTitle('Options'));
+		expect(screen.queryByText('Hide')).not.toBeInTheDocument();
 		expect(screen.getByText('Mark_read')).toBeInTheDocument();
 		expect(screen.getByText('Favorite')).toBeInTheDocument();
-		expect(screen.getByText('Leave')).not.toBeInTheDocument();
+		expect(screen.queryByText('Leave')).not.toBeInTheDocument();
 	});
 });
