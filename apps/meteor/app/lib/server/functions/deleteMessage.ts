@@ -1,5 +1,5 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import { api } from '@rocket.chat/core-services';
+import { api, Message } from '@rocket.chat/core-services';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Uploads, Users, ReadReceipts } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -43,6 +43,10 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		}
 	}
 
+	const room = await Rooms.findOneById(message.rid);
+
+	await Message.beforeDelete(deletedMsg, room, user);
+
 	if (deletedMsg?.tmid) {
 		await Messages.decreaseReplyCountById(deletedMsg.tmid, -1);
 	}
@@ -76,8 +80,6 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	} else {
 		void api.broadcast('notify.deleteMessage', message.rid, { _id: message._id });
 	}
-
-	const room = await Rooms.findOneById(message.rid, { projection: { lastMessage: 1, prid: 1, mid: 1, federated: 1 } });
 
 	// update last message
 	if (settings.get('Store_Last_Message') && (!room?.lastMessage || room.lastMessage._id === message._id)) {

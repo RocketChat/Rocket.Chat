@@ -11,6 +11,7 @@ import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { createDirectMessage } from '../../methods/createDirectMessage';
+import { FederationCheck } from './hooks/FederationCheck';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
@@ -117,5 +118,13 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		return addUserToRoom(room._id, user);
+	}
+
+	async beforeLeave(_user: IUser, room: IRoom) {
+		FederationCheck.blockIfFederationEnabledButNotReady(room);
+	}
+
+	async beforeUserRemoved(_user: IUser, _actor: IUser, room: IRoom) {
+		FederationCheck.blockIfFederationEnabledButNotReady(room);
 	}
 }

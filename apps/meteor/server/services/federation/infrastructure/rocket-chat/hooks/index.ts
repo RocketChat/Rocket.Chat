@@ -6,14 +6,18 @@ import { callbacks } from '../../../../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../../../lib/callbacks/afterRemoveFromRoomCallback';
 import type { FederationRoomServiceSender } from '../../../application/room/sender/RoomServiceSender';
+import { verifyFederationReady } from '../../../utils';
 
 export class FederationHooks {
 	public static afterUserLeaveRoom(callback: (user: IUser, room: IRoom) => Promise<void>): void {
 		afterLeaveRoomCallback.add(
 			async (user: IUser, room?: IRoom): Promise<void> => {
-				if (!room || !isRoomFederated(room) || !user || !settings.get('Federation_Matrix_enabled')) {
+				if (!room || !isRoomFederated(room) || !user) {
 					return;
 				}
+
+				verifyFederationReady();
+
 				await callback(user, room);
 			},
 			callbacks.priority.HIGH,
@@ -29,11 +33,13 @@ export class FederationHooks {
 					!isRoomFederated(room) ||
 					!params ||
 					!params.removedUser ||
-					!params.userWhoRemoved ||
-					!settings.get('Federation_Matrix_enabled')
+					!params.userWhoRemoved
 				) {
 					return;
 				}
+
+				verifyFederationReady();
+
 				await callback(params.removedUser, room, params.userWhoRemoved);
 			},
 			callbacks.priority.HIGH,
@@ -48,6 +54,9 @@ export class FederationHooks {
 				if (!params?.user || !room) {
 					return;
 				}
+
+				verifyFederationReady();
+
 				await callback(params.user, room);
 			},
 			callbacks.priority.HIGH,
@@ -59,9 +68,11 @@ export class FederationHooks {
 		callbacks.add(
 			'federation.beforeAddUserToARoom',
 			async (params: { user: IUser | string; inviter: IUser }, room: IRoom): Promise<void> => {
-				if (!params?.user || !params.inviter || !room || !settings.get('Federation_Matrix_enabled')) {
+				if (!params?.user || !params.inviter || !room) {
 					return;
 				}
+
+				verifyFederationReady();
 
 				await callback(params.user, params.inviter, room);
 			},
@@ -74,9 +85,12 @@ export class FederationHooks {
 		callbacks.add(
 			'federation.beforeCreateDirectMessage',
 			async (members: IUser[]): Promise<void> => {
-				if (!members || !settings.get('Federation_Matrix_enabled')) {
+				if (!members) {
 					return;
 				}
+
+				verifyFederationReady();
+
 				await callback(members);
 			},
 			callbacks.priority.HIGH,
@@ -93,11 +107,13 @@ export class FederationHooks {
 					!isMessageFromMatrixFederation(message) ||
 					!params ||
 					!params.user ||
-					!params.reaction ||
-					!settings.get('Federation_Matrix_enabled')
+					!params.reaction
 				) {
 					return;
 				}
+
+				verifyFederationReady();
+
 				await callback(message, params.user, params.reaction);
 			},
 			callbacks.priority.HIGH,
@@ -115,11 +131,13 @@ export class FederationHooks {
 					!params ||
 					!params.user ||
 					!params.reaction ||
-					!params.oldMessage ||
-					!settings.get('Federation_Matrix_enabled')
+					!params.oldMessage
 				) {
 					return;
 				}
+
+				verifyFederationReady();
+
 				await callback(params.oldMessage, params.user, params.reaction);
 			},
 			callbacks.priority.HIGH,
@@ -135,11 +153,13 @@ export class FederationHooks {
 					!room ||
 					!message ||
 					!isRoomFederated(room) ||
-					!isMessageFromMatrixFederation(message) ||
-					!settings.get('Federation_Matrix_enabled')
+					!isMessageFromMatrixFederation(message)
 				) {
 					return;
 				}
+
+				verifyFederationReady();
+
 				await callback(message, room._id);
 			},
 			callbacks.priority.HIGH,
@@ -155,11 +175,13 @@ export class FederationHooks {
 					!room ||
 					!isRoomFederated(room) ||
 					!message ||
-					!isMessageFromMatrixFederation(message) ||
-					!settings.get('Federation_Matrix_enabled')
+					!isMessageFromMatrixFederation(message)
 				) {
 					return message;
 				}
+
+				verifyFederationReady();
+
 				if (!isEditedMessage(message)) {
 					return message;
 				}
@@ -175,9 +197,12 @@ export class FederationHooks {
 		callbacks.add(
 			'afterSaveMessage',
 			async (message: IMessage, room: IRoom): Promise<IMessage> => {
-				if (!room || !isRoomFederated(room) || !message || !settings.get('Federation_Matrix_enabled')) {
+				if (!room || !isRoomFederated(room) || !message) {
 					return message;
 				}
+
+				verifyFederationReady();
+
 				if (isEditedMessage(message)) {
 					return message;
 				}
@@ -190,9 +215,12 @@ export class FederationHooks {
 	}
 
 	public static async afterRoomRoleChanged(federationRoomService: FederationRoomServiceSender, data?: Record<string, any>) {
-		if (!data || !settings.get('Federation_Matrix_enabled')) {
+		if (!data) {
 			return;
 		}
+
+		verifyFederationReady();
+
 		const {
 			_id: role,
 			type: action,
@@ -225,9 +253,12 @@ export class FederationHooks {
 		callbacks.add(
 			'afterRoomNameChange',
 			async (params: Record<string, any>): Promise<void> => {
-				if (!params?.rid || !params.name || !settings.get('Federation_Matrix_enabled')) {
+				if (!params?.rid || !params.name) {
 					return;
 				}
+
+				verifyFederationReady();
+
 				await callback(params.rid, params.name);
 			},
 			callbacks.priority.HIGH,
@@ -239,9 +270,12 @@ export class FederationHooks {
 		callbacks.add(
 			'afterRoomTopicChange',
 			async (params: Record<string, any>): Promise<void> => {
-				if (!params?.rid || !params.topic || !settings.get('Federation_Matrix_enabled')) {
+				if (!params?.rid || !params.topic) {
 					return;
 				}
+
+				verifyFederationReady();
+
 				await callback(params.rid, params.topic);
 			},
 			callbacks.priority.HIGH,
