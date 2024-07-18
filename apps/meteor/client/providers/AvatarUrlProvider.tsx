@@ -1,11 +1,15 @@
 import { AvatarUrlContext, useSetting } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React, { useMemo } from 'react';
 
 import { getURL } from '../../app/utils/client/getURL';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
-const AvatarUrlProvider: FC = ({ children }) => {
+type AvatarUrlProviderProps = {
+	children?: ReactNode;
+};
+
+const AvatarUrlProvider = ({ children }: AvatarUrlProviderProps) => {
 	const cdnAvatarUrl = String(useSetting('CDN_PREFIX') || '');
 	const externalProviderUrl = String(useSetting('Accounts_AvatarExternalProviderUrl') || '');
 	const contextValue = useMemo(

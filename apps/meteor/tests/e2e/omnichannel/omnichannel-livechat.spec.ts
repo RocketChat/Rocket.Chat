@@ -42,7 +42,7 @@ test.describe.serial('OC - Livechat', () => {
 
 	test.afterAll(async ({ api }) => {
 		await api.delete('/livechat/users/agent/user1');
-		await poLiveChat.page?.close();
+		await poLiveChat.page.close();
 	});
 
 	test('OC - Livechat - Send message to online agent', async () => {
@@ -123,7 +123,8 @@ test.describe.serial('OC - Livechat - Resub after close room', () => {
 	test.afterAll(async ({ api }) => {
 		await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false });
 		await api.delete('/livechat/users/agent/user1');
-		await poLiveChat.page?.close();
+		await poLiveChat.page.close();
+		await poHomeOmnichannel.page.close();
 	});
 
 	test('OC - Livechat - Resub after close room', async () => {
@@ -169,7 +170,8 @@ test.describe('OC - Livechat - Resume chat after closing', () => {
 
 	test.afterAll(async ({ api }) => {
 		await api.delete('/livechat/users/agent/user1');
-		await poLiveChat.page?.close();
+		await poLiveChat.page.close();
+		await poHomeOmnichannel.page.close();
 	});
 
 	test('OC - Livechat - Resume chat after closing', async () => {
@@ -213,7 +215,7 @@ test.describe('OC - Livechat - Close chat using widget', () => {
 	});
 
 	test.afterAll(async () => {
-		await poHomeOmnichannel.page?.close();
+		await poHomeOmnichannel.page.close();
 		await agent.delete();
 	});
 

@@ -12,7 +12,7 @@ import type {
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { compile } from 'path-to-regexp';
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React from 'react';
 
 import { sdk } from '../../app/utils/client/lib/SDKClient';
@@ -78,6 +78,8 @@ const contextValue = {
 	getStream,
 };
 
-const ServerProvider: FC = ({ children }) => <ServerContext.Provider children={children} value={contextValue} />;
+type ServerProviderProps = { children?: ReactNode };
+
+const ServerProvider = ({ children }: ServerProviderProps) => <ServerContext.Provider children={children} value={contextValue} />;
 
 export default ServerProvider;

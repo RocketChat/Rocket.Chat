@@ -458,7 +458,7 @@
   "API_EmbedCacheExpirationDays": "Embed Cache Expiration Days",
   "API_Enable_CORS": "Aktiver CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Aktiver sluttpunkt for direkte meldingshistorikk",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Dette gjør det mulig for `/ api / v1 / im.history.others` som lar visning av direkte meldinger sendt av andre brukere som den som ringer ikke er en del av.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Dette gjør det mulig for `/ api / v1 / im.messages.others` som lar visning av direkte meldinger sendt av andre brukere som den som ringer ikke er en del av.",
   "API_Enable_Personal_Access_Tokens": "Aktiver personlige adgangstokener til REST APIet",
   "API_Enable_Personal_Access_Tokens_Description": "Aktiver personlige adgangstokener for bruk med REST APIet",
   "API_Enable_Rate_Limiter": "Aktiver Rate Limit",
