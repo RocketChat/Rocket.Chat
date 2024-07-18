@@ -126,16 +126,18 @@ ${this.run_url}
 			});
 
 			// upload file to existing issue
-			result.attachments.forEach((attachment) => {
-				void fetch(`${this.url}/rest/api/2/issue/${existing.key}/attachments`, {
-					method: 'POST',
-					body: (attachment.path && fs.createReadStream(attachment.path)) || attachment.body,
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Basic ${this.apiKey}`,
-					},
-				});
-			});
+			await Promise.all(
+				result.attachments.map((attachment) =>
+					fetch(`${this.url}/rest/api/2/issue/${existing.key}/attachments`, {
+						method: 'POST',
+						body: (attachment.path && fs.createReadStream(attachment.path)) || attachment.body,
+						headers: {
+							'Content-Type': 'application/json',
+							'Authorization': `Basic ${this.apiKey}`,
+						},
+					}),
+				),
+			);
 
 			return;
 		}
@@ -196,16 +198,18 @@ ${this.run_url}
 			},
 		});
 		// upload file to existing issue
-		result.attachments.forEach((attachment) => {
-			void fetch(`${this.url}/rest/api/2/issue/${existing.key}/attachments`, {
-				method: 'POST',
-				body: (attachment.path && fs.createReadStream(attachment.path)) || attachment.body,
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Basic ${this.apiKey}`,
-				},
-			});
-		});
+		await Promise.all(
+			result.attachments.map((attachment) =>
+				fetch(`${this.url}/rest/api/2/issue/${existing.key}/attachments`, {
+					method: 'POST',
+					body: (attachment.path && fs.createReadStream(attachment.path)) || attachment.body,
+					headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `Basic ${this.apiKey}`,
+					},
+				}),
+			),
+		);
 	}
 }
 
