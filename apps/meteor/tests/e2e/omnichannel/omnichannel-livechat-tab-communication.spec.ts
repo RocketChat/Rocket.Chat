@@ -32,11 +32,14 @@ test.describe('OC - Livechat - Cross Tab Communication', () => {
 		await pageLivechat2.page.goto('/livechat');
 	});
 
-	test.afterAll(async () => {
-		await poHomeOmnichannel.page?.close();
-		await agent.delete();
+	test.afterEach(async () => {
 		await pageLivechat1.page.close();
 		await pageLivechat2.page.close();
+	});
+
+	test.afterAll(async () => {
+		await poHomeOmnichannel.page.close();
+		await agent.delete();
 	});
 
 	test('OC - Livechat - Send messages, close chat and start again 2 tabs', async () => {
