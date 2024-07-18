@@ -76,6 +76,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	private log: Logger;
 
+	// this is initialized as undefined and will be set when the first pdf is requested.
+	// if we try to initialize it at the start of the service using IIAFE, for some reason i18next doesn't return translations, maybe i18n isn't initialised yet
 	private translations?: Array<{ key: string; value: string }> = undefined;
 
 	maxNumberOfConcurrentJobs = 25;
@@ -87,10 +89,6 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		this.worker = new PdfWorker('chat-transcript');
 		// eslint-disable-next-line new-cap
 		this.log = new loggerClass('OmnichannelTranscript');
-
-		// this is initialized as undefined and will be set when the first pdf is requested.
-		// if we try to initialize it at the start of the service using IIAFE, for some reason i18next doesn't return translations, maybe i18n isn't initialised yet
-		this.translations = undefined;
 	}
 
 	async getTimezone(user?: { utcOffset?: string | number }): Promise<string> {
@@ -201,7 +199,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		return quotes;
 	}
 
-	private getSystemMessage(message: MessageData): false | MessageData {
+	private getSystemMessage(message: IMessage): false | MessageData {
 		if (!message.t) {
 			return false;
 		}
@@ -227,7 +225,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	private async getMessagesData(messages: IMessage[]): Promise<MessageData[]> {
 		const messagesData: MessageData[] = [];
 		for await (const message of messages) {
-			const systemMessage = await this.getSystemMessage(message as unknown as MessageData);
+			const systemMessage = this.getSystemMessage(message);
 
 			if (systemMessage) {
 				messagesData.push(systemMessage);
@@ -379,6 +377,14 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		return translation;
 	}
 
+	private async loadTranslations() {
+		if (!this.translations) {
+			this.translations = await this.getAllTranslations();
+		}
+
+		return this.translations;
+	}
+
 	async workOnPdf({ details }: { details: WorkDetailsWithSource }): Promise<void> {
 		this.log.info(`Processing transcript for room ${details.rid} by user ${details.userId} - Received from queue`);
 		if (this.maxNumberOfConcurrentJobs <= this.currentJobNumber) {
@@ -399,8 +405,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const agent =
 				room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1, utcOffset: 1 } }));
 
-			const translations = this.translations ?? (await this.getAllTranslations());
-			this.translations = translations;
+			const translations = await this.loadTranslations();
 
 			const messagesData = await this.getMessagesData(messages);
 

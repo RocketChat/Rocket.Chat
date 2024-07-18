@@ -1,15 +1,15 @@
-import type { MessageTypesValues } from '@rocket.chat/core-typings';
+import type { IOmnichannelSystemMessage, MessageTypesValues } from '@rocket.chat/core-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import formatDistance from 'date-fns/formatDistance';
 import moment from 'moment';
 
-import type { MessageData } from './OmnichannelTranscript';
+// import type { MessageData } from './OmnichannelTranscript';
 
 const livechatSystemMessagesMap = new Map<
 	MessageTypesValues,
 	{
 		message: string;
-		data?: (message: MessageData, t: (k: string, obj?: Record<string, string>) => string) => Record<string, string>;
+		data?: (message: IOmnichannelSystemMessage, t: (k: string, obj?: Record<string, string>) => string) => Record<string, string>;
 	}
 >();
 
@@ -17,7 +17,7 @@ const addType = (
 	id: MessageTypesValues,
 	options: {
 		message: string;
-		data?: (message: MessageData, t: (k: string, obj?: Record<string, string>) => string) => Record<string, string>;
+		data?: (message: IOmnichannelSystemMessage, t: (k: string, obj?: Record<string, string>) => string) => Record<string, string>;
 	},
 ) => livechatSystemMessagesMap.set(id, options);
 
@@ -51,7 +51,7 @@ addType('livechat-close', {
 
 addType('livechat_navigation_history', {
 	message: 'New_visitor_navigation',
-	data(message: MessageData) {
+	data(message: IOmnichannelSystemMessage) {
 		return {
 			history: message.navigation
 				? `${(message.navigation.page.title ? `${message.navigation.page.title} - ` : '') + message.navigation.page.location.href}`
@@ -62,7 +62,7 @@ addType('livechat_navigation_history', {
 
 addType('livechat_transfer_history', {
 	message: 'New_chat_transfer',
-	data(message: MessageData, t) {
+	data(message: IOmnichannelSystemMessage, t) {
 		if (!message.transferData) {
 			return {
 				transfer: '',
@@ -111,7 +111,7 @@ addType('livechat_transfer_history', {
 
 addType('livechat_transcript_history', {
 	message: 'Livechat_chat_transcript_sent',
-	data(message: MessageData, t) {
+	data(message: IOmnichannelSystemMessage, t) {
 		if (!message.requestData) {
 			return {
 				transcript: '',
@@ -139,7 +139,7 @@ addType('livechat_transcript_history', {
 
 addType('livechat_webrtc_video_call', {
 	message: 'room_changed_type',
-	data(message: MessageData, t) {
+	data(message: IOmnichannelSystemMessage, t) {
 		if (message.msg === 'ended' && message.webRtcCallEndTs && message.ts) {
 			return {
 				message: t('WebRTC_call_ended_message', {
@@ -161,7 +161,7 @@ addType('livechat_webrtc_video_call', {
 
 addType('omnichannel_placed_chat_on_hold', {
 	message: 'Omnichannel_placed_chat_on_hold',
-	data(message: MessageData) {
+	data(message: IOmnichannelSystemMessage) {
 		return {
 			comment: message.comment ? message.comment : 'No comment provided',
 		};
@@ -170,7 +170,7 @@ addType('omnichannel_placed_chat_on_hold', {
 
 addType('omnichannel_on_hold_chat_resumed', {
 	message: 'Omnichannel_on_hold_chat_resumed',
-	data(message: MessageData) {
+	data(message: IOmnichannelSystemMessage) {
 		return {
 			comment: message.comment ? message.comment : 'No comment provided',
 		};
