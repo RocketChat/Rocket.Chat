@@ -85,6 +85,10 @@ describe('OmnichannelTranscript', () => {
 		console.log(parsedMessages[0]);
 		expect(parsedMessages).toBeDefined();
 		expect(parsedMessages).toHaveLength(3);
+		expect(parsedMessages[0]).toHaveProperty('files');
+		expect(parsedMessages[0].files).toHaveLength(0);
+		expect(parsedMessages[0]).toHaveProperty('quotes');
+		expect(parsedMessages[0].quotes).toHaveLength(0);
 	});
 
 	it('should parse system message', async () => {
@@ -96,6 +100,10 @@ describe('OmnichannelTranscript', () => {
 		expect(systemMessage.t).toBe('livechat-started');
 		expect(systemMessage).toHaveProperty('msg');
 		expect(systemMessage.msg).toBe('Chat_started');
+		expect(systemMessage).toHaveProperty('files');
+		expect(systemMessage.files).toHaveLength(0);
+		expect(systemMessage).toHaveProperty('quotes');
+		expect(systemMessage.quotes).toHaveLength(0);
 	});
 
 	it('should parse an invalid system message', async () => {
