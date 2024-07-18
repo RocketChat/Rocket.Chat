@@ -89,14 +89,9 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						{showUsername && <MessageUsername data-username={user.username}>@{user.username}</MessageUsername>}
 					</MessageNameContainer>
 					{messageType && (
-						<MessageSystemBody
-							data-qa-type='system-message-body'
-							dangerouslySetInnerHTML={{
-								__html: messageType.render
-									? messageType.render(message)
-									: t(messageType.message, messageType.data ? messageType.data(message) : {}),
-							}}
-						/>
+						<MessageSystemBody data-qa-type='system-message-body'>
+							{t(messageType.message, messageType.data ? messageType.data(message) : {})}
+						</MessageSystemBody>
 					)}
 					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
 				</MessageSystemBlock>
