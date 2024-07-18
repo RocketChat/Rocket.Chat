@@ -103,7 +103,7 @@ export const updateMessage = async function (
 		const data = await callbacks.run('afterSaveMessage', msg, room);
 
 		void api.broadcast('message.save', {
-			message: data,
+			message: data as any, // TODO move "afterSaveMessage" type definition to specify a return value
 			room,
 			user,
 		});
