@@ -1,3 +1,4 @@
+import { isMessageFromVisitor } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
@@ -73,12 +74,10 @@ export class AppMessagesConverter {
 					return undefined;
 				}
 
-				let user = await cache.get('user')(message.u._id);
-
-				// When the sender of the message is a Guest (livechat) and not a user
-				if (!user) {
-					user = this.orch.getConverters().get('users').convertToApp(message.u);
-				}
+				// When the message contains token, means the message is from the visitor(omnichannel)
+				const user = await (isMessageFromVisitor(message).token
+					? this.orch.getConverters().get('users').convertToApp(message.u)
+					: cache.get('user')(message.u._id));
 
 				delete message.u;
 
