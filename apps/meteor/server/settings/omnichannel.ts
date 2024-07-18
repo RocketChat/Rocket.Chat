@@ -5,7 +5,7 @@ import { settingsRegistry } from '../../app/settings/server';
 const omnichannelEnabledQuery = { _id: 'Livechat_enabled', value: true };
 
 export const createOmniSettings = () =>
-	settingsRegistry.addGroup('Omnichannel', async function () {
+	settingsRegistry.addGroup('Omnichannel', async function() {
 		await this.add('Livechat_enabled', true, {
 			type: 'boolean',
 			group: 'Omnichannel',
@@ -376,8 +376,8 @@ export const createOmniSettings = () =>
 			enableQuery: omnichannelEnabledQuery,
 		});
 
-		await settingsRegistry.addGroup('Omnichannel', async function () {
-			await this.section('Business_Hours', async function () {
+		await settingsRegistry.addGroup('Omnichannel', async function() {
+			await this.section('Business_Hours', async function() {
 				await this.add('Livechat_enable_business_hours', false, {
 					type: 'boolean',
 					group: 'Omnichannel',
@@ -424,7 +424,7 @@ export const createOmniSettings = () =>
 			type: 'string',
 			group: 'Omnichannel',
 			public: true,
-			enableQuery: [{ _id: 'Livechat_enable_transcript', value: true }, omnichannelEnabledQuery],
+			enableQuery: omnichannelEnabledQuery,
 		});
 
 		await this.add('Omnichannel_enable_department_removal', false, {
@@ -640,7 +640,7 @@ export const createOmniSettings = () =>
 			enableQuery: omnichannelEnabledQuery,
 		});
 	});
-await settingsRegistry.addGroup('SMS', async function () {
+await settingsRegistry.addGroup('SMS', async function() {
 	await this.add('SMS_Enabled', false, {
 		type: 'boolean',
 		i18nLabel: 'Enabled',
@@ -669,7 +669,7 @@ await settingsRegistry.addGroup('SMS', async function () {
 		type: 'string',
 	});
 
-	await this.section('Twilio', async function () {
+	await this.section('Twilio', async function() {
 		await this.add('SMS_Twilio_Account_SID', '', {
 			type: 'string',
 			enableQuery: {
@@ -709,7 +709,7 @@ await settingsRegistry.addGroup('SMS', async function () {
 		});
 	});
 
-	await this.section('Voxtelesys', async function () {
+	await this.section('Voxtelesys', async function() {
 		await this.add('SMS_Voxtelesys_authToken', '', {
 			type: 'string',
 			enableQuery: {
@@ -749,7 +749,7 @@ await settingsRegistry.addGroup('SMS', async function () {
 		});
 	});
 
-	await this.section('Mobex', async function () {
+	await this.section('Mobex', async function() {
 		await this.add('SMS_Mobex_gateway_address', '', {
 			type: 'string',
 			enableQuery: {
@@ -803,7 +803,7 @@ await settingsRegistry.addGroup('SMS', async function () {
 			i18nDescription: 'Mobex_sms_gateway_from_numbers_list_desc',
 		});
 	});
-	await this.section('External Frame', async function () {
+	await this.section('External Frame', async function() {
 		await this.add('Omnichannel_External_Frame_Enabled', false, {
 			type: 'boolean',
 			public: true,
