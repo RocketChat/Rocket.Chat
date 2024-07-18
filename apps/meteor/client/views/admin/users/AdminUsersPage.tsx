@@ -150,6 +150,12 @@ const AdminUsersPage = (): ReactElement => {
 						{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' mis={8} />}
 						{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
 					</TabsItem>
+					<TabsItem selected={!tab || tab === 'active'} onClick={() => handleTabChangeAndSort('active')}>
+						{t('Active')}
+					</TabsItem>
+					<TabsItem selected={!tab || tab === 'deactivated'} onClick={() => handleTabChangeAndSort('deactivated')}>
+						{t('Deactivated')}
+					</TabsItem>
 				</Tabs>
 				<PageContent>
 					<UsersTable
