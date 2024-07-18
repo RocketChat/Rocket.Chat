@@ -1,3 +1,4 @@
+import '@rocket.chat/tracing';
 import './models/startup';
 /**
  * ./settings uses top level await, in theory the settings creation
