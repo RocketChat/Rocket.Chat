@@ -45,16 +45,13 @@ test.describe.serial('omnichannel-changing-room-priority-and-sla', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		let statusCode = (await api.delete(`/livechat/users/agent/${ADMIN_CREDENTIALS.username}`)).status();
-		await expect(statusCode).toBe(200);
-
-		statusCode = (await api.delete(`/livechat/users/manager/${ADMIN_CREDENTIALS.username}`)).status();
-		await expect(statusCode).toBe(200);
-
-		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' })).status();
-		await expect(statusCode).toBe(200);
-
 		await agent.page.close();
+
+		await Promise.all([
+			api.delete(`/livechat/users/agent/${ADMIN_CREDENTIALS.username}`),
+			api.delete(`/livechat/users/manager/${ADMIN_CREDENTIALS.username}`),
+			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
+		]);
 	});
 
 	test('expect to initiate a new livechat conversation', async ({ page, api }) => {

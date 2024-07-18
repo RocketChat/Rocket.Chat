@@ -8432,6 +8432,7 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.25
+    "@rocket.chat/tools": "workspace:^"
     "@types/bcrypt": ^5.0.1
     "@types/gc-stats": ^1.4.2
     "@types/node": ^14.18.63
@@ -8509,8 +8510,8 @@ __metadata:
   linkType: soft
 
 "@rocket.chat/apps-engine@npm:alpha":
-  version: 1.44.0-alpha.814
-  resolution: "@rocket.chat/apps-engine@npm:1.44.0-alpha.814"
+  version: 1.44.0-alpha.818
+  resolution: "@rocket.chat/apps-engine@npm:1.44.0-alpha.818"
   dependencies:
     "@msgpack/msgpack": 3.0.0-beta2
     adm-zip: ^0.5.9
@@ -8526,7 +8527,7 @@ __metadata:
     uuid: ~8.3.2
   peerDependencies:
     "@rocket.chat/ui-kit": "*"
-  checksum: 03f777ecd035af20c88558a941db77bb104f4402f78169a6d23e1629613c11ac23c04f6bdfb451a4273558789de58d4567661a7bd5de91b78464f98698e5f6a6
+  checksum: acef47bc7f13e0682d018531638b5168c3acd59beae37b013e881ea6fadfe12670fe10545f4a89487f7bedbe9166028833cba7ed3fc401d4283327e47e00e61c
   languageName: node
   linkType: hard
 
