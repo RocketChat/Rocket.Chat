@@ -43,7 +43,7 @@ export const findChannelsWithNumberOfMessages = async ({
 	const startOfLastWeek = moment(endOfLastWeek).subtract(daysBetweenDates, 'days').toDate();
 	const roomTypes = roomCoordinator.getTypesToShowOnDashboard() as Array<IRoom['t']>;
 
-	const analyticsInDateRange = await Analytics.countDocuments({
+	const analyticsInDateRange = await Analytics.findOne({
 		'type': 'messages',
 		'room.t': { $in: roomTypes },
 		'date': { $gte: convertDateToInt(startOfLastWeek), $lte: convertDateToInt(end) },
