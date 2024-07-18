@@ -1244,6 +1244,10 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			...(visitorId && visitorId !== 'undefined' && { 'v._id': visitorId }),
 		};
 
+		if (open) {
+			query.servedBy = { $exists: true };
+		}
+
 		if (createdAt) {
 			query.ts = {};
 			if (createdAt.start) {
