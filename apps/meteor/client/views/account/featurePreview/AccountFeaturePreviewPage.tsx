@@ -24,6 +24,21 @@ import { useForm } from 'react-hook-form';
 
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 
+const handleEnableQuery = (features: FeaturePreviewProps[]) => {
+	return features.map((item) => {
+		if (item.enableQuery) {
+			const expected = item.enableQuery.value;
+			const received = features.find((el) => el.name === item.enableQuery?.name)?.value;
+			if (expected !== received) {
+				item.disabled = true;
+				item.value = false;
+			} else {
+				item.disabled = false;
+			}
+		}
+		return item;
+	});
+};
 const AccountFeaturePreviewPage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -71,7 +86,7 @@ const AccountFeaturePreviewPage = () => {
 	};
 
 	const grouppedFeaturesPreview = Object.entries(
-		featuresPreview.reduce((result, currentValue) => {
+		handleEnableQuery(featuresPreview).reduce((result, currentValue) => {
 			(result[currentValue.group] = result[currentValue.group] || []).push(currentValue);
 			return result;
 		}, {} as Record<FeaturePreviewProps['group'], FeaturePreviewProps[]>),
@@ -108,7 +123,13 @@ const AccountFeaturePreviewPage = () => {
 													<Field>
 														<FieldRow>
 															<FieldLabel htmlFor={feature.name}>{t(feature.i18n)}</FieldLabel>
-															<ToggleSwitch id={feature.name} checked={feature.value} name={feature.name} onChange={handleFeatures} />
+															<ToggleSwitch
+																id={feature.name}
+																checked={feature.value}
+																name={feature.name}
+																onChange={handleFeatures}
+																disabled={feature.disabled}
+															/>
 														</FieldRow>
 														{feature.description && <FieldHint mbs={12}>{t(feature.description)}</FieldHint>}
 													</Field>
