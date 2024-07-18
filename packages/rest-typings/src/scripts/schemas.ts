@@ -1159,4 +1159,70 @@ export const schemas: SchemaObject = {
 			},
 		],
 	},
+	IBanner: {
+		type: 'object',
+		properties: {
+			platform: {
+				type: 'array',
+				items: {
+					type: 'string',
+				},
+			},
+			expireAt: {
+				type: 'string',
+				format: 'date-time',
+			},
+			startAt: {
+				type: 'string',
+				format: 'date-time',
+			},
+			roles: {
+				type: 'array',
+				items: {
+					type: 'string',
+				},
+				description: 'Deprecated: a new `selector` field should be created for filtering instead',
+			},
+			createdBy: {
+				type: 'object',
+				properties: {
+					_id: {
+						type: 'string',
+					},
+					username: {
+						type: 'string',
+					},
+				},
+				required: ['_id', 'username'],
+			},
+			createdAt: {
+				type: 'string',
+				format: 'date-time',
+			},
+			view: {
+				type: 'string',
+			},
+			active: {
+				type: 'boolean',
+			},
+			inactivedAt: {
+				type: 'string',
+				format: 'date-time',
+			},
+			snapshot: {
+				type: 'string',
+			},
+			dictionary: {
+				type: 'object',
+				additionalProperties: {
+					type: 'string',
+				},
+			},
+			surface: {
+				type: 'string',
+				enum: ['banner', 'modal'],
+			},
+		},
+		required: ['platform', 'expireAt', 'startAt', 'createdBy', 'createdAt', 'view', 'surface'],
+	},
 };
