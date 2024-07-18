@@ -98,14 +98,9 @@ const SystemMessage = ({ message, showUserAvatar }: SystemMessageProps): ReactEl
 						)}
 					</MessageNameContainer>
 					{messageType && (
-						<MessageSystemBody
-							data-qa-type='system-message-body'
-							dangerouslySetInnerHTML={{
-								__html: messageType.render
-									? messageType.render(message)
-									: t(messageType.message, messageType.data ? messageType.data(message) : {}),
-							}}
-						/>
+						<MessageSystemBody data-qa-type='system-message-body'>
+							{t(messageType.message, messageType.data ? messageType.data(message) : {})}
+						</MessageSystemBody>
 					)}
 					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
 				</MessageSystemBlock>
