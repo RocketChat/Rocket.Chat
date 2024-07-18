@@ -49,7 +49,7 @@ test.describe('OC - Livechat - Avatar visibility', async () => {
 	});
 
 	test.afterEach(async ({ page }) => {
-		await poAuxContext.page?.close();
+		await poAuxContext.page.close();
 		await page.close();
 	});
 
