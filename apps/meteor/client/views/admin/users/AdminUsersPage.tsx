@@ -86,9 +86,10 @@ const AdminUsersPage = (): ReactElement => {
 		filteredUsersQueryResult?.refetch();
 	};
 
-	const handleTabChangeAndSort = (tab: IAdminUserTabs) => {
+	const handleTabChange = (tab: IAdminUserTabs) => {
 		setTab(tab);
 
+		paginationData.setCurrent(0);
 		sortData.setSort(tab === 'pending' ? 'active' : 'name', 'asc');
 	};
 
@@ -142,18 +143,18 @@ const AdminUsersPage = (): ReactElement => {
 					</Callout>
 				)}
 				<Tabs>
-					<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChangeAndSort('all')}>
+					<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChange('all')}>
 						{t('All')}
 					</TabsItem>
-					<TabsItem selected={tab === 'pending'} onClick={() => handleTabChangeAndSort('pending')} display='flex' flexDirection='row'>
+					<TabsItem selected={tab === 'pending'} onClick={() => handleTabChange('pending')} display='flex' flexDirection='row'>
 						{`${t('Pending')} `}
 						{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' mis={8} />}
 						{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
 					</TabsItem>
-					<TabsItem selected={!tab || tab === 'active'} onClick={() => handleTabChangeAndSort('active')}>
+					<TabsItem selected={!tab || tab === 'active'} onClick={() => handleTabChange('active')}>
 						{t('Active')}
 					</TabsItem>
-					<TabsItem selected={!tab || tab === 'deactivated'} onClick={() => handleTabChangeAndSort('deactivated')}>
+					<TabsItem selected={!tab || tab === 'deactivated'} onClick={() => handleTabChange('deactivated')}>
 						{t('Deactivated')}
 					</TabsItem>
 				</Tabs>

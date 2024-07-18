@@ -154,36 +154,36 @@ const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSea
 			)}
 
 			<GenericTableCell
-				display='flex'
-				justifyContent='flex-end'
 				onClick={(e): void => {
 					e.stopPropagation();
 				}}
 			>
-				{tab === 'pending' && (
-					<>
-						{active ? (
-							<Button small secondary onClick={handleResendWelcomeEmail}>
-								{t('Resend_welcome_email')}
-							</Button>
-						) : (
-							<Button small primary onClick={changeUserStatusAction?.action} disabled={isSeatsCapExceeded}>
-								{t('Activate')}
-							</Button>
-						)}
-					</>
-				)}
-
-				<Menu
-					mi={4}
-					placement='bottom-start'
-					flexShrink={0}
-					key='menu'
-					renderItem={({ label: { label, icon }, ...props }): ReactElement => (
-						<Option label={label} title={label} icon={icon} variant={label === 'Delete' ? 'danger' : ''} {...props} />
+				<Box display='flex' justifyContent='flex-end'>
+					{tab === 'pending' && (
+						<>
+							{active ? (
+								<Button small secondary onClick={handleResendWelcomeEmail}>
+									{t('Resend_welcome_email')}
+								</Button>
+							) : (
+								<Button small primary onClick={changeUserStatusAction?.action} disabled={isSeatsCapExceeded}>
+									{t('Activate')}
+								</Button>
+							)}
+						</>
 					)}
-					options={menuOptions}
-				/>
+
+					<Menu
+						mi={4}
+						placement='bottom-start'
+						flexShrink={0}
+						key='menu'
+						renderItem={({ label: { label, icon }, ...props }): ReactElement => (
+							<Option label={label} title={label} icon={icon} variant={label === 'Delete' ? 'danger' : ''} {...props} />
+						)}
+						options={menuOptions}
+					/>
+				</Box>
 			</GenericTableCell>
 		</GenericTableRow>
 	);
