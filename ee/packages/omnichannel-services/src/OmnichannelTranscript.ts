@@ -222,7 +222,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		};
 	}
 
-	private async getMessagesData(messages: IMessage[]): Promise<MessageData[]> {
+	async getMessagesData(messages: IMessage[]): Promise<MessageData[]> {
 		const messagesData: MessageData[] = [];
 		for await (const message of messages) {
 			const systemMessage = this.getSystemMessage(message);
