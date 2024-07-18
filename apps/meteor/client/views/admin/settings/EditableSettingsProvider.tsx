@@ -5,7 +5,7 @@ import { useSettings } from '@rocket.chat/ui-contexts';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
 import type { FilterOperators } from 'mongodb';
-import type { FunctionComponent, MutableRefObject } from 'react';
+import type { MutableRefObject, ReactNode } from 'react';
 import React, { useEffect, useMemo, useRef } from 'react';
 
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
@@ -16,10 +16,11 @@ import { EditableSettingsContext } from '../EditableSettingsContext';
 const defaultQuery: SettingsContextQuery = {};
 
 type EditableSettingsProviderProps = {
-	readonly query?: SettingsContextQuery;
+	children?: ReactNode;
+	query?: SettingsContextQuery;
 };
 
-const EditableSettingsProvider: FunctionComponent<EditableSettingsProviderProps> = ({ children, query = defaultQuery }) => {
+const EditableSettingsProvider = ({ children, query = defaultQuery }: EditableSettingsProviderProps) => {
 	const settingsCollectionRef = useRef<Mongo.Collection<EditableSetting>>(null) as MutableRefObject<Mongo.Collection<EditableSetting>>;
 	const persistedSettings = useSettings(query);
 

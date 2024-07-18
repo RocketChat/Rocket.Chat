@@ -1,7 +1,7 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Tag } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, MouseEventHandler } from 'react';
+import type { MouseEventHandler } from 'react';
 import React, { memo } from 'react';
 
 import {
@@ -14,7 +14,7 @@ import {
 } from '../../../../components/Contextualbar';
 import { useScopeDict } from '../../../hooks/useScopeDict';
 
-const CannedResponse: FC<{
+type CannedResponseProps = {
 	allowEdit: boolean;
 	allowUse: boolean;
 	data: {
@@ -27,7 +27,16 @@ const CannedResponse: FC<{
 	onClickBack: MouseEventHandler<HTMLOrSVGElement>;
 	onClickEdit: MouseEventHandler<HTMLOrSVGElement>;
 	onClickUse: MouseEventHandler<HTMLOrSVGElement>;
-}> = ({ allowEdit, allowUse, data: { departmentName, shortcut, text, scope: dataScope, tags }, onClickBack, onClickEdit, onClickUse }) => {
+};
+
+const CannedResponse = ({
+	allowEdit,
+	allowUse,
+	data: { departmentName, shortcut, text, scope: dataScope, tags },
+	onClickBack,
+	onClickEdit,
+	onClickUse,
+}: CannedResponseProps) => {
 	const t = useTranslation();
 	const scope = useScopeDict(dataScope, departmentName);
 

@@ -29,6 +29,7 @@ import {
 } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+import { ObjectId } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
@@ -124,13 +125,26 @@ export const createLivechatRoom = async <
 		...extraRoomInfo,
 	} as InsertionModel<IOmnichannelRoom>;
 
-	const roomId = (await Rooms.insertOne(room)).insertedId;
+	const result = await Rooms.findOneAndUpdate(
+		room,
+		{
+			$set: {},
+		},
+		{
+			upsert: true,
+			returnDocument: 'after',
+		},
+	);
+
+	if (!result.value) {
+		throw new Error('Room not created');
+	}
 
 	await callbacks.run('livechat.newRoom', room);
 
 	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
 
-	return roomId;
+	return result.value as IOmnichannelRoom;
 };
 
 export const createLivechatInquiry = async ({
@@ -172,8 +186,8 @@ export const createLivechatInquiry = async ({
 		visitor: { _id, username, department, status, activity },
 	});
 
-	const result = (
-		await LivechatInquiry.insertOne({
+	const result = await LivechatInquiry.findOneAndUpdate(
+		{
 			rid,
 			name,
 			ts,
@@ -192,11 +206,24 @@ export const createLivechatInquiry = async ({
 			estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 
 			...extraInquiryInfo,
-		})
-	).insertedId;
+		},
+		{
+			$set: {
+				_id: new ObjectId().toHexString(),
+			},
+		},
+		{
+			upsert: true,
+			returnDocument: 'after',
+		},
+	);
 	logger.debug(`Inquiry ${result} created for visitor ${_id}`);
 
-	return result;
+	if (!result.value) {
+		throw new Error('Inquiry not created');
+	}
+
+	return result.value as ILivechatInquiryRecord;
 };
 
 export const createLivechatSubscription = async (
