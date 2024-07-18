@@ -10,7 +10,7 @@ import { useUserMenu } from './hooks/useUserMenu';
 
 type UserMenuProps = { user: IUser; className?: string };
 
-const UserMenu = function UserMenu({ user }: UserMenuProps) {
+const UserMenu = function UserMenu({ user, className }: UserMenuProps) {
 	const t = useTranslation();
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -30,6 +30,7 @@ const UserMenu = function UserMenu({ user }: UserMenuProps) {
 			isOpen={isOpen}
 			onOpenChange={setIsOpen}
 			aria-label={t('User_menu')}
+			className={className}
 		/>
 	);
 };
