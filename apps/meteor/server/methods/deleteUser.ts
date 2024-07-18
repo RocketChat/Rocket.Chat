@@ -1,6 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Users, MatrixBridgedUser } from '@rocket.chat/models';
+import { Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -30,13 +30,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user to delete', {
 				method: 'deleteUser',
 			});
-		}
-
-		const remoteUser = await MatrixBridgedUser.getExternalUserIdByLocalUserId(uid);
-		if (remoteUser) {
-			throw new Meteor.Error('error-not-allowed', 'User is participating in matrix federation, user deletion is not allowed, alternatively this user can be deactivated',
-				{ method: 'deleteUser' },
-			);
 		}
 
 		if (user.type === 'app') {

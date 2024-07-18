@@ -1,4 +1,5 @@
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { MatrixBridgedUser } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -31,6 +32,12 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		const remoteUser = await MatrixBridgedUser.getExternalUserIdByLocalUserId(uid);
+		if (remoteUser) {
+			throw new Meteor.Error('error-not-allowed', 'User is participating in matrix federation, user deactivation is not allowed, only deletion is allowed',
+				{ method: 'deleteUser' },
+			);
+		}
 		await setUserActiveStatus(userId, active, confirmRelinquish);
 
 		return true;

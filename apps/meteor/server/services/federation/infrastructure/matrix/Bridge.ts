@@ -752,4 +752,8 @@ export class MatrixBridge implements IFederationBridge {
 			'de.sorunome.msc2409.push_ephemeral': registrationFile.enableEphemeralEvents,
 		};
 	}
+
+	public async deactivateUser(uid: string) {
+		return this.bridgeInstance.getIntent(uid).matrixClient.doRequest('POST', '/_matrix/client/v3/account/deactivate', { erase: true }, {});
+	}
 }
