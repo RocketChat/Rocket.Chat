@@ -43,16 +43,7 @@ export const findChannelsWithNumberOfMessages = async ({
 	const startOfLastWeek = moment(endOfLastWeek).subtract(daysBetweenDates, 'days').toDate();
 	const roomTypes = roomCoordinator.getTypesToShowOnDashboard() as Array<IRoom['t']>;
 
-	const analyticsInDateRange = await Analytics.findOne({
-		'type': 'messages',
-		'room.t': { $in: roomTypes },
-		'date': { $gte: convertDateToInt(startOfLastWeek), $lte: convertDateToInt(end) },
-	});
-	if (!analyticsInDateRange) {
-		return { channels: [], total: 0 };
-	}
-
-	const [{ channels, total }] = await Analytics.findRoomsByTypesWithNumberOfMessagesBetweenDate({
+	const aggregationResult = await Analytics.findRoomsByTypesWithNumberOfMessagesBetweenDate({
 		types: roomTypes,
 		start: convertDateToInt(start),
 		end: convertDateToInt(end),
@@ -61,6 +52,12 @@ export const findChannelsWithNumberOfMessages = async ({
 		options,
 	}).toArray();
 
+	// The aggregation result may be undefined if there are no matching analytics or corresponding rooms in the period
+	if (!aggregationResult.length) {
+		return { channels: [], total: 0 };
+	}
+
+	const [{ channels, total }] = aggregationResult;
 	return {
 		channels,
 		total,
