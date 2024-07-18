@@ -1,13 +1,12 @@
-import type { IAdminUserTabs, Serialized } from '@rocket.chat/core-typings';
+import type { IAdminUserTabs, IRole, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useEffectEvent, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
-import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -19,10 +18,12 @@ import {
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import type { UsersFilters, UsersTableSortingOptions } from '../AdminUsersPage';
+import UsersTableFilters from './UsersTableFilters';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
 	tab: IAdminUserTabs;
+	roleData: { roles: IRole[] } | undefined;
 	onReload: () => void;
 	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
 	filteredUsersQueryResult: UseQueryResult<PaginatedResult<{ users: Serialized<DefaultUserInfo>[] }>>;
@@ -34,6 +35,7 @@ type UsersTableProps = {
 const UsersTable = ({
 	filteredUsersQueryResult,
 	setUserFilters,
+	roleData,
 	tab,
 	onReload,
 	paginationData,
@@ -113,15 +115,10 @@ const UsersTable = ({
 		[isLaptop, isMobile, setSort, sortBy, sortDirection, t, tab],
 	);
 
-	const handleSearchTextChange = useCallback(
-		({ text }) => {
-			setUserFilters({ text });
-		},
-		[setUserFilters],
-	);
 	return (
 		<>
-			<FilterByText shouldAutoFocus placeholder={t('Search_Users')} onChange={handleSearchTextChange} />
+			<UsersTableFilters roleData={roleData} setUsersFilters={setUserFilters} />
+
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

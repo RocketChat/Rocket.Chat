@@ -10,7 +10,7 @@ export const MainLayoutStyleTags = () => {
 	return (
 		<>
 			<PaletteStyleTag theme={theme} selector='.rcx-content--main, .rcx-tile' tagId={`main-palette-${theme}`} />
-			<PaletteStyleTag theme='dark' selector='.rcx-sidebar--main' tagId='sidebar-palette' />
+			<PaletteStyleTag theme='dark' selector='.rcx-sidebar--main, .rcx-navbar' tagId='sidebar-palette' />
 			{theme === 'dark' && <PaletteStyleTag selector='.rcx-content--main' palette={codeBlock} tagId='codeBlock-palette' />}
 		</>
 	);

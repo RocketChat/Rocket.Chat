@@ -49,8 +49,8 @@ test.describe('OC - Livechat - Department Flow', () => {
 	});
 
 	test.afterEach(async ({ page }) => {
-		await poHomeOmnichannelAgent1?.page?.close();
-		await poHomeOmnichannelAgent2?.page?.close();
+		await poHomeOmnichannelAgent1.page.close();
+		await poHomeOmnichannelAgent2.page.close();
 		await page.close();
 	});
 
