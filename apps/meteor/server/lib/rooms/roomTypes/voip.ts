@@ -19,7 +19,7 @@ roomCoordinator.add(VoipRoomType, {
 		return { title, text, name: room.name };
 	},
 
-	async getMsgSender(senderId) {
-		return Users.findOneById(senderId);
+	async getMsgSender(message) {
+		return Users.findOneById(message.u._id);
 	},
 } as AtLeast<IRoomTypeServerDirectives, 'roomName'>);
