@@ -42,7 +42,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	constructor() {
 		super();
 
-		this.onEvent('message.new', this.afterSave.bind(this));
+		this.onEvent('message.save', this.afterSave.bind(this));
 	}
 
 	async created() {

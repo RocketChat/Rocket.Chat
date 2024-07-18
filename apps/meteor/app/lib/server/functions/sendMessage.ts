@@ -297,15 +297,14 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 	setImmediate(async () => {
 		await callbacks.run('afterSaveMessage', message, room);
 
-		void api.broadcast('message.new', {
+		void api.broadcast('message.save', {
 			message,
 			room,
 			user,
 		});
 
 		void broadcastMessageFromData({
-			id: msg._id,
-			data: message,
+			id: message._id,
 		});
 
 		void notifyOnRoomChangedById(message.rid);
