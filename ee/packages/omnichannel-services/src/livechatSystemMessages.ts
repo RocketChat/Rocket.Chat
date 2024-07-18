@@ -3,8 +3,6 @@ import { escapeHTML } from '@rocket.chat/string-helpers';
 import formatDistance from 'date-fns/formatDistance';
 import moment from 'moment';
 
-// import type { MessageData } from './OmnichannelTranscript';
-
 const livechatSystemMessagesMap = new Map<
 	MessageTypesValues,
 	{
