@@ -3,23 +3,11 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { e2e } from '../../../../app/e2e/client';
 import { fileUploadIsValidContentType } from '../../../../app/utils/client';
+import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import FileUploadModal from '../../../views/room/modals/FileUploadModal';
 import { imperativeModal } from '../../imperativeModal';
 import { prependReplies } from '../../utils/prependReplies';
 import type { ChatAPI } from '../ChatAPI';
-
-if ('serviceWorker' in navigator) {
-	navigator.serviceWorker
-		.register('/enc.js', {
-			scope: '/',
-		})
-		.then((reg) => {
-			if (reg.active) console.log('service worker installed');
-		})
-		.catch((err) => {
-			console.log(`registration failed: ${err}`);
-		});
-}
 
 const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
 	return new Promise((resolve) => {
@@ -101,7 +89,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 						return;
 					}
 
-					const shouldConvertSentMessages = e2eRoom.shouldConvertSentMessages({ msg });
+					const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages({ msg });
 
 					if (!shouldConvertSentMessages) {
 						uploadFile(queue, { msg });
@@ -132,6 +120,9 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 									encryption: {
 										key: encryptedFilesarray[i].key,
 										iv: encryptedFilesarray[i].iv,
+									},
+									hashes: {
+										sha256: encryptedFilesarray[i].hash,
 									},
 								};
 
@@ -165,7 +156,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 									attachments.push({
 										...attachment,
 										size: queue[i].size,
-										// format: getFileExtension(file.name),
+										format: getFileExtension(file.name),
 									});
 								}
 
@@ -195,10 +186,12 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 								key: encryptedFilesarray[0].key,
 								iv: encryptedFilesarray[0].iv,
 							},
+							hashes: {
+								sha256: encryptedFilesarray[0].hash,
+							},
 						};
 
 						const fileContent = await e2eRoom.encryptMessageContent(fileContentData);
-						console.log('fileContent', fileContent);
 
 						uploadFile(
 							filesarray,

@@ -15,9 +15,10 @@ type UseFilteredUsersOptions = {
 	tab: IAdminUserTabs;
 	paginationData: ReturnType<typeof usePagination>;
 	sortData: ReturnType<typeof useSort<UsersTableSortingOptions>>;
+	selectedRoles: string[];
 };
 
-const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData, tab }: UseFilteredUsersOptions) => {
+const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData, tab, selectedRoles }: UseFilteredUsersOptions) => {
 	const { setCurrent, itemsPerPage, current } = paginationData;
 	const { sortBy, sortDirection } = sortData;
 
@@ -45,11 +46,12 @@ const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData
 		return {
 			...listUsersPayload[tab],
 			searchTerm,
+			roles: selectedRoles,
 			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 			count: itemsPerPage,
 			offset: searchTerm === prevSearchTerm.current ? current : 0,
 		};
-	}, [current, itemsPerPage, prevSearchTerm, searchTerm, setCurrent, sortBy, sortDirection, tab]);
+	}, [current, itemsPerPage, prevSearchTerm, searchTerm, selectedRoles, setCurrent, sortBy, sortDirection, tab]);
 	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const usersListQueryResult = useQuery(['users.list', payload, tab], async () => getUsers(payload), {

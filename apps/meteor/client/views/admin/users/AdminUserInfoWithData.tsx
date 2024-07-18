@@ -10,7 +10,7 @@ import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { ContextualbarContent } from '../../../components/Contextualbar';
 import { FormSkeleton } from '../../../components/Skeleton';
 import { UserCardRole } from '../../../components/UserCard';
-import UserInfo from '../../../components/UserInfo';
+import { UserInfo } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 import AdminUserInfoActions from './AdminUserInfoActions';
