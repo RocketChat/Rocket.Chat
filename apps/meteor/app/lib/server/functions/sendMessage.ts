@@ -290,10 +290,6 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
 	}
 
-	/* Defer other updates as their return is not interesting to the user */
-
-	// Execute all callbacks
-
 	setImmediate(async () => {
 		await callbacks.run('afterSaveMessage', message, room);
 
