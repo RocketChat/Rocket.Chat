@@ -60,6 +60,16 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		const subscription = await SubscriptionRaw.findOneByRoomIdAndUserId(roomId, userId, {
+			projection: {
+				_id: 1,
+			},
+		});
+		if (!room.open && subscription) {
+			await SubscriptionRaw.removeByRoomId(roomId);
+			return;
+		}
+
 		if (!room.open) {
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:closeRoom' });
 		}
@@ -71,11 +81,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const subscription = await SubscriptionRaw.findOneByRoomIdAndUserId(roomId, user._id, {
-			projection: {
-				_id: 1,
-			},
-		});
 		if (!subscription && !(await hasPermissionAsync(userId, 'close-others-livechat-room'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'livechat:closeRoom',
