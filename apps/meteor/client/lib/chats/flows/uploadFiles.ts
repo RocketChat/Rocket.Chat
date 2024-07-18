@@ -156,9 +156,10 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 									attachments.push({
 										...attachment,
 										size: queue[i].size,
-										format: getFileExtension(file.name),
+										format: getFileExtension(queue[i].name),
 									});
 								}
+								
 
 								const files = {
 									_id: _id[i],
