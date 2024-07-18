@@ -27,20 +27,20 @@ describe('parseTranscriptRequest', () => {
 		modelsMock.LivechatVisitors.findOneById.reset();
 	});
 
-	it('should return options when Livechat_enable_transcript setting is true', async () => {
+	it('should return `options` param with no changes when Livechat_enable_transcript setting is true', async () => {
 		settingsGetMock.get.withArgs('Livechat_enable_transcript').returns(true);
 		const options = await parseTranscriptRequest({} as any, {} as any);
 		expect(options).to.be.deep.equal({});
 	});
 
-	it('should return options when send always is disabled', async () => {
+	it('should return `options` param with no changes when send always is disabled', async () => {
 		settingsGetMock.get.withArgs('Livechat_enable_transcript').returns(false);
 		settingsGetMock.get.withArgs('Livechat_transcript_send_always').returns(false);
 		const options = await parseTranscriptRequest({} as any, {} as any);
 		expect(options).to.be.deep.equal({});
 	});
 
-	it('should return options when visitor is not provided and its not found on db', async () => {
+	it('should return `options` param with no changes when visitor is not provided and its not found on db', async () => {
 		settingsGetMock.get.withArgs('Livechat_enable_transcript').returns(false);
 		settingsGetMock.get.withArgs('Livechat_transcript_send_always').returns(true);
 		modelsMock.LivechatVisitors.findOneById.returns(null);
@@ -49,7 +49,7 @@ describe('parseTranscriptRequest', () => {
 		expect(options).to.be.deep.equal({});
 	});
 
-	it('should return options when visitor is passed but no email is found', async () => {
+	it('should return `options` param with no changes when visitor is passed but no email is found', async () => {
 		settingsGetMock.get.withArgs('Livechat_enable_transcript').returns(false);
 		settingsGetMock.get.withArgs('Livechat_transcript_send_always').returns(true);
 		modelsMock.LivechatVisitors.findOneById.returns({} as any);
@@ -58,7 +58,7 @@ describe('parseTranscriptRequest', () => {
 		expect(options).to.be.deep.equal({});
 	});
 
-	it('should return options when visitor is fetched from db, but no email is found', async () => {
+	it('should return `options` param with no changes when visitor is fetched from db, but no email is found', async () => {
 		settingsGetMock.get.withArgs('Livechat_enable_transcript').returns(false);
 		settingsGetMock.get.withArgs('Livechat_transcript_send_always').returns(true);
 		modelsMock.LivechatVisitors.findOneById.returns({} as any);
@@ -67,7 +67,7 @@ describe('parseTranscriptRequest', () => {
 		expect(options).to.be.deep.equal({});
 	});
 
-	it('should return options when no user is passed, room is not being served and rocketcat is not present', async () => {
+	it('should return `options` param with no changes when no user is passed, room is not being served and rocketcat is not present', async () => {
 		settingsGetMock.get.withArgs('Livechat_enable_transcript').returns(false);
 		settingsGetMock.get.withArgs('Livechat_transcript_send_always').returns(true);
 		modelsMock.Users.findOneById.returns(null);
@@ -77,7 +77,7 @@ describe('parseTranscriptRequest', () => {
 		expect(options).to.be.deep.equal({});
 	});
 
-	it('should return options with transcriptRequest data when user is passed', async () => {
+	it('should return `options` param with `transcriptRequest` key attached when user is passed', async () => {
 		settingsGetMock.get.withArgs('Livechat_enable_transcript').returns(false);
 		settingsGetMock.get.withArgs('Livechat_transcript_send_always').returns(true);
 		modelsMock.LivechatVisitors.findOneById.returns({ visitorEmails: [{ address: 'abc@rocket.chat' }] } as any);
@@ -90,7 +90,7 @@ describe('parseTranscriptRequest', () => {
 		expect(options.emailTranscript.requestData.requestedBy).to.be.deep.equal({ _id: '123' });
 	});
 
-	it('should return options with transcriptData when no user is passed, but theres an agent serving the room', async () => {
+	it('should return `options` param with `transcriptRequest` key attached when no user is passed, but theres an agent serving the room', async () => {
 		settingsGetMock.get.withArgs('Livechat_enable_transcript').returns(false);
 		settingsGetMock.get.withArgs('Livechat_transcript_send_always').returns(true);
 		modelsMock.Users.findOneById.returns({ _id: '123', username: 'kevsxxx', name: 'Kev' } as any);
@@ -104,7 +104,7 @@ describe('parseTranscriptRequest', () => {
 		expect(options.emailTranscript.requestData.requestedBy).to.be.deep.equal({ _id: '123', username: 'kevsxxx', name: 'Kev' });
 	});
 
-	it('should return options with transcriptData when no user is passed, no agent is serving but rocket.cat is present', async () => {
+	it('should return `options` param with `transcriptRequest` key attached when no user is passed, no agent is serving but rocket.cat is present', async () => {
 		settingsGetMock.get.withArgs('Livechat_enable_transcript').returns(false);
 		settingsGetMock.get.withArgs('Livechat_transcript_send_always').returns(true);
 		modelsMock.Users.findOneById.returns({ _id: 'rocket.cat', username: 'rocket.cat', name: 'Rocket Cat' } as any);
