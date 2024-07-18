@@ -52,7 +52,7 @@ test.describe('OC - Livechat - OC - File Upload', () => {
 		await api.post('/settings/FileUpload_Enabled', { value: true });
 		await api.post('/settings/Livechat_fileupload_enabled', { value: true });
 
-		await poHomeOmnichannel.page?.close();
+		await poHomeOmnichannel.page.close();
 		await agent.delete();
 	});
 

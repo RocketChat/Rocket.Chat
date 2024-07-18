@@ -27,13 +27,13 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		agent = { page, poHomeChannel: new HomeChannel(page) };
 	});
 	test.afterAll(async ({ api }) => {
+		await agent.page.close();
+
 		await Promise.all([
 			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
 			api.post('/settings/Livechat_auto_close_on_hold_chats_timeout', { value: 3600 }).then((res) => expect(res.status()).toBe(200)),
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }).then((res) => expect(res.status()).toBe(200)),
 		]);
-
-		await agent.page.close();
 	});
 
 	test.beforeEach(async ({ page, api }) => {
