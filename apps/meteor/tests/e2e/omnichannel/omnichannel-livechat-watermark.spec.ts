@@ -35,6 +35,10 @@ test.describe('OC - Livechat - Hide watermark', async () => {
 		poLiveChat = new OmnichannelLiveChat(livechatPage, api);
 	});
 
+	test.afterEach(async () => {
+		await poLiveChat.page.close();
+	});
+
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelSettings = new OmnichannelSettings(page);
 
