@@ -2,6 +2,7 @@ import { cronJobs } from '@rocket.chat/cron';
 import type { Logger } from '@rocket.chat/logger';
 import { Statistics } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { context, trace, ROOT_CONTEXT } from '@rocket.chat/tracing';
 import { Meteor } from 'meteor/meteor';
 
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
@@ -34,13 +35,27 @@ async function generateStatistics(logger: Logger): Promise<void> {
 	}
 }
 
+const tracer = trace.getTracer('core');
+
 export async function statsCron(logger: Logger): Promise<void> {
 	const name = 'Generate and save statistics';
-	await generateStatistics(logger);
+	const span = tracer.startSpan(`generateStatistics`);
+
+	await context.with(trace.setSpan(ROOT_CONTEXT, span), async () => {
+		await generateStatistics(logger);
+	});
+
+	span.end();
 
 	const now = new Date();
 
 	await cronJobs.add(name, `12 ${now.getHours()} * * *`, async () => {
-		await generateStatistics(logger);
+		const span = tracer.startSpan(`generateStatistics`);
+
+		await context.with(trace.setSpan(ROOT_CONTEXT, span), async () => {
+			await generateStatistics(logger);
+		});
+
+		span.end();
 	});
 }

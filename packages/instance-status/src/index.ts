@@ -2,6 +2,7 @@
 import { EventEmitter } from 'events';
 
 import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
+import { context, ROOT_CONTEXT, trace } from '@rocket.chat/tracing';
 import { v4 as uuidv4 } from 'uuid';
 
 const events = new EventEmitter();
@@ -108,13 +109,21 @@ async function unregisterInstance() {
 
 let pingInterval: NodeJS.Timeout | null;
 
+const tracer = trace.getTracer('core');
+
 function start(interval?: number) {
 	stop();
 
 	interval = interval || defaultPingInterval;
 
-	pingInterval = setInterval(function () {
-		ping();
+	pingInterval = setInterval(async function () {
+		const span = tracer.startSpan(`InstanceStatus.ping`);
+
+		await context.with(trace.setSpan(ROOT_CONTEXT, span), async () => {
+			await ping();
+		});
+
+		span.end();
 	}, interval * 1000);
 }
 

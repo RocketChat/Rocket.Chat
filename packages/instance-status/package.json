@@ -22,6 +22,7 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@rocket.chat/models": "workspace:^"
+		"@rocket.chat/models": "workspace:^",
+		"@rocket.chat/tracing": "workspace:^"
 	}
 }
