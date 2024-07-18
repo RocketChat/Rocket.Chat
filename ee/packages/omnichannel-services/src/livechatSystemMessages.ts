@@ -176,3 +176,7 @@ addType('omnichannel_on_hold_chat_resumed', {
 		};
 	},
 });
+
+addType('ul', {
+	message: 'User_left_this_channel',
+});
