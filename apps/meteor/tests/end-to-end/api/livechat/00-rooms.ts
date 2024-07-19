@@ -377,7 +377,7 @@ describe('LIVECHAT - rooms', () => {
 
 			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 		});
-		describe('Queued and OnHold chats', () => {
+		(IS_EE ? describe : describe.skip)('Queued and OnHold chats', () => {
 			before(async () => {
 				await updateSetting('Livechat_allow_manual_on_hold', true);
 				await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
@@ -388,33 +388,30 @@ describe('LIVECHAT - rooms', () => {
 				await updateSetting('Livechat_allow_manual_on_hold', false);
 			});
 
-			(IS_EE ? it : it.skip)(
-				'should not return on hold rooms along with queued rooms when `queued` is true and `onHold` is true',
-				async () => {
-					const { room } = await startANewLivechatRoomAndTakeIt();
-					await sendAgentMessage(room._id);
-					const response = await request
-						.post(api('livechat/room.onHold'))
-						.set(credentials)
-						.send({
-							roomId: room._id,
-						})
-						.expect(200);
+			it('should not return on hold rooms along with queued rooms when `queued` is true and `onHold` is true', async () => {
+				const { room } = await startANewLivechatRoomAndTakeIt();
+				await sendAgentMessage(room._id);
+				const response = await request
+					.post(api('livechat/room.onHold'))
+					.set(credentials)
+					.send({
+						roomId: room._id,
+					})
+					.expect(200);
 
-					expect(response.body.success).to.be.true;
+				expect(response.body.success).to.be.true;
 
-					const visitor = await createVisitor();
-					const room2 = await createLivechatRoom(visitor.token);
+				const visitor = await createVisitor();
+				const room2 = await createLivechatRoom(visitor.token);
 
-					const { body } = await request.get(api('livechat/rooms')).query({ queued: true, onhold: true }).set(credentials).expect(200);
+				const { body } = await request.get(api('livechat/rooms')).query({ queued: true, onhold: true }).set(credentials).expect(200);
 
-					expect(body.rooms.every((room: IOmnichannelRoom) => room.open)).to.be.true;
-					expect(body.rooms.every((room: IOmnichannelRoom) => !room.servedBy)).to.be.true;
-					expect(body.rooms.every((room: IOmnichannelRoom) => !room.onHold)).to.be.true;
-					expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === room._id)).to.be.undefined;
-					expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === room2._id)).to.be.not.undefined;
-				},
-			);
+				expect(body.rooms.every((room: IOmnichannelRoom) => room.open)).to.be.true;
+				expect(body.rooms.every((room: IOmnichannelRoom) => !room.servedBy)).to.be.true;
+				expect(body.rooms.every((room: IOmnichannelRoom) => !room.onHold)).to.be.true;
+				expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === room._id)).to.be.undefined;
+				expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === room2._id)).to.be.not.undefined;
+			});
 		});
 		(IS_EE ? it : it.skip)('should return only rooms with the given department', async () => {
 			const { department } = await createDepartmentWithAnOnlineAgent();
