@@ -17,6 +17,40 @@ export class AppMessagesConverter {
 		return this.convertMessage(msg);
 	}
 
+	async convertMessageRaw(msgObj) {
+		if (!msgObj) {
+			return undefined;
+		}
+
+		const { attachments, ...message } = msgObj;
+		const getAttachments = async () => this._convertAttachmentsToApp(attachments);
+
+		const map = {
+			id: '_id',
+			threadId: 'tmid',
+			reactions: 'reactions',
+			parseUrls: 'parseUrls',
+			text: 'msg',
+			createdAt: 'ts',
+			updatedAt: '_updatedAt',
+			editedAt: 'editedAt',
+			emoji: 'emoji',
+			avatarUrl: 'avatar',
+			alias: 'alias',
+			file: 'file',
+			customFields: 'customFields',
+			groupable: 'groupable',
+			token: 'token',
+			blocks: 'blocks',
+			roomId: 'rid',
+			editor: 'editedBy',
+			attachments: getAttachments,
+			sender: 'u',
+		};
+
+		return transformMappedData(message, map);
+	}
+
 	async convertMessage(msgObj) {
 		if (!msgObj) {
 			return undefined;
