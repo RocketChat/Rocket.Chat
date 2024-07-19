@@ -782,6 +782,10 @@ describe('LIVECHAT - dashboards', function () {
 	(IS_EE ? describe : describe.skip)('[livechat/analytics/agent-overview] - Average first response time', () => {
 		let agent: { credentials: Credentials; user: IUser & { username: string } };
 		let originalFirstResponseTimeInSeconds: number;
+		let roomId: string;
+		let visitorToken: string;
+		const firstDelayInS = 4;
+		const secondDelayInS = 8;
 
 		before(async () => {
 			agent = await createAnOnlineAgent();
@@ -791,8 +795,12 @@ describe('LIVECHAT - dashboards', function () {
 			await deleteUser(agent.user);
 		});
 
+		afterEach(() => Promise.all([deleteVisitor(visitorToken), closeOmnichannelRoom(roomId)]));
+
 		it('should return no average response time for an agent if no response has been sent in the period', async () => {
-			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomId = response.room._id;
+			visitorToken = response.visitor.token;
 
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 
@@ -808,18 +816,15 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body).to.have.property('data');
 			expect(result.body.data).to.be.an('array');
 			expect(result.body.data).to.not.deep.include({ name: agent.user.username });
-
-			await deleteVisitor(visitor.token);
-			await closeOmnichannelRoom(room._id);
 		});
 
 		it('should only consider a first response has been sent when an agent sends a text message', async () => {
-			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomId = response.room._id;
+			visitorToken = response.visitor.token;
 
-			const delayInS = 4;
-			await sleep(delayInS * 1000);
-
-			await sendAgentMessage(room._id, agent.credentials);
+			await sleep(firstDelayInS * 1000);
+			await sendAgentMessage(roomId, agent.credentials);
 
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 			const result = await request
@@ -841,19 +846,16 @@ describe('LIVECHAT - dashboards', function () {
 			expect(agentData).to.have.property('name', agent.user.username);
 			expect(agentData).to.have.property('value');
 			originalFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
-			expect(originalFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(delayInS);
-
-			await deleteVisitor(visitor.token);
-			await closeOmnichannelRoom(room._id);
+			expect(originalFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(firstDelayInS);
 		});
 
 		it('should correctly calculate the average time of first responses for an agent', async () => {
-			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomId = response.room._id;
+			visitorToken = response.visitor.token;
 
-			const delayInS = 8;
-			await sleep(delayInS * 1000);
-
-			await sendAgentMessage(room._id, agent.credentials);
+			await sleep(secondDelayInS * 1000);
+			await sendAgentMessage(roomId, agent.credentials);
 
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 			const result = await request
@@ -876,10 +878,8 @@ describe('LIVECHAT - dashboards', function () {
 			expect(agentData).to.have.property('value');
 			const averageFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
 			expect(averageFirstResponseTimeInSeconds).to.be.greaterThan(originalFirstResponseTimeInSeconds);
-			expect(averageFirstResponseTimeInSeconds).to.be.lessThan(delayInS);
-
-			await deleteVisitor(visitor.token);
-			await closeOmnichannelRoom(room._id);
+			expect(averageFirstResponseTimeInSeconds).to.be.greaterThanOrEqual((firstDelayInS + secondDelayInS) / 2);
+			expect(averageFirstResponseTimeInSeconds).to.be.lessThan(secondDelayInS);
 		});
 	});
 
