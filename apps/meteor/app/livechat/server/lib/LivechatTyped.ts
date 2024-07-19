@@ -639,11 +639,7 @@ class LivechatClass {
 
 			// eslint-disable-next-line no-nested-ternary
 			const messageContent = messageType
-				? `<i>${
-						messageType?.render
-							? messageType.render(message)
-							: i18n.t(messageType.message, messageType.data ? messageType.data(message) : {})
-				  }</i>`
+				? `<i>${i18n.t(messageType.message, messageType.data ? messageType.data(message) : {})}</i>`
 				: message.msg;
 
 			const datetime = moment.tz(message.ts, timezone).locale(userLanguage).format('LLL');
