@@ -1,21 +1,23 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import '@testing-library/jest-dom/extend-expect';
 import React from 'react';
+
 import RoomMenu from './RoomMenu';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useRouter: () => ({
-		navigate: () => {}
+		navigate: () => {},
 	}),
 	useSetModal: () => () => {},
 	useToastMessageDispatch: () => () => {},
 	useUserSubscription: () => ({
 		name: 'test-name',
-		t: 't'
+		t: 't',
 	}),
 	useSetting: () => true,
-	usePermission: () => false,
+	usePermission: () => {},
 	useMethod: () => () => {},
 	useTranslation: () => (key: string) => key,
 	useEndpoint: () => () => {},
@@ -23,34 +25,35 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 
 jest.mock('../lib/rooms/roomCoordinator', () => ({
 	roomCoordinator: {
-	getRoomDirectives: () => ({
-		getUiText: () => 'leaveWarning',
-	}),
-}}));
+		getRoomDirectives: () => ({
+			getUiText: () => 'leaveWarning',
+		}),
+	},
+}));
 
 jest.mock('../../app/ui-utils/client', () => ({
 	LegacyRoomManager: {
 		close: () => {},
-	}
-}))
+	},
+}));
 
 jest.mock('../../definition/IRoomTypeConfig', () => ({
 	UiTextContext: {
 		LEAVE_WARNING: 'leave',
-		HIDE_WARNING: 'hide'
-	}
+		HIDE_WARNING: 'hide',
+	},
 }));
 
 jest.mock('../components/GenericModal', () => ({
 	GenericModalDoNotAskAgain: () => <>Generic Modal</>,
-}))
+}));
 
 jest.mock('../hooks/useDontAskAgain', () => ({
 	useDontAskAgain: () => true,
 }));
 
 jest.mock('../omnichannel/hooks/useOmnichannelPrioritiesMenu', () => ({
-	useOmnichannelPrioritiesMenu: () => undefined
+	useOmnichannelPrioritiesMenu: () => undefined,
 }));
 
 const defaultProps = {
@@ -62,12 +65,12 @@ const defaultProps = {
 describe('RoomMenu component', () => {
 	it('renders without crashing', () => {
 		render(<RoomMenu {...defaultProps} />);
-		screen.debug()
 		expect(screen.getByTitle('Options')).toBeInTheDocument();
 	});
 
 	it('displays menu options', () => {
 		render(<RoomMenu {...defaultProps} />);
+		screen.debug();
 		userEvent.click(screen.getByTitle('Options'));
 		screen.debug();
 		expect(screen.getByText('Hide')).toBeInTheDocument();
