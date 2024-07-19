@@ -1,6 +1,6 @@
-import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
@@ -9,14 +9,11 @@ import { test, expect } from '../utils/test';
 test.use({ storageState: Users.admin.state });
 test.describe('OC - Livechat Triggers - Open by Visitor', () => {
 	let poLiveChat: OmnichannelLiveChat;
-	let newUser: { email: string; name: string };
+	let newVisitor: { email: string; name: string };
 	let agent: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 
 	test.beforeAll(async ({ api, browser }) => {
-		newUser = {
-			name: faker.person.firstName(),
-			email: faker.internet.email(),
-		};
+		newVisitor = createFakeVisitor();
 
 		const requests = await Promise.all([
 			api.post('/livechat/users/agent', { username: 'user1' }),
@@ -81,7 +78,7 @@ test.describe('OC - Livechat Triggers - Open by Visitor', () => {
 		await expect(poLiveChat.txtChatMessage('This is a trigger message open by visitor')).toBeVisible();
 
 		await poLiveChat.btnChatNow.click();
-		await poLiveChat.sendMessage(newUser, false);
+		await poLiveChat.sendMessage(newVisitor, false);
 
 		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 		await poLiveChat.btnSendMessageToOnlineAgent.click();
