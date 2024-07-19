@@ -19,6 +19,10 @@ test.describe.serial('Apps > ContextualBar', () => {
 		await poHomeChannel.sidenav.openChat('general');
 	});
 
+	test.afterAll(async () => {
+		await page.close();
+	});
+
 	test('expect allow user open app contextualbar', async () => {
 		await poHomeChannel.content.dispatchSlashCommand('/contextualbar');
 		await expect(poHomeChannel.btnContextualbarClose).toBeVisible();

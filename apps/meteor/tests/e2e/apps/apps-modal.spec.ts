@@ -23,6 +23,10 @@ test.describe.serial('Apps > ContextualBar', () => {
 		await poHomeChannel.sidenav.openChat('general');
 	});
 
+	test.afterAll(async () => {
+		await page.close();
+	});
+
 	test('expect allow user open app modal', async () => {
 		await poHomeChannel.content.dispatchSlashCommand('/modal');
 		await expect(poModal.btnModalSubmit).toBeVisible();
