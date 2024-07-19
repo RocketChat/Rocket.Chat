@@ -1,20 +1,19 @@
 import { Button, Modal, Select, Field, FieldGroup, FieldLabel, FieldRow, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React, { useState, useMemo } from 'react';
 
 import AutoCompleteAgentWithoutExtension from '../../../../../components/AutoCompleteAgentWithoutExtension';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 
-type AssignAgentModalParams = {
+type AssignAgentModalProps = {
 	closeModal: () => void;
 	reload: () => void;
 	existingExtension?: string;
 };
 
-const AssignAgentModal: FC<AssignAgentModalParams> = ({ existingExtension, closeModal, reload }) => {
+const AssignAgentModal = ({ existingExtension, closeModal, reload }: AssignAgentModalProps) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [agent, setAgent] = useState('');

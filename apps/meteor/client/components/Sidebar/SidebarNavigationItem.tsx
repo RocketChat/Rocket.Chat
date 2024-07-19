@@ -1,6 +1,6 @@
 import { Box, Icon, Tag } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { FC, ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import SidebarGenericItem from './SidebarGenericItem';
@@ -16,7 +16,7 @@ type SidebarNavigationItemProps = {
 	badge?: () => ReactElement;
 };
 
-const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
+const SidebarNavigationItem = ({
 	permissionGranted,
 	pathSection,
 	icon,
@@ -26,7 +26,7 @@ const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 	externalUrl,
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	badge: Badge,
-}) => {
+}: SidebarNavigationItemProps) => {
 	const path = pathSection;
 	const isActive = !!path && currentPath?.includes(path as string);
 

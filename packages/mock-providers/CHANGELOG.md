@@ -1,5 +1,31 @@
 # @rocket.chat/mock-providers
 
+## 0.1.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [d3c493b6da, 02dd87574b, 16b67aa0ff, 1056f220df, 768cad6de5, 2ef71e8ea6, 5f95c4ec6b, 363a011487, 45dc3d5f72, ee43f2c57c, 30399688fc, 4fd9c4cbaa, 4f72d62aa7, dfa49bdbb2]:</summary>
+
+  - @rocket.chat/i18n@0.5.0
+  </details>
+
+## 0.1.0-rc.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [d3c493b6da, 02dd87574b, 16b67aa0ff, 1056f220df, 768cad6de5, 2ef71e8ea6, 5f95c4ec6b, 363a011487, 45dc3d5f72, ee43f2c57c, 30399688fc, 4fd9c4cbaa, 4f72d62aa7, dfa49bdbb2]:</summary>
+
+  - @rocket.chat/i18n@0.5.0-rc.0
+  </details>
+
 ## 0.0.7
 
 ### Patch Changes

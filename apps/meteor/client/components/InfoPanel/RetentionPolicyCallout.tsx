@@ -1,31 +1,22 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React from 'react';
 
-import { useFormattedRelativeTime } from '../../hooks/useFormattedRelativeTime';
-import { getMaxAgeInMS } from '../../views/room/hooks/useRetentionPolicy';
+import { usePruneWarningMessage } from '../../hooks/usePruneWarningMessage';
+import { withErrorBoundary } from '../withErrorBoundary';
 
-type RetentionPolicyCalloutProps = {
-	filesOnly: boolean;
-	excludePinned: boolean;
-	maxAge: number;
-};
-
-const RetentionPolicyCallout: FC<RetentionPolicyCalloutProps> = ({ filesOnly, excludePinned, maxAge }) => {
+const RetentionPolicyCallout = ({ room }: { room: IRoom }) => {
+	const message = usePruneWarningMessage(room);
 	const t = useTranslation();
-	const time = useFormattedRelativeTime(getMaxAgeInMS(maxAge));
 
 	return (
 		<Callout arial-label={t('Retention_policy_warning_callout')} role='alert' aria-live='polite' type='warning'>
 			<div>
-				{filesOnly && excludePinned && <p>{t('RetentionPolicy_RoomWarning_FilesOnly', { time })}</p>}
-				{filesOnly && !excludePinned && <p>{t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time })}</p>}
-				{!filesOnly && excludePinned && <p>{t('RetentionPolicy_RoomWarning', { time })}</p>}
-				{!filesOnly && !excludePinned && <p>{t('RetentionPolicy_RoomWarning_Unpinned', { time })}</p>}
+				<p>{message}</p>
 			</div>
 		</Callout>
 	);
 };
 
-export default RetentionPolicyCallout;
+export default withErrorBoundary(RetentionPolicyCallout);
