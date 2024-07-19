@@ -1,6 +1,6 @@
-import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
@@ -48,10 +48,7 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 		await agent2.poHomeChannel.sidenav.switchOmnichannelStatus('offline');
 
 		// start a new chat for each test
-		newVisitor = {
-			name: faker.person.firstName(),
-			email: faker.internet.email(),
-		};
+		newVisitor = createFakeVisitor();
 		poLiveChat = new OmnichannelLiveChat(page, api);
 		await page.goto('/livechat');
 		await poLiveChat.openLiveChat();
