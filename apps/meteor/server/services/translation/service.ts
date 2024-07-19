@@ -39,7 +39,7 @@ export class TranslationService extends ServiceClassInternal implements ITransla
 
 		return keys.map((key) => ({
 			key,
-			value: i18n.t(key, { lng: language }),
+			value: i18n.t(key, { lng: language, fallbackLng: 'en' }),
 		}));
 	}
 }

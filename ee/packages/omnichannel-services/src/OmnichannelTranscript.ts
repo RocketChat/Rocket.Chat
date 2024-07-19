@@ -45,7 +45,19 @@ type Quote = { name: string; ts?: Date; md: Root };
 
 export type MessageData = Pick<
 	IOmnichannelSystemMessage,
-	'msg' | '_id' | 'u' | 'ts' | 'md' | 't' | 'navigation' | 'transferData' | 'requestData' | 'webRtcCallEndTs' | 'comment'
+	| 'msg'
+	| '_id'
+	| 'u'
+	| 'ts'
+	| 'md'
+	| 't'
+	| 'navigation'
+	| 'transferData'
+	| 'requestData'
+	| 'webRtcCallEndTs'
+	| 'comment'
+	| 'slaData'
+	| 'priorityData'
 > & {
 	files: ({ name?: string; buffer: Buffer | null; extension?: string } | undefined)[];
 	quotes: (Quote | undefined)[];
@@ -127,6 +139,8 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				transferData: 1,
 				webRtcCallEndTs: 1,
 				comment: 1,
+				priorityData: 1,
+				slaData: 1,
 			},
 		}).toArray();
 	}
@@ -355,6 +369,12 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			'Livechat_user_sent_chat_transcript_to_visitor',
 			'WebRTC_call_ended_message',
 			'WebRTC_call_declined_message',
+			'Without_SLA',
+			'Unknown_User',
+			'Livechat_transfer_failed_fallback',
+			'Unprioritized',
+			'Unknown_User',
+			'Without_priority',
 			...getAllSystemMessagesKeys(),
 		];
 
