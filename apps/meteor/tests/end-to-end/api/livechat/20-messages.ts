@@ -3,7 +3,7 @@ import type { ILivechatAgent, ILivechatVisitor, IOmnichannelRoom, IRoom } from '
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
-import { api, getCredentials, request } from '../../../data/api-data';
+import { api, getCredentials, credentials, request } from '../../../data/api-data';
 import { sendSimpleMessage } from '../../../data/chat.helper';
 import {
 	sendMessage,
@@ -39,7 +39,7 @@ describe('LIVECHAT - messages', () => {
 
 			await sendMessage(roomId, 'Hello from visitor', token);
 			const agentMsgSentence = faker.lorem.sentence();
-			const agentMsg = await sendAgentMessage(roomId, agentMsgSentence);
+			const agentMsg = await sendAgentMessage(roomId, credentials, agentMsgSentence);
 
 			const siteUrl = process.env.SITE_URL || process.env.TEST_API_URL || 'http://localhost:3000';
 
