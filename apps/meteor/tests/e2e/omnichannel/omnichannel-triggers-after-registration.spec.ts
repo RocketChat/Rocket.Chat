@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
@@ -10,14 +11,11 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 	let triggersName: string;
 	let triggerMessage: string;
 	let poLiveChat: OmnichannelLiveChat;
-	let newUser: { email: string; name: string };
+	let newVisitor: { email: string; name: string };
 	let agent: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 
 	test.beforeEach(async ({ api, browser }) => {
-		newUser = {
-			name: faker.person.firstName(),
-			email: faker.internet.email(),
-		};
+		newVisitor = createFakeVisitor();
 		triggersName = faker.string.uuid();
 		triggerMessage = 'This is a trigger message after guest registration';
 
@@ -59,7 +57,7 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 	test.describe('OC - Livechat New Chat Triggers - After Registration', async () => {
 		await test('expect trigger message after registration', async () => {
 			await poLiveChat.page.goto('/livechat');
-			await poLiveChat.sendMessageAndCloseChat(newUser);
+			await poLiveChat.sendMessageAndCloseChat(newVisitor);
 
 			await poLiveChat.startNewChat();
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
@@ -71,7 +69,7 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 			await test.step('expect trigger message after registration to be visible', async () => {
 				await poLiveChat.page.goto('/livechat');
 				await poLiveChat.openAnyLiveChat();
-				await poLiveChat.sendMessage(newUser, false);
+				await poLiveChat.sendMessage(newVisitor, false);
 				await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
 			});
 
@@ -106,12 +104,12 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 
 		await test('expect trigger message after registration', async () => {
 			await poLiveChat.page.goto('/livechat');
-			await poLiveChat.sendMessageAndCloseChat(newUser);
+			await poLiveChat.sendMessageAndCloseChat(newVisitor);
 
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
 
 			await poLiveChat.startNewChat();
-			await poLiveChat.sendMessage(newUser, false);
+			await poLiveChat.sendMessage(newVisitor, false);
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
 		});
 	});
