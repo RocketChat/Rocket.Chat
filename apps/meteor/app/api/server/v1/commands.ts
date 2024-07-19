@@ -7,7 +7,6 @@ import { canAccessRoomIdAsync } from '../../../authorization/server/functions/ca
 import { slashCommands } from '../../../utils/server/slashCommand';
 import { API } from '../api';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
-import { getPaginationItems } from '../helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'commands.get',
@@ -137,36 +136,67 @@ const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string,
 	return result;
 };
 
+// Helper function to fetch all commands 
+async function fetchAllCommands(query: Record<string, unknown>, sort: Record<string, 1 | -1>) {
+	const allCommands: any[] = [];
+	let offset = 0;
+	const limit = 50;
+
+	while (true) {
+		const commandsPage = await getCommandsPage({ query, sort, offset, limit });
+		allCommands.push(...commandsPage.commands);
+
+		if (commandsPage.commands.length < limit) {
+			break;
+		}
+
+		offset += limit;
+	}
+
+	return allCommands;
+}
+
+// Function to fetch a single page of commands
+async function getCommandsPage({ query, sort, offset, limit }: { query: Record<string, unknown>; sort: Record<string, 1 | -1>; offset: number; limit: number }) {
+	let commands = Object.values(slashCommands.commands);
+
+	if (query?.command) {
+		commands = commands.filter((command) => command.command === query.command);
+	}
+
+	const totalCount = commands.length;
+
+	return {
+		commands: processQueryOptionsOnResult(commands, {
+			sort: sort || { name: 1 },
+			skip: offset,
+			limit: limit,
+		}),
+		offset,
+		count: commands.length,
+		total: totalCount,
+	};
+}
+
 API.v1.addRoute(
 	'commands.list',
 	{ authRequired: true },
 	{
 		async get() {
-			const params = this.queryParams as Record<string, any>;
-			const { offset, count } = await getPaginationItems(params);
 			const { sort, query } = await this.parseJsonQuery();
 
-			let commands = Object.values(slashCommands.commands);
-
-			if (query?.command) {
-				commands = commands.filter((command) => command.command === query.command);
-			}
-
-			const totalCount = commands.length;
+			const allCommands = await fetchAllCommands(query, sort);
 
 			return API.v1.success({
-				commands: processQueryOptionsOnResult(commands, {
-					sort: sort || { name: 1 },
-					skip: offset,
-					limit: count,
-				}),
-				offset,
-				count: commands.length,
-				total: totalCount,
+				commands: allCommands,
+				offset: 0,
+				count: allCommands.length,
+				total: allCommands.length,
 			});
 		},
 	},
 );
+
 
 // Expects a body of: { command: 'gimme', params: 'any string value', roomId: 'value', triggerId: 'value' }
 API.v1.addRoute(
