@@ -81,7 +81,12 @@ export class AppMessagesConverter {
 
 				delete message.u;
 
-				return user;
+				/**
+				 * Old System Messages from visitor doesn't have the `token` field, to not return
+				 * `sender` as undefined, so we need to add this fallback here.
+				 */
+
+				return user || this.orch.getConverters().get('users').convertToApp(message.u);
 			},
 		};
 
