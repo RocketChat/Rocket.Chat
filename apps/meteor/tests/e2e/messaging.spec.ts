@@ -1,3 +1,5 @@
+import type { Page } from '@playwright/test';
+
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
@@ -137,36 +139,40 @@ test.describe.serial('Messaging', () => {
 		await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
 	});
 
-	test('expect show "hello word" in both contexts (targetChannel)', async ({ browser }) => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		const { page } = await createAuxContext(browser, Users.user2);
-		const auxContext = { page, poHomeChannel: new HomeChannel(page) };
+	test.describe('Both contexts', () => {
+		let auxContext: { page: Page; poHomeChannel: HomeChannel };
+		test.beforeEach(async ({ browser }) => {
+			const { page } = await createAuxContext(browser, Users.user2);
+			auxContext = { page, poHomeChannel: new HomeChannel(page) };
+		});
 
-		await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
+		test.afterEach(async () => {
+			await auxContext.page.close();
+		});
 
-		await poHomeChannel.content.sendMessage('hello world');
+		test('expect show "hello word" in both contexts (targetChannel)', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
 
-		await expect(async () => {
-			await expect(auxContext.poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-		}).toPass();
+			await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
 
-		await auxContext.page.close();
-	});
+			await poHomeChannel.content.sendMessage('hello world');
 
-	test('expect show "hello word" in both contexts (direct)', async ({ browser }) => {
-		await poHomeChannel.sidenav.openChat('user2');
-		const { page } = await createAuxContext(browser, Users.user2);
-		const auxContext = { page, poHomeChannel: new HomeChannel(page) };
-		await auxContext.poHomeChannel.sidenav.openChat('user1');
+			await expect(async () => {
+				await expect(auxContext.poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+				await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+			}).toPass();
+		});
 
-		await poHomeChannel.content.sendMessage('hello world');
+		test('expect show "hello word" in both contexts (direct)', async () => {
+			await poHomeChannel.sidenav.openChat('user2');
+			await auxContext.poHomeChannel.sidenav.openChat('user1');
 
-		await expect(async () => {
-			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-			await expect(auxContext.poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-		}).toPass();
+			await poHomeChannel.content.sendMessage('hello world');
 
-		await auxContext.page.close();
+			await expect(async () => {
+				await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+				await expect(auxContext.poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+			}).toPass();
+		});
 	});
 });
