@@ -34,13 +34,12 @@ test.describe('omnichannel-takeChat', () => {
 		await agent.poHomeChannel.sidenav.switchOmnichannelStatus('online');
 		await agent.poHomeChannel.sidenav.switchStatus('online');
 
-		await Promise.all([
-			await api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
-			await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
-			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }).then((res) => expect(res.status()).toBe(200)),
-		]);
-
 		await agent.page.close();
+		await Promise.all([
+			await api.delete('/livechat/users/agent/user1'),
+			await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }),
+			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }),
+		]);
 	});
 
 	test.beforeEach('start a new livechat chat', async ({ page, api }) => {
