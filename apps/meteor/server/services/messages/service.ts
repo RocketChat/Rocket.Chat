@@ -142,8 +142,8 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		message = await mentionServer.execute(message);
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
-		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
 		message = await this.badWords.filterBadWords({ message });
+		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
 		message = await this.spotify.convertSpotifyLinks({ message });
 		message = await this.jumpToMessage.createAttachmentForMessageURLs({
 			message,

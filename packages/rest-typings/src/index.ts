@@ -247,7 +247,6 @@ export * from './v1/users/UsersSetPreferenceParamsPOST';
 export * from './v1/users/UsersUpdateOwnBasicInfoParamsPOST';
 export * from './v1/users/UsersUpdateParamsPOST';
 export * from './v1/users/UsersCheckUsernameAvailabilityParamsGET';
-export * from './v1/users/UsersGetAvatarSuggestionParamsGET';
 export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
 export * from './v1/moderation';
 
@@ -258,6 +257,7 @@ export * from './v1/e2e/e2eGetUsersOfRoomWithoutKeyParamsGET';
 export * from './v1/e2e/e2eSetRoomKeyIDParamsPOST';
 export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
 export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
+export * from './v1/e2e';
 export * from './v1/import';
 export * from './v1/voip';
 export * from './v1/email-inbox';

@@ -1,13 +1,14 @@
 import { Box, Icon, Menu } from '@rocket.chat/fuselage';
 import { usePermission, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React from 'react';
 
-const RemoveAllClosed: FC<{
+type RemoveAllClosedProps = {
 	handleClearFilters: any;
 	handleRemoveClosed: any;
 	hasCustomFields: boolean;
-}> = ({ handleClearFilters, handleRemoveClosed, hasCustomFields, ...props }) => {
+};
+
+const RemoveAllClosed = ({ handleClearFilters, handleRemoveClosed, hasCustomFields, ...props }: RemoveAllClosedProps) => {
 	const t = useTranslation();
 	const directoryRoute = useRoute('omnichannel-current-chats');
 	const canRemove = usePermission('remove-closed-livechat-rooms');

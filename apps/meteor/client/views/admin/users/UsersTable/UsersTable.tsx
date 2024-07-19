@@ -1,13 +1,12 @@
-import type { IAdminUserTabs, Serialized } from '@rocket.chat/core-typings';
+import type { IAdminUserTabs, IRole, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
-import { useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
-import FilterByText from '../../../../components/FilterByText';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
@@ -18,30 +17,37 @@ import {
 } from '../../../../components/GenericTable';
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import type { UsersFilters } from '../AdminUsersPage';
+import type { UsersFilters, UsersTableSortingOptions } from '../AdminUsersPage';
+import UsersTableFilters from './UsersTableFilters';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
 	tab: IAdminUserTabs;
+	roleData: { roles: IRole[] } | undefined;
 	onReload: () => void;
 	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
 	filteredUsersQueryResult: UseQueryResult<PaginatedResult<{ users: Serialized<DefaultUserInfo>[] }>>;
 	paginationData: ReturnType<typeof usePagination>;
-	sortData: ReturnType<typeof useSort<'name' | 'username' | 'emails.address' | 'status'>>;
+	sortData: ReturnType<typeof useSort<UsersTableSortingOptions>>;
+	isSeatsCapExceeded: boolean;
 };
 
-// TODO: Missing error state
 const UsersTable = ({
 	filteredUsersQueryResult,
 	setUserFilters,
+	roleData,
 	tab,
 	onReload,
 	paginationData,
 	sortData,
+	isSeatsCapExceeded,
 }: UsersTableProps): ReactElement | null => {
 	const t = useTranslation();
 	const router = useRouter();
-	const mediaQuery = useMediaQuery('(min-width: 1024px)');
+	const breakpoints = useBreakpoints();
+
+	const isMobile = !breakpoints.includes('xl');
+	const isLaptop = !breakpoints.includes('xxl');
 
 	const { data, isLoading, isError, isSuccess } = filteredUsersQueryResult;
 
@@ -76,24 +82,14 @@ const UsersTable = ({
 
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell w='x240' key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>,
-			mediaQuery && (
+			<GenericTableHeaderCell key='username' direction={sortDirection} active={sortBy === 'username'} onClick={setSort} sort='username'>
+				{t('Username')}
+			</GenericTableHeaderCell>,
+			!isLaptop && (
 				<GenericTableHeaderCell
-					w='x140'
-					key='username'
-					direction={sortDirection}
-					active={sortBy === 'username'}
-					onClick={setSort}
-					sort='username'
-				>
-					{t('Username')}
-				</GenericTableHeaderCell>
-			),
-			mediaQuery && (
-				<GenericTableHeaderCell
-					w='x120'
 					key='email'
 					direction={sortDirection}
 					active={sortBy === 'emails.address'}
@@ -103,36 +99,26 @@ const UsersTable = ({
 					{t('Email')}
 				</GenericTableHeaderCell>
 			),
-			mediaQuery && (
-				<GenericTableHeaderCell w='x120' key='roles' onClick={setSort}>
-					{t('Roles')}
-				</GenericTableHeaderCell>
-			),
-			tab === 'all' && (
-				<GenericTableHeaderCell
-					w='x100'
-					key='status'
-					direction={sortDirection}
-					active={sortBy === 'status'}
-					onClick={setSort}
-					sort='status'
-				>
+			!isLaptop && <GenericTableHeaderCell key='roles'>{t('Roles')}</GenericTableHeaderCell>,
+			tab === 'all' && !isMobile && (
+				<GenericTableHeaderCell key='status' direction={sortDirection} active={sortBy === 'status'} onClick={setSort} sort='status'>
 					{t('Registration_status')}
 				</GenericTableHeaderCell>
 			),
+			tab === 'pending' && !isMobile && (
+				<GenericTableHeaderCell key='action' direction={sortDirection} active={sortBy === 'active'} onClick={setSort} sort='active'>
+					{t('Pending_action')}
+				</GenericTableHeaderCell>
+			),
+			<GenericTableHeaderCell key='actions' w={tab === 'pending' ? 'x204' : ''} />,
 		],
-		[mediaQuery, setSort, sortBy, sortDirection, t, tab],
+		[isLaptop, isMobile, setSort, sortBy, sortDirection, t, tab],
 	);
 
-	const handleSearchTextChange = useCallback(
-		({ text }) => {
-			setUserFilters({ text });
-		},
-		[setUserFilters],
-	);
 	return (
 		<>
-			<FilterByText shouldAutoFocus placeholder={t('Search_Users')} onChange={handleSearchTextChange} />
+			<UsersTableFilters roleData={roleData} setUsersFilters={setUserFilters} />
+
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -160,7 +146,16 @@ const UsersTable = ({
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.users.map((user) => (
-								<UsersTableRow key={user._id} onClick={handleClickOrKeyDown} mediaQuery={mediaQuery} user={user} tab={tab} />
+								<UsersTableRow
+									key={user._id}
+									onClick={handleClickOrKeyDown}
+									isMobile={isMobile}
+									isLaptop={isLaptop}
+									user={user}
+									onReload={onReload}
+									tab={tab}
+									isSeatsCapExceeded={isSeatsCapExceeded}
+								/>
 							))}
 						</GenericTableBody>
 					</GenericTable>

@@ -32,6 +32,7 @@ import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { checkUsernameAvailability } from '../../../app/lib/server/functions/checkUsernameAvailability';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { settings } from '../../../app/settings/server';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
@@ -472,11 +473,21 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		room.teamDefault = isDefault;
 		await Rooms.setTeamDefaultById(rid, isDefault);
 
-		if (room.teamDefault) {
-			const teamMembers = await this.members(uid, room.teamId, true, undefined, undefined);
+		if (isDefault) {
+			const maxNumberOfAutoJoinMembers = settings.get<number>('API_User_Limit');
+			const teamMembers = await this.members(
+				uid,
+				room.teamId,
+				true,
+				{ offset: 0, count: maxNumberOfAutoJoinMembers },
+				// We should not get the owner of the room, since he is already a member
+				{ _id: { $ne: room.u._id } },
+			);
 
 			for await (const m of teamMembers.records) {
-				await addUserToRoom(room._id, m.user, user);
+				if (await addUserToRoom(room._id, m.user, user)) {
+					room.usersCount++;
+				}
 			}
 		}
 
@@ -760,7 +771,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const usersToRemove = await Users.findByIds(membersIds, {
 			projection: { _id: 1, username: 1 },
 		}).toArray();
-		const byUser = (await Users.findOneById(uid, { projection: { _id: 1, username: 1 } })) as Pick<IUser, '_id' | 'username'>;
+		const byUser = await Users.findOneById(uid);
 
 		for await (const member of members) {
 			if (!member.userId) {
@@ -791,7 +802,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				await removeUserFromRoom(
 					team.roomId,
 					removedUser,
-					uid !== member.userId
+					uid !== member.userId && byUser
 						? {
 								byUser,
 						  }

@@ -1,4 +1,3 @@
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { type InquiryWithAgentInfo, type IOmnichannelQueue } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
@@ -100,7 +99,8 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				// And sorting them by _updatedAt: -1 will make it so that the oldest inquiries are taken first
 				// preventing us from playing with the same inquiry over and over again
 				queueLogger.debug(`Inquiry ${nextInquiry._id} not taken. Unlocking and re-queueing`);
-				return await LivechatInquiry.unlockAndQueue(nextInquiry._id);
+				const updatedQueue = await LivechatInquiry.unlockAndQueue(nextInquiry._id);
+				return updatedQueue;
 			}
 
 			queueLogger.debug(`Inquiry ${nextInquiry._id} taken successfully. Unlocking`);
@@ -185,9 +185,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 		queueLogger.debug(`Processing inquiry ${inquiry._id} from queue ${queue}`);
 		const { defaultAgent } = inquiry;
 
-		const roomFromDb = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'servedBy' | 'closedAt'>>(inquiry.rid, {
-			projection: { servedBy: 1, closedAt: 1 },
-		});
+		const roomFromDb = await LivechatRooms.findOneById(inquiry.rid);
 
 		// This is a precaution to avoid taking inquiries tied to rooms that no longer exist.
 		// This should never happen.
@@ -205,7 +203,7 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 			return this.reconciliation('closed', { roomId: inquiry.rid, inquiryId: inquiry._id });
 		}
 
-		const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
+		const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, roomFromDb);
 
 		if (room?.servedBy) {
 			const {
