@@ -1025,7 +1025,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect(200);
 
 			expect(result.body).to.be.an('array');
-			expect(result.body).to.have.lengthOf(7);
+			expect(result.body).to.have.lengthOf(13);
 			expect(result.body[0]).to.have.property('title', 'Total_conversations');
 			expect(result.body[0]).to.have.property('value', 0);
 		});
@@ -1043,7 +1043,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body).to.be.an('array');
 
 			const expectedResult = [
-				{ title: 'Total_conversations', value: 7 },
+				{ title: 'Total_conversations', value: 13 },
 				{ title: 'Open_conversations', value: 4 },
 				{ title: 'On_Hold_conversations', value: 1 },
 				// { title: 'Total_messages', value: 6 },
