@@ -6,6 +6,7 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
+import { notifyOnRoomChangedById } from '../../../app/lib/server/lib/notifyListener';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
@@ -121,9 +122,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			Rooms.incMsgCountById(rid, 1),
 		]);
 
-		void broadcastMessageFromData({
-			id: result.insertedId,
-		});
+		void broadcastMessageFromData({ id: result.insertedId });
+
+		// TODO: investigate if still needed
+		void notifyOnRoomChangedById(rid);
 
 		return result.insertedId;
 	}
