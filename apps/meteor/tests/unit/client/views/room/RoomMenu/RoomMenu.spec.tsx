@@ -1,15 +1,31 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import proxyquire from 'proxyquire';
 import React from 'react';
 
-import RoomMenu from '../../../../../../client/sidebar/RoomMenu';
+import type { default as _RoomMenu } from '../../../../../../client/sidebar/RoomMenu';
+
+const RoomMenu = proxyquire.noCallThru().load('../../../../../../client/sidebar/RoomMenu', {
+	'../hooks/useDontAskAgain': {
+		useDontAskAgain: () => false,
+	},
+	'../../app/ui-utils/client': {
+		LegacyRoomManager: () => false,
+	},
+	'../omnichannel/hooks/useOmnichannelPrioritiesMenu': {
+		useOmnichannelPrioritiesMenu: () => false,
+	},
+	'../UiTextContext': () => 'leaveWarning',
+	'../lib/rooms/roomCoordinator': () => 'leaveWarning',
+}).default as typeof _RoomMenu;
 
 const defaultProps = {
 	rid: 'roomId',
 	type: 'c' as RoomType,
 	hideDefaultOptions: false,
 };
+
 describe('RoomMenu component', () => {
 	it('renders without crashing', () => {
 		render(<RoomMenu {...defaultProps} />);
