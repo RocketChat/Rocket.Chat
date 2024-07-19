@@ -66,7 +66,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		return addUserToRoom(roomId, user, inviter, silenced);
 	}
 
-	async removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: Pick<IUser, '_id' | 'username'> }): Promise<void> {
+	async removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: IUser }): Promise<void> {
 		return removeUserFromRoom(roomId, user, options);
 	}
 
