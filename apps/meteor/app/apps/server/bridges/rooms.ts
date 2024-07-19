@@ -3,8 +3,8 @@ import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
-import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
-import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom } from '@rocket.chat/core-typings';
+import { GetMessagesOptions, RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
+import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
 
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
@@ -14,6 +14,7 @@ import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
+import { FindOptions } from 'mongodb';
 
 export class AppRoomBridge extends RoomBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
@@ -103,15 +104,7 @@ export class AppRoomBridge extends RoomBridge {
 		return this.orch.getConverters()?.get('users').convertById(room.u._id);
 	}
 
-	protected async getMessages(
-		roomId: string,
-		options: {
-			limit: number;
-			skip?: number;
-			sort?: Record<string, 1 | -1>;
-		},
-		appId: string,
-	): Promise<IMessageRaw[]> {
+	protected async getMessages(roomId: string, options: GetMessagesOptions, appId: string): Promise<IMessageRaw[]> {
 		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}" with options:`, options);
 
 		const { limit, skip = 0, sort } = options;
@@ -121,7 +114,7 @@ export class AppRoomBridge extends RoomBridge {
 			throw new Error('Message converter not found');
 		}
 
-		const messageQueryOptions = {
+		const messageQueryOptions: FindOptions<ICoreMessage> = {
 			limit,
 			skip,
 			sort,
@@ -256,13 +249,5 @@ export class AppRoomBridge extends RoomBridge {
 
 		const members = await Users.findUsersByUsernames(usernames, { limit: 50 }).toArray();
 		await Promise.all(members.map((user) => removeUserFromRoom(roomId, user)));
-	}
-
-	protected getMessages(
-		_roomId: string,
-		_options: { limit: number; skip?: number; sort?: Record<string, 1 | -1> },
-		_appId: string,
-	): Promise<IMessage[]> {
-		throw new Error('Method not implemented.');
 	}
 }
