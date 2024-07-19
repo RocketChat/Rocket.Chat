@@ -72,8 +72,14 @@ class JIRAReporter implements Reporter {
 		console.log(
 			JSON.stringify(
 				{
-					test,
-					result,
+					test: {
+						...test,
+						parent: undefined,
+					},
+					result: {
+						...result,
+						steps: result.steps.map(({ parent: _, ...step }) => ({ ...step })),
+					},
 				},
 				null,
 				2,
