@@ -6,8 +6,8 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
-import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
+import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
@@ -169,9 +169,9 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	private getMarkdownConfig() {
 		const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
 			? settings
-				.get<string>('Message_CustomDomain_AutoLink')
-				.split(',')
-				.map((domain) => domain.trim())
+					.get<string>('Message_CustomDomain_AutoLink')
+					.split(',')
+					.map((domain) => domain.trim())
 			: [];
 
 		return {

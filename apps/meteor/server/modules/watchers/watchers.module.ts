@@ -37,24 +37,24 @@ import {
 	LivechatPriority,
 } from '@rocket.chat/models';
 
+import { getMessageToBroadcast } from '../../../app/lib/server/lib/notifyListener';
 import { subscriptionFields, roomFields } from '../../../lib/publishFields';
 import type { DatabaseWatcher } from '../../database/DatabaseWatcher';
-import { getMessageToBroadcast } from './lib/messages';
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
 const hasKeys =
 	(requiredKeys: string[]): ((data?: Record<string, any>) => boolean) =>
-		(data?: Record<string, any>): boolean => {
-			if (!data) {
-				return false;
-			}
+	(data?: Record<string, any>): boolean => {
+		if (!data) {
+			return false;
+		}
 
-			return Object.keys(data)
-				.filter((key) => key !== '_id')
-				.map((key) => key.split('.')[0])
-				.some((key) => requiredKeys.includes(key));
-		};
+		return Object.keys(data)
+			.filter((key) => key !== '_id')
+			.map((key) => key.split('.')[0])
+			.some((key) => requiredKeys.includes(key));
+	};
 
 const hasRoomFields = hasKeys(Object.keys(roomFields));
 const hasSubscriptionFields = hasKeys(Object.keys(subscriptionFields));

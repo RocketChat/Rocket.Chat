@@ -12,10 +12,10 @@ import type { ParsedMail, Attachment } from 'mailparser';
 import stripHtml from 'string-strip-html';
 
 import { FileUpload } from '../../../app/file-upload/server';
+import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../app/settings/server';
-import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { i18n } from '../../lib/i18n';
 import { logger } from './logger';
 
@@ -132,14 +132,14 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	// TODO: html => md with turndown
 	const msg = email.html
 		? stripHtml(email.html, {
-			dumpLinkHrefsNearby: {
-				enabled: true,
-				putOnNewLine: false,
-				wrapHeads: '(',
-				wrapTails: ')',
-			},
-			skipHtmlDecoding: false,
-		}).result
+				dumpLinkHrefsNearby: {
+					enabled: true,
+					putOnNewLine: false,
+					wrapHeads: '(',
+					wrapTails: ')',
+				},
+				skipHtmlDecoding: false,
+		  }).result
 		: email.text || '';
 
 	const rid = room?._id ?? Random.id();
