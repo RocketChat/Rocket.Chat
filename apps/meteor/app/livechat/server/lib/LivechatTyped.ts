@@ -616,6 +616,7 @@ class LivechatClass {
 			'livechat-close',
 			'livechat-started',
 			'livechat_video_call',
+			'omnichannel_priority_change_history',
 		];
 		const acceptableImageMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
 		const messages = await Messages.findVisibleByRoomIdNotContainingTypesBeforeTs(
