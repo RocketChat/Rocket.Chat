@@ -69,6 +69,17 @@ class JIRAReporter implements Reporter {
 
 		console.log(`Sending test result to JIRA: ${JSON.stringify(payload)}`);
 
+		console.log(
+			JSON.stringify(
+				{
+					test,
+					result,
+				},
+				null,
+				2,
+			),
+		);
+
 		// first search and check if there is an existing issue
 
 		const search = await fetch(
