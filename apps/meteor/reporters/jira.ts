@@ -69,23 +69,6 @@ class JIRAReporter implements Reporter {
 
 		console.log(`Sending test result to JIRA: ${JSON.stringify(payload)}`);
 
-		console.log(
-			JSON.stringify(
-				{
-					test: {
-						...test,
-						parent: undefined,
-					},
-					result: {
-						...result,
-						steps: result.steps.map(({ parent: _, ...step }) => ({ ...step })),
-					},
-				},
-				null,
-				2,
-			),
-		);
-
 		// first search and check if there is an existing issue
 
 		const search = await fetch(
@@ -143,16 +126,19 @@ ${this.run_url}
 			});
 
 			// upload file to existing issue
-			await Promise.all(
-				result.attachments.map((attachment) =>
-					fetch(`${this.url}/rest/api/2/issue/${existing.key}/attachments`, {
-						method: 'POST',
-						body: (attachment.path && fs.createReadStream(attachment.path)) || attachment.body,
-						headers: {
-							'Content-Type': 'application/json',
-							'Authorization': `Basic ${this.apiKey}`,
-						},
-					}),
+			console.log(
+				'attachments',
+				await Promise.all(
+					result.attachments.map((attachment) =>
+						fetch(`${this.url}/rest/api/2/issue/${existing.key}/attachments`, {
+							method: 'POST',
+							body: (attachment.path && fs.createReadStream(attachment.path)) || attachment.body,
+							headers: {
+								'Content-Type': 'application/json',
+								'Authorization': `Basic ${this.apiKey}`,
+							},
+						}).then((response) => response.json()),
+					),
 				),
 			);
 
@@ -215,16 +201,19 @@ ${this.run_url}
 			},
 		});
 		// upload file to existing issue
-		await Promise.all(
-			result.attachments.map((attachment) =>
-				fetch(`${this.url}/rest/api/2/issue/${existing.key}/attachments`, {
-					method: 'POST',
-					body: (attachment.path && fs.createReadStream(attachment.path)) || attachment.body,
-					headers: {
-						'Content-Type': 'application/json',
-						'Authorization': `Basic ${this.apiKey}`,
-					},
-				}),
+		console.log(
+			'attachments',
+			await Promise.all(
+				result.attachments.map((attachment) =>
+					fetch(`${this.url}/rest/api/2/issue/${existing.key}/attachments`, {
+						method: 'POST',
+						body: (attachment.path && fs.createReadStream(attachment.path)) || attachment.body,
+						headers: {
+							'Content-Type': 'application/json',
+							'Authorization': `Basic ${this.apiKey}`,
+						},
+					}).then((response) => response.json()),
+				),
 			),
 		);
 	}
