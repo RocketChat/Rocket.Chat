@@ -2,7 +2,6 @@ import type { ISetting, ISettingGroup, Optional, SettingValue } from '@rocket.ch
 import { isSettingEnterprise } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { ISettingsModel } from '@rocket.chat/model-typings';
-import { type ModifyResult } from 'mongodb';
 import { isEqual } from 'underscore';
 
 import { SystemLogger } from '../../../server/lib/logger/system';
@@ -150,51 +149,34 @@ export class SettingsRegistry {
 
 		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
 
+		const { _id: _, ...settingProps } = settingFromCodeOverwritten;
+
 		if (settingStored && !compareSettings(settingStored, settingFromCodeOverwritten)) {
 			const { value: _value, ...settingOverwrittenProps } = settingFromCodeOverwritten;
 
 			const overwrittenKeys = Object.keys(settingFromCodeOverwritten);
 			const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
-			const updatedProps = {
-				...settingOverwrittenProps,
-				...(settingStoredOverwritten &&
-					settingStored.value !== settingStoredOverwritten.value && { value: settingStoredOverwritten.value }),
-			};
+			const updatedProps = (() => {
+				return {
+					...settingOverwrittenProps,
+					...(settingStoredOverwritten &&
+						settingStored.value !== settingStoredOverwritten.value && { value: settingStoredOverwritten.value }),
+				};
+			})();
 
-			if (!('value' in updatedProps)) {
-				// cache can only update if value changes
-				await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
-				return;
-			}
-
-			const { value: settingForCache } = await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
-
-			if (!settingForCache) {
-				// unreachable
-				throw new Error('No document returned after setting was updated due to metadata change, something is wrong with code');
-			}
-
-			this.store.set(settingForCache);
-
+			await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
+			this.store.set(settingFromCodeOverwritten);
 			return;
 		}
-
-		const { _id: _, ...settingProps } = settingFromCodeOverwritten;
 
 		if (settingStored && isOverwritten) {
 			if (settingStored.value !== settingFromCodeOverwritten.value) {
 				const overwrittenKeys = Object.keys(settingFromCodeOverwritten);
 				const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
-				const { value: settingForCache } = await this.saveUpdatedSetting(_id, settingProps, removedKeys);
-
-				if (!settingForCache) {
-					// unreachable
-					throw new Error('No document returned due to an OVERWRITE, something is wrong with the code');
-				}
-
-				this.store.set(settingForCache);
+				await this.saveUpdatedSetting(_id, settingProps, removedKeys);
+				this.store.set(settingFromCodeOverwritten);
 			}
 			return;
 		}
@@ -289,8 +271,8 @@ export class SettingsRegistry {
 		_id: string,
 		settingProps: Omit<Optional<ISetting, 'value'>, '_id'>,
 		removedKeys?: string[],
-	): Promise<ModifyResult<ISetting>> {
-		return this.model.findOneAndUpdate(
+	): Promise<void> {
+		await this.model.updateOne(
 			{ _id },
 			{
 				$set: settingProps,
@@ -298,7 +280,7 @@ export class SettingsRegistry {
 					$unset: removedKeys.reduce((unset, key) => ({ ...unset, [key]: 1 }), {}),
 				}),
 			},
-			{ upsert: true, returnDocument: 'after' },
+			{ upsert: true },
 		);
 	}
 }

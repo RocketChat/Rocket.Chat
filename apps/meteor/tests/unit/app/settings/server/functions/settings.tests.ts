@@ -17,6 +17,7 @@ describe('Settings', () => {
 		Settings.insertCalls = 0;
 		Settings.upsertCalls = 0;
 		process.env = {};
+		Settings.setDelay(0);
 	});
 
 	it('should not insert the same setting twice', async () => {
@@ -569,5 +570,20 @@ describe('Settings', () => {
 				}, settings.getConfig({ debounce: 10 }).debounce);
 			}, settings.getConfig({ debounce: 10 }).debounce);
 		});
+	});
+
+	it('should update the stored value on setting change', async () => {
+		Settings.setDelay(10);
+		process.env[`OVERWRITE_SETTING_${testSetting._id}`] = 'false';
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+
+		settings.set(testSetting);
+		settings.initialized();
+
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
+
+		expect(settings.get(testSetting._id)).to.be.equal(false);
 	});
 });
