@@ -205,7 +205,7 @@ ${this.run_url}
 			'attachments',
 			await Promise.all(
 				result.attachments.map((attachment) =>
-					fetch(`${this.url}/rest/api/2/issue/${existing.key}/attachments`, {
+					fetch(`${this.url}/rest/api/2/issue/${issue}/attachments`, {
 						method: 'POST',
 						body: (attachment.path && fs.createReadStream(attachment.path)) || attachment.body,
 						headers: {
