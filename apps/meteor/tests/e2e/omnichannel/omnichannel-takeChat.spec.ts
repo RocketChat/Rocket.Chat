@@ -1,6 +1,6 @@
-import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
@@ -46,10 +46,7 @@ test.describe('omnichannel-takeChat', () => {
 	test.beforeEach('start a new livechat chat', async ({ page, api }) => {
 		await agent.poHomeChannel.sidenav.switchStatus('online');
 
-		newVisitor = {
-			name: `${faker.person.firstName()} ${faker.string.uuid()}`,
-			email: faker.internet.email(),
-		};
+		newVisitor = createFakeVisitor();
 
 		poLiveChat = new OmnichannelLiveChat(page, api);
 
