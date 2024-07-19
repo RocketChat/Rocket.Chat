@@ -640,7 +640,7 @@ class LivechatClass {
 			// eslint-disable-next-line no-nested-ternary
 			const messageContent = messageType
 				? `<i>${
-						messageType.render
+						messageType?.render
 							? messageType.render(message)
 							: i18n.t(messageType.message, messageType.data ? messageType.data(message) : {})
 				  }</i>`
