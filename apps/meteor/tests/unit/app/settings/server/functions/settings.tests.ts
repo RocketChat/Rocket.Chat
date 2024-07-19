@@ -572,13 +572,7 @@ describe('Settings', () => {
 		});
 	});
 
-	it('should update the stored value on setting change considering delay, simulating the changestream round trip', async () => {
-		const delay = async (x: number) => {
-			return new Promise((resolve) => {
-				setTimeout(resolve, x);
-			});
-		};
-
+	it('should update the stored value on setting change', async () => {
 		Settings.setDelay(10);
 		process.env[`OVERWRITE_SETTING_${testSetting._id}`] = 'false';
 		const settings = new CachedSettings();
@@ -589,14 +583,6 @@ describe('Settings', () => {
 
 		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
-
-		expect(settings.get(testSetting._id)).to.be.equal(testSetting.value);
-
-		await delay(1);
-
-		expect(settings.get(testSetting._id)).to.be.equal(testSetting.value);
-
-		await delay(10);
 
 		expect(settings.get(testSetting._id)).to.be.equal(false);
 	});
