@@ -3,7 +3,7 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
-import { before, after, describe, it } from 'mocha';
+import { before, after, afterEach, describe, it } from 'mocha';
 import moment from 'moment';
 import type { Response } from 'supertest';
 
@@ -880,6 +880,108 @@ describe('LIVECHAT - dashboards', function () {
 
 			await deleteVisitor(visitor.token);
 			await closeOmnichannelRoom(room._id);
+		});
+	});
+
+	(IS_EE ? describe : describe.skip)('[livechat/analytics/agent-overview] - Best first response time', () => {
+		let agent: { credentials: Credentials; user: IUser & { username: string } };
+		let originalBestFirstResponseTimeInSeconds: number;
+		let roomId: string;
+		let visitorToken: string;
+
+		before(async () => {
+			agent = await createAnOnlineAgent();
+		});
+
+		after(() => deleteUser(agent.user));
+
+		afterEach(() => Promise.all([deleteVisitor(visitorToken), closeOmnichannelRoom(roomId)]));
+
+		it('should return no best response time for an agent if no response has been sent in the period', async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomId = response.room._id;
+			visitorToken = response.visitor.token;
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Best_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+			expect(result.body.data).to.not.deep.include({ name: agent.user.username });
+		});
+
+		it('should only consider a first response has been sent when an agent sends a text message', async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomId = response.room._id;
+			visitorToken = response.visitor.token;
+
+			const delayInS = 4;
+			await sleep(delayInS * 1000);
+
+			await sendAgentMessage(roomId, agent.credentials);
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Best_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+
+			const agentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
+			);
+			expect(agentData).to.not.be.undefined;
+			expect(agentData).to.have.property('name', agent.user.username);
+			expect(agentData).to.have.property('value');
+			originalBestFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			expect(originalBestFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(delayInS);
+		});
+
+		it('should correctly calculate the best first response time for an agent and there are multiple first responses in the period', async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomId = response.room._id;
+			visitorToken = response.visitor.token;
+
+			const delayInS = 6;
+			await sleep(delayInS * 1000);
+
+			await sendAgentMessage(roomId, agent.credentials);
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Best_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+
+			const agentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
+			);
+			expect(agentData).to.not.be.undefined;
+			expect(agentData).to.have.property('name', agent.user.username);
+			expect(agentData).to.have.property('value');
+			const bestFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			expect(bestFirstResponseTimeInSeconds).to.be.equal(originalBestFirstResponseTimeInSeconds);
 		});
 	});
 
