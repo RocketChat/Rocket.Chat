@@ -9,8 +9,8 @@ import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { callbacks } from '../../../lib/callbacks';
+import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { i18n } from '../../lib/i18n';
-import { broadcastMessageFromData } from '../../modules/watchers/lib/messages';
 import { inboxes } from './EmailInbox';
 import type { Inbox } from './EmailInbox';
 import { logger } from './logger';
@@ -69,9 +69,9 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 		.sendMail({
 			from: inbox.config.senderInfo
 				? {
-						name: inbox.config.senderInfo,
-						address: inbox.config.email,
-				  }
+					name: inbox.config.senderInfo,
+					address: inbox.config.email,
+				}
 				: inbox.config.email,
 			...mail,
 		})
@@ -171,7 +171,7 @@ slashCommands.add({
 				},
 			},
 		);
-		void broadcastMessageFromData({
+		void notifyOnMessageChange({
 			id: message._id,
 		});
 

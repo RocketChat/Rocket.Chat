@@ -15,8 +15,8 @@ import { FileUpload } from '../../../app/file-upload/server';
 import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../app/settings/server';
+import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { i18n } from '../../lib/i18n';
-import { broadcastMessageFromData } from '../../modules/watchers/lib/messages';
 import { logger } from './logger';
 
 type FileAttachment = VideoAttachmentProps & ImageAttachmentProps & AudioAttachmentProps;
@@ -132,14 +132,14 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	// TODO: html => md with turndown
 	const msg = email.html
 		? stripHtml(email.html, {
-				dumpLinkHrefsNearby: {
-					enabled: true,
-					putOnNewLine: false,
-					wrapHeads: '(',
-					wrapTails: ')',
-				},
-				skipHtmlDecoding: false,
-		  }).result
+			dumpLinkHrefsNearby: {
+				enabled: true,
+				putOnNewLine: false,
+				wrapHeads: '(',
+				wrapTails: ')',
+			},
+			skipHtmlDecoding: false,
+		}).result
 		: email.text || '';
 
 	const rid = room?._id ?? Random.id();
@@ -234,7 +234,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 				},
 			);
 			room && (await LivechatRooms.updateEmailThreadByRoomId(room._id, thread));
-			void broadcastMessageFromData({
+			void notifyOnMessageChange({
 				id: msgId,
 			});
 		})

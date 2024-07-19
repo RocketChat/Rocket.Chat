@@ -44,12 +44,12 @@ import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
 import { callbacks } from '../../../lib/callbacks';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
+import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { i18n } from '../../lib/i18n';
 import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatibleWithVideoConfRinging';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
-import { broadcastMessageFromData } from '../../modules/watchers/lib/messages';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -328,7 +328,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			const text = i18n.t('video_livechat_missed', { username: name });
 			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(text)]);
 
-			await broadcastMessageFromData({
+			await notifyOnMessageChange({
 				id: call.messages.started,
 			});
 		}

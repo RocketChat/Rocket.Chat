@@ -7,11 +7,11 @@ import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
+import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
-import { broadcastMessageFromData } from '../../modules/watchers/lib/messages';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
 import { BeforeSaveCheckMAC } from './hooks/BeforeSaveCheckMAC';
 import { BeforeSaveJumpToMessage } from './hooks/BeforeSaveJumpToMessage';
@@ -121,7 +121,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			Rooms.incMsgCountById(rid, 1),
 		]);
 
-		void broadcastMessageFromData({
+		void notifyOnMessageChange({
 			id: result.insertedId,
 		});
 
@@ -169,9 +169,9 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	private getMarkdownConfig() {
 		const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
 			? settings
-					.get<string>('Message_CustomDomain_AutoLink')
-					.split(',')
-					.map((domain) => domain.trim())
+				.get<string>('Message_CustomDomain_AutoLink')
+				.split(',')
+				.map((domain) => domain.trim())
 			: [];
 
 		return {
