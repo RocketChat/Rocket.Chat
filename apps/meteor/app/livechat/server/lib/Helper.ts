@@ -144,7 +144,7 @@ export const createLivechatRoom = async <
 
 	// TODO: replace with `Message.saveSystemMessage`
 
-	await Message.saveSystemMessage(guest, { t: 'livechat-started', msg: '', groupable: false, token: room.v?.token }, room);
+	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false, token: guest.token }, room);
 
 	return result.value as IOmnichannelRoom;
 };
