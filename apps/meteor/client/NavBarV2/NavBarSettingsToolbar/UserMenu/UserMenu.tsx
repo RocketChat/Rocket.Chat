@@ -1,5 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ComponentProps } from 'react';
 import React, { memo, useState } from 'react';
 
 import GenericMenu from '../../../components/GenericMenu/GenericMenu';
@@ -8,9 +9,9 @@ import { useHandleMenuAction } from '../../../components/GenericMenu/hooks/useHa
 import UserMenuButton from './UserMenuButton';
 import { useUserMenu } from './hooks/useUserMenu';
 
-type UserMenuProps = { user: IUser; className?: string };
+type UserMenuProps = { user: IUser } & Omit<ComponentProps<typeof GenericMenu>, 'sections' | 'items' | 'title'>;
 
-const UserMenu = function UserMenu({ user }: UserMenuProps) {
+const UserMenu = function UserMenu({ user, ...props }: UserMenuProps) {
 	const t = useTranslation();
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -21,6 +22,7 @@ const UserMenu = function UserMenu({ user }: UserMenuProps) {
 
 	return (
 		<GenericMenu
+			{...props}
 			is={UserMenuButton}
 			placement='bottom-end'
 			selectionMode='multiple'
