@@ -1,5 +1,4 @@
-import { faker } from '@faker-js/faker';
-
+import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
@@ -7,10 +6,7 @@ import { OmnichannelLiveChat, OmnichannelSettings } from '../page-objects';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
-const visitor = {
-	name: `${faker.person.firstName()} ${faker.string.uuid()}}`,
-	email: faker.internet.email(),
-};
+const visitor = createFakeVisitor();
 
 test.skip(!IS_EE, 'Enterprise Only');
 
@@ -33,6 +29,10 @@ test.describe('OC - Livechat - Hide watermark', async () => {
 		const { page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false);
 
 		poLiveChat = new OmnichannelLiveChat(livechatPage, api);
+	});
+
+	test.afterEach(async () => {
+		await poLiveChat.page.close();
 	});
 
 	test.beforeEach(async ({ page }) => {
