@@ -362,7 +362,6 @@ describe('LIVECHAT - rooms', () => {
 			expect(body.rooms.every((room: IOmnichannelRoom) => room.open)).to.be.true;
 			expect(body.rooms.every((room: IOmnichannelRoom) => !room.servedBy)).to.be.true;
 			expect(body.rooms.find((froom: IOmnichannelRoom) => froom._id === room._id)).to.be.not.undefined;
-
 		});
 		it('should return open rooms when `open` is param is passed. Open rooms should not include queued conversations', async () => {
 			const visitor = await createVisitor();
