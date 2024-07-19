@@ -648,7 +648,12 @@ class LivechatClass {
 			const messageType = isSystemMessage && MessageTypes.getType(message);
 
 			let messageContent = messageType
-				? `<i>${i18n.t(messageType.message, messageType.data ? messageType.data(message) : {})}</i>`
+				? `<i>${i18n.t(
+						messageType.message,
+						messageType.data
+							? { ...messageType.data(message), interpolation: { escapeValue: false } }
+							: { interpolation: { escapeValue: false } },
+				  )}</i>`
 				: message.msg;
 
 			let filesHTML = '';
