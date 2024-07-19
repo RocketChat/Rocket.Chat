@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import type { Scrollable } from '@rocket.chat/fuselage';
 import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
@@ -26,17 +25,7 @@ const PageScrollableContent = forwardRef<HTMLElement, PageScrollableContentProps
 			borderBlockEndColor={borderBlockEndColor}
 		>
 			<CustomScrollbars onScroll={onScrollContent as CustomScrollbarsProps['onScroll']} ref={ref}>
-				<Box
-					className={css`
-						transform: translateZ(0);
-					`}
-					height='100%'
-					paddingBlock={16}
-					paddingInline={24}
-					display='flex'
-					flexDirection='column'
-					{...props}
-				/>
+				<Box paddingBlock={16} paddingInline={24} display='flex' flexDirection='column' {...props} />
 			</CustomScrollbars>
 		</Box>
 	);
