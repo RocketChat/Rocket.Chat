@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
@@ -10,14 +11,11 @@ test.describe.serial('OC - Livechat Triggers', () => {
 	let triggersName: string;
 	let triggerMessage: string;
 	let poLiveChat: OmnichannelLiveChat;
-	let newUser: { email: string; name: string };
+	let newVisitor: { email: string; name: string };
 	let agent: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 
 	test.beforeAll(async ({ api, browser }) => {
-		newUser = {
-			name: faker.person.firstName(),
-			email: faker.internet.email(),
-		};
+		newVisitor = createFakeVisitor();
 		triggersName = faker.string.uuid();
 		triggerMessage = 'This is a trigger message';
 		const requests = await Promise.all([
@@ -57,7 +55,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 
 		await test.step('expect to register visitor', async () => {
 			await expect(poLiveChat.btnChatNow).not.toBeVisible();
-			await poLiveChat.sendMessage(newUser, false);
+			await poLiveChat.sendMessage(newVisitor, false);
 		});
 
 		await test.step('expect send a message as a visitor', async () => {
@@ -99,7 +97,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 
 		await test.step('expect to register visitor', async () => {
 			await poLiveChat.btnChatNow.click();
-			await poLiveChat.sendMessage(newUser, false);
+			await poLiveChat.sendMessage(newVisitor, false);
 		});
 
 		await test.step('expect trigger message after registration', async () => {
@@ -139,7 +137,7 @@ test.describe.serial('OC - Livechat Triggers', () => {
 		});
 
 		await test.step('expect to register visitor', async () => {
-			await poLiveChat.sendMessage(newUser, false);
+			await poLiveChat.sendMessage(newVisitor, false);
 		});
 
 		await test.step('expect trigger message after registration', async () => {
