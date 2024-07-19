@@ -7,7 +7,7 @@ import type { GetMessagesOptions } from '@rocket.chat/apps-engine/server/bridges
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
-import type { FindOptions } from 'mongodb';
+import type { FindOptions, Sort } from 'mongodb';
 
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
@@ -108,12 +108,15 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getMessages(roomId: string, options: GetMessagesOptions, appId: string): Promise<IMessageRaw[]> {
 		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}" with options:`, options);
 
-		const { limit, skip = 0, sort } = options;
+		const { limit, skip = 0, sort: _sort } = options;
 
 		const messageConverter = this.orch.getConverters()?.get('messages');
 		if (!messageConverter) {
 			throw new Error('Message converter not found');
 		}
+
+		// We support only one field for now
+		const sort: Sort | undefined = _sort?.createdAt ? { ts: _sort.createdAt } : undefined;
 
 		const messageQueryOptions: FindOptions<ICoreMessage> = {
 			limit,
