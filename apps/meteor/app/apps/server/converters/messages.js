@@ -75,7 +75,7 @@ export class AppMessagesConverter {
 				}
 
 				// When the message contains token, means the message is from the visitor(omnichannel)
-				const user = await (isMessageFromVisitor(message)
+				const user = await (isMessageFromVisitor(msgObj)
 					? this.orch.getConverters().get('users').convertToApp(message.u)
 					: cache.get('user')(message.u._id));
 
