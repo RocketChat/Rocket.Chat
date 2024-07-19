@@ -4,7 +4,6 @@ import React, { useEffect, useCallback } from 'react';
 
 import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
-import { queryClient } from '../../../lib/queryClient';
 import ContextualBarRouter from './ContextualBarRouter';
 import CallTab from './calls/CallTab';
 import ChatTab from './chats/ChatTab';
@@ -35,8 +34,6 @@ const OmnichannelDirectoryPage = () => {
 
 	const handleTabClick = useCallback((tab) => router.navigate({ name: 'omnichannel-directory', params: { tab } }), [router]);
 
-	const chatReload = () => queryClient.invalidateQueries({ queryKey: ['current-chats'] });
-
 	return (
 		<Page flexDirection='row'>
 			<Page>
@@ -46,7 +43,7 @@ const OmnichannelDirectoryPage = () => {
 						{t('Contacts')}
 					</Tabs.Item>
 					<Tabs.Item selected={tab === 'chats'} onClick={() => handleTabClick('chats')}>
-						{t('Chats' as any /* TODO: this is going to change to Conversations */)}
+						{t('Chats')}
 					</Tabs.Item>
 					<Tabs.Item selected={tab === 'calls'} onClick={() => handleTabClick('calls')}>
 						{t('Calls')}
@@ -60,7 +57,7 @@ const OmnichannelDirectoryPage = () => {
 			</Page>
 			{context && (
 				<ContextualbarDialog>
-					<ContextualBarRouter chatReload={chatReload} />
+					<ContextualBarRouter />
 				</ContextualbarDialog>
 			)}
 		</Page>
