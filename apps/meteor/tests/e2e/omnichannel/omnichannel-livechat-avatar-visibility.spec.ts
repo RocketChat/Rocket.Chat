@@ -1,6 +1,6 @@
-import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChatEmbedded } from '../page-objects';
@@ -14,11 +14,6 @@ declare const window: Window & {
 		};
 	};
 };
-
-const createVisitor = () => ({
-	name: `${faker.person.firstName()} ${faker.string.uuid()}`,
-	email: faker.internet.email(),
-});
 
 test.use({ storageState: Users.user1.state });
 
@@ -49,7 +44,7 @@ test.describe('OC - Livechat - Avatar visibility', async () => {
 	});
 
 	test.afterEach(async ({ page }) => {
-		await poAuxContext.page?.close();
+		await poAuxContext.page.close();
 		await page.close();
 	});
 
@@ -58,7 +53,7 @@ test.describe('OC - Livechat - Avatar visibility', async () => {
 	});
 
 	test('OC - Livechat - Change avatar visibility', async () => {
-		const visitor = createVisitor();
+		const visitor = createFakeVisitor();
 
 		await test.step('should initiate Livechat conversation', async () => {
 			await poLiveChat.openLiveChat();
