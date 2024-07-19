@@ -326,13 +326,6 @@ class LivechatClass {
 
 		this.logger.debug(`DB updated for room ${room._id}`);
 
-		const message = {
-			t: 'livechat-close',
-			msg: comment,
-			groupable: false,
-			transcriptRequested: !!transcriptRequest,
-		};
-
 		// Retrieve the closed room
 		const newRoom = await LivechatRooms.findOneById(rid);
 
@@ -341,7 +334,17 @@ class LivechatClass {
 		}
 
 		this.logger.debug(`Sending closing message to room ${room._id}`);
-		await sendMessage(chatCloser, message, newRoom);
+		await sendMessage(
+			chatCloser,
+			{
+				t: 'livechat-close',
+				msg: comment,
+				groupable: false,
+				transcriptRequested: !!transcriptRequest,
+				...(isRoomClosedByVisitorParams(params) && { token: params.visitor.token }),
+			},
+			newRoom,
+		);
 
 		await Message.saveSystemMessage('command', rid, 'promptTranscript', closeData.closedBy);
 
