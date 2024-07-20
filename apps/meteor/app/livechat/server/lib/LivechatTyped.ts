@@ -23,7 +23,8 @@ import type {
 	LivechatDepartmentDTO,
 	OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
-import { ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, UserStatus, isFileAttachment, isFileImageAttachment, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
 import {
 	LivechatDepartment,
@@ -37,6 +38,7 @@ import {
 	ReadReceipts,
 	Rooms,
 	LivechatCustomField,
+	Uploads,
 } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
@@ -613,6 +615,7 @@ class LivechatClass {
 			'livechat-started',
 			'livechat_video_call',
 		];
+		const acceptableImageMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
 		const messages = await Messages.findVisibleByRoomIdNotContainingTypesBeforeTs(
 			rid,
 			ignoredMessageTypes,
@@ -623,7 +626,14 @@ class LivechatClass {
 		);
 
 		let html = '<div> <hr>';
-		await messages.forEach((message) => {
+		const InvalidFileMessage = `<div style="background-color: ${colors.n100}; text-align: center; border-color: ${
+			colors.n250
+		}; border-width: 1px; border-style: solid; border-radius: 4px; padding-top: 8px; padding-bottom: 8px; margin-top: 4px;">${i18n.t(
+			'This_attachment_is_not_supported',
+			{ lng: userLanguage },
+		)}</div>`;
+
+		for await (const message of messages) {
 			let author;
 			if (message.u._id === visitor._id) {
 				author = i18n.t('You', { lng: userLanguage });
@@ -631,13 +641,60 @@ class LivechatClass {
 				author = showAgentInfo ? message.u.name || message.u.username : i18n.t('Agent', { lng: userLanguage });
 			}
 
+			let messageContent = message.msg;
+			let filesHTML = '';
+
+			if (message.attachments && message.attachments?.length > 0) {
+				messageContent = message.attachments[0].description || '';
+
+				for await (const attachment of message.attachments) {
+					if (!isFileAttachment(attachment)) {
+						// ignore other types of attachments
+						continue;
+					}
+
+					if (!isFileImageAttachment(attachment)) {
+						filesHTML += `<div>${attachment.title || ''}${InvalidFileMessage}</div>`;
+						continue;
+					}
+
+					if (!attachment.image_type || !acceptableImageMimeTypes.includes(attachment.image_type)) {
+						filesHTML += `<div>${attachment.title || ''}${InvalidFileMessage}</div>`;
+						continue;
+					}
+
+					// Image attachment can be rendered in email body
+					const file = message.files?.find((file) => file.name === attachment.title);
+
+					if (!file) {
+						filesHTML += `<div>${attachment.title || ''}${InvalidFileMessage}</div>`;
+						continue;
+					}
+
+					const uploadedFile = await Uploads.findOneById(file._id);
+
+					if (!uploadedFile) {
+						filesHTML += `<div>${file.name}${InvalidFileMessage}</div>`;
+						continue;
+					}
+
+					const uploadedFileBuffer = await FileUpload.getBuffer(uploadedFile);
+					filesHTML += `<div styles="color: ${colors.n700}; margin-top: 4px; flex-direction: "column";"><p>${file.name}</p><img src="data:${
+						attachment.image_type
+					};base64,${uploadedFileBuffer.toString(
+						'base64',
+					)}" style="width: 400px; max-height: 240px; object-fit: contain; object-position: 0;"/></div>`;
+				}
+			}
+
 			const datetime = moment.tz(message.ts, timezone).locale(userLanguage).format('LLL');
 			const singleMessage = `
 				<p><strong>${author}</strong>  <em>${datetime}</em></p>
-				<p>${message.msg}</p>
+				<p>${messageContent}</p>
+				<p>${filesHTML}</p>
 			`;
 			html += singleMessage;
-		});
+		}
 
 		html = `${html}</div>`;
 
