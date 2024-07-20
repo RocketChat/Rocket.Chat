@@ -69,6 +69,7 @@ export class MockedAppRootBuilder {
 		navigate: () => undefined,
 		subscribeToRouteChange: () => () => undefined,
 		subscribeToRoutesChange: () => () => undefined,
+		getRoomRoute: () => ({ path: '/' }),
 	};
 
 	private settings: Mutable<ContextType<typeof SettingsContext>> = {
