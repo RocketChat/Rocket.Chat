@@ -208,6 +208,7 @@ export class LDAPManager {
 				logger.debug(`Wrong password for ${escapedUsername}`);
 				throw new Error('Invalid user or wrong password');
 			}
+			await ldap.forceBindDN();
 
 			if (settings.get<boolean>('LDAP_Find_User_After_Login')) {
 				// Do a search as the user and check if they have any result
