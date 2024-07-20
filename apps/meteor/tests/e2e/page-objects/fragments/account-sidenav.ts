@@ -7,11 +7,15 @@ export class AccountSidenav {
 		this.page = page;
 	}
 
-	get linkTokens(): Locator {
+	get tokensLink(): Locator {
 		return this.page.locator('.flex-nav [href="/account/tokens"]');
 	}
 
-	get linkSecurity(): Locator {
+	get securityLink(): Locator {
 		return this.page.locator('.flex-nav [href="/account/security"]');
+	}
+
+	get closeButton(): Locator {
+		return this.page.locator('role=navigation >> role=button[name=Close]');
 	}
 }

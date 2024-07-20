@@ -1,37 +1,33 @@
 import { faker } from '@faker-js/faker';
-import type { Page } from '@playwright/test';
 
 import { BASE_API_URL } from './config/constants';
-import { createAuxContext } from './fixtures/createAuxContext';
 import injectInitialData from './fixtures/inject-initial-data';
 import { Users, storeState, restoreState } from './fixtures/userStates';
-import { AccountProfile, HomeChannel } from './page-objects';
+import { Registration, HomeChannel } from './page-objects';
+import { AccountSecurityPage } from './page-objects/account/security';
+import { setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
+test.beforeAll(async ({ api }) => {
+	await setSettingValueById(api, 'E2E_Enable', true);
+});
+
+test.afterAll(async ({ api }) => {
+	await setSettingValueById(api, 'E2E_Enable', false);
+});
+
 test.describe.serial('e2e-encryption initial setup', () => {
-	let poAccountProfile: AccountProfile;
+	let accountSecurityPage: AccountSecurityPage;
 	let poHomeChannel: HomeChannel;
-	let password: string;
+	let initialE2EEKeyPassword: string;
 
 	test.beforeEach(async ({ page }) => {
-		poAccountProfile = new AccountProfile(page);
+		accountSecurityPage = new AccountSecurityPage(page);
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/account/security');
-	});
-
-	test.beforeAll(async ({ api }) => {
-		const statusCode = (await api.post('/settings/E2E_Enable', { value: true })).status();
-
-		expect(statusCode).toBe(200);
-	});
-
-	test.afterAll(async ({ api }) => {
-		const statusCode = (await api.post('/settings/E2E_Enable', { value: false })).status();
-
-		expect(statusCode).toBe(200);
+		await accountSecurityPage.goto();
 	});
 
 	test.afterEach(async ({ api }) => {
@@ -41,106 +37,108 @@ test.describe.serial('e2e-encryption initial setup', () => {
 	test("expect reset user's e2e encryption key", async ({ page }) => {
 		// Reset key to start the flow from the beginning
 		// It will execute a logout
-		await poAccountProfile.securityE2EEncryptionSection.click();
-		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
+		await accountSecurityPage.e2ee.toggleButton.click();
+		await accountSecurityPage.e2ee.resetE2EKeyButton.click();
 
-		await page.locator('role=button[name="Login"]').waitFor();
+		// Logged out
+		const loginPage = new Registration(page);
+		await loginPage.btnLogin.waitFor();
 
 		await injectInitialData();
 
 		// Login again, check the banner to save the generated password and test it
 		await restoreState(page, Users.admin);
 
-		await page.locator('role=banner >> text="Save your encryption password"').click();
+		await page.locator('role=banner').locator('text="Save your encryption password"').click();
 
-		password = (await page.evaluate(() => localStorage.getItem('e2e.randomPassword'))) || 'undefined';
+		initialE2EEKeyPassword = (await page.evaluate(() => localStorage.getItem('e2e.randomPassword'))) || 'undefined';
 
-		await expect(page.locator('#modal-root')).toContainText(password);
+		await expect(page.locator('#modal-root')).toContainText(initialE2EEKeyPassword);
 
-		await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary').click();
+		await page.locator('#modal-root').locator('.rcx-button-group--align-end .rcx-button--primary').click();
 
-		await expect(page.locator('role=banner >> text="Save your encryption password"')).not.toBeVisible();
+		await expect(page.locator('role=banner').locator('text="Save your encryption password"')).not.toBeVisible();
 
 		await poHomeChannel.sidenav.logout();
 
-		await page.locator('role=button[name="Login"]').waitFor();
+		await loginPage.btnLogin.waitFor();
 
 		await injectInitialData();
 
 		await restoreState(page, Users.admin);
 
-		await page.locator('role=banner >> text="Enter your E2E password"').click();
+		await page.locator('role=banner').locator('text="Enter your E2E password"').click();
 
-		await page.locator('#modal-root input').fill(password);
+		await page.locator('#modal-root').locator('input').fill(initialE2EEKeyPassword);
 
-		await page.locator('#modal-root .rcx-button--primary').click();
+		await page.locator('#modal-root').locator('.rcx-button--primary').click();
 
-		await expect(page.locator('role=banner >> text="Enter your E2E password"')).not.toBeVisible();
+		await expect(page.locator('role=banner').locator('text="Enter your E2E password"')).not.toBeVisible();
 
 		await storeState(page, Users.admin);
 	});
 
 	test('expect change the e2ee password', async ({ page }) => {
-		// Change the password to a new one and test it
-		const newPassword = 'new password';
+		const finalE2EEKeyPassword = faker.internet.password();
 
 		await restoreState(page, Users.admin);
 
-		await poAccountProfile.securityE2EEncryptionSection.click();
-		await poAccountProfile.securityE2EEncryptionPassword.click();
-		await poAccountProfile.securityE2EEncryptionPassword.fill(newPassword);
-		await poAccountProfile.securityE2EEncryptionPasswordConfirmation.fill(newPassword);
-		await poAccountProfile.securityE2EEncryptionSavePasswordButton.click();
+		await accountSecurityPage.e2ee.toggleButton.click();
+		await accountSecurityPage.e2ee.newEncryptionPasswordField.click();
+		await accountSecurityPage.e2ee.newEncryptionPasswordField.fill(finalE2EEKeyPassword);
+		await accountSecurityPage.e2ee.confirmNewEncryptionPasswordField.fill(finalE2EEKeyPassword);
+		await accountSecurityPage.saveChangesButton.click();
 
-		await poAccountProfile.btnClose.click();
+		await accountSecurityPage.sidenav.closeButton.click();
 
 		await poHomeChannel.sidenav.logout();
 
-		await page.locator('role=button[name="Login"]').waitFor();
+		const loginPage = new Registration(page);
+		await loginPage.btnLogin.waitFor();
 
 		await injectInitialData();
 
 		await restoreState(page, Users.admin, { except: ['public_key', 'private_key'] });
 
-		await page.locator('role=banner >> text="Enter your E2E password"').click();
+		await page.locator('role=banner').locator('text="Enter your E2E password"').click();
 
-		await page.locator('#modal-root input').fill(password);
+		await page.locator('#modal-root').locator('input').fill(initialE2EEKeyPassword);
 
-		await page.locator('#modal-root .rcx-button--primary').click();
+		await page.locator('#modal-root').locator('.rcx-button--primary').click();
 
-		await page.locator('role=banner >> text="Wasn\'t possible to decode your encryption key to be imported."').click();
+		await page.locator('role=banner').locator('text="Wasn\'t possible to decode your encryption key to be imported."').click();
 
-		await page.locator('#modal-root input').fill(newPassword);
+		await page.locator('#modal-root').locator('input').fill(finalE2EEKeyPassword);
 
-		await page.locator('#modal-root .rcx-button--primary').click();
+		await page.locator('#modal-root').locator('.rcx-button--primary').click();
 
-		await expect(page.locator('role=banner >> text="Wasn\'t possible to decode your encryption key to be imported."')).not.toBeVisible();
-		await expect(page.locator('role=banner >> text="Enter your E2E password"')).not.toBeVisible();
+		await expect(
+			page.locator('role=banner').locator('text="Wasn\'t possible to decode your encryption key to be imported."'),
+		).not.toBeVisible();
+		await expect(page.locator('role=banner').locator('text="Enter your E2E password"')).not.toBeVisible();
 	});
 });
 
 test.describe.serial('e2e-encryption', () => {
-	let poHomeChannel: HomeChannel;
-
-	test.beforeEach(async ({ page, api }) => {
-		const statusCode = (await api.post('/settings/E2E_Enable', { value: true })).status();
-
-		expect(statusCode).toBe(200);
-
-		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
-	});
+	test.use({ storageState: Users.userE2EE.state });
 
 	test.beforeAll(async ({ api }) => {
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true })).status()).toBe(200);
 	});
 
 	test.afterAll(async ({ api }) => {
-		expect((await api.post('/settings/E2E_Enable', { value: false })).status()).toBe(200);
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
 	});
 
-	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
+	let poHomeChannel: HomeChannel;
+
+	test.beforeEach(async ({ page }) => {
+		poHomeChannel = new HomeChannel(page);
+
+		await page.goto('/home');
+	});
+
+	test('expect create a private channel encrypted and send an encrypted message', async ({ page, api }) => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
@@ -178,9 +176,12 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world encrypted again');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		const rid = await page.evaluate(() => document.querySelector<HTMLDivElement>('[data-qa-rc-room]')?.dataset.qaRcRoom);
+		await api.post('/rooms.delete', { roomId: rid });
 	});
 
-	test('expect create a private encrypted channel and send a encrypted thread message', async ({ page }) => {
+	test('expect create a private encrypted channel and send a encrypted thread message', async ({ page, api }) => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
@@ -212,9 +213,15 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.lastUserMessage).toContainText('This is an encrypted thread message also sent in channel');
 		await expect(poHomeChannel.content.mainThreadMessageText).toContainText('This is the thread main message.');
 		await expect(poHomeChannel.content.mainThreadMessageText.locator('.rcx-icon--name-key')).toBeVisible();
+
+		const rid = await page.evaluate(() => document.querySelector<HTMLDivElement>('[data-qa-rc-room]')?.dataset.qaRcRoom);
+		await api.post('/rooms.delete', { roomId: rid });
 	});
 
-	test('expect create a private encrypted channel and check disabled message menu actions on an encrypted message', async ({ page }) => {
+	test('expect create a private encrypted channel and check disabled message menu actions on an encrypted message', async ({
+		page,
+		api,
+	}) => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
@@ -237,6 +244,9 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(page.locator('role=menuitem[name="Reply in direct message"]')).toHaveClass(/disabled/);
 		await expect(page.locator('role=menuitem[name="Copy link"]')).toHaveClass(/disabled/);
+
+		const rid = await page.evaluate(() => document.querySelector<HTMLDivElement>('[data-qa-rc-room]')?.dataset.qaRcRoom);
+		await api.post('/rooms.delete', { roomId: rid });
 	});
 
 	test('expect create a private channel, encrypt it and send an encrypted message', async ({ page }) => {
@@ -263,6 +273,10 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		await poHomeChannel.tabs.btnRoomInfo.click();
+		await poHomeChannel.tabs.room.btnDelete.click();
+		await page.locator('#modal-root').getByRole('button', { name: 'Yes, delete' }).click();
 	});
 
 	test('should encrypted field be available on edit room', async ({ page }) => {
@@ -284,7 +298,7 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.tabs.room.checkboxEncrypted).toBeVisible();
 	});
 
-	test('expect create a Direct message, encrypt it and attempt to enable OTR', async ({ page }) => {
+	test('expect create a Direct message, encrypt it and attempt to enable OTR', async ({ page, api }) => {
 		await poHomeChannel.sidenav.openNewByLabel('Direct message');
 		await poHomeChannel.sidenav.inputDirectUsername.click();
 		await page.keyboard.type('user2');
@@ -292,7 +306,7 @@ test.describe.serial('e2e-encryption', () => {
 		await page.keyboard.press('Enter');
 		await poHomeChannel.sidenav.btnCreate.click();
 
-		await expect(page).toHaveURL(`/direct/rocketchat.internal.admin.testuser2`);
+		await expect(page).toHaveURL('/direct/user2userE2EE');
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await expect(poHomeChannel.tabs.btnEnableE2E).toBeVisible();
@@ -308,9 +322,12 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.tabs.btnEnableOTR.click({ force: true });
 
 		await expect(page.getByText('OTR not available')).toBeVisible();
+
+		const rid = await page.evaluate(() => document.querySelector<HTMLDivElement>('[data-qa-rc-room]')?.dataset.qaRcRoom);
+		await api.post('/rooms.delete', { roomId: rid });
 	});
 
-	test('expect placeholder text in place of encrypted message, when E2EE is not setup', async ({ page }) => {
+	test('expect placeholder text in place of encrypted message, when E2EE is not setup', async ({ page, api }) => {
 		const channelName = faker.string.uuid();
 
 		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
@@ -332,7 +349,7 @@ test.describe.serial('e2e-encryption', () => {
 		// Login again
 		await page.locator('role=button[name="Login"]').waitFor();
 		await injectInitialData();
-		await restoreState(page, Users.admin, { except: ['private_key', 'public_key'] });
+		await restoreState(page, Users.userE2EE, { except: ['private_key', 'public_key'] });
 
 		await poHomeChannel.sidenav.openChat(channelName);
 
@@ -342,6 +359,9 @@ test.describe.serial('e2e-encryption', () => {
 			'This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.',
 		);
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+
+		const rid = await page.evaluate(() => document.querySelector<HTMLDivElement>('[data-qa-rc-room]')?.dataset.qaRcRoom);
+		await api.post('/rooms.delete', { roomId: rid });
 	});
 
 	test('expect placeholder text in place of encrypted file description, when E2EE is not setup', async ({ page }) => {
@@ -372,9 +392,10 @@ test.describe.serial('e2e-encryption', () => {
 		await poHomeChannel.sidenav.logout();
 
 		// Login again
-		await page.locator('role=button[name="Login"]').waitFor();
+		const loginPage = new Registration(page);
+		await loginPage.btnLogin.waitFor();
 		await injectInitialData();
-		await restoreState(page, Users.admin, { except: ['private_key', 'public_key'] });
+		await restoreState(page, Users.userE2EE, { except: ['private_key', 'public_key'] });
 
 		await poHomeChannel.sidenav.openChat(channelName);
 
@@ -518,7 +539,7 @@ test.describe.serial('e2e-encryption', () => {
 
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Pin"]').click();
-		await page.locator('#modal-root >> button:has-text("Yes, pin message")').click();
+		await page.locator('#modal-root').locator('button:has-text("Yes, pin message")').click();
 
 		await poHomeChannel.tabs.kebab.click();
 		await poHomeChannel.tabs.btnPinnedMessagesList.click();
@@ -538,80 +559,47 @@ test.describe.serial('e2e-encryption', () => {
 			'This message should be pinned and stared.',
 		);
 	});
-
-	test.describe('reset keys', () => {
-		let anotherClientPage: Page;
-
-		test.beforeEach(async ({ browser }) => {
-			anotherClientPage = (await createAuxContext(browser, Users.admin)).page;
-		});
-
-		test.afterEach(async () => {
-			await anotherClientPage.close();
-		});
-		test.afterAll(async () => {
-			// inject initial data, so that tokens are restored after forced logout
-			await injectInitialData();
-		});
-
-		test('expect force logout on e2e keys reset', async ({ page }) => {
-			const poAccountProfile = new AccountProfile(page);
-			// creating another logged in client, to check force logout
-
-			await page.goto('/account/security');
-
-			await poAccountProfile.securityE2EEncryptionSection.click();
-			await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
-
-			await expect(page.locator('role=button[name="Login"]')).toBeVisible();
-			await expect(anotherClientPage.locator('role=button[name="Login"]')).toBeVisible();
-
-			// await expect(page.locator('role=banner')).toContainText('Your session was ended on this device, please log in again to continue.');
-			// await expect(anotherClientPage.locator('role=banner')).toContainText(
-			// 	'Your session was ended on this device, please log in again to continue.',
-			// );
-		});
-	});
 });
 
 test.describe.serial('e2ee room setup', () => {
-	let poAccountProfile: AccountProfile;
+	let accountSecurityPage: AccountSecurityPage;
 	let poHomeChannel: HomeChannel;
 	let e2eePassword: string;
 
 	test.beforeEach(async ({ page }) => {
-		poAccountProfile = new AccountProfile(page);
+		accountSecurityPage = new AccountSecurityPage(page);
 		poHomeChannel = new HomeChannel(page);
 	});
 
 	test.beforeAll(async ({ api }) => {
-		expect((await api.post('/settings/E2E_Enable', { value: true })).status()).toBe(200);
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
 	});
 
 	test.afterAll(async ({ api }) => {
-		expect((await api.post('/settings/E2E_Enable', { value: false })).status()).toBe(200);
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
 	});
 
 	test('expect save password state on encrypted room', async ({ page }) => {
-		await page.goto('/account/security');
-		await poAccountProfile.securityE2EEncryptionSection.click();
-		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
+		await accountSecurityPage.goto();
 
-		await page.locator('role=button[name="Login"]').waitFor();
+		await accountSecurityPage.e2ee.toggleButton.click();
+		await accountSecurityPage.e2ee.resetE2EKeyButton.click();
+
+		const loginPage = new Registration(page);
+
+		await loginPage.btnLogin.waitFor();
 
 		await page.reload();
 
-		await page.locator('role=button[name="Login"]').waitFor();
+		await loginPage.btnLogin.waitFor();
 
 		await injectInitialData();
 		await restoreState(page, Users.admin);
 
 		await page.goto('/home');
 
-		await page.locator('role=banner >> text="Save your encryption password"').waitFor();
-		await expect(page.locator('role=banner >> text="Save your encryption password"')).toBeVisible();
+		await page.locator('role=banner').locator('text="Save your encryption password"').waitFor();
+		await expect(page.locator('role=banner').locator('text="Save your encryption password"')).toBeVisible();
 
 		const channelName = faker.string.uuid();
 
@@ -644,7 +632,7 @@ test.describe.serial('e2ee room setup', () => {
 		await expect(page.locator('role=dialog[name="Save your encryption password"]')).toBeVisible();
 		await expect(page.locator('#modal-root')).toContainText(e2eePassword);
 
-		await page.locator('#modal-root >> button:has-text("I saved my password")').click();
+		await page.locator('#modal-root').locator('button:has-text("I saved my password")').click();
 
 		await poHomeChannel.content.inputMessage.waitFor();
 
@@ -682,7 +670,7 @@ test.describe.serial('e2ee room setup', () => {
 
 		await page.locator('role=button[name="Enter your E2E password"]').waitFor();
 
-		await expect(page.locator('role=banner >> text="Enter your E2E password"')).toBeVisible();
+		await expect(page.locator('role=banner').locator('text="Enter your E2E password"')).toBeVisible();
 
 		await poHomeChannel.tabs.btnE2EERoomSetupDisableE2E.waitFor();
 		await expect(poHomeChannel.tabs.btnE2EERoomSetupDisableE2E).toBeVisible();
@@ -697,7 +685,7 @@ test.describe.serial('e2ee room setup', () => {
 
 		await page.locator('#modal-root .rcx-button--primary').click();
 
-		await expect(page.locator('role=banner >> text="Enter your E2E password"')).not.toBeVisible();
+		await expect(page.locator('role=banner').locator('text="Enter your E2E password"')).not.toBeVisible();
 
 		await poHomeChannel.content.inputMessage.waitFor();
 		// For E2EE to complete init setup
@@ -735,10 +723,10 @@ test.describe.serial('e2ee room setup', () => {
 		await poHomeChannel.sidenav.userProfileMenu.click();
 		await poHomeChannel.sidenav.accountProfileOption.click();
 
-		await page.locator('role=navigation >> a:has-text("Security")').click();
+		await page.locator('role=navigation').locator('a:has-text("Security")').click();
 
-		await poAccountProfile.securityE2EEncryptionSection.click();
-		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
+		await accountSecurityPage.e2ee.toggleButton.click();
+		await accountSecurityPage.e2ee.resetE2EKeyButton.click();
 
 		await page.locator('role=button[name="Login"]').waitFor();
 
@@ -749,12 +737,12 @@ test.describe.serial('e2ee room setup', () => {
 		await injectInitialData();
 		await restoreState(page, Users.admin);
 
-		await page.locator('role=navigation >> role=button[name=Search]').click();
-		await page.locator('role=search >> role=searchbox').fill(channelName);
-		await page.locator(`role=search >> role=listbox >> role=link >> text="${channelName}"`).click();
+		await page.locator('role=navigation').locator('role=button[name=Search]').click();
+		await page.locator('role=search').locator('role=searchbox').fill(channelName);
+		await page.locator('role=search').locator('role=listbox').locator('role=link').locator(`text="${channelName}"`).click();
 
 		await page.locator('role=button[name="Save E2EE password"]').click();
-		await page.locator('#modal-root >> button:has-text("I saved my password")').click();
+		await page.locator('#modal-root').locator('button:has-text("I saved my password")').click();
 
 		await expect(poHomeChannel.content.inputMessage).not.toBeVisible();
 		await expect(page.locator('.rcx-states__title')).toContainText('Check back later');
@@ -776,12 +764,10 @@ test.describe.serial('e2ee support legacy formats', () => {
 	});
 
 	test.beforeAll(async ({ api }) => {
-		expect((await api.post('/settings/E2E_Enable', { value: true })).status()).toBe(200);
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
 	});
 
 	test.afterAll(async ({ api }) => {
-		expect((await api.post('/settings/E2E_Enable', { value: false })).status()).toBe(200);
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
 	});
 

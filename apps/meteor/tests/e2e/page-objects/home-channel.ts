@@ -4,16 +4,13 @@ import { expect } from '../utils/test';
 import { HomeContent, HomeSidenav, HomeFlextab } from './fragments';
 
 export class HomeChannel {
-	public readonly page: Page;
-
 	readonly content: HomeContent;
 
 	readonly sidenav: HomeSidenav;
 
 	readonly tabs: HomeFlextab;
 
-	constructor(page: Page) {
-		this.page = page;
+	constructor(readonly page: Page) {
 		this.content = new HomeContent(page);
 		this.sidenav = new HomeSidenav(page);
 		this.tabs = new HomeFlextab(page);
@@ -37,7 +34,7 @@ export class HomeChannel {
 
 	async dismissToast() {
 		// this is a workaround for when the toast is blocking the click of the button
-		await this.toastSuccess.locator('button >> i.rcx-icon--name-cross.rcx-icon').click();
+		await this.toastSuccess.locator('button >> i.rcx-icon--name-cross.rcx-icon').click({ force: true });
 		await this.page.mouse.move(0, 0);
 	}
 
