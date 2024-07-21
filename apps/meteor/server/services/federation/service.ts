@@ -1,6 +1,5 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IFederationService } from '@rocket.chat/core-services';
-import { MatrixBridgedUser } from '@rocket.chat/models';
 
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
 import type { FederationUserServiceSender } from './application/user/sender/UserServiceSender';
@@ -240,12 +239,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		return this.bridge.verifyInviteeIds(matrixIds);
 	}
 
-	protected async deactivateRemoteUser(userId: string) {
-		const remoteUserId = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
-		if (!remoteUserId) {
-			return;
-		}
-
+	protected async deactivateRemoteUser(remoteUserId: string) {
 		return this.bridge.deactivateUser(remoteUserId);
 	}
 }

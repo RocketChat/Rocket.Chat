@@ -51,7 +51,7 @@ Meteor.methods<ServerMethods>({
 
 			const federation = (await License.hasValidLicense()) ? FederationEE : Federation;
 
-			await federation.deactivateRemoteUser(externalUid);
+			await federation.deactivateRemoteUser(remoteUser);
 		}
 
 		await setUserActiveStatus(userId, active, confirmRelinquish);
