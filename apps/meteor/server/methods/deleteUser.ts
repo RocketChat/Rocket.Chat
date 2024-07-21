@@ -58,10 +58,13 @@ Meteor.methods<ServerMethods>({
 		const remoteUser = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
 
 		if (remoteUser) {
-			throw new Meteor.Error('error-cannot-delete-user-who-federated', 'User participated in federation, this user can only be deactivated permanently',
+			throw new Meteor.Error(
+				'error-cannot-delete-user-who-federated',
+				'User participated in federation, this user can only be deactivated permanently',
 				{
 					method: 'deleteUser',
-				});
+				},
+			);
 		}
 
 		await deleteUser(userId, confirmRelinquish, uid);
