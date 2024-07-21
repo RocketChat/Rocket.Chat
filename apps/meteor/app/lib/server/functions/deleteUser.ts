@@ -1,4 +1,4 @@
-import { api } from '@rocket.chat/core-services';
+import { api, Federation, FederationEE, License } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import {
 	Integrations,
@@ -151,6 +151,10 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 			});
 		}
 	}
+
+	const federation = (await License.hasValidLicense()) ? FederationEE : Federation;
+
+	await federation.deactivateRemoteUser(userId);
 
 	// Remove user from users database
 	await Users.removeById(userId);

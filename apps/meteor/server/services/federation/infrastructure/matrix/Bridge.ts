@@ -754,6 +754,9 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public async deactivateUser(uid: string) {
-		return this.bridgeInstance.getIntent(uid).matrixClient.doRequest('POST', '/_matrix/client/v3/account/deactivate', { erase: true }, {});
+		const resp = await this.bridgeInstance.getIntent().matrixClient.doRequest('POST', '/_matrix/client/v3/account/deactivate', { user_id: uid }, { erase: true })
+		if (!resp.is_server_unbind_result) {
+			throw new Error('Failed to deactivate matrix user');
+		}
 	}
 }

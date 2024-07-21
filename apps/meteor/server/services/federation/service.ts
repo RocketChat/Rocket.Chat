@@ -352,4 +352,8 @@ export class FederationService extends AbstractBaseFederationService implements 
 	public async created(): Promise<void> {
 		return super.created();
 	}
+
+	protected async deactivateRemoteUser(userId: string) {
+		return super.deactivateRemoteUser(userId);
+	}
 }

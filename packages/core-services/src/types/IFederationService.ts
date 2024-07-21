@@ -4,6 +4,8 @@ export interface IFederationService {
 	createDirectMessageRoomAndInviteUser(internalInviterId: string, internalRoomId: string, externalInviteeId: string): Promise<void>;
 
 	verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>>;
+
+	deactivateRemoteUser(userId: string): Promise<void>;
 }
 
 export interface IFederationJoinExternalPublicRoomInput {
