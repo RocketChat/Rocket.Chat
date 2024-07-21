@@ -1,4 +1,4 @@
-import { api, Federation, FederationEE, License } from '@rocket.chat/core-services';
+import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import {
 	Integrations,
@@ -12,7 +12,6 @@ import {
 	ReadReceipts,
 	LivechatUnitMonitors,
 	ModerationReports,
-	MatrixBridgedUser,
 } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -152,12 +151,6 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 			});
 		}
 	}
-
-	const federation = (await License.hasValidLicense()) ? FederationEE : Federation;
-
-	await federation.deactivateRemoteUser(userId);
-
-	await MatrixBridgedUser.removeExternalUserByLocalUserId(userId);
 
 	// Remove user from users database
 	await Users.removeById(userId);

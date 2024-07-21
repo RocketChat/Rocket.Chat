@@ -63,6 +63,12 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		if (user.federated) {
+			throw new Meteor.Error('error-cannot-delete-federated-user', 'Deleting federated user is not allowed', {
+				method: 'deleteUser',
+			});
+		}
+
 		await deleteUser(uid, confirmRelinquish);
 
 		// App IPostUserDeleted event hook
