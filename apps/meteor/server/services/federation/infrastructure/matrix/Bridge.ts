@@ -754,9 +754,13 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public async deactivateUser(uid: string) {
+		/*
+		 * https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3accountdeactivate
+		 * Using { erase: false } since rocket.chat side on deactivation we do not delete anything.
+		 */
 		const resp = await this.bridgeInstance
 			.getIntent()
-			.matrixClient.doRequest('POST', '/_matrix/client/v3/account/deactivate', { user_id: uid }, { erase: true });
+			.matrixClient.doRequest('POST', '/_matrix/client/v3/account/deactivate', { user_id: uid }, { erase: false });
 		if (resp.id_server_unbind_result !== 'success') {
 			throw new Error('Failed to deactivate matrix user');
 		}
