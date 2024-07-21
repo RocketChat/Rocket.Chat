@@ -42,7 +42,7 @@ Meteor.methods<ServerMethods>({
 			);
 		}
 
-		const remoteUser = await MatrixBridgedUser.getExternalUserIdByLocalUserId(uid);
+		const remoteUser = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
 
 		if (remoteUser) {
 			throw new Meteor.Error('error-not-allowed', 'User is participating in federation, deactivation is not allowed',
