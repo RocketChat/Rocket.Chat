@@ -12,6 +12,7 @@ import {
 	ReadReceipts,
 	LivechatUnitMonitors,
 	ModerationReports,
+	MatrixBridgedUser,
 } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -155,6 +156,8 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 	const federation = (await License.hasValidLicense()) ? FederationEE : Federation;
 
 	await federation.deactivateRemoteUser(userId);
+
+	await MatrixBridgedUser.removeExternalUserByLocalUserId(userId);
 
 	// Remove user from users database
 	await Users.removeById(userId);

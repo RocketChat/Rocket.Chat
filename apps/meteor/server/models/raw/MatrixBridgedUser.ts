@@ -57,4 +57,8 @@ export class MatrixBridgedUserRaw extends BaseRaw<IMatrixBridgedUser> implements
 			{ upsert: true },
 		);
 	}
+
+	async removeExternalUserByLocalUserId(userId: string) {
+		return this.deleteOne({ uid: userId })
+	}
 }

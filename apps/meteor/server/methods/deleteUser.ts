@@ -1,6 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { Users, MatrixBridgedUser } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -46,6 +46,12 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without admins is not allowed', {
 				method: 'deleteUser',
 				action: 'Remove_last_admin',
+			});
+		}
+
+		if (user.federated) {
+			throw new Meteor.Error('error-cannot-delete-federated-user', 'Deleting federated user is not allowed', {
+				method: 'deleteUser',
 			});
 		}
 
