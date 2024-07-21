@@ -1,6 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Users, MatrixBridgedUser } from '@rocket.chat/models';
+import { Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -47,24 +47,6 @@ Meteor.methods<ServerMethods>({
 				method: 'deleteUser',
 				action: 'Remove_last_admin',
 			});
-		}
-
-		if (user.federated) {
-			throw new Meteor.Error('error-cannot-delete-federated-user', 'Deleting federated user is not allowed', {
-				method: 'deleteUser',
-			});
-		}
-
-		const remoteUser = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
-
-		if (remoteUser) {
-			throw new Meteor.Error(
-				'error-cannot-delete-user-who-federated',
-				'User participated in federation, this user can only be deactivated permanently',
-				{
-					method: 'deleteUser',
-				},
-			);
 		}
 
 		await deleteUser(userId, confirmRelinquish, uid);
