@@ -5,6 +5,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage, type IMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
+import { cachedFunction } from './cachedFunction';
 import { transformMappedData } from './transformMappedData';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -17,24 +18,6 @@ interface Orchestrator {
 		convertToApp: IAppUsersConverter['convertToApp'];
 	};
 }
-
-const cachedFunction = <F extends (...args: any[]) => any>(fn: F) => {
-	const cache = new Map<string, unknown>();
-
-	return ((...args) => {
-		const cacheKey = JSON.stringify(args);
-
-		if (cache.has(cacheKey)) {
-			return cache.get(cacheKey) as ReturnType<F>;
-		}
-
-		const result = fn(...args);
-
-		cache.set(cacheKey, result);
-
-		return result;
-	}) as F;
-};
 
 export class AppThreadsConverter implements IAppThreadsConverter {
 	constructor(
