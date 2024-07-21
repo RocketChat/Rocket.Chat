@@ -216,7 +216,7 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 		return super.stopped();
 	}
 
-	protected async deactivateRemoteUser(userId: string) {
+	async deactivateRemoteUser(userId: string) {
 		return super.deactivateRemoteUser(userId);
 	}
 }

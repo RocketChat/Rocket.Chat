@@ -246,7 +246,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			return;
 		}
 
-		await this.bridge.deactivateUser(remoteUserId);
+		return this.bridge.deactivateUser(remoteUserId);
 	}
 }
 
@@ -353,7 +353,7 @@ export class FederationService extends AbstractBaseFederationService implements 
 		return super.created();
 	}
 
-	protected async deactivateRemoteUser(userId: string) {
+	public async deactivateRemoteUser(userId: string) {
 		return super.deactivateRemoteUser(userId);
 	}
 }
