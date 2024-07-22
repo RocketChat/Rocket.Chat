@@ -11,12 +11,12 @@ type Image = {
 	};
 };
 
-export type PreviewBlockBase = {
+export type PreviewBlockBase = LayoutBlockish<{
 	type: `${LayoutBlockType.PREVIEW}`;
 	title: TextObject[];
 	description: TextObject[];
 	footer?: ContextBlock;
-};
+}>;
 
 export type PreviewBlockWithThumb = PreviewBlockBase & {
 	thumb: Image;
@@ -29,7 +29,7 @@ export type PreviewBlockWithPreview = PreviewBlockBase & {
 	thumb: undefined;
 };
 
-export type PreviewBlock = LayoutBlockish<PreviewBlockBase | PreviewBlockWithThumb | PreviewBlockWithPreview>;
+export type PreviewBlock = PreviewBlockBase | PreviewBlockWithThumb | PreviewBlockWithPreview;
 
 export const isPreviewBlockWithThumb = (previewBlock: PreviewBlock): previewBlock is PreviewBlockWithThumb => 'thumb' in previewBlock;
 

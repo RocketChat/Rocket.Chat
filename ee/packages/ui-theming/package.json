@@ -1,10 +1,10 @@
 {
 	"name": "@rocket.chat/ui-theming",
-	"version": "0.1.2",
+	"version": "0.2.0",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.54.3",
+		"@rocket.chat/fuselage": "^0.56.0",
 		"@rocket.chat/fuselage-hooks": "^0.33.1",
 		"@rocket.chat/icons": "^0.36.0",
 		"@rocket.chat/ui-contexts": "workspace:~",

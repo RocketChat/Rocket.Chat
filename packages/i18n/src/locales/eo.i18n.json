@@ -283,7 +283,7 @@
   "API_EmbedCacheExpirationDays": "Envalidigi Cache-Finiĝajn Tagojn",
   "API_Enable_CORS": "Ebligu CORS",
   "API_Enable_Direct_Message_History_EndPoint": "Ebligu Rektan Mesaĝan Historion Endpoint",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Ĉi tio ebligas la `/ api / v1 / im.history.others`, kiu permesas la vidadon de rektaj mesaĝoj senditaj de aliaj uzantoj, kiujn la alvokanto ne estas parto de.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Ĉi tio ebligas la `/ api / v1 / im.messages.others`, kiu permesas la vidadon de rektaj mesaĝoj senditaj de aliaj uzantoj, kiujn la alvokanto ne estas parto de.",
   "API_Enable_Shields": "Ebligi Ŝildojn",
   "API_Enable_Shields_Description": "Ebligu ŝildojn haveblajn ĉe `/ api / v1 / shield.svg`",
   "API_GitHub_Enterprise_URL": "Servilo URL",
