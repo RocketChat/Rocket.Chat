@@ -1,3 +1,5 @@
+import type { Page } from '@playwright/test';
+
 import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
@@ -43,14 +45,22 @@ test.describe.serial('read-receipts', () => {
 			await setSettingValueById(api, 'Message_Read_Receipt_Store_Users', false);
 		});
 
+		let auxContext: { page: Page; poHomeChannel: HomeChannel } | undefined;
+
+		test.afterEach(async () => {
+			if (auxContext) {
+				await auxContext.page.close();
+			}
+			auxContext = undefined;
+		});
+
 		test('should show read receipts message sent status in the sent message', async ({ browser }) => {
 			const { page } = await createAuxContext(browser, Users.user1);
-			const auxContext = { page, poHomeChannel: new HomeChannel(page) };
+			auxContext = { page, poHomeChannel: new HomeChannel(page) };
 			await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
 			await auxContext.poHomeChannel.content.sendMessage('hello admin');
 
 			await expect(auxContext.poHomeChannel.content.lastUserMessage.getByRole('status', { name: 'Message sent' })).toBeVisible();
-			await auxContext.page.close();
 		});
 
 		test('should show read receipts message viewed status in the sent message', async () => {
