@@ -1071,12 +1071,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.sendAllPushNotifications(call._id);
 	}
 
-	private async isPersistentChatEnabled(): Promise<boolean> {
+	private isPersistentChatEnabled(): boolean {
 		return settings.get<boolean>('VideoConf_Enable_Persistent_Chat') && settings.get<boolean>('Discussion_enabled');
 	}
 
 	private async maybeCreateDiscussion(callId: VideoConference['_id'], createdBy?: IUser): Promise<void> {
-		if (!(await this.isPersistentChatEnabled())) {
+		if (!this.isPersistentChatEnabled()) {
 			return;
 		}
 
@@ -1170,7 +1170,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		await VideoConferenceModel.setDiscussionRidById(callId, rid);
+		if (rid === undefined) {
+			await VideoConferenceModel.unsetDiscussionRidById(callId);
+		} else {
+			await VideoConferenceModel.setDiscussionRidById(callId, rid);
+		}
 
 		if (room) {
 			await Promise.all(call.users.map(({ _id }) => this.addUserToDiscussion(room._id, _id)));
