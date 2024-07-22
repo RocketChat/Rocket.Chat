@@ -101,6 +101,12 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				},
 				sparse: true,
 			},
+			{
+				key: {
+					lockedAt: 1,
+				},
+				sparse: true,
+			},
 		];
 	}
 
@@ -154,10 +160,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 						},
 					},
 					{
-						locked: false,
-					},
-					{
-						locked: { $exists: false },
+						locked: { $ne: true },
 					},
 				],
 			},
