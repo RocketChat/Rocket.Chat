@@ -184,13 +184,13 @@ test.describe.serial('Threads', () => {
 			await expect(page).toHaveURL(/.*thread/);
 			await expect(page.getByRole('dialog').locator('[data-qa-type="message"]')).toBeVisible();
 			await expect(page.locator('[name="msg"]').last()).toBeFocused();
-	
+
 			await page.locator('[name="msg"]').last().fill('message to be edited');
 			await page.keyboard.press('Enter');
-	
+
 			await page.keyboard.press('ArrowUp');
 			await expect(page.locator('[name="msg"]').last()).toHaveValue('message to be edited');
-			
+
 			await page.keyboard.press('Escape');
 			await expect(page.locator('[name="msg"]').last()).toHaveValue('');
 			await expect(page).toHaveURL(/.*thread/);

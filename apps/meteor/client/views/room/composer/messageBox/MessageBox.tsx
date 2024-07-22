@@ -18,8 +18,6 @@ import type {
 	ReactElement,
 	MouseEventHandler,
 	FormEvent,
-	KeyboardEventHandler,
-	KeyboardEvent,
 	ClipboardEventHandler,
 	MouseEvent,
 } from 'react';
@@ -61,7 +59,7 @@ const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 };
 
 const handleFormattingShortcut = (
-	event: KeyboardEvent<HTMLTextAreaElement>,
+	event: KeyboardEvent,
 	formattingButtons: FormattingButton[],
 	composer: ComposerAPI,
 ) => {
@@ -196,7 +194,7 @@ const MessageBox = ({
 		}
 	};
 
-	const handler: KeyboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
+	const handler = useMutableCallback((event: KeyboardEvent) => {
 		const { which: keyCode } = event;
 
 		const input = event.target as HTMLTextAreaElement;
@@ -358,11 +356,11 @@ const MessageBox = ({
 	});
 
 	const keyDownHandlerCallbackRef = useCallback(
-		(node: any) => {
+		(node: HTMLTextAreaElement) => {
 			if (node === null) {
 				return;
 			}
-			node.addEventListener('keydown', (e: KeyboardEvent<HTMLTextAreaElement>) => {
+			node.addEventListener('keydown', (e: KeyboardEvent) => {
 				handler(e);
 				return;
 			});
