@@ -1,4 +1,4 @@
-import { Settings } from '@rocket.chat/models';
+import { Settings, WorkspaceCredentials } from '@rocket.chat/models';
 
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
@@ -18,11 +18,16 @@ export async function removeWorkspaceRegistrationInfo() {
 		'Cloud_Workspace_PublicKey',
 		'Cloud_Workspace_Registration_Client_Uri',
 		'Show_Setup_Wizard',
+		'clearCredentials',
 	];
 
 	const promises = settingsIds.map((settingId) => {
 		if (settingId === 'Show_Setup_Wizard') {
 			return Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+		}
+
+		if (settingId === 'clearCredentials') {
+			return WorkspaceCredentials.removeAllCredentials();
 		}
 
 		return Settings.resetValueById(settingId, null);

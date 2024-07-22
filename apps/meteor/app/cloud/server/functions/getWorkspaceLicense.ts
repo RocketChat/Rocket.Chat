@@ -7,7 +7,6 @@ import { callbacks } from '../../../../lib/callbacks';
 import { CloudWorkspaceConnectionError } from '../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceLicenseError } from '../../../../lib/errors/CloudWorkspaceLicenseError';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { settings } from '../../../settings/server';
 import { LICENSE_VERSION } from '../license';
 import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 
@@ -23,7 +22,7 @@ const workspaceLicensePayloadSchema = v.object({
 const assertWorkspaceLicensePayload = compile(workspaceLicensePayloadSchema);
 
 const fetchCloudWorkspaceLicensePayload = async ({ token }: { token: string }): Promise<Serialized<Cloud.WorkspaceLicensePayload>> => {
-	const workspaceRegistrationClientUri = settings.get<string>('Cloud_Workspace_Registration_Client_Uri');
+	const workspaceRegistrationClientUri = await Settings.getValueById('Cloud_Workspace_Registration_Client_Uri');
 	const response = await fetch(`${workspaceRegistrationClientUri}/license`, {
 		headers: {
 			Authorization: `Bearer ${token}`,

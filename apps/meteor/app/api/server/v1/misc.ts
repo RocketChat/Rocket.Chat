@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
 import { isOAuthUser, type IUser } from '@rocket.chat/core-typings';
-import { Settings, Users } from '@rocket.chat/models';
+import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
 	isShieldSvgProps,
 	isSpotlightProps,
@@ -675,9 +675,8 @@ API.v1.addRoute(
 					'Cloud_Workspace_PublicKey',
 					'Cloud_Workspace_License',
 					'Cloud_Workspace_Had_Trial',
-					'Cloud_Workspace_Access_Token',
 					'uniqueID',
-					'Cloud_Workspace_Access_Token_Expires_At',
+					'unsetCredentials',
 				);
 			}
 
@@ -694,6 +693,10 @@ API.v1.addRoute(
 
 				if (settingId === 'Deployment_FingerPrint_Verified') {
 					return Settings.updateValueById('Deployment_FingerPrint_Verified', true);
+				}
+
+				if (settingId === 'unsetCredentials') {
+					return WorkspaceCredentials.unsetCredentialByScope('');
 				}
 
 				return Settings.resetValueById(settingId);
