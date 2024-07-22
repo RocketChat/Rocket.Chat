@@ -45,19 +45,19 @@ test.describe('OC - Chat transfers [Agent role]', () => {
 	});
 
 	// Make "user-1" online & "user-2" offline so that chat can be automatically routed to "user-1"
-	test.beforeEach(async () => {
+	test.beforeAll(async () => {
 		const [agentA, agentB] = sessions;
 		await agentA.poHomeOmnichannel.sidenav.switchStatus('online');
 		await agentB.poHomeOmnichannel.sidenav.switchStatus('offline');
 	});
 
 	// Close sessions
-	test.afterEach(async () => {
+	test.afterAll(async () => {
 		await Promise.all(sessions.map(({ page }) => page.close()));
 	});
 
 	// Start a new chat for each test
-	test.beforeEach(async ({ api }) => {
+	test.beforeAll(async ({ api }) => {
 		conversations = [await createConversation(api)];
 	});
 
