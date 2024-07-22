@@ -1,8 +1,8 @@
-import { WorkspaceCredentials } from '@rocket.chat/models';
-
 import { getWorkspaceAccessTokenWithScope } from './getWorkspaceAccessTokenWithScope';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+
 import type { IWorkspaceCredentials } from '@rocket.chat/core-typings';
+import { WorkspaceCredentials } from '@rocket.chat/models';
 
 const hasWorkspaceAccessTokenExpired = (credentials: IWorkspaceCredentials): boolean => new Date() >= credentials.expirationDate;
 

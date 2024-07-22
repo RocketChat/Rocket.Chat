@@ -5,7 +5,6 @@ import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListen
 import { settings } from '../../../settings/server';
 import { syncCloudData } from './syncWorkspace/syncCloudData';
 
-
 type SaveRegistrationDataDTO = {
 	workspaceId: string;
 	client_name: string;
@@ -62,7 +61,7 @@ async function saveRegistrationDataBase({
 
 	const promises = [
 		...settingsData.map(({ _id, value }) => Settings.updateValueById(_id, value)),
-		WorkspaceCredentials.updateCredentialByScope('', '', new Date(0))
+		WorkspaceCredentials.updateCredentialByScope('', '', new Date(0)),
 	];
 
 	(await Promise.all(promises)).forEach((value, index) => {
