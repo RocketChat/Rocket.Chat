@@ -460,7 +460,7 @@ export class AppsRestApi {
 					if (!workspaceIdSetting) {
 						return API.v1.failure('No workspace id found');
 					}
-	
+
 					const requester = {
 						id: this.user._id,
 						username: this.user.username,
