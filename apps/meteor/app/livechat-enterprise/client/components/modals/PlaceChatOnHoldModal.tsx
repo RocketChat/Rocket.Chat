@@ -1,6 +1,5 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React from 'react';
 
 type PlaceChatOnHoldModalProps = {
@@ -9,7 +8,7 @@ type PlaceChatOnHoldModalProps = {
 	onCancel: () => void;
 };
 
-const PlaceChatOnHoldModal: FC<PlaceChatOnHoldModalProps> = ({ onCancel, onOnHoldChat, confirm = onOnHoldChat, ...props }) => {
+const PlaceChatOnHoldModal = ({ onCancel, onOnHoldChat, confirm = onOnHoldChat, ...props }: PlaceChatOnHoldModalProps) => {
 	const t = useTranslation();
 
 	return (

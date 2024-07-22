@@ -1,14 +1,15 @@
 import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
-import type { FC } from 'react';
 
 import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
 import useDeactivateUserAction from '../hooks/useDeactivateUserAction';
 import useDismissUserAction from '../hooks/useDismissUserAction';
 import useResetAvatarAction from '../hooks/useResetAvatarAction';
 
-const UserContextFooter: FC<{ userId: string; deleted: boolean }> = ({ userId, deleted }) => {
+type UserContextFooterProps = { userId: string; deleted: boolean };
+
+const UserContextFooter = ({ userId, deleted }: UserContextFooterProps) => {
 	const t = useTranslation();
 
 	const dismissUserAction = useDismissUserAction(userId, true);
