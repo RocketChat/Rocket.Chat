@@ -123,7 +123,7 @@ Join [#support](https://open.rocket.chat/channel/support) and [#general](https:/
 
 # 👥 Contributions
 
-Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://developer.rocket.chat/contribute-to-rocket.chat/ways-to-contribute) page for more details.
+Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://developer.rocket.chat/docs/modes-of-contribution) page for more details.
 
 
 ## 💼 Become a Rocketeer
