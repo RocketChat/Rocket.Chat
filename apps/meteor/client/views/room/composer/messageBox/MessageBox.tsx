@@ -357,7 +357,20 @@ const MessageBox = ({
 		configurations: composerPopupConfig,
 	});
 
-	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef);
+	const keyDownHandlerCallbackRef = useCallback(
+		(node: any) => {
+			if (node === null) {
+				return;
+			}
+			node.addEventListener('keydown', (e: KeyboardEvent<HTMLTextAreaElement>) => {
+				handler(e);
+				return;
+			});
+		},
+		[handler],
+	);
+
+	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef, keyDownHandlerCallbackRef);
 
 	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
 
@@ -411,7 +424,6 @@ const MessageBox = ({
 					onChange={setTyping}
 					style={textAreaStyle}
 					placeholder={composerPlaceholder}
-					onKeyDown={handler}
 					onPaste={handlePaste}
 					aria-activedescendant={ariaActiveDescendant}
 				/>
