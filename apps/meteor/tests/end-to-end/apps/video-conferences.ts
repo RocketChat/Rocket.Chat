@@ -125,6 +125,7 @@ describe('Apps - Video Conferences', () => {
 						expect(res.body.capabilities).to.have.a.property('mic').equal(true);
 						expect(res.body.capabilities).to.have.a.property('cam').equal(false);
 						expect(res.body.capabilities).to.have.a.property('title').equal(true);
+						expect(res.body.capabilities).to.have.a.property('persistentChat').equal(false);
 					});
 			});
 		});
@@ -233,6 +234,46 @@ describe('Apps - Video Conferences', () => {
 						expect(res.body.data).to.have.a.property('callId').that.is.a('string');
 					});
 			});
+
+			it('should start a call successfully when using a provider that supports persistent chat', async () => {
+				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
+				await updateSetting('VideoConf_Enable_Persistent_Chat', true);
+
+				await request
+					.post(api('video-conference.start'))
+					.set(credentials)
+					.send({
+						roomId,
+					})
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(true);
+						expect(res.body.data).to.be.an('object');
+						expect(res.body.data).to.have.a.property('providerName').equal('persistentchat');
+						expect(res.body.data).to.have.a.property('type').equal('videoconference');
+						expect(res.body.data).to.have.a.property('callId').that.is.a('string');
+					});
+			});
+
+			it('should start a call successfully when using a provider that supports persistent chat with the feature disabled', async () => {
+				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
+				await updateSetting('VideoConf_Enable_Persistent_Chat', false);
+
+				await request
+					.post(api('video-conference.start'))
+					.set(credentials)
+					.send({
+						roomId,
+					})
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(true);
+						expect(res.body.data).to.be.an('object');
+						expect(res.body.data).to.have.a.property('providerName').equal('persistentchat');
+						expect(res.body.data).to.have.a.property('type').equal('videoconference');
+						expect(res.body.data).to.have.a.property('callId').that.is.a('string');
+					});
+			});
 		});
 
 		describe('[/video-conference.join]', () => {
@@ -284,48 +325,119 @@ describe('Apps - Video Conferences', () => {
 		});
 
 		describe('[/video-conference.info]', () => {
-			let callId: string | undefined;
+			describe('[basic provider]', () => {
+				let callId: string | undefined;
 
-			before(async () => {
-				await updateSetting('VideoConf_Default_Provider', 'test');
-				const res = await request.post(api('video-conference.start')).set(credentials).send({
-					roomId,
+				before(async () => {
+					await updateSetting('VideoConf_Default_Provider', 'test');
+					const res = await request.post(api('video-conference.start')).set(credentials).send({
+						roomId,
+					});
+
+					callId = res.body.data.callId;
 				});
 
-				callId = res.body.data.callId;
+				it('should load the video conference data successfully', async () => {
+					await request
+						.get(api('video-conference.info'))
+						.set(credentials)
+						.query({
+							callId,
+						})
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(true);
+							expect(res.body).to.have.a.property('providerName').equal('test');
+							expect(res.body).to.not.have.a.property('providerData');
+							expect(res.body).to.have.a.property('_id').equal(callId);
+							expect(res.body).to.have.a.property('url').equal(`test/videoconference/${callId}/${roomName}`);
+							expect(res.body).to.have.a.property('type').equal('videoconference');
+							expect(res.body).to.have.a.property('rid').equal(roomId);
+							expect(res.body).to.have.a.property('users').that.is.an('array').with.lengthOf(0);
+							expect(res.body).to.have.a.property('status').equal(1);
+							expect(res.body).to.have.a.property('title').equal(roomName);
+							expect(res.body).to.have.a.property('messages').that.is.an('object');
+							expect(res.body.messages).to.have.a.property('started').that.is.a('string');
+							expect(res.body).to.have.a.property('createdBy').that.is.an('object');
+							expect(res.body.createdBy).to.have.a.property('_id').equal(credentials['X-User-Id']);
+							expect(res.body.createdBy).to.have.a.property('username').equal(adminUsername);
+							expect(res.body).to.not.have.a.property('discussionRid');
+						});
+				});
 			});
 
-			it('should load the video conference data successfully', async () => {
-				await request
-					.get(api('video-conference.info'))
-					.set(credentials)
-					.query({
-						callId,
-					})
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body.success).to.be.equal(true);
-						expect(res.body).to.have.a.property('providerName').equal('test');
-						expect(res.body).to.not.have.a.property('providerData');
-						expect(res.body).to.have.a.property('_id').equal(callId);
-						expect(res.body).to.have.a.property('url').equal(`test/videoconference/${callId}/${roomName}`);
-						expect(res.body).to.have.a.property('type').equal('videoconference');
-						expect(res.body).to.have.a.property('rid').equal(roomId);
-						expect(res.body).to.have.a.property('users').that.is.an('array').with.lengthOf(0);
-						expect(res.body).to.have.a.property('status').equal(1);
-						expect(res.body).to.have.a.property('title').equal(roomName);
-						expect(res.body).to.have.a.property('messages').that.is.an('object');
-						expect(res.body.messages).to.have.a.property('started').that.is.a('string');
-						expect(res.body).to.have.a.property('createdBy').that.is.an('object');
-						expect(res.body.createdBy).to.have.a.property('_id').equal(credentials['X-User-Id']);
-						expect(res.body.createdBy).to.have.a.property('username').equal(adminUsername);
+			describe('[persistent chat provider]', () => {
+				let callId: string | undefined;
+
+				before(async () => {
+					await updateSetting('VideoConf_Default_Provider', 'persistentchat');
+					await updateSetting('VideoConf_Enable_Persistent_Chat', true);
+					const res = await request.post(api('video-conference.start')).set(credentials).send({
+						roomId,
 					});
+
+					callId = res.body.data.callId;
+				});
+
+				it('should include a discussion room id on the response', async () => {
+					await request
+						.get(api('video-conference.info'))
+						.set(credentials)
+						.query({
+							callId,
+						})
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(true);
+							expect(res.body).to.have.a.property('providerName').equal('persistentchat');
+							expect(res.body).to.not.have.a.property('providerData');
+							expect(res.body).to.have.a.property('_id').equal(callId);
+							expect(res.body).to.have.a.property('discussionRid').that.is.a('string');
+
+							const { discussionRid } = res.body;
+							expect(res.body).to.have.a.property('url').equal(`pchat/videoconference/${callId}/${discussionRid}`);
+						});
+				});
+			});
+
+			describe('[persistent chat provider with the feature disabled]', () => {
+				let callId: string | undefined;
+
+				before(async () => {
+					await updateSetting('VideoConf_Default_Provider', 'persistentchat');
+					await updateSetting('VideoConf_Enable_Persistent_Chat', false);
+					const res = await request.post(api('video-conference.start')).set(credentials).send({
+						roomId,
+					});
+
+					callId = res.body.data.callId;
+				});
+
+				it('should not include a discussion room id on the response', async () => {
+					await request
+						.get(api('video-conference.info'))
+						.set(credentials)
+						.query({
+							callId,
+						})
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body.success).to.be.equal(true);
+							expect(res.body).to.have.a.property('providerName').equal('persistentchat');
+							expect(res.body).to.not.have.a.property('providerData');
+							expect(res.body).to.have.a.property('_id').equal(callId);
+							expect(res.body).to.not.have.a.property('discussionRid');
+
+							expect(res.body).to.have.a.property('url').equal(`pchat/videoconference/${callId}/none`);
+						});
+				});
 			});
 		});
 
 		describe('[/video-conference.list]', () => {
 			let callId1: string | undefined;
 			let callId2: string | undefined;
+			let callId3: string | undefined;
 
 			before(async () => {
 				await updateSetting('VideoConf_Default_Provider', 'test');
@@ -334,11 +446,20 @@ describe('Apps - Video Conferences', () => {
 				});
 				callId1 = res.body.data.callId;
 
+				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
+				await updateSetting('VideoConf_Enable_Persistent_Chat', false);
 				const res2 = await request.post(api('video-conference.start')).set(credentials).send({
 					roomId,
 				});
 
 				callId2 = res2.body.data.callId;
+
+				await updateSetting('VideoConf_Enable_Persistent_Chat', true);
+				const res3 = await request.post(api('video-conference.start')).set(credentials).send({
+					roomId,
+				});
+
+				callId3 = res3.body.data.callId;
 			});
 
 			it('should load the list of video conferences sorted by new', async () => {
@@ -351,11 +472,12 @@ describe('Apps - Video Conferences', () => {
 					.expect(200)
 					.expect((res: Response) => {
 						expect(res.body.success).to.be.equal(true);
-						expect(res.body).to.have.a.property('count').that.is.greaterThanOrEqual(2);
+						expect(res.body).to.have.a.property('count').that.is.greaterThanOrEqual(3);
 						expect(res.body).to.have.a.property('data').that.is.an('array').with.lengthOf(res.body.count);
 
-						const call2 = res.body.data[0];
-						const call1 = res.body.data[1];
+						const call3 = res.body.data[0];
+						const call2 = res.body.data[1];
+						const call1 = res.body.data[2];
 
 						expect(call1).to.have.a.property('_id').equal(callId1);
 						expect(call1).to.have.a.property('url').equal(`test/videoconference/${callId1}/${roomName}`);
@@ -369,8 +491,13 @@ describe('Apps - Video Conferences', () => {
 						expect(call1).to.have.a.property('createdBy').that.is.an('object');
 						expect(call1.createdBy).to.have.a.property('_id').equal(credentials['X-User-Id']);
 						expect(call1.createdBy).to.have.a.property('username').equal(adminUsername);
+						expect(call1).to.not.have.a.property('discussionRid');
 
 						expect(call2).to.have.a.property('_id').equal(callId2);
+						expect(call2).to.not.have.a.property('discussionRid');
+
+						expect(call3).to.have.a.property('_id').equal(callId3);
+						expect(call3).to.have.a.property('discussionRid').that.is.a('string');
 					});
 			});
 		});
