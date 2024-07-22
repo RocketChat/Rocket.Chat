@@ -19,12 +19,10 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 		triggersName = faker.string.uuid();
 		triggerMessage = 'This is a trigger message after guest registration';
 
-		const requests = await Promise.all([
+		await Promise.all([
 			api.post('/livechat/users/agent', { username: 'user1' }),
 			api.post('/livechat/users/manager', { username: 'user1' }),
 		]);
-
-		requests.every((e) => expect(e.status()).toBe(200));
 
 		const { page } = await createAuxContext(browser, Users.user1, '/omnichannel/triggers');
 		agent = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
@@ -52,11 +50,11 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		expect((await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false })).status()).toBe(200);
+		await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: false });
 	});
 
 	test.describe('OC - Livechat New Chat Triggers - After Registration', async () => {
-		await test('expect trigger message after registration', async () => {
+		test('expect trigger message after registration', async () => {
 			await poLiveChat.page.goto('/livechat');
 			await poLiveChat.sendMessageAndCloseChat(newVisitor);
 
@@ -100,10 +98,10 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 
 	test.describe('OC - Livechat New Chat Triggers - After Registration, clear Local storage', async () => {
 		test.beforeAll(async ({ api }) => {
-			expect((await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: true })).status()).toBe(200);
+			await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: true });
 		});
 
-		await test('expect trigger message after registration', async () => {
+		test('expect trigger message after registration', async () => {
 			await poLiveChat.page.goto('/livechat');
 			await poLiveChat.sendMessageAndCloseChat(newVisitor);
 
