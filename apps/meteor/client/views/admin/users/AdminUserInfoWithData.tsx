@@ -1,4 +1,4 @@
-import type { IAdminUserTabs, IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useRolesDescription, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -14,11 +14,12 @@ import { UserInfo } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 import AdminUserInfoActions from './AdminUserInfoActions';
+import type { AdminUserTab } from './AdminUsersPage';
 
 type AdminUserInfoWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
-	tab: IAdminUserTabs;
+	tab: AdminUserTab;
 };
 
 const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProps): ReactElement => {

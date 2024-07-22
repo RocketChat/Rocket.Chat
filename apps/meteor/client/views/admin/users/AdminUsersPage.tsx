@@ -1,4 +1,4 @@
-import type { IAdminUserTabs, LicenseInfo } from '@rocket.chat/core-typings';
+import type { LicenseInfo } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Callout, ContextualbarIcon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
@@ -38,6 +38,8 @@ export type UsersFilters = {
 	roles: OptionProp[];
 };
 
+export type AdminUserTab = 'all' | 'active' | 'deactivated' | 'pending';
+
 export type UsersTableSortingOptions = 'name' | 'username' | 'emails.address' | 'status' | 'active';
 
 const AdminUsersPage = (): ReactElement => {
@@ -64,7 +66,7 @@ const AdminUsersPage = (): ReactElement => {
 	const paginationData = usePagination();
 	const sortData = useSort<UsersTableSortingOptions>('name');
 
-	const [tab, setTab] = useState<IAdminUserTabs>('all');
+	const [tab, setTab] = useState<AdminUserTab>('all');
 	const [userFilters, setUserFilters] = useState<UsersFilters>({ text: '', roles: [] });
 
 	const searchTerm = useDebouncedValue(userFilters.text, 500);
@@ -86,7 +88,7 @@ const AdminUsersPage = (): ReactElement => {
 		filteredUsersQueryResult?.refetch();
 	};
 
-	const handleTabChange = (tab: IAdminUserTabs) => {
+	const handleTabChange = (tab: AdminUserTab) => {
 		setTab(tab);
 
 		paginationData.setCurrent(0);

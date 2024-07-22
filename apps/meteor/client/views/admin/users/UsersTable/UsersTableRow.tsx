@@ -1,5 +1,5 @@
 import { UserStatus as Status } from '@rocket.chat/core-typings';
-import type { IAdminUserTabs, IRole, IUser, Serialized } from '@rocket.chat/core-typings';
+import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, Menu, Option } from '@rocket.chat/fuselage';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
@@ -10,6 +10,7 @@ import React, { useMemo } from 'react';
 import { Roles } from '../../../../../app/models/client';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { UserStatus } from '../../../../components/UserStatus';
+import type { AdminUserTab } from '../AdminUsersPage';
 import { useChangeAdminStatusAction } from '../hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from '../hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
@@ -23,7 +24,7 @@ type UsersTableRowProps = {
 	isMobile: boolean;
 	isLaptop: boolean;
 	onReload: () => void;
-	tab: IAdminUserTabs;
+	tab: AdminUserTab;
 	isSeatsCapExceeded: boolean;
 };
 
