@@ -67,6 +67,8 @@ const { sendTranscript } = p.noCallThru().load('../../../../../../app/livechat/s
 	'../../../mailer/server/api': { send: mailerMock },
 	'../../../settings/server': { settings: { get: settingsMock } },
 	'../../../utils/server/lib/getTimezone': { getTimezone: getTimezoneMock },
+	// TODO: add tests for file handling on transcripts
+	'../../../file-upload/server': { FileUpload: {} },
 });
 
 describe('Send transcript', () => {

@@ -1,3 +1,4 @@
+import type { RoomType, RoomRouteData } from '@rocket.chat/core-typings';
 import type {
 	RouterContextValue,
 	RouteName,
@@ -15,6 +16,7 @@ import type { ReactNode } from 'react';
 import React from 'react';
 
 import { appLayout } from '../lib/appLayout';
+import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { queueMicrotask } from '../lib/utils/queueMicrotask';
 
 const subscribers = new Set<() => void>();
@@ -195,6 +197,9 @@ export const router: RouterContextValue = {
 	defineRoutes,
 	getRoutes,
 	subscribeToRoutesChange,
+	getRoomRoute(roomType: RoomType, routeData: RoomRouteData) {
+		return { path: roomCoordinator.getRouteLink(roomType, routeData) || '/' };
+	},
 };
 
 type RouterProviderProps = {

@@ -11,9 +11,6 @@ export const Message = {
 	parse(msg: IMessage, language: string) {
 		const messageType = MessageTypes.getType(msg);
 		if (messageType) {
-			if (messageType.render) {
-				return messageType.render(msg);
-			}
 			if (messageType.template) {
 				// Render message
 				return;
