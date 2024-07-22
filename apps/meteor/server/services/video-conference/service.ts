@@ -78,7 +78,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				throw new Error('invalid-room');
 			}
 
-			const user = await Users.findOneById<IUser>(createdBy, {});
+			const user = await Users.findOneById<IUser>(createdBy);
 			if (!user) {
 				throw new Error('failed-to-load-own-data');
 			}
