@@ -17,16 +17,18 @@ const isAgentWithInfo = (agent: any): agent is Serialized<ILivechatAgent> => !ag
 const getNextAgentFromQueue = async () => {
 	const {
 		defaultAgent,
-		iframe: { guest: { department } = {} },
+		iframe: { defaultDepartment, guest: { department } = {} },
 	} = store.state;
 
 	if (defaultAgent?.ts && Date.now() - defaultAgent.ts < agentCacheExpiry) {
 		return defaultAgent; // cache valid for 1 hour
 	}
 
+	const dep = department || defaultDepartment;
+
 	let agent = null;
 	try {
-		const tempAgent = await Livechat.nextAgent({ department });
+		const tempAgent = await Livechat.nextAgent({ department: dep });
 
 		if (isAgentWithInfo(tempAgent?.agent)) {
 			agent = tempAgent.agent;
@@ -35,7 +37,7 @@ const getNextAgentFromQueue = async () => {
 		return Promise.reject(error);
 	}
 
-	store.setState({ defaultAgent: { ...agent, department, ts: Date.now() } as Agent });
+	store.setState({ defaultAgent: { ...agent, department: dep, ts: Date.now() } as Agent });
 
 	return agent;
 };
