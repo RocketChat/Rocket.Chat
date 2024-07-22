@@ -5,8 +5,6 @@ export type MessageType = {
 	id: MessageTypesValues;
 	system?: boolean;
 	/* deprecated */
-	render?: (message: IMessage) => string;
-	/* deprecated */
 	template?: (message: IMessage) => unknown;
 	message: TranslationKey;
 	data?: (message: IMessage) => Record<string, string>;
