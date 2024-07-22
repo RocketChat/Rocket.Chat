@@ -421,7 +421,7 @@ test.describe.serial('e2e-encryption', () => {
 		await expect(poHomeChannel.content.nthMessage(0)).toContainText(
 			'This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.',
 		);
-		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+		await expect(poHomeChannel.content.nthMessage(0).locator('.rcx-icon--name-key')).toBeVisible();
 	});
 
 	test('expect slash commands to be enabled in an e2ee room', async ({ page }) => {
