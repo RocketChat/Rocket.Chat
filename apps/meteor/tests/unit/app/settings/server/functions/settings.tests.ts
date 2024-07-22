@@ -3,13 +3,21 @@ import { beforeEach, describe, it } from 'mocha';
 
 import { CachedSettings } from '../../../../../../app/settings/server/CachedSettings';
 import { SettingsRegistry } from '../../../../../../app/settings/server/SettingsRegistry';
+import { getSettingDefaults } from '../../../../../../app/settings/server/functions/getSettingDefaults';
 import { Settings } from '../../../../../../app/settings/server/functions/settings.mocks';
+
+const testSetting = getSettingDefaults({
+	_id: 'my_dummy_setting',
+	type: 'string',
+	value: 'dummy',
+});
 
 describe('Settings', () => {
 	beforeEach(() => {
 		Settings.insertCalls = 0;
 		Settings.upsertCalls = 0;
 		process.env = {};
+		Settings.setDelay(0);
 	});
 
 	it('should not insert the same setting twice', async () => {
@@ -440,6 +448,67 @@ describe('Settings', () => {
 			.to.not.have.any.keys('section');
 	});
 
+	it('should ignore setting object from code if only value changes and setting already stored', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
+
+		expect(Settings.insertCalls).to.be.equal(1);
+		Settings.insertCalls = 0;
+
+		const settingFromCodeFaked = { ...testSetting, value: Date.now().toString() };
+
+		await settingsRegistry.add(settingFromCodeFaked._id, settingFromCodeFaked.value, settingFromCodeFaked);
+
+		expect(Settings.insertCalls).to.be.equal(0);
+		expect(Settings.upsertCalls).to.be.equal(0);
+	});
+
+	it('should ignore value from environment if setting is already stored', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
+
+		process.env[testSetting._id] = Date.now().toString();
+
+		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
+
+		expect(Settings.findOne({ _id: testSetting._id }).value).to.be.equal(testSetting.value);
+	});
+
+	it('should update setting cache synchronously if overwrite is available in enviornment', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		process.env[`OVERWRITE_SETTING_${testSetting._id}`] = Date.now().toString();
+
+		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
+
+		expect(settings.get(testSetting._id)).to.be.equal(process.env[`OVERWRITE_SETTING_${testSetting._id}`]);
+	});
+
+	it('should update cached value with OVERWRITE_SETTING value even if both with-prefixed and without-prefixed variables exist', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		process.env[`OVERWRITE_SETTING_${testSetting._id}`] = Date.now().toString();
+		process.env[testSetting._id] = Date.now().toString();
+
+		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
+
+		expect(Settings.findOne({ _id: testSetting._id }).value).to.be.equal(process.env[`OVERWRITE_SETTING_${testSetting._id}`]);
+	});
+
 	it('should call `settings.get` callback on setting added', async () => {
 		return new Promise(async (resolve) => {
 			const settings = new CachedSettings();
@@ -501,5 +570,20 @@ describe('Settings', () => {
 				}, settings.getConfig({ debounce: 10 }).debounce);
 			}, settings.getConfig({ debounce: 10 }).debounce);
 		});
+	});
+
+	it('should update the stored value on setting change', async () => {
+		Settings.setDelay(10);
+		process.env[`OVERWRITE_SETTING_${testSetting._id}`] = 'false';
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+
+		settings.set(testSetting);
+		settings.initialized();
+
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
+
+		expect(settings.get(testSetting._id)).to.be.equal(false);
 	});
 });
