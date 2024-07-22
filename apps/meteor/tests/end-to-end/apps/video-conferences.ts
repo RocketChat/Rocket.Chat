@@ -235,7 +235,12 @@ describe('Apps - Video Conferences', () => {
 					});
 			});
 
-			it('should start a call successfully when using a provider that supports persistent chat', async () => {
+			it('should start a call successfully when using a provider that supports persistent chat', async function () {
+				if (!process.env.IS_EE) {
+					this.skip();
+					return;
+				}
+
 				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
 				await updateSetting('VideoConf_Enable_Persistent_Chat', true);
 
@@ -255,7 +260,12 @@ describe('Apps - Video Conferences', () => {
 					});
 			});
 
-			it('should start a call successfully when using a provider that supports persistent chat with the feature disabled', async () => {
+			it('should start a call successfully when using a provider that supports persistent chat with the feature disabled', async function () {
+				if (!process.env.IS_EE) {
+					this.skip();
+					return;
+				}
+
 				await updateSetting('VideoConf_Default_Provider', 'persistentchat');
 				await updateSetting('VideoConf_Enable_Persistent_Chat', false);
 
@@ -370,6 +380,10 @@ describe('Apps - Video Conferences', () => {
 				let callId: string | undefined;
 
 				before(async () => {
+					if (!process.env.IS_EE) {
+						return;
+					}
+
 					await updateSetting('VideoConf_Default_Provider', 'persistentchat');
 					await updateSetting('VideoConf_Enable_Persistent_Chat', true);
 					const res = await request.post(api('video-conference.start')).set(credentials).send({
@@ -379,7 +393,12 @@ describe('Apps - Video Conferences', () => {
 					callId = res.body.data.callId;
 				});
 
-				it('should include a discussion room id on the response', async () => {
+				it('should include a discussion room id on the response', async function () {
+					if (!process.env.IS_EE) {
+						this.skip();
+						return;
+					}
+
 					await request
 						.get(api('video-conference.info'))
 						.set(credentials)
@@ -404,6 +423,10 @@ describe('Apps - Video Conferences', () => {
 				let callId: string | undefined;
 
 				before(async () => {
+					if (!process.env.IS_EE) {
+						return;
+					}
+
 					await updateSetting('VideoConf_Default_Provider', 'persistentchat');
 					await updateSetting('VideoConf_Enable_Persistent_Chat', false);
 					const res = await request.post(api('video-conference.start')).set(credentials).send({
@@ -413,7 +436,12 @@ describe('Apps - Video Conferences', () => {
 					callId = res.body.data.callId;
 				});
 
-				it('should not include a discussion room id on the response', async () => {
+				it('should not include a discussion room id on the response', async function () {
+					if (!process.env.IS_EE) {
+						this.skip();
+						return;
+					}
+
 					await request
 						.get(api('video-conference.info'))
 						.set(credentials)
@@ -437,9 +465,66 @@ describe('Apps - Video Conferences', () => {
 		describe('[/video-conference.list]', () => {
 			let callId1: string | undefined;
 			let callId2: string | undefined;
+
+			before(async () => {
+				await updateSetting('VideoConf_Default_Provider', 'test');
+				const res = await request.post(api('video-conference.start')).set(credentials).send({
+					roomId,
+				});
+				callId1 = res.body.data.callId;
+
+				const res2 = await request.post(api('video-conference.start')).set(credentials).send({
+					roomId,
+				});
+
+				callId2 = res2.body.data.callId;
+			});
+
+			it('should load the list of video conferences sorted by new', async () => {
+				await request
+					.get(api('video-conference.list'))
+					.set(credentials)
+					.query({
+						roomId,
+					})
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body.success).to.be.equal(true);
+						expect(res.body).to.have.a.property('count').that.is.greaterThanOrEqual(2);
+						expect(res.body).to.have.a.property('data').that.is.an('array').with.lengthOf(res.body.count);
+
+						const call2 = res.body.data[0];
+						const call1 = res.body.data[1];
+
+						expect(call1).to.have.a.property('_id').equal(callId1);
+						expect(call1).to.have.a.property('url').equal(`test/videoconference/${callId1}/${roomName}`);
+						expect(call1).to.have.a.property('type').equal('videoconference');
+						expect(call1).to.have.a.property('rid').equal(roomId);
+						expect(call1).to.have.a.property('users').that.is.an('array').with.lengthOf(0);
+						expect(call1).to.have.a.property('status').equal(1);
+						expect(call1).to.have.a.property('title').equal(roomName);
+						expect(call1).to.have.a.property('messages').that.is.an('object');
+						expect(call1.messages).to.have.a.property('started').that.is.a('string');
+						expect(call1).to.have.a.property('createdBy').that.is.an('object');
+						expect(call1.createdBy).to.have.a.property('_id').equal(credentials['X-User-Id']);
+						expect(call1.createdBy).to.have.a.property('username').equal(adminUsername);
+						expect(call1).to.not.have.a.property('discussionRid');
+
+						expect(call2).to.have.a.property('_id').equal(callId2);
+					});
+			});
+		});
+
+		describe('[/video-conference.list - persistent chat]', () => {
+			let callId1: string | undefined;
+			let callId2: string | undefined;
 			let callId3: string | undefined;
 
 			before(async () => {
+				if (!process.env.IS_EE) {
+					return;
+				}
+
 				await updateSetting('VideoConf_Default_Provider', 'test');
 				const res = await request.post(api('video-conference.start')).set(credentials).send({
 					roomId,
@@ -462,7 +547,12 @@ describe('Apps - Video Conferences', () => {
 				callId3 = res3.body.data.callId;
 			});
 
-			it('should load the list of video conferences sorted by new', async () => {
+			it('should load the list of video conferences sorted by new', async function () {
+				if (!process.env.IS_EE) {
+					this.skip();
+					return;
+				}
+
 				await request
 					.get(api('video-conference.list'))
 					.set(credentials)
