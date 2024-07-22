@@ -1,5 +1,6 @@
 import type { Cloud, Serialized } from '@rocket.chat/core-typings';
 import { DuplicatedLicenseError } from '@rocket.chat/license';
+import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { v, compile } from 'suretype';
 
@@ -11,7 +12,6 @@ import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { buildWorkspaceRegistrationData } from '../buildRegistrationData';
 import { CloudWorkspaceAccessTokenEmptyError, getWorkspaceAccessToken } from '../getWorkspaceAccessToken';
 import { retrieveRegistrationStatus } from '../retrieveRegistrationStatus';
-import { Settings } from '@rocket.chat/models';
 
 const workspaceSyncPayloadSchema = v.object({
 	workspaceId: v.string().required(),
