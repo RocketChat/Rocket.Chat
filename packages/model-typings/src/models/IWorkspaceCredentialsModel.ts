@@ -1,4 +1,3 @@
-
 import type { IWorkspaceCredentials } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';

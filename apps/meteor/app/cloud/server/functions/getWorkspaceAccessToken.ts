@@ -29,8 +29,6 @@ export async function getWorkspaceAccessToken(forceNew = false, scope = '', save
 		throw new CloudWorkspaceAccessTokenError();
 	}
 
-	const now = new Date();
-
 	if (!hasWorkspaceAccessTokenExpired(workspaceCredentials) && !forceNew) {
 		return workspaceCredentials.accessToken;
 	}
