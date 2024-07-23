@@ -6498,5 +6498,7 @@
   "Workspace_and_user_settings": "Workspace and user settings",
   "Sidebar_Sections_Order": "Sidebar sections order",
   "Sidebar_Sections_Order_Description": "Select the categories in your preferred order",
-  "Incoming_Calls": "Incoming calls"
+  "Incoming_Calls": "Incoming calls",
+  "Advanced_settings": "Advanced settings",
+  "Security_and_permissions": "Security and permissions"
 }
