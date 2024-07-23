@@ -25,7 +25,6 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
-		"@rocket.chat/ui-contexts": "workspace:^",
 		"colorette": "^1.4.0",
 		"ejson": "^2.2.3",
 		"event-loop-stats": "^1.4.1",
@@ -45,6 +44,7 @@
 		"ws": "^8.8.1"
 	},
 	"devDependencies": {
+		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/ejson": "^2.2.1",
 		"@types/gc-stats": "^1.4.2",

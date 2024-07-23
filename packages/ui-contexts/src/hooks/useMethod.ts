@@ -1,4 +1,4 @@
-import type { ServerMethodFunction, ServerMethodParameters, ServerMethods } from '@rocket.chat/ddp-client/src/types/methods';
+import type { ServerMethodFunction, ServerMethodParameters, ServerMethods } from '@rocket.chat/ddp-client';
 import { useCallback, useContext } from 'react';
 
 import { ServerContext } from '../ServerContext';

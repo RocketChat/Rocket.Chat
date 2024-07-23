@@ -43,7 +43,6 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/ui-contexts": "workspace:^",
 		"@types/gc-stats": "^1.4.2",
 		"@types/polka": "^0.5.6",
 		"eslint": "~8.45.0",

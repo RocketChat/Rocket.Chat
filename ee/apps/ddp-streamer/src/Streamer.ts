@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import type { StreamNames } from '@rocket.chat/ui-contexts';
+import type { StreamNames } from '@rocket.chat/ddp-client';
 import type { DDPSubscription, Connection, TransformMessage } from 'meteor/rocketchat:streamer';
 import WebSocket from 'ws';
 
