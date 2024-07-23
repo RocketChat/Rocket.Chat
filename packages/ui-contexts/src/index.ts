@@ -30,6 +30,7 @@ export { useCurrentModal } from './hooks/useCurrentModal';
 export { useCurrentRoutePath } from './hooks/useCurrentRoutePath';
 export { useCustomSound } from './hooks/useCustomSound';
 export { useEndpoint } from './hooks/useEndpoint';
+export { useGoToRoom } from './hooks/useGoToRoom';
 export type { EndpointFunction } from './hooks/useEndpoint';
 export { useIsPrivilegedSettingsContext } from './hooks/useIsPrivilegedSettingsContext';
 export { useIsSettingsContextLoading } from './hooks/useIsSettingsContextLoading';
