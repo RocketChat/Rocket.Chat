@@ -9,22 +9,17 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 const PreferencesConversationTranscript = () => {
 	const t = useTranslation();
 
-	const { register, setValue, watch } = useFormContext();
+	const { register } = useFormContext();
 
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 	const alwaysSendEmailTranscript = useSetting('Livechat_transcript_send_always');
 	const canSendTranscriptPDF = usePermission('request-pdf-transcript');
 	const canSendTranscriptEmailPermission = usePermission('send-omnichannel-chat-transcript');
 	const canSendTranscriptEmail = canSendTranscriptEmailPermission && !alwaysSendEmailTranscript;
-	const canSendTranscriptEmailPref = watch('omnichannelTranscriptEmail');
 	const cantSendTranscriptPDF = !canSendTranscriptPDF || !hasLicense;
 
 	const omnichannelTranscriptPDF = useUniqueId();
 	const omnichannelTranscriptEmail = useUniqueId();
-
-	if (alwaysSendEmailTranscript && !canSendTranscriptEmailPref) {
-		setValue('omnichannelTranscriptEmail', true);
-	}
 
 	return (
 		<Accordion.Item defaultExpanded title={t('Conversational_transcript')}>
