@@ -1,7 +1,7 @@
 import { Accordion, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, Tag, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, usePermission, useSetting } from '@rocket.chat/ui-contexts';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
@@ -22,14 +22,9 @@ const PreferencesConversationTranscript = () => {
 	const omnichannelTranscriptPDF = useUniqueId();
 	const omnichannelTranscriptEmail = useUniqueId();
 
-	useEffect(() => {
-		if (alwaysSendEmailTranscript && !canSendTranscriptEmailPref) {
-			setValue('omnichannelTranscriptEmail', true);
-			return;
-		}
-
-		setValue('omnichannelTranscriptEmail', canSendTranscriptEmailPref);
-	}, [setValue, alwaysSendEmailTranscript, canSendTranscriptEmailPref]);
+	if (alwaysSendEmailTranscript && !canSendTranscriptEmailPref) {
+		setValue('omnichannelTranscriptEmail', true);
+	}
 
 	return (
 		<Accordion.Item defaultExpanded title={t('Conversational_transcript')}>
