@@ -1043,12 +1043,12 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body).to.be.an('array');
 
 			const expectedResult = [
-				{ title: 'Total_conversations', value: IS_EE ? 13 : 7 },
+				{ title: 'Total_conversations', value: 13 },
 				{ title: 'Open_conversations', value: 4 },
 				{ title: 'On_Hold_conversations', value: 1 },
 				// { title: 'Total_messages', value: 6 },
 				// { title: 'Busiest_day', value: moment().format('dddd') },
-				{ title: 'Conversations_per_day', value: '3.50' },
+				{ title: 'Conversations_per_day', value: '6.50' },
 				// { title: 'Busiest_time', value: '' },
 			];
 
