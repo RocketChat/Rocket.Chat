@@ -24,7 +24,7 @@ export const parseTranscriptRequest = async (
 
 	const visitorData =
 		visitor ||
-		(await LivechatVisitors.findOneById<Pick<ILivechatVisitor, 'visitorEmails'>>((room.v._id, { projection: { visitorEmails: 1 } })));
+		(await LivechatVisitors.findOneById<Pick<ILivechatVisitor, 'visitorEmails'>>(room.v._id, { projection: { visitorEmails: 1 } }));
 	// no visitor, no changes
 	if (!visitorData) {
 		return options;
