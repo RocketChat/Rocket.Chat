@@ -44,6 +44,8 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		await poAccountProfile.securityE2EEncryptionSection.click();
 		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
 
+		await page.reload();
+
 		await page.locator('role=button[name="Login"]').waitFor();
 
 		await injectInitialData();
@@ -60,6 +62,8 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		await page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary').click();
 
 		await expect(page.locator('role=banner >> text="Save your encryption password"')).not.toBeVisible();
+
+		await poAccountProfile.btnClose.click();
 
 		await poHomeChannel.sidenav.logout();
 
@@ -599,10 +603,7 @@ test.describe.serial('e2ee room setup', () => {
 		await poAccountProfile.securityE2EEncryptionSection.click();
 		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
 
-		await page.locator('role=button[name="Login"]').waitFor();
-
 		await page.reload();
-
 		await page.locator('role=button[name="Login"]').waitFor();
 
 		await injectInitialData();
@@ -660,8 +661,6 @@ test.describe.serial('e2ee room setup', () => {
 		// Logout to remove e2ee keys
 		await poHomeChannel.sidenav.logout();
 
-		await page.locator('role=button[name="Login"]').waitFor();
-		await page.reload();
 		await page.locator('role=button[name="Login"]').waitFor();
 
 		await injectInitialData();
@@ -740,14 +739,14 @@ test.describe.serial('e2ee room setup', () => {
 		await poAccountProfile.securityE2EEncryptionSection.click();
 		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
 
-		await page.locator('role=button[name="Login"]').waitFor();
-
 		await page.reload();
 
 		await page.locator('role=button[name="Login"]').waitFor();
 
 		await injectInitialData();
 		await restoreState(page, Users.admin);
+
+		await poAccountProfile.btnClose.click();
 
 		await page.locator('role=navigation >> role=button[name=Search]').click();
 		await page.locator('role=search >> role=searchbox').fill(channelName);
