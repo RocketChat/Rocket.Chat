@@ -1,8 +1,7 @@
 import type { Page } from '@playwright/test';
 
 import { DEFAULT_USER_CREDENTIALS } from '../config/constants';
-import injectInitialData from '../fixtures/inject-initial-data';
-import { Users } from '../fixtures/userStates';
+import { restoreState, Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { createConversation } from '../utils/omnichannel/rooms';
@@ -40,8 +39,8 @@ test.describe('OC - Manual Selection After Relogin', () => {
 		await poOmnichannel.page.locator('.main-content').waitFor();
 	});
 
-	test.afterEach(async () => {
-		await injectInitialData();
+	test.afterEach(async ({ page }) => {
+		await restoreState(page, Users.user3);
 	});
 
 	// Delete all data
