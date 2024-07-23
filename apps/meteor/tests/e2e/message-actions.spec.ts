@@ -70,6 +70,20 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.content.lastMessageTextAttachmentEqualsText).toHaveText(message);
 	});
 
+	test('expect create a discussion from message', async ({ page }) => {
+		const message = `Message for discussion - ${Date.now()}`;
+
+		await poHomeChannel.content.sendMessage(message);
+		await poHomeChannel.content.openLastMessageMenu();
+		await page.locator('role=menuitem[name="Start a Discussion"]').click();
+		await page.locator('input[name="topic"]').fill('1');
+		await page.getByRole('dialog').getByRole('button', { name: 'create' }).click();
+		// There is some condition checking if the form has been edited.
+		// the "Create" button should not be disabled if starting a discussion from a message
+		// TODO: Fix form and remove line below
+		await expect(page.locator('header h1')).toHaveText(message);
+	});
+
 	test('expect star the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('Message to star');
 		await poHomeChannel.content.openLastMessageMenu();

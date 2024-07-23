@@ -82,14 +82,15 @@ export class HomeContent {
 	async sendMessage(text: string): Promise<void> {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
-		await this.page.locator('[name="msg"]').type(text);
+		await this.page.locator('[name="msg"]').fill(text);
 		await this.page.keyboard.press('Enter');
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
-		await this.page.locator('[name="msg"]').type(text);
+		await this.page.locator('[name="msg"]').fill('');
+		await this.page.locator('[name="msg"]').fill(text);
 		await this.page.keyboard.press('Enter');
 		await this.page.keyboard.press('Enter');
 	}

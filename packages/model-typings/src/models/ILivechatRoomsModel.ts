@@ -28,6 +28,7 @@ type WithOptions = {
 	options?: any;
 };
 
+// TODO: Fix types of model
 export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	getQueueMetrics(params: { departmentId: any; agentId: any; includeOfflineAgents: any; options?: any }): any;
 
@@ -96,6 +97,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		visitorId?: any;
 		roomIds?: any;
 		onhold: any;
+		queued: any;
 		options?: any;
 		extraQuery?: any;
 	}): FindPaginated<FindCursor<IOmnichannelRoom>>;
