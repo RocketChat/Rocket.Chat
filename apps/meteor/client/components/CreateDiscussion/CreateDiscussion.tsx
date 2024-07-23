@@ -18,7 +18,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { goToRoomById } from '../../lib/utils/goToRoomById';
@@ -51,10 +51,11 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 		control,
 		watch,
 		register,
+		reset,
 	} = useForm({
 		mode: 'onBlur',
 		defaultValues: {
-			name: nameSuggestion || '',
+			name: '',
 			parentRoom: '',
 			encrypted: false,
 			usernames: [],
@@ -62,6 +63,12 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 			topic: '',
 		},
 	});
+
+	useEffect(() => {
+		if (!isDirty && typeof nameSuggestion === 'string' && nameSuggestion.length > 0) {
+			reset({ name: nameSuggestion }, { keepDefaultValues: true });
+		}
+	}, [nameSuggestion, reset, isDirty]);
 
 	const { encrypted } = watch();
 
