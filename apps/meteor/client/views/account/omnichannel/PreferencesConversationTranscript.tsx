@@ -1,7 +1,7 @@
 import { Accordion, Box, Field, FieldGroup, FieldLabel, FieldRow, FieldHint, Tag, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, usePermission } from '@rocket.chat/ui-contexts';
-import React from 'react';
+import { useTranslation, usePermission, useSetting } from '@rocket.chat/ui-contexts';
+import React, { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
@@ -9,15 +9,27 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 const PreferencesConversationTranscript = () => {
 	const t = useTranslation();
 
-	const { register } = useFormContext();
+	const { register, setValue, watch } = useFormContext();
 
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const alwaysSendEmailTranscript = useSetting('Livechat_transcript_send_always');
 	const canSendTranscriptPDF = usePermission('request-pdf-transcript');
-	const canSendTranscriptEmail = usePermission('send-omnichannel-chat-transcript');
+	const canSendTranscriptEmailPermission = usePermission('send-omnichannel-chat-transcript');
+	const canSendTranscriptEmail = canSendTranscriptEmailPermission && !alwaysSendEmailTranscript;
+	const canSendTranscriptEmailPref = watch('omnichannelTranscriptEmail');
 	const cantSendTranscriptPDF = !canSendTranscriptPDF || !hasLicense;
 
 	const omnichannelTranscriptPDF = useUniqueId();
 	const omnichannelTranscriptEmail = useUniqueId();
+
+	useEffect(() => {
+		if (alwaysSendEmailTranscript && !canSendTranscriptEmailPref) {
+			setValue('omnichannelTranscriptEmail', true);
+			return;
+		}
+
+		setValue('omnichannelTranscriptEmail', canSendTranscriptEmailPref);
+	}, [setValue, alwaysSendEmailTranscript, canSendTranscriptEmailPref]);
 
 	return (
 		<Accordion.Item defaultExpanded title={t('Conversational_transcript')}>
@@ -42,7 +54,7 @@ const PreferencesConversationTranscript = () => {
 						<FieldLabel htmlFor={omnichannelTranscriptEmail}>
 							<Box display='flex' alignItems='center'>
 								{t('Omnichannel_transcript_email')}
-								{!canSendTranscriptEmail && (
+								{!canSendTranscriptEmailPermission && (
 									<Box marginInline={4}>
 										<Tag>{t('No_permission')}</Tag>
 									</Box>

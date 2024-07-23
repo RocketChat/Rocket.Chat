@@ -6267,7 +6267,7 @@
   "Always_send_the_transcript_to_contacts_at_the_end_of_the_conversations": "Always send the transcript to contacts at the end of the conversations.",
   "Export_conversation_transcript_as_PDF": "Export conversation transcript as PDF",
   "Omnichannel_transcript_email": "Send chat transcript via email.",
-  "Accounts_Default_User_Preferences_omnichannelTranscriptEmail_Description": "Always send the transcript to contacts at the end of the conversations.",
+  "Accounts_Default_User_Preferences_omnichannelTranscriptEmail_Description": "Always send the transcript to contacts at the end of the conversations. This preference may be overriden by an admin setting.",
   "Omnichannel_transcript_pdf": "Export chat transcript as PDF.",
   "Accounts_Default_User_Preferences_omnichannelTranscriptPDF_Description": "Always export the transcript as PDF at the end of conversations.",
   "Contact_email": "Contact email",
