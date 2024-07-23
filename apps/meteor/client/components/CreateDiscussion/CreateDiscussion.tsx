@@ -18,7 +18,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { goToRoomById } from '../../lib/utils/goToRoomById';
@@ -46,16 +46,14 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 	const t = useTranslation();
 
 	const {
-		formState: { isDirty, isSubmitting, isValidating, errors },
+		formState: { isSubmitting, isValidating, errors },
 		handleSubmit,
 		control,
 		watch,
-		register,
-		reset,
 	} = useForm({
 		mode: 'onBlur',
 		defaultValues: {
-			name: '',
+			name: nameSuggestion || '',
 			parentRoom: '',
 			encrypted: false,
 			usernames: [],
@@ -63,12 +61,6 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 			topic: '',
 		},
 	});
-
-	useEffect(() => {
-		if (!isDirty && typeof nameSuggestion === 'string' && nameSuggestion.length > 0) {
-			reset({ name: nameSuggestion }, { keepDefaultValues: true });
-		}
-	}, [nameSuggestion, reset, isDirty]);
 
 	const { encrypted } = watch();
 
@@ -182,7 +174,11 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 					<Field>
 						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
 						<FieldRow>
-							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} />
+							<Controller
+								name='topic'
+								control={control}
+								render={({ field }) => <TextInput id={topicId} {...field} aria-describedby={`${topicId}-hint`} />}
+							/>
 						</FieldRow>
 						<FieldRow>
 							<FieldHint id={`${topicId}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
@@ -250,7 +246,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button type='submit' primary disabled={!isDirty} loading={isSubmitting || isValidating}>
+					<Button type='submit' primary loading={isSubmitting || isValidating}>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>
