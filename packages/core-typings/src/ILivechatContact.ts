@@ -14,8 +14,8 @@ export interface ILivechatContactConflictingField {
 
 export interface ILivechatContact extends IRocketChatRecord {
 	name: string;
-	phones: string[];
-	emails: string[];
+	phones?: string[];
+	emails?: string[];
 	contactManager?: string;
 	unknown?: boolean;
 	hasConflict?: boolean;
