@@ -594,14 +594,14 @@ test.describe.serial('e2ee room setup', () => {
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
 	});
 
+	test.afterEach(async ({ api }) => {
+		await api.recreateContext();
+	});
+
 	test('expect save password state on encrypted room', async ({ page }) => {
 		await page.goto('/account/security');
 		await poAccountProfile.securityE2EEncryptionSection.click();
 		await poAccountProfile.securityE2EEncryptionResetKeyButton.click();
-
-		await page.locator('role=button[name="Login"]').waitFor();
-
-		await page.reload();
 
 		await page.locator('role=button[name="Login"]').waitFor();
 
@@ -610,7 +610,6 @@ test.describe.serial('e2ee room setup', () => {
 
 		await page.goto('/home');
 
-		await page.locator('role=banner >> text="Save your encryption password"').waitFor();
 		await expect(page.locator('role=banner >> text="Save your encryption password"')).toBeVisible();
 
 		const channelName = faker.string.uuid();
@@ -624,10 +623,8 @@ test.describe.serial('e2ee room setup', () => {
 
 		await poHomeChannel.dismissToast();
 
-		await poHomeChannel.content.encryptedRoomHeaderIcon.first().waitFor();
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon.first()).toBeVisible();
 
-		await page.locator('role=button[name="Save E2EE password"]').waitFor();
 		await expect(page.locator('role=button[name="Save E2EE password"]')).toBeVisible();
 
 		await poHomeChannel.tabs.btnE2EERoomSetupDisableE2E.waitFor();
@@ -660,8 +657,6 @@ test.describe.serial('e2ee room setup', () => {
 		// Logout to remove e2ee keys
 		await poHomeChannel.sidenav.logout();
 
-		await page.locator('role=button[name="Login"]').waitFor();
-		await page.reload();
 		await page.locator('role=button[name="Login"]').waitFor();
 
 		await injectInitialData();
@@ -781,11 +776,11 @@ test.describe.serial('e2ee support legacy formats', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		expect((await api.post('/settings/E2E_Enable', { value: false })).status()).toBe(200);
-		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
+		await api.post('/settings/E2E_Enable', { value: false });
+		await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false });
 	});
 
-	// Not testing upload since it was not implemented in the legacy format
+	//  ->>>>>>>>>>>Not testing upload since it was not implemented in the legacy format
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page, request }) => {
 		await page.goto('/home');
 
