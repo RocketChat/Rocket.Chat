@@ -87,13 +87,13 @@ describe('Send transcript', () => {
 		await expect(sendTranscript({})).to.be.rejectedWith(Error);
 	});
 	it('should throw error when visitor not found', async () => {
-		modelsMock.LivechatVisitors.getVisitorByToken.returns(null);
+		modelsMock.LivechatVisitors.getVisitorByToken.resolves(null);
 		await expect(sendTranscript({ rid: 'rid', email: 'email', logger: mockLogger })).to.be.rejectedWith(Error);
 	});
 	it('should attempt to send an email when params are valid using default subject', async () => {
-		modelsMock.LivechatVisitors.getVisitorByToken.returns({ language: null });
-		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { token: 'token' } });
-		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.returns([]);
+		modelsMock.LivechatVisitors.getVisitorByToken.resolves({ language: null });
+		modelsMock.LivechatRooms.findOneById.resolves({ t: 'l', v: { token: 'token' } });
+		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.resolves([]);
 		tStub.returns('Conversation Transcript');
 
 		await sendTranscript({
@@ -117,9 +117,9 @@ describe('Send transcript', () => {
 		).to.be.true;
 	});
 	it('should use provided subject', async () => {
-		modelsMock.LivechatVisitors.getVisitorByToken.returns({ language: null });
-		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { token: 'token' } });
-		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.returns([]);
+		modelsMock.LivechatVisitors.getVisitorByToken.resolves({ language: null });
+		modelsMock.LivechatRooms.findOneById.resolves({ t: 'l', v: { token: 'token' } });
+		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.resolves([]);
 
 		await sendTranscript({
 			rid: 'rid',
@@ -143,9 +143,9 @@ describe('Send transcript', () => {
 		).to.be.true;
 	});
 	it('should use subject from setting (when configured) when no subject provided', async () => {
-		modelsMock.LivechatVisitors.getVisitorByToken.returns({ language: null });
-		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { token: 'token' } });
-		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.returns([]);
+		modelsMock.LivechatVisitors.getVisitorByToken.resolves({ language: null });
+		modelsMock.LivechatRooms.findOneById.resolves({ t: 'l', v: { token: 'token' } });
+		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.resolves([]);
 		mockSettingValues.Livechat_transcript_email_subject = 'A custom subject obtained from setting.get';
 
 		await sendTranscript({
@@ -169,36 +169,36 @@ describe('Send transcript', () => {
 		).to.be.true;
 	});
 	it('should fail if room provided is invalid', async () => {
-		modelsMock.LivechatRooms.findOneById.returns(null);
-		modelsMock.LivechatVisitors.getVisitorByToken.returns({ language: null });
+		modelsMock.LivechatRooms.findOneById.resolves(null);
+		modelsMock.LivechatVisitors.getVisitorByToken.resolves({ language: null });
 
 		await expect(sendTranscript({ rid: 'rid', email: 'email', logger: mockLogger })).to.be.rejectedWith(Error);
 	});
 
 	it('should fail if room provided is of different type', async () => {
-		modelsMock.LivechatRooms.findOneById.returns({ t: 'c' });
-		modelsMock.LivechatVisitors.getVisitorByToken.returns({ language: null });
+		modelsMock.LivechatRooms.findOneById.resolves({ t: 'c' });
+		modelsMock.LivechatVisitors.getVisitorByToken.resolves({ language: null });
 
 		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
 	});
 
 	it('should fail if room is of valid type, but doesnt doesnt have `v` property', async () => {
-		modelsMock.LivechatVisitors.getVisitorByToken.returns({ language: null });
-		modelsMock.LivechatRooms.findOneById.returns({ t: 'l' });
+		modelsMock.LivechatVisitors.getVisitorByToken.resolves({ language: null });
+		modelsMock.LivechatRooms.findOneById.resolves({ t: 'l' });
 
 		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
 	});
 
 	it('should fail if room is of valid type, has `v` prop, but it doesnt contain `token`', async () => {
-		modelsMock.LivechatVisitors.getVisitorByToken.returns({ language: null });
-		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { otherProp: 'xxx' } });
+		modelsMock.LivechatVisitors.getVisitorByToken.resolves({ language: null });
+		modelsMock.LivechatRooms.findOneById.resolves({ t: 'l', v: { otherProp: 'xxx' } });
 
 		await expect(sendTranscript({ rid: 'rid', email: 'email' })).to.be.rejectedWith(Error);
 	});
 
 	it('should fail if room is of valid type, has `v.token`, but its different from the one on param (room from another visitor)', async () => {
-		modelsMock.LivechatVisitors.getVisitorByToken.returns({ language: null });
-		modelsMock.LivechatRooms.findOneById.returns({ t: 'l', v: { token: 'xxx' } });
+		modelsMock.LivechatVisitors.getVisitorByToken.resolves({ language: null });
+		modelsMock.LivechatRooms.findOneById.resolves({ t: 'l', v: { token: 'xxx' } });
 
 		await expect(sendTranscript({ rid: 'rid', email: 'email', token: 'xveasdf' })).to.be.rejectedWith(Error);
 	});
