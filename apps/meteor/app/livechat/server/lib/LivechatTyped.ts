@@ -1389,7 +1389,7 @@ class LivechatClass {
 				_id: String,
 				username: String,
 				name: Match.Maybe(String),
-				type: String,
+				userType: String,
 			}),
 		);
 
