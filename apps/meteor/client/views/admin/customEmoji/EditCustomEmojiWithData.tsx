@@ -1,7 +1,6 @@
 import { Callout } from '@rocket.chat/fuselage';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { FC } from 'react';
 import React, { useMemo } from 'react';
 
 import { FormSkeleton } from '../../../components/Skeleton';
@@ -13,7 +12,7 @@ type EditCustomEmojiWithDataProps = {
 	onChange: () => void;
 };
 
-const EditCustomEmojiWithData: FC<EditCustomEmojiWithDataProps> = ({ _id, onChange, close, ...props }) => {
+const EditCustomEmojiWithData = ({ _id, onChange, close, ...props }: EditCustomEmojiWithDataProps) => {
 	const t = useTranslation();
 	const query = useMemo(() => ({ query: JSON.stringify({ _id }) }), [_id]);
 

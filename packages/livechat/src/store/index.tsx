@@ -6,6 +6,7 @@ import { useContext } from 'preact/hooks';
 import type { CustomField } from '../components/Form/CustomFields';
 import type { Agent } from '../definitions/agents';
 import type { Department } from '../definitions/departments';
+import type { TriggerMessage } from '../definitions/triggerMessage';
 import { parentCall } from '../lib/parentCall';
 import { createToken } from '../lib/random';
 import Store from './Store';
@@ -113,7 +114,6 @@ export type StoreState = {
 	room?: { _id: string };
 	noMoreMessages?: boolean;
 	loading?: boolean;
-	department?: string;
 	lastReadMessageId?: any;
 	triggerAgent?: any;
 	queueInfo?: any;
@@ -121,6 +121,7 @@ export type StoreState = {
 	parentUrl?: string;
 	connecting?: boolean;
 	messageListPosition?: 'top' | 'bottom' | 'free';
+	renderedTriggers: TriggerMessage[];
 };
 
 export const initialState = (): StoreState => ({
@@ -161,6 +162,7 @@ export const initialState = (): StoreState => ({
 	incomingCallAlert: null,
 	ongoingCall: null, // TODO: store call info like url, startTime, timeout, etc here
 	businessUnit: null,
+	renderedTriggers: [],
 });
 
 const dontPersist = [

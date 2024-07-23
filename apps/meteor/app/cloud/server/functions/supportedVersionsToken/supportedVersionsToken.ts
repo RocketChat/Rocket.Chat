@@ -6,6 +6,7 @@ import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { SystemLogger } from '../../../../../server/lib/logger/system';
+import { notifyOnSettingChangedById } from '../../../../lib/server/lib/notifyListener';
 import { settings } from '../../../../settings/server';
 import { supportedVersions as supportedVersionsFromBuild } from '../../../../utils/rocketchat-supported-versions.info';
 import { buildVersionUpdateMessage } from '../../../../version-check/server/functions/buildVersionUpdateMessage';
@@ -62,9 +63,10 @@ const cacheValueInSettings = <T extends SettingValue>(
 	reset: () => Promise<T>;
 } => {
 	const reset = async () => {
+		SystemLogger.debug(`Resetting cached value ${key} in settings`);
 		const value = await fn();
 
-		await Settings.updateValueById(key, value);
+		(await Settings.updateValueById(key, value)).modifiedCount && void notifyOnSettingChangedById(key);
 
 		return value;
 	};
@@ -103,7 +105,7 @@ const getSupportedVersionsFromCloud = async () => {
 	const response = await handleResponse<SupportedVersions>(
 		fetch(releaseEndpoint, {
 			headers,
-			timeout: 3000,
+			timeout: 5000,
 		}),
 	);
 
@@ -133,6 +135,31 @@ const getSupportedVersionsToken = async () => {
 		versionsFromLicense?.supportedVersions,
 		(response.success && response.result) || undefined,
 	);
+
+	SystemLogger.debug({
+		msg: 'Supported versions',
+		supportedVersionsFromBuild: supportedVersionsFromBuild.timestamp,
+		versionsFromLicense: versionsFromLicense?.supportedVersions?.timestamp,
+		response: response.success && response.result?.timestamp,
+	});
+
+	switch (supportedVersions) {
+		case supportedVersionsFromBuild:
+			SystemLogger.info({
+				msg: 'Using supported versions from build',
+			});
+			break;
+		case versionsFromLicense?.supportedVersions:
+			SystemLogger.info({
+				msg: 'Using supported versions from license',
+			});
+			break;
+		case response.success && response.result:
+			SystemLogger.info({
+				msg: 'Using supported versions from cloud',
+			});
+			break;
+	}
 
 	await buildVersionUpdateMessage(supportedVersions?.versions);
 

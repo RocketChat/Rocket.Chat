@@ -38,7 +38,7 @@ export class HomeSidenav {
 	}
 
 	get userProfileMenu(): Locator {
-		return this.page.getByRole('button', { name: 'User menu' });
+		return this.page.getByRole('button', { name: 'User menu', exact: true });
 	}
 
 	get sidebarChannelsList(): Locator {
@@ -47,6 +47,21 @@ export class HomeSidenav {
 
 	get sidebarToolbar(): Locator {
 		return this.page.getByRole('toolbar', { name: 'Sidebar actions' });
+	}
+
+	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
+		await this.sidebarToolbar.getByRole('button', { name: 'Display', exact: true }).click();
+		await this.sidebarToolbar.getByRole('menuitemcheckbox', { name: mode }).click();
+		await this.sidebarToolbar.click();
+	}
+
+	// Note: this is different from openChat because queued chats are not searchable
+	getQueuedChat(name: string): Locator {
+		return this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first();
+	}
+
+	get accountProfileOption(): Locator {
+		return this.page.locator('role=menuitemcheckbox[name="Profile"]');
 	}
 
 	getSidebarItemByName(name: string): Locator {
@@ -99,8 +114,8 @@ export class HomeSidenav {
 	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
 		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
+		await this.page.locator('role=main >> role=list').waitFor();
 
-		await expect(this.page.locator('role=main >> .rcx-skeleton')).toHaveCount(0);
 		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
 	}
 
@@ -129,15 +144,17 @@ export class HomeSidenav {
 		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
 	}
 
-	// Note: this is a workaround for now since queued omnichannel chats are not searchable yet so we can't use openChat() :(
-	async openQueuedOmnichannelChat(name: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-item-title"]', { hasText: name }).first().click();
-	}
-
 	async createPublicChannel(name: string) {
 		await this.openNewByLabel('Channel');
 		await this.checkboxPrivateChannel.click();
 		await this.inputChannelName.type(name);
+		await this.btnCreate.click();
+	}
+
+	async createEncryptedChannel(name: string) {
+		await this.openNewByLabel('Channel');
+		await this.inputChannelName.type(name);
+		await this.checkboxEncryption.click();
 		await this.btnCreate.click();
 	}
 }

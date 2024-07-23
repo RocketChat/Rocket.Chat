@@ -138,7 +138,8 @@ export {
 	IUserService,
 };
 
-export const dbWatchersDisabled = ['yes', 'true'].includes(String(process.env.DISABLE_DB_WATCHERS).toLowerCase());
+export const dbWatchersDisabled =
+	['yes', 'true'].includes(String(process.env.DISABLE_DB_WATCHERS).toLowerCase()) || process.env.NODE_ENV !== 'production';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
@@ -154,7 +155,7 @@ export const Team = proxifyWithWait<ITeamService>('team');
 export const MessageReads = proxifyWithWait<IMessageReadsService>('message-reads');
 export const Room = proxifyWithWait<IRoomService>('room');
 export const Media = proxifyWithWait<IMediaService>('media');
-export const Voip = proxifyWithWait<IVoipService>('voip');
+export const VoipAsterisk = proxifyWithWait<IVoipService>('voip-asterisk');
 export const LivechatVoip = proxifyWithWait<IOmnichannelVoipService>('omnichannel-voip');
 export const Analytics = proxifyWithWait<IAnalyticsService>('analytics');
 export const LDAP = proxifyWithWait<ILDAPService>('ldap');

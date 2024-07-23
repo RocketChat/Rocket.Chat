@@ -1,10 +1,14 @@
-import { Button, ButtonGroup, ContextualbarIcon } from '@rocket.chat/fuselage';
-import { usePermission, useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import type { IAdminUserTabs, LicenseInfo } from '@rocket.chat/core-typings';
+import { Button, ButtonGroup, Callout, ContextualbarIcon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import type { OptionProp } from '@rocket.chat/ui-client';
+import { ExternalLink } from '@rocket.chat/ui-client';
+import { usePermission, useRouteParameter, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Trans } from 'react-i18next';
 
-import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
-import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';
 import {
 	Contextualbar,
 	ContextualbarHeader,
@@ -12,20 +16,38 @@ import {
 	ContextualbarClose,
 	ContextualbarDialog,
 } from '../../../components/Contextualbar';
+import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
+import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
+import { useLicenseLimitsByBehavior } from '../../../hooks/useLicenseLimitsByBehavior';
 import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
+import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
 import AdminInviteUsers from './AdminInviteUsers';
 import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
 import AdminUserUpgrade from './AdminUserUpgrade';
+import UserPageHeaderContentWithSeatsCap from './UserPageHeaderContentWithSeatsCap';
 import UsersTable from './UsersTable';
+import useFilteredUsers from './hooks/useFilteredUsers';
+import usePendingUsersCount from './hooks/usePendingUsersCount';
+import { useSeatsCap } from './useSeatsCap';
 
-const UsersPage = (): ReactElement => {
+export type UsersFilters = {
+	text: string;
+	roles: OptionProp[];
+};
+
+export type UsersTableSortingOptions = 'name' | 'username' | 'emails.address' | 'status' | 'active';
+
+const AdminUsersPage = (): ReactElement => {
 	const t = useTranslation();
 
 	const seatsCap = useSeatsCap();
-	const reload = useRef(() => null);
+
+	const isSeatsCapExceeded = useShouldPreventAction('activeUsers');
+	const { prevent_action: preventAction } = useLicenseLimitsByBehavior() ?? {};
+	const manageSubscriptionUrl = useCheckoutUrl();
 
 	const router = useRouter();
 	const context = useRouteParameter('context');
@@ -36,36 +58,110 @@ const UsersPage = (): ReactElement => {
 
 	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
 
+	const getRoles = useEndpoint('GET', '/v1/roles.list');
+	const { data } = useQuery(['roles'], async () => getRoles());
+
+	const paginationData = usePagination();
+	const sortData = useSort<UsersTableSortingOptions>('name');
+
+	const [tab, setTab] = useState<IAdminUserTabs>('all');
+	const [userFilters, setUserFilters] = useState<UsersFilters>({ text: '', roles: [] });
+
+	const searchTerm = useDebouncedValue(userFilters.text, 500);
+	const prevSearchTerm = useRef('');
+
+	const filteredUsersQueryResult = useFilteredUsers({
+		searchTerm,
+		prevSearchTerm,
+		sortData,
+		paginationData,
+		tab,
+		selectedRoles: useMemo(() => userFilters.roles.map((role) => role.id), [userFilters.roles]),
+	});
+
+	const pendingUsersCount = usePendingUsersCount(filteredUsersQueryResult.data?.users);
+
 	const handleReload = (): void => {
 		seatsCap?.reload();
-		reload.current();
+		filteredUsersQueryResult?.refetch();
 	};
 
-	const isRoutePrevented = context && ['new', 'invite'].includes(context) && isCreateUserDisabled;
+	const handleTabChangeAndSort = (tab: IAdminUserTabs) => {
+		setTab(tab);
+
+		sortData.setSort(tab === 'pending' ? 'active' : 'name', 'asc');
+	};
+
+	useEffect(() => {
+		prevSearchTerm.current = searchTerm;
+	}, [searchTerm]);
+
+	const isRoutePrevented = useMemo(
+		() => context && ['new', 'invite'].includes(context) && isCreateUserDisabled,
+		[context, isCreateUserDisabled],
+	);
+
+	const toTranslationKey = (key: keyof LicenseInfo['limits']) => t(`subscription.callout.${key}`);
 
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<PageHeader title={t('Users')}>
 					{seatsCap && seatsCap.maxActiveUsers < Number.POSITIVE_INFINITY ? (
-						<UserPageHeaderContentWithSeatsCap {...seatsCap} />
+						<UserPageHeaderContentWithSeatsCap isSeatsCapExceeded={isSeatsCapExceeded} {...seatsCap} />
 					) : (
 						<ButtonGroup>
 							{canBulkCreateUser && (
-								<Button icon='mail' onClick={() => router.navigate('/admin/users/invite')}>
+								<Button icon='mail' onClick={() => router.navigate('/admin/users/invite')} disabled={isSeatsCapExceeded}>
 									{t('Invite')}
 								</Button>
 							)}
 							{canCreateUser && (
-								<Button icon='user-plus' onClick={() => router.navigate('/admin/users/new')}>
+								<Button icon='user-plus' onClick={() => router.navigate('/admin/users/new')} disabled={isSeatsCapExceeded}>
 									{t('New_user')}
 								</Button>
 							)}
 						</ButtonGroup>
 					)}
 				</PageHeader>
+				{preventAction?.includes('activeUsers') && (
+					<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} mbe={19} mi={24}>
+						<Trans i18nKey='subscription.callout.description.limitsExceeded' count={preventAction.length}>
+							Your workspace exceeded the <>{{ val: preventAction.map(toTranslationKey) }}</> license limit.
+							<ExternalLink
+								to={manageSubscriptionUrl({
+									target: 'callout',
+									action: 'prevent_action',
+									limits: preventAction.join(','),
+								})}
+							>
+								Manage your subscription
+							</ExternalLink>
+							to increase limits.
+						</Trans>
+					</Callout>
+				)}
+				<Tabs>
+					<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChangeAndSort('all')}>
+						{t('All')}
+					</TabsItem>
+					<TabsItem selected={tab === 'pending'} onClick={() => handleTabChangeAndSort('pending')} display='flex' flexDirection='row'>
+						{`${t('Pending')} `}
+						{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' mis={8} />}
+						{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
+					</TabsItem>
+				</Tabs>
 				<PageContent>
-					<UsersTable reload={reload} />
+					<UsersTable
+						filteredUsersQueryResult={filteredUsersQueryResult}
+						setUserFilters={setUserFilters}
+						onReload={handleReload}
+						paginationData={paginationData}
+						sortData={sortData}
+						tab={tab}
+						isSeatsCapExceeded={isSeatsCapExceeded}
+						roleData={data}
+					/>
 				</PageContent>
 			</Page>
 			{context && (
@@ -93,4 +189,4 @@ const UsersPage = (): ReactElement => {
 	);
 };
 
-export default UsersPage;
+export default AdminUsersPage;

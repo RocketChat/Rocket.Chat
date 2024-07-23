@@ -1,6 +1,5 @@
 import { Divider } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React, { Fragment, memo } from 'react';
 
 import type { SidebarItem } from '../../lib/createSidebarItems';
@@ -12,7 +11,7 @@ type SidebarItemsAssemblerProps = {
 	currentPath?: string;
 };
 
-const SidebarItemsAssembler: FC<SidebarItemsAssemblerProps> = ({ items, currentPath }) => {
+const SidebarItemsAssembler = ({ items, currentPath }: SidebarItemsAssemblerProps) => {
 	const t = useTranslation();
 
 	return (

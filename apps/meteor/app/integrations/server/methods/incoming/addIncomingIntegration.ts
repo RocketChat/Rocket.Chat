@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { validateScriptEngine, isScriptEngineFrozen } from '../../lib/validateScriptEngine';
 
 const validChannelChars = ['@', '#'];
@@ -155,9 +156,13 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 
 	await Roles.addUserRoles(user._id, ['bot']);
 
-	const result = await Integrations.insertOne(integrationData);
+	const { insertedId } = await Integrations.insertOne(integrationData);
 
-	integrationData._id = result.insertedId;
+	if (insertedId) {
+		void notifyOnIntegrationChanged({ ...integrationData, _id: insertedId }, 'inserted');
+	}
+
+	integrationData._id = insertedId;
 
 	return integrationData;
 };

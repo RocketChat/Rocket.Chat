@@ -1,5 +1,211 @@
 # @rocket.chat/models
 
+## 0.1.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [eaf2f11a6c, f75a2cb4bb, 4f72d62aa7]:</summary>
+
+  - @rocket.chat/model-typings@0.5.0
+  </details>
+
+## 0.1.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.5.0-rc.7
+  </details>
+
+## 0.1.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.5.0-rc.6
+  </details>
+
+## 0.1.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.5.0-rc.5
+  </details>
+
+## 0.1.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.5.0-rc.4
+  </details>
+
+## 0.1.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.5.0-rc.3
+  </details>
+
+## 0.1.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.5.0-rc.2
+  </details>
+
+## 0.1.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.5.0-rc.1
+  </details>
+
+## 0.1.0-rc.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [eaf2f11a6c, f75a2cb4bb, 4f72d62aa7]:</summary>
+
+  - @rocket.chat/model-typings@0.5.0-rc.0
+
+## 0.0.42
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.4.4
+  </details>
+
+## 0.0.41
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.4.3
+  </details>
+
+## 0.0.40
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.4.2
+  </details>
+
+## 0.0.39
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.4.1
+  </details>
+
+## 0.0.39-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.4.1-rc.2
+  </details>
+
+## 0.0.39-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.4.1-rc.1
+  </details>
+
+## 0.0.39-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.4.1-rc.0
+  </details>
+
+## 0.0.38
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [da45cb6998]:</summary>
+
+  - @rocket.chat/model-typings@0.4.0
+  </details>
+
+## 0.0.38-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.4.0-rc.2
+  </details>
+
+## 0.0.38-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.4.0-rc.1
+  </details>
+
+## 0.0.38-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [da45cb6998]:</summary>
+
+  - @rocket.chat/model-typings@0.4.0-rc.0
+
+## 0.0.37
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.3.9
+  </details>
+
+> > > > > > > origin/master
+
+## 0.0.36
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.3.8
+  </details>
+
 ## 0.0.35
 
 ### Patch Changes

@@ -225,12 +225,12 @@ registerAdminRoute('/moderation/:tab?/:context?/:id?', {
 
 registerAdminRoute('/engagement/:tab?', {
 	name: 'engagement-dashboard',
-	component: lazy(() => import('../../../ee/client/views/admin/engagementDashboard/EngagementDashboardRoute')),
+	component: lazy(() => import('./engagementDashboard/EngagementDashboardRoute')),
 });
 
 registerAdminRoute('/device-management/:context?/:id?', {
 	name: 'device-management',
-	component: lazy(() => import('../../../ee/client/views/admin/deviceManagement/DeviceManagementAdminRoute')),
+	component: lazy(() => import('./deviceManagement/DeviceManagementAdminRoute')),
 });
 
 registerAdminRoute('/subscription', {
