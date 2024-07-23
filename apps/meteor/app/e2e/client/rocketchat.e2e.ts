@@ -272,7 +272,7 @@ class E2E extends Emitter {
 		delete this.instancesByRoomId[rid];
 	}
 
-	async persistKeys(
+	private async persistKeys(
 		{ public_key, private_key }: KeyPair,
 		password: string,
 		{ force }: { force: boolean } = { force: false },
