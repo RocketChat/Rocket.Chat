@@ -246,7 +246,8 @@ export class AppLivechatBridge extends LivechatBridge {
 			username,
 			name,
 			type,
-		};
+			userType: 'user',
+		} as const;
 
 		let userId;
 		let transferredTo;
