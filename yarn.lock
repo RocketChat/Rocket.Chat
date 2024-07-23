@@ -9719,6 +9719,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/mock-providers@workspace:packages/mock-providers"
   dependencies:
+    "@rocket.chat/ddp-client": "workspace:~"
     "@rocket.chat/i18n": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:*"
     "@storybook/react": ~6.5.16

@@ -1,7 +1,6 @@
 import type { RestClientInterface } from '@rocket.chat/api-client';
-import type { SDK, ClientStream, StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ddp-client';
+import type { SDK, ClientStream, StreamKeys, StreamNames, StreamerCallbackArgs, ServerMethods } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 
