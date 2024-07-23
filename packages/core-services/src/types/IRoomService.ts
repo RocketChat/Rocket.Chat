@@ -1,4 +1,4 @@
-import type { AtLeast, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom, IUser, SidepanelItems } from '@rocket.chat/core-typings';
 
 export interface ISubscriptionExtraData {
 	open: boolean;
@@ -24,6 +24,9 @@ export interface ICreateRoomParams {
 	readOnly?: boolean;
 	extraData?: Partial<ICreateRoomExtraData>;
 	options?: ICreateRoomOptions;
+	sidepanel?: {
+		items: [SidepanelItems, SidepanelItems?];
+	};
 }
 export interface IRoomService {
 	addMember(uid: string, rid: string): Promise<boolean>;

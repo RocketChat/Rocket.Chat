@@ -1,4 +1,4 @@
-import type { IRole, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IRole, IRoom, ITeam, IUser, SidepanelItems } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
@@ -89,6 +89,9 @@ export type TeamsEndpoints = {
 				};
 			};
 			owner?: IUser['_id'];
+			sidepanel?: {
+				items: [SidepanelItems, SidepanelItems?];
+			};
 		}) => {
 			team: ITeam;
 		};

@@ -82,10 +82,11 @@ API.v1.addRoute(
 					members: Match.Maybe([String]),
 					room: Match.Maybe(Match.Any),
 					owner: Match.Maybe(String),
+					sidepanel: Match.Maybe(Match.Any),
 				}),
 			);
 
-			const { name, type, members, room, owner } = this.bodyParams;
+			const { name, type, members, room, owner, sidepanel } = this.bodyParams;
 
 			const team = await Team.create(this.userId, {
 				team: {
@@ -95,6 +96,7 @@ API.v1.addRoute(
 				room,
 				members,
 				owner,
+				sidepanel,
 			});
 
 			return API.v1.success({ team });
