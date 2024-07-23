@@ -5073,7 +5073,6 @@
   "Conversational_transcript": "Экспорт содержимого диалога",
   "Always_send_the_transcript_to_contacts_at_the_end_of_the_conversations": "Всегда отправлять содержимое чата контактам по окончанию диалога.",
   "Omnichannel_transcript_email": "Отправить содержимое диалога по электронной почте.",
-  "Accounts_Default_User_Preferences_omnichannelTranscriptEmail_Description": "Всегда отправлять содержимое чата контактам по окончанию диалога.",
   "Omnichannel_transcript_pdf": "Экспорт содержимого чата в PDF.",
   "Accounts_Default_User_Preferences_omnichannelTranscriptPDF_Description": "Всегда экспортировать содержимое чата по окончанию диалога.",
   "User_Status": "Пользовательский статус",
