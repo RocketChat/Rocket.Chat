@@ -1409,6 +1409,7 @@ class LivechatClass {
 					username,
 				},
 				groupable: false,
+				...(transferData.transferredBy.userType === 'visitor' && { token: room.v.token }),
 				transferData: {
 					transferredBy,
 					ts: new Date(),
