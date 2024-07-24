@@ -76,11 +76,10 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage(message);
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Start a Discussion"]').click();
-		await page.locator('input[name="topic"]').fill('1');
-		await page.getByRole('dialog').getByRole('button', { name: 'create' }).click();
-		// There is some condition checking if the form has been edited.
-		// the "Create" button should not be disabled if starting a discussion from a message
-		// TODO: Fix form and remove line below
+		const createButton = page.getByRole('dialog').getByRole('button', { name: 'create' });
+		// Name should be prefilled thus making the create button enabled
+		await expect(createButton).not.toBeDisabled();
+		await createButton.click();
 		await expect(page.locator('header h1')).toHaveText(message);
 	});
 
