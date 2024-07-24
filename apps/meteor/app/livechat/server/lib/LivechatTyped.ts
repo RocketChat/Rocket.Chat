@@ -302,12 +302,6 @@ class LivechatClass {
 
 		const transcriptRequested =
 			!!transcriptRequest || (!settings.get('Livechat_enable_transcript') && settings.get('Livechat_transcript_send_always'));
-		const message = {
-			t: 'livechat-close',
-			msg: comment,
-			groupable: false,
-			transcriptRequested,
-		};
 
 		// Retrieve the closed room
 		const newRoom = await LivechatRooms.findOneById(rid);
@@ -317,7 +311,17 @@ class LivechatClass {
 		}
 
 		this.logger.debug(`Sending closing message to room ${room._id}`);
-		await sendMessage(chatCloser, message, newRoom);
+		await sendMessage(
+			chatCloser,
+			{
+				t: 'livechat-close',
+				msg: comment,
+				groupable: false,
+				transcriptRequested,
+				...(isRoomClosedByVisitorParams(params) && { token: chatCloser.token }),
+			},
+			newRoom,
+		);
 
 		if (settings.get('Livechat_enable_transcript') && !settings.get('Livechat_transcript_send_always')) {
 			await Message.saveSystemMessage('command', rid, 'promptTranscript', closeData.closedBy);
@@ -748,7 +752,9 @@ class LivechatClass {
 			visitorDataToUpdate.visitorEmails = [{ address: visitorEmail }];
 		}
 
-		if (department) {
+		const livechatVisitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
+
+		if (livechatVisitor?.department !== department && department) {
 			Livechat.logger.debug(`Attempt to find a department with id/name ${department}`);
 			const dep = await LivechatDepartment.findOneByIdOrName(department, { projection: { _id: 1 } });
 			if (!dep) {
@@ -758,8 +764,6 @@ class LivechatClass {
 			Livechat.logger.debug(`Assigning visitor ${token} to department ${dep._id}`);
 			visitorDataToUpdate.department = dep._id;
 		}
-
-		const livechatVisitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 
 		visitorDataToUpdate.token = livechatVisitor?.token || token;
 
@@ -1303,7 +1307,7 @@ class LivechatClass {
 		if (guest.name) {
 			message.alias = guest.name;
 		}
-		return Object.assign(await sendMessage(guest, message, room), {
+		return Object.assign(await sendMessage(guest, { ...message, token: guest.token }, room), {
 			newRoom,
 			showConnecting: this.showConnecting(),
 		});
@@ -1422,7 +1426,7 @@ class LivechatClass {
 				_id: String,
 				username: String,
 				name: Match.Maybe(String),
-				type: String,
+				userType: String,
 			}),
 		);
 
@@ -1430,34 +1434,31 @@ class LivechatClass {
 		const scopeData = scope || (nextDepartment ? 'department' : 'agent');
 		this.logger.info(`Storing new chat transfer of ${room._id} [Transfered by: ${_id} to ${scopeData}]`);
 
-		const transfer = {
-			transferData: {
-				transferredBy,
+		await sendMessage(
+			transferredBy,
+			{
+				t: 'livechat_transfer_history',
+				rid: room._id,
 				ts: new Date(),
-				scope: scopeData,
-				comment,
-				...(previousDepartment && { previousDepartment }),
-				...(nextDepartment && { nextDepartment }),
-				...(transferredTo && { transferredTo }),
+				msg: '',
+				u: {
+					_id,
+					username,
+				},
+				groupable: false,
+				...(transferData.transferredBy.userType === 'visitor' && { token: room.v.token }),
+				transferData: {
+					transferredBy,
+					ts: new Date(),
+					scope: scopeData,
+					comment,
+					...(previousDepartment && { previousDepartment }),
+					...(nextDepartment && { nextDepartment }),
+					...(transferredTo && { transferredTo }),
+				},
 			},
-		};
-
-		const type = 'livechat_transfer_history';
-		const transferMessage = {
-			t: type,
-			rid: room._id,
-			ts: new Date(),
-			msg: '',
-			u: {
-				_id,
-				username,
-			},
-			groupable: false,
-		};
-
-		Object.assign(transferMessage, transfer);
-
-		await sendMessage(transferredBy, transferMessage, room);
+			room,
+		);
 	}
 
 	async saveGuest(guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string }, userId: string) {

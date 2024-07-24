@@ -116,7 +116,7 @@ class AutoTransferChatSchedulerClass {
 
 		await forwardRoomToAgent(room, {
 			userId: agent.agentId,
-			transferredBy,
+			transferredBy: { ...transferredBy, userType: 'user' },
 			transferredTo: agent,
 			scope: 'autoTransferUnansweredChatsToAgent',
 			comment: timeoutDuration,
