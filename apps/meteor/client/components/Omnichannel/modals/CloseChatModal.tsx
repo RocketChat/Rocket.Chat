@@ -52,6 +52,7 @@ const CloseChatModal = ({
 	} = useForm();
 
 	const commentRequired = useSetting('Livechat_request_comment_when_closing_conversation') as boolean;
+	const alwaysSendTranscript = useSetting<boolean>('Livechat_transcript_send_always');
 	const customSubject = useSetting<string>('Livechat_transcript_email_subject');
 	const [tagRequired, setTagRequired] = useState(false);
 
@@ -66,7 +67,7 @@ const CloseChatModal = ({
 	const transcriptPDFPermission = usePermission('request-pdf-transcript');
 	const transcriptEmailPermission = usePermission('send-omnichannel-chat-transcript');
 
-	const canSendTranscriptEmail = transcriptEmailPermission && visitorEmail;
+	const canSendTranscriptEmail = transcriptEmailPermission && visitorEmail && !alwaysSendTranscript;
 	const canSendTranscriptPDF = transcriptPDFPermission && hasLicense;
 	const canSendTranscript = canSendTranscriptEmail || canSendTranscriptPDF;
 
@@ -78,7 +79,7 @@ const CloseChatModal = ({
 		({ comment, tags, transcriptPDF, transcriptEmail, subject }): void => {
 			const preferences = {
 				omnichannelTranscriptPDF: !!transcriptPDF,
-				omnichannelTranscriptEmail: !!transcriptEmail,
+				omnichannelTranscriptEmail: alwaysSendTranscript ? true : !!transcriptEmail,
 			};
 			const requestData = transcriptEmail && visitorEmail ? { email: visitorEmail, subject } : undefined;
 
@@ -98,7 +99,7 @@ const CloseChatModal = ({
 				onConfirm(comment, tags, preferences, requestData);
 			}
 		},
-		[commentRequired, tagRequired, visitorEmail, errors, setError, t, onConfirm],
+		[commentRequired, tagRequired, visitorEmail, errors, setError, t, onConfirm, alwaysSendTranscript],
 	);
 
 	const cannotSubmit = useMemo(() => {
