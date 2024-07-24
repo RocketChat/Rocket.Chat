@@ -777,6 +777,10 @@ describe('[Users]', function () {
 		let deactivatedUser;
 		let user2;
 		let user2Credentials;
+		let user3;
+		let user3Credentials;
+		let group;
+		let inviteToken;
 
 		before(async () => {
 			const username = `deactivated_${Date.now()}${apiUsername}`;
@@ -833,7 +837,35 @@ describe('[Users]', function () {
 		before(async () => {
 			user2 = await createUser({ joinDefaultChannels: false });
 			user2Credentials = await login(user2.username, password);
+			user3 = await createUser({ joinDefaultChannels: false });
+			user3Credentials = await login(user3.username, password);
 		});
+
+		before('Create a group', async () => {
+			group = (
+				await createRoom({
+					type: 'p',
+					name: `group.test.${Date.now()}-${Math.random()}`,
+				})
+			).body.group;
+		});
+
+		before('Create invite link', async () => {
+			inviteToken = (
+				await request.post(api('findOrCreateInvite')).set(credentials).send({
+					rid: group._id,
+					days: 0,
+					maxUses: 0,
+				})
+			).body._id;
+		});
+
+		after('Remove invite link', async () =>
+			request
+				.delete(api(`removeInvite/${inviteToken}`))
+				.set(credentials)
+				.send(),
+		);
 
 		after(() =>
 			Promise.all([
@@ -841,6 +873,8 @@ describe('[Users]', function () {
 				deleteUser(deactivatedUser),
 				deleteUser(user),
 				deleteUser(user2),
+				deleteUser(user3),
+				deleteRoom({ type: 'p', roomId: group._id }),
 				updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']),
 				updateSetting('API_Apply_permission_view-outside-room_on_users-list', false),
 			]),
@@ -962,6 +996,70 @@ describe('[Users]', function () {
 			await updateSetting('API_Apply_permission_view-outside-room_on_users-list', true);
 
 			await request.get(api('users.list')).set(user2Credentials).expect('Content-Type', 'application/json').expect(403);
+		});
+
+		it('should exclude inviteToken in the user item for privileged users even when fields={inviteToken:1} is specified', async () => {
+			await request
+				.post(api('useInviteToken'))
+				.set(user2Credentials)
+				.send({ token: inviteToken })
+				.expect(200)
+				.expect('Content-Type', 'application/json')
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room');
+					expect(res.body.room).to.have.property('rid', group._id);
+				});
+
+			await request
+				.get(api('users.list'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.query({
+					fields: JSON.stringify({ inviteToken: 1 }),
+					sort: JSON.stringify({ inviteToken: -1 }),
+					count: 100,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+					res.body.users.forEach((user) => {
+						expect(user).to.not.have.property('inviteToken');
+					});
+				});
+		});
+
+		it('should exclude inviteToken in the user item for normal users even when fields={inviteToken:1} is specified', async () => {
+			await updateSetting('API_Apply_permission_view-outside-room_on_users-list', false);
+			await request
+				.post(api('useInviteToken'))
+				.set(user3Credentials)
+				.send({ token: inviteToken })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room');
+					expect(res.body.room).to.have.property('rid', group._id);
+				});
+
+			await request
+				.get(api('users.list'))
+				.set(user3Credentials)
+				.expect('Content-Type', 'application/json')
+				.query({
+					fields: JSON.stringify({ inviteToken: 1 }),
+					sort: JSON.stringify({ inviteToken: -1 }),
+					count: 100,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users');
+					res.body.users.forEach((user) => {
+						expect(user).to.not.have.property('inviteToken');
+					});
+				});
 		});
 	});
 
