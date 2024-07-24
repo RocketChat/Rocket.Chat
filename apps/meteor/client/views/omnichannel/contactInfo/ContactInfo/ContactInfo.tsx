@@ -35,7 +35,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 	const getCustomFields = useEndpoint('GET', '/v1/livechat/custom-fields');
 	const { data: { customFields } = {} } = useQuery(['/v1/livechat/custom-fields'], () => getCustomFields());
 
-	const { name, emails, phones, createdAt, lastChat, customFields: userCustomFields } = contact;
+	const { name, emails, phones, createdAt, lastChat, contactManager, customFields: userCustomFields } = contact;
 
 	const showContactHistory = (currentRouteName === 'live' || currentRouteName === 'omnichannel-directory') && lastChat;
 
@@ -94,7 +94,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 			{context === 'details' && (
 				<ContactInfoDetails
 					createdAt={createdAt}
-					// contactManager={contactManager}
+					contactManager={contactManager}
 					phones={phones?.map(({ phoneNumber }) => phoneNumber)}
 					emails={emails?.map(({ address }) => address)}
 					customFieldEntries={customFieldEntries}

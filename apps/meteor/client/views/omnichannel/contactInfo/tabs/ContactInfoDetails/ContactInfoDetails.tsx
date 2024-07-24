@@ -16,9 +16,7 @@ type ContactInfoDetailsProps = {
 	phones?: string[];
 	createdAt: string;
 	customFieldEntries: [string, string][];
-	contactManager?: {
-		username: string;
-	};
+	contactManager?: string;
 };
 
 const ContactInfoDetails = ({ emails, phones, createdAt, customFieldEntries, contactManager }: ContactInfoDetailsProps) => {
@@ -29,7 +27,7 @@ const ContactInfoDetails = ({ emails, phones, createdAt, customFieldEntries, con
 		<ContextualbarScrollableContent>
 			{emails?.length ? <ContactInfoDetailsGroup type='email' label={t('Email')} values={emails} /> : null}
 			{phones?.length ? <ContactInfoDetailsGroup type='phone' label={t('Phone_number')} values={phones} /> : null}
-			{contactManager && <ContactManagerInfo username={contactManager.username} />}
+			{contactManager && <ContactManagerInfo userId={contactManager} />}
 			<Margins block={4}>
 				{createdAt && (
 					<Field>
