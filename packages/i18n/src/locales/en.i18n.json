@@ -6278,6 +6278,7 @@
   "Omnichannel_transcript_pdf": "Export chat transcript as PDF.",
   "Accounts_Default_User_Preferences_omnichannelTranscriptPDF_Description": "Always export the transcript as PDF at the end of conversations.",
   "Contact_email": "Contact email",
+  "Contact_identification": "Contact identification",
   "Customer": "Customer",
   "Time": "Time",
   "Omnichannel_Agent": "Omnichannel Agent",
