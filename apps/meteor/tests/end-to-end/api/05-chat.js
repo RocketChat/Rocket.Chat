@@ -1,3 +1,4 @@
+import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 
@@ -1108,6 +1109,27 @@ describe('[Chat]', function () {
 					expect(res.body).to.have.property('error', 'Not enough permission');
 				})
 				.end(done);
+		});
+
+		it('should fail if message is a system message', () => {
+			const msgId = Random.id();
+			return request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						_id: msgId,
+						rid: 'GENERAL',
+						msg: 'xss',
+						t: 'subscription-role-added',
+						role: '<h1>XSS<iframe srcdoc=\'<script src="/file-upload/664b3f90c4d3e60470c5e34a/js.js"></script>\'></iframe>',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
 		});
 	});
 
