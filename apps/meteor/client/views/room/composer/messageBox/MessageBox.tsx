@@ -192,6 +192,10 @@ const MessageBox = ({
 		const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
 
 		if (isSubmitKey) {
+			if (popup) {
+				return;
+			}
+
 			const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
 			const isSending = (sendOnEnter && !withModifier) || (!sendOnEnter && withModifier);
 
@@ -357,7 +361,8 @@ const MessageBox = ({
 		[handler],
 	);
 
-	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef, keyDownHandlerCallbackRef);
+	// TODO: Fix this! Parameter order matters here!
+	const mergedRefs = useMessageComposerMergedRefs(keyDownHandlerCallbackRef, c, textareaRef, callbackRef, autofocusRef);
 
 	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
 
