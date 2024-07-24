@@ -388,6 +388,39 @@ export const createOmniSettings = () =>
 			});
 		});
 
+		await settingsRegistry.addGroup('Omnichannel', async function () {
+			await this.section('Contact Identification', async function () {
+				await this.add('Livechat_Block_Unknown_Contacts', false, {
+					type: 'boolean',
+					public: true,
+					enableQuery: omnichannelEnabledQuery,
+					group: 'Omnichannel',
+				});
+
+				await this.add('Livechat_Block_Unverified_Contacts', false, {
+					type: 'boolean',
+					public: true,
+					enableQuery: omnichannelEnabledQuery,
+					group: 'Omnichannel',
+				});
+
+				await this.add('Livechat_Contact_Verification_App', '', {
+					type: 'select',
+					public: true,
+					values: [{ key: 'VerifyChat', i18nLabel: 'VerifyChat' }],
+					enableQuery: omnichannelEnabledQuery,
+					group: 'Omnichannel',
+				});
+
+				await this.add('Livechat_Request_Verification_On_First_Contact_Only', false, {
+					type: 'boolean',
+					public: true,
+					enableQuery: omnichannelEnabledQuery,
+					group: 'Omnichannel',
+				});
+			});
+		});
+
 		await this.add('Livechat_continuous_sound_notification_new_livechat_room', false, {
 			type: 'boolean',
 			group: 'Omnichannel',
