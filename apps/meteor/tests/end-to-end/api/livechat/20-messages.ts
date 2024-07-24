@@ -39,7 +39,7 @@ describe('LIVECHAT - messages', () => {
 
 			await sendMessage(roomId, 'Hello from visitor', token);
 			const agentMsgSentence = faker.lorem.sentence();
-			const agentMsg = await sendAgentMessage(roomId, credentials, agentMsgSentence);
+			const agentMsg = await sendAgentMessage(roomId, agentMsgSentence);
 
 			const siteUrl = process.env.SITE_URL || process.env.TEST_API_URL || 'http://localhost:3000';
 

@@ -240,7 +240,7 @@ export const uploadFile = (roomId: string, visitorToken: string): Promise<IMessa
 };
 
 // Sends a message using sendMessage method from agent
-export const sendAgentMessage = (roomId: string, userCredentials: Credentials = credentials, msg?: string): Promise<IMessage> => {
+export const sendAgentMessage = (roomId: string, msg?: string, userCredentials: Credentials = credentials): Promise<IMessage> => {
 	return new Promise((resolve, reject) => {
 		void request
 			.post(methodCall('sendMessage'))

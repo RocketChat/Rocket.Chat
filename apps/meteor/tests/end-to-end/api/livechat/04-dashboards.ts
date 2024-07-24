@@ -779,11 +779,10 @@ describe('LIVECHAT - dashboards', function () {
 		});
 	});
 
-	(IS_EE ? describe : describe.skip)('[livechat/analytics/agent-overview] - Average first response time', () => {
+	describe('[livechat/analytics/agent-overview] - Average first response time', () => {
 		let agent: { credentials: Credentials; user: IUser & { username: string } };
 		let originalFirstResponseTimeInSeconds: number;
 		let roomId: string;
-		let visitorToken: string;
 		const firstDelayInS = 4;
 		const secondDelayInS = 8;
 
@@ -795,12 +794,8 @@ describe('LIVECHAT - dashboards', function () {
 			await deleteUser(agent.user);
 		});
 
-		afterEach(() => Promise.all([deleteVisitor(visitorToken), closeOmnichannelRoom(roomId)]));
-
 		it('should return no average response time for an agent if no response has been sent in the period', async () => {
-			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
-			roomId = response.room._id;
-			visitorToken = response.visitor.token;
+			await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 
@@ -821,10 +816,9 @@ describe('LIVECHAT - dashboards', function () {
 		it('should only consider a first response has been sent when an agent sends a text message', async () => {
 			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 			roomId = response.room._id;
-			visitorToken = response.visitor.token;
 
 			await sleep(firstDelayInS * 1000);
-			await sendAgentMessage(roomId, agent.credentials);
+			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
 
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 			const result = await request
@@ -852,10 +846,9 @@ describe('LIVECHAT - dashboards', function () {
 		it('should correctly calculate the average time of first responses for an agent', async () => {
 			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 			roomId = response.room._id;
-			visitorToken = response.visitor.token;
 
 			await sleep(secondDelayInS * 1000);
-			await sendAgentMessage(roomId, agent.credentials);
+			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
 
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 			const result = await request
@@ -883,11 +876,10 @@ describe('LIVECHAT - dashboards', function () {
 		});
 	});
 
-	(IS_EE ? describe : describe.skip)('[livechat/analytics/agent-overview] - Best first response time', () => {
+	describe('[livechat/analytics/agent-overview] - Best first response time', () => {
 		let agent: { credentials: Credentials; user: IUser & { username: string } };
 		let originalBestFirstResponseTimeInSeconds: number;
 		let roomId: string;
-		let visitorToken: string;
 
 		before(async () => {
 			agent = await createAnOnlineAgent();
@@ -895,12 +887,8 @@ describe('LIVECHAT - dashboards', function () {
 
 		after(() => deleteUser(agent.user));
 
-		afterEach(() => Promise.all([deleteVisitor(visitorToken), closeOmnichannelRoom(roomId)]));
-
 		it('should return no best response time for an agent if no response has been sent in the period', async () => {
-			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
-			roomId = response.room._id;
-			visitorToken = response.visitor.token;
+			await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 
@@ -921,12 +909,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should only consider a first response has been sent when an agent sends a text message', async () => {
 			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 			roomId = response.room._id;
-			visitorToken = response.visitor.token;
 
 			const delayInS = 4;
 			await sleep(delayInS * 1000);
 
-			await sendAgentMessage(roomId, agent.credentials);
+			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
 
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 			const result = await request
@@ -954,12 +941,11 @@ describe('LIVECHAT - dashboards', function () {
 		it('should correctly calculate the best first response time for an agent and there are multiple first responses in the period', async () => {
 			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 			roomId = response.room._id;
-			visitorToken = response.visitor.token;
 
 			const delayInS = 6;
 			await sleep(delayInS * 1000);
 
-			await sendAgentMessage(roomId, agent.credentials);
+			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
 
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 			const result = await request
