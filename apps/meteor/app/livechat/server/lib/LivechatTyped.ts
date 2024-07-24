@@ -40,7 +40,7 @@ import {
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { Filter, FindCursor } from 'mongodb';
+import type { Filter, FindCursor, ClientSession } from 'mongodb';
 import UAParser from 'ua-parser-js';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -74,6 +74,7 @@ import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
 import { sendTranscript as sendTranscriptFunc } from './sendTranscript';
+import { client } from '../../../../server/database/utils';
 
 type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
 	id?: string;
@@ -139,6 +140,11 @@ type ICRMData = {
 	};
 	crmData?: IOmnichannelRoom['crmData'];
 };
+		const isRoomClosedByUserParams = (params: CloseRoomParams): params is CloseRoomParamsByUser =>
+			(params as CloseRoomParamsByUser).user !== undefined;
+		const isRoomClosedByVisitorParams = (params: CloseRoomParams): params is CloseRoomParamsByVisitor =>
+			(params as CloseRoomParamsByVisitor).visitor !== undefined;
+
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
 
@@ -218,13 +224,91 @@ class LivechatClass {
 	}
 
 	async closeRoom(params: CloseRoomParams): Promise<void> {
+		let newRoom: IOmnichannelRoom;
+		let chatCloser: any;
+
+		const session = client.startSession();
+		try {
+			session.startTransaction();
+			const { room, closedBy } = await this.doCloseRoom(params, session);
+			await session.commitTransaction();
+
+			newRoom = room;
+			chatCloser = closedBy;
+		} catch (e) {
+			this.logger.error(e);
+			await session.abortTransaction();
+			throw new Error('error-room-closing-failed-try-again');
+		} finally {
+			await session.endSession();
+		}
+
+		// Note: when reaching this point, the room has been closed
+		// Transaction is commited and so these messages can be sent here.
+		return this.afterRoomClosed(newRoom, chatCloser, params);
+	}
+
+	async afterRoomClosed(newRoom: IOmnichannelRoom, chatCloser: any, params: CloseRoomParams): Promise<void> {
+		// Note: we are okay with these messages being sent outside of the transaction. The process of sending a message
+		// is huge and involves multiple db calls. Making it transactionable this way would be really hard.
+		// And passing just _some_ actions to the transaction creates some deadlocks since messages are updated in the afterSaveMessages callbacks.
+		const transcriptRequested =
+			!!params.room.transcriptRequest || (!settings.get('Livechat_enable_transcript') && settings.get('Livechat_transcript_send_always'));
+		this.logger.debug(`Sending closing message to room ${newRoom._id}`);
+		await sendMessage(
+			chatCloser,
+			{
+				t: 'livechat-close',
+				msg: params.comment,
+				groupable: false,
+				transcriptRequested,
+				...(isRoomClosedByVisitorParams(params) && { token: chatCloser.token }),
+			},
+			newRoom,
+		);
+
+		if (settings.get('Livechat_enable_transcript') && !settings.get('Livechat_transcript_send_always')) {
+			await Message.saveSystemMessage('command', newRoom._id, 'promptTranscript', { _id: chatCloser._id, username: chatCloser.username });
+		}
+
+		this.logger.debug(`Running callbacks for room ${newRoom._id}`);
+
+		process.nextTick(() => {
+			/**
+			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
+			 * in the next major version of the Apps-Engine
+			 */
+			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
+			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
+		});
+
+		const visitor = isRoomClosedByVisitorParams(params) ? params.visitor : undefined;
+		const opts = await parseTranscriptRequest(params.room, params.options, visitor);
+		if (process.env.TEST_MODE) {
+			await callbacks.run('livechat.closeRoom', {
+				room: newRoom,
+				options: opts,
+			});
+		} else {
+			callbacks.runAsync('livechat.closeRoom', {
+				room: newRoom,
+				options: opts,
+			});
+		}
+
+		void notifyOnRoomChangedById(newRoom._id);
+
+		this.logger.debug(`Room ${newRoom._id} was closed`);
+	}
+
+	async doCloseRoom(params: CloseRoomParams, session: ClientSession): Promise<{ room: IOmnichannelRoom; closedBy: any }> {
 		const { comment } = params;
 		const { room } = params;
 
 		this.logger.debug(`Attempting to close room ${room._id}`);
 		if (!room || !isOmnichannelRoom(room) || !room.open) {
 			this.logger.debug(`Room ${room._id} is not open`);
-			return;
+			throw new Error('error-room-closed');
 		}
 
 		const commentRequired = settings.get('Livechat_request_comment_when_closing_conversation');
@@ -236,7 +320,7 @@ class LivechatClass {
 		this.logger.debug(`Resolved chat tags for room ${room._id}`);
 
 		const now = new Date();
-		const { _id: rid, servedBy, transcriptRequest } = room;
+		const { _id: rid, servedBy } = room;
 		const serviceTimeDuration = servedBy && (now.getTime() - new Date(servedBy.ts).getTime()) / 1000;
 
 		const closeData: IOmnichannelRoomClosingInfo = {
@@ -246,11 +330,6 @@ class LivechatClass {
 			...options,
 		};
 		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.chatDuration})`);
-
-		const isRoomClosedByUserParams = (params: CloseRoomParams): params is CloseRoomParamsByUser =>
-			(params as CloseRoomParamsByUser).user !== undefined;
-		const isRoomClosedByVisitorParams = (params: CloseRoomParams): params is CloseRoomParamsByVisitor =>
-			(params as CloseRoomParamsByVisitor).visitor !== undefined;
 
 		let chatCloser: any;
 		if (isRoomClosedByUserParams(params)) {
@@ -277,9 +356,9 @@ class LivechatClass {
 
 		this.logger.debug(`Updating DB for room ${room._id} with close data`);
 
-		const inquiry = await LivechatInquiry.findOneByRoomId(rid);
+		const inquiry = await LivechatInquiry.findOneByRoomId(rid, { session });
 
-		const removedInquiry = await LivechatInquiry.removeByRoomId(rid);
+		const removedInquiry = await LivechatInquiry.removeByRoomId(rid, { session });
 		if (removedInquiry && removedInquiry.deletedCount !== 1) {
 			throw new Error('Error removing inquiry');
 		}
@@ -287,70 +366,28 @@ class LivechatClass {
 			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
 		}
 
-		const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData);
+		const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData, { session });
 		if (!updatedRoom || updatedRoom.modifiedCount !== 1) {
 			throw new Error('Error closing room');
 		}
 
-		await Subscriptions.removeByRoomId(rid);
+		const subs = await Subscriptions.countByRoomId(rid, { session });
+		if (subs) {
+			const removedSubs = await Subscriptions.removeByRoomId(rid, { session });
+			if (removedSubs !== subs) {
+				throw new Error('Error removing subscriptions');
+			}
+		}
 
 		this.logger.debug(`DB updated for room ${room._id}`);
 
-		const transcriptRequested =
-			!!transcriptRequest || (!settings.get('Livechat_enable_transcript') && settings.get('Livechat_transcript_send_always'));
-
 		// Retrieve the closed room
-		const newRoom = await LivechatRooms.findOneById(rid);
-
+		const newRoom = await LivechatRooms.findOneById(rid, { session });
 		if (!newRoom) {
 			throw new Error('Error: Room not found');
 		}
 
-		this.logger.debug(`Sending closing message to room ${room._id}`);
-		await sendMessage(
-			chatCloser,
-			{
-				t: 'livechat-close',
-				msg: comment,
-				groupable: false,
-				transcriptRequested,
-				...(isRoomClosedByVisitorParams(params) && { token: chatCloser.token }),
-			},
-			newRoom,
-		);
-
-		if (settings.get('Livechat_enable_transcript') && !settings.get('Livechat_transcript_send_always')) {
-			await Message.saveSystemMessage('command', rid, 'promptTranscript', closeData.closedBy);
-		}
-
-		this.logger.debug(`Running callbacks for room ${newRoom._id}`);
-
-		process.nextTick(() => {
-			/**
-			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
-			 * in the next major version of the Apps-Engine
-			 */
-			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
-			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
-		});
-
-		const visitor = isRoomClosedByVisitorParams(params) ? params.visitor : undefined;
-		const opts = await parseTranscriptRequest(params.room, options, visitor);
-		if (process.env.TEST_MODE) {
-			await callbacks.run('livechat.closeRoom', {
-				room: newRoom,
-				options: opts,
-			});
-		} else {
-			callbacks.runAsync('livechat.closeRoom', {
-				room: newRoom,
-				options: opts,
-			});
-		}
-
-		void notifyOnRoomChangedById(newRoom._id);
-
-		this.logger.debug(`Room ${newRoom._id} was closed`);
+		return { room: newRoom, closedBy: chatCloser };
 	}
 
 	async getRequiredDepartment(onlineRequired = true) {
