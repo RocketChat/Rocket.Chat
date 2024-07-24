@@ -17,6 +17,7 @@ import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
+import { MessageTypes } from '../../../ui-utils/lib/MessageTypes';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 
 const logger = new Logger('Livechat-SendTranscript');
@@ -63,6 +64,7 @@ export async function sendTranscript({
 	}
 
 	const showAgentInfo = settings.get<boolean>('Livechat_show_agent_info');
+	const showSystemMessages = settings.get<boolean>('Livechat_transcript_show_system_messages');
 	const closingMessage = await Messages.findLivechatClosingMessage(rid, { projection: { ts: 1 } });
 	const ignoredMessageTypes: MessageTypesValues[] = [
 		'livechat_navigation_history',
@@ -71,12 +73,14 @@ export async function sendTranscript({
 		'livechat-close',
 		'livechat-started',
 		'livechat_video_call',
+		'omnichannel_priority_change_history',
 	];
 	const acceptableImageMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
 	const messages = await Messages.findVisibleByRoomIdNotContainingTypesBeforeTs(
 		rid,
 		ignoredMessageTypes,
 		closingMessage?.ts ? new Date(closingMessage.ts) : new Date(),
+		showSystemMessages,
 		{
 			sort: { ts: 1 },
 		},
@@ -98,7 +102,18 @@ export async function sendTranscript({
 			author = showAgentInfo ? message.u.name || message.u.username : i18n.t('Agent', { lng: userLanguage });
 		}
 
-		let messageContent = message.msg;
+		const isSystemMessage = MessageTypes.isSystemMessage(message);
+		const messageType = isSystemMessage && MessageTypes.getType(message);
+
+		let messageContent = messageType
+			? `<i>${i18n.t(
+					messageType.message,
+					messageType.data
+						? { ...messageType.data(message), interpolation: { escapeValue: false } }
+						: { interpolation: { escapeValue: false } },
+			  )}</i>`
+			: message.msg;
+
 		let filesHTML = '';
 
 		if (message.attachments && message.attachments?.length > 0) {
