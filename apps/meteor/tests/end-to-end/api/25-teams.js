@@ -21,6 +21,8 @@ describe('[Teams]', () => {
 	let testUser2;
 	const testUserCredentials = {};
 
+	before(() => updatePermission('create-team', ['admin', 'user']));
+
 	before('Create test users', (done) => {
 		let username = `user.test.${Date.now()}`;
 		let email = `${username}@rocket.chat`;
