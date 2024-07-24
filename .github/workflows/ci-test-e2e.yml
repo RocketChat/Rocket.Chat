@@ -281,7 +281,7 @@ jobs:
         if: failure()
         run: |
           docker compose -f docker-compose-ci.yml logs rocketchat
-          docker compose -f docker-compose-ci.yml traefik
+          docker compose -f docker-compose-ci.yml  logs traefik
 
       - name: Upload Traefik logs if E2E test failed
         if: failure()
