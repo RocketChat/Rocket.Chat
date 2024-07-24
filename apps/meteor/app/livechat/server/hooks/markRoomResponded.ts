@@ -28,6 +28,10 @@ callbacks.add(
 			return message;
 		}
 
+		let livechatInquiryResult;
+
+		const updates: Record<any, any> = { $set: {}, $unset: {} };
+
 		// Return YYYY-MM from moment
 		const monthYear = moment().format('YYYY-MM');
 		const isVisitorActive = await LivechatVisitors.isVisitorActiveOnPeriod(room.v._id, monthYear);
@@ -38,39 +42,39 @@ callbacks.add(
 		}
 
 		if (!room.v?.activity?.includes(monthYear)) {
-			const [, livechatInquiry] = await Promise.all([
-				LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear),
-				LivechatInquiry.markInquiryActiveForPeriod(room._id, monthYear),
-			]);
-			if (livechatInquiry) {
-				void notifyOnLivechatInquiryChanged(livechatInquiry, 'updated', { v: livechatInquiry.v });
-			}
+			updates.$set['v.activity'] = monthYear;
+
+			livechatInquiryResult = LivechatInquiry.markInquiryActiveForPeriod(room._id, monthYear);
 		}
 
 		if (room.responseBy) {
-			await LivechatRooms.setAgentLastMessageTs(room._id);
+			updates.$set['responseBy.lastMessageTs'] = new Date();
 		}
 
 		// check if room is yet awaiting for response from visitor
-		if (!room.waitingResponse) {
+		if (room.waitingResponse) {
+			// This is the first message from agent after visitor had last responded
+			const responseBy: IOmnichannelRoom['responseBy'] = room.responseBy || {
+				_id: message.u._id,
+				username: message.u.username,
+				firstResponseTs: new Date(message.ts),
+				lastMessageTs: new Date(message.ts),
+			};
+
 			// case where agent sends second message or any subsequent message in a room before visitor responds to the first message
 			// in this case, we just need to update the lastMessageTs of the responseBy object
-			if (room.responseBy) {
-				await LivechatRooms.setAgentLastMessageTs(room._id);
-			}
-			return message;
+			updates.$set.responseBy = responseBy;
+			updates.$unset.waitingResponse = 1;
 		}
 
-		// This is the first message from agent after visitor had last responded
-		const responseBy: IOmnichannelRoom['responseBy'] = room.responseBy || {
-			_id: message.u._id,
-			username: message.u.username,
-			firstResponseTs: new Date(message.ts),
-			lastMessageTs: new Date(message.ts),
-		};
+		// TODO replace LivechatRooms.updateOne by something more miningful
 
-		// this unsets waitingResponse and sets responseBy object
-		await LivechatRooms.setResponseByRoomId(room._id, responseBy);
+		const [livechatInquiry] = await Promise.all([livechatInquiryResult, LivechatRooms.updateOne({ rid: room._id }, updates)]);
+		if (livechatInquiry) {
+			void notifyOnLivechatInquiryChanged(livechatInquiry, 'updated', { v: livechatInquiry.v });
+		}
+
+		// TODO should notify room update as well?
 
 		return message;
 	},
