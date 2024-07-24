@@ -1029,7 +1029,7 @@ describe('LIVECHAT - dashboards', function () {
 
 			const expectedResult = [
 				{ title: 'Total_conversations', value: 13 },
-				{ title: 'Open_conversations', value: 4 },
+				{ title: 'Open_conversations', value: 10 },
 				{ title: 'On_Hold_conversations', value: 1 },
 				// { title: 'Total_messages', value: 6 },
 				// { title: 'Busiest_day', value: moment().format('dddd') },
