@@ -3161,6 +3161,7 @@
   "registration.component.form.emailOrUsername": "Email ou nome de utilizador",
   "registration.component.form.username": "Nome de utilizador",
   "registration.component.form.name": "Nome",
+  "registration.component.form.nameContainsInvalidChars": "O nome contém caracteres inválidos",
   "registration.component.form.userAlreadyExist": "O nome de utilizador já existe. Por favor, tente outro nome de utilizador.",
   "registration.component.form.emailAlreadyExists": "Email já registado",
   "registration.component.form.usernameAlreadyExists": "O nome de utilizador já existe. Por favor, tente outro nome de utilizador.",
