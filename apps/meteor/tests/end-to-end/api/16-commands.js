@@ -4,7 +4,7 @@ import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { sendSimpleMessage } from '../../data/chat.helper.js';
-import { createRoom } from '../../data/rooms.helper.js';
+import { createRoom, deleteRoom } from '../../data/rooms.helper.js';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper.js';
 
