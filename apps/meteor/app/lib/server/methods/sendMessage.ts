@@ -65,8 +65,6 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 
 	let { rid } = message;
 
-	check(rid, String);
-
 	// do not allow nested threads
 	if (message.tmid) {
 		const parentMessage = await Messages.findOneById(message.tmid, { projection: { rid: 1, tmid: 1 } });
@@ -80,6 +78,8 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 	if (!rid) {
 		throw new Error("The 'rid' property on the message object is missing.");
 	}
+
+	check(rid, String);
 
 	try {
 		const room = await canSendMessageAsync(rid, { uid, username: user.username, type: user.type });
@@ -132,6 +132,7 @@ Meteor.methods<ServerMethods>({
 		if (MessageTypes.isSystemMessage(message)) {
 			throw new Error("Cannot send system messages using 'sendMessage'");
 		}
+		
 
 		try {
 			return await executeSendMessage(uid, message, previewUrls);
