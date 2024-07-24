@@ -1,10 +1,16 @@
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
 import { adminUsername, password } from '../../data/user';
-import { createUser, login } from '../../data/users.helper';
+import { createUser, login, deleteUser } from '../../data/users.helper';
+
+const deleteTeam = async (credentials, teamName) => {
+	await request.post(api('teams.delete')).set(credentials).send({
+		teamName,
+	});
+};
 
 describe('[Teams]', () => {
 	before((done) => getCredentials(done));
@@ -19,6 +25,8 @@ describe('[Teams]', () => {
 	let testUser;
 	let testUser2;
 	const testUserCredentials = {};
+
+	before(() => updatePermission('create-team', ['admin', 'user']));
 
 	before('Create test users', (done) => {
 		let username = `user.test.${Date.now()}`;
@@ -498,17 +506,53 @@ describe('[Teams]', () => {
 	});
 
 	describe('/teams.list', () => {
-		before('Create test team', (done) => {
-			const teamName = `test-team-${Date.now()}`;
-			request
-				.post(api('teams.create'))
-				.set(credentials)
-				.send({
-					name: teamName,
+		const teamName = `test-team-list-${Date.now()}`;
+		let testUser1;
+		let testUser1Credentials;
+		let testTeamAdmin;
+		let testTeam1;
+
+		before('Create test users', async () => {
+			testUser1 = await createUser();
+		});
+
+		before('login test users', async () => {
+			testUser1Credentials = await login(testUser1.username, password);
+		});
+
+		before('Create test team', async () => {
+			await request.post(api('teams.create')).set(credentials).send({
+				name: teamName,
+				type: 0,
+			});
+
+			const team1Name = `test-team-1-${Date.now()}`;
+			const teamAdminName = `test-team-admin-${Date.now()}`;
+
+			testTeam1 = (
+				await request.post(api('teams.create')).set(testUser1Credentials).send({
+					name: team1Name,
 					type: 0,
 				})
-				.end(done);
+			).body.team;
+			testTeamAdmin = (
+				await request.post(api('teams.create')).set(credentials).send({
+					name: teamAdminName,
+					type: 0,
+				})
+			).body.team;
 		});
+
+		after(() =>
+			Promise.all([
+				deleteTeam(credentials, teamName),
+				deleteTeam(testUser1Credentials, testTeam1.name),
+				deleteTeam(credentials, testTeamAdmin.name),
+			]),
+		);
+
+		after('delete test users', () => deleteUser(testUser1));
+
 		it('should list all teams', (done) => {
 			request
 				.get(api('teams.list'))
@@ -521,7 +565,7 @@ describe('[Teams]', () => {
 					expect(res.body).to.have.property('offset', 0);
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('teams');
-					expect(res.body.teams).to.have.length.greaterThan(1);
+					expect(res.body.teams.length).to.be.gte(1);
 					expect(res.body.teams[0]).to.include.property('_id');
 					expect(res.body.teams[0]).to.include.property('_updatedAt');
 					expect(res.body.teams[0]).to.include.property('name');
@@ -535,6 +579,54 @@ describe('[Teams]', () => {
 					expect(res.body.teams[0]).to.include.property('numberOfUsers');
 				})
 				.end(done);
+		});
+
+		it("should prevent users from accessing unrelated teams via 'query' parameter", () => {
+			return request
+				.get(api('teams.list'))
+				.set(testUser1Credentials)
+				.query({
+					query: JSON.stringify({ _id: { $regex: '.*' } }),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.teams.length).to.be.gte(1);
+					expect(res.body.teams)
+						.to.be.an('array')
+						.and.to.satisfy(
+							(teams) => teams.every((team) => team.createdBy._id === testUser1._id),
+							`Expected only user's own teams to be returned, but found unowned teams.\n${JSON.stringify(
+								res.body.teams.filter((team) => team.createdBy._id !== testUser1._id),
+								null,
+								2,
+							)}`,
+						);
+				});
+		});
+
+		it("should prevent admins from accessing unrelated teams via 'query' parameter", () => {
+			return request
+				.get(api('teams.list'))
+				.set(credentials)
+				.query({
+					query: JSON.stringify({ _id: { $regex: '.*' } }),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.teams.length).to.be.gte(1);
+					expect(res.body.teams)
+						.to.be.an('array')
+						.and.to.satisfy(
+							(teams) => teams.every((team) => team.createdBy._id === credentials['X-User-Id']),
+							`Expected only admin's own teams to be returned, but found unowned teams.\n${JSON.stringify(
+								res.body.teams.filter((team) => team.createdBy._id !== credentials['X-User-Id']),
+								null,
+								2,
+							)}`,
+						);
+				});
 		});
 	});
 
