@@ -3271,6 +3271,8 @@
   "Livechat_email_transcript_has_been_requested": "The transcript has been requested. It may take a few seconds.",
   "Livechat_transcript_request_has_been_canceled": "The chat transcription request has been canceled.",
   "Livechat_transcript_sent": "Omnichannel transcript sent",
+  "Livechat_transcript_email_subject": "Custom email subject for transcript",
+  "Livechat_transcript_email_subject_Description": "Allows to customize the email subject for transcripts sent via email. It can be overriden by passing a `subject` property when closing a room. Leave it empty to use default subject.",
   "Livechat_transfer_return_to_the_queue": "{{from}} returned the chat to the queue",
   "Livechat_transfer_return_to_the_queue_with_a_comment": "{{from}} returned the chat to the queue with a comment: {{comment}}",
   "Livechat_transfer_return_to_the_queue_auto_transfer_unanswered_chat": "{{from}} returned the chat to the queue since it was unanswered for {{duration}} seconds",
