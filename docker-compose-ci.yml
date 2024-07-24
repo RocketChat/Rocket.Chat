@@ -166,9 +166,7 @@ services:
     command:
       - --providers.docker=true
       - '--log.level=DEBUG' # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
-      - '--log.filePath=/logs/traefik.log'
     ports:
       - 3000:80
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /logs/:/tmp/logs/
