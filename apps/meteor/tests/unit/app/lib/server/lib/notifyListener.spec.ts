@@ -77,8 +77,15 @@ describe('Message Broadcast Tests', () => {
 
 		const testCases = [
 			{
-				description: 'should return undefined if message is hidden or imported',
+				description: 'should return undefined if message is hidden',
 				message: { ...sampleMessage, _hidden: true },
+				hideSystemMessages: [],
+				useRealName: false,
+				expectedResult: undefined,
+			},
+			{
+				description: 'should return undefined if message is imported',
+				message: { ...sampleMessage, imported: true },
 				hideSystemMessages: [],
 				useRealName: false,
 				expectedResult: undefined,
@@ -96,6 +103,26 @@ describe('Message Broadcast Tests', () => {
 				hideSystemMessages: [],
 				useRealName: true,
 				expectedResult: { ...sampleMessage, u: { ...sampleMessage.u, name: 'Real User' } },
+			},
+			{
+				description: 'should return the message with mentions real name if useRealName is true',
+				message: {
+					...sampleMessage,
+					mentions: [
+						{ _id: 'mention1', username: 'mention1', name: 'Mention 1' },
+						{ _id: 'mention2', username: 'mention2', name: 'Mention 2' },
+					],
+				},
+				hideSystemMessages: [],
+				useRealName: true,
+				expectedResult: {
+					...sampleMessage,
+					u: { ...sampleMessage.u, name: 'Real User' },
+					mentions: [
+						{ _id: 'mention1', username: 'mention1', name: 'Mention 1' },
+						{ _id: 'mention2', username: 'mention2', name: 'Mention 2' },
+					],
+				},
 			},
 			{
 				description: 'should return the message if Hide_System_Messages is undefined',
@@ -162,7 +189,12 @@ describe('Message Broadcast Tests', () => {
 				getSettingValueByIdStub.withArgs('UI_Use_Real_Name').resolves(useRealName);
 
 				if (useRealName) {
-					usersFindOneStub.resolves({ name: 'Real User' });
+					const realNames =
+						message.mentions && message.mentions.length > 0
+							? [message.u.name, ...message.mentions.map((mention) => mention.name)]
+							: [message.u.name];
+
+					realNames.forEach((user, index) => usersFindOneStub.onCall(index).resolves({ name: user }));
 				}
 
 				const result = await getMessageToBroadcast({ id: '123' });
@@ -187,25 +219,33 @@ describe('Message Broadcast Tests', () => {
 				description: 'should broadcast the message if dbWatchersDisabled is true',
 				dbWatchersDisabled: true,
 				expectBroadcast: true,
+				message: sampleMessage,
 			},
 			{
 				description: 'should not broadcast the message if dbWatchersDisabled is false',
 				dbWatchersDisabled: false,
 				expectBroadcast: false,
+				message: sampleMessage,
+			},
+			{
+				description: 'should not broadcast the message if there is no data attributes',
+				dbWatchersDisabled: true,
+				expectBroadcast: false,
+				message: null,
 			},
 		];
 
-		testCases.forEach(({ description, dbWatchersDisabled, expectBroadcast }) => {
+		testCases.forEach(({ description, dbWatchersDisabled, expectBroadcast, message }) => {
 			it(description, async () => {
 				setupProxyMock(dbWatchersDisabled);
-				messagesFindOneStub.resolves(sampleMessage);
+				messagesFindOneStub.resolves(message);
 				getSettingValueByIdStub.resolves([]);
 
-				await notifyOnMessageChange({ id: '123', data: sampleMessage });
+				await notifyOnMessageChange({ id: '123', data: message });
 
 				if (expectBroadcast) {
 					expect(broadcastStub.calledOnce).to.be.true;
-					expect(broadcastStub.calledOnceWith('watch.messages', { message: sampleMessage })).to.be.true;
+					expect(broadcastStub.calledOnceWith('watch.messages', { message })).to.be.true;
 				} else {
 					expect(broadcastStub.called).to.be.false;
 				}
