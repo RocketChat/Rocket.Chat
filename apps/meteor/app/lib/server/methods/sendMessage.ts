@@ -132,7 +132,6 @@ Meteor.methods<ServerMethods>({
 		if (MessageTypes.isSystemMessage(message)) {
 			throw new Error("Cannot send system messages using 'sendMessage'");
 		}
-		
 
 		try {
 			return await executeSendMessage(uid, message, previewUrls);
