@@ -3,7 +3,7 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
-import { before, after, afterEach, describe, it } from 'mocha';
+import { before, after, describe, it } from 'mocha';
 import moment from 'moment';
 import type { Response } from 'supertest';
 
@@ -11,7 +11,6 @@ import { getCredentials, api, request, credentials } from '../../../data/api-dat
 import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
 import {
 	closeOmnichannelRoom,
-	deleteVisitor,
 	placeRoomOnHold,
 	sendAgentMessage,
 	sendMessage,

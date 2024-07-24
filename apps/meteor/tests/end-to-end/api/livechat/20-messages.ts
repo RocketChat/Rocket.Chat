@@ -3,7 +3,7 @@ import type { ILivechatAgent, ILivechatVisitor, IOmnichannelRoom, IRoom } from '
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
-import { api, getCredentials, credentials, request } from '../../../data/api-data';
+import { api, getCredentials, request } from '../../../data/api-data';
 import { sendSimpleMessage } from '../../../data/chat.helper';
 import {
 	sendMessage,
