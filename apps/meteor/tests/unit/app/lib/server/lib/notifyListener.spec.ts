@@ -49,7 +49,7 @@ describe('Message Broadcast Tests', () => {
 		broadcastStub = sinon.stub();
 		memStub = sinon.stub().callsFake((fn: any) => fn);
 
-		const proxyMock = proxyquire.noCallThru().load('../../../../../../app/lib/server/lib/notifyListener', {
+		const proxyMock = proxyquire.noPreserveCache().load('../../../../../../app/lib/server/lib/notifyListener', {
 			'@rocket.chat/models': modelsStubs(),
 			'@rocket.chat/core-services': coreStubs(false),
 			'mem': memStub,
@@ -57,10 +57,6 @@ describe('Message Broadcast Tests', () => {
 
 		getMessageToBroadcast = proxyMock.getMessageToBroadcast;
 		notifyOnMessageChange = proxyMock.notifyOnMessageChange;
-	});
-
-	afterEach(() => {
-		sinon.reset();
 	});
 
 	describe('getMessageToBroadcast', () => {
