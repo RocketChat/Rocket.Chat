@@ -9,7 +9,7 @@ import type {
 	IRoom,
 	IUser,
 	IRole,
-	SidepanelItems,
+	SidepanelItem,
 } from '@rocket.chat/core-typings';
 import type { Document, Filter, FindOptions } from 'mongodb';
 
@@ -25,7 +25,7 @@ export interface ITeamCreateParams {
 	members?: Array<string> | null; // list of user _ids
 	owner?: string | null; // the team owner. If not present, owner = requester
 	sidepanel?: {
-		items: [SidepanelItems, SidepanelItems?];
+		items: [SidepanelItem, SidepanelItem?];
 	};
 }
 

@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TEAM_TYPE, isSidepanelItem } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 import {
 	isTeamsConvertToChannelProps,
@@ -82,11 +82,20 @@ API.v1.addRoute(
 					members: Match.Maybe([String]),
 					room: Match.Maybe(Match.Any),
 					owner: Match.Maybe(String),
-					sidepanel: Match.Maybe(Match.Any),
 				}),
 			);
 
 			const { name, type, members, room, owner, sidepanel } = this.bodyParams;
+
+			if (
+				sidepanel?.items &&
+				(!Array.isArray(sidepanel.items) ||
+					!sidepanel.items.length ||
+					!sidepanel.items.every(isSidepanelItem) ||
+					sidepanel.items.length > 2)
+			) {
+				throw new Error('error-invalid-sidepanel');
+			}
 
 			const team = await Team.create(this.userId, {
 				team: {
