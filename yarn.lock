@@ -9792,6 +9792,7 @@ __metadata:
     "@rocket.chat/tools": "workspace:^"
     "@types/jest": ~29.5.7
     "@types/node": ^14.18.63
+    date-fns: ^2.28.0
     ejson: ^2.2.3
     emoji-toolkit: ^7.0.1
     eslint: ~8.45.0

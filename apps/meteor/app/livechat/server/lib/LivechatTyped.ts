@@ -9,7 +9,6 @@ import type {
 	IUser,
 	MessageTypesValues,
 	ILivechatVisitor,
-	IOmnichannelSystemMessage,
 	SelectedAgent,
 	ILivechatAgent,
 	IMessage,
@@ -23,8 +22,7 @@ import type {
 	LivechatDepartmentDTO,
 	OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
-import { ILivechatAgentStatus, UserStatus, isFileAttachment, isFileImageAttachment, isOmnichannelRoom } from '@rocket.chat/core-typings';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
+import { ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
 import {
 	LivechatDepartment,
@@ -38,12 +36,10 @@ import {
 	ReadReceipts,
 	Rooms,
 	LivechatCustomField,
-	Uploads,
 } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import moment from 'moment-timezone';
 import type { Filter, FindCursor } from 'mongodb';
 import UAParser from 'ua-parser-js';
 
@@ -70,7 +66,6 @@ import {
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
-import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { businessHourManager } from '../business-hour';
 import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
@@ -78,6 +73,7 @@ import { RoutingManager } from './RoutingManager';
 import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
+import { sendTranscript as sendTranscriptFunc } from './sendTranscript';
 
 type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
 	id?: string;
@@ -545,182 +541,6 @@ class LivechatClass {
 				throw new Meteor.Error('error-removing-room', 'Error removing room');
 			}
 		}
-	}
-
-	async sendTranscript({
-		token,
-		rid,
-		email,
-		subject,
-		user,
-	}: {
-		token: string;
-		rid: string;
-		email: string;
-		subject?: string;
-		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
-	}): Promise<boolean> {
-		check(rid, String);
-		check(email, String);
-		this.logger.debug(`Sending conversation transcript of room ${rid} to user with token ${token}`);
-
-		const room = await LivechatRooms.findOneById(rid);
-
-		const visitor = await LivechatVisitors.getVisitorByToken(token, {
-			projection: { _id: 1, token: 1, language: 1, username: 1, name: 1 },
-		});
-
-		if (!visitor) {
-			throw new Error('error-invalid-token');
-		}
-
-		// @ts-expect-error - Visitor typings should include language?
-		const userLanguage = visitor?.language || settings.get('Language') || 'en';
-		const timezone = getTimezone(user);
-		this.logger.debug(`Transcript will be sent using ${timezone} as timezone`);
-
-		if (!room) {
-			throw new Error('error-invalid-room');
-		}
-
-		// allow to only user to send transcripts from their own chats
-		if (room.t !== 'l' || !room.v || room.v.token !== token) {
-			throw new Error('error-invalid-room');
-		}
-
-		const showAgentInfo = settings.get<boolean>('Livechat_show_agent_info');
-		const closingMessage = await Messages.findLivechatClosingMessage(rid, { projection: { ts: 1 } });
-		const ignoredMessageTypes: MessageTypesValues[] = [
-			'livechat_navigation_history',
-			'livechat_transcript_history',
-			'command',
-			'livechat-close',
-			'livechat-started',
-			'livechat_video_call',
-		];
-		const acceptableImageMimeTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-		const messages = await Messages.findVisibleByRoomIdNotContainingTypesBeforeTs(
-			rid,
-			ignoredMessageTypes,
-			closingMessage?.ts ? new Date(closingMessage.ts) : new Date(),
-			{
-				sort: { ts: 1 },
-			},
-		);
-
-		let html = '<div> <hr>';
-		const InvalidFileMessage = `<div style="background-color: ${colors.n100}; text-align: center; border-color: ${
-			colors.n250
-		}; border-width: 1px; border-style: solid; border-radius: 4px; padding-top: 8px; padding-bottom: 8px; margin-top: 4px;">${i18n.t(
-			'This_attachment_is_not_supported',
-			{ lng: userLanguage },
-		)}</div>`;
-
-		for await (const message of messages) {
-			let author;
-			if (message.u._id === visitor._id) {
-				author = i18n.t('You', { lng: userLanguage });
-			} else {
-				author = showAgentInfo ? message.u.name || message.u.username : i18n.t('Agent', { lng: userLanguage });
-			}
-
-			let messageContent = message.msg;
-			let filesHTML = '';
-
-			if (message.attachments && message.attachments?.length > 0) {
-				messageContent = message.attachments[0].description || '';
-
-				for await (const attachment of message.attachments) {
-					if (!isFileAttachment(attachment)) {
-						// ignore other types of attachments
-						continue;
-					}
-
-					if (!isFileImageAttachment(attachment)) {
-						filesHTML += `<div>${attachment.title || ''}${InvalidFileMessage}</div>`;
-						continue;
-					}
-
-					if (!attachment.image_type || !acceptableImageMimeTypes.includes(attachment.image_type)) {
-						filesHTML += `<div>${attachment.title || ''}${InvalidFileMessage}</div>`;
-						continue;
-					}
-
-					// Image attachment can be rendered in email body
-					const file = message.files?.find((file) => file.name === attachment.title);
-
-					if (!file) {
-						filesHTML += `<div>${attachment.title || ''}${InvalidFileMessage}</div>`;
-						continue;
-					}
-
-					const uploadedFile = await Uploads.findOneById(file._id);
-
-					if (!uploadedFile) {
-						filesHTML += `<div>${file.name}${InvalidFileMessage}</div>`;
-						continue;
-					}
-
-					const uploadedFileBuffer = await FileUpload.getBuffer(uploadedFile);
-					filesHTML += `<div styles="color: ${colors.n700}; margin-top: 4px; flex-direction: "column";"><p>${file.name}</p><img src="data:${
-						attachment.image_type
-					};base64,${uploadedFileBuffer.toString(
-						'base64',
-					)}" style="width: 400px; max-height: 240px; object-fit: contain; object-position: 0;"/></div>`;
-				}
-			}
-
-			const datetime = moment.tz(message.ts, timezone).locale(userLanguage).format('LLL');
-			const singleMessage = `
-				<p><strong>${author}</strong>  <em>${datetime}</em></p>
-				<p>${messageContent}</p>
-				<p>${filesHTML}</p>
-			`;
-			html += singleMessage;
-		}
-
-		html = `${html}</div>`;
-
-		const fromEmail = settings.get<string>('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
-		let emailFromRegexp = '';
-		if (fromEmail) {
-			emailFromRegexp = fromEmail[0];
-		} else {
-			emailFromRegexp = settings.get<string>('From_Email');
-		}
-
-		const mailSubject = subject || i18n.t('Transcript_of_your_livechat_conversation', { lng: userLanguage });
-
-		await this.sendEmail(emailFromRegexp, email, emailFromRegexp, mailSubject, html);
-
-		setImmediate(() => {
-			void callbacks.run('livechat.sendTranscript', messages, email);
-		});
-
-		const requestData: IOmnichannelSystemMessage['requestData'] = {
-			type: 'user',
-			visitor,
-			user,
-		};
-
-		if (!user?.username) {
-			const cat = await Users.findOneById('rocket.cat', { projection: { _id: 1, username: 1, name: 1 } });
-			if (cat) {
-				requestData.user = cat;
-				requestData.type = 'visitor';
-			}
-		}
-
-		if (!requestData.user) {
-			this.logger.error('rocket.cat user not found');
-			throw new Error('No user provided and rocket.cat not found');
-		}
-
-		await Message.saveSystemMessage<IOmnichannelSystemMessage>('livechat_transcript_history', room._id, '', requestData.user, {
-			requestData,
-		});
-
-		return true;
 	}
 
 	async registerGuest({
@@ -2020,6 +1840,22 @@ class LivechatClass {
 		}
 
 		return departmentDB;
+	}
+
+	async sendTranscript({
+		token,
+		rid,
+		email,
+		subject,
+		user,
+	}: {
+		token: string;
+		rid: string;
+		email: string;
+		subject?: string;
+		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
+	}): Promise<boolean> {
+		return sendTranscriptFunc({ token, rid, email, subject, user });
 	}
 }
 

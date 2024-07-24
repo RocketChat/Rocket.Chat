@@ -53,6 +53,7 @@ const CloseChatModal = ({
 
 	const commentRequired = useSetting('Livechat_request_comment_when_closing_conversation') as boolean;
 	const alwaysSendTranscript = useSetting<boolean>('Livechat_transcript_send_always');
+	const customSubject = useSetting<string>('Livechat_transcript_email_subject');
 	const [tagRequired, setTagRequired] = useState(false);
 
 	const tags = watch('tags');
@@ -98,7 +99,7 @@ const CloseChatModal = ({
 				onConfirm(comment, tags, preferences, requestData);
 			}
 		},
-		[commentRequired, tagRequired, visitorEmail, errors, setError, t, onConfirm],
+		[commentRequired, tagRequired, visitorEmail, errors, setError, t, onConfirm, alwaysSendTranscript],
 	);
 
 	const cannotSubmit = useMemo(() => {
@@ -133,9 +134,9 @@ const CloseChatModal = ({
 				dispatchToastMessage({ type: 'error', message: t('Customer_without_registered_email') });
 				return;
 			}
-			setValue('subject', subject || t('Transcript_of_your_livechat_conversation'));
+			setValue('subject', subject || customSubject || t('Transcript_of_your_livechat_conversation'));
 		}
-	}, [transcriptEmail, setValue, visitorEmail, subject, t]);
+	}, [transcriptEmail, setValue, visitorEmail, subject, t, customSubject]);
 
 	if (commentRequired || tagRequired || canSendTranscript) {
 		return (
