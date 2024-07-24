@@ -412,12 +412,26 @@ export const createOmniSettings = () =>
 			enableQuery: omnichannelEnabledQuery,
 		});
 
+		await this.add('Livechat_transcript_show_system_messages', false, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			public: true,
+			enableQuery: omnichannelEnabledQuery,
+		});
+
 		await this.add('Livechat_transcript_message', '', {
 			type: 'string',
 			group: 'Omnichannel',
 			public: true,
 			i18nLabel: 'Transcript_message',
 			enableQuery: [{ _id: 'Livechat_enable_transcript', value: true }, omnichannelEnabledQuery],
+		});
+
+		await this.add('Livechat_transcript_email_subject', '', {
+			type: 'string',
+			group: 'Omnichannel',
+			public: true,
+			enableQuery: omnichannelEnabledQuery,
 		});
 
 		await this.add('Omnichannel_enable_department_removal', false, {
