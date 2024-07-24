@@ -286,14 +286,14 @@ jobs:
       - name: Show traefik logs if E2E test failed
         if: failure()
         run: |
-          cat /tmp/logs/traefik/access.log
+          cat /tmp/logs/traefik.log
 
       - name: Upload Traefik logs if E2E test failed
         if: failure()
         uses: actions/upload-artifact@v3
         with:
           name: traefik-logs-${{ matrix.shard }}
-          path: /tmp/logs/traefik
+          path: /tmp/logs/traefik.log
 
       - name: Extract e2e:ee:coverage
         if: inputs.type == 'ui' && inputs.release == 'ee'

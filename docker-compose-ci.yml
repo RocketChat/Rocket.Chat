@@ -165,10 +165,10 @@ services:
     image: traefik:v3.0
     command:
       - --providers.docker=true
-      - '--accesslog=true'
-      - '--accesslog.filePath=/logs/access.log'
+      - '--log.level=DEBUG' # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
+      - '--log.filePath=/logs/traefik.log'
     ports:
       - 3000:80
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /logs/:/tmp/logs/traefik/
+      - /logs/:/tmp/logs/
