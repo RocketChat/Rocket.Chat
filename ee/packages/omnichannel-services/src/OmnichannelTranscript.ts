@@ -10,7 +10,16 @@ import {
 	Settings as settingsService,
 } from '@rocket.chat/core-services';
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
-import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IUser,
+	IRoom,
+	IUpload,
+	ILivechatVisitor,
+	ILivechatAgent,
+	IOmnichannelRoom,
+	IOmnichannelSystemMessage,
+} from '@rocket.chat/core-typings';
 import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
@@ -18,6 +27,8 @@ import type { Root } from '@rocket.chat/message-parser';
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
 import { guessTimezone, guessTimezoneFromOffset, streamToBuffer } from '@rocket.chat/tools';
+
+import { getAllSystemMessagesKeys, getSystemMessage } from './livechatSystemMessages';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result.status === 'rejected';
 
@@ -32,7 +43,22 @@ type WorkDetailsWithSource = WorkDetails & {
 
 type Quote = { name: string; ts?: Date; md: Root };
 
-type MessageData = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg' | 'md'> & {
+export type MessageData = Pick<
+	IOmnichannelSystemMessage,
+	| 'msg'
+	| '_id'
+	| 'u'
+	| 'ts'
+	| 'md'
+	| 't'
+	| 'navigation'
+	| 'transferData'
+	| 'requestData'
+	| 'webRtcCallEndTs'
+	| 'comment'
+	| 'slaData'
+	| 'priorityData'
+> & {
 	files: ({ name?: string; buffer: Buffer | null; extension?: string } | undefined)[];
 	quotes: (Quote | undefined)[];
 };
@@ -49,12 +75,22 @@ type WorkerData = {
 	translations: { key: string; value: string }[];
 };
 
+const customSprintfInterpolation = (template: string, values: Record<string, string>) => {
+	return template.replace(/{{(\w+)}}/g, (match, key) => {
+		return typeof values[key] !== 'undefined' ? values[key] : match;
+	});
+};
+
 export class OmnichannelTranscript extends ServiceClass implements IOmnichannelTranscriptService {
 	protected name = 'omnichannel-transcript';
 
 	private worker: PdfWorker;
 
 	private log: Logger;
+
+	// this is initialized as undefined and will be set when the first pdf is requested.
+	// if we try to initialize it at the start of the service using IIAFE, for some reason i18next doesn't return translations, maybe i18n isn't initialised yet
+	private translations?: Array<{ key: string; value: string }> = undefined;
 
 	maxNumberOfConcurrentJobs = 25;
 
@@ -83,11 +119,29 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 	}
 
-	private getMessagesFromRoom({ rid }: { rid: string }): Promise<IMessage[]> {
+	private async getMessagesFromRoom({ rid }: { rid: string }): Promise<IMessage[]> {
+		const showSystemMessages = await settingsService.get<boolean>('Livechat_transcript_show_system_messages');
+
 		// Closing message should not appear :)
-		return Messages.findLivechatMessagesWithoutClosing(rid, {
+		return Messages.findLivechatMessagesWithoutTypes(rid, ['command'], showSystemMessages, {
 			sort: { ts: 1 },
-			projection: { _id: 1, msg: 1, u: 1, t: 1, ts: 1, attachments: 1, files: 1, md: 1 },
+			projection: {
+				_id: 1,
+				msg: 1,
+				u: 1,
+				t: 1,
+				ts: 1,
+				attachments: 1,
+				files: 1,
+				md: 1,
+				navigation: 1,
+				requestData: 1,
+				transferData: 1,
+				webRtcCallEndTs: 1,
+				comment: 1,
+				priorityData: 1,
+				slaData: 1,
+			},
 		}).toArray();
 	}
 
@@ -159,22 +213,49 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		return quotes;
 	}
 
-	private async getMessagesData(messages: IMessage[]): Promise<MessageData[]> {
+	private getSystemMessage(message: IMessage): false | MessageData {
+		if (!message.t) {
+			return false;
+		}
+
+		const systemMessageDefinition = getSystemMessage(message.t);
+
+		if (!systemMessageDefinition) {
+			return false;
+		}
+
+		const args = systemMessageDefinition.data && systemMessageDefinition?.data(message, this.getTranslation.bind(this));
+
+		const systemMessage = this.getTranslation(systemMessageDefinition.message, args);
+
+		return {
+			...message,
+			msg: systemMessage,
+			files: [],
+			quotes: [],
+		};
+	}
+
+	async getMessagesData(messages: IMessage[]): Promise<MessageData[]> {
 		const messagesData: MessageData[] = [];
 		for await (const message of messages) {
+			const systemMessage = this.getSystemMessage(message);
+
+			if (systemMessage) {
+				messagesData.push(systemMessage);
+				continue;
+			}
+
 			if (!message.attachments?.length) {
 				// If there's no attachment and no message, what was sent? lol
 				messagesData.push({
-					_id: message._id,
+					...message,
 					files: [],
 					quotes: [],
-					ts: message.ts,
-					u: message.u,
-					msg: message.msg,
-					md: message.md,
 				});
 				continue;
 			}
+
 			const files = [];
 			const quotes = [];
 
@@ -267,17 +348,61 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		return messagesData;
 	}
 
-	private async getTranslations(): Promise<Array<{ key: string; value: string }>> {
-		const keys: string[] = ['Agent', 'Date', 'Customer', 'Not_assigned', 'Time', 'Chat_transcript', 'This_attachment_is_not_supported'];
+	private async getAllTranslations(): Promise<Array<{ key: string; value: string }>> {
+		const keys: string[] = [
+			'Agent',
+			'Date',
+			'Customer',
+			'Not_assigned',
+			'Time',
+			'Chat_transcript',
+			'This_attachment_is_not_supported',
+			'Livechat_transfer_to_agent',
+			'Livechat_transfer_to_agent_with_a_comment',
+			'Livechat_transfer_to_department',
+			'Livechat_transfer_to_department_with_a_comment',
+			'Livechat_transfer_return_to_the_queue',
+			'Livechat_transfer_return_to_the_queue_with_a_comment',
+			'Livechat_transfer_to_agent_auto_transfer_unanswered_chat',
+			'Livechat_transfer_return_to_the_queue_auto_transfer_unanswered_chat',
+			'Livechat_visitor_transcript_request',
+			'Livechat_user_sent_chat_transcript_to_visitor',
+			'WebRTC_call_ended_message',
+			'WebRTC_call_declined_message',
+			'Without_SLA',
+			'Unknown_User',
+			'Livechat_transfer_failed_fallback',
+			'Unprioritized',
+			'Unknown_User',
+			'Without_priority',
+			...getAllSystemMessagesKeys(),
+		];
 
-		return Promise.all(
-			keys.map(async (key) => {
-				return {
-					key,
-					value: await translationService.translateToServerLanguage(key),
-				};
-			}),
-		);
+		return translationService.translateMultipleToServerLanguage(keys);
+	}
+
+	private getTranslation(translationKey: string, args?: Record<string, string>): string {
+		const translationValue = this.translations?.find(({ key }) => key === translationKey)?.value;
+
+		if (!translationValue) {
+			return translationKey;
+		}
+
+		if (!args) {
+			return translationValue;
+		}
+
+		const translation = customSprintfInterpolation(translationValue, args);
+
+		return translation;
+	}
+
+	private async loadTranslations() {
+		if (!this.translations) {
+			this.translations = await this.getAllTranslations();
+		}
+
+		return this.translations;
 	}
 
 	async workOnPdf({ details }: { details: WorkDetailsWithSource }): Promise<void> {
@@ -300,14 +425,15 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const agent =
 				room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1, utcOffset: 1 } }));
 
+			const translations = await this.loadTranslations();
+
 			const messagesData = await this.getMessagesData(messages);
 
-			const [siteName, dateFormat, timeAndDateFormat, timezone, translations] = await Promise.all([
+			const [siteName, dateFormat, timeAndDateFormat, timezone] = await Promise.all([
 				settingsService.get<string>('Site_Name'),
 				settingsService.get<string>('Message_DateFormat'),
 				settingsService.get<string>('Message_TimeAndDateFormat'),
 				this.getTimezone(agent),
-				this.getTranslations(),
 			]);
 			const data = {
 				visitor,
