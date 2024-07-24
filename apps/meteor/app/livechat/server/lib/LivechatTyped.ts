@@ -45,6 +45,7 @@ import UAParser from 'ua-parser-js';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
+import { client } from '../../../../server/database/utils';
 import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
@@ -74,7 +75,6 @@ import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
 import { sendTranscript as sendTranscriptFunc } from './sendTranscript';
-import { client } from '../../../../server/database/utils';
 
 type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
 	id?: string;
@@ -140,11 +140,10 @@ type ICRMData = {
 	};
 	crmData?: IOmnichannelRoom['crmData'];
 };
-		const isRoomClosedByUserParams = (params: CloseRoomParams): params is CloseRoomParamsByUser =>
-			(params as CloseRoomParamsByUser).user !== undefined;
-		const isRoomClosedByVisitorParams = (params: CloseRoomParams): params is CloseRoomParamsByVisitor =>
-			(params as CloseRoomParamsByVisitor).visitor !== undefined;
-
+const isRoomClosedByUserParams = (params: CloseRoomParams): params is CloseRoomParamsByUser =>
+	(params as CloseRoomParamsByUser).user !== undefined;
+const isRoomClosedByVisitorParams = (params: CloseRoomParams): params is CloseRoomParamsByVisitor =>
+	(params as CloseRoomParamsByVisitor).visitor !== undefined;
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
 
