@@ -7,19 +7,19 @@ import RoomMenu from '../../../../../client/sidebar/RoomMenu';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useRouter: () => ({
-		navigate: () => {},
+		navigate: jest.fn(),
 	}),
-	useSetModal: () => () => {},
-	useToastMessageDispatch: () => () => {},
+	useSetModal: () => jest.fn(),
+	useToastMessageDispatch: () => jest.fn(),
 	useUserSubscription: () => ({
 		name: 'test-name',
 		t: 't',
 	}),
 	useSetting: () => true,
-	usePermission: () => {},
-	useMethod: () => () => {},
+	usePermission: jest.fn(),
+	useMethod: () => jest.fn(),
 	useTranslation: () => (key: string) => key,
-	useEndpoint: () => () => {},
+	useEndpoint: () => jest.fn(),
 }));
 
 jest.mock('../../../../../client/lib/rooms/roomCoordinator', () => ({
@@ -32,7 +32,7 @@ jest.mock('../../../../../client/lib/rooms/roomCoordinator', () => ({
 
 jest.mock('../../../../../app/ui-utils/client', () => ({
 	LegacyRoomManager: {
-		close: () => {},
+		close: jest.fn(),
 	},
 }));
 
@@ -56,7 +56,7 @@ jest.mock('../../../../../client/omnichannel/hooks/useOmnichannelPrioritiesMenu'
 }));
 
 jest.mock('@rocket.chat/fuselage', () => ({
-	Menu: ({ options }) => (
+	Menu: ({ options }: any) => (
 		<>
 			{Object.keys(options).map((key) => {
 				const { label } = options[key];
