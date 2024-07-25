@@ -1,5 +1,47 @@
 # @rocket.chat/meteor
 
+## 6.10.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#32819](https://github.com/RocketChat/Rocket.Chat/pull/32819) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixed issue with livechat agents not being able to leave omnichannel rooms if joining after a room has been closed by the visitor (due to race conditions)
+
+- ([#32894](https://github.com/RocketChat/Rocket.Chat/pull/32894)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#32829](https://github.com/RocketChat/Rocket.Chat/pull/32829) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue not displaying all groups in settings list
+
+- ([#32836](https://github.com/RocketChat/Rocket.Chat/pull/32836) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.1
+  - @rocket.chat/rest-typings@6.10.1
+  - @rocket.chat/api-client@0.2.1
+  - @rocket.chat/license@0.2.1
+  - @rocket.chat/omnichannel-services@0.2.1
+  - @rocket.chat/pdf-worker@0.1.1
+  - @rocket.chat/presence@0.2.1
+  - @rocket.chat/apps@0.1.1
+  - @rocket.chat/core-services@0.4.1
+  - @rocket.chat/cron@0.1.1
+  - @rocket.chat/fuselage-ui-kit@8.0.1
+  - @rocket.chat/gazzodown@8.0.1
+  - @rocket.chat/model-typings@0.5.1
+  - @rocket.chat/ui-contexts@8.0.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.1.1
+  - @rocket.chat/ui-theming@0.2.0
+  - @rocket.chat/ui-avatar@4.0.1
+  - @rocket.chat/ui-client@8.0.1
+  - @rocket.chat/ui-video-conf@8.0.1
+  - @rocket.chat/web-ui-registration@8.0.1
+  - @rocket.chat/instance-status@0.1.1
+  </details>
+
 ## 6.10.0
 
 ### Minor Changes
