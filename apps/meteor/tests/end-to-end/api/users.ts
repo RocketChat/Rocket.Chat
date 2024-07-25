@@ -622,6 +622,23 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+		it("should return an error when registering a user's name with invalid characters: >, <, /, or \\", (done) => {
+			void request
+				.post(api('users.register'))
+				.send({
+					email,
+					name: '</\\name>',
+					username,
+					pass: 'test',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.equal('Name contains invalid characters');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/users.info]', () => {
@@ -1324,6 +1341,21 @@ describe('[Users]', () => {
 							.end(done);
 					});
 				});
+			});
+			it('should prevent users from passing server-side request forgery (SSRF) payloads as avatarUrl', (done) => {
+				void request
+					.post(api('users.setAvatar'))
+					.set(credentials)
+					.send({
+						userId: userCredentials['X-User-Id'],
+						avatarUrl: 'http://169.254.169.254/',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					})
+					.end(done);
 			});
 		});
 
