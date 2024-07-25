@@ -169,7 +169,8 @@ export const createSettings = async (): Promise<void> => {
 
 		await this.add('Livechat_Block_Unknown_Contacts', false, {
 			type: 'boolean',
-			public: true,
+			public: false,
+			hidden: true,
 			enableQuery: omnichannelEnabledQuery,
 			invalidValue: false,
 			section: 'Contact_identification',
@@ -179,7 +180,8 @@ export const createSettings = async (): Promise<void> => {
 
 		await this.add('Livechat_Block_Unverified_Contacts', false, {
 			type: 'boolean',
-			public: true,
+			public: false,
+			hidden: true,
 			enableQuery: omnichannelEnabledQuery,
 			invalidValue: false,
 			section: 'Contact_identification',
@@ -189,7 +191,8 @@ export const createSettings = async (): Promise<void> => {
 
 		await this.add('Livechat_Contact_Verification_App', '', {
 			type: 'select',
-			public: true,
+			public: false,
+			hidden: true,
 			values: [{ key: 'VerifyChat', i18nLabel: 'VerifyChat' }],
 			enableQuery: omnichannelEnabledQuery,
 			invalidValue: '',
@@ -200,7 +203,8 @@ export const createSettings = async (): Promise<void> => {
 
 		await this.add('Livechat_Request_Verification_On_First_Contact_Only', false, {
 			type: 'boolean',
-			public: true,
+			public: false,
+			hidden: true,
 			enableQuery: omnichannelEnabledQuery,
 			invalidValue: false,
 			section: 'Contact_identification',
