@@ -1,5 +1,14 @@
 # @rocket.chat/ui-client
 
+## 8.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.1
+  </details>
+
 ## 8.0.0
 
 ### Minor Changes
