@@ -40,7 +40,7 @@ import {
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { Filter, FindCursor, ClientSession } from 'mongodb';
+import type { Filter, FindCursor, ClientSession, MongoError } from 'mongodb';
 import UAParser from 'ua-parser-js';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -239,8 +239,8 @@ class LivechatClass {
 			await session.abortTransaction();
 			// Dont propagate transaction errors
 			if (
-				(e as any)?.errorLabels?.includes('UnknownTransactionCommitResult') ||
-				(e as any)?.errorLabels?.includes('TransientTransactionError')
+				(e as unknown as MongoError)?.errorLabels?.includes('UnknownTransactionCommitResult') ||
+				(e as unknown as MongoError)?.errorLabels?.includes('TransientTransactionError')
 			) {
 				throw new Error('error-room-cannot-be-closed-try-again');
 			}
