@@ -2,7 +2,7 @@
  * Mentions is a named function that will process Mentions
  * @param {Object} message - The message object
  */
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import { isE2EEMessage, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 
 import { type MentionsParserArgs, MentionsParser } from '../lib/MentionsParser';
 
@@ -43,15 +43,11 @@ export class MentionsServer extends MentionsParser {
 			});
 	}
 
-	async getUsersByMentions({
-		msg,
-		rid,
-		u: sender,
-		t,
-		e2eMentions,
-	}: Pick<IMessage, 'msg' | 'rid' | 'u' | 't' | 'e2eMentions'>): Promise<IMessage['mentions']> {
+	async getUsersByMentions(message: IMessage): Promise<IMessage['mentions']> {
+		const { msg, rid, u: sender, e2eMentions }: Pick<IMessage, 'msg' | 'rid' | 'u' | 't' | 'e2eMentions'> = message;
+
 		const mentions =
-			t === 'e2e' && e2eMentions?.e2eUserMentions && e2eMentions?.e2eUserMentions.length > 0
+			isE2EEMessage(message) && e2eMentions?.e2eUserMentions && e2eMentions?.e2eUserMentions.length > 0
 				? e2eMentions?.e2eUserMentions
 				: this.getUserMentions(msg);
 		const mentionsAll: { _id: string; username: string }[] = [];
@@ -76,9 +72,11 @@ export class MentionsServer extends MentionsParser {
 		return [...mentionsAll, ...(userMentions.length ? await this.getUsers(userMentions) : [])];
 	}
 
-	async getChannelbyMentions({ msg, t, e2eMentions }: Pick<IMessage, 'msg' | 't' | 'e2eMentions'>) {
+	async getChannelbyMentions(message: IMessage) {
+		const { msg, e2eMentions }: Pick<IMessage, 'msg' | 't' | 'e2eMentions'> = message;
+
 		const channels =
-			t === 'e2e' && e2eMentions?.e2eChannelMentions && e2eMentions?.e2eChannelMentions.length > 0
+			isE2EEMessage(message) && e2eMentions?.e2eChannelMentions && e2eMentions?.e2eChannelMentions.length > 0
 				? e2eMentions?.e2eChannelMentions
 				: this.getChannelMentions(msg);
 		return this.getChannels(channels.map((c) => c.trim().substr(1)));
