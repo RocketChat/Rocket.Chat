@@ -402,3 +402,9 @@ export type IMessageWithPendingFileImport = IMessage & {
 		downloaded?: boolean;
 	};
 };
+
+export interface IMessageFromVisitor extends IMessage {
+	token: string;
+}
+
+export const isMessageFromVisitor = (message: IMessage): message is IMessageFromVisitor => 'token' in message;
