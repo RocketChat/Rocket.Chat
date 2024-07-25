@@ -42,7 +42,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 		file: File[] | File,
 		extraData?: Pick<IMessage, 't' | 'e2e'> & { description?: string },
 		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
-		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
+		fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
 	) => {
 		chat.uploads.send(
 			file,

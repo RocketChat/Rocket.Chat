@@ -45,7 +45,7 @@ const send = async (
 		t?: IMessage['t'];
 	},
 	getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
-	fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
+	fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
 ): Promise<void> => {
 	if (!Array.isArray(file)) {
 		file = [file];
@@ -62,7 +62,6 @@ const send = async (
 
 	var fileIds: string[] = [];
 	var fileUrls: string[] = [];
-	const promisearray: Promise<void>[] = [];
 
 	file.map((f) => {
 		new Promise<void>((resolve, reject) => {
@@ -144,16 +143,7 @@ const send = async (
 								t,
 								content,
 							};
-							// await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${fileIds[0]}`, {
 							await sdk.call('sendMessage', text, fileUrls, fileIds, msgData);
-							// await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${fileIds[0]}`, {
-							// 	msg,
-							// 	tmid,
-							// 	description,
-							// 	t,
-							// 	content,
-							// 	fileIds,
-							// });
 
 							updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
 						} catch (error) {
@@ -176,7 +166,6 @@ const send = async (
 							}
 						}
 					}
-					// resolve();
 				}
 			};
 
@@ -198,6 +187,6 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 		file: File[] | File,
 		{ description, msg, t }: { description?: string; msg?: string; t?: IMessage['t'] },
 		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
-		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
+		fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
 	): Promise<void> => send(file, { description, msg, rid, tmid, t }, getContent, fileContent),
 });
