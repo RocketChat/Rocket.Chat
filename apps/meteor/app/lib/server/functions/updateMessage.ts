@@ -1,5 +1,5 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import { Message } from '@rocket.chat/core-services';
+import { Message, api } from '@rocket.chat/core-services';
 import type { IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -100,7 +100,13 @@ export const updateMessage = async function (
 
 		// although this is an "afterSave" kind callback, we know they can extend message's properties
 		// so we wait for it to run before broadcasting
-		const data = await callbacks.run('afterSaveMessage', msg, room, user._id);
+		const data = await callbacks.run('afterSaveMessage', msg, room);
+
+		void api.broadcastLocal('message.save', {
+			message: data as any, // TODO move "afterSaveMessage" type definition to specify a return value
+			room,
+			user,
+		});
 
 		void broadcastMessageFromData({
 			id: msg._id,

@@ -16,36 +16,6 @@ const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<
 	});
 };
 
-/**
- * We need to propagate the writing of new message in a discussion to the linking
- * system message
- */
-callbacks.add(
-	'afterSaveMessage',
-	async (message, { _id, prid }) => {
-		if (!prid) {
-			return message;
-		}
-
-		const room = await Rooms.findOneById(_id, {
-			projection: {
-				msgs: 1,
-				lm: 1,
-			},
-		});
-
-		if (!room) {
-			return message;
-		}
-
-		await updateAndNotifyParentRoomWithParentMessage(room);
-
-		return message;
-	},
-	callbacks.priority.LOW,
-	'PropagateDiscussionMetadata',
-);
-
 callbacks.add(
 	'afterDeleteMessage',
 	async (message, { _id, prid }) => {
