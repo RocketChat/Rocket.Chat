@@ -48,17 +48,17 @@ const TeamMessageTypesValues = [
 const LivechatMessageTypesValues = [
 	'livechat_navigation_history',
 	'livechat_transfer_history',
-	'omnichannel_priority_change_history',
-	'omnichannel_sla_change_history',
 	'livechat_transcript_history',
 	'livechat_video_call',
 	'livechat_transfer_history_fallback',
 	'livechat-close',
 	'livechat_webrtc_video_call',
 	'livechat-started',
+	'omnichannel_priority_change_history',
+	'omnichannel_sla_change_history',
+	'omnichannel_placed_chat_on_hold',
+	'omnichannel_on_hold_chat_resumed',
 ] as const;
-
-const OmnichannelTypesValues = ['omnichannel_placed_chat_on_hold', 'omnichannel_on_hold_chat_resumed'] as const;
 
 const OtrMessageTypeValues = ['otr', 'otr-ack'] as const;
 
@@ -107,7 +107,6 @@ const MessageTypes = [
 	...TeamMessageTypesValues,
 	...LivechatMessageTypesValues,
 	...VoipMessageTypesValues,
-	...OmnichannelTypesValues,
 	...OtrMessageTypeValues,
 	...OtrSystemMessagesValues,
 ] as const;
@@ -256,7 +255,7 @@ export const isEditedMessage = (message: IMessage): message is IEditedMessage =>
 	typeof (message as IEditedMessage).editedBy._id === 'string';
 
 export const isSystemMessage = (message: IMessage): message is ISystemMessage =>
-	't' in message && message.t !== undefined && MessageTypes.includes(message.t);
+	message.t !== undefined && MessageTypes.includes(message.t);
 
 export const isDeletedMessage = (message: IMessage): message is IEditedMessage => isEditedMessage(message) && message.t === 'rm';
 export const isMessageFromMatrixFederation = (message: IMessage): boolean =>
