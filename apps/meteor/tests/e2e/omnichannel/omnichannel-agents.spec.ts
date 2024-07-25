@@ -25,7 +25,7 @@ test.describe.serial('OC - Manage Agents', () => {
 
 	// Ensure that there is no leftover data even if test fails
 	test.afterEach(async ({ api }) => {
-		await await api.delete('/livechat/users/agent/user1');
+		await api.delete('/livechat/users/agent/user1');
 		await api.post('/settings/Omnichannel_enable_department_removal', { value: true }).then((res) => expect(res.status()).toBe(200));
 		await department.delete();
 		await api.post('/settings/Omnichannel_enable_department_removal', { value: false }).then((res) => expect(res.status()).toBe(200));
