@@ -12,6 +12,7 @@ import { canSendMessageAsync } from '../../../authorization/server/functions/can
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
+import { MessageTypes } from '../../../ui-utils/server';
 import { sendMessage } from '../functions/sendMessage';
 import { RateLimiter } from '../lib';
 
@@ -78,6 +79,8 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 		throw new Error("The 'rid' property on the message object is missing.");
 	}
 
+	check(rid, String);
+
 	try {
 		const room = await canSendMessageAsync(rid, { uid, username: user.username, type: user.type });
 
@@ -124,6 +127,10 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'sendMessage',
 			});
+		}
+
+		if (MessageTypes.isSystemMessage(message)) {
+			throw new Error("Cannot send system messages using 'sendMessage'");
 		}
 
 		try {
