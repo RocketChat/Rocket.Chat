@@ -1,5 +1,5 @@
 import { Team } from '@rocket.chat/core-services';
-import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues, SidepanelItem } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
@@ -49,6 +49,7 @@ type RoomSettings = {
 		favorite: boolean;
 		defaultValue: boolean;
 	};
+	sidepanel?: { items: [SidepanelItem, SidepanelItem?] };
 };
 
 type RoomSettingsValidators = {
@@ -80,6 +81,20 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 	},
+	async sidepanel({ room, userId }) {
+		if (!(await hasPermissionAsync(userId, 'edit-team'))) {
+			throw new Meteor.Error('error-action-not-allowed', 'You do not have permission to change sidepanel items', {
+				method: 'saveRoomSettings',
+			});
+		}
+
+		if (!room.teamMain) {
+			throw new Meteor.Error('error-action-not-allowed', 'Invalid room', {
+				method: 'saveRoomSettings',
+			});
+		}
+	},
+
 	async roomType({ userId, room, value }) {
 		if (value === room.t) {
 			return;
@@ -213,6 +228,9 @@ const settingSavers: RoomSettingsSavers = {
 			await saveRoomTopic(rid, value, user);
 		}
 	},
+	async sidepanel({ value, rid }) {
+		await Rooms.setSidepanelById(rid, value);
+	},
 	async roomAnnouncement({ value, room, rid, user }) {
 		if (!value && !room.announcement) {
 			return;
@@ -339,6 +357,7 @@ const fields: (keyof RoomSettings)[] = [
 	'retentionOverrideGlobal',
 	'encrypted',
 	'favorite',
+	'sidepanel',
 ];
 
 const validate = <TRoomSetting extends keyof RoomSettings>(

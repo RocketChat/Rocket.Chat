@@ -1,4 +1,3 @@
-import type { SidepanelItem } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
@@ -9,12 +8,10 @@ export type TeamsUpdateProps = ({ teamId: string } | { teamName: string }) & {
 		| {
 				name: string;
 				type?: TEAM_TYPE;
-				sidepanel?: { items: [SidepanelItem, SidepanelItem?] };
 		  }
 		| {
 				name?: string;
 				type: TEAM_TYPE;
-				sidepanel?: { items: [SidepanelItem, SidepanelItem?] };
 		  };
 };
 
