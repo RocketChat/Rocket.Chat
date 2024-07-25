@@ -1,5 +1,22 @@
 # @rocket.chat/ddp-streamer
 
+## 0.3.2-rc.0
+
+### Patch Changes
+
+- ([#32719](https://github.com/RocketChat/Rocket.Chat/pull/32719)) Added the `user` param to apps-engine update method call, allowing apps' new `onUpdate` hook to know who triggered the update.
+
+- <details><summary>Updated dependencies [439faa87d3, 03c8b066f9, 2d89a0c448, 439faa87d3, 24f7df4894, 4e8aa575a6, 03c8b066f9, 264d7d5496, b8e5887fb9]:</summary>
+
+  - @rocket.chat/model-typings@0.6.0-rc.0
+  - @rocket.chat/core-services@0.5.0-rc.0
+  - @rocket.chat/core-typings@6.11.0-rc.0
+  - @rocket.chat/ui-contexts@9.0.0-rc.0
+  - @rocket.chat/models@0.2.0-rc.0
+  - @rocket.chat/rest-typings@6.11.0-rc.0
+  - @rocket.chat/instance-status@0.1.2-rc.0
+  </details>
+
 ## 0.3.1
 
 ### Patch Changes
