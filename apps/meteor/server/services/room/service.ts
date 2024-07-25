@@ -59,14 +59,17 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 	async addUserToRoom(
 		roomId: string,
-		user: Pick<IUser, '_id' | 'username'> | string,
+		user: Pick<IUser, '_id'> | string,
 		inviter?: Pick<IUser, '_id' | 'username'>,
-		silenced?: boolean,
+		options?: {
+			skipSystemMessage?: boolean;
+			skipAlertSound?: boolean;
+		},
 	): Promise<boolean | undefined> {
-		return addUserToRoom(roomId, user, inviter, silenced);
+		return addUserToRoom(roomId, user, inviter, options);
 	}
 
-	async removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: Pick<IUser, '_id' | 'username'> }): Promise<void> {
+	async removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: IUser }): Promise<void> {
 		return removeUserFromRoom(roomId, user, options);
 	}
 

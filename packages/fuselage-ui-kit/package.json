@@ -1,7 +1,7 @@
 {
   "name": "@rocket.chat/fuselage-ui-kit",
   "private": true,
-  "version": "7.0.2",
+  "version": "8.0.1",
   "description": "UiKit elements for Rocket.Chat Apps built under Fuselage design system",
   "homepage": "https://rocketchat.github.io/Rocket.Chat.Fuselage/",
   "author": {
@@ -50,10 +50,10 @@
     "@rocket.chat/icons": "*",
     "@rocket.chat/prettier-config": "*",
     "@rocket.chat/styled": "*",
-    "@rocket.chat/ui-avatar": "3.0.2",
-    "@rocket.chat/ui-contexts": "7.0.2",
-    "@rocket.chat/ui-kit": "0.34.0",
-    "@rocket.chat/ui-video-conf": "7.0.2",
+    "@rocket.chat/ui-avatar": "4.0.1",
+    "@rocket.chat/ui-contexts": "8.0.1",
+    "@rocket.chat/ui-kit": "0.35.0",
+    "@rocket.chat/ui-video-conf": "8.0.1",
     "@tanstack/react-query": "*",
     "react": "*",
     "react-dom": "*"
@@ -66,7 +66,7 @@
     "@rocket.chat/apps-engine": "alpha",
     "@rocket.chat/core-typings": "workspace:^",
     "@rocket.chat/eslint-config": "workspace:^",
-    "@rocket.chat/fuselage": "^0.54.3",
+    "@rocket.chat/fuselage": "^0.56.0",
     "@rocket.chat/fuselage-hooks": "^0.33.1",
     "@rocket.chat/fuselage-polyfills": "~0.31.25",
     "@rocket.chat/icons": "^0.36.0",

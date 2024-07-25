@@ -1,5 +1,111 @@
 # @rocket.chat/ui-client
 
+## 8.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.1
+  </details>
+
+## 8.0.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4f72d62aa7]:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0
+  </details>
+
+## 8.0.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.7
+  </details>
+
+## 8.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.6
+  </details>
+
+## 8.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.5
+  </details>
+
+## 8.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.4
+  </details>
+
+## 8.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.3
+  </details>
+
+## 8.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.2
+  </details>
+
+## 8.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.1
+  </details>
+
+## 8.0.0-rc.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4f72d62aa7]:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.0-rc.0
+
+## 7.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@7.0.3
+  </details>
+
 ## 7.0.2
 
 ### Patch Changes

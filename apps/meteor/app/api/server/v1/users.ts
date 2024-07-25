@@ -19,6 +19,7 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
+import { getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -43,6 +44,7 @@ import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
 import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
+import { validateNameChars } from '../../../lib/server/functions/validateNameChars';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../lib/server/lib/notifyListener';
 import { generateAccessToken } from '../../../lib/server/methods/createToken';
 import { settings } from '../../../settings/server';
@@ -94,6 +96,10 @@ API.v1.addRoute(
 		async post() {
 			const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
 
+			if (userData.name && !validateNameChars(userData.name)) {
+				return API.v1.failure('Name contains invalid characters');
+			}
+
 			await saveUser(this.userId, userData);
 
 			if (this.bodyParams.data.customFields) {
@@ -137,6 +143,10 @@ API.v1.addRoute(
 				newPassword: this.bodyParams.data.newPassword,
 				typedPassword: this.bodyParams.data.currentPassword,
 			};
+
+			if (userData.realname && !validateNameChars(userData.realname)) {
+				return API.v1.failure('Name contains invalid characters');
+			}
 
 			// saveUserProfile now uses the default two factor authentication procedures, so we need to provide that
 			const twoFactorOptions = !userData.typedPassword
@@ -278,6 +288,10 @@ API.v1.addRoute(
 			// New change made by pull request #5152
 			if (typeof this.bodyParams.joinDefaultChannels === 'undefined') {
 				this.bodyParams.joinDefaultChannels = true;
+			}
+
+			if (this.bodyParams.name && !validateNameChars(this.bodyParams.name)) {
+				return API.v1.failure('Name contains invalid characters');
 			}
 
 			if (this.bodyParams.customFields) {
@@ -627,15 +641,19 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			const { secret: secretURL, ...params } = this.bodyParams;
+
 			if (this.userId) {
 				return API.v1.failure('Logged in users can not register again.');
+			}
+
+			if (params.name && !validateNameChars(params.name)) {
+				return API.v1.failure('Name contains invalid characters');
 			}
 
 			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
 				return API.v1.failure('Username is already in use');
 			}
-
-			const { secret: secretURL, ...params } = this.bodyParams;
 
 			if (this.bodyParams.customFields) {
 				try {
@@ -1048,8 +1066,9 @@ API.v1.addRoute(
 
 			const token = me.services?.resume?.loginTokens?.find((token) => token.hashedToken === hashedToken);
 
-			const tokenExpires =
-				(token && 'when' in token && new Date(token.when.getTime() + settings.get<number>('Accounts_LoginExpiration') * 1000)) || undefined;
+			const loginExp = settings.get<number>('Accounts_LoginExpiration');
+
+			const tokenExpires = (token && 'when' in token && new Date(token.when.getTime() + getLoginExpirationInMs(loginExp))) || undefined;
 
 			return API.v1.success({
 				token: xAuthToken,

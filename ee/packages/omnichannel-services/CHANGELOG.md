@@ -1,5 +1,170 @@
 # @rocket.chat/omnichannel-services
 
+## 0.2.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.1
+  - @rocket.chat/rest-typings@6.10.1
+  - @rocket.chat/pdf-worker@0.1.1
+  - @rocket.chat/core-services@0.4.1
+  - @rocket.chat/model-typings@0.5.1
+  - @rocket.chat/models@0.1.1
+  </details>
+
+## 0.2.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- ([#32329](https://github.com/RocketChat/Rocket.Chat/pull/32329)) Added a new setting `Restrict files access to users who can access room` that controls file visibility. This new setting allows users that "can access a room" to also download the files that are there. This is specially important for users with livechat manager or monitor roles, or agents that have special permissions to view closed rooms, since this allows them to download files on the conversation even after the conversation is closed.
+  New setting is disabled by default and it is mutually exclusive with the setting `Restrict file access to room members` since this allows _more_ types of users to download files.
+- <details><summary>Updated dependencies [1240c874a5, eaf2f11a6c, 5f95c4ec6b, 495628bce0, f75a2cb4bb, 07c4ca0621, 4f72d62aa7, dfa49bdbb2]:</summary>
+
+  - @rocket.chat/core-typings@6.10.0
+  - @rocket.chat/model-typings@0.5.0
+  - @rocket.chat/rest-typings@6.10.0
+  - @rocket.chat/pdf-worker@0.1.0
+  - @rocket.chat/core-services@0.4.0
+  - @rocket.chat/models@0.1.0
+  </details>
+
+## 0.2.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.7
+  - @rocket.chat/rest-typings@6.10.0-rc.7
+  - @rocket.chat/pdf-worker@0.1.0-rc.7
+  - @rocket.chat/core-services@0.4.0-rc.7
+  - @rocket.chat/model-typings@0.5.0-rc.7
+  - @rocket.chat/models@0.1.0-rc.7
+  </details>
+
+## 0.2.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.6
+  - @rocket.chat/rest-typings@6.10.0-rc.6
+  - @rocket.chat/pdf-worker@0.1.0-rc.6
+  - @rocket.chat/core-services@0.4.0-rc.6
+  - @rocket.chat/model-typings@0.5.0-rc.6
+  - @rocket.chat/models@0.1.0-rc.6
+  </details>
+
+## 0.2.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.5
+  - @rocket.chat/rest-typings@6.10.0-rc.5
+  - @rocket.chat/pdf-worker@0.1.0-rc.5
+  - @rocket.chat/core-services@0.4.0-rc.5
+  - @rocket.chat/model-typings@0.5.0-rc.5
+  - @rocket.chat/models@0.1.0-rc.5
+  </details>
+
+## 0.2.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.4
+  - @rocket.chat/rest-typings@6.10.0-rc.4
+  - @rocket.chat/pdf-worker@0.1.0-rc.4
+  - @rocket.chat/core-services@0.4.0-rc.4
+  - @rocket.chat/model-typings@0.5.0-rc.4
+  - @rocket.chat/models@0.1.0-rc.4
+  </details>
+
+## 0.2.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.3
+  - @rocket.chat/rest-typings@6.10.0-rc.3
+  - @rocket.chat/pdf-worker@0.1.0-rc.3
+  - @rocket.chat/core-services@0.4.0-rc.3
+  - @rocket.chat/model-typings@0.5.0-rc.3
+  - @rocket.chat/models@0.1.0-rc.3
+  </details>
+
+## 0.2.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.2
+  - @rocket.chat/rest-typings@6.10.0-rc.2
+  - @rocket.chat/pdf-worker@0.1.0-rc.2
+  - @rocket.chat/core-services@0.4.0-rc.2
+  - @rocket.chat/model-typings@0.5.0-rc.2
+  - @rocket.chat/models@0.1.0-rc.2
+  </details>
+
+## 0.2.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.1
+  - @rocket.chat/rest-typings@6.10.0-rc.1
+  - @rocket.chat/pdf-worker@0.1.0-rc.1
+  - @rocket.chat/core-services@0.4.0-rc.1
+  - @rocket.chat/model-typings@0.5.0-rc.1
+  - @rocket.chat/models@0.1.0-rc.1
+  </details>
+
+## 0.2.0-rc.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- ([#32329](https://github.com/RocketChat/Rocket.Chat/pull/32329)) Added a new setting `Restrict files access to users who can access room` that controls file visibility. This new setting allows users that "can access a room" to also download the files that are there. This is specially important for users with livechat manager or monitor roles, or agents that have special permissions to view closed rooms, since this allows them to download files on the conversation even after the conversation is closed.
+  New setting is disabled by default and it is mutually exclusive with the setting `Restrict file access to room members` since this allows _more_ types of users to download files.
+- <details><summary>Updated dependencies [1240c874a5, eaf2f11a6c, 5f95c4ec6b, 495628bce0, f75a2cb4bb, 07c4ca0621, 4f72d62aa7, dfa49bdbb2]:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.0
+  - @rocket.chat/model-typings@0.5.0-rc.0
+  - @rocket.chat/rest-typings@6.10.0-rc.0
+  - @rocket.chat/pdf-worker@0.1.0-rc.0
+  - @rocket.chat/core-services@0.4.0-rc.0
+  - @rocket.chat/models@0.1.0-rc.0
+
+## 0.1.18
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.3
+  - @rocket.chat/rest-typings@6.9.3
+  - @rocket.chat/pdf-worker@0.0.42
+  - @rocket.chat/core-services@0.3.18
+  - @rocket.chat/model-typings@0.4.4
+  - @rocket.chat/models@0.0.42
+  </details>
+
 ## 0.1.17
 
 ### Patch Changes

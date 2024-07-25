@@ -1,10 +1,10 @@
 {
 	"name": "@rocket.chat/ui-avatar",
-	"version": "3.0.2",
+	"version": "4.0.1",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
-		"@rocket.chat/fuselage": "^0.54.3",
+		"@rocket.chat/fuselage": "^0.56.0",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@types/babel__core": "~7.20.3",
 		"@types/react": "~17.0.69",
@@ -31,7 +31,7 @@
 	],
 	"peerDependencies": {
 		"@rocket.chat/fuselage": "*",
-		"@rocket.chat/ui-contexts": "7.0.2",
+		"@rocket.chat/ui-contexts": "8.0.1",
 		"react": "~17.0.2"
 	},
 	"volta": {

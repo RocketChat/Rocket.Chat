@@ -1,4 +1,4 @@
-import type { IMessage, ITranslatedMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import {
 	isFileAttachment,
 	isE2EEMessage,
@@ -56,21 +56,35 @@ export const parseMessageTextToAstMarkdown = <
 	};
 };
 
-export const parseMessageQuoteAttachment = <T extends MessageQuoteAttachment>(
-	quote: T,
+export const parseMessageAttachment = <T extends MessageAttachment>(
+	attachment: T,
 	parseOptions: Options,
 	autoTranslateOptions: { autoTranslateLanguage?: string; translated: boolean },
 ): T => {
 	const { translated, autoTranslateLanguage } = autoTranslateOptions;
-	if (quote.attachments && quote.attachments?.length > 0) {
-		quote.attachments = quote.attachments.map((attachment) => parseMessageQuoteAttachment(attachment, parseOptions, autoTranslateOptions));
+	if (!attachment.text && !attachment.description) {
+		return attachment;
 	}
 
-	const text = (isTranslatedAttachment(quote) && autoTranslateLanguage && quote?.translations?.[autoTranslateLanguage]) || quote.text || '';
+	if (isQuoteAttachment(attachment) && attachment.attachments) {
+		attachment.attachments = parseMessageAttachments(attachment.attachments, parseOptions, autoTranslateOptions);
+	}
+
+	const text =
+		(isTranslatedAttachment(attachment) && autoTranslateLanguage && attachment?.translations?.[autoTranslateLanguage]) ||
+		attachment.text ||
+		attachment.description ||
+		'';
+
+	if (isFileAttachment(attachment) && attachment.description) {
+		attachment.descriptionMd = translated
+			? textToMessageToken(text, parseOptions)
+			: attachment.descriptionMd ?? textToMessageToken(text, parseOptions);
+	}
 
 	return {
-		...quote,
-		md: translated ? textToMessageToken(text, parseOptions) : quote.md ?? textToMessageToken(text, parseOptions),
+		...attachment,
+		md: translated ? textToMessageToken(text, parseOptions) : attachment.md ?? textToMessageToken(text, parseOptions),
 	};
 };
 
@@ -78,36 +92,7 @@ export const parseMessageAttachments = <T extends MessageAttachment>(
 	attachments: T[],
 	parseOptions: Options,
 	autoTranslateOptions: { autoTranslateLanguage?: string; translated: boolean },
-): T[] =>
-	attachments.map((attachment) => {
-		const { translated, autoTranslateLanguage } = autoTranslateOptions;
-		if (!attachment.text && !attachment.description) {
-			return attachment;
-		}
-
-		if (isQuoteAttachment(attachment) && attachment.attachments) {
-			attachment.attachments = attachment.attachments.map((quoteAttachment) =>
-				parseMessageQuoteAttachment(quoteAttachment, parseOptions, autoTranslateOptions),
-			);
-		}
-
-		const text =
-			(isTranslatedAttachment(attachment) && autoTranslateLanguage && attachment?.translations?.[autoTranslateLanguage]) ||
-			attachment.text ||
-			attachment.description ||
-			'';
-
-		if (isFileAttachment(attachment) && attachment.description) {
-			attachment.descriptionMd = translated
-				? textToMessageToken(text, parseOptions)
-				: attachment.descriptionMd ?? textToMessageToken(text, parseOptions);
-		}
-
-		return {
-			...attachment,
-			md: translated ? textToMessageToken(text, parseOptions) : attachment.md ?? textToMessageToken(text, parseOptions),
-		};
-	});
+): T[] => attachments.map((attachment) => parseMessageAttachment(attachment, parseOptions, autoTranslateOptions));
 
 const isNotNullOrUndefined = (value: unknown): boolean => value !== null && value !== undefined;
 

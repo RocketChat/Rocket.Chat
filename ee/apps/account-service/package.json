@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/account-service",
 	"private": true,
-	"version": "0.3.16",
+	"version": "0.4.1",
 	"description": "Rocket.Chat Account service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -22,6 +22,7 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
+		"@rocket.chat/tools": "workspace:^",
 		"@types/node": "^14.18.63",
 		"bcrypt": "^5.0.1",
 		"ejson": "^2.2.3",

@@ -1,3 +1,4 @@
+import type { RoomType, RoomRouteData } from '@rocket.chat/core-typings';
 import type {
 	RouterContextValue,
 	RouteName,
@@ -11,10 +12,11 @@ import { RouterContext } from '@rocket.chat/ui-contexts';
 import type { LocationSearch } from '@rocket.chat/ui-contexts/src/RouterContext';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React from 'react';
 
 import { appLayout } from '../lib/appLayout';
+import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { queueMicrotask } from '../lib/utils/queueMicrotask';
 
 const subscribers = new Set<() => void>();
@@ -195,8 +197,15 @@ export const router: RouterContextValue = {
 	defineRoutes,
 	getRoutes,
 	subscribeToRoutesChange,
+	getRoomRoute(roomType: RoomType, routeData: RoomRouteData) {
+		return { path: roomCoordinator.getRouteLink(roomType, routeData) || '/' };
+	},
 };
 
-const RouterProvider: FC = ({ children }) => <RouterContext.Provider children={children} value={router} />;
+type RouterProviderProps = {
+	children?: ReactNode;
+};
+
+const RouterProvider = ({ children }: RouterProviderProps) => <RouterContext.Provider children={children} value={router} />;
 
 export default RouterProvider;
