@@ -238,7 +238,10 @@ class LivechatClass {
 			this.logger.error(e);
 			await session.abortTransaction();
 			// Dont propagate transaction errors
-			if ((e as any)?.errorLabels?.includes('UnknownTransactionCommitResult') || (e as any)?.errorLabels?.includes('TransientTransactionError')) {
+			if (
+				(e as any)?.errorLabels?.includes('UnknownTransactionCommitResult') ||
+				(e as any)?.errorLabels?.includes('TransientTransactionError')
+			) {
 				throw new Error('error-room-cannot-be-closed-try-again');
 			}
 			throw e;
