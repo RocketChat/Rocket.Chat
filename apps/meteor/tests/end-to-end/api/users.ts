@@ -623,7 +623,7 @@ describe('[Users]', () => {
 				.end(done);
 		});
 		it("should return an error when registering a user's name with invalid characters: >, <, /, or \\", (done) => {
-			request
+			void request
 				.post(api('users.register'))
 				.send({
 					email,
@@ -1343,7 +1343,7 @@ describe('[Users]', () => {
 				});
 			});
 			it('should prevent users from passing server-side request forgery (SSRF) payloads as avatarUrl', (done) => {
-				request
+				void request
 					.post(api('users.setAvatar'))
 					.set(credentials)
 					.send({
