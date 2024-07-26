@@ -1216,7 +1216,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 			}
 
-			void notifyOnUserChange({ clientAction: 'updated', id: this.userId, diff: { 'services.resume.loginTokens': [] } });
+			void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [] } });
 
 			return API.v1.success({
 				message: `User ${userId} has been logged out!`,
