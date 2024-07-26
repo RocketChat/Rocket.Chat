@@ -39,7 +39,24 @@ const createBasicTemplate = (): oas31.OpenAPIObject => ({
 	paths: {},
 	components: {
 		schemas,
+		securitySchemes: {
+			ApiKeyAuth: {
+				type: 'apiKey',
+				in: 'header',
+				name: 'X-API-Key',
+			},
+			BearerAuth: {
+				type: 'http',
+				scheme: 'bearer',
+				bearerFormat: 'JWT',
+			},
+		},
 	},
+	security: [
+		{
+			ApiKeyAuth: [],
+		},
+	],
 });
 
 // Type mapping
@@ -195,6 +212,12 @@ const processEndpoints = (endpoints: IEndpoints, tag: string): Record<string, oa
 						description: 'Authorization information is missing or invalid.',
 					},
 				},
+				security: [
+					{
+						ApiKeyAuth: [],
+						BearerAuth: [],
+					},
+				],
 			};
 
 			pathItem[method.toLowerCase() as keyof oas31.PathItemObject] = operation;
