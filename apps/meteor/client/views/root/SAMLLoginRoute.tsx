@@ -50,7 +50,7 @@ const SAMLLoginRoute = () => {
 			},
 			{ replace: true },
 		);
-	}, [userId, rootUrl, router]);
+	}, [userId, router]);
 
 	return null;
 };
