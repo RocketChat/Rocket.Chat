@@ -31,17 +31,14 @@ import { IS_EE } from '../../e2e/config/constants';
 	after(() => deleteUser({ _id: auditor._id }));
 	after(() => deleteRoom({ type: 'p', roomId: testPrivateChannel._id }));
 
-	describe('audit/rooms.members', () => {
-		it('should fail if user is not logged in', async () => {
-			await request
-				.get(api('audit/rooms.members'))
-				.query({
-					roomId: 'GENERAL',
-				})
-				.expect(401);
+	describe('audit/rooms.members [no permissions]', () => {
+		before(async () => {
+			await updatePermission('view-members-list-all-rooms', []);
+		});
+		after(async () => {
+			await updatePermission('view-members-list-all-rooms', ['admin', 'auditor']);
 		});
 		it('should fail if user does not have view-members-list-all-rooms permission', async () => {
-			await updatePermission('view-members-list-all-rooms', []);
 			await request
 				.get(api('audit/rooms.members'))
 				.set(credentials)
@@ -56,9 +53,19 @@ import { IS_EE } from '../../e2e/config/constants';
 					roomId: 'GENERAL',
 				})
 				.expect(403);
-
-			await updatePermission('view-members-list-all-rooms', ['admin', 'auditor']);
 		});
+	});
+
+	describe('audit/rooms.members', () => {
+		it('should fail if user is not logged in', async () => {
+			await request
+				.get(api('audit/rooms.members'))
+				.query({
+					roomId: 'GENERAL',
+				})
+				.expect(401);
+		});
+		
 		it('should fail if roomId is invalid', async () => {
 			await request
 				.get(api('audit/rooms.members'))
