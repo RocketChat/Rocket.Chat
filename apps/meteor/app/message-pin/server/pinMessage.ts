@@ -8,11 +8,10 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../lib/isTruthy';
-import { broadcastMessageFromData } from '../../../server/modules/watchers/lib/messages';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
-import { notifyOnRoomChangedById } from '../../lib/server/lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
 import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
@@ -227,7 +226,7 @@ Meteor.methods<ServerMethods>({
 		if (settings.get('Message_Read_Receipt_Store_Users')) {
 			await ReadReceipts.setPinnedByMessageId(originalMessage._id, originalMessage.pinned);
 		}
-		void broadcastMessageFromData({
+		void notifyOnMessageChange({
 			id: message._id,
 		});
 

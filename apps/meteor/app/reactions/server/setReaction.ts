@@ -8,12 +8,11 @@ import _ from 'underscore';
 
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../../server/lib/i18n';
-import { broadcastMessageFromData } from '../../../server/modules/watchers/lib/messages';
 import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
-import { notifyOnRoomChangedById } from '../../lib/server/lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 
 const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
 	if (!message.reactions) {
@@ -111,7 +110,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 
 	await Apps.self?.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
 
-	void broadcastMessageFromData({
+	void notifyOnMessageChange({
 		id: message._id,
 	});
 }

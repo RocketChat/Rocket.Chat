@@ -4,10 +4,9 @@ import { Messages, Subscriptions, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { broadcastMessageFromData } from '../../../server/modules/watchers/lib/messages';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
-import { notifyOnRoomChangedById } from '../../lib/server/lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -63,7 +62,7 @@ Meteor.methods<ServerMethods>({
 
 		await Messages.updateUserStarById(message._id, uid, message.starred);
 
-		void broadcastMessageFromData({
+		void notifyOnMessageChange({
 			id: message._id,
 		});
 
