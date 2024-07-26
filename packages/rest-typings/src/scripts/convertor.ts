@@ -116,24 +116,37 @@ const createResponseSchema = (response: Record<string, any>): oas31.SchemaObject
 	};
 
 	for (const [key, value] of Object.entries(response || {})) {
-		let $ref = value;
-		const regex = /^I[A-Z]/u;
-		if (regex.test(value)) {
-			const stringRegex = /\[\s*'[^']*'\s*\]/;
-			if (stringRegex.test(value)) {
-				$ref = 'string';
-			} else {
-				$ref = `#/components/schemas/${value}`;
-				if ($ref.endsWith('[]')) {
-					$ref = $ref.slice(0, -2);
+		let schemaRef: oas31.ReferenceObject | oas31.SchemaObject;
+
+		if (typeof value === 'object' && !Array.isArray(value)) {
+			const nestedSchema = createResponseSchema(value);
+			responseSchema.properties![key] = {
+				type: 'object',
+				properties: nestedSchema.properties,
+			};
+		} else {
+			const regex = /^I[A-Z]/u;
+			if (regex.test(value)) {
+				const stringRegex = /\[\s*'[^']*'\s*\]/;
+				if (stringRegex.test(value)) {
+					schemaRef = { type: 'string' };
+				} else {
+					const refName = value.replace(/\s*\|\s*(null|undefined)/g, '');
+					if (refName.endsWith('[]')) {
+						schemaRef = {
+							type: 'array',
+							items: { $ref: `#/components/schemas/${refName.slice(0, -2)}` },
+						};
+					} else {
+						schemaRef = { $ref: `#/components/schemas/${refName}` };
+					}
 				}
-
-				const unwantedPattern = /\s*\|\s*(null|undefined)/g; // if | null exists then it is not in required //
-				if (unwantedPattern.test($ref)) $ref = $ref.replace(unwantedPattern, '');
+			} else {
+				schemaRef = { type: paramTypeMap[value] || 'string' };
 			}
-		}
 
-		responseSchema.properties![key] = { $ref };
+			responseSchema.properties![key] = schemaRef;
+		}
 	}
 
 	return responseSchema;
@@ -174,6 +187,12 @@ const processEndpoints = (endpoints: IEndpoints, tag: string): Record<string, oa
 								schema: responseSchema,
 							},
 						},
+					},
+					'400': {
+						description: 'Bad request.',
+					},
+					'401': {
+						description: 'Authorization information is missing or invalid.',
 					},
 				},
 			};

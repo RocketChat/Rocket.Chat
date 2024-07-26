@@ -18,29 +18,11 @@ const program: ts.Program = ts.createProgram([fileName], {
 const checker: ts.TypeChecker = program.getTypeChecker();
 
 /* ###################################################################################### */
+
 const resolveType = (typeNode: ts.TypeNode, temp: any = {}) => {
 	if (ts.isTypeLiteralNode(typeNode)) {
 		extractLiteralNode(typeNode, temp);
 	} else if (ts.isTypeReferenceNode(typeNode)) {
-		// Handle case for PaginatedRequest | PaginatedResponse
-		if (ts.isIdentifier(typeNode.typeName)) {
-			let paginationParams: any = {};
-			if (typeNode.typeName.escapedText === 'PaginatedRequest') {
-				paginationParams = {
-					'count?': 'number',
-					'offset?': 'number',
-					'sort?': 'string',
-					'query?': 'string',
-				};
-			} else if (typeNode.typeName.escapedText === 'PaginatedResponse') {
-				paginationParams = {
-					count: 'number',
-					offset: 'number',
-					total: 'number',
-				};
-			}
-			Object.assign(temp, paginationParams);
-		}
 		extractReferencedNode(typeNode, temp);
 	} else if (ts.isUnionTypeNode(typeNode)) {
 		const unionArr: any = [];
@@ -50,6 +32,9 @@ const resolveType = (typeNode: ts.TypeNode, temp: any = {}) => {
 	} else if (ts.isParenthesizedTypeNode(typeNode)) {
 		const parenthesisType = typeNode.type;
 		resolveType(parenthesisType, temp);
+	} else if (ts.isLiteralTypeNode(typeNode)) {
+		const typeLitral = typeNode.literal;
+		temp = typeLitral.getText();
 	}
 };
 
@@ -59,25 +44,25 @@ const extractLiteralNode = (typeNode: ts.TypeLiteralNode, properties: any = {}) 
 	typeNode.members?.forEach((member) => {
 		if (ts.isPropertySignature(member) && member.name && ts.isIdentifier(member.name)) {
 			let key = member.name.text;
-			const { type } = member;
+			const literalType = member.type;
 			if (member.questionToken) key += '?';
-			if (!type) {
+			if (!literalType) {
 				console.error(`Type value not present at: ${key}`);
 				return;
 			}
 
 			const temp: any = {};
-			if (ts.isTypeReferenceNode(type)) {
-				// need to make this robust: currently not working for all cases
+			if (ts.isTypeReferenceNode(literalType)) {
+				// not working for all cases => when "importSpecifier" is used
 				const subTemp: any = {};
-				extractReferencedNode(type, subTemp);
-				temp[key] = subTemp || 'undefined';
-			} else if (ts.isTypeLiteralNode(type)) {
+				extractReferencedNode(literalType, subTemp);
+				Object.assign(temp, { [key]: subTemp });
+			} else if (ts.isTypeLiteralNode(literalType)) {
 				const subTemp: any = {};
-				extractLiteralNode(type, subTemp);
+				extractLiteralNode(literalType, subTemp);
 				temp[key] = subTemp;
 			} else {
-				const valueType = checker.getTypeAtLocation(type);
+				const valueType = checker.getTypeAtLocation(literalType);
 				const value = checker.typeToString(valueType);
 				temp[key] = value;
 			}
@@ -109,6 +94,30 @@ const extractIntersectionNode = (typeNode: ts.IntersectionTypeNode, temp: any = 
 // const processedTypes = new Map<string, any>(); // TODO: Add cache for already processed types
 const extractReferencedNode = (typeNode: ts.TypeReferenceNode, params: any = {}) => {
 	if (!typeNode) return {};
+
+	// Handle case for PaginatedRequest | PaginatedResponse | Pick
+	if (ts.isIdentifier(typeNode.typeName)) {
+		let additionalParams: any = {};
+		if (typeNode.typeName.escapedText === 'PaginatedRequest') {
+			additionalParams = {
+				'count?': 'number',
+				'offset?': 'number',
+				'sort?': 'string',
+				'query?': 'string',
+			};
+		} else if (typeNode.typeName.escapedText === 'PaginatedResponse' || typeNode.typeName.escapedText === 'PaginatedResult') {
+			additionalParams = {
+				count: 'number',
+				offset: 'number',
+				total: 'number',
+			};
+		} else if (typeNode.typeName.escapedText === 'Pick') {
+			typeNode.typeArguments?.forEach((arg) => {
+				resolveType(arg, additionalParams);
+			});
+		}
+		Object.assign(params, additionalParams);
+	}
 
 	if (typeNode.typeArguments) {
 		typeNode.typeArguments?.forEach((arg) => {
@@ -245,6 +254,6 @@ nonDeclarationFiles.forEach((file) => {
 	if (Object.keys(temp).length) endpoints[filename] = temp;
 });
 
-// console.log(JSON.stringify(endpoints));
+console.log(JSON.stringify(endpoints));
 
 export default endpoints;
