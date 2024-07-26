@@ -65,7 +65,6 @@ import { IS_EE } from '../../e2e/config/constants';
 				})
 				.expect(401);
 		});
-		
 		it('should fail if roomId is invalid', async () => {
 			await request
 				.get(api('audit/rooms.members'))
