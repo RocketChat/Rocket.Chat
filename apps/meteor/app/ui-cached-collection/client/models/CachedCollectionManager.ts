@@ -42,10 +42,10 @@ class CachedCollectionManager extends Emitter<{ reconnect: void; login: string |
 		});
 
 		Tracker.autorun(() => {
-			const uid = Meteor.userId();
-			this.logged = uid !== null;
-			if (this.logged) {
-				this.emit('login', uid);
+			const user = Meteor.user();
+			if (user?._id) {
+				this.logged = true;
+				this.emit('login', user._id);
 			}
 		});
 	}
