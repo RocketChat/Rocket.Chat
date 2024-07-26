@@ -10,21 +10,13 @@ const SAMLLoginRoute = () => {
 
 	useEffect(() => {
 		const { token } = router.getRouteParameters();
+		const { redirectUrl } = router.getSearchParameters();
 
 		Meteor.loginWithSamlToken(token, (error?: unknown) => {
 			if (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		});
-	}, [dispatchToastMessage, rootUrl, router]);
-
-	const userId = useUserId();
-	useEffect(() => {
-		if (!userId) {
-			return;
-		}
-
-		const { redirectUrl } = router.getSearchParameters();
 
 		const decodedRedirectUrl = decodeURIComponent(redirectUrl || '');
 		if (decodedRedirectUrl?.startsWith(rootUrl)) {
@@ -44,6 +36,20 @@ const SAMLLoginRoute = () => {
 				{ replace: true },
 			);
 		}
+	}, [dispatchToastMessage, rootUrl, router]);
+
+	const userId = useUserId();
+	useEffect(() => {
+		if (!userId) {
+			return;
+		}
+
+		router.navigate(
+			{
+				pathname: '/home',
+			},
+			{ replace: true },
+		);
 	}, [userId, rootUrl, router]);
 
 	return null;
