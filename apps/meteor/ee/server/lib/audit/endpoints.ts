@@ -1,0 +1,74 @@
+import type { IUser } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
+import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
+import Ajv from 'ajv';
+
+import { API } from '../../../../app/api/server/api';
+import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
+import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+
+const ajv = new Ajv({
+	coerceTypes: true,
+});
+
+type AuditRoomMembersParams = PaginatedRequest<{
+	roomId: string;
+	filter: string;
+}>;
+
+const auditRoomMembersSchema = {
+	type: 'object',
+	properties: {
+		roomId: { type: 'string' },
+		filter: { type: 'string', nullable: true },
+		count: { type: 'number', nullable: true },
+		offset: { type: 'number', nullable: true },
+		sort: { type: 'string', nullable: true },
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isAuditRoomMembersProps = ajv.compile<AuditRoomMembersParams>(auditRoomMembersSchema);
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Endpoints {
+		'/v1/audit/rooms.members': {
+			GET: (params: AuditRoomMembersParams) => PaginatedResult<{ members: IUser[] }>;
+		};
+	}
+}
+
+API.v1.addRoute(
+	'audit/rooms.members',
+	{ authRequired: true, permissionsRequired: ['view-members-list-all-rooms'], validateParams: isAuditRoomMembersProps },
+	{
+		async get() {
+			const { roomId, filter } = this.queryParams;
+			const { count: limit, offset: skip } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+
+			const room = await Rooms.findOneById(roomId, { projection: { _id: 1 } });
+			if (!room) {
+				return API.v1.notFound();
+			}
+
+			const { cursor, totalCount } = findUsersOfRoom({
+				rid: room._id,
+				filter,
+				skip,
+				limit,
+				...(sort?.username && { sort: { username: sort.username } }),
+			});
+
+			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+			return API.v1.success({
+				members,
+				count: members.length,
+				offset: skip,
+				total,
+			});
+		},
+	},
+);
