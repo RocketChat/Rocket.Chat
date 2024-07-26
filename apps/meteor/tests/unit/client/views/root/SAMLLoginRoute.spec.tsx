@@ -19,7 +19,7 @@ describe('views/root/SAMLLoginRoute', () => {
 		loginWithSamlTokenStub.callsFake((_token, callback) => callback());
 	});
 
-	it('should redirect to /home when userId is not null', async () => {
+	it('should redirect to /home', async () => {
 		render(
 			<MockedServerContext>
 				<MockedUserContext>
@@ -30,7 +30,7 @@ describe('views/root/SAMLLoginRoute', () => {
 			</MockedServerContext>,
 		);
 
-		expect(navigateStub.calledTwice).toBe(true);
+		expect(navigateStub.calledOnce).toBe(true);
 		expect(
 			navigateStub.calledWith(
 				sinon.match({
@@ -40,7 +40,7 @@ describe('views/root/SAMLLoginRoute', () => {
 		).toBe(true);
 	});
 
-	it('should redirect to /home when userId is null and redirectUrl is not within the workspace domain', async () => {
+	it('should redirect to /home when redirectUrl is not within the workspace domain', async () => {
 		render(
 			<MockedServerContext>
 				<RouterContextMock searchParameters={{ redirectUrl: 'http://rocket.chat' }} navigate={navigateStub}>
@@ -58,7 +58,7 @@ describe('views/root/SAMLLoginRoute', () => {
 		).toBe(true);
 	});
 
-	it('should redirect to the provided redirectUrl when userId is null and redirectUrl is within the workspace domain', async () => {
+	it('should redirect to the provided redirectUrl when redirectUrl is within the workspace domain', async () => {
 		render(
 			<MockedServerContext>
 				<RouterContextMock searchParameters={{ redirectUrl: 'http://localhost:3000/invite/test' }} navigate={navigateStub}>
