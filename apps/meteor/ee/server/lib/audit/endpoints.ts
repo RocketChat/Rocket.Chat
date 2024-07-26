@@ -35,7 +35,7 @@ declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/audit/rooms.members': {
-			GET: (params: AuditRoomMembersParams) => PaginatedResult<{ members: IUser[] }>;
+			GET: (params: AuditRoomMembersParams) => PaginatedResult<{ members: Pick<IUser, '_id' | 'name' | 'username' | 'status' | '_updatedAt'>[] }>;
 		};
 	}
 }
