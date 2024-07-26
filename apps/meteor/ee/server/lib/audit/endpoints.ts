@@ -19,7 +19,7 @@ type AuditRoomMembersParams = PaginatedRequest<{
 const auditRoomMembersSchema = {
 	type: 'object',
 	properties: {
-		roomId: { type: 'string' },
+		roomId: { type: 'string', minLength: 1 },
 		filter: { type: 'string', nullable: true },
 		count: { type: 'number', nullable: true },
 		offset: { type: 'number', nullable: true },
