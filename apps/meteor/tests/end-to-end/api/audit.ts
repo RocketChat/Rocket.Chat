@@ -11,14 +11,16 @@ import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('Audit Panel', () => {
+(IS_EE ? describe.only: describe.skip)('Audit Panel', () => {
 	let testChannel: IRoom;
+	let testPrivateChannel: IRoom;
 	let dummyUser: IUser;
 	let auditor: IUser;
 	let auditorCredentials: Credentials;
 	before((done) => getCredentials(done));
 	before(async () => {
 		testChannel = (await createRoom({ type: 'c', name: `chat.api-test-${Date.now()}` })).body.channel;
+		testPrivateChannel = (await createRoom({ type: 'p', name: `chat.api-test-${Date.now()}` })).body.group;
 		dummyUser = await createUser();
 		auditor = await createUser({ roles: ['user', 'auditor'] });
 
@@ -27,6 +29,7 @@ import { IS_EE } from '../../e2e/config/constants';
 	after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 	after(() => deleteUser({ _id: dummyUser._id }));
 	after(() => deleteUser({ _id: auditor._id }));
+	after(() => deleteRoom({ type: 'p', roomId: testPrivateChannel._id }));
 
 	describe('audit/rooms.members', () => {
 		it('should fail if user is not logged in', async () => {
@@ -164,8 +167,8 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.members).to.be.an('array');
 					expect(res.body.members).to.have.lengthOf(2);
-					expect(res.body.members[0].username).to.be.equal('rocketchat.internal.admin.test');
-					expect(res.body.members[1].username).to.be.equal(dummyUser.username);
+					expect(res.body.members[1].username).to.be.equal('rocketchat.internal.admin.test');
+					expect(res.body.members[0].username).to.be.equal(dummyUser.username);
 				});
 		});
 
@@ -208,6 +211,22 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body.members[0].username).to.be.equal('rocketchat.internal.admin.test');
 					expect(res.body.members[1].username).to.be.equal(dummyUser.username);
 					expect(res.body.total).to.be.equal(2);
+				});
+		});
+
+		it('should allow to fetch info from private rooms', async () => {
+			await request
+				.get(api('audit/rooms.members'))
+				.set(auditorCredentials)
+				.query({
+					roomId: testPrivateChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.members).to.be.an('array');
+					expect(res.body.members[0].username).to.be.equal('rocketchat.internal.admin.test');
+					expect(res.body.total).to.be.equal(1);
 				});
 		});
 	});
