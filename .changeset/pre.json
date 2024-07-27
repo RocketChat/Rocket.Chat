@@ -63,6 +63,7 @@
   },
   "changesets": [
     "afraid-guests-jog",
+    "bump-patch-1722087664914",
     "chatty-hounds-hammer",
     "chilled-yaks-beg",
     "chilly-papayas-march",
