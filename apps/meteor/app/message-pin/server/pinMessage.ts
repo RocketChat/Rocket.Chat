@@ -2,8 +2,8 @@ import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Message } from '@rocket.chat/core-services';
 import { isQuoteAttachment, isRegisterUser } from '@rocket.chat/core-typings';
 import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Rooms, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -35,7 +35,7 @@ const recursiveRemove = (msg: MessageAttachment, deep = 1) => {
 const shouldAdd = (attachments: MessageAttachment[], attachment: MessageQuoteAttachment) =>
 	!attachments.some((_attachment) => isQuoteAttachment(_attachment) && _attachment.message_link === attachment.message_link);
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		pinMessage(message: IMessage, pinnedAt?: Date): IMessage | null;
