@@ -121,6 +121,7 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 			await poLiveChat.page.goto('/livechat');
 			await poLiveChat.sendMessageAndCloseChat(newVisitor);
 
+			await expect(poLiveChat.btnNewChat).toBeVisible();
 			await expect(poLiveChat.txtChatMessage(triggerMessage)).not.toBeVisible();
 
 			await poLiveChat.startNewChat();
