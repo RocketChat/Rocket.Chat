@@ -1,0 +1,34 @@
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "sourceMap": true,
+        "target": "es6",
+        "module": "commonjs",
+        "declaration": true,
+        "noImplicitAny": true,
+        "noUnusedLocals": true,
+        "removeComments": false,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "moduleResolution": "node",
+        "types": ["node"],
+        "lib": ["es2017", "dom"],
+        "outDir": ".",
+        "skipLibCheck": true
+    },
+    "exclude": [
+        "node_modules",
+        "server",
+        "client",
+        "definition",
+        "examples",
+        "deno-runtime"
+    ],
+    "include": [
+        "src",
+        "tests"
+    ],
+    "atom": {
+        "rewriteTsconfig": false
+    }
+}

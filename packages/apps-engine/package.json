@@ -1,0 +1,138 @@
+{
+    "name": "@rocket.chat/apps-engine",
+    "version": "1.43.1",
+    "description": "The engine code for the Rocket.Chat Apps which manages, runs, translates, coordinates and all of that.",
+    "main": "index",
+    "typings": "index",
+    "scripts": {
+        "start": "gulp",
+        "test": "concurrently \"npm:test:node\" \"npm:test:deno\"",
+        "lint:eslint": "eslint .",
+        "lint:deno": "deno lint --ignore=deno-runtime/.deno deno-runtime/",
+        "lint": "concurrently \"npm:lint:eslint\" \"npm:lint:deno\"",
+        "fix-lint": "eslint . --fix",
+        "bundle": "gulp bundle",
+        "compile": "gulp compile",
+        "go-publish": "gulp publish",
+        "go-publish-beta": "gulp publish-beta",
+        "go-publish-alpha": "gulp publish-alpha",
+        "test:node": "NODE_ENV=test ts-node ./tests/runner.ts",
+        "test:deno": "cd deno-runtime && deno task test",
+        "gen-doc": "typedoc",
+        "postinstall": "node scripts/postinstall.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/RocketChat/Rocket.Chat.Apps-engine.git"
+    },
+    "keywords": [
+        "rocket.chat",
+        "team chat",
+        "apps engine"
+    ],
+    "files": [
+        "client/**",
+        "definition/**",
+        "deno-runtime/**",
+        "lib/**",
+        "scripts/**",
+        "server/**"
+    ],
+    "author": {
+        "name": "Rocket.Chat",
+        "url": "https://rocket.chat/"
+    },
+    "contributors": [
+        {
+            "name": "Bradley Hilton",
+            "email": "bradley.hilton@rocket.chat"
+        },
+        {
+            "name": "Rodrigo Nascimento",
+            "email": "rodrigo.nascimento@rocket.chat"
+        },
+        {
+            "name": "Douglas Gubert",
+            "email": "douglas.gubert@rocket.chat"
+        }
+    ],
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/RocketChat/Rocket.Chat.Apps-engine/issues"
+    },
+    "homepage": "https://github.com/RocketChat/Rocket.Chat.Apps-engine#readme",
+    "devDependencies": {
+        "@rocket.chat/eslint-config": "~0.5.2",
+        "@rocket.chat/ui-kit": "^0.31.22",
+        "@types/adm-zip": "^0.5.0",
+        "@types/debug": "^4.1.12",
+        "@types/lodash.clonedeep": "^4.5.7",
+        "@types/nedb": "^1.8.12",
+        "@types/node": "^18.0.0",
+        "@types/semver": "^5.5.0",
+        "@types/stack-trace": "0.0.29",
+        "@types/uuid": "~8.3.4",
+        "@typescript-eslint/eslint-plugin": "~5.60.1",
+        "@typescript-eslint/parser": "~5.60.1",
+        "alsatian": "^2.4.0",
+        "browserify": "^16.5.2",
+        "concurrently": "^8.2.1",
+        "del": "^3.0.0",
+        "eslint": "~8.45.0",
+        "gulp": "^4.0.2",
+        "gulp-bump": "^3.2.0",
+        "gulp-shell": "^0.6.5",
+        "gulp-sourcemaps": "^2.6.5",
+        "gulp-typescript": "^4.0.2",
+        "http-server": "^0.12.3",
+        "merge2": "^1.4.1",
+        "nedb": "^1.8.0",
+        "nyc": "^14.1.1",
+        "pre-push": "^0.1.2",
+        "tap-bark": "^1.0.0",
+        "ts-node": "^6.2.0",
+        "typedoc": "~0.24.8",
+        "typescript": "~5.1.6",
+        "uglify-es": "^3.3.9"
+    },
+    "dependencies": {
+        "@msgpack/msgpack": "3.0.0-beta2",
+        "adm-zip": "^0.5.9",
+        "cryptiles": "^4.1.3",
+        "debug": "^4.3.4",
+        "deno-bin": "1.37.1",
+        "esbuild": "^0.20.2",
+        "jose": "^4.11.1",
+        "jsonrpc-lite": "^2.2.0",
+        "lodash.clonedeep": "^4.5.0",
+        "semver": "^5.7.1",
+        "stack-trace": "0.0.10",
+        "uuid": "~8.3.2"
+    },
+    "peerDependencies": {
+        "@rocket.chat/ui-kit": "next"
+    },
+    "nyc": {
+        "include": [
+            "src/*.ts",
+            "src/server/**/*.ts"
+        ],
+        "extension": [
+            ".ts"
+        ],
+        "reporter": [
+            "lcov",
+            "json",
+            "html"
+        ],
+        "all": true
+    },
+    "pre-push": [
+        "lint",
+        "compile",
+        "test"
+    ],
+    "volta": {
+        "node": "14.21.3"
+    }
+}
