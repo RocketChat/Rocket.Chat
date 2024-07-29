@@ -2,6 +2,7 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
+import EJSON from 'ejson';
 import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
@@ -74,6 +75,18 @@ import { IS_EE } from '../../e2e/config/constants';
 				})
 				.expect(404);
 		});
+		it('should fail if roomId is not present', async () => {
+			await request.get(api('audit/rooms.members')).set(credentials).query({}).expect(400);
+		});
+		it('should fail if roomId is an empty string', async () => {
+			await request
+				.get(api('audit/rooms.members'))
+				.set(credentials)
+				.query({
+					roomId: '',
+				})
+				.expect(400);
+		});
 		it('should fetch the members of a room', async () => {
 			await request
 				.get(api('audit/rooms.members'))
@@ -86,6 +99,53 @@ import { IS_EE } from '../../e2e/config/constants';
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.members).to.be.an('array');
 					expect(res.body.members).to.have.lengthOf(1);
+				});
+		});
+		it('should persist a log entry', async () => {
+			await request
+				.get(api('audit/rooms.members'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.members).to.be.an('array');
+					expect(res.body.members).to.have.lengthOf(1);
+				});
+
+			await request
+				.post(methodCall('auditGetAuditions'))
+				.set(credentials)
+				.send({
+					message: EJSON.stringify({
+						method: 'auditGetAuditions',
+						params: [{ startDate: new Date(Date.now() - 86400000), endDate: new Date() }],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const message = JSON.parse(res.body.message);
+
+					expect(message.result).to.be.an('array').with.lengthOf.greaterThan(1);
+					const entry = message.result.find((audition: any) => {
+						return audition.fields.rids.includes(testChannel._id);
+					});
+					expect(entry).to.have.property('u').that.is.an('object').deep.equal({
+						_id: 'rocketchat.internal.admin.test',
+						username: 'rocketchat.internal.admin.test',
+						name: 'RocketChat Internal Admin Test',
+					});
+					expect(entry).to.have.property('fields').that.is.an('object');
+					const { fields } = entry;
+
+					expect(fields).to.have.property('msg', 'Room_members_list');
+					expect(fields).to.have.property('rids').that.is.an('array').with.lengthOf(1);
 				});
 		});
 		it('should fetch the members of a room with offset and count', async () => {
