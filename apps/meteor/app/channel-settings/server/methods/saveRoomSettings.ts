@@ -82,14 +82,14 @@ const validators: RoomSettingsValidators = {
 		}
 	},
 	async sidepanel({ room, userId, value }) {
-		if (!(await hasPermissionAsync(userId, 'edit-team', room._id))) {
-			throw new Meteor.Error('error-action-not-allowed', 'You do not have permission to change sidepanel items', {
+		if (!room.teamMain) {
+			throw new Meteor.Error('error-action-not-allowed', 'Invalid room', {
 				method: 'saveRoomSettings',
 			});
 		}
 
-		if (!room.teamMain) {
-			throw new Meteor.Error('error-action-not-allowed', 'Invalid room', {
+		if (!(await hasPermissionAsync(userId, 'edit-team', room._id))) {
+			throw new Meteor.Error('error-action-not-allowed', 'You do not have permission to change sidepanel items', {
 				method: 'saveRoomSettings',
 			});
 		}
