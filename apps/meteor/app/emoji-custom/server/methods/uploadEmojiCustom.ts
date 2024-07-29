@@ -1,5 +1,5 @@
 import { api, Media } from '@rocket.chat/core-services';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 import sharp from 'sharp';
@@ -16,7 +16,7 @@ const getFile = async (file: Buffer, extension: string) => {
 	return sharp(file).png().toBuffer();
 };
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		uploadEmojiCustom(
