@@ -1,9 +1,13 @@
+import { isMessageFromVisitor } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
+import { cachedFunction } from './cachedFunction';
 import { transformMappedData } from './transformMappedData';
 
 export class AppMessagesConverter {
+	mem = new WeakMap();
+
 	constructor(orch) {
 		this.orch = orch;
 	}
@@ -14,10 +18,53 @@ export class AppMessagesConverter {
 		return this.convertMessage(msg);
 	}
 
+	async convertMessageRaw(msgObj) {
+		if (!msgObj) {
+			return undefined;
+		}
+
+		const { attachments, ...message } = msgObj;
+		const getAttachments = async () => this._convertAttachmentsToApp(attachments);
+
+		const map = {
+			id: '_id',
+			threadId: 'tmid',
+			reactions: 'reactions',
+			parseUrls: 'parseUrls',
+			text: 'msg',
+			createdAt: 'ts',
+			updatedAt: '_updatedAt',
+			editedAt: 'editedAt',
+			emoji: 'emoji',
+			avatarUrl: 'avatar',
+			alias: 'alias',
+			file: 'file',
+			customFields: 'customFields',
+			groupable: 'groupable',
+			token: 'token',
+			blocks: 'blocks',
+			roomId: 'rid',
+			editor: 'editedBy',
+			attachments: getAttachments,
+			sender: 'u',
+		};
+
+		return transformMappedData(message, map);
+	}
+
 	async convertMessage(msgObj) {
 		if (!msgObj) {
 			return undefined;
 		}
+
+		const cache =
+			this.mem.get(msgObj) ??
+			new Map([
+				['room', cachedFunction(this.orch.getConverters().get('rooms').convertById.bind(this.orch.getConverters().get('rooms')))],
+				['user', cachedFunction(this.orch.getConverters().get('users').convertById.bind(this.orch.getConverters().get('users')))],
+			]);
+
+		this.mem.set(msgObj, cache);
 
 		const map = {
 			id: '_id',
@@ -37,7 +84,7 @@ export class AppMessagesConverter {
 			token: 'token',
 			blocks: 'blocks',
 			room: async (message) => {
-				const result = await this.orch.getConverters().get('rooms').convertById(message.rid);
+				const result = await cache.get('room')(message.rid);
 				delete message.rid;
 				return result;
 			},
@@ -49,7 +96,7 @@ export class AppMessagesConverter {
 					return undefined;
 				}
 
-				return this.orch.getConverters().get('users').convertById(editedBy._id);
+				return cache.get('user')(editedBy._id);
 			},
 			attachments: async (message) => {
 				const result = await this._convertAttachmentsToApp(message.attachments);
@@ -61,16 +108,19 @@ export class AppMessagesConverter {
 					return undefined;
 				}
 
-				let user = await this.orch.getConverters().get('users').convertById(message.u._id);
-
-				// When the sender of the message is a Guest (livechat) and not a user
-				if (!user) {
-					user = this.orch.getConverters().get('users').convertToApp(message.u);
-				}
+				// When the message contains token, means the message is from the visitor(omnichannel)
+				const user = await (isMessageFromVisitor(msgObj)
+					? this.orch.getConverters().get('users').convertToApp(message.u)
+					: cache.get('user')(message.u._id));
 
 				delete message.u;
 
-				return user;
+				/**
+				 * Old System Messages from visitor doesn't have the `token` field, to not return
+				 * `sender` as undefined, so we need to add this fallback here.
+				 */
+
+				return user || this.orch.getConverters().get('users').convertToApp(message.u);
 			},
 		};
 

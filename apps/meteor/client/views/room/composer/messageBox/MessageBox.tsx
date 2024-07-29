@@ -14,15 +14,7 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type {
-	ReactElement,
-	MouseEventHandler,
-	FormEvent,
-	KeyboardEventHandler,
-	KeyboardEvent,
-	ClipboardEventHandler,
-	MouseEvent,
-} from 'react';
+import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler, MouseEvent } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
 import { Trans } from 'react-i18next';
 import { useSubscription } from 'use-subscription';
@@ -60,11 +52,7 @@ const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	return Boolean(target.value.trim());
 };
 
-const handleFormattingShortcut = (
-	event: KeyboardEvent<HTMLTextAreaElement>,
-	formattingButtons: FormattingButton[],
-	composer: ComposerAPI,
-) => {
+const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: FormattingButton[], composer: ComposerAPI) => {
 	const isMacOS = navigator.platform.indexOf('Mac') !== -1;
 	const isCmdOrCtrlPressed = (isMacOS && event.metaKey) || (!isMacOS && event.ctrlKey);
 
@@ -196,7 +184,7 @@ const MessageBox = ({
 		}
 	};
 
-	const handler: KeyboardEventHandler<HTMLTextAreaElement> = useMutableCallback((event) => {
+	const handler = useMutableCallback((event: KeyboardEvent) => {
 		const { which: keyCode } = event;
 
 		const input = event.target as HTMLTextAreaElement;
@@ -357,7 +345,19 @@ const MessageBox = ({
 		configurations: composerPopupConfig,
 	});
 
-	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef);
+	const keyDownHandlerCallbackRef = useCallback(
+		(node: HTMLTextAreaElement) => {
+			if (node === null) {
+				return;
+			}
+			node.addEventListener('keydown', (e: KeyboardEvent) => {
+				handler(e);
+			});
+		},
+		[handler],
+	);
+
+	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef, keyDownHandlerCallbackRef);
 
 	const shouldPopupPreview = useEnablePopupPreview(filter, popup);
 
@@ -411,7 +411,6 @@ const MessageBox = ({
 					onChange={setTyping}
 					style={textAreaStyle}
 					placeholder={composerPlaceholder}
-					onKeyDown={handler}
 					onPaste={handlePaste}
 					aria-activedescendant={ariaActiveDescendant}
 				/>

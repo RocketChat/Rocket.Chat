@@ -1,6 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { isUserFederated } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -16,7 +17,12 @@ type AdminUserFormWithDataProps = {
 
 const AdminUserFormWithData = ({ uid, onReload }: AdminUserFormWithDataProps): ReactElement => {
 	const t = useTranslation();
-	const { data, isLoading, isError } = useUserInfoQuery({ userId: uid });
+	const { data, isLoading, isError, refetch } = useUserInfoQuery({ userId: uid });
+
+	const handleReload = useEffectEvent(() => {
+		onReload();
+		refetch();
+	});
 
 	if (isLoading) {
 		return (
@@ -42,7 +48,7 @@ const AdminUserFormWithData = ({ uid, onReload }: AdminUserFormWithDataProps): R
 		);
 	}
 
-	return <AdminUserForm userData={data?.user} onReload={onReload} />;
+	return <AdminUserForm userData={data?.user} onReload={handleReload} />;
 };
 
 export default AdminUserFormWithData;
