@@ -283,7 +283,7 @@ jobs:
         if: inputs.type == 'ui' && always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-test-trace${{ inputs.release }}
+          name: playwright-test-trace-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/tests/e2e/.playwright*
 
       - name: Show server logs if E2E test failed
@@ -316,12 +316,12 @@ jobs:
         if: inputs.type == 'api' && inputs.release == 'ee'
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-api-ee-coverage
+          name: e2e-api-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: /tmp/coverage
 
       - name: Store e2e-ee-coverage
         if: inputs.type == 'ui' && inputs.release == 'ee'
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-ee-coverage
+          name: e2e-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/coverage*
