@@ -22,7 +22,6 @@ import type {
 	ILivechatDepartmentAgents,
 	LivechatDepartmentDTO,
 	OmnichannelSourceType,
-	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -38,7 +37,6 @@ import {
 	ReadReceipts,
 	Rooms,
 	LivechatCustomField,
-	LivechatContacts,
 } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
@@ -762,20 +760,12 @@ class LivechatClass {
 			}
 		}
 
-		let contactId;
-		if (email) {
-			const contact = await LivechatContacts.findVerifiedContactByEmail<Pick<ILivechatContact, '_id'>>(email, { projection: { _id: 1 } });
-			contactId = contact?._id;
-		}
-
-		if (!contactId) {
-			contactId = await createContact({
-				name: name ?? (visitorDataToUpdate.username as string),
-				emails: email ? [email] : [],
-				phones: phone ? [phone.number] : [],
-				unknown: true,
-			});
-		}
+		const contactId = await createContact({
+			name: name ?? (visitorDataToUpdate.username as string),
+			emails: email ? [email] : [],
+			phones: phone ? [phone.number] : [],
+			unknown: true,
+		});
 		visitorDataToUpdate.contactId = contactId;
 
 		const upsertedLivechatVisitor = await LivechatVisitors.updateOneByIdOrToken(visitorDataToUpdate, {
