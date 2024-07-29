@@ -101,12 +101,6 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 				},
 				sparse: true,
 			},
-			{
-				key: {
-					lockedAt: 1,
-				},
-				sparse: true,
-			},
 		];
 	}
 
@@ -192,7 +186,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 	async unlockAll(): Promise<UpdateResult | Document> {
 		return this.updateMany(
-			{ $or: [{ lockedAt: { $exists: true } }, { locked: { $exists: true } }] },
+			{ locked: { $exists: true } },
 			{ $unset: { locked: 1, lockedAt: 1 }, $set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() } },
 		);
 	}
