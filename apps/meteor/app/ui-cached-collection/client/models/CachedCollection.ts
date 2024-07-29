@@ -1,5 +1,5 @@
+import type { StreamNames } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
-import type { StreamNames } from '@rocket.chat/ui-contexts';
 import localforage from 'localforage';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
