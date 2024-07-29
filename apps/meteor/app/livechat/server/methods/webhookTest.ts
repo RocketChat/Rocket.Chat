@@ -1,5 +1,5 @@
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -14,7 +14,7 @@ const postCatchError = async function (url: string, options?: Record<string, any
 	}
 };
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'livechat:webhookTest'(): Promise<any>;
