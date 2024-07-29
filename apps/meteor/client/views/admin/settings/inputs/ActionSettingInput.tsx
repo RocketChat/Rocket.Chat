@@ -1,5 +1,6 @@
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Button, FieldRow, FieldHint } from '@rocket.chat/fuselage';
-import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useMethod, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';

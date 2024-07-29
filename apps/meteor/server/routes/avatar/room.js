@@ -5,6 +5,9 @@ import { FileUpload } from '../../../app/file-upload/server';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
 
+const MAX_ROOM_SVG_AVATAR_SIZE = 1024;
+const MIN_ROOM_SVG_AVATAR_SIZE = 16;
+
 const cookie = new Cookies();
 const getRoomAvatar = async (roomId) => {
 	const room = await Rooms.findOneById(roomId, { projection: { t: 1, prid: 1, name: 1, fname: 1, federated: 1 } });
@@ -64,7 +67,12 @@ export const roomAvatar = async function (req, res /* , next*/) {
 		return;
 	}
 
-	const svg = renderSVGLetters(roomName, req.query.size && parseInt(req.query.size));
+	let avatarSize = req.query.size && parseInt(req.query.size);
+	if (avatarSize) {
+		avatarSize = Math.min(Math.max(avatarSize, MIN_ROOM_SVG_AVATAR_SIZE), MAX_ROOM_SVG_AVATAR_SIZE);
+	}
+
+	const svg = renderSVGLetters(roomName, avatarSize);
 
 	return serveAvatar(svg, req.query.format, res);
 };
