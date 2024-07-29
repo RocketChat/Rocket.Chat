@@ -2229,8 +2229,25 @@ describe('LIVECHAT - rooms', () => {
 			// This error indicates a conflict in the simultaneous close and that the request was rejected
 			// @ts-expect-error promise typings
 			expect(invalidResponses[0].value.body).to.have.property('error', 'error-room-cannot-be-closed-try-again');
+		});
 
-			await deleteVisitor(visitor.token);
+		it('should allow different rooms to be closed simultaneously', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+
+			const visitor2 = await createVisitor();
+			const { _id: _id2 } = await createLivechatRoom(visitor2.token);
+
+			const results = await Promise.allSettled([
+				request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }),
+				request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id2, comment: 'test' }),
+			]);
+
+			const validResponse = results.filter((res) => (res as any).value.status === 200);
+			const invalidResponses = results.filter((res) => (res as any).value.status !== 200);
+
+			expect(validResponse.length).to.equal(2);
+			expect(invalidResponses.length).to.equal(0);
 		});
 
 		it('when both user & visitor try to close room, only one will succeed (theres no guarantee who will win)', async () => {
