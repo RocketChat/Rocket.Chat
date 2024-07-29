@@ -1211,6 +1211,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		visitorId,
 		roomIds,
 		onhold,
+		queued,
 		options = {},
 		extraQuery = {},
 	}: {
@@ -1226,6 +1227,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		visitorId?: string;
 		roomIds?: string[];
 		onhold?: boolean;
+		queued?: boolean;
 		options?: { offset?: number; count?: number; sort?: { [k: string]: SortDirection } };
 		extraQuery?: Filter<IOmnichannelRoom>;
 	}) {
@@ -1241,6 +1243,10 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			...(served !== undefined && { servedBy: { $exists: served } }),
 			...(visitorId && visitorId !== 'undefined' && { 'v._id': visitorId }),
 		};
+
+		if (open) {
+			query.servedBy = { $exists: true };
+		}
 
 		if (createdAt) {
 			query.ts = {};
@@ -1278,6 +1284,12 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				$exists: true,
 				$eq: onhold,
 			};
+		}
+
+		if (queued) {
+			query.servedBy = { $exists: false };
+			query.open = true;
+			query.onHold = { $ne: true };
 		}
 
 		return this.findPaginated(query, {
@@ -2284,14 +2296,10 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				servedBy: {
 					_id: newAgent.agentId,
 					username: newAgent.username,
-					ts: new Date(),
+					ts: newAgent.ts ?? new Date(),
 				},
 			},
 		};
-
-		if (newAgent.ts) {
-			update.$set.servedBy.ts = newAgent.ts;
-		}
 
 		return this.updateOne(query, update);
 	}

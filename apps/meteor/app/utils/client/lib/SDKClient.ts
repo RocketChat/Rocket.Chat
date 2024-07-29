@@ -1,15 +1,12 @@
 import type { RestClientInterface } from '@rocket.chat/api-client';
-import type { SDK } from '@rocket.chat/ddp-client/src/DDPSDK';
-import type { ClientStream } from '@rocket.chat/ddp-client/src/types/ClientStream';
-import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '@rocket.chat/ddp-client/src/types/streams';
+import type { SDK, ClientStream, StreamKeys, StreamNames, StreamerCallbackArgs, ServerMethods } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 
 import { APIClient } from './RestApiClient';
 
-declare module '@rocket.chat/ddp-client/src/DDPSDK' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface SDK {
 		stream<N extends StreamNames, K extends StreamKeys<N>>(

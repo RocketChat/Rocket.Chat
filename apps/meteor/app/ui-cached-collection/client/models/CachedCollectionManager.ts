@@ -11,15 +11,12 @@ class CachedCollectionManager extends Emitter<{ reconnect: void; login: string |
 
 	private _syncEnabled: boolean;
 
-	private logged: boolean;
-
 	private step: number;
 
 	constructor() {
 		super();
 		this.items = [];
 		this._syncEnabled = false;
-		this.logged = false;
 
 		const { _unstoreLoginToken } = Accounts;
 		Accounts._unstoreLoginToken = (...args) => {
@@ -38,14 +35,6 @@ class CachedCollectionManager extends Emitter<{ reconnect: void; login: string |
 					return connected || this.step++;
 				case LISTENING_RECONNECTIONS:
 					return connected && this.emit('reconnect');
-			}
-		});
-
-		Tracker.autorun(() => {
-			const uid = Meteor.userId();
-			this.logged = uid !== null;
-			if (this.logged) {
-				this.emit('login', uid);
 			}
 		});
 	}
@@ -80,10 +69,7 @@ class CachedCollectionManager extends Emitter<{ reconnect: void; login: string |
 	}
 
 	onLogin(cb: () => void) {
-		this.on('login', cb);
-		if (this.logged) {
-			cb();
-		}
+		Accounts.onLogin(cb);
 	}
 }
 

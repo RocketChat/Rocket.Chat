@@ -1,5 +1,4 @@
-import { faker } from '@faker-js/faker';
-
+import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
@@ -49,8 +48,8 @@ test.describe('OC - Livechat - Department Flow', () => {
 	});
 
 	test.afterEach(async ({ page }) => {
-		await poHomeOmnichannelAgent1?.page?.close();
-		await poHomeOmnichannelAgent2?.page?.close();
+		await poHomeOmnichannelAgent1.page.close();
+		await poHomeOmnichannelAgent2.page.close();
 		await page.close();
 	});
 
@@ -62,10 +61,7 @@ test.describe('OC - Livechat - Department Flow', () => {
 	});
 
 	test('OC - Livechat - Chat with Department', async () => {
-		const guest = {
-			name: `${faker.person.firstName()} ${faker.string.nanoid(10)}}`,
-			email: faker.internet.email(),
-		};
+		const guest = createFakeVisitor();
 
 		await test.step('expect start Chat with department', async () => {
 			await poLiveChat.openAnyLiveChat();
@@ -89,10 +85,7 @@ test.describe('OC - Livechat - Department Flow', () => {
 	});
 
 	test('OC - Livechat - Change Department', async () => {
-		const guest = {
-			name: `${faker.person.firstName()} ${faker.string.nanoid(10)}}`,
-			email: faker.internet.email(),
-		};
+		const guest = createFakeVisitor();
 		await test.step('expect start Chat with department', async () => {
 			await poLiveChat.openAnyLiveChat();
 			await poLiveChat.sendMessage(guest, false, departmentA.name);

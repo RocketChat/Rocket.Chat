@@ -3,7 +3,7 @@ import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useSettingsDispatch, useSettings, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
-import type { FC, ReactNode, FormEvent, MouseEvent } from 'react';
+import type { ReactNode, FormEvent, MouseEvent } from 'react';
 import React, { useMemo, memo } from 'react';
 
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
@@ -21,7 +21,7 @@ type GroupPageProps = {
 	isCustom?: boolean;
 };
 
-const GroupPage: FC<GroupPageProps> = ({
+const GroupPage = ({
 	children = undefined,
 	headerButtons = undefined,
 	_id,
@@ -29,7 +29,7 @@ const GroupPage: FC<GroupPageProps> = ({
 	i18nDescription = undefined,
 	tabs = undefined,
 	isCustom = false,
-}) => {
+}: GroupPageProps) => {
 	const t = useTranslation();
 	const router = useRoute('admin-settings');
 	const dispatch = useSettingsDispatch();
