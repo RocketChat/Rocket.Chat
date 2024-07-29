@@ -226,16 +226,4 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			throw new FederationMatrixInvalidConfigurationError('Unable to delete message');
 		}
 	}
-
-	async beforeNameChange(room: IRoom) {
-		if (isRoomFederated(room) && isFederationEnabled() && !isFederationReady()) {
-			throw new FederationMatrixInvalidConfigurationError('Unable to change room name');
-		}
-	}
-
-	async beforeTopicChange(room: IRoom) {
-		if (isRoomFederated(room) && isFederationEnabled() && !isFederationReady()) {
-			throw new FederationMatrixInvalidConfigurationError('Unable to change topic');
-		}
-	}
 }

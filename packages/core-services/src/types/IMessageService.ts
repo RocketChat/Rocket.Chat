@@ -14,6 +14,6 @@ export interface IMessageService {
 	deleteMessage(user: IUser, message: IMessage): Promise<void>;
 	updateMessage(message: IMessage, user: IUser, originalMsg?: IMessage): Promise<void>;
 	reactToMessage(userId: string, reaction: string, messageId: IMessage['_id'], shouldReact?: boolean): Promise<void>;
-	beforeReacted(message: IMessage, room: IRoom, user: IUser, reaction: string): Promise<void>;
-	beforeDelete(message: IMessage, room: IRoom, user: IUser): Promise<void>;
+	beforeReacted(message: IMessage, room: IRoom): Promise<void>;
+	beforeDelete(message: IMessage, room: IRoom): Promise<void>;
 }

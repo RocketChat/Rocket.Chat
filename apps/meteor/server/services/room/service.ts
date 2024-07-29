@@ -130,4 +130,13 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	async beforeUserRemoved(room: IRoom) {
 		FederationCheck.blockIfFederationEnabledButNotReady(room);
 	}
+
+
+	async beforeNameChange(room: IRoom) {
+		FederationCheck.blockIfFederationEnabledButNotReady(room);
+	}
+
+	async beforeTopicChange(room: IRoom) {
+		FederationCheck.blockIfFederationEnabledButNotReady(room);
+	}
 }
