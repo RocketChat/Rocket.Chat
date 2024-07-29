@@ -1,3 +1,4 @@
+import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { MessageAction } from '../../../app/ui-utils/client';
@@ -32,5 +33,8 @@ Meteor.startup(() => {
 		},
 		order: 10,
 		group: 'menu',
+		disabled({ message }) {
+			return isE2EEMessage(message);
+		},
 	});
 });
