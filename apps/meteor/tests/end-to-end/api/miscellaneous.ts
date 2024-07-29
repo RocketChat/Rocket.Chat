@@ -182,6 +182,7 @@ describe('miscellaneous', () => {
 					'sidebarViewMode',
 					'sidebarDisplayAvatar',
 					'sidebarGroupByType',
+					'sidebarSectionsOrder',
 					'muteFocusedConversations',
 					'notifyCalendarEvents',
 					'enableMobileRinging',

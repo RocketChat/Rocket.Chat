@@ -1,12 +1,12 @@
 import { User } from '@rocket.chat/core-services';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		createToken(userId: string): { userId: string; authToken: string };

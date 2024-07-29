@@ -1,5 +1,6 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IMessage, IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 import type { Response } from 'supertest';
@@ -768,6 +769,40 @@ describe('[Chat]', () => {
 				.end(done);
 		});
 
+		describe('Bad words filter', () => {
+			before(() =>
+				Promise.all([updateSetting('Message_AllowBadWordsFilter', true), updateSetting('Message_BadWordsFilterList', 'badword,badword2')]),
+			);
+
+			after(() => Promise.all([updateSetting('Message_AllowBadWordsFilter', false), updateSetting('Message_BadWordsFilterList', '')]));
+
+			it('should censor bad words on send', async () => {
+				const badMessage = {
+					_id: Random.id(),
+					rid: testChannel._id,
+					msg: 'This message has badword badword2',
+				};
+
+				await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({ message: badMessage })
+					.expect(200)
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message');
+						const { message } = res.body;
+						expect(message).to.have.property('msg', 'This message has ******* ********');
+						expect(message).to.have.property('md').to.be.an('array').that.has.lengthOf(1);
+						const para = message.md[0];
+						expect(para).to.have.property('value').to.be.an('array').that.has.lengthOf(1);
+						const text = para.value[0];
+						expect(text).to.have.property('value', 'This message has ******* ********');
+					});
+			});
+		});
+
 		describe('oembed', () => {
 			let ytEmbedMsgId: IMessage['_id'];
 			let imgUrlMsgId: IMessage['_id'];
@@ -1117,6 +1152,27 @@ describe('[Chat]', () => {
 				.end(done);
 		});
 
+		it('should fail if message is a system message', () => {
+			const msgId = Random.id();
+			return request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						_id: msgId,
+						rid: 'GENERAL',
+						msg: 'xss',
+						t: 'subscription-role-added',
+						role: '<h1>XSS<iframe srcdoc=\'<script src="/file-upload/664b3f90c4d3e60470c5e34a/js.js"></script>\'></iframe>',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+
 		describe('customFields', () => {
 			async function testMessageSending({
 				customFields,
@@ -1459,6 +1515,38 @@ describe('[Chat]', () => {
 					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
 					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(0);
 				});
+		});
+
+		describe('Bad words filter', () => {
+			before(() =>
+				Promise.all([updateSetting('Message_AllowBadWordsFilter', true), updateSetting('Message_BadWordsFilterList', 'badword,badword2')]),
+			);
+
+			after(() => Promise.all([updateSetting('Message_AllowBadWordsFilter', false), updateSetting('Message_BadWordsFilterList', '')]));
+
+			it('should censor bad words on update', async () => {
+				await request
+					.post(api('chat.update'))
+					.set(credentials)
+					.send({
+						roomId: testChannel._id,
+						msgId: message._id,
+						text: 'This message has badword badword2',
+					})
+					.expect(200)
+					.expect('Content-Type', 'application/json')
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('message');
+						const { message } = res.body;
+						expect(message).to.have.property('msg', 'This message has ******* ********');
+						expect(message).to.have.property('md').to.be.an('array').that.has.lengthOf(1);
+						const para = message.md[0];
+						expect(para).to.have.property('value').to.be.an('array').that.has.lengthOf(1);
+						const text = para.value[0];
+						expect(text).to.have.property('value', 'This message has ******* ********');
+					});
+			});
 		});
 	});
 
