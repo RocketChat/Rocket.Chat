@@ -1578,7 +1578,7 @@ describe('[Chat]', () => {
 					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API 2');
 					expect(res.body.message).to.have.property('customFields').that.is.an('object').that.deep.equals({ test: 'test 2' });
 				});
-    });
+		});
 
 		describe('Bad words filter', () => {
 			before(() =>
