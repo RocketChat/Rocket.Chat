@@ -115,7 +115,6 @@ export const isValidSidepanel = (sidepanel: IRoom['sidepanel']) => {
 		Array.isArray(sidepanel.items) &&
 		sidepanel.items.length &&
 		sidepanel.items.every(isSidepanelItem) &&
-		sidepanel.items.length <= 2 &&
 		sidepanel.items.length === new Set(sidepanel.items).size
 	);
 };
