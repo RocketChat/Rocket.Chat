@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { notifyOnSubscriptionChangedByRoomIdAndUserIds } from '../lib/notifyListener';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		unblockUser({ rid, blocked }: { rid: string; blocked: string }): boolean;
