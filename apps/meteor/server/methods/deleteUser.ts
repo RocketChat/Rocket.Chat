@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import type { IUser } from '@rocket.chat/core-typings';
+import { isUserFederated, type IUser } from '@rocket.chat/core-typings';
 import { Users, MatrixBridgedUser } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { check } from 'meteor/check';
@@ -49,7 +49,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (user.federated) {
+		if (isUserFederated(user)) {
 			throw new Meteor.Error('error-not-allowed', 'Deleting federated, external user is not allowed', {
 				method: 'deleteUser',
 			});
