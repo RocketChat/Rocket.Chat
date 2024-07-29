@@ -5794,7 +5794,7 @@
   "view-all-team-channels_description": "Permission to view all team's channels",
   "view-members-list-all-rooms": "Can view members in all rooms",
   "view-members-list-all-rooms_description": "Gives the ability to see the members list in all rooms, even those the user is not part of",
-  "Room_members_list": "Member's list",
+  "Room_members_list": "Members list",
   "view-broadcast-member-list": "View Members List in Broadcast Room",
   "view-broadcast-member-list_description": "Permission to view list of users in broadcast channel",
   "view-c-room": "View Public Channel",
