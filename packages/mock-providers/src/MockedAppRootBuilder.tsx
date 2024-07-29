@@ -1,10 +1,8 @@
 import { type ISetting, type Serialized, type SettingValue } from '@rocket.chat/core-typings';
+import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
 import languages from '@rocket.chat/i18n/dist/languages';
 import { type Method, type OperationParams, type OperationResult, type PathPattern, type UrlParams } from '@rocket.chat/rest-typings';
 import {
-	type ServerMethodName,
-	type ServerMethodParameters,
-	type ServerMethodReturn,
 	type TranslationKey,
 	AuthorizationContext,
 	ConnectionStatusContext,

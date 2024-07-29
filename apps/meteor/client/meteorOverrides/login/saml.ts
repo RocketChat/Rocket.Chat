@@ -21,6 +21,12 @@ declare module 'meteor/accounts-base' {
 			credentialToken?: string;
 			credentialSecret?: string;
 		};
+
+		/**
+		 * There is one case where the onlogout event is triggered with no user:
+		 * during the deletion, the user is logged out, and the framework try to get the user from the database.
+		 */
+		function onLogout(func: (options: { user?: Meteor.User; connection: Meteor.Connection }) => void): void;
 	}
 }
 
