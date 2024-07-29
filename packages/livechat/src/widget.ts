@@ -1,5 +1,5 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
-import type { LivechatRoomEvents } from '@rocket.chat/ddp-client/dist/livechat/types/LivechatSDK';
+import type { LivechatRoomEvents } from '@rocket.chat/ddp-client';
 import mitt from 'mitt';
 
 import { isDefined } from './helpers/isDefined';
