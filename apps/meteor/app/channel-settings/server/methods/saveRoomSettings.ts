@@ -1,5 +1,5 @@
 import { Team } from '@rocket.chat/core-services';
-import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues, SidepanelItem } from '@rocket.chat/core-typings';
+import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
 import { TEAM_TYPE, isValidSidepanel } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
@@ -49,7 +49,7 @@ type RoomSettings = {
 		favorite: boolean;
 		defaultValue: boolean;
 	};
-	sidepanel?: { items: [SidepanelItem, SidepanelItem?] };
+	sidepanel?: IRoom['sidepanel'];
 };
 
 type RoomSettingsValidators = {
