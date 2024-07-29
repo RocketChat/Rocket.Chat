@@ -282,7 +282,7 @@
   "API_EmbedCacheExpirationDays": "Rojên Cache Expiration Rojanekirin",
   "API_Enable_CORS": "CORS çalak bikin",
   "API_Enable_Direct_Message_History_EndPoint": "Dîroka Dîroka Dîroka Dîroka Navdewletî Veşêre",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "Ew dikare bikarhêner `/ api / v1 / im.history.others` ku ji bo ku bikarhênerên din yên din jî ji hêla rasterastên peyamên şandina veguhestinê ve tête şandin ku beşdar ne beşek e.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "Ew dikare bikarhêner `/ api / v1 / im.messages.others` ku ji bo ku bikarhênerên din yên din jî ji hêla rasterastên peyamên şandina veguhestinê ve tête şandin ku beşdar ne beşek e.",
   "API_Enable_Shields": "Hilbijartin xurt bikin",
   "API_Enable_Shields_Description": "Pêşbaziyên çalak bikin li `/ api / v1 / shield.svg` li peyda hene",
   "API_GitHub_Enterprise_URL": "URL Server",

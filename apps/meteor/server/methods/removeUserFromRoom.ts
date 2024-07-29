@@ -1,6 +1,8 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -15,7 +17,7 @@ import { afterRemoveFromRoomCallback } from '../../lib/callbacks/afterRemoveFrom
 import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		removeUserFromRoom(data: { rid: string; username: string }): boolean;
@@ -75,6 +77,16 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		}
 	}
 
+	try {
+		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserLeave, room, removedUser, fromUser);
+	} catch (error: any) {
+		if (error.name === AppsEngineException.name) {
+			throw new Meteor.Error('error-app-prevented', error.message);
+		}
+
+		throw error;
+	}
+
 	await callbacks.run('beforeRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 
 	const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
@@ -102,6 +114,8 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		void afterRemoveFromRoomCallback.run({ removedUser, userWhoRemoved: fromUser }, room);
 		void notifyOnRoomChanged(room);
 	});
+
+	await Apps.self?.triggerEvent(AppEvents.IPostRoomUserLeave, room, removedUser, fromUser);
 
 	return true;
 };

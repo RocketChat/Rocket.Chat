@@ -15,7 +15,7 @@ import _ from 'underscore';
 
 import { callbacks } from '../../../lib/callbacks';
 import { isTruthy } from '../../../lib/isTruthy';
-import { broadcastMessageFromData } from '../../../server/modules/watchers/lib/messages';
+import { notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 import { Markdown } from '../../markdown/server';
 import { settings } from '../../settings/server';
 
@@ -332,7 +332,7 @@ export abstract class AutoTranslate {
 	}
 
 	private notifyTranslatedMessage(messageId: string): void {
-		void broadcastMessageFromData({
+		void notifyOnMessageChange({
 			id: messageId,
 		});
 	}

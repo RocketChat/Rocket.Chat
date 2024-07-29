@@ -70,6 +70,19 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.content.lastMessageTextAttachmentEqualsText).toHaveText(message);
 	});
 
+	test('expect create a discussion from message', async ({ page }) => {
+		const message = `Message for discussion - ${Date.now()}`;
+
+		await poHomeChannel.content.sendMessage(message);
+		await poHomeChannel.content.openLastMessageMenu();
+		await page.locator('role=menuitem[name="Start a Discussion"]').click();
+		const createButton = page.getByRole('dialog').getByRole('button', { name: 'create' });
+		// Name should be prefilled thus making the create button enabled
+		await expect(createButton).not.toBeDisabled();
+		await createButton.click();
+		await expect(page.locator('header h1')).toHaveText(message);
+	});
+
 	test('expect star the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('Message to star');
 		await poHomeChannel.content.openLastMessageMenu();

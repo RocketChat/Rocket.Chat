@@ -359,11 +359,14 @@ export class E2ERoom extends Emitter {
 		}
 	}
 
-	async sha256Hash(text) {
-		const encoder = new TextEncoder();
-		const data = encoder.encode(text);
-		const hashArray = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', data)));
+	async sha256Hash(arrayBuffer) {
+		const hashArray = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', arrayBuffer)));
 		return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+	}
+
+	async sha256HashText(text) {
+		const encoder = new TextEncoder();
+		return this.sha256Hash(encoder.encode(text));
 	}
 
 	// Encrypts files before upload. I/O is in arraybuffers.
@@ -373,6 +376,8 @@ export class E2ERoom extends Emitter {
 		// }
 
 		const fileArrayBuffer = await readFileAsArrayBuffer(file);
+
+		const hash = await this.sha256Hash(new Uint8Array(fileArrayBuffer));
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 		const key = await generateAESCTRKey();
@@ -386,7 +391,7 @@ export class E2ERoom extends Emitter {
 
 		const exportedKey = await window.crypto.subtle.exportKey('jwk', key);
 
-		const fileName = await this.sha256Hash(file.name);
+		const fileName = await this.sha256HashText(file.name);
 
 		const encryptedFile = new File([toArrayBuffer(result)], fileName);
 
@@ -395,6 +400,7 @@ export class E2ERoom extends Emitter {
 			key: exportedKey,
 			iv: Base64.encode(vector),
 			type: file.type,
+			hash,
 		};
 	}
 

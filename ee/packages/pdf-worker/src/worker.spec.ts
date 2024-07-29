@@ -6,6 +6,7 @@ import {
 	dataWithASingleMessageButAReallyLongMessage,
 	dataWithMultipleMessagesAndABigMessage,
 	dataWithASingleMessageAndAnImage,
+	dataWithASingleSystemMessage,
 } from './worker.fixtures';
 
 const streamToBuffer = async (stream: NodeJS.ReadableStream) => {
@@ -16,6 +17,12 @@ const streamToBuffer = async (stream: NodeJS.ReadableStream) => {
 
 	return Buffer.concat(chunks as Buffer[]);
 };
+
+jest.mock('@rocket.chat/core-services', () => ({
+	Translation: {
+		translateToServerLanguage: (e: string) => e,
+	},
+}));
 
 const pdfWorker = new PdfWorker('chat-transcript');
 
@@ -57,6 +64,13 @@ describe('PdfWorker', () => {
 
 	it('should generate a pdf transcript for multiple messages, one big message and 2 small messages', async () => {
 		const stream = await pdfWorker.renderToStream({ data: dataWithMultipleMessagesAndABigMessage });
+		const buffer = await streamToBuffer(stream);
+
+		expect(buffer).toBeTruthy();
+	});
+
+	it('should generate a pdf transcript for a single system message', async () => {
+		const stream = await pdfWorker.renderToStream({ data: dataWithASingleSystemMessage });
 		const buffer = await streamToBuffer(stream);
 
 		expect(buffer).toBeTruthy();

@@ -1,22 +1,28 @@
 import { useStableArray } from '@rocket.chat/fuselage-hooks';
-import { HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
+import { HeaderToolbarAction } from '../../../../components/Header';
 import { roomActionHooksForE2EESetup } from '../../../../ui';
+import { useRoom } from '../../contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../contexts/RoomToolboxContext';
 import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
+import { getRoomGroup } from '../../lib/getRoomGroup';
 
 const RoomToolboxE2EESetup = () => {
 	const t = useTranslation();
 	const toolbox = useRoomToolbox();
+	const room = useRoom();
 
 	const { tab } = toolbox;
 
 	const actions = useStableArray(
 		roomActionHooksForE2EESetup
 			.map((roomActionHook) => roomActionHook())
-			.filter((roomAction): roomAction is RoomToolboxActionConfig => !!roomAction),
+			.filter(
+				(roomAction): roomAction is RoomToolboxActionConfig =>
+					!!roomAction && (!roomAction.groups || roomAction.groups.includes(getRoomGroup(room))),
+			),
 	);
 
 	return (
