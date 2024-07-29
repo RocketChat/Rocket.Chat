@@ -504,6 +504,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		let monitor2Credentials: Awaited<ReturnType<typeof login>>;
 		let unit: IOmnichannelBusinessUnit;
 		let department: ILivechatDepartment;
+		let baseDepartment: ILivechatDepartment;
 
 		before(async () => {
 			monitor1 = await createUser();
@@ -513,10 +514,19 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await createMonitor(monitor2.username);
 			monitor2Credentials = await login(monitor2.username, password);
 			department = await createDepartment();
-			unit = await createUnit(monitor1._id, monitor1.username, []);
+			baseDepartment = await createDepartment();
+			unit = await createUnit(monitor1._id, monitor1.username, [baseDepartment._id]);
 		});
 
-		after(async () => Promise.all([deleteUser(monitor1), deleteUser(monitor2), deleteUnit(unit), deleteDepartment(department._id)]));
+		after(async () =>
+			Promise.all([
+				deleteUser(monitor1),
+				deleteUser(monitor2),
+				deleteUnit(unit),
+				deleteDepartment(department._id),
+				deleteDepartment(baseDepartment._id),
+			]),
+		);
 
 		it("should fail updating a department's unit when providing an invalid property in the department unit object", () => {
 			const updatedName = 'updated-department-name';
@@ -552,6 +562,23 @@ import { IS_EE } from '../../../e2e/config/constants';
 				});
 		});
 
+		it('should fail removing the last department from a unit', () => {
+			const updatedName = 'updated-department-name';
+			return request
+				.put(api(`livechat/department/${baseDepartment._id}`))
+				.set(credentials)
+				.send({
+					department: { name: updatedName, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
+					departmentUnit: {},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-unit-cant-be-empty');
+				});
+		});
+
 		it('should succesfully add an existing department to a unit as an admin', async () => {
 			const updatedName = 'updated-department-name';
 
@@ -568,7 +595,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 1);
+			expect(updatedUnit).to.have.property('numDepartments', 2);
 
 			const fullDepartment = await getDepartmentById(department._id);
 			expect(fullDepartment).to.have.property('parentId', unit._id);
@@ -592,7 +619,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 0);
+			expect(updatedUnit).to.have.property('numDepartments', 1);
 
 			const fullDepartment = await getDepartmentById(department._id);
 			expect(fullDepartment).to.have.property('parentId').that.is.null;
@@ -615,7 +642,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 0);
+			expect(updatedUnit).to.have.property('numDepartments', 1);
 
 			const fullDepartment = await getDepartmentById(department._id);
 			expect(fullDepartment).to.have.property('parentId').that.is.null;
@@ -638,7 +665,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 1);
+			expect(updatedUnit).to.have.property('numDepartments', 2);
 
 			const fullDepartment = await getDepartmentById(department._id);
 			expect(fullDepartment).to.have.property('name', updatedName);
@@ -663,7 +690,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 1);
+			expect(updatedUnit).to.have.property('numDepartments', 2);
 
 			const fullDepartment = await getDepartmentById(department._id);
 			expect(fullDepartment).to.have.property('name', updatedName);
@@ -688,7 +715,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 0);
+			expect(updatedUnit).to.have.property('numDepartments', 1);
 
 			const fullDepartment = await getDepartmentById(department._id);
 			expect(fullDepartment).to.have.property('name', updatedName);
@@ -705,6 +732,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		let unit: IOmnichannelBusinessUnit;
 		const departmentName = 'Test-Department-Livechat-Method';
 		let testDepartmentId = '';
+		let baseDepartment: ILivechatDepartment;
 
 		before(async () => {
 			monitor1 = await createUser();
@@ -713,10 +741,19 @@ import { IS_EE } from '../../../e2e/config/constants';
 			monitor1Credentials = await login(monitor1.username, password);
 			await createMonitor(monitor2.username);
 			monitor2Credentials = await login(monitor2.username, password);
-			unit = await createUnit(monitor1._id, monitor1.username, []);
+			baseDepartment = await createDepartment();
+			unit = await createUnit(monitor1._id, monitor1.username, [baseDepartment._id]);
 		});
 
-		after(async () => Promise.all([deleteUser(monitor1), deleteUser(monitor2), deleteUnit(unit), deleteDepartment(testDepartmentId)]));
+		after(async () =>
+			Promise.all([
+				deleteUser(monitor1),
+				deleteUser(monitor2),
+				deleteUnit(unit),
+				deleteDepartment(testDepartmentId),
+				deleteDepartment(baseDepartment._id),
+			]),
+		);
 
 		it('should fail creating department when providing an invalid _id type in the department unit object', () => {
 			return request
@@ -747,6 +784,35 @@ import { IS_EE } from '../../../e2e/config/constants';
 				});
 		});
 
+		it('should fail removing last department from unit', () => {
+			return request
+				.post(methodCall('livechat:saveDepartment'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'livechat:saveDepartment',
+						params: [
+							baseDepartment._id,
+							{ name: 'Fail-Test', enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
+							[],
+							{},
+						],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message').that.is.a('string');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.property('error').that.is.an('object');
+					expect(data.error).to.have.property('errorType', 'Meteor.Error');
+					expect(data.error).to.have.property('error', 'error-unit-cant-be-empty');
+				});
+		});
+
 		it('should fail creating a department into an existing unit that a monitor does not supervise', async () => {
 			const departmentName = 'Fail-Test';
 
@@ -760,7 +826,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 0);
+			expect(updatedUnit).to.have.property('numDepartments', 1);
 
 			const fullDepartment = await getDepartmentById(testDepartmentId);
 			expect(fullDepartment).to.not.have.property('parentId');
@@ -776,7 +842,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 1);
+			expect(updatedUnit).to.have.property('numDepartments', 2);
 
 			const fullDepartment = await getDepartmentById(testDepartmentId);
 			expect(fullDepartment).to.have.property('parentId', unit._id);
@@ -790,7 +856,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 0);
+			expect(updatedUnit).to.have.property('numDepartments', 1);
 
 			const fullDepartment = await getDepartmentById(testDepartmentId);
 			expect(fullDepartment).to.have.property('parentId').that.is.null;
@@ -803,7 +869,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 1);
+			expect(updatedUnit).to.have.property('numDepartments', 2);
 
 			const fullDepartment = await getDepartmentById(testDepartmentId);
 			expect(fullDepartment).to.have.property('parentId', unit._id);
@@ -822,7 +888,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 0);
+			expect(updatedUnit).to.have.property('numDepartments', 1);
 
 			const fullDepartment = await getDepartmentById(testDepartmentId);
 			expect(fullDepartment).to.have.property('parentId').that.is.null;
@@ -840,7 +906,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 1);
+			expect(updatedUnit).to.have.property('numDepartments', 2);
 
 			const fullDepartment = await getDepartmentById(testDepartmentId);
 			expect(fullDepartment).to.have.property('parentId', unit._id);
@@ -859,7 +925,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 1);
+			expect(updatedUnit).to.have.property('numDepartments', 2);
 
 			const fullDepartment = await getDepartmentById(testDepartmentId);
 			expect(fullDepartment).to.have.property('parentId', unit._id);
@@ -881,7 +947,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const updatedUnit = await getUnit(unit._id);
 			expect(updatedUnit).to.have.property('name', unit.name);
 			expect(updatedUnit).to.have.property('numMonitors', 1);
-			expect(updatedUnit).to.have.property('numDepartments', 2);
+			expect(updatedUnit).to.have.property('numDepartments', 3);
 
 			const fullDepartment = await getDepartmentById(testDepartmentId);
 			expect(fullDepartment).to.have.property('parentId', unit._id);

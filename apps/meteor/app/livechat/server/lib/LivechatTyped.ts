@@ -1760,7 +1760,18 @@ class LivechatClass {
 			});
 		}
 
-		const department = _id ? await LivechatDepartment.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1 } }) : null;
+		const department = _id
+			? await LivechatDepartment.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1, parentId: 1 } })
+			: null;
+
+		if (departmentUnit && !departmentUnit._id && department && department.parentId) {
+			const isLastDepartmentInUnit = (await LivechatDepartment.countDepartmentsInUnit(department.parentId)) === 1;
+			if (isLastDepartmentInUnit) {
+				throw new Meteor.Error('error-unit-cant-be-empty', "The last department in a unit can't be removed", {
+					method: 'livechat:saveDepartment',
+				});
+			}
+		}
 
 		if (!department && !(await isDepartmentCreationAvailable())) {
 			throw new Meteor.Error('error-max-departments-number-reached', 'Maximum number of departments reached', {

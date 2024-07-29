@@ -59,6 +59,7 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	): Promise<FindCursor<ILivechatDepartment>>;
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null>;
 	findByUnitIds(unitIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+	countDepartmentsInUnit(unitId: string): Promise<number>;
 	findActiveByUnitIds(unitIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
 	findNotArchived(options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
 	getBusinessHoursWithDepartmentStatuses(): Promise<
