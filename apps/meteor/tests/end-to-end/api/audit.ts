@@ -27,10 +27,12 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		auditorCredentials = await login(auditor.username, password);
 	});
-	after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
-	after(() => deleteUser({ _id: dummyUser._id }));
-	after(() => deleteUser({ _id: auditor._id }));
-	after(() => deleteRoom({ type: 'p', roomId: testPrivateChannel._id }));
+	after(async () => {
+		await deleteRoom({ type: 'c', roomId: testChannel._id });
+		await deleteUser({ _id: dummyUser._id });
+		await deleteUser({ _id: auditor._id });
+		await deleteRoom({ type: 'p', roomId: testPrivateChannel._id });
+	});
 
 	describe('audit/rooms.members [no permissions]', () => {
 		before(async () => {
