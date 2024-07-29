@@ -117,11 +117,11 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 			await api.post('/settings/Livechat_clear_local_storage_when_chat_ended', { value: true });
 		});
 
-		test('expect trigger message after registration', async () => {
+		test('expect trigger message after registration not be visible after local storage clear', async () => {
 			await poLiveChat.page.goto('/livechat');
 			await poLiveChat.sendMessageAndCloseChat(newVisitor);
 
-			await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
+			await expect(poLiveChat.txtChatMessage(triggerMessage)).not.toBeVisible();
 
 			await poLiveChat.startNewChat();
 			await poLiveChat.sendMessage(newVisitor, false);
