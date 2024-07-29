@@ -820,7 +820,7 @@ jobs:
         with:
           token: ${{ secrets.DISTRIBUTION_TOKEN }}
           event-type: new_release
-          repository: RocketChat/Release.Distributions
+          repository: RocketChat/public-releases
           client-payload: '{"tag": "${{ github.ref_name }}"}'
 
   docs-update:
