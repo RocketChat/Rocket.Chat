@@ -1,7 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { isUserFederated, type IUser } from '@rocket.chat/core-typings';
-import { Users, MatrixBridgedUser } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { Users, MatrixBridgedUser } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
