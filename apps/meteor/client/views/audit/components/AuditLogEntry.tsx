@@ -4,6 +4,7 @@ import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 
 import { GenericTableRow, GenericTableCell } from '../../../components/GenericTable';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
@@ -13,10 +14,11 @@ type AuditLogEntryProps = { value: IAuditLog };
 
 const AuditLogEntry = ({ value: { u, results, ts, _id, fields } }: AuditLogEntryProps): ReactElement => {
 	const formatDateAndTime = useFormatDateAndTime();
+	const t = useTranslation();
 
 	const { username, name, avatarETag } = u;
 
-	const { msg, users, room, startDate, endDate } = fields;
+	const { msg, users, room, startDate, endDate, type } = fields;
 
 	const when = useMemo(() => formatDateAndTime(ts), [formatDateAndTime, ts]);
 
@@ -43,7 +45,7 @@ const AuditLogEntry = ({ value: { u, results, ts, _id, fields } }: AuditLogEntry
 				</Box>
 			</GenericTableCell>
 			<GenericTableCell fontScale='p2m' color='hint' withTruncatedText>
-				{msg}
+				{type === 'room_member_list' ? t('Room_members_list') : msg }
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>{when}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{results}</GenericTableCell>

@@ -20,9 +20,11 @@ const AuditFiltersDisplay = ({ users, room, startDate, endDate }: AuditFiltersDi
 	return (
 		<Box display='flex' flexDirection='column' alignItems='stretch' withTruncatedText>
 			<Box withTruncatedText>{users?.length ? users.map((user) => `@${user}`).join(' : ') : `#${room}`}</Box>
-			<Box withTruncatedText>
-				{formatDate(startDate)} {t('Date_to')} {formatDate(endDate)} {/* TODO: fix this translation */}
-			</Box>
+			{startDate && endDate ? (
+				<Box withTruncatedText>
+					{formatDate(startDate)} {t('Date_to')} {formatDate(endDate)} {/* TODO: fix this translation */}
+				</Box>
+			) : null}
 		</Box>
 	);
 };

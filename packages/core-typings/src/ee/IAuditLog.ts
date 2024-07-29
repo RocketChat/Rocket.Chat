@@ -12,8 +12,8 @@ export interface IAuditLog extends IRocketChatRecord {
 	fields: {
 		type: string;
 		msg: IMessage['msg'];
-		startDate: Date;
-		endDate: Date;
+		startDate?: Date;
+		endDate?: Date;
 		rids?: IRoom['_id'][];
 		room: IRoom['name'];
 		users?: IUser['username'][];

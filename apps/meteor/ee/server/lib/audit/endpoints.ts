@@ -1,5 +1,5 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import type { IUser, IRoom } from '@rocket.chat/core-typings';
+import { Rooms, AuditLog } from '@rocket.chat/models';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import Ajv from 'ajv';
 
@@ -51,7 +51,7 @@ API.v1.addRoute(
 			const { count: limit, offset: skip } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 
-			const room = await Rooms.findOneById(roomId, { projection: { _id: 1 } });
+			const room = await Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'fname'>>(roomId, { projection: { _id: 1, name: 1, fname: 1 } });
 			if (!room) {
 				return API.v1.notFound();
 			}
@@ -65,6 +65,24 @@ API.v1.addRoute(
 			});
 
 			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			await AuditLog.insertOne({
+				ts: new Date(),
+				results: total,
+				u: {
+					_id: this.user._id,
+					username: this.user.username,
+					name: this.user.name,
+					avatarETag: this.user.avatarETag,
+				},
+				fields: {
+					msg: 'Room_members_list',
+					rids: [room._id],
+					type: 'room_member_list',
+					room: room.name || room.fname,
+				},
+			});
+
 			return API.v1.success({
 				members,
 				count: members.length,
