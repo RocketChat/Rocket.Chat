@@ -1,3 +1,4 @@
+import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 
@@ -1978,6 +1979,46 @@ describe('Meteor.methods', function () {
 				})
 				.end(done);
 		});
+
+		it('should not send message if it is a system message', async () => {
+			const msgId = Random.id();
+			await request
+				.post(methodCall('sendMessage'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'sendMessage',
+						params: [
+							{
+								_id: msgId,
+								rid: 'GENERAL',
+								msg: 'xss',
+								t: 'subscription-role-added',
+								role: '<h1>XSS<iframe srcdoc=\'<script src="/file-upload/664b3f90c4d3e60470c5e34a/js.js"></script>\'></iframe>',
+							},
+						],
+						id: 1000,
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const data = JSON.parse(res.body.message);
+					expect(data).to.not.have.a.property('result').that.is.an('object');
+					expect(data).to.have.a.property('error').that.is.an('object');
+				});
+			await request
+				.get(api('chat.getMessage'))
+				.set(credentials)
+				.query({ msgId })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
 	});
 
 	describe('[@updateMessage]', () => {
@@ -3106,6 +3147,145 @@ describe('Meteor.methods', function () {
 						});
 				});
 			});
+		});
+	});
+
+	describe('[@saveSettings]', () => {
+		it('should return an error when trying to save a "NaN" value', () => {
+			request
+				.post(api('method.call/saveSettings'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '13',
+						method: 'saveSettings',
+						params: [[{ _id: 'Message_AllowEditing_BlockEditInMinutes', value: { $InfNaN: 0 } }]],
+					}),
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const parsedBody = JSON.parse(res.body.message);
+					expect(parsedBody).to.have.property('error');
+					expect(parsedBody.error).to.have.property('error', 'Invalid setting value NaN');
+				});
+		});
+
+		it('should return an error when trying to save a "Infinity" value', () => {
+			request
+				.post(api('method.call/saveSettings'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '13',
+						method: 'saveSettings',
+						params: [[{ _id: 'Message_AllowEditing_BlockEditInMinutes', value: { $InfNaN: 1 } }]],
+					}),
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const parsedBody = JSON.parse(res.body.message);
+					expect(parsedBody).to.have.property('error');
+					expect(parsedBody.error).to.have.property('error', 'Invalid setting value Infinity');
+				});
+		});
+
+		it('should return an error when trying to save a "-Infinity" value', () => {
+			request
+				.post(api('method.call/saveSettings'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						msg: 'method',
+						id: '13',
+						method: 'saveSettings',
+						params: [[{ _id: 'Message_AllowEditing_BlockEditInMinutes', value: { $InfNaN: -1 } }]],
+					}),
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const parsedBody = JSON.parse(res.body.message);
+					expect(parsedBody).to.have.property('error');
+					expect(parsedBody.error).to.have.property('error', 'Invalid setting value -Infinity');
+				});
+		});
+	});
+
+	describe('@insertOrUpdateUser', () => {
+		let testUser;
+		let testUserCredentials;
+
+		before(async () => {
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+		});
+
+		after(() => Promise.all([deleteUser(testUser)]));
+
+		it('should fail if user tries to verify their own email via insertOrUpdateUser', (done) => {
+			request
+				.post(methodCall('insertOrUpdateUser'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'insertOrUpdateUser',
+						params: [
+							{
+								_id: testUserCredentials['X-User-Id'],
+								email: 'manager@rocket.chat',
+								verified: true,
+							},
+						],
+						id: '52',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('msg', 'result');
+					expect(data).to.have.a.property('id', '52');
+					expect(data.error).to.have.property('error', 'error-action-not-allowed');
+				})
+				.end(done);
+		});
+
+		it('should pass if a user with the right permissions tries to verify the email of another user', (done) => {
+			request
+				.post(methodCall('insertOrUpdateUser'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'insertOrUpdateUser',
+						params: [
+							{
+								_id: testUserCredentials['X-User-Id'],
+								email: 'testuser@rocket.chat',
+								verified: true,
+							},
+						],
+						id: '52',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('message').that.is.a('string');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('msg', 'result');
+					expect(data).to.have.a.property('id', '52');
+					expect(data).to.have.a.property('result', true);
+				})
+				.end(done);
 		});
 	});
 });
