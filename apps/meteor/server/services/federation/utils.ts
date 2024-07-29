@@ -14,7 +14,7 @@ export function verifyFederationReady() {
 	}
 
 	if (!isFederationReady()) {
-		throw new Error('Federation configuration is invalid');
+		throw new FederationMatrixInvalidConfigurationError();
 	}
 }
 

@@ -215,13 +215,13 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	// 	await Room.join({ room, user });
 	// }
 
-	async beforeReacted(message: IMessage, room: IRoom, _user: IUser, _reaction: string) {
+	async beforeReacted(message: IMessage, room: IRoom) {
 		if ((isMessageFromMatrixFederation(message) || isRoomFederated(room)) && isFederationEnabled() && !isFederationReady()) {
 			throw new FederationMatrixInvalidConfigurationError('Unable to react to message');
 		}
 	}
 
-	async beforeDelete(message: IMessage, room: IRoom, _user: IUser) {
+	async beforeDelete(message: IMessage, room: IRoom) {
 		if ((isMessageFromMatrixFederation(message) || isRoomFederated(room)) && isFederationEnabled() && !isFederationReady()) {
 			throw new FederationMatrixInvalidConfigurationError('Unable to delete message');
 		}

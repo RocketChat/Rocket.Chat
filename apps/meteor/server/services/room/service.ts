@@ -123,11 +123,11 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		return addUserToRoom(room._id, user);
 	}
 
-	async beforeLeave(_user: IUser, room: IRoom) {
+	async beforeLeave(room: IRoom) {
 		FederationCheck.blockIfFederationEnabledButNotReady(room);
 	}
 
-	async beforeUserRemoved(_user: IUser, _actor: IUser, room: IRoom) {
+	async beforeUserRemoved(room: IRoom) {
 		FederationCheck.blockIfFederationEnabledButNotReady(room);
 	}
 }
