@@ -1271,7 +1271,7 @@ class LivechatClass {
 			},
 		};
 
-		await Message.saveSystemMessage(transferMessage.t, room._id, '', { _id, username }, transferMessage);
+		await Message.saveSystemMessage('livechat_transfer_history', room._id, '', { _id, username }, transferMessage);
 	}
 
 	async saveGuest(guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string }, userId: string) {
