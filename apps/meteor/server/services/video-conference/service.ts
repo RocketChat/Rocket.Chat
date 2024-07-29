@@ -40,6 +40,7 @@ import { RocketChatAssets } from '../../../app/assets/server';
 import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { metrics } from '../../../app/metrics/server/lib/metrics';
 import PushNotification from '../../../app/push-notifications/server/lib/PushNotification';
 import { Push } from '../../../app/push/server/push';
@@ -55,7 +56,6 @@ import { isRoomCompatibleWithVideoConfRinging } from '../../lib/isRoomCompatible
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
-import { broadcastMessageFromData } from '../../modules/watchers/lib/messages';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -360,7 +360,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			const text = i18n.t('video_livechat_missed', { username: name });
 			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(text)]);
 
-			await broadcastMessageFromData({
+			await notifyOnMessageChange({
 				id: call.messages.started,
 			});
 		}

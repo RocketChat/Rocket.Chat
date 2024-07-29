@@ -4906,6 +4906,7 @@
   "registration.component.resetPassword": "Redefinir senha",
   "registration.component.form.username": "Nome de usuário",
   "registration.component.form.name": "Nome",
+  "registration.component.form.nameContainsInvalidChars": "O nome contém caracteres inválidos",
   "registration.component.form.userAlreadyExist": "O nome de usuário já existe. Tente outro nome de usuário.",
   "registration.component.form.emailAlreadyExists": "E-mail já existe",
   "registration.component.form.usernameAlreadyExists": "O nome de usuário já existe. Tente outro nome de usuário.",
