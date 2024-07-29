@@ -8,6 +8,7 @@
 		"react-i18next": "~13.2.2"
 	},
 	"devDependencies": {
+		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:*",
 		"@storybook/react": "~6.5.16",
 		"@tanstack/react-query": "^4.16.1",

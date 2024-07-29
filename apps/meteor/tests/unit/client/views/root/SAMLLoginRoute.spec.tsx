@@ -16,7 +16,7 @@ describe('views/root/SAMLLoginRoute', () => {
 		(Meteor.loginWithSamlToken as jest.Mock<any>).mockClear();
 	});
 
-	it('should redirect to /home when userId is not null', async () => {
+	it('should redirect to /home', async () => {
 		render(
 			<MockedServerContext>
 				<MockedUserContext>
@@ -27,11 +27,11 @@ describe('views/root/SAMLLoginRoute', () => {
 			</MockedServerContext>,
 		);
 
-		expect(navigateStub).toHaveBeenCalledTimes(2);
+		expect(navigateStub).toHaveBeenCalledTimes(1);
 		expect(navigateStub).toHaveBeenLastCalledWith(expect.objectContaining({ pathname: '/home' }), expect.anything());
 	});
 
-	it('should redirect to /home when userId is null and redirectUrl is not within the workspace domain', async () => {
+	it('should redirect to /home when redirectUrl is not within the workspace domain', async () => {
 		render(
 			<MockedServerContext>
 				<RouterContextMock searchParameters={{ redirectUrl: 'http://rocket.chat' }} navigate={navigateStub}>
@@ -44,7 +44,7 @@ describe('views/root/SAMLLoginRoute', () => {
 		expect(navigateStub).toHaveBeenLastCalledWith(expect.objectContaining({ pathname: '/home' }), expect.anything());
 	});
 
-	it('should redirect to the provided redirectUrl when userId is null and redirectUrl is within the workspace domain', async () => {
+	it('should redirect to the provided redirectUrl when redirectUrl is within the workspace domain', async () => {
 		render(
 			<MockedServerContext>
 				<RouterContextMock searchParameters={{ redirectUrl: 'http://localhost:3000/invite/test' }} navigate={navigateStub}>
