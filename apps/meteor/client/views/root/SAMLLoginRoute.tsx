@@ -1,5 +1,5 @@
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
-import { useRouter, useToastMessageDispatch, useUserId, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
+import { useRouter, useToastMessageDispatch, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { useEffect } from 'react';
 
@@ -37,20 +37,6 @@ const SAMLLoginRoute = () => {
 			}
 		});
 	}, [dispatchToastMessage, rootUrl, router]);
-
-	const userId = useUserId();
-	useEffect(() => {
-		if (!userId) {
-			return;
-		}
-
-		router.navigate(
-			{
-				pathname: '/home',
-			},
-			{ replace: true },
-		);
-	}, [userId, router]);
 
 	return null;
 };

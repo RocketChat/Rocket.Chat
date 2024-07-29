@@ -33,9 +33,12 @@ Accounts.onLogin((info: ILoginAttempt) => {
 	deviceManagementEvents.emit('device-login', eventObject);
 });
 
-Accounts.onLogout((info: { user: Meteor.User; connection: Meteor.Connection }) => {
+Accounts.onLogout((info) => {
 	const { httpHeaders } = info.connection;
 
+	if (!info.user) {
+		return;
+	}
 	sauEvents.emit('accounts.logout', {
 		userId: info.user._id,
 		connection: { instanceId: InstanceStatus.id(), ...info.connection, httpHeaders: httpHeaders as IncomingHttpHeaders },

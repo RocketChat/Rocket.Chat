@@ -1,16 +1,16 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Messages, Rooms } from '@rocket.chat/models';
+import { Messages, Rooms, VideoConference } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
+import { notifyOnMessageChange } from '../../../lib/server/lib/notifyListener';
 
 const updateAndNotifyParentRoomWithParentMessage = async (room: IRoom): Promise<void> => {
 	const { value: parentMessage } = await Messages.refreshDiscussionMetadata(room);
 	if (!parentMessage) {
 		return;
 	}
-	void broadcastMessageFromData({
+	void notifyOnMessageChange({
 		id: parentMessage._id,
 		data: parentMessage,
 	});
@@ -108,6 +108,8 @@ callbacks.add(
 				},
 			},
 		);
+
+		await VideoConference.unsetDiscussionRid(drid);
 		return drid;
 	},
 	callbacks.priority.LOW,
