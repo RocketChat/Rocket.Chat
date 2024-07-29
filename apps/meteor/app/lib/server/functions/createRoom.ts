@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Message, Team } from '@rocket.chat/core-services';
+import { Federation, FederationEE, License, Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
@@ -222,6 +222,13 @@ export const createRoom = async <T extends RoomType>(
 		Object.assign(roomProps, eventResult);
 	}
 
+	const shouldBeHandledByFederation = roomProps.federated === true || owner.username.includes(':');
+
+	if (shouldBeHandledByFederation) {
+		const federation = (await License.hasValidLicense()) ? FederationEE : Federation;
+		await federation.beforeCreateRoom(roomProps);
+	}
+
 	if (type === 'c') {
 		await callbacks.run('beforeCreateChannel', owner, roomProps);
 	}
@@ -229,8 +236,6 @@ export const createRoom = async <T extends RoomType>(
 	const room = await Rooms.createWithFullRoomData(roomProps);
 
 	void notifyOnRoomChanged(room, 'inserted');
-
-	const shouldBeHandledByFederation = room.federated === true || owner.username.includes(':');
 
 	await createUsersSubscriptions({ room, members, now, owner, options, shouldBeHandledByFederation });
 

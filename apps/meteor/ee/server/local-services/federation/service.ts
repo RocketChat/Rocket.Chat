@@ -11,6 +11,7 @@ import { FederationFactoryEE } from './infrastructure/Factory';
 import type { RocketChatRoomAdapterEE } from './infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatUserAdapterEE } from './infrastructure/rocket-chat/adapters/User';
 import { FederationRoomSenderConverterEE } from './infrastructure/rocket-chat/converters/RoomSender';
+import { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 
 abstract class AbstractBaseFederationServiceEE extends AbstractFederationService {
 	protected internalUserServiceEE: FederationUserServiceEE;
@@ -230,5 +231,9 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 
 	public async configurationStatus() {
 		return super.configurationStatus();
+	}
+
+	public async beforeCreateRoom(room: Partial<IRoom>) {
+		return super.beforeCreateRoom(room);
 	}
 }

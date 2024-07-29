@@ -27,13 +27,7 @@ export class FederationHooks {
 	public static onUserRemovedFromRoom(callback: (removedUser: IUser, room: IRoom, userWhoRemoved: IUser) => Promise<void>): void {
 		afterRemoveFromRoomCallback.add(
 			async (params, room): Promise<void> => {
-				if (
-					!room ||
-					!isRoomFederated(room) ||
-					!params ||
-					!params.removedUser ||
-					!params.userWhoRemoved
-				) {
+				if (!room || !isRoomFederated(room) || !params || !params.removedUser || !params.userWhoRemoved) {
 					return;
 				}
 
@@ -101,13 +95,7 @@ export class FederationHooks {
 		callbacks.add(
 			'afterSetReaction',
 			async (message: IMessage, params: { user: IUser; reaction: string }): Promise<void> => {
-				if (
-					!message ||
-					!isMessageFromMatrixFederation(message) ||
-					!params ||
-					!params.user ||
-					!params.reaction
-				) {
+				if (!message || !isMessageFromMatrixFederation(message) || !params || !params.user || !params.reaction) {
 					return;
 				}
 
@@ -124,14 +112,7 @@ export class FederationHooks {
 		callbacks.add(
 			'afterUnsetReaction',
 			async (message: IMessage, params: { user: IUser; reaction: string; oldMessage: IMessage }): Promise<void> => {
-				if (
-					!message ||
-					!isMessageFromMatrixFederation(message) ||
-					!params ||
-					!params.user ||
-					!params.reaction ||
-					!params.oldMessage
-				) {
+				if (!message || !isMessageFromMatrixFederation(message) || !params || !params.user || !params.reaction || !params.oldMessage) {
 					return;
 				}
 
@@ -148,12 +129,7 @@ export class FederationHooks {
 		callbacks.add(
 			'afterDeleteMessage',
 			async (message: IMessage, room: IRoom): Promise<void> => {
-				if (
-					!room ||
-					!message ||
-					!isRoomFederated(room) ||
-					!isMessageFromMatrixFederation(message)
-				) {
+				if (!room || !message || !isRoomFederated(room) || !isMessageFromMatrixFederation(message)) {
 					return;
 				}
 
@@ -170,12 +146,7 @@ export class FederationHooks {
 		callbacks.add(
 			'afterSaveMessage',
 			async (message: IMessage, room: IRoom): Promise<IMessage> => {
-				if (
-					!room ||
-					!isRoomFederated(room) ||
-					!message ||
-					!isMessageFromMatrixFederation(message)
-				) {
+				if (!room || !isRoomFederated(room) || !message || !isMessageFromMatrixFederation(message)) {
 					return message;
 				}
 

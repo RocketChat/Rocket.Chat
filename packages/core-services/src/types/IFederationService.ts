@@ -1,4 +1,5 @@
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 export type FederationConfigurationStatus = {
 	appservice: {
@@ -23,6 +24,8 @@ interface IFederationBaseService {
 	markConfigurationValid(): Promise<void>;
 
 	markConfigurationInvalid(): Promise<void>;
+
+	beforeCreateRoom(room: Partial<IRoom>): Promise<void>;
 }
 
 export interface IFederationService extends IFederationBaseService {
