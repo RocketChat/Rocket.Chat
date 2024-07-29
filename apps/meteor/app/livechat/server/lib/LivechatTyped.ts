@@ -140,6 +140,9 @@ type ICRMData = {
 	};
 	crmData?: IOmnichannelRoom['crmData'];
 };
+
+type ChatCloser = IUser | ILivechatVisitor | null;
+
 const isRoomClosedByUserParams = (params: CloseRoomParams): params is CloseRoomParamsByUser =>
 	(params as CloseRoomParamsByUser).user !== undefined;
 const isRoomClosedByVisitorParams = (params: CloseRoomParams): params is CloseRoomParamsByVisitor =>
@@ -224,7 +227,7 @@ class LivechatClass {
 
 	async closeRoom(params: CloseRoomParams): Promise<void> {
 		let newRoom: IOmnichannelRoom;
-		let chatCloser: any;
+		let chatCloser: ChatCloser;
 
 		const session = client.startSession();
 		try {
@@ -254,7 +257,11 @@ class LivechatClass {
 		return this.afterRoomClosed(newRoom, chatCloser, params);
 	}
 
-	async afterRoomClosed(newRoom: IOmnichannelRoom, chatCloser: any, params: CloseRoomParams): Promise<void> {
+	async afterRoomClosed(newRoom: IOmnichannelRoom, chatCloser: ChatCloser, params: CloseRoomParams): Promise<void> {
+		if (!chatCloser) {
+			// this should never happen
+			return;
+		}
 		// Note: we are okay with these messages being sent outside of the transaction. The process of sending a message
 		// is huge and involves multiple db calls. Making it transactionable this way would be really hard.
 		// And passing just _some_ actions to the transaction creates some deadlocks since messages are updated in the afterSaveMessages callbacks.
@@ -268,7 +275,7 @@ class LivechatClass {
 				msg: params.comment,
 				groupable: false,
 				transcriptRequested,
-				...(isRoomClosedByVisitorParams(params) && { token: chatCloser.token }),
+				...(isRoomClosedByVisitorParams(params) && { token: params.visitor.token }),
 			},
 			newRoom,
 		);
@@ -307,7 +314,7 @@ class LivechatClass {
 		this.logger.debug(`Room ${newRoom._id} was closed`);
 	}
 
-	async doCloseRoom(params: CloseRoomParams, session: ClientSession): Promise<{ room: IOmnichannelRoom; closedBy: any }> {
+	async doCloseRoom(params: CloseRoomParams, session: ClientSession): Promise<{ room: IOmnichannelRoom; closedBy: ChatCloser }> {
 		const { comment } = params;
 		const { room } = params;
 
@@ -337,7 +344,7 @@ class LivechatClass {
 		};
 		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.chatDuration})`);
 
-		let chatCloser: any;
+		let chatCloser: ChatCloser;
 		if (isRoomClosedByUserParams(params)) {
 			const { user } = params;
 			this.logger.debug(`Closing by user ${user?._id}`);
