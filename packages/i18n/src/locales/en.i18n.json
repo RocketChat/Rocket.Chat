@@ -1929,7 +1929,7 @@
   "Extra_CSP_Domains": "Extra CSP Domains",
   "Extra_CSP_Domains_Description": "Extra domains to add to the Content-Security-Policy",
   "Enable_Desktop_Notifications": "Enable Desktop Notifications",
-  "Enable_encryption" : "Enable encryption",
+  "Enable_encryption": "Enable encryption",
   "Enable_inquiry_fetch_by_stream": "Enable inquiry data fetch from server using a stream",
   "Enable_omnichannel_auto_close_abandoned_rooms": "Enable automatic closing of rooms abandoned by the visitor",
   "Enable_Password_History": "Enable Password History",
