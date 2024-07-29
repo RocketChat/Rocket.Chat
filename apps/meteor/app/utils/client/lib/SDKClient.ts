@@ -175,18 +175,9 @@ const createStreamManager = () => {
 
 		const stop = (): void => {
 			streamProxy.off(eventLiteral, proxyCallback);
-			if (eventLiteral.includes('subscriptions-changed')) {
-				console.log('Stopping', eventLiteral);
-			}
 			// If someone is still listening, don't unsubscribe
 			if (streamProxy.has(eventLiteral)) {
-				if (eventLiteral.includes('subscriptions-changed')) {
-					console.log('Still listening', eventLiteral);
-				}
 				return;
-			}
-			if (eventLiteral.includes('subscriptions-changed')) {
-				console.log('No longer listening', eventLiteral);
 			}
 
 			if (stream) {
@@ -197,9 +188,6 @@ const createStreamManager = () => {
 
 		const stream = streams.get(eventLiteral) || createNewMeteorStream(name, key, args);
 
-		if (eventLiteral.includes('subscriptions-changed')) {
-			console.log(streams.get(eventLiteral) ? 'Cached' : 'New', eventLiteral, new Error().stack);
-		}
 		stream.unsubList.add(stop);
 		if (!streams.has(eventLiteral)) {
 			streams.set(eventLiteral, stream);
