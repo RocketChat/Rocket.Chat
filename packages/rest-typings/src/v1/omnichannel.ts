@@ -2646,6 +2646,7 @@ export type GETLivechatRoomsParams = PaginatedRequest<{
 	departmentId?: string;
 	open?: string | boolean;
 	onhold?: string | boolean;
+	queued?: string | boolean;
 	tags?: string[];
 }>;
 
@@ -2706,6 +2707,12 @@ const GETLivechatRoomsParamsSchema = {
 			],
 		},
 		onhold: {
+			anyOf: [
+				{ type: 'string', nullable: true },
+				{ type: 'boolean', nullable: true },
+			],
+		},
+		queued: {
 			anyOf: [
 				{ type: 'string', nullable: true },
 				{ type: 'boolean', nullable: true },
