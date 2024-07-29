@@ -1,5 +1,15 @@
 # @rocket.chat/api-client
 
+## 0.1.36
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.7
+  - @rocket.chat/rest-typings@6.7.7
+  </details>
+
 ## 0.1.35
 
 ### Patch Changes
