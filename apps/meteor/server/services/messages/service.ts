@@ -6,14 +6,13 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
+import { notifyUsersOnMessage, notifyOnMessageChange } from '../../../app/lib/server/lib/notifyUsersOnMessage';
 import { notifyOnRoomChanged } from '../../../app/lib/server/lib/notifyListener';
-import { notifyUsersOnMessage } from '../../../app/lib/server/lib/notifyUsersOnMessage';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
-import { broadcastMessageFromData } from '../../modules/watchers/lib/messages';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
 import { BeforeSaveCheckMAC } from './hooks/BeforeSaveCheckMAC';
 import { BeforeSaveJumpToMessage } from './hooks/BeforeSaveJumpToMessage';
@@ -137,7 +136,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			});
 		}
 
-		void broadcastMessageFromData({ id: messageData._id });
+		void notifyOnMessageChange({ id: messageData._id });
 		void notifyOnRoomChanged(room);
 
 		return messageData;
@@ -157,8 +156,8 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		message = await mentionServer.execute(message);
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
-		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
 		message = await this.badWords.filterBadWords({ message });
+		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
 		message = await this.spotify.convertSpotifyLinks({ message });
 		message = await this.jumpToMessage.createAttachmentForMessageURLs({
 			message,
