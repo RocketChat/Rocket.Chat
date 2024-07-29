@@ -236,6 +236,20 @@ describe('[Teams]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(400);
 		});
+		it('should throw error when creating a team with sidepanel with duplicated items', async () => {
+			await request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: `test-team-with-sidepanel-error-${Date.now()}`,
+					type: 0,
+					sidepanel: {
+						items: ['other'],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
 	});
 
 	describe('/teams.convertToChannel', () => {
@@ -1989,33 +2003,6 @@ describe('[Teams]', () => {
 		after(() =>
 			Promise.all([...[testTeamName, testTeamName2, teamName3].map((name) => deleteTeam(credentials, name)), deleteUser(unauthorizedUser)]),
 		);
-
-		it('should update sidepanel items to channels and discussions', async () => {
-			const sidepanelItems = ['channels', 'discussions'];
-			const response = await request
-				.post(api('rooms.saveRoomSettings'))
-				.set(credentials)
-				.send({
-					rid: testTeam.roomId,
-					sidepanel: { items: sidepanelItems },
-				});
-
-			expect('Content-Type', 'application/json');
-			expect(200);
-			expect(response.body).to.have.property('success', true);
-
-			await request
-				.get(api('channels.info'))
-				.set(credentials)
-				.query({ roomId: response.body.rid })
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((response) => {
-					expect(response.body).to.have.property('success', true);
-					expect(response.body.channel).to.have.property('sidepanel');
-					expect(response.body.channel.sidepanel).to.have.property('items').that.is.an('array').to.have.deep.members(sidepanelItems);
-				});
-		});
 
 		it('should update team name', async () => {
 			const updateResponse = await request

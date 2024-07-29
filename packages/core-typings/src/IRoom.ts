@@ -7,7 +7,8 @@ import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
 
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
-export type SidepanelItem = 'channel' | 'discussion';
+const sidepanelItemValues = ['channels', 'discussions'] as const;
+export type SidepanelItem = (typeof sidepanelItemValues)[number];
 
 export type RoomID = string;
 export type ChannelName = string;
@@ -103,7 +104,20 @@ export interface IRoom extends IRocketChatRecord {
 }
 
 export const isSidepanelItem = (item: any): item is SidepanelItem => {
-	return item === 'channels' || item === 'discussion';
+	return sidepanelItemValues.includes(item);
+};
+
+export const isValidSidepanel = (sidepanel: IRoom['sidepanel']) => {
+	if (!sidepanel?.items) {
+		return false;
+	}
+	return (
+		Array.isArray(sidepanel.items) &&
+		sidepanel.items.length &&
+		sidepanel.items.every(isSidepanelItem) &&
+		sidepanel.items.length <= 2 &&
+		sidepanel.items.length === new Set(sidepanel.items).size
+	);
 };
 
 export const isRoomWithJoinCode = (room: Partial<IRoom>): room is IRoomWithJoinCode =>

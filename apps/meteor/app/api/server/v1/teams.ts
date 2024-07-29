@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
-import { TEAM_TYPE, isSidepanelItem } from '@rocket.chat/core-typings';
+import { TEAM_TYPE, isValidSidepanel } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 import {
 	isTeamsConvertToChannelProps,
@@ -87,13 +87,7 @@ API.v1.addRoute(
 
 			const { name, type, members, room, owner, sidepanel } = this.bodyParams;
 
-			if (
-				sidepanel?.items &&
-				(!Array.isArray(sidepanel.items) ||
-					!sidepanel.items.length ||
-					!sidepanel.items.every(isSidepanelItem) ||
-					sidepanel.items.length > 2)
-			) {
+			if (sidepanel?.items && !isValidSidepanel(sidepanel)) {
 				throw new Error('error-invalid-sidepanel');
 			}
 
