@@ -244,7 +244,7 @@ describe('[Teams]', () => {
 					name: `test-team-with-sidepanel-error-${Date.now()}`,
 					type: 0,
 					sidepanel: {
-						items: ['other'],
+						items: ['channels', 'channels'],
 					},
 				})
 				.expect('Content-Type', 'application/json')
