@@ -1,5 +1,5 @@
 ---
-'@rocket.chat/meteor': minor
+'@rocket.chat/meteor': patch
 ---
 
 Federated users can no longer be deleted.
