@@ -30,5 +30,13 @@ class UsersCollection extends Mongo.Collection<IUser> {
 	}
 }
 
+Object.assign(Meteor.users, {
+	_connection: undefined,
+	findOneById: UsersCollection.prototype.findOneById,
+	isUserInRole: UsersCollection.prototype.isUserInRole,
+	findUsersInRoles: UsersCollection.prototype.findUsersInRoles,
+	remove: UsersCollection.prototype.remove,
+});
+
 /** @deprecated */
-export const Users = new UsersCollection();
+export const Users = Meteor.users as UsersCollection;

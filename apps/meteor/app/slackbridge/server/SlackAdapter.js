@@ -1341,7 +1341,7 @@ export default class SlackAdapter {
 					const user = (await this.rocket.findUser(member)) || (await this.rocket.addUser(member));
 					if (user) {
 						slackLogger.debug('Adding user to room', user.username, rid);
-						await addUserToRoom(rid, user, null, true);
+						await addUserToRoom(rid, user, null, { skipSystemMessage: true });
 					}
 				}
 			}

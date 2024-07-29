@@ -31,6 +31,7 @@ test.describe('OC - Manage Tags', () => {
 
 	test.afterAll(async () => {
 		await department.delete();
+		await department2.delete();
 		await agent.delete();
 	});
 

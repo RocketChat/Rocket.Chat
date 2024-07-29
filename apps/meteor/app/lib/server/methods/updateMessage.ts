@@ -1,6 +1,6 @@
 import type { IEditedMessage, IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
@@ -90,7 +90,7 @@ export async function executeUpdateMessage(uid: IUser['_id'], message: AtLeast<I
 	return updateMessage(message, user, originalMessage, previewUrls);
 }
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		updateMessage(message: IEditedMessage, previewUrls?: string[]): void;

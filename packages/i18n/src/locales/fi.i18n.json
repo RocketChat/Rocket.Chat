@@ -5660,7 +5660,6 @@
   "Always_send_the_transcript_to_contacts_at_the_end_of_the_conversations": "Lähetä tekstitallenne aina yhteyshenkilöille keskustelujen lopuksi.",
   "Export_conversation_transcript_as_PDF": "Vie keskustelun tekstitallenne PDF-muotoon",
   "Omnichannel_transcript_email": "Lähetä keskustelun tekstitallenne sähköpostitse.",
-  "Accounts_Default_User_Preferences_omnichannelTranscriptEmail_Description": "Lähetä tekstitallenne aina yhteyshenkilöille keskustelujen lopuksi.",
   "Omnichannel_transcript_pdf": "Vie keskustelun tekstitallenne PDF-muotoon.",
   "Accounts_Default_User_Preferences_omnichannelTranscriptPDF_Description": "Vie tekstitallenne aina PDF-muotoon keskustelujen lopuksi.",
   "Contact_email": "Yhteyshenkilön sähköpostiosoite",
