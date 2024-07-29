@@ -49,7 +49,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#afterUserLeaveRoom()', () => {
 		it('should NOT execute the callback if no room was provided', async () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterUserLeaveRoom(stub);
 
@@ -59,7 +58,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if the provided room is not federated', async () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterUserLeaveRoom(stub);
 
@@ -70,7 +68,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no user was provided', async () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterUserLeaveRoom(stub);
 
@@ -94,7 +91,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should execute the callback when everything is correct', async () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterUserLeaveRoom(stub);
 
@@ -107,7 +103,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#onUserRemovedFromRoom()', () => {
 		it('should NOT execute the callback if no room was provided', async () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.onUserRemovedFromRoom(stub);
 
@@ -118,7 +113,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if the provided room is not federated', async () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.onUserRemovedFromRoom(stub);
 
@@ -129,7 +123,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no params were provided', async () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.onUserRemovedFromRoom(stub);
 
@@ -140,7 +133,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no removedUser was provided', async () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.onUserRemovedFromRoom(stub);
 			// @ts-expect-error
@@ -150,7 +142,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no userWhoRemoved was provided', async () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.onUserRemovedFromRoom(stub);
 			// @ts-expect-error
@@ -167,12 +158,13 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			FederationHooks.onUserRemovedFromRoom(stub);
 
 			// @ts-expect-error
-			expect(afterRemoveFromRoomCallback.run({ removedUser: 'removedUser', userWhoRemoved: 'userWhoRemoved' }, { federated: true })).to.have.rejectedWith(error);
+			expect(
+				afterRemoveFromRoomCallback.run({ removedUser: 'removedUser', userWhoRemoved: 'userWhoRemoved' }, { federated: true }),
+			).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
 
 		it('should execute the callback when everything is correct', async () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.onUserRemovedFromRoom(stub);
 			// @ts-expect-error
@@ -183,7 +175,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#canAddFederatedUserToNonFederatedRoom()', () => {
 		it('should NOT execute the callback if no room was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.canAddFederatedUserToNonFederatedRoom(stub);
 			hooks['federation-v2-can-add-federated-user-to-non-federated-room']();
@@ -191,7 +182,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no params were provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.canAddFederatedUserToNonFederatedRoom(stub);
 			hooks['federation-v2-can-add-federated-user-to-non-federated-room']({}, { federated: true });
@@ -199,7 +189,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no user was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.canAddFederatedUserToNonFederatedRoom(stub);
 			hooks['federation-v2-can-add-federated-user-to-non-federated-room']({}, { federated: true }, {});
@@ -207,7 +196,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should execute the callback when everything is correct', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.canAddFederatedUserToNonFederatedRoom(stub);
 			hooks['federation-v2-can-add-federated-user-to-non-federated-room']({ user: 'user' }, { federated: true });
@@ -217,7 +205,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#canAddFederatedUserToFederatedRoom()', () => {
 		it('should NOT execute the callback if no room was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.canAddFederatedUserToFederatedRoom(stub);
 			hooks['federation-v2-can-add-federated-user-to-federated-room']();
@@ -225,7 +212,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no params were provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.canAddFederatedUserToFederatedRoom(stub);
 			hooks['federation-v2-can-add-federated-user-to-federated-room']({}, { federated: true });
@@ -233,7 +219,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no user was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.canAddFederatedUserToFederatedRoom(stub);
 			hooks['federation-v2-can-add-federated-user-to-federated-room']({}, { federated: true }, {});
@@ -241,7 +226,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no inviter was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.canAddFederatedUserToFederatedRoom(stub);
 			hooks['federation-v2-can-add-federated-user-to-federated-room']({ user: 'user' }, { federated: true }, {});
@@ -253,12 +237,13 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooks.canAddFederatedUserToFederatedRoom(stub);
-			expect(hooks['federation-v2-can-add-federated-user-to-federated-room']({ user: 'user', inviter: 'inviter' }, { federated: true })).to.have.rejectedWith(error);
+			expect(
+				hooks['federation-v2-can-add-federated-user-to-federated-room']({ user: 'user', inviter: 'inviter' }, { federated: true }),
+			).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
 
 		it('should execute the callback when everything is correct', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.canAddFederatedUserToFederatedRoom(stub);
 			hooks['federation-v2-can-add-federated-user-to-federated-room']({ user: 'user', inviter: 'inviter' }, { federated: true });
@@ -268,7 +253,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#canCreateDirectMessageFromUI()', () => {
 		it('should NOT execute the callback if no members was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.canCreateDirectMessageFromUI(stub);
 			hooks['federation-v2-can-create-direct-message-from-ui-ce']();
@@ -285,7 +269,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should execute the callback when everything is correct', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.canCreateDirectMessageFromUI(stub);
 			hooks['federation-v2-can-create-direct-message-from-ui-ce']([]);
@@ -295,7 +278,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#afterMessageReacted()', () => {
 		it('should NOT execute the callback if no message was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageReacted(stub);
 			hooks['federation-v2-after-message-reacted']();
@@ -303,7 +285,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if the provided message is not from a federated room', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageReacted(stub);
 			hooks['federation-v2-after-message-reacted']({});
@@ -311,7 +292,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no params were provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageReacted(stub);
 			hooks['federation-v2-after-message-reacted']({ federation: { eventId: 'eventId' } }, {});
@@ -319,7 +299,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no user was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageReacted(stub);
 			hooks['federation-v2-after-message-reacted']({ federation: { eventId: 'eventId' } }, { federated: true }, {});
@@ -327,7 +306,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no reaction was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageReacted(stub);
 			hooks['federation-v2-after-message-reacted']({ federation: { eventId: 'eventId' } }, { user: 'user' });
@@ -339,12 +317,13 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageReacted(stub);
-			expect(hooks['federation-v2-after-message-reacted']({ federation: { eventId: 'eventId' } }, { user: 'user', reaction: 'reaction' })).to.have.rejectedWith(error);
+			expect(
+				hooks['federation-v2-after-message-reacted']({ federation: { eventId: 'eventId' } }, { user: 'user', reaction: 'reaction' }),
+			).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
 
 		it('should execute the callback when everything is correct', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageReacted(stub);
 			hooks['federation-v2-after-message-reacted']({ federation: { eventId: 'eventId' } }, { user: 'user', reaction: 'reaction' });
@@ -354,7 +333,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#afterMessageunReacted()', () => {
 		it('should NOT execute the callback if no message was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageunReacted(stub);
 			hooks['federation-v2-after-message-unreacted']();
@@ -362,7 +340,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if the provided message is not from a federated room', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageunReacted(stub);
 			hooks['federation-v2-after-message-unreacted']({});
@@ -370,7 +347,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no params were provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageunReacted(stub);
 			hooks['federation-v2-after-message-unreacted']({ federation: { eventId: 'eventId' } }, {});
@@ -378,7 +354,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no user was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageunReacted(stub);
 			hooks['federation-v2-after-message-unreacted']({ federation: { eventId: 'eventId' } }, { federated: true }, {});
@@ -386,7 +361,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no reaction was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageunReacted(stub);
 			hooks['federation-v2-after-message-unreacted']({ federation: { eventId: 'eventId' } }, { user: 'user' });
@@ -394,7 +368,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no oldMessage was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageunReacted(stub);
 			hooks['federation-v2-after-message-unreacted']({ federation: { eventId: 'eventId' } }, { user: 'user', reaction: 'reaction' });
@@ -406,15 +379,16 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageunReacted(stub);
-			expect(hooks['federation-v2-after-message-unreacted'](
-				{ federation: { eventId: 'eventId' } },
-				{ user: 'user', reaction: 'reaction', oldMessage: {} },
-			)).to.have.rejectedWith(error);
+			expect(
+				hooks['federation-v2-after-message-unreacted'](
+					{ federation: { eventId: 'eventId' } },
+					{ user: 'user', reaction: 'reaction', oldMessage: {} },
+				),
+			).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
 
 		it('should execute the callback when everything is correct', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageunReacted(stub);
 			hooks['federation-v2-after-message-unreacted'](
@@ -427,7 +401,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#afterMessageDeleted()', () => {
 		it('should NOT execute the callback if no room was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageDeleted(stub);
 			hooks['federation-v2-after-room-message-deleted']();
@@ -435,7 +408,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if the provided room is not federated', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageDeleted(stub);
 			hooks['federation-v2-after-room-message-deleted']({}, {});
@@ -443,7 +415,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if the provided message is not from a federated room', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageDeleted(stub);
 			hooks['federation-v2-after-room-message-deleted']({}, { federated: true });
@@ -455,12 +426,13 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageDeleted(stub);
-			expect(hooks['federation-v2-after-room-message-deleted']({ federation: { eventId: 'eventId' } }, { federated: true })).to.have.rejectedWith(error);
+			expect(
+				hooks['federation-v2-after-room-message-deleted']({ federation: { eventId: 'eventId' } }, { federated: true }),
+			).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
 
 		it('should execute the callback when everything is correct', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageDeleted(stub);
 			hooks['federation-v2-after-room-message-deleted']({ federation: { eventId: 'eventId' } }, { federated: true, _id: 'roomId' });
@@ -470,7 +442,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#afterMessageUpdated()', () => {
 		it('should NOT execute the callback if no room was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageUpdated(stub);
 			hooks['federation-v2-after-room-message-updated']();
@@ -478,7 +449,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if the provided room is not federated', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageUpdated(stub);
 			hooks['federation-v2-after-room-message-updated']({}, {});
@@ -486,7 +456,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if the provided message is not from a federated room', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageUpdated(stub);
 			hooks['federation-v2-after-room-message-updated']({}, { federated: true });
@@ -498,12 +467,13 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageUpdated(stub);
-			expect(hooks['federation-v2-after-room-message-updated']({ federation: { eventId: 'eventId' } }, { federated: true })).to.have.rejectedWith(error);
+			expect(
+				hooks['federation-v2-after-room-message-updated']({ federation: { eventId: 'eventId' } }, { federated: true }),
+			).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
 
 		it('should NOT execute the callback if the message is not a edited one', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageUpdated(stub);
 			hooks['federation-v2-after-room-message-updated']({ federation: { eventId: 'eventId' } }, { federated: true });
@@ -514,7 +484,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			const editedAt = faker.date.recent();
 			const editedBy = { _id: 'userId' };
 			const message = { federation: { eventId: 'eventId' }, editedAt, editedBy };
-			verifyFederationReady.returns(true);
+
 			const stub = sinon.stub();
 			FederationHooks.afterMessageUpdated(stub);
 			hooks['federation-v2-after-room-message-updated'](message, { federated: true, _id: 'roomId' });
@@ -524,7 +494,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#afterMessageSent()', () => {
 		it('should NOT execute the callback if no room was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageSent(stub);
 			hooks['federation-v2-after-room-message-sent']();
@@ -532,7 +501,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if the provided room is not federated', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageSent(stub);
 			hooks['federation-v2-after-room-message-sent']({}, {});
@@ -549,7 +517,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if the message is edited one', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageSent(stub);
 			const editedAt = faker.date.recent();
@@ -559,7 +526,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should execute the callback when everything is correct', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageSent(stub);
 			hooks['federation-v2-after-room-message-sent']({ u: { _id: 'userId' } }, { federated: true, _id: 'roomId' });
@@ -603,7 +569,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT call the handler if the event is not for roles we are interested in on Federation', async () => {
-			verifyFederationReady.returns(true);
 			await FederationHooks.afterRoomRoleChanged(handlers, { _id: 'not-interested' });
 
 			expect(handlers.onRoomOwnerAdded.called).to.be.false;
@@ -613,7 +578,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT call the handler there is no handler for the event', async () => {
-			verifyFederationReady.returns(true);
 			await FederationHooks.afterRoomRoleChanged(handlers, { _id: 'owner', type: 'not-existing-type' });
 
 			expect(handlers.onRoomOwnerAdded.called).to.be.false;
@@ -627,7 +591,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			const internalTargetUserId = 'internalTargetUserId';
 			const internalUserId = 'internalUserId';
 			it(`should call the handler for the event ${type}`, async () => {
-				verifyFederationReady.returns(true);
 				await FederationHooks.afterRoomRoleChanged(handlers, {
 					_id: type.split('-')[0],
 					type: type.split('-')[1],
@@ -649,7 +612,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#afterRoomNameChanged()', () => {
 		it('should NOT execute the callback if no params was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterRoomNameChanged(stub);
 			hooks['federation-v2-after-room-name-changed']();
@@ -657,7 +619,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no roomId was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterRoomNameChanged(stub);
 			hooks['federation-v2-after-room-name-changed']({});
@@ -665,7 +626,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no roomName was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterRoomNameChanged(stub);
 			hooks['federation-v2-after-room-name-changed']({ rid: 'roomId' });
@@ -682,7 +642,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should execute the callback when everything is correct', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterRoomNameChanged(stub);
 			hooks['federation-v2-after-room-name-changed']({ rid: 'roomId', name: 'roomName' });
@@ -692,7 +651,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 
 	describe('#afterRoomTopicChanged()', () => {
 		it('should NOT execute the callback if no params was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterRoomTopicChanged(stub);
 			hooks['federation-v2-after-room-topic-changed']();
@@ -700,7 +658,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no roomId was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterRoomTopicChanged(stub);
 			hooks['federation-v2-after-room-topic-changed']({});
@@ -708,7 +665,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if no topic was provided', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterRoomTopicChanged(stub);
 			hooks['federation-v2-after-room-topic-changed']({ rid: 'roomId' });
@@ -725,7 +681,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should execute the callback when everything is correct', () => {
-			verifyFederationReady.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterRoomTopicChanged(stub);
 			hooks['federation-v2-after-room-topic-changed']({ rid: 'roomId', topic: 'topic' });
