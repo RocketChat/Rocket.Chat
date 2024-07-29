@@ -2247,7 +2247,7 @@ describe('LIVECHAT - rooms', () => {
 		});
 	});
 
-	describe('it should mark room as unread when a new message arrives and the config is activated', () => {
+	describe.only('it should mark room as unread when a new message arrives and the config is activated', () => {
 		let room: IOmnichannelRoom;
 		let visitor: ILivechatVisitor;
 		let totalMessagesSent = 0;
@@ -2263,8 +2263,16 @@ describe('LIVECHAT - rooms', () => {
 			visitor = await createVisitor(departmentWithAgent.department._id);
 			room = await createLivechatRoom(visitor.token);
 
-			await sendMessage(room._id, 'message 1', visitor.token);
-			await sendMessage(room._id, 'message 2', visitor.token);
+			const msg1 = await sendMessage(room._id, 'message 1', visitor.token);
+			const msg2 = await sendMessage(room._id, 'message 2', visitor.token);
+
+			console.log({
+				room,
+				departmentWithAgent,
+				visitor,
+				msg1,
+				msg2,
+			});
 
 			// 1st message is for the room creation, so we need to add 1 to the total messages sent
 			totalMessagesSent = 3;

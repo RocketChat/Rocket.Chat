@@ -248,11 +248,6 @@ class LivechatClass {
 	}
 
 	async closeRoom(params: CloseRoomParams): Promise<void> {
-		console.log(`CLOSE_ROOM`);
-		console.log(`CLOSE_ROOM`);
-		console.log(`CLOSE_ROOM`);
-		console.log(`CLOSE_ROOM`);
-
 		const { comment } = params;
 		const { room } = params;
 
@@ -343,7 +338,7 @@ class LivechatClass {
 			transcriptRequested: !!transcriptRequest,
 		};
 
-		await Message.saveSystemMessage('livechat-close', rid, 'promptTranscript', closeData.closedBy, message);
+		await Message.saveSystemMessage(message.t, rid, 'promptTranscript', closeData.closedBy, message);
 
 		process.nextTick(() => {
 			/**
@@ -1413,7 +1408,7 @@ class LivechatClass {
 			},
 		};
 
-		await Message.saveSystemMessage('livechat_transfer_history', room._id, '', { _id, username }, transferMessage);
+		await Message.saveSystemMessage(transferMessage.t, room._id, '', { _id, username }, transferMessage);
 	}
 
 	async saveGuest(guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string }, userId: string) {

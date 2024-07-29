@@ -64,6 +64,7 @@ const createDepartmentWithMethod = (initialAgents: { agentId: string; username: 
 				}),
 			})
 			.end((err: any, res: any) => {
+				console.log({ err, res });
 				if (err) {
 					return reject(err);
 				}
