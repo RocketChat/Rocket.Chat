@@ -9,11 +9,12 @@ import { useFormatDate } from '../../../hooks/useFormatDate';
 type AuditFiltersDisplayProps = {
 	users?: IUser['username'][];
 	room?: IRoom['name'];
-	startDate: Date;
-	endDate: Date;
+	startDate?: Date;
+	endDate?: Date;
+	filters?: string;
 };
 
-const AuditFiltersDisplay = ({ users, room, startDate, endDate }: AuditFiltersDisplayProps): ReactElement => {
+const AuditFiltersDisplay = ({ users, room, startDate, endDate, filters }: AuditFiltersDisplayProps): ReactElement => {
 	const formatDate = useFormatDate();
 	const t = useTranslation();
 
@@ -25,6 +26,7 @@ const AuditFiltersDisplay = ({ users, room, startDate, endDate }: AuditFiltersDi
 					{formatDate(startDate)} {t('Date_to')} {formatDate(endDate)} {/* TODO: fix this translation */}
 				</Box>
 			) : null}
+			{filters ? <Box withTruncatedText>{filters}</Box> : null}
 		</Box>
 	);
 };

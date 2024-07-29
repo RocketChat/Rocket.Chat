@@ -80,6 +80,7 @@ API.v1.addRoute(
 					rids: [room._id],
 					type: 'room_member_list',
 					room: room.name || room.fname,
+					filters: filter,
 				},
 			});
 

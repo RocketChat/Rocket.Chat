@@ -19,5 +19,6 @@ export interface IAuditLog extends IRocketChatRecord {
 		users?: IUser['username'][];
 		visitor?: ILivechatVisitor['_id'];
 		agent?: ILivechatAgent['_id'];
+		filters?: string;
 	};
 }
