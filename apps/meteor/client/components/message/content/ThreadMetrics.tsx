@@ -3,22 +3,18 @@ import {
 	MessageBlock,
 	MessageMetrics,
 	MessageMetricsReply,
-	MessageMetricsFollowing,
 	MessageMetricsItemIcon,
 	MessageMetricsItemLabel,
-	MessageMetricsItemAvatarRow,
-	Badge,
 } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
+import React from 'react';
 
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
-import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
-import { followStyle, anchor } from '../helpers/followSyle';
-import ThreadMetricAvatar from './ThreadMetricAvatar';
+import ThreadMetricsFollow from './ThreadMetricsFollow';
+import ThreadMetricsParticipants from './ThreadMetricsParticipants';
 
 type ThreadMetricsProps = {
 	unread: boolean;
@@ -32,22 +28,6 @@ type ThreadMetricsProps = {
 	following: boolean;
 };
 
-const getBadgeVariant = (unread: boolean, mention: boolean, all: boolean) => {
-	if (!unread) {
-		return false;
-	}
-
-	if (mention) {
-		return 'danger';
-	}
-
-	if (all) {
-		return 'warning';
-	}
-
-	return 'primary';
-};
-
 const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, following, lm }: ThreadMetricsProps): ReactElement => {
 	const { t } = useTranslation();
 
@@ -55,21 +35,12 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 
 	const goToThread = useGoToThread();
 
-	const dispatchToastMessage = useToastMessageDispatch();
-	const toggleFollowingThreadMutation = useToggleFollowingThreadMutation({
-		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
-		},
-	});
+	const { ref, borderBoxSize } = useResizeObserver();
 
-	const handleFollow = useCallback(() => {
-		toggleFollowingThreadMutation.mutate({ rid, tmid: mid, follow: !following });
-	}, [following, rid, mid, toggleFollowingThreadMutation]);
-
-	const unreadBadgeVariant = getBadgeVariant(unread, mention, all);
+	const isSmall = (borderBoxSize.inlineSize || Infinity) < 320;
 
 	return (
-		<MessageBlock className={followStyle}>
+		<MessageBlock ref={ref}>
 			<MessageMetrics>
 				<MessageMetricsReply
 					data-rid={rid}
@@ -78,32 +49,18 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 					primary={!!unread}
 					position='relative'
 					overflow='visible'
-					badge={unreadBadgeVariant ? <Badge variant={unreadBadgeVariant}>!</Badge> : undefined}
 				>
 					{t('View_thread')}
 				</MessageMetricsReply>
-				<MessageMetricsItem className={!following ? anchor : undefined} data-rid={rid}>
-					<MessageMetricsFollowing
-						title={following ? t('Following') : t('Not_following')}
-						name={following ? 'bell' : 'bell-off'}
-						onClick={handleFollow}
-					/>
-				</MessageMetricsItem>
-				{!!participants && (
-					<MessageMetricsItem title={t('Participants')}>
-						<MessageMetricsItemAvatarRow>
-							{participants.slice(0, 2).map((uid) => (
-								<ThreadMetricAvatar userId={uid} key={uid} />
-							))}
-						</MessageMetricsItemAvatarRow>
-						{participants.length - 2 > 0 && (
-							<MessageMetricsItemLabel>{t('__count__participants', { count: participants.length - 2 })}</MessageMetricsItemLabel>
-						)}
-					</MessageMetricsItem>
-				)}
+				<ThreadMetricsFollow unread={unread} mention={mention} all={all} mid={mid} rid={rid} following={following} />
+				{participants?.length > 0 && <ThreadMetricsParticipants participants={participants} />}
 				<MessageMetricsItem title={t('Last_message__date__', { date: format(lm) })}>
 					<MessageMetricsItemIcon name='thread' />
-					<MessageMetricsItemLabel>{t('__count__replies__date__', { count: counter, date: format(lm) })}</MessageMetricsItemLabel>
+					{isSmall ? (
+						<MessageMetricsItemLabel>{t('__count__replies', { count: counter })}</MessageMetricsItemLabel>
+					) : (
+						<MessageMetricsItemLabel>{t('__count__replies__date__', { count: counter, date: format(lm) })}</MessageMetricsItemLabel>
+					)}
 				</MessageMetricsItem>
 			</MessageMetrics>
 		</MessageBlock>
