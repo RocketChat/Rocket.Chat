@@ -30,6 +30,7 @@ services:
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
       traefik.http.routers.rocketchat.service: rocketchat
       traefik.http.routers.rocketchat.rule: PathPrefix(`/`)
+      traefik.http.middlewares.test-retry.retry.attempts: 4
 
   authorization-service:
     platform: linux/amd64
@@ -166,7 +167,7 @@ services:
     command:
       - --providers.docker=true
       - '--log.level=DEBUG' # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
-      - --entryPoints.name.transport.respondingTimeouts.idleTimeout=0
+      - --entryPoints.http.transport.respondingTimeouts.idleTimeout=0
     ports:
       - 3000:80
     volumes:
