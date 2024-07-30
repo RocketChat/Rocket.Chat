@@ -9,7 +9,7 @@ describe('Message Broadcast Tests', () => {
 	let messagesFindOneStub: sinon.SinonStub;
 	let broadcastStub: sinon.SinonStub;
 	let getMessageToBroadcast: any;
-	let broadcastMessageFromData: any;
+	let notifyOnMessageChange: any;
 	let memStub: sinon.SinonStub;
 
 	const sampleMessage: IMessage = {
@@ -49,18 +49,14 @@ describe('Message Broadcast Tests', () => {
 		broadcastStub = sinon.stub();
 		memStub = sinon.stub().callsFake((fn: any) => fn);
 
-		const proxyMock = proxyquire.noCallThru().load('../../../../../../server/modules/watchers/lib/messages', {
+		const proxyMock = proxyquire.noPreserveCache().load('../../../../../../app/lib/server/lib/notifyListener', {
 			'@rocket.chat/models': modelsStubs(),
 			'@rocket.chat/core-services': coreStubs(false),
 			'mem': memStub,
 		});
 
 		getMessageToBroadcast = proxyMock.getMessageToBroadcast;
-		broadcastMessageFromData = proxyMock.broadcastMessageFromData;
-	});
-
-	afterEach(() => {
-		sinon.reset();
+		notifyOnMessageChange = proxyMock.notifyOnMessageChange;
 	});
 
 	describe('getMessageToBroadcast', () => {
@@ -77,8 +73,15 @@ describe('Message Broadcast Tests', () => {
 
 		const testCases = [
 			{
-				description: 'should return undefined if message is hidden or imported',
+				description: 'should return undefined if message is hidden',
 				message: { ...sampleMessage, _hidden: true },
+				hideSystemMessages: [],
+				useRealName: false,
+				expectedResult: undefined,
+			},
+			{
+				description: 'should return undefined if message is imported',
+				message: { ...sampleMessage, imported: true },
 				hideSystemMessages: [],
 				useRealName: false,
 				expectedResult: undefined,
@@ -96,6 +99,26 @@ describe('Message Broadcast Tests', () => {
 				hideSystemMessages: [],
 				useRealName: true,
 				expectedResult: { ...sampleMessage, u: { ...sampleMessage.u, name: 'Real User' } },
+			},
+			{
+				description: 'should return the message with mentions real name if useRealName is true',
+				message: {
+					...sampleMessage,
+					mentions: [
+						{ _id: 'mention1', username: 'mention1', name: 'Mention 1' },
+						{ _id: 'mention2', username: 'mention2', name: 'Mention 2' },
+					],
+				},
+				hideSystemMessages: [],
+				useRealName: true,
+				expectedResult: {
+					...sampleMessage,
+					u: { ...sampleMessage.u, name: 'Real User' },
+					mentions: [
+						{ _id: 'mention1', username: 'mention1', name: 'Mention 1' },
+						{ _id: 'mention2', username: 'mention2', name: 'Mention 2' },
+					],
+				},
 			},
 			{
 				description: 'should return the message if Hide_System_Messages is undefined',
@@ -162,7 +185,12 @@ describe('Message Broadcast Tests', () => {
 				getSettingValueByIdStub.withArgs('UI_Use_Real_Name').resolves(useRealName);
 
 				if (useRealName) {
-					usersFindOneStub.resolves({ name: 'Real User' });
+					const realNames =
+						message.mentions && message.mentions.length > 0
+							? [message.u.name, ...message.mentions.map((mention) => mention.name)]
+							: [message.u.name];
+
+					realNames.forEach((user, index) => usersFindOneStub.onCall(index).resolves({ name: user }));
 				}
 
 				const result = await getMessageToBroadcast({ id: '123' });
@@ -172,14 +200,14 @@ describe('Message Broadcast Tests', () => {
 		});
 	});
 
-	describe('broadcastMessageFromData', () => {
+	describe('notifyOnMessageChange', () => {
 		const setupProxyMock = (dbWatchersDisabled: boolean) => {
-			const proxyMock = proxyquire.noCallThru().load('../../../../../../server/modules/watchers/lib/messages', {
+			const proxyMock = proxyquire.noCallThru().load('../../../../../../app/lib/server/lib/notifyListener', {
 				'@rocket.chat/models': modelsStubs(),
 				'@rocket.chat/core-services': coreStubs(dbWatchersDisabled),
 				'mem': memStub,
 			});
-			broadcastMessageFromData = proxyMock.broadcastMessageFromData;
+			notifyOnMessageChange = proxyMock.notifyOnMessageChange;
 		};
 
 		const testCases = [
@@ -187,25 +215,33 @@ describe('Message Broadcast Tests', () => {
 				description: 'should broadcast the message if dbWatchersDisabled is true',
 				dbWatchersDisabled: true,
 				expectBroadcast: true,
+				message: sampleMessage,
 			},
 			{
 				description: 'should not broadcast the message if dbWatchersDisabled is false',
 				dbWatchersDisabled: false,
 				expectBroadcast: false,
+				message: sampleMessage,
+			},
+			{
+				description: 'should not broadcast the message if there is no data attributes',
+				dbWatchersDisabled: true,
+				expectBroadcast: false,
+				message: null,
 			},
 		];
 
-		testCases.forEach(({ description, dbWatchersDisabled, expectBroadcast }) => {
+		testCases.forEach(({ description, dbWatchersDisabled, expectBroadcast, message }) => {
 			it(description, async () => {
 				setupProxyMock(dbWatchersDisabled);
-				messagesFindOneStub.resolves(sampleMessage);
+				messagesFindOneStub.resolves(message);
 				getSettingValueByIdStub.resolves([]);
 
-				await broadcastMessageFromData({ id: '123', data: sampleMessage });
+				await notifyOnMessageChange({ id: '123', data: message });
 
 				if (expectBroadcast) {
 					expect(broadcastStub.calledOnce).to.be.true;
-					expect(broadcastStub.calledOnceWith('watch.messages', { message: sampleMessage })).to.be.true;
+					expect(broadcastStub.calledOnceWith('watch.messages', { message })).to.be.true;
 				} else {
 					expect(broadcastStub.called).to.be.false;
 				}
