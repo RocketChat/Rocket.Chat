@@ -353,20 +353,22 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						</FieldRow>
 						{errors?.roles && <FieldError>{errors.roles.message}</FieldError>}
 					</Field>
-					<Field>
-						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
-							<FieldLabel htmlFor={joinDefaultChannelsId}>{t('Join_default_channels')}</FieldLabel>
-							<FieldRow>
-								<Controller
-									control={control}
-									name='joinDefaultChannels'
-									render={({ field: { ref, onChange, value } }) => (
-										<ToggleSwitch id={joinDefaultChannelsId} ref={ref} onChange={onChange} checked={value} />
-									)}
-								/>
-							</FieldRow>
-						</Box>
-					</Field>
+					{isNewUserPage && (
+						<Field>
+							<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1}>
+								<FieldLabel htmlFor={joinDefaultChannelsId}>{t('Join_default_channels')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										control={control}
+										name='joinDefaultChannels'
+										render={({ field: { ref, onChange, value } }) => (
+											<ToggleSwitch id={joinDefaultChannelsId} ref={ref} onChange={onChange} checked={value} />
+										)}
+									/>
+								</FieldRow>
+							</Box>
+						</Field>
+					)}
 					<Field>
 						<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} mbe={8}>
 							<FieldLabel htmlFor={sendWelcomeEmailId} disabled={!isSmtpEnabled}>
