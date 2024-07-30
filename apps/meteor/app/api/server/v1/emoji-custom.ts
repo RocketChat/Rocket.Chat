@@ -153,7 +153,7 @@ API.v1.addRoute(
 			const emojiData = {
 				name: fields.name,
 				_id: fields._id,
-				aliases: fields.alias,
+				aliases: fields.aliases,
 				extension: fields.extension,
 				previousName: fields.previousName,
 				previousExtension: fields.previousExtension,
