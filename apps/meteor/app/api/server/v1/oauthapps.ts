@@ -59,7 +59,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isOauthAppsInfoParams },
 	{
 		async get() {
-			const oauthApp = await OAuthApps.findOneAuthAppByIdOrClientId(this.queryParams);
+			const oauthApp = await OAuthApps.findOneAuthAppByIdOrClientId(this.queryParams, { projection: { clientId: 1, name: 1 } });
 
 			if (!oauthApp) {
 				return API.v1.failure('OAuth app not found.');
