@@ -290,14 +290,6 @@ jobs:
         if: failure()
         run: |
           docker compose -f docker-compose-ci.yml logs rocketchat
-          docker compose -f docker-compose-ci.yml  logs traefik
-
-      - name: Upload Traefik logs if E2E test failed
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: traefik-logs-${{ matrix.shard }}
-          path: /tmp/logs/traefik.log
 
       - name: Extract e2e:ee:coverage
         if: inputs.type == 'ui' && inputs.release == 'ee'

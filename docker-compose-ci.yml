@@ -166,7 +166,6 @@ services:
     image: traefik:v3.1
     command:
       - --providers.docker=true
-      - '--log.level=DEBUG' # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
       - '--serverstransport.maxidleconnsperhost=-1'
     ports:
       - 3000:80
