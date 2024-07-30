@@ -166,6 +166,7 @@ services:
     command:
       - --providers.docker=true
       - '--log.level=DEBUG' # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
+      - --entryPoints.web.transport.respondingTimeouts.idleTimeout=0
     ports:
       - 3000:80
     volumes:
