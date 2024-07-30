@@ -8,7 +8,7 @@ import { useIsRoomOverMacLimit } from '../../../../hooks/omnichannel/useIsRoomOv
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useChat } from '../../contexts/ChatContext';
-import { useRoom } from '../../contexts/RoomContext';
+import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useDropTarget } from './useDropTarget';
 
 export const useFileUploadDropTarget = (): readonly [
@@ -36,6 +36,7 @@ export const useFileUploadDropTarget = (): readonly [
 	);
 
 	const chat = useChat();
+	const subscription = useRoomSubscription();
 
 	const onFileDrop = useMutableCallback(async (files: File[]) => {
 		const { getMimeType } = await import('../../../../../app/utils/lib/mimeTypes');
@@ -78,12 +79,20 @@ export const useFileUploadDropTarget = (): readonly [
 			} as const;
 		}
 
+		if (!subscription) {
+			return {
+				enabled: false,
+				reason: t('error-not-allowed'),
+				...overlayProps,
+			} as const;
+		}
+
 		return {
 			enabled: true,
 			onFileDrop,
 			...overlayProps,
 		} as const;
-	}, [fileUploadAllowedForUser, fileUploadEnabled, isRoomOverMacLimit, onFileDrop, overlayProps, t]);
+	}, [fileUploadAllowedForUser, fileUploadEnabled, isRoomOverMacLimit, onFileDrop, overlayProps, subscription, t]);
 
 	return [triggerProps, allOverlayProps] as const;
 };
