@@ -3,7 +3,7 @@ import {
 	isDeleteOAuthAppParams,
 	isOauthAppsAddParams,
 	isOauthAppsGetParams,
-	isOauthInfoInfoParams,
+	isOauthAppsInfoParams,
 	isUpdateOAuthAppParams,
 } from '@rocket.chat/rest-typings';
 
@@ -56,7 +56,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'oauth-apps.info',
-	{ authRequired: true, validateParams: isOauthInfoInfoParams },
+	{ authRequired: true, validateParams: isOauthAppsInfoParams },
 	{
 		async get() {
 			const oauthApp = await OAuthApps.findOneAuthAppByIdOrClientId(this.queryParams);
