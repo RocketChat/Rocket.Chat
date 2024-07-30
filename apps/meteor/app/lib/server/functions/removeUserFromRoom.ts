@@ -27,7 +27,7 @@ export const removeUserFromRoom = async function (rid: string, user: IUser, opti
 		throw error;
 	}
 
-	await Room.beforeLeave(user, room);
+	await Room.beforeLeave(room);
 
 	// TODO: move before callbacks to service
 	await beforeLeaveRoomCallback.run(user, room);

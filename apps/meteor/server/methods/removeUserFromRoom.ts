@@ -57,7 +57,7 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 
 	const removedUser = await Users.findOneByUsernameIgnoringCase(data.username);
 
-	await Room.beforeUserRemoved(removedUser, fromUser, room);
+	await Room.beforeUserRemoved(room);
 
 	if (!canKickAnyUser) {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, {
