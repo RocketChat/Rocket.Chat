@@ -162,11 +162,11 @@ services:
     image: nats:2.6-alpine
 
   traefik:
-    image: traefik:v3.0
+    image: traefik:v3.1
     command:
       - --providers.docker=true
       - '--log.level=DEBUG' # DEBUG, PANIC, FATAL, ERROR, WARN, INFO
-      - --entryPoints.web.transport.respondingTimeouts.idleTimeout=0
+      - --entryPoints.name.transport.respondingTimeouts.idleTimeout=0
     ports:
       - 3000:80
     volumes:
