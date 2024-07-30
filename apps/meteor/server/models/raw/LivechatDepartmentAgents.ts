@@ -12,6 +12,7 @@ import type {
 	DeleteResult,
 	IndexDescription,
 	SortDirection,
+	AggregationCursor,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -394,6 +395,39 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		options?: FindOptions<ILivechatDepartmentAgents>,
 	): FindCursor<ILivechatDepartmentAgents> {
 		return this.find({ agentId: { $in: agentsIds }, departmentId }, options);
+	}
+
+	findDepartmentsOfAgent(agentId: string, enabled = false): AggregationCursor<ILivechatDepartmentAgents & { departmentName: string }> {
+		return this.col.aggregate<ILivechatDepartmentAgents & { departmentName: string }>([
+			{
+				$match: {
+					agentId,
+					...(enabled && { departmentEnabled: true }),
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_livechat_department',
+					localField: 'departmentId',
+					foreignField: '_id',
+					as: 'department',
+				},
+			},
+			{ $unwind: '$department' },
+			{
+				$project: {
+					_id: '$_id',
+					agentId: '$agentId',
+					departmentId: '$departmentId',
+					departmentName: '$department.name',
+					username: '$username',
+					count: '$count',
+					order: '$order',
+					_updatedAt: '$_udpatedAt',
+					departmentEnabled: '$departmentEnabled',
+				},
+			},
+		]);
 	}
 }
 

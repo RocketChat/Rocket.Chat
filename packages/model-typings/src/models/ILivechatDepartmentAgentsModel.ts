@@ -1,5 +1,5 @@
 import type { ILivechatDepartmentAgents, IUser } from '@rocket.chat/core-typings';
-import type { DeleteResult, FindCursor, FindOptions, Document, UpdateResult, Filter } from 'mongodb';
+import type { DeleteResult, FindCursor, FindOptions, Document, UpdateResult, Filter, AggregationCursor } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -97,4 +97,5 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 		departmentId: ILivechatDepartmentAgents['departmentId'],
 		options?: FindOptions<ILivechatDepartmentAgents>,
 	): FindCursor<ILivechatDepartmentAgents>;
+	findDepartmentsOfAgent(agentId: string, enabled?: boolean): AggregationCursor<ILivechatDepartmentAgents & { departmentName: string }>;
 }
