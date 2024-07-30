@@ -5,11 +5,10 @@ import { Messages, Rooms, Uploads, Users, ReadReceipts } from '@rocket.chat/mode
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { notifyOnRoomChangedById } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
 
 export const deleteMessageValidatingPermission = async (message: AtLeast<IMessage, '_id'>, userId: IUser['_id']): Promise<void> => {
 	if (!message?._id) {
@@ -93,7 +92,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	void notifyOnRoomChangedById(message.rid);
 
 	if (keepHistory || showDeletedStatus) {
-		void broadcastMessageFromData({
+		void notifyOnMessageChange({
 			id: message._id,
 		});
 	}

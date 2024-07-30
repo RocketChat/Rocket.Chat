@@ -1,4 +1,4 @@
-import type { IAdminUserTabs, LicenseInfo } from '@rocket.chat/core-typings';
+import type { LicenseInfo } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup, Callout, ContextualbarIcon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
@@ -38,6 +38,8 @@ export type UsersFilters = {
 	roles: OptionProp[];
 };
 
+export type AdminUserTab = 'all' | 'active' | 'deactivated' | 'pending';
+
 export type UsersTableSortingOptions = 'name' | 'username' | 'emails.address' | 'status' | 'active';
 
 const AdminUsersPage = (): ReactElement => {
@@ -64,7 +66,7 @@ const AdminUsersPage = (): ReactElement => {
 	const paginationData = usePagination();
 	const sortData = useSort<UsersTableSortingOptions>('name');
 
-	const [tab, setTab] = useState<IAdminUserTabs>('all');
+	const [tab, setTab] = useState<AdminUserTab>('all');
 	const [userFilters, setUserFilters] = useState<UsersFilters>({ text: '', roles: [] });
 
 	const searchTerm = useDebouncedValue(userFilters.text, 500);
@@ -86,9 +88,10 @@ const AdminUsersPage = (): ReactElement => {
 		filteredUsersQueryResult?.refetch();
 	};
 
-	const handleTabChangeAndSort = (tab: IAdminUserTabs) => {
+	const handleTabChange = (tab: AdminUserTab) => {
 		setTab(tab);
 
+		paginationData.setCurrent(0);
 		sortData.setSort(tab === 'pending' ? 'active' : 'name', 'asc');
 	};
 
@@ -142,13 +145,19 @@ const AdminUsersPage = (): ReactElement => {
 					</Callout>
 				)}
 				<Tabs>
-					<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChangeAndSort('all')}>
+					<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChange('all')}>
 						{t('All')}
 					</TabsItem>
-					<TabsItem selected={tab === 'pending'} onClick={() => handleTabChangeAndSort('pending')} display='flex' flexDirection='row'>
+					<TabsItem selected={tab === 'pending'} onClick={() => handleTabChange('pending')} display='flex' flexDirection='row'>
 						{`${t('Pending')} `}
 						{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' mis={8} />}
 						{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
+					</TabsItem>
+					<TabsItem selected={tab === 'active'} onClick={() => handleTabChange('active')}>
+						{t('Active')}
+					</TabsItem>
+					<TabsItem selected={tab === 'deactivated'} onClick={() => handleTabChange('deactivated')}>
+						{t('Deactivated')}
 					</TabsItem>
 				</Tabs>
 				<PageContent>
@@ -177,7 +186,7 @@ const AdminUsersPage = (): ReactElement => {
 							</ContextualbarTitle>
 							<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
 						</ContextualbarHeader>
-						{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} />}
+						{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} tab={tab} />}
 						{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
 						{!isRoutePrevented && context === 'new' && <AdminUserForm onReload={handleReload} />}
 						{!isRoutePrevented && context === 'invite' && <AdminInviteUsers />}
