@@ -21,7 +21,7 @@
 		"@types/chart.js": "^2.9.39",
 		"@types/js-yaml": "^4.0.8",
 		"ts-node": "^10.9.2",
-		"turbo": "^1.12.4"
+		"turbo": "^2.0.9"
 	},
 	"workspaces": [
 		"apps/*",
