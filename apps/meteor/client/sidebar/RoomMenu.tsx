@@ -1,6 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { Option, Menu } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey, Fields } from '@rocket.chat/ui-contexts';
 import {
 	useRouter,
@@ -171,19 +171,23 @@ const RoomMenu = ({
 		);
 	});
 
-	const handleToggleRead = useMutableCallback(async () => {
+	const handleToggleRead = useEffectEvent(async () => {
 		try {
 			if (isUnread) {
 				await readMessages({ rid, readThreads: true });
 				return;
 			}
-			await unreadMessages(undefined, rid);
+
 			if (subscription == null) {
 				return;
 			}
-			LegacyRoomManager.close(subscription.t + subscription.name);
 
-			router.navigate('/home');
+			if (roomOpen) {
+				router.navigate('/home');
+			}
+
+			await unreadMessages(undefined, rid);
+			LegacyRoomManager.close(subscription.t + subscription.name);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
