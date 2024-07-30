@@ -1,4 +1,4 @@
-import type { IOAuthAppsInfo, IUser } from '@rocket.chat/core-typings';
+import type { OAuthAppsInfo, IUser } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form } from '@rocket.chat/layout';
@@ -13,7 +13,7 @@ import CurrentUserDisplay from './CurrentUserDisplay';
 import Layout from './Layout';
 
 type AuthorizationFormPageProps = {
-	oauthApp: IOAuthAppsInfo;
+	oauthApp: OAuthAppsInfo;
 	redirectUri: string;
 	user: IUser;
 };

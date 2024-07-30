@@ -1,10 +1,7 @@
-export interface IOAuthAppsInfo {
+export interface IOAuthApps {
+	_id: string;
 	clientId: string;
 	name: string;
-}
-
-export interface IOAuthApps extends IOAuthAppsInfo {
-	_id: string;
 	active: boolean;
 	clientSecret: string;
 	redirectUri: string;
@@ -16,3 +13,5 @@ export interface IOAuthApps extends IOAuthAppsInfo {
 	_updatedAt: Date;
 	appId?: string;
 }
+
+export type OAuthAppsInfo = Pick<IOAuthApps, 'clientId' | 'name'>;
