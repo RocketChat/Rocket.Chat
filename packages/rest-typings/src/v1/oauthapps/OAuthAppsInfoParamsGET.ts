@@ -7,6 +7,7 @@ const oauthAppsInfoParamsSchema = {
 	properties: {
 		clientId: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['clientId'],

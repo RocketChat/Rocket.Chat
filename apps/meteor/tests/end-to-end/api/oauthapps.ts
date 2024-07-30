@@ -108,8 +108,8 @@ describe('[OAuthApps]', () => {
 	});
 
 	describe('[/oauth-apps.info]', () => {
-		it('should return a single oauthApp with only client id and name attributes', (done) => {
-			void request
+		it('should return a single oauthApp with only client id and name attributes', async () => {
+			await request
 				.get(api('oauth-apps.info'))
 				.query({ clientId: 'zapier' })
 				.set(credentials)
@@ -120,8 +120,7 @@ describe('[OAuthApps]', () => {
 					expect(res.body.oauthApp.clientId).to.be.equal('zapier');
 					expect(res.body.oauthApp).to.have.keys(['clientId', 'name']);
 					expect(Object.keys(res.body.oauthApp)).to.have.length(2);
-				})
-				.end(done);
+				});
 		});
 	});
 
