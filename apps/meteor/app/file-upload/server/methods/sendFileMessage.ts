@@ -31,12 +31,15 @@ function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtL
 }
 
 export const parseFileIntoMessageAttachments = async (
-	filearr: Partial<IUpload>[],
+	filearr: Partial<IUpload>[] | Partial<IUpload>,
 	roomId: string,
 	user: IUser,
 ): Promise<FilesAndAttachments> => {
 	const attachments: MessageAttachment[] = [];
 	const filesarray: FileProp[] = [];
+	if (!Array.isArray(filearr)) {
+		filearr = [filearr];
+	}
 	filearr.forEach(async (file: Partial<IUpload>) => {
 		validateFileRequiredFields(file);
 
@@ -160,7 +163,7 @@ export const sendFileMessage = async (
 		msgData,
 	}: {
 		roomId: string;
-		file: Partial<IUpload>[];
+		file: Partial<IUpload>[] | Partial<IUpload>;
 		msgData?: Record<string, any>;
 	},
 	{
