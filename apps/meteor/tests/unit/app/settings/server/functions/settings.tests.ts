@@ -467,7 +467,7 @@ describe('Settings', () => {
 		expect(Settings.upsertCalls).to.be.equal(0);
 	});
 
-	it('should not update cached setting if some prop in code changes', async () => {
+	it('should not update cached setting with value in code if some prop in code changes', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initialized();
