@@ -1,4 +1,4 @@
-import { Box, CheckBox, Icon, Margins, Option, SearchInput, Tile } from '@rocket.chat/fuselage';
+import { Box, CheckBox, Icon, Option, SearchInput, Tile } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
@@ -27,18 +27,16 @@ const MultiSelectCustomList = ({
 	return (
 		<Tile overflow='auto' pb={12} pi={0} elevation='2' w='full' bg='light' borderRadius={2}>
 			{searchBarText && (
-				<Option>
-					<Margins blockEnd={12} inline={12}>
-						<SearchInput
-							name='select-search'
-							placeholder={t(searchBarText as TranslationKey)}
-							autoComplete='off'
-							addon={<Icon name='magnifier' size='x20' />}
-							onChange={handleChange}
-							value={text}
-						/>
-					</Margins>
-				</Option>
+				<Box pi={12} mbe={12}>
+					<SearchInput
+						name='select-search'
+						placeholder={t(searchBarText as TranslationKey)}
+						autoComplete='off'
+						addon={<Icon name='magnifier' size='x20' />}
+						onChange={handleChange}
+						value={text}
+					/>
+				</Box>
 			)}
 			{filteredOptions.map((option) => (
 				<Fragment key={option.id}>
