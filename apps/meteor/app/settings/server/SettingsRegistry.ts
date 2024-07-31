@@ -166,7 +166,11 @@ export class SettingsRegistry {
 			})();
 
 			await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
-			this.store.set(settingStoredOverwritten!);
+
+			if (updatedProps.value) {
+				this.store.set(updatedProps as ISetting);
+			}
+
 			return;
 		}
 

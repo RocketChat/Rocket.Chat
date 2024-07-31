@@ -448,7 +448,7 @@ describe('Settings', () => {
 			.to.not.have.any.keys('section');
 	});
 
-	it('should ignore setting object from code if only value changes and setting already stored', async () => {
+	it('should ignore setting object from code if only value changes in code and setting already stored', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initialized();
@@ -465,6 +465,27 @@ describe('Settings', () => {
 
 		expect(Settings.insertCalls).to.be.equal(0);
 		expect(Settings.upsertCalls).to.be.equal(0);
+	});
+
+	it('should not update cached setting if some prop in code changes', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
+
+		expect(Settings.insertCalls).to.be.equal(1);
+		Settings.insertCalls = 0;
+
+		const settingFromCodeFaked = { ...testSetting, value: Date.now().toString(), enterprise: true, invalidValue: '' };
+
+		await settingsRegistry.add(settingFromCodeFaked._id, settingFromCodeFaked.value, settingFromCodeFaked);
+
+		expect(Settings.insertCalls).to.be.equal(0);
+		expect(Settings.upsertCalls).to.be.equal(1);
+
+		expect(settings.get(testSetting._id)).to.be.equal(testSetting.value);
 	});
 
 	it('should ignore value from environment if setting is already stored', async () => {
