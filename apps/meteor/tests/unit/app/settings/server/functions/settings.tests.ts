@@ -467,7 +467,7 @@ describe('Settings', () => {
 		expect(Settings.upsertCalls).to.be.equal(0);
 	});
 
-	it('should not update cached setting with value in code if some prop in code changes', async () => {
+	it('should not update (reset) cached setting with value in code if some prop in code changes', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initialized();
@@ -511,7 +511,7 @@ describe('Settings', () => {
 		expect(settings.get(testSetting._id)).to.be.equal(process.env[`OVERWRITE_SETTING_${testSetting._id}`]);
 	});
 
-	it('should ignore value from environment if setting is already stored', async () => {
+	it('should ignore default value from environment if setting is already stored', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initialized();
@@ -526,7 +526,7 @@ describe('Settings', () => {
 		expect(Settings.findOne({ _id: testSetting._id }).value).to.be.equal(testSetting.value);
 	});
 
-	it('should update setting cache synchronously if overwrite is available in enviornment', async () => {
+	it('should update setting cache synchronously if overwrite is available in environnment', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initialized();
@@ -541,7 +541,7 @@ describe('Settings', () => {
 		expect(settings.get(testSetting._id)).to.be.equal(process.env[`OVERWRITE_SETTING_${testSetting._id}`]);
 	});
 
-	it('should update cached value with OVERWRITE_SETTING value even if both with-prefixed and without-prefixed variables exist', async () => {
+	it('should update cached value with OVERWRITE_SETTING value even if both overwrite and default overwrite variables both exist', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initialized();
