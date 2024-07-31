@@ -71,15 +71,7 @@ export const useFileUploadDropTarget = (): readonly [
 			} as const;
 		}
 
-		if (!fileUploadAllowedForUser) {
-			return {
-				enabled: false,
-				reason: t('error-not-allowed'),
-				...overlayProps,
-			} as const;
-		}
-
-		if (!subscription) {
+		if (!fileUploadAllowedForUser || !subscription) {
 			return {
 				enabled: false,
 				reason: t('error-not-allowed'),
