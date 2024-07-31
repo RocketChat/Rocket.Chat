@@ -135,6 +135,12 @@ const createStreamManager = () => {
 
 	const streams = new Map<string, StreamMapValue>();
 
+	Accounts.onLogout(() => {
+		streams.forEach((stream) => {
+			stream.unsubList.forEach((stop) => stop());
+		});
+	});
+
 	Meteor.connection._stream.on('message', (rawMsg: string) => {
 		const msg = DDPCommon.parseDDP(rawMsg);
 		if (!isChangedCollectionPayload(msg)) {
@@ -166,7 +172,6 @@ const createStreamManager = () => {
 
 		const stop = (): void => {
 			streamProxy.off(eventLiteral, proxyCallback);
-
 			// If someone is still listening, don't unsubscribe
 			if (streamProxy.has(eventLiteral)) {
 				return;
@@ -179,11 +184,15 @@ const createStreamManager = () => {
 		};
 
 		const stream = streams.get(eventLiteral) || createNewMeteorStream(name, key, args);
+
 		stream.unsubList.add(stop);
 		if (!streams.has(eventLiteral)) {
 			streams.set(eventLiteral, stream);
 		}
-		stream.error(() => stop());
+
+		stream.error(() => {
+			stream.unsubList.forEach((stop) => stop());
+		});
 
 		return {
 			id: '',
