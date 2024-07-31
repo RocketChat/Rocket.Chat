@@ -423,7 +423,6 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 					username: '$username',
 					count: '$count',
 					order: '$order',
-					_updatedAt: '$_udpatedAt',
 					departmentEnabled: '$departmentEnabled',
 				},
 			},
