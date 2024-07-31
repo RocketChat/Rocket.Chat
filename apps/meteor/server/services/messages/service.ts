@@ -142,7 +142,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		// await this.joinDiscussionOnMessage({ message, room, user });
 
 		if ((isMessageFromMatrixFederation(message) || isRoomFederated(room)) && isFederationEnabled() && !isFederationReady()) {
-			throw new FederationMatrixInvalidConfigurationError('Unable to react to message');
+			throw new FederationMatrixInvalidConfigurationError('Unable to send message');
 		}
 
 		message = await mentionServer.execute(message);

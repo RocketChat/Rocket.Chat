@@ -52,7 +52,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 	// 	return;
 	// }
 
-	await Message.beforeReacted(message, room, user, reaction);
+	await Message.beforeReacted(message, room);
 
 	const userAlreadyReacted =
 		message.reactions &&
