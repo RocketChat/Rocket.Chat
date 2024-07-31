@@ -1,7 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { isUserFederated, type IUser } from '@rocket.chat/core-typings';
+import { type IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Users, MatrixBridgedUser } from '@rocket.chat/models';
+import { Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -46,19 +46,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-action-not-allowed', 'Leaving the app without admins is not allowed', {
 				method: 'deleteUser',
 				action: 'Remove_last_admin',
-			});
-		}
-
-		if (isUserFederated(user)) {
-			throw new Meteor.Error('error-not-allowed', 'Deleting federated, external user is not allowed', {
-				method: 'deleteUser',
-			});
-		}
-
-		const remoteUser = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
-		if (remoteUser) {
-			throw new Meteor.Error('error-not-allowed', 'User participated in federation, this user can only be deactivated permanently', {
-				method: 'deleteUser',
 			});
 		}
 
