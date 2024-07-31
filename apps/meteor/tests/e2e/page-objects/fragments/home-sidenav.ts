@@ -10,7 +10,7 @@ export class HomeSidenav {
 	}
 
 	get advancedSettingsAccordion(): Locator {
-		return this.page.getByRole('dialog').getByRole('button', { name: 'Advanced settings' });
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Advanced settings', exact: true });
 	}
 
 	get checkboxPrivateChannel(): Locator {

@@ -232,7 +232,6 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 						</FieldDescription>
 					</Field>
 				</FieldGroup>
-
 				<Accordion>
 					<AccordionItem title={t('Advanced_settings')}>
 						<FieldGroup>

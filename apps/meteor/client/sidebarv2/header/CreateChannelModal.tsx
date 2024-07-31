@@ -279,7 +279,6 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 						</FieldHint>
 					</Field>
 				</FieldGroup>
-
 				<Accordion>
 					<AccordionItem title={t('Advanced_settings')}>
 						<FieldGroup>

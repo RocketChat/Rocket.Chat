@@ -234,7 +234,6 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 						</FieldDescription>
 					</Field>
 				</FieldGroup>
-
 				<Accordion>
 					<AccordionItem title={t('Advanced_settings')}>
 						<FieldGroup>
