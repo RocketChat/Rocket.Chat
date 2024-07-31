@@ -34,6 +34,10 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		if (user.services?.totp?.enabled) {
+			throw new Meteor.Error('error-2fa-already-enabled');
+		}
+
 		const secret = TOTP.generateSecret();
 
 		await Users.disable2FAAndSetTempSecretByUserId(userId, secret.base32);

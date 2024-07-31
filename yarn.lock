@@ -8968,10 +8968,10 @@ __metadata:
     "@rocket.chat/icons": "*"
     "@rocket.chat/prettier-config": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-avatar": 4.0.0
-    "@rocket.chat/ui-contexts": 8.0.0
-    "@rocket.chat/ui-kit": 0.35.0
-    "@rocket.chat/ui-video-conf": 8.0.0
+    "@rocket.chat/ui-avatar": 5.0.0-rc.0
+    "@rocket.chat/ui-contexts": 9.0.0-rc.0
+    "@rocket.chat/ui-kit": 0.36.0-rc.0
+    "@rocket.chat/ui-video-conf": 9.0.0-rc.0
     "@tanstack/react-query": "*"
     react: "*"
     react-dom: "*"
@@ -9060,8 +9060,8 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "*"
     "@rocket.chat/message-parser": 0.31.29
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-client": 8.0.0
-    "@rocket.chat/ui-contexts": 8.0.0
+    "@rocket.chat/ui-client": 9.0.0-rc.0
+    "@rocket.chat/ui-contexts": 9.0.0-rc.0
     katex: "*"
     react: "*"
   languageName: unknown
@@ -9792,6 +9792,7 @@ __metadata:
     "@rocket.chat/tools": "workspace:^"
     "@types/jest": ~29.5.7
     "@types/node": ^14.18.63
+    date-fns: ^2.28.0
     ejson: ^2.2.3
     emoji-toolkit: ^7.0.1
     eslint: ~8.45.0
@@ -10280,7 +10281,7 @@ __metadata:
     typescript: ~5.3.3
   peerDependencies:
     "@rocket.chat/fuselage": "*"
-    "@rocket.chat/ui-contexts": 8.0.0
+    "@rocket.chat/ui-contexts": 9.0.0-rc.0
     react: ~17.0.2
   languageName: unknown
   linkType: soft
@@ -10333,7 +10334,7 @@ __metadata:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/ui-contexts": 8.0.0
+    "@rocket.chat/ui-contexts": 9.0.0-rc.0
     react: ~17.0.2
   languageName: unknown
   linkType: soft
@@ -10509,8 +10510,8 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-avatar": 4.0.0
-    "@rocket.chat/ui-contexts": 8.0.0
+    "@rocket.chat/ui-avatar": 5.0.0-rc.0
+    "@rocket.chat/ui-contexts": 9.0.0-rc.0
     react: ^17.0.2
     react-dom: ^17.0.2
   languageName: unknown
@@ -10599,8 +10600,8 @@ __metadata:
     typescript: ~5.3.3
   peerDependencies:
     "@rocket.chat/layout": "*"
-    "@rocket.chat/tools": 0.2.1
-    "@rocket.chat/ui-contexts": 8.0.0
+    "@rocket.chat/tools": 0.2.2-rc.0
+    "@rocket.chat/ui-contexts": 9.0.0-rc.0
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"

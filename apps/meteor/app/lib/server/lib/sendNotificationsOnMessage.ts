@@ -266,7 +266,7 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 		return;
 	}
 
-	const sender = await roomCoordinator.getRoomDirectives(room.t).getMsgSender(message.u._id);
+	const sender = await roomCoordinator.getRoomDirectives(room.t).getMsgSender(message);
 	if (!sender) {
 		return message;
 	}
