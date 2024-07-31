@@ -50,7 +50,7 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 		options?: FindOptions<ILivechatDepartmentAgents>,
 	): Promise<ILivechatDepartmentAgents | null>;
 	findOneByAgentIdAndDepartmentId(agentId: string, departmentId: string): Promise<ILivechatDepartmentAgents | null>;
-	saveAgent(agent: Omit<ILivechatDepartmentAgents, '_id'>): Promise<UpdateResult>;
+	saveAgent(agent: Omit<ILivechatDepartmentAgents, '_id' | '_updatedAt'>): Promise<UpdateResult>;
 	removeByAgentId(agentId: string): Promise<DeleteResult>;
 	removeByDepartmentIdAndAgentId(departmentId: string, agentId: string): Promise<void>;
 	getNextAgentForDepartment(
