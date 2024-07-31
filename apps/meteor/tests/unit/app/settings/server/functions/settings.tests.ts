@@ -488,6 +488,29 @@ describe('Settings', () => {
 		expect(settings.get(testSetting._id)).to.be.equal(testSetting.value);
 	});
 
+	it('should update cached setting with value from environment if some prop including value in code changes', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
+
+		expect(Settings.insertCalls).to.be.equal(1);
+		Settings.insertCalls = 0;
+
+		const settingFromCodeFaked = { ...testSetting, value: Date.now().toString(), enterprise: true, invalidValue: '' };
+
+		process.env[`OVERWRITE_SETTING_${testSetting._id}`] = Date.now().toString();
+
+		await settingsRegistry.add(settingFromCodeFaked._id, settingFromCodeFaked.value, settingFromCodeFaked);
+
+		expect(Settings.insertCalls).to.be.equal(0);
+		expect(Settings.upsertCalls).to.be.equal(1);
+
+		expect(settings.get(testSetting._id)).to.be.equal(process.env[`OVERWRITE_SETTING_${testSetting._id}`]);
+	});
+
 	it('should ignore value from environment if setting is already stored', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
@@ -509,6 +532,8 @@ describe('Settings', () => {
 		settings.initialized();
 		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
+		settings.set(testSetting);
+
 		process.env[`OVERWRITE_SETTING_${testSetting._id}`] = Date.now().toString();
 
 		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
@@ -527,7 +552,8 @@ describe('Settings', () => {
 
 		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
 
-		expect(Settings.findOne({ _id: testSetting._id }).value).to.be.equal(process.env[`OVERWRITE_SETTING_${testSetting._id}`]);
+		expect(Settings.insertCalls).to.be.equal(1);
+		expect(settings.get(testSetting._id)).to.be.equal(process.env[`OVERWRITE_SETTING_${testSetting._id}`]);
 	});
 
 	it('should call `settings.get` callback on setting added', async () => {
