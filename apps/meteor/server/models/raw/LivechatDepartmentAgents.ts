@@ -112,34 +112,6 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.findPaginated(query, options);
 	}
 
-	findActiveDepartmentsByAgentId(agentId: string): FindCursor<ILivechatDepartmentAgents>;
-
-	findActiveDepartmentsByAgentId(agentId: string, options: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;
-
-	findActiveDepartmentsByAgentId<P extends Document>(
-		agentId: string,
-		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): FindCursor<P>;
-
-	findActiveDepartmentsByAgentId<P extends Document>(
-		agentId: string,
-		options?:
-			| undefined
-			| FindOptions<ILivechatDepartmentAgents>
-			| FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): FindCursor<ILivechatDepartmentAgents> | FindCursor<P> {
-		const query = {
-			agentId,
-			departmentEnabled: true,
-		};
-
-		if (options === undefined) {
-			return this.find(query);
-		}
-
-		return this.find(query, options);
-	}
-
 	findByDepartmentIds(departmentIds: string[], options = {}): FindCursor<ILivechatDepartmentAgents> {
 		return this.find({ departmentId: { $in: departmentIds } }, options);
 	}
