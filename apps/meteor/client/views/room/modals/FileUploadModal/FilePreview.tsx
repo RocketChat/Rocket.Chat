@@ -8,7 +8,7 @@ import MediaPreview from './MediaPreview';
 export enum FilePreviewType {
 	IMAGE = 'image',
 	AUDIO = 'audio',
-	VIDEO = 'video',
+	// VIDEO = 'video', // currently showing it in simple generic view
 }
 
 const getFileType = (fileType: File['type']): FilePreviewType | undefined => {
@@ -54,7 +54,7 @@ const FilePreview = ({ file, index, onRemove }: FilePreviewProps): ReactElement 
 	};
 
 	if (shouldShowMediaPreview(file, fileType)) {
-		return <MediaPreview file={file} fileType={fileType as FilePreviewType} />;
+		return <MediaPreview file={file} fileType={fileType as FilePreviewType} onRemove={handleRemove} index={index} />;
 	}
 
 	return <GenericPreview file={file} onRemove={handleRemove} index={index} />;
