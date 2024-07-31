@@ -5,20 +5,22 @@
     "main": "index",
     "typings": "index",
     "scripts": {
-        "start": "gulp",
-        "test": "concurrently \"npm:test:node\" \"npm:test:deno\"",
-        "lint:eslint": "eslint .",
-        "lint:deno": "deno lint --ignore=deno-runtime/.deno deno-runtime/",
-        "lint": "concurrently \"npm:lint:eslint\" \"npm:lint:deno\"",
+        "start": "run-s .:build:clean .:build:watch",
+        "test": "run-p .:test:node .:test:deno",
+        ".:test:node": "NODE_ENV=test ts-node ./tests/runner.ts",
+        ".:test:deno": "cd deno-runtime && deno task test",
+        "lint": "run-p .:lint:eslint .:lint:deno",
+        ".:lint:eslint": "eslint .",
+        ".:lint:deno": "deno lint --ignore=deno-runtime/.deno deno-runtime/",
         "fix-lint": "eslint . --fix",
-        "bundle": "gulp bundle",
-        "compile": "gulp compile",
-        "go-publish": "gulp publish",
-        "go-publish-beta": "gulp publish-beta",
-        "go-publish-alpha": "gulp publish-alpha",
-        "test:node": "NODE_ENV=test ts-node ./tests/runner.ts",
-        "test:deno": "cd deno-runtime && deno task test",
+        "build": "run-s .:build:clean .:build:default",
+        ".:build:clean": "rimraf client definition server",
+        ".:build:default": "tsc -p tsconfig.json",
+        ".:build:watch": "yarn .:build:default -- --watch",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "bundle": "node scripts/bundle.js",
         "gen-doc": "typedoc",
+        "prepack": "yarn bundle",
         "postinstall": "node scripts/postinstall.js"
     },
     "repository": {
@@ -38,6 +40,9 @@
         "scripts/**",
         "server/**"
     ],
+    "publishConfig": {
+        "access": "public"
+    },
     "author": {
         "name": "Rocket.Chat",
         "url": "https://rocket.chat/"
@@ -62,8 +67,8 @@
     },
     "homepage": "https://github.com/RocketChat/Rocket.Chat.Apps-engine#readme",
     "devDependencies": {
-        "@rocket.chat/eslint-config": "~0.5.2",
-        "@rocket.chat/ui-kit": "^0.31.22",
+        "@rocket.chat/eslint-config": "workspace:~",
+        "@rocket.chat/ui-kit": "workspace:~",
         "@types/adm-zip": "^0.5.0",
         "@types/debug": "^4.1.12",
         "@types/lodash.clonedeep": "^4.5.7",
@@ -76,19 +81,11 @@
         "@typescript-eslint/parser": "~5.60.1",
         "alsatian": "^2.4.0",
         "browserify": "^16.5.2",
-        "concurrently": "^8.2.1",
-        "del": "^3.0.0",
         "eslint": "~8.45.0",
-        "gulp": "^4.0.2",
-        "gulp-bump": "^3.2.0",
-        "gulp-shell": "^0.6.5",
-        "gulp-sourcemaps": "^2.6.5",
-        "gulp-typescript": "^4.0.2",
-        "http-server": "^0.12.3",
-        "merge2": "^1.4.1",
         "nedb": "^1.8.0",
+        "npm-run-all": "^4.1.5",
         "nyc": "^14.1.1",
-        "pre-push": "^0.1.2",
+        "rimraf": "^6.0.1",
         "tap-bark": "^1.0.0",
         "ts-node": "^6.2.0",
         "typedoc": "~0.24.8",
@@ -110,7 +107,7 @@
         "uuid": "~8.3.2"
     },
     "peerDependencies": {
-        "@rocket.chat/ui-kit": "next"
+        "@rocket.chat/ui-kit": "workspace:^"
     },
     "nyc": {
         "include": [
@@ -127,12 +124,7 @@
         ],
         "all": true
     },
-    "pre-push": [
-        "lint",
-        "compile",
-        "test"
-    ],
     "volta": {
-        "node": "14.21.3"
+        "extends": "../../package.json"
     }
 }

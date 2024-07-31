@@ -1,5 +1,4 @@
 {
-    "compileOnSave": false,
     "compilerOptions": {
         "sourceMap": true,
         "target": "es6",
@@ -13,22 +12,10 @@
         "moduleResolution": "node",
         "types": ["node"],
         "lib": ["es2017", "dom"],
+        "rootDir": "./src",
         "outDir": ".",
         "skipLibCheck": true
     },
-    "exclude": [
-        "node_modules",
-        "server",
-        "client",
-        "definition",
-        "examples",
-        "deno-runtime"
-    ],
-    "include": [
-        "src",
-        "tests"
-    ],
-    "atom": {
-        "rewriteTsconfig": false
-    }
+    "exclude": ["deno-runtime"],
+    "include": ["./src/**/*"]
 }

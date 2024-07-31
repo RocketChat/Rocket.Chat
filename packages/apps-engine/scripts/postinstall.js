@@ -1,3 +1,8 @@
+// This file needs to be run everytime the apps-engine is installed
+// which includes "production" installations (meant only to be used by apps)
+// Since `ts-node` is a dev dependency and will not be installed by NPM on app
+// projects, we need a JS file for this
+
 const childProcess = require('child_process');
 const path = require('path');
 
