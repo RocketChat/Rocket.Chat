@@ -68,6 +68,14 @@ export class HomeSidenav {
 		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
 	}
 
+	async selectMarkAsUnread(name: string) {
+		const sidebarItem = this.getSidebarItemByName(name);
+		await sidebarItem.focus();
+		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
+		await this.page.getByRole('option', { name: 'Mark Unread' }).click();
+		return sidebarItem;
+	}
+
 	async selectPriority(name: string, priority: string) {
 		const sidebarItem = this.getSidebarItemByName(name);
 		await sidebarItem.focus();
