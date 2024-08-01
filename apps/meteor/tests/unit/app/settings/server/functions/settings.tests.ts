@@ -468,24 +468,33 @@ describe('Settings', () => {
 	});
 
 	it('should not update (reset) cached setting with value in code if some prop in code changes', async () => {
+		Settings.setDelay(1000);
 		const settings = new CachedSettings();
+		process.env[`OVERWRITE_SETTING_${testSetting._id}`] = 'false';
+		const storedSetting = { ...testSetting, value: true, packageValue: true };
+		settings.set(storedSetting);
+
 		Settings.settings = settings;
+
 		settings.initialized();
+
+		expect(settings.get(storedSetting._id)).to.be.equal(true);
+
 		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
 
-		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
-
-		expect(Settings.insertCalls).to.be.equal(1);
-		Settings.insertCalls = 0;
-
-		const settingFromCodeFaked = { ...testSetting, value: Date.now().toString(), enterprise: true, invalidValue: '' };
+		const settingFromCodeFaked = {
+			...storedSetting,
+			value: true,
+			enterprise: true,
+			invalidValue: '',
+		};
 
 		await settingsRegistry.add(settingFromCodeFaked._id, settingFromCodeFaked.value, settingFromCodeFaked);
 
 		expect(Settings.insertCalls).to.be.equal(0);
 		expect(Settings.upsertCalls).to.be.equal(1);
 
-		expect(settings.get(testSetting._id)).to.be.equal(testSetting.value);
+		expect(settings.get(storedSetting._id)).to.be.equal(false);
 	});
 
 	it('should update cached setting with value from environment if some prop including value in code changes', async () => {
