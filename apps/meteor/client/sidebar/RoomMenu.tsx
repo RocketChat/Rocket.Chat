@@ -182,12 +182,13 @@ const RoomMenu = ({
 				return;
 			}
 
+			LegacyRoomManager.close(subscription.t + subscription.name);
+
 			if (roomOpen) {
 				router.navigate('/home');
 			}
 
 			await unreadMessages(undefined, rid);
-			LegacyRoomManager.close(subscription.t + subscription.name);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
