@@ -57,7 +57,9 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 		await poLiveChat.btnSendMessageToOnlineAgent.click();
 	});
 
-	test('expect chat to be auto transferred to next agent within 5 seconds of no reply from first agent', async () => {
+	// Skipping this due https://github.com/RocketChat/Rocket.Chat/pull/32186
+	// TODO: Find a better way to test the cron jobs
+	test.skip('expect chat to be auto transferred to next agent within 5 seconds of no reply from first agent', async () => {
 		await agent1.poHomeChannel.sidenav.openChat(newVisitor.name);
 
 		await agent2.poHomeChannel.sidenav.switchOmnichannelStatus('online');
