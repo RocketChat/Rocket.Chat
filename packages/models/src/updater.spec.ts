@@ -74,6 +74,33 @@ test('updater $set operations', async () => {
 		{ $set: { a: { b: 'set' } } },
 	);
 });
+test('updater $unset operations', async () => {
+	const updateOne = jest.fn();
+
+	const updater = new UpdaterImpl<{
+		_id: string;
+		t: 'l';
+		a: {
+			b: string;
+		};
+		c?: number;
+	}>({
+		updateOne,
+	} as any);
+
+	updater.unset('c');
+
+	await updater.persist({
+		_id: 'test',
+	});
+
+	expect(updateOne).toBeCalledWith(
+		{
+			_id: 'test',
+		},
+		{ $unset: { c: 1 } },
+	);
+});
 
 test('updater inc multiple operations', async () => {
 	const updateOne = jest.fn();
