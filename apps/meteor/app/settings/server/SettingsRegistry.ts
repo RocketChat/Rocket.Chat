@@ -139,6 +139,8 @@ export class SettingsRegistry {
 		const settingFromCodeOverwritten = overwriteSetting(settingFromCode);
 
 		const settingStored = this.store.getSetting(_id);
+
+		console.log('settingStored', settingStored);
 		const settingStoredOverwritten = settingStored && overwriteSetting(settingStored);
 
 		try {
@@ -166,8 +168,7 @@ export class SettingsRegistry {
 			})();
 
 			await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
-
-			if (updatedProps.value) {
+			if ('value' in updatedProps) {
 				this.store.set(updatedProps as ISetting);
 			}
 
