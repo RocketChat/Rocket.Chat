@@ -40,6 +40,9 @@ test('updater typings', () => {
 	updater.unset('d');
 
 	updater.unset('d.e');
+	// @ts-expect-error
+	updater.inc('d', 1);
+	updater.inc('c', 1);
 });
 
 test('updater $set operations', async () => {
@@ -69,6 +72,35 @@ test('updater $set operations', async () => {
 			_id: 'test',
 		},
 		{ $set: { a: { b: 'set' } } },
+	);
+});
+
+test('updater inc multiple operations', async () => {
+	const updateOne = jest.fn();
+
+	const updater = new UpdaterImpl<{
+		_id: string;
+		t: 'l';
+		a: {
+			b: string;
+		};
+		c?: number;
+	}>({
+		updateOne,
+	} as any);
+
+	updater.inc('c', 1);
+	updater.inc('c', 1);
+
+	await updater.persist({
+		_id: 'test',
+	});
+
+	expect(updateOne).toBeCalledWith(
+		{
+			_id: 'test',
+		},
+		{ $inc: { c: 2 } },
 	);
 });
 

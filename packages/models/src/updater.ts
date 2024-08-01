@@ -5,8 +5,7 @@ import type { UpdateFilter, Join, NestedPaths, PropertyType, ArrayElement, Neste
 export interface Updater<T extends { _id: string }> {
 	set<P extends SetProps<T>, K extends keyof P>(key: K, value: P[K]): Updater<T>;
 	unset<K extends keyof UnsetProps<T>>(key: K): Updater<T>;
-	// inc<K extends keyof T>(key: K, value: number): Updater<T>;
-	// dec<K extends keyof T>(key: K, value: number): Updater<T>;
+	inc<K extends keyof IncProps<T>>(key: K, value: number): Updater<T>;
 	persist(query: Filter<T>): Promise<void>;
 }
 
@@ -22,14 +21,16 @@ type SetProps<TSchema extends { _id: string }> = Readonly<
 	}
 >;
 
-type GetNullables<T> = {
-	[Key in keyof T]: undefined extends T[Key] ? 1 : never;
+type GetType<T, K> = {
+	[Key in keyof T]: K extends T[Key] ? 1 : never;
 };
 
 type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
 
 // only allow optional properties
-type UnsetProps<TSchema extends { _id: string }> = OmitNever<GetNullables<SetProps<TSchema>>>;
+type UnsetProps<TSchema extends { _id: string }> = OmitNever<GetType<SetProps<TSchema>, undefined>>;
+
+type IncProps<TSchema extends { _id: string }> = OmitNever<GetType<SetProps<TSchema>, number>>;
 
 type Keys<T extends { _id: string }> = keyof SetProps<T>;
 
@@ -38,9 +39,7 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 
 	private _unset: Set<keyof UnsetProps<T>> | undefined;
 
-	private _inc: Map<keyof T, number> | undefined;
-
-	private _dec: Map<keyof T, number> | undefined;
+	private _inc: Map<keyof IncProps<T>, number> | undefined;
 
 	private dirty = false;
 
@@ -62,15 +61,11 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 		console.log(key);
 	}
 
-	inc<K extends keyof T>(key: K, value: number): Updater<T> {
-		this._inc = this._inc ?? new Map<keyof T, number>();
-		this._inc.set(key, value);
-		return this;
-	}
+	inc<K extends keyof IncProps<T>>(key: K, value: number): Updater<T> {
+		this._inc = this._inc ?? new Map<keyof IncProps<T>, number>();
 
-	dec<K extends keyof T>(key: K, value: number): Updater<T> {
-		this._dec = this._dec ?? new Map<keyof T, number>();
-		this._dec.set(key, value);
+		const prev = this._inc.get(key) ?? 0;
+		this._inc.set(key, prev + value);
 		return this;
 	}
 
@@ -84,7 +79,6 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 			...(this._set && { $set: Object.fromEntries(this._set) }),
 			...(this._unset && { $unset: Object.fromEntries([...this._unset.values()].map((k) => [k, 1])) }),
 			...(this._inc && { $inc: Object.fromEntries(this._inc) }),
-			...(this._dec && { $dec: Object.fromEntries(this._dec) }),
 		} as unknown as UpdateFilter<T>);
 	}
 }
