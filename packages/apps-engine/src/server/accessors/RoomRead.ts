@@ -1,8 +1,9 @@
 import type { IRoomRead } from '../../definition/accessors';
-import type { IMessage } from '../../definition/messages';
+import type { IMessageRaw } from '../../definition/messages';
 import type { IRoom } from '../../definition/rooms';
 import type { IUser } from '../../definition/users';
 import type { RoomBridge } from '../bridges';
+import { type GetMessagesOptions, GetMessagesSortableFields } from '../bridges/RoomBridge';
 
 export class RoomRead implements IRoomRead {
     constructor(private roomBridge: RoomBridge, private appId: string) {}
@@ -23,8 +24,18 @@ export class RoomRead implements IRoomRead {
         return this.roomBridge.doGetCreatorByName(name, this.appId);
     }
 
-    public getMessages(roomId: string): Promise<IterableIterator<IMessage>> {
-        throw new Error('Method not implemented.');
+    public getMessages(roomId: string, options: Partial<GetMessagesOptions> = {}): Promise<IMessageRaw[]> {
+        if (typeof options.limit !== 'undefined' && (!Number.isFinite(options.limit) || options.limit > 100)) {
+            throw new Error(`Invalid limit provided. Expected number <= 100, got ${options.limit}`);
+        }
+
+        options.limit ??= 100;
+
+        if (options.sort) {
+            this.validateSort(options.sort);
+        }
+
+        return this.roomBridge.doGetMessages(roomId, options as GetMessagesOptions, this.appId);
     }
 
     public getMembers(roomId: string): Promise<Array<IUser>> {
@@ -45,5 +56,18 @@ export class RoomRead implements IRoomRead {
 
     public getLeaders(roomId: string): Promise<Array<IUser>> {
         return this.roomBridge.doGetLeaders(roomId, this.appId);
+    }
+
+    // If there are any invalid fields or values, throw
+    private validateSort(sort: Record<string, unknown>) {
+        Object.entries(sort).forEach(([key, value]) => {
+            if (!GetMessagesSortableFields.includes(key as typeof GetMessagesSortableFields[number])) {
+                throw new Error(`Invalid key "${key}" used in sort. Available keys for sorting are ${GetMessagesSortableFields.join(', ')}`);
+            }
+
+            if (value !== 'asc' && value !== 'desc') {
+                throw new Error(`Invalid sort direction for field "${key}". Expected "asc" or "desc", got ${value}`);
+            }
+        });
     }
 }

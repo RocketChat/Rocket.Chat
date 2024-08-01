@@ -3,6 +3,9 @@ import type { IUser } from '../users';
 
 export interface IExtraRoomParams {
     source?: ILivechatRoom['source'];
+    customFields?: {
+        [key: string]: unknown;
+    };
 }
 
 export interface ILivechatCreator {
@@ -16,12 +19,21 @@ export interface ILivechatCreator {
      * @param agent The agent responsible for the room
      */
     createRoom(visitor: IVisitor, agent: IUser, extraParams?: IExtraRoomParams): Promise<ILivechatRoom>;
+
     /**
+     * @deprecated Use `createAndReturnVisitor` instead.
      * Creates a Livechat visitor
      *
      * @param visitor Data of the visitor to be created
      */
     createVisitor(visitor: IVisitor): Promise<string>;
+
+    /**
+     * Creates a Livechat visitor
+     *
+     * @param visitor Data of the visitor to be created
+     */
+    createAndReturnVisitor(visitor: IVisitor): Promise<IVisitor | undefined>;
 
     /**
      * Creates a token to be used when

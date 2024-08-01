@@ -14,6 +14,7 @@ import handleOnSettingUpdated from './handleOnSettingUpdated.ts';
 import handleListener from '../listener/handler.ts';
 import handleUIKitInteraction, { uikitInteractions } from '../uikit/handler.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
+import handleOnUpdate from './handleOnUpdate.ts';
 
 export default async function handleApp(method: string, params: unknown): Promise<Defined | JsonRpcError> {
     const [, appMethod] = method.split(':');
@@ -82,6 +83,9 @@ export default async function handleApp(method: string, params: unknown): Promis
                 break;
             case 'onSettingUpdated':
                 result = await handleOnSettingUpdated(params);
+                break;
+            case 'onUpdate':
+                result = await handleOnUpdate(params);
                 break;
             default:
                 throw new JsonRpcError('Method not found', -32601);

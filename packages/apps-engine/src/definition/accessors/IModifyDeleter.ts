@@ -7,4 +7,6 @@ export interface IModifyDeleter {
     deleteUsers(appId: Exclude<IUser['appId'], undefined>, userType: UserType.APP | UserType.BOT): Promise<boolean>;
 
     deleteMessage(message: IMessage, user: IUser): Promise<void>;
+
+    removeUsersFromRoom(roomId: string, usernames: Array<string>): Promise<void>;
 }

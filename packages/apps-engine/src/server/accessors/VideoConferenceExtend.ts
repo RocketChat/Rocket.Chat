@@ -52,6 +52,12 @@ export class VideoConferenceExtender implements IVideoConferenceExtender {
         return this;
     }
 
+    public setDiscussionRid(rid: VideoConference['discussionRid']): IVideoConferenceExtender {
+        this.videoConference.discussionRid = rid;
+
+        return this;
+    }
+
     public getVideoConference(): VideoConference {
         return Utilities.deepClone(this.videoConference);
     }

@@ -17,6 +17,7 @@ export class VideoConferenceBuilder implements IVideoConferenceBuilder {
             createdBy: data.createdBy,
             providerName: data.providerName,
             title: data.title,
+            discussionRid: data.discussionRid,
         };
 
         return this;
@@ -65,6 +66,15 @@ export class VideoConferenceBuilder implements IVideoConferenceBuilder {
 
     public getTitle(): string {
         return this.call.title;
+    }
+
+    public setDiscussionRid(rid: AppVideoConference['discussionRid']): IVideoConferenceBuilder {
+        this.call.discussionRid = rid;
+        return this;
+    }
+
+    public getDiscussionRid(): AppVideoConference['discussionRid'] {
+        return this.call.discussionRid;
     }
 
     public getVideoConference(): AppVideoConference {

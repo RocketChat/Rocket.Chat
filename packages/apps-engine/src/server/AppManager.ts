@@ -653,7 +653,11 @@ export class AppManager {
         this.apps.delete(app.getID());
     }
 
-    public async update(appPackage: Buffer, permissionsGranted: Array<IPermission>, updateOptions = { loadApp: true }): Promise<AppFabricationFulfillment> {
+    public async update(
+        appPackage: Buffer,
+        permissionsGranted: Array<IPermission>,
+        updateOptions: { loadApp?: boolean; user?: IUser } = { loadApp: true },
+    ): Promise<AppFabricationFulfillment> {
         const aff = new AppFabricationFulfillment();
         const result = await this.getParser().unpackageApp(appPackage);
 
@@ -723,6 +727,8 @@ export class AppManager {
                 .doAppUpdated(app)
                 .catch(() => {});
         }
+
+        await this.updateApp(app, updateOptions.user, old.info.version);
 
         return aff;
     }
@@ -921,6 +927,24 @@ export class AppManager {
 
         try {
             await app.call(AppMethod.ONINSTALL, context);
+
+            result = true;
+        } catch (e) {
+            const status = AppStatus.ERROR_DISABLED;
+
+            result = false;
+
+            await app.setStatus(status);
+        }
+
+        return result;
+    }
+
+    private async updateApp(app: ProxiedApp, user: IUser | null, oldAppVersion: string): Promise<boolean> {
+        let result: boolean;
+
+        try {
+            await app.call(AppMethod.ONUPDATE, { oldAppVersion, user });
 
             result = true;
         } catch (e) {

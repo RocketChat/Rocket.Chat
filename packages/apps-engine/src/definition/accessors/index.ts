@@ -1,6 +1,7 @@
 export * from './IApiExtend';
 export * from './IAppAccessors';
 export * from './IAppInstallationContext';
+export * from './IAppUpdateContext';
 export * from './IAppUninstallationContext';
 export * from './ICloudWorkspaceRead';
 export * from './IConfigurationExtend';

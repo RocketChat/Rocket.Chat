@@ -26,5 +26,9 @@ export interface IVideoConferenceBuilder {
 
     getTitle(): string;
 
+    setDiscussionRid(rid: string | undefined): IVideoConferenceBuilder;
+
+    getDiscussionRid(): string | undefined;
+
     getVideoConference(): AppVideoConference;
 }

@@ -17,4 +17,19 @@ export class ModifyDeleter implements IModifyDeleter {
     public async deleteMessage(message: IMessage, user: IUser): Promise<void> {
         return this.bridges.getMessageBridge().doDelete(message, user, this.appId);
     }
+
+    /**
+     * Removes `usernames` from the room's member list
+     *
+     * For performance reasons, it is only possible to remove 50 users in one
+     * call to this method. Removing users is an expensive operation due to the
+     * amount of entity relationships that need to be modified.
+     */
+    public async removeUsersFromRoom(roomId: string, usernames: Array<string>) {
+        if (usernames.length > 50) {
+            throw new Error('A maximum of 50 members can be removed in a single call');
+        }
+
+        return this.bridges.getRoomBridge().doRemoveUsers(roomId, usernames, this.appId);
+    }
 }

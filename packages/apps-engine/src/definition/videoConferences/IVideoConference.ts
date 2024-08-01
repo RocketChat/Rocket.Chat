@@ -36,6 +36,7 @@ export interface IVideoConference {
     providerData?: Record<string, any>;
 
     ringing?: boolean;
+    discussionRid?: string;
 }
 
 export interface IDirectVideoConference extends IVideoConference {

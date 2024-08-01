@@ -10,6 +10,7 @@ import type {
     IModify,
     IPersistence,
     IRead,
+    IAppUpdateContext,
 } from './accessors';
 import { AppStatus } from './AppStatus';
 import type { IApp } from './IApp';
@@ -180,6 +181,13 @@ export abstract class App implements IApp {
      * This method is NOT called when the App is updated.
      */
     public async onInstall(context: IAppInstallationContext, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify): Promise<void> {}
+
+    /**
+     * Method which is called when the App is updated and it is called one single time.
+     *
+     * This method is NOT called when the App is installed.
+     */
+    public async onUpdate(context: IAppUpdateContext, read: IRead, http: IHttp, persistence: IPersistence, modify: IModify): Promise<void> {}
 
     /**
      * Method which is called whenever a setting which belongs to this App has been updated

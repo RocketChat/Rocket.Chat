@@ -9,7 +9,7 @@ const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definit
     RocketChatAssociationModel: typeof _RocketChatAssociationModel;
 };
 
-export type AppVideoConference = Pick<IGroupVideoConference, 'rid' | 'providerName' | 'providerData' | 'title'> & {
+export type AppVideoConference = Pick<IGroupVideoConference, 'rid' | 'providerName' | 'providerData' | 'title' | 'discussionRid'> & {
     createdBy: IGroupVideoConference['createdBy']['_id'];
 };
 
@@ -28,6 +28,7 @@ export class VideoConferenceBuilder implements IVideoConferenceBuilder {
             createdBy: data.createdBy,
             providerName: data.providerName!,
             title: data.title!,
+            discussionRid: data.discussionRid,
         };
 
         return this;
@@ -76,6 +77,15 @@ export class VideoConferenceBuilder implements IVideoConferenceBuilder {
 
     public getTitle(): string {
         return this.call.title;
+    }
+
+    public setDiscussionRid(rid: AppVideoConference['discussionRid']): IVideoConferenceBuilder {
+        this.call.discussionRid = rid;
+        return this;
+    }
+
+    public getDiscussionRid(): AppVideoConference['discussionRid'] {
+        return this.call.discussionRid;
     }
 
     public getVideoConference(): AppVideoConference {

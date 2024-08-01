@@ -18,6 +18,8 @@ export interface IVideoConfProvider {
         cam?: boolean;
         // Indicates if Rocket.Chat can send a custom title for the video conferences
         title?: boolean;
+        // Indicates if the provider supports Rocket.Chat's Persistent Chat feature on its conferences.
+        persistentChat?: boolean;
     };
 
     // Optional function that can be used to determine if the provider is ready to use or still needs to be configured

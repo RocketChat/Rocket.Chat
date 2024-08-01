@@ -50,9 +50,18 @@ export abstract class LivechatBridge extends BaseBridge {
         }
     }
 
+    /**
+     * @deprecated please use the `doCreateAndReturnVisitor` method instead.
+     */
     public async doCreateVisitor(visitor: IVisitor, appId: string): Promise<string> {
         if (this.hasWritePermission(appId, 'livechat-visitor')) {
             return this.createVisitor(visitor, appId);
+        }
+    }
+
+    public async doCreateAndReturnVisitor(visitor: IVisitor, appId: string): Promise<IVisitor | undefined> {
+        if (this.hasWritePermission(appId, 'livechat-visitor')) {
+            return this.createAndReturnVisitor(visitor, appId);
         }
     }
 
@@ -160,7 +169,13 @@ export abstract class LivechatBridge extends BaseBridge {
 
     protected abstract updateMessage(message: ILivechatMessage, appId: string): Promise<void>;
 
+    /**
+     * @deprecated please use `createAndReturnVisitor` instead.
+     * It returns the created record rather than the ID.
+     */
     protected abstract createVisitor(visitor: IVisitor, appId: string): Promise<string>;
+
+    protected abstract createAndReturnVisitor(visitor: IVisitor, appId: string): Promise<IVisitor | undefined>;
 
     /**
      * @deprecated This method does not adhere to the conversion practices applied

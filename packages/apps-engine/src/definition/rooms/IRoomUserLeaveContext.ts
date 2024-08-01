@@ -15,4 +15,9 @@ export interface IRoomUserLeaveContext {
      * The room that the user is leaving
      */
     room: IRoom;
+
+    /**
+     * The user that removed the room member
+     */
+    removedBy?: IUser;
 }
