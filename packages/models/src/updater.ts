@@ -42,6 +42,8 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 
 	private _dec: Map<keyof T, number> | undefined;
 
+	private dirty = false;
+
 	constructor(private model: IBaseModel<T>) {}
 
 	set<P extends SetProps<T>, K extends keyof P>(key: K, value: P[K]) {
@@ -73,6 +75,11 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 	}
 
 	async persist(query: Filter<T>): Promise<void> {
+		if (this.dirty) {
+			throw new Error('Updater is not dirty');
+		}
+
+		this.dirty = true;
 		await this.model.updateOne(query, {
 			...(this._set && { $set: Object.fromEntries(this._set) }),
 			...(this._unset && { $unset: Object.fromEntries([...this._unset.values()].map((k) => [k, 1])) }),

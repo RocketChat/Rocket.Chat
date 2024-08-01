@@ -71,3 +71,30 @@ test('updater $set operations', async () => {
 		{ $set: { a: { b: 'set' } } },
 	);
 });
+
+test('it should persist only once', async () => {
+	const updateOne = jest.fn();
+
+	const updater = new UpdaterImpl<{
+		_id: string;
+		t: 'l';
+		a: {
+			b: string;
+		};
+		c?: number;
+	}>({
+		updateOne,
+	} as any);
+
+	updater.set('a', {
+		b: 'set',
+	});
+
+	await updater.persist({
+		_id: 'test',
+	});
+
+	expect(updateOne).toBeCalledTimes(1);
+
+	expect(() => updater.persist({ _id: 'test' })).rejects.toThrow();
+});
