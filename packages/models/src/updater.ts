@@ -2,10 +2,13 @@
 import type { IBaseModel } from '@rocket.chat/model-typings';
 import type { UpdateFilter, Join, NestedPaths, PropertyType, ArrayElement, NestedPathsOfType, Filter } from 'mongodb';
 
+type ArrayElementType<T> = T extends (infer E)[] ? E : T;
+
 export interface Updater<T extends { _id: string }> {
 	set<P extends SetProps<T>, K extends keyof P>(key: K, value: P[K]): Updater<T>;
 	unset<K extends keyof UnsetProps<T>>(key: K): Updater<T>;
 	inc<K extends keyof IncProps<T>>(key: K, value: number): Updater<T>;
+	addToSet<K extends keyof AddToSetProps<T>>(key: K, value: AddToSetProps<T>[K]): Updater<T>;
 	persist(query: Filter<T>): Promise<void>;
 }
 
@@ -22,7 +25,7 @@ type SetProps<TSchema extends { _id: string }> = Readonly<
 >;
 
 type GetType<T, K> = {
-	[Key in keyof T]: K extends T[Key] ? 1 : never;
+	[Key in keyof T]: K extends T[Key] ? T[Key] : never;
 };
 
 type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
@@ -32,6 +35,8 @@ type UnsetProps<TSchema extends { _id: string }> = OmitNever<GetType<SetProps<TS
 
 type IncProps<TSchema extends { _id: string }> = OmitNever<GetType<SetProps<TSchema>, number>>;
 
+type AddToSetProps<TSchema extends { _id: string }> = OmitNever<GetType<SetProps<TSchema>, any[]>>;
+
 type Keys<T extends { _id: string }> = keyof SetProps<T>;
 
 export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
@@ -40,6 +45,8 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 	private _unset: Set<keyof UnsetProps<T>> | undefined;
 
 	private _inc: Map<keyof IncProps<T>, number> | undefined;
+
+	private _addToSet: Map<keyof AddToSetProps<T>, any[]> | undefined;
 
 	private dirty = false;
 
@@ -69,6 +76,14 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 		return this;
 	}
 
+	addToSet<K extends keyof AddToSetProps<T>>(key: K, value: ArrayElementType<AddToSetProps<T>[K]>): Updater<T> {
+		this._addToSet = this._addToSet ?? new Map<keyof AddToSetProps<T>, any[]>();
+
+		const prev = this._addToSet.get(key) ?? [];
+		this._addToSet.set(key, [...prev, value]);
+		return this;
+	}
+
 	async persist(query: Filter<T>): Promise<void> {
 		if (this.dirty) {
 			throw new Error('Updater is not dirty');
@@ -79,6 +94,7 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 			...(this._set && { $set: Object.fromEntries(this._set) }),
 			...(this._unset && { $unset: Object.fromEntries([...this._unset.values()].map((k) => [k, 1])) }),
 			...(this._inc && { $inc: Object.fromEntries(this._inc) }),
+			...(this._addToSet && { $addToSet: { $each: Object.fromEntries(this._addToSet) } }),
 		} as unknown as UpdateFilter<T>);
 	}
 }

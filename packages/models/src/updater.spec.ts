@@ -12,7 +12,15 @@ test('updater typings', () => {
 		d?: {
 			e: string;
 		};
+		e: string[];
 	}>({} as any);
+
+	updater.addToSet('e', 'a');
+
+	// @ts-expect-error
+	updater.addToSet('e', 1);
+	// @ts-expect-error
+	updater.addToSet('a', 'b');
 
 	// @ts-expect-error
 	updater.set('njame', 1);
@@ -74,6 +82,7 @@ test('updater $set operations', async () => {
 		{ $set: { a: { b: 'set' } } },
 	);
 });
+
 test('updater $unset operations', async () => {
 	const updateOne = jest.fn();
 
@@ -128,6 +137,30 @@ test('updater inc multiple operations', async () => {
 			_id: 'test',
 		},
 		{ $inc: { c: 2 } },
+	);
+});
+
+test('it should add items to array', async () => {
+	const updateOne = jest.fn();
+	const updater = new UpdaterImpl<{
+		_id: string;
+		a: string[];
+	}>({
+		updateOne,
+	} as any);
+
+	updater.addToSet('a', 'b');
+	updater.addToSet('a', 'c');
+
+	await updater.persist({
+		_id: 'test',
+	});
+
+	expect(updateOne).toBeCalledWith(
+		{
+			_id: 'test',
+		},
+		{ $addToSet: { $each: { a: ['b', 'c'] } } },
 	);
 });
 
