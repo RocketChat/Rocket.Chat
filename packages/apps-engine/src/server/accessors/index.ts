@@ -2,9 +2,9 @@ import { ApiExtend } from './ApiExtend';
 import { AppAccessors } from './AppAccessors';
 import { ConfigurationExtend } from './ConfigurationExtend';
 import { ConfigurationModify } from './ConfigurationModify';
-import { EnvironmentalVariableRead } from './EnvironmentalVariableRead';
 import { EnvironmentRead } from './EnvironmentRead';
 import { EnvironmentWrite } from './EnvironmentWrite';
+import { EnvironmentalVariableRead } from './EnvironmentalVariableRead';
 import { ExternalComponentsExtend } from './ExternalComponentsExtend';
 import { Http } from './Http';
 import { HttpExtend } from './HttpExtend';
@@ -30,20 +30,20 @@ import { RoomRead } from './RoomRead';
 import { SchedulerExtend } from './SchedulerExtend';
 import { SchedulerModify } from './SchedulerModify';
 import { ServerSettingRead } from './ServerSettingRead';
-import { ServerSettingsModify } from './ServerSettingsModify';
 import { ServerSettingUpdater } from './ServerSettingUpdater';
+import { ServerSettingsModify } from './ServerSettingsModify';
 import { SettingRead } from './SettingRead';
-import { SettingsExtend } from './SettingsExtend';
 import { SettingUpdater } from './SettingUpdater';
+import { SettingsExtend } from './SettingsExtend';
 import { SlashCommandsExtend } from './SlashCommandsExtend';
 import { SlashCommandsModify } from './SlashCommandsModify';
 import { UploadRead } from './UploadRead';
 import { UserBuilder } from './UserBuilder';
 import { UserRead } from './UserRead';
+import { VideoConfProviderExtend } from './VideoConfProviderExtend';
 import { VideoConferenceBuilder } from './VideoConferenceBuilder';
 import { VideoConferenceExtender } from './VideoConferenceExtend';
 import { VideoConferenceRead } from './VideoConferenceRead';
-import { VideoConfProviderExtend } from './VideoConfProviderExtend';
 
 export {
     ApiExtend,

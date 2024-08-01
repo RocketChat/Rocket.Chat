@@ -2,8 +2,8 @@ import { Expect, SetupFixture, Test } from 'alsatian';
 
 import type { IApi } from '../../../src/definition/api';
 import type { IApiEndpoint } from '../../../src/definition/api/IApiEndpoint';
-import { AppApi } from '../../../src/server/managers/AppApi';
 import type { ProxiedApp } from '../../../src/server/ProxiedApp';
+import { AppApi } from '../../../src/server/managers/AppApi';
 
 export class AppApiRegistrationTestFixture {
     private mockApp: ProxiedApp;

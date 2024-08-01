@@ -1,7 +1,7 @@
 import type { IBlock } from '../../definition/uikit';
+import type { IVideoConferenceOptions, IVideoConfProvider, VideoConfData, VideoConfDataExtended } from '../../definition/videoConfProviders';
 import type { VideoConference } from '../../definition/videoConferences';
 import type { IVideoConferenceUser } from '../../definition/videoConferences/IVideoConferenceUser';
-import type { IVideoConferenceOptions, IVideoConfProvider, VideoConfData, VideoConfDataExtended } from '../../definition/videoConfProviders';
 import type { AppManager } from '../AppManager';
 import type { VideoConferenceBridge } from '../bridges';
 import { VideoConfProviderAlreadyExistsError, VideoConfProviderNotRegisteredError } from '../errors';

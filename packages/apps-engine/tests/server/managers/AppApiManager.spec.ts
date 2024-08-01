@@ -1,11 +1,12 @@
 import type { FunctionSpy, RestorableFunctionSpy } from 'alsatian';
 import { AsyncTest, Expect, Setup, SetupFixture, SpyOn, Teardown, Test } from 'alsatian';
 
+import { AppStatus } from '../../../src/definition/AppStatus';
 import { RequestMethod } from '../../../src/definition/accessors';
 import type { IApi, IApiRequest } from '../../../src/definition/api';
-import { AppStatus } from '../../../src/definition/AppStatus';
 import type { AppMethod } from '../../../src/definition/metadata';
 import type { AppManager } from '../../../src/server/AppManager';
+import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { AppBridges } from '../../../src/server/bridges';
 import { PathAlreadyExistsError } from '../../../src/server/errors';
 import { AppConsole } from '../../../src/server/logging';
@@ -13,13 +14,12 @@ import type { AppExternalComponentManager, AppSchedulerManager, AppSlashCommandM
 import { AppAccessorManager, AppApiManager } from '../../../src/server/managers';
 import { AppApi } from '../../../src/server/managers/AppApi';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
-import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { AppsEngineRuntime } from '../../../src/server/runtime/AppsEngineRuntime';
+import type { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import type { AppLogStorage } from '../../../src/server/storage';
 import { TestsAppBridges } from '../../test-data/bridges/appBridges';
 import { TestsAppLogStorage } from '../../test-data/storage/logStorage';
 import { TestData } from '../../test-data/utilities';
-import type { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
 
 export class AppApiManagerTestFixture {
     public static doThrow = false;

@@ -1,5 +1,5 @@
-import type { IUIKitErrorInteraction, IUIKitInteraction, IUIKitSurface } from '../uikit';
 import type { Omit } from '../../lib/utils';
+import type { IUIKitErrorInteraction, IUIKitInteraction, IUIKitSurface } from '../uikit';
 import type { IUIKitContextualBarViewParam, IUIKitModalViewParam } from '../uikit/UIKitInteractionResponder';
 import type { IUser } from '../users';
 

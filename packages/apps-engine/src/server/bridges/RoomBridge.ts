@@ -11,7 +11,7 @@ export const GetMessagesSortableFields = ['createdAt'] as const;
 export type GetMessagesOptions = {
     limit: number;
     skip: number;
-    sort: Record<typeof GetMessagesSortableFields[number], 'asc' | 'desc'>;
+    sort: Record<(typeof GetMessagesSortableFields)[number], 'asc' | 'desc'>;
 };
 
 export abstract class RoomBridge extends BaseBridge {

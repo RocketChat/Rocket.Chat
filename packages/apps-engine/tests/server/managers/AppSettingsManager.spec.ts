@@ -1,8 +1,8 @@
 import { AsyncTest, Expect, SetupFixture, SpyOn, Test } from 'alsatian';
 
 import { AppMethod } from '../../../src/definition/metadata';
-import { TestData } from '../../test-data/utilities';
 import type { AppManager } from '../../../src/server/AppManager';
+import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { AppBridges } from '../../../src/server/bridges';
 import type {
     AppApiManager,
@@ -13,9 +13,9 @@ import type {
 } from '../../../src/server/managers';
 import { AppAccessorManager, AppSettingsManager } from '../../../src/server/managers';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
-import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { AppMetadataStorage, IAppStorageItem } from '../../../src/server/storage';
 import { TestsAppBridges } from '../../test-data/bridges/appBridges';
+import { TestData } from '../../test-data/utilities';
 
 export class AppSettingsManagerTestFixture {
     private mockStorageItem: IAppStorageItem;

@@ -1,8 +1,8 @@
 import { AppMethod } from '../../definition/metadata';
 import type { IBlock } from '../../definition/uikit';
+import type { IVideoConferenceOptions, IVideoConfProvider, VideoConfData, VideoConfDataExtended } from '../../definition/videoConfProviders';
 import type { VideoConference } from '../../definition/videoConferences';
 import type { IVideoConferenceUser } from '../../definition/videoConferences/IVideoConferenceUser';
-import type { IVideoConferenceOptions, IVideoConfProvider, VideoConfData, VideoConfDataExtended } from '../../definition/videoConfProviders';
 import type { ProxiedApp } from '../ProxiedApp';
 import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/deno/AppsEngineDenoRuntime';
 import type { AppLogStorage } from '../storage';

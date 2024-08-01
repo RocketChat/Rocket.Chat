@@ -2,8 +2,8 @@ import { Expect, SetupFixture, Test } from 'alsatian';
 
 import { AppInterface } from '../../../src/definition/metadata';
 import type { AppManager } from '../../../src/server/AppManager';
-import { AppListenerManager } from '../../../src/server/managers';
 import type { ProxiedApp } from '../../../src/server/ProxiedApp';
+import { AppListenerManager } from '../../../src/server/managers';
 
 export class AppListenerManagerTestFixture {
     private mockApp: ProxiedApp;

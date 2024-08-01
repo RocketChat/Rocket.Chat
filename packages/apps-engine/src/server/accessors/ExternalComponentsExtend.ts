@@ -1,6 +1,6 @@
-import type { AppExternalComponentManager } from '../managers/AppExternalComponentManager';
 import type { IExternalComponentsExtend } from '../../definition/accessors';
 import type { IExternalComponent } from '../../definition/externalComponent/IExternalComponent';
+import type { AppExternalComponentManager } from '../managers/AppExternalComponentManager';
 
 export class ExternalComponentsExtend implements IExternalComponentsExtend {
     constructor(private readonly manager: AppExternalComponentManager, private readonly appId: string) {}

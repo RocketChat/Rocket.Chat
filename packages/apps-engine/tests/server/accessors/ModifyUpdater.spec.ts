@@ -1,9 +1,9 @@
 import { AsyncTest, Expect, SetupFixture, SpyOn } from 'alsatian';
 
+import type { ILivechatRoom } from '../../../src/definition/livechat/ILivechatRoom';
 import type { IMessage } from '../../../src/definition/messages';
 import type { IRoom } from '../../../src/definition/rooms';
 import { RoomType } from '../../../src/definition/rooms';
-import type { ILivechatRoom } from '../../../src/definition/livechat/ILivechatRoom';
 import { MessageBuilder, ModifyUpdater, RoomBuilder } from '../../../src/server/accessors';
 import type { AppBridges, MessageBridge, RoomBridge } from '../../../src/server/bridges';
 import { TestData } from '../../test-data/utilities';

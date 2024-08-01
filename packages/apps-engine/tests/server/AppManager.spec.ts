@@ -1,6 +1,5 @@
 import { Expect, SetupFixture, Teardown, Test } from 'alsatian';
 
-import { SimpleClass, TestInfastructureSetup } from '../test-data/utilities';
 import { AppManager } from '../../src/server/AppManager';
 import { AppBridges } from '../../src/server/bridges';
 import { AppCompiler, AppPackageParser } from '../../src/server/compiler';
@@ -14,6 +13,7 @@ import {
     AppVideoConfProviderManager,
 } from '../../src/server/managers';
 import type { AppLogStorage, AppMetadataStorage, AppSourceStorage } from '../../src/server/storage';
+import { SimpleClass, TestInfastructureSetup } from '../test-data/utilities';
 
 export class AppManagerTestFixture {
     private testingInfastructure: TestInfastructureSetup;

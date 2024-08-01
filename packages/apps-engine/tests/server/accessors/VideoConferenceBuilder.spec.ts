@@ -1,8 +1,8 @@
 import { Expect, Test } from 'alsatian';
 
 import type { AppVideoConference } from '../../../src/definition/videoConferences';
-import { TestData } from '../../test-data/utilities';
 import { VideoConferenceBuilder } from '../../../src/server/accessors';
+import { TestData } from '../../test-data/utilities';
 
 export class VideoConferenceBuilderAccessorTestFixture {
     @Test()

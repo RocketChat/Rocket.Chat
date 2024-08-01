@@ -1,6 +1,6 @@
+import { AppStatusUtils } from '../../definition/AppStatus';
 import { HttpStatusCode } from '../../definition/accessors';
 import type { IApi, IApiEndpointMetadata, IApiRequest, IApiResponse } from '../../definition/api';
-import { AppStatusUtils } from '../../definition/AppStatus';
 import type { AppManager } from '../AppManager';
 import type { ApiBridge } from '../bridges';
 import { PathAlreadyExistsError } from '../errors';

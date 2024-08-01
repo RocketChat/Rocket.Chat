@@ -1,8 +1,8 @@
-import type { MessageBridge } from '../bridges/MessageBridge';
 import type { IMessageRead } from '../../definition/accessors';
 import type { IMessage } from '../../definition/messages';
 import type { IRoom } from '../../definition/rooms';
 import type { IUser } from '../../definition/users';
+import type { MessageBridge } from '../bridges/MessageBridge';
 
 export class MessageRead implements IMessageRead {
     constructor(private messageBridge: MessageBridge, private appId: string) {}

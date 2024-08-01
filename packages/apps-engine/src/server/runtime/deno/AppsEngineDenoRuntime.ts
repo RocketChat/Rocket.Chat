@@ -2,20 +2,20 @@ import * as child_process from 'child_process';
 import * as path from 'path';
 import { type Readable, EventEmitter } from 'stream';
 
-import * as jsonrpc from 'jsonrpc-lite';
 import debugFactory from 'debug';
+import * as jsonrpc from 'jsonrpc-lite';
 
-import { decoder } from './codec';
+import { AppStatus } from '../../../definition/AppStatus';
 import type { AppManager } from '../../AppManager';
-import type { AppLogStorage } from '../../storage';
 import type { AppBridges } from '../../bridges';
 import type { IParseAppPackageResult } from '../../compiler';
-import type { AppAccessorManager, AppApiManager } from '../../managers';
 import type { ILoggerStorageEntry } from '../../logging';
-import { AppStatus } from '../../../definition/AppStatus';
-import { bundleLegacyApp } from './bundler';
-import { ProcessMessenger } from './ProcessMessenger';
+import type { AppAccessorManager, AppApiManager } from '../../managers';
+import type { AppLogStorage } from '../../storage';
 import { LivenessManager } from './LivenessManager';
+import { ProcessMessenger } from './ProcessMessenger';
+import { bundleLegacyApp } from './bundler';
+import { decoder } from './codec';
 
 const baseDebug = debugFactory('appsEngine:runtime:deno');
 
@@ -52,7 +52,7 @@ const COMMAND_PONG = '_zPONG';
 
 export const JSONRPC_METHOD_NOT_FOUND = -32601;
 
-export function isValidOrigin(accessor: string): accessor is typeof ALLOWED_ACCESSOR_METHODS[number] {
+export function isValidOrigin(accessor: string): accessor is (typeof ALLOWED_ACCESSOR_METHODS)[number] {
     return ALLOWED_ACCESSOR_METHODS.includes(accessor as any);
 }
 
@@ -374,7 +374,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
         // Need to fix typing of return value
         const getAccessorForOrigin = (
             accessorMethods: string[],
-            managerOrigin: typeof ALLOWED_ACCESSOR_METHODS[number],
+            managerOrigin: (typeof ALLOWED_ACCESSOR_METHODS)[number],
             accessorManager: AppAccessorManager,
         ) => {
             const origin = accessorManager[managerOrigin](this.appPackage.info.id);

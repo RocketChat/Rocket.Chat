@@ -23,6 +23,7 @@ import type { CloudWorkspaceBridge } from '../../../src/server/bridges/CloudWork
 import type { IInternalFederationBridge } from '../../../src/server/bridges/IInternalFederationBridge';
 import type { OAuthAppsBridge } from '../../../src/server/bridges/OAuthAppsBridge';
 import type { ThreadBridge } from '../../../src/server/bridges/ThreadBridge';
+import { TestOAuthAppsBridge } from './OAuthAppsBridge';
 import { TestsActivationBridge } from './activationBridge';
 import { TestsApiBridge } from './apiBridge';
 import { TestsAppDetailChangesBridge } from './appDetailChanges';
@@ -35,7 +36,6 @@ import { TestsInternalFederationBridge } from './internalFederationBridge';
 import { TestLivechatBridge } from './livechatBridge';
 import { TestsMessageBridge } from './messageBridge';
 import { TestsModerationBridge } from './moderationBridge';
-import { TestOAuthAppsBridge } from './OAuthAppsBridge';
 import { TestsPersisBridge } from './persisBridge';
 import { TestsRoleBridge } from './roleBridge';
 import { TestsRoomBridge } from './roomBridge';

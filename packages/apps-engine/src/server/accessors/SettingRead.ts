@@ -1,6 +1,6 @@
-import type { ProxiedApp } from '../ProxiedApp';
 import type { ISettingRead } from '../../definition/accessors';
 import type { ISetting } from '../../definition/settings';
+import type { ProxiedApp } from '../ProxiedApp';
 
 export class SettingRead implements ISettingRead {
     constructor(private readonly app: ProxiedApp) {}

@@ -1,9 +1,9 @@
 import { AsyncTest, Expect, SetupFixture } from 'alsatian';
 
-import { TestData } from '../../test-data/utilities';
-import { SettingRead } from '../../../src/server/accessors';
 import type { ProxiedApp } from '../../../src/server/ProxiedApp';
+import { SettingRead } from '../../../src/server/accessors';
 import type { IAppStorageItem } from '../../../src/server/storage';
+import { TestData } from '../../test-data/utilities';
 
 export class SettingReadAccessorTestFixture {
     private mockStorageItem: IAppStorageItem;

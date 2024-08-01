@@ -2,6 +2,7 @@ import type { RestorableFunctionSpy } from 'alsatian';
 import { Expect, Setup, SetupFixture, SpyOn, Teardown, Test } from 'alsatian';
 
 import type { AppManager } from '../../../src/server/AppManager';
+import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { AppBridges } from '../../../src/server/bridges';
 import type {
     AppApiManager,
@@ -12,7 +13,6 @@ import type {
 } from '../../../src/server/managers';
 import { AppAccessorManager } from '../../../src/server/managers';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
-import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import { TestsAppBridges } from '../../test-data/bridges/appBridges';
 
 export class AppAccessorManagerTestFixture {

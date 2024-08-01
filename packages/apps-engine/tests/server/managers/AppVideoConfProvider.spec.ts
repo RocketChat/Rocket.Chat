@@ -1,8 +1,8 @@
 import { Expect, SetupFixture, Test } from 'alsatian';
 
 import type { IVideoConfProvider } from '../../../src/definition/videoConfProviders';
-import { AppVideoConfProvider } from '../../../src/server/managers/AppVideoConfProvider';
 import type { ProxiedApp } from '../../../src/server/ProxiedApp';
+import { AppVideoConfProvider } from '../../../src/server/managers/AppVideoConfProvider';
 
 export class AppSlashCommandRegistrationTestFixture {
     private mockApp: ProxiedApp;

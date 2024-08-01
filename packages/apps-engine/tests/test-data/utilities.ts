@@ -1,5 +1,9 @@
+import { AppStatus } from '../../src/definition/AppStatus';
 import type { IHttp, IModify, IPersistence, IRead } from '../../src/definition/accessors';
 import { HttpStatusCode } from '../../src/definition/accessors';
+import type { IApi, IApiRequest, IApiResponse } from '../../src/definition/api';
+import { ApiSecurity, ApiVisibility } from '../../src/definition/api';
+import type { IApiEndpointInfo } from '../../src/definition/api/IApiEndpointInfo';
 import type { IMessage } from '../../src/definition/messages';
 import type { IRoom } from '../../src/definition/rooms';
 import { RoomType } from '../../src/definition/rooms';
@@ -8,23 +12,15 @@ import { SettingType } from '../../src/definition/settings';
 import type { ISlashCommand, ISlashCommandPreview, ISlashCommandPreviewItem, SlashCommandContext } from '../../src/definition/slashcommands';
 import type { IUser } from '../../src/definition/users';
 import { UserStatusConnection, UserType } from '../../src/definition/users';
-import { TestsAppBridges } from './bridges/appBridges';
-import { TestsAppLogStorage } from './storage/logStorage';
-import { TestsAppStorage } from './storage/storage';
-import { TestSourceStorage } from './storage/TestSourceStorage';
-import type { IApi, IApiRequest, IApiResponse } from '../../src/definition/api';
-import { ApiSecurity, ApiVisibility } from '../../src/definition/api';
-import type { IApiEndpointInfo } from '../../src/definition/api/IApiEndpointInfo';
-import { AppStatus } from '../../src/definition/AppStatus';
+import type { IVideoConferenceOptions, IVideoConfProvider, VideoConfData, VideoConfDataExtended } from '../../src/definition/videoConfProviders';
 import type { AppVideoConference } from '../../src/definition/videoConferences/AppVideoConference';
 import type { VideoConference } from '../../src/definition/videoConferences/IVideoConference';
 import { VideoConferenceStatus } from '../../src/definition/videoConferences/IVideoConference';
 import type { IVideoConferenceUser } from '../../src/definition/videoConferences/IVideoConferenceUser';
-import type { IVideoConferenceOptions, IVideoConfProvider, VideoConfData, VideoConfDataExtended } from '../../src/definition/videoConfProviders';
 import type { AppManager } from '../../src/server/AppManager';
-import type { AppBridges } from '../../src/server/bridges';
 import { ProxiedApp } from '../../src/server/ProxiedApp';
-import type { AppLogStorage, AppMetadataStorage, AppSourceStorage, IAppStorageItem } from '../../src/server/storage';
+import type { AppBridges } from '../../src/server/bridges';
+import { AppPackageParser } from '../../src/server/compiler';
 import type {
     AppExternalComponentManager,
     AppSchedulerManager,
@@ -32,10 +28,14 @@ import type {
     AppSlashCommandManager,
     AppVideoConfProviderManager,
 } from '../../src/server/managers';
+import type { AppRuntimeManager } from '../../src/server/managers/AppRuntimeManager';
 import type { UIActionButtonManager } from '../../src/server/managers/UIActionButtonManager';
 import type { DenoRuntimeSubprocessController } from '../../src/server/runtime/deno/AppsEngineDenoRuntime';
-import { AppPackageParser } from '../../src/server/compiler';
-import type { AppRuntimeManager } from '../../src/server/managers/AppRuntimeManager';
+import type { AppLogStorage, AppMetadataStorage, AppSourceStorage, IAppStorageItem } from '../../src/server/storage';
+import { TestsAppBridges } from './bridges/appBridges';
+import { TestSourceStorage } from './storage/TestSourceStorage';
+import { TestsAppLogStorage } from './storage/logStorage';
+import { TestsAppStorage } from './storage/storage';
 
 export class TestInfastructureSetup {
     private appStorage: TestsAppStorage;

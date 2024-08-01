@@ -2,8 +2,8 @@ import { Expect, Test } from 'alsatian';
 
 import type { IMessage } from '../../../src/definition/messages';
 import type { IUser } from '../../../src/definition/users';
-import { TestData } from '../../test-data/utilities';
 import { MessageBuilder, UserBuilder } from '../../../src/server/accessors';
+import { TestData } from '../../test-data/utilities';
 
 export class MessageBuilderAccessorTestFixture {
     @Test()
