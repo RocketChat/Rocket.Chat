@@ -20,17 +20,12 @@ ENV DEPLOY_METHOD=docker \
     HOME=/tmp \
     PORT=3000 \
     ROOT_URL=http://localhost:3000 \
-    Accounts_AvatarStorePath=/app/uploads \
-    DENO_DIR=/usr/share/deno
+    Accounts_AvatarStorePath=/app/uploads
 
 RUN aptMark="$(apt-mark showmanual)" \
     && apt-get install -y --no-install-recommends g++ make python3 ca-certificates \
     && cd /app/bundle/programs/server \
-    && npm install \
-    && cd npm/node_modules/isolated-vm \
-    && npm install \
-    && cd /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime \
-    && ../../../deno-bin/bin/deno cache main.ts \
+    && npm install --unsafe-perm \
     && apt-mark auto '.*' > /dev/null \
     && apt-mark manual $aptMark > /dev/null \
     && find /usr/local -type f -executable -exec ldd '{}' ';' \
