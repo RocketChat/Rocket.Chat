@@ -13,9 +13,7 @@
   <img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/RocketChat/Rocket.Chat/develop">
 </p>
 
-
-
-[Rocket.Chat](https://rocket.chat) is an open-source fully customizable communications platform developed in JavaScript for organizations with high standards of data protection.
+[Rocket.Chat](https://rocket.chat) i an open-source fully customizable communications platform developed in JavaScript for organizations with high standards of data protection.
 
 We are the ultimate **Free Open Source Solution** for team communications, enabling real-time conversations between colleagues, with other companies or with your customers, regardless of how they connect with you. The result is an increase in productivity and customer satisfaction rates.
 
@@ -23,7 +21,7 @@ Every day, tens of millions of users in over 150 countries and in organizations 
 
 # 🚀 Product Offerings - Self Hosted and Cloud
 
-Rocket.Chat has four key product offerings: 
+Rocket.Chat has four key product offerings:
 
 💬 **Team collaboration** - A single point for secure internal and cross-company collaboration.
 
@@ -45,7 +43,7 @@ Free for 30 days. Afterward, choose between continuing to host on our secure clo
 
 # 🛠️ Local development
 
-##  Prerequisites
+## Prerequisites
 
 You can follow these instructions to setup a dev environment:
 
@@ -60,7 +58,9 @@ You can follow these instructions to setup a dev environment:
 ```bash
 yarn dev # run all packages
 ```
+
 OR
+
 ```bash
 yarn dsv # run only meteor (front and back) with pre-built packages
 ```
@@ -69,7 +69,6 @@ After initialized, you can access the server at http://localhost:3000
 
 More details at: [Developer Docs](https://developer.rocket.chat/v1/docs/server-environment-setup)
 PS: For Windows you MUST use WSL2 and have +12Gb RAM
-
 
 # Gitpod Setup
 
@@ -98,10 +97,9 @@ Please refer to [Install Rocket.Chat](https://rocket.chat/install) to install yo
 
 In addition to the web interface, you can also download Rocket.Chat clients for:
 
-
 [![Rocket.Chat on Apple App Store](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=chat.rocket.android) [![](https://user-images.githubusercontent.com/551004/48210349-50649480-e35e-11e8-97d9-74a4331faf3a.png)](https://f-droid.org/en/packages/chat.rocket.android)
 
-You can also contribute to the Mobile open source code in [Rocket.Chat.ReactNative](https://github.com/RocketChat/Rocket.Chat.ReactNative) and check it out its [documentation](https://developer.rocket.chat/mobile-app/mobile-app-environment-setup) 
+You can also contribute to the Mobile open source code in [Rocket.Chat.ReactNative](https://github.com/RocketChat/Rocket.Chat.ReactNative) and check it out its [documentation](https://developer.rocket.chat/mobile-app/mobile-app-environment-setup)
 
 # 🧩 Apps Engine for Rocket.Chat
 
@@ -124,11 +122,9 @@ You can develop your own app that can be integrated with Rocket.Chat. We provide
 Join thousands of members worldwide in our [community server](https://open.rocket.chat).
 Join [#support](https://open.rocket.chat/channel/support) and [#general](https://open.rocket.chat/channel/general) for help from the community.
 
-
 # 👥 Contributions
 
 Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://developer.rocket.chat/contribute-to-rocket.chat/ways-to-contribute) page for more details.
-
 
 ## 💼 Become a Rocketeer
 
