@@ -16,7 +16,7 @@
         "build": "run-s .:build:clean .:build:default",
         ".:build:clean": "rimraf client definition server",
         ".:build:default": "tsc -p tsconfig.json",
-        ".:build:watch": "yarn .:build:default -- --watch",
+        ".:build:watch": "yarn .:build:default --watch",
         "typecheck": "tsc -p tsconfig.json --noEmit",
         "bundle": "node scripts/bundle.js",
         "gen-doc": "typedoc",
