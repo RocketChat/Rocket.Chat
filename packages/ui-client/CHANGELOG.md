@@ -23,6 +23,13 @@
 
   - @rocket.chat/ui-contexts@9.0.0-rc.0
   </details>
+## 8.0.2
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@8.0.2
+  </details>
 
 ## 8.0.1
 

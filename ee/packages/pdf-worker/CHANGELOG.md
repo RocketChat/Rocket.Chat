@@ -23,6 +23,7 @@
 
   - @rocket.chat/core-typings@6.11.0-rc.0
   </details>
+  </details>
 
 ## 0.1.1
 
