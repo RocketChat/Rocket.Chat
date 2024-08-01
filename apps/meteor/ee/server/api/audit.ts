@@ -3,9 +3,9 @@ import { Rooms, AuditLog } from '@rocket.chat/models';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import Ajv from 'ajv';
 
-import { API } from '../../../../app/api/server/api';
-import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
-import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
+import { API } from '../../../app/api/server/api';
+import { getPaginationItems } from '../../../app/api/server/helpers/getPaginationItems';
+import { findUsersOfRoom } from '../../../server/lib/findUsersOfRoom';
 
 const ajv = new Ajv({
 	coerceTypes: true,
