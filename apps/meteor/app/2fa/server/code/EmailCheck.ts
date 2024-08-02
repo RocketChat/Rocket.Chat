@@ -28,8 +28,8 @@ export class EmailCheck implements ICodeCheck {
 			return false;
 		}
 
-		if (settings.get('Accounts_TwoFactorAuthentication_Disable_Email_For_OAuth_Users')) {
-			return isOAuthUser(user);
+		if (settings.get('Accounts_TwoFactorAuthentication_Disable_Email_For_OAuth_Users') && isOAuthUser(user)) {
+			return false;
 		}
 
 		return this.getUserVerifiedEmails(user).length > 0;
