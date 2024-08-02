@@ -212,7 +212,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		room: IOmnichannelRoom,
 		message: IMessage,
 		analyticsData?: Record<string, string | number | Date>,
-	): Promise<UpdateResult>;
+	): Promise<void>; // Promise<UpdateResult>;
 	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lt: Date }, data?: { departmentId: string }): Promise<number>;
 	getAnalyticsMetricsBetweenDate(
 		t: 'l',
