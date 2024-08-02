@@ -264,5 +264,3 @@ export type AvatarServiceObject = {
 };
 
 export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject;
-
-export type IAdminUserTabs = 'all' | 'active' | 'deactivated' | 'pending';
