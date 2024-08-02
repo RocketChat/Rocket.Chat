@@ -1,24 +1,19 @@
-import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isEditedMessage, isMessageFromVisitor } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
 callbacks.add(
-	'afterSaveMessage',
-	async (message, room) => {
-		// check if room is livechat
-		if (!isOmnichannelRoom(room)) {
-			return message;
-		}
-
+	'afterOmnichannelSaveMessage',
+	async (message, { room }) => {
 		// skips this callback if the message was edited
 		if (!message || isEditedMessage(message)) {
 			return message;
 		}
 
 		// if the message has a token, it was sent by the visitor
-		if (message.token) {
+		if (isMessageFromVisitor(message)) {
 			// When visitor sends a mesage, most metrics wont be calculated/served.
 			// But, v.lq (last query) will be updated to the message time. This has to be done
 			// As not doing it will cause the metrics to be crazy and not have real values.
