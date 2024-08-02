@@ -9,8 +9,9 @@ import type {
 	ReportResult,
 	MACStats,
 } from '@rocket.chat/core-typings';
-import { UserStatus } from '@rocket.chat/core-typings';
+import { isMessageFromVisitor, UserStatus } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
+import type { Updater } from '@rocket.chat/models';
 import { Settings } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
@@ -2020,53 +2021,94 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		);
 	}
 
-	saveAnalyticsDataByRoomId(room: IOmnichannelRoom, message: IMessage, analyticsData: Record<string, string | number | Date>) {
-		const update: DeepWritable<UpdateFilter<IOmnichannelRoom>> = {
-			$set: {
-				...(analyticsData && {
-					'metrics.response.avg': analyticsData.avgResponseTime,
-				}),
-				...(analyticsData?.firstResponseTime && {
-					'metrics.reaction.fd': analyticsData.firstReactionDate,
-					'metrics.reaction.ft': analyticsData.firstReactionTime,
-					'metrics.response.fd': analyticsData.firstResponseDate,
-					'metrics.response.ft': analyticsData.firstResponseTime,
-				}),
-			},
-			...(analyticsData && {
-				$inc: {
-					'metrics.response.total': 1,
-					'metrics.response.tt': analyticsData.responseTime as number,
-					'metrics.reaction.tt': analyticsData.reactionTime as number,
-				},
-			}),
-		};
+	private getAnalyticsUpdateQuery(
+		analyticsData: Record<string, string | number | Date>,
+		updater: Updater<IOmnichannelRoom> = this.getUpdater(),
+	) {
+		if (analyticsData) {
+			updater.set('metrics.response.avg', analyticsData.avgResponseTime);
+			updater.inc('metrics.response.total', 1);
+			updater.inc('metrics.response.tt', analyticsData.responseTime as number);
+			updater.inc('metrics.reaction.tt', analyticsData.reactionTime as number);
+		}
+
+		if (analyticsData.firstResponseTime) {
+			updater.set('metrics.reaction.fd', analyticsData.firstReactionDate);
+			updater.set('metrics.reaction.ft', analyticsData.firstReactionTime);
+			updater.set('metrics.response.fd', analyticsData.firstResponseDate);
+			updater.set('metrics.response.ft', analyticsData.firstResponseTime);
+		}
+
+		return updater;
+	}
+
+	private getAnalyticsUpdateQueryBySentByAgent(
+		room: IOmnichannelRoom,
+		message: IMessage,
+		analyticsData: Record<string, string | number | Date>,
+	) {
+		const updater = this.getAnalyticsUpdateQuery(analyticsData);
 
 		// livechat analytics : update last message timestamps
 		const visitorLastQuery = room.metrics?.v ? room.metrics.v.lq : room.ts;
 		const agentLastReply = room.metrics?.servedBy ? room.metrics.servedBy.lr : room.ts;
 
-		if (message.token) {
-			// update visitor timestamp, only if its new inquiry and not continuing message
-			if (agentLastReply >= visitorLastQuery) {
-				// if first query, not continuing query from visitor
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				update.$set!['metrics.v.lq'] = message.ts;
-			}
-		} else if (visitorLastQuery > agentLastReply) {
-			// update agent timestamp, if first response, not continuing
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			update.$set!['metrics.servedBy.lr'] = message.ts;
+		if (visitorLastQuery > agentLastReply) {
+			updater.set('metrics.servedBy.lr', message.ts);
 		}
 
-		return this.updateOne(
-			{
-				_id: room._id,
-				t: 'l',
-			},
-			update,
-		);
+		return updater;
 	}
+
+	private getAnalyticsUpdateQueryBySentByVisitor(
+		room: IOmnichannelRoom,
+		message: IMessage,
+		analyticsData: Record<string, string | number | Date>,
+	) {
+		const updater = this.getAnalyticsUpdateQuery(analyticsData);
+
+		// livechat analytics : update last message timestamps
+		const visitorLastQuery = room.metrics?.v ? room.metrics.v.lq : room.ts;
+		const agentLastReply = room.metrics?.servedBy ? room.metrics.servedBy.lr : room.ts;
+
+		// update visitor timestamp, only if its new inquiry and not continuing message
+		if (agentLastReply >= visitorLastQuery) {
+			updater.set('metrics.v.lq', message.ts);
+		}
+
+		return updater;
+	}
+
+	private getAnalyticsUpdateQueryByRoomId(
+		room: IOmnichannelRoom,
+		message: IMessage,
+		analyticsData: Record<string, string | number | Date>,
+	) {
+		return isMessageFromVisitor(message)
+			? this.getAnalyticsUpdateQueryBySentByVisitor(room, message, analyticsData)
+			: this.getAnalyticsUpdateQueryBySentByAgent(room, message, analyticsData);
+	}
+
+	async saveAnalyticsDataByRoomId(
+		room: IOmnichannelRoom,
+		message: IMessage,
+		analyticsData: Record<string, string | number | Date>,
+	): Promise<void> {
+		const updater = this.getAnalyticsUpdateQueryByRoomId(room, message, analyticsData);
+		return updater.persist({ _id: room._id });
+	}
+
+	// saveAnalyticsDataByRoomIdAndLastMessageFromVisitor(
+	// 	room: IOmnichannelRoom,
+	// 	message: IMessage,
+	// 	analyticsData: Record<string, string | number | Date>,
+	// ) {
+	// 	const updater = this.getAnalyticsUpdateQueryByRoomId(room, message, analyticsData);
+
+	// 	updater.set('v.lastMessageTs', message.ts);
+
+	// 	return updater.persist({ _id: room._id });
+	// }
 
 	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lt: Date }, { departmentId }: { departmentId?: string } = {}) {
 		const query: Filter<IOmnichannelRoom> = {
