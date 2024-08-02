@@ -9774,7 +9774,7 @@ __metadata:
     "@swc/jest": ^0.2.29
     "@types/jest": ~29.5.12
     eslint: ~8.45.0
-    jest: ~29.7.0
+    jest: ^29.7.0
     ts-jest: ~29.1.1
     typescript: ~5.3.3
   languageName: unknown
@@ -28457,7 +28457,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:~29.7.0":
+"jest@npm:^29.7.0, jest@npm:~29.7.0":
   version: 29.7.0
   resolution: "jest@npm:29.7.0"
   dependencies:
