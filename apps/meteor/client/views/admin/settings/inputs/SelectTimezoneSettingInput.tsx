@@ -4,20 +4,9 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
+import type { SettingInputProps } from './types';
 
-type SelectTimezoneSettingInputProps = {
-	_id: string;
-	label: string;
-	value?: string;
-	placeholder?: string;
-	readonly?: boolean;
-	autocomplete?: boolean;
-	disabled?: boolean;
-	required?: boolean;
-	hasResetButton?: boolean;
-	onChangeValue?: (value: string) => void;
-	onResetButtonClick?: () => void;
-};
+type SelectTimezoneSettingInputProps = SettingInputProps;
 
 function SelectTimezoneSettingInput({
 	_id,

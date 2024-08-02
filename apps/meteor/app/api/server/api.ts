@@ -14,15 +14,16 @@ import { Restivus } from 'meteor/rocketchat:restivus';
 import _ from 'underscore';
 
 import { isObject } from '../../../lib/utils/isObject';
+import { getNestedProp } from '../../../server/lib/getNestedProp';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { checkCodeForUser } from '../../2fa/server/code';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { apiDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
+import { notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import type { PermissionsPayload } from './api.helpers';
-import { checkPermissionsForInvocation, checkPermissions } from './api.helpers';
+import { checkPermissionsForInvocation, checkPermissions, parseDeprecation } from './api.helpers';
 import type {
 	FailureResult,
 	InternalError,
@@ -62,6 +63,7 @@ interface IAPIDefaultFieldsToExclude {
 	statusDefault: number;
 	_updatedAt: number;
 	settings: number;
+	inviteToken: number;
 }
 
 type RateLimiterOptions = {
@@ -108,6 +110,22 @@ const getRequestIP = (req: Request): string | null => {
 	return forwardedFor[forwardedFor.length - httpForwardedCount];
 };
 
+const generateConnection = (
+	ipAddress: string,
+	httpHeaders: Record<string, any>,
+): {
+	id: string;
+	close: () => void;
+	clientAddress: string;
+	httpHeaders: Record<string, any>;
+} => ({
+	id: Random.id(),
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	close() {},
+	httpHeaders,
+	clientAddress: ipAddress,
+});
+
 let prometheusAPIUserAgent = false;
 
 export class APIClass<TBasePath extends string = ''> extends Restivus {
@@ -132,6 +150,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 
 	public limitedUserFieldsToExcludeIfIsPrivilegedUser: {
 		services: number;
+		inviteToken: number;
 	};
 
 	constructor(properties: IAPIProperties) {
@@ -159,10 +178,12 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			statusDefault: 0,
 			_updatedAt: 0,
 			settings: 0,
+			inviteToken: 0,
 		};
 		this.limitedUserFieldsToExclude = this.defaultLimitedUserFieldsToExclude;
 		this.limitedUserFieldsToExcludeIfIsPrivilegedUser = {
 			services: 0,
+			inviteToken: 0,
 		};
 	}
 
@@ -322,7 +343,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		}
 
 		rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.increment(objectForRateLimitMatch);
-		const attemptResult = rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
+		const attemptResult = await rateLimiterDictionary[objectForRateLimitMatch.route].rateLimiter.check(objectForRateLimitMatch);
 		const timeToResetAttempsInSeconds = Math.ceil(attemptResult.timeToReset / 1000);
 		response.setHeader('X-RateLimit-Limit', rateLimiterDictionary[objectForRateLimitMatch.route].options.numRequestsAllowed);
 		response.setHeader('X-RateLimit-Remaining', attemptResult.numInvocationsLeft);
@@ -569,18 +590,11 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 
 						let result;
 
-						const connection = {
-							id: Random.id(),
-							// eslint-disable-next-line @typescript-eslint/no-empty-function
-							close() {},
-							token: this.token,
-							httpHeaders: this.request.headers,
-							clientAddress: this.requestIp,
-						};
+						const connection = { ...generateConnection(this.requestIp, this.request.headers), token: this.token };
 
 						try {
-							if (options.deprecationVersion) {
-								apiDeprecationLogger.endpoint(this.request.route, options.deprecationVersion, this.response);
+							if (options.deprecation) {
+								parseDeprecation(this, options.deprecation);
 							}
 
 							await api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
@@ -761,12 +775,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 					const args = loginCompatibility(this.bodyParams, request);
 
 					const invocation = new DDPCommon.MethodInvocation({
-						connection: {
-							// eslint-disable-next-line @typescript-eslint/no-empty-function
-							close() {},
-							httpHeaders: this.request.headers,
-							clientAddress: getRequestIP(request) || '',
-						},
+						connection: generateConnection(getRequestIP(request) || '', this.request.headers),
 					});
 
 					let auth;
@@ -825,52 +834,68 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			},
 		);
 
-		const logout = async function (this: Restivus): Promise<{ status: string; data: { message: string } }> {
-			    // Remove the given auth token from the user's account
-			    const authToken = this.request.headers['x-auth-token'];
-			    const hashedToken = Accounts._hashLoginToken(authToken);
-			    const tokenLocation = self._config?.auth?.token;
-			    const index = tokenLocation?.lastIndexOf('.') || 0;
-			    const tokenPath = tokenLocation?.substring(0, index) || '';
-			    const tokenFieldName = tokenLocation?.substring(index + 1) || '';
-			    const tokenToRemove: Record<string, any> = {};
-			    tokenToRemove[tokenFieldName] = hashedToken;
-			
-			    const response = {
-			        status: 'success',
-			        data: {
-			            message: "You've been logged out!",
-			        },
-			    };
-			
-			    try {
-			        // Update the user document to remove the token
-			        await Users.updateOne(
-			            { _id: this.user._id },
-			            {
-			                $pull: { [tokenPath]: tokenToRemove },
-			            },
-			        );
-			
-			        // Call the logout hook with the authenticated user attached
-			        const extraData = self._config.onLoggedOut?.call(this);
-			        if (extraData != null) {
-			            _.extend(response.data, {
-			                extra: extraData,
-			            });
-			        }
-			    } catch (error) {
-			        console.error('Error removing token:', error);
-			        return {
-			            status: 'error',
-			            data: {
-			                message: 'Failed to log out. Please try again.',
-			            },
-			        };
-			    }
-			
-			    return response;
-			};
+		
+const logout = async function (this: Restivus): Promise<{ status: string; data: { message: string } }> {
+    // Remove the given auth token from the user's account
+    const authToken = this.request.headers['x-auth-token'];
+    const hashedToken = Accounts._hashLoginToken(authToken);
+    const tokenLocation = self._config?.auth?.token;
+    const index = tokenLocation?.lastIndexOf('.') || 0;
+    const tokenPath = tokenLocation?.substring(0, index) || '';
+    const tokenFieldName = tokenLocation?.substring(index + 1) || '';
+    const tokenToRemove: Record<string, any> = {};
+    tokenToRemove[tokenFieldName] = hashedToken;
+    const tokenRemovalQuery: Record<string, any> = {};
+    tokenRemovalQuery[tokenPath] = tokenToRemove;
+
+    const response = {
+        status: 'success',
+        data: {
+            message: "You've been logged out!",
+        },
+    };
+
+    try {
+        // Update the user document to remove the token
+        await Users.updateOne(
+            { _id: this.user._id },
+            {
+                $pull: tokenRemovalQuery,
+            },
+        );
+
+        // Call the logout hook with the authenticated user attached
+        const extraData = self._config.onLoggedOut?.call(this);
+        if (extraData != null) {
+            _.extend(response.data, {
+                extra: extraData,
+            });
+        }
+
+        // Notify relevant components asynchronously about the user change
+        void notifyOnUserChangeAsync(async () => {
+            const userTokens = await Users.findOneById(this.user._id, { projection: { [tokenPath]: 1 } });
+            if (!userTokens) {
+                return;
+            }
+
+            const diff = { [tokenPath]: getNestedProp(userTokens, tokenPath) };
+
+            return { clientAction: 'updated', id: this.user._id, diff };
+        });
+    } catch (error) {
+        console.error('Error removing token:', error);
+        return {
+            status: 'error',
+            data: {
+                message: 'Failed to log out. Please try again.',
+            },
+        };
+    }
+
+    return response;
+};
+
 
 		/*
 			Add a logout endpoint to the API

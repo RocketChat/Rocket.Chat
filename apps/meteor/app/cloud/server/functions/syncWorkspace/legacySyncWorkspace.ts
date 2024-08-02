@@ -5,6 +5,7 @@ import { v, compile } from 'suretype';
 
 import { CloudWorkspaceConnectionError } from '../../../../../lib/errors/CloudWorkspaceConnectionError';
 import { CloudWorkspaceRegistrationError } from '../../../../../lib/errors/CloudWorkspaceRegistrationError';
+import { notifyOnSettingChangedById } from '../../../../lib/server/lib/notifyListener';
 import { settings } from '../../../../settings/server';
 import type { WorkspaceRegistrationData } from '../buildRegistrationData';
 import { buildWorkspaceRegistrationData } from '../buildRegistrationData';
@@ -98,7 +99,7 @@ const fetchWorkspaceClientPayload = async ({
 			Authorization: `Bearer ${token}`,
 		},
 		body: workspaceRegistrationData,
-		timeout: 3000,
+		timeout: 5000,
 	});
 
 	if (!response.ok) {
@@ -126,11 +127,13 @@ const fetchWorkspaceClientPayload = async ({
 /** @deprecated */
 const consumeWorkspaceSyncPayload = async (result: Serialized<Cloud.WorkspaceSyncPayload>) => {
 	if (result.publicKey) {
-		await Settings.updateValueById('Cloud_Workspace_PublicKey', result.publicKey);
+		(await Settings.updateValueById('Cloud_Workspace_PublicKey', result.publicKey)).modifiedCount &&
+			void notifyOnSettingChangedById('Cloud_Workspace_PublicKey');
 	}
 
 	if (result.trial?.trialID) {
-		await Settings.updateValueById('Cloud_Workspace_Had_Trial', true);
+		(await Settings.updateValueById('Cloud_Workspace_Had_Trial', true)).modifiedCount &&
+			void notifyOnSettingChangedById('Cloud_Workspace_Had_Trial');
 	}
 
 	// add banners

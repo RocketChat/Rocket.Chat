@@ -23,11 +23,11 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('[data-qa-id="return-to-queue-modal"]');
 	}
 
-	get btnReturnToQueueConfirm():Locator {
+	get btnReturnToQueueConfirm(): Locator {
 		return this.modalReturnToQueue.locator('role=button[name="Confirm"]');
 	}
 
-	get btnReturnToQueueCancel():Locator {
+	get btnReturnToQueueCancel(): Locator {
 		return this.modalReturnToQueue.locator('role=button[name="Cancel"]');
 	}
 
@@ -58,7 +58,7 @@ export class HomeOmnichannelContent extends HomeContent {
 	get infoContactName(): Locator {
 		return this.page.locator('[data-qa-id="contactInfo-name"]');
 	}
-	
+
 	get btnReturn(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-back"]');
 	}
@@ -77,5 +77,9 @@ export class HomeOmnichannelContent extends HomeContent {
 
 	get btnOnHoldConfirm(): Locator {
 		return this.modalOnHold.locator('role=button[name="Place chat On-Hold"]');
+	}
+
+	get infoHeaderName(): Locator {
+		return this.page.locator('.rcx-room-header').getByRole('heading');
 	}
 }

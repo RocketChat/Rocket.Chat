@@ -23,6 +23,7 @@ export const createFileUploadSettings = () =>
 			type: 'string',
 			public: true,
 			i18nDescription: 'FileUpload_MediaTypeBlackListDescription',
+			alert: 'FileUpload_MediaTypeBlackList_Alert',
 		});
 
 		await this.add('FileUpload_ProtectFiles', true, {
@@ -33,10 +34,30 @@ export const createFileUploadSettings = () =>
 
 		await this.add('FileUpload_Restrict_to_room_members', true, {
 			type: 'boolean',
-			enableQuery: {
-				_id: 'FileUpload_ProtectFiles',
-				value: true,
-			},
+			enableQuery: [
+				{
+					_id: 'FileUpload_ProtectFiles',
+					value: true,
+				},
+				{
+					_id: 'FileUpload_Restrict_to_users_who_can_access_room',
+					value: false,
+				},
+			],
+		});
+
+		await this.add('FileUpload_Restrict_to_users_who_can_access_room', false, {
+			type: 'boolean',
+			enableQuery: [
+				{
+					_id: 'FileUpload_ProtectFiles',
+					value: true,
+				},
+				{
+					_id: 'FileUpload_Restrict_to_room_members',
+					value: false,
+				},
+			],
 		});
 
 		await this.add('FileUpload_RotateImages', true, {
@@ -110,6 +131,8 @@ export const createFileUploadSettings = () =>
 				type: 'password',
 				autocomplete: false,
 				secret: true,
+				i18nLabel: 'FileUpload_S3_AWSAccessKeyId',
+				i18nDescription: 'FileUpload_S3_AWSAccessKeyId_desc',
 				enableQuery: {
 					_id: 'FileUpload_Storage_Type',
 					value: 'AmazonS3',
@@ -119,6 +142,8 @@ export const createFileUploadSettings = () =>
 				type: 'password',
 				autocomplete: false,
 				secret: true,
+				i18nLabel: 'FileUpload_S3_AWSSecretAccessKey',
+				i18nDescription: 'FileUpload_S3_AWSSecretAccessKey_desc',
 				enableQuery: {
 					_id: 'FileUpload_Storage_Type',
 					value: 'AmazonS3',
@@ -183,6 +208,13 @@ export const createFileUploadSettings = () =>
 					value: 'AmazonS3',
 				},
 			});
+			await this.add('FileUpload_S3_Proxy_UserDataFiles', false, {
+				type: 'boolean',
+				enableQuery: {
+					_id: 'FileUpload_Storage_Type',
+					value: 'AmazonS3',
+				},
+			});
 		});
 
 		await this.section('Google Cloud Storage', async function () {
@@ -234,6 +266,13 @@ export const createFileUploadSettings = () =>
 				},
 			});
 			await this.add('FileUpload_GoogleStorage_Proxy_Uploads', false, {
+				type: 'boolean',
+				enableQuery: {
+					_id: 'FileUpload_Storage_Type',
+					value: 'GoogleCloudStorage',
+				},
+			});
+			await this.add('FileUpload_GoogleStorage_Proxy_UserDataFiles', false, {
 				type: 'boolean',
 				enableQuery: {
 					_id: 'FileUpload_Storage_Type',
@@ -292,6 +331,13 @@ export const createFileUploadSettings = () =>
 				},
 			});
 			await this.add('FileUpload_Webdav_Proxy_Uploads', false, {
+				type: 'boolean',
+				enableQuery: {
+					_id: 'FileUpload_Storage_Type',
+					value: 'Webdav',
+				},
+			});
+			await this.add('FileUpload_Webdav_Proxy_UserDataFiles', false, {
 				type: 'boolean',
 				enableQuery: {
 					_id: 'FileUpload_Storage_Type',

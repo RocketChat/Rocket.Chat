@@ -1,26 +1,24 @@
 import { useDebouncedState, useSafely } from '@rocket.chat/fuselage-hooks';
-import type { RefObject } from 'react';
-import { useEffect } from 'react';
+import { useCallback } from 'react';
 
-export const useIsVisible = (ref: RefObject<HTMLInputElement>): [boolean] => {
+export const useIsVisible = () => {
 	const [menuVisibility, setMenuVisibility] = useSafely(useDebouncedState(!!window.DISABLE_ANIMATION, 100));
 
-	useEffect(() => {
-		if (!ref.current) {
-			return;
-		}
-		const observer = new IntersectionObserver((entries) => {
-			entries.forEach((entry) => {
-				setMenuVisibility(entry.isIntersecting);
+	const callbackRef = useCallback(
+		(node: HTMLElement | null) => {
+			if (!node) {
+				return;
+			}
+			const observer = new IntersectionObserver((entries) => {
+				entries.forEach((entry) => {
+					setMenuVisibility(entry.isIntersecting);
+				});
 			});
-		});
 
-		observer.observe(ref.current);
+			observer.observe(node);
+		},
+		[setMenuVisibility],
+	);
 
-		return (): void => {
-			observer.disconnect();
-		};
-	}, [setMenuVisibility, ref]);
-
-	return [menuVisibility];
+	return [callbackRef, menuVisibility] as const;
 };

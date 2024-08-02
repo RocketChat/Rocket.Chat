@@ -1,5 +1,52 @@
 # Change Log
 
+## 0.36.0-rc.0
+
+### Minor Changes
+
+- ([#32793](https://github.com/RocketChat/Rocket.Chat/pull/32793)) New Feature: Video Conference Persistent Chat.
+  This feature provides a discussion id for conference provider apps to store the chat messages exchanged during the conferences, so that those users may then access those messages again at any time through Rocket.Chat.
+
+## 0.35.0
+
+### Minor Changes
+
+- ([#31455](https://github.com/RocketChat/Rocket.Chat/pull/31455)) Introduced new elements for apps to select users
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+## 0.35.0-rc.0
+
+### Minor Changes
+
+- ([#31455](https://github.com/RocketChat/Rocket.Chat/pull/31455)) Introduced new elements for apps to select users
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+## 0.34.0
+
+### Minor Changes
+
+- ([#31918](https://github.com/RocketChat/Rocket.Chat/pull/31918)) Introduced new elements for apps to select channels
+
+## 0.34.0-rc.0
+
+### Minor Changes
+
+- ([#31918](https://github.com/RocketChat/Rocket.Chat/pull/31918)) Introduced new elements for apps to select channels
+
+## 0.33.0
+
+### Minor Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+## 0.33.0-rc.0
+
+### Minor Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
 ## 0.32.1
 
 ### Patch Changes

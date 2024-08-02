@@ -3,7 +3,7 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import Header, { Picture, Content, SubTitle, Title, Actions, Action, Post, CustomField } from '.';
-import { gazzoAvatar } from '../../helpers.stories';
+import { gazzoAvatar } from '../../../.storybook/helpers';
 import Arrow from '../../icons/arrowDown.svg';
 import Bell from '../../icons/bell.svg';
 import NewWindow from '../../icons/newWindow.svg';

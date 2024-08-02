@@ -13,8 +13,10 @@ import type {
 	IndexDescription,
 	DeleteResult,
 	UpdateFilter,
+	AggregationCursor,
 } from 'mongodb';
 
+import { notifyOnLivechatDepartmentAgentChangedByDepartmentId } from '../../../app/lib/server/lib/notifyListener';
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implements ILivechatDepartmentModel {
@@ -250,6 +252,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 
 		if (current?.enabled !== data.enabled) {
 			await LivechatDepartmentAgents.setDepartmentEnabledByDepartmentId(_id, data.enabled);
+			void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id, current ? 'updated' : 'inserted');
 		}
 
 		const latestDept = await this.findOneById(_id);
@@ -444,6 +447,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 	}
 
 	findByParentId(_parentId: string, _options?: FindOptions<ILivechatDepartment> | undefined): FindCursor<ILivechatDepartment> {
+		throw new Error('Method not implemented in CE');
+	}
+
+	findAgentsByBusinessHourId(_businessHourId: string): AggregationCursor<{ agentIds: string[] }> {
 		throw new Error('Method not implemented in CE');
 	}
 }

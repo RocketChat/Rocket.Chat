@@ -1,5 +1,439 @@
 # @rocket.chat/instance-status
 
+## 0.1.3-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.2.0-rc.2
+  </details>
+
+## 0.1.3-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+## 0.1.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/models@0.1.2
+  </details>
+
+  - @rocket.chat/models@0.2.0-rc.1
+  </details>
+
+## 0.1.3-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [2d89a0c448]:</summary>
+
+  - @rocket.chat/models@0.2.0-rc.0
+  - @rocket.chat/models@0.1.2
+  </details>
+
+## 0.1.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.1.1
+  </details>
+
+## 0.1.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4f72d62aa7]:</summary>
+
+  - @rocket.chat/models@0.1.0
+  </details>
+
+## 0.1.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.1.0-rc.7
+  </details>
+
+## 0.1.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.1.0-rc.6
+  </details>
+
+## 0.1.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.1.0-rc.5
+  </details>
+
+## 0.1.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.1.0-rc.4
+  </details>
+
+## 0.1.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.1.0-rc.3
+  </details>
+
+## 0.1.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.1.0-rc.2
+  </details>
+
+## 0.1.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.1.0-rc.1
+  </details>
+
+## 0.1.0-rc.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [4f72d62aa7]:</summary>
+
+  - @rocket.chat/models@0.1.0-rc.0
+
+## 0.0.42
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.42
+  </details>
+
+## 0.0.41
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.41
+  </details>
+
+## 0.0.40
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.40
+  </details>
+
+## 0.0.39
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.39
+  </details>
+
+## 0.0.39-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.39-rc.2
+  </details>
+
+## 0.0.39-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.39-rc.1
+  </details>
+
+## 0.0.39-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.39-rc.0
+  </details>
+
+## 0.0.38
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.38
+  </details>
+
+## 0.0.38-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.38-rc.2
+  </details>
+
+## 0.0.38-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.38-rc.1
+  </details>
+
+## 0.0.37
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.37
+  </details>
+
+## 0.0.36
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.37-rc.1
+  </details>
+
+## 0.0.37-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.36-rc.0
+  </details>
+
+## 0.0.35
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [e203c40471]:</summary>
+
+  - @rocket.chat/models@0.0.35
+  </details>
+
+## 0.0.35-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.35-rc.4
+  </details>
+
+## 0.0.35-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.35-rc.3
+  </details>
+
+## 0.0.35-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.35-rc.2
+  </details>
+
+## 0.0.35-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.35-rc.1
+  </details>
+
+## 0.0.35-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [e203c40471]:</summary>
+
+  - @rocket.chat/models@0.0.35-rc.0
+  </details>
+
+## 0.0.34
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ada096901a]:</summary>
+
+  - @rocket.chat/models@0.0.34
+  </details>
+
+## 0.0.33
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.33
+  </details>
+
+## 0.0.32
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.32
+  </details>
+
+## 0.0.31
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.31
+  </details>
+
+## 0.0.30
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.30
+  </details>
+
+## 0.0.29
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.29
+  </details>
+
+## 0.0.28
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- <details><summary>Updated dependencies [b223cbde14]:</summary>
+
+  - @rocket.chat/models@0.0.28
+  </details>
+
+## 0.0.28-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.28-rc.7
+  </details>
+
+## 0.0.28-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.28-rc.6
+  </details>
+
+## 0.0.28-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@0.0.28-rc.5
+  </details>
+
+## 0.0.28-rc.4
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.28-rc.4
+
+## 0.0.28-rc.3
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.28-rc.3
+
+## 0.0.28-rc.2
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.28-rc.2
+
+## 0.0.28-rc.1
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.28-rc.1
+
+## 0.0.28-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- Updated dependencies [b223cbde14]
+  - @rocket.chat/models@0.0.28-rc.0
+
+## 0.0.27
+
+### Patch Changes
+
+- @rocket.chat/models@0.0.27
+
 ## 0.0.26
 
 ### Patch Changes

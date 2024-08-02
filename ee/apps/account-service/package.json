@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/account-service",
 	"private": true,
-	"version": "0.3.2",
+	"version": "0.4.3-rc.2",
 	"description": "Rocket.Chat Account service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -22,6 +22,7 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
+		"@rocket.chat/tools": "workspace:^",
 		"@types/node": "^14.18.63",
 		"bcrypt": "^5.0.1",
 		"ejson": "^2.2.3",
@@ -31,7 +32,7 @@
 		"gc-stats": "^1.4.0",
 		"mem": "^8.1.1",
 		"moleculer": "^0.14.31",
-		"mongodb": "^4.17.1",
+		"mongodb": "^4.17.2",
 		"nats": "^2.4.0",
 		"pino": "^8.15.0",
 		"polka": "^0.5.2",
@@ -44,7 +45,7 @@
 		"@types/polka": "^0.5.6",
 		"eslint": "~8.45.0",
 		"ts-node": "^10.9.1",
-		"typescript": "~5.3.2"
+		"typescript": "~5.3.3"
 	},
 	"main": "./dist/ee/apps/account-service/src/service.js",
 	"files": [

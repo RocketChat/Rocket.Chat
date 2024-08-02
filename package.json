@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "6.6.0-develop",
+	"version": "6.12.0-develop",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
@@ -13,13 +13,15 @@
 		"dsv": "turbo run dsv --filter=@rocket.chat/meteor...",
 		"lint": "turbo run lint",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
-		"fuselage": "./fuselage.sh"
+		"fuselage": "./fuselage.sh",
+		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.26.2",
 		"@types/chart.js": "^2.9.39",
 		"@types/js-yaml": "^4.0.8",
-		"turbo": "~1.10.16"
+		"ts-node": "^10.9.2",
+		"turbo": "^2.0.9"
 	},
 	"workspaces": [
 		"apps/*",
@@ -48,7 +50,6 @@
 		"minTag": "0.55.0-rc.0",
 		"updateFiles": [
 			"package.json",
-			"apps/meteor/package.json",
 			"apps/meteor/app/utils/rocketchat.info"
 		]
 	},

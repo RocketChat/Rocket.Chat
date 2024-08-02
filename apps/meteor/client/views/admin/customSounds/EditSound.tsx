@@ -146,11 +146,13 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup mbs={8} stretch>
-					<Button icon='trash' danger onClick={handleDeleteButtonClick}>
-						{t('Delete')}
-					</Button>
-				</ButtonGroup>
+				<Box mbs={8}>
+					<ButtonGroup stretch>
+						<Button icon='trash' danger onClick={handleDeleteButtonClick}>
+							{t('Delete')}
+						</Button>
+					</ButtonGroup>
+				</Box>
 			</ContextualbarFooter>
 		</>
 	);

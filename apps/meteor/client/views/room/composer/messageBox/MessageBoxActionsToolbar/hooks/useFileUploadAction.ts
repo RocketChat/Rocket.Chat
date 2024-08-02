@@ -1,15 +1,15 @@
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
+import type { GenericMenuItemProps } from '../../../../../../components/GenericMenu/GenericMenuItem';
 import { useFileInput } from '../../../../../../hooks/useFileInput';
 import { useChat } from '../../../../contexts/ChatContext';
-import type { ToolbarAction } from './ToolbarAction';
 
 const fileInputProps = { type: 'file', multiple: true };
 
-export const useFileUploadAction = (disabled: boolean): ToolbarAction => {
+export const useFileUploadAction = (disabled: boolean): GenericMenuItemProps => {
 	const t = useTranslation();
-	const fileUploadEnabled = useSetting('FileUpload_Enabled');
+	const fileUploadEnabled = useSetting<boolean>('FileUpload_Enabled');
 	const fileInputRef = useFileInput(fileInputProps);
 	const chat = useChat();
 
@@ -23,10 +23,10 @@ export const useFileUploadAction = (disabled: boolean): ToolbarAction => {
 		};
 
 		const handleUploadChange = async () => {
-			const { mime } = await import('../../../../../../../app/utils/lib/mimeTypes');
+			const { getMimeType } = await import('../../../../../../../app/utils/lib/mimeTypes');
 			const filesToUpload = Array.from(fileInputRef?.current?.files ?? []).map((file) => {
 				Object.defineProperty(file, 'type', {
-					value: mime.lookup(file.name),
+					value: getMimeType(file.type, file.name),
 				});
 				return file;
 			});
@@ -43,9 +43,8 @@ export const useFileUploadAction = (disabled: boolean): ToolbarAction => {
 
 	return {
 		id: 'file-upload',
+		content: t('Upload_file'),
 		icon: 'clip',
-		label: t('File'),
-		title: t('File'),
 		onClick: handleUpload,
 		disabled: !fileUploadEnabled || disabled,
 	};

@@ -207,4 +207,12 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 		await federationService.initialize();
 		return federationService;
 	}
+
+	async created(): Promise<void> {
+		return super.created();
+	}
+
+	async stopped(): Promise<void> {
+		return super.stopped();
+	}
 }

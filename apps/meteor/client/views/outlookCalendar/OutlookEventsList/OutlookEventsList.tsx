@@ -14,7 +14,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarSkeleton,
 } from '../../../components/Contextualbar';
-import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
+import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
 import { useMutationOutlookCalendarSync, useOutlookCalendarListForToday } from '../hooks/useOutlookCalendarList';
@@ -67,11 +67,13 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 						</Box>
 					</ContextualbarContent>
 					<ContextualbarFooter>
-						<ButtonGroup mbs={8} stretch>
-							<Button primary loading={syncOutlookCalendar.isLoading} onClick={() => syncOutlookCalendar.mutate()}>
-								{t('Login')}
-							</Button>
-						</ButtonGroup>
+						<Box mbs={8}>
+							<ButtonGroup stretch>
+								<Button primary loading={syncOutlookCalendar.isLoading} onClick={() => syncOutlookCalendar.mutate()}>
+									{t('Login')}
+								</Button>
+							</ButtonGroup>
+						</Box>
 					</ContextualbarFooter>
 				</>
 			)}
@@ -106,7 +108,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 									totalCount={total}
 									overscan={25}
 									data={calendarEvents}
-									components={{ Scroller: ScrollableContentWrapper }}
+									components={{ Scroller: VirtuosoScrollbars }}
 									itemContent={(_index, calendarData): ReactElement => <OutlookEventItem {...calendarData} />}
 								/>
 							</Box>
@@ -122,11 +124,13 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 							)}
 						</ButtonGroup>
 						{hasOutlookMethods && (
-							<ButtonGroup mbs={8} stretch>
-								<Button primary loading={syncOutlookCalendar.isLoading} onClick={() => syncOutlookCalendar.mutate()}>
-									{t('Sync')}
-								</Button>
-							</ButtonGroup>
+							<Box mbs={8}>
+								<ButtonGroup stretch>
+									<Button primary loading={syncOutlookCalendar.isLoading} onClick={() => syncOutlookCalendar.mutate()}>
+										{t('Sync')}
+									</Button>
+								</ButtonGroup>
+							</Box>
 						)}
 					</ContextualbarFooter>
 				</>

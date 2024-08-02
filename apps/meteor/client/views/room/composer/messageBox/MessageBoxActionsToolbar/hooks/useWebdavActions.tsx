@@ -1,26 +1,24 @@
 import type { IWebdavAccountIntegration } from '@rocket.chat/core-typings';
-import { useTranslation, useSetting, useSetModal } from '@rocket.chat/ui-contexts';
+import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { WebdavAccounts } from '../../../../../../../app/models/client';
-import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
+import type { GenericMenuItemProps } from '../../../../../../components/GenericMenu/GenericMenuItem';
+import { useWebDAVAccountIntegrationsQuery } from '../../../../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
 import { useChat } from '../../../../contexts/ChatContext';
 import AddWebdavAccountModal from '../../../../webdav/AddWebdavAccountModal';
 import WebdavFilePickerModal from '../../../../webdav/WebdavFilePickerModal';
-import type { ToolbarAction } from './ToolbarAction';
 
-const getWebdavAccounts = (): IWebdavAccountIntegration[] => WebdavAccounts.find().fetch();
+export const useWebdavActions = (): GenericMenuItemProps[] => {
+	const enabled = useSetting<boolean>('Webdav_Integration_Enabled', false);
 
-export const useWebdavActions = (): Array<ToolbarAction> => {
-	const t = useTranslation();
-	const setModal = useSetModal();
-	const webDavAccounts = useReactiveValue(getWebdavAccounts);
-
-	const webDavEnabled = useSetting('Webdav_Integration_Enabled');
-
-	const handleCreateWebDav = () => setModal(<AddWebdavAccountModal onClose={() => setModal(null)} onConfirm={() => setModal(null)} />);
+	const { isSuccess, data } = useWebDAVAccountIntegrationsQuery({ enabled });
 
 	const chat = useChat();
+
+	const { t } = useTranslation();
+	const setModal = useSetModal();
+	const handleAddWebDav = () => setModal(<AddWebdavAccountModal onClose={() => setModal(null)} onConfirm={() => setModal(null)} />);
 
 	const handleUpload = async (file: File, description?: string) =>
 		chat?.uploads.send(file, {
@@ -33,19 +31,17 @@ export const useWebdavActions = (): Array<ToolbarAction> => {
 	return [
 		{
 			id: 'webdav-add',
-			title: !webDavEnabled ? t('WebDAV_Integration_Not_Allowed') : undefined,
-			disabled: !webDavEnabled,
-			onClick: handleCreateWebDav,
+			content: t('Add_Server'),
 			icon: 'cloud-plus',
-			label: t('Add_Server'),
+			disabled: !isSuccess,
+			onClick: handleAddWebDav,
 		},
-		...(webDavEnabled && webDavAccounts.length > 0
-			? webDavAccounts.map((account) => ({
+		...(isSuccess
+			? data.map((account) => ({
 					id: account._id,
-					disabled: false,
-					onClick: () => handleOpenWebdav(account),
+					content: account.name,
 					icon: 'cloud-plus' as const,
-					label: account.name,
+					onClick: () => handleOpenWebdav(account),
 			  }))
 			: []),
 	];

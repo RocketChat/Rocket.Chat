@@ -1,8 +1,10 @@
-import { Sidebar } from '@rocket.chat/fuselage';
-import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
+import { Sidebar, SidebarDivider, SidebarSection } from '@rocket.chat/fuselage';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
+import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
+import SidebarHeaderToolbar from './SidebarHeaderToolbar';
 import UserAvatarWithStatus from './UserAvatarWithStatus';
 import UserMenu from './UserMenu';
 import Administration from './actions/Administration';
@@ -24,22 +26,45 @@ const Header = (): ReactElement => {
 	const user = useUser();
 
 	return (
-		<Sidebar.TopBar.Section>
-			{user ? <UserMenu user={user} /> : <UserAvatarWithStatus />}
-			<Sidebar.TopBar.Actions>
-				<Home title={t('Home')} />
-				<Search title={t('Search')} />
-				{user && (
-					<>
-						<Directory title={t('Directory')} />
-						<Sort title={t('Display')} />
-						<CreateRoom title={t('Create_new')} data-qa='sidebar-create' />
-						<Administration title={t('Administration')} />
-					</>
-				)}
-				{!user && <Login title={t('Login')} />}
-			</Sidebar.TopBar.Actions>
-		</Sidebar.TopBar.Section>
+		<FeaturePreview feature='newNavigation'>
+			<FeaturePreviewOff>
+				<Sidebar.TopBar.Section>
+					{user ? <UserMenu user={user} /> : <UserAvatarWithStatus />}
+					<SidebarHeaderToolbar aria-label={t('Sidebar_actions')}>
+						<Home title={t('Home')} />
+						<Search title={t('Search')} />
+						{user && (
+							<>
+								<Directory title={t('Directory')} />
+								<Sort title={t('Display')} />
+								<CreateRoom title={t('Create_new')} data-qa='sidebar-create' />
+								<Administration title={t('Administration')} />
+							</>
+						)}
+						{!user && <Login title={t('Login')} />}
+					</SidebarHeaderToolbar>
+				</Sidebar.TopBar.Section>
+			</FeaturePreviewOff>
+			<FeaturePreviewOn>
+				<SidebarSection>
+					{user ? <UserMenu user={user} /> : <UserAvatarWithStatus />}
+					<SidebarHeaderToolbar aria-label={t('Sidebar_actions')}>
+						<Home title={t('Home')} />
+						<Search title={t('Search')} />
+						{user && (
+							<>
+								<Directory title={t('Directory')} />
+								<Sort title={t('Display')} />
+								<CreateRoom title={t('Create_new')} data-qa='sidebar-create' />
+								<Administration title={t('Administration')} />
+							</>
+						)}
+						{!user && <Login title={t('Login')} />}
+					</SidebarHeaderToolbar>
+				</SidebarSection>
+				<SidebarDivider />
+			</FeaturePreviewOn>
+		</FeaturePreview>
 	);
 };
 

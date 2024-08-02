@@ -28,6 +28,7 @@ type WithOptions = {
 	options?: any;
 };
 
+// TODO: Fix types of model
 export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	getQueueMetrics(params: { departmentId: any; agentId: any; includeOfflineAgents: any; options?: any }): any;
 
@@ -96,6 +97,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		visitorId?: any;
 		roomIds?: any;
 		onhold: any;
+		queued: any;
 		options?: any;
 		extraQuery?: any;
 	}): FindPaginated<FindCursor<IOmnichannelRoom>>;
@@ -230,6 +232,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		data?: { departmentId: string },
 	): AggregationCursor<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs' | 'onHold'>>;
 	findOpenByAgent(userId: string, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
+	countOpenByAgent(userId: string, extraQuery?: Filter<IOmnichannelRoom>): Promise<number>;
 	changeAgentByRoomId(roomId: string, newAgent: { agentId: string; username: string }): Promise<UpdateResult>;
 	changeDepartmentIdByRoomId(roomId: string, departmentId: string): Promise<UpdateResult>;
 	saveCRMDataByRoomId(roomId: string, crmData: unknown): Promise<UpdateResult>;

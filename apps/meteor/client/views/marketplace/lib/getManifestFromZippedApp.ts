@@ -1,7 +1,8 @@
+import type { AppPermission } from '@rocket.chat/core-typings';
 import { unzipSync, strFromU8 } from 'fflate';
 
 type Uint8ArrayObject = { [fileName: string]: Uint8Array };
-type AppManifestSchema = { [key: string]: string };
+type AppManifestSchema = { id: string; name: string; permissions: AppPermission[] };
 
 async function fileToUint8Array(file: File): Promise<Uint8Array> {
 	return new Promise((resolve, reject) => {

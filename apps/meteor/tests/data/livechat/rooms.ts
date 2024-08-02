@@ -1,4 +1,6 @@
+/* eslint-disable no-await-in-loop */
 import { faker } from '@faker-js/faker';
+import type { Credentials } from '@rocket.chat/api-client';
 import type {
 	ILivechatInquiryRecord,
 	ILivechatAgent,
@@ -7,12 +9,15 @@ import type {
 	IMessage,
 	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
+import type { Response } from 'supertest';
+
 import { api, credentials, methodCall, request } from '../api-data';
+import { imgURL } from '../interactions';
 import { getSettingValueById, restorePermissionToRoles, updateSetting } from '../permissions.helper';
-import { IUserCredentialsHeader, adminUsername } from '../user';
+import { adminUsername } from '../user';
 import { getRandomVisitorToken } from './users';
-import { DummyResponse, sleep } from './utils';
-import { Response } from 'supertest';
+import type { DummyResponse } from './utils';
+import { sleep } from './utils';
 
 export const createLivechatRoom = async (visitorToken: string, extraRoomParams?: Record<string, string>): Promise<IOmnichannelRoom> => {
 	const urlParams = new URLSearchParams();
@@ -23,29 +28,26 @@ export const createLivechatRoom = async (visitorToken: string, extraRoomParams?:
 		}
 	}
 
-	const response = await request
-		.get(api(`livechat/room?${urlParams.toString()}`))
-		.set(credentials)
-		.expect(200);
+	const response = await request.get(api('livechat/room')).query(urlParams.toString()).set(credentials).expect(200);
 
 	return response.body.room;
 };
 
-export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
+export const createVisitor = (department?: string, visitorName?: string): Promise<ILivechatVisitor> =>
 	new Promise((resolve, reject) => {
 		const token = getRandomVisitorToken();
 		const email = `${token}@${token}.com`;
 		const phone = `${Math.floor(Math.random() * 10000000000)}`;
-		request.get(api(`livechat/visitor/${token}`)).end((err: Error, res: DummyResponse<ILivechatVisitor>) => {
+		void request.get(api(`livechat/visitor/${token}`)).end((err: Error, res: DummyResponse<ILivechatVisitor>) => {
 			if (!err && res && res.body && res.body.visitor) {
 				return resolve(res.body.visitor);
 			}
-			request
+			void request
 				.post(api('livechat/visitor'))
 				.set(credentials)
 				.send({
 					visitor: {
-						name: `Visitor ${Date.now()}`,
+						name: visitorName || `Visitor ${Date.now()}`,
 						email,
 						token,
 						phone,
@@ -62,16 +64,25 @@ export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 		});
 	});
 
-export const takeInquiry = async (inquiryId: string, agentCredentials?: IUserCredentialsHeader): Promise<void> => {
-    const userId = agentCredentials ? agentCredentials['X-User-Id'] : credentials['X-User-Id'];
+export const deleteVisitor = async (token: string): Promise<void> => {
+	await request.delete(api(`livechat/visitor/${token}`));
+};
 
-    await request.post(api('livechat/inquiries.take')).set(agentCredentials || credentials).send({ userId, inquiryId }).expect(200);
+export const takeInquiry = async (inquiryId: string, agentCredentials?: Credentials): Promise<void> => {
+	const userId = agentCredentials ? agentCredentials['X-User-Id'] : credentials['X-User-Id'];
+
+	await request
+		.post(api('livechat/inquiries.take'))
+		.set(agentCredentials || credentials)
+		.send({ userId, inquiryId })
+		.expect(200);
 };
 
 export const fetchInquiry = (roomId: string): Promise<ILivechatInquiryRecord> => {
 	return new Promise((resolve, reject) => {
-		request
-			.get(api(`livechat/inquiries.getOne?roomId=${roomId}`))
+		void request
+			.get(api('livechat/inquiries.getOne'))
+			.query({ roomId })
 			.set(credentials)
 			.end((err: Error, res: DummyResponse<ILivechatInquiryRecord>) => {
 				if (err) {
@@ -82,9 +93,14 @@ export const fetchInquiry = (roomId: string): Promise<ILivechatInquiryRecord> =>
 	});
 };
 
-export const createDepartment = (agents?: { agentId: string }[], name?: string, enabled = true, opts: Record<string, any> = {}): Promise<ILivechatDepartment> => {
+export const createDepartment = (
+	agents?: { agentId: string }[],
+	name?: string,
+	enabled = true,
+	opts: Record<string, any> = {},
+): Promise<ILivechatDepartment> => {
 	return new Promise((resolve, reject) => {
-		request
+		void request
 			.post(api('livechat/department'))
 			.set(credentials)
 			.send({
@@ -109,7 +125,7 @@ export const createDepartment = (agents?: { agentId: string }[], name?: string, 
 
 export const createAgent = (overrideUsername?: string): Promise<ILivechatAgent> =>
 	new Promise((resolve, reject) => {
-		request
+		void request
 			.post(api('livechat/users/agent'))
 			.set(credentials)
 			.send({
@@ -125,7 +141,7 @@ export const createAgent = (overrideUsername?: string): Promise<ILivechatAgent> 
 
 export const createManager = (overrideUsername?: string): Promise<ILivechatAgent> =>
 	new Promise((resolve, reject) => {
-		request
+		void request
 			.post(api('livechat/users/manager'))
 			.set(credentials)
 			.send({
@@ -139,7 +155,7 @@ export const createManager = (overrideUsername?: string): Promise<ILivechatAgent
 			});
 	});
 
-export const makeAgentAvailable = async (overrideCredentials?: { 'X-Auth-Token': string | undefined; 'X-User-Id': string | undefined }): Promise<Response> => {
+export const makeAgentAvailable = async (overrideCredentials?: Credentials): Promise<Response> => {
 	await restorePermissionToRoles('view-l-room');
 	await request
 		.post(api('users.setStatus'))
@@ -157,7 +173,7 @@ export const makeAgentAvailable = async (overrideCredentials?: { 'X-Auth-Token':
 		});
 };
 
-export const makeAgentUnavailable = async (overrideCredentials?: { 'X-Auth-Token': string; 'X-User-Id': string }): Promise<void> => {
+export const makeAgentUnavailable = async (overrideCredentials?: Credentials): Promise<void> => {
 	await request
 		.post(api('users.setStatus'))
 		.set(overrideCredentials || credentials)
@@ -174,7 +190,7 @@ export const makeAgentUnavailable = async (overrideCredentials?: { 'X-Auth-Token
 
 export const getLivechatRoomInfo = (roomId: string): Promise<IOmnichannelRoom> => {
 	return new Promise((resolve /* , reject*/) => {
-		request
+		void request
 			.get(api('channels.info'))
 			.set(credentials)
 			.query({
@@ -188,10 +204,10 @@ export const getLivechatRoomInfo = (roomId: string): Promise<IOmnichannelRoom> =
 
 /**
  * @summary Sends message as visitor
-*/
+ */
 export const sendMessage = (roomId: string, message: string, visitorToken: string): Promise<IMessage> => {
 	return new Promise((resolve, reject) => {
-		request
+		void request
 			.post(api('livechat/message'))
 			.set(credentials)
 			.send({
@@ -208,10 +224,25 @@ export const sendMessage = (roomId: string, message: string, visitorToken: strin
 	});
 };
 
+export const uploadFile = (roomId: string, visitorToken: string): Promise<IMessage> => {
+	return new Promise((resolve, reject) => {
+		void request
+			.post(api(`livechat/upload/${roomId}`))
+			.set({ 'x-visitor-token': visitorToken, ...credentials })
+			.attach('file', imgURL)
+			.end((err: Error, res: DummyResponse<IMessage>) => {
+				if (err) {
+					return reject(err);
+				}
+				resolve(res.body as unknown as IMessage);
+			});
+	});
+};
+
 // Sends a message using sendMessage method from agent
 export const sendAgentMessage = (roomId: string, msg?: string): Promise<IMessage> => {
 	return new Promise((resolve, reject) => {
-		request
+		void request
 			.post(methodCall('sendMessage'))
 			.set(credentials)
 			.send({
@@ -233,7 +264,7 @@ export const sendAgentMessage = (roomId: string, msg?: string): Promise<IMessage
 
 export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMessage[]> => {
 	return new Promise((resolve, reject) => {
-		request
+		void request
 			.get(api(`livechat/messages.history/${roomId}`))
 			.set(credentials)
 			.query({
@@ -243,13 +274,23 @@ export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMe
 				if (err) {
 					return reject(err);
 				}
+
+				if (!res.body.success) {
+					reject(res.body);
+					return;
+				}
+
 				resolve(res.body.messages);
 			});
 	});
 };
 
 export const closeOmnichannelRoom = async (roomId: string, tags?: string[]): Promise<void> => {
-	await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId, ...tags && { tags }, comment: faker.lorem.sentence() }).expect(200);
+	await request
+		.post(api('livechat/room.closeByUser'))
+		.set(credentials)
+		.send({ rid: roomId, ...(tags && { tags }), comment: faker.lorem.sentence() })
+		.expect(200);
 };
 
 export const bulkCreateLivechatRooms = async (
@@ -272,22 +313,20 @@ export const bulkCreateLivechatRooms = async (
 };
 
 export const startANewLivechatRoomAndTakeIt = async ({
-    departmentId,
-    agent
+	departmentId,
+	agent,
 }: {
-    departmentId?: string;
-    agent?: IUserCredentialsHeader;
+	departmentId?: string;
+	agent?: Credentials;
 } = {}): Promise<{ room: IOmnichannelRoom; visitor: ILivechatVisitor }> => {
+	const currentRoutingMethod = await getSettingValueById('Livechat_Routing_Method');
+	const routingMethodChanged = false;
+	if (currentRoutingMethod !== 'Manual_Selection') {
+		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 
-    const currentRoutingMethod = await getSettingValueById('Livechat_Routing_Method');
-    let routingMethodChanged = false;
-    if (currentRoutingMethod !== 'Manual_Selection') {
-        await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
-
-        // wait for routing algorithm to stop
-        await sleep(1000);
-    }
-
+		// wait for routing algorithm to stop
+		await sleep(1000);
+	}
 
 	const visitor = await createVisitor(departmentId);
 	const room = await createLivechatRoom(visitor.token);
@@ -296,26 +335,21 @@ export const startANewLivechatRoomAndTakeIt = async ({
 	await takeInquiry(inq._id, agent);
 	await sendMessage(roomId, 'test message', visitor.token);
 
+	if (routingMethodChanged) {
+		await updateSetting('Livechat_Routing_Method', currentRoutingMethod);
 
-    if (routingMethodChanged) {
-        await updateSetting('Livechat_Routing_Method', currentRoutingMethod);
-
-        // wait for routing algorithm to start
-        await sleep(1000);
-    }
+		// wait for routing algorithm to start
+		await sleep(1000);
+	}
 
 	return { room, visitor };
 };
 
 export const placeRoomOnHold = async (roomId: string): Promise<void> => {
-    await request
-        .post(api('livechat/room.onHold'))
-        .set(credentials)
-        .send({ roomId })
-        .expect(200);
-}
+	await request.post(api('livechat/room.onHold')).set(credentials).send({ roomId }).expect(200);
+};
 
-export const moveBackToQueue = async (roomId: string, overrideCredentials?: IUserCredentialsHeader): Promise<void> => {
+export const moveBackToQueue = async (roomId: string, overrideCredentials?: Credentials): Promise<void> => {
 	await request
 		.post(methodCall('livechat:returnAsInquiry'))
 		.set(overrideCredentials || credentials)

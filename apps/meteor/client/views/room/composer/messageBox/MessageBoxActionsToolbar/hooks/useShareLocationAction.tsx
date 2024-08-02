@@ -1,12 +1,12 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useSetting, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
+import type { GenericMenuItemProps } from '../../../../../../components/GenericMenu/GenericMenuItem';
 import ShareLocationModal from '../../../../ShareLocation/ShareLocationModal';
-import type { ToolbarAction } from './ToolbarAction';
 
-export const useShareLocationAction = (room?: IRoom, tmid?: string): ToolbarAction => {
+export const useShareLocationAction = (room?: IRoom, tmid?: IMessage['tmid']): GenericMenuItemProps => {
 	if (!room) {
 		throw new Error('Invalid room');
 	}
@@ -25,9 +25,8 @@ export const useShareLocationAction = (room?: IRoom, tmid?: string): ToolbarActi
 
 	return {
 		id: 'share-location',
+		content: t('Location'),
 		icon: 'map-pin',
-		label: t('Location'),
-		title: !allowGeolocation ? t('Not_Available') : undefined,
 		onClick: handleShareLocation,
 		disabled: !allowGeolocation,
 	};

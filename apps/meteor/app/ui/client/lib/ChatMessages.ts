@@ -1,7 +1,6 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isVideoConfMessage } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
-import type { UIEvent } from 'react';
 
 import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
 import { createDataAPI } from '../../../../client/lib/chats/data';
@@ -44,8 +43,6 @@ export class ChatMessages implements ChatAPI {
 	public uploads: UploadsAPI;
 
 	public ActionManager: any;
-
-	public userCard: { open(username: string): (event: UIEvent) => void; close(): void };
 
 	public emojiPicker: {
 		open(el: Element, cb: (emoji: string) => void): void;
@@ -158,11 +155,6 @@ export class ChatMessages implements ChatAPI {
 		};
 
 		this.readStateManager = new ReadStateManager(rid);
-
-		this.userCard = {
-			open: unimplemented,
-			close: unimplemented,
-		};
 
 		this.emojiPicker = {
 			open: unimplemented,

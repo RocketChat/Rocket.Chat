@@ -1,12 +1,8 @@
-import type { IMessage, IRoom, IUser, RoomAdminFieldsType } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
+import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from './Ajv';
 
 type RoomsAutoCompleteChannelAndPrivateProps = { selector: string };
 
@@ -130,6 +126,7 @@ type RoomsCreateDiscussionProps = {
 	users?: IUser['username'][];
 	encrypted?: boolean;
 	reply?: string;
+	topic?: string;
 };
 
 const RoomsCreateDiscussionSchema = {
@@ -168,73 +165,100 @@ const RoomsCreateDiscussionSchema = {
 
 export const isRoomsCreateDiscussionProps = ajv.compile<RoomsCreateDiscussionProps>(RoomsCreateDiscussionSchema);
 
-type RoomsExportProps = {
+type RoomsExportProps = RoomsExportFileProps | RoomsExportEmailProps;
+
+type RoomsExportFileProps = {
 	rid: IRoom['_id'];
-	type: 'email' | 'file';
+	type: 'file';
+	format: 'html' | 'json';
+	dateFrom?: string;
+	dateTo?: string;
+};
+
+type RoomsExportEmailProps = {
+	rid: IRoom['_id'];
+	type: 'email';
 	toUsers?: IUser['username'][];
 	toEmails?: string[];
 	additionalEmails?: string;
 	subject?: string;
-	messages?: IMessage['_id'][];
-	dateFrom?: string;
-	dateTo?: string;
-	format?: 'html' | 'json';
+	messages: IMessage['_id'][];
 };
 
 const RoomsExportSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
-		},
-		type: {
-			type: 'string',
-			nullable: true,
-		},
-		toUsers: {
-			type: 'array',
-			items: {
-				type: 'string',
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				rid: {
+					type: 'string',
+				},
+				type: {
+					type: 'string',
+					enum: ['file'],
+				},
+				format: {
+					type: 'string',
+					enum: ['html', 'json'],
+				},
+				dateFrom: {
+					type: 'string',
+					nullable: true,
+					format: 'date',
+				},
+				dateTo: {
+					type: 'string',
+					nullable: true,
+					format: 'date',
+				},
 			},
-			nullable: true,
+			required: ['rid', 'type', 'format'],
+			additionalProperties: false,
 		},
-		toEmails: {
-			type: 'array',
-			items: {
-				type: 'string',
+		{
+			type: 'object',
+			properties: {
+				rid: {
+					type: 'string',
+				},
+				type: {
+					type: 'string',
+					enum: ['email'],
+				},
+				toUsers: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
+				toEmails: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					nullable: true,
+				},
+				additionalEmails: {
+					type: 'string',
+					nullable: true,
+				},
+				subject: {
+					type: 'string',
+					nullable: true,
+				},
+				messages: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					minItems: 1,
+				},
 			},
-			nullable: true,
+			required: ['rid', 'type', 'messages'],
+			additionalProperties: false,
 		},
-		additionalEmails: {
-			type: 'string',
-			nullable: true,
-		},
-		subject: {
-			type: 'string',
-			nullable: true,
-		},
-		messages: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			nullable: true,
-		},
-		dateFrom: {
-			type: 'string',
-			nullable: true,
-		},
-		dateTo: {
-			type: 'string',
-			nullable: true,
-		},
-		format: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	required: ['rid'],
-	additionalProperties: false,
+	],
 };
 
 export const isRoomsExportProps = ajv.compile<RoomsExportProps>(RoomsExportSchema);
@@ -435,6 +459,74 @@ export type Notifications = {
 
 type RoomsGetDiscussionsProps = PaginatedRequest<BaseRoomsProps>;
 
+type RoomsMuteUnmuteUser = { userId: string; roomId: string } | { username: string; roomId: string };
+
+const RoomsMuteUnmuteUserSchema = {
+	type: 'object',
+	oneOf: [
+		{
+			properties: {
+				userId: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['userId', 'roomId'],
+			additionalProperties: false,
+		},
+		{
+			properties: {
+				username: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['username', 'roomId'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isRoomsMuteUnmuteUserProps = ajv.compile<RoomsMuteUnmuteUser>(RoomsMuteUnmuteUserSchema);
+export type RoomsImagesProps = {
+	roomId: string;
+	startingFromId?: string;
+	count?: number;
+	offset?: number;
+};
+const roomsImagesPropsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		startingFromId: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isRoomsImagesProps = ajv.compile<RoomsImagesProps>(roomsImagesPropsSchema);
+
 export type RoomsEndpoints = {
 	'/v1/rooms.autocomplete.channelAndPrivate': {
 		GET: (params: RoomsAutoCompleteChannelAndPrivateProps) => {
@@ -483,7 +575,7 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.createDiscussion': {
 		POST: (params: RoomsCreateDiscussionProps) => {
-			discussion: IRoom;
+			discussion: IRoom & { rid: IRoom['_id'] };
 		};
 	};
 
@@ -525,6 +617,26 @@ export type RoomsEndpoints = {
 			groupable?: boolean;
 			msg?: string;
 			tmid?: string;
+			customFields?: string;
+		}) => { message: IMessage | null };
+	};
+
+	'/v1/rooms.media/:rid': {
+		POST: (params: { file: File }) => { file: { url: string } };
+	};
+
+	'/v1/rooms.mediaConfirm/:rid/:fileId': {
+		POST: (params: {
+			description?: string;
+			avatar?: string;
+			emoji?: string;
+			alias?: string;
+			groupable?: boolean;
+			msg?: string;
+			tmid?: string;
+			customFields?: string;
+			t?: IMessage['t'];
+			content?: IE2EEMessage['content'];
 		}) => { message: IMessage | null };
 	};
 
@@ -570,6 +682,20 @@ export type RoomsEndpoints = {
 	'/v1/rooms.getDiscussions': {
 		GET: (params: RoomsGetDiscussionsProps) => PaginatedResult<{
 			discussions: IRoom[];
+		}>;
+	};
+
+	'/v1/rooms.muteUser': {
+		POST: (params: RoomsMuteUnmuteUser) => void;
+	};
+
+	'/v1/rooms.unmuteUser': {
+		POST: (params: RoomsMuteUnmuteUser) => void;
+	};
+
+	'/v1/rooms.images': {
+		GET: (params: RoomsImagesProps) => PaginatedResult<{
+			files: IUpload[];
 		}>;
 	};
 };

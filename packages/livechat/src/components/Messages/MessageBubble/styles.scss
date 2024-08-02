@@ -12,11 +12,8 @@ $message-bubble-me-link-color: $color-text-lighter;
 $message-bubble-nude-padding: 0;
 $message-bubble-quoted-padding: 12px 12px 12px 0;
 $message-bubble-quoted-indicator-width: 3px;
-$message-bubble-quoted-indicator-margin:
-	(-2 * $message-bubble-quoted-indicator-width)
-	(2 * $message-bubble-quoted-indicator-width)
-	(-2 * $message-bubble-quoted-indicator-width)
-	$message-bubble-quoted-indicator-width;
+$message-bubble-quoted-indicator-margin: (-2 * $message-bubble-quoted-indicator-width) (2 * $message-bubble-quoted-indicator-width)
+	(-2 * $message-bubble-quoted-indicator-width) $message-bubble-quoted-indicator-width;
 $message-bubble-quoted-indicator-border-radius: $default-border-radius;
 $message-bubble-quoted-indicator-color: $color-green;
 
@@ -28,7 +25,7 @@ $message-bubble-quoted-indicator-color: $color-green;
 	color: $message-bubble-color;
 	border-radius: $message-bubble-border-radius;
 
-	background-color: $message-bubble-background-color;
+	background-color: var(--receiver-bubble-background-color, $message-bubble-background-color);
 	align-items: stretch;
 	flex-flow: row nowrap;
 	justify-content: flex-start;
@@ -39,7 +36,7 @@ $message-bubble-quoted-indicator-color: $color-green;
 
 	&--inverse {
 		color: var(--font-color, $message-bubble-me-color);
-		background-color: var(--color, $message-bubble-me-background-color);
+		background-color: var(--sender-bubble-background-color, var(--color, $message-bubble-me-background-color));
 
 		a {
 			color: var(--font-color, $message-bubble-me-link-color);
@@ -55,13 +52,13 @@ $message-bubble-quoted-indicator-color: $color-green;
 	&--quoted {
 		padding: $message-bubble-quoted-padding;
 
-		background-color: $message-bubble-background-color;
+		background-color: var(--receiver-bubble-background-color, $message-bubble-background-color);
 
 		&::before {
 			width: $message-bubble-quoted-indicator-width;
 			margin: -6px 6px -6px 3px;
 
-			content: "";
+			content: '';
 
 			border-radius: $message-bubble-quoted-indicator-border-radius;
 			background-color: $message-bubble-quoted-indicator-color;

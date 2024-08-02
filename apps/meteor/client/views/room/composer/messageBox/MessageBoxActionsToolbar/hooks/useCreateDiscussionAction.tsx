@@ -4,15 +4,15 @@ import { useTranslation, useSetting, usePermission, useSetModal } from '@rocket.
 import React from 'react';
 
 import CreateDiscussion from '../../../../../../components/CreateDiscussion';
-import type { ToolbarAction } from './ToolbarAction';
+import type { GenericMenuItemProps } from '../../../../../../components/GenericMenu/GenericMenuItem';
 
-export const useCreateDiscussionAction = (room?: IRoom): ToolbarAction => {
+export const useCreateDiscussionAction = (room?: IRoom): GenericMenuItemProps => {
+	const t = useTranslation();
+	const setModal = useSetModal();
+
 	if (!room) {
 		throw new Error('Invalid room');
 	}
-
-	const setModal = useSetModal();
-	const t = useTranslation();
 
 	const handleCreateDiscussion = () =>
 		setModal(<CreateDiscussion onClose={() => setModal(null)} defaultParentRoom={room?.prid || room?._id} />);
@@ -25,10 +25,9 @@ export const useCreateDiscussionAction = (room?: IRoom): ToolbarAction => {
 
 	return {
 		id: 'create-discussion',
-		title: !allowDiscussion ? t('Not_Available') : undefined,
+		content: t('Discussion'),
+		icon: 'discussion',
 		disabled: !allowDiscussion,
 		onClick: handleCreateDiscussion,
-		icon: 'discussion',
-		label: t('Discussion'),
 	};
 };

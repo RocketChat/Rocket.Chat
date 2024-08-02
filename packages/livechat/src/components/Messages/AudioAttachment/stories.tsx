@@ -2,7 +2,7 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import AudioAttachment from '.';
-import { sampleAudio } from '../../../helpers.stories';
+import { sampleAudio } from '../../../../.storybook/helpers';
 
 export default {
 	title: 'Messages/AudioAttachment',

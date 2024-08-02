@@ -1,13 +1,6 @@
-import type {
-	ILivechatAgent,
-	ILivechatDepartment,
-	ILivechatTrigger,
-	ILivechatVisitor,
-	IOmnichannelRoom,
-	SelectedAgent,
-} from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatDepartment, ILivechatTrigger, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
-import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
@@ -21,12 +14,17 @@ export function online(department: string, skipSettingCheck = false, skipFallbac
 
 async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' | 'conditions' | 'runOnce'>[]> {
 	const triggers = await LivechatTrigger.findEnabled().toArray();
-	return triggers.map(({ _id, actions, conditions, runOnce }) => ({
-		_id,
-		actions,
-		conditions,
-		runOnce,
-	}));
+	const hasLicense = License.hasModule('livechat-enterprise');
+	const premiumActions = ['use-external-service'];
+
+	return triggers
+		.filter(({ actions }) => hasLicense || actions.some((c) => !premiumActions.includes(c.name)))
+		.map(({ _id, actions, conditions, runOnce }) => ({
+			_id,
+			actions,
+			conditions,
+			runOnce,
+		}));
 }
 
 async function findDepartments(
@@ -98,33 +96,6 @@ export async function findOpenRoom(token: string, departmentId?: string): Promis
 		return rooms[0];
 	}
 }
-export function getRoom({
-	guest,
-	rid,
-	roomInfo,
-	agent,
-	extraParams,
-}: {
-	guest: ILivechatVisitor;
-	rid: string;
-	roomInfo: {
-		source?: IOmnichannelRoom['source'];
-	};
-	agent?: SelectedAgent;
-	extraParams?: Record<string, any>;
-}): Promise<{ room: IOmnichannelRoom; newRoom: boolean }> {
-	const token = guest?.token;
-
-	const message = {
-		_id: Random.id(),
-		rid,
-		msg: '',
-		token,
-		ts: new Date(),
-	};
-
-	return LivechatTyped.getRoom(guest, message, roomInfo, agent, extraParams);
-}
 
 export async function findAgent(agentId?: string): Promise<void | { hiddenInfo: boolean } | ILivechatAgent> {
 	return normalizeAgent(agentId);
@@ -164,12 +135,17 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 			limitTextLength:
 				initSettings.Livechat_enable_message_character_limit &&
 				(initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
+			hiddenSystemMessages: initSettings.Livechat_hide_system_messages,
+			livechatLogo: initSettings.Assets_livechat_widget_logo,
+			hideWatermark: initSettings.Livechat_hide_watermark || false,
 		},
 		theme: {
 			title: initSettings.Livechat_title,
 			color: initSettings.Livechat_title_color,
 			offlineTitle: initSettings.Livechat_offline_title,
 			offlineColor: initSettings.Livechat_offline_title_color,
+			position: initSettings.Livechat_widget_position || 'right',
+			background: initSettings.Livechat_background,
 			actionLinks: {
 				webrtc: [
 					{

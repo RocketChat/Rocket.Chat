@@ -1,7 +1,12 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 
-export type FeaturesAvailable = 'quickReactions' | 'navigationBar';
+export type FeaturesAvailable =
+	| 'quickReactions'
+	| 'navigationBar'
+	| 'enable-timestamp-message-parser'
+	| 'contextualbarResizable'
+	| 'newNavigation';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -30,6 +35,30 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		group: 'Navigation',
 		value: false,
 		enabled: false,
+	},
+	{
+		name: 'enable-timestamp-message-parser',
+		i18n: 'Enable_timestamp',
+		description: 'Enable_timestamp_description',
+		group: 'Message',
+		value: false,
+		enabled: true,
+	},
+	{
+		name: 'contextualbarResizable',
+		i18n: 'Contextualbar_resizable',
+		description: 'Contextualbar_resizable_description',
+		group: 'Navigation',
+		value: false,
+		enabled: true,
+	},
+	{
+		name: 'newNavigation',
+		i18n: 'New_navigation',
+		description: 'New_navigation_description',
+		group: 'Navigation',
+		value: false,
+		enabled: true,
 	},
 ];
 

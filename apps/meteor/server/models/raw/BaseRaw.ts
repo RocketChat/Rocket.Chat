@@ -78,6 +78,8 @@ export abstract class BaseRaw<
 		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
 	}
 
+	private pendingIndexes: Promise<void> | undefined;
+
 	public async createIndexes() {
 		const indexes = this.modelIndexes();
 		if (this.options?._updatedAtIndexOptions) {
@@ -85,7 +87,17 @@ export abstract class BaseRaw<
 		}
 
 		if (indexes?.length) {
-			return this.col.createIndexes(indexes);
+			if (this.pendingIndexes) {
+				await this.pendingIndexes;
+			}
+
+			this.pendingIndexes = this.col.createIndexes(indexes) as unknown as Promise<void>;
+
+			void this.pendingIndexes.finally(() => {
+				this.pendingIndexes = undefined;
+			});
+
+			return this.pendingIndexes;
 		}
 	}
 
@@ -253,6 +265,10 @@ export abstract class BaseRaw<
 
 	removeById(_id: T['_id']): Promise<DeleteResult> {
 		return this.deleteOne({ _id } as Filter<T>);
+	}
+
+	removeByIds(ids: T['_id'][]): Promise<DeleteResult> {
+		return this.deleteMany({ _id: { $in: ids } } as unknown as Filter<T>);
 	}
 
 	async deleteOne(filter: Filter<T>, options?: DeleteOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteResult> {

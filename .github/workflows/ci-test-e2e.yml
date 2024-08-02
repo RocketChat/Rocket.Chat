@@ -43,8 +43,16 @@ on:
         default: 1
         required: false
         type: number
+      retries:
+        default: 0
+        required: false
+        type: number
       type:
         required: true
+        type: string
+      db-watcher-disabled:
+        default: 'false'
+        required: false
         type: string
     secrets:
       CR_USER:
@@ -58,6 +66,8 @@ on:
       REPORTER_ROCKETCHAT_API_KEY:
         required: false
       CODECOV_TOKEN:
+        required: false
+      REPORTER_JIRA_ROCKETCHAT_API_KEY:
         required: false
 
 env:
@@ -79,9 +89,33 @@ jobs:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
 
-    name: MongoDB ${{ matrix.mongodb-version }} (${{ matrix.shard }}/${{ inputs.total-shard }})
+    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'true' && ' [no watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})${{ matrix.mongodb-version == '6.0' && ' - Alpine' || '' }}
 
     steps:
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
+        with:
+          theme: dark
+          job_summary: true
+          comment_on_pr: false
+
+      - name: Setup kernel limits
+        run: |
+          sudo sysctl -w net.ipv4.ip_local_port_range="500   65535"
+          sudo sysctl -w net.ipv4.tcp_mem="383865   511820   2303190"
+
+          echo fs.file-max=20000500 | sudo tee -a /etc/sysctl.conf
+          echo fs.nr_open=20000500 | sudo tee -a /etc/sysctl.conf
+          sudo sysctl -p
+
+      - name: Login to GitHub Container Registry
+        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
       - name: Launch MongoDB
         uses: supercharge/mongodb-github-action@v1.10.0
         with:
@@ -149,6 +183,7 @@ jobs:
           TRANSPORTER: ${{ inputs.transporter }}
           COVERAGE_DIR: '/tmp/coverage'
           COVERAGE_REPORTER: 'lcov'
+          DISABLE_DB_WATCHERS: ${{ inputs.db-watcher-disabled }}
         run: |
           docker compose -f docker-compose-ci.yml up -d
 
@@ -226,13 +261,19 @@ jobs:
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
           REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
           REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+          REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
           REPORTER_ROCKETCHAT_REPORT: ${{ github.event.pull_request.draft != 'true' && 'true' || '' }}
           REPORTER_ROCKETCHAT_RUN: ${{ github.run_number }}
           REPORTER_ROCKETCHAT_BRANCH: ${{ github.ref }}
           REPORTER_ROCKETCHAT_DRAFT: ${{ github.event.pull_request.draft }}
+          REPORTER_ROCKETCHAT_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REPORTER_ROCKETCHAT_AUTHOR: ${{ github.event.pull_request.user.login }}
+          REPORTER_ROCKETCHAT_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REPORTER_ROCKETCHAT_PR: ${{ github.event.pull_request.number }}
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
           CI: true
+          PLAYWRIGHT_RETRIES: ${{ inputs.retries }}
         working-directory: ./apps/meteor
         run: |
           yarn prepare
