@@ -184,9 +184,7 @@ const RoomMenu = ({
 
 			LegacyRoomManager.close(subscription.t + subscription.name);
 
-			if (roomOpen) {
-				router.navigate('/home');
-			}
+			router.navigate('/home');
 
 			await unreadMessages(undefined, rid);
 		} catch (error) {
