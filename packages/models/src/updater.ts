@@ -31,10 +31,6 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 		return this;
 	}
 
-	test1<K extends UpdateFilter<T>>(key: K) {
-		console.log(key);
-	}
-
 	inc<K extends keyof IncProps<T>>(key: K, value: number): Updater<T> {
 		this._inc = this._inc ?? new Map<keyof IncProps<T>, number>();
 
