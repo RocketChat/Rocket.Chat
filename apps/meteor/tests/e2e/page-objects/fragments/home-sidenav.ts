@@ -9,6 +9,10 @@ export class HomeSidenav {
 		this.page = page;
 	}
 
+	get advancedSettingsAccordion(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Advanced settings', exact: true });
+	}
+
 	get checkboxPrivateChannel(): Locator {
 		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Private' }) });
 	}
@@ -154,6 +158,7 @@ export class HomeSidenav {
 	async createEncryptedChannel(name: string) {
 		await this.openNewByLabel('Channel');
 		await this.inputChannelName.type(name);
+		await this.advancedSettingsAccordion.click();
 		await this.checkboxEncryption.click();
 		await this.btnCreate.click();
 	}

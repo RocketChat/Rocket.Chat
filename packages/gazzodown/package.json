@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/gazzodown",
-	"version": "8.0.1",
+	"version": "9.0.0-rc.2",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
@@ -25,7 +25,7 @@
 		"@swc/jest": "^0.2.29",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "~12.1.5",
-		"@types/jest": "~29.5.7",
+		"@types/jest": "~29.5.12",
 		"@types/katex": "~0.16.5",
 		"@types/react": "~17.0.69",
 		"@types/react-dom": "~17.0.22",
@@ -39,8 +39,8 @@
 		"eslint-plugin-react-hooks": "~4.6.0",
 		"eslint-plugin-storybook": "~0.6.15",
 		"identity-obj-proxy": "^3.0.0",
-		"jest": "~29.6.4",
-		"jest-environment-jsdom": "~29.6.4",
+		"jest": "~29.7.0",
+		"jest-environment-jsdom": "~29.7.0",
 		"katex": "~0.16.9",
 		"outdent": "^0.8.0",
 		"react-docgen-typescript-plugin": "~1.0.5",
@@ -71,8 +71,8 @@
 		"@rocket.chat/fuselage-tokens": "*",
 		"@rocket.chat/message-parser": "0.31.29",
 		"@rocket.chat/styled": "*",
-		"@rocket.chat/ui-client": "8.0.1",
-		"@rocket.chat/ui-contexts": "8.0.1",
+		"@rocket.chat/ui-client": "9.0.0-rc.2",
+		"@rocket.chat/ui-contexts": "9.0.0-rc.2",
 		"katex": "*",
 		"react": "*"
 	},
