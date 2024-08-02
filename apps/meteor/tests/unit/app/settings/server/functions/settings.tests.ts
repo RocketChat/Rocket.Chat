@@ -467,7 +467,7 @@ describe('Settings', () => {
 		expect(Settings.upsertCalls).to.be.equal(0);
 	});
 
-	it('should not update (reset) cached setting with value in code if some prop in code changes', async () => {
+	it('should not update (reset) cached setting with value in code if some prop in code changes (including value)', async () => {
 		Settings.setDelay(1000);
 		const settings = new CachedSettings();
 		process.env[`OVERWRITE_SETTING_${testSetting._id}`] = 'false';
