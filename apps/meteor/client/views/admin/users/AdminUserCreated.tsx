@@ -11,7 +11,7 @@ const AdminUserCreated = ({ uid }: { uid: string }) => {
 
 	return (
 		<>
-			<ContextualbarEmptyContent icon='user' title={t('You_have_created_user', { count: 1 })} />
+			<ContextualbarEmptyContent icon='user' title={t('You_have_created_user')} />
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button type='reset' w='50%' onClick={() => router.navigate(`/admin/users/new`)}>
