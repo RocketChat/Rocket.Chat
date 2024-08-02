@@ -3,6 +3,7 @@ import { isOmnichannelRoom, isEditedMessage } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatVisitors, LivechatInquiry } from '@rocket.chat/models';
 import moment from 'moment';
 
+import { setPredictedVisitorAbandonmentTime } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 
@@ -71,6 +72,7 @@ callbacks.add(
 
 		// this unsets waitingResponse and sets responseBy object
 		await LivechatRooms.setResponseByRoomId(room._id, responseBy);
+		await setPredictedVisitorAbandonmentTime({ _id: room._id, responseBy, departmentId: room.departmentId });
 
 		return message;
 	},
