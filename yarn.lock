@@ -8876,9 +8876,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-toastbar@npm:^0.32.0":
-  version: 0.32.0
-  resolution: "@rocket.chat/fuselage-toastbar@npm:0.32.0"
+"@rocket.chat/fuselage-toastbar@npm:^0.33.0":
+  version: 0.33.0
+  resolution: "@rocket.chat/fuselage-toastbar@npm:0.33.0"
+  dependencies:
+    react-timing-hooks: ~4.0.2
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
@@ -8886,7 +8888,7 @@ __metadata:
     "@rocket.chat/styled": "*"
     react: ^17.0.2
     react-dom: ^17.0.2
-  checksum: 5e78516aee6446da4c76dac10ff83adb4deeb86d6111c42419f0629c35ec64b19ae6ab563f20b5efa2600c9c723b9096edc3c166e960fd25cfda1f07c4df3f3f
+  checksum: 97993ad2acdc5a742b71c94f9d321e090769c4116ab52208c2103ca41d4455bc4cd15c0cd0a1f8545144910a8c7f7de645ee150c0d8fc6b746001244690de2ed
   languageName: node
   linkType: hard
 
@@ -8908,7 +8910,7 @@ __metadata:
     "@rocket.chat/apps-engine": alpha
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ^0.56.0
+    "@rocket.chat/fuselage": ^0.57.0
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/fuselage-polyfills": ~0.31.25
     "@rocket.chat/gazzodown": "workspace:^"
@@ -8970,9 +8972,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/fuselage@npm:^0.56.0":
-  version: 0.56.0
-  resolution: "@rocket.chat/fuselage@npm:0.56.0"
+"@rocket.chat/fuselage@npm:^0.57.0":
+  version: 0.57.0
+  resolution: "@rocket.chat/fuselage@npm:0.57.0"
   dependencies:
     "@rocket.chat/css-in-js": ^0.31.25
     "@rocket.chat/css-supports": ^0.31.25
@@ -8990,7 +8992,7 @@ __metadata:
     react: ^17.0.2
     react-dom: ^17.0.2
     react-virtuoso: 1.2.4
-  checksum: 1817eb660c9581906a645b8d39cd0377395085ab7dc204d7afd3b2b1c1a36000ea3727a8263ff02dc3d51b8280e1b51e42d062587d685f7e0be1a7a6eb97c5bf
+  checksum: 80f49f79ca6655067f528a9b427a7bfabbcf1583d0c9f3ed40b79217c7a495e93e0335e15e29b23237bf2ccb5ee5fa063051b40bf4d539439f452ffd45fdb537
   languageName: node
   linkType: hard
 
@@ -9001,7 +9003,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.56.0
+    "@rocket.chat/fuselage": ^0.57.0
     "@rocket.chat/fuselage-tokens": ^0.33.1
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/styled": ~0.31.25
@@ -9382,10 +9384,10 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.2
     "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.3
-    "@rocket.chat/fuselage": ^0.56.0
+    "@rocket.chat/fuselage": ^0.57.0
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/fuselage-polyfills": ~0.31.25
-    "@rocket.chat/fuselage-toastbar": ^0.32.0
+    "@rocket.chat/fuselage-toastbar": ^0.33.0
     "@rocket.chat/fuselage-tokens": ^0.33.1
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
     "@rocket.chat/gazzodown": "workspace:^"
@@ -10280,7 +10282,7 @@ __metadata:
   resolution: "@rocket.chat/ui-avatar@workspace:packages/ui-avatar"
   dependencies:
     "@babel/core": ~7.22.20
-    "@rocket.chat/fuselage": ^0.56.0
+    "@rocket.chat/fuselage": ^0.57.0
     "@rocket.chat/ui-contexts": "workspace:^"
     "@types/babel__core": ~7.20.3
     "@types/react": ~17.0.69
@@ -10306,7 +10308,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@react-aria/toolbar": ^3.0.0-beta.1
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.56.0
+    "@rocket.chat/fuselage": ^0.57.0
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/icons": ^0.36.0
     "@rocket.chat/mock-providers": "workspace:^"
@@ -10359,7 +10361,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@react-aria/toolbar": ^3.0.0-beta.1
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ^0.56.0
+    "@rocket.chat/fuselage": ^0.57.0
     "@rocket.chat/icons": ^0.36.0
     "@storybook/addon-actions": ~6.5.16
     "@storybook/addon-docs": ~6.5.16
@@ -10456,7 +10458,7 @@ __metadata:
   resolution: "@rocket.chat/ui-theming@workspace:ee/packages/ui-theming"
   dependencies:
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.56.0
+    "@rocket.chat/fuselage": ^0.57.0
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/icons": ^0.36.0
     "@rocket.chat/ui-contexts": "workspace:~"
@@ -10499,7 +10501,7 @@ __metadata:
     "@rocket.chat/css-in-js": ~0.31.25
     "@rocket.chat/emitter": ~0.31.25
     "@rocket.chat/eslint-config": "workspace:^"
-    "@rocket.chat/fuselage": ^0.56.0
+    "@rocket.chat/fuselage": ^0.57.0
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/icons": ^0.36.0
     "@rocket.chat/styled": ~0.31.25
@@ -10544,10 +10546,10 @@ __metadata:
     "@codemirror/tooltip": ^0.19.16
     "@lezer/highlight": ^1.1.6
     "@rocket.chat/css-in-js": ~0.31.25
-    "@rocket.chat/fuselage": ^0.56.0
+    "@rocket.chat/fuselage": ^0.57.0
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/fuselage-polyfills": ~0.31.25
-    "@rocket.chat/fuselage-toastbar": ^0.32.0
+    "@rocket.chat/fuselage-toastbar": ^0.33.0
     "@rocket.chat/fuselage-tokens": ^0.33.1
     "@rocket.chat/fuselage-ui-kit": "workspace:~"
     "@rocket.chat/icons": ^0.36.0
@@ -35801,6 +35803,15 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 7ee8ef3aab74c7ae1d70ff34a27643d11ba1a8d62d072c767827d9ff9a520905223e567002e0bf6c772929d8ea1c781a3ba0cc4a563e92b1e3dc2eaa817ecbe8
+  languageName: node
+  linkType: hard
+
+"react-timing-hooks@npm:~4.0.2":
+  version: 4.0.2
+  resolution: "react-timing-hooks@npm:4.0.2"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 95ebcaffe400f3e1af32bd82eb92258c5e1473e43a7edf65879692117946105bb21f4e91046fdc85c8c737997be1d8148bffacfde8a8a9ee835d81415048119e
   languageName: node
   linkType: hard
 
