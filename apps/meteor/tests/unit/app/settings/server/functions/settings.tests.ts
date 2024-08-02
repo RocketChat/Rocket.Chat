@@ -535,7 +535,7 @@ describe('Settings', () => {
 		expect(Settings.findOne({ _id: testSetting._id }).value).to.be.equal(testSetting.value);
 	});
 
-	it('should update setting cache synchronously if overwrite is available in environnment', async () => {
+	it('should update setting cache synchronously if overwrite is available in environment', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initialized();
