@@ -35,6 +35,35 @@ test.describe('Mark Unread - Sidebar Action', () => {
 		await expect(sidebarItem.locator('.rcx-badge')).toBeVisible();
 	});
 
+	test.describe('Mark Unread - Other Channel', () => {
+		let poHomeChannelUser2: HomeChannel;
+		let secondChannel: string;
+
+		test.beforeEach(async ({ api }) => {
+			secondChannel = await createTargetChannel(api);
+		});
+
+		test.afterEach(async ({ api }) => {
+			await api.post('/channels.delete', { roomName: secondChannel });
+		});
+
+		test('should mark a populated room as unread', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.content.sendMessage('this is a message for reply');
+
+			await poHomeChannel.sidenav.openChat(secondChannel);
+			await poHomeChannel.content.sendMessage('this is a message for reply');
+
+			const sidebarItem = await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel);
+			await expect(sidebarItem.locator('.rcx-badge')).toBeVisible();
+			await expect(poHomeChannel.page.locator('[data-qa-type="message"]').last()).toBeVisible();
+		});
+
+		test.afterAll(async () => {
+			await poHomeChannelUser2.page.close();
+		});
+	});
+
 	test.describe('Mark Unread - Message Action', () => {
 		let poHomeChannelUser2: HomeChannel;
 
