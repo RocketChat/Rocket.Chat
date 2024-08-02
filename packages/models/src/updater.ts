@@ -58,41 +58,26 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 
 		this.dirty = true;
 
+		const update = this.getUpdateFilter();
 		try {
-			await this.model.updateOne(query, {
-				...(this._set && { $set: Object.fromEntries(this._set) }),
-				...(this._unset && { $unset: Object.fromEntries([...this._unset.values()].map((k) => [k, 1])) }),
-				...(this._inc && { $inc: Object.fromEntries(this._inc) }),
-				...(this._addToSet && { $addToSet: { $each: Object.fromEntries(this._addToSet) } }),
-			} as unknown as UpdateFilter<T>);
+			await this.model.updateOne(query, update);
 		} catch (error) {
-			console.error(
-				'Failed to update',
-				JSON.stringify(query),
-				JSON.stringify(
-					{
-						...(this._set && { $set: Object.fromEntries(this._set) }),
-						...(this._unset && { $unset: Object.fromEntries([...this._unset.values()].map((k) => [k, 1])) }),
-						...(this._inc && { $inc: Object.fromEntries(this._inc) }),
-						...(this._addToSet && { $addToSet: { $each: Object.fromEntries(this._addToSet) } }),
-					},
-					null,
-					2,
-				),
-			);
+			console.error('Failed to update', JSON.stringify(query), JSON.stringify(update, null, 2));
 			throw error;
 		}
 	}
 
 	hasChanges() {
-		const update = {
+		return Object.keys(this.getUpdateFilter()).length > 0;
+	}
+
+	private getUpdateFilter() {
+		return {
 			...(this._set && { $set: Object.fromEntries(this._set) }),
 			...(this._unset && { $unset: Object.fromEntries([...this._unset.values()].map((k) => [k, 1])) }),
 			...(this._inc && { $inc: Object.fromEntries(this._inc) }),
 			...(this._addToSet && { $addToSet: { $each: Object.fromEntries(this._addToSet) } }),
 		} as unknown as UpdateFilter<T>;
-
-		return Object.keys(update).length > 0;
 	}
 }
 
