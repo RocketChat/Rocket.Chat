@@ -2022,7 +2022,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	private getAnalyticsUpdateQuery(
-		analyticsData: Record<string, string | number | Date>,
+		analyticsData: Record<string, string | number | Date> | undefined,
 		updater: Updater<IOmnichannelRoom> = this.getUpdater(),
 	) {
 		if (analyticsData) {
@@ -2032,7 +2032,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			updater.inc('metrics.reaction.tt', analyticsData.reactionTime as number);
 		}
 
-		if (analyticsData.firstResponseTime) {
+		if (analyticsData?.firstResponseTime) {
 			updater.set('metrics.reaction.fd', analyticsData.firstReactionDate);
 			updater.set('metrics.reaction.ft', analyticsData.firstReactionTime);
 			updater.set('metrics.response.fd', analyticsData.firstResponseDate);
@@ -2045,7 +2045,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	private getAnalyticsUpdateQueryBySentByAgent(
 		room: IOmnichannelRoom,
 		message: IMessage,
-		analyticsData: Record<string, string | number | Date>,
+		analyticsData: Record<string, string | number | Date> | undefined,
 	) {
 		const updater = this.getAnalyticsUpdateQuery(analyticsData);
 
@@ -2063,7 +2063,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	private getAnalyticsUpdateQueryBySentByVisitor(
 		room: IOmnichannelRoom,
 		message: IMessage,
-		analyticsData: Record<string, string | number | Date>,
+		analyticsData: Record<string, string | number | Date> | undefined,
 	) {
 		const updater = this.getAnalyticsUpdateQuery(analyticsData);
 
@@ -2082,7 +2082,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	private getAnalyticsUpdateQueryByRoomId(
 		room: IOmnichannelRoom,
 		message: IMessage,
-		analyticsData: Record<string, string | number | Date>,
+		analyticsData: Record<string, string | number | Date> | undefined,
 	) {
 		return isMessageFromVisitor(message)
 			? this.getAnalyticsUpdateQueryBySentByVisitor(room, message, analyticsData)
@@ -2092,7 +2092,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	async saveAnalyticsDataByRoomId(
 		room: IOmnichannelRoom,
 		message: IMessage,
-		analyticsData: Record<string, string | number | Date>,
+		analyticsData?: Record<string, string | number | Date>,
 	): Promise<void> {
 		const updater = this.getAnalyticsUpdateQueryByRoomId(room, message, analyticsData);
 		return updater.persist({ _id: room._id });
