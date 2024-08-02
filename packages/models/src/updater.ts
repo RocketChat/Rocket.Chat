@@ -1,41 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import type { IBaseModel } from '@rocket.chat/model-typings';
-import type { UpdateFilter, Join, NestedPaths, PropertyType, ArrayElement, NestedPathsOfType, Filter } from 'mongodb';
+import type { IBaseModel, Updater, SetProps, UnsetProps, IncProps, AddToSetProps } from '@rocket.chat/model-typings';
+import type { UpdateFilter, Filter } from 'mongodb';
 
 type ArrayElementType<T> = T extends (infer E)[] ? E : T;
-
-export interface Updater<T extends { _id: string }> {
-	set<P extends SetProps<T>, K extends keyof P>(key: K, value: P[K]): Updater<T>;
-	unset<K extends keyof UnsetProps<T>>(key: K): Updater<T>;
-	inc<K extends keyof IncProps<T>>(key: K, value: number): Updater<T>;
-	addToSet<K extends keyof AddToSetProps<T>>(key: K, value: AddToSetProps<T>[K]): Updater<T>;
-	persist(query: Filter<T>): Promise<void>;
-}
-
-type SetProps<TSchema extends { _id: string }> = Readonly<
-	{
-		[Property in Join<NestedPaths<TSchema, []>, '.'>]: PropertyType<TSchema, Property>;
-	} & {
-		[Property in `${NestedPathsOfType<TSchema, any[]>}.$${`[${string}]` | ''}`]: ArrayElement<
-			PropertyType<TSchema, Property extends `${infer Key}.$${string}` ? Key : never>
-		>;
-	} & {
-		[Property in `${NestedPathsOfType<TSchema, Record<string, any>[]>}.$${`[${string}]` | ''}.${string}`]: any;
-	}
->;
-
-type GetType<T, K> = {
-	[Key in keyof T]: K extends T[Key] ? T[Key] : never;
-};
-
-type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
-
-// only allow optional properties
-type UnsetProps<TSchema extends { _id: string }> = OmitNever<GetType<SetProps<TSchema>, undefined>>;
-
-type IncProps<TSchema extends { _id: string }> = OmitNever<GetType<SetProps<TSchema>, number>>;
-
-type AddToSetProps<TSchema extends { _id: string }> = OmitNever<GetType<SetProps<TSchema>, any[]>>;
 
 type Keys<T extends { _id: string }> = keyof SetProps<T>;
 
@@ -89,6 +56,39 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 			throw new Error('Updater is not dirty');
 		}
 
+		if ((process.env.NODE_ENV === 'development' || process.env.TEST_MODE) && !this.hasChanges()) {
+			throw new Error('Nothing to update');
+		}
+
+		this.dirty = true;
+
+		try {
+			await this.model.updateOne(query, {
+				...(this._set && { $set: Object.fromEntries(this._set) }),
+				...(this._unset && { $unset: Object.fromEntries([...this._unset.values()].map((k) => [k, 1])) }),
+				...(this._inc && { $inc: Object.fromEntries(this._inc) }),
+				...(this._addToSet && { $addToSet: { $each: Object.fromEntries(this._addToSet) } }),
+			} as unknown as UpdateFilter<T>);
+		} catch (error) {
+			console.error(
+				'Failed to update',
+				JSON.stringify(query),
+				JSON.stringify(
+					{
+						...(this._set && { $set: Object.fromEntries(this._set) }),
+						...(this._unset && { $unset: Object.fromEntries([...this._unset.values()].map((k) => [k, 1])) }),
+						...(this._inc && { $inc: Object.fromEntries(this._inc) }),
+						...(this._addToSet && { $addToSet: { $each: Object.fromEntries(this._addToSet) } }),
+					},
+					null,
+					2,
+				),
+			);
+			throw error;
+		}
+	}
+
+	hasChanges() {
 		const update = {
 			...(this._set && { $set: Object.fromEntries(this._set) }),
 			...(this._unset && { $unset: Object.fromEntries([...this._unset.values()].map((k) => [k, 1])) }),
@@ -96,17 +96,8 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 			...(this._addToSet && { $addToSet: { $each: Object.fromEntries(this._addToSet) } }),
 		} as unknown as UpdateFilter<T>;
 
-		if ((process.env.NODE_ENV === 'development' || process.env.TEST_MODE) && Object.keys(update).length === 0) {
-			throw new Error('Nothing to update');
-		}
-
-		this.dirty = true;
-
-		try {
-			await this.model.updateOne(query, update);
-		} catch (error) {
-			console.error('Failed to update', JSON.stringify(query), JSON.stringify(update, null, 2));
-			throw error;
-		}
+		return Object.keys(update).length > 0;
 	}
 }
+
+export { Updater };

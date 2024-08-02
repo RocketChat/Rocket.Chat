@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import type { Join, NestedPaths, PropertyType, ArrayElement, NestedPathsOfType } from 'mongodb';
+import type { Join, NestedPaths, PropertyType, ArrayElement, NestedPathsOfType, Filter } from 'mongodb';
 
 export interface Updater<T extends { _id: string }> {
 	set<P extends SetProps<T>, K extends keyof P>(key: K, value: P[K]): Updater<T>;
 	unset<K extends keyof UnsetProps<T>>(key: K): Updater<T>;
-	// inc<K extends keyof T>(key: K, value: number): Updater<T>;
-	// dec<K extends keyof T>(key: K, value: number): Updater<T>;
-	persist(): Promise<void>;
+	inc<K extends keyof IncProps<T>>(key: K, value: number): Updater<T>;
+	addToSet<K extends keyof AddToSetProps<T>>(key: K, value: AddToSetProps<T>[K]): Updater<T>;
+	persist(query: Filter<T>): Promise<void>;
+	hasChanges(): boolean;
 }
 
-type SetProps<TSchema extends { _id: string }> = Readonly<
+export type SetProps<TSchema extends { _id: string }> = Readonly<
 	{
 		[Property in Join<NestedPaths<TSchema, []>, '.'>]: PropertyType<TSchema, Property>;
 	} & {
@@ -21,11 +22,15 @@ type SetProps<TSchema extends { _id: string }> = Readonly<
 	}
 >;
 
-type GetNullables<T> = {
-	[Key in keyof T]: undefined extends T[Key] ? 1 : never;
+type GetType<T, K> = {
+	[Key in keyof T]: K extends T[Key] ? T[Key] : never;
 };
 
 type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
 
 // only allow optional properties
-type UnsetProps<TSchema extends { _id: string }> = OmitNever<GetNullables<SetProps<TSchema>>>;
+export type UnsetProps<TSchema extends { _id: string }> = OmitNever<GetType<SetProps<TSchema>, undefined>>;
+
+export type IncProps<TSchema extends { _id: string }> = OmitNever<GetType<SetProps<TSchema>, number>>;
+
+export type AddToSetProps<TSchema extends { _id: string }> = OmitNever<GetType<SetProps<TSchema>, any[]>>;
