@@ -108,9 +108,10 @@ describe('[OAuthApps]', () => {
 	});
 
 	describe('[/oauth-apps.info]', () => {
-		it('should return a single oauthApp with only client id and name attributes', async () => {
-			await updatePermission('manage-oauth-apps', []);
+		before(() => updatePermission('manage-oauth-apps', []));
+		after(() => updatePermission('manage-oauth-apps', ['admin']));
 
+		it('should return a single oauthApp with only client id and name attributes', async () => {
 			await request
 				.get(api('oauth-apps.info'))
 				.query({ clientId: 'zapier' })
@@ -126,8 +127,6 @@ describe('[OAuthApps]', () => {
 		});
 
 		it('should return an error when the oauthApp is not found by clientId', async () => {
-			await updatePermission('manage-oauth-apps', []);
-
 			await request
 				.get(api('oauth-apps.info'))
 				.query({ clientId: 'not-exist' })
