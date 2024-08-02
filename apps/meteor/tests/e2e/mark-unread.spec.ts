@@ -55,7 +55,7 @@ test.describe('Mark Unread - Sidebar Action', () => {
 			await expect(sidebarItem.locator('.rcx-badge')).toBeVisible();
 		});
 
-		test.afterAll(async () => {
+		test.afterEach(async () => {
 			await poHomeChannelUser2.page.close();
 		});
 	});
