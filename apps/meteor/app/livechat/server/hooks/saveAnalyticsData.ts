@@ -71,7 +71,13 @@ callbacks.add(
 		}
 
 		const analyticsData = getAnalyticsData(room, new Date());
-		await LivechatRooms.saveAnalyticsDataByRoomId(room, message, analyticsData);
+		const updater = await LivechatRooms.getAnalyticsUpdateQueryByRoomId(room, message, analyticsData);
+
+		if (updater.hasChanges()) {
+			await updater.persist({
+				_id: room._id,
+			});
+		}
 
 		return message;
 	},

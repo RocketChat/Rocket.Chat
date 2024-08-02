@@ -2046,15 +2046,14 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		room: IOmnichannelRoom,
 		message: IMessage,
 		analyticsData: Record<string, string | number | Date> | undefined,
+		updater: Updater<IOmnichannelRoom> = this.getUpdater(),
 	) {
-		const updater = this.getAnalyticsUpdateQuery(analyticsData);
-
 		// livechat analytics : update last message timestamps
 		const visitorLastQuery = room.metrics?.v ? room.metrics.v.lq : room.ts;
 		const agentLastReply = room.metrics?.servedBy ? room.metrics.servedBy.lr : room.ts;
 
 		if (visitorLastQuery > agentLastReply) {
-			updater.set('metrics.servedBy.lr', message.ts);
+			return this.getAnalyticsUpdateQuery(analyticsData, updater).set('metrics.servedBy.lr', message.ts);
 		}
 
 		return updater;
@@ -2064,51 +2063,30 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		room: IOmnichannelRoom,
 		message: IMessage,
 		analyticsData: Record<string, string | number | Date> | undefined,
+		updater: Updater<IOmnichannelRoom> = this.getUpdater(),
 	) {
-		const updater = this.getAnalyticsUpdateQuery(analyticsData);
-
 		// livechat analytics : update last message timestamps
 		const visitorLastQuery = room.metrics?.v ? room.metrics.v.lq : room.ts;
 		const agentLastReply = room.metrics?.servedBy ? room.metrics.servedBy.lr : room.ts;
 
 		// update visitor timestamp, only if its new inquiry and not continuing message
 		if (agentLastReply >= visitorLastQuery) {
-			updater.set('metrics.v.lq', message.ts);
+			return this.getAnalyticsUpdateQuery(analyticsData).set('metrics.v.lq', message.ts);
 		}
 
 		return updater;
 	}
 
-	private getAnalyticsUpdateQueryByRoomId(
+	async getAnalyticsUpdateQueryByRoomId(
 		room: IOmnichannelRoom,
 		message: IMessage,
 		analyticsData: Record<string, string | number | Date> | undefined,
+		updater: Updater<IOmnichannelRoom> = this.getUpdater(),
 	) {
 		return isMessageFromVisitor(message)
-			? this.getAnalyticsUpdateQueryBySentByVisitor(room, message, analyticsData)
-			: this.getAnalyticsUpdateQueryBySentByAgent(room, message, analyticsData);
+			? this.getAnalyticsUpdateQueryBySentByVisitor(room, message, analyticsData, updater)
+			: this.getAnalyticsUpdateQueryBySentByAgent(room, message, analyticsData, updater);
 	}
-
-	async saveAnalyticsDataByRoomId(
-		room: IOmnichannelRoom,
-		message: IMessage,
-		analyticsData?: Record<string, string | number | Date>,
-	): Promise<void> {
-		const updater = this.getAnalyticsUpdateQueryByRoomId(room, message, analyticsData);
-		return updater.persist({ _id: room._id });
-	}
-
-	// saveAnalyticsDataByRoomIdAndLastMessageFromVisitor(
-	// 	room: IOmnichannelRoom,
-	// 	message: IMessage,
-	// 	analyticsData: Record<string, string | number | Date>,
-	// ) {
-	// 	const updater = this.getAnalyticsUpdateQueryByRoomId(room, message, analyticsData);
-
-	// 	updater.set('v.lastMessageTs', message.ts);
-
-	// 	return updater.persist({ _id: room._id });
-	// }
 
 	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lt: Date }, { departmentId }: { departmentId?: string } = {}) {
 		const query: Filter<IOmnichannelRoom> = {
