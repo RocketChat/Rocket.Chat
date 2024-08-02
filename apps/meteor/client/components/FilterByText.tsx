@@ -1,13 +1,13 @@
 import { Box, Icon, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, FormEvent, AllHTMLAttributes } from 'react';
-import React, { forwardRef, memo, useCallback, useEffect, useState } from 'react';
+import type { ChangeEvent, FormEvent, HTMLAttributes } from 'react';
+import React, { forwardRef, memo, useCallback, useState } from 'react';
 
 type FilterByTextProps = {
-	onChange: (filter: { text: string }) => void;
+	onChange: (filter: string) => void;
 	shouldAutoFocus?: boolean;
-} & Omit<AllHTMLAttributes<HTMLInputElement>, 'is' | 'onChange'>;
+} & Omit<HTMLAttributes<HTMLInputElement>, 'is' | 'onChange'>;
 
 const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function FilterByText(
 	{ placeholder, onChange: setFilter, shouldAutoFocus = false, children, ...props },
@@ -18,13 +18,10 @@ const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function Fi
 	const autoFocusRef = useAutoFocus(shouldAutoFocus);
 	const mergedRefs = useMergedRefs(ref, autoFocusRef);
 
-	const handleInputChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
+	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setText(event.currentTarget.value);
-	}, []);
-
-	useEffect(() => {
-		setFilter({ text });
-	}, [setFilter, text]);
+		setFilter(event.currentTarget.value);
+	};
 
 	const handleFormSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();

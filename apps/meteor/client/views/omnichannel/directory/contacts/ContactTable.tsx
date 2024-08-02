@@ -106,7 +106,7 @@ function ContactTable(): ReactElement {
 	return (
 		<>
 			{((isSuccess && data?.visitors.length > 0) || queryHasChanged) && (
-				<FilterByText onChange={({ text }) => setTerm(text)}>
+				<FilterByText onChange={setTerm}>
 					<Button onClick={onButtonNewClick} primary>
 						{t('New_contact')}
 					</Button>

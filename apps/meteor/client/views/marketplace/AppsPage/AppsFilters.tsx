@@ -60,7 +60,7 @@ const AppsFilters = ({
 
 	return (
 		<Box pi={24} mbe={4}>
-			<FilterByText placeholder={appsSearchPlaceholders[context]} onChange={({ text }): void => setText(text)}>
+			<FilterByText placeholder={appsSearchPlaceholders[context]} onChange={setText}>
 				{!isPrivateAppsPage && (
 					<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
 				)}
