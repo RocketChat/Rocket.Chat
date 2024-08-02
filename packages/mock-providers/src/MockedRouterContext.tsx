@@ -2,7 +2,13 @@ import { RouterContext } from '@rocket.chat/ui-contexts';
 import type { ContextType } from 'react';
 import React from 'react';
 
-export const MockedRouterContext = ({ children, router }: { children: React.ReactNode; router?: ContextType<typeof RouterContext> }) => {
+export const MockedRouterContext = ({
+	children,
+	router,
+}: {
+	children: React.ReactNode;
+	router?: Partial<ContextType<typeof RouterContext>>;
+}) => {
 	return (
 		<RouterContext.Provider
 			value={{

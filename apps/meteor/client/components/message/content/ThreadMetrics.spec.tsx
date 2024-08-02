@@ -1,4 +1,6 @@
+import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { mockAppRoot, MockedRouterContext } from '@rocket.chat/mock-providers';
+import type { UsersInfoParamsGet } from '@rocket.chat/rest-typings';
 import { render, screen } from '@testing-library/react';
 import { type WrapperComponent } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
@@ -11,7 +13,13 @@ import ThreadMetrics from './ThreadMetrics';
 import ThreadMetricsFollow from './ThreadMetricsFollow';
 import ThreadMetricsParticipants from './ThreadMetricsParticipants';
 
-const usersInfoMock = ({ userId }: { userId: string }) => ({ user: createFakeUser({ _id: userId, username: userId }) as any });
+
+const usersInfoMock = (params: UsersInfoParamsGet) => {
+	if (!('userId' in params)) {
+		throw new Error('missing userId - usersInfoMock - ThreadMetrics.spec');
+	}
+	return { user: createFakeUser({ _id: params.userId, username: params.userId }) as unknown as Serialized<IUser> };
+};
 const toggleFollowMock =
 	(done: jest.DoneCallback | (() => undefined)) =>
 	({ mid }: { mid: string }) => {
@@ -28,12 +36,12 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 
 const mockRoot = () => {
 	const AppRoot = mockAppRoot();
-	const buildWithRouter = (navigate: (args: any[]) => void): WrapperComponent<{ children: ReactNode }> => {
+	const buildWithRouter = (navigate: (...args: any[]) => void): WrapperComponent<{ children: ReactNode }> => {
 		const Wrapper = AppRoot.build();
 		return function Mock({ children }) {
 			return (
 				<Wrapper>
-					<MockedRouterContext router={{ navigate, getRouteName: () => 'thread' }}>{children}</MockedRouterContext>
+					<MockedRouterContext router={{ navigate, getRouteName: () => 'thread' as any }}>{children}</MockedRouterContext>
 				</Wrapper>
 			);
 		};
