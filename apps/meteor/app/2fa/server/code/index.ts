@@ -168,9 +168,9 @@ const getSecondFactorMethod = (user: IUser, method: string | undefined, options:
 };
 
 export async function checkCodeForUser({ user, code, method, options = {}, connection }: ICheckCodeForUser): Promise<boolean> {
-	if (process.env.TEST_MODE && !options.requireSecondFactor) {
-		return true;
-	}
+	// if (process.env.TEST_MODE && !options.requireSecondFactor) {
+	// 	return true;
+	// }
 
 	if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
 		return true;

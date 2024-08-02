@@ -8,9 +8,9 @@ import { useEndpointAction } from '../../../hooks/useEndpointAction';
 const TwoFactorEmail = (props: ComponentProps<typeof Box>): JSX.Element | null => {
 	const t = useTranslation();
 	const user = useUser();
-
+	console.log('user - ', user);
 	const disableEmail2FAForOAuth = useSetting('Accounts_TwoFactorAuthentication_Disable_Email_For_OAuth_Users');
-	const isOAuthUser = !user?.services?.password?.exists;
+	const isOAuthUser = user?.isOAuthUser;
 	const isEnabled = user?.services?.email2fa?.enabled;
 	const isAllowed = !isOAuthUser || !disableEmail2FAForOAuth;
 

@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-import type { IUser } from '@rocket.chat/core-typings';
+import { isOAuthUser, type IUser } from '@rocket.chat/core-typings';
 import { Settings, Users } from '@rocket.chat/models';
 import {
 	isShieldSvgProps,
@@ -26,7 +26,6 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { passwordPolicy } from '../../../lib/server';
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
-import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
 import { API } from '../api';
@@ -34,6 +33,38 @@ import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getUserInfo } from '../helpers/getUserInfo';
+
+const userFields = {
+	'name': 1,
+	'username': 1,
+	'nickname': 1,
+	'emails': 1,
+	'status': 1,
+	'statusDefault': 1,
+	'statusText': 1,
+	'statusConnection': 1,
+	'bio': 1,
+	'avatarOrigin': 1,
+	'utcOffset': 1,
+	'language': 1,
+	'settings': 1,
+	'enableAutoAway': 1,
+	'idleTimeLimit': 1,
+	'roles': 1,
+	'active': 1,
+	'defaultRoom': 1,
+	'customFields': 1,
+	'requirePasswordChange': 1,
+	'requirePasswordChangeReason': 1,
+	'statusLivechat': 1,
+	'banners': 1,
+	'oauth.authorizedClients': 1,
+	'_updatedAt': 1,
+	'avatarETag': 1,
+	'extension': 1,
+	'openBusinessHours': 1,
+	'services': 1,
+};
 
 /**
  * @openapi
@@ -176,15 +207,18 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const fields = getDefaultUserFields();
-			const { services, ...user } = (await Users.findOneById(this.userId, { projection: fields })) as IUser;
+			const { services, ...user } = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
 
 			return API.v1.success(
 				await getUserInfo({
 					...user,
+					isOAuthUser: isOAuthUser({ ...user, services }),
 					...(services && {
 						services: {
-							...services,
+							...(services.github && { github: services.github }),
+							...(services.gitlab && { gitlab: services.gitlab }),
+							...(services.email2fa?.enabled && { email2fa: { enabled: services.email2fa.enabled } }),
+							...(services.totp?.enabled && { totp: { enabled: services.totp.enabled } }),
 							password: {
 								// The password hash shouldn't be leaked but the client may need to know if it exists.
 								exists: Boolean(services?.password?.bcrypt),
