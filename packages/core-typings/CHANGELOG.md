@@ -1,5 +1,7 @@
 # @rocket.chat/core-typings
 
+## 6.11.0-rc.2
+
 ## 6.11.0-rc.1
 
 ## 6.11.0-rc.0
@@ -19,6 +21,7 @@
 
   - @rocket.chat/ui-kit@0.36.0-rc.0
   </details>
+
 ## 6.10.2
 
 ### Patch Changes
