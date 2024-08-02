@@ -118,7 +118,6 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
 		persistent: true,
-		alert: 'OAuth_button_colors_alert',
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-button_color`, values.buttonColor || '#1d74f5', {
 		type: 'string',
@@ -126,7 +125,6 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 		section: `Custom OAuth: ${name}`,
 		i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
 		persistent: true,
-		alert: 'OAuth_button_colors_alert',
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-key_field`, values.keyField || 'username', {
 		type: 'select',
