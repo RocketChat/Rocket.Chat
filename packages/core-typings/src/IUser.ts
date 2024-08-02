@@ -46,12 +46,12 @@ export type ILoginUsername =
 export type LoginUsername = string | ILoginUsername;
 
 export interface IOAuthUserServices {
-	google?: any;
-	facebook?: any;
-	github?: any;
-	linkedin?: any;
-	twitter?: any;
-	gitlab?: any;
+	google?: Record<string, any>;
+	facebook?: Record<string, any>;
+	github?: Record<string, any>;
+	linkedin?: Record<string, any>;
+	twitter?: Record<string, any>;
+	gitlab?: Record<string, any>;
 	saml?: {
 		inResponseTo?: string;
 		provider?: string;
@@ -121,16 +121,16 @@ const defaultOAuthKeys = [
 ] as IOAuthServices[];
 const userServiceKeys = ['emailCode', 'email2fa', 'totp', 'resume', 'password', 'passwordHistory', 'cloud', 'email'] as IUserService[];
 
-export const isUserServiceKey = (key: string): key is IUserService => key in userServiceKeys || key in defaultOAuthKeys;
+export const isUserServiceKey = (key: string): key is IUserService =>
+	userServiceKeys.includes(key as IUserService) || defaultOAuthKeys.includes(key as IOAuthServices);
 
 export const isDefaultOAuthUser = (user: IUser): boolean =>
-	!!(user.services && Object.keys(user.services).some((key) => key in defaultOAuthKeys));
+	!!user.services && Object.keys(user.services).some((key) => defaultOAuthKeys.includes(key as IOAuthServices));
 
 export const isCustomOAuthUser = (user: IUser): boolean =>
-	!!(user.services && Object.keys(user.services).some((key) => !isUserServiceKey(key)));
+	!!user.services && Object.keys(user.services).some((key) => !isUserServiceKey(key));
 
-export const isOAuthUser = (user: IUser): boolean =>
-	!!(user.services && Object.keys(user.services).some((key: any) => !userServiceKeys.includes(key)));
+export const isOAuthUser = (user: IUser): boolean => isDefaultOAuthUser(user) || isCustomOAuthUser(user);
 
 export interface IUserEmail {
 	address: string;
@@ -217,7 +217,7 @@ export interface IUser extends IRocketChatRecord {
 	_pendingAvatarUrl?: string;
 	requirePasswordChange?: boolean;
 	requirePasswordChangeReason?: string;
-	isOAuthUser?: boolean;
+	isOAuthUser?: boolean; // client only field
 }
 
 export interface IRegisterUser extends IUser {
