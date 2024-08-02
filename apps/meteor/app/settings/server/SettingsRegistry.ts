@@ -140,7 +140,6 @@ export class SettingsRegistry {
 
 		const settingStored = this.store.getSetting(_id);
 
-		console.log('settingStored', settingStored);
 		const settingStoredOverwritten = settingStored && overwriteSetting(settingStored);
 
 		try {
