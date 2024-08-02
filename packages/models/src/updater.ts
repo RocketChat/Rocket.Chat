@@ -89,12 +89,24 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 			throw new Error('Updater is not dirty');
 		}
 
-		this.dirty = true;
-		await this.model.updateOne(query, {
+		const update = {
 			...(this._set && { $set: Object.fromEntries(this._set) }),
 			...(this._unset && { $unset: Object.fromEntries([...this._unset.values()].map((k) => [k, 1])) }),
 			...(this._inc && { $inc: Object.fromEntries(this._inc) }),
 			...(this._addToSet && { $addToSet: { $each: Object.fromEntries(this._addToSet) } }),
-		} as unknown as UpdateFilter<T>);
+		} as unknown as UpdateFilter<T>;
+
+		if ((process.env.NODE_ENV === 'development' || process.env.TEST_MODE) && Object.keys(update).length === 0) {
+			throw new Error('Nothing to update');
+		}
+
+		this.dirty = true;
+
+		try {
+			await this.model.updateOne(query, update);
+		} catch (error) {
+			console.error('Failed to update', JSON.stringify(query), JSON.stringify(update, null, 2));
+			throw error;
+		}
 	}
 }
