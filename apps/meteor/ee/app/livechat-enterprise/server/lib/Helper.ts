@@ -107,15 +107,11 @@ export const dispatchInquiryPosition = async (inquiry: Omit<InquiryWithAgentInfo
 		return;
 	}
 	const data = await normalizeQueueInfo({ position, queueInfo, department });
-	const propagateInquiryPosition = (inquiry: Omit<InquiryWithAgentInfo, 'v'>) => {
+	return setTimeout(() => {
 		void api.broadcast('omnichannel.room', inquiry.rid, {
 			type: 'queueData',
 			data,
 		});
-	};
-
-	return setTimeout(() => {
-		propagateInquiryPosition(inquiry);
 	}, 1000);
 };
 
