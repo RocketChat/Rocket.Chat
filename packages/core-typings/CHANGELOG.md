@@ -1,5 +1,9 @@
 # @rocket.chat/core-typings
 
+## 6.11.0-rc.3
+
+## 6.11.0-rc.2
+
 ## 6.11.0-rc.1
 
 ## 6.11.0-rc.0
@@ -19,6 +23,18 @@
 
   - @rocket.chat/ui-kit@0.36.0-rc.0
   </details>
+
+## 6.10.2
+
+### Patch Changes
+
+- ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Fixed an issue that prevented apps from being updated or uninstalled in some cases
+
+- ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Fixed an issue that prevented apps from handling errors during execution in some cases
+
+- ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Improved Apps-Engine installation to prevent start up errors on manual installation setups
+
+- ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Fixed an issue that caused the video conference button on rooms to not recognize a video conference provider app in some cases
 
 ## 6.10.1
 
