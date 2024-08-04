@@ -3,23 +3,20 @@ import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
-import sinon from 'sinon';
 
 import SAMLLoginRoute from '../../../../../client/views/root/SAMLLoginRoute';
 import RouterContextMock from '../../../../mocks/client/RouterContextMock';
 
-const loginWithSamlTokenStub = Meteor.loginWithSamlToken as sinon.SinonStub;
-const navigateStub = sinon.stub();
+const navigateStub = jest.fn();
 
 describe('views/root/SAMLLoginRoute', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
-		navigateStub.resetHistory();
-		loginWithSamlTokenStub.reset();
-		loginWithSamlTokenStub.callsFake((_token, callback) => callback());
+		navigateStub.mockClear();
+		(Meteor.loginWithSamlToken as jest.Mock<any>).mockClear();
 	});
 
-	it('should redirect to /home when userId is not null', async () => {
+	it('should redirect to /home', async () => {
 		render(
 			<MockedServerContext>
 				<MockedUserContext>
@@ -30,17 +27,11 @@ describe('views/root/SAMLLoginRoute', () => {
 			</MockedServerContext>,
 		);
 
-		expect(navigateStub.calledTwice).toBe(true);
-		expect(
-			navigateStub.calledWith(
-				sinon.match({
-					pathname: '/home',
-				}),
-			),
-		).toBe(true);
+		expect(navigateStub).toHaveBeenCalledTimes(1);
+		expect(navigateStub).toHaveBeenLastCalledWith(expect.objectContaining({ pathname: '/home' }), expect.anything());
 	});
 
-	it('should redirect to /home when userId is null and redirectUrl is not within the workspace domain', async () => {
+	it('should redirect to /home when redirectUrl is not within the workspace domain', async () => {
 		render(
 			<MockedServerContext>
 				<RouterContextMock searchParameters={{ redirectUrl: 'http://rocket.chat' }} navigate={navigateStub}>
@@ -49,16 +40,11 @@ describe('views/root/SAMLLoginRoute', () => {
 			</MockedServerContext>,
 		);
 
-		expect(
-			navigateStub.calledOnceWith(
-				sinon.match({
-					pathname: '/home',
-				}),
-			),
-		).toBe(true);
+		expect(navigateStub).toHaveBeenCalledTimes(1);
+		expect(navigateStub).toHaveBeenLastCalledWith(expect.objectContaining({ pathname: '/home' }), expect.anything());
 	});
 
-	it('should redirect to the provided redirectUrl when userId is null and redirectUrl is within the workspace domain', async () => {
+	it('should redirect to the provided redirectUrl when redirectUrl is within the workspace domain', async () => {
 		render(
 			<MockedServerContext>
 				<RouterContextMock searchParameters={{ redirectUrl: 'http://localhost:3000/invite/test' }} navigate={navigateStub}>
@@ -67,13 +53,8 @@ describe('views/root/SAMLLoginRoute', () => {
 			</MockedServerContext>,
 		);
 
-		expect(
-			navigateStub.calledOnceWith(
-				sinon.match({
-					pathname: '/invite/test',
-				}),
-			),
-		).toBe(true);
+		expect(navigateStub).toHaveBeenCalledTimes(1);
+		expect(navigateStub).toHaveBeenLastCalledWith(expect.objectContaining({ pathname: '/invite/test' }), expect.anything());
 	});
 
 	it('should call loginWithSamlToken when component is mounted', async () => {
@@ -85,7 +66,8 @@ describe('views/root/SAMLLoginRoute', () => {
 			</MockedServerContext>,
 		);
 
-		expect(loginWithSamlTokenStub.calledOnceWith(undefined)).toBe(true);
+		expect(Meteor.loginWithSamlToken).toHaveBeenCalledTimes(1);
+		expect(Meteor.loginWithSamlToken).toHaveBeenLastCalledWith(undefined, expect.any(Function));
 	});
 
 	it('should call loginWithSamlToken with the token when it is present', async () => {
@@ -101,6 +83,7 @@ describe('views/root/SAMLLoginRoute', () => {
 			</MockedUserContext>,
 		);
 
-		expect(loginWithSamlTokenStub.calledOnceWith('testToken')).toBe(true);
+		expect(Meteor.loginWithSamlToken).toHaveBeenCalledTimes(1);
+		expect(Meteor.loginWithSamlToken).toHaveBeenLastCalledWith('testToken', expect.any(Function));
 	});
 });

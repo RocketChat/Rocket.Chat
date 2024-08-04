@@ -1,8 +1,8 @@
 import { Message } from '@rocket.chat/core-services';
 import type { ILivechatVisitor, IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatVisitors, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';
@@ -31,7 +31,7 @@ async function resolveOnHoldCommentInfo(options: { clientAction: boolean }, room
 	return i18n.t('Omnichannel_on_hold_chat_automatically', { guest });
 }
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'livechat:resumeOnHold'(roomId: string, options?: { clientAction: boolean }): void;
