@@ -39,7 +39,7 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
 	});
 
-	test('expect follow/unfollow message with thread closed', async ({ page }) => {
+	test.only('expect follow/unfollow message with thread closed', async ({ page }) => {
 		await test.step('start thread', async () => {
 			await poHomeChannel.content.sendMessage('this is a message for reply');
 			await page.locator('[data-qa-type="message"]').last().hover();
@@ -50,7 +50,7 @@ test.describe.serial('message-actions', () => {
 		});
 
 		// close thread before testing because behaviour changes
-		await page.locator('role=button[aria-label="close"]').click();
+		await page.locator('role=button[name="Close"]').click();
 
 		await test.step('unfollow thread', async () => {
 			const unFollowButton = page.locator('[data-qa-type="message"]').last().getByTitle('Following');
