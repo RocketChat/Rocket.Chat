@@ -6,6 +6,7 @@
 		"@babel/core": "~7.22.20",
 		"@babel/preset-env": "~7.22.20",
 		"@babel/preset-typescript": "~7.22.15",
+		"@rocket.chat/apps-engine": "alpha",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/babel__core": "^7.20.3",
 		"@types/babel__preset-env": "^7.9.4",
@@ -34,14 +35,12 @@
 		"extends": "../../package.json"
 	},
 	"dependencies": {
-		"@rocket.chat/apps-engine": "alpha",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/icons": "^0.36.0",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",
-		"@types/fibers": "^3.1.3",
-		"fibers": "^5.0.3"
+		"@types/fibers": "^3.1.3"
 	}
 }

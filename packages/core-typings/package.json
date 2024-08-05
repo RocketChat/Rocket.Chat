@@ -4,6 +4,7 @@
 	"private": true,
 	"version": "7.0.0-develop",
 	"devDependencies": {
+		"@rocket.chat/apps-engine": "alpha",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"eslint": "~8.45.0",
 		"mongodb": "^4.17.2",
@@ -23,7 +24,6 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@rocket.chat/apps-engine": "alpha",
 		"@rocket.chat/icons": "^0.36.0",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~"

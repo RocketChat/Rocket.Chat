@@ -26,7 +26,6 @@
 		"ejson": "^2.2.3",
 		"emoji-toolkit": "^7.0.1",
 		"eventemitter3": "^4.0.7",
-		"fibers": "^5.0.3",
 		"mem": "^8.1.1",
 		"moment-timezone": "^0.5.43",
 		"mongo-message-queue": "^1.0.0",

@@ -33,7 +33,7 @@ Meteor.methods<ServerMethods>({
 		const AllowAnonymousWrite = settings.get<boolean>('Accounts_AllowAnonymousWrite');
 		const manuallyApproveNewUsers = settings.get<boolean>('Accounts_ManuallyApproveNewUsers');
 		if (AllowAnonymousRead === true && AllowAnonymousWrite === true && !formData.email) {
-			const userId = Accounts.insertUserDoc(
+			const userId = await Accounts.insertUserDoc(
 				{},
 				{
 					globalRoles: ['anonymous'],
@@ -41,9 +41,9 @@ Meteor.methods<ServerMethods>({
 				},
 			);
 
-			const stampedLoginToken = Accounts._generateStampedLoginToken();
+			const stampedLoginToken = await Accounts._generateStampedLoginToken();
 
-			Accounts._insertLoginToken(userId, stampedLoginToken);
+			await Accounts._insertLoginToken(userId, stampedLoginToken);
 			return stampedLoginToken;
 		}
 		check(

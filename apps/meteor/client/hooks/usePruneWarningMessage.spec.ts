@@ -20,6 +20,9 @@ const getRetentionRoomProps = (props: Partial<IRoomWithRetentionPolicy['retentio
 		},
 	};
 };
+// Warning: The dates are formated using date-fns/intlFormat, which itself uses the JS Intl API
+// The resulting formatted date can change depending on node version. These tests may break or the results
+// may be different when running on the browser.
 
 beforeEach(() => {
 	jest.setSystemTime(new Date(2024, 5, 1, 0, 0, 0));
@@ -35,9 +38,9 @@ describe('usePruneWarningMessage hook', () => {
 					TTLChannels: 60000,
 				}),
 			});
-			expect(result.current).toEqual('a minute June 1, 2024, 12:30 AM');
+			expect(result.current).toEqual('a minute June 1, 2024 at 12:30 AM');
 			jest.advanceTimersByTime(31 * 60 * 1000);
-			expect(result.current).toEqual('a minute June 1, 2024, 1:00 AM');
+			expect(result.current).toEqual('a minute June 1, 2024 at 1:00 AM');
 		});
 
 		it('Should return the default warning with precision set to every_hour', () => {
@@ -49,7 +52,7 @@ describe('usePruneWarningMessage hook', () => {
 					precision: '1',
 				}),
 			});
-			expect(result.current).toEqual('a minute June 1, 2024, 1:00 AM');
+			expect(result.current).toEqual('a minute June 1, 2024 at 1:00 AM');
 		});
 
 		it('Should return the default warning with precision set to every_six_hours', () => {
@@ -61,7 +64,7 @@ describe('usePruneWarningMessage hook', () => {
 					precision: '2',
 				}),
 			});
-			expect(result.current).toEqual('a minute June 1, 2024, 6:00 AM');
+			expect(result.current).toEqual('a minute June 1, 2024 at 6:00 AM');
 		});
 
 		it('Should return the default warning with precision set to every_day', () => {
@@ -73,7 +76,7 @@ describe('usePruneWarningMessage hook', () => {
 					precision: '3',
 				}),
 			});
-			expect(result.current).toEqual('a minute June 2, 2024, 12:00 AM');
+			expect(result.current).toEqual('a minute June 2, 2024 at 12:00 AM');
 		});
 
 		it('Should return the default warning with advanced precision', () => {
@@ -86,7 +89,7 @@ describe('usePruneWarningMessage hook', () => {
 					advancedPrecisionCron: '0 0 1 */1 *',
 				}),
 			});
-			expect(result.current).toEqual('a minute July 1, 2024, 12:00 AM');
+			expect(result.current).toEqual('a minute July 1, 2024 at 12:00 AM');
 		});
 	});
 
@@ -99,7 +102,7 @@ describe('usePruneWarningMessage hook', () => {
 					TTLChannels: 60000,
 				}),
 			});
-			expect(result.current).toEqual('a minute June 1, 2024, 12:30 AM');
+			expect(result.current).toEqual('a minute June 1, 2024 at 12:30 AM');
 		});
 
 		it('Should return the unpinned messages warning', () => {
@@ -111,7 +114,7 @@ describe('usePruneWarningMessage hook', () => {
 					doNotPrunePinned: true,
 				}),
 			});
-			expect(result.current).toEqual('Unpinned a minute June 1, 2024, 12:30 AM');
+			expect(result.current).toEqual('Unpinned a minute June 1, 2024 at 12:30 AM');
 		});
 
 		it('Should return the files only warning', () => {
@@ -124,7 +127,7 @@ describe('usePruneWarningMessage hook', () => {
 					filesOnly: true,
 				}),
 			});
-			expect(result.current).toEqual('FilesOnly a minute June 1, 2024, 12:30 AM');
+			expect(result.current).toEqual('FilesOnly a minute June 1, 2024 at 12:30 AM');
 		});
 
 		it('Should return the unpinned files only warning', () => {
@@ -138,7 +141,7 @@ describe('usePruneWarningMessage hook', () => {
 					doNotPrunePinned: true,
 				}),
 			});
-			expect(result.current).toEqual('UnpinnedFilesOnly a minute June 1, 2024, 12:30 AM');
+			expect(result.current).toEqual('UnpinnedFilesOnly a minute June 1, 2024 at 12:30 AM');
 		});
 	});
 
@@ -148,7 +151,7 @@ describe('usePruneWarningMessage hook', () => {
 			const { result } = renderHook(() => usePruneWarningMessage(fakeRoom), {
 				wrapper: createMock(),
 			});
-			expect(result.current).toEqual('30 days June 1, 2024, 12:30 AM');
+			expect(result.current).toEqual('30 days June 1, 2024 at 12:30 AM');
 		});
 
 		it('Should return the unpinned messages warning', () => {
@@ -156,7 +159,7 @@ describe('usePruneWarningMessage hook', () => {
 			const { result } = renderHook(() => usePruneWarningMessage(fakeRoom), {
 				wrapper: createMock(),
 			});
-			expect(result.current).toEqual('Unpinned 30 days June 1, 2024, 12:30 AM');
+			expect(result.current).toEqual('Unpinned 30 days June 1, 2024 at 12:30 AM');
 		});
 
 		it('Should return the files only warning', () => {
@@ -165,7 +168,7 @@ describe('usePruneWarningMessage hook', () => {
 			const { result } = renderHook(() => usePruneWarningMessage(fakeRoom), {
 				wrapper: createMock(),
 			});
-			expect(result.current).toEqual('FilesOnly 30 days June 1, 2024, 12:30 AM');
+			expect(result.current).toEqual('FilesOnly 30 days June 1, 2024 at 12:30 AM');
 		});
 
 		it('Should return the unpinned files only warning', () => {
@@ -174,7 +177,7 @@ describe('usePruneWarningMessage hook', () => {
 			const { result } = renderHook(() => usePruneWarningMessage(fakeRoom), {
 				wrapper: createMock(),
 			});
-			expect(result.current).toEqual('UnpinnedFilesOnly 30 days June 1, 2024, 12:30 AM');
+			expect(result.current).toEqual('UnpinnedFilesOnly 30 days June 1, 2024 at 12:30 AM');
 		});
 	});
 });

@@ -8433,7 +8433,6 @@ __metadata:
     eslint: ~8.45.0
     event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
-    fibers: ^5.0.3
     gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.31
@@ -8508,7 +8507,7 @@ __metadata:
     adm-zip: ^0.5.9
     cryptiles: ^4.1.3
     debug: ^4.3.4
-    deno-bin: 1.37.1
+    deno-bin: 1.44.2
     esbuild: ^0.20.2
     jose: ^4.11.1
     jsonrpc-lite: ^2.2.0
@@ -8556,7 +8555,6 @@ __metadata:
     eslint: ~8.45.0
     event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
-    fibers: ^5.0.3
     gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.31
@@ -8619,7 +8617,6 @@ __metadata:
     "@types/jest": ~29.5.12
     babel-jest: ^29.5.0
     eslint: ~8.45.0
-    fibers: ^5.0.3
     jest: ~29.7.0
     mongodb: ^4.17.2
     prettier: ~2.8.8
@@ -8734,7 +8731,6 @@ __metadata:
     eslint: ~8.45.0
     event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
-    fibers: ^5.0.3
     gc-stats: ^1.4.0
     jaeger-client: ^3.19.0
     mem: ^8.1.1
@@ -9465,7 +9461,6 @@ __metadata:
     "@types/ejson": ^2.2.1
     "@types/express": ^4.17.20
     "@types/express-rate-limit": ^5.1.3
-    "@types/fibers": ^3.1.3
     "@types/google-libphonenumber": ^7.4.29
     "@types/gravatar": ^1.8.5
     "@types/he": ^1.1.2
@@ -9484,8 +9479,6 @@ __metadata:
     "@types/lodash.get": ^4.4.8
     "@types/mailparser": ^3.4.3
     "@types/marked": ^4.0.8
-    "@types/meteor": ^2.9.8
-    "@types/meteor-collection-hooks": ^0.8.8
     "@types/mkdirp": ^1.0.2
     "@types/mocha": "github:whitecolor/mocha-types"
     "@types/moment-timezone": ^0.5.30
@@ -9588,7 +9581,6 @@ __metadata:
     fast-glob: ^3.2.12
     fastq: ^1.13.0
     fflate: ^0.7.4
-    fibers: ^5.0.3
     file-type: ^16.5.4
     filenamify: ^4.3.0
     filesize: 9.0.11
@@ -9609,7 +9601,7 @@ __metadata:
     imap: ^0.8.19
     ip-range-check: ^0.2.0
     is-svg: ^4.3.2
-    isolated-vm: 4.4.2
+    isolated-vm: 5.0.1
     jest: ~29.7.0
     jschardet: ^3.0.0
     jsdom: ^16.7.0
@@ -9810,7 +9802,6 @@ __metadata:
     emoji-toolkit: ^7.0.1
     eslint: ~8.45.0
     eventemitter3: ^4.0.7
-    fibers: ^5.0.3
     jest: ~29.7.0
     mem: ^8.1.1
     moment-timezone: ^0.5.43
@@ -9845,7 +9836,6 @@ __metadata:
     eslint: ~8.45.0
     event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
-    fibers: ^5.0.3
     gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.31
@@ -9989,7 +9979,6 @@ __metadata:
     eslint: ~8.45.0
     event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
-    fibers: ^5.0.3
     gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.31
@@ -10054,7 +10043,6 @@ __metadata:
     eslint: ~8.45.0
     event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
-    fibers: ^5.0.3
     gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.31
@@ -10221,7 +10209,6 @@ __metadata:
     eslint: ~8.45.0
     event-loop-stats: ^1.4.1
     eventemitter3: ^4.0.7
-    fibers: ^5.0.3
     gc-stats: ^1.4.0
     mem: ^8.1.1
     moleculer: ^0.14.31
@@ -13986,15 +13973,6 @@ __metadata:
   version: 1.0.5
   resolution: "@types/mdurl@npm:1.0.5"
   checksum: e8e872e8da8f517a9c748b06cec61c947cb73fd3069e8aeb0926670ec5dfac5d30549b3d0f1634950401633e812f9b7263f2d5dbe7e98fce12bcb2c659aa4b21
-  languageName: node
-  linkType: hard
-
-"@types/meteor-collection-hooks@npm:^0.8.8":
-  version: 0.8.8
-  resolution: "@types/meteor-collection-hooks@npm:0.8.8"
-  dependencies:
-    meteor-typings: ^1.3.1
-  checksum: bf0afc8531c836f3f7ead4aa0f8be3f69257af7a62397924a50533a20837b21b16c307777bb4fe52dc2e26753ba7269d0df6133ba6f1dad27d4075fea38a05f9
   languageName: node
   linkType: hard
 
@@ -21048,16 +21026,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"deno-bin@npm:1.37.1":
-  version: 1.37.1
-  resolution: "deno-bin@npm:1.37.1"
+"deno-bin@npm:1.44.2":
+  version: 1.44.2
+  resolution: "deno-bin@npm:1.44.2"
   dependencies:
     adm-zip: ^0.5.4
-    follow-redirects: ^1.10.0
   bin:
     deno: bin/deno.js
     deno-bin: bin/deno.js
-  checksum: 1c985611aa67b4b72f68b5608644af73dbff75619ac4fba67fecf036763acf76c66a9bb537cf09865c855313ceec6af1190474fa0163a616620b8af705c82736
+  checksum: 70a2c3e5306850ed8a5713bf1eacd77f7797a9a62327ce8a3801db29ae8e80ccea6abcf7e293d5f5f9426626ba1eff3931e8a9c0e7d595486fe6633e71619e5a
   languageName: node
   linkType: hard
 
@@ -21131,7 +21108,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"detect-libc@npm:^1.0.2, detect-libc@npm:^1.0.3":
+"detect-libc@npm:^1.0.2":
   version: 1.0.3
   resolution: "detect-libc@npm:1.0.3"
   bin:
@@ -23563,15 +23540,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fibers@npm:^5.0.3":
-  version: 5.0.3
-  resolution: "fibers@npm:5.0.3"
-  dependencies:
-    detect-libc: ^1.0.3
-  checksum: d66c5e18a911aab3480b846e1c837e5c7cfacb27a2a5fe512919865eaecef33cdd4abc14d777191a6a93473dc52356d48549c91a2a7b8b3450544c44104b23f3
-  languageName: node
-  linkType: hard
-
 "figgy-pudding@npm:^3.5.1":
   version: 3.5.2
   resolution: "figgy-pudding@npm:3.5.2"
@@ -24015,13 +23983,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.10.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.14.4, follow-redirects@npm:^1.14.7, follow-redirects@npm:^1.14.8, follow-redirects@npm:^1.14.9, follow-redirects@npm:^1.15.2":
-  version: 1.15.4
-  resolution: "follow-redirects@npm:1.15.4"
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.0, follow-redirects@npm:^1.14.4, follow-redirects@npm:^1.14.7, follow-redirects@npm:^1.14.8, follow-redirects@npm:^1.14.9, follow-redirects@npm:^1.15.2":
+  version: 1.15.2
+  resolution: "follow-redirects@npm:1.15.2"
   peerDependenciesMeta:
     debug:
       optional: true
-  checksum: e178d1deff8b23d5d24ec3f7a94cde6e47d74d0dc649c35fc9857041267c12ec5d44650a0c5597ef83056ada9ea6ca0c30e7c4f97dbf07d035086be9e6a5b7b6
+  checksum: faa66059b66358ba65c234c2f2a37fcec029dc22775f35d9ad6abac56003268baf41e55f9ee645957b32c7d9f62baf1f0b906e68267276f54ec4b4c597c2b190
   languageName: node
   linkType: hard
 
@@ -27709,12 +27677,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"isolated-vm@npm:4.4.2":
-  version: 4.4.2
-  resolution: "isolated-vm@npm:4.4.2"
+"isolated-vm@npm:5.0.1":
+  version: 5.0.1
+  resolution: "isolated-vm@npm:5.0.1"
   dependencies:
     node-gyp: latest
-  checksum: 86d12d96f90ceef74a3fc096439c71b0c115235ae3053d600eb8f7c678443d9ca3c8a2805dcd7f97463d11eb7d2e667868946b90e377a3e6d50fdd4085506fbc
+    prebuild-install: ^7.1.1
+  checksum: 33ca559797d8c20571015733309b313f55df667cbaf17f7c6445b707fcdfd8bef6896264a30e48eaaa5635ab1d33e826b4aa95a1ba0bf8d26b045a1226956956
   languageName: node
   linkType: hard
 
@@ -30509,13 +30478,6 @@ __metadata:
     meteor-html-tools: ^1.2.0
     meteor-htmljs: ^1.2.0
   checksum: 921a91c1a02dc47cdde9b6caa6779001cbcbd0c28f1859c721d0cf23fd5cdea41540501b10aa537f8c12741ea2a0ec05b8c9bd99d92f9b94b8446e65c6fdd985
-  languageName: node
-  linkType: hard
-
-"meteor-typings@npm:^1.3.1":
-  version: 1.4.1
-  resolution: "meteor-typings@npm:1.4.1"
-  checksum: 236aa932a2f863c14b440270ee85f6093cd57f8087107c44a8a1108c1ffc9cf4837ae065c96796062c9912a64d9ccee51b90263f7bd5362e6984c7ca9b909d27
   languageName: node
   linkType: hard
 
@@ -36883,7 +36845,6 @@ __metadata:
     ejson: ^2.2.3
     eventemitter3: ^4.0.7
     express: ^4.17.3
-    fibers: ^5.0.3
     jaeger-client: ^3.19.0
     mem: ^8.1.1
     moleculer: ^0.14.31
