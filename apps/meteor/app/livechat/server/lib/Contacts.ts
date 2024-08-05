@@ -58,6 +58,12 @@ type UpdateContactParams = {
 	channels?: ILivechatContactChannel[];
 };
 
+type ContactOTPCodeInfo = {
+	code: string;
+	expiresAt: Date;
+	attempts: number;
+};
+
 export const Contacts = {
 	async registerContact({
 		token,
@@ -277,4 +283,16 @@ export async function validateContactManager(user: Pick<IUser, 'roles'> | null) 
 	if (!user) {
 		throw new Error('error-contact-manager-not-found');
 	}
+}
+
+export async function addEmailCodeByContactEmail(email: string, channel: string, code: string, expiresAt: Date): Promise<any> {
+	throw new Error('addEmailCodeByContactEmail: implement');
+}
+
+export async function findContactCodeFromChannelAndEmail(email: string, channel: string): Promise<ContactOTPCodeInfo> {
+	throw new Error('findContactCodeFromChannelAndEmail: implement');
+}
+
+export async function incrementInvalidEmailCodeAttemptByVerifyingMethod(email: string, channel: string): Promise<any> {
+	throw new Error('incrementInvalidEmailCodeAttemptByVerifyingMethod: implement');
 }
