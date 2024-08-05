@@ -46,12 +46,12 @@ export type ILoginUsername =
 export type LoginUsername = string | ILoginUsername;
 
 export interface IOAuthUserServices {
-	google?: Record<string, any>;
-	facebook?: Record<string, any>;
-	github?: Record<string, any>;
-	linkedin?: Record<string, any>;
-	twitter?: Record<string, any>;
-	gitlab?: Record<string, any>;
+	google?: any;
+	facebook?: any;
+	github?: any;
+	linkedin?: any;
+	twitter?: any;
+	gitlab?: any;
 	saml?: {
 		inResponseTo?: string;
 		provider?: string;
