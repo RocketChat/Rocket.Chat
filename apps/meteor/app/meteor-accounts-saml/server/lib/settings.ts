@@ -120,8 +120,12 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 				if (value === true) {
 					const samlConfigs = getSamlConfigs(key);
 					SAMLUtils.log(key);
-					await LoginServiceConfiguration.createOrUpdateService(serviceName, samlConfigs);
-					void notifyOnLoginServiceConfigurationChangedByService(serviceName);
+
+					const { operation } = await LoginServiceConfiguration.createOrUpdateService(serviceName, samlConfigs);
+					if (operation === 'created' || operation === 'updated') {
+						void notifyOnLoginServiceConfigurationChangedByService(serviceName);
+					}
+
 					return configureSamlService(samlConfigs);
 				}
 
