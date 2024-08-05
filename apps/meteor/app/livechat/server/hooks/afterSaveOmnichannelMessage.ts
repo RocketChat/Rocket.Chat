@@ -11,13 +11,13 @@ callbacks.add(
 		}
 
 		const updater = LivechatRooms.getUpdater();
-		await callbacks.run('afterOmnichannelSaveMessage', message, { room, roomUpdater: updater });
+		const result = await callbacks.run('afterOmnichannelSaveMessage', message, { room, roomUpdater: updater });
 
 		if (updater.hasChanges()) {
 			await updater.persist({ _id: room._id });
 		}
 
-		return message;
+		return result;
 	},
 	callbacks.priority.MEDIUM,
 	'after-omnichannel-save-message',
