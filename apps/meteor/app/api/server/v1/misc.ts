@@ -176,7 +176,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const userFields = { ...getBaseUserFields, services: 1 };
+			const userFields = { ...getBaseUserFields(), services: 1 };
 			const { services, ...user } = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
 
 			return API.v1.success(

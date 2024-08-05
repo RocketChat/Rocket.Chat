@@ -24,11 +24,11 @@ export class EmailCheck implements ICodeCheck {
 			return false;
 		}
 
-		if (!user.services?.email2fa?.enabled) {
+		if (!settings.get('Accounts_TwoFactorAuthentication_email_available_for_oAuth_users') && isOAuthUser(user)) {
 			return false;
 		}
 
-		if (settings.get('Accounts_TwoFactorAuthentication_Disable_Email_For_OAuth_Users') && isOAuthUser(user)) {
+		if (!user.services?.email2fa?.enabled) {
 			return false;
 		}
 

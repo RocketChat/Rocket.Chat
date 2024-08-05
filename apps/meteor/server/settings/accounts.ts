@@ -31,7 +31,7 @@ export const createAccountSettings = () =>
 				public: true,
 			});
 
-			await this.add('Accounts_TwoFactorAuthentication_Disable_Email_For_OAuth_Users', false, {
+			await this.add('Accounts_TwoFactorAuthentication_email_available_for_oAuth_users', true, {
 				type: 'boolean',
 				enableQuery: [
 					enable2FA,
