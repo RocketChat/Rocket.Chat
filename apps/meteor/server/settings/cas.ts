@@ -33,8 +33,8 @@ export const createCasSettings = () =>
 			await this.add('CAS_popup_width', 810, { type: 'int', group: 'CAS', public: true });
 			await this.add('CAS_popup_height', 610, { type: 'int', group: 'CAS', public: true });
 			await this.add('CAS_button_label_text', 'CAS', { type: 'string', group: 'CAS' });
-			await this.add('CAS_button_label_color', '#FFFFFF', { type: 'color', group: 'CAS', alert: 'OAuth_button_colors_alert' });
-			await this.add('CAS_button_color', '#1d74f5', { type: 'color', group: 'CAS', alert: 'OAuth_button_colors_alert' });
+			await this.add('CAS_button_label_color', '#FFFFFF', { type: 'color', group: 'CAS' });
+			await this.add('CAS_button_color', '#1d74f5', { type: 'color', group: 'CAS' });
 			await this.add('CAS_autoclose', true, { type: 'boolean', group: 'CAS' });
 		});
 	});

@@ -15,6 +15,7 @@ import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { sendNotification } from '../../../lib/server';
 import {
@@ -27,6 +28,7 @@ import { i18n } from '../../../utils/lib/i18n';
 import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue } from './Helper';
 import { Livechat } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
+import { getInquirySortMechanismSetting } from './settings';
 
 const logger = new Logger('QueueManager');
 
@@ -257,6 +259,18 @@ export class QueueManager {
 		if (!newRoom) {
 			logger.error(`Room with id ${rid} not found`);
 			throw new Error('room-not-found');
+		}
+
+		if (!newRoom.servedBy && settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
+			const [inq] = await LivechatInquiry.getCurrentSortedQueueAsync({
+				inquiryId: inquiry._id,
+				department,
+				queueSortBy: getInquirySortMechanismSetting(),
+			});
+
+			if (inq) {
+				void dispatchInquiryPosition(inq);
+			}
 		}
 
 		return newRoom;

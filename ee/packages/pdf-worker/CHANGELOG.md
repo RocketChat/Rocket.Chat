@@ -1,5 +1,39 @@
 # @rocket.chat/pdf-worker
 
+## 0.2.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.2
+  </details>
+
+## 0.2.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.1
+  </details>
+
+## 0.2.0-rc.0
+
+### Minor Changes
+
+- ([#32752](https://github.com/RocketChat/Rocket.Chat/pull/32752)) Added system messages support for Omnichannel PDF transcripts and email transcripts. Currently these transcripts don't render system messages and is shown as an empty message in PDF/email. This PR adds this support for all valid livechat system messages.
+
+  Also added a new setting under transcripts, to toggle the inclusion of system messages in email and PDF transcripts.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [2d89a0c448, 24f7df4894, b8e5887fb9]:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.0
+  </details>
+  </details>
+
 ## 0.1.1
 
 ### Patch Changes
