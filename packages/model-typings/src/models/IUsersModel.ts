@@ -406,4 +406,5 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	setFreeSwitchExtension(userId: string, extension: string | undefined): Promise<UpdateResult>;
 	findAssignedFreeSwitchExtensions(): FindCursor<string>;
 	findUsersWithAssignedFreeSwitchExtensions<T = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
+	countActiveUsersWithCustomRoles(): Promise<number>;
 }
