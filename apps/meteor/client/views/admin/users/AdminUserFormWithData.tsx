@@ -1,5 +1,4 @@
 import type { IRole, IUser } from '@rocket.chat/core-typings';
-import { isUserFederated } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -43,7 +42,7 @@ const AdminUserFormWithData = ({ uid, onReload, context, roleData, roleError }: 
 		);
 	}
 
-	if (data?.user && isUserFederated(data?.user)) {
+	if (data?.user && !!data.user.federated) {
 		return (
 			<Callout m={16} type='danger'>
 				{t('Edit_Federated_User_Not_Allowed')}
