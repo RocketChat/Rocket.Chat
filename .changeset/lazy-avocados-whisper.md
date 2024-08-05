@@ -3,4 +3,4 @@
 "@rocket.chat/i18n": minor
 ---
 
-Improved thread metrics to feature user avatars, among other improvements.
+Improved thread metrics to feature user avatars, better titles and elements positions.
