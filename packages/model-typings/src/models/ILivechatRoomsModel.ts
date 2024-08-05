@@ -31,6 +31,8 @@ type WithOptions = {
 
 // TODO: Fix types of model
 export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
+	getUpdater(): Updater<IOmnichannelRoom>;
+
 	getQueueMetrics(params: { departmentId: any; agentId: any; includeOfflineAgents: any; options?: any }): any;
 
 	findAllNumberOfAbandonedRooms(params: Period & WithDepartment & WithOnlyCount & WithOptions): Promise<any>;
