@@ -104,7 +104,7 @@ export interface IUserServices extends IOAuthUserServices {
 }
 
 type IUserService = keyof IUserServices;
-type IOAuthServices = keyof IOAuthUserServices;
+type IOAuthService = keyof IOAuthUserServices;
 
 const defaultOAuthKeys = [
 	'google',
@@ -118,14 +118,14 @@ const defaultOAuthKeys = [
 	'nextcloud',
 	'saml',
 	'twitter',
-] as IOAuthServices[];
+] as IOAuthService[];
 const userServiceKeys = ['emailCode', 'email2fa', 'totp', 'resume', 'password', 'passwordHistory', 'cloud', 'email'] as IUserService[];
 
 export const isUserServiceKey = (key: string): key is IUserService =>
-	userServiceKeys.includes(key as IUserService) || defaultOAuthKeys.includes(key as IOAuthServices);
+	userServiceKeys.includes(key as IUserService) || defaultOAuthKeys.includes(key as IOAuthService);
 
 export const isDefaultOAuthUser = (user: IUser): boolean =>
-	!!user.services && Object.keys(user.services).some((key) => defaultOAuthKeys.includes(key as IOAuthServices));
+	!!user.services && Object.keys(user.services).some((key) => defaultOAuthKeys.includes(key as IOAuthService));
 
 export const isCustomOAuthUser = (user: IUser): boolean =>
 	!!user.services && Object.keys(user.services).some((key) => !isUserServiceKey(key));
