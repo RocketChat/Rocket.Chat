@@ -2399,17 +2399,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.deleteOne(query);
 	}
 
-	setVisitorLastMessageTimestampByRoomId(roomId: string, lastMessageTs: Date) {
-		const query = {
-			_id: roomId,
-		};
-		const update = {
-			$set: {
-				'v.lastMessageTs': lastMessageTs,
-			},
-		};
-
-		return this.updateOne(query, update);
+	getVisitorLastMessageTsUpdateQueryByRoomId(lastMessageTs: Date, updater: Updater<IOmnichannelRoom> = this.getUpdater()) {
+		return updater.set('v.lastMessageTs', lastMessageTs);
 	}
 
 	setVisitorInactivityInSecondsById(roomId: string, visitorInactivity: number) {
