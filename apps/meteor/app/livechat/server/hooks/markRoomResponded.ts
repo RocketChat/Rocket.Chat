@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { isEditedMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage, isMessageFromVisitor } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatVisitors, LivechatInquiry } from '@rocket.chat/models';
 import moment from 'moment';
 
@@ -8,19 +8,8 @@ import { notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyLi
 
 callbacks.add(
 	'afterOmnichannelSaveMessage',
-	async (message, { room }) => {
-		// skips this callback if the message was edited
-		if (!message || isEditedMessage(message)) {
-			return message;
-		}
-
-		// skips this callback if the message is a system message
-		if (message.t) {
-			return message;
-		}
-
-		// if the message has a token, it was sent by the visitor, so ignore it
-		if (message.token) {
+	async (message, { room, roomUpdater }) => {
+		if (!message || message.t || isEditedMessage(message) || isMessageFromVisitor(message)) {
 			return message;
 		}
 
@@ -44,7 +33,7 @@ callbacks.add(
 		}
 
 		if (room.responseBy) {
-			await LivechatRooms.setAgentLastMessageTs(room._id);
+			LivechatRooms.getAgentLastMessageTsUpdateQuery(roomUpdater);
 		}
 
 		// check if room is yet awaiting for response from visitor
@@ -52,12 +41,11 @@ callbacks.add(
 			// case where agent sends second message or any subsequent message in a room before visitor responds to the first message
 			// in this case, we just need to update the lastMessageTs of the responseBy object
 			if (room.responseBy) {
-				await LivechatRooms.setAgentLastMessageTs(room._id);
+				LivechatRooms.getAgentLastMessageTsUpdateQuery(roomUpdater);
 			}
 			return message;
 		}
 
-		// This is the first message from agent after visitor had last responded
 		const responseBy: IOmnichannelRoom['responseBy'] = room.responseBy || {
 			_id: message.u._id,
 			username: message.u.username,
@@ -65,8 +53,7 @@ callbacks.add(
 			lastMessageTs: new Date(message.ts),
 		};
 
-		// this unsets waitingResponse and sets responseBy object
-		await LivechatRooms.setResponseByRoomId(room._id, responseBy);
+		LivechatRooms.getResponseByRoomIdUpdateQuery(room._id, responseBy);
 
 		return message;
 	},
