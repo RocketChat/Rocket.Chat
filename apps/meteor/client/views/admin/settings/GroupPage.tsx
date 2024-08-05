@@ -1,8 +1,8 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useSettingsDispatch, useSettings, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSettingsDispatch, useSettings, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, FormEvent, MouseEvent } from 'react';
 import React, { useMemo, memo } from 'react';
 
@@ -31,9 +31,10 @@ const GroupPage = ({
 	isCustom = false,
 }: GroupPageProps) => {
 	const t = useTranslation();
-	const router = useRoute('admin-settings');
+	const router = useRouter();
 	const dispatch = useSettingsDispatch();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const isSettingsRoute = router.getRouteName() === 'admin-settings';
 
 	const changedEditableSettings = useEditableSettings(
 		useMemo(
@@ -56,7 +57,7 @@ const GroupPage = ({
 
 	const isColorSetting = (setting: ISetting): setting is ISettingColor => setting.type === 'color';
 
-	const save = useMutableCallback(async () => {
+	const save = useEffectEvent(async () => {
 		const changes = changedEditableSettings.map((setting) => {
 			if (isColorSetting(setting)) {
 				return {
@@ -86,7 +87,7 @@ const GroupPage = ({
 
 	const dispatchToEditing = useEditableSettingsDispatch();
 
-	const cancel = useMutableCallback(() => {
+	const cancel = useEffectEvent(() => {
 		const settingsToDispatch = changedEditableSettings
 			.map(({ _id }) => originalSettings.find((setting) => setting._id === _id))
 			.map((setting) => {
@@ -118,7 +119,7 @@ const GroupPage = ({
 		save();
 	};
 
-	const handleBack = useMutableCallback(() => router.push({}));
+	const handleBack = useEffectEvent(() => router.navigate('/admin/settings'));
 
 	const handleCancelClick = (event: MouseEvent<HTMLOrSVGElement>): void => {
 		event.preventDefault();
@@ -139,7 +140,7 @@ const GroupPage = ({
 
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>
-			<PageHeader onClickBack={handleBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
+			<PageHeader onClickBack={isSettingsRoute ? handleBack : undefined} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
 				<ButtonGroup>{headerButtons}</ButtonGroup>
 			</PageHeader>
 			{tabs}
