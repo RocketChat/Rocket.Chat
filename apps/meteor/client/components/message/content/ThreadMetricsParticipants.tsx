@@ -12,7 +12,8 @@ type ThreadMetricsParticipantsProps = {
 const ThreadMetricsParticipants = ({ participants }: ThreadMetricsParticipantsProps): ReactElement => {
 	const t = useTranslation();
 
-	const participantsLabel = participants.length - 2 > 0 ? `+${participants.length - 2}` : undefined;
+	const participantsLengthExcludingVisibleAvatars = participants.length - 2;
+	const participantsLabel = participantsLengthExcludingVisibleAvatars > 0 ? `+${participantsLengthExcludingVisibleAvatars}` : undefined;
 
 	return (
 		<MessageMetricsItem title={t('follower', { count: participants.length })}>

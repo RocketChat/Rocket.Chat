@@ -112,9 +112,8 @@ describe('Thread Metrics', () => {
 
 			const followButton = screen.getByTitle('Following');
 			expect(followButton).toBeVisible();
-			// userEvent.click(followButton);
 
-			const badge = screen.getByRole('status');
+			const badge = screen.getByTitle('Unread');
 			expect(badge).toBeVisible();
 
 			expect(await screen.findByTitle('followers')).toBeVisible();
@@ -173,7 +172,7 @@ describe('Thread Metrics', () => {
 			const followButton = screen.getByTitle('Not_following');
 			expect(followButton).toBeVisible();
 
-			const badge = screen.getByRole('status');
+			const badge = screen.getByTitle('Unread');
 			expect(badge).toBeVisible();
 
 			expect(await screen.findByTitle('followers')).toBeVisible();
@@ -209,11 +208,25 @@ describe('Thread Metrics', () => {
 			expect(followButton).toBeVisible();
 			userEvent.click(followButton);
 		});
-		it('should render badge', () => {
+		it('should render unread badge', () => {
 			render(<ThreadMetricsFollow unread={true} mention={false} all={false} mid='mid' rid='rid' following={false} />, {
 				wrapper: mockAppRoot().build(),
 			});
-			const badge = screen.getByRole('status');
+			const badge = screen.getByTitle('Unread');
+			expect(badge).toBeVisible();
+		});
+		it('should render mention-all badge', () => {
+			render(<ThreadMetricsFollow unread={true} mention={false} all={true} mid='mid' rid='rid' following={false} />, {
+				wrapper: mockAppRoot().build(),
+			});
+			const badge = screen.getByTitle('mention-all');
+			expect(badge).toBeVisible();
+		});
+		it('should render Mentions_you badge', () => {
+			render(<ThreadMetricsFollow unread={true} mention={true} all={false} mid='mid' rid='rid' following={false} />, {
+				wrapper: mockAppRoot().build(),
+			});
+			const badge = screen.getByTitle('Mentions_you');
 			expect(badge).toBeVisible();
 		});
 	});

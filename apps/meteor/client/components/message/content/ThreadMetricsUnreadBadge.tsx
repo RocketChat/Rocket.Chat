@@ -1,28 +1,38 @@
 import { Badge } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import type { ComponentProps } from 'react';
 
-const getBadgeVariant = (unread: boolean, mention: boolean, all: boolean) => {
+const getBadgeVariantAndTitle = (
+	unread: boolean,
+	mention: boolean,
+	all: boolean,
+): false | [ComponentProps<typeof Badge>['variant'], TranslationKey] => {
 	if (!unread) {
 		return false;
 	}
 
 	if (mention) {
-		return 'danger';
+		return ['danger', 'Mentions_you'];
 	}
 
 	if (all) {
-		return 'warning';
+		return ['warning', 'mention-all'];
 	}
 
-	return 'primary';
+	return ['primary', 'Unread'];
 };
 
 const ThreadMetricsUnreadBadge = ({ unread, mention, all }: { unread: boolean; mention: boolean; all: boolean }) => {
-	const variant = getBadgeVariant(unread, mention, all);
+	const t = useTranslation();
+	const result = getBadgeVariantAndTitle(unread, mention, all);
 
-	if (!variant) return null;
+	if (!result) return null;
 
-	return <Badge small variant={variant} />;
+	const [variant, title] = result;
+
+	return <Badge small variant={variant} role='status' title={t(title)} />;
 };
 
 export default ThreadMetricsUnreadBadge;
