@@ -53,7 +53,7 @@ callbacks.add(
 			lastMessageTs: new Date(message.ts),
 		};
 
-		LivechatRooms.getResponseByRoomIdUpdateQuery(room._id, responseBy);
+		LivechatRooms.getResponseByRoomIdUpdateQuery(responseBy, roomUpdater);
 
 		return message;
 	},
