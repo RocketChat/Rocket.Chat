@@ -160,6 +160,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findSmallestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined>;
 
 	countFederatedRooms(): Promise<number>;
+	countMessagesInActiveFederatedRooms(): Promise<number>;
 	incMsgCountById(rid: string, inc: number): Promise<UpdateResult>;
 	getIncMsgCountUpdateQuery(inc: number, roomUpdater: Updater<IRoom>): Updater<IRoom>;
 	decreaseMessageCountById(rid: string, dec: number): Promise<UpdateResult>;
