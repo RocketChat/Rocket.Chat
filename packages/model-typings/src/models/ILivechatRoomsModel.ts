@@ -9,6 +9,7 @@ import type {
 import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult, Filter } from 'mongodb';
 
 import type { FindPaginated } from '..';
+import type { Updater } from '../updater';
 import type { IBaseModel } from './IBaseModel';
 
 type Period = {
@@ -30,6 +31,8 @@ type WithOptions = {
 
 // TODO: Fix types of model
 export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
+	getUpdater(): Updater<IOmnichannelRoom>;
+
 	getQueueMetrics(params: { departmentId: any; agentId: any; includeOfflineAgents: any; options?: any }): any;
 
 	findAllNumberOfAbandonedRooms(params: Period & WithDepartment & WithOnlyCount & WithOptions): Promise<any>;
@@ -208,11 +211,12 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	setResponseByRoomId(roomId: string, responseBy: IOmnichannelRoom['responseBy']): Promise<UpdateResult>;
 	setNotResponseByRoomId(roomId: string): Promise<UpdateResult>;
 	setAgentLastMessageTs(roomId: string): Promise<UpdateResult>;
-	saveAnalyticsDataByRoomId(
+	getAnalyticsUpdateQueryByRoomId(
 		room: IOmnichannelRoom,
 		message: IMessage,
-		analyticsData?: Record<string, string | number | Date>,
-	): Promise<UpdateResult>;
+		analyticsData: Record<string, string | number | Date> | undefined,
+		updater?: Updater<IOmnichannelRoom>,
+	): Promise<Updater<IOmnichannelRoom>>;
 	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lt: Date }, data?: { departmentId: string }): Promise<number>;
 	getAnalyticsMetricsBetweenDate(
 		t: 'l',
