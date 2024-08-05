@@ -3,11 +3,10 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import moment from 'moment';
-import type { Document, UpdateResult } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
-import { notifyOnSubscriptionChangedByRoomIdExcludingUserIds, notifyOnSubscriptionChangedByRoomIdAndUserIds } from './notifyListener';
+import { notifyOnSubscriptionChanged, notifyOnSubscriptionChangedByRoomIdAndUserIds } from './notifyListener';
 
 function messageContainsHighlight(message: IMessage, highlights: string[]): boolean {
 	if (!highlights || highlights.length === 0) return false;
@@ -52,26 +51,14 @@ export async function getMentions(message: IMessage): Promise<{ toAll: boolean; 
 
 type UnreadCountType = 'all_messages' | 'user_mentions_only' | 'group_mentions_only' | 'user_and_group_mentions_only';
 
-const incGroupMentions = async (
-	rid: IRoom['_id'],
-	roomType: RoomType,
-	excludeUserId: IUser['_id'],
-	unreadCount: Exclude<UnreadCountType, 'user_mentions_only'>,
-): Promise<UpdateResult | Document> => {
+const getGroupMentions = (roomType: RoomType, unreadCount: Exclude<UnreadCountType, 'user_mentions_only'>): number => {
 	const incUnreadByGroup = ['all_messages', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
-	const incUnread = roomType === 'd' || roomType === 'l' || incUnreadByGroup ? 1 : 0;
-	return Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(rid, excludeUserId, 1, incUnread);
+	return roomType === 'd' || roomType === 'l' || incUnreadByGroup ? 1 : 0;
 };
 
-const incUserMentions = async (
-	rid: IRoom['_id'],
-	roomType: RoomType,
-	uids: IUser['_id'][],
-	unreadCount: Exclude<UnreadCountType, 'group_mentions_only'>,
-): Promise<UpdateResult | Document> => {
-	const incUnreadByUser = new Set(['all_messages', 'user_mentions_only', 'user_and_group_mentions_only']).has(unreadCount);
-	const incUnread = roomType === 'd' || roomType === 'l' || incUnreadByUser ? 1 : 0;
-	return Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(rid, uids, 1, incUnread);
+const getUserMentions = (roomType: RoomType, unreadCount: Exclude<UnreadCountType, 'group_mentions_only'>): number => {
+	const incUnreadByUser = ['all_messages', 'user_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
+	return roomType === 'd' || roomType === 'l' || incUnreadByUser ? 1 : 0;
 };
 
 export const getUserIdsFromHighlights = async (rid: IRoom['_id'], message: IMessage): Promise<string[]> => {
@@ -112,55 +99,45 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	const userIds = [...new Set([...mentionIds, ...highlightIds])];
 	const unreadCount = getUnreadSettingCount(room.t);
 
-	const includeUsers = new Set<string>();
-	const excludeUsers = new Set<string>();
+	const userMentionInc = getUserMentions(room.t, unreadCount as Exclude<UnreadCountType, 'group_mentions_only'>);
+	const groupMentionInc = getGroupMentions(room.t, unreadCount as Exclude<UnreadCountType, 'user_mentions_only'>);
+
+	Subscriptions.findByRoomIdAndNotAlertOrOpenExcludingUserIds({
+		roomId: room._id,
+		uidsExclude: [message.u._id],
+		uidsInclude: userIds,
+		onlyRead: !toAll && !toHere,
+	}).forEach((sub) => {
+		const hasUserMention = userIds.includes(sub.u._id);
+		const shouldIncUnread = hasUserMention || toAll || toHere || unreadCount === 'all_messages';
+		void notifyOnSubscriptionChanged(
+			{
+				...sub,
+				alert: true,
+				open: true,
+				...(shouldIncUnread && { unread: sub.unread + 1 }),
+				...(hasUserMention && { userMentions: sub.userMentions + 1 }),
+				...((toAll || toHere) && { groupMentions: sub.groupMentions + 1 }),
+			},
+			'updated',
+		);
+	});
 
 	// Give priority to user mentions over group mentions
 	if (userIds.length) {
-		const incUserMentionsResponse = await incUserMentions(
-			room._id,
-			room.t,
-			userIds,
-			unreadCount as Exclude<UnreadCountType, 'group_mentions_only'>,
-		);
-		if (incUserMentionsResponse.modifiedCount) {
-			userIds.forEach((userId) => includeUsers.add(userId));
-		}
+		await Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, userIds, 1, userMentionInc);
 	} else if (toAll || toHere) {
-		const incGroupMentionsResponse = await incGroupMentions(
-			room._id,
-			room.t,
-			message.u._id,
-			unreadCount as Exclude<UnreadCountType, 'user_mentions_only'>,
-		);
-		if (incGroupMentionsResponse.modifiedCount) {
-			excludeUsers.add(message.u._id);
-		}
+		await Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, groupMentionInc);
 	}
 
 	if (!toAll && !toHere && unreadCount === 'all_messages') {
-		const incUnreadForRoomIdResponse = await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1);
-		if (incUnreadForRoomIdResponse.modifiedCount) {
-			[userIds, message.u._id].flat().forEach((userId) => excludeUsers.add(userId));
-		}
+		await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1);
 	}
 
-	const [alertResponse, openResponse] = await Promise.all([
+	await Promise.all([
 		Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id),
 		Subscriptions.setOpenForRoomIdExcludingUserId(message.rid, message.u._id),
 	]);
-
-	if (alertResponse.modifiedCount || openResponse.modifiedCount) {
-		excludeUsers.add(message.u._id);
-	}
-
-	if (includeUsers.size) {
-		void notifyOnSubscriptionChangedByRoomIdExcludingUserIds(message.rid, [...excludeUsers]);
-	}
-
-	if (excludeUsers.size) {
-		void notifyOnSubscriptionChangedByRoomIdAndUserIds(message.rid, [...includeUsers]);
-	}
 }
 
 export async function updateThreadUsersSubscriptions(message: IMessage, replies: IUser['_id'][]): Promise<void> {

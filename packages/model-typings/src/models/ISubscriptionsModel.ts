@@ -73,6 +73,16 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	findByUserIdAndTypes(userId: string, types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
+	findByRoomIdAndNotAlertOrOpenExcludingUserIds(
+		filter: {
+			roomId: ISubscription['rid'];
+			uidsExclude?: ISubscription['u']['_id'][];
+			uidsInclude?: ISubscription['u']['_id'][];
+			onlyRead: boolean;
+		},
+		options?: FindOptions<ISubscription>,
+	): FindCursor<ISubscription>;
+
 	removeByRoomId(roomId: ISubscription['rid']): Promise<DeleteResult>;
 
 	findByRoomIdExcludingUserIds(

@@ -327,6 +327,33 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options || {});
 	}
 
+	findByRoomIdAndNotAlertOrOpenExcludingUserIds(
+		{
+			roomId,
+			uidsExclude,
+			uidsInclude,
+			onlyRead,
+		}: {
+			roomId: ISubscription['rid'];
+			uidsExclude?: ISubscription['u']['_id'][];
+			uidsInclude?: ISubscription['u']['_id'][];
+			onlyRead: boolean;
+		},
+		options?: FindOptions<ISubscription>,
+	) {
+		const query = {
+			rid: roomId,
+			...(uidsExclude?.length && {
+				'u._id': { $nin: uidsExclude },
+			}),
+			...(onlyRead && {
+				$or: [...(uidsInclude?.length ? [{ 'u._id': { $in: uidsInclude } }] : []), { alert: { $ne: true } }, { open: { $ne: true } }],
+			}),
+		};
+
+		return this.find(query, options || {});
+	}
+
 	async removeByRoomId(roomId: ISubscription['rid']): Promise<DeleteResult> {
 		const query = {
 			rid: roomId,

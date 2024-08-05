@@ -473,6 +473,12 @@ export const notifyOnMessageChange = withDbWatcherCheck(async ({ id, data }: { i
 	void api.broadcast('watch.messages', { message });
 });
 
+export const notifyOnSubscriptionChanged = withDbWatcherCheck(
+	async (subscription: ISubscription, clientAction: ClientAction = 'updated'): Promise<void> => {
+		void api.broadcast('watch.subscriptions', { clientAction, subscription });
+	},
+);
+
 export async function notifyOnSubscriptionChangedByRoomIdAndUserId(
 	rid: ISubscription['rid'],
 	uid: ISubscription['u']['_id'],
