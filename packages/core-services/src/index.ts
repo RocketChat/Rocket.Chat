@@ -50,6 +50,7 @@ import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVid
 import type { IVoipService } from './types/IVoipService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
+export { asyncMethodCallContextStore, traceInstanceMethods } from './lib/asyncMethodCallContext';
 export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';
 export { EventSignatures } from './events/Events';

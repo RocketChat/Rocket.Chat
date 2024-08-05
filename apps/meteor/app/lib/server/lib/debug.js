@@ -1,5 +1,6 @@
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Logger } from '@rocket.chat/logger';
+import { context, trace } from '@rocket.chat/tracing';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
@@ -49,6 +50,8 @@ const traceConnection = (enable, filter, prefix, name, connection, userId) => {
 	}
 };
 
+const tracer = trace.getTracer('core');
+
 const wrapMethods = function (name, originalHandler, methodsMap) {
 	methodsMap[name] = function (...originalArgs) {
 		traceConnection(Log_Trace_Methods, Log_Trace_Methods_Filter, 'method', name, this.connection, this.userId);
@@ -70,6 +73,23 @@ const wrapMethods = function (name, originalHandler, methodsMap) {
 			instanceId: InstanceStatus.id(),
 			...getMethodArgs(name, originalArgs),
 		});
+
+		const currentSpan = trace.getSpan(context.active());
+		if (currentSpan) {
+			const span = tracer.startSpan(`Method ${name}`, {
+				attributes: {
+					method: name,
+					userId: this.userId,
+				},
+			});
+
+			const result = context.with(trace.setSpan(context.active(), span), () => {
+				return originalHandler.apply(this, originalArgs);
+			});
+			end();
+			span.end();
+			return result;
+		}
 
 		const result = originalHandler.apply(this, originalArgs);
 		end();

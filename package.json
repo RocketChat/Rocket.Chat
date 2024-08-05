@@ -68,6 +68,9 @@
 		"typia@~5.3.3": "patch:typia@npm%3A5.3.3#./.yarn/patches/typia-npm-5.3.3-21d3e18463.patch"
 	},
 	"dependencies": {
+		"@opentelemetry/auto-instrumentations-node": "^0.48.0",
+		"@opentelemetry/exporter-trace-otlp-grpc": "^0.52.1",
+		"@opentelemetry/sdk-node": "^0.52.1",
 		"node-gyp": "^9.4.1"
 	}
 }

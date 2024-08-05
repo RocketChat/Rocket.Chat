@@ -1,7 +1,10 @@
+import { traceInstanceMethods } from '@rocket.chat/core-services';
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
 import type { Updater } from '@rocket.chat/models';
 import { getCollectionName, UpdaterImpl } from '@rocket.chat/models';
+import { context, trace } from '@rocket.chat/tracing';
+import { MongoInternals } from 'meteor/mongo';
 import { ObjectId } from 'mongodb';
 import type {
 	BulkWriteOptions,
@@ -44,6 +47,106 @@ type ModelOptions = {
 	_updatedAtIndexOptions?: Omit<IndexDescription, 'key'>;
 };
 
+// function getCallerNames(skip = 1, limit = 4) {
+// 	// const a = Date.now();
+// 	let data = [];
+// 	try {
+// 		try {
+// 			throw new Error();
+// 		} catch (e) {
+// 			// console.log(e.stack);
+// 			data = e.stack.match(/(?<=at )[^\(\n]+(?= \()/g).splice(skip, limit);
+// 		}
+// 	} catch (e) {
+// 		// return [];
+// 	}
+// 	// console.log(Date.now() - a);
+// 	return data;
+// }
+
+const { client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+const tracer = trace.getTracer('core');
+console.log(client);
+const DurationStart = new Map();
+client.on('commandStarted', (event) => {
+	// console.log(event);
+	const collection = event.command[event.commandName];
+	// if (collection !== 'rocketchat_settings') return;
+
+	// console.log(JSON.stringify(event, null, 2));
+	// console.log('asyncMethodCallContextStore.getStore()', asyncMethodCallContextStore.getStore());
+	// if (asyncMethodCallContextStore.getStore()) {
+	const currentSpan = trace.getSpan(context.active());
+	if (currentSpan) {
+		const span = tracer.startSpan(`mongodb ${collection}.${event.commandName}`, {
+			attributes: {
+				'db.connection_string': event.address,
+				'db.mongodb.collection': collection,
+				'db.name': event.databaseName,
+				'db.operation': event.commandName,
+				'db.statement': JSON.stringify(event.command, null, 2),
+				'db.system': 'mongodb',
+				// net.peer.name
+				// net.peer.port
+			},
+		});
+
+		DurationStart.set(event.requestId, { event, span });
+		// console.log(JSON.stringify(event, 2));
+	}
+});
+client.on('commandSucceeded', (event) => {
+	if (!DurationStart.has(event.requestId)) {
+		return;
+	}
+
+	const { event: startEvent, span } = DurationStart.get(event.requestId);
+	DurationStart.delete(event.requestId);
+
+	span.end();
+
+	// const number =
+	// 	event.reply.n ?? event.reply.cursor?.firstBatch?.length ?? event.reply.cursor?.nextBatch?.length ?? event.reply.lastErrorObject?.n ?? 0;
+	// const { duration } = event;
+	// const cmd =
+	// 	startEvent.command.filter ||
+	// 	startEvent.command.query ||
+	// 	startEvent.command.deletes ||
+	// 	startEvent.command.updates ||
+	// 	startEvent.command.pipeline ||
+	// 	startEvent.command.indexes;
+	// const result = {
+	// 	type: 'db:command',
+	// 	collection: startEvent.command[startEvent.commandName],
+	// 	command: event.commandName,
+	// 	caller: cmd?.$comment || JSON.stringify(cmd),
+	// 	duration,
+	// 	number,
+	// };
+	// store.push(result);
+	// console.log('asyncMethodCallContextStore.getStore()', asyncMethodCallContextStore.getStore());
+	// console.log('commandSucceeded', { duration, number });
+	// console.log(result);
+	// metrics.collectionsByTime.set(result, duration);
+	// metrics.collectionsByRecord.set(result, number);
+
+	// if (event.commandName === 'findAndModify') {
+	// 	console.log(startEvent);
+	// 	console.log(event);
+	// }
+	// if (!['find', 'update', 'getMore', 'ismaster', 'listIndexes', 'count', 'delete', 'serverStatus', 'insert', 'createIndexes', 'aggregate', 'drop', 'findAndModify'].includes(result.command)) {
+	// 	console.log({
+	// 		...result,
+	// 		duration,
+	// 		number,
+	// 		durationPerNumber: number === 0 ? 0 : duration / number,
+	// 	});
+	// 	console.log(startEvent);
+	// 	console.log(event);
+	// }
+});
+client.on('commandFailed', (event) => DurationStart.delete(event.requestId));
+
 export abstract class BaseRaw<
 	T extends { _id: string },
 	C extends DefaultFields<T> = undefined,
@@ -77,6 +180,8 @@ export abstract class BaseRaw<
 		});
 
 		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
+
+		return traceInstanceMethods(this);
 	}
 
 	private pendingIndexes: Promise<void> | undefined;
