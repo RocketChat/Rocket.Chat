@@ -2060,7 +2060,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			return this.getAnalyticsUpdateQuery(analyticsData, updater).set('metrics.servedBy.lr', message.ts);
 		}
 
-		return updater;
+		return this.getAnalyticsUpdateQuery(analyticsData, updater);
 	}
 
 	private getAnalyticsUpdateQueryBySentByVisitor(
@@ -2075,10 +2075,10 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 		// update visitor timestamp, only if its new inquiry and not continuing message
 		if (agentLastReply >= visitorLastQuery) {
-			return this.getAnalyticsUpdateQuery(analyticsData).set('metrics.v.lq', message.ts);
+			return this.getAnalyticsUpdateQuery(analyticsData, updater).set('metrics.v.lq', message.ts);
 		}
 
-		return updater;
+		return this.getAnalyticsUpdateQuery(analyticsData, updater);
 	}
 
 	async getAnalyticsUpdateQueryByRoomId(
