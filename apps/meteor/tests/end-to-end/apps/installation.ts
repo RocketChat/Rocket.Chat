@@ -100,9 +100,10 @@ describe('Apps - Installation', () => {
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.a.property('success', true);
-						expect(res.body).to.have.a.property('data').that.is.an('array').with.lengthOf(2);
+						expect(res.body).to.have.a.property('data').that.is.an('array').with.lengthOf(3);
 						expect(res.body.data[0]).to.be.an('object').with.a.property('key').equal('test');
-						expect(res.body.data[1]).to.be.an('object').with.a.property('key').equal('unconfigured');
+						expect(res.body.data[1]).to.be.an('object').with.a.property('key').equal('persistentchat');
+						expect(res.body.data[2]).to.be.an('object').with.a.property('key').equal('unconfigured');
 					})
 					.end(done);
 			});

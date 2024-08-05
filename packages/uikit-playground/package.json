@@ -1,7 +1,7 @@
 {
   "name": "@rocket.chat/uikit-playground",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.3.3-rc.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -15,10 +15,10 @@
     "@codemirror/tooltip": "^0.19.16",
     "@lezer/highlight": "^1.1.6",
     "@rocket.chat/css-in-js": "~0.31.25",
-    "@rocket.chat/fuselage": "^0.55.2",
+    "@rocket.chat/fuselage": "^0.57.0",
     "@rocket.chat/fuselage-hooks": "^0.33.1",
     "@rocket.chat/fuselage-polyfills": "~0.31.25",
-    "@rocket.chat/fuselage-toastbar": "^0.32.0",
+    "@rocket.chat/fuselage-toastbar": "^0.33.0",
     "@rocket.chat/fuselage-tokens": "^0.33.1",
     "@rocket.chat/fuselage-ui-kit": "workspace:~",
     "@rocket.chat/icons": "^0.36.0",

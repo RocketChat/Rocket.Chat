@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom, isEditedMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatVisitors, LivechatInquiry } from '@rocket.chat/models';
 import moment from 'moment';
 
@@ -7,12 +7,8 @@ import { callbacks } from '../../../../lib/callbacks';
 import { notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 
 callbacks.add(
-	'afterSaveMessage',
-	async (message, room) => {
-		if (!isOmnichannelRoom(room)) {
-			return message;
-		}
-
+	'afterOmnichannelSaveMessage',
+	async (message, { room }) => {
 		// skips this callback if the message was edited
 		if (!message || isEditedMessage(message)) {
 			return message;

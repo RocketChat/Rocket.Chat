@@ -23,6 +23,7 @@ import type {
 	MessageMention,
 	OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import type { FilterOperators } from 'mongodb';
 
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
@@ -50,6 +51,7 @@ interface EventLikeCallbackSignatures {
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
 	'afterRoomNameChange': (params: { rid: string; name: string; oldName: string }) => void;
 	'afterSaveMessage': (message: IMessage, room: IRoom, uid?: string) => void;
+	'afterOmnichannelSaveMessage': (message: IMessage, constant: { room: IOmnichannelRoom; roomUpdater: Updater<IOmnichannelRoom> }) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.closeRoom': (params: { room: IOmnichannelRoom; options: CloseRoomParams['options'] }) => void;
@@ -63,7 +65,10 @@ interface EventLikeCallbackSignatures {
 	) => void;
 	'livechat.afterAgentRemoved': (params: { agent: Pick<IUser, '_id' | 'username'> }) => void;
 	'afterAddedToRoom': (params: { user: IUser; inviter?: IUser }, room: IRoom) => void;
-	'beforeAddedToRoom': (params: { user: AtLeast<IUser, '_id' | 'federated' | 'roles'>; inviter: IUser }) => void;
+	'beforeAddedToRoom': (params: {
+		user: AtLeast<IUser, '_id' | 'federated' | 'roles'>;
+		inviter: AtLeast<IUser, '_id' | 'username'>;
+	}) => void;
 	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[]; creatorId: IUser['_id'] }) => void;
 	'beforeDeleteRoom': (params: IRoom) => void;
 	'beforeJoinDefaultChannels': (user: IUser) => void;

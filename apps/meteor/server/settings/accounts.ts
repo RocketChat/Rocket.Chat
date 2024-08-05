@@ -709,6 +709,28 @@ export const createAccountSettings = () =>
 				public: true,
 				i18nLabel: 'VideoConf_Mobile_Ringing',
 			});
+
+			const defaultUserPreferencesSidebarSectionsOrder = [
+				'Incoming_Calls',
+				'Incoming_Livechats',
+				'Open_Livechats',
+				'On_Hold_Chats',
+				'Unread',
+				'Favorites',
+				'Teams',
+				'Discussions',
+				'Channels',
+				'Direct_Messages',
+				'Conversations',
+			];
+
+			await this.add('Accounts_Default_User_Preferences_sidebarSectionsOrder', defaultUserPreferencesSidebarSectionsOrder, {
+				type: 'multiSelect',
+				public: true,
+				values: defaultUserPreferencesSidebarSectionsOrder.map((key) => ({ key, i18nLabel: key })),
+				i18nLabel: 'Sidebar_Sections_Order',
+				i18nDescription: 'Sidebar_Sections_Order_Description',
+			});
 		});
 
 		await this.section('Avatar', async function () {
