@@ -34,7 +34,7 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@react-pdf/renderer": "^3.1.14",
+		"@react-pdf/renderer": "^3.4.4",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/fuselage-tokens": "^0.33.1",
 		"@types/react": "~17.0.69",

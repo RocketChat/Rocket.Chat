@@ -7198,169 +7198,163 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-pdf/fns@npm:2.0.1":
-  version: 2.0.1
-  resolution: "@react-pdf/fns@npm:2.0.1"
+"@react-pdf/fns@npm:2.2.1":
+  version: 2.2.1
+  resolution: "@react-pdf/fns@npm:2.2.1"
   dependencies:
     "@babel/runtime": ^7.20.13
-  checksum: cc56f632862820c7512530c423a5506addcb6aefc46e61d952dd735c0b887fa209dddcc1ec49f89fecc30b6852f44bd2025687898d86d76d8019b35b74d0094b
+  checksum: 738bc27e45ee3253e9abf74924696428ac856e679ac617b030936052da773996bec3d314ca9ad67c675d3eb82c8c74a9c24a3dbd0473b66773dbaefb1f202826
   languageName: node
   linkType: hard
 
-"@react-pdf/font@npm:^2.3.7":
-  version: 2.3.7
-  resolution: "@react-pdf/font@npm:2.3.7"
+"@react-pdf/font@npm:^2.5.1":
+  version: 2.5.1
+  resolution: "@react-pdf/font@npm:2.5.1"
   dependencies:
     "@babel/runtime": ^7.20.13
-    "@react-pdf/types": ^2.3.4
+    "@react-pdf/types": ^2.5.0
     cross-fetch: ^3.1.5
     fontkit: ^2.0.2
     is-url: ^1.2.4
-  checksum: bf3f774045294c3e4f2f7b3e86e631ee01dddfe8e8c11fb97264cfa1fbf21e4f3c4ed0684d4971c967c4c175bb918e56f7c1d0dbeac4aa1adf30c618f965f3c9
+  checksum: c770a7a8b9537abc950dc46b0d2e3a7a01034f89425acd897ae2d3fe56dab3d3b4743c5cf89ab1c634ed53d385c9737db741210ca6f991727c23c25409a72f8e
   languageName: node
   linkType: hard
 
-"@react-pdf/image@npm:^2.2.2":
-  version: 2.2.2
-  resolution: "@react-pdf/image@npm:2.2.2"
+"@react-pdf/image@npm:^2.3.6":
+  version: 2.3.6
+  resolution: "@react-pdf/image@npm:2.3.6"
   dependencies:
     "@babel/runtime": ^7.20.13
-    "@react-pdf/png-js": ^2.2.0
+    "@react-pdf/png-js": ^2.3.1
     cross-fetch: ^3.1.5
-  checksum: f14c5595ba25f54a2274c1ec4b2d19b195108f05ac34960a0ec8c03499f2090faa9937428ed1d189597fb675733b4d68d092d98c18319e0ef6efa530d12c605b
+    jay-peg: ^1.0.2
+  checksum: 177e221e61714d7efd6c7c7c1f78b7dc9b343eaf6fd7d11f22ebd0830114f4188fb0be5b6dab71e734f8e9aa0f6ca0cad946011b2872f771526ab75c14a5a039
   languageName: node
   linkType: hard
 
-"@react-pdf/layout@npm:^3.6.3":
-  version: 3.6.3
-  resolution: "@react-pdf/layout@npm:3.6.3"
+"@react-pdf/layout@npm:^3.12.1":
+  version: 3.12.1
+  resolution: "@react-pdf/layout@npm:3.12.1"
   dependencies:
     "@babel/runtime": ^7.20.13
-    "@react-pdf/fns": 2.0.1
-    "@react-pdf/image": ^2.2.2
-    "@react-pdf/pdfkit": ^3.0.2
-    "@react-pdf/primitives": ^3.0.0
-    "@react-pdf/stylesheet": ^4.1.8
-    "@react-pdf/textkit": ^4.2.0
-    "@react-pdf/types": ^2.3.4
-    "@react-pdf/yoga": ^4.1.2
+    "@react-pdf/fns": 2.2.1
+    "@react-pdf/image": ^2.3.6
+    "@react-pdf/pdfkit": ^3.1.10
+    "@react-pdf/primitives": ^3.1.1
+    "@react-pdf/stylesheet": ^4.2.5
+    "@react-pdf/textkit": ^4.4.1
+    "@react-pdf/types": ^2.5.0
     cross-fetch: ^3.1.5
-    emoji-regex: ^10.2.1
+    emoji-regex: ^10.3.0
     queue: ^6.0.1
-  checksum: 812b5f3c3f27fba2fc6a15c35a3e9191e4d6407ff4a23a96c2d99889842c26f15bf03531e67c607cc2114ed731739d03f02c934926db7bc05926ef29ed959dad
+    yoga-layout: ^2.0.1
+  checksum: 62317c086ee27c10b2c2a9605ab5882f482818a139231d4de5a2ac906db1e8d27f703513d55c2d5d6144422cf532739c79194f960961bc046a9ab6bd75ef0e6e
   languageName: node
   linkType: hard
 
-"@react-pdf/pdfkit@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "@react-pdf/pdfkit@npm:3.0.2"
+"@react-pdf/pdfkit@npm:^3.1.10":
+  version: 3.1.10
+  resolution: "@react-pdf/pdfkit@npm:3.1.10"
   dependencies:
     "@babel/runtime": ^7.20.13
-    "@react-pdf/png-js": ^2.2.0
+    "@react-pdf/png-js": ^2.3.1
     browserify-zlib: ^0.2.0
-    crypto-js: ^4.0.0
+    crypto-js: ^4.2.0
     fontkit: ^2.0.2
+    jay-peg: ^1.0.2
     vite-compatible-readable-stream: ^3.6.1
-  checksum: 8ab264e699751c1eb5245eb712c62c681c916e081fdf21a60bfda993f4f39336b238c799baba20d9b9b642a0819f46edd8e93de8dad5f1ce177b6ea57fee83a4
+  checksum: df8d2ce9a6588f79c24a090fc6e2ecc91e656435a8025f9af37cdae4edff96756239aee11f923c604a98ef51b1659e37cd30addf641b49dd17c12963889cfa1e
   languageName: node
   linkType: hard
 
-"@react-pdf/png-js@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "@react-pdf/png-js@npm:2.2.0"
+"@react-pdf/png-js@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "@react-pdf/png-js@npm:2.3.1"
   dependencies:
     browserify-zlib: ^0.2.0
-  checksum: 0f1571f43dcffa93c219ede411210c83f20c81a01f0a0cb39e713c9f066fa4b7b9781602240676e937e89c0218f2940f9acb98f06165e30dc7012897d1ff8d07
+  checksum: bab00c8380cb1f2126c2844568929fe04753ee8611d9d9d0f6f9d5d4fdc3c8aafd265297d354941610b9e2fadcafca6e1cd2f36b137f2847e35985d226d056bc
   languageName: node
   linkType: hard
 
-"@react-pdf/primitives@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "@react-pdf/primitives@npm:3.0.1"
-  checksum: c4bea5c6c61a2bbfdc462385def8ec9a36b60320b2008643f694de4e587dd05058ff78c98aa8a5d66bd472bbe09c93a477b15fefd64db58f6e64c122adabbdf1
+"@react-pdf/primitives@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "@react-pdf/primitives@npm:3.1.1"
+  checksum: a52c0cfff74d29d36e2e4c1c2b8935faf2f13bbe3800901e93354ea044385d8716166e45f3a49bb729e6d9944d7a8239056f5af80b345cb2984e245b2e719c1d
   languageName: node
   linkType: hard
 
-"@react-pdf/render@npm:^3.2.7":
-  version: 3.2.7
-  resolution: "@react-pdf/render@npm:3.2.7"
+"@react-pdf/render@npm:^3.4.4":
+  version: 3.4.4
+  resolution: "@react-pdf/render@npm:3.4.4"
   dependencies:
     "@babel/runtime": ^7.20.13
-    "@react-pdf/fns": 2.0.1
-    "@react-pdf/primitives": ^3.0.0
-    "@react-pdf/textkit": ^4.2.0
-    "@react-pdf/types": ^2.3.4
+    "@react-pdf/fns": 2.2.1
+    "@react-pdf/primitives": ^3.1.1
+    "@react-pdf/textkit": ^4.4.1
+    "@react-pdf/types": ^2.5.0
     abs-svg-path: ^0.1.1
-    color-string: ^1.5.3
+    color-string: ^1.9.1
     normalize-svg-path: ^1.1.0
     parse-svg-path: ^0.1.2
     svg-arc-to-cubic-bezier: ^3.2.0
-  checksum: 74bb7190d006fee7b2df074bb28ade1f0bdf4a20a33998cdc2826974f4b4fc3622e660a598a4f4623046c12009bc3b663aa8701d9361a487334b84c7c2512de7
+  checksum: 753883a18613de3c2e334ecb121848cb066fd006739d76ed3dde36495d4646aa110154beffb8222f20c763a3cda3877ee5a5705fae194cd303aae4adc5fbb97a
   languageName: node
   linkType: hard
 
-"@react-pdf/renderer@npm:^3.1.14":
-  version: 3.1.14
-  resolution: "@react-pdf/renderer@npm:3.1.14"
+"@react-pdf/renderer@npm:^3.4.4":
+  version: 3.4.4
+  resolution: "@react-pdf/renderer@npm:3.4.4"
   dependencies:
     "@babel/runtime": ^7.20.13
-    "@react-pdf/font": ^2.3.7
-    "@react-pdf/layout": ^3.6.3
-    "@react-pdf/pdfkit": ^3.0.2
-    "@react-pdf/primitives": ^3.0.0
-    "@react-pdf/render": ^3.2.7
-    "@react-pdf/types": ^2.3.4
+    "@react-pdf/font": ^2.5.1
+    "@react-pdf/layout": ^3.12.1
+    "@react-pdf/pdfkit": ^3.1.10
+    "@react-pdf/primitives": ^3.1.1
+    "@react-pdf/render": ^3.4.4
+    "@react-pdf/types": ^2.5.0
     events: ^3.3.0
     object-assign: ^4.1.1
     prop-types: ^15.6.2
     queue: ^6.0.1
     scheduler: ^0.17.0
   peerDependencies:
-    react: ^16.8.6 || ^17.0.0 || ^18.0.0
-  checksum: f0313c066b5e9f34e87940a86dd344d07347829781407ea9e7d24480213624b8d0457a8258c09b62c6cfe145120f4e06978ebf7d18e7272a2e8a7d21f02c6202
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: f45cc7b64be48447dc1c97c0bc3d29d480b1642fb5a1811f295ff219a511d7b414fa4a8bcd159719c313c8bad2227e6136afb1065be4f330dc5c12a505b4c63e
   languageName: node
   linkType: hard
 
-"@react-pdf/stylesheet@npm:^4.1.8":
-  version: 4.1.8
-  resolution: "@react-pdf/stylesheet@npm:4.1.8"
+"@react-pdf/stylesheet@npm:^4.2.5":
+  version: 4.2.5
+  resolution: "@react-pdf/stylesheet@npm:4.2.5"
   dependencies:
     "@babel/runtime": ^7.20.13
-    "@react-pdf/fns": 2.0.1
-    "@react-pdf/types": ^2.3.4
-    color-string: ^1.5.3
+    "@react-pdf/fns": 2.2.1
+    "@react-pdf/types": ^2.5.0
+    color-string: ^1.9.1
     hsl-to-hex: ^1.0.0
     media-engine: ^1.0.3
     postcss-value-parser: ^4.1.0
-  checksum: c5339fdb49ee0420a6633e0955632073440fb0d235f0153164dae17401c5880995cf835c8ca1cf81a23ba83e4377439584ee86d2ab695796f01030791ab4f31f
+  checksum: f6d9c0132a73a58d0b5a4d5a37fa7504edaaaadbbeb055f5ed1b47e37dd9931c31b0886d3367ed05e83ad23632a173e8205fafc4438bd495bdc752549825424e
   languageName: node
   linkType: hard
 
-"@react-pdf/textkit@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "@react-pdf/textkit@npm:4.2.0"
+"@react-pdf/textkit@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "@react-pdf/textkit@npm:4.4.1"
   dependencies:
     "@babel/runtime": ^7.20.13
-    "@react-pdf/fns": 2.0.1
+    "@react-pdf/fns": 2.2.1
+    bidi-js: ^1.0.2
     hyphen: ^1.6.4
     unicode-properties: ^1.4.1
-  checksum: d7fb9b0bbd9ae3da224ab35d5b2bc12e0278c6a3cb8f274d6a573577389bdd18d0f97a7f2ed6af32f28bebb407f05846bbb687e466db2184fb1b267e0fc17e2f
+  checksum: e07b7574bab13999a2859dd6e8ddbbe3650ae63736c77ea36fc7f355d743a8954bfa8e59f43f8d0ecd5379e239a64882d0b88eb47a654019fb7575df0a235510
   languageName: node
   linkType: hard
 
-"@react-pdf/types@npm:^2.3.4":
-  version: 2.3.4
-  resolution: "@react-pdf/types@npm:2.3.4"
-  checksum: 3aa1b00581c69b5078fbc946d7c86abc984c2bef6a1b4b51e236be6719efd6773f794d390356df6d8355aa3c1f5a3a4a4bdca1e2d3c31fe3d3bf55250e405b02
-  languageName: node
-  linkType: hard
-
-"@react-pdf/yoga@npm:^4.1.2":
-  version: 4.1.2
-  resolution: "@react-pdf/yoga@npm:4.1.2"
-  dependencies:
-    "@babel/runtime": ^7.20.13
-  checksum: e226c8181fc7709c5bfa33fc2c4b4eae08f4a032fdad8b71e43b4f0e6b185152b47f51734a137cd6fe892a1e920d4a0dcec76344abca001c45ff633d0a33a1b0
+"@react-pdf/types@npm:^2.5.0":
+  version: 2.5.0
+  resolution: "@react-pdf/types@npm:2.5.0"
+  checksum: 0ddcfd1af2c22dacdb741a15ab0f9c54c7be05ef11900866f8454abf704afa55f184d6815f120d869a86ddf395bdf3ab6373b09ab4aa6fd926993bebf08676db
   languageName: node
   linkType: hard
 
@@ -9365,7 +9359,7 @@ __metadata:
     "@playwright/test": ^1.40.1
     "@react-aria/color": ^3.0.0-beta.15
     "@react-aria/toolbar": ^3.0.0-beta.1
-    "@react-pdf/renderer": ^3.1.14
+    "@react-pdf/renderer": ^3.4.4
     "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
@@ -9823,7 +9817,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/omnichannel-transcript@workspace:ee/apps/omnichannel-transcript"
   dependencies:
-    "@react-pdf/renderer": ^3.1.14
+    "@react-pdf/renderer": ^3.4.4
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ~0.31.25
@@ -9908,7 +9902,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/pdf-worker@workspace:ee/packages/pdf-worker"
   dependencies:
-    "@react-pdf/renderer": ^3.1.14
+    "@react-pdf/renderer": ^3.4.4
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/fuselage-tokens": ^0.33.1
     "@storybook/addon-essentials": ~6.5.16
@@ -10034,7 +10028,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/queue-worker@workspace:ee/apps/queue-worker"
   dependencies:
-    "@react-pdf/renderer": ^3.1.14
+    "@react-pdf/renderer": ^3.4.4
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ~0.31.25
@@ -17283,6 +17277,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"bidi-js@npm:^1.0.2":
+  version: 1.0.3
+  resolution: "bidi-js@npm:1.0.3"
+  dependencies:
+    require-from-string: ^2.0.2
+  checksum: 877c5dcfd69a35fd30fee9e49a03faf205a7a4cd04a38af7648974a659cab7b1cd51fa881d7957c07bd1fc5adf22b90a56da3617bb0885ee69d58ff41117658c
+  languageName: node
+  linkType: hard
+
 "big-integer@npm:^1.6.51, big-integer@npm:^1.6.7":
   version: 1.6.51
   resolution: "big-integer@npm:1.6.51"
@@ -19062,7 +19065,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"color-string@npm:^1.5.3, color-string@npm:^1.6.0, color-string@npm:^1.9.0":
+"color-string@npm:^1.6.0, color-string@npm:^1.9.0, color-string@npm:^1.9.1":
   version: 1.9.1
   resolution: "color-string@npm:1.9.1"
   dependencies:
@@ -19847,10 +19850,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crypto-js@npm:^4.0.0":
-  version: 4.1.1
-  resolution: "crypto-js@npm:4.1.1"
-  checksum: b3747c12ee3a7632fab3b3e171ea50f78b182545f0714f6d3e7e2858385f0f4101a15f2517e033802ce9d12ba50a391575ff4638c9de3dd9b2c4bc47768d5425
+"crypto-js@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "crypto-js@npm:4.2.0"
+  checksum: f051666dbc077c8324777f44fbd3aaea2986f198fe85092535130d17026c7c2ccf2d23ee5b29b36f7a4a07312db2fae23c9094b644cc35f7858b1b4fcaf27774
   languageName: node
   linkType: hard
 
@@ -21701,10 +21704,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"emoji-regex@npm:^10.2.1":
-  version: 10.2.1
-  resolution: "emoji-regex@npm:10.2.1"
-  checksum: 1aa2d16881c56531fdfc03d0b36f5c2b6221cc4097499a5665b88b711dc3fb4d5b8804f0ca6f00c56e5dcf89bac75f0487eee85da1da77df3a33accc6ecbe426
+"emoji-regex@npm:^10.3.0":
+  version: 10.3.0
+  resolution: "emoji-regex@npm:10.3.0"
+  checksum: 5da48edfeb9462fb1ae5495cff2d79129974c696853fb0ce952cbf560f29a2756825433bf51cfd5157ec7b9f93f46f31d712e896d63e3d8ac9c3832bdb45ab73
   languageName: node
   linkType: hard
 
@@ -27802,6 +27805,15 @@ __metadata:
     uuid: ^8.3.2
     xorshift: ^1.1.1
   checksum: fcdc0523b70299c0db1c07e6c209fa170cef75aa3ad00e6241c906423ba07dc6112a60e1b96de59c2a8eb9d335bf0a0c2a23cc13595ef24aededca2fdff65837
+  languageName: node
+  linkType: hard
+
+"jay-peg@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "jay-peg@npm:1.0.2"
+  dependencies:
+    restructure: ^3.0.0
+  checksum: 18cc0e41e636121ae6737c92b31d34e44d87ccfab938e0850cc614fd81346c57c4d7993bdf223b99bf21fe190621fb19cd3e1e35c901fe20efe3deeda4de17e1
   languageName: node
   linkType: hard
 
@@ -42993,6 +43005,13 @@ __metadata:
   version: 1.0.0
   resolution: "yocto-queue@npm:1.0.0"
   checksum: 2cac84540f65c64ccc1683c267edce396b26b1e931aa429660aefac8fbe0188167b7aee815a3c22fa59a28a58d898d1a2b1825048f834d8d629f4c2a5d443801
+  languageName: node
+  linkType: hard
+
+"yoga-layout@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "yoga-layout@npm:2.0.1"
+  checksum: 65a83b1bf019dcb506c1b10cb0c278718b8eb9ef07c2967c1c8c66c2ce8b3edf44028fbc75e05c5b6492060add7e8e742da22b4afbb44ab199f7bae76114a92a
   languageName: node
   linkType: hard
 
