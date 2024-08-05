@@ -38,6 +38,34 @@ test.describe.serial('message-actions', () => {
 
 		await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
 	});
+
+	test('expect follow/unfollow message with thread closed', async ({ page }) => {
+		await test.step('start thread', async () => {
+			await poHomeChannel.content.sendMessage('this is a message for reply');
+			await page.locator('[data-qa-type="message"]').last().hover();
+			await page.locator('role=button[name="Reply in thread"]').click();
+			await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).type('this is a reply message');
+			await page.keyboard.press('Enter');
+			await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
+		});
+
+		// close thread before testing because behaviour changes
+		await page.locator('role=button[aria-label="close"]').click();
+
+		await test.step('unfollow thread', async () => {
+			const unFollowButton = page.locator('[data-qa-type="message"]').last().getByTitle('Following');
+			await expect(unFollowButton).toBeVisible();
+			await unFollowButton.click();
+		});
+
+		await test.step('follow thread', async () => {
+			const followButton = page.locator('[data-qa-type="message"]').last().getByTitle('Not following');
+			await expect(followButton).toBeVisible();
+			await followButton.click();
+			await expect(page.locator('[data-qa-type="message"]').last().getByTitle('Following')).toBeVisible();
+		});
+	});
+
 	test('expect edit the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('This is a message to edit');
 		await poHomeChannel.content.openLastMessageMenu();
