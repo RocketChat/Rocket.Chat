@@ -9717,7 +9717,6 @@ __metadata:
     use-subscription: ~1.6.0
     use-sync-external-store: ^1.2.0
     uuid: ^8.3.2
-    vm2: ^3.9.19
     webdav: ^4.11.3
     xml-crypto: ~3.1.0
     xml-encryption: ~3.0.2
@@ -41792,7 +41791,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vm2@npm:^3.9.19, vm2@npm:^3.9.8":
+"vm2@npm:^3.9.8":
   version: 3.9.19
   resolution: "vm2@npm:3.9.19"
   dependencies:

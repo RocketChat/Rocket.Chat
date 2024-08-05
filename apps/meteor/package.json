@@ -440,7 +440,6 @@
 		"use-subscription": "~1.6.0",
 		"use-sync-external-store": "^1.2.0",
 		"uuid": "^8.3.2",
-		"vm2": "^3.9.19",
 		"webdav": "^4.11.3",
 		"xml-crypto": "~3.1.0",
 		"xml-encryption": "~3.0.2",
