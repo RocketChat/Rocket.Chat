@@ -8876,9 +8876,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-toastbar@npm:^0.32.0":
-  version: 0.32.0
-  resolution: "@rocket.chat/fuselage-toastbar@npm:0.32.0"
+"@rocket.chat/fuselage-toastbar@npm:^0.33.0":
+  version: 0.33.0
+  resolution: "@rocket.chat/fuselage-toastbar@npm:0.33.0"
+  dependencies:
+    react-timing-hooks: ~4.0.2
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
@@ -8886,7 +8888,7 @@ __metadata:
     "@rocket.chat/styled": "*"
     react: ^17.0.2
     react-dom: ^17.0.2
-  checksum: 5e78516aee6446da4c76dac10ff83adb4deeb86d6111c42419f0629c35ec64b19ae6ab563f20b5efa2600c9c723b9096edc3c166e960fd25cfda1f07c4df3f3f
+  checksum: 97993ad2acdc5a742b71c94f9d321e090769c4116ab52208c2103ca41d4455bc4cd15c0cd0a1f8545144910a8c7f7de645ee150c0d8fc6b746001244690de2ed
   languageName: node
   linkType: hard
 
@@ -9385,7 +9387,7 @@ __metadata:
     "@rocket.chat/fuselage": ^0.57.0
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/fuselage-polyfills": ~0.31.25
-    "@rocket.chat/fuselage-toastbar": ^0.32.0
+    "@rocket.chat/fuselage-toastbar": ^0.33.0
     "@rocket.chat/fuselage-tokens": ^0.33.1
     "@rocket.chat/fuselage-ui-kit": "workspace:^"
     "@rocket.chat/gazzodown": "workspace:^"
@@ -10547,7 +10549,7 @@ __metadata:
     "@rocket.chat/fuselage": ^0.57.0
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/fuselage-polyfills": ~0.31.25
-    "@rocket.chat/fuselage-toastbar": ^0.32.0
+    "@rocket.chat/fuselage-toastbar": ^0.33.0
     "@rocket.chat/fuselage-tokens": ^0.33.1
     "@rocket.chat/fuselage-ui-kit": "workspace:~"
     "@rocket.chat/icons": ^0.36.0
@@ -35801,6 +35803,15 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 7ee8ef3aab74c7ae1d70ff34a27643d11ba1a8d62d072c767827d9ff9a520905223e567002e0bf6c772929d8ea1c781a3ba0cc4a563e92b1e3dc2eaa817ecbe8
+  languageName: node
+  linkType: hard
+
+"react-timing-hooks@npm:~4.0.2":
+  version: 4.0.2
+  resolution: "react-timing-hooks@npm:4.0.2"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 95ebcaffe400f3e1af32bd82eb92258c5e1473e43a7edf65879692117946105bb21f4e91046fdc85c8c737997be1d8148bffacfde8a8a9ee835d81415048119e
   languageName: node
   linkType: hard
 
