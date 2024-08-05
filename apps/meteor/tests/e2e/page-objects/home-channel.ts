@@ -72,4 +72,8 @@ export class HomeChannel {
 	getSystemMessageByText(text: string): Locator {
 		return this.page.locator('[aria-roledescription="system message"]', { hasText: text });
 	}
+
+	get markUnread(): Locator {
+		return this.page.locator('role=menuitem[name="Mark Unread"]');
+	}
 }

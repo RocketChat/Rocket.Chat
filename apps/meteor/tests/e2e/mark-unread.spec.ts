@@ -24,15 +24,17 @@ test.describe('Mark Unread - Sidebar Action', () => {
 	});
 
 	test('should not mark empty room as unread', async () => {
-		const sidebarItem = await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel);
-		await expect(sidebarItem.locator('.rcx-badge')).not.toBeVisible();
+		const sidebarItem = poHomeChannel.sidenav.getSidebarItemByName(targetChannel);
+		await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel);
+		await expect(poHomeChannel.sidenav.getChannelBadge(sidebarItem)).not.toBeVisible();
 	});
 
 	test('should mark a populated room as unread', async () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage('this is a message for reply');
-		const sidebarItem = await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel);
-		await expect(sidebarItem.locator('.rcx-badge')).toBeVisible();
+		const sidebarItem = poHomeChannel.sidenav.getSidebarItemByName(targetChannel);
+		await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel);
+		await expect(poHomeChannel.sidenav.getChannelBadge(sidebarItem)).toBeVisible();
 	});
 
 	test.describe('Mark Unread - Message Action', () => {
@@ -50,9 +52,9 @@ test.describe('Mark Unread - Sidebar Action', () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 
 			await poHomeChannel.content.openLastMessageMenu();
-			await poHomeChannel.page.locator('role=menuitem[name="Mark Unread"]').click();
+			await poHomeChannel.markUnread.click();
 			const sidebarItem = poHomeChannel.sidenav.getSidebarItemByName(targetChannel);
-			await expect(sidebarItem.locator('.rcx-badge')).toBeVisible();
+			await expect(poHomeChannel.sidenav.getChannelBadge(sidebarItem)).toBeVisible();
 		});
 
 		test.afterEach(async () => {

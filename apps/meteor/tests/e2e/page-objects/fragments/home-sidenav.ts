@@ -73,7 +73,6 @@ export class HomeSidenav {
 		await sidebarItem.focus();
 		await sidebarItem.locator('.rcx-sidebar-item__menu').click();
 		await this.page.getByRole('option', { name: 'Mark Unread' }).click();
-		return sidebarItem;
 	}
 
 	async selectPriority(name: string, priority: string) {
@@ -164,5 +163,9 @@ export class HomeSidenav {
 		await this.inputChannelName.type(name);
 		await this.checkboxEncryption.click();
 		await this.btnCreate.click();
+	}
+
+	getChannelBadge(sidebarItem: Locator): Locator {
+		return sidebarItem.locator('.rcx-badge');
 	}
 }
