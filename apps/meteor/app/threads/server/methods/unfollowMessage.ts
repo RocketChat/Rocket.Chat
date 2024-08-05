@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { RateLimiter } from '../../../lib/server';
+import { notifyOnMessageChange } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { unfollow } from '../functions';
 
@@ -42,6 +43,10 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const unfollowResult = await unfollow({ rid: message.rid, tmid: message.tmid || message._id, uid });
+
+		void notifyOnMessageChange({
+			id: mid,
+		});
 
 		const isFollowed = false;
 		await Apps.self?.triggerEvent(AppEvents.IPostMessageFollowed, message, await Meteor.userAsync(), isFollowed);
