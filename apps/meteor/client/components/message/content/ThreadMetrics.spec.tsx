@@ -13,7 +13,6 @@ import ThreadMetrics from './ThreadMetrics';
 import ThreadMetricsFollow from './ThreadMetricsFollow';
 import ThreadMetricsParticipants from './ThreadMetricsParticipants';
 
-
 const usersInfoMock = (params: UsersInfoParamsGet) => {
 	if (!('userId' in params)) {
 		throw new Error('missing userId - usersInfoMock - ThreadMetrics.spec');
