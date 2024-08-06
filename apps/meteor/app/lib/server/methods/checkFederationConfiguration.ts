@@ -26,10 +26,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		// NOTE(Debdut): reason for not returning early
-		// is making sure we are communicating the whole error immediately.
-		// This is especially helpful for support cases.
-
 		const errors: string[] = [];
 
 		const successes: string[] = [];
