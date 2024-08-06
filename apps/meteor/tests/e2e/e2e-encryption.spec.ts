@@ -351,6 +351,7 @@ test.describe.serial('e2e-encryption', () => {
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
+		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
 		await poHomeChannel.sidenav.checkboxEncryption.click();
 		await poHomeChannel.sidenav.btnCreate.click();
 
@@ -661,6 +662,7 @@ test.describe.serial('e2ee room setup', () => {
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
+		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
 		await poHomeChannel.sidenav.checkboxEncryption.click();
 		await poHomeChannel.sidenav.btnCreate.click();
 
@@ -711,6 +713,7 @@ test.describe.serial('e2ee room setup', () => {
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
+		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
 		await poHomeChannel.sidenav.checkboxEncryption.click();
 		await poHomeChannel.sidenav.btnCreate.click();
 
@@ -758,6 +761,7 @@ test.describe.serial('e2ee room setup', () => {
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.fill(channelName);
+		await poHomeChannel.sidenav.advancedSettingsAccordion.click();
 		await poHomeChannel.sidenav.checkboxEncryption.click();
 		await poHomeChannel.sidenav.btnCreate.click();
 
