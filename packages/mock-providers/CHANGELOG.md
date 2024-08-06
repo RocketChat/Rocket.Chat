@@ -1,5 +1,16 @@
 # @rocket.chat/mock-providers
 
+## 0.1.1-rc.0
+
+### Patch Changes
+
+- ([#32482](https://github.com/RocketChat/Rocket.Chat/pull/32482)) Fixed an issue with blocked login when dismissed 2FA modal by clicking outside of it or pressing the escape key
+
+- <details><summary>Updated dependencies [b4bbcbfc9a, 25da5280a5, 1b7b1161cf, 03c8b066f9, 2d89a0c448, 3ffe4a2944, 3b4b19cfc5]:</summary>
+
+  - @rocket.chat/i18n@0.6.0-rc.0
+  </details>
+
 ## 0.1.0
 
 ### Minor Changes
