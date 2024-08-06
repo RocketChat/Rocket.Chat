@@ -6,13 +6,20 @@
 const childProcess = require('child_process');
 const path = require('path');
 
-// Find executable installed by deno-bin
-const executablePath = path.join(require.resolve('deno-bin'), '..', 'bin', 'deno');
+try {
+    childProcess.execSync('deno info');
+} catch (e) {
+    console.error(
+        'Could not execute "deno" in the system. It is now a requirement for the Apps-Engine framework, and Rocket.Chat apps will not work without it.\n',
+        'Make sure to install Deno and run the installation process for the Apps-Engine again. More info on https://docs.deno.com/runtime/manual/getting_started/installation',
+    );
+    process.exit(1);
+}
 
 const rootPath = path.join(__dirname, '..');
 const DENO_DIR = path.join(rootPath, '.deno-cache');
 
-childProcess.spawnSync(executablePath, ['cache', 'main.ts'], {
+childProcess.execSync('deno', ['cache', 'main.ts'], {
     cwd: path.join(rootPath, 'deno-runtime'),
     env: {
         DENO_DIR,

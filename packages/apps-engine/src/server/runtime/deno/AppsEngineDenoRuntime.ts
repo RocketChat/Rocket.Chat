@@ -56,15 +56,6 @@ export function isValidOrigin(accessor: string): accessor is (typeof ALLOWED_ACC
     return ALLOWED_ACCESSOR_METHODS.includes(accessor as any);
 }
 
-/**
- * Resolves the absolute path of the Deno executable
- * installed by deno-bin.
- */
-export function getDenoExecutablePath(): string {
-    // require.resolve returns correctly even after Meteor's bundle magic
-    return path.join(path.dirname(require.resolve('deno-bin')), 'bin', 'deno');
-}
-
 export function getDenoWrapperPath(): string {
     try {
         // This path is relative to the compiled version of the Apps-Engine source
@@ -124,7 +115,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
     public spawnProcess(): void {
         try {
-            const denoExePath = getDenoExecutablePath();
+            const denoExePath = 'deno';
             const denoWrapperPath = getDenoWrapperPath();
             // During development, the appsEngineDir is enough to run the deno process
             const appsEngineDir = path.dirname(path.join(denoWrapperPath, '..'));
