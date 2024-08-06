@@ -55,7 +55,7 @@ runs:
     - shell: bash
       run: |
         yarn build
-        yarn install --production
+        yarn workspaces focus --production
 
     - name: Build Docker images
       shell: bash
