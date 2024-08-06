@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useDialModal } from '../../../../hooks/useDialModal';
-import { useOutboundDialer } from '../../../../hooks/useOutboundDialer';
+import { useOmnichannelOutboundDialer } from '../../../../hooks/useOmnichannelOutboundDialer';
 import type { PadDigit } from '../Pad';
 
 type DialPadStateHandlers = {
@@ -26,7 +26,7 @@ type DialPadProps = {
 
 export const useDialPad = ({ initialValue, initialErrorMessage }: DialPadProps): DialPadStateHandlers => {
 	const t = useTranslation();
-	const outboundClient = useOutboundDialer();
+	const outboundClient = useOmnichannelOutboundDialer();
 	const { closeDialModal } = useDialModal();
 
 	const {

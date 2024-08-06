@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 
 import { EEVoipClient } from '../lib/voip/EEVoipClient';
 import { VoIPUser } from '../lib/voip/VoIPUser';
-import { useWebRtcServers } from '../providers/CallProvider/hooks/useWebRtcServers';
+import { useWebRtcServers } from '../providers/OmnichannelCallProvider/hooks/useWebRtcServers';
 import { useHasLicenseModule } from './useHasLicenseModule';
 
 type UseVoipClientResult = {
@@ -22,7 +22,7 @@ const isSignedResponse = (data: any): data is { result: string } => typeof data?
 
 // Currently we only support the websocket connection and the SIP proxy connection being from the same host,
 // we need to add a new setting for SIP proxy if we want to support different hosts for them.
-export const useVoipClient = (): UseVoipClientResult => {
+export const useOmnichannelVoipClient = (): UseVoipClientResult => {
 	const settingVoipEnabled = Boolean(useSetting('VoIP_Enabled'));
 
 	const [voipConnectorEnabled, setVoipConnectorEnabled] = useSafely(useState(true));

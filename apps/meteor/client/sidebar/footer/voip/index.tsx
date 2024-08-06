@@ -12,10 +12,10 @@ import {
 	useOpenedRoomInfo,
 	useQueueCounter,
 	useQueueName,
-} from '../../../contexts/CallContext';
-import { useVoipFooterMenu } from '../../../hooks/useVoipFooterMenu';
+} from '../../../contexts/OmnichannelCallContext';
+import { useOmnichannelVoipFooterMenu } from '../../../hooks/useOmnichannelVoipFooterMenu';
 import SidebarFooterDefault from '../SidebarFooterDefault';
-import { VoipFooter as VoipFooterComponent } from './VoipFooter';
+import { VoipFooter as VoipFooterComponent } from './OmnichannelVoipFooter';
 
 export const VoipFooter = (): ReactElement | null => {
 	const t = useTranslation();
@@ -28,7 +28,7 @@ export const VoipFooter = (): ReactElement | null => {
 	const queueCounter = useQueueCounter();
 	const queueName = useQueueName();
 	const openedRoomInfo = useOpenedRoomInfo();
-	const options = useVoipFooterMenu();
+	const options = useOmnichannelVoipFooterMenu();
 
 	const [muted, setMuted] = useState(false);
 	const [paused, setPaused] = useState(false);

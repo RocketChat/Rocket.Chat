@@ -28,10 +28,10 @@ import React, { useMemo, useRef, useCallback, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom';
 import type { OutgoingByeRequest } from 'sip.js/lib/core';
 
-import type { CallContextValue } from '../../contexts/CallContext';
-import { CallContext, useIsVoipEnterprise } from '../../contexts/CallContext';
+import type { CallContextValue } from '../../contexts/OmnichannelCallContext';
+import { CallContext, useIsVoipEnterprise } from '../../contexts/OmnichannelCallContext';
 import { useDialModal } from '../../hooks/useDialModal';
-import { isOutboundClient, useVoipClient } from '../../hooks/useVoipClient';
+import { isOutboundClient, useOmnichannelVoipClient } from '../../hooks/useOmnichannelVoipClient';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import type { QueueAggregator } from '../../lib/voip/QueueAggregator';
 import { parseOutboundPhoneNumber } from '../../lib/voip/parseOutboundPhoneNumber';
@@ -40,11 +40,11 @@ import { useVoipSounds } from './hooks/useVoipSounds';
 
 type NetworkState = 'online' | 'offline';
 
-type CallProviderProps = {
+type OmnichannelCallProviderProps = {
 	children?: ReactNode;
 };
 
-export const CallProvider = ({ children }: CallProviderProps) => {
+export const OmnichannelCallProvider = ({ children }: OmnichannelCallProviderProps) => {
 	const [clientState, setClientState] = useState<'registered' | 'unregistered'>('unregistered');
 
 	const voipEnabled = useSetting('VoIP_Enabled');
@@ -57,7 +57,7 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 	const setModal = useSetModal();
 	const t = useTranslation();
 
-	const result = useVoipClient();
+	const result = useOmnichannelVoipClient();
 	const user = useUser();
 	const router = useRouter();
 	const setOutputMediaDevice = useSetOutputMediaDevice();
@@ -74,6 +74,10 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 	const { openDialModal } = useDialModal();
 
 	const voipSounds = useVoipSounds();
+
+	const [queueAggregator, setQueueAggregator] = useState<QueueAggregator>();
+
+	const [networkStatus, setNetworkStatus] = useState<NetworkState>('online');
 
 	const closeRoom = useCallback(
 		async (data = {}): Promise<void> => {
@@ -115,26 +119,6 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 
 		setInputMediaDevice(selectedAudioDevice);
 	});
-
-	const [queueAggregator, setQueueAggregator] = useState<QueueAggregator>();
-
-	const [networkStatus, setNetworkStatus] = useState<NetworkState>('online');
-
-	useEffect(() => {
-		const { voipClient } = result || {};
-
-		if (!voipClient) {
-			return;
-		}
-
-		setQueueAggregator(voipClient.getAggregator());
-
-		return (): void => {
-			if (clientState === 'registered') {
-				return voipClient.unregister();
-			}
-		};
-	}, [result, clientState]);
 
 	const openRoom = useCallback((rid: IVoipRoom['_id']): void => {
 		roomCoordinator.openRouteLink('v', { rid });
@@ -185,6 +169,22 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 		},
 		[openRoom, result.voipClient, user, voipEndpoint, findOrCreateVisitor],
 	);
+
+	useEffect(() => {
+		const { voipClient } = result || {};
+
+		if (!voipClient) {
+			return;
+		}
+
+		setQueueAggregator(voipClient.getAggregator());
+
+		return (): void => {
+			if (clientState === 'registered') {
+				return voipClient.unregister();
+			}
+		};
+	}, [result, clientState]);
 
 	useEffect(() => {
 		if (!voipEnabled || !user || !queueAggregator) {
@@ -331,7 +331,9 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 			if (!callDetails.callInfo) {
 				return;
 			}
+
 			voipSounds.stopAll();
+
 			if (callDetails.userState !== UserState.UAC) {
 				return;
 			}
@@ -540,3 +542,5 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 		</CallContext.Provider>
 	);
 };
+
+export default OmnichannelCallProvider;

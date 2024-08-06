@@ -4,7 +4,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
 import React from 'react';
 
-import { useVoipOutboundStates } from '../../../../contexts/CallContext';
+import { useVoipOutboundStates } from '../../../../contexts/OmnichannelCallContext';
 import { useDialModal } from '../../../../hooks/useDialModal';
 
 const rcxCallDialButton = css`

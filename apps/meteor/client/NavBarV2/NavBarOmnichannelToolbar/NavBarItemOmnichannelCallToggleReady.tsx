@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef } from 'react';
 import React, { useCallback } from 'react';
 
-import { useCallerInfo, useCallRegisterClient, useCallUnregisterClient, useVoipNetworkStatus } from '../../contexts/CallContext';
+import { useCallerInfo, useCallRegisterClient, useCallUnregisterClient, useVoipNetworkStatus } from '../../contexts/OmnichannelCallContext';
 
 type NavBarItemOmnichannelCallToggleReadyProps = ComponentPropsWithoutRef<typeof NavBarItem>;
 
