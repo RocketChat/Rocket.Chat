@@ -13,7 +13,7 @@ import { emoji } from '../../emoji/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 
-const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
+export const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
 	if (!message.reactions) {
 		return message;
 	}
@@ -25,7 +25,7 @@ const removeUserReaction = (message: IMessage, reaction: string, username: strin
 	return message;
 };
 
-async function setReaction(
+export async function setReaction(
 	room: Pick<IRoom, '_id' | 'muted' | 'unmuted' | 'reactWhenReadOnly' | 'ro' | 'lastMessage'>,
 	user: IUser,
 	message: IMessage,
@@ -94,9 +94,10 @@ async function setReaction(
 
 export async function executeSetReaction(userId: string, reaction: string, messageId: IMessage['_id'], shouldReact?: boolean) {
 	// Check if the emoji is valid before proceeding
-	reaction = `:${reaction.replace(/:/g, '')}:`;
+	const reactionWithoutColons = reaction.replace(/:/g, '');
+	reaction = `:${reactionWithoutColons}:`;
 
-	if (!emoji.list[reaction] && (await EmojiCustom.findByNameOrAlias(reaction, {}).count()) === 0) {
+	if (!emoji.list[reaction] && (await EmojiCustom.countByNameOrAlias(reactionWithoutColons)) === 0) {
 		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', {
 			method: 'setReaction',
 		});

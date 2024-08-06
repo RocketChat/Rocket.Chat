@@ -1,6 +1,6 @@
 import type { IEmojiCustom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IEmojiCustomModel, InsertionModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
+import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId, CountDocumentsOptions } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -71,5 +71,13 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 	// INSERT
 	create(data: InsertionModel<IEmojiCustom>): Promise<InsertOneResult<WithId<IEmojiCustom>>> {
 		return this.insertOne(data);
+	}
+
+	countByNameOrAlias(name: string): Promise<number> {
+		const query = {
+			$or: [{ name }, { aliases: name }],
+		};
+
+		return this.countDocuments(query);
 	}
 }
