@@ -18,13 +18,14 @@ Meteor.methods<ServerMethods>({
 		methodDeprecationLogger.method('insertOrUpdateUser', '8.0.0');
 
 		check(userData, Object);
+		const userId = Meteor.userId();
 
-		if (!Meteor.userId()) {
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'insertOrUpdateUser',
 			});
 		}
 
-		return saveUser(Meteor.userId(), userData);
+		return saveUser(userId, userData as ISaveUserDataParams);
 	}),
 });
