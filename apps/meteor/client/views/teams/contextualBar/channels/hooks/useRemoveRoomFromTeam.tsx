@@ -5,11 +5,11 @@ import React from 'react';
 import GenericModal from '../../../../../components/GenericModal';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 
-export const useRemoveRoomFromTeam = (room: IRoom, { reload }: { reload?: () => void }) => {
+export const useRemoveRoomFromTeam = (room: IRoom, mainRoomId: IRoom['_id'], { reload }: { reload?: () => void }) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const canRemoveTeamChannel = usePermission('remove-team-channel', room._id);
+	const canRemoveTeamChannel = usePermission('remove-team-channel', mainRoomId);
 
 	const removeRoomEndpoint = useEndpoint('POST', '/v1/teams.removeRoom');
 

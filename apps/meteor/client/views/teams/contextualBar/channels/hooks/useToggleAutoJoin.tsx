@@ -7,7 +7,7 @@ import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 export const useToggleAutoJoin = (room: IRoom, { reload, mainRoom }: { reload?: () => void; mainRoom: IRoom }) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const updateRoomEndpoint = useEndpoint('POST', '/v1/teams.updateRoom');
-	const canEditTeamChannel = usePermission('edit-team-channel', room._id);
+	const canEditTeamChannel = usePermission('edit-team-channel', mainRoom._id);
 	const maxNumberOfAutoJoinMembers = useSetting<number>('API_User_Limit');
 
 	const handleToggleAutoJoin = async () => {

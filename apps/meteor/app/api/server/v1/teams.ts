@@ -167,7 +167,7 @@ API.v1.addRoute(
 				return API.v1.failure('team-does-not-exist');
 			}
 
-			if (!(await hasPermissionAsync(this.userId, 'add-team-channel', team.roomId))) {
+			if (!(await hasPermissionAsync(this.userId, 'move-room-to-team', team.roomId))) {
 				return API.v1.unauthorized('error-no-permission-team-channel');
 			}
 

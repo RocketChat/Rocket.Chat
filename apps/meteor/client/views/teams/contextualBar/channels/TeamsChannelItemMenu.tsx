@@ -12,7 +12,7 @@ import { useToggleAutoJoin } from './hooks/useToggleAutoJoin';
 const TeamsChannelItemMenu = ({ room, mainRoom, reload }: { room: IRoom; mainRoom: IRoom; reload?: () => void }) => {
 	const t = useTranslation();
 
-	const { handleRemoveRoom, canRemoveTeamChannel } = useRemoveRoomFromTeam(room, { reload });
+	const { handleRemoveRoom, canRemoveTeamChannel } = useRemoveRoomFromTeam(room, mainRoom._id, { reload });
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload });
 	const { handleToggleAutoJoin, canEditTeamChannel } = useToggleAutoJoin(room, { reload, mainRoom });
 

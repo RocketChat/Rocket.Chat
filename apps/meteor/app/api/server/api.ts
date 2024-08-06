@@ -1021,6 +1021,7 @@ export const API: {
 				members?: { key: string; value?: string[] };
 				customFields?: { key: string; value?: string };
 				teams?: { key: string; value?: string[] };
+				teamId?: { key: string; value?: string };
 			}) => Promise<void>;
 			execute: (
 				userId: string,

@@ -642,8 +642,15 @@ async function createChannelValidator(params: {
 	members?: { key: string; value?: string[] };
 	customFields?: { key: string; value?: string };
 	teams?: { key: string; value?: string[] };
+	teamId?: { key: string; value?: string };
 }) {
-	if (!(await hasPermissionAsync(params.user.value, 'create-c'))) {
+	const teamId = params.teamId?.value;
+
+	const team = teamId && (await Team.getInfoById(teamId));
+	if (
+		(!teamId && !(await hasPermissionAsync(params.user.value, 'create-c'))) ||
+		(teamId && team && !(await hasPermissionAsync(params.user.value, 'create-team-channel', team.roomId)))
+	) {
 		throw new Error('unauthorized');
 	}
 
@@ -723,6 +730,10 @@ API.v1.addRoute(
 					teams: {
 						value: bodyParams.teams,
 						key: 'teams',
+					},
+					teamId: {
+						value: bodyParams.extraData?.teamId,
+						key: 'teamId',
 					},
 				});
 			} catch (e: any) {
