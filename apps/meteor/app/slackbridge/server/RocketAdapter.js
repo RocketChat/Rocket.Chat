@@ -81,7 +81,7 @@ export default class RocketAdapter {
 			rocketLogger.debug('onRocketSetReaction');
 
 			if (rocketMsg._id && reaction) {
-				if (this.slackBridge.reactionsMap.delete(`set${rocketMsgID}${reaction}`)) {
+				if (this.slackBridge.reactionsMap.delete(`set${rocketMsg._id}${reaction}`)) {
 					// This was a Slack reaction, we don't need to tell Slack about it
 					return;
 				}
@@ -109,7 +109,7 @@ export default class RocketAdapter {
 			rocketLogger.debug('onRocketUnSetReaction');
 
 			if (rocketMsg._id && reaction) {
-				if (this.slackBridge.reactionsMap.delete(`unset${rocketMsgID}${reaction}`)) {
+				if (this.slackBridge.reactionsMap.delete(`unset${rocketMsg._id}${reaction}`)) {
 					// This was a Slack unset reaction, we don't need to tell Slack about it
 					return;
 				}
