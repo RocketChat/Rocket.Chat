@@ -18,7 +18,7 @@ const isSetNotNull = (fn: () => unknown) => {
 	return value !== null && value !== undefined;
 };
 
-const getEmojiUrlFromName = (name: string, extension: string) => {
+const getEmojiUrlFromName = (name: string, extension: string, etag?: string) => {
 	if (name == null) {
 		return;
 	}
@@ -27,7 +27,7 @@ const getEmojiUrlFromName = (name: string, extension: string) => {
 
 	const random = (Session as unknown as { keys: Record<string, any> }).keys[key] ?? 0;
 
-	return getURL(`/emoji-custom/${encodeURIComponent(name)}.${extension}?_dc=${random}`);
+	return getURL(`/emoji-custom/${encodeURIComponent(name)}.${extension}?_dc=${random}${etag ? `&etag=${etag}` : ''}`);
 };
 
 export const deleteEmojiCustom = (emojiData: IEmoji) => {
@@ -123,6 +123,7 @@ const customRender = (html: string) => {
 		return `<span class="emoji" style="background-image:url(${getEmojiUrlFromName(
 			emojiAlias,
 			dataCheck.extension!,
+			dataCheck.etag,
 		)});" data-emoji="${emojiAlias}" title="${shortname}">${shortname}</span>`;
 	});
 
