@@ -2,20 +2,14 @@ import type { IRoom, IUser, Username } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../../../lib/callbacks';
-import { verifyFederationReady } from '/server/services/federation/utils';
+import { verifyFederationReady } from '../../../../../../../server/services/federation/utils';
 
 export class FederationHooksEE {
 	public static onFederatedRoomCreated(callback: (room: IRoom, owner: IUser, originalMemberList: string[]) => Promise<void>): void {
 		callbacks.add(
 			'federation.afterCreateFederatedRoom',
 			async (room: IRoom, params: { owner: IUser; originalMemberList: string[] }) => {
-				if (
-					!room ||
-					!isRoomFederated(room) ||
-					!params ||
-					!params.owner ||
-					!params.originalMemberList
-				) {
+				if (!room || !isRoomFederated(room) || !params || !params.owner || !params.originalMemberList) {
 					return;
 				}
 
@@ -32,13 +26,7 @@ export class FederationHooksEE {
 		callbacks.add(
 			'federation.onAddUsersToARoom',
 			async (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => {
-				if (
-					!room ||
-					!isRoomFederated(room) ||
-					!params ||
-					!params.invitees ||
-					!params.inviter
-				) {
+				if (!room || !isRoomFederated(room) || !params || !params.invitees || !params.inviter) {
 					return;
 				}
 

@@ -35,16 +35,24 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
 	const bridges = Apps.self?.isLoaded() && Apps.getBridges();
 
-	if (deletedMsg && bridges) {
+	if (!deletedMsg) {
+		throw new Meteor.Error('error-invalid-message', 'Invalid message id');
+	}
+
+	const room = await Rooms.findOneById(message.rid, { projection: { lastMessage: 1, prid: 1, mid: 1, federated: 1 } });
+
+	if (!room) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room id in message payload');
+	}
+
+	if (bridges) {
 		const prevent = await bridges.getListenerBridge().messageEvent(AppEvents.IPreMessageDeletePrevent, deletedMsg);
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the message deleting.');
 		}
 	}
 
-	const room = await Rooms.findOneById(message.rid, { projection: { lastMessage: 1, prid: 1, mid: 1, federated: 1 } });
-
-	await Message.beforeDelete(deletedMsg, room, user);
+	await Message.beforeDelete(deletedMsg, room);
 
 	if (deletedMsg?.tmid) {
 		await Messages.decreaseReplyCountById(deletedMsg.tmid, -1);

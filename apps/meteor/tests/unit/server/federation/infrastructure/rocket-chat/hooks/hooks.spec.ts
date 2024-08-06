@@ -85,6 +85,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			FederationHooks.afterUserLeaveRoom(stub);
 
 			// @ts-expect-error
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(afterLeaveRoomCallback.run({}, { federated: true })).to.have.rejectedWith(error);
 
 			expect(stub.called).to.be.false;
@@ -157,8 +158,9 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			const stub = sinon.stub();
 			FederationHooks.onUserRemovedFromRoom(stub);
 
-			// @ts-expect-error
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(
+				// @ts-ignore-error
 				afterRemoveFromRoomCallback.run({ removedUser: 'removedUser', userWhoRemoved: 'userWhoRemoved' }, { federated: true }),
 			).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
@@ -237,6 +239,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooks.canAddFederatedUserToFederatedRoom(stub);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(
 				hooks['federation-v2-can-add-federated-user-to-federated-room']({ user: 'user', inviter: 'inviter' }, { federated: true }),
 			).to.have.rejectedWith(error);
@@ -264,6 +267,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooks.canCreateDirectMessageFromUI(stub);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(hooks['federation-v2-can-create-direct-message-from-ui-ce']([])).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
@@ -317,6 +321,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageReacted(stub);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(
 				hooks['federation-v2-after-message-reacted']({ federation: { eventId: 'eventId' } }, { user: 'user', reaction: 'reaction' }),
 			).to.have.rejectedWith(error);
@@ -379,6 +384,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageunReacted(stub);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(
 				hooks['federation-v2-after-message-unreacted'](
 					{ federation: { eventId: 'eventId' } },
@@ -426,6 +432,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageDeleted(stub);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(
 				hooks['federation-v2-after-room-message-deleted']({ federation: { eventId: 'eventId' } }, { federated: true }),
 			).to.have.rejectedWith(error);
@@ -467,6 +474,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageUpdated(stub);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(
 				hooks['federation-v2-after-room-message-updated']({ federation: { eventId: 'eventId' } }, { federated: true }),
 			).to.have.rejectedWith(error);
@@ -512,6 +520,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageSent(stub);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(hooks['federation-v2-after-room-message-sent']({}, { federated: true })).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
@@ -560,6 +569,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		it('should NOT call the Federation module is disabled', async () => {
 			const error = new Error();
 			verifyFederationReady.throws(error);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(FederationHooks.afterRoomRoleChanged(handlers, undefined)).to.have.rejectedWith(error);
 
 			expect(handlers.onRoomOwnerAdded.called).to.be.false;
@@ -637,6 +647,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooks.afterRoomNameChanged(stub);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(hooks['federation-v2-after-room-name-changed']({ rid: 'roomId', name: 'roomName' })).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
@@ -676,6 +687,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooks.afterRoomTopicChanged(stub);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(hooks['federation-v2-after-room-topic-changed']({ rid: 'roomId', topic: 'topic' })).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
