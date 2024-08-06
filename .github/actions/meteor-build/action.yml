@@ -114,8 +114,10 @@ runs:
           echo -e "rocketchat:coverage\n" >> ./apps/meteor/.meteor/packages
           echo "Coverage enabled"
         fi
-        yarn build:ci
+        yarn
+        yarn build
         yarn workspaces focus --production
+        yarn build:ci
 
     - name: Prepare build
       shell: bash
