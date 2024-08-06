@@ -54,7 +54,6 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		async (action, permissionsGranted) => {
 			if (action) {
 				if (action !== 'request') {
-					setPurchased(true);
 					await marketplaceActions[action]({ ...app, permissionsGranted });
 				} else {
 					setEndUserRequested(true);
@@ -63,7 +62,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 			setLoading(false);
 		},
-		[app, marketplaceActions, setLoading, setPurchased],
+		[app, marketplaceActions, setLoading],
 	);
 
 	const cancelAction = useCallback(() => {
@@ -77,6 +76,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		isAppPurchased,
 		onDismiss: cancelAction,
 		onSuccess: confirmAction,
+		setIsPurchased: setPurchased,
 	});
 
 	const handleAcquireApp = useCallback(() => {

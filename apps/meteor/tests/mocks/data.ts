@@ -228,3 +228,49 @@ export const createFakeLicenseInfo = (partial: Partial<Omit<LicenseInfo, 'licens
 	trial: faker.datatype.boolean(),
 	...partial,
 });
+
+export function createFakeMessageWithAttachment<TMessage extends IMessage>(overrides?: Partial<TMessage>): TMessage;
+export function createFakeMessageWithAttachment(overrides?: Partial<IMessage>): IMessage {
+	const fakeMessage = createFakeMessage(overrides);
+	const fileId = faker.database.mongodbObjectId();
+	const fileName = faker.system.commonFileName('txt');
+
+	return {
+		...fakeMessage,
+		msg: '',
+		file: {
+			_id: fileId,
+			name: fileName,
+			type: 'text/plain',
+			size: faker.number.int(),
+			format: faker.string.alpha(),
+		},
+		attachments: [
+			{
+				type: 'file',
+				title: fileName,
+				title_link: `/file-upload/${fileId}/${fileName}`,
+			},
+		],
+		...overrides,
+	};
+}
+
+const guestNames = faker.helpers.uniqueArray(faker.person.firstName, 1000);
+
+function pullNextVisitorName() {
+	const guestName = guestNames.pop();
+
+	if (!guestName) {
+		throw new Error('exhausted guest names');
+	}
+
+	return guestName;
+}
+
+export function createFakeVisitor() {
+	return {
+		name: pullNextVisitorName(),
+		email: faker.internet.email(),
+	} as const;
+}

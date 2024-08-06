@@ -2,8 +2,8 @@ import crypto from 'crypto';
 import type { ServerResponse, IncomingMessage } from 'http';
 
 import type { IRocketChatAssets, IRocketChatAsset, ISetting } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Settings } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { NextHandleFunction } from 'connect';
 import sizeOf from 'image-size';
 import { Meteor } from 'meteor/meteor';
@@ -13,6 +13,7 @@ import sharp from 'sharp';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { RocketChatFile } from '../../file/server';
 import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
+import { notifyOnSettingChangedById } from '../../lib/server/lib/notifyListener';
 import { settings, settingsRegistry } from '../../settings/server';
 import { getExtension } from '../../utils/lib/mimeTypes';
 import { getURL } from '../../utils/server/getURL';
@@ -261,7 +262,13 @@ class RocketChatAssetsClass {
 					defaultUrl: assetInstance.defaultUrl,
 				};
 
-				void Settings.updateValueById(key, value);
+				void (async () => {
+					const { modifiedCount } = await Settings.updateValueById(key, value);
+					if (modifiedCount) {
+						void notifyOnSettingChangedById(key);
+					}
+				})();
+
 				return RocketChatAssets.processAsset(key, value);
 			}, 200);
 		});
@@ -282,7 +289,13 @@ class RocketChatAssetsClass {
 			defaultUrl: getAssetByKey(asset).defaultUrl,
 		};
 
-		void Settings.updateValueById(key, value);
+		void (async () => {
+			const { modifiedCount } = await Settings.updateValueById(key, value);
+			if (modifiedCount) {
+				void notifyOnSettingChangedById(key);
+			}
+		})();
+
 		await RocketChatAssets.processAsset(key, value);
 	}
 
@@ -371,7 +384,8 @@ export async function addAssetToSetting(asset: string, value: IRocketChatAsset, 
 
 	if (currentValue && typeof currentValue === 'object' && currentValue.defaultUrl !== getAssetByKey(asset).defaultUrl) {
 		currentValue.defaultUrl = getAssetByKey(asset).defaultUrl;
-		await Settings.updateValueById(key, currentValue);
+
+		(await Settings.updateValueById(key, currentValue)).modifiedCount && void notifyOnSettingChangedById(key);
 	}
 }
 
@@ -392,7 +406,7 @@ Meteor.startup(() => {
 	}, 200);
 });
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		refreshClients(): boolean;

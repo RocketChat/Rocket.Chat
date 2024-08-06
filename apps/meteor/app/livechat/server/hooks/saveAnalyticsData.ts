@@ -1,28 +1,68 @@
-import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
+const getMetricValue = <T>(metric: T | undefined, defaultValue: T): T => metric ?? defaultValue;
+const calculateTimeDifference = <T extends Date | number>(startTime: T, now: Date): number =>
+	(now.getTime() - new Date(startTime).getTime()) / 1000;
+const calculateAvgResponseTime = (totalResponseTime: number, newResponseTime: number, responseCount: number) =>
+	(totalResponseTime + newResponseTime) / (responseCount + 1);
+
+const getFirstResponseAnalytics = (
+	visitorLastQuery: Date,
+	agentJoinTime: Date,
+	totalResponseTime: number,
+	responseCount: number,
+	now: Date,
+) => {
+	const responseTime = calculateTimeDifference(visitorLastQuery, now);
+	const reactionTime = calculateTimeDifference(agentJoinTime, now);
+	const avgResponseTime = calculateAvgResponseTime(totalResponseTime, responseTime, responseCount);
+
+	return {
+		firstResponseDate: now,
+		firstResponseTime: responseTime,
+		responseTime,
+		avgResponseTime,
+		firstReactionDate: now,
+		firstReactionTime: reactionTime,
+		reactionTime,
+	};
+};
+
+const getSubsequentResponseAnalytics = (visitorLastQuery: Date, totalResponseTime: number, responseCount: number, now: Date) => {
+	const responseTime = calculateTimeDifference(visitorLastQuery, now);
+	const avgResponseTime = calculateAvgResponseTime(totalResponseTime, responseTime, responseCount);
+
+	return {
+		responseTime,
+		avgResponseTime,
+		reactionTime: responseTime,
+	};
+};
+
+const getAnalyticsData = (room: IOmnichannelRoom, now: Date): Record<string, string | number | Date> | undefined => {
+	const visitorLastQuery = getMetricValue(room.metrics?.v?.lq, room.ts);
+	const agentLastReply = getMetricValue(room.metrics?.servedBy?.lr, room.ts);
+	const agentJoinTime = getMetricValue(room.servedBy?.ts, room.ts);
+	const totalResponseTime = getMetricValue(room.metrics?.response?.tt, 0);
+	const responseCount = getMetricValue(room.metrics?.response?.total, 0);
+
+	if (agentLastReply === room.ts) {
+		return getFirstResponseAnalytics(visitorLastQuery, agentJoinTime, totalResponseTime, responseCount, now);
+	}
+	if (visitorLastQuery > agentLastReply) {
+		return getSubsequentResponseAnalytics(visitorLastQuery, totalResponseTime, responseCount, now);
+	}
+};
+
 callbacks.add(
-	'afterSaveMessage',
-	async (message, room) => {
-		// check if room is livechat
-		if (!isOmnichannelRoom(room)) {
-			return message;
-		}
-
-		// skips this callback if the message was edited
+	'afterOmnichannelSaveMessage',
+	async (message, { room }) => {
 		if (!message || isEditedMessage(message)) {
-			return message;
-		}
-
-		// if the message has a token, it was sent by the visitor
-		if (message.token) {
-			// When visitor sends a mesage, most metrics wont be calculated/served.
-			// But, v.lq (last query) will be updated to the message time. This has to be done
-			// As not doing it will cause the metrics to be crazy and not have real values.
-			await LivechatRooms.saveAnalyticsDataByRoomId(room, message);
 			return message;
 		}
 
@@ -30,55 +70,15 @@ callbacks.add(
 			message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
 		}
 
-		const now = new Date();
-		let analyticsData;
+		const analyticsData = getAnalyticsData(room, new Date());
+		const updater = await LivechatRooms.getAnalyticsUpdateQueryByRoomId(room, message, analyticsData);
 
-		const visitorLastQuery = room.metrics?.v ? room.metrics.v.lq : room.ts;
-		const agentLastReply = room.metrics?.servedBy ? room.metrics.servedBy.lr : room.ts;
-		const agentJoinTime = room.servedBy?.ts ? room.servedBy.ts : room.ts;
+		if (updater.hasChanges()) {
+			await updater.persist({
+				_id: room._id,
+			});
+		}
 
-		const isResponseTt = room.metrics?.response?.tt;
-		const isResponseTotal = room.metrics?.response?.total;
-
-		if (agentLastReply === room.ts) {
-			// first response
-			const firstResponseDate = now;
-			const firstResponseTime = (now.getTime() - new Date(visitorLastQuery).getTime()) / 1000;
-			const responseTime = (now.getTime() - new Date(visitorLastQuery).getTime()) / 1000;
-			const avgResponseTime =
-				((isResponseTt ? room.metrics?.response?.tt : 0) || 0 + responseTime) /
-				((isResponseTotal ? room.metrics?.response?.total : 0) || 0 + 1);
-
-			const firstReactionDate = now;
-			const firstReactionTime = (now.getTime() - new Date(agentJoinTime).getTime()) / 1000;
-			const reactionTime = (now.getTime() - new Date(agentJoinTime).getTime()) / 1000;
-
-			analyticsData = {
-				firstResponseDate,
-				firstResponseTime,
-				responseTime,
-				avgResponseTime,
-				firstReactionDate,
-				firstReactionTime,
-				reactionTime,
-			};
-		} else if (visitorLastQuery > agentLastReply) {
-			// response, not first
-			const responseTime = (now.getTime() - new Date(visitorLastQuery).getTime()) / 1000;
-			const avgResponseTime =
-				((isResponseTt ? room.metrics?.response?.tt : 0) || 0 + responseTime) /
-				((isResponseTotal ? room.metrics?.response?.total : 0) || 0 + 1);
-
-			const reactionTime = (now.getTime() - new Date(visitorLastQuery).getTime()) / 1000;
-
-			analyticsData = {
-				responseTime,
-				avgResponseTime,
-				reactionTime,
-			};
-		} // ignore, its continuing response
-
-		await LivechatRooms.saveAnalyticsDataByRoomId(room, message, analyticsData);
 		return message;
 	},
 	callbacks.priority.LOW,

@@ -3,7 +3,7 @@ import { usePermission, useRouter, useTranslation } from '@rocket.chat/ui-contex
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import type { ISettings } from '../../../../ee/client/apps/@types/IOrchestrator';
+import type { ISettings } from '../../../apps/@types/IOrchestrator';
 
 type AppDetailsPageTabsProps = {
 	context: string;

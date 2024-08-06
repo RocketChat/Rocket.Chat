@@ -6,11 +6,11 @@ import type Mail from 'nodemailer/lib/mailer';
 
 import { FileUpload } from '../../../app/file-upload/server';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
-import { broadcastMessageFromData } from '../../modules/watchers/lib/messages';
 import { inboxes } from './EmailInbox';
 import type { Inbox } from './EmailInbox';
 import { logger } from './logger';
@@ -171,7 +171,7 @@ slashCommands.add({
 				},
 			},
 		);
-		void broadcastMessageFromData({
+		void notifyOnMessageChange({
 			id: message._id,
 		});
 

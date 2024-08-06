@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 
 import { API } from '../../../app/api/server/api';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
+import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
 
 API.v1.addRoute(
 	'licenses.get',
@@ -40,23 +41,20 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'licenses.add',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['edit-privileged-setting'] },
 	{
 		async post() {
 			check(this.bodyParams, {
 				license: String,
 			});
 
-			if (!(await hasPermissionAsync(this.userId, 'edit-privileged-setting'))) {
-				return API.v1.unauthorized();
-			}
-
 			const { license } = this.bodyParams;
 			if (!(await License.validateFormat(license))) {
 				return API.v1.failure('Invalid license');
 			}
 
-			await Settings.updateValueById('Enterprise_License', license);
+			(await Settings.updateValueById('Enterprise_License', license)).modifiedCount &&
+				void notifyOnSettingChangedById('Enterprise_License');
 
 			return API.v1.success();
 		},
