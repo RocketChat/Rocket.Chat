@@ -23,7 +23,7 @@ ENV DEPLOY_METHOD=docker \
     Accounts_AvatarStorePath=/app/uploads
 
 RUN aptMark="$(apt-mark showmanual)" \
-    && apt-get install -y --no-install-recommends g++ make python3 ca-certificates \
+    && apt-get install -y --no-install-recommends g++ make python3 ca-certificates deno=1.37.1 \
     && cd /app/bundle/programs/server \
     && npm install --unsafe-perm \
     && apt-mark auto '.*' > /dev/null \
