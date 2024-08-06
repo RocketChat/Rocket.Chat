@@ -44,7 +44,7 @@ Meteor.methods<ServerMethods>({
 
 		const id = message.tmid || message._id;
 
-		const unfollowResult = await unfollow({ rid: message.rid, tmid: id });
+		const unfollowResult = await unfollow({ rid: message.rid, tmid: id, uid });
 
 		void notifyOnMessageChange({
 			id,
