@@ -119,7 +119,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
             const denoWrapperPath = getDenoWrapperPath();
             // During development, the appsEngineDir is enough to run the deno process
             const appsEngineDir = path.dirname(path.join(denoWrapperPath, '..'));
-            const DENO_DIR = path.join(appsEngineDir, '.deno-cache');
+            const DENO_DIR = process.env.DENO_DIR ?? path.join(appsEngineDir, '.deno-cache');
             // When running in production, we're likely inside a node_modules which the Deno
             // process must be able to read in order to include files that use NPM packages
             const parentNodeModulesDir = path.dirname(path.join(appsEngineDir, '..'));
