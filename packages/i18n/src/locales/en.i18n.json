@@ -1929,7 +1929,7 @@
   "Extra_CSP_Domains": "Extra CSP Domains",
   "Extra_CSP_Domains_Description": "Extra domains to add to the Content-Security-Policy",
   "Enable_Desktop_Notifications": "Enable Desktop Notifications",
-  "Enable_encryption" : "Enable encryption",
+  "Enable_encryption": "Enable encryption",
   "Enable_inquiry_fetch_by_stream": "Enable inquiry data fetch from server using a stream",
   "Enable_omnichannel_auto_close_abandoned_rooms": "Enable automatic closing of rooms abandoned by the visitor",
   "Enable_Password_History": "Enable Password History",
@@ -3964,7 +3964,6 @@
   "OAuth": "OAuth",
   "OAuth_Description": "Configure authentication methods beyond just username and password.",
   "OAuth_Application": "OAuth Application",
-  "OAuth_button_colors_alert": "Changing the color may result in non-compliance with WCAG (Web Content Accessibility Guidelines) requirements. Please ensure that the new colors meet the recommended contrast and readability standards to maintain accessibility for all users.",
   "Objects": "Objects",
   "Off": "Off",
   "Off_the_record_conversation": "Off-the-Record Conversation",
@@ -6498,5 +6497,7 @@
   "Workspace_and_user_settings": "Workspace and user settings",
   "Sidebar_Sections_Order": "Sidebar sections order",
   "Sidebar_Sections_Order_Description": "Select the categories in your preferred order",
-  "Incoming_Calls": "Incoming calls"
+  "Incoming_Calls": "Incoming calls",
+  "Advanced_settings": "Advanced settings",
+  "Security_and_permissions": "Security and permissions"
 }
