@@ -2,7 +2,7 @@ import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useSettingsDispatch, useSettings, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useSettingsDispatch, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactNode, FormEvent, MouseEvent } from 'react';
 import React, { useMemo, memo } from 'react';
 
@@ -14,6 +14,7 @@ import GroupPageSkeleton from './GroupPageSkeleton';
 type GroupPageProps = {
 	children: ReactNode;
 	headerButtons?: ReactNode;
+	onClickBack?: () => void;
 	_id: string;
 	i18nLabel: string;
 	i18nDescription?: string;
@@ -24,6 +25,7 @@ type GroupPageProps = {
 const GroupPage = ({
 	children = undefined,
 	headerButtons = undefined,
+	onClickBack,
 	_id,
 	i18nLabel,
 	i18nDescription = undefined,
@@ -31,10 +33,8 @@ const GroupPage = ({
 	isCustom = false,
 }: GroupPageProps) => {
 	const t = useTranslation();
-	const router = useRouter();
 	const dispatch = useSettingsDispatch();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const isSettingsRoute = router.getRouteName() === 'admin-settings';
 
 	const changedEditableSettings = useEditableSettings(
 		useMemo(
@@ -119,8 +119,6 @@ const GroupPage = ({
 		save();
 	};
 
-	const handleBack = useEffectEvent(() => router.navigate('/admin/settings'));
-
 	const handleCancelClick = (event: MouseEvent<HTMLOrSVGElement>): void => {
 		event.preventDefault();
 		cancel();
@@ -140,7 +138,7 @@ const GroupPage = ({
 
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>
-			<PageHeader onClickBack={isSettingsRoute ? handleBack : undefined} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
+			<PageHeader onClickBack={onClickBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
 				<ButtonGroup>{headerButtons}</ButtonGroup>
 			</PageHeader>
 			{tabs}
