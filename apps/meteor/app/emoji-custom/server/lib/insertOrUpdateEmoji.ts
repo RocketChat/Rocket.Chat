@@ -8,7 +8,7 @@ import { trim } from '../../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 
-type EmojiData = {
+export type EmojiData = {
 	_id?: string;
 	name: string;
 	aliases: string;
@@ -33,7 +33,6 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 	}
 
 	emojiData.name = limax(emojiData.name, { replacement: '_' });
-	emojiData.aliases = limax(emojiData.aliases, { replacement: '_' });
 
 	// allow all characters except colon, whitespace, comma, >, <, &, ", ', /, \, (, )
 	// more practical than allowing specific sets of characters; also allows foreign languages
@@ -61,7 +60,13 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 				field: 'Alias_Set',
 			});
 		}
-		aliases = _.without(emojiData.aliases.split(/[\s,]/).filter(Boolean), emojiData.name);
+		aliases = _.without(
+			emojiData.aliases
+				.split(/\s*,\s*/)
+				.filter(Boolean)
+				.map((alias) => limax(alias, { replacement: '_' })),
+			emojiData.name,
+		);
 	}
 
 	emojiData.extension = emojiData.extension === 'svg+xml' ? 'png' : emojiData.extension;
@@ -119,7 +124,8 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 		const rs = await RocketChatFileEmojiCustomInstance.getFileWithReadStream(
 			encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`),
 		);
-		if (rs !== null) {
+
+		if (rs) {
 			await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
 			const ws = RocketChatFileEmojiCustomInstance.createWriteStream(
 				encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`),
