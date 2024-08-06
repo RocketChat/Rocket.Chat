@@ -92,12 +92,18 @@ jobs:
     name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'true' && ' [no watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})${{ matrix.mongodb-version == '6.0' && ' - Alpine' || '' }}
 
     steps:
+      - name: Get disk usage
+        run: sudo df -h
+
       - name: Collect Workflow Telemetry
         uses: catchpoint/workflow-telemetry-action@v2
         with:
           theme: dark
           job_summary: true
           comment_on_pr: false
+
+      - name: Get disk usage
+        run: sudo df -h
 
       - name: Setup kernel limits
         run: |
@@ -122,7 +128,13 @@ jobs:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: rs0
 
+      - name: Get disk usage
+        run: sudo df -h
+
       - uses: actions/checkout@v4
+
+      - name: Get disk usage
+        run: sudo df -h
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
@@ -130,6 +142,9 @@ jobs:
           node-version: ${{ inputs.node-version }}
           cache-modules: true
           install: true
+
+      - name: Get disk usage
+        run: sudo df -h
 
       # if we are testing a PR from a fork, we need to build the docker image at this point
       - uses: ./.github/actions/build-docker
@@ -139,7 +154,13 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ inputs.node-version }}
 
+      - name: Get disk usage
+        run: sudo df -h
+
       - uses: rharkor/caching-for-turbo@v1.5
+
+      - name: Get disk usage
+        run: sudo df -h
 
       - name: Start httpbin container and wait for it to be ready
         if: inputs.type == 'api'
@@ -159,7 +180,13 @@ jobs:
             exit 1
           fi
 
+      - name: Get disk usage
+        run: sudo df -h
+
       - run: yarn build
+
+      - name: Get disk usage
+        run: sudo df -h
 
       - name: Prepare code coverage directory
         if: inputs.release == 'ee'
@@ -175,6 +202,9 @@ jobs:
           # when we are testing CE, we only need to start the rocketchat container
           docker compose -f docker-compose-ci.yml up -d rocketchat
 
+      - name: Get disk usage
+        run: sudo df -h
+
       - name: Start containers for EE
         if: inputs.release == 'ee'
         env:
@@ -187,11 +217,18 @@ jobs:
         run: |
           docker compose -f docker-compose-ci.yml up -d
 
+      - name: Get disk usage
+        run: sudo df -h
+
       - name: Clean up temporary files
         # remove all folders inside /tmp except /tmp/coverage
         run: |
           cd /tmp
+          sudo du -sh *
           sudo find . -mindepth 1 -maxdepth 1 -type d | grep -v './coverage' | sudo xargs rm -rf
+
+      - name: Get disk usage
+        run: sudo df -h
 
       - name: Cache Playwright binaries
         if: inputs.type == 'ui'
@@ -203,10 +240,16 @@ jobs:
           # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
           key: playwright-1.40.1
 
+      - name: Get disk usage
+        run: sudo df -h
+
       - name: Install Playwright
         if: inputs.type == 'ui' && steps.cache-playwright.outputs.cache-hit != 'true'
         working-directory: ./apps/meteor
         run: npx playwright install --with-deps
+
+      - name: Get disk usage
+        run: sudo df -h
 
       - name: Wait for Rocket.Chat to start up
         uses: cygnetdigital/wait_for_response@v2.0.0
@@ -215,6 +258,9 @@ jobs:
           responseCode: '200'
           timeout: 60000
           interval: 1000
+
+      - name: Get disk usage
+        run: sudo df -h
 
       - name: Wait services to start up
         if: inputs.release == 'ee'
@@ -227,8 +273,15 @@ jobs:
             sleep 10
           done;
 
+      - name: Get disk usage
+        run: sudo df -h
+
       - name: Remove unused Docker images
         run: docker system prune -af
+
+      - name: Get disk usage
+        run: sudo df -h
+
       - name: E2E Test API
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
