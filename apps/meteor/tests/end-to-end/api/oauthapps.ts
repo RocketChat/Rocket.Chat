@@ -77,6 +77,7 @@ describe('[OAuthApps]', () => {
 				})
 				.end(done);
 		});
+<<<<<<< HEAD
 		it('should return a 403 Forbidden error when the user does not have the necessary permission by client id', async () => {
 			await updatePermission('manage-oauth-apps', []);
 			await request
@@ -100,6 +101,35 @@ describe('[OAuthApps]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 				});
+=======
+		it('should return a 403 Forbidden error when the user does not have the necessary permission by client id', (done) => {
+			void updatePermission('manage-oauth-apps', []).then(() => {
+				void request
+					.get(api('oauth-apps.get'))
+					.query({ clientId: 'zapier' })
+					.set(credentials)
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('unauthorized');
+					})
+					.end(done);
+			});
+		});
+		it('should return a 403 Forbidden error when the user does not have the necessary permission by app id', (done) => {
+			void updatePermission('manage-oauth-apps', []).then(() => {
+				void request
+					.get(api('oauth-apps.get'))
+					.query({ appId: 'zapier' })
+					.set(credentials)
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.be.equal('unauthorized');
+					})
+					.end(done);
+			});
+>>>>>>> cf778f1651c2f8498abe821cba5208ca571ff4fb
 		});
 	});
 
@@ -208,7 +238,11 @@ describe('[OAuthApps]', () => {
 			const name = 'test-oauth-app';
 			const redirectUri = 'https://test.com';
 			const active = true;
+<<<<<<< HEAD
 			const res = await request
+=======
+			void request
+>>>>>>> cf778f1651c2f8498abe821cba5208ca571ff4fb
 				.post(api('oauth-apps.create'))
 				.set(credentials)
 				.send({
@@ -217,6 +251,7 @@ describe('[OAuthApps]', () => {
 					active,
 				})
 				.expect('Content-Type', 'application/json')
+<<<<<<< HEAD
 				.expect(200);
 			appId = res.body.application._id;
 			createdAppsIds.push(appId);
@@ -224,6 +259,14 @@ describe('[OAuthApps]', () => {
 
 		after(async () => {
 			await updatePermission('manage-oauth-apps', ['admin']);
+=======
+				.expect(200)
+				.end((_err, res) => {
+					appId = res.body.application._id;
+					createdAppsIds.push(appId);
+					done();
+				});
+>>>>>>> cf778f1651c2f8498abe821cba5208ca571ff4fb
 		});
 
 		it("should update an app's name, its Active and Redirect URI fields correctly by its id", async () => {
@@ -282,7 +325,11 @@ describe('[OAuthApps]', () => {
 			const name = 'test-oauth-app';
 			const redirectUri = 'https://test.com';
 			const active = true;
+<<<<<<< HEAD
 			const res = await request
+=======
+			void request
+>>>>>>> cf778f1651c2f8498abe821cba5208ca571ff4fb
 				.post(api('oauth-apps.create'))
 				.set(credentials)
 				.send({
@@ -291,12 +338,20 @@ describe('[OAuthApps]', () => {
 					active,
 				})
 				.expect('Content-Type', 'application/json')
+<<<<<<< HEAD
 				.expect(200);
 			appId = res.body.application._id;
 		});
 
 		after(async () => {
 			await updatePermission('manage-oauth-apps', ['admin']);
+=======
+				.expect(200)
+				.end((_err, res) => {
+					appId = res.body.application._id;
+					done();
+				});
+>>>>>>> cf778f1651c2f8498abe821cba5208ca571ff4fb
 		});
 
 		it('should delete an app by its id', async () => {

@@ -308,7 +308,11 @@ describe('[Incoming Integrations]', () => {
 	});
 
 	describe('[/integrations.history]', () => {
+<<<<<<< HEAD
 		it('should return an error when trying to get history of incoming integrations if user does NOT have enough permissions', (done) => {
+=======
+		it('should return an error when trying to get history of incoming integrations', (done) => {
+>>>>>>> cf778f1651c2f8498abe821cba5208ca571ff4fb
 			void request
 				.get(api('integrations.history'))
 				.set(credentials)
@@ -397,6 +401,7 @@ describe('[Incoming Integrations]', () => {
 			});
 		});
 
+<<<<<<< HEAD
 		it('should return unauthorized error when the user does not have any integrations permissions', async () => {
 			await Promise.all([
 				updatePermission('manage-incoming-integrations', []),
@@ -412,6 +417,25 @@ describe('[Incoming Integrations]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+=======
+		it('should return unauthorized error when the user does not have any integrations permissions', (done) => {
+			void updatePermission('manage-incoming-integrations', []).then(() => {
+				void updatePermission('manage-own-incoming-integrations', []).then(() => {
+					void updatePermission('manage-outgoing-integrations', []).then(() => {
+						void updatePermission('manage-outgoing-integrations', []).then(() => {
+							void request
+								.get(api('integrations.list'))
+								.set(credentials)
+								.expect('Content-Type', 'application/json')
+								.expect(403)
+								.expect((res) => {
+									expect(res.body).to.have.property('success', false);
+									expect(res.body).to.have.property('error', 'unauthorized');
+								})
+								.end(done);
+						});
+					});
+>>>>>>> cf778f1651c2f8498abe821cba5208ca571ff4fb
 				});
 		});
 	});

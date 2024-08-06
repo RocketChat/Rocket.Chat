@@ -340,98 +340,21 @@ describe('[Channels]', () => {
 			.end(done);
 	});
 
-	describe('/channels.list', () => {
-		let testChannel: IRoom;
-		before(async () => {
-			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']);
-			await updatePermission('view-joined-room', ['guest', 'bot', 'app', 'anonymous']);
-			testChannel = (await createRoom({ type: 'c', name: `channels.messages.test.${Date.now()}` })).body.channel;
-		});
-
-		after(async () => {
-			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app', 'anonymous']);
-			await updatePermission('view-joined-room', ['guest', 'bot', 'app', 'anonymous']);
-			await deleteRoom({ type: 'c', roomId: testChannel._id });
-		});
-
-		it('should succesfully return a list of channels', async () => {
-			await request
-				.get(api('channels.list'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('channels').that.is.an('array');
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-				});
-		});
-
-		it('should correctly filter channel by id', async () => {
-			await request
-				.get(api('channels.list'))
-				.set(credentials)
-				.query({
-					query: JSON.stringify({
-						_id: testChannel._id,
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('channels').that.is.an('array').of.length(1);
-					expect(res.body).to.have.property('count', 1);
-					expect(res.body).to.have.property('total');
-				});
-		});
-
-		it('should not be succesful when user does NOT have the permission to view channels or joined rooms', async () => {
-			await updatePermission('view-c-room', []);
-			await updatePermission('view-joined-room', []);
-			await request
-				.get(api('channels.list'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
-				});
-		});
-
-		it('should be succesful when user does NOT have the permission to view channels, but can view joined rooms', async () => {
-			await updatePermission('view-c-room', []);
-			await updatePermission('view-joined-room', ['admin']);
-			await request
-				.get(api('channels.list'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('channels').that.is.an('array');
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-				});
-		});
-
-		it('should be succesful when user does NOT have the permission to view joined rooms, but can view channels', async () => {
-			await updatePermission('view-c-room', ['admin']);
-			await updatePermission('view-joined-room', []);
-			await request
-				.get(api('channels.list'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('channels').that.is.an('array');
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-				});
-		});
+	it('/channels.list', (done) => {
+		void request
+			.get(api('channels.list'))
+			.set(credentials)
+			.query({
+				roomId: channel._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('count');
+				expect(res.body).to.have.property('total');
+			})
+			.end(done);
 	});
 
 	it('/channels.list.joined', (done) => {
@@ -1477,69 +1400,76 @@ describe('[Channels]', () => {
 			]);
 		});
 
-		it('should return the list of integrations of created channel and it should contain the integration created by user when the admin DOES have the permission', async () => {
-			await updatePermission('manage-incoming-integrations', ['admin']);
-			await request
-				.get(api('channels.getIntegrations'))
-				.set(credentials)
-				.query({
-					roomId: createdChannel._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					const integrationCreated = (res.body.integrations as IIntegration[]).find(
-						(createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id,
-					);
-					assert.isDefined(integrationCreated);
-					expect(integrationCreated).to.be.an('object');
-					expect(integrationCreated._id).to.be.equal(integrationCreatedByAnUser._id);
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('total');
+		it('should return the list of integrations of created channel and it should contain the integration created by user when the admin DOES have the permission', (done) => {
+			void updatePermission('manage-incoming-integrations', ['admin']).then(() => {
+				void request
+					.get(api('channels.getIntegrations'))
+					.set(credentials)
+					.query({
+						roomId: createdChannel._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						const integrationCreated = (res.body.integrations as IIntegration[]).find(
+							(createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id,
+						);
+						assert.isDefined(integrationCreated);
+						expect(integrationCreated).to.be.an('object');
+						expect(integrationCreated._id).to.be.equal(integrationCreatedByAnUser._id);
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+					})
+					.end(done);
+			});
+		});
+
+		it('should return the list of integrations created by the user only', (done) => {
+			void updatePermission('manage-own-incoming-integrations', ['admin']).then(() => {
+				void updatePermission('manage-incoming-integrations', []).then(() => {
+					void request
+						.get(api('channels.getIntegrations'))
+						.set(credentials)
+						.query({
+							roomId: createdChannel._id,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							const integrationCreated = (res.body.integrations as IIntegration[]).find(
+								(createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id,
+							);
+							assert.isUndefined(integrationCreated);
+							expect(integrationCreated).to.be.equal(undefined);
+							expect(res.body).to.have.property('offset');
+							expect(res.body).to.have.property('total');
+						})
+						.end(done);
 				});
 		});
 
-		it('should return the list of integrations created by the user only', async () => {
-			await updatePermission('manage-own-incoming-integrations', ['admin']);
-			await updatePermission('manage-incoming-integrations', []);
-			await request
-				.get(api('channels.getIntegrations'))
-				.set(credentials)
-				.query({
-					roomId: createdChannel._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					const integrationCreated = (res.body.integrations as IIntegration[]).find(
-						(createdIntegration) => createdIntegration._id === integrationCreatedByAnUser._id,
-					);
-					expect(integrationCreated).to.be.equal(undefined);
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('total');
-				});
-		});
-
-		it('should return unauthorized error when the user does not have any integrations permissions', async () => {
-			await Promise.all([
-				updatePermission('manage-incoming-integrations', []),
-				updatePermission('manage-own-incoming-integrations', []),
-				updatePermission('manage-outgoing-integrations', []),
-				updatePermission('manage-own-outgoing-integrations', []),
-			]);
-			await request
-				.get(api('channels.getIntegrations'))
-				.set(credentials)
-				.query({
-					roomId: createdChannel._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+		it('should return unauthorized error when the user does not have any integrations permissions', (done) => {
+			void updatePermission('manage-incoming-integrations', []).then(() => {
+				void updatePermission('manage-own-incoming-integrations', []).then(() => {
+					void updatePermission('manage-outgoing-integrations', []).then(() => {
+						void updatePermission('manage-own-outgoing-integrations', []).then(() => {
+							void request
+								.get(api('channels.getIntegrations'))
+								.set(credentials)
+								.query({
+									roomId: createdChannel._id,
+								})
+								.expect('Content-Type', 'application/json')
+								.expect(403)
+								.expect((res) => {
+									expect(res.body).to.have.property('success', false);
+									expect(res.body).to.have.property('error', 'unauthorized');
+								})
+								.end(done);
+						});
+					});
 				});
 		});
 	});

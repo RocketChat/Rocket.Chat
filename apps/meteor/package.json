@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "7.0.0-develop",
+	"version": "6.12.0-develop",
 	"private": true,
 	"author": {
 		"name": "Rocket.Chat",
@@ -246,7 +246,7 @@
 		"@rocket.chat/fuselage": "^0.57.0",
 		"@rocket.chat/fuselage-hooks": "^0.33.1",
 		"@rocket.chat/fuselage-polyfills": "~0.31.25",
-		"@rocket.chat/fuselage-toastbar": "^0.32.0",
+		"@rocket.chat/fuselage-toastbar": "^0.33.0",
 		"@rocket.chat/fuselage-tokens": "^0.33.1",
 		"@rocket.chat/fuselage-ui-kit": "workspace:^",
 		"@rocket.chat/gazzodown": "workspace:^",

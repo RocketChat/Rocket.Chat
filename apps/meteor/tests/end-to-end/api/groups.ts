@@ -1154,6 +1154,7 @@ describe('[Groups]', () => {
 	});
 
 	describe('/groups.listAll', () => {
+<<<<<<< HEAD
 		before(async () => {
 			return updatePermission('view-room-administration', ['admin']);
 		});
@@ -1185,6 +1186,35 @@ describe('[Groups]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				});
+=======
+		it('should fail if the user doesnt have view-room-administration permission', (done) => {
+			void updatePermission('view-room-administration', []).then(() => {
+				void request
+					.get(api('groups.listAll'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(403)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'unauthorized');
+					})
+					.end(done);
+			});
+		});
+		it('should succeed if user has view-room-administration permission', (done) => {
+			void updatePermission('view-room-administration', ['admin']).then(() => {
+				void request
+					.get(api('groups.listAll'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('groups').and.to.be.an('array');
+					})
+					.end(done);
+			});
+>>>>>>> cf778f1651c2f8498abe821cba5208ca571ff4fb
 		});
 	});
 

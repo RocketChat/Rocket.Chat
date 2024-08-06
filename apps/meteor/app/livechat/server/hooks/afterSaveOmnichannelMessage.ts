@@ -1,15 +1,23 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 
 callbacks.add(
 	'afterSaveMessage',
 	async (message, room) => {
-		// only call webhook if it is a livechat room
 		if (!isOmnichannelRoom(room)) {
 			return message;
 		}
-		return callbacks.run('afterOmnichannelSaveMessage', message, { room });
+
+		const updater = LivechatRooms.getUpdater();
+		const result = await callbacks.run('afterOmnichannelSaveMessage', message, { room, roomUpdater: updater });
+
+		if (updater.hasChanges()) {
+			await updater.persist({ _id: room._id });
+		}
+
+		return result;
 	},
 	callbacks.priority.MEDIUM,
 	'after-omnichannel-save-message',

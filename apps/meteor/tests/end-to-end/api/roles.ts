@@ -1,15 +1,23 @@
+<<<<<<< HEAD
 import type { IUser } from '@rocket.chat/core-typings';
+=======
+>>>>>>> cf778f1651c2f8498abe821cba5208ca571ff4fb
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+<<<<<<< HEAD
 import { updatePermission } from '../../data/permissions.helper';
 import { password, adminUsername } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Roles]', function () {
 	this.retries(0);
+=======
+
+describe('[Roles]', () => {
+>>>>>>> cf778f1651c2f8498abe821cba5208ca571ff4fb
 	const isEnterprise = Boolean(process.env.IS_EE);
 
 	before((done) => getCredentials(done));
@@ -143,6 +151,7 @@ describe('[Roles]', function () {
 				});
 		});
 	});
+<<<<<<< HEAD
 
 	describe('[/roles.getUsersInRole]', () => {
 		let testUser: IUser;
@@ -555,4 +564,6 @@ describe('[Roles]', function () {
 				});
 		});
 	});
+=======
+>>>>>>> cf778f1651c2f8498abe821cba5208ca571ff4fb
 });

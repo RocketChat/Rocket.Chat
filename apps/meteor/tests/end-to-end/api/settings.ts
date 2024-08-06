@@ -3,7 +3,11 @@ import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+<<<<<<< HEAD
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
+=======
+import { updateSetting } from '../../data/permissions.helper';
+>>>>>>> cf778f1651c2f8498abe821cba5208ca571ff4fb
 
 describe('[Settings]', () => {
 	before((done) => getCredentials(done));
@@ -56,6 +60,7 @@ describe('[Settings]', () => {
 	});
 
 	describe('[/settings/:_id]', () => {
+<<<<<<< HEAD
 		before(async () => {
 			await updatePermission('view-privileged-setting', ['admin']);
 			await updatePermission('edit-privileged-setting', ['admin']);
@@ -68,6 +73,10 @@ describe('[Settings]', () => {
 
 		it('should succesfully return one setting (GET)', async () => {
 			return request
+=======
+		it('should return one setting', (done) => {
+			void request
+>>>>>>> cf778f1651c2f8498abe821cba5208ca571ff4fb
 				.get(api('settings/Site_Url'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
