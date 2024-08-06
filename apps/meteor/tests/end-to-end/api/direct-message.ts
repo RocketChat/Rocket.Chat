@@ -216,29 +216,51 @@ describe('[Direct Messages]', () => {
 			.end(done);
 	});
 
-	it('/im.list.everyone', (done) => {
-		void request
-			.get(api('im.list.everyone'))
-			.set(credentials)
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-				expect(res.body).to.have.property('count');
-				expect(res.body).to.have.property('total');
-				expect(res.body).to.have.property('ims').and.to.be.an('array');
-				const im = (res.body.ims as IRoom[]).find((dm) => dm._id === testDM._id);
-				expect(im).to.have.property('_id');
-				expect(im).to.have.property('t').and.to.be.eq('d');
-				expect(im).to.have.property('msgs').and.to.be.a('number');
-				expect(im).to.have.property('usernames').and.to.be.an('array');
-				expect(im).to.have.property('ro');
-				expect(im).to.have.property('sysMes');
-				expect(im).to.have.property('_updatedAt');
-				expect(im).to.have.property('ts');
-				expect(im).to.have.property('lastMessage');
-			})
-			.end(done);
+	describe('/im.list.everyone', () => {
+		before(async () => {
+			return updatePermission('view-room-administration', ['admin']);
+		});
+
+		after(async () => {
+			return updatePermission('view-room-administration', ['admin']);
+		});
+
+		it('should succesfully return a list of direct messages', async () => {
+			await request
+				.get(api('im.list.everyone'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count', 1);
+					expect(res.body).to.have.property('total', 1);
+					expect(res.body).to.have.property('ims').and.to.be.an('array');
+					const im = res.body.ims[0];
+					expect(im).to.have.property('_id');
+					expect(im).to.have.property('t').and.to.be.eq('d');
+					expect(im).to.have.property('msgs').and.to.be.a('number');
+					expect(im).to.have.property('usernames').and.to.be.an('array');
+					expect(im).to.have.property('ro');
+					expect(im).to.have.property('sysMes');
+					expect(im).to.have.property('_updatedAt');
+					expect(im).to.have.property('ts');
+					expect(im).to.have.property('lastMessage');
+				});
+		});
+
+		it('should fail if user does NOT have the view-room-administration permission', async () => {
+			await updatePermission('view-room-administration', []);
+			await request
+				.get(api('im.list.everyone'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+				});
+		});
 	});
 
 	describe("Setting: 'Use Real Name': true", () => {
@@ -365,63 +387,71 @@ describe('[Direct Messages]', () => {
 	});
 
 	describe('/im.messages.others', () => {
-		it('should fail when the endpoint is disabled', (done) => {
-			void updateSetting('API_Enable_Direct_Message_History_EndPoint', false).then(() => {
-				void request
-					.get(api('im.messages.others'))
-					.set(credentials)
-					.query({
-						roomId: directMessage._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-endpoint-disabled');
-					})
-					.end(done);
-			});
-		});
-		it('should fail when the endpoint is enabled but the user doesnt have permission', (done) => {
-			void updateSetting('API_Enable_Direct_Message_History_EndPoint', true).then(() => {
-				void updatePermission('view-room-administration', []).then(() => {
-					void request
-						.get(api('im.messages.others'))
-						.set(credentials)
-						.query({
-							roomId: directMessage._id,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(403)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error', 'unauthorized');
-						})
-						.end(done);
+		it('should fail when the endpoint is disabled and the user has permissions', async () => {
+			await updateSetting('API_Enable_Direct_Message_History_EndPoint', false);
+			await request
+				.get(api('im.messages.others'))
+				.set(credentials)
+				.query({
+					roomId: directMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-endpoint-disabled');
 				});
-			});
 		});
-		it('should succeed when the endpoint is enabled and user has permission', (done) => {
-			void updateSetting('API_Enable_Direct_Message_History_EndPoint', true).then(() => {
-				void updatePermission('view-room-administration', ['admin']).then(() => {
-					void request
-						.get(api('im.messages.others'))
-						.set(credentials)
-						.query({
-							roomId: directMessage._id,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('messages').and.to.be.an('array');
-							expect(res.body).to.have.property('offset');
-							expect(res.body).to.have.property('count');
-							expect(res.body).to.have.property('total');
-						})
-						.end(done);
+		it('should fail when the endpoint is disabled and the user doesnt have permission', async () => {
+			await updateSetting('API_Enable_Direct_Message_History_EndPoint', false);
+			await updatePermission('view-room-administration', []);
+			await request
+				.get(api('im.messages.others'))
+				.set(credentials)
+				.query({
+					roomId: directMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
 				});
-			});
+		});
+		it('should fail when the endpoint is enabled but the user doesnt have permission', async () => {
+			await updateSetting('API_Enable_Direct_Message_History_EndPoint', true);
+			await updatePermission('view-room-administration', []);
+			await request
+				.get(api('im.messages.others'))
+				.set(credentials)
+				.query({
+					roomId: directMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+				});
+		});
+		it('should succeed when the endpoint is enabled and user has permission', async () => {
+			await updateSetting('API_Enable_Direct_Message_History_EndPoint', true);
+			await updatePermission('view-room-administration', ['admin']);
+			await request
+				.get(api('im.messages.others'))
+				.set(credentials)
+				.query({
+					roomId: directMessage._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				});
 		});
 	});
 
