@@ -55,7 +55,7 @@ runs:
     - shell: bash
       run: |
         yarn build
-        yarn install --production --ignore-scripts --prefer-offline
+        yarn install --production
 
     - name: Build Docker images
       shell: bash
