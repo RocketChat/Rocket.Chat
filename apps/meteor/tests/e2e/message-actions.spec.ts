@@ -39,12 +39,38 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
 	});
 
-	test.only('expect follow/unfollow message with thread closed', async ({ page }) => {
+	// with thread open we listen to the subscription and update the collection from there
+	test('expect follow/unfollow message with thread open', async ({ page }) => {
 		await test.step('start thread', async () => {
 			await poHomeChannel.content.sendMessage('this is a message for reply');
 			await page.locator('[data-qa-type="message"]').last().hover();
 			await page.locator('role=button[name="Reply in thread"]').click();
-			await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).type('this is a reply message');
+			await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).fill('this is a reply message');
+			await page.keyboard.press('Enter');
+			await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
+		});
+
+		await test.step('unfollow thread', async () => {
+			const unFollowButton = page.locator('[data-qa-type="message"]').last().getByTitle('Following');
+			await expect(unFollowButton).toBeVisible();
+			await unFollowButton.click();
+		});
+
+		await test.step('follow thread', async () => {
+			const followButton = page.locator('[data-qa-type="message"]').last().getByTitle('Not following');
+			await expect(followButton).toBeVisible();
+			await followButton.click();
+			await expect(page.locator('[data-qa-type="message"]').last().getByTitle('Following')).toBeVisible();
+		});
+	});
+
+	// with thread closed we depend on message changed updates
+	test('expect follow/unfollow message with thread closed', async ({ page }) => {
+		await test.step('start thread', async () => {
+			await poHomeChannel.content.sendMessage('this is a message for reply');
+			await page.locator('[data-qa-type="message"]').last().hover();
+			await page.locator('role=button[name="Reply in thread"]').click();
+			await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).fill('this is a reply message');
 			await page.keyboard.press('Enter');
 			await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
 		});
