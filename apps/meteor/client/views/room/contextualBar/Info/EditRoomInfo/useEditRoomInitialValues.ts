@@ -1,28 +1,16 @@
 import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
+import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-
-const getPolicyRoomType = (roomType: IRoomWithRetentionPolicy['t']) => {
-	switch (roomType) {
-		case 'c':
-			return 'Channels';
-		case 'p':
-			return 'Groups';
-		case 'd':
-			return 'DMs';
-	}
-};
+import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 
 export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
-	const { t, ro, archived, topic, description, announcement, joinCodeRequired, sysMes, encrypted, retention, reactWhenReadOnly } = room;
+	const retentionPolicy = useRetentionPolicy(room);
+	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
 
-	const retentionPolicyEnabled = useSetting('RetentionPolicy_Enabled');
-	const maxAgeDefault = useSetting<number>(`RetentionPolicy_MaxAge_${getPolicyRoomType(room.t)}`) || 30;
-	const retentionEnabledDefault = useSetting<boolean>(`RetentionPolicy_AppliesTo${getPolicyRoomType(room.t)}`);
-	const excludePinnedDefault = useSetting('RetentionPolicy_DoNotPrunePinned');
-	const filesOnlyDefault = useSetting('RetentionPolicy_FilesOnly');
+	const { t, ro, archived, topic, description, announcement, joinCodeRequired, sysMes, encrypted, retention, reactWhenReadOnly } = room;
 
 	return useMemo(
 		() => ({
@@ -40,25 +28,23 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
 			systemMessages: Array.isArray(sysMes) ? sysMes : [],
 			hideSysMes: Array.isArray(sysMes) ? !!sysMes?.length : !!sysMes,
 			encrypted,
-			...(retentionPolicyEnabled && {
-				retentionEnabled: retention?.enabled ?? retentionEnabledDefault,
-				retentionOverrideGlobal: !!retention?.overrideGlobal,
-				retentionMaxAge: Math.min(retention?.maxAge, maxAgeDefault) || maxAgeDefault,
-				retentionExcludePinned: retention?.excludePinned ?? excludePinnedDefault,
-				retentionFilesOnly: retention?.filesOnly ?? filesOnlyDefault,
-			}),
+			...(canEditRoomRetentionPolicy &&
+				retentionPolicy?.enabled && {
+					retentionEnabled: retention?.enabled ?? retentionPolicy.isActive,
+					retentionOverrideGlobal: !!retention?.overrideGlobal,
+					retentionMaxAge: retention?.maxAge ?? msToTimeUnit(TIMEUNIT.days, retentionPolicy.maxAge),
+					retentionExcludePinned: retention?.excludePinned ?? retentionPolicy.excludePinned,
+					retentionFilesOnly: retention?.filesOnly ?? retentionPolicy.filesOnly,
+					retentionIgnoreThreads: retention?.ignoreThreads ?? retentionPolicy.ignoreThreads,
+				}),
 		}),
 		[
 			announcement,
 			archived,
 			description,
-			excludePinnedDefault,
-			filesOnlyDefault,
 			joinCodeRequired,
-			maxAgeDefault,
 			retention,
-			retentionEnabledDefault,
-			retentionPolicyEnabled,
+			retentionPolicy,
 			ro,
 			room,
 			sysMes,
@@ -66,6 +52,7 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
 			topic,
 			encrypted,
 			reactWhenReadOnly,
+			canEditRoomRetentionPolicy,
 		],
 	);
 };

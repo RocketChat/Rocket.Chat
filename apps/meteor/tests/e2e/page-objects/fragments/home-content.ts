@@ -13,6 +13,10 @@ export class HomeContent {
 		return this.page.locator('main header');
 	}
 
+	get channelRetentionPolicyWarning(): Locator {
+		return this.page.locator('main').getByRole('alert', { name: 'Retention policy warning banner' });
+	}
+
 	get inputMessage(): Locator {
 		return this.page.locator('[name="msg"]');
 	}
@@ -78,14 +82,15 @@ export class HomeContent {
 	async sendMessage(text: string): Promise<void> {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
-		await this.page.locator('[name="msg"]').type(text);
+		await this.page.locator('[name="msg"]').fill(text);
 		await this.page.keyboard.press('Enter');
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
 		await this.joinRoomIfNeeded();
 		await this.page.waitForSelector('[name="msg"]:not([disabled])');
-		await this.page.locator('[name="msg"]').type(text);
+		await this.page.locator('[name="msg"]').fill('');
+		await this.page.locator('[name="msg"]').fill(text);
 		await this.page.keyboard.press('Enter');
 		await this.page.keyboard.press('Enter');
 	}
@@ -94,7 +99,7 @@ export class HomeContent {
 		await this.page.locator('[data-qa-type="message"]').last().hover();
 		await this.page.locator('role=button[name="Forward message"]').click();
 
-		await this.page.getByRole('textbox', { name: 'Person or Channel' }).click();
+		await this.page.getByRole('textbox', { name: 'Person or Channel', exact: true }).click();
 		await this.page.keyboard.type(chatName);
 		await this.page.locator('#position-container').getByText(chatName).waitFor();
 		await this.page.locator('#position-container').getByText(chatName).click();
@@ -137,6 +142,10 @@ export class HomeContent {
 
 	get lastThreadMessageTextAttachmentEqualsText(): Locator {
 		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
+	}
+
+	get mainThreadMessageText(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').first();
 	}
 
 	get lastThreadMessageText(): Locator {
@@ -184,7 +193,7 @@ export class HomeContent {
 	}
 
 	get btnMenuMoreActions() {
-		return this.page.getByRole('button', { name: 'More actions' });
+		return this.page.getByRole('button', { name: 'More actions', exact: true });
 	}
 
 	get userCard(): Locator {
@@ -228,7 +237,7 @@ export class HomeContent {
 	}
 
 	get imageGallery(): Locator {
-		return this.page.getByRole('dialog', { name: 'Image gallery' });
+		return this.page.getByRole('dialog', { name: 'Image gallery', exact: true });
 	}
 
 	get imageGalleryImage(): Locator {
@@ -353,6 +362,18 @@ export class HomeContent {
 
 	get btnAnonymousTalk(): Locator {
 		return this.page.locator('role=button[name="Or talk as anonymous"]');
+	}
+
+	get nextSlideButton(): Locator {
+		return this.page.getByLabel('Next slide');
+	}
+
+	get previousSlideButton(): Locator {
+		return this.page.getByLabel('Previous slide');
+	}
+
+	get currentGalleryImage(): Locator {
+		return this.page.locator('div[class="swiper-slide swiper-slide-active"] img');
 	}
 
 	findSystemMessage(text: string): Locator {

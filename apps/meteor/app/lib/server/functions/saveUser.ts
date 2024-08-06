@@ -19,6 +19,7 @@ import { settings } from '../../../settings/server';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { validateEmailDomain } from '../lib';
 import { generatePassword } from '../lib/generatePassword';
+import { notifyOnUserChangeById, notifyOnUserChange } from '../lib/notifyListener';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { checkEmailAvailability } from './checkEmailAvailability';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
@@ -72,6 +73,13 @@ async function _sendUserEmail(subject: string, html: string, userData: RequiredF
 async function validateUserData(userId: IUser['_id'], userData: ISaveUserDataParams) {
 	const existingRoles = _.pluck(await getRoles(), '_id');
 	const isUpdateUserParams = '_id' in userData && userData._id;
+
+	if (isUpdateUserParams && userData.verified && userId === userData._id) {
+		throw new Meteor.Error('error-action-not-allowed', 'Editing email verification is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Editing_user',
+		});
+	}
 
 	if (isUpdateUserParams && userId !== userData._id && !(await hasPermissionAsync(userId, 'edit-other-user-info'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed', {
@@ -327,6 +335,8 @@ const saveNewUser = async function (userData: ICreateUserParams, sendPassword: b
 		}
 	}
 
+	void notifyOnUserChangeById({ clientAction: 'inserted', id: _id });
+
 	return _id;
 };
 
@@ -398,6 +408,7 @@ export const saveUser = async function (userId: IUser['_id'], userData: ISaveUse
 
 	const updateUser: DeepWritable<UpdateFilter<IUser>> = {};
 	updateUser.$set = {};
+	updateUser.$unset = {};
 
 	handleBio(updateUser, userData.bio);
 	handleNickname(updateUser, userData.nickname);
@@ -415,6 +426,9 @@ export const saveUser = async function (userId: IUser['_id'], userData: ISaveUse
 
 	if (typeof userData.requirePasswordChange !== 'undefined') {
 		updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
+		if (!userData.requirePasswordChange) {
+			updateUser.$unset.requirePasswordChangeReason = 1;
+		}
 	}
 
 	if (typeof userData.verified === 'boolean') {
@@ -424,7 +438,7 @@ export const saveUser = async function (userId: IUser['_id'], userData: ISaveUse
 	await Users.updateOne({ _id: userData._id }, updateUser);
 
 	// App IPostUserUpdated event hook
-	const userUpdated = await Users.findOneById(userId);
+	const userUpdated = await Users.findOneById(userData._id);
 
 	await callbacks.run('afterSaveUser', {
 		user: userUpdated,
@@ -445,6 +459,18 @@ export const saveUser = async function (userId: IUser['_id'], userData: ISaveUse
 			userData as RequiredField<IUpdateUserParams, 'email'>,
 		);
 	}
+
+	if (typeof userData.verified === 'boolean') {
+		delete userData.verified;
+	}
+	void notifyOnUserChange({
+		clientAction: 'updated',
+		id: userData._id,
+		diff: {
+			...userData,
+			emails: userUpdated.emails,
+		},
+	});
 
 	return true;
 };

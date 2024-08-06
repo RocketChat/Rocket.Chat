@@ -9,14 +9,21 @@ import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { callbacks } from '../../../../lib/callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { notifyOnRoomChangedById } from '../lib/notifyListener';
 
 export const addUserToRoom = async function (
 	rid: string,
-	user: Pick<IUser, '_id' | 'username'> | string,
+	user: Pick<IUser, '_id'> | string,
 	inviter?: Pick<IUser, '_id' | 'username'>,
-	silenced?: boolean,
+	{
+		skipSystemMessage,
+		skipAlertSound,
+	}: {
+		skipSystemMessage?: boolean;
+		skipAlertSound?: boolean;
+	} = {},
 ): Promise<boolean | undefined> {
 	const now = new Date();
 	const room = await Rooms.findOneById(rid);
@@ -42,12 +49,12 @@ export const addUserToRoom = async function (
 	}
 
 	try {
-		await callbacks.run('federation.beforeAddUserToARoom', { user, inviter }, room);
+		await callbacks.run('federation.beforeAddUserToARoom', { user: userToBeAdded, inviter }, room);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}
 
-	await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter: userToBeAdded });
+	await callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter });
 
 	// Check if user is already in room
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
@@ -78,7 +85,7 @@ export const addUserToRoom = async function (
 	await Subscriptions.createWithRoomAndUser(room, userToBeAdded as IUser, {
 		ts: now,
 		open: true,
-		alert: true,
+		alert: !skipAlertSound,
 		unread: 1,
 		userMentions: 1,
 		groupMentions: 0,
@@ -92,7 +99,7 @@ export const addUserToRoom = async function (
 		throw new Meteor.Error('error-invalid-user', 'Cannot add an user to a room without a username');
 	}
 
-	if (!silenced) {
+	if (!skipSystemMessage) {
 		if (inviter) {
 			const extraData = {
 				ts: now,
@@ -130,6 +137,10 @@ export const addUserToRoom = async function (
 	if (room.teamMain && room.teamId) {
 		// if user is joining to main team channel, create a membership
 		await Team.addMember(inviter || userToBeAdded, userToBeAdded._id, room.teamId);
+	}
+
+	if (room.encrypted && settings.get('E2E_Enable') && userToBeAdded.e2e?.public_key) {
+		await Rooms.addUserIdToE2EEQueueByRoomIds([room._id], userToBeAdded._id);
 	}
 
 	return true;

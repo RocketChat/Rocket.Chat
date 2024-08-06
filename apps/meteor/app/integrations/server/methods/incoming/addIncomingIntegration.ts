@@ -1,7 +1,7 @@
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Roles, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Babel } from 'meteor/babel-compiler';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -13,7 +13,7 @@ import { validateScriptEngine, isScriptEngineFrozen } from '../../lib/validateSc
 
 const validChannelChars = ['@', '#'];
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		addIncomingIntegration(integration: INewIncomingIntegration): Promise<IIncomingIntegration>;

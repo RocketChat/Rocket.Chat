@@ -1,5 +1,5 @@
+import type { StreamNames } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
-import type { StreamNames } from '@rocket.chat/ui-contexts';
 import localforage from 'localforage';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
@@ -356,12 +356,6 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 			this.trySync();
 		});
 
-		if (!this.userRelated) {
-			return this.setupListener();
-		}
-
-		CachedCollectionManager.onLogin(async () => {
-			await this.setupListener();
-		});
+		return this.setupListener();
 	}
 }

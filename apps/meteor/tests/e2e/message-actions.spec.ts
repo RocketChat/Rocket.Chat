@@ -70,6 +70,19 @@ test.describe.serial('message-actions', () => {
 		await expect(poHomeChannel.content.lastMessageTextAttachmentEqualsText).toHaveText(message);
 	});
 
+	test('expect create a discussion from message', async ({ page }) => {
+		const message = `Message for discussion - ${Date.now()}`;
+
+		await poHomeChannel.content.sendMessage(message);
+		await poHomeChannel.content.openLastMessageMenu();
+		await page.locator('role=menuitem[name="Start a Discussion"]').click();
+		const createButton = page.getByRole('dialog').getByRole('button', { name: 'create' });
+		// Name should be prefilled thus making the create button enabled
+		await expect(createButton).not.toBeDisabled();
+		await createButton.click();
+		await expect(page.locator('header h1')).toHaveText(message);
+	});
+
 	test('expect star the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('Message to star');
 		await poHomeChannel.content.openLastMessageMenu();
@@ -86,7 +99,7 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Copy text"]').click();
 
-		const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+		const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 		expect(clipboardText).toBe('Message to copy');
 	});
 
@@ -128,7 +141,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
-	})
+	});
 
 	test('expect forward message to team', async () => {
 		const message = 'this is a message to forward to team';
@@ -137,7 +150,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(forwardTeam);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
-	})
+	});
 
 	test('expect forward message to direct message', async () => {
 		const message = 'this is a message to forward to direct message';
@@ -149,7 +162,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(ADMIN_CREDENTIALS.username);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
-	})
+	});
 
 	test('expect forward text file to channel', async () => {
 		const filename = 'any_file.txt';
@@ -161,7 +174,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
-	})
+	});
 
 	test('expect forward image file to channel', async () => {
 		const filename = 'test-image.jpeg';
@@ -173,7 +186,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
-	})
+	});
 
 	test('expect forward pdf file to channel', async () => {
 		const filename = 'test_pdf_file.pdf';
@@ -185,7 +198,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
-	})
+	});
 
 	test('expect forward audio message to channel', async () => {
 		const filename = 'sample-audio.mp3';
@@ -197,7 +210,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
-	})
+	});
 
 	test('expect forward video message to channel', async () => {
 		const filename = 'test_video.mp4';
@@ -209,5 +222,5 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.sidenav.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
-	})
+	});
 });

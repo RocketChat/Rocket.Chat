@@ -1,6 +1,5 @@
 import type { GroupId } from '@rocket.chat/core-typings';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
-import type { FunctionComponent } from 'react';
 import React from 'react';
 
 import GroupPage from './GroupPage';
@@ -14,7 +13,7 @@ type GroupSelectorProps = {
 	groupId: GroupId;
 };
 
-const GroupSelector: FunctionComponent<GroupSelectorProps> = ({ groupId }) => {
+const GroupSelector = ({ groupId }: GroupSelectorProps) => {
 	const group = useSettingStructure(groupId);
 
 	if (!group) {

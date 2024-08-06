@@ -1,7 +1,8 @@
 import { api } from '@rocket.chat/core-services';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { notifyOnUserChange } from '../../app/lib/server/lib/notifyListener';
 import * as Mailer from '../../app/mailer/server/api';
 import { settings } from '../../app/settings/server';
 import { i18n } from './i18n';
@@ -71,9 +72,12 @@ export async function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean
 
 	await Users.resetE2EKey(uid);
 	await Subscriptions.resetUserE2EKey(uid);
+	await Rooms.removeUserFromE2EEQueue(uid);
 
 	// Force the user to logout, so that the keys can be generated again
 	await Users.unsetLoginTokens(uid);
+
+	void notifyOnUserChange({ clientAction: 'updated', id: uid, diff: { 'services.resume.loginTokens': [] } });
 
 	return true;
 }

@@ -28,6 +28,7 @@ export async function settingsRegenerator() {
 			settings: invalidSettings.map(({ _id }) => _id),
 		});
 		await Settings.deleteMany({ _id: { $in: invalidSettings.map(({ _id }) => _id) } });
+		// No need to notify listener
 	} else {
 		logger.info('No invalid settings found on DB.');
 	}

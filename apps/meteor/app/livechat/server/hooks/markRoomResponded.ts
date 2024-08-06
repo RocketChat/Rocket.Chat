@@ -1,17 +1,14 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom, isEditedMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatVisitors, LivechatInquiry } from '@rocket.chat/models';
 import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 
 callbacks.add(
-	'afterSaveMessage',
-	async (message, room) => {
-		if (!isOmnichannelRoom(room)) {
-			return message;
-		}
-
+	'afterOmnichannelSaveMessage',
+	async (message, { room }) => {
 		// skips this callback if the message was edited
 		if (!message || isEditedMessage(message)) {
 			return message;
@@ -37,10 +34,13 @@ callbacks.add(
 		}
 
 		if (!room.v?.activity?.includes(monthYear)) {
-			await Promise.all([
+			const [, livechatInquiry] = await Promise.all([
 				LivechatRooms.markVisitorActiveForPeriod(room._id, monthYear),
 				LivechatInquiry.markInquiryActiveForPeriod(room._id, monthYear),
 			]);
+			if (livechatInquiry) {
+				void notifyOnLivechatInquiryChanged(livechatInquiry, 'updated', { v: livechatInquiry.v });
+			}
 		}
 
 		if (room.responseBy) {

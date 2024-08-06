@@ -12,23 +12,25 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 } from '../../../../components/Contextualbar';
-import InfoPanel from '../../../../components/InfoPanel';
+import {
+	InfoPanel,
+	InfoPanelAction,
+	InfoPanelActionGroup,
+	InfoPanelAvatar,
+	InfoPanelField,
+	InfoPanelLabel,
+	InfoPanelSection,
+	InfoPanelText,
+	InfoPanelTitle,
+} from '../../../../components/InfoPanel';
 import RetentionPolicyCallout from '../../../../components/InfoPanel/RetentionPolicyCallout';
 import MarkdownText from '../../../../components/MarkdownText';
 import type { Action } from '../../../hooks/useActionSpread';
 import { useActionSpread } from '../../../hooks/useActionSpread';
-
-type RetentionPolicy = {
-	retentionPolicyEnabled: boolean;
-	maxAgeDefault: number;
-	retentionEnabledDefault: boolean;
-	excludePinnedDefault: boolean;
-	filesOnlyDefault: boolean;
-};
+import { useRetentionPolicy } from '../../../room/hooks/useRetentionPolicy';
 
 type TeamsInfoProps = {
 	room: IRoom;
-	retentionPolicy: RetentionPolicy;
 	onClickHide: () => void;
 	onClickClose: () => void;
 	onClickLeave: () => void;
@@ -40,7 +42,6 @@ type TeamsInfoProps = {
 
 const TeamsInfo = ({
 	room,
-	retentionPolicy,
 	onClickHide,
 	onClickClose,
 	onClickLeave,
@@ -51,7 +52,7 @@ const TeamsInfo = ({
 }: TeamsInfoProps): ReactElement => {
 	const t = useTranslation();
 
-	const { retentionPolicyEnabled, filesOnlyDefault, excludePinnedDefault, maxAgeDefault } = retentionPolicy;
+	const retentionPolicy = useRetentionPolicy(room);
 
 	const memoizedActions = useMemo(
 		() => ({
@@ -117,7 +118,7 @@ const TeamsInfo = ({
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { label, icon, action }]: [string, Action]): ReactElement => (
-			<InfoPanel.Action key={key} label={label as string} onClick={action} icon={icon} />
+			<InfoPanelAction key={key} label={label as string} onClick={action} icon={icon} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
@@ -132,81 +133,75 @@ const TeamsInfo = ({
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent p={24}>
 				<InfoPanel>
-					<InfoPanel.Section maxWidth='x332' mi='auto'>
-						<InfoPanel.Avatar>
+					<InfoPanelSection maxWidth='x332' mi='auto'>
+						<InfoPanelAvatar>
 							<RoomAvatar size='x332' room={room} />
-						</InfoPanel.Avatar>
+						</InfoPanelAvatar>
 
-						<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
-					</InfoPanel.Section>
+						<InfoPanelActionGroup>{actions}</InfoPanelActionGroup>
+					</InfoPanelSection>
 
-					<InfoPanel.Section>
+					<InfoPanelSection>
 						{room.archived && (
 							<Box mb={16}>
 								<Callout type='warning'>{t('Room_archived')}</Callout>
 							</Box>
 						)}
-					</InfoPanel.Section>
+					</InfoPanelSection>
 
-					<InfoPanel.Section>
-						<InfoPanel.Title title={room.fname || room.name || ''} icon='team' />
-					</InfoPanel.Section>
+					<InfoPanelSection>
+						<InfoPanelTitle title={room.fname || room.name || ''} icon='team' />
+					</InfoPanelSection>
 
-					<InfoPanel.Section>
+					<InfoPanelSection>
 						{room.broadcast && (
-							<InfoPanel.Field>
-								<InfoPanel.Label>
+							<InfoPanelField>
+								<InfoPanelLabel>
 									<b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}
-								</InfoPanel.Label>
-							</InfoPanel.Field>
+								</InfoPanelLabel>
+							</InfoPanelField>
 						)}
 
 						{room.description && (
-							<InfoPanel.Field>
-								<InfoPanel.Label>{t('Description')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>
+							<InfoPanelField>
+								<InfoPanelLabel>{t('Description')}</InfoPanelLabel>
+								<InfoPanelText withTruncatedText={false}>
 									<MarkdownText variant='inline' content={room.description} />
-								</InfoPanel.Text>
-							</InfoPanel.Field>
+								</InfoPanelText>
+							</InfoPanelField>
 						)}
 
 						{room.announcement && (
-							<InfoPanel.Field>
-								<InfoPanel.Label>{t('Announcement')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>
+							<InfoPanelField>
+								<InfoPanelLabel>{t('Announcement')}</InfoPanelLabel>
+								<InfoPanelText withTruncatedText={false}>
 									<MarkdownText variant='inline' content={room.announcement} />
-								</InfoPanel.Text>
-							</InfoPanel.Field>
+								</InfoPanelText>
+							</InfoPanelField>
 						)}
 
 						{room.topic && (
-							<InfoPanel.Field>
-								<InfoPanel.Label>{t('Topic')}</InfoPanel.Label>
-								<InfoPanel.Text withTruncatedText={false}>
+							<InfoPanelField>
+								<InfoPanelLabel>{t('Topic')}</InfoPanelLabel>
+								<InfoPanelText withTruncatedText={false}>
 									<MarkdownText variant='inline' content={room.topic} />
-								</InfoPanel.Text>
-							</InfoPanel.Field>
+								</InfoPanelText>
+							</InfoPanelField>
 						)}
 
 						{onClickViewChannels && (
-							<InfoPanel.Field>
-								<InfoPanel.Label>{t('Teams_channels')}</InfoPanel.Label>
-								<InfoPanel.Text>
+							<InfoPanelField>
+								<InfoPanelLabel>{t('Teams_channels')}</InfoPanelLabel>
+								<InfoPanelText>
 									<Button onClick={onClickViewChannels} small>
 										{t('View_channels')}
 									</Button>
-								</InfoPanel.Text>
-							</InfoPanel.Field>
+								</InfoPanelText>
+							</InfoPanelField>
 						)}
 
-						{retentionPolicyEnabled && (
-							<RetentionPolicyCallout
-								filesOnlyDefault={filesOnlyDefault}
-								excludePinnedDefault={excludePinnedDefault}
-								maxAgeDefault={maxAgeDefault}
-							/>
-						)}
-					</InfoPanel.Section>
+						{retentionPolicy?.isActive && <RetentionPolicyCallout room={room} />}
+					</InfoPanelSection>
 				</InfoPanel>
 			</ContextualbarScrollableContent>
 		</>

@@ -1,6 +1,7 @@
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
-import { getCollectionName } from '@rocket.chat/models';
+import type { Updater } from '@rocket.chat/models';
+import { getCollectionName, UpdaterImpl } from '@rocket.chat/models';
 import { ObjectId } from 'mongodb';
 import type {
 	BulkWriteOptions,
@@ -107,6 +108,10 @@ export abstract class BaseRaw<
 
 	getCollectionName(): string {
 		return this.collectionName;
+	}
+
+	protected getUpdater(): Updater<T> {
+		return new UpdaterImpl<T>(this.col as unknown as IBaseModel<T>);
 	}
 
 	private doNotMixInclusionAndExclusionFields(options: FindOptions<T> = {}): FindOptions<T> {
@@ -265,6 +270,10 @@ export abstract class BaseRaw<
 
 	removeById(_id: T['_id']): Promise<DeleteResult> {
 		return this.deleteOne({ _id } as Filter<T>);
+	}
+
+	removeByIds(ids: T['_id'][]): Promise<DeleteResult> {
+		return this.deleteMany({ _id: { $in: ids } } as unknown as Filter<T>);
 	}
 
 	async deleteOne(filter: Filter<T>, options?: DeleteOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteResult> {

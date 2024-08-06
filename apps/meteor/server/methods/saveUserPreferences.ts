@@ -1,10 +1,11 @@
+import type { ThemePreference } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { FontSize } from '@rocket.chat/rest-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { notifyOnUserChange } from '../../app/lib/server/lib/notifyListener';
 import { settings as rcSettings } from '../../app/settings/server';
 
 type UserPreferences = {
@@ -46,7 +47,7 @@ type UserPreferences = {
 	mentionsWithSymbol?: boolean;
 };
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		saveUserPreferences(preferences: Partial<UserPreferences>): boolean;
@@ -94,8 +95,8 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		mentionsWithSymbol: Match.Optional(Boolean),
 	};
 	check(settings, Match.ObjectIncluding(keys));
-	const user = await Users.findOneById(userId);
 
+	const user = await Users.findOneById(userId);
 	if (!user) {
 		return;
 	}
@@ -127,6 +128,21 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 	}
 
 	await Users.setPreferences(user._id, settings);
+
+	const diff = (Object.keys(settings) as (keyof UserPreferences)[]).reduce<Record<string, any>>((data, key) => {
+		data[`settings.preferences.${key}`] = settings[key];
+
+		return data;
+	}, {});
+
+	void notifyOnUserChange({
+		id: user._id,
+		clientAction: 'updated',
+		diff: {
+			...diff,
+			...(settings.language != null && { language: settings.language }),
+		},
+	});
 
 	// propagate changed notification preferences
 	setImmediate(async () => {

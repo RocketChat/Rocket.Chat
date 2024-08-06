@@ -8,5 +8,7 @@ export { default as TextSeparator } from './TextSeparator';
 export * from './TooltipComponent';
 export * as UserStatus from './UserStatus';
 export * from './Header';
+export * from './HeaderV2';
 export * from './MultiSelectCustom/MultiSelectCustom';
 export * from './FeaturePreview/FeaturePreview';
+export * from './RoomBanner';
