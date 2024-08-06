@@ -115,14 +115,12 @@ export const createOauthSettings = () =>
 				public: true,
 				i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
 				persistent: true,
-				alert: 'OAuth_button_colors_alert',
 			});
 			await this.add('Accounts_OAuth_Nextcloud_button_color', '#0082c9', {
 				type: 'string',
 				public: true,
 				i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
 				persistent: true,
-				alert: 'OAuth_button_colors_alert',
 			});
 		});
 
@@ -275,13 +273,11 @@ export const createOauthSettings = () =>
 				type: 'string',
 				i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
 				persistent: true,
-				alert: 'OAuth_button_colors_alert',
 			});
 			await this.add('Accounts_OAuth_Dolphin_button_color', '#1d74f5', {
 				type: 'string',
 				i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
 				persistent: true,
-				alert: 'OAuth_button_colors_alert',
 			});
 		});
 		await this.section('Facebook', async function () {

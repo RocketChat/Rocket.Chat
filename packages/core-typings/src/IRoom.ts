@@ -275,9 +275,12 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 			total: number;
 			avg: number;
 			ft: number;
+			fd?: number;
 		};
 		reaction?: {
+			tt: number;
 			ft: number;
+			fd?: number;
 		};
 	};
 

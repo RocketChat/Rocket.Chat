@@ -1,15 +1,11 @@
-import { isOmnichannelRoom, isEditedMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 
 callbacks.add(
-	'afterSaveMessage',
-	async (message, room) => {
-		if (!isOmnichannelRoom(room)) {
-			return message;
-		}
-
+	'afterOmnichannelSaveMessage',
+	async (message, { room }) => {
 		// skips this callback if the message was edited
 		if (!message || isEditedMessage(message)) {
 			return message;
@@ -21,7 +17,7 @@ callbacks.add(
 		}
 
 		// check if room is yet awaiting for response
-		if (typeof room.t !== 'undefined' && room.t === 'l' && room.waitingResponse) {
+		if (room.waitingResponse) {
 			return message;
 		}
 
