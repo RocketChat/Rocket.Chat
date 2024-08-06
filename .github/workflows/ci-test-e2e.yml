@@ -386,3 +386,7 @@ jobs:
         with:
           name: e2e-ee-coverage
           path: ./apps/meteor/coverage*
+
+      - name: Disk usage if failure
+        if: failure()
+        run: sudo df -h
