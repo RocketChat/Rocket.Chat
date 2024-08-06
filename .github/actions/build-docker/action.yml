@@ -52,8 +52,10 @@ runs:
         cache-modules: true
         install: true
 
-    - run: yarn build
-      shell: bash
+    - shell: bash
+      run: |
+        yarn build
+        yarn install --production --ignore-scripts --prefer-offline
 
     - name: Build Docker images
       shell: bash
