@@ -1,7 +1,7 @@
 import {
 	parseStringToIceServers,
 	parseStringToIceServer,
-} from '../../../../../../client/providers/CallProvider/lib/parseStringToIceServers';
+} from '../../../../../../client/providers/OmnichannelCallProvider/lib/parseStringToIceServers';
 
 describe('parseStringToIceServers', () => {
 	describe('parseStringToIceServers', () => {

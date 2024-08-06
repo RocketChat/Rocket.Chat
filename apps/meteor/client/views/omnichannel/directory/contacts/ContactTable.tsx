@@ -18,7 +18,7 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import { useIsCallReady } from '../../../../contexts/CallContext';
+import { useIsCallReady } from '../../../../contexts/OmnichannelCallContext';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { parseOutboundPhoneNumber } from '../../../../lib/voip/parseOutboundPhoneNumber';
 import { CallDialpadButton } from '../components/CallDialpadButton';

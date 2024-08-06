@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useVoipOutboundStates } from '../../../contexts/CallContext';
+import { useVoipOutboundStates } from '../../../contexts/OmnichannelCallContext';
 import { useDialModal } from '../../../hooks/useDialModal';
 
 export const OmniChannelCallDialPad = ({ ...props }): ReactElement => {

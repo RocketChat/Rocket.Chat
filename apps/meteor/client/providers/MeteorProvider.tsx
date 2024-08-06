@@ -6,13 +6,13 @@ import ActionManagerProvider from './ActionManagerProvider';
 import AuthenticationProvider from './AuthenticationProvider/AuthenticationProvider';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
-import { CallProvider } from './CallProvider';
 import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
 import { DeviceProvider } from './DeviceProvider/DeviceProvider';
 import EmojiPickerProvider from './EmojiPickerProvider';
 import LayoutProvider from './LayoutProvider';
 import ModalProvider from './ModalProvider/ModalProvider';
+import OmnichannelCallProvider from './OmnichannelCallProvider';
 import OmnichannelProvider from './OmnichannelProvider';
 import RouterProvider from './RouterProvider';
 import ServerProvider from './ServerProvider';
@@ -47,9 +47,9 @@ const MeteorProvider: FC = ({ children }) => (
 																			<UserPresenceProvider>
 																				<ActionManagerProvider>
 																					<VideoConfProvider>
-																						<CallProvider>
+																						<OmnichannelCallProvider>
 																							<OmnichannelProvider>{children}</OmnichannelProvider>
-																						</CallProvider>
+																						</OmnichannelCallProvider>
 																					</VideoConfProvider>
 																				</ActionManagerProvider>
 																			</UserPresenceProvider>

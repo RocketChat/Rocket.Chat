@@ -6,7 +6,7 @@ import { KJUR } from 'jsrsasign';
 import { useEffect, useState } from 'react';
 
 import { VoIPUser } from '../../../client/lib/voip/VoIPUser';
-import { useWebRtcServers } from '../../../client/providers/CallProvider/hooks/useWebRtcServers';
+import { useWebRtcServers } from '../../../client/providers/OmnichannelCallProvider/hooks/useWebRtcServers';
 import { EEVoipClient } from '../lib/voip/EEVoipClient';
 import { useHasLicenseModule } from './useHasLicenseModule';
 
@@ -22,7 +22,7 @@ const isSignedResponse = (data: any): data is { result: string } => typeof data?
 
 // Currently we only support the websocket connection and the SIP proxy connection being from the same host,
 // we need to add a new setting for SIP proxy if we want to support different hosts for them.
-export const useVoipClient = (): UseVoipClientResult => {
+export const useOmnichannelVoipClient = (): UseVoipClientResult => {
 	const settingVoipEnabled = Boolean(useSetting('VoIP_Enabled'));
 
 	const [voipConnectorEnabled, setVoipConnectorEnabled] = useSafely(useState(true));
