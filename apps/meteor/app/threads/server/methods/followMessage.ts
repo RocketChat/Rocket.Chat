@@ -42,10 +42,12 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'followMessage' });
 		}
 
-		const followResult = await follow({ tmid: message.tmid || message._id, uid });
+		const id = message.tmid || message._id;
+
+		const followResult = await follow({ tmid: id, uid });
 
 		void notifyOnMessageChange({
-			id: mid,
+			id,
 		});
 
 		const isFollowed = true;
