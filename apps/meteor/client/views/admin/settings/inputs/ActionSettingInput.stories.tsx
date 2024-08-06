@@ -1,5 +1,6 @@
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Field } from '@rocket.chat/fuselage';
-import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 

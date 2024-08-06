@@ -18,6 +18,9 @@ const { AppMessagesConverter } = proxyquire.noCallThru().load('../../../../../ap
 		Messages: new MessagesMock(),
 		Users: new UsersMock(),
 	},
+	'@rocket.chat/core-typings': {
+		isMessageFromVisitor: (message) => 'token' in message,
+	},
 });
 
 describe('The AppMessagesConverter instance', () => {
