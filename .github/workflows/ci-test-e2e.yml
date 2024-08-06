@@ -139,7 +139,7 @@ jobs:
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ inputs.node-version }}
 
-      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+      - uses: rharkor/caching-for-turbo@v1.5
 
       - name: Start httpbin container and wait for it to be ready
         if: inputs.type == 'api'
