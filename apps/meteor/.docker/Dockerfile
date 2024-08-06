@@ -26,7 +26,7 @@ ENV DEPLOY_METHOD=docker \
 RUN aptMark="$(apt-mark showmanual)" \
     && apt-get install -y --no-install-recommends g++ make python3 ca-certificates \
     && cd /app/bundle/programs/server \
-    && npm install --unsafe-perm \
+    && npm install --unsafe-perm --production \
     && apt-mark auto '.*' > /dev/null \
     && apt-mark manual $aptMark > /dev/null \
     && find /usr/local -type f -executable -exec ldd '{}' ';' \
