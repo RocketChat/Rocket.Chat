@@ -468,7 +468,7 @@ export const saveUser = async function (userId: IUser['_id'], userData: ISaveUse
 		id: userData._id,
 		diff: {
 			...userData,
-			emails: userUpdated.emails,
+			emails: userUpdated?.emails,
 		},
 	});
 
