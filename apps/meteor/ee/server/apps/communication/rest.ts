@@ -747,7 +747,12 @@ export class AppsRestApi {
 						return API.v1.internalError('private_app_install_disabled');
 					}
 
-					const aff = await manager.update(buff, permissionsGranted);
+					const user = orchestrator
+						?.getConverters()
+						?.get('users')
+						?.convertToApp(await Meteor.userAsync());
+
+					const aff = await manager.update(buff, permissionsGranted, { user, loadApp: true });
 					const info: IAppInfo & { status?: AppStatus } = aff.getAppInfo();
 
 					if (aff.hasStorageError()) {

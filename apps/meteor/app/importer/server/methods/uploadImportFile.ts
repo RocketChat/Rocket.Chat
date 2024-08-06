@@ -1,6 +1,6 @@
 import { Import } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { Importers } from '..';
@@ -55,7 +55,7 @@ export const executeUploadImportFile = async (
 	await instance.updateProgress(ProgressStep.FILE_LOADED);
 };
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		uploadImportFile(binaryContent: string, contentType: string, fileName: string, importerKey: string): void;
