@@ -246,7 +246,7 @@
 		"@rocket.chat/fuselage": "^0.57.0",
 		"@rocket.chat/fuselage-hooks": "^0.33.1",
 		"@rocket.chat/fuselage-polyfills": "~0.31.25",
-		"@rocket.chat/fuselage-toastbar": "^0.32.0",
+		"@rocket.chat/fuselage-toastbar": "^0.33.0",
 		"@rocket.chat/fuselage-tokens": "^0.33.1",
 		"@rocket.chat/fuselage-ui-kit": "workspace:^",
 		"@rocket.chat/gazzodown": "workspace:^",
