@@ -24,6 +24,7 @@ import TranslationProvider from './TranslationProvider';
 import UserPresenceProvider from './UserPresenceProvider';
 import UserProvider from './UserProvider';
 import VideoConfProvider from './VideoConfProvider';
+import VoiceCallProvider from './VoiceCallProvider';
 
 const MeteorProvider: FC = ({ children }) => (
 	<ConnectionStatusProvider>
@@ -47,9 +48,11 @@ const MeteorProvider: FC = ({ children }) => (
 																			<UserPresenceProvider>
 																				<ActionManagerProvider>
 																					<VideoConfProvider>
-																						<OmnichannelCallProvider>
-																							<OmnichannelProvider>{children}</OmnichannelProvider>
-																						</OmnichannelCallProvider>
+																						<VoiceCallProvider>
+																							<OmnichannelCallProvider>
+																								<OmnichannelProvider>{children}</OmnichannelProvider>
+																							</OmnichannelCallProvider>
+																						</VoiceCallProvider>
 																					</VideoConfProvider>
 																				</ActionManagerProvider>
 																			</UserPresenceProvider>
