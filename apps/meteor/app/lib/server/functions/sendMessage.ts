@@ -283,6 +283,8 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 		message._id = insertedId;
 	}
 
+	console.log('Inserted message', message);
+
 	if (Apps.self?.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
 		// so, we don't really care if it is successful or fails
