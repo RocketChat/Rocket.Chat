@@ -23,7 +23,6 @@ import UserCardProvider from './UserCardProvider';
 import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
 import { useRoomQuery } from './hooks/useRoomQuery';
 import { useUsersNameChanged } from './hooks/useUsersNameChanged';
-// import { useQuery } from '@tanstack/react-query';
 
 type RoomProviderProps = {
 	children: ReactNode;
@@ -35,9 +34,6 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 
 	const { data: room, isSuccess } = useRoomQuery(rid);
 	const teamResult = useTeamInfo(room?.teamId);
-
-	// const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
-	// const test = useQuery(['teamId', room?.teamId], async () => teamsInfoEndpoint({ teamId: room?.teamId }));
 
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
 	const router = useRouter();
@@ -105,7 +101,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 
 		if (room?.teamId && !room?.teamMain) {
 			if (teamResult.isSuccess) {
-				RoomManager.openSecondLevel(teamResult.data.teamInfo.roomId!, rid);
+				RoomManager.openSecondLevel(teamResult.data.teamInfo.roomId, rid);
 			}
 		}
 
