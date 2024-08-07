@@ -1001,6 +1001,36 @@ describe('LIVECHAT - rooms', () => {
 			roomId = newRoom._id;
 			visitorToken = newVisitor.token;
 		});
+		// Needs fixing
+		(IS_EE ? it.skip : it.skip)('should correctly set fallback department', async () => {
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+
+			const { department: fallbackDeparment } = await createDepartmentWithAnOnlineAgent();
+			const { department: initialDepartment } = await createDepartmentWithAnOfflineAgent({
+				fallbackForwardDepartment: fallbackDeparment._id,
+			});
+			expect(initialDepartment.fallbackForwardDepartment).to.be.equal(fallbackDeparment._id);
+		});
+		// Needs fixing
+		(IS_EE ? it.skip : it.skip)(
+			'should redirect chat to fallback department when all agents in the initial department are offline',
+			async () => {
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+
+				const { department: fallbackDeparment } = await createDepartmentWithAnOnlineAgent();
+				const { department: initialDepartment } = await createDepartmentWithAnOfflineAgent({
+					fallbackForwardDepartment: fallbackDeparment._id,
+				});
+
+				const newVisitor = await createVisitor(initialDepartment._id);
+				const newRoom = await createLivechatRoom(newVisitor.token);
+
+				const latestRoom = await getLivechatRoomInfo(newRoom._id);
+
+				expect(latestRoom).to.have.property('departmentId');
+				expect(latestRoom.departmentId).to.be.equal(fallbackDeparment._id);
+			},
+		);
 		(IS_EE ? it : it.skip)('system messages sent on transfer should be properly generated', async () => {
 			const messagesList = await fetchMessages(roomId, visitorToken);
 
