@@ -1,5 +1,52 @@
 # @rocket.chat/livechat Change Log
 
+## 1.19.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@9.0.0-rc.2
+  </details>
+
+## 1.19.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@9.0.0-rc.1
+  </details>
+
+## 1.19.0-rc.0
+
+### Minor Changes
+
+- ([#32498](https://github.com/RocketChat/Rocket.Chat/pull/32498)) Created a `transferChat` Livechat API endpoint for transferring chats programmatically, the endpoint has all the limitations & permissions required that transferring via UI has
+
+### Patch Changes
+
+- ([#32692](https://github.com/RocketChat/Rocket.Chat/pull/32692)) Fixed an issue that caused the widget to set the wrong department when using the setDepartment Livechat api endpoint in conjunction with a Livechat Trigger
+
+- ([#32626](https://github.com/RocketChat/Rocket.Chat/pull/32626)) livechat `setDepartment` livechat api fixes:
+  - Changing department didn't reflect on the registration form in real time
+  - Changing the department mid conversation didn't transfer the chat
+  - Depending on the state of the department, it couldn't be set as default
+- <details><summary>Updated dependencies [2d89a0c448]:</summary>
+
+  - @rocket.chat/ui-kit@0.36.0-rc.0
+  - @rocket.chat/gazzodown@9.0.0-rc.0
+
+## 1.18.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@8.0.2
+  </details>
+  </details>
+
 ## 1.18.1
 
 ### Patch Changes

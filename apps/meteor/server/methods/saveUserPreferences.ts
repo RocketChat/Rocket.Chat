@@ -1,7 +1,7 @@
+import type { ThemePreference } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { FontSize } from '@rocket.chat/rest-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { ThemePreference } from '@rocket.chat/ui-theming/src/types/themes';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -47,7 +47,7 @@ type UserPreferences = {
 	mentionsWithSymbol?: boolean;
 };
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		saveUserPreferences(preferences: Partial<UserPreferences>): boolean;
