@@ -23,13 +23,16 @@ declare module '@rocket.chat/rest-typings' {
 			GET: (params: VoipFreeSwitchExtensionListProps) => { extensions: FreeSwitchExtension[] };
 		};
 		'/v1/voip-freeswitch.extension.getDetails': {
-			GET: (params: VoipFreeSwitchExtensionGetDetailsProps) => FreeSwitchExtension & { userId?: string; username?: string };
+			GET: (params: VoipFreeSwitchExtensionGetDetailsProps) => FreeSwitchExtension & { userId?: string; username?: string; name?: string };
 		};
 		'/v1/voip-freeswitch.extension.assign': {
 			POST: (params: VoipFreeSwitchExtensionAssignProps) => void;
 		};
 		'/v1/voip-freeswitch.extension.getRegistrationInfoByUserId': {
-			GET: (params: VoipFreeSwitchExtensionGetInfoProps) => { extension: FreeSwitchExtension; credentials: { password: string } };
+			GET: (params: VoipFreeSwitchExtensionGetInfoProps) => {
+				extension: FreeSwitchExtension;
+				credentials: { password: string; websocketPath: string };
+			};
 		};
 	}
 }
@@ -109,7 +112,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'voip-freeswitch.extension.getDetails',
-	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'], validateParams: isVoipFreeSwitchExtensionGetDetailsProps },
+	{ authRequired: true, validateParams: isVoipFreeSwitchExtensionGetDetailsProps },
 	{
 		async get() {
 			const { extension, group } = this.queryParams;
@@ -123,11 +126,11 @@ API.v1.addRoute(
 				return API.v1.notFound();
 			}
 
-			const existingUser = await Users.findOneByFreeSwitchExtension(extensionData.extension, { projection: { username: 1 } });
+			const existingUser = await Users.findOneByFreeSwitchExtension(extensionData.extension, { projection: { username: 1, name: 1 } });
 
 			return API.v1.success({
 				...extensionData,
-				...(existingUser && { userId: existingUser._id, username: existingUser.username }),
+				...(existingUser && { userId: existingUser._id, name: existingUser.name, username: existingUser.username }),
 			});
 		},
 	},
@@ -135,7 +138,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'voip-freeswitch.extension.getRegistrationInfoByUserId',
-	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'], validateParams: isVoipFreeSwitchExtensionGetInfoProps },
+	{ authRequired: true, validateParams: isVoipFreeSwitchExtensionGetInfoProps },
 	{
 		async get() {
 			const { userId } = this.queryParams;
