@@ -12,7 +12,11 @@ import { updateMessage } from '../functions/updateMessage';
 
 const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg', 'customFields', 'content'];
 
-export async function executeUpdateMessage(uid: IUser['_id'], message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>, previewUrls?: string[]) {
+export async function executeUpdateMessage(
+	uid: IUser['_id'],
+	message: AtLeast<IMessage, '_id' | 'rid' | 'msg' | 'customFields'>,
+	previewUrls?: string[],
+) {
 	const originalMessage = await Messages.findOneById(message._id);
 	if (!originalMessage?._id) {
 		return;
@@ -26,8 +30,11 @@ export async function executeUpdateMessage(uid: IUser['_id'], message: AtLeast<I
 		}
 	});
 
+	// IF the message has custom fields, always update
+	// Ideally, we'll compare the custom fields to check for change, but since we don't know the shape of
+	// custom fields, as it's user defined, we're gonna update
 	const msgText = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
-	if (msgText === message.msg && !previewUrls) {
+	if (msgText === message.msg && !previewUrls && !message.customFields) {
 		return;
 	}
 
