@@ -55,9 +55,9 @@ jobs:
           echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
 
           echo "CURRENT DIR: $(pwd)"
-          V=$(test -f .tool-versions)
+          V=$(ls -la | grep tool)
           echo "is there? $V"
-          V=$(test -f $(pwd)/.tool-versions)
+          V=$(ls -la)
           echo "is there? $V"
 
           DENO_VERSION=$(awk '$1=="deno"{ print $2 }' .tool-versions)
