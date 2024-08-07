@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription, IUpload, IE2EEMessage, FileAttachmentProps } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
@@ -12,10 +12,10 @@ import {
 	MessageComposerHint,
 	MessageComposerButton,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler, MouseEvent } from 'react';
-import React, { memo, useRef, useReducer, useCallback } from 'react';
+import React, { memo, useRef, useReducer, useCallback, useState } from 'react';
 import { Trans } from 'react-i18next';
 import { useSubscription } from 'use-subscription';
 
@@ -45,6 +45,11 @@ import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
+import FilePreview from '../../modals/FileUploadModal/FilePreview';
+import { Box } from '@rocket.chat/fuselage';
+import fileSize from 'filesize';
+import { e2e } from '/app/e2e/client';
+import { getFileExtension } from '/lib/utils/getFileExtension';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -117,7 +122,60 @@ const MessageBox = ({
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 
 	const [typing, setTyping] = useReducer(reducer, false);
+	const [uploadfiles, setUploadfiles] = useState<File[]>([]);
+	const dispatchToastMessage = useToastMessageDispatch();
+	const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
+	function handlefileUpload(fileslist: File[], resetFileInput?: () => void) {
+		setUploadfiles((prevFiles) => [...prevFiles, ...fileslist]);
 
+		resetFileInput?.();
+	}
+
+	const handleremove = (index: number) => {
+		if (!uploadfiles) {
+			return;
+		}
+		const temp = uploadfiles.filter((_, i) => {
+			return i !== index;
+		});
+		setUploadfiles(temp);
+	};
+
+	const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
+		return new Promise((resolve) => {
+			const img = new Image();
+			img.onload = () => {
+				resolve({
+					height: img.height,
+					width: img.width,
+				});
+			};
+			img.src = dataURL;
+		});
+	};
+	const uploadFile = (
+		file: File[] | File,
+		extraData?: Pick<IMessage, 't' | 'e2e'> & { description?: string },
+		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
+		fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
+	) => {
+		if (!chat) {
+			console.error('Chat context not found');
+			return;
+		}
+		const msg = chat.composer?.text ?? '';
+		chat.composer?.clear();
+		setUploadfiles([]);
+		chat.uploads.send(
+			file,
+			{
+				msg,
+				...extraData,
+			},
+			getContent,
+			fileContent,
+		);
+	};
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
 	const sendOnEnter = sendOnEnterBehavior == null || sendOnEnterBehavior === 'normal' || (sendOnEnterBehavior === 'desktop' && !isMobile);
@@ -158,7 +216,166 @@ const MessageBox = ({
 		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
 	});
 
-	const handleSendMessage = useMutableCallback(() => {
+	const handleSendMessage = useMutableCallback(async () => {
+		if (uploadfiles !== undefined && uploadfiles.length > 0) {
+			const msg = chat.composer?.text ?? '';
+			if (uploadfiles.length > 6) {
+				dispatchToastMessage({
+					type: 'error',
+					message: "You can't upload more than 6 files at once",
+				});
+				chat.composer?.clear();
+				setUploadfiles([]);
+				return;
+			}
+			for (const queuedFile of uploadfiles) {
+				const { name, size } = queuedFile;
+				if (!name) {
+					dispatchToastMessage({
+						type: 'error',
+						message: t('error-the-field-is-required', { field: t('Name') }),
+					});
+					chat.composer?.clear();
+					setUploadfiles([]);
+					return;
+				}
+
+				// Validate file size
+				if (maxFileSize > -1 && (size || 0) > maxFileSize) {
+					dispatchToastMessage({
+						type: 'error',
+						message: `${t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })}`,
+					});
+					chat.composer?.clear();
+					setUploadfiles([]);
+					return;
+				}
+			}
+
+			Object.defineProperty(uploadfiles[0], 'name', {
+				writable: true,
+				value: uploadfiles[0].name,
+			});
+
+			const e2eRoom = await e2e.getInstanceByRoomId(room._id);
+
+			if (!e2eRoom) {
+				uploadFile(uploadfiles, { msg });
+				return;
+			}
+
+			const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages({ msg });
+
+			if (!shouldConvertSentMessages) {
+				uploadFile(uploadfiles, { msg });
+				return;
+			}
+			const encryptedFilesarray: any = await Promise.all(
+				uploadfiles.map(async (file) => {
+					return await e2eRoom.encryptFile(file);
+				}),
+			);
+			const filesarray = encryptedFilesarray.map((file: any) => {
+				return file?.file;
+			});
+			if (encryptedFilesarray[0]) {
+				const getContent = async (_id: string[], fileUrl: string[]): Promise<IE2EEMessage['content']> => {
+					const attachments = [];
+					const arrayoffiles = [];
+					for (let i = 0; i < _id.length; i++) {
+						const attachment: FileAttachmentProps = {
+							title: uploadfiles[i].name,
+							type: 'file',
+							title_link: fileUrl[i],
+							title_link_download: true,
+							encryption: {
+								key: encryptedFilesarray[i].key,
+								iv: encryptedFilesarray[i].iv,
+							},
+							hashes: {
+								sha256: encryptedFilesarray[i].hash,
+							},
+						};
+
+						if (/^image\/.+/.test(uploadfiles[i].type)) {
+							const dimensions = await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(uploadfiles[i]));
+
+							attachments.push({
+								...attachment,
+								image_url: fileUrl[i],
+								image_type: uploadfiles[i].type,
+								image_size: uploadfiles[i].size,
+								...(dimensions && {
+									image_dimensions: dimensions,
+								}),
+							});
+						} else if (/^audio\/.+/.test(uploadfiles[i].type)) {
+							attachments.push({
+								...attachment,
+								audio_url: fileUrl[i],
+								audio_type: uploadfiles[i].type,
+								audio_size: uploadfiles[i].size,
+							});
+						} else if (/^video\/.+/.test(uploadfiles[i].type)) {
+							attachments.push({
+								...attachment,
+								video_url: fileUrl[i],
+								video_type: uploadfiles[i].type,
+								video_size: uploadfiles[i].size,
+							});
+						} else {
+							attachments.push({
+								...attachment,
+								size: uploadfiles[i].size,
+								format: getFileExtension(uploadfiles[i].name),
+							});
+						}
+
+						const files = {
+							_id: _id[i],
+							name: uploadfiles[i].name,
+							type: uploadfiles[i].type,
+							size: uploadfiles[i].size,
+							// "format": "png"
+						};
+						arrayoffiles.push(files);
+					}
+
+					return e2eRoom.encryptMessageContent({
+						attachments,
+						files: arrayoffiles,
+						file: uploadfiles[0],
+					});
+				};
+
+				const fileContentData = {
+					type: uploadfiles[0].type,
+					typeGroup: uploadfiles[0].type.split('/')[0],
+					name: uploadfiles[0].name,
+					msg: msg || '',
+					encryption: {
+						key: encryptedFilesarray[0].key,
+						iv: encryptedFilesarray[0].iv,
+					},
+					hashes: {
+						sha256: encryptedFilesarray[0].hash,
+					},
+				};
+
+				const fileContent = await e2eRoom.encryptMessageContent(fileContentData);
+
+				uploadFile(
+					filesarray,
+					{
+						t: 'e2e',
+					},
+					getContent,
+					fileContent,
+				);
+			}
+			chat.composer?.clear();
+			return;
+		}
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
 		clearPopup();
@@ -416,6 +633,21 @@ const MessageBox = ({
 					aria-activedescendant={ariaActiveDescendant}
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
+				<Box
+					display='flex'
+					style={{
+						gap: '3px',
+						width: '100%',
+					}}
+				>
+					{uploadfiles !== undefined && uploadfiles.length > 0 && (
+						<>
+							{uploadfiles.map((file, index) => (
+								<FilePreview key={index} file={file} index={index} onRemove={handleremove} />
+							))}
+						</>
+					)}
+				</Box>
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
@@ -441,6 +673,7 @@ const MessageBox = ({
 							tmid={tmid}
 							isRecording={isRecording}
 							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
+							handlefiles={handlefileUpload}
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
@@ -455,10 +688,10 @@ const MessageBox = ({
 								<MessageComposerAction
 									aria-label={t('Send')}
 									icon='send'
-									disabled={!canSend || (!typing && !isEditing)}
+									disabled={!canSend || (!typing && !isEditing && !(uploadfiles.length > 0))}
 									onClick={handleSendMessage}
-									secondary={typing || isEditing}
-									info={typing || isEditing}
+									secondary={typing || isEditing || (uploadfiles !== undefined && uploadfiles.length > 0)}
+									info={typing || isEditing || (uploadfiles !== undefined && uploadfiles.length > 0)}
 								/>
 							</>
 						)}
