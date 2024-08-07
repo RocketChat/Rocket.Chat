@@ -10,17 +10,20 @@ import React, { useMemo } from 'react';
 import { Roles } from '../../../../../app/models/client';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { UserStatus } from '../../../../components/UserStatus';
+import AssignExtensionButton from '../voip/AssignExtensionButton';
+import RemoveExtensionButton from '../voip/RemoveExtensionButton';
 
 type UsersTableRowProps = {
 	user: Serialized<DefaultUserInfo>;
 	onClick: (id: IUser['_id'], e: React.MouseEvent<HTMLElement, MouseEvent> | React.KeyboardEvent<HTMLElement>) => void;
 	mediaQuery: boolean;
 	tab: IAdminUserTabs;
+	showVoipExtension: boolean;
 };
 
-const UsersTableRow = ({ user, onClick, mediaQuery, tab }: UsersTableRowProps): ReactElement => {
+const UsersTableRow = ({ user, onClick, mediaQuery, tab, showVoipExtension }: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
-	const { _id, emails, username, name, roles, status, active, avatarETag, lastLogin, type } = user;
+	const { _id, emails, username, name, roles, status, active, avatarETag, lastLogin, type, freeSwitchExtension } = user;
 	const registrationStatusText = useMemo(() => {
 		const usersExcludedFromPending = ['bot', 'app'];
 
@@ -85,6 +88,15 @@ const UsersTableRow = ({ user, onClick, mediaQuery, tab }: UsersTableRowProps): 
 				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
 					{registrationStatusText}
 				</GenericTableCell>
+			)}
+			{tab === 'all' && showVoipExtension && username && (
+				<>
+					{freeSwitchExtension ? (
+						<RemoveExtensionButton username={username} extension={freeSwitchExtension} />
+					) : (
+						<AssignExtensionButton username={username} />
+					)}
+				</>
 			)}
 		</GenericTableRow>
 	);
