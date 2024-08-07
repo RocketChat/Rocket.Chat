@@ -70,15 +70,20 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
     const {
       target: { value: elValue },
     } = e;
+
     setLoading(true);
 
     if (Array.isArray(value)) {
-      const idx = value.findIndex((value) => value === elValue);
-
-      if (idx > -1) {
-        setValue(value.filter((_, i) => i !== idx));
+      if (Array.isArray(elValue)) {
+        setValue(elValue);
       } else {
-        setValue([...value, elValue]);
+        const idx = value.findIndex((value) => value === elValue);
+
+        if (idx > -1) {
+          setValue(value.filter((_, i) => i !== idx));
+        } else {
+          setValue([...value, elValue]);
+        }
       }
     } else {
       setValue(elValue);
