@@ -115,23 +115,26 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 		this.emit('changed', this.rid);
 	}
 
-	open(rid: IRoom['_id']): void {
+	private _open(rid: IRoom['_id'], parent?: IRoom['_id']): void {
 		if (rid === this.rid) {
 			return;
 		}
-
 		this.back(rid);
 		if (!this.rooms.has(rid)) {
 			this.rooms.set(rid, new RoomStore(rid));
 		}
 		this.rid = rid;
+		this.parentRid = parent;
 		this.emit('opened', this.rid);
 		this.emit('changed', this.rid);
 	}
 
+	open(rid: IRoom['_id']): void {
+		this._open(rid);
+	}
+
 	openSecondLevel(parentId: IRoom['_id'], rid: IRoom['_id']): void {
-		this.parentRid = parentId;
-		this.open(rid);
+		this._open(rid, parentId);
 	}
 
 	getStore(rid: IRoom['_id']): RoomStore | undefined {

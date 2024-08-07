@@ -12,6 +12,7 @@ import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
+import { useTeamInfo } from '../Header/ParentTeam';
 import RoomNotFound from '../RoomNotFound';
 import RoomSkeleton from '../RoomSkeleton';
 import { useRoomRolesManagement } from '../body/hooks/useRoomRolesManagement';
@@ -33,6 +34,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useRoomRolesManagement(rid);
 
 	const { data: room, isSuccess } = useRoomQuery(rid);
+	const teamResult = useTeamInfo(room?.teamId);
 
 	// const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
 	// const test = useQuery(['teamId', room?.teamId], async () => teamsInfoEndpoint({ teamId: room?.teamId }));
@@ -101,22 +103,24 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 			};
 		}
 
-		const firstLevel = (room?.prid || room?.teamId) ?? room?._id;
-
-		if (!firstLevel) {
-			return;
+		if (room?.teamId && !room?.teamMain) {
+			if (teamResult.isSuccess) {
+				RoomManager.openSecondLevel(teamResult.data.teamInfo.roomId!, rid);
+			}
 		}
 
-		if (firstLevel === rid) {
+		if (room?.prid) {
+			RoomManager.openSecondLevel(room?.prid, rid);
+		}
+
+		if ((!room?.teamId || room?.teamMain) && !room?.prid) {
 			RoomManager.open(rid);
-		} else {
-			RoomManager.openSecondLevel(firstLevel, rid);
 		}
 
 		return (): void => {
 			RoomManager.back(rid);
 		};
-	}, [isNewNavigationEnabled, rid, room?._id, room?.prid, room?.teamId, room?.teamMain]);
+	}, [isNewNavigationEnabled, rid, room?._id, room?.prid, room?.teamId, room?.teamMain, teamResult, teamResult.isSuccess]);
 
 	const subscribed = !!subscriptionQuery.data;
 
