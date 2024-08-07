@@ -7,9 +7,9 @@ import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRing
 import { VideoConfManager } from '../../../../../lib/VideoConfManager';
 import { useUserCard } from '../../../contexts/UserCardContext';
 import { useVideoConfWarning } from '../../../contextualBar/VideoConference/hooks/useVideoConfWarning';
-import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
+import type { UserInfoAction } from '../useUserInfoActions';
 
-export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAction | undefined => {
+export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAction | undefined => {
 	const t = useTranslation();
 	const usernameSubscription = useUserSubscriptionByName(user.username ?? '');
 	const room = useUserRoom(usernameSubscription?.rid || '');
@@ -24,7 +24,7 @@ export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAc
 	const enabledForDMs = useSetting('VideoConf_Enable_DMs');
 	const permittedToCallManagement = usePermission('call-management', room?._id);
 
-	const videoCallOption = useMemo(() => {
+	const videoCallOption = useMemo<UserInfoAction | undefined>(() => {
 		const action = async (): Promise<void> => {
 			if (isCalling || isRinging || !room) {
 				return;
@@ -44,10 +44,11 @@ export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): UserInfoAc
 
 		return shouldShowStartCall
 			? {
-					content: t('Start_call'),
-					icon: 'phone' as const,
+					type: 'communication',
+					content: t('Video_call'),
+					icon: 'video',
+					iconOnly: true,
 					onClick: action,
-					type: 'communication' as UserInfoActionType,
 			  }
 			: undefined;
 	}, [
