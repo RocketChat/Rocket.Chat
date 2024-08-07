@@ -57,19 +57,19 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			throw new Error('error-unserved-rooms-cannot-be-placed-onhold');
 		}
 
-		await Promise.all([
+		const [roomResult, subsResult] = await Promise.all([
 			LivechatRooms.setOnHoldByRoomId(roomId),
 			Subscriptions.setOnHoldByRoomId(roomId),
 			Message.saveSystemMessage<IOmnichannelSystemMessage>('omnichannel_placed_chat_on_hold', roomId, '', onHoldBy, { comment }),
-		]).then((data) => {
-			if (data[0].modifiedCount) {
-				void notifyOnRoomChangedById(roomId);
-			}
+		]);
 
-			if (data[1].modifiedCount) {
-				void notifyOnSubscriptionChangedByRoomId(roomId);
-			}
-		});
+		if (roomResult.modifiedCount) {
+			void notifyOnRoomChangedById(roomId);
+		}
+
+		if (subsResult.modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomId(roomId);
+		}
 
 		await callbacks.run('livechat:afterOnHold', room);
 	}
@@ -114,19 +114,19 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			clientAction,
 		});
 
-		await Promise.all([
+		const [roomResult, subsResult] = await Promise.all([
 			LivechatRooms.unsetOnHoldByRoomId(roomId),
 			Subscriptions.unsetOnHoldByRoomId(roomId),
 			Message.saveSystemMessage<IOmnichannelSystemMessage>('omnichannel_on_hold_chat_resumed', roomId, '', resumeBy, { comment }),
-		]).then((data) => {
-			if (data[0].modifiedCount) {
-				void notifyOnRoomChangedById(roomId);
-			}
+		]);
 
-			if (data[1].modifiedCount) {
-				void notifyOnSubscriptionChangedByRoomId(roomId);
-			}
-		});
+		if (roomResult.modifiedCount) {
+			void notifyOnRoomChangedById(roomId);
+		}
+
+		if (subsResult.modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomId(roomId);
+		}
 
 		await callbacks.run('livechat:afterOnHoldChatResumed', room);
 	}
