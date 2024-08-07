@@ -54,6 +54,8 @@ jobs:
           echo "NODE_VERSION: ${NODE_VERSION}"
           echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
 
+          echo "CURRENT DIR: $(pwd)"
+
           DENO_VERSION=$(awk '$1=="deno"{ print $2 }' .tool-versions)
           echo "DENO_VERSION: ${DENO_VERSION}"
           echo "deno-version=${DENO_VERSION}" >> $GITHUB_OUTPUT
