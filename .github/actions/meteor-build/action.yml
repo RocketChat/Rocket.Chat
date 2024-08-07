@@ -91,7 +91,7 @@ runs:
         meteor node -v
         git version
 
-    - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+    - uses: rharkor/caching-for-turbo@v1.5
 
     - name: Translation check
       shell: bash

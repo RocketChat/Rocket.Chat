@@ -11,7 +11,11 @@ import GroupPage from '../GroupPage';
 import Section from '../Section';
 import VoipExtensionsPage from './voip/VoipExtensionsPage';
 
-function VoipGroupPage({ _id, ...group }: ISetting): JSX.Element {
+type VoipGroupPageProps = ISetting & {
+	onClickBack?: () => void;
+};
+
+function VoipGroupPage({ _id, onClickBack, ...group }: VoipGroupPageProps) {
 	const t = useTranslation();
 	const voipEnabled = useSetting('VoIP_Enabled');
 
@@ -46,7 +50,7 @@ function VoipGroupPage({ _id, ...group }: ISetting): JSX.Element {
 	);
 
 	return (
-		<GroupPage _id={_id} {...group} tabs={tabsComponent} isCustom={true}>
+		<GroupPage _id={_id} {...group} tabs={tabsComponent} isCustom={true} onClickBack={onClickBack}>
 			{tab === 'Extensions' ? (
 				ExtensionsPageComponent
 			) : (

@@ -161,7 +161,7 @@ jobs:
           restore-keys: |
             vite-local-cache-${{ runner.os }}-
 
-      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+      - uses: rharkor/caching-for-turbo@v1.5
 
       - name: Build Rocket.Chat Packages
         run: yarn build
