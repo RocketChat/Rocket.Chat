@@ -8,6 +8,8 @@ services:
     build:
       dockerfile: ${RC_DOCKERFILE}
       context: /tmp/build
+      args:
+        DENO_VERSION: ${DENO_VERSION}
     image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${RC_DOCKER_TAG}
     environment:
       - TEST_MODE=true

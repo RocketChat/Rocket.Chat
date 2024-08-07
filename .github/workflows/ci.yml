@@ -287,6 +287,7 @@ jobs:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ needs.release-versions.outputs.node-version }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
           platform: ${{ matrix.platform }}
           build-containers: ${{ matrix.platform == 'alpine' && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
 
@@ -576,6 +577,7 @@ jobs:
           release: preview
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
+          deno-version: ${{ needs.release-versions.outputs.deno-version }}
 
   docker-image-publish:
     name: 🚀 Publish Docker Image (main)

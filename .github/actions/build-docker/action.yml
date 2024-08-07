@@ -65,6 +65,8 @@ runs:
       run: |
         args=(rocketchat ${{ inputs.build-containers }})
 
+        DENO_VERSION="${{ inputs.deno-version }}"
+
         docker compose -f docker-compose-ci.yml build "${args[@]}"
 
     - name: Publish Docker images to GitHub Container Registry

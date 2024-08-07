@@ -1,3 +1,7 @@
+ARG DENO_VERSION="1.37.1"
+
+FROM denoland/deno:${DENO_VERSION} as deno
+
 FROM node:14.21.3-bullseye-slim
 
 LABEL maintainer="buildmaster@rocket.chat"
@@ -9,6 +13,8 @@ RUN groupadd -g 65533 -r rocketchat \
     && chown rocketchat:rocketchat /app/uploads \
     && apt-get update \
     && apt-get install -y --no-install-recommends fontconfig
+
+COPY --from=deno /bin/deno /bin/deno
 
 # --chown requires Docker 17.12 and works only on Linux
 ADD --chown=rocketchat:rocketchat . /app
@@ -23,7 +29,7 @@ ENV DEPLOY_METHOD=docker \
     Accounts_AvatarStorePath=/app/uploads
 
 RUN aptMark="$(apt-mark showmanual)" \
-    && apt-get install -y --no-install-recommends g++ make python3 ca-certificates deno=1.37.1 \
+    && apt-get install -y --no-install-recommends g++ make python3 ca-certificates \
     && cd /app/bundle/programs/server \
     && npm install --unsafe-perm \
     && apt-mark auto '.*' > /dev/null \
