@@ -333,35 +333,3 @@ jobs:
         with:
           name: e2e-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/coverage*
-
-
-  merge:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - name: Merge playwright-test-trace-* artifacts
-        if: inputs.type == 'ui' && always()
-        uses: actions/upload-artifact/merge@v4
-        continue-on-error: true
-        with:
-          name: playwright-test-trace${{ inputs.release }}
-          pattern: playwright-test-trace-*
-          delete-merged: true
-
-      - name: Merge e2e-api-ee-coverage-* artifacts
-        if: inputs.type == 'api' && inputs.release == 'ee'
-        uses: actions/upload-artifact/merge@v4
-        continue-on-error: true
-        with:
-          name: e2e-api-ee-coverage
-          pattern: e2e-api-ee-coverage-*
-          delete-merged: true
-
-      - name: Merge e2e-ee-coverage-* artifacts
-        if: inputs.type == 'ui' && inputs.release == 'ee'
-        uses: actions/upload-artifact/merge@v4
-        continue-on-error: true
-        with:
-          name: e2e-ee-coverage
-          pattern: e2e-ee-coverage-*
-          delete-merged: true
