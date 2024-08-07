@@ -1,11 +1,12 @@
 import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
-import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
+import { useSetModal, useTranslation, useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import { useExternalLink } from '../../../../../client/hooks/useExternalLink';
 import { useShouldPreventAction } from '../../../../../client/hooks/useShouldPreventAction';
 import { useCheckoutUrl } from '../../../../../client/views/admin/subscription/hooks/useCheckoutUrl';
+import AssignExtensionModal from '../../../../../client/views/admin/users/voip/AssignExtensionModal';
 import SeatsCapUsage from './SeatsCapUsage';
 
 type UserPageHeaderContentWithSeatsCapProps = {
@@ -18,6 +19,9 @@ const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: User
 
 	const t = useTranslation();
 	const router = useRouter();
+	const setModal = useSetModal();
+
+	const canRegisterExtension = useSetting('VoIP_TeamCollab_Enabled');
 
 	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'user-page', action: 'buy_more' });
 	const openExternalLink = useExternalLink();
@@ -36,6 +40,11 @@ const UserPageHeaderContentWithSeatsCap = ({ activeUsers, maxActiveUsers }: User
 				<SeatsCapUsage members={activeUsers} limit={maxActiveUsers} />
 			</Margins>
 			<ButtonGroup>
+				{canRegisterExtension && (
+					<Button primary onClick={(): void => setModal(<AssignExtensionModal closeModal={(): void => setModal()} />)}>
+						{t('Associate_Extension')}
+					</Button>
+				)}
 				<Button icon='mail' onClick={handleInviteButtonClick}>
 					{t('Invite')}
 				</Button>

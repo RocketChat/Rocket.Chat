@@ -2,7 +2,7 @@ import type { IAdminUserTabs, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useCallback, useMemo } from 'react';
@@ -27,7 +27,7 @@ type UsersTableProps = {
 	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
 	filteredUsersQueryResult: UseQueryResult<PaginatedResult<{ users: Serialized<DefaultUserInfo>[] }>>;
 	paginationData: ReturnType<typeof usePagination>;
-	sortData: ReturnType<typeof useSort<'name' | 'username' | 'emails.address' | 'status'>>;
+	sortData: ReturnType<typeof useSort<'name' | 'username' | 'emails.address' | 'status' | 'freeSwitchExtension'>>;
 };
 
 // TODO: Missing error state
@@ -42,6 +42,7 @@ const UsersTable = ({
 	const t = useTranslation();
 	const router = useRouter();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
+	const isVoIPEnabled = useSetting<boolean>('VoIP_TeamCollab_Enabled') || false;
 
 	const { data, isLoading, isError, isSuccess } = filteredUsersQueryResult;
 
@@ -120,8 +121,20 @@ const UsersTable = ({
 					{t('Registration_status')}
 				</GenericTableHeaderCell>
 			),
+			tab === 'all' && isVoIPEnabled && (
+				<GenericTableHeaderCell
+					w='x100'
+					key='status'
+					direction={sortDirection}
+					active={sortBy === 'freeSwitchExtension'}
+					onClick={setSort}
+					sort='status'
+				>
+					{t('Voice_Call_Extension')}
+				</GenericTableHeaderCell>
+			),
 		],
-		[mediaQuery, setSort, sortBy, sortDirection, t, tab],
+		[mediaQuery, setSort, sortBy, sortDirection, t, tab, isVoIPEnabled],
 	);
 
 	const handleSearchTextChange = useCallback(
@@ -160,7 +173,14 @@ const UsersTable = ({
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.users.map((user) => (
-								<UsersTableRow key={user._id} onClick={handleClickOrKeyDown} mediaQuery={mediaQuery} user={user} tab={tab} />
+								<UsersTableRow
+									key={user._id}
+									onClick={handleClickOrKeyDown}
+									mediaQuery={mediaQuery}
+									user={user}
+									tab={tab}
+									showVoipExtension={isVoIPEnabled}
+								/>
 							))}
 						</GenericTableBody>
 					</GenericTable>
