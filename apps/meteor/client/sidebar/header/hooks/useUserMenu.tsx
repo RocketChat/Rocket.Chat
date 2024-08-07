@@ -7,12 +7,14 @@ import type { GenericMenuItemProps } from '../../../components/GenericMenu/Gener
 import UserMenuHeader from '../UserMenuHeader';
 import { useAccountItems } from './useAccountItems';
 import { useStatusItems } from './useStatusItems';
+import useVoiceCallItems from './useVoiceCallItems';
 
 export const useUserMenu = (user: IUser) => {
 	const t = useTranslation();
 
 	const statusItems = useStatusItems();
 	const accountItems = useAccountItems();
+	const voiceCallItems = useVoiceCallItems();
 
 	const logout = useLogout();
 	const handleLogout = useMutableCallback(() => {
@@ -34,6 +36,9 @@ export const useUserMenu = (user: IUser) => {
 		{
 			title: t('Status'),
 			items: statusItems,
+		},
+		{
+			items: voiceCallItems,
 		},
 		{
 			title: t('Account'),
