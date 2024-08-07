@@ -9,11 +9,11 @@ export const i18n = i18next.use(sprintf);
 export const addSprinfToI18n = function (t: (typeof i18n)['t']) {
 	return function (key: string, ...replaces: any): string {
 		if (replaces[0] === undefined) {
-			return t(key, ...replaces);
+			return t(key);
 		}
 
 		if (isObject(replaces[0]) && !Array.isArray(replaces[0])) {
-			return t(key, ...replaces);
+			return t(key, replaces[0]);
 		}
 
 		return t(key, {

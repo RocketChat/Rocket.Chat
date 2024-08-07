@@ -20,7 +20,7 @@ export class Registration {
 	}
 
 	get btnLoginWithSaml(): Locator {
-		return this.page.locator('role=button[name="SAML test login button"]');
+		return this.page.locator('role=button[name="SAML"]');
 	}
 
 	get btnLoginWithGoogle(): Locator {
