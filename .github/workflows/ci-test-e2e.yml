@@ -159,7 +159,7 @@ jobs:
             exit 1
           fi
 
-      - run: yarn build
+      # - run: yarn build
 
       - name: Prepare code coverage directory
         if: inputs.release == 'ee'
