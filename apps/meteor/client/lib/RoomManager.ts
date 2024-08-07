@@ -55,6 +55,8 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 
 	private rooms: Map<IRoom['_id'], RoomStore> = new Map();
 
+	private parentRid?: IRoom['_id'] | undefined;
+
 	constructor() {
 		super();
 		debugRoomManager &&
@@ -106,7 +108,10 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 		this.emit('changed', this.rid);
 	}
 
-	open(rid: IRoom['_id']): void {
+	open(rid: IRoom['_id'], parentId?: IRoom['_id']): void {
+		console.log(this);
+		console.log('rid', rid, 'parentId', parentId);
+
 		if (rid === this.rid) {
 			return;
 		}
@@ -116,6 +121,7 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 			this.rooms.set(rid, new RoomStore(rid));
 		}
 		this.rid = rid;
+		this.parentRid = parentId;
 		this.emit('opened', this.rid);
 		this.emit('changed', this.rid);
 	}
@@ -130,4 +136,11 @@ const subscribeOpenedRoom = [
 	(): IRoom['_id'] | undefined => RoomManager.opened,
 ] as const;
 
+const subscribeOpenedSecondLevelRoom = [
+	(callback: () => void): (() => void) => RoomManager.on('changed', callback),
+	(): IRoom['_id'] | undefined => RoomManager.opened,
+] as const;
+
 export const useOpenedRoom = (): IRoom['_id'] | undefined => useSyncExternalStore(...subscribeOpenedRoom);
+
+export const useSecondLevelOpenedRoom = (): IRoom['_id'] | undefined => useSyncExternalStore(...subscribeOpenedSecondLevelRoom);

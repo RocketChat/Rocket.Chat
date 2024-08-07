@@ -21,6 +21,7 @@ import UserCardProvider from './UserCardProvider';
 import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
 import { useRoomQuery } from './hooks/useRoomQuery';
 import { useUsersNameChanged } from './hooks/useUsersNameChanged';
+// import { useQuery } from '@tanstack/react-query';
 
 type RoomProviderProps = {
 	children: ReactNode;
@@ -31,6 +32,9 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useRoomRolesManagement(rid);
 
 	const { data: room, isSuccess } = useRoomQuery(rid);
+
+	// const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
+	// const test = useQuery(['teamId', room?.teamId], async () => teamsInfoEndpoint({ teamId: room?.teamId }));
 
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
 	const router = useRouter();
@@ -87,11 +91,12 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [hasMoreNextMessages, hasMorePreviousMessages, isLoadingMoreMessages, pseudoRoom, rid, subscriptionQuery.data]);
 
 	useEffect(() => {
-		RoomManager.open(rid);
+		// RoomManager.open(rid);
+		RoomManager.open(rid, room?.prid || room?.teamId);
 		return (): void => {
 			RoomManager.back(rid);
 		};
-	}, [rid]);
+	}, [rid, room?.prid, room?.teamId, room?.teamMain]);
 
 	const subscribed = !!subscriptionQuery.data;
 
