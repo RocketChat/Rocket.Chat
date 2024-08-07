@@ -170,6 +170,11 @@ export const FileUpload = {
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 
+		if (!settings.get('E2E_Enable_Encrypt_Files') && isE2EEUpload(file)) {
+			const reason = i18n.t('Encrypted_file_not_allowed', { lng: language });
+			throw new Meteor.Error('error-invalid-file-type', reason);
+		}
+
 		// E2EE files are of type - application/octet-stream, application/octet-stream is whitelisted for E2EE files.
 		if (!fileUploadIsValidContentType(file?.type, isE2EEUpload(file) ? 'application/octet-stream' : undefined)) {
 			const reason = i18n.t('File_type_is_not_accepted', { lng: language });

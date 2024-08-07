@@ -2,6 +2,7 @@ import type { IMessage, FileAttachmentProps, IE2EEMessage, IUpload } from '@rock
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { e2e } from '../../../../app/e2e/client';
+import { settings } from '../../../../app/settings/client';
 import { fileUploadIsValidContentType } from '../../../../app/utils/client';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import FileUploadModal from '../../../views/room/modals/FileUploadModal';
@@ -79,6 +80,11 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					const e2eRoom = await e2e.getInstanceByRoomId(room._id);
 
 					if (!e2eRoom) {
+						uploadFile(file, { description });
+						return;
+					}
+
+					if (!settings.get('E2E_Enable_Encrypt_Files')) {
 						uploadFile(file, { description });
 						return;
 					}
