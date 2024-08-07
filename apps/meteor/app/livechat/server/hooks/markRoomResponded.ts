@@ -12,7 +12,7 @@ export async function markRoomResponded(
 	room: IOmnichannelRoom,
 	roomUpdater: Updater<IOmnichannelRoom>,
 ): Promise<IOmnichannelRoom['responseBy'] | undefined> {
-	if (message.t || isEditedMessage(message) || isMessageFromVisitor(message)) {
+	if (message.t || isEditedMessage(message) || isMessageFromVisitor(message) || isSystemMessage(message)) {
 		return;
 	}
 
