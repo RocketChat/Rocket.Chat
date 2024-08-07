@@ -13,7 +13,7 @@ import React, { useState } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
 
-import { useChangeAudioInputDevice, useChangeAudioOutputDevice } from '../../../../client/contexts/CallContext';
+import { useChangeAudioInputDevice, useChangeAudioOutputDevice } from '../../../../client/contexts/OmnichannelCallContext';
 import { isSetSinkIdAvailable } from '../../../../client/providers/DeviceProvider/lib/isSetSinkIdAvailable';
 
 type FieldValues = {

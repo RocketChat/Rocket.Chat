@@ -5,7 +5,7 @@ import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
-import { useIsCallReady } from '../../../../contexts/CallContext';
+import { useIsCallReady } from '../../../../contexts/OmnichannelCallContext';
 import { parseOutboundPhoneNumber } from '../../../../lib/voip/parseOutboundPhoneNumber';
 import { CallDialpadButton } from '../components/CallDialpadButton';
 

@@ -3,7 +3,12 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
-import { useCallerInfo, useCallRegisterClient, useCallUnregisterClient, useVoipNetworkStatus } from '../../../contexts/CallContext';
+import {
+	useCallRegisterClient,
+	useCallUnregisterClient,
+	useCallerInfo,
+	useVoipNetworkStatus,
+} from '../../../contexts/OmnichannelCallContext';
 
 export const OmnichannelCallToggleReady = ({ ...props }): ReactElement => {
 	const t = useTranslation();

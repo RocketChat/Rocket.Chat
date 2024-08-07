@@ -91,6 +91,7 @@ export const useIsCallReady = (): boolean => {
 
 	return Boolean(ready);
 };
+
 export const useIsCallError = (): boolean => {
 	const context = useContext(CallContext);
 	return Boolean(isCallContextError(context));

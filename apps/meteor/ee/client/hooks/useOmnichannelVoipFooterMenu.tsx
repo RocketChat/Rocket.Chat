@@ -12,7 +12,7 @@ export type VoipFooterMenuOptions = Record<
 	}
 > | null;
 
-export const useVoipFooterMenu = (): VoipFooterMenuOptions => {
+export const useOmnichannelVoipFooterMenu = (): VoipFooterMenuOptions => {
 	const deviceMenuOption = useDevicesMenuOption();
 
 	const options = useMemo(

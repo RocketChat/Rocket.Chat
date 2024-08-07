@@ -10,18 +10,20 @@ import UserInfo from '../../../../components/UserInfo';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 type UserInfoActionsProps = {
-	user: Pick<IUser, '_id' | 'username' | 'name'>;
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
 	rid: IRoom['_id'];
 	backToList: () => void;
 };
 
 const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): ReactElement => {
 	const t = useTranslation();
-	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions(
-		{ _id: user._id, username: user.username, name: user.name },
+	const { _id: userId, username, name, freeSwitchExtension } = user;
+	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions({
 		rid,
-		backToList,
-	);
+		user: { _id: userId, username, name, freeSwitchExtension },
+		reload: backToList,
+		size: 3,
+	});
 
 	const menu = useMemo(() => {
 		if (!menuOptions?.length) {
@@ -44,8 +46,8 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 
 	// TODO: sanitize Action type to avoid any
 	const actions = useMemo(() => {
-		const mapAction = ([key, { content, icon, onClick }]: any): ReactElement => (
-			<UserInfo.Action key={key} title={content} label={content} onClick={onClick} icon={icon} />
+		const mapAction = ([key, { content, icon, iconOnly, onClick }]: any): ReactElement => (
+			<UserInfo.Action key={key} iconOnly={iconOnly} title={content} label={content} onClick={onClick} icon={icon} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);

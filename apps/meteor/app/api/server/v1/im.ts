@@ -328,7 +328,7 @@ API.v1.addRoute(
 			};
 
 			const options = {
-				projection: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1, federated: 1 },
+				projection: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1, federated: 1, freeSwitchExtension: 1 },
 				skip: offset,
 				limit: count,
 				sort: {

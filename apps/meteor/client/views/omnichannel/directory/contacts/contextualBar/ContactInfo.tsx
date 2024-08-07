@@ -10,7 +10,7 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import ContactManagerInfo from '../../../../../../ee/client/omnichannel/ContactManagerInfo';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
 import { UserStatus } from '../../../../../components/UserStatus';
-import { useIsCallReady } from '../../../../../contexts/CallContext';
+import { useIsCallReady } from '../../../../../contexts/OmnichannelCallContext';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';
