@@ -1,6 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/license';
 
+import { settings } from '../../../app/settings/server/cached';
 import { isRunningMs } from '../../../server/lib/isRunningMs';
 import { FederationService } from '../../../server/services/federation/service';
 import { LicenseService } from '../../app/license/server/license.internalService';
@@ -10,6 +11,7 @@ import { FederationServiceEE } from '../local-services/federation/service';
 import { InstanceService } from '../local-services/instance/service';
 import { LDAPEEService } from '../local-services/ldap/service';
 import { MessageReadsService } from '../local-services/message-reads/service';
+import { VoipFreeSwitchService } from '../local-services/voip-freeswitch/service';
 
 // TODO consider registering these services only after a valid license is added
 api.registerService(new EnterpriseSettings());
@@ -17,6 +19,7 @@ api.registerService(new LDAPEEService());
 api.registerService(new LicenseService());
 api.registerService(new MessageReadsService());
 api.registerService(new OmnichannelEE());
+api.registerService(new VoipFreeSwitchService((id) => settings.get(id)));
 
 // when not running micro services we want to start up the instance intercom
 if (!isRunningMs()) {

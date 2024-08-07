@@ -1,5 +1,6 @@
 export * from './CallStates';
 export * from './ConnectionState';
+export * from './FreeSwitchExtension';
 export * from './ICallerInfo';
 export * from './IConnectionDelegate';
 export * from './IEvents';
