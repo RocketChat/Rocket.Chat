@@ -6,14 +6,16 @@ import { useEditableSettingsGroupSections } from '../../EditableSettingsContext'
 import GroupPage from '../GroupPage';
 import Section from '../Section';
 
-type GenericGroupPageProps = ISetting;
+type GenericGroupPageProps = ISetting & {
+	onClickBack?: () => void;
+};
 
-function GenericGroupPage({ _id, ...props }: GenericGroupPageProps): ReactElement {
+function GenericGroupPage({ _id, onClickBack, ...props }: GenericGroupPageProps): ReactElement {
 	const sections = useEditableSettingsGroupSections(_id);
 	const solo = sections.length === 1;
 
 	return (
-		<GroupPage _id={_id} {...props}>
+		<GroupPage _id={_id} onClickBack={onClickBack} {...props}>
 			{sections.map((sectionName) => (
 				<Section key={sectionName || ''} groupId={_id} sectionName={sectionName} solo={solo} />
 			))}

@@ -69,7 +69,7 @@ const UnitsTable = () => {
 
 	return (
 		<>
-			{((isSuccess && data?.units.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setFilter(text)} />}
+			{((isSuccess && data?.units.length > 0) || queryHasChanged) && <FilterByText onChange={setFilter} />}
 			{isLoading && (
 				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>

@@ -84,7 +84,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	return (
 		<>
-			{((isSuccess && data?.sla.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setFilter(text)} />}
+			{((isSuccess && data?.sla.length > 0) || queryHasChanged) && <FilterByText onChange={setFilter} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
