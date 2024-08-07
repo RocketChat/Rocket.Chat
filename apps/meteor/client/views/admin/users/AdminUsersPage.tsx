@@ -40,7 +40,7 @@ export type UsersFilters = {
 
 export type AdminUserTab = 'all' | 'active' | 'deactivated' | 'pending';
 
-export type UsersTableSortingOptions = 'name' | 'username' | 'emails.address' | 'status' | 'active';
+export type UsersTableSortingOptions = 'name' | 'username' | 'emails.address' | 'status' | 'active' | 'freeSwitchExtension';
 
 const AdminUsersPage = (): ReactElement => {
 	const t = useTranslation();

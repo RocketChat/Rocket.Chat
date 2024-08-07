@@ -2,7 +2,7 @@ import type { IRole, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useEffectEvent, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouter, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useMemo } from 'react';
@@ -48,6 +48,7 @@ const UsersTable = ({
 
 	const isMobile = !breakpoints.includes('xl');
 	const isLaptop = !breakpoints.includes('xxl');
+	const isVoIPEnabled = useSetting<boolean>('VoIP_TeamCollab_Enabled') || false;
 
 	const { data, isLoading, isError, isSuccess } = filteredUsersQueryResult;
 
@@ -110,9 +111,21 @@ const UsersTable = ({
 					{t('Pending_action')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell key='actions' w={tab === 'pending' ? 'x204' : ''} />,
+			tab === 'all' && isVoIPEnabled && (
+				<GenericTableHeaderCell
+					w='x100'
+					key='freeSwitchExtension'
+					direction={sortDirection}
+					active={sortBy === 'freeSwitchExtension'}
+					onClick={setSort}
+					sort='freeSwitchExtension'
+				>
+					{t('Voice_Call_Extension')}
+				</GenericTableHeaderCell>
+			),
+			<GenericTableHeaderCell key='actions' w={tab === 'pending' ? 'x204' : 'x50'} />,
 		],
-		[isLaptop, isMobile, setSort, sortBy, sortDirection, t, tab],
+		[isLaptop, isMobile, setSort, sortBy, sortDirection, t, tab, isVoIPEnabled],
 	);
 
 	return (
@@ -155,6 +168,7 @@ const UsersTable = ({
 									onReload={onReload}
 									tab={tab}
 									isSeatsCapExceeded={isSeatsCapExceeded}
+									showVoipExtension={isVoIPEnabled}
 								/>
 							))}
 						</GenericTableBody>

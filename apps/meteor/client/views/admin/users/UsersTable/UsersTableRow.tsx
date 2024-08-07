@@ -17,6 +17,8 @@ import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
 import { useResetE2EEKeyAction } from '../hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
 import { useSendWelcomeEmailMutation } from '../hooks/useSendWelcomeEmailMutation';
+import AssignExtensionButton from '../voip/AssignExtensionButton';
+import RemoveExtensionButton from '../voip/RemoveExtensionButton';
 
 type UsersTableRowProps = {
 	user: Serialized<DefaultUserInfo>;
@@ -26,12 +28,22 @@ type UsersTableRowProps = {
 	onReload: () => void;
 	tab: AdminUserTab;
 	isSeatsCapExceeded: boolean;
+	showVoipExtension: boolean;
 };
 
-const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSeatsCapExceeded }: UsersTableRowProps): ReactElement => {
+const UsersTableRow = ({
+	user,
+	onClick,
+	onReload,
+	isMobile,
+	isLaptop,
+	tab,
+	isSeatsCapExceeded,
+	showVoipExtension,
+}: UsersTableRowProps): ReactElement => {
 	const t = useTranslation();
 
-	const { _id, emails, username, name, roles, status, active, avatarETag, lastLogin, type } = user;
+	const { _id, emails, username, name, roles, status, active, avatarETag, lastLogin, type, freeSwitchExtension } = user;
 	const registrationStatusText = useMemo(() => {
 		const usersExcludedFromPending = ['bot', 'app'];
 
@@ -152,6 +164,16 @@ const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSea
 						{active ? t('User_first_log_in') : t('Activation')}
 					</Box>
 				</GenericTableCell>
+			)}
+
+			{tab === 'all' && showVoipExtension && username && (
+				<>
+					{freeSwitchExtension ? (
+						<RemoveExtensionButton username={username} extension={freeSwitchExtension} />
+					) : (
+						<AssignExtensionButton username={username} />
+					)}
+				</>
 			)}
 
 			<GenericTableCell
