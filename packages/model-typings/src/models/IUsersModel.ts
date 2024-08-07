@@ -393,4 +393,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	countByRole(roleName: string): Promise<number>;
 	removeEmailCodeOfUserId(userId: string): Promise<UpdateResult>;
 	incrementInvalidEmailCodeAttempt(userId: string): Promise<ModifyResult<IUser>>;
+	findOneByFreeSwitchExtension<T = IUser>(extension: string, options?: FindOptions<IUser>): Promise<T | null>;
+	setFreeSwitchExtension(userId: string, extension: string | undefined): Promise<UpdateResult>;
+	findAssignedFreeSwitchExtensions(): FindCursor<string>;
+	findUsersWithAssignedFreeSwitchExtensions<T = IUser>(options?: FindOptions<IUser>): FindCursor<T>;
 }

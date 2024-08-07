@@ -1,9 +1,9 @@
 import { type IVoipFreeSwitchService, ServiceClassInternal } from '@rocket.chat/core-services';
-import type { FreeSwitchExtension } from '@rocket.chat/core-typings';
+import type { FreeSwitchExtension, ISetting, SettingValue } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { wrapExceptions } from '@rocket.chat/tools';
+import type { FreeSwitchEventData, StringMap } from 'esl';
 
-import { settings } from '../../../app/settings/server/cached';
 import { FreeSwitchRCClient } from './lib/client';
 
 export class VoipFreeSwitchService extends ServiceClassInternal implements IVoipFreeSwitchService {
@@ -11,25 +11,25 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 
 	private logger: Logger;
 
-	constructor() {
+	constructor(private getSetting: <T extends SettingValue = SettingValue>(id: ISetting['_id']) => T) {
 		super();
 
 		this.logger = new Logger('VoIPFreeSwitchService');
 	}
 
 	private getConnectionSettings(): { host: string; port: number; password: string; timeout: number } {
-		if (!settings.get('VoIP_TeamCollab_Enabled') && !process.env.FREESWITCHIP) {
+		if (!this.getSetting('VoIP_TeamCollab_Enabled') && !process.env.FREESWITCHIP) {
 			throw new Error('VoIP is disabled.');
 		}
 
-		const host = process.env.FREESWITCHIP || settings.get<string>('VoIP_TeamCollab_FreeSwitch_Host');
+		const host = process.env.FREESWITCHIP || this.getSetting<string>('VoIP_TeamCollab_FreeSwitch_Host');
 		if (!host) {
 			throw new Error('VoIP is not properly configured.');
 		}
 
-		const port = settings.get<number>('VoIP_TeamCollab_FreeSwitch_Port') || 8021;
-		const timeout = settings.get<number>('VoIP_TeamCollab_FreeSwitch_Timeout') || 3000;
-		const password = settings.get<string>('VoIP_TeamCollab_FreeSwitch_Password');
+		const port = this.getSetting<number>('VoIP_TeamCollab_FreeSwitch_Port') || 8021;
+		const timeout = this.getSetting<number>('VoIP_TeamCollab_FreeSwitch_Timeout') || 3000;
+		const password = this.getSetting<string>('VoIP_TeamCollab_FreeSwitch_Password');
 
 		return {
 			host,
@@ -39,7 +39,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		};
 	}
 
-	private async runCommand(command: string): Promise<Record<string, string | undefined>> {
+	private async runCallback<T>(cb: (runCommand: (command: string) => Promise<StringMap>) => Promise<T>): Promise<T> {
 		const { host, port, password, timeout } = this.getConnectionSettings();
 
 		const client = new FreeSwitchRCClient({
@@ -52,18 +52,32 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		try {
 			const call = await client.connect();
 
-			const response = await call.bgapi(command, timeout);
-			if (!response?.body) {
-				throw new Error('No response from FreeSwitch server.');
-			}
+			// Await result so it runs within the try..finally scope
+			const result = await cb(async (command) => {
+				const response = await call.bgapi(command, timeout);
+				return this.getCommandResponse(response, command);
+			});
 
-			return response.body;
+			return result;
 		} finally {
 			await wrapExceptions(async () => client.end()).suppress();
 		}
 	}
 
-	private async parseUserList(commandResponse: Record<string, string | undefined>): Promise<Record<string, string>[]> {
+	private async getCommandResponse(response: FreeSwitchEventData, command?: string): Promise<StringMap> {
+		if (!response?.body) {
+			this.logger.error('No response from FreeSwitch server', command, response);
+			throw new Error('No response from FreeSwitch server.');
+		}
+
+		return response.body;
+	}
+
+	private async runCommand(command: string): Promise<StringMap> {
+		return this.runCallback(async (runCommand) => runCommand(command));
+	}
+
+	private async parseUserList(commandResponse: StringMap): Promise<Record<string, string>[]> {
 		const { _body: text } = commandResponse;
 
 		if (!text) {
@@ -132,7 +146,7 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		return 'UNKNOWN';
 	}
 
-	private mapUserData(user: Record<string, string | undefined>): FreeSwitchExtension {
+	private mapUserData(user: StringMap): FreeSwitchExtension {
 		const {
 			userid: extension,
 			context,
@@ -161,16 +175,69 @@ export class VoipFreeSwitchService extends ServiceClassInternal implements IVoip
 		};
 	}
 
+	private parseDomainResponse(response: StringMap): string {
+		const { _body: domain } = response;
+
+		if (domain === undefined) {
+			this.logger.error({ msg: 'Failed to load user domain', response });
+			throw new Error('Failed to load user domain from FreeSwitch.');
+		}
+
+		return domain;
+	}
+
+	private parsePasswordResponse(response: StringMap): string {
+		const { _body: password } = response;
+
+		if (password === undefined) {
+			this.logger.error({ msg: 'Failed to load user password', response });
+			throw new Error('Failed to load user password from FreeSwitch.');
+		}
+
+		return password;
+	}
+
+	private getCommandGetDomain(): string {
+		return 'eval ${domain}';
+	}
+
+	private getCommandListUsers(): string {
+		return 'list_users';
+	}
+
+	private getCommandListFilteredUser(user: string, group = 'default'): string {
+		return `list_users group ${group} user ${user}`;
+	}
+
+	private getCommandGetUserPassword(user: string, domain = 'rocket.chat'): string {
+		return `user_data ${user}@${domain} param password`;
+	}
+
+	async getDomain(): Promise<string> {
+		const response = await this.runCommand(this.getCommandGetDomain());
+		return this.parseDomainResponse(response);
+	}
+
+	async getUserPassword(user: string): Promise<string> {
+		return this.runCallback(async (runCommand) => {
+			const domainResponse = await runCommand(this.getCommandGetDomain());
+			const domain = this.parseDomainResponse(domainResponse);
+
+			const response = await runCommand(this.getCommandGetUserPassword(user, domain));
+			return this.parsePasswordResponse(response);
+		});
+	}
+
 	async getExtensionList(): Promise<FreeSwitchExtension[]> {
-		const response = await this.runCommand('list_users');
+		const response = await this.runCommand(this.getCommandListUsers());
 		const users = await this.parseUserList(response);
 
 		return users.map((item) => this.mapUserData(item));
 	}
 
 	async getExtensionDetails(requestParams: { extension: string; group?: string }): Promise<FreeSwitchExtension> {
-		const { extension, group = 'default' } = requestParams;
-		const response = await this.runCommand(`list_users group ${group} user ${extension}`);
+		const { extension, group } = requestParams;
+		const response = await this.runCommand(this.getCommandListFilteredUser(extension, group));
 
 		const users = await this.parseUserList(response);
 

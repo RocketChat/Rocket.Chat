@@ -1,9 +1,10 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 
-import { VoipFreeSwitchService } from '../../../../server/services/voip-freeswitch/service';
+import { settings } from '../../../../app/settings/server/cached';
+import { VoipFreeSwitchService } from '../../../../ee/server/local-services/voip-freeswitch/service';
 
-const VoipFreeSwitch = new VoipFreeSwitchService();
+const VoipFreeSwitch = new VoipFreeSwitchService((id) => settings.get(id));
 
 describe.skip('VoIP', () => {
 	describe('FreeSwitch', () => {
@@ -20,6 +21,18 @@ describe.skip('VoIP', () => {
 
 			expect(result).to.be.an('object');
 			expect(result.extension).to.be.equal('1001');
+		});
+
+		it('Should load user domain from FreeSwitch', async () => {
+			const result = await VoipFreeSwitch.getDomain();
+
+			expect(result).to.be.a('string').equal('rocket.chat');
+		});
+
+		it('Should load user password from FreeSwitch', async () => {
+			const result = await VoipFreeSwitch.getUserPassword('1000');
+
+			expect(result).to.be.a('string');
 		});
 	});
 });

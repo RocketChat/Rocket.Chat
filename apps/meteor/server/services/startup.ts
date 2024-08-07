@@ -31,7 +31,6 @@ import { UploadService } from './upload/service';
 import { UserService } from './user/service';
 import { VideoConfService } from './video-conference/service';
 import { VoipAsteriskService } from './voip-asterisk/service';
-import { VoipFreeSwitchService } from './voip-freeswitch/service';
 
 export const registerServices = async (): Promise<void> => {
 	const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
@@ -48,7 +47,6 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new RoomService());
 	api.registerService(new SAUMonitorService());
 	api.registerService(new VoipAsteriskService(db));
-	api.registerService(new VoipFreeSwitchService());
 	api.registerService(new OmnichannelService());
 	api.registerService(new OmnichannelVoipService());
 	api.registerService(new TeamService());
