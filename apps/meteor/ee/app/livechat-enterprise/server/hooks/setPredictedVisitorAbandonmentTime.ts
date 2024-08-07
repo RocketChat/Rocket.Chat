@@ -27,21 +27,19 @@ callbacks.remove('afterOmnichannelSaveMessage', 'markRoomResponded');
 callbacks.add(
 	'afterOmnichannelSaveMessage',
 	async (message, { room, roomUpdater }) => {
-		if (!message || !shouldSaveInactivity(message)) {
+		const responseBy = await markRoomResponded(message, room, roomUpdater);
+
+		if (!shouldSaveInactivity(message)) {
 			return message;
 		}
 
-		const responseBy = await markRoomResponded(message, room, roomUpdater);
-
 		if (!responseBy) {
-			return message;
+			return;
 		}
 
 		if (moment(responseBy.firstResponseTs).isSame(moment(message.ts))) {
-			await setPredictedVisitorAbandonmentTime(room);
+			await setPredictedVisitorAbandonmentTime({ ...room, responseBy }, roomUpdater);
 		}
-
-		return message;
 	},
 	callbacks.priority.MEDIUM,
 	'save-visitor-inactivity',

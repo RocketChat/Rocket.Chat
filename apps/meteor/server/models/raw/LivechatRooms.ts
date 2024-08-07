@@ -2616,6 +2616,13 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		throw new Error('Method not implemented.');
 	}
 
+	getPredictedVisitorAbandonmentByRoomIdUpdateQuery(
+		_willBeAbandonedAt: Date,
+		_updater: Updater<IOmnichannelRoom>,
+	): Updater<IOmnichannelRoom> {
+		throw new Error('Method not implemented.');
+	}
+
 	setPredictedVisitorAbandonmentByRoomId(_rid: string, _willBeAbandonedAt: Date): Promise<UpdateResult> {
 		throw new Error('Method not implemented.');
 	}
