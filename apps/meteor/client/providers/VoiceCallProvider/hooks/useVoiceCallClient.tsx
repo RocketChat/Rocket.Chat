@@ -2,8 +2,8 @@ import { useUser, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
-import VoIPClient from '../lib/voip/VoIPClient';
-import { useWebRtcServers } from '../providers/OmnichannelCallProvider/hooks/useWebRtcServers';
+import VoIPClient from '../../../lib/voip/VoIPClient';
+import { useWebRtcServers } from '../../OmnichannelCallProvider/hooks/useWebRtcServers';
 
 type VoiceCallClientParams = {
 	autoRegister?: boolean;

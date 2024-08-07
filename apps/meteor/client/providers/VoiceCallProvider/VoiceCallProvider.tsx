@@ -6,10 +6,10 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
-import type { VoiceCallContextValue } from '../contexts/VoiceCallContext';
-import { VoiceCallContext } from '../contexts/VoiceCallContext';
-import { useVoiceCallClient } from '../hooks/useVoiceCallClient';
-import { useVoipSounds } from './OmnichannelCallProvider/hooks/useVoipSounds';
+import type { VoiceCallContextValue } from '../../contexts/VoiceCallContext';
+import { VoiceCallContext } from '../../contexts/VoiceCallContext';
+import { useVoipSounds } from '../OmnichannelCallProvider/hooks/useVoipSounds';
+import { useVoiceCallClient } from './hooks/useVoiceCallClient';
 
 const VoiceCallProvider = ({ children }: { children: ReactNode }) => {
 	// Settings
