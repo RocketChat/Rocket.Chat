@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType, ReactElement } from 'react';
 import React, { useMemo, memo, useEffect, useCallback } from 'react';
@@ -90,13 +91,32 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		};
 	}, [hasMoreNextMessages, hasMorePreviousMessages, isLoadingMoreMessages, pseudoRoom, rid, subscriptionQuery.data]);
 
+	const isNewNavigationEnabled = useFeaturePreview('newNavigation');
+
 	useEffect(() => {
-		// RoomManager.open(rid);
-		RoomManager.open(rid, room?.prid || room?.teamId);
+		if (!isNewNavigationEnabled) {
+			RoomManager.open(rid);
+			return (): void => {
+				RoomManager.back(rid);
+			};
+		}
+
+		const firstLevel = (room?.prid || room?.teamId) ?? room?._id;
+
+		if (!firstLevel) {
+			return;
+		}
+
+		if (firstLevel === rid) {
+			RoomManager.open(rid);
+		} else {
+			RoomManager.openSecondLevel(firstLevel, rid);
+		}
+
 		return (): void => {
 			RoomManager.back(rid);
 		};
-	}, [rid, room?.prid, room?.teamId, room?.teamMain]);
+	}, [isNewNavigationEnabled, rid, room?._id, room?.prid, room?.teamId, room?.teamMain]);
 
 	const subscribed = !!subscriptionQuery.data;
 
