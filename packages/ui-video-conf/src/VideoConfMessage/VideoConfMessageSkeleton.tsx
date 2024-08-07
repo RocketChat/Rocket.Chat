@@ -4,7 +4,9 @@ import type { AllHTMLAttributes, ReactElement } from 'react';
 import VideoConfMessage from './VideoConfMessage';
 import VideoConfMessageRow from './VideoConfMessageRow';
 
-const VideoConfMessageSkeleton = (props: Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>): ReactElement => (
+type VideoConfMessageSkeletonProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
+
+const VideoConfMessageSkeleton = (props: VideoConfMessageSkeletonProps): ReactElement => (
 	<VideoConfMessage {...props}>
 		<VideoConfMessageRow>
 			<Skeleton width='full' pb={4} />

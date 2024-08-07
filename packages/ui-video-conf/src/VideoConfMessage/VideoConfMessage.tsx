@@ -1,7 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes, ReactElement } from 'react';
 
-const VideoConfMessage = (props: Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>): ReactElement => (
+type VideoConfMessageProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
+const VideoConfMessage = (props: VideoConfMessageProps): ReactElement => (
 	<Box
 		mbs={4}
 		color='default'

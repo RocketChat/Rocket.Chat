@@ -5,7 +5,7 @@ import VideoConfController from './VideoConfController';
 export default {
 	title: 'Components/VideoConfController',
 	component: VideoConfController,
-} as ComponentMeta<typeof VideoConfController>;
+} satisfies ComponentMeta<typeof VideoConfController>;
 
 export const Default: ComponentStory<typeof VideoConfController> = (args) => <VideoConfController {...args} />;
 Default.args = {

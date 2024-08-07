@@ -6,16 +6,14 @@ import * as stories from './VideoConfPopup.stories';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
-describe('[VideoConfPopup Rendering]', () => {
-	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const tree = render(<Story />);
-		expect(tree.baseElement).toMatchSnapshot();
-	});
+test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
+	const tree = render(<Story />);
+	expect(tree.baseElement).toMatchSnapshot();
+});
 
-	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
-		const { container } = render(<Story />);
+test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
+	const { container } = render(<Story />);
 
-		const results = await axe(container);
-		expect(results).toHaveNoViolations();
-	});
+	const results = await axe(container);
+	expect(results).toHaveNoViolations();
 });
