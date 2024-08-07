@@ -9,6 +9,10 @@ inputs:
     required: true
     description: 'Node version'
     type: string
+  deno-version:
+    required: true
+    description: 'Deno version'
+    type: string
   platform:
     required: false
     description: 'Platform'
@@ -49,6 +53,7 @@ runs:
       uses: ./.github/actions/setup-node
       with:
         node-version: ${{ inputs.node-version }}
+        deno-version: ${{ inputs.deno-version }}
         cache-modules: true
         install: true
 
