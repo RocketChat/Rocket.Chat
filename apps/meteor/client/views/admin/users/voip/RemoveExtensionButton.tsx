@@ -1,6 +1,7 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useEndpoint, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { FC } from 'react';
 import React from 'react';
 
@@ -12,10 +13,17 @@ const RemoveExtensionButton: FC<{ username: string; extension: string }> = ({ us
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
+	const queryClient = useQueryClient();
+	const loggedUser = useUser();
 
 	const handleRemoveClick = useMutableCallback(async () => {
 		try {
 			await removeExtension({ username });
+			queryClient.invalidateQueries(['users.list']);
+
+			if (loggedUser?.username === username) {
+				queryClient.invalidateQueries(['voice-call-client']);
+			}
 		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

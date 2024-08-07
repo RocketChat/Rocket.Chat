@@ -124,11 +124,11 @@ const UsersTable = ({
 			tab === 'all' && isVoIPEnabled && (
 				<GenericTableHeaderCell
 					w='x100'
-					key='status'
+					key='freeSwitchExtension'
 					direction={sortDirection}
 					active={sortBy === 'freeSwitchExtension'}
 					onClick={setSort}
-					sort='status'
+					sort='freeSwitchExtension'
 				>
 					{t('Voice_Call_Extension')}
 				</GenericTableHeaderCell>
