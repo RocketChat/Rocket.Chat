@@ -38,7 +38,10 @@ import { settings } from '../../../app/settings/server';
 export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
 
-	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
+	async create(
+		uid: string,
+		{ team, room = { name: team.name, extraData: {} }, members, owner, sidepanel }: ITeamCreateParams,
+	): Promise<ITeam> {
 		if (!(await checkUsernameAvailability(team.name))) {
 			throw new Error('team-name-already-exists');
 		}
@@ -121,6 +124,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 						teamId,
 						teamMain: true,
 					},
+					sidepanel,
 				};
 
 				const createdRoom = await Room.create(owner || uid, newRoom);

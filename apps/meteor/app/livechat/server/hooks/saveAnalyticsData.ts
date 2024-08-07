@@ -61,7 +61,7 @@ const getAnalyticsData = (room: IOmnichannelRoom, now: Date): Record<string, str
 
 callbacks.add(
 	'afterOmnichannelSaveMessage',
-	async (message, { room }) => {
+	async (message, { room, roomUpdater }) => {
 		if (!message || isEditedMessage(message)) {
 			return message;
 		}
@@ -71,13 +71,7 @@ callbacks.add(
 		}
 
 		const analyticsData = getAnalyticsData(room, new Date());
-		const updater = await LivechatRooms.getAnalyticsUpdateQueryByRoomId(room, message, analyticsData);
-
-		if (updater.hasChanges()) {
-			await updater.persist({
-				_id: room._id,
-			});
-		}
+		await LivechatRooms.getAnalyticsUpdateQueryByRoomId(room, message, analyticsData, roomUpdater);
 
 		return message;
 	},

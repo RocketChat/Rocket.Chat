@@ -122,6 +122,7 @@ export const createRoom = async <T extends RoomType>(
 	readOnly?: boolean,
 	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
+	sidepanel?: ICreateRoomParams['sidepanel'],
 ): Promise<
 	ICreatedRoom & {
 		rid: string;
@@ -197,6 +198,7 @@ export const createRoom = async <T extends RoomType>(
 		},
 		ts: now,
 		ro: readOnly === true,
+		sidepanel,
 	};
 
 	if (teamId) {
