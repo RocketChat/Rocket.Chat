@@ -102,7 +102,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	const userMentionInc = getUserMentions(room.t, unreadCount as Exclude<UnreadCountType, 'group_mentions_only'>);
 	const groupMentionInc = getGroupMentions(room.t, unreadCount as Exclude<UnreadCountType, 'user_mentions_only'>);
 
-	Subscriptions.findByRoomIdAndNotAlertOrOpenExcludingUserIds({
+	void Subscriptions.findByRoomIdAndNotAlertOrOpenExcludingUserIds({
 		roomId: room._id,
 		uidsExclude: [message.u._id],
 		uidsInclude: userIds,
