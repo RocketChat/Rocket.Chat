@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import { isEditedMessage, isOmnichannelRoom, isSystemMessage } from '@rocket.chat/core-typings';
-=======
-import { isEditedMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage, isSystemMessage } from '@rocket.chat/core-typings';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
->>>>>>> 5b1e8946b2476aa307892eb63ab2e02242053981
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
