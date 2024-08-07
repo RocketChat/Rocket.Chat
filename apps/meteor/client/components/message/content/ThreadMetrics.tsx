@@ -24,7 +24,7 @@ type ThreadMetricsProps = {
 	mid: string;
 	rid: string;
 	counter: number;
-	participants: Array<string>;
+	participants: string[];
 	following: boolean;
 };
 
