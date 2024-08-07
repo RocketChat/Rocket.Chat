@@ -782,8 +782,8 @@ describe('LIVECHAT - dashboards', function () {
 		let agent: { credentials: Credentials; user: IUser & { username: string } };
 		let originalFirstResponseTimeInSeconds: number;
 		let roomId: string;
-		const firstDelayInS = 4;
-		const secondDelayInS = 8;
+		const firstDelayInSeconds = 4;
+		const secondDelayInSeconds = 8;
 
 		before(async () => {
 			agent = await createAnOnlineAgent();
@@ -812,11 +812,11 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body.data).to.not.deep.include({ name: agent.user.username });
 		});
 
-		it('should only consider a first response has been sent when an agent sends a text message', async () => {
+		it("should not consider system messages in agents' first response time metric", async () => {
 			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 			roomId = response.room._id;
 
-			await sleep(firstDelayInS * 1000);
+			await sleep(firstDelayInSeconds * 1000);
 			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
 
 			const today = moment().startOf('day').format('YYYY-MM-DD');
@@ -839,14 +839,14 @@ describe('LIVECHAT - dashboards', function () {
 			expect(agentData).to.have.property('name', agent.user.username);
 			expect(agentData).to.have.property('value');
 			originalFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
-			expect(originalFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(firstDelayInS);
+			expect(originalFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(firstDelayInSeconds);
 		});
 
 		it('should correctly calculate the average time of first responses for an agent', async () => {
 			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 			roomId = response.room._id;
 
-			await sleep(secondDelayInS * 1000);
+			await sleep(secondDelayInSeconds * 1000);
 			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
 
 			const today = moment().startOf('day').format('YYYY-MM-DD');
@@ -870,8 +870,8 @@ describe('LIVECHAT - dashboards', function () {
 			expect(agentData).to.have.property('value');
 			const averageFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
 			expect(averageFirstResponseTimeInSeconds).to.be.greaterThan(originalFirstResponseTimeInSeconds);
-			expect(averageFirstResponseTimeInSeconds).to.be.greaterThanOrEqual((firstDelayInS + secondDelayInS) / 2);
-			expect(averageFirstResponseTimeInSeconds).to.be.lessThan(secondDelayInS);
+			expect(averageFirstResponseTimeInSeconds).to.be.greaterThanOrEqual((firstDelayInSeconds + secondDelayInSeconds) / 2);
+			expect(averageFirstResponseTimeInSeconds).to.be.lessThan(secondDelayInSeconds);
 		});
 	});
 
@@ -905,7 +905,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body.data).to.not.deep.include({ name: agent.user.username });
 		});
 
-		it('should only consider a first response has been sent when an agent sends a text message', async () => {
+		it("should not consider system messages in agents' best response time metric", async () => {
 			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 			roomId = response.room._id;
 
