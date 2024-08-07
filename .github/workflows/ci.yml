@@ -55,7 +55,7 @@ jobs:
           echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
 
           echo "CURRENT DIR: $(pwd)"
-          V=$(ls -la | grep tool)
+          V=$(ls -la)
           echo "is there? $V"
           V=$(ls -la)
           echo "is there? $V"
