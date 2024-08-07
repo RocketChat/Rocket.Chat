@@ -128,7 +128,6 @@ const send = async (
 						}
 						const text: IMessage = {
 							rid,
-							msg,
 							_id: id,
 						};
 						try {
