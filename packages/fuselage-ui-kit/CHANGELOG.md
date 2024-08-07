@@ -1,5 +1,70 @@
 # Change Log
 
+## 9.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.2
+  - @rocket.chat/gazzodown@9.0.0-rc.2
+  - @rocket.chat/ui-contexts@9.0.0-rc.2
+  - @rocket.chat/ui-avatar@5.0.0-rc.2
+  - @rocket.chat/ui-video-conf@9.0.0-rc.2
+  </details>
+
+## 9.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.1
+  - @rocket.chat/gazzodown@9.0.0-rc.1
+  - @rocket.chat/ui-contexts@9.0.0-rc.1
+  - @rocket.chat/ui-avatar@5.0.0-rc.1
+  - @rocket.chat/ui-video-conf@9.0.0-rc.1
+  </details>
+
+## 9.0.0-rc.0
+
+### Patch Changes
+
+- ([#32679](https://github.com/RocketChat/Rocket.Chat/pull/32679)) Fix validations from "UiKit" modal component
+
+- ([#32719](https://github.com/RocketChat/Rocket.Chat/pull/32719)) Added the `user` param to apps-engine update method call, allowing apps' new `onUpdate` hook to know who triggered the update.
+
+- <details><summary>Updated dependencies [2d89a0c448, 24f7df4894, 4e8aa575a6, b8e5887fb9]:</summary>
+
+  - @rocket.chat/ui-video-conf@9.0.0-rc.0
+  - @rocket.chat/core-typings@6.11.0-rc.0
+  - @rocket.chat/ui-contexts@9.0.0-rc.0
+  - @rocket.chat/ui-kit@0.36.0-rc.0
+  - @rocket.chat/gazzodown@9.0.0-rc.0
+  - @rocket.chat/ui-avatar@5.0.0-rc.0
+  </details>
+
+## 8.0.2
+
+### Patch Changes
+
+- ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Fixed an issue that prevented apps from being updated or uninstalled in some cases
+
+- ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Fixed an issue that prevented apps from handling errors during execution in some cases
+
+- ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Improved Apps-Engine installation to prevent start up errors on manual installation setups
+
+- ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Fixed an issue that caused the video conference button on rooms to not recognize a video conference provider app in some cases
+
+- <details><summary>Updated dependencies [ca6a9d8de8, ca6a9d8de8, ca6a9d8de8, ca6a9d8de8]:</summary>
+
+  - @rocket.chat/core-typings@6.10.2
+  - @rocket.chat/gazzodown@8.0.2
+  - @rocket.chat/ui-contexts@8.0.2
+  - @rocket.chat/ui-avatar@4.0.2
+  - @rocket.chat/ui-video-conf@8.0.2
+  </details>
+
 ## 8.0.1
 
 ### Patch Changes
