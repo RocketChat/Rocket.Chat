@@ -10,6 +10,9 @@ inputs:
   install:
     required: false
     type: boolean
+  deno-version:
+    required: true
+    type: string
   deno-dir:
     required: false
     type: string
@@ -26,7 +29,7 @@ runs:
     - run: echo 'DENO_DIR=${{ inputs.deno-dir }}' >> $GITHUB_ENV
       shell: bash
 
-    - name: Cache Node Modules
+    - name: Cache Node Modules & Deno
       if: inputs.cache-modules
       id: cache-node-modules
       uses: actions/cache@v3
@@ -36,7 +39,7 @@ runs:
           ${{ env.DENO_DIR }}
           apps/meteor/node_modules
           apps/meteor/ee/server/services/node_modules
-        key: node-modules-${{ hashFiles('yarn.lock') }}
+        key: node-modules-${{ hashFiles('yarn.lock') }}-deno-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}
     #
     # Could use this command to list all paths to save:
     # find . -name 'node_modules' -prune | grep -v "/\.meteor/" | grep -v "/meteor/packages/"
@@ -47,6 +50,11 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
         cache: 'yarn'
+
+    - name: Use Deno ${{ inputs.deno-version }}
+      uses: denoland/setup-deno@v1
+      with:
+        deno-version: ${{ inputs.deno-version }}
 
     - name: yarn install
       shell: bash

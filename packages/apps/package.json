@@ -22,7 +22,7 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@rocket.chat/apps-engine": "alpha",
+		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^"
 	}

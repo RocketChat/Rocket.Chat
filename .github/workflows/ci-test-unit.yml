@@ -6,6 +6,9 @@ on:
       node-version:
         required: true
         type: string
+      deno-version:
+        required: true
+        type: string
       enterprise-license:
         required: false
         type: string
@@ -37,6 +40,7 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ inputs.node-version }}
+          deno-version: ${{ inputs.deno-version }}
           cache-modules: true
           install: true
 

@@ -1,4 +1,5 @@
 /packages/* @RocketChat/Architecture
+/packages/apps-engine/ @RocketChat/apps
 /packages/core-typings/ @RocketChat/Architecture
 /packages/rest-typings/ @RocketChat/Architecture @RocketChat/backend
 /packages/ui-contexts/ @RocketChat/frontend
