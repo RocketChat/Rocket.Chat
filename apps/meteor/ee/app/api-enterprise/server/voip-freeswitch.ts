@@ -100,11 +100,11 @@ API.v1.addRoute(
 				return API.v1.notFound();
 			}
 
-			const existingUser = await Users.findOneByFreeSwitchExtension(extensionData.extension, { projection: { username: 1 } });
+			const existingUser = await Users.findOneByFreeSwitchExtension(extensionData.extension, { projection: { username: 1, name: 1 } });
 
 			return API.v1.success({
 				...extensionData,
-				...(existingUser && { userId: existingUser._id, username: existingUser.username }),
+				...(existingUser && { userId: existingUser._id, name: existingUser.name, username: existingUser.username }),
 			});
 		},
 	},
