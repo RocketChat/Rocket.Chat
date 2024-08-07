@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`[VideoConfController Rendering] renders Default without crashing 1`] = `
+exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <button

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`[VideoConfMessage Rendering] renders CallEnded without crashing 1`] = `
+exports[`renders CallEnded without crashing 1`] = `
 <body>
   <div>
     <div
@@ -207,7 +207,7 @@ exports[`[VideoConfMessage Rendering] renders CallEnded without crashing 1`] = `
 </body>
 `;
 
-exports[`[VideoConfMessage Rendering] renders CallEndedDM without crashing 1`] = `
+exports[`renders CallEndedDM without crashing 1`] = `
 <body>
   <div>
     <div
@@ -377,7 +377,7 @@ exports[`[VideoConfMessage Rendering] renders CallEndedDM without crashing 1`] =
 </body>
 `;
 
-exports[`[VideoConfMessage Rendering] renders CallOngoing without crashing 1`] = `
+exports[`renders CallOngoing without crashing 1`] = `
 <body>
   <div>
     <div
@@ -594,7 +594,7 @@ exports[`[VideoConfMessage Rendering] renders CallOngoing without crashing 1`] =
 </body>
 `;
 
-exports[`[VideoConfMessage Rendering] renders CallingDM without crashing 1`] = `
+exports[`renders CallingDM without crashing 1`] = `
 <body>
   <div>
     <div
@@ -764,7 +764,7 @@ exports[`[VideoConfMessage Rendering] renders CallingDM without crashing 1`] = `
 </body>
 `;
 
-exports[`[VideoConfMessage Rendering] renders Loading without crashing 1`] = `
+exports[`renders Loading without crashing 1`] = `
 <body>
   <div>
     <div

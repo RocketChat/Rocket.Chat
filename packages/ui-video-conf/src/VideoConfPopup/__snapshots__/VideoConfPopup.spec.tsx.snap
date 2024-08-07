@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`[VideoConfPopup Rendering] renders StartCall without crashing 1`] = `
+exports[`renders StartCall without crashing 1`] = `
 <body>
   <div>
     <div
