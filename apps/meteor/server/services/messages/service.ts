@@ -182,9 +182,9 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	private getMarkdownConfig() {
 		const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
 			? settings
-				.get<string>('Message_CustomDomain_AutoLink')
-				.split(',')
-				.map((domain) => domain.trim())
+					.get<string>('Message_CustomDomain_AutoLink')
+					.split(',')
+					.map((domain) => domain.trim())
 			: [];
 
 		return {
