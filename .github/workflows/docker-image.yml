@@ -1,0 +1,69 @@
+name: Build Image + Deploy SSH over WireGuard
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "main", "cb-develop" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    env:
+     YCR_REGISTRY_ID: ${{ vars.YCR_REGISTRY_ID }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: "Set current date as env variable"
+      run: |
+        echo "buildtag=$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_OUTPUT
+      id: version
+    - name: Create key.json
+      uses: jsdaniell/create-json@1.1.2
+      with:
+        name: "key.json"
+        json: ${{ secrets.YCR_KEY_JSON }}
+    - name: Docker login into Yandex Registry by key.json
+      run: cat key.json | docker login --username json_key --password-stdin cr.yandex | rm key.json
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag cb-rocket-chat:latest
+    - name: Docker tag latest for Yandex Registry
+      run: docker image tag cb-rocket-chat:latest cr.yandex/${YCR_REGISTRY_ID}/cb-rocket-chat:latest
+    - name: Docker tag by commit hash for Yandex Registry
+      run: docker image tag cb-rocket-chat:latest cr.yandex/${YCR_REGISTRY_ID}/cb-rocket-chat:${{ steps.version.outputs.buildtag }}
+    - name: Docker push latest to Yandex Registry
+      if: github.ref == 'refs/heads/cb-develop' && github.event_name != 'pull_request'
+      run: docker push cr.yandex/${YCR_REGISTRY_ID}/cb-rocket-chat:latest
+    - name: Docker push by commit hash to Yandex Registry
+      run: docker push cr.yandex/${YCR_REGISTRY_ID}/cb-rocket-chat:${{ steps.version.outputs.buildtag }}
+   
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/cb-develop' && github.event_name != 'pull_request'
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install wireguard and resolvconf
+      run: |
+        sudo apt-get install wireguard resolvconf
+    - name: Create wireguard tunnel configuration
+      run: |
+        echo "${{ secrets.CLIENT_DEPLOY_WIREGUARD_CONF }}" > tunnel.conf
+        sudo cp tunnel.conf /etc/wireguard/tunnel.conf
+    - name: Prepare ssh key for remote login
+      run: |
+        mkdir ~/.ssh/
+        echo "${{ secrets.CLIENT_DEPLOY_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+    - name: Deploy the package
+      run: |
+        wg-quick up tunnel
+        ssh -o StrictHostKeyChecking=no ${{ vars.CLIENT_DEPLOY_HOST }} bash <<EOF
+          docker-credential-ycr configure-docker
+          docker pull cr.yandex/${{ vars.YCR_REGISTRY_ID }}/cb-rocket-chat:latest
+          docker ps -aq | xargs docker rm --force
+          docker images --filter "dangling=true" -q --no-trunc | xargs docker rmi
+          sudo shutdown -r +1
+          exit
+        EOF
+        wg-quick down tunnel
