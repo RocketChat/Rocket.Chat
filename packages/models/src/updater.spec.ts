@@ -1,3 +1,5 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+
 import { UpdaterImpl } from './updater';
 
 test('updater typings', () => {
@@ -14,6 +16,20 @@ test('updater typings', () => {
 		};
 		e: string[];
 	}>({} as any);
+
+	const omnichannel = new UpdaterImpl<IOmnichannelRoom>({} as any);
+	omnichannel.addToSet('v.activity', 'asd');
+	// @ts-expect-error
+	omnichannel.addToSet('v.activity', 1);
+	// @ts-expect-error
+	omnichannel.addToSet('v.activity', {
+		asdas: 1,
+	});
+
+	// @ts-expect-error
+	omnichannel.addToSet('v.activity.asd', {
+		asdas: 1,
+	});
 
 	updater.addToSet('e', 'a');
 
