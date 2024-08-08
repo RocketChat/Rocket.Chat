@@ -40,7 +40,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 
 	const uploadFile = (
 		file: File[] | File,
-		extraData?: Pick<IMessage, 't' | 'e2e'> & { description?: string },
+		extraData?: Pick<IMessage, 't' | 'e2e'> & { msg?: string },
 		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
 		fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
 	) => {
@@ -159,7 +159,6 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 										format: getFileExtension(queue[i].name),
 									});
 								}
-								
 
 								const files = {
 									_id: _id[i],
@@ -194,13 +193,17 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 
 						const fileContent = await e2eRoom.encryptMessageContent(fileContentData);
 
+						const uploadFileData = {
+							raw: {},
+							encrypted: fileContent,
+						};
 						uploadFile(
 							filesarray,
 							{
 								t: 'e2e',
 							},
 							getContent,
-							fileContent,
+							uploadFileData,
 						);
 					}
 				},

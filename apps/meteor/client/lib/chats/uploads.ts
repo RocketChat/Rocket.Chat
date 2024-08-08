@@ -55,7 +55,7 @@ const send = async (
 		...uploads,
 		{
 			id,
-			name: file[0].name || fileContent?.raw.name || file[0]?.file?.name,
+			name: file[0].name || fileContent?.raw.name || 'unknown',
 			percentage: 0,
 		},
 	]);
@@ -126,9 +126,17 @@ const send = async (
 						if (msg == undefined) {
 							msg = '';
 						}
+						// const text: IMessage = {
+						// 	rid,
+						// 	_id: id,
+						// };
 						const text: IMessage = {
 							rid,
 							_id: id,
+							msg: '',
+							ts: new Date(),
+							u: { _id: id, username: id },
+							_updatedAt: new Date(),
 						};
 						try {
 							let content;

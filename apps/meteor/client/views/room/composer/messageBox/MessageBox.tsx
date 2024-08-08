@@ -48,8 +48,9 @@ import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import FilePreview from '../../modals/FileUploadModal/FilePreview';
 import { Box } from '@rocket.chat/fuselage';
 import fileSize from 'filesize';
-import { e2e } from '/app/e2e/client';
-import { getFileExtension } from '/lib/utils/getFileExtension';
+// import { e2e } from '/app/e2e/client';
+import { e2e } from '../../../../../app/e2e/client';
+import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -155,7 +156,7 @@ const MessageBox = ({
 	};
 	const uploadFile = (
 		file: File[] | File,
-		extraData?: Pick<IMessage, 't' | 'e2e'> & { description?: string },
+		extraData?: Pick<IMessage, 't' | 'e2e'> & { msg?: string },
 		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
 		fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
 	) => {
@@ -240,7 +241,6 @@ const MessageBox = ({
 					return;
 				}
 
-				// Validate file size
 				if (maxFileSize > -1 && (size || 0) > maxFileSize) {
 					dispatchToastMessage({
 						type: 'error',
@@ -364,13 +364,17 @@ const MessageBox = ({
 
 				const fileContent = await e2eRoom.encryptMessageContent(fileContentData);
 
+				const uploadFileData = {
+					raw: {},
+					encrypted: fileContent,
+				};
 				uploadFile(
 					filesarray,
 					{
 						t: 'e2e',
 					},
 					getContent,
-					fileContent,
+					uploadFileData,
 				);
 			}
 			chat.composer?.clear();

@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useState, memo } from 'react';
 
-import { userAgentMIMETypeFallback } from '../../../../lib/utils/userAgentMIMETypeFallback';
+// import { userAgentMIMETypeFallback } from '../../../../lib/utils/userAgentMIMETypeFallback'; // as currently showing video in generic view
 import { FilePreviewType } from './FilePreview';
 import ImagePreview from './ImagePreview';
 import PreviewSkeleton from './PreviewSkeleton';

@@ -1,17 +1,4 @@
-import {
-	Modal,
-	Box,
-	Field,
-	FieldGroup,
-	FieldLabel,
-	FieldRow,
-	FieldError,
-	TextInput,
-	Button,
-	Scrollable,
-	Tile,
-	Icon,
-} from '@rocket.chat/fuselage';
+import { Modal, Box, Field, FieldGroup, FieldLabel, FieldRow, TextInput, Button, Scrollable, Tile, Icon } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
@@ -25,7 +12,7 @@ type FileUploadModalProps = {
 	queue?: File[];
 	onSubmit: (name: string, description?: string) => void;
 	file: File;
-	updateQueue: (queue: File[]) => void;
+	updateQueue?: (queue: File[]) => void;
 	fileName: string;
 	fileDescription?: string;
 	invalidContentType: boolean;
@@ -71,7 +58,9 @@ const FileUploadModal = ({
 			const target = e.target as HTMLInputElement;
 			const files = Array.from(target.files as FileList);
 			setQueue1([...queue1, ...files]);
-			updateQueue([...queue1, ...files]);
+			if (updateQueue !== undefined) {
+				updateQueue([...queue1, ...files]);
+			}
 		};
 	};
 
