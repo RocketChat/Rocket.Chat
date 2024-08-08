@@ -10,7 +10,6 @@ import type { UserFormProps } from './AdminUserForm';
 type AdminUserSetRandomPasswordProps = {
 	isNewUserPage: boolean | undefined;
 	control: Control<UserFormProps, any>;
-	isSmtpStatusAvailable: boolean;
 	isSmtpEnabled: boolean | undefined;
 	setRandomPasswordId: string;
 	setValue: UseFormSetValue<UserFormProps>;
@@ -19,7 +18,6 @@ type AdminUserSetRandomPasswordProps = {
 const AdminUserSetRandomPasswordRadios = ({
 	isNewUserPage,
 	control,
-	isSmtpStatusAvailable,
 	isSmtpEnabled,
 	setRandomPasswordId,
 	setValue,
@@ -33,10 +31,6 @@ const AdminUserSetRandomPasswordRadios = ({
 
 		onChange(value);
 	};
-
-	if (!isSmtpStatusAvailable || isNewUserPage === undefined) {
-		return null;
-	}
 
 	return (
 		<>
