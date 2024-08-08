@@ -176,7 +176,7 @@ test('it should add items to array', async () => {
 		{
 			_id: 'test',
 		},
-		{ $addToSet: { $each: { a: ['b', 'c'] } } },
+		{ $addToSet: { a: { $each: ['b', 'c'] } } },
 	);
 });
 
