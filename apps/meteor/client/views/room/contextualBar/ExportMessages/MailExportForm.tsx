@@ -57,6 +57,7 @@ const MailExportForm = ({ formId, rid, onCancel, exportOptions }: MailExportForm
 
 	const clearSelection = useMutableCallback(() => {
 		selectedMessageStore.clearStore();
+		clearErrors('messagesCount');
 	});
 
 	useEffect(() => {
@@ -70,7 +71,8 @@ const MailExportForm = ({ formId, rid, onCancel, exportOptions }: MailExportForm
 
 	useEffect(() => {
 		setValue('messagesCount', messages.length);
-	}, [setValue, messages.length]);
+		clearErrors('messagesCount')
+	}, [setValue, messages.length, clearErrors]);
 
 	const handleExport = async ({ toUsers, subject, additionalEmails }: MailExportFormValues) => {
 		roomExportMutation.mutateAsync({
