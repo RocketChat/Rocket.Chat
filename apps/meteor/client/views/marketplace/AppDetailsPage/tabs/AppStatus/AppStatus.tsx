@@ -10,9 +10,9 @@ import semver from 'semver';
 import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
 import type { appStatusSpanResponseProps } from '../../../helpers';
 import { appButtonProps, appMultiStatusProps } from '../../../helpers';
-import { marketplaceActions } from '../../../helpers/marketplaceActions';
 import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstallationHandler';
 import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
+import { useMarketplaceActions } from '../../../hooks/useMarketplaceActions';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
 
 type AppStatusProps = {
@@ -48,18 +48,21 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const action = button?.action;
 
+	const marketplaceActions = useMarketplaceActions();
+
 	const confirmAction = useCallback<AppInstallationHandlerParams['onSuccess']>(
 		async (action, permissionsGranted) => {
-			if (action !== 'request') {
-				setPurchased(true);
-				await marketplaceActions[action]({ ...app, permissionsGranted });
-			} else {
-				setEndUserRequested(true);
+			if (action) {
+				if (action !== 'request') {
+					await marketplaceActions[action]({ ...app, permissionsGranted });
+				} else {
+					setEndUserRequested(true);
+				}
 			}
 
 			setLoading(false);
 		},
-		[app, setLoading, setPurchased],
+		[app, marketplaceActions, setLoading],
 	);
 
 	const cancelAction = useCallback(() => {
@@ -77,8 +80,9 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const handleAcquireApp = useCallback(() => {
 		setLoading(true);
+		setPurchased(true);
 		appInstallationHandler();
-	}, [appInstallationHandler, setLoading]);
+	}, [appInstallationHandler, setLoading, setPurchased]);
 
 	// @TODO we should refactor this to not use the label to determine the variant
 	const getStatusVariant = (status: appStatusSpanResponseProps) => {

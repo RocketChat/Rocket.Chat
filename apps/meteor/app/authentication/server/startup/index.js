@@ -1,3 +1,5 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
+import { User } from '@rocket.chat/core-services';
 import { Roles, Settings, Users } from '@rocket.chat/models';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import { Accounts } from 'meteor/accounts-base';
@@ -5,18 +7,19 @@ import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateUserCallback } from '../../../../lib/callbacks/beforeCreateUserCallback';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
+import { getMaxLoginTokens } from '../../../../server/lib/getMaxLoginTokens';
 import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { joinDefaultChannels } from '../../../lib/server/functions/joinDefaultChannels';
 import { setAvatarFromServiceWithValidation } from '../../../lib/server/functions/setUserAvatar';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
@@ -263,10 +266,14 @@ Accounts.onCreateUser(function (...args) {
 
 const { insertUserDoc } = Accounts;
 const insertUserDocAsync = async function (options, user) {
-	const globalRoles = [];
+	const globalRoles = new Set();
+
+	if (Match.test(options.globalRoles, [String]) && options.globalRoles.length > 0) {
+		options.globalRoles.map((role) => globalRoles.add(role));
+	}
 
 	if (Match.test(user.globalRoles, [String]) && user.globalRoles.length > 0) {
-		globalRoles.push(...user.globalRoles);
+		user.globalRoles.map((role) => globalRoles.add(role));
 	}
 
 	delete user.globalRoles;
@@ -275,11 +282,12 @@ const insertUserDocAsync = async function (options, user) {
 		const defaultAuthServiceRoles = parseCSV(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles') || '');
 
 		if (defaultAuthServiceRoles.length > 0) {
-			globalRoles.push(...defaultAuthServiceRoles);
+			defaultAuthServiceRoles.map((role) => globalRoles.add(role));
 		}
 	}
 
-	const roles = getNewUserRoles(globalRoles);
+	const arrayGlobalRoles = [...globalRoles];
+	const roles = options.skipNewUserRolesSetting ? arrayGlobalRoles : getNewUserRoles(arrayGlobalRoles);
 
 	if (!user.type) {
 		user.type = 'user';
@@ -316,7 +324,8 @@ const insertUserDocAsync = async function (options, user) {
 		if (!roles.includes('admin') && !hasAdmin) {
 			roles.push('admin');
 			if (settings.get('Show_Setup_Wizard') === 'pending') {
-				await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+				(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount &&
+					void notifyOnSettingChangedById('Show_Setup_Wizard');
 			}
 		}
 	}
@@ -324,7 +333,7 @@ const insertUserDocAsync = async function (options, user) {
 	await addUserRolesAsync(_id, roles);
 
 	// Make user's roles to be present on callback
-	user = await Users.findOneById(_id, { projection: { username: 1, type: 1 } });
+	user = await Users.findOneById(_id, { projection: { username: 1, type: 1, roles: 1 } });
 
 	if (user.username) {
 		if (options.joinDefaultChannels !== false) {
@@ -350,8 +359,8 @@ const insertUserDocAsync = async function (options, user) {
 
 	if (!options.skipAppsEngineEvent) {
 		// `post` triggered events don't need to wait for the promise to resolve
-		Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() }).catch((e) => {
-			Apps.getRocketChatLogger().error('Error while executing post user created event:', e);
+		Apps.self?.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() }).catch((e) => {
+			Apps.self?.getRocketChatLogger().error('Error while executing post user created event:', e);
 		});
 	}
 
@@ -424,7 +433,7 @@ const validateLoginAttemptAsync = async function (login) {
 	 */
 	if (login.type !== 'resume') {
 		// App IPostUserLoggedIn event hook
-		await Apps.triggerEvent(AppEvents.IPostUserLoggedIn, login.user);
+		await Apps.self?.triggerEvent(AppEvents.IPostUserLoggedIn, login.user);
 	}
 
 	return true;
@@ -475,20 +484,14 @@ Accounts.validateNewUser((user) => {
 	return true;
 });
 
-export const MAX_RESUME_LOGIN_TOKENS = parseInt(process.env.MAX_RESUME_LOGIN_TOKENS) || 50;
-
 Accounts.onLogin(async ({ user }) => {
 	if (!user || !user.services || !user.services.resume || !user.services.resume.loginTokens || !user._id) {
 		return;
 	}
 
-	if (user.services.resume.loginTokens.length < MAX_RESUME_LOGIN_TOKENS) {
+	if (user.services.resume.loginTokens.length < getMaxLoginTokens()) {
 		return;
 	}
 
-	const { tokens } = (await Users.findAllResumeTokensByUserId(user._id))[0];
-	if (tokens.length >= MAX_RESUME_LOGIN_TOKENS) {
-		const oldestDate = tokens.reverse()[MAX_RESUME_LOGIN_TOKENS - 1];
-		await Users.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
-	}
+	await User.ensureLoginTokensLimit(user._id);
 });

@@ -9,6 +9,7 @@ import type {
 	Filter,
 	InsertOneResult,
 	InsertManyResult,
+	AggregationCursor,
 } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -96,7 +97,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	setGroupE2EKey(_id: string, key: string): Promise<ISubscription | null>;
 
-	setGroupE2ESuggestedKey(_id: string, key: string): Promise<UpdateResult | Document>;
+	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<UpdateResult>;
 
 	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document>;
 
@@ -128,6 +129,11 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	getAutoTranslateLanguagesByRoomAndNotUser(rid: string, userId: string): Promise<(string | undefined)[]>;
 
 	findByRidWithoutE2EKey(rid: string, options: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findUsersWithPublicE2EKeyByRids(
+		rids: IRoom['_id'][],
+		excludeUserId: IUser['_id'],
+		usersLimit?: number,
+	): AggregationCursor<{ rid: IRoom['_id']; users: { _id: IUser['_id']; public_key: string }[] }>;
 	findByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	cachedFindByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	updateAutoTranslateById(_id: string, autoTranslate: boolean): Promise<UpdateResult>;
@@ -227,7 +233,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		notificationOriginField: string,
 	): Promise<UpdateResult | Document>;
 	removeByUserId(userId: string): Promise<number>;
-	createWithRoomAndUser(room: IRoom, user: IUser, extraData?: Record<string, any>): Promise<InsertOneResult<ISubscription>>;
+	createWithRoomAndUser(room: IRoom, user: IUser, extraData?: Partial<ISubscription>): Promise<InsertOneResult<ISubscription>>;
 	createWithRoomAndManyUsers(
 		room: IRoom,
 		users: { user: AtLeast<IUser, '_id' | 'username' | 'name' | 'settings'>; extraData: Record<string, any> }[],

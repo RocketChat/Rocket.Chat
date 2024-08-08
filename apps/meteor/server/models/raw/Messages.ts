@@ -31,7 +31,6 @@ import type {
 
 import { otrSystemMessages } from '../../../app/otr/lib/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { escapeExternalFederationEventId } from '../../services/federation/infrastructure/rocket-chat/adapters/federation-id-escape-helper';
 import { BaseRaw } from './BaseRaw';
 
 type DeepWritable<T> = T extends (...args: any) => any
@@ -549,7 +548,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ _id },
 			{
 				$set: {
-					[`reactions.${reaction}.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username,
+					[`reactions.${reaction}.federationReactionEventIds.${federationEventId}`]: username,
 				} as any,
 			},
 		);
@@ -560,7 +559,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ _id },
 			{
 				$unset: {
-					[`reactions.${reaction}.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: 1,
+					[`reactions.${reaction}.federationReactionEventIds.${federationEventId}`]: 1,
 				},
 			},
 		);
@@ -606,7 +605,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 							$match: {
 								$and: [
 									{ 'reactions.v.usernames': { $in: [username] } },
-									{ [`reactions.v.federationReactionEventIds.${escapeExternalFederationEventId(federationEventId)}`]: username },
+									{ [`reactions.v.federationReactionEventIds.${federationEventId}`]: username },
 								],
 							},
 						},
@@ -674,7 +673,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 			ts: { $lte: ts },
 		};
-		return this.deleteMany(query);
+		return this.col.deleteMany(query);
 	}
 
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult> {
@@ -1041,12 +1040,11 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne(query, options);
 	}
 
-	getLastVisibleMessageSentWithNoTypeByRoomId(rid: string, messageId?: string): Promise<IMessage | null> {
-		const query = {
+	getLastVisibleUserMessageSentByRoomId(rid: string, messageId?: string): Promise<IMessage | null> {
+		const query: Filter<IMessage> = {
 			rid,
 			_hidden: { $ne: true },
-			t: { $exists: false },
-			$or: [{ tmid: { $exists: false } }, { tshow: true }],
+			$or: [{ t: 'e2e' }, { t: { $exists: false }, tmid: { $exists: false } }, { t: { $exists: false }, tshow: true }],
 			...(messageId && { _id: { $ne: messageId } }),
 		};
 
@@ -1056,7 +1054,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<IMessage>(query, options);
 	}
 
 	async cloneAndSaveAsHistoryByRecord(record: IMessage, user: IMessage['u']): Promise<InsertOneResult<IMessage>> {

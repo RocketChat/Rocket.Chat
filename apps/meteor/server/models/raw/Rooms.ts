@@ -93,6 +93,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				sparse: true,
 			},
 			{ key: { t: 1, ts: 1 } },
+			{
+				key: {
+					'usersWaitingForE2EKeys.userId': 1,
+				},
+				partialFilterExpression: {
+					'usersWaitingForE2EKeys.userId': {
+						$exists: true,
+					},
+				},
+			},
 		];
 	}
 
@@ -1460,6 +1470,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find({ createdOTR: true });
 	}
 
+	findByUsernamesOrUids(uids: IRoom['u']['_id'][], usernames: IRoom['u']['username'][]): FindCursor<IRoom> {
+		return this.find({ $or: [{ usernames: { $in: usernames } }, { uids: { $in: uids } }] });
+	}
+
+	findDMsByUids(uids: IRoom['u']['_id'][]): FindCursor<IRoom> {
+		return this.find({ uids: { $size: 2, $in: [uids] }, t: 'd' });
+	}
+
 	// UPDATE
 	addImportIds(_id: IRoom['_id'], importIds: string[]): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
@@ -1830,13 +1848,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	// 5
 	saveRetentionIgnoreThreadsById(_id: IRoom['_id'], value: boolean): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 
 		const update: UpdateFilter<IRoom> = {
-			[value === true ? '$set' : '$unset']: {
-				'retention.ignoreThreads': true,
+			$set: {
+				'retention.ignoreThreads': value === true,
 			},
 		};
 
@@ -1969,5 +1986,107 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	async getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]> {
+		return (
+			await this.col
+				.aggregate([
+					{ $match: { encrypted: true } },
+					{
+						$lookup: {
+							from: 'rocketchat_subscription',
+							localField: '_id',
+							foreignField: 'rid',
+							as: 'subs',
+						},
+					},
+					{
+						$unwind: '$subs',
+					},
+					{
+						$match: {
+							'subs.u._id': uid,
+							'subs.E2EKey': {
+								$exists: false,
+							},
+						},
+					},
+					{
+						$project: {
+							_id: 1,
+						},
+					},
+				])
+				.toArray()
+		).map(({ _id }) => _id);
+	}
+
+	addUserIdToE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
+			'_id': {
+				$in: roomIds,
+			},
+			'usersWaitingForE2EKeys.userId': { $ne: uid },
+			'encrypted': true,
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$push: {
+				usersWaitingForE2EKeys: {
+					$each: [
+						{
+							userId: uid,
+							ts: new Date(),
+						},
+					],
+					$slice: -50,
+				},
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	async removeUsersFromE2EEQueueByRoomId(roomId: IRoom['_id'], uids: IUser['_id'][]): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
+			'_id': roomId,
+			'usersWaitingForE2EKeys.userId': {
+				$in: uids,
+			},
+			'encrypted': true,
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				usersWaitingForE2EKeys: { userId: { $in: uids } },
+			},
+		};
+
+		await this.updateMany(query, update);
+
+		return this.updateMany(
+			{
+				'_id': roomId,
+				'usersWaitingForE2EKeys.0': { $exists: false },
+				'encrypted': true,
+			},
+			{ $unset: { usersWaitingForE2EKeys: 1 } },
+		);
+	}
+
+	async removeUserFromE2EEQueue(uid: IUser['_id']): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
+			'usersWaitingForE2EKeys.userId': uid,
+			'encrypted': true,
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				usersWaitingForE2EKeys: { userId: uid },
+			},
+		};
+
+		return this.updateMany(query, update);
 	}
 }

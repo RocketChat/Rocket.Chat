@@ -50,6 +50,10 @@ on:
       type:
         required: true
         type: string
+      db-watcher-disabled:
+        default: 'false'
+        required: false
+        type: string
     secrets:
       CR_USER:
         required: true
@@ -83,9 +87,24 @@ jobs:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
 
-    name: MongoDB ${{ matrix.mongodb-version }} (${{ matrix.shard }}/${{ inputs.total-shard }})
+    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'true' && ' [no watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})${{ matrix.mongodb-version == '6.0' && ' - Alpine' || '' }}
 
     steps:
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
+        with:
+          theme: dark
+          job_summary: true
+          comment_on_pr: false
+
+      - name: Login to GitHub Container Registry
+        if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
       - name: Launch MongoDB
         uses: supercharge/mongodb-github-action@v1.10.0
         with:
@@ -153,6 +172,7 @@ jobs:
           TRANSPORTER: ${{ inputs.transporter }}
           COVERAGE_DIR: '/tmp/coverage'
           COVERAGE_REPORTER: 'lcov'
+          DISABLE_DB_WATCHERS: ${{ inputs.db-watcher-disabled }}
         run: |
           docker compose -f docker-compose-ci.yml up -d
 

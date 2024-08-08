@@ -19,6 +19,12 @@ import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
+import {
+	notifyOnRoomChangedById,
+	notifyOnIntegrationChangedByUserId,
+	notifyOnLivechatDepartmentAgentChanged,
+	notifyOnUserChange,
+} from '../lib/notifyListener';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
@@ -89,11 +95,29 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		await Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
 		await Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
+		const rids = subscribedRooms.map((room) => room.rid);
+		void notifyOnRoomChangedById(rids);
+
 		await Subscriptions.removeByUserId(userId); // Remove user subscriptions
 
+		// Remove user as livechat agent
 		if (user.roles.includes('livechat-agent')) {
-			// Remove user as livechat agent
-			await LivechatDepartmentAgents.removeByAgentId(userId);
+			const departmentAgents = await LivechatDepartmentAgents.findByAgentId(userId).toArray();
+
+			const { deletedCount } = await LivechatDepartmentAgents.removeByAgentId(userId);
+
+			if (deletedCount > 0) {
+				departmentAgents.forEach((depAgent) => {
+					void notifyOnLivechatDepartmentAgentChanged(
+						{
+							_id: depAgent._id,
+							agentId: userId,
+							departmentId: depAgent.departmentId,
+						},
+						'removed',
+					);
+				});
+			}
 		}
 
 		if (user.roles.includes('livechat-monitor')) {
@@ -110,7 +134,9 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 			await FileUpload.getStore('Avatars').deleteByName(user.username);
 		}
 
-		await Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.
+		// Disables all the integrations which rely on the user being deleted.
+		await Integrations.disableByUserId(userId);
+		void notifyOnIntegrationChangedByUserId(userId);
 
 		// Don't broadcast user.deleted for Erasure Type of 'Keep' so that messages don't disappear from logged in sessions
 		if (messageErasureType === 'Delete') {
@@ -134,6 +160,8 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 	// Refresh the servers list
 	await FederationServers.refreshServers();
+
+	void notifyOnUserChange({ clientAction: 'removed', id: user._id });
 
 	await callbacks.run('afterDeleteUser', user);
 }

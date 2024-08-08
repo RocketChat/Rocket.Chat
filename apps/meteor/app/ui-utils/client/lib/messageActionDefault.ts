@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isE2EEMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
@@ -63,6 +63,9 @@ Meteor.startup(async () => {
 		},
 		order: 0,
 		group: 'menu',
+		disabled({ message }) {
+			return isE2EEMessage(message);
+		},
 	});
 
 	MessageAction.addButton({
@@ -87,6 +90,9 @@ Meteor.startup(async () => {
 		},
 		order: 0,
 		group: 'message',
+		disabled({ message }) {
+			return isE2EEMessage(message);
+		},
 	});
 
 	MessageAction.addButton({
@@ -139,6 +145,9 @@ Meteor.startup(async () => {
 		},
 		order: 5,
 		group: 'menu',
+		disabled({ message }) {
+			return isE2EEMessage(message);
+		},
 	});
 
 	MessageAction.addButton({
@@ -185,7 +194,7 @@ Meteor.startup(async () => {
 				return false;
 			}
 			const blockEditInMinutes = settings.Message_AllowEditing_BlockEditInMinutes as number;
-			const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete');
+			const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete', message.rid);
 
 			if (!bypassBlockTimeLimit && blockEditInMinutes) {
 				let msgTs;

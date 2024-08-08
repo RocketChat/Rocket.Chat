@@ -18,11 +18,11 @@ import React, { memo, useMemo } from 'react';
 
 import { LegacyRoomManager } from '../../app/ui-utils/client';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
-import { useOmnichannelPrioritiesMenu } from '../../ee/client/omnichannel/hooks/useOmnichannelPrioritiesMenu';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import WarningModal from '../components/WarningModal';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
+import { useOmnichannelPrioritiesMenu } from '../omnichannel/hooks/useOmnichannelPrioritiesMenu';
 
 const fields: Fields = {
 	f: true,
@@ -131,7 +131,6 @@ const RoomMenu = ({
 				text={t(warnText as TranslationKey, name)}
 				confirmText={t('Leave_room')}
 				close={closeModal}
-				cancel={closeModal}
 				cancelText={t('Cancel')}
 				confirm={leave}
 			/>,
@@ -251,7 +250,6 @@ const RoomMenu = ({
 			title={t('Options')}
 			mini
 			aria-keyshortcuts='alt'
-			tabIndex={-1}
 			options={menuOptions}
 			maxHeight={300}
 			renderItem={({ label: { label, icon }, ...props }): JSX.Element => <Option label={label} icon={icon} {...props} />}

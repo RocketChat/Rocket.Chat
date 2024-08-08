@@ -14,15 +14,16 @@ import { Restivus } from 'meteor/rocketchat:restivus';
 import _ from 'underscore';
 
 import { isObject } from '../../../lib/utils/isObject';
+import { getNestedProp } from '../../../server/lib/getNestedProp';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { checkCodeForUser } from '../../2fa/server/code';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { apiDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
+import { notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
 import { metrics } from '../../metrics/server';
 import { settings } from '../../settings/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import type { PermissionsPayload } from './api.helpers';
-import { checkPermissionsForInvocation, checkPermissions } from './api.helpers';
+import { checkPermissionsForInvocation, checkPermissions, parseDeprecation } from './api.helpers';
 import type {
 	FailureResult,
 	InternalError,
@@ -62,6 +63,7 @@ interface IAPIDefaultFieldsToExclude {
 	statusDefault: number;
 	_updatedAt: number;
 	settings: number;
+	inviteToken: number;
 }
 
 type RateLimiterOptions = {
@@ -148,6 +150,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 
 	public limitedUserFieldsToExcludeIfIsPrivilegedUser: {
 		services: number;
+		inviteToken: number;
 	};
 
 	constructor(properties: IAPIProperties) {
@@ -175,10 +178,12 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			statusDefault: 0,
 			_updatedAt: 0,
 			settings: 0,
+			inviteToken: 0,
 		};
 		this.limitedUserFieldsToExclude = this.defaultLimitedUserFieldsToExclude;
 		this.limitedUserFieldsToExcludeIfIsPrivilegedUser = {
 			services: 0,
+			inviteToken: 0,
 		};
 	}
 
@@ -588,8 +593,8 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 						const connection = { ...generateConnection(this.requestIp, this.request.headers), token: this.token };
 
 						try {
-							if (options.deprecationVersion) {
-								apiDeprecationLogger.endpoint(this.request.route, options.deprecationVersion, this.response);
+							if (options.deprecation) {
+								parseDeprecation(this, options.deprecation);
 							}
 
 							await api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
@@ -848,6 +853,19 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 					$pull: tokenRemovalQuery,
 				},
 			);
+
+			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
+			// instead of having to listen to every watch.users event
+			void notifyOnUserChangeAsync(async () => {
+				const userTokens = await Users.findOneById(this.user._id, { projection: { [tokenPath]: 1 } });
+				if (!userTokens) {
+					return;
+				}
+
+				const diff = { [tokenPath]: getNestedProp(userTokens, tokenPath) };
+
+				return { clientAction: 'updated', id: this.user._id, diff };
+			});
 
 			const response = {
 				status: 'success',

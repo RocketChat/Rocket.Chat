@@ -95,6 +95,8 @@ export interface IRoom extends IRocketChatRecord {
 	customFields?: Record<string, any>;
 
 	channel?: { _id: string };
+
+	usersWaitingForE2EKeys?: { userId: IUser['_id']; ts: Date }[];
 }
 
 export const isRoomWithJoinCode = (room: Partial<IRoom>): room is IRoomWithJoinCode =>
@@ -129,6 +131,7 @@ export const isPrivateDiscussion = (room: Partial<IRoom>): room is IRoom => isDi
 export const isPublicDiscussion = (room: Partial<IRoom>): room is IRoom => isDiscussion(room) && room.t === 'c';
 
 export const isPublicRoom = (room: Partial<IRoom>): room is IRoom => room.t === 'c';
+export const isPrivateRoom = (room: Partial<IRoom>): room is IRoom => room.t === 'p';
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';

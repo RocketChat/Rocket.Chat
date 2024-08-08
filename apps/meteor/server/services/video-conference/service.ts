@@ -1,3 +1,4 @@
+import { Apps } from '@rocket.chat/apps';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
@@ -41,7 +42,6 @@ import { settings } from '../../../app/settings/server';
 import { updateCounter } from '../../../app/statistics/server/functions/updateStatsCounter';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
-import { Apps } from '../../../ee/server/apps';
 import { callbacks } from '../../../lib/callbacks';
 import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -828,11 +828,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async getProviderManager(): Promise<AppVideoConfProviderManager> {
-		if (!Apps?.isLoaded()) {
+		if (!Apps.self?.isLoaded()) {
 			throw new Error('apps-engine-not-loaded');
 		}
 
-		const manager = Apps.getManager()?.getVideoConfProviderManager();
+		const manager = Apps.self?.getManager()?.getVideoConfProviderManager();
 		if (!manager) {
 			throw new Error(availabilityErrors.NO_APP);
 		}

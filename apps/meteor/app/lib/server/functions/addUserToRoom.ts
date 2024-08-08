@@ -1,3 +1,4 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
@@ -5,10 +6,12 @@ import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
-import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { settings } from '../../../settings/server';
+import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 
 export const addUserToRoom = async function (
 	rid: string,
@@ -54,7 +57,7 @@ export const addUserToRoom = async function (
 	}
 
 	try {
-		await Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter);
+		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter);
 	} catch (error: any) {
 		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
@@ -81,7 +84,10 @@ export const addUserToRoom = async function (
 		userMentions: 1,
 		groupMentions: 0,
 		...autoTranslateConfig,
+		...getDefaultSubscriptionPref(userToBeAdded as IUser),
 	});
+
+	void notifyOnRoomChangedById(rid);
 
 	if (!userToBeAdded.username) {
 		throw new Meteor.Error('error-invalid-user', 'Cannot add an user to a room without a username');
@@ -118,13 +124,17 @@ export const addUserToRoom = async function (
 			// Keep the current event
 			await callbacks.run('afterJoinRoom', userToBeAdded, room);
 
-			void Apps.triggerEvent(AppEvents.IPostRoomUserJoined, room, userToBeAdded, inviter);
+			void Apps.self?.triggerEvent(AppEvents.IPostRoomUserJoined, room, userToBeAdded, inviter);
 		});
 	}
 
 	if (room.teamMain && room.teamId) {
 		// if user is joining to main team channel, create a membership
 		await Team.addMember(inviter || userToBeAdded, userToBeAdded._id, room.teamId);
+	}
+
+	if (room.encrypted && settings.get('E2E_Enable') && userToBeAdded.e2e?.public_key) {
+		await Rooms.addUserIdToE2EEQueueByRoomIds([room._id], userToBeAdded._id);
 	}
 
 	return true;

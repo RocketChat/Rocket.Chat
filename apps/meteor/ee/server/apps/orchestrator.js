@@ -1,5 +1,5 @@
+import { registerOrchestrator } from '@rocket.chat/apps';
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Logger } from '@rocket.chat/logger';
 import { AppLogs, Apps as AppsModel, AppsPersistence } from '@rocket.chat/models';
@@ -21,7 +21,7 @@ import { AppThreadsConverter } from '../../../app/apps/server/converters/threads
 import { settings } from '../../../app/settings/server';
 import { canEnableApp } from '../../app/license/server/canEnableApp';
 import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
-import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
+import { AppRealLogStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
@@ -54,7 +54,7 @@ export class AppServerOrchestrator {
 		this._logModel = AppLogs;
 		this._persistModel = AppsPersistence;
 		this._storage = new AppRealStorage(this._model);
-		this._logStorage = new AppRealLogsStorage(this._logModel);
+		this._logStorage = new AppRealLogStorage(this._logModel);
 		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath);
 
 		this._converters = new Map();
@@ -172,34 +172,35 @@ export class AppServerOrchestrator {
 		await this.getManager().load();
 
 		// Before enabling each app we verify if there is still room for it
-		await this.getManager()
-			.get()
-			// We reduce everything to a promise chain so it runs sequentially
-			.reduce(
-				(control, app) =>
-					control.then(async () => {
-						const canEnable = await canEnableApp(app.getStorageItem());
+		const apps = await this.getManager().get();
 
-						if (canEnable) {
-							return this.getManager().loadOne(app.getID());
-						}
+		/* eslint-disable no-await-in-loop */
+		// This needs to happen sequentially to keep track of app limits
+		for (const app of apps) {
+			const canEnable = await canEnableApp(app.getStorageItem());
 
-						this._rocketchatLogger.warn(`App "${app.getInfo().name}" can't be enabled due to CE limits.`);
-					}),
-				Promise.resolve(),
-			);
+			if (!canEnable) {
+				this._rocketchatLogger.warn(`App "${app.getInfo().name}" can't be enabled due to CE limits.`);
+				// We need to continue as the limits are applied depending on the app installation source
+				// i.e. if one limit is hit, we can't break the loop as the following apps might still be valid
+				continue;
+			}
+
+			await this.getManager().loadOne(app.getID());
+		}
+		/* eslint-enable no-await-in-loop */
 
 		await this.getBridges().getSchedulerBridge().startScheduler();
 
-		this._rocketchatLogger.info(`Loaded the Apps Framework and loaded a total of ${this.getManager().get({ enabled: true }).length} Apps!`);
+		const appCount = (await this.getManager().get({ enabled: true })).length;
+
+		this._rocketchatLogger.info(`Loaded the Apps Framework and loaded a total of ${appCount} Apps!`);
 	}
 
 	async disableApps() {
-		await this.getManager()
-			.get()
-			.forEach((app) => {
-				this.getManager().disable(app.getID());
-			});
+		const apps = await this.getManager().get();
+
+		await Promise.all(apps.map((app) => this.getManager().disable(app.getID())));
 	}
 
 	async unload() {
@@ -249,8 +250,8 @@ export class AppServerOrchestrator {
 	}
 }
 
-export const AppEvents = AppInterface;
 export const Apps = new AppServerOrchestrator();
+registerOrchestrator(Apps);
 
 settings.watch('Apps_Framework_Source_Package_Storage_Type', (value) => {
 	if (!Apps.isInitialized()) {

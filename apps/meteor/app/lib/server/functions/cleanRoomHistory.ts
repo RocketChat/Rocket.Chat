@@ -4,6 +4,7 @@ import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.cha
 
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 import { deleteRoom } from './deleteRoom';
 
 export async function cleanRoomHistory({
@@ -110,9 +111,11 @@ export async function cleanRoomHistory({
 	}
 
 	if (count) {
-		const lastMessage = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(rid);
+		const lastMessage = await Messages.getLastVisibleUserMessageSentByRoomId(rid);
 
 		await Rooms.resetLastMessageById(rid, lastMessage, -count);
+
+		void notifyOnRoomChangedById(rid);
 
 		void api.broadcast('notify.deleteMessageBulk', rid, {
 			rid,
@@ -123,5 +126,6 @@ export async function cleanRoomHistory({
 			ids: selectedMessageIds,
 		});
 	}
+
 	return count;
 }

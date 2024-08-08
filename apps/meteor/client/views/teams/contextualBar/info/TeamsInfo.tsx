@@ -17,18 +17,10 @@ import RetentionPolicyCallout from '../../../../components/InfoPanel/RetentionPo
 import MarkdownText from '../../../../components/MarkdownText';
 import type { Action } from '../../../hooks/useActionSpread';
 import { useActionSpread } from '../../../hooks/useActionSpread';
-
-type RetentionPolicy = {
-	retentionPolicyEnabled: boolean;
-	maxAgeDefault: number;
-	retentionEnabledDefault: boolean;
-	excludePinnedDefault: boolean;
-	filesOnlyDefault: boolean;
-};
+import { useRetentionPolicy } from '../../../room/hooks/useRetentionPolicy';
 
 type TeamsInfoProps = {
 	room: IRoom;
-	retentionPolicy: RetentionPolicy;
 	onClickHide: () => void;
 	onClickClose: () => void;
 	onClickLeave: () => void;
@@ -40,7 +32,6 @@ type TeamsInfoProps = {
 
 const TeamsInfo = ({
 	room,
-	retentionPolicy,
 	onClickHide,
 	onClickClose,
 	onClickLeave,
@@ -51,7 +42,7 @@ const TeamsInfo = ({
 }: TeamsInfoProps): ReactElement => {
 	const t = useTranslation();
 
-	const { retentionPolicyEnabled, filesOnlyDefault, excludePinnedDefault, maxAgeDefault } = retentionPolicy;
+	const retentionPolicy = useRetentionPolicy(room);
 
 	const memoizedActions = useMemo(
 		() => ({
@@ -105,7 +96,7 @@ const TeamsInfo = ({
 			<Menu
 				small={false}
 				flexShrink={0}
-				mi={2}
+				flexGrow={0}
 				key='menu'
 				maxHeight='initial'
 				secondary
@@ -132,11 +123,13 @@ const TeamsInfo = ({
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent p={24}>
 				<InfoPanel>
-					<InfoPanel.Avatar>
-						<RoomAvatar size='x332' room={room} />
-					</InfoPanel.Avatar>
+					<InfoPanel.Section maxWidth='x332' mi='auto'>
+						<InfoPanel.Avatar>
+							<RoomAvatar size='x332' room={room} />
+						</InfoPanel.Avatar>
 
-					<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
+						<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
+					</InfoPanel.Section>
 
 					<InfoPanel.Section>
 						{room.archived && (
@@ -197,13 +190,7 @@ const TeamsInfo = ({
 							</InfoPanel.Field>
 						)}
 
-						{retentionPolicyEnabled && (
-							<RetentionPolicyCallout
-								filesOnlyDefault={filesOnlyDefault}
-								excludePinnedDefault={excludePinnedDefault}
-								maxAgeDefault={maxAgeDefault}
-							/>
-						)}
+						{retentionPolicy?.isActive && <RetentionPolicyCallout room={room} />}
 					</InfoPanel.Section>
 				</InfoPanel>
 			</ContextualbarScrollableContent>

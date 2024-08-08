@@ -1,12 +1,14 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 import { beforeLeaveRoomCallback } from '../../../../lib/callbacks/beforeLeaveRoomCallback';
+import { settings } from '../../../settings/server';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 
 export const removeUserFromRoom = async function (
 	rid: string,
@@ -20,7 +22,7 @@ export const removeUserFromRoom = async function (
 	}
 
 	try {
-		await Apps.triggerEvent(AppEvents.IPreRoomUserLeave, room, user);
+		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserLeave, room, user);
 	} catch (error: any) {
 		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
@@ -64,8 +66,14 @@ export const removeUserFromRoom = async function (
 		await Team.removeMember(room.teamId, user._id);
 	}
 
+	if (room.encrypted && settings.get('E2E_Enable')) {
+		await Rooms.removeUsersFromE2EEQueueByRoomId(room._id, [user._id]);
+	}
+
 	// TODO: CACHE: maybe a queue?
 	await afterLeaveRoomCallback.run(user, room);
 
-	await Apps.triggerEvent(AppEvents.IPostRoomUserLeave, room, user);
+	void notifyOnRoomChangedById(rid);
+
+	await Apps.self?.triggerEvent(AppEvents.IPostRoomUserLeave, room, user);
 };

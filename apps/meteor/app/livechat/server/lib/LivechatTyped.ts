@@ -1,6 +1,7 @@
 import dns from 'dns';
 import * as util from 'util';
 
+import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Message, VideoConf, api, Omnichannel } from '@rocket.chat/core-services';
 import type {
 	IOmnichannelRoom,
@@ -19,6 +20,7 @@ import type {
 	IMessageInbox,
 	IOmnichannelAgent,
 	ILivechatDepartmentAgents,
+	LivechatDepartmentDTO,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -38,11 +40,11 @@ import {
 import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
 import moment from 'moment-timezone';
 import type { Filter, FindCursor, UpdateFilter } from 'mongodb';
 import UAParser from 'ua-parser-js';
 
-import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { i18n } from '../../../../server/lib/i18n';
@@ -55,6 +57,14 @@ import { FileUpload } from '../../../file-upload/server';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
+import {
+	notifyOnLivechatInquiryChanged,
+	notifyOnLivechatInquiryChangedByRoom,
+	notifyOnRoomChangedById,
+	notifyOnLivechatInquiryChangedByToken,
+	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
+	notifyOnUserChange,
+} from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
@@ -63,6 +73,7 @@ import { businessHourManager } from '../business-hour';
 import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
+import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
 
 type GenericCloseRoomParams = {
 	room: IOmnichannelRoom;
@@ -289,9 +300,14 @@ class LivechatClass {
 
 		this.logger.debug(`Updating DB for room ${room._id} with close data`);
 
+		const inquiry = await LivechatInquiry.findOneByRoomId(rid);
+
 		const removedInquiry = await LivechatInquiry.removeByRoomId(rid);
 		if (removedInquiry && removedInquiry.deletedCount !== 1) {
 			throw new Error('Error removing inquiry');
+		}
+		if (inquiry) {
+			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
 		}
 
 		const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData);
@@ -329,8 +345,8 @@ class LivechatClass {
 			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
 			 * in the next major version of the Apps-Engine
 			 */
-			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
-			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
+			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
+			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
 		});
 		if (process.env.TEST_MODE) {
 			await callbacks.run('livechat.closeRoom', {
@@ -343,6 +359,8 @@ class LivechatClass {
 				options,
 			});
 		}
+
+		void notifyOnRoomChangedById(newRoom._id);
 
 		this.logger.debug(`Room ${newRoom._id} was closed`);
 	}
@@ -494,6 +512,8 @@ class LivechatClass {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room');
 		}
 
+		const inquiry = await LivechatInquiry.findOneByRoomId(rid);
+
 		const result = await Promise.allSettled([
 			Messages.removeByRoomId(rid),
 			ReadReceipts.removeByRoomId(rid),
@@ -501,6 +521,10 @@ class LivechatClass {
 			LivechatInquiry.removeByRoomId(rid),
 			LivechatRooms.removeById(rid),
 		]);
+
+		if (inquiry) {
+			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
+		}
 
 		for (const r of result) {
 			if (r.status === 'rejected') {
@@ -996,6 +1020,8 @@ class LivechatClass {
 
 		await Promise.all([LivechatDepartmentAgents.disableAgentsByDepartmentId(_id), LivechatDepartment.archiveDepartment(_id)]);
 
+		void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id);
+
 		await callbacks.run('livechat.afterDepartmentArchived', department);
 	}
 
@@ -1008,6 +1034,9 @@ class LivechatClass {
 
 		// TODO: these kind of actions should be on events instead of here
 		await Promise.all([LivechatDepartmentAgents.enableAgentsByDepartmentId(_id), LivechatDepartment.unarchiveDepartment(_id)]);
+
+		void notifyOnLivechatDepartmentAgentChangedByDepartmentId(_id);
+
 		return true;
 	}
 
@@ -1259,11 +1288,11 @@ class LivechatClass {
 			]);
 		}
 
-		await Promise.all([
-			Subscriptions.removeByVisitorToken(token),
-			LivechatRooms.removeByVisitorToken(token),
-			LivechatInquiry.removeByVisitorToken(token),
-		]);
+		await Promise.all([Subscriptions.removeByVisitorToken(token), LivechatRooms.removeByVisitorToken(token)]);
+
+		const livechatInquiries = await LivechatInquiry.findIdsByVisitorToken(token).toArray();
+		await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
+		void notifyOnLivechatInquiryChanged(livechatInquiries, 'removed');
 	}
 
 	async deleteMessage({ guest, message }: { guest: ILivechatVisitor; message: IMessage }) {
@@ -1280,9 +1309,18 @@ class LivechatClass {
 	}
 
 	async setUserStatusLivechatIf(userId: string, status: ILivechatAgentStatus, condition?: Filter<IUser>, fields?: AKeyOf<ILivechatAgent>) {
-		const user = await Users.setLivechatStatusIf(userId, status, condition, fields);
+		const result = await Users.setLivechatStatusIf(userId, status, condition, fields);
+
+		if (result.modifiedCount > 0) {
+			void notifyOnUserChange({
+				id: userId,
+				clientAction: 'updated',
+				diff: { ...fields, statusLivechat: status },
+			});
+		}
+
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
-		return user;
+		return result;
 	}
 
 	async returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?: string, overrideTransferData: any = {}) {
@@ -1426,7 +1464,7 @@ class LivechatClass {
 		const ret = await LivechatVisitors.saveGuestById(_id, updateData);
 
 		setImmediate(() => {
-			void Apps.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
+			void Apps.self?.triggerEvent(AppEvents.IPostLivechatGuestSaved, _id);
 		});
 
 		return ret;
@@ -1652,13 +1690,30 @@ class LivechatClass {
 	}
 
 	async notifyGuestStatusChanged(token: string, status: UserStatus) {
-		await LivechatInquiry.updateVisitorStatus(token, status);
 		await LivechatRooms.updateVisitorStatus(token, status);
+
+		const inquiryVisitorStatus = await LivechatInquiry.updateVisitorStatus(token, status);
+
+		if (inquiryVisitorStatus.modifiedCount) {
+			void notifyOnLivechatInquiryChangedByToken(token, 'updated', { v: { status } });
+		}
 	}
 
 	async setUserStatusLivechat(userId: string, status: ILivechatAgentStatus) {
 		const user = await Users.setLivechatStatus(userId, status);
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
+
+		if (user.modifiedCount > 0) {
+			void notifyOnUserChange({
+				id: userId,
+				clientAction: 'updated',
+				diff: {
+					statusLivechat: status,
+					livechatStatusSystemModified: false,
+				},
+			});
+		}
+
 		return user;
 	}
 
@@ -1792,20 +1847,130 @@ class LivechatClass {
 		await LivechatRooms.saveRoomById(roomData);
 
 		setImmediate(() => {
-			void Apps.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
+			void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomSaved, roomData._id);
 		});
 
 		if (guestData?.name?.trim().length) {
 			const { _id: rid } = roomData;
 			const { name } = guestData;
+
 			await Promise.all([
 				Rooms.setFnameById(rid, name),
 				LivechatInquiry.setNameByRoomId(rid, name),
 				Subscriptions.updateDisplayNameByRoomId(rid, name),
 			]);
 
-			return true;
+			void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
 		}
+
+		void notifyOnRoomChangedById(roomData._id);
+
+		return true;
+	}
+
+	/**
+	 * @param {string|null} _id - The department id
+	 * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
+	 * @param {{upsert?: { agentId: string; count?: number; order?: number; }[], remove?: { agentId: string; count?: number; order?: number; }}} [departmentAgents] - The department agents
+	 */
+	async saveDepartment(
+		_id: string | null,
+		departmentData: LivechatDepartmentDTO,
+		departmentAgents?: {
+			upsert?: { agentId: string; count?: number; order?: number }[];
+			remove?: { agentId: string; count?: number; order?: number };
+		},
+	) {
+		check(_id, Match.Maybe(String));
+
+		const department = _id ? await LivechatDepartment.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1 } }) : null;
+
+		if (!department && !(await isDepartmentCreationAvailable())) {
+			throw new Meteor.Error('error-max-departments-number-reached', 'Maximum number of departments reached', {
+				method: 'livechat:saveDepartment',
+			});
+		}
+
+		if (department?.archived && departmentData.enabled) {
+			throw new Meteor.Error('error-archived-department-cant-be-enabled', 'Archived departments cant be enabled', {
+				method: 'livechat:saveDepartment',
+			});
+		}
+
+		const defaultValidations: Record<string, Match.Matcher<any> | BooleanConstructor | StringConstructor> = {
+			enabled: Boolean,
+			name: String,
+			description: Match.Optional(String),
+			showOnRegistration: Boolean,
+			email: String,
+			showOnOfflineForm: Boolean,
+			requestTagBeforeClosingChat: Match.Optional(Boolean),
+			chatClosingTags: Match.Optional([String]),
+			fallbackForwardDepartment: Match.Optional(String),
+			departmentsAllowedToForward: Match.Optional([String]),
+			allowReceiveForwardOffline: Match.Optional(Boolean),
+		};
+
+		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
+		Object.keys(departmentData).forEach((field) => {
+			if (!defaultValidations.hasOwnProperty(field)) {
+				defaultValidations[field] = Match.OneOf(String, Match.Integer, Boolean);
+			}
+		});
+
+		check(departmentData, defaultValidations);
+		check(
+			departmentAgents,
+			Match.Maybe({
+				upsert: Match.Maybe(Array),
+				remove: Match.Maybe(Array),
+			}),
+		);
+
+		const { requestTagBeforeClosingChat, chatClosingTags, fallbackForwardDepartment } = departmentData;
+		if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
+			throw new Meteor.Error(
+				'error-validating-department-chat-closing-tags',
+				'At least one closing tag is required when the department requires tag(s) on closing conversations.',
+				{ method: 'livechat:saveDepartment' },
+			);
+		}
+
+		if (_id && !department) {
+			throw new Meteor.Error('error-department-not-found', 'Department not found', {
+				method: 'livechat:saveDepartment',
+			});
+		}
+
+		if (fallbackForwardDepartment === _id) {
+			throw new Meteor.Error(
+				'error-fallback-department-circular',
+				'Cannot save department. Circular reference between fallback department and department',
+			);
+		}
+
+		if (fallbackForwardDepartment) {
+			const fallbackDep = await LivechatDepartment.findOneById(fallbackForwardDepartment, {
+				projection: { _id: 1, fallbackForwardDepartment: 1 },
+			});
+			if (!fallbackDep) {
+				throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', {
+					method: 'livechat:saveDepartment',
+				});
+			}
+		}
+
+		const departmentDB = await LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
+		if (departmentDB && departmentAgents) {
+			await updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
+		}
+
+		// Disable event
+		if (department?.enabled && !departmentDB?.enabled) {
+			await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
+		}
+
+		return departmentDB;
 	}
 }
 
