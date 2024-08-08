@@ -16,7 +16,7 @@ export const createE2ESettings = () =>
 			enableQuery: { _id: 'E2E_Enable', value: true },
 		});
 
-		await this.add('E2E_Enable_Encrypt_Files', false, {
+		await this.add('E2E_Enable_Encrypt_Files', true, {
 			type: 'boolean',
 			i18nLabel: 'E2E_Enable_Encrypt_Files',
 			i18nDescription: 'E2E_Enable_Encrypt_Files_Description',
