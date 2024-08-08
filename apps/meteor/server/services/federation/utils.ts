@@ -14,12 +14,13 @@ export function verifyFederationReady() {
 	}
 
 	if (!isFederationReady()) {
-		throw new FederationMatrixInvalidConfigurationError();
+		throw new Error('Federation configuration is invalid');
 	}
 }
 
 export class FederationMatrixInvalidConfigurationError extends Error {
 	constructor(cause?: string) {
+		// eslint-disable-next-line prefer-template
 		const message = 'Federation configuration is invalid' + (cause ? ',' + cause[0].toLowerCase() + cause.slice(1) : '');
 
 		super(message);

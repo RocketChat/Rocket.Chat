@@ -80,6 +80,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.onFederatedRoomCreated(stub);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(
 				hooks['federation-v2-after-create-room']({ federated: true }, { owner: 'owner', originalMemberList: [] }),
 			).to.have.rejectedWith(error);
@@ -128,6 +129,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(
 				hooks['federation-v2-after-add-user-to-a-room']({ user: 'user', inviter: 'inviter' }, { federated: true }),
 			).to.have.rejectedWith(error);
@@ -189,6 +191,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(
 				hooks['federation-v2-on-add-users-to-a-room']({ invitees: ['user'], inviter: 'inviter' }, { federated: true }),
 			).to.have.rejectedWith(error);
@@ -244,6 +247,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.onDirectMessageRoomCreated(stub);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(
 				hooks['federation-v2-after-create-direct-message-room']({ federated: true }, { creatorId: 'creatorId', members: [] }),
 			).to.have.rejectedWith(error);
@@ -271,6 +275,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.beforeDirectMessageRoomCreate(stub);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(hooks['federation-v2-before-create-direct-message-room']([])).to.have.rejectedWith(error);
 			expect(stub.called).to.be.false;
 		});
@@ -317,6 +322,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 			verifyFederationReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.beforeAddUserToARoom(stub);
+			// eslint-disable-next-line @typescript-eslint/no-floating-promises
 			expect(
 				hooks['federation-v2-before-add-user-to-the-room']({ user: 'user', inviter: 'inviter' }, { federated: true }),
 			).to.have.rejectedWith(error);

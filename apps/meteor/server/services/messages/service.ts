@@ -1,6 +1,14 @@
 import type { IMessageService } from '@rocket.chat/core-services';
 import { Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
-import { type IMessage, type MessageTypesValues, type IUser, type IRoom, isEditedMessage, isMessageFromMatrixFederation, isRoomFederated } from '@rocket.chat/core-typings';
+import {
+	type IMessage,
+	type MessageTypesValues,
+	type IUser,
+	type IRoom,
+	isEditedMessage,
+	isMessageFromMatrixFederation,
+	isRoomFederated,
+} from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
@@ -12,6 +20,7 @@ import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
+import { isFederationEnabled, isFederationReady, FederationMatrixInvalidConfigurationError } from '../federation/utils';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
 import { BeforeSaveCheckMAC } from './hooks/BeforeSaveCheckMAC';
 import { BeforeSaveJumpToMessage } from './hooks/BeforeSaveJumpToMessage';
@@ -19,7 +28,6 @@ import { BeforeSaveMarkdownParser } from './hooks/BeforeSaveMarkdownParser';
 import { mentionServer } from './hooks/BeforeSaveMentions';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
-import { isFederationEnabled, isFederationReady, FederationMatrixInvalidConfigurationError } from '../federation/utils';
 
 const disableMarkdownParser = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_PARSER).toLowerCase());
 
@@ -174,9 +182,9 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	private getMarkdownConfig() {
 		const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
 			? settings
-					.get<string>('Message_CustomDomain_AutoLink')
-					.split(',')
-					.map((domain) => domain.trim())
+				.get<string>('Message_CustomDomain_AutoLink')
+				.split(',')
+				.map((domain) => domain.trim())
 			: [];
 
 		return {
