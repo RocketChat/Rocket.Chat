@@ -1002,7 +1002,7 @@ describe('LIVECHAT - rooms', () => {
 			visitorToken = newVisitor.token;
 		});
 		// Needs fixing
-		(IS_EE ? it.skip : it.skip)('should correctly set fallback department', async () => {
+		(IS_EE ? it: it.skip)('should correctly set fallback department', async () => {
 			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 
 			const { department: fallbackDeparment } = await createDepartmentWithAnOnlineAgent();
@@ -1012,7 +1012,7 @@ describe('LIVECHAT - rooms', () => {
 			expect(initialDepartment.fallbackForwardDepartment).to.be.equal(fallbackDeparment._id);
 		});
 		// Needs fixing
-		(IS_EE ? it.skip : it.skip)(
+		(IS_EE ? it: it.skip)(
 			'should redirect chat to fallback department when all agents in the initial department are offline',
 			async () => {
 				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
