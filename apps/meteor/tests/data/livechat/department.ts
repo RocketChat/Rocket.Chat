@@ -38,26 +38,41 @@ const updateDepartment = async (departmentId: string, departmentData: Partial<Li
 	return response.body.department;
 };
 
-const createDepartmentWithMethod = (initialAgents: { agentId: string; username: string }[] = [], allowReceiveForwardOffline = false) =>
+export const createDepartmentWithMethod = ({
+	initialAgents = [],
+	allowReceiveForwardOffline = false,
+	name,
+	departmentUnit,
+	userCredentials = credentials,
+	departmentId = '',
+}: {
+	initialAgents?: { agentId: string; username: string }[];
+	allowReceiveForwardOffline?: boolean;
+	name?: string;
+	departmentUnit?: { _id?: string };
+	userCredentials?: Credentials;
+	departmentId?: string;
+} = {}): Promise<ILivechatDepartment> =>
 	new Promise((resolve, reject) => {
 		void request
 			.post(methodCall('livechat:saveDepartment'))
-			.set(credentials)
+			.set(userCredentials)
 			.send({
 				message: JSON.stringify({
 					method: 'livechat:saveDepartment',
 					params: [
-						'',
+						departmentId,
 						{
 							enabled: true,
 							email: faker.internet.email(),
 							showOnRegistration: true,
 							showOnOfflineForm: true,
-							name: `new department ${Date.now()}`,
+							name: name || `new department ${Date.now()}`,
 							description: 'created from api',
 							allowReceiveForwardOffline,
 						},
 						initialAgents,
+						departmentUnit,
 					],
 					id: 'id',
 					msg: 'method',
@@ -79,7 +94,7 @@ type OnlineAgent = {
 export const createDepartmentWithAnOnlineAgent = async (): Promise<{ department: ILivechatDepartment; agent: OnlineAgent }> => {
 	const { user, credentials } = await createAnOnlineAgent();
 
-	const department = (await createDepartmentWithMethod()) as ILivechatDepartment;
+	const department = await createDepartmentWithMethod();
 
 	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
 
@@ -94,7 +109,7 @@ export const createDepartmentWithAnOnlineAgent = async (): Promise<{ department:
 
 export const createDepartmentWithAgent = async (agent: OnlineAgent): Promise<{ department: ILivechatDepartment; agent: OnlineAgent }> => {
 	const { user, credentials } = agent;
-	const department = (await createDepartmentWithMethod()) as ILivechatDepartment;
+	const department = await createDepartmentWithMethod();
 
 	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
 
@@ -137,7 +152,7 @@ export const createDepartmentWithAnOfflineAgent = async ({
 }> => {
 	const { user, credentials } = await createAnOfflineAgent();
 
-	const department = (await createDepartmentWithMethod(undefined, allowReceiveForwardOffline)) as ILivechatDepartment;
+	const department = (await createDepartmentWithMethod({ allowReceiveForwardOffline })) as ILivechatDepartment;
 
 	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
 
