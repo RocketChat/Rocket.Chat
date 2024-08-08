@@ -8,12 +8,12 @@ import moment from 'moment';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { API } from '../../../api/server/api';
-import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
-import { metrics } from '../../../metrics/server';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
+import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { MessageTypes } from '../../../ui-utils/server';
 import { sendMessage } from '../functions/sendMessage';
@@ -95,7 +95,7 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 			}
 		}
 
-		metrics.messagesSent.inc(); // TODO This line needs to be moved to its proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
+		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return await sendMessage(user, message, room, false, previewUrls);
 	} catch (err: any) {
 		SystemLogger.error({ msg: 'Error sending message:', err });
