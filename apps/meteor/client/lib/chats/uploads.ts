@@ -47,23 +47,21 @@ const send = async (
 	getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
 	fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
 ): Promise<void> => {
-	if (!Array.isArray(file)) {
-		file = [file];
-	}
+	const files = Array.isArray(file) ? file : [file];
 	const id = Random.id();
 	updateUploads((uploads) => [
 		...uploads,
 		{
 			id,
-			name: file[0].name || fileContent?.raw.name || 'unknown',
+			name: files[0].name || fileContent?.raw.name || 'unknown',
 			percentage: 0,
 		},
 	]);
 
-	var fileIds: string[] = [];
-	var fileUrls: string[] = [];
+	const fileIds: string[] = [];
+	const fileUrls: string[] = [];
 
-	file.map((f) => {
+	files.forEach((f) => {
 		new Promise<void>((resolve, reject) => {
 			const xhr = sdk.rest.upload(
 				`/v1/rooms.media/${rid}`,
@@ -74,7 +72,6 @@ const send = async (
 					}),
 				},
 				{
-					// load: () => resolve(),
 					progress: (event) => {
 						if (!event.lengthComputable) {
 							return;
@@ -82,7 +79,6 @@ const send = async (
 						const progress = (event.loaded / event.total) * 100;
 						if (progress === 100) {
 							resolve();
-							// return;
 						}
 
 						updateUploads((uploads) =>
@@ -122,14 +118,11 @@ const send = async (
 					const result = JSON.parse(xhr.responseText);
 					fileIds.push(result.file._id);
 					fileUrls.push(result.file.url);
-					if (fileIds.length === file.length) {
+					if (fileIds.length === files.length) {
 						if (msg == undefined) {
 							msg = '';
 						}
-						// const text: IMessage = {
-						// 	rid,
-						// 	_id: id,
-						// };
+
 						const text: IMessage = {
 							rid,
 							_id: id,
@@ -138,6 +131,7 @@ const send = async (
 							u: { _id: id, username: id },
 							_updatedAt: new Date(),
 						};
+
 						try {
 							let content;
 							if (getContent) {
