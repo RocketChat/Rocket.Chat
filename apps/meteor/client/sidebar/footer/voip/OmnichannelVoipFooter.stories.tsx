@@ -3,7 +3,7 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import type { ComponentStory } from '@storybook/react';
 import React, { useState } from 'react';
 
-import { VoipFooter } from './VoipFooter';
+import { VoipFooter } from './OmnichannelVoipFooter';
 
 const callActions = {
 	mute: () => ({}),

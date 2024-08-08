@@ -16,7 +16,7 @@ import {
 } from '../../../../../components/Contextualbar';
 import InfoPanel from '../../../../../components/InfoPanel';
 import { UserStatus } from '../../../../../components/UserStatus';
-import { useIsCallReady } from '../../../../../contexts/CallContext';
+import { useIsCallReady } from '../../../../../contexts/OmnichannelCallContext';
 import { parseOutboundPhoneNumber } from '../../../../../lib/voip/parseOutboundPhoneNumber';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';
 import AgentField from '../../components/AgentField';

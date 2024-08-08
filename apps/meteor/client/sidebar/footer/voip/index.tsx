@@ -3,7 +3,7 @@ import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState } from 'react';
 
-import { useVoipFooterMenu } from '../../../../ee/client/hooks/useVoipFooterMenu';
+import { useOmnichannelVoipFooterMenu } from '../../../../ee/client/hooks/useOmnichannelVoipFooterMenu';
 import {
 	useCallActions,
 	useCallCreateRoom,
@@ -13,9 +13,9 @@ import {
 	useOpenedRoomInfo,
 	useQueueCounter,
 	useQueueName,
-} from '../../../contexts/CallContext';
+} from '../../../contexts/OmnichannelCallContext';
 import SidebarFooterDefault from '../SidebarFooterDefault';
-import { VoipFooter as VoipFooterComponent } from './VoipFooter';
+import { VoipFooter as VoipFooterComponent } from './OmnichannelVoipFooter';
 
 export const VoipFooter = (): ReactElement | null => {
 	const t = useTranslation();
@@ -28,7 +28,7 @@ export const VoipFooter = (): ReactElement | null => {
 	const queueCounter = useQueueCounter();
 	const queueName = useQueueName();
 	const openedRoomInfo = useOpenedRoomInfo();
-	const options = useVoipFooterMenu();
+	const options = useOmnichannelVoipFooterMenu();
 
 	const [muted, setMuted] = useState(false);
 	const [paused, setPaused] = useState(false);

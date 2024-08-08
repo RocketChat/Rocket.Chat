@@ -3,7 +3,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLayout, useRoute, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
-import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
+import { useIsCallEnabled, useIsCallReady } from '../../contexts/OmnichannelCallContext';
 import { useIsOverMacLimit } from '../../hooks/omnichannel/useIsOverMacLimit';
 import { useOmnichannelShowQueueLink } from '../../hooks/omnichannel/useOmnichannelShowQueueLink';
 import SidebarHeaderToolbar from '../header/SidebarHeaderToolbar';

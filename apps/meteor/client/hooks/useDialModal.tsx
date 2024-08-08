@@ -1,7 +1,7 @@
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { Suspense, lazy, useCallback, useMemo } from 'react';
 
-import { useIsVoipEnterprise } from '../contexts/CallContext';
+import { useIsVoipEnterprise } from '../contexts/OmnichannelCallContext';
 import { dispatchToastMessage } from '../lib/toast';
 
 const DialPadModal = lazy(() => import('../../ee/client/voip/modal/DialPad/DialPadModal'));

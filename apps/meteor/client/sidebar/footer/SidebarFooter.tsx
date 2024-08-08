@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useIsCallEnabled, useIsCallReady } from '../../contexts/CallContext';
+import { useIsCallEnabled, useIsCallReady } from '../../contexts/OmnichannelCallContext';
 import SidebarFooterDefault from './SidebarFooterDefault';
 import { VoipFooter } from './voip';
 
