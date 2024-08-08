@@ -1,64 +1,29 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { ITeam } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import { useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { HeaderTag, HeaderTagIcon, HeaderTagSkeleton } from '../../../components/Header';
+import { HeaderTag, HeaderTagIcon } from '../../../components/Header';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
-type APIErrorResult = { success: boolean; error: string };
-
-const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
-	const { teamId } = room;
-	const userId = useUserId();
-
-	if (!teamId) {
-		throw new Error('invalid rid');
-	}
-
-	if (!userId) {
-		throw new Error('invalid uid');
-	}
-
-	const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
-	const userTeamsListEndpoint = useEndpoint('GET', '/v1/users.listTeams');
-
-	const {
-		data: teamInfoData,
-		isLoading: teamInfoLoading,
-		isError: teamInfoError,
-	} = useQuery(['teamId', teamId], async () => teamsInfoEndpoint({ teamId }), {
-		keepPreviousData: true,
-		retry: (_, error) => (error as APIErrorResult)?.error === 'unauthorized' && false,
-	});
-
-	const { data: userTeams, isLoading: userTeamsLoading } = useQuery(['userId', userId], async () => userTeamsListEndpoint({ userId }));
-
-	const userBelongsToTeam = userTeams?.teams?.find((team) => team._id === teamId) || false;
-	const isTeamPublic = teamInfoData?.teamInfo.type === TEAM_TYPE.PUBLIC;
+const ParentTeam = ({ team }: { team: ITeam }): ReactElement | null => {
+	const isTeamPublic = team.type === TEAM_TYPE.PUBLIC;
 
 	const redirectToMainRoom = (): void => {
-		const rid = teamInfoData?.teamInfo.roomId;
+		const rid = team.roomId;
 		if (!rid) {
 			return;
 		}
 
+		const isTeamPublic = team.type === TEAM_TYPE.PUBLIC;
+		// TODO how to know if belongs to team?
+		const userBelongsToTeam = false;
 		if (!(isTeamPublic || userBelongsToTeam)) {
 			return;
 		}
 
 		goToRoomById(rid);
 	};
-
-	if (teamInfoLoading || userTeamsLoading) {
-		return <HeaderTagSkeleton />;
-	}
-
-	if (teamInfoError) {
-		return null;
-	}
 
 	return (
 		<HeaderTag
@@ -68,7 +33,7 @@ const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 			onClick={redirectToMainRoom}
 		>
 			<HeaderTagIcon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
-			{teamInfoData?.teamInfo.name}
+			{team.name}
 		</HeaderTag>
 	);
 };
