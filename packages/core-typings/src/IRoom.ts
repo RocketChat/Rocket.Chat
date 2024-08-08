@@ -1,3 +1,4 @@
+import type { ILivechatDepartment } from './ILivechatDepartment';
 import type { ILivechatPriority } from './ILivechatPriority';
 import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IMessage, MessageTypesValues } from './IMessage';
@@ -351,6 +352,8 @@ export type IOmnichannelRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer'
 	serviceTimeDuration?: number;
 	chatDuration: number;
 };
+
+export type IOmnichannelRoomWithDepartment = IOmnichannelRoom & { department?: ILivechatDepartment };
 
 export const isOmnichannelRoom = (room: Pick<IRoom, 't'>): room is IOmnichannelRoom & IRoom => room.t === 'l';
 
