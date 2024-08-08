@@ -16,7 +16,9 @@
 		"@swc/core": "~1.5.24",
 		"@swc/jest": "~0.2.36",
 		"@testing-library/jest-dom": "~6.4.5",
+		"@types/jest-axe": "~3.5.9",
 		"identity-obj-proxy": "~3.0.0",
+		"jest-axe": "~9.0.0",
 		"jest-environment-jsdom": "~29.7.0",
 		"uuid": "~9.0.1"
 	},
