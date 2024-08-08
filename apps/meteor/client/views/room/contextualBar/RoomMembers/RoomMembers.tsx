@@ -20,7 +20,7 @@ import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import RoomMembersRow from './RoomMembersRow';
 
-type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status'>;
+type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'>;
 
 type RoomMembersProps = {
 	rid: IRoom['_id'];

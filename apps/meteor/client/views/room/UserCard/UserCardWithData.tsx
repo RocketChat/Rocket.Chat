@@ -38,6 +38,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			utcOffset = defaultValue,
 			nickname,
 			avatarETag,
+			freeSwitchExtension,
 		} = data?.user || {};
 
 		return {
@@ -51,6 +52,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			status: _id && <ReactiveUserStatus uid={_id} />,
 			customStatus: statusText,
 			nickname,
+			freeSwitchExtension,
 		};
 	}, [data, username, showRealNames, isLoading, getRoles]);
 
@@ -59,10 +61,11 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 		onClose();
 	});
 
-	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions(
-		{ _id: user._id ?? '', username: user.username, name: user.name },
+	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions({
 		rid,
-	);
+		user: { _id: user._id ?? '', username: user.username, name: user.name, freeSwitchExtension: user.freeSwitchExtension },
+		size: 3,
+	});
 
 	const menu = useMemo(() => {
 		if (!menuOptions?.length) {

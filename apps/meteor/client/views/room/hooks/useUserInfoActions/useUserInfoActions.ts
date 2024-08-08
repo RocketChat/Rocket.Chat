@@ -7,7 +7,6 @@ import { useMemo } from 'react';
 import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useBlockUserAction } from './actions/useBlockUserAction';
-import { useCallAction } from './actions/useCallAction';
 import { useChangeLeaderAction } from './actions/useChangeLeaderAction';
 import { useChangeModeratorAction } from './actions/useChangeModeratorAction';
 import { useChangeOwnerAction } from './actions/useChangeOwnerAction';
@@ -17,15 +16,18 @@ import { useMuteUserAction } from './actions/useMuteUserAction';
 import { useRedirectModerationConsole } from './actions/useRedirectModerationConsole';
 import { useRemoveUserAction } from './actions/useRemoveUserAction';
 import { useReportUser } from './actions/useReportUser';
+import { useVideoCallAction } from './actions/useVideoCallAction';
+import { useVoiceCallAction } from './actions/useVoiceCallAction';
 
 export type UserInfoActionType = 'communication' | 'privileges' | 'management' | 'moderation';
 
 export type UserInfoAction = {
+	type?: UserInfoActionType;
 	content: string;
 	icon?: ComponentProps<typeof Icon>['name'];
-	onClick: () => void;
-	type?: UserInfoActionType;
 	variant?: 'danger';
+	iconOnly?: boolean;
+	onClick: () => void;
 };
 
 type UserMenuAction = {
@@ -34,12 +36,19 @@ type UserMenuAction = {
 	items: GenericMenuItemProps[];
 }[];
 
-export const useUserInfoActions = (
-	user: Pick<IUser, '_id' | 'username' | 'name'>,
-	rid: IRoom['_id'],
-	reload?: () => void,
+type UserInfoActionsParams = {
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
+	rid: IRoom['_id'];
+	reload?: () => void;
+	size?: number;
+};
+
+export const useUserInfoActions = ({
+	user,
+	rid,
+	reload,
 	size = 2,
-): { actions: [string, UserInfoAction][]; menuActions: any | undefined } => {
+}: UserInfoActionsParams): { actions: [string, UserInfoAction][]; menuActions: any | undefined } => {
 	const blockUser = useBlockUserAction(user, rid);
 	const changeLeader = useChangeLeaderAction(user, rid);
 	const changeModerator = useChangeModeratorAction(user, rid);
@@ -49,7 +58,8 @@ export const useUserInfoActions = (
 	const ignoreUser = useIgnoreUserAction(user, rid);
 	const muteUser = useMuteUserAction(user, rid);
 	const removeUser = useRemoveUserAction(user, rid, reload);
-	const call = useCallAction(user);
+	const videoCall = useVideoCallAction(user);
+	const voiceCall = useVoiceCallAction(user);
 	const reportUserOption = useReportUser(user);
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const { userToolbox: hiddenActions } = useLayoutHiddenActions();
@@ -57,7 +67,8 @@ export const useUserInfoActions = (
 	const userinfoActions = useMemo(
 		() => ({
 			...(openDirectMessage && !isLayoutEmbedded && { openDirectMessage }),
-			...(call && { call }),
+			...(videoCall && { videoCall }),
+			...(voiceCall && { voiceCall }),
 			...(changeOwner && { changeOwner }),
 			...(changeLeader && { changeLeader }),
 			...(changeModerator && { changeModerator }),
@@ -71,7 +82,8 @@ export const useUserInfoActions = (
 		[
 			openDirectMessage,
 			isLayoutEmbedded,
-			call,
+			videoCall,
+			voiceCall,
 			changeOwner,
 			changeLeader,
 			changeModerator,
