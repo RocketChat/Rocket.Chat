@@ -15,10 +15,10 @@ import { settings } from '../../../settings/server';
 import { MessageTypes } from '../../../ui-utils/server';
 import { sendMessage } from '../functions/sendMessage';
 import { RateLimiter } from '../lib';
-import { canAccessRoomIdAsync } from '/app/authorization/server/functions/canAccessRoom';
-import { API } from '/app/api/server';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { API } from '../../../../app/api/server/api';
 import { IUpload } from '@rocket.chat/core-typings';
-import { sendFileMessage } from '/app/file-upload/server/methods/sendFileMessage';
+import { sendFileMessage } from '../../../../app/file-upload/server/methods/sendFileMessage';
 
 export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>, previewUrls?: string[]) {
 	if (message.tshow && !message.tmid) {
