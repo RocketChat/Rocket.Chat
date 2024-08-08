@@ -53,6 +53,10 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 		return false;
 	}
 
+	if (user.active === active) {
+		return true;
+	}
+
 	if (isUserFederated(user)) {
 		throw new Meteor.Error('error-user-is-federated', 'Cannot change federated users status', {
 			method: 'setUserActiveStatus',
