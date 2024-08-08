@@ -13,4 +13,9 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		await this.updateOne({ _id: contactId }, { $set: { ...data, unknown: true } });
 		return this.findOneById(contactId) as Promise<ILivechatContact>;
 	}
+
+	async findVerifiedContactByEmail(email: string): Promise<ILivechatContact | null> {
+		// TODO: find only contacts with verified channels
+		return this.findOne({ emails: { $elemMatch: { address: email } }, channels: { $elemMatch: { verified: true } } });
+	}
 }
