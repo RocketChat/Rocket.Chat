@@ -17,7 +17,7 @@ const ParentTeam = ({ team }: { team: ITeam }): ReactElement | null => {
 
 		const isTeamPublic = team.type === TEAM_TYPE.PUBLIC;
 		// TODO how to know if belongs to team?
-		const userBelongsToTeam = false;
+		const userBelongsToTeam = true;
 		if (!(isTeamPublic || userBelongsToTeam)) {
 			return;
 		}
