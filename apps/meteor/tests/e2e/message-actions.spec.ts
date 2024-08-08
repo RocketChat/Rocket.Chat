@@ -51,16 +51,27 @@ test.describe.serial('message-actions', () => {
 		});
 
 		await test.step('unfollow thread', async () => {
-			const unFollowButton = page.locator('[data-qa-type="message"]').last().getByTitle('Following');
+			const unFollowButton = page
+				.locator('[data-qa-type="message"]', { has: page.getByRole('button', { name: 'Following' }) })
+				.last()
+				.getByRole('button', { name: 'Following' });
 			await expect(unFollowButton).toBeVisible();
 			await unFollowButton.click();
 		});
 
 		await test.step('follow thread', async () => {
-			const followButton = page.locator('[data-qa-type="message"]').last().getByTitle('Not following');
+			const followButton = page
+				.locator('[data-qa-type="message"]', { has: page.getByRole('button', { name: 'Not following' }) })
+				.last()
+				.getByRole('button', { name: 'Not following' });
 			await expect(followButton).toBeVisible();
 			await followButton.click();
-			await expect(page.locator('[data-qa-type="message"]').last().getByTitle('Following')).toBeVisible();
+			await expect(
+				page
+					.locator('[data-qa-type="message"]', { has: page.getByRole('button', { name: 'Following' }) })
+					.last()
+					.getByRole('button', { name: 'Following' }),
+			).toBeVisible();
 		});
 	});
 
