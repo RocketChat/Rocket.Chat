@@ -32,7 +32,7 @@ function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtL
 
 export const parseFileIntoMessageAttachments = async (
 	filearr: Partial<IUpload>[] | Partial<IUpload>,
-	// roomId: string,
+	roomId: string,
 	user: IUser,
 ): Promise<FilesAndAttachments> => {
 	const attachments: MessageAttachment[] = [];
@@ -219,8 +219,7 @@ export const sendFileMessage = async (
 	};
 
 	if (parseAttachmentsForE2EE || msgData?.t !== 'e2e') {
-		// const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
-		const { files, attachments } = await parseFileIntoMessageAttachments(file, user);
+		const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
 		data.file = files[0];
 		data.files = files;
 		data.attachments = attachments;

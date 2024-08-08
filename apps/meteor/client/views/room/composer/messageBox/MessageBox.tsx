@@ -45,12 +45,11 @@ import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
-import FilePreview from '../../modals/FileUploadModal/FilePreview';
-import { Box } from '@rocket.chat/fuselage';
 import fileSize from 'filesize';
-// import { e2e } from '/app/e2e/client';
 import { e2e } from '../../../../../app/e2e/client';
 import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
+import { Box } from '@rocket.chat/fuselage';
+import FilePreview from '../../modals/FileUploadModal/FilePreview';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;

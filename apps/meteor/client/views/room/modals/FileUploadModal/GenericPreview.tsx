@@ -1,6 +1,7 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
+
 import { formatBytes } from '../../../../lib/utils/formatBytes';
 
 type GenericPreviewProps = {

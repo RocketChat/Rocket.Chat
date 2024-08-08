@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IMessage, IUser, IUpload } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Uploads, Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
@@ -16,9 +16,8 @@ import { MessageTypes } from '../../../ui-utils/server';
 import { sendMessage } from '../functions/sendMessage';
 import { RateLimiter } from '../lib';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { API } from '../../../../app/api/server/api';
-import { IUpload } from '@rocket.chat/core-typings';
-import { sendFileMessage } from '../../../../app/file-upload/server/methods/sendFileMessage';
+import { API } from '../../../api/server/api';
+import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
 
 export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>, previewUrls?: string[]) {
 	if (message.tshow && !message.tmid) {
@@ -96,7 +95,7 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 			}
 		}
 
-		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
+		metrics.messagesSent.inc(); // TODO This line needs to be moved to its proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return await sendMessage(user, message, room, false, previewUrls);
 	} catch (err: any) {
 		SystemLogger.error({ msg: 'Error sending message:', err });
@@ -137,13 +136,12 @@ Meteor.methods<ServerMethods>({
 			throw new Error("Cannot send system messages using 'sendMessage'");
 		}
 
-		if (filesToConfirm != undefined) {
+		if (filesToConfirm !== undefined) {
 			if (!(await canAccessRoomIdAsync(message.rid, uid))) {
 				return API.v1.unauthorized();
 			}
 			const filesarray: Partial<IUpload>[] = [];
-			for (let i = 0; i < filesToConfirm.length; i++) {
-				const fileid = filesToConfirm[i];
+			for (const fileid of filesToConfirm) {
 				const file = await Uploads.findOneById(fileid);
 				if (!file) {
 					throw new Meteor.Error('invalid-file');
@@ -152,11 +150,11 @@ Meteor.methods<ServerMethods>({
 			}
 			await sendFileMessage(uid, { roomId: message.rid, file: filesarray, msgData }, { parseAttachmentsForE2EE: false });
 
-			for (let i = 0; i < filesToConfirm.length; i++) {
-				await Uploads.confirmTemporaryFile(filesToConfirm[i], uid);
+			for (const fileid of filesToConfirm) {
+				await Uploads.confirmTemporaryFile(fileid, uid);
 			}
 			let resmessage;
-			if (filesarray[0] != null && filesarray[0]._id != undefined) {
+			if (filesarray[0] !== null && filesarray[0]._id !== undefined) {
 				resmessage = await Messages.getMessageByFileIdAndUsername(filesarray[0]._id, uid);
 			}
 
@@ -176,6 +174,7 @@ Meteor.methods<ServerMethods>({
 		}
 	},
 });
+
 // Limit a user, who does not have the "bot" role, to sending 5 msgs/second
 RateLimiter.limitMethod('sendMessage', 5, 1000, {
 	async userId(userId: IUser['_id']) {
