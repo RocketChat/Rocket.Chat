@@ -54,7 +54,9 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 	}
 
 	if (isUserFederated(user)) {
-		throw new Meteor.Error('error-not-allowed', 'Deactivating federated user is not allowed', { method: 'setUserActiveStatus' });
+		throw new Meteor.Error('error-user-is-federated', 'Cannot change federated users status', {
+			method: 'setUserActiveStatus',
+		});
 	}
 
 	const remoteUser = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
