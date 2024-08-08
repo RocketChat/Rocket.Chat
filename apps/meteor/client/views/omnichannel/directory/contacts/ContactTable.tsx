@@ -1,4 +1,4 @@
-import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box, Button } from '@rocket.chat/fuselage';
 import { useDebouncedState, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
@@ -106,12 +106,11 @@ function ContactTable(): ReactElement {
 	return (
 		<>
 			{((isSuccess && data?.visitors.length > 0) || queryHasChanged) && (
-				<FilterByText
-					displayButton
-					textButton={t('New_contact')}
-					onButtonClick={onButtonNewClick}
-					onChange={({ text }): void => setTerm(text)}
-				/>
+				<FilterByText onChange={setTerm}>
+					<Button onClick={onButtonNewClick} primary>
+						{t('New_contact')}
+					</Button>
+				</FilterByText>
 			)}
 			{isLoading && (
 				<GenericTable>
