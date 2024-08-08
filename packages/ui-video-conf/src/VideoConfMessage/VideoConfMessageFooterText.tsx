@@ -1,8 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
+import type { AllHTMLAttributes, ReactElement } from 'react';
 
-const VideoConfMessageFooterText = ({ children }: { children: ReactNode }): ReactElement => (
-	<Box fontScale='c1' mi={4}>
+type VideoConfMessageFooterTextProps = Omit<AllHTMLAttributes<HTMLParagraphElement>, 'is'>;
+
+const VideoConfMessageFooterText = ({ children, ...props }: VideoConfMessageFooterTextProps): ReactElement => (
+	<Box {...props} is='p' fontScale='c1' mi={4}>
 		{children}
 	</Box>
 );

@@ -1977,21 +1977,10 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.find(query, options);
 	}
 
-	setResponseByRoomId(roomId: string, responseBy: IOmnichannelRoom['responseBy']) {
-		return this.updateOne(
-			{
-				_id: roomId,
-				t: 'l',
-			},
-			{
-				$set: {
-					responseBy,
-				},
-				$unset: {
-					waitingResponse: 1,
-				},
-			},
-		);
+	getResponseByRoomIdUpdateQuery(responseBy: IOmnichannelRoom['responseBy'], updater: Updater<IOmnichannelRoom> = this.getUpdater()) {
+		updater.set('responseBy', responseBy);
+		updater.unset('waitingResponse');
+		return updater;
 	}
 
 	setNotResponseByRoomId(roomId: string) {
@@ -2011,18 +2000,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		);
 	}
 
-	setAgentLastMessageTs(roomId: string) {
-		return this.updateOne(
-			{
-				_id: roomId,
-				t: 'l',
-			},
-			{
-				$set: {
-					'responseBy.lastMessageTs': new Date(),
-				},
-			},
-		);
+	getAgentLastMessageTsUpdateQuery(updater: Updater<IOmnichannelRoom> = this.getUpdater()) {
+		return updater.set('responseBy.lastMessageTs', new Date());
 	}
 
 	private getAnalyticsUpdateQuery(
@@ -2634,6 +2613,13 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 	}
 
 	findOpenRoomsByPriorityId(_priorityId: string): FindCursor<IOmnichannelRoom> {
+		throw new Error('Method not implemented.');
+	}
+
+	getPredictedVisitorAbandonmentByRoomIdUpdateQuery(
+		_willBeAbandonedAt: Date,
+		_updater: Updater<IOmnichannelRoom>,
+	): Updater<IOmnichannelRoom> {
 		throw new Error('Method not implemented.');
 	}
 
