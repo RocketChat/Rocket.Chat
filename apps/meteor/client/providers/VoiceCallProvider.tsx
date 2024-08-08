@@ -11,6 +11,8 @@ import { VoiceCallContext } from '../contexts/VoiceCallContext';
 import { useVoiceCallClient } from '../hooks/voiceCall/useVoiceCallClient';
 import { createAnchor } from '../lib/utils/createAnchor';
 import { deleteAnchor } from '../lib/utils/deleteAnchor';
+import VoiceCallWidgetPortal from '../portals/VoiceCallWidgetPortal';
+import VoiceCallWidget from '../views/room/contextualBar/VoiceCall/VoiceCallWidget';
 import { useVoipSounds } from './OmnichannelCallProvider/hooks/useVoipSounds';
 
 const VoiceCallProvider = ({ children }: { children: ReactNode }) => {
@@ -188,6 +190,9 @@ const VoiceCallProvider = ({ children }: { children: ReactNode }) => {
 					</audio>,
 					document.body,
 				)}
+			<VoiceCallWidgetPortal>
+				<VoiceCallWidget />
+			</VoiceCallWidgetPortal>
 		</VoiceCallContext.Provider>
 	);
 };
