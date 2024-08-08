@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import type { Join, NestedPaths, PropertyType, ArrayElement, NestedPathsOfType, Filter } from 'mongodb';
+import type { Join, NestedPaths, PropertyType, ArrayElement, NestedPathsOfType, Filter, UpdateFilter } from 'mongodb';
 
 export interface Updater<T extends { _id: string }> {
 	set<P extends SetProps<T>, K extends keyof P>(key: K, value: P[K]): Updater<T>;
@@ -8,6 +8,7 @@ export interface Updater<T extends { _id: string }> {
 	addToSet<K extends keyof AddToSetProps<T>>(key: K, value: AddToSetProps<T>[K]): Updater<T>;
 	persist(query: Filter<T>): Promise<void>;
 	hasChanges(): boolean;
+	getUpdateFilter(): UpdateFilter<T>;
 }
 
 export type SetProps<TSchema extends { _id: string }> = Readonly<
