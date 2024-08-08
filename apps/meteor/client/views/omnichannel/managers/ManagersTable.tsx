@@ -80,7 +80,7 @@ const ManagersTable = () => {
 	return (
 		<>
 			<AddManager reload={refetch} />
-			{((isSuccess && data?.users.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setText(text)} />}
+			{((isSuccess && data?.users.length > 0) || queryHasChanged) && <FilterByText onChange={setText} />}
 			{isLoading && (
 				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>
