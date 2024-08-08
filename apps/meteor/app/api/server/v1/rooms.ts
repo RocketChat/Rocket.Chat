@@ -412,9 +412,9 @@ API.v1.addRoute(
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
-			const team = room.teamId && (await Team.getOneById(room.teamId));
+			const team = room.teamId && (await Team.getOneById(room.teamId, { projection: { name: 1, roomId: 1, type: 1 } }));
 
-			const parent = room.prid && (await Rooms.findOneById(room.prid, { ...API.v1.defaultFieldsToExclude }));
+			const parent = room.prid && (await Rooms.findOneById(room.prid, { projection: { name: 1, fname: 1, t: 1 } }));
 
 			return API.v1.success({
 				room: (await Rooms.findOneById(room._id, { projection: fields })) ?? undefined,
