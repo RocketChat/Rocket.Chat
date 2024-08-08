@@ -175,7 +175,6 @@ Meteor.methods<ServerMethods>({
 		}
 	},
 });
-
 // Limit a user, who does not have the "bot" role, to sending 5 msgs/second
 RateLimiter.limitMethod('sendMessage', 5, 1000, {
 	async userId(userId: IUser['_id']) {

@@ -7,7 +7,7 @@ import { useChat } from '../../../../contexts/ChatContext';
 
 const fileInputProps = { type: 'file', multiple: true };
 
-export const useFileUploadAction = (disabled: boolean, handlefiles?: any): GenericMenuItemProps => {
+export const useFileUploadAction = (disabled: boolean, handleFiles?: any): GenericMenuItemProps => {
 	const t = useTranslation();
 	const fileUploadEnabled = useSetting<boolean>('FileUpload_Enabled');
 	const fileInputRef = useFileInput(fileInputProps);
@@ -30,7 +30,7 @@ export const useFileUploadAction = (disabled: boolean, handlefiles?: any): Gener
 				});
 				return file;
 			});
-			handlefiles(filesToUpload, resetFileInput);
+			handleFiles(filesToUpload, resetFileInput);
 		};
 
 		fileInputRef.current?.addEventListener('change', handleUploadChange);
