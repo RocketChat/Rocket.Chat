@@ -95,7 +95,7 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
+			<FilterByText placeholder={t('Search_Users')} onChange={setText} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

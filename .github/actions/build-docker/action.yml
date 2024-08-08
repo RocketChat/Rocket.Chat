@@ -31,7 +31,7 @@ runs:
         password: ${{ inputs.CR_PAT }}
 
     - name: Restore build
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: build
         path: /tmp/build
@@ -43,7 +43,7 @@ runs:
         tar xzf Rocket.Chat.tar.gz
         rm Rocket.Chat.tar.gz
 
-    - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+    - uses: rharkor/caching-for-turbo@v1.5
 
     - name: Setup NodeJS
       uses: ./.github/actions/setup-node
