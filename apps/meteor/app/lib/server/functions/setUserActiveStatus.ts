@@ -1,6 +1,7 @@
+import { Federation, FederationEE, License } from '@rocket.chat/core-services';
 import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
 import { isUserFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
+import { Rooms, Users, Subscriptions, MatrixBridgedUser } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -53,9 +54,21 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 	}
 
 	if (isUserFederated(user)) {
-		throw new Meteor.Error('error-user-is-federated', 'Cannot change federated users status', {
-			method: 'setUserActiveStatus',
-		});
+		throw new Meteor.Error('error-not-allowed', 'Deactivating federated user is not allowed', { method: 'setUserActiveStatus' });
+	}
+
+	const remoteUser = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
+
+	if (remoteUser) {
+		if (active) {
+			throw new Meteor.Error('error-not-allowed', 'Deactivated federated users can not be re-activated', {
+				method: 'setUserActiveStatus',
+			});
+		}
+
+		const federation = (await License.hasValidLicense()) ? FederationEE : Federation;
+
+		await federation.deactivateRemoteUser(remoteUser);
 	}
 
 	// Users without username can't do anything, so there is no need to check for owned rooms
