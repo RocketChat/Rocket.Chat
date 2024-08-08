@@ -405,8 +405,8 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
+			const room = await findRoomByIdOrName({ params: this.queryParams });
 			const { fields } = await this.parseJsonQuery();
-			const room = await findRoomByIdOrName({ params: this.queryParams, fields });
 
 			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
 				return API.v1.failure('not-allowed', 'Not Allowed');
@@ -417,7 +417,7 @@ API.v1.addRoute(
 			const parent = room.prid && (await Rooms.findOneById(room.prid, { ...API.v1.defaultFieldsToExclude }));
 
 			return API.v1.success({
-				room: room ?? undefined,
+				room: (await Rooms.findOneById(room._id, { projection: fields })) ?? undefined,
 				...(team && { team }),
 				...(parent && { parent }),
 			});
