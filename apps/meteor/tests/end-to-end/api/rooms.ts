@@ -417,6 +417,7 @@ describe('[Rooms]', () => {
 				.split(',')
 				.filter((type) => type !== 'image/svg+xml')
 				.join(',');
+			console.log({ newBlockedMediaTypes, blockedMediaTypes });
 			await updateSetting('FileUpload_MediaTypeBlackList', newBlockedMediaTypes);
 		});
 
@@ -706,6 +707,78 @@ describe('[Rooms]', () => {
 					expect(res.body.message.files[0]).to.have.property('type', 'image/png');
 					expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
 					expect(res.body.message.attachments[0]).to.have.property('description', 'some_file_description');
+				});
+		});
+
+		it('should correctly save encrypted file', async () => {
+			let fileId;
+
+			await request
+				.post(api(`rooms.media/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../mocks/files/diagram.drawio')), {
+					contentType: 'application/octet-stream',
+				})
+				.field({ content: JSON.stringify({ algorithm: 'rc.v1.aes-sha2', ciphertext: 'something' }) })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('file');
+					expect(res.body.file).to.have.property('_id');
+					expect(res.body.file).to.have.property('url');
+
+					fileId = res.body.file._id;
+				});
+
+			await request
+				.post(api(`rooms.mediaConfirm/${testChannel._id}/${fileId}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.have.property('files');
+					expect(res.body.message.files).to.be.an('array').of.length(1);
+					expect(res.body.message.files[0]).to.have.property('type', 'application/octet-stream');
+					expect(res.body.message.files[0]).to.have.property('name', 'diagram.drawio');
+				});
+		});
+
+		it('should fail encrypted file upload when files encryption is disabled', async () => {
+			await updateSetting('E2E_Enable_Encrypt_Files', false);
+
+			await request
+				.post(api(`rooms.media/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../mocks/files/diagram.drawio')), {
+					contentType: 'application/octet-stream',
+				})
+				.field({ content: JSON.stringify({ algorithm: 'rc.v1.aes-sha2', ciphertext: 'something' }) })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
+				});
+		});
+
+		it('should fail encrypted file upload on blacklisted application/octet-stream media type', async () => {
+			await updateSetting('FileUpload_MediaTypeBlackList', 'application/octet-stream');
+
+			await request
+				.post(api(`rooms.media/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../mocks/files/diagram.drawio')), {
+					contentType: 'application/octet-stream',
+				})
+				.field({ content: JSON.stringify({ algorithm: 'rc.v1.aes-sha2', ciphertext: 'something' }) })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
 				});
 		});
 	});
