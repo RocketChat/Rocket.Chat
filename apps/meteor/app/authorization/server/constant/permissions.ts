@@ -97,6 +97,10 @@ export const permissions = [
 		_id: 'create-livechat-contact',
 		roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
 	},
+	{
+		_id: 'update-livechat-contact',
+		roles: ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin'],
+	},
 	{ _id: 'view-livechat-manager', roles: ['livechat-manager', 'livechat-monitor', 'admin'] },
 	{
 		_id: 'view-omnichannel-contact-center',

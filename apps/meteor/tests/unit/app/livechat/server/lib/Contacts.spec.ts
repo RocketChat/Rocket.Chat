@@ -2,10 +2,12 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const { validateCustomFields } = proxyquire.noCallThru().load('../../../../../../app/livechat/server/lib/Contacts', {
-	'meteor/check': sinon.stub(),
-	'meteor/meteor': sinon.stub(),
-});
+const { validateCustomFields, validateContactManager } = proxyquire
+	.noCallThru()
+	.load('../../../../../../app/livechat/server/lib/Contacts', {
+		'meteor/check': sinon.stub(),
+		'meteor/meteor': sinon.stub(),
+	});
 
 describe('[OC] Contacts', () => {
 	describe('validateCustomFields', () => {
@@ -35,6 +37,20 @@ describe('[OC] Contacts', () => {
 			const customFields = {};
 
 			expect(() => validateCustomFields(allowedCustomFields, customFields)).not.to.throw();
+		});
+	});
+
+	describe('validateContactManager', () => {
+		it('should throw an error if the user does not exist', async () => {
+			const user = null;
+
+			await expect(validateContactManager(user)).to.be.rejectedWith('error-contact-manager-not-found');
+		});
+
+		it('should not throw an error if the user has the "livechat-agent" role', async () => {
+			const user = { roles: ['livechat-agent'] };
+
+			await expect(validateContactManager(user)).to.not.be.rejected;
 		});
 	});
 });
