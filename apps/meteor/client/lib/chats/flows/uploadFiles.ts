@@ -75,7 +75,6 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 				onClose: (): void => {
 					imperativeModal.close();
 				},
-				// onSubmit: async (fileName: string, description?: string): Promise<void> => {
 				onSubmit: async (fileName: string, msg?: string): Promise<void> => {
 					Object.defineProperty(file, 'name', {
 						writable: true,
@@ -95,18 +94,10 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 						uploadFile(queue, { msg });
 						return;
 					}
-					console.log('uploading file', file);
-					console.log('message ', msg);
-					const encryptedFilesarray: any = await Promise.all(
-						queue.map(async (file) => {
-							return await e2eRoom.encryptFile(file);
-						}),
-					);
-					console.log('encryptedFilesarray', encryptedFilesarray);
-					const filesarray = encryptedFilesarray.map((file: any) => {
-						return file?.file;
-					});
-					console.log('filesarray', filesarray);
+
+					const encryptedFilesarray: any = await Promise.all(queue.map((file) => e2eRoom.encryptFile(file)));
+					const filesarray = encryptedFilesarray.map((file: any) => file?.file);
+
 					if (encryptedFilesarray[0]) {
 						const getContent = async (_id: string[], fileUrl: string[]): Promise<IE2EEMessage['content']> => {
 							const attachments = [];
@@ -165,7 +156,6 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 									name: queue[i].name,
 									type: queue[i].type,
 									size: queue[i].size,
-									// "format": "png"
 								};
 								arrayoffiles.push(files);
 							}

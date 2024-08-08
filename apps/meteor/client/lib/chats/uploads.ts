@@ -119,7 +119,7 @@ const send = async (
 					fileIds.push(result.file._id);
 					fileUrls.push(result.file.url);
 					if (fileIds.length === files.length) {
-						if (msg == undefined) {
+						if (msg === undefined) {
 							msg = '';
 						}
 

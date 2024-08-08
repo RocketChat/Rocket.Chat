@@ -269,14 +269,10 @@ const MessageBox = ({
 				uploadFile(uploadfiles, { msg });
 				return;
 			}
-			const encryptedFilesarray: any = await Promise.all(
-				uploadfiles.map(async (file) => {
-					return await e2eRoom.encryptFile(file);
-				}),
-			);
-			const filesarray = encryptedFilesarray.map((file: any) => {
-				return file?.file;
-			});
+
+			const encryptedFilesarray: any = await Promise.all(uploadfiles.map((file) => e2eRoom.encryptFile(file)));
+			const filesarray = encryptedFilesarray.map((file: any) => file?.file);
+
 			if (encryptedFilesarray[0]) {
 				const getContent = async (_id: string[], fileUrl: string[]): Promise<IE2EEMessage['content']> => {
 					const attachments = [];
@@ -335,7 +331,6 @@ const MessageBox = ({
 							name: uploadfiles[i].name,
 							type: uploadfiles[i].type,
 							size: uploadfiles[i].size,
-							// "format": "png"
 						};
 						arrayoffiles.push(files);
 					}
@@ -390,6 +385,181 @@ const MessageBox = ({
 			isSlashCommandAllowed,
 		});
 	});
+
+	// const handleSendMessage = useMutableCallback(async () => {
+	// 	if (uploadfiles !== undefined && uploadfiles.length > 0) {
+	// 		const msg = chat.composer?.text ?? '';
+	// 		if (uploadfiles.length > 6) {
+	// 			dispatchToastMessage({
+	// 				type: 'error',
+	// 				message: "You can't upload more than 6 files at once",
+	// 			});
+	// 			chat.composer?.clear();
+	// 			setUploadfiles([]);
+	// 			return;
+	// 		}
+	// 		for (const queuedFile of uploadfiles) {
+	// 			const { name, size } = queuedFile;
+	// 			if (!name) {
+	// 				dispatchToastMessage({
+	// 					type: 'error',
+	// 					message: t('error-the-field-is-required', { field: t('Name') }),
+	// 				});
+	// 				chat.composer?.clear();
+	// 				setUploadfiles([]);
+	// 				return;
+	// 			}
+
+	// 			if (maxFileSize > -1 && (size || 0) > maxFileSize) {
+	// 				dispatchToastMessage({
+	// 					type: 'error',
+	// 					message: `${t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })}`,
+	// 				});
+	// 				chat.composer?.clear();
+	// 				setUploadfiles([]);
+	// 				return;
+	// 			}
+	// 		}
+
+	// 		Object.defineProperty(uploadfiles[0], 'name', {
+	// 			writable: true,
+	// 			value: uploadfiles[0].name,
+	// 		});
+
+	// 		const e2eRoom = await e2e.getInstanceByRoomId(room._id);
+
+	// 		if (!e2eRoom) {
+	// 			uploadFile(uploadfiles, { msg });
+	// 			return;
+	// 		}
+
+	// 		const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages({ msg });
+
+	// 		if (!shouldConvertSentMessages) {
+	// 			uploadFile(uploadfiles, { msg });
+	// 			return;
+	// 		}
+	// 		const encryptedFilesarray: any = await Promise.all(
+	// 			uploadfiles.map(async (file) => {
+	// 				return await e2eRoom.encryptFile(file);
+	// 			}),
+	// 		);
+	// 		const filesarray = encryptedFilesarray.map((file: any) => {
+	// 			return file?.file;
+	// 		});
+	// 		if (encryptedFilesarray[0]) {
+	// 			const getContent = async (_id: string[], fileUrl: string[]): Promise<IE2EEMessage['content']> => {
+	// 				const attachments = [];
+	// 				const arrayoffiles = [];
+	// 				for (let i = 0; i < _id.length; i++) {
+	// 					const attachment: FileAttachmentProps = {
+	// 						title: uploadfiles[i].name,
+	// 						type: 'file',
+	// 						title_link: fileUrl[i],
+	// 						title_link_download: true,
+	// 						encryption: {
+	// 							key: encryptedFilesarray[i].key,
+	// 							iv: encryptedFilesarray[i].iv,
+	// 						},
+	// 						hashes: {
+	// 							sha256: encryptedFilesarray[i].hash,
+	// 						},
+	// 					};
+
+	// 					if (/^image\/.+/.test(uploadfiles[i].type)) {
+	// 						const dimensions = await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(uploadfiles[i]));
+
+	// 						attachments.push({
+	// 							...attachment,
+	// 							image_url: fileUrl[i],
+	// 							image_type: uploadfiles[i].type,
+	// 							image_size: uploadfiles[i].size,
+	// 							...(dimensions && {
+	// 								image_dimensions: dimensions,
+	// 							}),
+	// 						});
+	// 					} else if (/^audio\/.+/.test(uploadfiles[i].type)) {
+	// 						attachments.push({
+	// 							...attachment,
+	// 							audio_url: fileUrl[i],
+	// 							audio_type: uploadfiles[i].type,
+	// 							audio_size: uploadfiles[i].size,
+	// 						});
+	// 					} else if (/^video\/.+/.test(uploadfiles[i].type)) {
+	// 						attachments.push({
+	// 							...attachment,
+	// 							video_url: fileUrl[i],
+	// 							video_type: uploadfiles[i].type,
+	// 							video_size: uploadfiles[i].size,
+	// 						});
+	// 					} else {
+	// 						attachments.push({
+	// 							...attachment,
+	// 							size: uploadfiles[i].size,
+	// 							format: getFileExtension(uploadfiles[i].name),
+	// 						});
+	// 					}
+
+	// 					const files = {
+	// 						_id: _id[i],
+	// 						name: uploadfiles[i].name,
+	// 						type: uploadfiles[i].type,
+	// 						size: uploadfiles[i].size,
+	// 						// "format": "png"
+	// 					};
+	// 					arrayoffiles.push(files);
+	// 				}
+
+	// 				return e2eRoom.encryptMessageContent({
+	// 					attachments,
+	// 					files: arrayoffiles,
+	// 					file: uploadfiles[0],
+	// 				});
+	// 			};
+
+	// 			const fileContentData = {
+	// 				type: uploadfiles[0].type,
+	// 				typeGroup: uploadfiles[0].type.split('/')[0],
+	// 				name: uploadfiles[0].name,
+	// 				msg: msg || '',
+	// 				encryption: {
+	// 					key: encryptedFilesarray[0].key,
+	// 					iv: encryptedFilesarray[0].iv,
+	// 				},
+	// 				hashes: {
+	// 					sha256: encryptedFilesarray[0].hash,
+	// 				},
+	// 			};
+
+	// 			const fileContent = await e2eRoom.encryptMessageContent(fileContentData);
+
+	// 			const uploadFileData = {
+	// 				raw: {},
+	// 				encrypted: fileContent,
+	// 			};
+	// 			uploadFile(
+	// 				filesarray,
+	// 				{
+	// 					t: 'e2e',
+	// 				},
+	// 				getContent,
+	// 				uploadFileData,
+	// 			);
+	// 		}
+	// 		chat.composer?.clear();
+	// 		return;
+	// 	}
+	// 	const text = chat.composer?.text ?? '';
+	// 	chat.composer?.clear();
+	// 	clearPopup();
+
+	// 	onSend?.({
+	// 		value: text,
+	// 		tshow,
+	// 		previewUrls,
+	// 		isSlashCommandAllowed,
+	// 	});
+	// });
 
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
 		if (chat.currentEditing) {

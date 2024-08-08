@@ -8,16 +8,16 @@ import moment from 'moment';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { API } from '../../../api/server/api';
+import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
+import { metrics } from '../../../metrics/server';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { MessageTypes } from '../../../ui-utils/server';
 import { sendMessage } from '../functions/sendMessage';
 import { RateLimiter } from '../lib';
-import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { API } from '../../../api/server/api';
-import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
 
 export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>, previewUrls?: string[]) {
 	if (message.tshow && !message.tmid) {
@@ -140,19 +140,20 @@ Meteor.methods<ServerMethods>({
 			if (!(await canAccessRoomIdAsync(message.rid, uid))) {
 				return API.v1.unauthorized();
 			}
-			const filesarray: Partial<IUpload>[] = [];
-			for (const fileid of filesToConfirm) {
-				const file = await Uploads.findOneById(fileid);
-				if (!file) {
-					throw new Meteor.Error('invalid-file');
-				}
-				filesarray.push(file);
-			}
+			const filesarray: Partial<IUpload>[] = await Promise.all(
+				filesToConfirm.map(async (fileid) => {
+					const file = await Uploads.findOneById(fileid);
+					if (!file) {
+						throw new Meteor.Error('invalid-file');
+					}
+					return file;
+				}),
+			);
+
 			await sendFileMessage(uid, { roomId: message.rid, file: filesarray, msgData }, { parseAttachmentsForE2EE: false });
 
-			for (const fileid of filesToConfirm) {
-				await Uploads.confirmTemporaryFile(fileid, uid);
-			}
+			await Promise.all(filesToConfirm.map((fileid) => Uploads.confirmTemporaryFile(fileid, uid)));
+
 			let resmessage;
 			if (filesarray[0] !== null && filesarray[0]._id !== undefined) {
 				resmessage = await Messages.getMessageByFileIdAndUsername(filesarray[0]._id, uid);
