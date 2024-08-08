@@ -1,7 +1,7 @@
 import { License, Federation, FederationEE } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { MatrixBridgedUser, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { MatrixBridgedUser, Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
