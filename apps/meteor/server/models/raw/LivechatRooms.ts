@@ -8,6 +8,7 @@ import type {
 	IOmnichannelServiceLevelAgreements,
 	ReportResult,
 	MACStats,
+	LivechatPriorityWeight,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatRoomsModel } from '@rocket.chat/model-typings';
@@ -2581,6 +2582,31 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				},
 			])
 			.toArray();
+	}
+
+	async countLivechatRoomsByPriority(priority: LivechatPriorityWeight): Promise<number> {
+		const pipeline = [
+			{
+				$match: {
+					t: 'l',
+					priorityWeight: priority,
+				},
+			},
+			{
+				$group: {
+					_id: null,
+					sum: { $sum: 1 },
+				},
+			},
+		];
+
+		const result = await this.col.aggregate<{ sum: number }>(pipeline).toArray();
+
+		return result.length ? result[0].sum : 0;
+	}
+
+	countLivechatRoomsWithDepartment(): Promise<number> {
+		return this.col.countDocuments({ departmentId: { $exists: true }, t: 'l' });
 	}
 
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {

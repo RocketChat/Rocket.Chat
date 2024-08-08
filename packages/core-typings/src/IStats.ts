@@ -57,6 +57,15 @@ export interface IStats {
 	totalDirectMessages: number;
 	totalDiscussionsMessages: number;
 	totalLivechatMessages: number;
+	totalLivechatRoomsWithPriority: {
+		lowest: number;
+		low: number;
+		medium: number;
+		high: number;
+		highest: number;
+		notSpecified: number;
+	};
+	totalLivechatRoomsWithDepartment: number;
 	totalTriggers: number;
 	totalMessages: number;
 	federatedServers: number;

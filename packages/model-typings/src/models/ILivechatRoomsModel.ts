@@ -5,6 +5,7 @@ import type {
 	ISetting,
 	ILivechatVisitor,
 	MACStats,
+	LivechatPriorityWeight,
 } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult, Filter, UpdateOptions } from 'mongodb';
 
@@ -265,4 +266,6 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		source?: string;
 		options?: FindOptions;
 	}): FindPaginated<FindCursor<IOmnichannelRoom>>;
+	countLivechatRoomsByPriority(priority: LivechatPriorityWeight): Promise<number>;
+	countLivechatRoomsWithDepartment(): Promise<number>;
 }
