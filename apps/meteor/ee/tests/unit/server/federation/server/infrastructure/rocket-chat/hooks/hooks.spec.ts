@@ -28,7 +28,7 @@ const { FederationHooksEE } = proxyquire
 				},
 			},
 		},
-		'../../../app/settings/server': {
+		'../../../../../../../server/services/federation/utils': {
 			verifyFederationReady,
 		},
 	});
