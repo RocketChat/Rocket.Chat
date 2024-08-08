@@ -1010,6 +1010,9 @@ describe('LIVECHAT - rooms', () => {
 				fallbackForwardDepartment: fallbackDeparment._id,
 			});
 			expect(initialDepartment.fallbackForwardDepartment).to.be.equal(fallbackDeparment._id);
+
+			await deleteDepartment(initialDepartment._id);
+			await deleteDepartment(fallbackDeparment._id);
 		});
 		// Needs fixing
 		(IS_EE ? it : it.skip)(
@@ -1029,6 +1032,9 @@ describe('LIVECHAT - rooms', () => {
 
 				expect(latestRoom).to.have.property('departmentId');
 				expect(latestRoom.departmentId).to.be.equal(fallbackDeparment._id);
+
+				await deleteDepartment(initialDepartment._id);
+				await deleteDepartment(fallbackDeparment._id);
 			},
 		);
 		(IS_EE ? it : it.skip)('system messages sent on transfer should be properly generated', async () => {
