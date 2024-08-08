@@ -3,6 +3,7 @@ import { URL } from 'node:url';
 
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IFederationService, FederationConfigurationStatus } from '@rocket.chat/core-services';
+import { isRoomFederated, type IRoom } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
@@ -19,10 +20,7 @@ import type { RocketChatUserAdapter } from './infrastructure/rocket-chat/adapter
 import { federationServiceLogger } from './infrastructure/rocket-chat/adapters/logger';
 import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/converters/RoomSender';
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
-
 import './infrastructure/rocket-chat/well-known';
-import { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import { isRoomFederated } from '@rocket.chat/core-typings';
 import { verifyFederationReady } from './utils';
 
 function extractError(e: unknown) {
