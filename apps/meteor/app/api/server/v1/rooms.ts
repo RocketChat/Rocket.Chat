@@ -1,4 +1,4 @@
-import { Media } from '@rocket.chat/core-services';
+import { Media, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
@@ -36,6 +36,7 @@ import {
 async function findRoomByIdOrName({
 	params,
 	checkedArchived = true,
+	fields,
 }: {
 	params:
 		| {
@@ -45,6 +46,7 @@ async function findRoomByIdOrName({
 				roomName?: string;
 		  };
 	checkedArchived?: boolean;
+	fields?: Partial<IRoom>;
 }): Promise<IRoom> {
 	if (
 		(!('roomId' in params) && !('roomName' in params)) ||
@@ -53,7 +55,7 @@ async function findRoomByIdOrName({
 		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
-	const projection = { ...API.v1.defaultFieldsToExclude };
+	const projection = fields || { ...API.v1.defaultFieldsToExclude };
 
 	let room;
 	if ('roomId' in params) {
@@ -403,14 +405,22 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const room = await findRoomByIdOrName({ params: this.queryParams });
 			const { fields } = await this.parseJsonQuery();
+			const room = await findRoomByIdOrName({ params: this.queryParams, fields });
 
 			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
-			return API.v1.success({ room: (await Rooms.findOneByIdOrName(room._id, { projection: fields })) ?? undefined });
+			const team = room.teamId && (await Team.getOneById(room.teamId));
+
+			const parent = room.prid && (await Rooms.findOneById(room.prid, { ...API.v1.defaultFieldsToExclude }));
+
+			return API.v1.success({
+				room: room ?? undefined,
+				...(team && { team }),
+				...(parent && { parent }),
+			});
 		},
 	},
 );
