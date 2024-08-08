@@ -133,7 +133,7 @@ jobs:
 
       # if we are testing a PR from a fork, we need to build the docker image at this point
       - uses: ./.github/actions/build-docker
-        if: github.event.pull_request.head.repo.full_name != github.repository
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -187,6 +187,12 @@ jobs:
         run: |
           docker compose -f docker-compose-ci.yml up -d
 
+      - name: Clean up temporary files
+        # remove all folders inside /tmp except /tmp/coverage
+        run: |
+          cd /tmp
+          sudo find . -mindepth 1 -maxdepth 1 -type d | grep -v './coverage' | sudo xargs rm -rf
+
       - name: Cache Playwright binaries
         if: inputs.type == 'ui'
         uses: actions/cache@v3
@@ -221,6 +227,8 @@ jobs:
             sleep 10
           done;
 
+      - name: Remove unused Docker images
+        run: docker system prune -af
       - name: E2E Test API
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
@@ -281,9 +289,9 @@ jobs:
 
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: playwright-test-trace${{ inputs.release }}
+          name: playwright-test-trace-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/tests/e2e/.playwright*
 
       - name: Show server logs if E2E test failed
@@ -314,14 +322,14 @@ jobs:
 
       - name: Store e2e-api-ee-coverage
         if: inputs.type == 'api' && inputs.release == 'ee'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: e2e-api-ee-coverage
+          name: e2e-api-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: /tmp/coverage
 
       - name: Store e2e-ee-coverage
         if: inputs.type == 'ui' && inputs.release == 'ee'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: e2e-ee-coverage
+          name: e2e-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/coverage*

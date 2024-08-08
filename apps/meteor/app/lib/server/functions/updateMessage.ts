@@ -11,7 +11,7 @@ import { validateCustomMessageFields } from '../lib/validateCustomMessageFields'
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 export const updateMessage = async function (
-	message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>,
+	message: AtLeast<IMessage, '_id' | 'rid' | 'msg' | 'customFields'>,
 	user: IUser,
 	originalMsg?: IMessage,
 	previewUrls?: string[],
