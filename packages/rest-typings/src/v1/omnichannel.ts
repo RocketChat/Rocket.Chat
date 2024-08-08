@@ -9,6 +9,7 @@ import type {
 	ILivechatVisitorDTO,
 	IMessage,
 	IOmnichannelRoom,
+	IOmnichannelRoomWithDepartment,
 	IRoom,
 	ISetting,
 	ILivechatAgentActivity,
@@ -3750,7 +3751,7 @@ export type OmnichannelEndpoints = {
 		DELETE: () => void;
 	};
 	'/v1/livechat/rooms': {
-		GET: (params: GETLivechatRoomsParams) => PaginatedResult<{ rooms: IOmnichannelRoom[] }>;
+		GET: (params: GETLivechatRoomsParams) => PaginatedResult<{ rooms: IOmnichannelRoomWithDepartment[] }>;
 	};
 	'/v1/livechat/room/:rid/priority': {
 		POST: (params: POSTLivechatRoomPriorityParams) => void;

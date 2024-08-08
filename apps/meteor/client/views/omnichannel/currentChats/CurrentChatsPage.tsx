@@ -1,7 +1,7 @@
 import { Callout, Pagination } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
-import { usePermission } from '@rocket.chat/ui-contexts';
+import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
 import moment from 'moment';
 import type { ComponentProps, ReactElement } from 'react';
@@ -131,6 +131,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 	const [customFields, setCustomFields] = useState<{ [key: string]: string }>();
 
 	const { t } = useTranslation();
+	const directoryPath = useRouter().buildRoutePath('/omnichannel-directory');
 
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
@@ -204,7 +205,11 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 					<GenericTableCell withTruncatedText data-qa='current-chats-cell-status'>
 						<RoomActivityIcon room={room} /> {getStatusText(open, onHold, !!servedBy?.username)}
 					</GenericTableCell>
-					{canRemoveClosedChats && !open && <RemoveChatButton _id={_id} />}
+					{canRemoveClosedChats && (
+						<GenericTableCell maxHeight='x36' fontScale='p2' color='hint' withTruncatedText data-qa='current-chats-cell-delete'>
+							{!open && <RemoveChatButton _id={_id} />}
+						</GenericTableCell>
+					)}
 				</GenericTableRow>
 			);
 		},
@@ -304,10 +309,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 					<Callout type='warning' title={t('This_page_will_be_deprecated_soon')}>
 						<Trans i18nKey='Manage_conversations_in_the_contact_center'>
 							Manage conversations in the
-							<a target='_blank' href='https://go.rocket.chat/i/omnichannel-docs'>
-								contact center
-							</a>
-							.
+							<a href={directoryPath}>contact center</a>.
 						</Trans>
 					</Callout>
 					{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && (
