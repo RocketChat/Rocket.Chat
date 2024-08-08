@@ -1,6 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Message, Team } from '@rocket.chat/core-services';
+import { Message, Team, Room } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -27,6 +27,9 @@ export const removeUserFromRoom = async function (rid: string, user: IUser, opti
 		throw error;
 	}
 
+	await Room.beforeLeave(room);
+
+	// TODO: move before callbacks to service
 	await beforeLeaveRoomCallback.run(user, room);
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {

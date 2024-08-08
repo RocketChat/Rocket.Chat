@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
+import { isFederationEnabled, isFederationReady, FederationMatrixInvalidConfigurationError } from '../services/federation/utils';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -36,10 +37,16 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!(await hasPermissionAsync(uid, 'set-moderator', rid)) && !isRoomFederated(room)) {
+		const isFederated = isRoomFederated(room);
+
+		if (!(await hasPermissionAsync(uid, 'set-moderator', rid)) && !isFederated) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'addRoomModerator',
 			});
+		}
+
+		if (isFederated && isFederationEnabled() && !isFederationReady()) {
+			throw new FederationMatrixInvalidConfigurationError('unable to change room owners');
 		}
 
 		const user = await Users.findOneById(userId);

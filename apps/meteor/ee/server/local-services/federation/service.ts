@@ -1,3 +1,4 @@
+import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IFederationServiceEE, IFederationJoinExternalPublicRoomInput } from '@rocket.chat/core-services';
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
 
@@ -230,5 +231,9 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 
 	public async configurationStatus() {
 		return super.configurationStatus();
+	}
+
+	public async beforeCreateRoom(room: Partial<IRoom>) {
+		return super.beforeCreateRoom(room);
 	}
 }
