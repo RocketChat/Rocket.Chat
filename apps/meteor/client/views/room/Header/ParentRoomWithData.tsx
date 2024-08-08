@@ -27,7 +27,7 @@ const ParentRoomWithData = ({ room }: ParentRoomWithDataProps): ReactElement => 
 
 	const subscription = useUserSubscription(parentId);
 	if (subscription) {
-		return <ParentRoom room={subscription} />;
+		return <ParentRoom room={{ ...subscription, _id: subscription.rid }} />;
 	}
 
 	return <ParentRoomWithEndpointData rid={room._id} />;

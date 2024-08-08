@@ -13,7 +13,12 @@ type ParentRoomProps = {
 const ParentRoom = ({ room }: ParentRoomProps): ReactElement => {
 	const icon = useRoomIcon(room);
 
-	const handleRedirect = (): void => roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room });
+	const handleRedirect = (): void => {
+		if (!roomCoordinator.getRoomDirectives(room.t).hasSubscription(room._id)) {
+			return;
+		}
+		roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room });
+	};
 
 	return (
 		<HeaderTag
