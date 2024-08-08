@@ -36,7 +36,6 @@ import {
 async function findRoomByIdOrName({
 	params,
 	checkedArchived = true,
-	fields,
 }: {
 	params:
 		| {
@@ -46,7 +45,6 @@ async function findRoomByIdOrName({
 				roomName?: string;
 		  };
 	checkedArchived?: boolean;
-	fields?: Partial<IRoom>;
 }): Promise<IRoom> {
 	if (
 		(!('roomId' in params) && !('roomName' in params)) ||
@@ -55,7 +53,7 @@ async function findRoomByIdOrName({
 		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
-	const projection = fields || { ...API.v1.defaultFieldsToExclude };
+	const projection = { ...API.v1.defaultFieldsToExclude };
 
 	let room;
 	if ('roomId' in params) {
