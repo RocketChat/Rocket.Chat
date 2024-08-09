@@ -19,6 +19,7 @@ import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import UserActions from './RoomMembersActions';
+import RoomOwnerTag from './RoomOwnerTag';
 
 type RoomMembersItemProps = {
 	onClickView: (e: MouseEvent<HTMLElement>) => void;
@@ -46,7 +47,10 @@ const RoomMembersItem = ({ _id, name, username, federated, onClickView, rid, rel
 			</OptionAvatar>
 			<OptionColumn>{federated ? <Icon name='globe' size='x16' /> : <ReactiveUserStatus uid={_id} />}</OptionColumn>
 			<OptionContent data-qa={`MemberItem-${username}`}>
-				{nameOrUsername} {displayUsername && <OptionDescription>({displayUsername})</OptionDescription>}
+				<div style={{ display: 'flex', alignItems: 'baseline' }}>
+					{nameOrUsername} {displayUsername && <OptionDescription>({displayUsername})</OptionDescription>}
+					<RoomOwnerTag roomId={rid} userId={_id} />
+				</div>
 			</OptionContent>
 			<OptionMenu onClick={preventPropagation}>
 				{showButton ? (
