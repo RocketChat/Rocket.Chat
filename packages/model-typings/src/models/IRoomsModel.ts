@@ -99,7 +99,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findDefaultRoomsForTeam(teamId: any): FindCursor<IRoom>;
 
-	incUsersCountByIds(ids: Array<IRoom['_id']>, inc: number): Promise<Document | UpdateResult>;
+	incUsersCountByIds(ids: Array<IRoom['_id']>, inc: number, options?: UpdateOptions): Promise<Document | UpdateResult>;
 
 	findOneByNameOrFname(name: NonNullable<IRoom['name'] | IRoom['fname']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 

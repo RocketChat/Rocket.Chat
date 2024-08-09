@@ -20,6 +20,7 @@ import type {
 	IndexDescription,
 	FindCursor,
 	UpdateFilter,
+	DeleteOptions,
 } from 'mongodb';
 
 import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
@@ -274,8 +275,8 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		throw new Error('Method not implemented on the community edition.');
 	}
 
-	async removeByRoomId(rid: string): Promise<DeleteResult> {
-		return this.deleteOne({ rid });
+	async removeByRoomId(rid: string, options?: DeleteOptions): Promise<DeleteResult> {
+		return this.deleteOne({ rid }, options);
 	}
 
 	getQueuedInquiries(options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord> {

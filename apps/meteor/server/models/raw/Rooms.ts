@@ -597,7 +597,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		});
 	}
 
-	incUsersCountByIds(ids: Array<IRoom['_id']>, inc = 1): Promise<Document | UpdateResult> {
+	incUsersCountByIds(ids: Array<IRoom['_id']>, inc = 1, options?: UpdateOptions): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
 			_id: {
 				$in: ids,
@@ -610,7 +610,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 
-		return this.updateMany(query, update);
+		return this.updateMany(query, update, options);
 	}
 
 	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }> {

@@ -10,6 +10,8 @@ import type {
 	InsertOneResult,
 	InsertManyResult,
 	AggregationCursor,
+	DeleteOptions,
+	CountDocumentsOptions,
 } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -73,7 +75,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	findByUserIdAndTypes(userId: string, types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
-	removeByRoomId(roomId: string): Promise<number>;
+	removeByRoomId(roomId: string, options?: DeleteOptions): Promise<number>;
 
 	findConnectedUsersExcept(
 		userId: string,
@@ -253,7 +255,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	removeUnreadThreadsByRoomId(rid: string, tunread: string[]): Promise<UpdateResult | Document>;
 	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number>;
-	countByRoomId(roomId: string): Promise<number>;
+	countByRoomId(roomId: string, options?: CountDocumentsOptions): Promise<number>;
 	countByUserId(userId: string): Promise<number>;
 	openByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	countByRoomIdAndNotUserId(rid: string, uid: string): Promise<number>;
