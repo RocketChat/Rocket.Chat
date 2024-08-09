@@ -12,10 +12,11 @@ type AvatarUrlProviderProps = {
 const AvatarUrlProvider = ({ children }: AvatarUrlProviderProps) => {
 	const cdnAvatarUrl = String(useSetting('CDN_PREFIX') || '');
 	const externalProviderUrl = String(useSetting('Accounts_AvatarExternalProviderUrl') || '');
+	const externalProviderProxy = Boolean(useSetting('Accounts_AvatarExternalProviderProxy') || false);
 	const contextValue = useMemo(
 		() => ({
 			getUserPathAvatar: ((): ((uid: string, etag?: string) => string) => {
-				if (externalProviderUrl) {
+				if (externalProviderUrl && !externalProviderProxy) {
 					return (uid: string): string => externalProviderUrl.trim().replace(/\/+$/, '').replace('{username}', uid);
 				}
 				if (cdnAvatarUrl) {
@@ -26,7 +27,7 @@ const AvatarUrlProvider = ({ children }: AvatarUrlProviderProps) => {
 			getRoomPathAvatar: ({ type, ...room }: any): string =>
 				roomCoordinator.getRoomDirectives(type || room.t).getAvatarPath({ username: room._id, ...room }) || '',
 		}),
-		[externalProviderUrl, cdnAvatarUrl],
+		[externalProviderUrl, cdnAvatarUrl, externalProviderProxy],
 	);
 
 	return <AvatarUrlContext.Provider children={children} value={contextValue} />;
