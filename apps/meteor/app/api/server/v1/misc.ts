@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 
+import { isMeteorError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Settings, Users } from '@rocket.chat/models';
 import {
@@ -496,6 +497,18 @@ declare module '@rocket.chat/rest-typings' {
 	}
 }
 
+const parseErrorObject = (err: any) => {
+	if (!isMeteorError(err)) {
+		return {
+			message: err?.message || 'Error',
+			...(process.env.TEST_MODE === 'true' ? { stack: err?.stack } : {}),
+		};
+	}
+
+	// Meteor errors can be EJSONed without problems
+	return err;
+};
+
 const mountResult = ({
 	id,
 	error,
@@ -510,7 +523,7 @@ const mountResult = ({
 	message: EJSON.stringify({
 		msg: 'result',
 		id,
-		error: error as any,
+		error: parseErrorObject(error),
 		result: result as any,
 	}),
 });
