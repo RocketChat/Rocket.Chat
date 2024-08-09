@@ -72,4 +72,12 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 	create(data: InsertionModel<IEmojiCustom>): Promise<InsertOneResult<WithId<IEmojiCustom>>> {
 		return this.insertOne(data);
 	}
+
+	countByNameOrAlias(name: string): Promise<number> {
+		const query = {
+			$or: [{ name }, { aliases: name }],
+		};
+
+		return this.countDocuments(query);
+	}
 }

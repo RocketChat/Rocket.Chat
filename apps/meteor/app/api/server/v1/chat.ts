@@ -364,19 +364,13 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-messageid-param-not-provided', 'The required "messageId" param is missing.');
 			}
 
-			const msg = await Messages.findOneById(this.bodyParams.messageId);
-
-			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-			}
-
 			const emoji = 'emoji' in this.bodyParams ? this.bodyParams.emoji : (this.bodyParams as { reaction: string }).reaction;
 
 			if (!emoji) {
 				throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
 			}
 
-			await executeSetReaction(this.userId, emoji, msg._id, this.bodyParams.shouldReact);
+			await executeSetReaction(this.userId, emoji, this.bodyParams.messageId, this.bodyParams.shouldReact);
 
 			return API.v1.success();
 		},
