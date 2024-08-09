@@ -2025,7 +2025,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return updater;
 	}
 
-	private getAnalyticsUpdateQueryBySentByAgent(
+	async getAnalyticsUpdateQueryBySentByAgent(
 		room: IOmnichannelRoom,
 		message: IMessage,
 		analyticsData: Record<string, string | number | Date> | undefined,
@@ -2042,10 +2042,9 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.getAnalyticsUpdateQuery(analyticsData, updater);
 	}
 
-	private getAnalyticsUpdateQueryBySentByVisitor(
+	async getAnalyticsUpdateQueryBySentByVisitor(
 		room: IOmnichannelRoom,
 		message: IMessage,
-		analyticsData: Record<string, string | number | Date> | undefined,
 		updater: Updater<IOmnichannelRoom> = this.getUpdater(),
 	) {
 		// livechat analytics : update last message timestamps
@@ -2054,21 +2053,10 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 		// update visitor timestamp, only if its new inquiry and not continuing message
 		if (agentLastReply >= visitorLastQuery) {
-			return this.getAnalyticsUpdateQuery(analyticsData, updater).set('metrics.v.lq', message.ts);
+			return updater.set('metrics.v.lq', message.ts);
 		}
 
-		return this.getAnalyticsUpdateQuery(analyticsData, updater);
-	}
-
-	async getAnalyticsUpdateQueryByRoomId(
-		room: IOmnichannelRoom,
-		message: IMessage,
-		analyticsData: Record<string, string | number | Date> | undefined,
-		updater: Updater<IOmnichannelRoom> = this.getUpdater(),
-	) {
-		return isMessageFromVisitor(message)
-			? this.getAnalyticsUpdateQueryBySentByVisitor(room, message, analyticsData, updater)
-			: this.getAnalyticsUpdateQueryBySentByAgent(room, message, analyticsData, updater);
+		return updater;
 	}
 
 	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lt: Date }, { departmentId }: { departmentId?: string } = {}) {

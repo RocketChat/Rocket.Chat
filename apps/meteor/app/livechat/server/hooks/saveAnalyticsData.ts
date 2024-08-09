@@ -70,8 +70,12 @@ callbacks.add(
 			message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
 		}
 
-		const analyticsData = isMessageFromVisitor(message) ? undefined : getAnalyticsData(room, new Date());
-		await LivechatRooms.getAnalyticsUpdateQueryByRoomId(room, message, analyticsData, roomUpdater);
+		if (isMessageFromVisitor(message)) {
+			await LivechatRooms.getAnalyticsUpdateQueryBySentByVisitor(room, message, roomUpdater);
+		} else {
+			const analyticsData = getAnalyticsData(room, new Date());
+			await LivechatRooms.getAnalyticsUpdateQueryBySentByAgent(room, message, analyticsData, roomUpdater);
+		}
 
 		return message;
 	},
