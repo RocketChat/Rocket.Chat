@@ -461,9 +461,6 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 }
 
 export const notifyOnMessageChange = withDbWatcherCheck(async ({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<void> => {
-	if (!dbWatchersDisabled) {
-		return;
-	}
 	const message = await getMessageToBroadcast({ id, data });
 	if (!message) {
 		return;
