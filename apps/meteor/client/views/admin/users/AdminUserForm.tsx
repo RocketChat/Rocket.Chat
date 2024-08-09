@@ -165,6 +165,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 	const rolesId = useUniqueId();
 	const joinDefaultChannelsId = useUniqueId();
 	const sendWelcomeEmailId = useUniqueId();
+	const isSaveUserLoading = handleCreateUser?.isLoading || handleUpdateUser?.isLoading;
 
 	return (
 		<>
@@ -494,7 +495,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 					>
 						{t('Reset')}
 					</Button>
-					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)}>
+					<Button primary disabled={!isDirty || isSaveUserLoading} onClick={handleSubmit(handleSaveUser)}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
