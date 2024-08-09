@@ -1,15 +1,18 @@
 import { api } from '@rocket.chat/core-services';
-import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
+import type { AtLeast, IMessage, IUser, IUpload } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Messages, Users } from '@rocket.chat/models';
+import { Messages, Uploads, Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { API } from '../../../api/server/api';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { MessageTypes } from '../../../ui-utils/server';
@@ -114,12 +117,12 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		sendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>, previewUrls?: string[]): any;
+		sendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>, previewUrls?: string[], filesToConfirm?: string[], msgData?: any): any;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	async sendMessage(message, previewUrls) {
+	async sendMessage(message, previewUrls, filesToConfirm, msgData) {
 		check(message, Object);
 
 		const uid = Meteor.userId();
@@ -131,6 +134,34 @@ Meteor.methods<ServerMethods>({
 
 		if (MessageTypes.isSystemMessage(message)) {
 			throw new Error("Cannot send system messages using 'sendMessage'");
+		}
+
+		if (filesToConfirm !== undefined) {
+			if (!(await canAccessRoomIdAsync(message.rid, uid))) {
+				return API.v1.unauthorized();
+			}
+			const filesarray: Partial<IUpload>[] = await Promise.all(
+				filesToConfirm.map(async (fileid) => {
+					const file = await Uploads.findOneById(fileid);
+					if (!file) {
+						throw new Meteor.Error('invalid-file');
+					}
+					return file;
+				}),
+			);
+
+			await sendFileMessage(uid, { roomId: message.rid, file: filesarray, msgData }, { parseAttachmentsForE2EE: false });
+
+			await Promise.all(filesToConfirm.map((fileid) => Uploads.confirmTemporaryFile(fileid, uid)));
+
+			let resmessage;
+			if (filesarray[0] !== null && filesarray[0]._id !== undefined) {
+				resmessage = await Messages.getMessageByFileIdAndUsername(filesarray[0]._id, uid);
+			}
+
+			return API.v1.success({
+				resmessage,
+			});
 		}
 
 		try {

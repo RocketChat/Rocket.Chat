@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useState, memo } from 'react';
 
-import { userAgentMIMETypeFallback } from '../../../../lib/utils/userAgentMIMETypeFallback';
+// import { userAgentMIMETypeFallback } from '../../../../lib/utils/userAgentMIMETypeFallback'; // as currently showing video in generic view
 import { FilePreviewType } from './FilePreview';
 import ImagePreview from './ImagePreview';
 import PreviewSkeleton from './PreviewSkeleton';
@@ -34,9 +34,11 @@ const useFileAsDataURL = (file: File): [loaded: boolean, url: null | FileReader[
 type MediaPreviewProps = {
 	file: File;
 	fileType: FilePreviewType;
+	onRemove: (index: number) => void;
+	index: number;
 };
 
-const MediaPreview = ({ file, fileType }: MediaPreviewProps): ReactElement => {
+const MediaPreview = ({ file, fileType, onRemove, index }: MediaPreviewProps): ReactElement => {
 	const [loaded, url] = useFileAsDataURL(file);
 	const t = useTranslation();
 
@@ -54,17 +56,17 @@ const MediaPreview = ({ file, fileType }: MediaPreviewProps): ReactElement => {
 	}
 
 	if (fileType === FilePreviewType.IMAGE) {
-		return <ImagePreview url={url} file={file} />;
+		return <ImagePreview url={url} file={file} onRemove={onRemove} index={index} />;
 	}
 
-	if (fileType === FilePreviewType.VIDEO) {
-		return (
-			<Box is='video' w='full' controls>
-				<source src={url} type={userAgentMIMETypeFallback(file.type)} />
-				{t('Browser_does_not_support_video_element')}
-			</Box>
-		);
-	}
+	// if (fileType === FilePreviewType.VIDEO) {
+	// 	return (
+	// 		<Box is='video' w='full' controls>
+	// 			<source src={url} type={userAgentMIMETypeFallback(file.type)} />
+	// 			{t('Browser_does_not_support_video_element')}
+	// 		</Box>
+	// 	);
+	// }
 
 	if (fileType === FilePreviewType.AUDIO) {
 		return <AudioPlayer src={url} />;

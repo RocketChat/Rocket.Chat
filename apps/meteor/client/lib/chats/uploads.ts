@@ -30,7 +30,7 @@ const wipeFailedOnes = (): void => {
 };
 
 const send = async (
-	file: File,
+	file: File[] | File,
 	{
 		description,
 		msg,
@@ -44,41 +44,41 @@ const send = async (
 		tmid?: string;
 		t?: IMessage['t'];
 	},
-	getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
-	fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
+	getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
+	fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
 ): Promise<void> => {
+	const files = Array.isArray(file) ? file : [file];
 	const id = Random.id();
-
 	updateUploads((uploads) => [
 		...uploads,
 		{
 			id,
-			name: fileContent?.raw.name || file.name,
+			name: files[0].name || fileContent?.raw.name || 'unknown',
 			percentage: 0,
 		},
 	]);
 
-	try {
-		await new Promise((resolve, reject) => {
+	const fileIds: string[] = [];
+	const fileUrls: string[] = [];
+
+	files.forEach((f) => {
+		new Promise<void>((resolve, reject) => {
 			const xhr = sdk.rest.upload(
 				`/v1/rooms.media/${rid}`,
 				{
-					file,
+					file: f,
 					...(fileContent && {
 						content: JSON.stringify(fileContent.encrypted),
 					}),
 				},
 				{
-					load: (event) => {
-						resolve(event);
-					},
 					progress: (event) => {
 						if (!event.lengthComputable) {
 							return;
 						}
 						const progress = (event.loaded / event.total) * 100;
 						if (progress === 100) {
-							return;
+							resolve();
 						}
 
 						updateUploads((uploads) =>
@@ -116,51 +116,67 @@ const send = async (
 			xhr.onload = async () => {
 				if (xhr.readyState === xhr.DONE && xhr.status === 200) {
 					const result = JSON.parse(xhr.responseText);
-					let content;
-					if (getContent) {
-						content = await getContent(result.file._id, result.file.url);
-					}
+					fileIds.push(result.file._id);
+					fileUrls.push(result.file.url);
+					if (fileIds.length === files.length) {
+						if (msg === undefined) {
+							msg = '';
+						}
 
-					await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${result.file._id}`, {
-						msg,
-						tmid,
-						description,
-						t,
-						content,
-					});
+						const text: IMessage = {
+							rid,
+							_id: id,
+							msg: '',
+							ts: new Date(),
+							u: { _id: id, username: id },
+							_updatedAt: new Date(),
+						};
+
+						try {
+							let content;
+							if (getContent) {
+								content = await getContent(fileIds, fileUrls);
+							}
+							const msgData = {
+								msg,
+								tmid,
+								description,
+								t,
+								content,
+							};
+							await sdk.call('sendMessage', text, fileUrls, fileIds, msgData);
+
+							updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
+						} catch (error) {
+							updateUploads((uploads) =>
+								uploads.map((upload) => {
+									if (upload.id !== id) {
+										return upload;
+									}
+
+									return {
+										...upload,
+										percentage: 0,
+										error: new Error(getErrorMessage(error)),
+									};
+								}),
+							);
+						} finally {
+							if (!uploads.length) {
+								UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
+							}
+						}
+					}
 				}
 			};
-
-			if (uploads.length) {
-				UserAction.performContinuously(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
-			}
 
 			emitter.once(`cancelling-${id}`, () => {
 				xhr.abort();
 				updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
+				reject(new Error('Upload cancelled'));
 			});
 		});
-
-		updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
-	} catch (error: unknown) {
-		updateUploads((uploads) =>
-			uploads.map((upload) => {
-				if (upload.id !== id) {
-					return upload;
-				}
-
-				return {
-					...upload,
-					percentage: 0,
-					error: new Error(getErrorMessage(error)),
-				};
-			}),
-		);
-	} finally {
-		if (!uploads.length) {
-			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
-		}
-	}
+	});
 };
 
 export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): UploadsAPI => ({
@@ -169,9 +185,9 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 	wipeFailedOnes,
 	cancel,
 	send: (
-		file: File,
+		file: File[] | File,
 		{ description, msg, t }: { description?: string; msg?: string; t?: IMessage['t'] },
-		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
-		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
+		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
+		fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
 	): Promise<void> => send(file, { description, msg, rid, tmid, t }, getContent, fileContent),
 });
