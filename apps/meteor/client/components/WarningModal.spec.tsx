@@ -4,10 +4,9 @@ import React from 'react';
 
 import WarningModal from './WarningModal';
 
-import '@testing-library/jest-dom';
-
 it('should look good', async () => {
 	render(<WarningModal text='text' confirmText='confirm' cancelText='cancel' confirm={() => undefined} close={() => undefined} />, {
+		legacyRoot: true,
 		wrapper: mockAppRoot().build(),
 	});
 
