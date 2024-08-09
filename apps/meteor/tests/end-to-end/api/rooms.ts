@@ -1995,6 +1995,24 @@ describe('[Rooms]', () => {
 				})
 				.end(done);
 		});
+		it('should return an array sorted by "ts" property', (done) => {
+			void request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					sort: JSON.stringify({
+						ts: -1,
+					}),
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf.at.least(1);
+					expect(res.body.rooms[0]).to.have.property('ts').that.is.a('string');
+				})
+				.end(done);
+		});
 	});
 
 	describe('update group dms name', () => {

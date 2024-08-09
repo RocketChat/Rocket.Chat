@@ -53,7 +53,7 @@ const EditRoomWithData = ({ rid, onReload }: EditRoomWithDataProps) => {
 				<ContextualbarTitle>{t('Room_Info')}</ContextualbarTitle>
 				<ContextualbarClose onClick={() => router.navigate('/admin/rooms')} />
 			</ContextualbarHeader>
-			<EditRoom room={data} onChange={handleChange} onDelete={handleDelete} />
+			<EditRoom room={data as IRoom} onChange={handleChange} onDelete={handleDelete} />
 		</Contextualbar>
 	) : null;
 };

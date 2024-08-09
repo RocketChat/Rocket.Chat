@@ -9,6 +9,7 @@ export const adminFields: Partial<Record<keyof IRoom, 1>> = {
 	cl: 1,
 	u: 1,
 	usernames: 1,
+	ts: 1,
 	usersCount: 1,
 	muted: 1,
 	unmuted: 1,

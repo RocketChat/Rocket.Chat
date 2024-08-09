@@ -27,7 +27,7 @@ import { useDeleteRoom } from '../../hooks/roomActions/useDeleteRoom';
 import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
 
 type EditRoomProps = {
-	room: Pick<IRoom, RoomAdminFieldsType>;
+	room: IRoom;
 	onChange: () => void;
 	onDelete: () => void;
 };
