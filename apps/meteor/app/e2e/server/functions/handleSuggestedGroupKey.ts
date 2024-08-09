@@ -1,6 +1,8 @@
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { notifyOnSubscriptionChangedById } from '../../../lib/server/lib/notifyListener';
+
 export async function handleSuggestedGroupKey(
 	handle: 'accept' | 'reject',
 	rid: string,
@@ -31,4 +33,6 @@ export async function handleSuggestedGroupKey(
 	}
 
 	await Subscriptions.unsetGroupE2ESuggestedKey(sub._id);
+
+	void notifyOnSubscriptionChangedById(sub._id);
 }

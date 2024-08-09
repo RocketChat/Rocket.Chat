@@ -4,6 +4,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { notifyOnSubscriptionChangedById } from '../../../lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -44,6 +45,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		let shouldNotifySubscriptionChanged = false;
+
 		switch (field) {
 			case 'autoTranslate':
 				const room = await Rooms.findE2ERoomById(rid, { projection: { _id: 1 } });
@@ -53,14 +56,32 @@ Meteor.methods<ServerMethods>({
 					});
 				}
 
-				await Subscriptions.updateAutoTranslateById(subscription._id, value === '1');
-				if (!subscription.autoTranslateLanguage && options.defaultLanguage) {
-					await Subscriptions.updateAutoTranslateLanguageById(subscription._id, options.defaultLanguage);
+				const updateAutoTranslateResponse = await Subscriptions.updateAutoTranslateById(subscription._id, value === '1');
+				if (updateAutoTranslateResponse.modifiedCount) {
+					shouldNotifySubscriptionChanged = true;
 				}
+
+				if (!subscription.autoTranslateLanguage && options.defaultLanguage) {
+					const updateAutoTranslateLanguageResponse = await Subscriptions.updateAutoTranslateLanguageById(
+						subscription._id,
+						options.defaultLanguage,
+					);
+					if (updateAutoTranslateLanguageResponse.modifiedCount) {
+						shouldNotifySubscriptionChanged = true;
+					}
+				}
+
 				break;
 			case 'autoTranslateLanguage':
-				await Subscriptions.updateAutoTranslateLanguageById(subscription._id, value);
+				const updateAutoTranslateLanguage = await Subscriptions.updateAutoTranslateLanguageById(subscription._id, value);
+				if (updateAutoTranslateLanguage.modifiedCount) {
+					shouldNotifySubscriptionChanged = true;
+				}
 				break;
+		}
+
+		if (shouldNotifySubscriptionChanged) {
+			void notifyOnSubscriptionChangedById(subscription._id);
 		}
 
 		return true;

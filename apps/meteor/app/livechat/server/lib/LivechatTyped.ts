@@ -60,8 +60,10 @@ import {
 	notifyOnLivechatInquiryChangedByRoom,
 	notifyOnRoomChangedById,
 	notifyOnLivechatInquiryChangedByToken,
-	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
 	notifyOnUserChange,
+	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
+	notifyOnSubscriptionChangedByRoomId,
+	notifyOnSubscriptionChangedByToken,
 } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
@@ -292,7 +294,7 @@ class LivechatClass {
 			throw new Error('Error closing room');
 		}
 
-		await Subscriptions.removeByRoomId(rid);
+		(await Subscriptions.removeByRoomId(rid)).deletedCount && void notifyOnSubscriptionChangedByRoomId(rid, 'removed');
 
 		this.logger.debug(`DB updated for room ${room._id}`);
 
@@ -531,7 +533,11 @@ class LivechatClass {
 			LivechatRooms.removeById(rid),
 		]);
 
-		if (inquiry) {
+		if (result[2]?.status === 'fulfilled' && result[2].value?.deletedCount) {
+			void notifyOnSubscriptionChangedByRoomId(rid, 'removed');
+		}
+
+		if (result[3]?.status === 'fulfilled' && result[3].value?.deletedCount && inquiry) {
 			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
 		}
 
@@ -1160,7 +1166,11 @@ class LivechatClass {
 			]);
 		}
 
-		await Promise.all([Subscriptions.removeByVisitorToken(token), LivechatRooms.removeByVisitorToken(token)]);
+		const responses = await Promise.all([Subscriptions.removeByVisitorToken(token), LivechatRooms.removeByVisitorToken(token)]);
+
+		if (responses[0]?.deletedCount) {
+			void notifyOnSubscriptionChangedByToken(token, 'removed');
+		}
 
 		const livechatInquiries = await LivechatInquiry.findIdsByVisitorToken(token).toArray();
 		await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
@@ -1723,13 +1733,19 @@ class LivechatClass {
 			const { _id: rid } = roomData;
 			const { name } = guestData;
 
-			await Promise.all([
+			const responses = await Promise.all([
 				Rooms.setFnameById(rid, name),
 				LivechatInquiry.setNameByRoomId(rid, name),
 				Subscriptions.updateDisplayNameByRoomId(rid, name),
 			]);
 
-			void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
+			if (responses[1]?.modifiedCount) {
+				void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
+			}
+
+			if (responses[2]?.modifiedCount) {
+				await notifyOnSubscriptionChangedByRoomId(rid);
+			}
 		}
 
 		void notifyOnRoomChangedById(roomData._id);

@@ -32,6 +32,7 @@ import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { checkUsernameAvailability } from '../../../app/lib/server/functions/checkUsernameAvailability';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
@@ -745,7 +746,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('invalid-team');
 		}
 
-		await Promise.all([
+		const responses = await Promise.all([
 			TeamMember.updateOneByUserIdAndTeamId(member.userId, teamId, memberUpdate),
 			Subscriptions.updateOne(
 				{
@@ -757,6 +758,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				},
 			),
 		]);
+
+		if (responses[1].modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomIdAndUserId(team.roomId, member.userId);
+		}
 	}
 
 	async removeMember(teamId: string, userId: string): Promise<void> {

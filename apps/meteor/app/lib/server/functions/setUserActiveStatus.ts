@@ -8,7 +8,12 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { notifyOnRoomChangedById, notifyOnRoomChangedByUserDM, notifyOnUserChange } from '../lib/notifyListener';
+import {
+	notifyOnRoomChangedById,
+	notifyOnRoomChangedByUserDM,
+	notifySubscriptionsOnUserArchived,
+	notifyOnUserChange,
+} from '../lib/notifyListener';
 import { closeOmnichannelConversations } from './closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
@@ -38,8 +43,10 @@ async function reactivateDirectConversations(userId: string) {
 		return acc;
 	}, []);
 
-	await Rooms.setDmReadOnlyByUserId(userId, roomsToReactivate, false, false);
-	void notifyOnRoomChangedById(roomsToReactivate);
+	const setDmReadOnlyResponse = await Rooms.setDmReadOnlyByUserId(userId, roomsToReactivate, false, false);
+	if (setDmReadOnlyResponse.modifiedCount) {
+		void notifyOnRoomChangedById(roomsToReactivate);
+	}
 }
 
 export async function setUserActiveStatus(userId: string, active: boolean, confirmRelinquish = false): Promise<boolean | undefined> {
@@ -101,7 +108,10 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 	}
 
 	if (user.username) {
-		await Subscriptions.setArchivedByUsername(user.username, !active);
+		const setArchivedResponse = await Subscriptions.setArchivedByUsername(user.username, !active);
+		if (setArchivedResponse.modifiedCount) {
+			void notifySubscriptionsOnUserArchived(user._id, 'd');
+		}
 	}
 
 	if (active === false) {

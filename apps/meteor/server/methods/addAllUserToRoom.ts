@@ -6,6 +6,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { getDefaultSubscriptionPref } from '../../app/utils/lib/getDefaultSubscriptionPref';
 import { callbacks } from '../../lib/callbacks';
@@ -58,7 +59,7 @@ Meteor.methods<ServerMethods>({
 			}
 			await callbacks.run('beforeJoinRoom', user, room);
 			const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(user);
-			await Subscriptions.createWithRoomAndUser(room, user, {
+			const { insertedId } = await Subscriptions.createWithRoomAndUser(room, user, {
 				ts: now,
 				open: true,
 				alert: true,
@@ -68,6 +69,9 @@ Meteor.methods<ServerMethods>({
 				...autoTranslateConfig,
 				...getDefaultSubscriptionPref(user),
 			});
+			if (insertedId) {
+				void notifyOnSubscriptionChangedById(insertedId, 'inserted');
+			}
 			await Message.saveSystemMessage('uj', rid, user.username || '', user, { ts: now });
 			await callbacks.run('afterJoinRoom', user, room);
 		}

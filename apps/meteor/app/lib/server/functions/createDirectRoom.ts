@@ -11,7 +11,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
-import { notifyOnRoomChangedById } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../lib/notifyListener';
 
 const generateSubscription = (
 	fname: string,
@@ -135,7 +135,7 @@ export async function createDirectRoom(
 
 	if (roomMembers.length === 1) {
 		// dm to yourself
-		await Subscriptions.updateOne(
+		const { modifiedCount, upsertedCount } = await Subscriptions.updateOne(
 			{ rid, 'u._id': roomMembers[0]._id },
 			{
 				$set: { open: true },
@@ -146,6 +146,9 @@ export async function createDirectRoom(
 			},
 			{ upsert: true },
 		);
+		if (modifiedCount || upsertedCount) {
+			void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, roomMembers[0]._id, modifiedCount ? 'updated' : 'inserted');
+		}
 	} else {
 		const memberIds = roomMembers.map((member) => member._id);
 		const membersWithPreferences: IUser[] = await Users.find(
@@ -155,7 +158,7 @@ export async function createDirectRoom(
 
 		for await (const member of membersWithPreferences) {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);
-			await Subscriptions.updateOne(
+			const { modifiedCount, upsertedCount } = await Subscriptions.updateOne(
 				{ rid, 'u._id': member._id },
 				{
 					...(options?.creator === member._id && { $set: { open: true } }),
@@ -166,6 +169,9 @@ export async function createDirectRoom(
 				},
 				{ upsert: true },
 			);
+			if (modifiedCount || upsertedCount) {
+				void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, member._id, modifiedCount ? 'updated' : 'inserted');
+			}
 		}
 	}
 

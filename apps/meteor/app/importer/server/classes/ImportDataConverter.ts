@@ -28,7 +28,7 @@ import { generateUsernameSuggestion } from '../../../lib/server/functions/getUse
 import { insertMessage } from '../../../lib/server/functions/insertMessage';
 import { saveUserIdentity } from '../../../lib/server/functions/saveUserIdentity';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
-import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedByRoomId, notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 import { createChannelMethod } from '../../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../../lib/server/methods/createPrivateGroup';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
@@ -1161,8 +1161,11 @@ export class ImportDataConverter {
 	}
 
 	async archiveRoomById(rid: string) {
-		await Rooms.archiveById(rid);
-		await Subscriptions.archiveByRoomId(rid);
+		const responses = await Promise.all([Rooms.archiveById(rid), Subscriptions.archiveByRoomId(rid)]);
+
+		if (responses[1]?.modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomId(rid);
+		}
 	}
 
 	async convertData(startedByUserId: string, callbacks: IConversionCallbacks = {}): Promise<void> {

@@ -11,7 +11,7 @@ import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/li
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
-import { notifyOnRoomChangedById } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
 
 export const addUserToRoom = async function (
 	rid: string,
@@ -82,7 +82,7 @@ export const addUserToRoom = async function (
 
 	const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(userToBeAdded);
 
-	await Subscriptions.createWithRoomAndUser(room, userToBeAdded as IUser, {
+	const { insertedId } = await Subscriptions.createWithRoomAndUser(room, userToBeAdded as IUser, {
 		ts: now,
 		open: true,
 		alert: !skipAlertSound,
@@ -92,6 +92,10 @@ export const addUserToRoom = async function (
 		...autoTranslateConfig,
 		...getDefaultSubscriptionPref(userToBeAdded as IUser),
 	});
+
+	if (insertedId) {
+		void notifyOnSubscriptionChangedById(insertedId, 'inserted');
+	}
 
 	void notifyOnRoomChangedById(rid);
 
