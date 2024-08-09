@@ -1,5 +1,82 @@
 # @rocket.chat/ddp-streamer
 
+## 0.3.3
+
+### Patch Changes
+
+- ([#32719](https://github.com/RocketChat/Rocket.Chat/pull/32719)) Added the `user` param to apps-engine update method call, allowing apps' new `onUpdate` hook to know who triggered the update.
+
+- <details><summary>Updated dependencies [439faa87d3, 03c8b066f9, 2d89a0c448, 439faa87d3, 24f7df4894, 4e8aa575a6, 03c8b066f9, 264d7d5496, b8e5887fb9]:</summary>
+
+  - @rocket.chat/model-typings@0.6.0
+  - @rocket.chat/core-services@0.5.0
+  - @rocket.chat/core-typings@6.11.0
+  - @rocket.chat/ui-contexts@9.0.0
+  - @rocket.chat/models@0.2.0
+  - @rocket.chat/rest-typings@6.11.0
+  - @rocket.chat/instance-status@0.1.3
+  </details>
+
+## 0.3.3-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.6
+  - @rocket.chat/rest-typings@6.11.0-rc.6
+  - @rocket.chat/core-services@0.5.0-rc.6
+  - @rocket.chat/model-typings@0.6.0-rc.6
+  - @rocket.chat/ui-contexts@9.0.0-rc.6
+  - @rocket.chat/models@0.2.0-rc.6
+  - @rocket.chat/instance-status@0.1.3-rc.6
+  </details>
+
+## 0.3.3-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.5
+  - @rocket.chat/rest-typings@6.11.0-rc.5
+  - @rocket.chat/core-services@0.5.0-rc.5
+  - @rocket.chat/model-typings@0.6.0-rc.5
+  - @rocket.chat/ui-contexts@9.0.0-rc.5
+  - @rocket.chat/models@0.2.0-rc.5
+  - @rocket.chat/instance-status@0.1.3-rc.5
+  </details>
+
+## 0.3.3-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.4
+  - @rocket.chat/rest-typings@6.11.0-rc.4
+  - @rocket.chat/core-services@0.5.0-rc.4
+  - @rocket.chat/model-typings@0.6.0-rc.4
+  - @rocket.chat/ui-contexts@9.0.0-rc.4
+  - @rocket.chat/models@0.2.0-rc.4
+  - @rocket.chat/instance-status@0.1.3-rc.4
+  </details>
+
+## 0.3.3-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.3
+  - @rocket.chat/rest-typings@6.11.0-rc.3
+  - @rocket.chat/core-services@0.5.0-rc.3
+  - @rocket.chat/model-typings@0.6.0-rc.3
+  - @rocket.chat/ui-contexts@9.0.0-rc.3
+  - @rocket.chat/models@0.2.0-rc.3
+  - @rocket.chat/instance-status@0.1.3-rc.3
+  </details>
+
 ## 0.3.3-rc.2
 
 ### Patch Changes
