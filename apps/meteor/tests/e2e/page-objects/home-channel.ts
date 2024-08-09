@@ -4,7 +4,7 @@ import { expect } from '../utils/test';
 import { HomeContent, HomeSidenav, HomeFlextab } from './fragments';
 
 export class HomeChannel {
-	private readonly page: Page;
+	public readonly page: Page;
 
 	readonly content: HomeContent;
 
@@ -39,5 +39,37 @@ export class HomeChannel {
 		// this is a workaround for when the toast is blocking the click of the button
 		await this.toastSuccess.locator('button >> i.rcx-icon--name-cross.rcx-icon').click();
 		await this.page.mouse.move(0, 0);
+	}
+
+	get composer(): Locator {
+		return this.page.locator('textarea[name="msg"]');
+	}
+
+	get userCardToolbar(): Locator {
+		return this.page.locator('[role=toolbar][aria-label="User card actions"]');
+	}
+
+	get composerToolbar(): Locator {
+		return this.page.locator('[role=toolbar][aria-label="Composer Primary Actions"]');
+	}
+
+	get composerToolbarActions(): Locator {
+		return this.page.locator('[role=toolbar][aria-label="Composer Primary Actions"] button');
+	}
+
+	get roomHeaderFavoriteBtn(): Locator {
+		return this.page.getByRole('button', { name: 'Favorite' });
+	}
+
+	get readOnlyFooter(): Locator {
+		return this.page.locator('footer', { hasText: 'This room is read only' });
+	}
+
+	get roomHeaderToolbar(): Locator {
+		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]');
+	}
+
+	getSystemMessageByText(text: string): Locator {
+		return this.page.locator('[aria-roledescription="system message"]', { hasText: text });
 	}
 }

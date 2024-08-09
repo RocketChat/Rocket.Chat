@@ -72,7 +72,6 @@ export type TeamsEndpoints = {
 					teamMain?: boolean;
 				} & { [key: string]: string | boolean };
 				options?: {
-					nameValidationRegex?: string;
 					creator: string;
 					subscriptionExtra?: {
 						open: boolean;
@@ -90,6 +89,7 @@ export type TeamsEndpoints = {
 				};
 			};
 			owner?: IUser['_id'];
+			sidepanel?: IRoom['sidepanel'];
 		}) => {
 			team: ITeam;
 		};

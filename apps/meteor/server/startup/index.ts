@@ -1,4 +1,3 @@
-import './migrations';
 import './appcache';
 import './callbacks';
 import './cron';
@@ -10,9 +9,13 @@ import '../hooks';
 import '../lib/rooms/roomTypes';
 import '../lib/settingsRegenerator';
 import { isRunningMs } from '../lib/isRunningMs';
+import { performMigrationProcedure } from './migrations';
 
-// only starts network broker if running in micro services mode
-if (!isRunningMs()) {
-	require('./localServices');
-	require('./watchDb');
-}
+export const startup = async () => {
+	await performMigrationProcedure();
+	// only starts network broker if running in micro services mode
+	if (!isRunningMs()) {
+		require('./localServices');
+		require('./watchDb');
+	}
+};

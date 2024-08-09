@@ -1,6 +1,7 @@
 import { cronJobs } from '@rocket.chat/cron';
-import { Meteor } from 'meteor/meteor';
+
+import { executeClearOEmbedCache } from '../methods/OEmbedCacheCleanup';
 
 export async function oembedCron(): Promise<void> {
-	await cronJobs.add('Cleanup OEmbed cache', '24 2 * * *', async () => Meteor.callAsync('OEmbedCacheCleanup'));
+	await cronJobs.add('Cleanup OEmbed cache', '24 2 * * *', async () => executeClearOEmbedCache());
 }

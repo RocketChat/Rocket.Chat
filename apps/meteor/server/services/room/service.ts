@@ -1,7 +1,7 @@
 import { ServiceClassInternal, Authorization, MeteorError } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
 import { type AtLeast, type IRoom, type IUser, isRoomWithJoinCode } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
@@ -16,7 +16,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
 
 	async create(uid: string, params: ICreateRoomParams): Promise<IRoom> {
-		const { type, name, members = [], readOnly, extraData, options } = params;
+		const { type, name, members = [], readOnly, extraData, options, sidepanel } = params;
 
 		const hasPermission = await Authorization.hasPermission(uid, `create-${type}`);
 		if (!hasPermission) {
@@ -29,7 +29,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		// TODO convert `createRoom` function to "raw" and move to here
-		return createRoom(type, name, user, members, false, readOnly, extraData, options) as unknown as IRoom;
+		return createRoom(type, name, user, members, false, readOnly, extraData, options, sidepanel) as unknown as IRoom;
 	}
 
 	async createDirectMessage({ to, from }: { to: string; from: string }): Promise<{ rid: string }> {
@@ -59,22 +59,21 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 	async addUserToRoom(
 		roomId: string,
-		user: Pick<IUser, '_id' | 'username'> | string,
+		user: Pick<IUser, '_id'> | string,
 		inviter?: Pick<IUser, '_id' | 'username'>,
-		silenced?: boolean,
+		options?: {
+			skipSystemMessage?: boolean;
+			skipAlertSound?: boolean;
+		},
 	): Promise<boolean | undefined> {
-		return addUserToRoom(roomId, user, inviter, silenced);
+		return addUserToRoom(roomId, user, inviter, options);
 	}
 
-	async removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: Pick<IUser, '_id' | 'username'> }): Promise<void> {
+	async removeUserFromRoom(roomId: string, user: IUser, options?: { byUser: IUser }): Promise<void> {
 		return removeUserFromRoom(roomId, user, options);
 	}
 
-	async getValidRoomName(
-		displayName: string,
-		roomId = '',
-		options: { allowDuplicates?: boolean; nameValidationRegex?: string } = {},
-	): Promise<string> {
+	async getValidRoomName(displayName: string, roomId = '', options: { allowDuplicates?: boolean } = {}): Promise<string> {
 		return getValidRoomName(displayName, roomId, options);
 	}
 
@@ -106,14 +105,18 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
 
-		if (
-			isRoomWithJoinCode(room) &&
-			(!joinCode || joinCode !== room.joinCode) &&
-			!(await Authorization.hasPermission(user._id, 'join-without-join-code'))
-		) {
-			throw new MeteorError('error-code-invalid', 'Invalid Room Password', {
-				method: 'joinRoom',
-			});
+		if (isRoomWithJoinCode(room) && !(await Authorization.hasPermission(user._id, 'join-without-join-code'))) {
+			if (!joinCode) {
+				throw new MeteorError('error-code-required', 'Code required', { method: 'joinRoom' });
+			}
+
+			const isCorrectJoinCode = !!(await Rooms.findOneByJoinCodeAndId(joinCode, room._id, {
+				projection: { _id: 1 },
+			}));
+
+			if (!isCorrectJoinCode) {
+				throw new MeteorError('error-code-invalid', 'Invalid code', { method: 'joinRoom' });
+			}
 		}
 
 		return addUserToRoom(room._id, user);

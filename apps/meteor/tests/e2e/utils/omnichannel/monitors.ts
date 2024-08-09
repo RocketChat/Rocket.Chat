@@ -1,5 +1,5 @@
-import { BaseTest } from '../test';
-import { parseMeteorResponse } from './utils';
+import { parseMeteorResponse } from '../parseMeteorResponse';
+import type { BaseTest } from '../test';
 
 const removeMonitor = async (api: BaseTest['api'], id: string) =>
 	api.post('/method.call/livechat:removeMonitor', {

@@ -1,7 +1,7 @@
 import { Authorization, VideoConf } from '@rocket.chat/core-services';
 import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
 import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
-import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ui-contexts';
 import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
 
 import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
@@ -257,7 +257,7 @@ export class NotificationsModule {
 
 		this.streamRoomUsers.allowRead('none');
 		this.streamRoomUsers.allowWrite(async function (eventName, ...args: any[]) {
-			const [roomId, e] = eventName.split('/') as typeof eventName extends `${infer K}/${infer E}` ? [K, E] : never;
+			const [roomId, e] = eventName.split('/');
 			if (!this.userId) {
 				const room = await Rooms.findOneById<IOmnichannelRoom>(roomId, {
 					projection: { 't': 1, 'servedBy._id': 1 },
@@ -531,7 +531,7 @@ export class NotificationsModule {
 		return this.streamUser.emitWithoutBroadcast(`${userId}/${eventName}`, ...args);
 	}
 
-	sendPresence(uid: string, ...args: [username: string, statusChanged: 0 | 1 | 2 | 3, statusText: string | undefined]): void {
+	sendPresence(uid: string, ...args: [username: string, status?: 0 | 1 | 2 | 3, statusText?: string]): void {
 		emit(uid, [args]);
 		return this.streamPresence.emitWithoutBroadcast(uid, args);
 	}

@@ -1,5 +1,446 @@
 # @rocket.chat/pdf-worker
 
+## 0.2.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.2
+  </details>
+
+## 0.2.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.1
+  </details>
+
+## 0.2.0-rc.0
+
+### Minor Changes
+
+- ([#32752](https://github.com/RocketChat/Rocket.Chat/pull/32752)) Added system messages support for Omnichannel PDF transcripts and email transcripts. Currently these transcripts don't render system messages and is shown as an empty message in PDF/email. This PR adds this support for all valid livechat system messages.
+
+  Also added a new setting under transcripts, to toggle the inclusion of system messages in email and PDF transcripts.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [2d89a0c448, 24f7df4894, b8e5887fb9]:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.0
+  </details>
+  </details>
+
+## 0.1.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.1
+  </details>
+
+## 0.1.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [1240c874a5, 5f95c4ec6b, f75a2cb4bb, 4f72d62aa7, dfa49bdbb2]:</summary>
+
+  - @rocket.chat/core-typings@6.10.0
+  </details>
+
+## 0.1.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.7
+  </details>
+
+## 0.1.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.6
+  </details>
+
+## 0.1.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.5
+  </details>
+
+## 0.1.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.4
+  </details>
+
+## 0.1.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.3
+  </details>
+
+## 0.1.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.2
+  </details>
+
+## 0.1.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.1
+  </details>
+
+## 0.1.0-rc.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [1240c874a5, 5f95c4ec6b, f75a2cb4bb, 4f72d62aa7, dfa49bdbb2]:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.0
+
+## 0.0.42
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.3
+  </details>
+
+## 0.0.41
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.2
+  </details>
+
+## 0.0.40
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.1
+  </details>
+
+## 0.0.39
+
+### Patch Changes
+
+- ([#32311](https://github.com/RocketChat/Rocket.Chat/pull/32311)) Fixed multiple issues with PDF generation logic when a quoted message was too big to fit in one single page. This was causing an internal infinite loop within the library (as it tried to make it fit, failing and then trying to fit on next page where the same happened thus causing a loop).
+  The library was not able to break down some nested views and thus was trying to fit the whole quote on one single page. Logic was updated to allow wrapping of the contents when messages are quoted (so they can span multiple lines) and removed a bunch of unnecesary views from the code.
+- <details><summary>Updated dependencies [ff4e396416, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/core-typings@6.9.0
+  </details>
+
+## 0.0.39-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.2
+  </details>
+
+## 0.0.39-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.1
+  </details>
+
+## 0.0.39-rc.0
+
+### Patch Changes
+
+- ([#32311](https://github.com/RocketChat/Rocket.Chat/pull/32311)) Fixed multiple issues with PDF generation logic when a quoted message was too big to fit in one single page. This was causing an internal infinite loop within the library (as it tried to make it fit, failing and then trying to fit on next page where the same happened thus causing a loop).
+  The library was not able to break down some nested views and thus was trying to fit the whole quote on one single page. Logic was updated to allow wrapping of the contents when messages are quoted (so they can span multiple lines) and removed a bunch of unnecesary views from the code.
+- <details><summary>Updated dependencies [ff4e396416, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.0
+  </details>
+
+## 0.0.38
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c47a8e3514, b94ca7c30b, 4aba7c8a26]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0
+  </details>
+
+## 0.0.38-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b94ca7c30b]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.2
+  </details>
+
+## 0.0.38-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.1
+  </details>
+
+## 0.0.38-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c47a8e3514, 4aba7c8a26]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.0
+
+## 0.0.37
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.2
+  </details>
+
+## 0.0.36
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.1
+  </details>
+
+## 0.0.35
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0
+  </details>
+
+## 0.0.35-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.4
+  </details>
+
+## 0.0.35-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.3
+  </details>
+
+## 0.0.35-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.2
+  </details>
+
+## 0.0.35-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.1
+  </details>
+
+## 0.0.35-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.0
+  </details>
+
+## 0.0.34
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.6
+  </details>
+
+## 0.0.33
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.5
+  </details>
+
+## 0.0.32
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.4
+  </details>
+
+## 0.0.31
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.3
+  </details>
+
+## 0.0.30
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.2
+  </details>
+
+## 0.0.29
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.1
+  </details>
+
+## 0.0.28
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- ([#31349](https://github.com/RocketChat/Rocket.Chat/pull/31349) by [@Subhojit-Dey1234](https://github.com/Subhojit-Dey1234)) feat: Implemented InlineCode handling in Bold, Italic and Strike
+
+- <details><summary>Updated dependencies [b223cbde14, dbb08ef948, fdd9852079, b4b2cd20a8]:</summary>
+
+  - @rocket.chat/core-typings@6.6.0
+  </details>
+
+## 0.0.28-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.7
+  </details>
+
+## 0.0.28-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.6
+  </details>
+
+## 0.0.28-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.5
+  </details>
+
+## 0.0.28-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.4
+
+## 0.0.28-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.3
+
+## 0.0.28-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.2
+
+## 0.0.28-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.1
+
+## 0.0.28-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- dbb08ef948: feat: Implemented InlineCode handling in Bold, Italic and Strike
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+- Updated dependencies [fdd9852079]
+- Updated dependencies [b4b2cd20a8]
+  - @rocket.chat/core-typings@6.6.0-rc.0
+
+## 0.0.27
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.3
+
 ## 0.0.26
 
 ### Patch Changes

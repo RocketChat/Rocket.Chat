@@ -6,7 +6,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { ContextualbarEmptyContent } from '../../../../../components/Contextualbar';
-import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
+import { VirtuosoScrollbars } from '../../../../../components/CustomScrollbars';
 import RoomMessage from '../../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -45,7 +45,7 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 										totalCount={messageSearchQuery.data.length}
 										overscan={25}
 										data={messageSearchQuery.data}
-										components={{ Scroller: ScrollableContentWrapper }}
+										components={{ Scroller: VirtuosoScrollbars }}
 										itemContent={(index, message) => {
 											const previous = messageSearchQuery.data[index - 1];
 

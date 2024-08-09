@@ -7,13 +7,60 @@ export const RateLimiterClass = new (class {
 		if (process.env.TEST_MODE === 'true') {
 			return fn;
 		}
-		const rateLimiter = new RateLimiter();
+		const rateLimiter = new (class extends RateLimiter {
+			async check(input) {
+				const reply = {
+					allowed: true,
+					timeToReset: 0,
+					numInvocationsLeft: Infinity,
+				};
+
+				const matchedRules = this._findAllMatchingRules(input);
+
+				for await (const rule of matchedRules) {
+					const ruleResult = await rule.apply(input);
+					let numInvocations = rule.counters[ruleResult.key];
+
+					if (ruleResult.timeToNextReset < 0) {
+						// Reset all the counters since the rule has reset
+						await rule.resetCounter();
+						ruleResult.timeSinceLastReset = new Date().getTime() - rule._lastResetTime;
+						ruleResult.timeToNextReset = rule.options.intervalTime;
+						numInvocations = 0;
+					}
+
+					if (numInvocations > rule.options.numRequestsAllowed) {
+						// Only update timeToReset if the new time would be longer than the
+						// previously set time. This is to ensure that if this input triggers
+						// multiple rules, we return the longest period of time until they can
+						// successfully make another call
+						if (reply.timeToReset < ruleResult.timeToNextReset) {
+							reply.timeToReset = ruleResult.timeToNextReset;
+						}
+						reply.allowed = false;
+						reply.numInvocationsLeft = 0;
+						reply.ruleId = rule.id;
+						await rule._executeCallback(reply, input);
+					} else {
+						// If this is an allowed attempt and we haven't failed on any of the
+						// other rules that match, update the reply field.
+						if (rule.options.numRequestsAllowed - numInvocations < reply.numInvocationsLeft && reply.allowed) {
+							reply.timeToReset = ruleResult.timeToNextReset;
+							reply.numInvocationsLeft = rule.options.numRequestsAllowed - numInvocations;
+						}
+						reply.ruleId = rule.id;
+						await rule._executeCallback(reply, input);
+					}
+				}
+				return reply;
+			}
+		})();
 		Object.entries(matchers).forEach(([key, matcher]) => {
-			matchers[key] = (...args) => Promise.await(matcher(...args));
+			matchers[key] = matcher;
 		});
 
 		rateLimiter.addRule(matchers, numRequests, timeInterval);
-		return function (...args) {
+		return async function (...args) {
 			const match = {};
 
 			Object.keys(matchers).forEach((key) => {
@@ -21,7 +68,7 @@ export const RateLimiterClass = new (class {
 			});
 
 			rateLimiter.increment(match);
-			const rateLimitResult = rateLimiter.check(match);
+			const rateLimitResult = await rateLimiter.check(match);
 			if (rateLimitResult.allowed) {
 				return fn.apply(null, args);
 			}

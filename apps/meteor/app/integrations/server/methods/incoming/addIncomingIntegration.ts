@@ -1,18 +1,19 @@
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Roles, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Babel } from 'meteor/babel-compiler';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { validateScriptEngine, isScriptEngineFrozen } from '../../lib/validateScriptEngine';
 
 const validChannelChars = ['@', '#'];
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		addIncomingIntegration(integration: INewIncomingIntegration): Promise<IIncomingIntegration>;
@@ -155,9 +156,13 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 
 	await Roles.addUserRoles(user._id, ['bot']);
 
-	const result = await Integrations.insertOne(integrationData);
+	const { insertedId } = await Integrations.insertOne(integrationData);
 
-	integrationData._id = result.insertedId;
+	if (insertedId) {
+		void notifyOnIntegrationChanged({ ...integrationData, _id: insertedId }, 'inserted');
+	}
+
+	integrationData._id = insertedId;
 
 	return integrationData;
 };

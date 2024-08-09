@@ -11,6 +11,7 @@ import _ from 'underscore';
 
 import { callbacks } from '../../../lib/callbacks';
 import { isURL } from '../../../lib/utils/isURL';
+import { notifyOnUserChange } from '../../lib/server/lib/notifyListener';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 import { settings } from '../../settings/server';
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
@@ -106,7 +107,7 @@ export class CustomOAuth {
 	async getAccessToken(query) {
 		const config = await ServiceConfiguration.configurations.findOneAsync({ service: this.name });
 		if (!config) {
-			throw new ServiceConfiguration.ConfigError();
+			throw new Accounts.ConfigError();
 		}
 
 		let response = undefined;
@@ -374,6 +375,8 @@ export class CustomOAuth {
 				};
 
 				await Users.update({ _id: user._id }, update);
+
+				void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: update });
 			}
 		});
 

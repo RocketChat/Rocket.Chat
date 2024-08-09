@@ -46,6 +46,7 @@ test.describe.serial('teams-management', () => {
 	test('expect create "targetTeamReadOnly" readonly', async ({ page }) => {
 		await poHomeTeam.sidenav.openNewByLabel('Team');
 		await poHomeTeam.inputTeamName.type(targetTeamReadOnly);
+		await poHomeTeam.sidenav.advancedSettingsAccordion.click();
 		await poHomeTeam.textReadOnly.click();
 		await poHomeTeam.addMember('user1');
 		await poHomeTeam.btnTeamCreate.click();
@@ -87,6 +88,16 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.tabs.channels.inputChannels.type(targetChannel, { delay: 100 });
 		await page.locator(`.rcx-option__content:has-text("${targetChannel}")`).click();
 		await poHomeTeam.tabs.channels.btnAdd.click();
-		await expect(page.locator('//main//aside >> li')).toContainText(targetChannel);
+		await expect(page.getByRole('dialog').getByRole('listitem')).toContainText(targetChannel);
+	});
+
+	test('should access team channel through "targetTeam" header', async ({ page }) => {
+		await poHomeTeam.sidenav.openChat(targetChannel);
+		await page.getByRole('button', { name: targetChannel }).first().focus();
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Space');
+
+		await expect(page).toHaveURL(`/group/${targetTeam}`);
 	});
 });

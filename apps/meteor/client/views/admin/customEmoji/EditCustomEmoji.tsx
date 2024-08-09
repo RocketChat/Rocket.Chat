@@ -12,7 +12,7 @@ import {
 	IconButton,
 } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
@@ -32,7 +32,7 @@ type EditCustomEmojiProps = {
 	};
 };
 
-const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...props }) => {
+const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiProps) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -181,11 +181,13 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<ButtonGroup mbs={8} stretch>
-					<Button icon='trash' danger onClick={handleDeleteButtonClick}>
-						{t('Delete')}
-					</Button>
-				</ButtonGroup>
+				<Box mbs={8}>
+					<ButtonGroup stretch>
+						<Button icon='trash' danger onClick={handleDeleteButtonClick}>
+							{t('Delete')}
+						</Button>
+					</ButtonGroup>
+				</Box>
 			</ContextualbarFooter>
 		</>
 	);

@@ -1,5 +1,503 @@
 # @rocket.chat/ddp-client
 
+## 0.3.3-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.11.0-rc.2
+  - @rocket.chat/api-client@0.2.3-rc.2
+  </details>
+
+## 0.3.3-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.11.0-rc.1
+  - @rocket.chat/api-client@0.2.2-rc.1
+  </details>
+
+## 0.3.3-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [264d7d5496, b8e5887fb9]:</summary>
+
+  - @rocket.chat/rest-typings@6.11.0-rc.0
+  - @rocket.chat/api-client@0.2.2-rc.0
+  </details>
+
+## 0.3.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ca6a9d8de8, ca6a9d8de8, ca6a9d8de8, ca6a9d8de8]:</summary>
+
+  - @rocket.chat/rest-typings@6.10.2
+  - @rocket.chat/api-client@0.2.2
+  </details>
+
+## 0.3.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.10.1
+  - @rocket.chat/api-client@0.2.1
+  </details>
+
+## 0.3.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [495628bce0, f75a2cb4bb, 07c4ca0621, 4f72d62aa7]:</summary>
+
+  - @rocket.chat/rest-typings@6.10.0
+  - @rocket.chat/api-client@0.2.0
+  </details>
+
+## 0.3.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.10.0-rc.7
+  - @rocket.chat/api-client@0.2.0-rc.7
+  </details>
+
+## 0.3.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.10.0-rc.6
+  - @rocket.chat/api-client@0.2.0-rc.6
+  </details>
+
+## 0.3.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.10.0-rc.5
+  - @rocket.chat/api-client@0.2.0-rc.5
+  </details>
+
+## 0.3.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.10.0-rc.4
+  - @rocket.chat/api-client@0.2.0-rc.4
+  </details>
+
+## 0.3.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.10.0-rc.3
+  - @rocket.chat/api-client@0.2.0-rc.3
+  </details>
+
+## 0.3.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.10.0-rc.2
+  - @rocket.chat/api-client@0.2.0-rc.2
+  </details>
+
+## 0.3.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.10.0-rc.1
+  - @rocket.chat/api-client@0.2.0-rc.1
+  </details>
+
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [495628bce0, f75a2cb4bb, 07c4ca0621, 4f72d62aa7]:</summary>
+
+  - @rocket.chat/rest-typings@6.10.0-rc.0
+  - @rocket.chat/api-client@0.2.0-rc.0
+
+## 0.2.27
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.9.3
+  - @rocket.chat/api-client@0.1.36
+  </details>
+
+## 0.2.26
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.9.2
+  - @rocket.chat/api-client@0.1.35
+  </details>
+
+## 0.2.25
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.9.1
+  - @rocket.chat/api-client@0.1.34
+  </details>
+
+## 0.2.24
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f83bd56cc5]:</summary>
+
+  - @rocket.chat/rest-typings@6.9.0
+  - @rocket.chat/api-client@0.1.33
+  </details>
+
+## 0.2.24-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.9.0-rc.2
+  - @rocket.chat/api-client@0.1.33-rc.2
+  </details>
+
+## 0.2.24-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.9.0-rc.1
+  - @rocket.chat/api-client@0.1.33-rc.1
+  </details>
+
+## 0.2.24-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f83bd56cc5]:</summary>
+
+  - @rocket.chat/rest-typings@6.9.0-rc.0
+  - @rocket.chat/api-client@0.1.33-rc.0
+  </details>
+
+## 0.2.23
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [845fd64f45, 9a6a7d0a40, 845fd64f45, b94ca7c30b, 9902554388]:</summary>
+
+  - @rocket.chat/rest-typings@6.8.0
+  - @rocket.chat/api-client@0.1.32
+  </details>
+
+## 0.2.23-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b94ca7c30b]:</summary>
+
+  - @rocket.chat/rest-typings@6.8.0-rc.2
+  - @rocket.chat/api-client@0.1.32-rc.2
+  </details>
+
+## 0.2.23-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/api-client@0.1.31-rc.1
+  </details>
+
+## 0.2.23-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [845fd64f45, 9a6a7d0a40, 845fd64f45, 9902554388]:</summary>
+
+  - @rocket.chat/rest-typings@6.8.0-rc.0
+  - @rocket.chat/api-client@0.1.30-rc.0
+
+## 0.2.22
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/api-client@0.1.31
+  </details>
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.7.1
+  - @rocket.chat/api-client@0.1.30
+  </details>
+
+## 0.2.20
+
+### Patch Changes
+
+- ([#31941](https://github.com/RocketChat/Rocket.Chat/pull/31941)) fix: livechat sdk reconnect not resubscribing
+
+- ([#31823](https://github.com/RocketChat/Rocket.Chat/pull/31823)) Revert unintentional changes real time presence data payload
+
+- <details><summary>Updated dependencies [d1b1ffe9e5]:</summary>
+
+  - @rocket.chat/rest-typings@6.7.0
+  - @rocket.chat/api-client@0.1.29
+  </details>
+
+## 0.2.20-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.7.0-rc.4
+  - @rocket.chat/api-client@0.1.29-rc.4
+  </details>
+
+## 0.2.20-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.7.0-rc.3
+  - @rocket.chat/api-client@0.1.29-rc.3
+  </details>
+
+## 0.2.20-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.7.0-rc.2
+  - @rocket.chat/api-client@0.1.29-rc.2
+  </details>
+
+## 0.2.20-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.7.0-rc.1
+  - @rocket.chat/api-client@0.1.29-rc.1
+  </details>
+
+## 0.2.20-rc.0
+
+### Patch Changes
+
+- ([#31941](https://github.com/RocketChat/Rocket.Chat/pull/31941)) fix: livechat sdk reconnect not resubscribing
+
+- ([#31823](https://github.com/RocketChat/Rocket.Chat/pull/31823)) Revert unintentional changes real time presence data payload
+
+- <details><summary>Updated dependencies [d1b1ffe9e5]:</summary>
+
+  - @rocket.chat/rest-typings@6.7.0-rc.0
+  - @rocket.chat/api-client@0.1.29-rc.0
+  </details>
+
+## 0.2.19
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.6.6
+  - @rocket.chat/api-client@0.1.28
+  </details>
+
+## 0.2.18
+
+### Patch Changes
+
+- ([#31941](https://github.com/RocketChat/Rocket.Chat/pull/31941)) fix: livechat sdk reconnect not resubscribing
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.6.5
+  - @rocket.chat/api-client@0.1.27
+  </details>
+
+## 0.2.17
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.6.4
+  - @rocket.chat/api-client@0.1.26
+  </details>
+
+## 0.2.16
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.6.3
+  - @rocket.chat/api-client@0.1.25
+  </details>
+
+## 0.2.15
+
+### Patch Changes
+
+- ([#31823](https://github.com/RocketChat/Rocket.Chat/pull/31823)) Revert unintentional changes real time presence data payload
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.6.2
+  - @rocket.chat/api-client@0.1.24
+  </details>
+
+## 0.2.14
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.6.1
+  - @rocket.chat/api-client@0.1.23
+  </details>
+
+## 0.2.13
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- ([#31304](https://github.com/RocketChat/Rocket.Chat/pull/31304)) chore: Add readme to ddp-client package
+
+- <details><summary>Updated dependencies [b223cbde14, dbb08ef948, 748e57984d, 7c6198f49f, fdd9852079, 2260c04ec6]:</summary>
+
+  - @rocket.chat/api-client@0.1.22
+  - @rocket.chat/rest-typings@6.6.0
+  </details>
+
+## 0.2.13-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.6.0-rc.7
+  - @rocket.chat/api-client@0.1.22-rc.7
+  </details>
+
+## 0.2.13-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.6.0-rc.6
+  - @rocket.chat/api-client@0.1.22-rc.6
+  </details>
+
+## 0.2.13-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.6.0-rc.5
+  - @rocket.chat/api-client@0.1.22-rc.5
+  </details>
+
+## 0.2.13-rc.4
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.6.0-rc.4
+- @rocket.chat/api-client@0.1.22-rc.4
+
+## 0.2.13-rc.3
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.6.0-rc.3
+- @rocket.chat/api-client@0.1.22-rc.3
+
+## 0.2.13-rc.2
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.6.0-rc.2
+- @rocket.chat/api-client@0.1.22-rc.2
+
+## 0.2.13-rc.1
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.6.0-rc.1
+- @rocket.chat/api-client@0.1.22-rc.1
+
+## 0.2.13-rc.0
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- 97cd497e5e: chore: Add readme to ddp-client package
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+- Updated dependencies [748e57984d]
+- Updated dependencies [7c6198f49f]
+- Updated dependencies [fdd9852079]
+- Updated dependencies [2260c04ec6]
+  - @rocket.chat/api-client@0.1.22-rc.0
+  - @rocket.chat/rest-typings@6.6.0-rc.0
+
+## 0.2.12
+
+### Patch Changes
+
+- @rocket.chat/rest-typings@6.5.3
+- @rocket.chat/api-client@0.1.21
+
 ## 0.2.11
 
 ### Patch Changes

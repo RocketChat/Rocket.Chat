@@ -48,3 +48,5 @@ yarn-error.log*
 .envrc
 
 *.sublime-workspace
+
+**/.vim/

@@ -1,4 +1,4 @@
-import type { ILivechatVisitor, IRoom } from '@rocket.chat/core-typings';
+import type { ILivechatCustomField, IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -47,40 +47,72 @@ API.v1.addRoute('livechat/visitor', {
 			connectionData: normalizeHttpHeaderData(this.request.headers),
 		};
 
-		const visitorId = await LivechatTyped.registerGuest(guest);
-
-		let visitor: ILivechatVisitor | null = await VisitorsRaw.findOneEnabledById(visitorId, {});
-		if (visitor) {
-			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
-			// If it's updating an existing visitor, it must also update the roomInfo
-			const rooms = await LivechatRooms.findOpenByVisitorToken(visitor?.token, {}, extraQuery).toArray();
-			await Promise.all(
-				rooms.map(
-					(room: IRoom) =>
-						visitor &&
-						LivechatTyped.saveRoomInfo(room, {
-							_id: visitor._id,
-							name: visitor.name,
-							phone: visitor.phone?.[0]?.phoneNumber,
-							livechatData: visitor.livechatData as { [k: string]: string },
-						}),
-				),
-			);
+		const visitor = await LivechatTyped.registerGuest(guest);
+		if (!visitor) {
+			throw new Meteor.Error('error-livechat-visitor-registration', 'Error registering visitor', {
+				method: 'livechat/visitor',
+			});
 		}
 
-		if (customFields && Array.isArray(customFields)) {
-			for await (const field of customFields) {
-				const customField = await LivechatCustomField.findOneById(field.key);
-				if (!customField) {
-					continue;
-				}
-				const { key, value, overwrite } = field;
-				if (customField.scope === 'visitor' && !(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
-					return API.v1.failure();
-				}
+		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+		// If it's updating an existing visitor, it must also update the roomInfo
+		const rooms = await LivechatRooms.findOpenByVisitorToken(visitor?.token, {}, extraQuery).toArray();
+		await Promise.all(
+			rooms.map(
+				(room: IRoom) =>
+					visitor &&
+					LivechatTyped.saveRoomInfo(room, {
+						_id: visitor._id,
+						name: visitor.name,
+						phone: visitor.phone?.[0]?.phoneNumber,
+						livechatData: visitor.livechatData as { [k: string]: string },
+					}),
+			),
+		);
+
+		if (customFields && Array.isArray(customFields) && customFields.length > 0) {
+			const keys = customFields.map((field) => field.key);
+			const errors: string[] = [];
+
+			const processedKeys = await Promise.all(
+				await LivechatCustomField.findByIdsAndScope<Pick<ILivechatCustomField, '_id'>>(keys, 'visitor', {
+					projection: { _id: 1 },
+				})
+					.map(async (field) => {
+						const customField = customFields.find((f) => f.key === field._id);
+						if (!customField) {
+							return;
+						}
+
+						const { key, value, overwrite } = customField;
+						// TODO: Change this to Bulk update
+						if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
+							errors.push(key);
+						}
+
+						return key;
+					})
+					.toArray(),
+			);
+
+			if (processedKeys.length !== keys.length) {
+				LivechatTyped.logger.warn({
+					msg: 'Some custom fields were not processed',
+					visitorId: visitor._id,
+					missingKeys: keys.filter((key) => !processedKeys.includes(key)),
+				});
 			}
 
-			visitor = await VisitorsRaw.findOneEnabledById(visitorId, {});
+			if (errors.length > 0) {
+				LivechatTyped.logger.error({
+					msg: 'Error updating custom fields',
+					visitorId: visitor._id,
+					errors,
+				});
+				throw new Error('error-updating-custom-fields');
+			}
+
+			return API.v1.success({ visitor: await VisitorsRaw.findOneEnabledById(visitor._id) });
 		}
 
 		if (!visitor) {

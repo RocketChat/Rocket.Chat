@@ -1,17 +1,17 @@
-import { Message, api } from '@rocket.chat/core-services';
+import { Apps, AppEvents } from '@rocket.chat/apps';
+import { Message } from '@rocket.chat/core-services';
 import { isQuoteAttachment, isRegisterUser } from '@rocket.chat/core-typings';
 import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Rooms, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 import { isTruthy } from '../../../lib/isTruthy';
-import { broadcastMessageSentEvent } from '../../../server/modules/watchers/lib/messages';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
 import { getUserAvatarURL } from '../../utils/server/getUserAvatarURL';
 
@@ -35,7 +35,7 @@ const recursiveRemove = (msg: MessageAttachment, deep = 1) => {
 const shouldAdd = (attachments: MessageAttachment[], attachment: MessageQuoteAttachment) =>
 	!attachments.some((_attachment) => isQuoteAttachment(_attachment) && _attachment.message_link === attachment.message_link);
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		pinMessage(message: IMessage, pinnedAt?: Date): IMessage | null;
@@ -116,6 +116,7 @@ Meteor.methods<ServerMethods>({
 		}
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
+			void notifyOnRoomChangedById(room._id);
 		}
 
 		const attachments: MessageAttachment[] = [];
@@ -129,9 +130,11 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// App IPostMessagePinned event hook
-		await Apps.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
+		await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
 
-		const msgId = await Message.saveSystemMessage('message_pinned', originalMessage.rid, '', me, {
+		const pinMessageType = originalMessage.t === 'e2e' ? 'message_pinned_e2e' : 'message_pinned';
+
+		const msgId = await Message.saveSystemMessage(pinMessageType, originalMessage.rid, '', me, {
 			attachments: [
 				{
 					text: originalMessage.msg,
@@ -213,18 +216,18 @@ Meteor.methods<ServerMethods>({
 
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
+			void notifyOnRoomChangedById(room._id);
 		}
 
 		// App IPostMessagePinned event hook
-		await Apps.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
+		await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
 
 		await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 		if (settings.get('Message_Read_Receipt_Store_Users')) {
 			await ReadReceipts.setPinnedByMessageId(originalMessage._id, originalMessage.pinned);
 		}
-		void broadcastMessageSentEvent({
+		void notifyOnMessageChange({
 			id: message._id,
-			broadcastCallback: (message) => api.broadcast('message.sent', message),
 		});
 
 		return true;

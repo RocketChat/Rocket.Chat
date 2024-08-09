@@ -44,7 +44,7 @@ export const useCreateRoomItems = (): GenericMenuItemProps[] => {
 	};
 	const createDirectMessageItem: GenericMenuItemProps = {
 		id: 'direct',
-		content: t('Direct_Messages'),
+		content: t('Direct_message'),
 		icon: 'balloon',
 		onClick: () => {
 			createDirectMessage();
@@ -60,9 +60,9 @@ export const useCreateRoomItems = (): GenericMenuItemProps[] => {
 	};
 
 	return [
-		...(canCreateChannel ? [createChannelItem] : []),
-		...(canCreateTeam ? [createTeamItem] : []),
 		...(canCreateDirectMessages ? [createDirectMessageItem] : []),
 		...(canCreateDiscussion && discussionEnabled ? [createDiscussionItem] : []),
+		...(canCreateChannel ? [createChannelItem] : []),
+		...(canCreateTeam ? [createTeamItem] : []),
 	];
 };

@@ -12,12 +12,12 @@ import type { VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
+import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
 import { getConfig } from '../../lib/utils/getConfig';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import Row from './Row';
-import ScrollerWithCustomProps from './ScrollerWithCustomProps';
 
 const mobileCheck = function () {
 	let check = false;
@@ -101,7 +101,7 @@ const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRo
 	const getSpotlight = useMethod('spotlight');
 
 	return useQuery(
-		['sidebar/search/spotlight', name, usernamesFromClient, type, localRooms.map(({ _id }) => _id)],
+		['sidebar/search/spotlight', name, usernamesFromClient, type, localRooms.map(({ _id, name }) => _id + name)],
 		async () => {
 			if (localRooms.length === LIMIT) {
 				return localRooms;
@@ -338,15 +338,17 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 			role='search'
 		>
 			<Sidebar.TopBar.Section {...({ flexShrink: 0 } as any)} is='form'>
-				<TextInput
-					aria-owns={listId}
-					data-qa='sidebar-search-input'
-					ref={autofocus}
-					{...filter}
-					placeholder={placeholder}
-					role='searchbox'
-					addon={<Icon name='cross' size='x20' onClick={onClose} />}
-				/>
+				<Box mb='x12' w='full'>
+					<TextInput
+						aria-owns={listId}
+						data-qa='sidebar-search-input'
+						ref={autofocus}
+						{...filter}
+						placeholder={placeholder}
+						role='searchbox'
+						addon={<Icon name='cross' size='x20' onClick={onClose} />}
+					/>
+				</Box>
 			</Sidebar.TopBar.Section>
 			<Box
 				ref={boxRef}
@@ -366,7 +368,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 					style={{ height: '100%', width: '100%' }}
 					totalCount={items.length}
 					data={items}
-					components={{ Scroller: ScrollerWithCustomProps }}
+					components={{ Scroller: VirtuosoScrollbars }}
 					computeItemKey={(_, room) => room._id}
 					itemContent={(_, data): ReactElement => <Row data={itemData} item={data} />}
 					ref={listRef}

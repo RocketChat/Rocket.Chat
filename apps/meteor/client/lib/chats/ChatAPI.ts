@@ -1,6 +1,5 @@
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
-import type { UIEvent } from 'react';
 
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import type { Subscribable } from '../../definitions/Subscribable';
@@ -101,7 +100,12 @@ export type UploadsAPI = {
 	subscribe(callback: () => void): () => void;
 	wipeFailedOnes(): void;
 	cancel(id: Upload['id']): void;
-	send(file: File, { description, msg }: { description?: string; msg?: string }): Promise<void>;
+	send(
+		file: File,
+		{ description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] },
+		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
+		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
+	): Promise<void>;
 };
 
 export type ChatAPI = {
@@ -126,11 +130,6 @@ export type ChatAPI = {
 		  }
 		| undefined;
 
-	readonly userCard: {
-		open(username: string): (event: UIEvent) => void;
-		close(): void;
-	};
-
 	readonly emojiPicker: {
 		open(el: Element, cb: (emoji: string) => void): void;
 		close(): void;
@@ -146,7 +145,15 @@ export type ChatAPI = {
 
 	readonly flows: {
 		readonly uploadFiles: (files: readonly File[], resetFileInput?: () => void) => Promise<void>;
-		readonly sendMessage: ({ text, tshow }: { text: string; tshow?: boolean; previewUrls?: string[] }) => Promise<boolean>;
+		readonly sendMessage: ({
+			text,
+			tshow,
+		}: {
+			text: string;
+			tshow?: boolean;
+			previewUrls?: string[];
+			isSlashCommandAllowed?: boolean;
+		}) => Promise<boolean>;
 		readonly processSlashCommand: (message: IMessage, userId: string | null) => Promise<boolean>;
 		readonly processTooLongMessage: (message: IMessage) => Promise<boolean>;
 		readonly processMessageEditing: (

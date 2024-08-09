@@ -1,19 +1,23 @@
+import { Apps, AppEvents } from '@rocket.chat/apps';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync, getUsersInRole } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
+import { notifyOnRoomChanged } from '../../app/lib/server/lib/notifyListener';
+import { settings } from '../../app/settings/server';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { callbacks } from '../../lib/callbacks';
 import { afterRemoveFromRoomCallback } from '../../lib/callbacks/afterRemoveFromRoomCallback';
 import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		removeUserFromRoom(data: { rid: string; username: string }): boolean;
@@ -73,6 +77,16 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		}
 	}
 
+	try {
+		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserLeave, room, removedUser, fromUser);
+	} catch (error: any) {
+		if (error.name === AppsEngineException.name) {
+			throw new Meteor.Error('error-app-prevented', error.message);
+		}
+
+		throw error;
+	}
+
 	await callbacks.run('beforeRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 
 	await Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
@@ -88,9 +102,16 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 		await Team.removeMember(room.teamId, removedUser._id);
 	}
 
+	if (room.encrypted && settings.get('E2E_Enable')) {
+		await Rooms.removeUsersFromE2EEQueueByRoomId(room._id, [removedUser._id]);
+	}
+
 	setImmediate(() => {
 		void afterRemoveFromRoomCallback.run({ removedUser, userWhoRemoved: fromUser }, room);
+		void notifyOnRoomChanged(room);
 	});
+
+	await Apps.self?.triggerEvent(AppEvents.IPostRoomUserLeave, room, removedUser, fromUser);
 
 	return true;
 };

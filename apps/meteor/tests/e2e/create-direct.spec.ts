@@ -14,7 +14,7 @@ test.describe.serial('channel-direct-message', () => {
 	});
 
 	test('expect create a direct room', async ({ page }) => {
-		await poHomeChannel.sidenav.openNewByLabel('Direct messages');
+		await poHomeChannel.sidenav.openNewByLabel('Direct message');
 
 		await poHomeChannel.sidenav.inputDirectUsername.click();
 		await page.keyboard.type('rocket.cat');

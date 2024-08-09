@@ -95,7 +95,7 @@ const CallTable = () => {
 
 	return (
 		<>
-			{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }) => setText(text)} />}
+			{((isSuccess && data?.rooms.length > 0) || queryHasChanged) && <FilterByText onChange={setText} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -110,7 +110,7 @@ const CallTable = () => {
 					icon='phone'
 					title={t('No_calls_yet')}
 					description={t('No_calls_yet_description')}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_voice_channel')}
 				/>
 			)}

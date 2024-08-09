@@ -1,14 +1,14 @@
 {
 	"name": "@rocket.chat/gazzodown",
-	"version": "3.0.2",
+	"version": "9.0.0-rc.2",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.41.0",
-		"@rocket.chat/fuselage-tokens": "~0.32.0",
-		"@rocket.chat/message-parser": "~0.31.27",
+		"@rocket.chat/fuselage": "^0.57.0",
+		"@rocket.chat/fuselage-tokens": "^0.33.1",
+		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/styled": "~0.31.25",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
@@ -25,7 +25,7 @@
 		"@swc/jest": "^0.2.29",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "~12.1.5",
-		"@types/jest": "~29.5.7",
+		"@types/jest": "~29.5.12",
 		"@types/katex": "~0.16.5",
 		"@types/react": "~17.0.69",
 		"@types/react-dom": "~17.0.22",
@@ -39,14 +39,14 @@
 		"eslint-plugin-react-hooks": "~4.6.0",
 		"eslint-plugin-storybook": "~0.6.15",
 		"identity-obj-proxy": "^3.0.0",
-		"jest": "~29.6.4",
-		"jest-environment-jsdom": "~29.6.4",
+		"jest": "~29.7.0",
+		"jest-environment-jsdom": "~29.7.0",
 		"katex": "~0.16.9",
 		"outdent": "^0.8.0",
 		"react-docgen-typescript-plugin": "~1.0.5",
 		"react-dom": "~17.0.2",
 		"ts-jest": "~29.1.1",
-		"typescript": "~5.3.2"
+		"typescript": "~5.3.3"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -65,18 +65,19 @@
 		"/dist"
 	],
 	"peerDependencies": {
-		"@rocket.chat/core-typings": "6.6.0-develop",
+		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "*",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-tokens": "*",
-		"@rocket.chat/message-parser": "*",
+		"@rocket.chat/message-parser": "0.31.29",
 		"@rocket.chat/styled": "*",
-		"@rocket.chat/ui-client": "3.0.2",
-		"@rocket.chat/ui-contexts": "3.0.2",
+		"@rocket.chat/ui-client": "9.0.0-rc.2",
+		"@rocket.chat/ui-contexts": "9.0.0-rc.2",
 		"katex": "*",
 		"react": "*"
 	},
 	"dependencies": {
+		"date-fns": "^3.3.1",
 		"highlight.js": "^11.5.1",
 		"react-error-boundary": "^3.1.4"
 	},

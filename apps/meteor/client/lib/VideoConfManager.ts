@@ -3,7 +3,6 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { Notifications } from '../../app/notifications/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { getConfig } from './utils/getConfig';
 
@@ -507,14 +506,14 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 	}
 
 	private async notifyUser(uid: IUser['_id'], action: string, params: DirectCallParams): Promise<void> {
-		return Notifications.notifyUser(uid, 'video-conference', { action, params });
+		return sdk.publish('notify-user', [`${uid}/video-conference`, { action, params }]);
 	}
 
 	private async connectUser(userId: string): Promise<void> {
 		debug && console.log(`[VideoConf] connecting user ${userId}`);
 		this.userId = userId;
 
-		const { stop, ready } = Notifications.onUser('video-conference', (data) => this.onVideoConfNotification(data));
+		const { stop, ready } = sdk.stream('notify-user', [`${userId}/video-conference`], (data) => this.onVideoConfNotification(data));
 
 		await ready();
 

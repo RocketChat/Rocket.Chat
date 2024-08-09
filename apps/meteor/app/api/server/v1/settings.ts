@@ -1,18 +1,19 @@
-import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
+import type {
+	FacebookOAuthConfiguration,
+	ISetting,
+	ISettingColor,
+	TwitterOAuthConfiguration,
+	OAuthConfiguration,
+} from '@rocket.chat/core-typings';
 import { isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
-import { Settings } from '@rocket.chat/models';
-import {
-	isOauthCustomConfiguration,
-	isSettingsUpdatePropDefault,
-	isSettingsUpdatePropsActions,
-	isSettingsUpdatePropsColor,
-} from '@rocket.chat/rest-typings';
+import { LoginServiceConfiguration as LoginServiceConfigurationModel, Settings } from '@rocket.chat/models';
+import { isSettingsUpdatePropDefault, isSettingsUpdatePropsActions, isSettingsUpdatePropsColor } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
-import { ServiceConfiguration } from 'meteor/service-configuration';
 import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
 import { API } from '../api';
@@ -71,22 +72,25 @@ API.v1.addRoute(
 	{ authRequired: false },
 	{
 		async get() {
-			const oAuthServicesEnabled = await ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetchAsync();
+			const oAuthServicesEnabled = await LoginServiceConfigurationModel.find({}, { projection: { secret: 0 } }).toArray();
 
 			return API.v1.success({
 				services: oAuthServicesEnabled.map((service) => {
-					if (!isOauthCustomConfiguration(service)) {
+					if (!service) {
 						return service;
 					}
 
-					if (service.custom || (service.service && ['saml', 'cas', 'wordpress'].includes(service.service))) {
+					if ((service as OAuthConfiguration).custom || (service.service && ['saml', 'cas', 'wordpress'].includes(service.service))) {
 						return { ...service };
 					}
 
 					return {
 						_id: service._id,
 						name: service.service,
-						clientId: service.appId || service.clientId || service.consumerKey,
+						clientId:
+							(service as FacebookOAuthConfiguration).appId ||
+							(service as OAuthConfiguration).clientId ||
+							(service as TwitterOAuthConfiguration).consumerKey,
 						buttonLabelText: service.buttonLabelText || '',
 						buttonColor: service.buttonColor || '',
 						buttonLabelColor: service.buttonLabelColor || '',
@@ -103,7 +107,7 @@ API.v1.addRoute(
 	{ authRequired: true, twoFactorRequired: true },
 	{
 		async post() {
-			if (!this.bodyParams.name || !this.bodyParams.name.trim()) {
+			if (!this.bodyParams.name?.trim()) {
 				throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
 			}
 
@@ -183,23 +187,34 @@ API.v1.addRoute(
 				}
 
 				if (isSettingColor(setting) && isSettingsUpdatePropsColor(this.bodyParams)) {
-					await Settings.updateOptionsById<ISettingColor>(this.urlParams._id, {
-						editor: this.bodyParams.editor,
-					});
-					await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+					const updateOptionsPromise = Settings.updateOptionsById<ISettingColor>(this.urlParams._id, { editor: this.bodyParams.editor });
+					const updateValuePromise = Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+
+					const [updateOptionsResult, updateValueResult] = await Promise.all([updateOptionsPromise, updateValuePromise]);
+
+					if (updateOptionsResult.modifiedCount || updateValueResult.modifiedCount) {
+						await notifyOnSettingChangedById(this.urlParams._id);
+					}
+
 					return API.v1.success();
 				}
 
-				if (
-					isSettingsUpdatePropDefault(this.bodyParams) &&
-					(await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value))
-				) {
+				if (isSettingsUpdatePropDefault(this.bodyParams)) {
+					const { matchedCount } = await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+					if (!matchedCount) {
+						return API.v1.failure();
+					}
+
 					const s = await Settings.findOneNotHiddenById(this.urlParams._id);
 					if (!s) {
 						return API.v1.failure();
 					}
+
 					settings.set(s);
 					setValue(this.urlParams._id, this.bodyParams.value);
+
+					await notifyOnSettingChanged(s);
+
 					return API.v1.success();
 				}
 
@@ -215,7 +230,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			return API.v1.success({
-				configurations: await ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetchAsync(),
+				configurations: await LoginServiceConfigurationModel.find({}, { projection: { secret: 0 } }).toArray(),
 			});
 		},
 	},

@@ -9,6 +9,7 @@ import type {
 	Filter,
 	InsertOneResult,
 	InsertManyResult,
+	AggregationCursor,
 } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -96,7 +97,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	setGroupE2EKey(_id: string, key: string): Promise<ISubscription | null>;
 
-	setGroupE2ESuggestedKey(_id: string, key: string): Promise<UpdateResult | Document>;
+	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<UpdateResult>;
 
 	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document>;
 
@@ -128,9 +129,15 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	getAutoTranslateLanguagesByRoomAndNotUser(rid: string, userId: string): Promise<(string | undefined)[]>;
 
 	findByRidWithoutE2EKey(rid: string, options: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findUsersWithPublicE2EKeyByRids(
+		rids: IRoom['_id'][],
+		excludeUserId: IUser['_id'],
+		usersLimit?: number,
+	): AggregationCursor<{ rid: IRoom['_id']; users: { _id: IUser['_id']; public_key: string }[] }>;
 	findByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	cachedFindByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	updateAutoTranslateById(_id: string, autoTranslate: boolean): Promise<UpdateResult>;
+	updateAllAutoTranslateLanguagesByUserId(userId: IUser['_id'], language: string): Promise<UpdateResult | Document>;
 	disableAutoTranslateByRoomId(roomId: IRoom['_id']): Promise<UpdateResult | Document>;
 	findAlwaysNotifyDesktopUsersByRoomId(roomId: string): FindCursor<ISubscription>;
 
@@ -186,13 +193,13 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateDirectNameAndFnameByName(name: string, newName?: string, newFname?: string): Promise<UpdateResult | Document>;
 
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(
-		roomId: string,
-		userId: string,
+		roomId: IRoom['_id'],
+		userId: IUser['_id'],
 		incGroup?: number,
 		incUnread?: number,
 	): Promise<UpdateResult | Document>;
 	unsetBlockedByRoomId(rid: string, blocked: string, blocker: string): Promise<UpdateResult[]>;
-	setLastReplyForRoomIdAndUserIds(roomId: string, uids: string, lr: Date): Promise<UpdateResult | Document>;
+	setLastReplyForRoomIdAndUserIds(roomId: IRoom['_id'], uids: IUser['_id'][], lr: Date): Promise<UpdateResult | Document>;
 	updateCustomFieldsByRoomId(rid: string, cfields: Record<string, any>): Promise<UpdateResult | Document>;
 	setOpenForRoomIdAndUserIds(roomId: string, uids: string[]): Promise<UpdateResult | Document>;
 
@@ -200,8 +207,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateTypeByRoomId(roomId: string, type: ISubscription['t']): Promise<UpdateResult | Document>;
 	setBlockedByRoomId(rid: string, blocked: string, blocker: string): Promise<UpdateResult[]>;
 	incUserMentionsAndUnreadForRoomIdAndUserIds(
-		roomId: string,
-		userIds: string[],
+		roomId: IRoom['_id'],
+		userIds: IUser['_id'][],
 		incUser?: number,
 		incUnread?: number,
 	): Promise<UpdateResult | Document>;
@@ -226,7 +233,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		notificationOriginField: string,
 	): Promise<UpdateResult | Document>;
 	removeByUserId(userId: string): Promise<number>;
-	createWithRoomAndUser(room: IRoom, user: IUser, extraData?: Record<string, any>): Promise<InsertOneResult<ISubscription>>;
+	createWithRoomAndUser(room: IRoom, user: IUser, extraData?: Partial<ISubscription>): Promise<InsertOneResult<ISubscription>>;
 	createWithRoomAndManyUsers(
 		room: IRoom,
 		users: { user: AtLeast<IUser, '_id' | 'username' | 'name' | 'settings'>; extraData: Record<string, any> }[],

@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 import React from 'react';
 
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
-import AccordionLoading from '../../../AccordionLoading';
+import AccordionLoading from '../../../components/AccordionLoading';
 import { useLogs } from '../../../hooks/useLogs';
 import AppLogsItem from './AppLogsItem';
 

@@ -5,6 +5,8 @@ import type { ValidateFunction } from 'ajv';
 import busboy from 'busboy';
 import type { Request } from 'express';
 
+import { getMimeType } from '../../../utils/lib/mimeTypes';
+
 type UploadResult<K> = {
 	file: Readable & { truncated: boolean };
 	fieldname: string;
@@ -83,7 +85,7 @@ export async function getUploadFormData<
 				file,
 				filename,
 				encoding,
-				mimetype,
+				mimetype: getMimeType(mimetype, filename),
 				fieldname,
 				fields,
 				fileBuffer: Buffer.concat(fileChunks),

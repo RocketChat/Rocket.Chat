@@ -2,6 +2,7 @@ import { Button } from '@rocket.chat/fuselage';
 import { useRouteParameter, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
+import { ContextualbarDialog } from '../../../components/Contextualbar';
 import { Page, PageHeader, PageContent } from '../../../components/Page';
 import CustomFieldsTable from './CustomFieldsTable';
 import EditCustomFields from './EditCustomFields';
@@ -26,8 +27,12 @@ const CustomFieldsPage = () => {
 					<CustomFieldsTable />
 				</PageContent>
 			</Page>
-			{context === 'edit' && id && <EditCustomFieldsWithData customFieldId={id} />}
-			{context === 'new' && <EditCustomFields />}
+			{context && (
+				<ContextualbarDialog>
+					{context === 'edit' && id && <EditCustomFieldsWithData customFieldId={id} />}
+					{context === 'new' && <EditCustomFields />}
+				</ContextualbarDialog>
+			)}
 		</Page>
 	);
 };

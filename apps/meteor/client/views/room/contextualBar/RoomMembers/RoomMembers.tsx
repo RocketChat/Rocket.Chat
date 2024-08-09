@@ -15,9 +15,10 @@ import {
 	ContextualbarContent,
 	ContextualbarFooter,
 	ContextualbarEmptyContent,
+	ContextualbarSection,
 } from '../../../../components/Contextualbar';
+import { VirtuosoScrollbars } from '../../../../components/CustomScrollbars';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
-import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import RoomMembersRow from './RoomMembersRow';
 
 type RoomMemberUser = Pick<IUser, 'username' | '_id' | 'name' | 'status'>;
@@ -92,20 +93,19 @@ const RoomMembers = ({
 				<ContextualbarTitle>{isTeam ? t('Teams_members') : t('Members')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-			<ContextualbarContent p={12}>
-				<Box display='flex' flexDirection='row' p={12} flexShrink={0}>
-					<TextInput
-						placeholder={t('Search_by_username')}
-						value={text}
-						ref={inputRef}
-						onChange={setText}
-						addon={<Icon name='magnifier' size='x20' />}
-					/>
-					<Box w='x144' mis={8}>
-						<Select onChange={(value): void => setType(value as 'online' | 'all')} value={type} options={options} />
-					</Box>
+			<ContextualbarSection>
+				<TextInput
+					placeholder={t('Search_by_username')}
+					value={text}
+					ref={inputRef}
+					onChange={setText}
+					addon={<Icon name='magnifier' size='x20' />}
+				/>
+				<Box w='x144' mis={8}>
+					<Select onChange={(value): void => setType(value as 'online' | 'all')} value={type} options={options} />
 				</Box>
-
+			</ContextualbarSection>
+			<ContextualbarContent p={12}>
 				{loading && (
 					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
@@ -138,7 +138,7 @@ const RoomMembers = ({
 								overscan={50}
 								data={members}
 								// eslint-disable-next-line react/no-multi-comp
-								components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
+								components={{ Scroller: VirtuosoScrollbars, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
 								itemContent={(index, data): ReactElement => (
 									<RowComponent useRealName={useRealName} data={itemData} user={data} index={index} reload={reload} />
 								)}

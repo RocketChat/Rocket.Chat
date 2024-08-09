@@ -1,17 +1,9 @@
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import {
-	useToastMessageDispatch,
-	useUser,
-	useSettingsDispatch,
-	useSettings,
-	useTranslation,
-	useLoadLanguage,
-	useRoute,
-} from '@rocket.chat/ui-contexts';
-import type { FC, ReactNode, FormEvent, MouseEvent } from 'react';
+import { useToastMessageDispatch, useSettingsDispatch, useSettings, useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactNode, FormEvent, MouseEvent } from 'react';
 import React, { useMemo, memo } from 'react';
 
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
@@ -22,6 +14,7 @@ import GroupPageSkeleton from './GroupPageSkeleton';
 type GroupPageProps = {
 	children: ReactNode;
 	headerButtons?: ReactNode;
+	onClickBack?: () => void;
 	_id: string;
 	i18nLabel: string;
 	i18nDescription?: string;
@@ -29,21 +22,19 @@ type GroupPageProps = {
 	isCustom?: boolean;
 };
 
-const GroupPage: FC<GroupPageProps> = ({
+const GroupPage = ({
 	children = undefined,
 	headerButtons = undefined,
+	onClickBack,
 	_id,
 	i18nLabel,
 	i18nDescription = undefined,
 	tabs = undefined,
 	isCustom = false,
-}) => {
+}: GroupPageProps) => {
 	const t = useTranslation();
-	const user = useUser();
-	const router = useRoute('admin-settings');
 	const dispatch = useSettingsDispatch();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const loadLanguage = useLoadLanguage();
 
 	const changedEditableSettings = useEditableSettings(
 		useMemo(
@@ -66,7 +57,7 @@ const GroupPage: FC<GroupPageProps> = ({
 
 	const isColorSetting = (setting: ISetting): setting is ISettingColor => setting.type === 'color';
 
-	const save = useMutableCallback(async () => {
+	const save = useEffectEvent(async () => {
 		const changes = changedEditableSettings.map((setting) => {
 			if (isColorSetting(setting)) {
 				return {
@@ -88,17 +79,6 @@ const GroupPage: FC<GroupPageProps> = ({
 
 		try {
 			await dispatch(changes);
-
-			if (changes.some(({ _id }) => _id === 'Language')) {
-				const lng = user?.language || changes.filter(({ _id }) => _id === 'Language').shift()?.value || 'en';
-				if (typeof lng === 'string') {
-					await loadLanguage(lng);
-					dispatchToastMessage({ type: 'success', message: t('Settings_updated', { lng }) });
-					return;
-				}
-				throw new Error('lng is not a string');
-			}
-
 			dispatchToastMessage({ type: 'success', message: t('Settings_updated') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -107,7 +87,7 @@ const GroupPage: FC<GroupPageProps> = ({
 
 	const dispatchToEditing = useEditableSettingsDispatch();
 
-	const cancel = useMutableCallback(() => {
+	const cancel = useEffectEvent(() => {
 		const settingsToDispatch = changedEditableSettings
 			.map(({ _id }) => originalSettings.find((setting) => setting._id === _id))
 			.map((setting) => {
@@ -139,8 +119,6 @@ const GroupPage: FC<GroupPageProps> = ({
 		save();
 	};
 
-	const handleBack = useMutableCallback(() => router.push({}));
-
 	const handleCancelClick = (event: MouseEvent<HTMLOrSVGElement>): void => {
 		event.preventDefault();
 		cancel();
@@ -160,7 +138,7 @@ const GroupPage: FC<GroupPageProps> = ({
 
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>
-			<PageHeader onClickBack={handleBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
+			<PageHeader onClickBack={onClickBack} title={i18nLabel && isTranslationKey(i18nLabel) && t(i18nLabel)}>
 				<ButtonGroup>{headerButtons}</ButtonGroup>
 			</PageHeader>
 			{tabs}

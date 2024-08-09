@@ -11,6 +11,7 @@ import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import type { FederatedRoom } from '../../../domain/FederatedRoom';
 import type { FederatedUser } from '../../../domain/FederatedUser';
 import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../converters/to-external-parser-formatter';
+import { escapeExternalFederationEventId } from './federation-id-escape-helper';
 
 const DEFAULT_EMOJI_TO_REACT_WHEN_RECEIVED_EMOJI_DOES_NOT_EXIST = ':grey_question:';
 
@@ -316,7 +317,12 @@ export class RocketChatMessageAdapter {
 		try {
 			await executeSetReaction(user.getInternalId(), reaction, message._id);
 			user.getUsername() &&
-				(await Messages.setFederationReactionEventId(user.getUsername() as string, message._id, reaction, externalEventId));
+				(await Messages.setFederationReactionEventId(
+					user.getUsername() as string,
+					message._id,
+					reaction,
+					escapeExternalFederationEventId(externalEventId),
+				));
 		} catch (error: any) {
 			if (error?.message?.includes('Invalid emoji provided.')) {
 				await executeSetReaction(user.getInternalId(), DEFAULT_EMOJI_TO_REACT_WHEN_RECEIVED_EMOJI_DOES_NOT_EXIST, message._id);
@@ -326,12 +332,16 @@ export class RocketChatMessageAdapter {
 
 	public async unreactToMessage(user: FederatedUser, message: IMessage, reaction: string, externalEventId: string): Promise<void> {
 		await executeSetReaction(user.getInternalId(), reaction, message._id);
-		await Messages.unsetFederationReactionEventId(externalEventId, message._id, reaction);
+		await Messages.unsetFederationReactionEventId(escapeExternalFederationEventId(externalEventId), message._id, reaction);
 	}
 
 	public async findOneByFederationIdOnReactions(federationEventId: string, user: FederatedUser): Promise<IMessage | null | undefined> {
 		return (
-			(user.getUsername() && Messages.findOneByFederationIdAndUsernameOnReactions(federationEventId, user.getUsername() as string)) ||
+			(user.getUsername() &&
+				Messages.findOneByFederationIdAndUsernameOnReactions(
+					escapeExternalFederationEventId(federationEventId),
+					user.getUsername() as string,
+				)) ||
 			undefined
 		);
 	}
@@ -345,7 +355,7 @@ export class RocketChatMessageAdapter {
 	}
 
 	public async unsetExternalFederationEventOnMessageReaction(externalEventId: string, message: IMessage, reaction: string): Promise<void> {
-		await Messages.unsetFederationReactionEventId(externalEventId, message._id, reaction);
+		await Messages.unsetFederationReactionEventId(escapeExternalFederationEventId(externalEventId), message._id, reaction);
 	}
 
 	public async getMessageById(internalMessageId: string): Promise<IMessage | null> {
@@ -358,6 +368,6 @@ export class RocketChatMessageAdapter {
 		reaction: string,
 		externalEventId: string,
 	): Promise<void> {
-		await Messages.setFederationReactionEventId(username, message._id, reaction, externalEventId);
+		await Messages.setFederationReactionEventId(username, message._id, reaction, escapeExternalFederationEventId(externalEventId));
 	}
 }

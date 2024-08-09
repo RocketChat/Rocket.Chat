@@ -36,7 +36,7 @@ const broker = new BrokerMocked();
 
 describe('Check MAC', () => {
 	before(() => {
-		api.setBroker(broker);
+		api.setBroker(broker as any);
 	});
 
 	it('should do nothing if not omnichannel room', async () => {

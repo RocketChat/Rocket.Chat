@@ -2,6 +2,7 @@ import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { VideoConfPopupBackdrop } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo } from 'react';
+import { FocusScope } from 'react-aria';
 
 import type { VideoConfPopupPayload } from '../../../../../contexts/VideoConfContext';
 import { useVideoConfIsCalling, useVideoConfIsRinging, useVideoConfIncomingCalls } from '../../../../../contexts/VideoConfContext';
@@ -41,11 +42,13 @@ const VideoConfPopups = ({ children }: { children?: VideoConfPopupPayload }): Re
 		<>
 			{(children || popups?.length > 0) && (
 				<VideoConfPopupPortal>
-					<VideoConfPopupBackdrop>
-						{(children ? [children, ...popups] : popups).map(({ id, rid, isReceiving }, index = 1) => (
-							<VideoConfPopup key={id} id={id} rid={rid} isReceiving={isReceiving} isCalling={isCalling} position={index * 10} />
-						))}
-					</VideoConfPopupBackdrop>
+					<FocusScope autoFocus contain restoreFocus>
+						<VideoConfPopupBackdrop>
+							{(children ? [children, ...popups] : popups).map(({ id, rid, isReceiving }, index = 1) => (
+								<VideoConfPopup key={id} id={id} rid={rid} isReceiving={isReceiving} isCalling={isCalling} position={index * 10} />
+							))}
+						</VideoConfPopupBackdrop>
+					</FocusScope>
 				</VideoConfPopupPortal>
 			)}
 		</>

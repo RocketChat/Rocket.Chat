@@ -27,6 +27,7 @@ import type {
 	UpdateFilter,
 	InsertOneResult,
 	InsertManyResult,
+	AggregationCursor,
 } from 'mongodb';
 
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
@@ -61,6 +62,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{ key: { prid: 1 } },
 			{ key: { 'u._id': 1, 'open': 1, 'department': 1 } },
 			{ key: { rid: 1, ls: 1 } },
+			{ key: { 'u._id': 1, 'autotranslate': 1 } },
 		];
 	}
 
@@ -537,8 +539,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.findOneById(_id);
 	}
 
-	setGroupE2ESuggestedKey(_id: string, key: string): Promise<UpdateResult | Document> {
-		const query = { _id };
+	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<UpdateResult> {
+		const query = { rid, 'u._id': uid };
 		const update = { $set: { E2ESuggestedKey: key } };
 		return this.updateOne(query, update);
 	}
@@ -603,6 +605,21 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
+	updateAllAutoTranslateLanguagesByUserId(userId: IUser['_id'], language: string): Promise<UpdateResult | Document> {
+		const query = {
+			'u._id': userId,
+			'autoTranslate': true,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				autoTranslateLanguage: language,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
 	disableAutoTranslateByRoomId(roomId: IRoom['_id']): Promise<UpdateResult | Document> {
 		const query = {
 			rid: roomId,
@@ -656,6 +673,61 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		return this.find(query, options);
+	}
+
+	findUsersWithPublicE2EKeyByRids(
+		rids: IRoom['_id'][],
+		excludeUserId: IUser['_id'],
+		usersLimit = 50,
+	): AggregationCursor<{ rid: IRoom['_id']; users: { _id: IUser['_id']; public_key: string }[] }> {
+		return this.col.aggregate([
+			{
+				$match: {
+					'rid': {
+						$in: rids,
+					},
+					'E2EKey': {
+						$exists: false,
+					},
+					'u._id': {
+						$ne: excludeUserId,
+					},
+				},
+			},
+			{
+				$lookup: {
+					from: 'users',
+					localField: 'u._id',
+					foreignField: '_id',
+					as: 'user',
+				},
+			},
+			{
+				$unwind: '$user',
+			},
+			{
+				$match: {
+					'user.e2e.public_key': {
+						$exists: 1,
+					},
+				},
+			},
+			{
+				$group: {
+					_id: {
+						rid: '$rid',
+					},
+					users: { $push: { _id: '$user._id', public_key: '$user.e2e.public_key' } },
+				},
+			},
+			{
+				$project: {
+					rid: '$_id.rid',
+					users: { $slice: ['$users', usersLimit] },
+					_id: 0,
+				},
+			},
+		]);
 	}
 
 	updateAudioNotificationValueById(_id: string, audioNotificationValue: string): Promise<UpdateResult> {
@@ -855,6 +927,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{
 				$unset: {
 					E2EKey: '',
+					E2ESuggestedKey: 1,
 				},
 			},
 		);
@@ -1271,8 +1344,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(
-		roomId: string,
-		userId: string,
+		roomId: IRoom['_id'],
+		userId: IUser['_id'],
 		incGroup = 1,
 		incUnread = 1,
 	): Promise<UpdateResult | Document> {
@@ -1298,8 +1371,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	incUserMentionsAndUnreadForRoomIdAndUserIds(
-		roomId: string,
-		userIds: string[],
+		roomId: IRoom['_id'],
+		userIds: IUser['_id'][],
 		incUser = 1,
 		incUnread = 1,
 	): Promise<UpdateResult | Document> {
@@ -1368,7 +1441,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	setLastReplyForRoomIdAndUserIds(roomId: string, uids: string, lr: Date): Promise<UpdateResult | Document> {
+	setLastReplyForRoomIdAndUserIds(roomId: IRoom['_id'], uids: IUser['_id'][], lr: Date): Promise<UpdateResult | Document> {
 		const query = {
 			'rid': roomId,
 			'u._id': { $in: uids },
@@ -1587,7 +1660,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	// INSERT
-	async createWithRoomAndUser(room: IRoom, user: IUser, extraData: Record<string, any> = {}): Promise<InsertOneResult<ISubscription>> {
+	async createWithRoomAndUser(room: IRoom, user: IUser, extraData: Partial<ISubscription> = {}): Promise<InsertOneResult<ISubscription>> {
 		const subscription = {
 			open: false,
 			alert: false,

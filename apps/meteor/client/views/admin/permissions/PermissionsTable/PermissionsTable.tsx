@@ -1,4 +1,5 @@
-import { Margins, Tabs, Button, Pagination } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Margins, Tabs, Button, Pagination, Palette } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, usePermission, useMethod, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -55,6 +56,26 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 		});
 	});
 
+	const fixedColumnStyle = css`
+		tr > th {
+			&:first-child {
+				position: sticky;
+				left: 0;
+				background-color: ${Palette.surface['surface-light']};
+				z-index: 12;
+			}
+		}
+		tr > td {
+			&:first-child {
+				position: sticky;
+				left: 0;
+				box-shadow: -1px 0 0 ${Palette.stroke['stroke-light']} inset;
+				background-color: ${Palette.surface['surface-light']};
+				z-index: 11;
+			}
+		}
+	`;
+
 	return (
 		<Page flexDirection='row'>
 			<Page>
@@ -89,7 +110,7 @@ const PermissionsTable = ({ isEnterprise }: { isEnterprise: boolean }): ReactEle
 						{permissions?.length === 0 && <GenericNoResults />}
 						{permissions?.length > 0 && (
 							<>
-								<GenericTable fixed={false}>
+								<GenericTable className={[fixedColumnStyle]} fixed={false}>
 									<GenericTableHeader>
 										<GenericTableHeaderCell width='x120'>{t('Name')}</GenericTableHeaderCell>
 										{roleList?.map(({ _id, name, description }) => (
