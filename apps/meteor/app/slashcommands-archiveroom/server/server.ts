@@ -61,7 +61,7 @@ slashCommands.add({
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Duplicate_archived_channel_name', {
 					postProcess: 'sprintf',
-					sprintf: [channel],
+					sprintf: [room.fname],
 					lng: settings.get('Language') || 'en',
 				}),
 			});
@@ -73,7 +73,7 @@ slashCommands.add({
 		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 			msg: i18n.t('Channel_Archived', {
 				postProcess: 'sprintf',
-				sprintf: [channel],
+				sprintf: [room.fname],
 				lng: settings.get('Language') || 'en',
 			}),
 		});
