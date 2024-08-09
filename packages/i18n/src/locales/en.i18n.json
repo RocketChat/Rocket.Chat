@@ -1798,6 +1798,8 @@
   "E2E_Enabled": "E2E Enabled",
   "E2E_Enabled_Default_DirectRooms": "Enable encryption for Direct Rooms by default",
   "E2E_Enabled_Default_PrivateRooms": "Enable encryption for Private Rooms by default",
+  "E2E_Enabled_Mentions": "Mentions",
+  "E2E_Enabled_Mentions_Description": "Notify people, and highlight user, channel, and team mentions in encrypted content.",
   "E2E_Encryption_Password_Change": "Change Encryption Password",
   "E2E_Encryption_Password_Explanation": "You can now create encrypted private groups and direct messages. You may also change existing private groups or DMs to encrypted.<br/><br/>This is end-to-end encryption so the key to encode/decode your messages will not be saved on the server. For that reason you need to store your password somewhere safe. You will be required to enter it on other devices you wish to use e2e encryption on.",
   "E2E_key_reset_email": "E2E Key Reset Notification",

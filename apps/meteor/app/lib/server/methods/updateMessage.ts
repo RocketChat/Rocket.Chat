@@ -10,7 +10,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { settings } from '../../../settings/server';
 import { updateMessage } from '../functions/updateMessage';
 
-const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg', 'customFields', 'content'];
+const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg', 'customFields', 'content', 'e2eMentions'];
 
 export async function executeUpdateMessage(
 	uid: IUser['_id'],
