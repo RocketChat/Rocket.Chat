@@ -982,7 +982,6 @@ describe('LIVECHAT - rooms', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res: Response) => {
-					console.log({ res: res.body });
 					expect(res.body).to.have.property('success', true);
 				});
 
