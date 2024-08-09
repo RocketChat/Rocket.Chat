@@ -2,7 +2,7 @@ import type { QueriesResults } from '@tanstack/react-query';
 import { useQueries } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
-import { slashCommands } from '../../../../../app/utils/lib/slashCommand';
+import { slashCommands } from '../../../../../app/utils/client/slashCommand';
 import type { ComposerPopupOption } from '../../contexts/ComposerPopupContext';
 import { useEnablePopupPreview } from './useEnablePopupPreview';
 

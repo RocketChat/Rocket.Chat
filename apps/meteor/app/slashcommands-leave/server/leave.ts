@@ -5,7 +5,7 @@ import { Users } from '@rocket.chat/models';
 import { i18n } from '../../../server/lib/i18n';
 import { leaveRoomMethod } from '../../lib/server/methods/leaveRoom';
 import { settings } from '../../settings/server';
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { slashCommands } from '../../utils/server/slashCommand';
 
 /*
  * Leave is a named function that will replace /leave commands
