@@ -1,5 +1,17 @@
 # @rocket.chat/web-ui-registration
 
+## 9.0.0
+
+### Patch Changes
+
+- ([#32482](https://github.com/RocketChat/Rocket.Chat/pull/32482)) Fixed an issue with blocked login when dismissed 2FA modal by clicking outside of it or pressing the escape key
+
+- <details><summary>Updated dependencies [8fc6ca8b4e, 2d89a0c448, 4e8aa575a6]:</summary>
+
+  - @rocket.chat/tools@0.2.2
+  - @rocket.chat/ui-contexts@9.0.0
+  </details>
+
 ## 9.0.0-rc.6
 
 ### Patch Changes

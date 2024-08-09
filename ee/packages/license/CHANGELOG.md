@@ -1,5 +1,14 @@
 # @rocket.chat/license
 
+## 0.2.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [2d89a0c448, 24f7df4894, b8e5887fb9]:</summary>
+
+  - @rocket.chat/core-typings@6.11.0
+  </details>
+
 ## 0.2.3-rc.6
 
 ### Patch Changes

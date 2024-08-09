@@ -1,5 +1,26 @@
 # rocketchat-services
 
+## 1.3.0
+
+### Minor Changes
+
+- ([#32793](https://github.com/RocketChat/Rocket.Chat/pull/32793)) New Feature: Video Conference Persistent Chat.
+  This feature provides a discussion id for conference provider apps to store the chat messages exchanged during the conferences, so that those users may then access those messages again at any time through Rocket.Chat.
+
+### Patch Changes
+
+- ([#32719](https://github.com/RocketChat/Rocket.Chat/pull/32719)) Added the `user` param to apps-engine update method call, allowing apps' new `onUpdate` hook to know who triggered the update.
+
+- <details><summary>Updated dependencies [439faa87d3, 03c8b066f9, 2d89a0c448, 439faa87d3, 24f7df4894, 03c8b066f9, 264d7d5496, b8e5887fb9]:</summary>
+
+  - @rocket.chat/model-typings@0.6.0
+  - @rocket.chat/core-services@0.5.0
+  - @rocket.chat/core-typings@6.11.0
+  - @rocket.chat/models@0.2.0
+  - @rocket.chat/ui-kit@0.36.0
+  - @rocket.chat/rest-typings@6.11.0
+  </details>
+
 ## 1.3.0-rc.6
 
 ### Patch Changes
