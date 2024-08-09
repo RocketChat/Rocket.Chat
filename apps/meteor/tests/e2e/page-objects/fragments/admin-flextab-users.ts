@@ -63,4 +63,8 @@ export class AdminFlextabUsers {
 	get setupSmtpLink(): Locator {
 		return this.page.locator('role=link[name="Set up SMTP"]');
 	}
+
+	get btnContextualbarClose(): Locator {
+		return this.page.locator('button[data-qa="ContextualbarActionClose"]');
+	}
 }
