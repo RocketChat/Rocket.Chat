@@ -94,8 +94,8 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 			</Box>
 			<Box minWidth='x224' m='x4'>
 				<MultiSelectCustom
-					dropdownOptions={roomTypeFilterStructure as OptionProp[]}
-					defaultTitle={'All_rooms' as any}
+					dropdownOptions={roomTypeFilterStructure}
+					defaultTitle='All_rooms'
 					selectedOptionsTitle='Rooms'
 					setSelectedOptions={handleRoomTypeChange}
 					selectedOptions={roomTypeSelectedOptions}

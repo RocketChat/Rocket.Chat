@@ -7,8 +7,8 @@ import { forwardRef } from 'react';
 
 type MultiSelectCustomAnchorProps = {
 	collapsed: boolean;
-	defaultTitle: TranslationKey;
-	selectedOptionsTitle: TranslationKey;
+	defaultTitle: string;
+	selectedOptionsTitle: string;
 	selectedOptionsCount: number;
 	maxCount: number;
 } & ComponentProps<typeof Box>;
@@ -37,7 +37,7 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 			className={['rcx-input-box__wrapper', customStyle, ...(Array.isArray(className) ? className : [className])].filter(Boolean)}
 			{...props}
 		>
-			{isDirty ? `${t(selectedOptionsTitle)} (${selectedOptionsCount})` : t(defaultTitle)}
+			{isDirty ? `${t(selectedOptionsTitle as TranslationKey)} (${selectedOptionsCount})` : t(defaultTitle as TranslationKey)}
 			<Icon name={collapsed ? 'chevron-up' : 'chevron-down'} fontSize='x20' color='hint' />
 		</Box>
 	);

@@ -1,5 +1,5 @@
 import type { LicenseInfo } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, Callout, ContextualbarIcon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Callout, ContextualbarIcon, Icon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { ExternalLink } from '@rocket.chat/ui-client';
@@ -23,6 +23,7 @@ import { useLicenseLimitsByBehavior } from '../../../hooks/useLicenseLimitsByBeh
 import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
 import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
 import AdminInviteUsers from './AdminInviteUsers';
+import AdminUserCreated from './AdminUserCreated';
 import AdminUserForm from './AdminUserForm';
 import AdminUserFormWithData from './AdminUserFormWithData';
 import AdminUserInfoWithData from './AdminUserInfoWithData';
@@ -61,7 +62,7 @@ const AdminUsersPage = (): ReactElement => {
 	const isCreateUserDisabled = useShouldPreventAction('activeUsers');
 
 	const getRoles = useEndpoint('GET', '/v1/roles.list');
-	const { data } = useQuery(['roles'], async () => getRoles());
+	const { data, error } = useQuery(['roles'], async () => getRoles());
 
 	const paginationData = usePagination();
 	const sortData = useSort<UsersTableSortingOptions>('name');
@@ -181,14 +182,23 @@ const AdminUsersPage = (): ReactElement => {
 							<ContextualbarTitle>
 								{context === 'info' && t('User_Info')}
 								{context === 'edit' && t('Edit_User')}
-								{context === 'new' && t('Add_User')}
+								{(context === 'new' || context === 'created') && (
+									<>
+										<Icon name='user-plus' size={20} /> {t('New_user')}
+									</>
+								)}
 								{context === 'invite' && t('Invite_Users')}
 							</ContextualbarTitle>
 							<ContextualbarClose onClick={() => router.navigate('/admin/users')} />
 						</ContextualbarHeader>
 						{context === 'info' && id && <AdminUserInfoWithData uid={id} onReload={handleReload} tab={tab} />}
-						{context === 'edit' && id && <AdminUserFormWithData uid={id} onReload={handleReload} />}
-						{!isRoutePrevented && context === 'new' && <AdminUserForm onReload={handleReload} />}
+						{context === 'edit' && id && (
+							<AdminUserFormWithData uid={id} onReload={handleReload} context={context} roleData={data} roleError={error} />
+						)}
+						{!isRoutePrevented && context === 'new' && (
+							<AdminUserForm onReload={handleReload} context={context} roleData={data} roleError={error} />
+						)}
+						{!isRoutePrevented && context === 'created' && id && <AdminUserCreated uid={id} />}
 						{!isRoutePrevented && context === 'invite' && <AdminInviteUsers />}
 						{isRoutePrevented && <AdminUserUpgrade />}
 					</Contextualbar>
