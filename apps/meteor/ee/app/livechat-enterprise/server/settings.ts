@@ -166,6 +166,51 @@ export const createSettings = async (): Promise<void> => {
 				invalidValue: '',
 			});
 		});
+
+		await this.add('Livechat_Block_Unknown_Contacts', false, {
+			type: 'boolean',
+			public: true,
+			hidden: true,
+			enableQuery: omnichannelEnabledQuery,
+			invalidValue: false,
+			section: 'Contact_identification',
+			enterprise: true,
+			modules: ['livechat-enterprise'],
+		});
+
+		await this.add('Livechat_Block_Unverified_Contacts', false, {
+			type: 'boolean',
+			public: true,
+			hidden: true,
+			enableQuery: omnichannelEnabledQuery,
+			invalidValue: false,
+			section: 'Contact_identification',
+			enterprise: true,
+			modules: ['livechat-enterprise'],
+		});
+
+		await this.add('Livechat_Contact_Verification_App', '', {
+			type: 'select',
+			public: true,
+			hidden: true,
+			values: [{ key: 'VerifyChat', i18nLabel: 'VerifyChat' }],
+			enableQuery: omnichannelEnabledQuery,
+			invalidValue: '',
+			section: 'Contact_identification',
+			enterprise: true,
+			modules: ['livechat-enterprise'],
+		});
+
+		await this.add('Livechat_Request_Verification_On_First_Contact_Only', false, {
+			type: 'boolean',
+			public: true,
+			hidden: true,
+			enableQuery: omnichannelEnabledQuery,
+			invalidValue: false,
+			section: 'Contact_identification',
+			enterprise: true,
+			modules: ['livechat-enterprise'],
+		});
 	});
 
 	await settingsRegistry.add('Livechat_AdditionalWidgetScripts', '', {

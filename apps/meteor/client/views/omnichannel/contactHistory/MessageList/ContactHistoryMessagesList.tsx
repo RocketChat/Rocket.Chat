@@ -1,12 +1,24 @@
-import { Box, Icon, Margins, States, StatesIcon, StatesSubtitle, StatesTitle, TextInput, Throbber } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Button,
+	ButtonGroup,
+	ContextualbarFooter,
+	Icon,
+	Margins,
+	States,
+	StatesIcon,
+	StatesSubtitle,
+	StatesTitle,
+	TextInput,
+	Throbber,
+} from '@rocket.chat/fuselage';
 import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, Dispatch, ReactElement, SetStateAction } from 'react';
+import type { ChangeEvent, ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import {
 	ContextualbarHeader,
-	ContextualbarAction,
 	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarClose,
@@ -21,18 +33,17 @@ import { isMessageSequential } from '../../../room/MessageList/lib/isMessageSequ
 import ContactHistoryMessage from './ContactHistoryMessage';
 import { useHistoryMessageList } from './useHistoryMessageList';
 
-const ContactHistoryMessagesList = ({
-	chatId,
-	setChatId,
-	close,
-}: {
+type ContactHistoryMessagesListProps = {
 	chatId: string;
-	setChatId: Dispatch<SetStateAction<string>>;
-	close: () => void;
-}): ReactElement => {
-	const [text, setText] = useState('');
+	onClose: () => void;
+	onOpenRoom?: () => void;
+};
+
+const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHistoryMessagesListProps) => {
 	const t = useTranslation();
+	const [text, setText] = useState('');
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
+
 	const { itemsList: messageList, loadMoreItems } = useHistoryMessageList(
 		useMemo(() => ({ roomId: chatId, filter: text }), [chatId, text]),
 	);
@@ -47,10 +58,9 @@ const ContactHistoryMessagesList = ({
 	return (
 		<>
 			<ContextualbarHeader>
-				<ContextualbarAction onClick={(): void => setChatId('')} title={t('Back')} name='arrow-back' />
 				<ContextualbarIcon name='history' />
 				<ContextualbarTitle>{t('Chat_History')}</ContextualbarTitle>
-				<ContextualbarClose onClick={close} />
+				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 
 			<ContextualbarContent paddingInline={0}>
@@ -111,6 +121,13 @@ const ContactHistoryMessagesList = ({
 					)}
 				</Box>
 			</ContextualbarContent>
+			{onOpenRoom && (
+				<ContextualbarFooter>
+					<ButtonGroup stretch>
+						<Button onClick={onOpenRoom}>{t('Open_chat')}</Button>
+					</ButtonGroup>
+				</ContextualbarFooter>
+			)}
 		</>
 	);
 };
