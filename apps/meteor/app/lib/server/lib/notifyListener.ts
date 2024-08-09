@@ -624,16 +624,14 @@ export async function notifyOnSubscriptionChangedByUserIdAndRoomType(
 }
 
 export async function notifyOnSubscriptionChangedByNameAndRoomType(
-	name?: ISubscription['name'],
-	fname?: ISubscription['fname'],
-	t?: ISubscription['t'],
+	filter: Partial<Pick<ISubscription, 'name' | 't'>>,
 	clientAction: ClientAction = 'updated',
 ): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
 	}
 
-	const subscriptions = Subscriptions.findByNameAndRoomType(name, fname, t, { projection: subscriptionFields });
+	const subscriptions = Subscriptions.findByNameAndRoomType(filter, { projection: subscriptionFields });
 
 	for await (const subscription of subscriptions) {
 		void api.broadcast('watch.subscriptions', { clientAction, subscription });

@@ -1304,15 +1304,16 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	findByNameAndRoomType(
-		name?: ISubscription['name'],
-		fname?: ISubscription['fname'],
-		type?: ISubscription['t'],
+		filter: Partial<Pick<ISubscription, 'name' | 't'>>,
 		options?: FindOptions<ISubscription>,
 	): FindCursor<ISubscription> {
-		const query: Filter<ISubscription> = {};
-		if (name) query.name = name;
-		if (fname) query.fname = fname;
-		if (type) query.t = type;
+		if (!filter.name && !filter.t) {
+			throw new Error('invalid filter');
+		}
+		const query: Filter<ISubscription> = {
+			...(filter.name && { name: filter.name }),
+			...(filter.t && { t: filter.t }),
+		};
 		return this.find(query, options);
 	}
 

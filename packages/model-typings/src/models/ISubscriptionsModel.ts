@@ -168,9 +168,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		options?: FindOptions<ISubscription>,
 	): FindCursor<ISubscription>;
 	findByNameAndRoomType(
-		name?: ISubscription['name'],
-		fname?: ISubscription['fname'],
-		type?: ISubscription['t'],
+		filter: Partial<Pick<ISubscription, 'name' | 't'>>,
 		options?: FindOptions<ISubscription>,
 	): FindCursor<ISubscription>;
 

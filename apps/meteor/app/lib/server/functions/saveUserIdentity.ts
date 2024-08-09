@@ -160,7 +160,10 @@ async function updateUsernameReferences({
 		);
 
 		if (updateDirectNameResponse?.modifiedCount) {
-			void notifyOnSubscriptionChangedByNameAndRoomType(rawUsername && username, rawName && name, 'd');
+			void notifyOnSubscriptionChangedByNameAndRoomType({
+				t: 'd',
+				name: username,
+			});
 		}
 
 		// update name and fname of group direct messages
