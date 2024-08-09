@@ -205,7 +205,7 @@ function SideBarItemTemplateWithData({
 						threadUnread={threadUnread}
 						rid={rid}
 						unread={!!unread}
-						roomOpen={false}
+						roomOpen={selected}
 						type={type}
 						cl={cl}
 						name={title}
