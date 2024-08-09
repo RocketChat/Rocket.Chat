@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType, ReactElement } from 'react';
 import React, { useMemo, memo, useEffect, useCallback } from 'react';
@@ -11,6 +12,7 @@ import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
+import { useTeamInfo } from '../Header/ParentTeam';
 import RoomNotFound from '../RoomNotFound';
 import RoomSkeleton from '../RoomSkeleton';
 import { useRoomRolesManagement } from '../body/hooks/useRoomRolesManagement';
@@ -31,6 +33,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useRoomRolesManagement(rid);
 
 	const { data: room, isSuccess } = useRoomQuery(rid);
+	const teamResult = useTeamInfo(room?.teamId);
 
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
 	const router = useRouter();
@@ -86,12 +89,34 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		};
 	}, [hasMoreNextMessages, hasMorePreviousMessages, isLoadingMoreMessages, pseudoRoom, rid, subscriptionQuery.data]);
 
+	const isNewNavigationEnabled = useFeaturePreview('newNavigation');
+
 	useEffect(() => {
-		RoomManager.open(rid);
+		if (!isNewNavigationEnabled) {
+			RoomManager.open(rid);
+			return (): void => {
+				RoomManager.back(rid);
+			};
+		}
+
+		if (room?.teamId && !room?.teamMain) {
+			if (teamResult.isSuccess) {
+				RoomManager.openSecondLevel(teamResult.data.teamInfo.roomId, rid);
+			}
+		}
+
+		if (room?.prid) {
+			RoomManager.openSecondLevel(room?.prid, rid);
+		}
+
+		if ((!room?.teamId || room?.teamMain) && !room?.prid) {
+			RoomManager.open(rid);
+		}
+
 		return (): void => {
 			RoomManager.back(rid);
 		};
-	}, [rid]);
+	}, [isNewNavigationEnabled, rid, room?._id, room?.prid, room?.teamId, room?.teamMain, teamResult, teamResult.isSuccess]);
 
 	const subscribed = !!subscriptionQuery.data;
 
