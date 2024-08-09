@@ -9,7 +9,7 @@ import type {
 	ReportResult,
 	MACStats,
 } from '@rocket.chat/core-typings';
-import { isMessageFromVisitor, UserStatus } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Settings } from '@rocket.chat/models';
