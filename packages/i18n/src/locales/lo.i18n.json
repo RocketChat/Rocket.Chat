@@ -293,7 +293,7 @@
   "API_EmbedCacheExpirationDays": "ຝັງເວລາຫມົດອາຍຸຂອງແຄດ",
   "API_Enable_CORS": "ເປີດໃຊ້ CORS",
   "API_Enable_Direct_Message_History_EndPoint": "ເປີດໃຊ້ຂໍ້ຄວາມຈຸດປະສົງຂອງຂໍ້ຄວາມ Direct Message",
-  "API_Enable_Direct_Message_History_EndPoint_Description": "ນີ້ອະນຸຍາດໃຫ້ `/ api / v1 / im.history.others` ເຊິ່ງອະນຸຍາດໃຫ້ການເບິ່ງຂໍ້ຄວາມໂດຍກົງທີ່ສົ່ງໂດຍຜູ້ໃຊ້ອື່ນໆທີ່ຜູ້ໂທບໍ່ແມ່ນສ່ວນຫນຶ່ງຂອງ.",
+  "API_Enable_Direct_Message_History_EndPoint_Description": "ນີ້ອະນຸຍາດໃຫ້ `/ api / v1 / im.messages.others` ເຊິ່ງອະນຸຍາດໃຫ້ການເບິ່ງຂໍ້ຄວາມໂດຍກົງທີ່ສົ່ງໂດຍຜູ້ໃຊ້ອື່ນໆທີ່ຜູ້ໂທບໍ່ແມ່ນສ່ວນຫນຶ່ງຂອງ.",
   "API_Enable_Shields": "ເປີດ Shields",
   "API_Enable_Shields_Description": "ເປີດໃຊ້ໄສ້ກອງທີ່ມີຢູ່ `/ api / v1 / shield.svg`",
   "API_GitHub_Enterprise_URL": "URL Server",

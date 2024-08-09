@@ -67,6 +67,8 @@ on:
         required: false
       CODECOV_TOKEN:
         required: false
+      REPORTER_JIRA_ROCKETCHAT_API_KEY:
+        required: false
 
 env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
@@ -122,7 +124,7 @@ jobs:
 
       # if we are testing a PR from a fork, we need to build the docker image at this point
       - uses: ./.github/actions/build-docker
-        if: github.event.pull_request.head.repo.full_name != github.repository
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -176,6 +178,12 @@ jobs:
         run: |
           docker compose -f docker-compose-ci.yml up -d
 
+      - name: Clean up temporary files
+        # remove all folders inside /tmp except /tmp/coverage
+        run: |
+          cd /tmp
+          sudo find . -mindepth 1 -maxdepth 1 -type d | grep -v './coverage' | sudo xargs rm -rf
+
       - name: Cache Playwright binaries
         if: inputs.type == 'ui'
         uses: actions/cache@v3
@@ -210,6 +218,8 @@ jobs:
             sleep 10
           done;
 
+      - name: Remove unused Docker images
+        run: docker system prune -af
       - name: E2E Test API
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
@@ -250,10 +260,15 @@ jobs:
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
           REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
           REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+          REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
           REPORTER_ROCKETCHAT_REPORT: ${{ github.event.pull_request.draft != 'true' && 'true' || '' }}
           REPORTER_ROCKETCHAT_RUN: ${{ github.run_number }}
           REPORTER_ROCKETCHAT_BRANCH: ${{ github.ref }}
           REPORTER_ROCKETCHAT_DRAFT: ${{ github.event.pull_request.draft }}
+          REPORTER_ROCKETCHAT_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REPORTER_ROCKETCHAT_AUTHOR: ${{ github.event.pull_request.user.login }}
+          REPORTER_ROCKETCHAT_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REPORTER_ROCKETCHAT_PR: ${{ github.event.pull_request.number }}
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
           CI: true

@@ -1,15 +1,18 @@
 import { usePrefersReducedData } from '@rocket.chat/fuselage-hooks';
 import type { AttachmentContextValue } from '@rocket.chat/ui-contexts';
 import { AttachmentContext, useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React, { useMemo } from 'react';
 
 import { getURL } from '../../app/utils/client';
 
-const AttachmentProvider: FC<{
+type AttachmentProviderProps = {
+	children?: ReactNode;
 	width?: number;
 	height?: number;
-}> = ({ children, width = 360, height = 360 }) => {
+};
+
+const AttachmentProvider = ({ children, width = 360, height = 360 }: AttachmentProviderProps) => {
 	const { isMobile } = useLayout();
 	const reducedData = usePrefersReducedData();
 	const collapsedByDefault = !!useUserPreference<boolean>('collapseMediaByDefault');

@@ -19,6 +19,7 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
+import { getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -1065,8 +1066,9 @@ API.v1.addRoute(
 
 			const token = me.services?.resume?.loginTokens?.find((token) => token.hashedToken === hashedToken);
 
-			const tokenExpires =
-				(token && 'when' in token && new Date(token.when.getTime() + settings.get<number>('Accounts_LoginExpiration') * 1000)) || undefined;
+			const loginExp = settings.get<number>('Accounts_LoginExpiration');
+
+			const tokenExpires = (token && 'when' in token && new Date(token.when.getTime() + getLoginExpirationInMs(loginExp))) || undefined;
 
 			return API.v1.success({
 				token: xAuthToken,
@@ -1214,7 +1216,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 			}
 
-			void notifyOnUserChange({ clientAction: 'updated', id: this.userId, diff: { 'services.resume.loginTokens': [] } });
+			void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [] } });
 
 			return API.v1.success({
 				message: `User ${userId} has been logged out!`,

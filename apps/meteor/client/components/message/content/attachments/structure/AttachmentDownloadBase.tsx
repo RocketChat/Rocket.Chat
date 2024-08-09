@@ -1,12 +1,12 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, FC } from 'react';
+import type { ComponentProps } from 'react';
 import React from 'react';
 
 import Action from '../../Action';
 
 type AttachmentDownloadBaseProps = Omit<ComponentProps<typeof Action>, 'icon'> & { title?: string | undefined; href: string };
 
-const AttachmentDownloadBase: FC<AttachmentDownloadBaseProps> = ({ title, href, disabled, ...props }) => {
+const AttachmentDownloadBase = ({ title, href, disabled, ...props }: AttachmentDownloadBaseProps) => {
 	const t = useTranslation();
 
 	return (

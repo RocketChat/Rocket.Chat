@@ -2,7 +2,7 @@ import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.ch
 import { Box, Button, ButtonGroup, ContextualbarEmptyContent, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { Dispatch, FC, FormEventHandler, MouseEvent, ReactElement, SetStateAction } from 'react';
+import type { Dispatch, FormEventHandler, MouseEvent, ReactElement, SetStateAction } from 'react';
 import React, { memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -19,7 +19,7 @@ import { useRoomToolbox } from '../../../../views/room/contexts/RoomToolboxConte
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
 
-const CannedResponseList: FC<{
+type CannedResponseListProps = {
 	loadMoreItems: (start: number, end: number) => void;
 	cannedItems: (IOmnichannelCannedResponse & { departmentName: ILivechatDepartment['name'] })[];
 	itemCount: number;
@@ -35,7 +35,9 @@ const CannedResponseList: FC<{
 	onClickCreate: (e: MouseEvent<HTMLOrSVGElement>) => void;
 	onClickUse: (e: MouseEvent<HTMLOrSVGElement>, text: string) => void;
 	reload: () => void;
-}> = ({
+};
+
+const CannedResponseList = ({
 	loadMoreItems,
 	cannedItems,
 	itemCount,
@@ -51,7 +53,7 @@ const CannedResponseList: FC<{
 	onClickCreate,
 	onClickUse,
 	reload,
-}) => {
+}: CannedResponseListProps) => {
 	const t = useTranslation();
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
 
