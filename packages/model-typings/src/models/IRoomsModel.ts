@@ -1,7 +1,7 @@
 import type { IDirectMessageRoom, IMessage, IOmnichannelGenericRoom, IRoom, IRoomFederated, ITeam, IUser } from '@rocket.chat/core-typings';
-import type { Updater } from '@rocket.chat/models';
 import type { AggregationCursor, DeleteResult, Document, FindCursor, FindOptions, UpdateOptions, UpdateResult } from 'mongodb';
 
+import type { Updater } from '../updater';
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface IChannelsWithNumberOfMessagesBetweenDate {
