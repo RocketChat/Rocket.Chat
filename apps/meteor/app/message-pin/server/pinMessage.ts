@@ -134,19 +134,24 @@ Meteor.methods<ServerMethods>({
 
 		const pinMessageType = originalMessage.t === 'e2e' ? 'message_pinned_e2e' : 'message_pinned';
 
-		const msgId = await Message.saveSystemMessage(pinMessageType, originalMessage.rid, '', me, {
-			attachments: [
-				{
-					text: originalMessage.msg,
-					author_name: originalMessage.u.username,
-					author_icon: getUserAvatarURL(originalMessage.u.username),
-					ts: originalMessage.ts,
-					attachments: attachments.map(recursiveRemove),
-				},
-			],
-		});
-
-		return Messages.findOneById(msgId);
+		return Message.saveSystemMessage(
+			pinMessageType,
+			originalMessage.rid,
+			'',
+			me,
+			{
+				attachments: [
+					{
+						text: originalMessage.msg,
+						author_name: originalMessage.u.username,
+						author_icon: getUserAvatarURL(originalMessage.u.username),
+						ts: originalMessage.ts,
+						attachments: attachments.map(recursiveRemove),
+					},
+				],
+			},
+			false,
+		);
 	},
 	async unpinMessage(message) {
 		check(message._id, String);

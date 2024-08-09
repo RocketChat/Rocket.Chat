@@ -6,7 +6,8 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
-import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
+import { notifyOnRoomChanged, notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
+import { notifyUsersOnMessage } from '../../../app/lib/server/lib/notifyUsersOnMessage';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
@@ -103,13 +104,14 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		message: string,
 		owner: Pick<IUser, '_id' | 'username' | 'name'>,
 		extraData?: Partial<T>,
-	): Promise<IMessage['_id']> {
+		shouldNotifyUsersOnMessage = true,
+	): Promise<IMessage> {
 		const { _id: userId, username, name } = owner;
 		if (!username) {
 			throw new Error('The username cannot be empty.');
 		}
 
-		const [result] = await Promise.all([
+		const [createdMessage, room] = await Promise.all([
 			Messages.createWithTypeRoomIdMessageUserAndUnread(
 				type,
 				rid,
@@ -118,14 +120,26 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 				settings.get('Message_Read_Receipt_Enabled'),
 				extraData,
 			),
-			Rooms.incMsgCountById(rid, 1),
+			Rooms.findOneById(rid, { projection: { _id: 1, lastMessage: 1, t: 1 } }),
 		]);
+		if (!createdMessage?.value || !room) {
+			throw new Error('Could not create system message');
+		}
 
-		void notifyOnMessageChange({
-			id: result.insertedId,
-		});
+		const messageData = createdMessage.value;
 
-		return result.insertedId;
+		if (shouldNotifyUsersOnMessage) {
+			await notifyUsersOnMessage(messageData, {
+				_id: room._id,
+				lastMessage: room.lastMessage,
+				t: room.t,
+			});
+		}
+
+		void notifyOnMessageChange({ id: messageData._id });
+		void notifyOnRoomChanged(room);
+
+		return messageData;
 	}
 
 	async beforeSave({

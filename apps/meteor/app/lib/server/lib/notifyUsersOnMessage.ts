@@ -99,7 +99,7 @@ const getUnreadSettingCount = (roomType: RoomType): UnreadCountType => {
 	return settings.get(unreadSetting);
 };
 
-async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise<void> {
+async function updateUsersSubscriptions(message: IMessage, room: Pick<IRoom, 't' | '_id'>): Promise<void> {
 	// Don't increase unread counter on thread messages
 	if (room != null && !message.tmid) {
 		const { toAll, toHere, mentionIds } = await getMentions(message);
@@ -141,7 +141,7 @@ export async function updateThreadUsersSubscriptions(message: IMessage, replies:
 	await Subscriptions.setLastReplyForRoomIdAndUserIds(message.rid, repliesPlusSender, new Date());
 }
 
-export async function notifyUsersOnMessage(message: IMessage, room: IRoom): Promise<IMessage> {
+export async function notifyUsersOnMessage(message: IMessage, room: Pick<IRoom, 'lastMessage' | 't' | '_id'>): Promise<IMessage> {
 	// Skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
 	if (isEditedMessage(message)) {
 		if (Math.abs(moment(message.editedAt).diff(Date.now())) > 60000) {

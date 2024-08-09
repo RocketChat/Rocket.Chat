@@ -252,7 +252,6 @@ class LivechatClass {
 		const isRoomClosedByVisitorParams = (params: CloseRoomParams): params is CloseRoomParamsByVisitor =>
 			(params as CloseRoomParamsByVisitor).visitor !== undefined;
 
-		let chatCloser: any;
 		if (isRoomClosedByUserParams(params)) {
 			const { user } = params;
 			this.logger.debug(`Closing by user ${user?._id}`);
@@ -261,7 +260,6 @@ class LivechatClass {
 				_id: user?._id || '',
 				username: user?.username,
 			};
-			chatCloser = user;
 		} else if (isRoomClosedByVisitorParams(params)) {
 			const { visitor } = params;
 			this.logger.debug(`Closing by visitor ${params.visitor._id}`);
@@ -270,7 +268,6 @@ class LivechatClass {
 				_id: visitor._id,
 				username: visitor.username,
 			};
-			chatCloser = visitor;
 		} else {
 			throw new Error('Error: Please provide details of the user or visitor who closed the room');
 		}
@@ -296,10 +293,6 @@ class LivechatClass {
 
 		this.logger.debug(`DB updated for room ${room._id}`);
 
-		const transcriptRequested =
-			!!transcriptRequest || (!settings.get('Livechat_enable_transcript') && settings.get('Livechat_transcript_send_always'));
-
-		// Retrieve the closed room
 		const newRoom = await LivechatRooms.findOneById(rid);
 
 		if (!newRoom) {
@@ -307,23 +300,15 @@ class LivechatClass {
 		}
 
 		this.logger.debug(`Sending closing message to room ${room._id}`);
-		await sendMessage(
-			chatCloser,
-			{
-				t: 'livechat-close',
-				msg: comment,
-				groupable: false,
-				transcriptRequested,
-				...(isRoomClosedByVisitorParams(params) && { token: chatCloser.token }),
-			},
-			newRoom,
-		);
+
+		const transcriptRequested =
+			!!transcriptRequest || (!settings.get('Livechat_enable_transcript') && settings.get('Livechat_transcript_send_always'));
+
+		await Message.saveSystemMessage('livechat-close', rid, comment ?? '', closeData.closedBy, { groupable: false, transcriptRequested });
 
 		if (settings.get('Livechat_enable_transcript') && !settings.get('Livechat_transcript_send_always')) {
 			await Message.saveSystemMessage('command', rid, 'promptTranscript', closeData.closedBy);
 		}
-
-		this.logger.debug(`Running callbacks for room ${newRoom._id}`);
 
 		process.nextTick(() => {
 			/**
@@ -1254,11 +1239,18 @@ class LivechatClass {
 		const scopeData = scope || (nextDepartment ? 'department' : 'agent');
 		this.logger.info(`Storing new chat transfer of ${room._id} [Transfered by: ${_id} to ${scopeData}]`);
 
-		await sendMessage(
-			transferredBy,
-			{
-				t: 'livechat_transfer_history',
-				rid: room._id,
+		const transferMessage = {
+			t: 'livechat_transfer_history',
+			rid: room._id,
+			ts: new Date(),
+			msg: '',
+			u: {
+				_id,
+				username,
+			},
+			groupable: false,
+			transferData: {
+				transferredBy,
 				ts: new Date(),
 				msg: '',
 				u: {
@@ -1277,8 +1269,9 @@ class LivechatClass {
 					...(transferredTo && { transferredTo }),
 				},
 			},
-			room,
-		);
+		};
+
+		await Message.saveSystemMessage('livechat_transfer_history', room._id, '', { _id, username }, transferMessage);
 	}
 
 	async saveGuest(guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string }, userId: string) {

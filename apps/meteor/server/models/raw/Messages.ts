@@ -11,6 +11,7 @@ import type {
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { ObjectId } from 'mongodb';
 import type {
 	AggregationCursor,
 	Collection,
@@ -1339,7 +1340,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		user: Pick<IMessage['u'], '_id' | 'username' | 'name'>,
 		unread?: boolean,
 		extraData?: Partial<IMessage>,
-	): Promise<InsertOneResult<IMessage>> {
+	): Promise<ModifyResult<IMessage>> {
 		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
 			t: type,
 			rid,
@@ -1356,7 +1357,8 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		const data = Object.assign(record, extraData);
 
-		return this.insertOne(data);
+		const oid = new ObjectId().toHexString();
+		return this.findOneAndUpdate({ _id: oid }, { $set: data }, { upsert: true, returnDocument: 'after' });
 	}
 
 	// REMOVE

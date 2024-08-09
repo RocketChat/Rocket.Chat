@@ -36,7 +36,6 @@ import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
-import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import {
 	notifyOnLivechatDepartmentAgentChanged,
 	notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId,
@@ -141,10 +140,7 @@ export const createLivechatRoom = async <
 	}
 
 	await callbacks.run('livechat.newRoom', room);
-
-	// TODO: replace with `Message.saveSystemMessage`
-
-	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false, token: guest.token }, room);
+	await Message.saveSystemMessage('livechat-started', rid, '', { _id, username }, { groupable: false });
 
 	return result.value as IOmnichannelRoom;
 };
