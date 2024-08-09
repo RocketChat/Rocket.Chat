@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import getUniqueId from '../utils/getUniqueId';
 import type { initialStateType } from './initialState';
 import {
@@ -269,7 +267,7 @@ const reducer = (state: initialStateType, action: IAction) => {
       const activeProjectId = getUniqueId();
       const screensIds = state.projects[action.payload.id].screens;
       const newScreensIds = screensIds.map(() => getUniqueId());
-      const screens = _.cloneDeep(state.screens);
+      const screens = structuredClone(state.screens);
       newScreensIds.forEach((id, index) => {
         screens[id] = {
           ...screens[screensIds[index]],
