@@ -1,4 +1,6 @@
 import { api, Media } from '@rocket.chat/core-services';
+import { EmojiCustom } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
 import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
 import sharp from 'sharp';
@@ -41,9 +43,12 @@ export async function uploadEmojiCustomWithBuffer(
 		throw new Meteor.Error('not_authorized');
 	}
 
+	if (!Array.isArray(emojiData.aliases)) {
+		// delete aliases for notification purposes. here, it is a string or undefined rather than an array
+		delete emojiData.aliases;
+	}
+
 	emojiData.name = limax(emojiData.name, { replacement: '_' });
-	// delete aliases for notification purposes. here, it is a string rather than an array
-	delete emojiData.aliases;
 
 	const file = await getFile(buffer, emojiData.extension);
 	emojiData.extension = emojiData.extension === 'svg+xml' ? 'png' : emojiData.extension;
@@ -67,8 +72,10 @@ export async function uploadEmojiCustomWithBuffer(
 			encodeURIComponent(`${emojiData.name}.${emojiData.extension}`),
 			contentType,
 		);
-		ws.on('end', () => {
-			setTimeout(() => api.broadcast('emoji.updateCustom', emojiData), 500);
+		ws.on('end', async () => {
+			const etag = Random.hexString(6);
+			await EmojiCustom.setETagByIdOrName(emojiData.name, etag);
+			setTimeout(() => api.broadcast('emoji.updateCustom', { ...emojiData, etag }), 500);
 			resolve();
 		});
 
