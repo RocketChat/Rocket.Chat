@@ -30,7 +30,7 @@ async function returnMatrixClientJSON(_: IncomingMessage, res: ServerResponse) {
 
 	res.setHeader('content-type', 'application/json');
 
-	res.write(JSON.stringify({ 'm.homeserver': `${protocol}//${hostname}` }));
+	res.write(JSON.stringify({ 'm.homeserver': { base_url: `${protocol}//${hostname}` } }));
 
 	res.end();
 }

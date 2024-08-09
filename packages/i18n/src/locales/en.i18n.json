@@ -2328,6 +2328,8 @@
   "Federation_Matrix_serve_well_known": "Serve Well Known",
   "Federation_Matrix_serve_well_known_Description": "Serve /.well-known/matrix/server and /.well-known/matrix/client directly from within Rocket.Chat instead of reverse proxy for federation",
   "Federation_Matrix_serve_well_known_Alert": "Keep this off if using DNS srv records for federation, or use a reverse proxy to return static JSON if federation traffic is heavy. <a target=\"_blank\" href=\"https://matrix-org.github.io/synapse/latest/federate.html\">Read mode</a>.",
+  "Federation_Matrix_check_configuration": "Verify configuration",
+  "Federation_Matrix_configuration_status": "Configuration status",
   "Field": "Field",
   "Field_removed": "Field removed",
   "Field_required": "Field required",

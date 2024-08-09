@@ -1,0 +1,11 @@
+services:
+    synapse:
+        image: "matrixdotorg/synapse:v1.84.1"
+        volumes:
+            - "./data:/data"
+            - "./synapse-appservice-registration-example.yaml:/registration.yaml"
+        environment:
+            SYNAPSE_SERVER_NAME: "host.example.com"
+            SYNAPSE_REPORT_STATS: "yes"
+        ports:
+          - 8008:8008

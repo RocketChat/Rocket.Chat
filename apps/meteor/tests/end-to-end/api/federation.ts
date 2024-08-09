@@ -67,7 +67,7 @@ describe('federation', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
-						expect(res.body).to.have.property('m.homeserver', 'http://localhost');
+						expect(res.body['m.homeserver']).to.have.property('base_url', 'http://localhost');
 					});
 			});
 		});

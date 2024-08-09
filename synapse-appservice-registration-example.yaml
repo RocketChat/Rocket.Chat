@@ -1,0 +1,17 @@
+id: rocketchat
+hs_token: asdfasdfasdf
+as_token: asdfasdfasdf
+url: http://host.docker.internal:3300
+sender_localpart: rocket.cat
+namespaces:
+  users:
+    - exclusive: false
+      regex: .*
+  rooms:
+    - exclusive: false
+      regex: .*
+  aliases:
+    - exclusive: false
+      regex: .*
+de.sorunome.msc2409.push_ephemeral: false
+
