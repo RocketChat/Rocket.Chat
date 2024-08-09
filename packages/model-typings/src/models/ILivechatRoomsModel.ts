@@ -212,7 +212,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		responseBy: IOmnichannelRoom['responseBy'],
 		updater?: Updater<IOmnichannelRoom>,
 	): Updater<IOmnichannelRoom>;
-	getNotResponseByRoomIdUpdateQuery(updater: Updater<IOmnichannelRoom> = this.getUpdater()): Updater<IOmnichannelRoom>;
+	getNotResponseByRoomIdUpdateQuery(updater: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	getAgentLastMessageTsUpdateQuery(updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	getAnalyticsUpdateQueryByRoomId(
 		room: IOmnichannelRoom,
