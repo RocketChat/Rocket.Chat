@@ -1,10 +1,11 @@
 import type { IAppServerOrchestrator, IAppsMessage, IAppsUser } from '@rocket.chat/apps';
+import type { IMessage as IAppsEngineMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { ITypingDescriptor } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
 import { MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
 import { api } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Users, Subscriptions, Messages } from '@rocket.chat/models';
+import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -33,6 +34,58 @@ export class AppMessageBridge extends MessageBridge {
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 		const message: IAppsMessage | undefined = await this.orch.getConverters()?.get('messages').convertById(messageId);
 		return message as IAppsMessage;
+	}
+
+	protected async getUnreadByRoomAndUser(
+		roomId: string,
+		userId: string,
+		options: {
+			limit: number;
+			skip?: number;
+			sort?: Record<string, 1 | -1>;
+		},
+		appId: string,
+	): Promise<Array<IAppsEngineMessage>> {
+		this.orch.debugLog(`The App ${appId} is getting the unread messages for the user: "${userId}" in the room: "${roomId}"`);
+
+		const messageConverter = this.orch.getConverters()?.get('messages');
+		if (!messageConverter) {
+			throw new Error('Message converter not found');
+		}
+
+		const room = await Rooms.findOneById(roomId, { projection: { _id: 1 } });
+
+		if (!room) {
+			throw new Error('Room not found');
+		}
+
+		if (!Number.isFinite(options.limit) || options.limit < 1) {
+			options.limit = 100;
+		}
+
+		const { limit, skip, sort = { ts: 1 } } = options;
+
+		const messageQueryOptions = {
+			limit: Math.min(limit, 100),
+			skip,
+			sort,
+		};
+		const lastSeen = (await Subscriptions.findOneByRoomIdAndUserId(roomId, userId))?.ls;
+
+		if (!lastSeen) {
+			return [];
+		}
+
+		const messages = await Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+			roomId,
+			lastSeen,
+			new Date(),
+			[],
+			messageQueryOptions,
+		).toArray();
+
+		const convertedMessages = Promise.all(messages.map((msg) => messageConverter.convertMessage(msg)));
+		return convertedMessages;
 	}
 
 	protected async update(message: IAppsMessage, appId: string): Promise<void> {
