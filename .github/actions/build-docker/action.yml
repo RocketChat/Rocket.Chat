@@ -52,8 +52,10 @@ runs:
         cache-modules: true
         install: true
 
-    - run: yarn build
-      shell: bash
+    - shell: bash
+      run: |
+        yarn build
+        yarn workspaces focus --production
 
     - name: Build Docker images
       shell: bash

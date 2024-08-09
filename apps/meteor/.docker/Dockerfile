@@ -26,9 +26,9 @@ ENV DEPLOY_METHOD=docker \
 RUN aptMark="$(apt-mark showmanual)" \
     && apt-get install -y --no-install-recommends g++ make python3 ca-certificates \
     && cd /app/bundle/programs/server \
-    && npm install \
+    && npm install --production \
     && cd npm/node_modules/isolated-vm \
-    && npm install \
+    && npm install --production \
     && cd /app/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/deno-runtime \
     && ../../../deno-bin/bin/deno cache main.ts \
     && apt-mark auto '.*' > /dev/null \

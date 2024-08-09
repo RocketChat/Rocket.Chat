@@ -7,7 +7,7 @@
 	"scripts": {
 		"build": "turbo run build",
 		"build:services": "turbo run build --filter=rocketchat-services...",
-		"build:ci": "turbo run build:ci",
+		"build:ci": "yarn workspace @rocket.chat/meteor run build:ci",
 		"testunit": "turbo run testunit",
 		"dev": "turbo run dev --parallel --filter=@rocket.chat/meteor...",
 		"dsv": "turbo run dsv --filter=@rocket.chat/meteor...",
