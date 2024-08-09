@@ -417,7 +417,6 @@ describe('[Rooms]', () => {
 				.split(',')
 				.filter((type) => type !== 'image/svg+xml')
 				.join(',');
-			console.log({ newBlockedMediaTypes, blockedMediaTypes });
 			await updateSetting('FileUpload_MediaTypeBlackList', newBlockedMediaTypes);
 		});
 
