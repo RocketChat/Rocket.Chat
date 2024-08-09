@@ -13,12 +13,18 @@ export class OAuthAppsRaw extends BaseRaw<IOAuthApps> implements IOAuthAppsModel
 		return [{ key: { clientId: 1, clientSecret: 1 } }, { key: { appId: 1 } }];
 	}
 
-	findOneAuthAppByIdOrClientId(props: { clientId: string } | { appId: string } | { _id: string }): Promise<IOAuthApps | null> {
-		return this.findOne({
-			...('_id' in props && { _id: props._id }),
-			...('appId' in props && { _id: props.appId }),
-			...('clientId' in props && { clientId: props.clientId }),
-		});
+	findOneAuthAppByIdOrClientId(
+		props: { clientId: string } | { appId: string } | { _id: string },
+		options?: FindOptions<IOAuthApps>,
+	): Promise<IOAuthApps | null> {
+		return this.findOne(
+			{
+				...('_id' in props && { _id: props._id }),
+				...('appId' in props && { _id: props.appId }),
+				...('clientId' in props && { clientId: props.clientId }),
+			},
+			options,
+		);
 	}
 
 	findOneActiveByClientId(clientId: string, options?: FindOptions<IOAuthApps>): Promise<IOAuthApps | null> {

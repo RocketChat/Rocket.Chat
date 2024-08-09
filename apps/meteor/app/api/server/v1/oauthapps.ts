@@ -27,11 +27,12 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isOauthAppsGetParams },
 	{
 		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
-				return API.v1.unauthorized();
-			}
+			const isOAuthAppsManager = await hasPermissionAsync(this.userId, 'manage-oauth-apps');
 
-			const oauthApp = await OAuthApps.findOneAuthAppByIdOrClientId(this.queryParams);
+			const oauthApp = await OAuthApps.findOneAuthAppByIdOrClientId(
+				this.queryParams,
+				!isOAuthAppsManager ? { projection: { clientSecret: 0 } } : {},
+			);
 
 			if (!oauthApp) {
 				return API.v1.failure('OAuth app not found.');
