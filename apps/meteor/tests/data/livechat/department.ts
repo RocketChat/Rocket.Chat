@@ -16,12 +16,16 @@ const NewDepartmentData = ((): Partial<ILivechatDepartment> => ({
 	showOnOfflineForm: true,
 }))();
 
-export const createDepartment = async (departmentData: Partial<ILivechatDepartment> = NewDepartmentData): Promise<ILivechatDepartment> => {
+export const createDepartment = async (
+	departmentData: Partial<ILivechatDepartment> = NewDepartmentData,
+	agents?: { agentId: string; count?: string; order?: string }[],
+): Promise<ILivechatDepartment> => {
 	const response = await request
 		.post(api('livechat/department'))
 		.set(credentials)
 		.send({
 			department: departmentData,
+			...(agents && { agents }),
 		})
 		.expect(200);
 	return response.body.department;
