@@ -87,11 +87,11 @@ yarn turbo run ms
 
 After initialized, you can access the server at http://localhost:4000
 
-> ⚠️ Check more detailed information in the [Rocket.Chat Environment Setup](https://developer.rocket.chat/rocket.chat/rocket-chat-environment-setup) guide
+> ⚠️ Check more detailed information in the [Rocket.Chat Environment Setup](https://developer.rocket.chat/v1/docs/server-environment-setup) guide
 
 # 💻 Installation
 
-Please see the [requirements documentation](https://docs.rocket.chat/deploy/installing-client-apps/minimum-requirements-for-using-rocket.chat) for system requirements and more information about supported operating systems.
+Please see the [requirements documentation](https://docs.rocket.chat/docs/system-requirements) for system requirements and more information about supported operating systems.
 Please refer to [Install Rocket.Chat](https://rocket.chat/install) to install your Rocket.Chat instance.
 
 # 📱 Mobile Apps
@@ -101,7 +101,7 @@ In addition to the web interface, you can also download Rocket.Chat clients for:
 
 [![Rocket.Chat on Apple App Store](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=chat.rocket.android) [![](https://user-images.githubusercontent.com/551004/48210349-50649480-e35e-11e8-97d9-74a4331faf3a.png)](https://f-droid.org/en/packages/chat.rocket.android)
 
-You can also contribute to the Mobile open source code in [Rocket.Chat.ReactNative](https://github.com/RocketChat/Rocket.Chat.ReactNative) and check it out its [documentation](https://developer.rocket.chat/mobile-app/mobile-app-environment-setup) 
+You can also contribute to the Mobile open source code in [Rocket.Chat.ReactNative](https://github.com/RocketChat/Rocket.Chat.ReactNative) and check it out its [documentation](https://developer.rocket.chat/docs/mobile-app) 
 
 # 🧩 Apps Engine for Rocket.Chat
 
@@ -127,7 +127,7 @@ Join [#support](https://open.rocket.chat/channel/support) and [#general](https:/
 
 # 👥 Contributions
 
-Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://developer.rocket.chat/contribute-to-rocket.chat/ways-to-contribute) page for more details.
+Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://developer.rocket.chat/docs/modes-of-contribution) page for more details.
 
 
 ## 💼 Become a Rocketeer
