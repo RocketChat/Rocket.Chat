@@ -339,8 +339,8 @@ AutolinkedEmail = e:Email { return autoEmail(e); }
 AutolinkedURL = u:AutoLinkURL { return autoLink(u, options.customDomains); }
 
 AutoLinkURL
-  = $(URLScheme URLAuthority AutoLinkURLBody*)
-  / $(URLAuthorityHost AutoLinkURLBody*)
+  = $(!("_") URLScheme URLAuthority AutoLinkURLBody* !("_"))
+  / $(!("_") URLAuthorityHost AutoLinkURLBody* !("_"))
 
 AutoLinkURLBody =  !(Extra* (Whitespace / EndOfLine)) .
 
@@ -393,6 +393,9 @@ ItalicContentItem
   / Emoticon
   / AnyItalic
   / Line
+  / TextWithDotOrDecimalNumbers
+
+TextWithDotOrDecimalNumbers = $(AlphaNumericChar "." AlphaNumericChar)
 
 /* Bold */
 Bold = [\x2A] [\x2A] @BoldContent [\x2A] [\x2A] / [\x2A] @BoldContent [\x2A]
@@ -435,6 +438,7 @@ ItalicContentItemForReferences
   / AnyItalic
   / Line
   / InlineCode
+  / TextWithDotOrDecimalNumbers
 
 /* Bold for References */
 BoldForReferences = [\x2A] [\x2A] @BoldContentForReferences [\x2A] [\x2A] / [\x2A] @BoldContentForReferences [\x2A]
