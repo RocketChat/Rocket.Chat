@@ -38,6 +38,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 			}
 
 			if (role.scope === 'Subscriptions' && scope) {
+				// TODO remove dependency from other models - this logic should be inside a function/service
 				const addRolesResponse = await Subscriptions.addRolesByUserId(userId, [role._id], scope);
 				if (addRolesResponse.modifiedCount) {
 					void notifyOnSubscriptionChangedByRoomIdAndUserId(scope, userId);
