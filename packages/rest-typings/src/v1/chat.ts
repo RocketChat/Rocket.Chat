@@ -1,4 +1,12 @@
-import type { IMessage, IRoom, MessageAttachment, ReadReceipt, OtrSystemMessages, MessageUrl } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IRoom,
+	MessageAttachment,
+	ReadReceipt,
+	OtrSystemMessages,
+	MessageUrl,
+	IThreadMainMessage,
+} from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -885,7 +893,7 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.getThreadsList': {
 		GET: (params: ChatGetThreadsList) => {
-			threads: IMessage[];
+			threads: IThreadMainMessage[];
 			total: number;
 		};
 	};

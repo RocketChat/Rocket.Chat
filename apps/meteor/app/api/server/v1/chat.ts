@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import { isChatReportMessageProps, isChatGetURLPreviewProps } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -533,7 +533,7 @@ API.v1.addRoute(
 			};
 
 			const threadQuery = { ...query, ...typeThread, rid: room._id, tcount: { $exists: true } };
-			const { cursor, totalCount } = await Messages.findPaginated(threadQuery, {
+			const { cursor, totalCount } = await Messages.findPaginated<IThreadMainMessage>(threadQuery, {
 				sort: sort || { tlm: -1 },
 				skip: offset,
 				limit: count,

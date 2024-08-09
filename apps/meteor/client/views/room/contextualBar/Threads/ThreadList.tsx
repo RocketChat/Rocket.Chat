@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Select, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
@@ -169,7 +169,7 @@ const ThreadList = () => {
 							overscan={25}
 							data={items}
 							components={{ Scroller: VirtuosoScrollbars }}
-							itemContent={(_index, data: IMessage): ReactElement => (
+							itemContent={(_index, data: IThreadMainMessage): ReactElement => (
 								<ThreadListItem
 									thread={data}
 									unread={subscription?.tunread ?? []}
