@@ -334,7 +334,7 @@
 		"emoji-toolkit": "^7.0.1",
 		"emojione": "^4.5.0",
 		"eventemitter3": "^4.0.7",
-		"exif-be-gone": "^1.3.2",
+		"exif-be-gone": "^1.4.1",
 		"express": "^4.17.3",
 		"express-rate-limit": "^5.5.1",
 		"fastq": "^1.13.0",
