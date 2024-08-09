@@ -1,0 +1,5 @@
+name: 'Cache Turbo Rocket.Rocket.Chat'
+description: 'Cache Turbo Rocket.Rocket.Chat dependencies'
+runs:
+  using: 'node20'
+  main: 'index.js'
