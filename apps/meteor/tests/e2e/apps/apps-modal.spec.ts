@@ -7,7 +7,7 @@ import { expect, test } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });
 
-test.describe.serial('Apps > ContextualBar', () => {
+test.describe.serial('Apps > Modal', () => {
 	let poHomeChannel: HomeChannel;
 	let poModal: Modal;
 
