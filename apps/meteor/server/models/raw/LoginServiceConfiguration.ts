@@ -1,6 +1,6 @@
 import type { LoginServiceConfiguration, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILoginServiceConfigurationModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, DeleteResult, Document, FindOptions } from 'mongodb';
+import type { Collection, Db, DeleteResult, Document, FindOptions, ModifyResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -17,31 +17,33 @@ export class LoginServiceConfigurationRaw extends BaseRaw<LoginServiceConfigurat
 	async createOrUpdateService(
 		serviceName: LoginServiceConfiguration['service'],
 		serviceData: Partial<LoginServiceConfiguration>,
-	): Promise<LoginServiceConfiguration['_id']> {
+	): Promise<{ operation: 'created' | 'updated' | 'no-op'; result: ModifyResult<LoginServiceConfiguration> }> {
 		const service = serviceName.toLowerCase();
 
-		const existing = await this.findOne({ service });
-		if (!existing) {
-			const insertResult = await this.insertOne({
-				service,
-				...serviceData,
-			});
+		const updateResult = await this.findOneAndUpdate(
+			{ service },
+			{
+				$set: serviceData,
+				$setOnInsert: { service },
+			},
+			{
+				returnDocument: 'after',
+				upsert: true,
+			},
+		);
 
-			return insertResult.insertedId;
+		const { lastErrorObject } = updateResult;
+		let operation: 'created' | 'updated' | 'no-op';
+
+		if (lastErrorObject?.upserted) {
+			operation = 'created';
+		} else if (Object.keys(serviceData).length === 0) {
+			operation = 'no-op';
+		} else {
+			operation = 'updated';
 		}
 
-		if (Object.keys(serviceData).length > 0) {
-			await this.updateOne(
-				{
-					_id: existing._id,
-				},
-				{
-					$set: serviceData,
-				},
-			);
-		}
-
-		return existing._id;
+		return { operation, result: updateResult };
 	}
 
 	async removeService(_id: LoginServiceConfiguration['_id']): Promise<DeleteResult> {

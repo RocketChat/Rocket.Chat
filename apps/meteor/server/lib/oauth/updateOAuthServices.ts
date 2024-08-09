@@ -116,8 +116,10 @@ export async function updateOAuthServices(): Promise<void> {
 				data.buttonColor = settings.get('Accounts_OAuth_Nextcloud_button_color');
 			}
 
-			await LoginServiceConfiguration.createOrUpdateService(serviceKey, data);
-			void notifyOnLoginServiceConfigurationChangedByService(serviceKey);
+			const { operation } = await LoginServiceConfiguration.createOrUpdateService(serviceKey, data);
+			if (operation === 'created' || operation === 'updated') {
+				void notifyOnLoginServiceConfigurationChangedByService(serviceKey);
+			}
 		} else {
 			const service = await LoginServiceConfiguration.findOneByService(serviceName, { projection: { _id: 1 } });
 			if (service?._id) {
