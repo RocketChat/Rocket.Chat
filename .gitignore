@@ -50,3 +50,8 @@ yarn-error.log*
 *.sublime-workspace
 
 **/.vim/
+
+# tours
+.tours
+RC.Guided.Tours
+tours.sh
