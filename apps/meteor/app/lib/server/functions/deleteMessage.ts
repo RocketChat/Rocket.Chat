@@ -43,6 +43,10 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	}
 
 	if (deletedMsg?.tmid) {
+		const threadMsgCounts = await Messages.countDocuments({ 'tmid': deletedMsg.tmid, 'u._id': deletedMsg.u._id });
+		if (threadMsgCounts === 1) {
+			await Messages.removeThreadFollowerByThreadId(deletedMsg.tmid, deletedMsg.u._id);
+		}
 		await Messages.decreaseReplyCountById(deletedMsg.tmid, -1);
 	}
 
