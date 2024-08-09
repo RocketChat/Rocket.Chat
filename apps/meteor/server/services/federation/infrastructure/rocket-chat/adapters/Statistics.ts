@@ -54,6 +54,10 @@ class RocketChatStatisticsAdapter {
 			servers: externalServers,
 		};
 	}
+
+	async getAmountOfMessagesInActiveFederatedRooms(): Promise<number> {
+		return Rooms.countMessagesInActiveFederatedRooms();
+	}
 }
 
 export const getMatrixFederationStatistics = async (): Promise<IMatrixFederationStatistics> => {
@@ -67,5 +71,6 @@ export const getMatrixFederationStatistics = async (): Promise<IMatrixFederation
 		amountOfExternalUsers: await statisticsService.getAmountOfExternalUsers(),
 		amountOfFederatedRooms: await statisticsService.getAmountOfExternalRooms(),
 		externalConnectedServers: await statisticsService.getAmountOfConnectedExternalServers(),
+		amountOfMessagesInActiveFederatedRooms: await statisticsService.getAmountOfMessagesInActiveFederatedRooms(),
 	};
 };

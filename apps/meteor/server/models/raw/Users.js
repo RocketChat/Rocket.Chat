@@ -3078,4 +3078,17 @@ export class UsersRaw extends BaseRaw {
 			},
 		);
 	}
+
+	countActiveUsersWithCustomRoles() {
+		const customRoleRegex = /^[0-9a-fA-F]{24}$/;
+		const query = {
+			active: true,
+			roles: {
+				$elemMatch: {
+					$regex: customRoleRegex,
+				},
+			},
+		};
+		return this.col.countDocuments(query);
+	}
 }

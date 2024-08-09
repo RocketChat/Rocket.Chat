@@ -8,6 +8,8 @@ const findSmallestFederatedRoomInNumberOfUsers = sinon.stub();
 const countFederatedExternalUsers = sinon.stub();
 const countFederatedRooms = sinon.stub();
 const getExternalServerConnectedExcluding = sinon.stub();
+const countMessagesInActiveFederatedRooms = sinon.stub();
+const getAmountOfMessagesInActiveFederatedRooms = sinon.stub();
 
 const { getMatrixFederationStatistics } = proxyquire
 	.noCallThru()
@@ -25,6 +27,7 @@ const { getMatrixFederationStatistics } = proxyquire
 				findBiggestFederatedRoomInNumberOfUsers,
 				findSmallestFederatedRoomInNumberOfUsers,
 				countFederatedRooms,
+				countMessagesInActiveFederatedRooms,
 			},
 			Users: {
 				countFederatedExternalUsers,
@@ -39,6 +42,7 @@ describe('Federation - Infrastructure - RocketChat - Statistics', () => {
 		countFederatedExternalUsers.reset();
 		countFederatedRooms.reset();
 		getExternalServerConnectedExcluding.reset();
+		getAmountOfMessagesInActiveFederatedRooms.reset();
 	});
 
 	describe('#getMatrixFederationStatistics()', () => {
@@ -67,6 +71,7 @@ describe('Federation - Infrastructure - RocketChat - Statistics', () => {
 			findSmallestFederatedRoomInNumberOfUsers.resolves(smallestRoom);
 			countFederatedExternalUsers.resolves(10);
 			countFederatedRooms.resolves(20);
+			countMessagesInActiveFederatedRooms.resolves(300);
 			getExternalServerConnectedExcluding.resolves(['server1', 'server2']);
 
 			expect(await getMatrixFederationStatistics()).to.be.eql({
@@ -77,6 +82,7 @@ describe('Federation - Infrastructure - RocketChat - Statistics', () => {
 				amountOfExternalUsers: 10,
 				amountOfFederatedRooms: 20,
 				externalConnectedServers: { quantity: 2, servers: ['server1', 'server2'] },
+				amountOfMessagesInActiveFederatedRooms: 300,
 			});
 		});
 	});

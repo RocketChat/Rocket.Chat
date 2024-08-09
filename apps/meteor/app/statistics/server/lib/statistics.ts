@@ -3,7 +3,7 @@ import os from 'os';
 
 import { Analytics, Team, VideoConf, Presence } from '@rocket.chat/core-services';
 import type { IRoom, IStats } from '@rocket.chat/core-typings';
-import { UserStatus } from '@rocket.chat/core-typings';
+import { LivechatPriorityWeight, UserStatus } from '@rocket.chat/core-typings';
 import {
 	NotificationQueue,
 	Rooms,
@@ -118,6 +118,7 @@ export const statistics = {
 		statistics.busyUsers = await Users.col.countDocuments({ status: UserStatus.BUSY });
 		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
 		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
+		statistics.activeUsersWithCustomRoles = await Users.countActiveUsersWithCustomRoles();
 		statsPms.push(
 			getUserLanguages(statistics.totalUsers).then((total) => {
 				statistics.userLanguages = total;
@@ -156,6 +157,19 @@ export const statistics = {
 					}));
 				}),
 		);
+
+		// Number of livechat rooms with priorities
+		statistics.totalLivechatRoomsWithPriority = {
+			lowest: await LivechatRooms.countLivechatRoomsByPriority(LivechatPriorityWeight.LOWEST),
+			low: await LivechatRooms.countLivechatRoomsByPriority(LivechatPriorityWeight.LOW),
+			medium: await LivechatRooms.countLivechatRoomsByPriority(LivechatPriorityWeight.MEDIUM),
+			high: await LivechatRooms.countLivechatRoomsByPriority(LivechatPriorityWeight.HIGH),
+			highest: await LivechatRooms.countLivechatRoomsByPriority(LivechatPriorityWeight.HIGHEST),
+			notSpecified: await LivechatRooms.countLivechatRoomsByPriority(LivechatPriorityWeight.NOT_SPECIFIED),
+		};
+
+		// Number of livechat rooms with department
+		statistics.totalLivechatRoomsWithDepartment = await LivechatRooms.countLivechatRoomsWithDepartment();
 
 		// Number of departments
 		statsPms.push(

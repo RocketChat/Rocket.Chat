@@ -34,6 +34,7 @@ export interface IStats {
 	busyUsers: number;
 	totalConnectedUsers: number;
 	offlineUsers: number;
+	activeUsersWithCustomRoles: number;
 	userLanguages: Record<string, number>;
 	totalRooms: number;
 	totalChannels: number;
@@ -56,6 +57,15 @@ export interface IStats {
 	totalDirectMessages: number;
 	totalDiscussionsMessages: number;
 	totalLivechatMessages: number;
+	totalLivechatRoomsWithPriority: {
+		lowest: number;
+		low: number;
+		medium: number;
+		high: number;
+		highest: number;
+		notSpecified: number;
+	};
+	totalLivechatRoomsWithDepartment: number;
 	totalTriggers: number;
 	totalMessages: number;
 	federatedServers: number;
