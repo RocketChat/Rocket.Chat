@@ -70,7 +70,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 
 	return (
 		<>
-			<FilterByText onChange={({ text }): void => setText(text)} />
+			<FilterByText onChange={setText} />
 			{data.length === 0 && <GenericNoResult />}
 			{data && data.length > 0 && (
 				<>

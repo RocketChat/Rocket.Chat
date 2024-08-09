@@ -20,7 +20,7 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 	const [text, setText] = useState('');
 
 	const handleSearchTextChange = useCallback(
-		({ text }) => {
+		(text) => {
 			setUsersFilters({ text, roles: selectedRoles });
 			setText(text);
 		},
