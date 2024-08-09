@@ -125,11 +125,52 @@ const MessageBox = ({
 	const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
-	function handleFileUpload(fileslist: File[], resetFileInput?: () => void) {
-		setFilesToUpload((prevFiles) => [...prevFiles, ...fileslist]);
+
+	function handleFileUpload(filesList: File[], resetFileInput?: () => void) {
+		setFilesToUpload((prevFiles) => {
+			let newFilesToUpload = [...prevFiles, ...filesList];
+
+			if (newFilesToUpload.length > 6) {
+				newFilesToUpload = newFilesToUpload.slice(0, 6);
+				dispatchToastMessage({
+					type: 'error',
+					message: "You can't upload more than 6 files at once. Only the first 6 files will be uploaded.",
+				});
+			}
+
+			const validFiles = newFilesToUpload.filter((queuedFile) => {
+				const { name, size } = queuedFile;
+
+				if (!name) {
+					dispatchToastMessage({
+						type: 'error',
+						message: t('error-the-field-is-required', { field: t('Name') }),
+					});
+					return false;
+				}
+
+				if (maxFileSize > -1 && (size || 0) > maxFileSize) {
+					dispatchToastMessage({
+						type: 'error',
+						message: `${t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })}`,
+					});
+					return false;
+				}
+
+				return true;
+			});
+
+			return validFiles;
+		});
 
 		resetFileInput?.();
 	}
+
+	// function handleFileUpload(fileslist: File[], resetFileInput?: () => void) {
+	// 	setFilesToUpload((prevFiles) => [...prevFiles, ...fileslist]);
+
+	// 	resetFileInput?.();
+	// }
 
 	const handleRemoveFile = (index: number) => {
 		const temp = [...filesToUpload];
@@ -215,37 +256,6 @@ const MessageBox = ({
 	const handleSendMessage = useMutableCallback(async () => {
 		if (filesToUpload.length > 0) {
 			const msg = chat.composer?.text ?? '';
-			if (filesToUpload.length > 6) {
-				dispatchToastMessage({
-					type: 'error',
-					message: "You can't upload more than 6 files at once",
-				});
-				chat.composer?.clear();
-				setFilesToUpload([]);
-				return;
-			}
-			for (const queuedFile of filesToUpload) {
-				const { name, size } = queuedFile;
-				if (!name) {
-					dispatchToastMessage({
-						type: 'error',
-						message: t('error-the-field-is-required', { field: t('Name') }),
-					});
-					chat.composer?.clear();
-					setFilesToUpload([]);
-					return;
-				}
-
-				if (maxFileSize > -1 && (size || 0) > maxFileSize) {
-					dispatchToastMessage({
-						type: 'error',
-						message: `${t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })}`,
-					});
-					chat.composer?.clear();
-					setFilesToUpload([]);
-					return;
-				}
-			}
 
 			Object.defineProperty(filesToUpload[0], 'name', {
 				writable: true,
