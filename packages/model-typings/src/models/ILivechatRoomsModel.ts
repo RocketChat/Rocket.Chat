@@ -208,9 +208,12 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		options?: FindOptions<IOmnichannelRoom>,
 		extraQuery?: Filter<IOmnichannelRoom>,
 	): FindCursor<IOmnichannelRoom>;
-	setResponseByRoomId(roomId: string, responseBy: IOmnichannelRoom['responseBy']): Promise<UpdateResult>;
+	getResponseByRoomIdUpdateQuery(
+		responseBy: IOmnichannelRoom['responseBy'],
+		updater?: Updater<IOmnichannelRoom>,
+	): Updater<IOmnichannelRoom>;
 	setNotResponseByRoomId(roomId: string): Promise<UpdateResult>;
-	setAgentLastMessageTs(roomId: string): Promise<UpdateResult>;
+	getAgentLastMessageTsUpdateQuery(updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	getAnalyticsUpdateQueryByRoomId(
 		room: IOmnichannelRoom,
 		message: IMessage,

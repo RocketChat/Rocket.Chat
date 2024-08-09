@@ -33,7 +33,7 @@ export class AutoCloseOnHoldSchedulerClass {
 			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
 			db: { collection: SCHEDULER_NAME },
 			defaultConcurrency: 1,
-			processEvery: '1 minute',
+			processEvery: process.env.TEST_MODE === 'true' ? '3 seconds' : '1 minute',
 		});
 
 		await this.scheduler.start();
