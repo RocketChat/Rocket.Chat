@@ -21660,17 +21660,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"emojione@npm:4.5.0":
+"emojione@npm:^4.5.0":
   version: 4.5.0
   resolution: "emojione@npm:4.5.0"
   checksum: 52d77d0a1fa62b41225c1cfc15bf596b7a2a0d1083b1d580012e4ba6b7bb70d3dd4080d4ab307044ee32539068e925cdf6482057e0e7cb986153fa9418dcd333
-  languageName: node
-  linkType: hard
-
-"emojione@patch:emojione@npm%3A4.5.0#./.yarn/patches/emojione-npm-4.5.0-e7373e91e7.patch::locator=rocket.chat%40workspace%3A.":
-  version: 4.5.0
-  resolution: "emojione@patch:emojione@npm%3A4.5.0#./.yarn/patches/emojione-npm-4.5.0-e7373e91e7.patch::version=4.5.0&hash=1cc9eb&locator=rocket.chat%40workspace%3A."
-  checksum: c0a8b76e3709dd904ab837c1ee77dfd323a2828f83b35f27446123358d593e17cc9a4d93c3e5b786f90e230e1a3ad7ae2bdc04f4d9c7e52c877c6359a4bbad1b
   languageName: node
   linkType: hard
 
