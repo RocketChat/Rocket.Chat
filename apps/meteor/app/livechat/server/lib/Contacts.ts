@@ -1,5 +1,21 @@
-import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatVisitors, Users, LivechatRooms, LivechatCustomField, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
+import type {
+	ILivechatContact,
+	ILivechatContactChannel,
+	ILivechatCustomField,
+	ILivechatVisitor,
+	IOmnichannelRoom,
+	IUser,
+} from '@rocket.chat/core-typings';
+import {
+	LivechatVisitors,
+	Users,
+	LivechatRooms,
+	LivechatCustomField,
+	LivechatInquiry,
+	Rooms,
+	Subscriptions,
+	LivechatContacts,
+} from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
@@ -20,6 +36,32 @@ type RegisterContactProps = {
 	contactManager?: {
 		username: string;
 	};
+};
+
+type CreateContactParams = {
+	name: string;
+	emails?: string[];
+	phones?: string[];
+	unknown: boolean;
+	customFields?: Record<string, string | unknown>;
+	contactManager?: string;
+	channels?: ILivechatContactChannel[];
+};
+
+type UpdateContactParams = {
+	contactId: string;
+	name?: string;
+	emails?: string[];
+	phones?: string[];
+	customFields?: Record<string, unknown>;
+	contactManager?: string;
+	channels?: ILivechatContactChannel[];
+};
+
+type ContactOTPCodeInfo = {
+	code: string;
+	expiresAt: Date;
+	attempts: number;
 };
 
 export const Contacts = {
@@ -152,3 +194,105 @@ export const Contacts = {
 		return contactId;
 	},
 };
+
+export async function createContact(params: CreateContactParams): Promise<string> {
+	const { name, emails, phones, customFields = {}, contactManager, channels, unknown } = params;
+
+	if (contactManager) {
+		const contactManagerUser = await Users.findOneAgentById<Pick<IUser, 'roles'>>(contactManager, { projection: { roles: 1 } });
+		await validateContactManager(contactManagerUser);
+	}
+
+	const allowedCustomFields = await getAllowedCustomFields();
+	validateCustomFields(allowedCustomFields, customFields);
+
+	const { insertedId } = await LivechatContacts.insertOne({
+		name,
+		emails,
+		phones,
+		contactManager,
+		channels,
+		customFields,
+		unknown,
+	});
+
+	return insertedId;
+}
+
+export async function updateContact(params: UpdateContactParams): Promise<ILivechatContact> {
+	const { contactId, name, emails, phones, customFields, contactManager, channels } = params;
+
+	const contact = await LivechatContacts.findOneById(contactId, { projection: { _id: 1 } });
+
+	if (!contact) {
+		throw new Error('error-contact-not-found');
+	}
+
+	if (contactManager) {
+		const contactManagerUser = await Users.findOneById<Pick<IUser, 'roles'>>(contactManager, { projection: { roles: 1 } });
+		await validateContactManager(contactManagerUser);
+	}
+
+	if (customFields) {
+		const allowedCustomFields = await getAllowedCustomFields();
+		validateCustomFields(allowedCustomFields, customFields);
+	}
+
+	const updatedContact = await LivechatContacts.updateContact(contactId, { name, emails, phones, contactManager, channels, customFields });
+
+	return updatedContact;
+}
+
+async function getAllowedCustomFields(): Promise<ILivechatCustomField[]> {
+	return LivechatCustomField.findByScope(
+		'visitor',
+		{
+			projection: { _id: 1, label: 1, regexp: 1, required: 1 },
+		},
+		false,
+	).toArray();
+}
+
+export function validateCustomFields(allowedCustomFields: ILivechatCustomField[], customFields: Record<string, string | unknown>) {
+	for (const cf of allowedCustomFields) {
+		if (!customFields.hasOwnProperty(cf._id)) {
+			if (cf.required) {
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+			}
+			continue;
+		}
+		const cfValue: string = trim(customFields[cf._id]);
+
+		if (!cfValue || typeof cfValue !== 'string') {
+			if (cf.required) {
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+			}
+			continue;
+		}
+
+		if (cf.regexp) {
+			const regex = new RegExp(cf.regexp);
+			if (!regex.test(cfValue)) {
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+			}
+		}
+	}
+}
+
+export async function validateContactManager(user: Pick<IUser, 'roles'> | null) {
+	if (!user) {
+		throw new Error('error-contact-manager-not-found');
+	}
+}
+
+export async function addEmailCodeByContactEmail(email: string, channel: string, code: string, expiresAt: Date): Promise<any> {
+	throw new Error('addEmailCodeByContactEmail: implement');
+}
+
+export async function findContactCodeFromChannelAndEmail(email: string, channel: string): Promise<ContactOTPCodeInfo> {
+	throw new Error('findContactCodeFromChannelAndEmail: implement');
+}
+
+export async function incrementInvalidEmailCodeAttemptByVerifyingMethod(email: string, channel: string): Promise<any> {
+	throw new Error('incrementInvalidEmailCodeAttemptByVerifyingMethod: implement');
+}

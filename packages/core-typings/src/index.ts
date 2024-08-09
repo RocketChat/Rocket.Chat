@@ -96,6 +96,7 @@ export * from './ILivechatCustomField';
 export * from './IOmnichannel';
 export * from './ILivechatAgentActivity';
 export * from './ILivechatBusinessHour';
+export * from './ILivechatContact';
 export * from './ILivechatVisitor';
 export * from './ILivechatDepartmentAgents';
 export * from './ILivechatAgent';

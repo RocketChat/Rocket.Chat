@@ -20,6 +20,7 @@ import type {
 	IImportDataModel,
 	ILivechatAgentActivityModel,
 	ILivechatBusinessHoursModel,
+	ILivechatContactsModel,
 	ILivechatCustomFieldModel,
 	ILivechatDepartmentAgentsModel,
 	ILivechatDepartmentModel,
@@ -117,6 +118,7 @@ export const Integrations = proxify<IIntegrationsModel>('IIntegrationsModel');
 export const Invites = proxify<IInvitesModel>('IInvitesModel');
 export const LivechatAgentActivity = proxify<ILivechatAgentActivityModel>('ILivechatAgentActivityModel');
 export const LivechatBusinessHours = proxify<ILivechatBusinessHoursModel>('ILivechatBusinessHoursModel');
+export const LivechatContacts = proxify<ILivechatContactsModel>('ILivechatContactsModel');
 export const LivechatCustomField = proxify<ILivechatCustomFieldModel>('ILivechatCustomFieldModel');
 export const LivechatDepartmentAgents = proxify<ILivechatDepartmentAgentsModel>('ILivechatDepartmentAgentsModel');
 export const LivechatDepartment = proxify<ILivechatDepartmentModel>('ILivechatDepartmentModel');
