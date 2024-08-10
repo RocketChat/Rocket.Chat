@@ -166,12 +166,6 @@ const MessageBox = ({
 		resetFileInput?.();
 	}
 
-	// function handleFileUpload(fileslist: File[], resetFileInput?: () => void) {
-	// 	setFilesToUpload((prevFiles) => [...prevFiles, ...fileslist]);
-
-	// 	resetFileInput?.();
-	// }
-
 	const handleRemoveFile = (index: number) => {
 		const temp = [...filesToUpload];
 		temp.splice(index, 1);
