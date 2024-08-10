@@ -163,7 +163,7 @@ export const sendFileMessage = async (
 		msgData,
 	}: {
 		roomId: string;
-		file: Partial<IUpload>[] | Partial<IUpload>;
+		file: Partial<IUpload>;
 		msgData?: Record<string, any>;
 	},
 	{
@@ -189,6 +189,7 @@ export const sendFileMessage = async (
 	if (user?.type !== 'app' && !(await canAccessRoomAsync(room, user))) {
 		return false;
 	}
+
 	check(
 		msgData,
 		Match.Maybe({
