@@ -1,10 +1,11 @@
 import { ServiceClassInternal, Message } from '@rocket.chat/core-services';
 import type { IOmnichannelEEService } from '@rocket.chat/core-services';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { IOmnichannelRoom, IUser, ILivechatInquiryRecord, IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, Subscriptions, LivechatInquiry } from '@rocket.chat/models';
 
+import { notifyOnLivechatInquiryChangedById, notifyOnRoomChangedById } from '../../../../../app/lib/server/lib/notifyListener';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
@@ -59,6 +60,8 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		]);
 
 		await callbacks.run('livechat:afterOnHold', room);
+
+		void notifyOnRoomChangedById(roomId);
 	}
 
 	async resumeRoomOnHold(
@@ -108,6 +111,8 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		]);
 
 		await callbacks.run('livechat:afterOnHoldChatResumed', room);
+
+		void notifyOnRoomChangedById(roomId);
 	}
 
 	private async attemptToAssignRoomToServingAgentElseQueueIt({
@@ -173,6 +178,15 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			RoutingManager.removeAllRoomSubscriptions(room),
 		]);
 
+		void notifyOnLivechatInquiryChangedById(inquiryId, 'updated', {
+			status: LivechatInquiryStatus.QUEUED,
+			queuedAt: new Date(),
+			takenAt: undefined,
+			defaultAgent: undefined,
+		});
+
 		await dispatchAgentDelegated(roomId);
+
+		void notifyOnRoomChangedById(roomId);
 	}
 }

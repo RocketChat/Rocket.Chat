@@ -1,22 +1,21 @@
-import { faker } from '@faker-js/faker';
-
+import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
 import { createAgent } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
-const visitor = {
-	name: `${faker.person.firstName()} ${faker.string.uuid()}}`,
-	email: faker.internet.email(),
-}
+const visitor = createFakeVisitor();
 
 // Endpoint defaults are reset after each test, so if not in matrix assume is true
 const endpointMatrix = [
-	[{ url: '/settings/FileUpload_Enabled', value: false}],
-	[{ url: '/settings/Livechat_fileupload_enabled', value: false}],
-	[{ url: '/settings/FileUpload_Enabled', value: false}, { url: '/settings/Livechat_fileupload_enabled', value: false}],
-]
+	[{ url: '/settings/FileUpload_Enabled', value: false }],
+	[{ url: '/settings/Livechat_fileupload_enabled', value: false }],
+	[
+		{ url: '/settings/FileUpload_Enabled', value: false },
+		{ url: '/settings/Livechat_fileupload_enabled', value: false },
+	],
+];
 
 const beforeTest = async (poLiveChat: OmnichannelLiveChat) => {
 	await poLiveChat.page.goto('/livechat');
@@ -26,8 +25,8 @@ const beforeTest = async (poLiveChat: OmnichannelLiveChat) => {
 	await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
 	await poLiveChat.btnSendMessageToOnlineAgent.click();
 
-	await poLiveChat.txtChatMessage('this_a_test_message_from_user').waitFor({state: 'visible'});
-}
+	await poLiveChat.txtChatMessage('this_a_test_message_from_user').waitFor({ state: 'visible' });
+};
 
 test.describe('OC - Livechat - OC - File Upload', () => {
 	let poLiveChat: OmnichannelLiveChat;
@@ -45,11 +44,11 @@ test.describe('OC - Livechat - OC - File Upload', () => {
 		poLiveChat = new OmnichannelLiveChat(page, api);
 	});
 
-	test.afterAll(async ({api}) => {
+	test.afterAll(async ({ api }) => {
 		await api.post('/settings/FileUpload_Enabled', { value: true });
 		await api.post('/settings/Livechat_fileupload_enabled', { value: true });
 
-		await poHomeOmnichannel.page?.close();
+		await poHomeOmnichannel.page.close();
 		await agent.delete();
 	});
 
@@ -85,7 +84,7 @@ test.describe('OC - Livechat - OC - File Upload - Disabled', () => {
 		poHomeOmnichannel = new HomeOmnichannel(page);
 	});
 
-	test.afterAll(async ({api}) => {
+	test.afterAll(async ({ api }) => {
 		await api.post('/settings/FileUpload_Enabled', { value: true });
 		await api.post('/settings/Livechat_fileupload_enabled', { value: true });
 
@@ -97,13 +96,13 @@ test.describe('OC - Livechat - OC - File Upload - Disabled', () => {
 		const testName = endpoints.map((endpoint) => endpoint.url.split('/').pop()?.concat(`=${endpoint.value}`)).join(' ');
 
 		test(`OC - Livechat - txt Drag & Drop - ${testName}`, async ({ page, api }) => {
-			test.fail();
-
 			poLiveChat = new OmnichannelLiveChat(page, api);
 
-			await Promise.all(endpoints.map(async (endpoint: { url: string, value: boolean }) => {
-				await api.post(endpoint.url, { value: endpoint.value });
-			}));
+			await Promise.all(
+				endpoints.map(async (endpoint: { url: string; value: boolean }) => {
+					await api.post(endpoint.url, { value: endpoint.value });
+				}),
+			);
 
 			await poLiveChat.page.goto('/livechat');
 
@@ -112,12 +111,12 @@ test.describe('OC - Livechat - OC - File Upload - Disabled', () => {
 			await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
 			await poLiveChat.btnSendMessageToOnlineAgent.click();
 
-			await poLiveChat.txtChatMessage('this_a_test_message_from_user').waitFor({state: 'visible'});
+			await poLiveChat.txtChatMessage('this_a_test_message_from_user').waitFor({ state: 'visible' });
 
 			await test.step('expect to upload a txt file', async () => {
 				await poLiveChat.dragAndDropTxtFile();
 
-				await expect(poLiveChat.alertMessage('file_upload_disabled')).toBeVisible();
+				await expect(poLiveChat.alertMessage('File upload is disabled')).toBeVisible();
 			});
 		});
 	});

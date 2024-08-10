@@ -1,4 +1,4 @@
-import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box, Button } from '@rocket.chat/fuselage';
 import { useDebouncedState, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { hashQueryKey } from '@tanstack/react-query';
@@ -26,7 +26,7 @@ import { useCurrentContacts } from './hooks/useCurrentContacts';
 
 function ContactTable(): ReactElement {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
-	const { sortBy, sortDirection, setSort } = useSort<'username' | 'phone' | 'name' | 'visitorEmails.address' | 'lastchat'>('username');
+	const { sortBy, sortDirection, setSort } = useSort<'username' | 'phone' | 'name' | 'visitorEmails.address' | 'lastChat.ts'>('username');
 	const isCallReady = useIsCallReady();
 
 	const [term, setTerm] = useDebouncedState('', 500);
@@ -90,7 +90,13 @@ function ContactTable(): ReactElement {
 			>
 				{t('Email')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='lastchat' direction={sortDirection} active={sortBy === 'lastchat'} onClick={setSort} sort='lastchat'>
+			<GenericTableHeaderCell
+				key='lastchat'
+				direction={sortDirection}
+				active={sortBy === 'lastChat.ts'}
+				onClick={setSort}
+				sort='lastChat.ts'
+			>
 				{t('Last_Chat')}
 			</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='call' width={44} />
@@ -100,12 +106,11 @@ function ContactTable(): ReactElement {
 	return (
 		<>
 			{((isSuccess && data?.visitors.length > 0) || queryHasChanged) && (
-				<FilterByText
-					displayButton
-					textButton={t('New_contact')}
-					onButtonClick={onButtonNewClick}
-					onChange={({ text }): void => setTerm(text)}
-				/>
+				<FilterByText onChange={setTerm}>
+					<Button onClick={onButtonNewClick} primary>
+						{t('New_contact')}
+					</Button>
+				</FilterByText>
 			)}
 			{isLoading && (
 				<GenericTable>

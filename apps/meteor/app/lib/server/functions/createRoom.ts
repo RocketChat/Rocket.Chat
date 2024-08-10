@@ -10,7 +10,9 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreateRoomCallback';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
+import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
+import { notifyOnRoomChanged } from '../lib/notifyListener';
 import { createDirectRoom } from './createDirectRoom';
 
 const isValidName = (name: unknown): name is string => {
@@ -36,14 +38,14 @@ async function createUsersSubscriptions({
 	options?: ICreateRoomParams['options'];
 }) {
 	if (shouldBeHandledByFederation) {
-		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
-		extra.open = true;
-		extra.ls = now;
-		extra.roles = ['owner'];
-
-		if (room.prid) {
-			extra.prid = room.prid;
-		}
+		const extra: Partial<ISubscriptionExtraData> = {
+			...options?.subscriptionExtra,
+			open: true,
+			ls: now,
+			roles: ['owner'],
+			...(room.prid && { prid: room.prid }),
+			...getDefaultSubscriptionPref(owner),
+		};
 
 		await Subscriptions.createWithRoomAndUser(room, owner, extra);
 
@@ -110,12 +112,14 @@ export const createRoom = async <T extends RoomType>(
 	readOnly?: boolean,
 	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
+	sidepanel?: ICreateRoomParams['sidepanel'],
 ): Promise<
 	ICreatedRoom & {
 		rid: string;
 	}
 > => {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
+
 	await beforeCreateRoomCallback.run({
 		type,
 		// name,
@@ -123,9 +127,9 @@ export const createRoom = async <T extends RoomType>(
 		// members,
 		// readOnly,
 		extraData,
-
 		// options,
 	});
+
 	if (type === 'd') {
 		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || owner?.username });
 	}
@@ -184,6 +188,7 @@ export const createRoom = async <T extends RoomType>(
 		},
 		ts: now,
 		ro: readOnly === true,
+		sidepanel,
 	};
 
 	if (teamId) {
@@ -224,6 +229,8 @@ export const createRoom = async <T extends RoomType>(
 	}
 
 	const room = await Rooms.createWithFullRoomData(roomProps);
+
+	void notifyOnRoomChanged(room, 'inserted');
 
 	const shouldBeHandledByFederation = room.federated === true || owner.username.includes(':');
 

@@ -1,10 +1,8 @@
 import { type ISetting, type Serialized, type SettingValue } from '@rocket.chat/core-typings';
+import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
 import languages from '@rocket.chat/i18n/dist/languages';
 import { type Method, type OperationParams, type OperationResult, type PathPattern, type UrlParams } from '@rocket.chat/rest-typings';
 import {
-	type ServerMethodName,
-	type ServerMethodParameters,
-	type ServerMethodReturn,
 	type TranslationKey,
 	AuthorizationContext,
 	ConnectionStatusContext,
@@ -40,13 +38,16 @@ export class MockedAppRootBuilder {
 
 	private server: ContextType<typeof ServerContext> = {
 		absoluteUrl: (path: string) => `http://localhost:3000/${path}`,
-		callEndpoint: <TMethod extends Method, TPathPattern extends PathPattern>(_args: {
+		callEndpoint: <TMethod extends Method, TPathPattern extends PathPattern>({
+			method,
+			pathPattern,
+		}: {
 			method: TMethod;
 			pathPattern: TPathPattern;
 			keys: UrlParams<TPathPattern>;
 			params: OperationParams<TMethod, TPathPattern>;
 		}): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
-			throw new Error('not implemented');
+			throw new Error(`not implemented (method: ${method}, pathPattern: ${pathPattern})`);
 		},
 		getStream: () => () => () => undefined,
 		uploadToEndpoint: () => Promise.reject(new Error('not implemented')),
@@ -66,6 +67,7 @@ export class MockedAppRootBuilder {
 		navigate: () => undefined,
 		subscribeToRouteChange: () => () => undefined,
 		subscribeToRoutesChange: () => () => undefined,
+		getRoomRoute: () => ({ path: '/' }),
 	};
 
 	private settings: Mutable<ContextType<typeof SettingsContext>> = {

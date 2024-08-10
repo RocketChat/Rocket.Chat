@@ -50,6 +50,10 @@ on:
       type:
         required: true
         type: string
+      db-watcher-disabled:
+        default: 'false'
+        required: false
+        type: string
     secrets:
       CR_USER:
         required: true
@@ -62,6 +66,8 @@ on:
       REPORTER_ROCKETCHAT_API_KEY:
         required: false
       CODECOV_TOKEN:
+        required: false
+      REPORTER_JIRA_ROCKETCHAT_API_KEY:
         required: false
 
 env:
@@ -83,9 +89,25 @@ jobs:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
 
-    name: MongoDB ${{ matrix.mongodb-version }} (${{ matrix.shard }}/${{ inputs.total-shard }})
+    name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.db-watcher-disabled == 'true' && ' [no watchers]' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})${{ matrix.mongodb-version == '6.0' && ' - Alpine' || '' }}
 
     steps:
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
+        with:
+          theme: dark
+          job_summary: true
+          comment_on_pr: false
+
+      - name: Setup kernel limits
+        run: |
+          sudo sysctl -w net.ipv4.ip_local_port_range="500   65535"
+          sudo sysctl -w net.ipv4.tcp_mem="383865   511820   2303190"
+
+          echo fs.file-max=20000500 | sudo tee -a /etc/sysctl.conf
+          echo fs.nr_open=20000500 | sudo tee -a /etc/sysctl.conf
+          sudo sysctl -p
+
       - name: Login to GitHub Container Registry
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         uses: docker/login-action@v2
@@ -111,13 +133,13 @@ jobs:
 
       # if we are testing a PR from a fork, we need to build the docker image at this point
       - uses: ./.github/actions/build-docker
-        if: github.event.pull_request.head.repo.full_name != github.repository
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ inputs.node-version }}
 
-      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+      - uses: rharkor/caching-for-turbo@v1.5
 
       - name: Start httpbin container and wait for it to be ready
         if: inputs.type == 'api'
@@ -161,8 +183,15 @@ jobs:
           TRANSPORTER: ${{ inputs.transporter }}
           COVERAGE_DIR: '/tmp/coverage'
           COVERAGE_REPORTER: 'lcov'
+          DISABLE_DB_WATCHERS: ${{ inputs.db-watcher-disabled }}
         run: |
           docker compose -f docker-compose-ci.yml up -d
+
+      - name: Clean up temporary files
+        # remove all folders inside /tmp except /tmp/coverage
+        run: |
+          cd /tmp
+          sudo find . -mindepth 1 -maxdepth 1 -type d | grep -v './coverage' | sudo xargs rm -rf
 
       - name: Cache Playwright binaries
         if: inputs.type == 'ui'
@@ -198,6 +227,8 @@ jobs:
             sleep 10
           done;
 
+      - name: Remove unused Docker images
+        run: docker system prune -af
       - name: E2E Test API
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
@@ -238,10 +269,15 @@ jobs:
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
           REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
           REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+          REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
           REPORTER_ROCKETCHAT_REPORT: ${{ github.event.pull_request.draft != 'true' && 'true' || '' }}
           REPORTER_ROCKETCHAT_RUN: ${{ github.run_number }}
           REPORTER_ROCKETCHAT_BRANCH: ${{ github.ref }}
           REPORTER_ROCKETCHAT_DRAFT: ${{ github.event.pull_request.draft }}
+          REPORTER_ROCKETCHAT_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REPORTER_ROCKETCHAT_AUTHOR: ${{ github.event.pull_request.user.login }}
+          REPORTER_ROCKETCHAT_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REPORTER_ROCKETCHAT_PR: ${{ github.event.pull_request.number }}
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
           CI: true
@@ -253,9 +289,9 @@ jobs:
 
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: playwright-test-trace${{ inputs.release }}
+          name: playwright-test-trace-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/tests/e2e/.playwright*
 
       - name: Show server logs if E2E test failed
@@ -286,14 +322,14 @@ jobs:
 
       - name: Store e2e-api-ee-coverage
         if: inputs.type == 'api' && inputs.release == 'ee'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: e2e-api-ee-coverage
+          name: e2e-api-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: /tmp/coverage
 
       - name: Store e2e-ee-coverage
         if: inputs.type == 'ui' && inputs.release == 'ee'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: e2e-ee-coverage
+          name: e2e-ee-coverage-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/coverage*

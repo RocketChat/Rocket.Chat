@@ -5,10 +5,10 @@ import { Messages, Rooms, Uploads, Users, ReadReceipts } from '@rocket.chat/mode
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
 
 export const deleteMessageValidatingPermission = async (message: AtLeast<IMessage, '_id'>, userId: IUser['_id']): Promise<void> => {
 	if (!message?._id) {
@@ -80,7 +80,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 
 	// update last message
 	if (settings.get('Store_Last_Message') && (!room?.lastMessage || room.lastMessage._id === message._id)) {
-		const lastMessageNotDeleted = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(message.rid);
+		const lastMessageNotDeleted = await Messages.getLastVisibleUserMessageSentByRoomId(message.rid);
 		await Rooms.resetLastMessageById(message.rid, lastMessageNotDeleted, -1);
 	} else {
 		// decrease message count
@@ -89,8 +89,10 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 
 	await callbacks.run('afterDeleteMessage', deletedMsg, room);
 
+	void notifyOnRoomChangedById(message.rid);
+
 	if (keepHistory || showDeletedStatus) {
-		void broadcastMessageFromData({
+		void notifyOnMessageChange({
 			id: message._id,
 		});
 	}

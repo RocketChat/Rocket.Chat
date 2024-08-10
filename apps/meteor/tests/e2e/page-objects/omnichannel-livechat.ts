@@ -15,7 +15,7 @@ export class OmnichannelLiveChat {
 		return this.page.locator(`role=button[name="${label}"]`);
 	}
 
-	btnOpenLiveChat(): Locator {
+	get btnOpenLiveChat(): Locator {
 		return this.page.locator(`[data-qa-id="chat-button"]`);
 	}
 
@@ -55,6 +55,10 @@ export class OmnichannelLiveChat {
 		return this.page.locator('[data-qa="livechat-watermark"]');
 	}
 
+	get imgLogo(): Locator {
+		return this.btnOpenLiveChat.locator('img[alt="Livechat"]');
+	}
+
 	alertMessage(message: string): Locator {
 		return this.page.getByRole('alert').locator(`text="${message}"`);
 	}
@@ -77,7 +81,7 @@ export class OmnichannelLiveChat {
 	// TODO: replace openLivechat with this method and create a new method for openOnlineLivechat
 	// as openLivechat only opens a chat that is in the 'online' state
 	async openAnyLiveChat(): Promise<void> {
-		await this.btnOpenLiveChat().click();
+		await this.btnOpenLiveChat.click();
 	}
 
 	async startNewChat(): Promise<void> {
@@ -165,9 +169,10 @@ export class OmnichannelLiveChat {
 	): Promise<void> {
 		await this.openAnyLiveChat();
 		await this.sendMessage(liveChatUser, false);
-		await this.onlineAgentMessage.type(message);
+		await this.onlineAgentMessage.fill(message);
 		await this.btnSendMessageToOnlineAgent.click();
 		await expect(this.txtChatMessage(message)).toBeVisible();
+		await expect(this.page.locator('[data-qa="message-bubble"] >> text="Chat started"')).toBeVisible();
 		await this.closeChat();
 	}
 
