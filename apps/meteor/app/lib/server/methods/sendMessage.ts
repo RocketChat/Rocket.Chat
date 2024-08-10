@@ -19,7 +19,12 @@ import { MessageTypes } from '../../../ui-utils/server';
 import { sendMessage } from '../functions/sendMessage';
 import { RateLimiter } from '../lib';
 
-export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>, previewUrls?: string[]) {
+export async function executeSendMessage(
+	uid: IUser['_id'],
+	message: AtLeast<IMessage, 'rid'>,
+	previewUrls?: string[],
+	filesArray?: Partial<IUpload>[],
+) {
 	if (message.tshow && !message.tmid) {
 		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
 			method: 'sendMessage',
@@ -96,7 +101,7 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 		}
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
-		return await sendMessage(user, message, room, false, previewUrls);
+		return await sendMessage(user, message, room, false, previewUrls, filesArray);
 	} catch (err: any) {
 		SystemLogger.error({ msg: 'Error sending message:', err });
 
@@ -135,12 +140,13 @@ Meteor.methods<ServerMethods>({
 		if (MessageTypes.isSystemMessage(message)) {
 			throw new Error("Cannot send system messages using 'sendMessage'");
 		}
+		let filesArray: Partial<IUpload>[] = [];
 
 		if (filesToConfirm !== undefined) {
 			if (!(await canAccessRoomIdAsync(message.rid, uid))) {
 				return API.v1.unauthorized();
 			}
-			const filesarray: Partial<IUpload>[] = await Promise.all(
+			filesArray = await Promise.all(
 				filesToConfirm.map(async (fileid) => {
 					const file = await Uploads.findOneById(fileid);
 					if (!file) {
@@ -149,23 +155,27 @@ Meteor.methods<ServerMethods>({
 					return file;
 				}),
 			);
-
-			await sendFileMessage(uid, { roomId: message.rid, file: filesarray, msgData }, { parseAttachmentsForE2EE: false });
+			message.msg = msgData?.msg;
+			message.tmid = msgData?.tmid;
+			// description,
+			message.t = msgData?.t;
+			message.content = msgData?.content;
+			// await sendFileMessage(uid, { roomId: message.rid, file: filesArray, msgData }, { parseAttachmentsForE2EE: false });
 
 			await Promise.all(filesToConfirm.map((fileid) => Uploads.confirmTemporaryFile(fileid, uid)));
 
-			let resmessage;
-			if (filesarray[0] !== null && filesarray[0]._id !== undefined) {
-				resmessage = await Messages.getMessageByFileIdAndUsername(filesarray[0]._id, uid);
-			}
+			// let resmessage;
+			// if (filesArray[0] !== null && filesArray[0]._id !== undefined) {
+			// 	resmessage = await Messages.getMessageByFileIdAndUsername(filesArray[0]._id, uid);
+			// }
 
-			return API.v1.success({
-				resmessage,
-			});
+			// return API.v1.success({
+			// 	resmessage,
+			// });
 		}
 
 		try {
-			return await executeSendMessage(uid, message, previewUrls);
+			return await executeSendMessage(uid, message, previewUrls, filesArray);
 		} catch (error: any) {
 			if ((error.error || error.message) === 'error-not-allowed') {
 				throw new Meteor.Error(error.error || error.message, error.reason, {

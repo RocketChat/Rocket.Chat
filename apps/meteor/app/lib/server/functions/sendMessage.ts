@@ -1,6 +1,6 @@
 import { Apps } from '@rocket.chat/apps';
 import { api, Message } from '@rocket.chat/core-services';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUpload } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
@@ -13,6 +13,7 @@ import { settings } from '../../../settings/server';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
+import { parseFileIntoMessageAttachments } from '../../../../app/file-upload/server/methods/sendFileMessage';
 
 // TODO: most of the types here are wrong, but I don't want to change them now
 
@@ -215,9 +216,28 @@ export function prepareMessageObject(
 /**
  * Validates and sends the message object.
  */
-export const sendMessage = async function (user: any, message: any, room: any, upsert = false, previewUrls?: string[]) {
+export const sendMessage = async function (
+	user: any,
+	message: any,
+	room: any,
+	upsert = false,
+	previewUrls?: string[],
+	filesArray?: Partial<IUpload>[] | Partial<IUpload>,
+) {
 	if (!user || !message || !room._id) {
 		return false;
+	}
+
+	if (filesArray !== undefined && (typeof filesArray !== undefined || message?.t !== 'e2e')) {
+		const roomId = message.rid;
+		const { files, attachments } = await parseFileIntoMessageAttachments(
+			Array.isArray(filesArray) ? filesArray : [filesArray],
+			roomId,
+			user,
+		);
+		message.file = files[0];
+		message.files = files;
+		message.attachments = attachments;
 	}
 
 	await validateMessage(message, room, user);
