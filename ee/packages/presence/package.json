@@ -19,9 +19,9 @@
 		"lint": "eslint src",
 		"lint:fix": "eslint src --fix",
 		"test": "jest",
-		"build": "tsc -p tsconfig.json",
-		"testunit": "jest tests/**/*.test.ts",
-		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
+		"build": "tsc",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit --skipLibCheck"
 	},
 	"main": "./dist/Presence.js",
 	"typings": "./dist/Presence.d.ts",
