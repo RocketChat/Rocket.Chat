@@ -418,6 +418,7 @@ describe('[Rooms]', () => {
 				.filter((type) => type !== 'image/svg+xml')
 				.join(',');
 			await updateSetting('FileUpload_MediaTypeBlackList', newBlockedMediaTypes);
+			await updateSetting('E2E_Enable_Encrypt_Files', true);
 		});
 
 		after(() =>
@@ -427,6 +428,7 @@ describe('[Rooms]', () => {
 				updateSetting('FileUpload_Restrict_to_room_members', true),
 				updateSetting('FileUpload_ProtectFiles', true),
 				updateSetting('FileUpload_MediaTypeBlackList', blockedMediaTypes),
+				updateSetting('E2E_Enable_Encrypt_Files', true),
 			]),
 		);
 
@@ -761,8 +763,6 @@ describe('[Rooms]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
 				});
-
-			await updateSetting('E2E_Enable_Encrypt_Files', true);
 		});
 
 		it('should fail encrypted file upload on blacklisted application/octet-stream media type', async () => {
