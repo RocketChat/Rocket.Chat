@@ -5,7 +5,7 @@ import { callbacks } from '../../../../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../../../lib/callbacks/afterRemoveFromRoomCallback';
 import type { FederationRoomServiceSender } from '../../../application/room/sender/RoomServiceSender';
-import { isFederationEnabled, verifyFederationReady } from '../../../utils';
+import { isFederationEnabled, throwIfFederationNotEnabledOrReady, throwIfFederationNotReady } from '../../../utils';
 
 export class FederationHooks {
 	public static afterUserLeaveRoom(callback: (user: IUser, room: IRoom) => Promise<void>): void {
@@ -15,7 +15,7 @@ export class FederationHooks {
 					return;
 				}
 
-				verifyFederationReady();
+				throwIfFederationNotEnabledOrReady();
 
 				await callback(user, room);
 			},
@@ -31,7 +31,7 @@ export class FederationHooks {
 					return;
 				}
 
-				verifyFederationReady();
+				throwIfFederationNotEnabledOrReady();
 
 				await callback(params.removedUser, room, params.userWhoRemoved);
 			},
@@ -48,7 +48,7 @@ export class FederationHooks {
 					return;
 				}
 
-				verifyFederationReady();
+				throwIfFederationNotEnabledOrReady();
 
 				await callback(params.user, room);
 			},
@@ -65,7 +65,7 @@ export class FederationHooks {
 					return;
 				}
 
-				verifyFederationReady();
+				throwIfFederationNotEnabledOrReady();
 
 				await callback(params.user, params.inviter, room);
 			},
@@ -82,7 +82,7 @@ export class FederationHooks {
 					return;
 				}
 
-				verifyFederationReady();
+				throwIfFederationNotEnabledOrReady();
 
 				await callback(members);
 			},
@@ -99,7 +99,7 @@ export class FederationHooks {
 					return;
 				}
 
-				verifyFederationReady();
+				throwIfFederationNotEnabledOrReady();
 
 				await callback(message, params.user, params.reaction);
 			},
@@ -116,7 +116,7 @@ export class FederationHooks {
 					return;
 				}
 
-				verifyFederationReady();
+				throwIfFederationNotEnabledOrReady();
 
 				await callback(params.oldMessage, params.user, params.reaction);
 			},
@@ -133,7 +133,7 @@ export class FederationHooks {
 					return;
 				}
 
-				verifyFederationReady();
+				throwIfFederationNotEnabledOrReady();
 
 				await callback(message, room._id);
 			},
@@ -150,7 +150,7 @@ export class FederationHooks {
 					return message;
 				}
 
-				verifyFederationReady();
+				throwIfFederationNotEnabledOrReady();
 
 				if (!isEditedMessage(message)) {
 					return message;
@@ -171,7 +171,7 @@ export class FederationHooks {
 					return message;
 				}
 
-				verifyFederationReady();
+				throwIfFederationNotEnabledOrReady();
 
 				if (isEditedMessage(message)) {
 					return message;
@@ -193,7 +193,7 @@ export class FederationHooks {
 			return;
 		}
 
-		verifyFederationReady();
+		throwIfFederationNotReady();
 
 		const {
 			_id: role,
@@ -231,7 +231,7 @@ export class FederationHooks {
 					return;
 				}
 
-				verifyFederationReady();
+				throwIfFederationNotEnabledOrReady();
 
 				await callback(params.rid, params.name);
 			},
@@ -248,7 +248,7 @@ export class FederationHooks {
 					return;
 				}
 
-				verifyFederationReady();
+				throwIfFederationNotEnabledOrReady();
 
 				await callback(params.rid, params.topic);
 			},

@@ -21,7 +21,7 @@ import { federationServiceLogger } from './infrastructure/rocket-chat/adapters/l
 import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/converters/RoomSender';
 import { FederationHooks } from './infrastructure/rocket-chat/hooks';
 import './infrastructure/rocket-chat/well-known';
-import { verifyFederationReady } from './utils';
+import { throwIfFederationNotEnabledOrReady } from './utils';
 
 function extractError(e: unknown) {
 	if (e instanceof Error || (typeof e === 'object' && e && 'toString' in e)) {
@@ -339,7 +339,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			return;
 		}
 
-		verifyFederationReady();
+		throwIfFederationNotEnabledOrReady();
 	}
 }
 

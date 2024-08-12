@@ -8,11 +8,17 @@ export function isFederationReady() {
 	return settings.get<string>('Federation_Matrix_configuration_status') === 'Valid';
 }
 
-export function verifyFederationReady() {
+export function throwIfFederationNotEnabledOrReady() {
 	if (!isFederationEnabled()) {
 		throw new Error('Federation is not enabled');
 	}
 
+	if (!isFederationReady()) {
+		throw new Error('Federation configuration is invalid');
+	}
+}
+
+export function throwIfFederationNotReady() {
 	if (!isFederationReady()) {
 		throw new Error('Federation configuration is invalid');
 	}
