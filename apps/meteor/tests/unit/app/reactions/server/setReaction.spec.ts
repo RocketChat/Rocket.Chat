@@ -180,7 +180,6 @@ describe('Reactions', () => {
 			await executeSetReaction('test', 'test', { reactions: { ':test:': { usernames: ['test'] } } });
 			expect(modelsMock.Messages.findOneById.calledOnce).to.be.false;
 		});
-
 	});
 	describe('setReaction', () => {
 		beforeEach(() => {

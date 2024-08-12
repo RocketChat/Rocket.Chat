@@ -99,7 +99,12 @@ export async function setReaction(
 	});
 }
 
-export async function executeSetReaction(userId: string, reaction: string, messageParam: IMessage['_id'] | IMessage, shouldReact?: boolean) {
+export async function executeSetReaction(
+	userId: string,
+	reaction: string,
+	messageParam: IMessage['_id'] | IMessage,
+	shouldReact?: boolean,
+) {
 	// Check if the emoji is valid before proceeding
 	const reactionWithoutColons = reaction.replace(/:/g, '');
 	reaction = `:${reactionWithoutColons}:`;
