@@ -4,4 +4,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Added a new setting to to enable/disable file encryption in an end to end encrypted room.
+Added a new setting to enable/disable file encryption in an end to end encrypted room.
