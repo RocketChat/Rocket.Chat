@@ -1,5 +1,6 @@
 {
   "500": "ਅੰਦਰੂਨੀ ਸਰਵਰ ਗੜਬੜ",
+  "__count__empty_rooms_will_be_removed_automatically__rooms__": "{{count}} empty rooms will be removed automatically:<br/> {{rooms}}.",
   "set__username__as__role_": "set {{username}} ਨੂੰ {{role}}",
   "away": "ਦੂਰ",
   "Away": "ਦੂਰ",
