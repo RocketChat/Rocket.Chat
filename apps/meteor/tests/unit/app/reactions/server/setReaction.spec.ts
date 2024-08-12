@@ -102,6 +102,20 @@ describe('Reactions', () => {
 			expect(result.reactions.other.usernames).to.include('test');
 			expect(result.reactions.other.usernames).to.include('test2');
 		});
+		it('should do nothing if username is not in the reaction', () => {
+			const message = {
+				reactions: {
+					test: {
+						usernames: ['test', 'test2'],
+					},
+				},
+			};
+
+			const result = removeUserReaction(message as any, 'test', 'test3');
+			expect(result.reactions.test.usernames).to.not.include('test3');
+			expect(result.reactions.test.usernames).to.include('test');
+			expect(result.reactions.test.usernames).to.include('test2');
+		});
 	});
 	describe('executeSetReaction', () => {
 		beforeEach(() => {
@@ -157,6 +171,16 @@ describe('Reactions', () => {
 			const res = await executeSetReaction('test', 'test', 'test');
 			expect(res).to.be.undefined;
 		});
+		it('should use the message from param when the type is not an string', async () => {
+			modelsMock.EmojiCustom.countByNameOrAlias.resolves(1);
+			modelsMock.Users.findOneById.resolves({ username: 'test' });
+			modelsMock.Rooms.findOneById.resolves({ t: 'c' });
+			canAccessRoomAsyncMock.resolves(true);
+
+			await executeSetReaction('test', 'test', { reactions: { ':test:': { usernames: ['test'] } } });
+			expect(modelsMock.Messages.findOneById.calledOnce).to.be.false;
+		});
+
 	});
 	describe('setReaction', () => {
 		beforeEach(() => {

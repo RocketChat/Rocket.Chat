@@ -18,7 +18,14 @@ export const removeUserReaction = (message: IMessage, reaction: string, username
 		return message;
 	}
 
-	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);
+	const idx = message.reactions[reaction].usernames.indexOf(username);
+
+	// user not found in reaction array
+	if (idx === -1) {
+		return message;
+	}
+
+	message.reactions[reaction].usernames.splice(idx, 1);
 	if (!message.reactions[reaction].usernames.length) {
 		delete message.reactions[reaction];
 	}
@@ -92,7 +99,7 @@ export async function setReaction(
 	});
 }
 
-export async function executeSetReaction(userId: string, reaction: string, messageId: IMessage['_id'], shouldReact?: boolean) {
+export async function executeSetReaction(userId: string, reaction: string, messageParam: IMessage['_id'] | IMessage, shouldReact?: boolean) {
 	// Check if the emoji is valid before proceeding
 	const reactionWithoutColons = reaction.replace(/:/g, '');
 	reaction = `:${reactionWithoutColons}:`;
@@ -108,7 +115,7 @@ export async function executeSetReaction(userId: string, reaction: string, messa
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
 	}
 
-	const message = await Messages.findOneById(messageId);
+	const message = typeof messageParam === 'string' ? await Messages.findOneById(messageParam) : messageParam;
 	if (!message) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 	}
