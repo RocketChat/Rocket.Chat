@@ -88,6 +88,7 @@ export function getCollectionName(name: string): string {
 }
 
 export { registerModel } from './proxify';
+export { type Updater, UpdaterImpl } from './updater';
 
 export const Apps = proxify<IAppsModel>('IAppsModel');
 export const AppsTokens = proxify<IAppsTokensModel>('IAppsTokensModel');

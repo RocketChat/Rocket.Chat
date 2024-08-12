@@ -982,7 +982,6 @@ describe('LIVECHAT - rooms', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res: Response) => {
-					console.log({ res: res.body });
 					expect(res.body).to.have.property('success', true);
 				});
 
@@ -1000,6 +999,45 @@ describe('LIVECHAT - rooms', () => {
 
 			roomId = newRoom._id;
 			visitorToken = newVisitor.token;
+		});
+		(IS_EE ? describe : describe.skip)('fallback department', () => {
+			let fallbackDepartment: Awaited<ReturnType<typeof createDepartmentWithAnOnlineAgent>>['department'];
+			let initialDepartment: Awaited<ReturnType<typeof createDepartmentWithAnOfflineAgent>>['department'];
+			let newVisitor: ILivechatVisitor;
+			let latestRoom: IOmnichannelRoom;
+			before(async () => {
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+
+				fallbackDepartment = (await createDepartmentWithAnOnlineAgent()).department;
+				initialDepartment = (
+					await createDepartmentWithAnOfflineAgent({
+						fallbackForwardDepartment: fallbackDepartment._id,
+					})
+				).department;
+
+				expect(initialDepartment.fallbackForwardDepartment).to.be.equal(fallbackDepartment._id);
+			});
+
+			after(async () => {
+				await Promise.all([
+					deleteDepartment(fallbackDepartment._id),
+					deleteDepartment(initialDepartment._id),
+					deleteVisitor(newVisitor._id),
+					closeOmnichannelRoom(latestRoom._id),
+				]);
+			});
+
+			it('should redirect chat to fallback department when all agents in the initial department are offline', async () => {
+				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+
+				newVisitor = await createVisitor(initialDepartment._id);
+				const newRoom = await createLivechatRoom(newVisitor.token);
+
+				latestRoom = await getLivechatRoomInfo(newRoom._id);
+
+				expect(latestRoom).to.have.property('departmentId');
+				expect(latestRoom.departmentId).to.be.equal(fallbackDepartment._id);
+			});
 		});
 		(IS_EE ? it : it.skip)('system messages sent on transfer should be properly generated', async () => {
 			const messagesList = await fetchMessages(roomId, visitorToken);

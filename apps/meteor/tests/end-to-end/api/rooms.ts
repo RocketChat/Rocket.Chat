@@ -2129,12 +2129,15 @@ describe('[Rooms]', () => {
 	describe('rooms.saveRoomSettings', () => {
 		let testChannel: IRoom;
 		const randomString = `randomString${Date.now()}`;
+		const teamName = `team-${Date.now()}`;
 		let discussion: IRoom;
+		let testTeam: ITeam;
 
 		before(async () => {
 			const result = await createRoom({ type: 'c', name: `channel.test.${Date.now()}-${Math.random()}` });
 			testChannel = result.body.channel;
 
+			const resTeam = await request.post(api('teams.create')).set(credentials).send({ name: teamName, type: 0 });
 			const resDiscussion = await request
 				.post(api('rooms.createDiscussion'))
 				.set(credentials)
@@ -2143,10 +2146,17 @@ describe('[Rooms]', () => {
 					t_name: `discussion-create-from-tests-${testChannel.name}`,
 				});
 
+			testTeam = resTeam.body.team;
 			discussion = resDiscussion.body.discussion;
 		});
 
-		after(() => Promise.all([deleteRoom({ type: 'p', roomId: discussion._id }), deleteRoom({ type: 'p', roomId: testChannel._id })]));
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'p', roomId: discussion._id }),
+				deleteTeam(credentials, testTeam.name),
+				deleteRoom({ type: 'p', roomId: testChannel._id }),
+			]),
+		);
 
 		it('should update the room settings', (done) => {
 			const imageDataUri = `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), imgURL)).toString('base64')}`;
@@ -2289,6 +2299,64 @@ describe('[Rooms]', () => {
 					expect(res.body.room).to.have.property('_id', testChannel._id);
 					expect(res.body.room).to.not.have.property('favorite');
 				});
+		});
+		it('should update the team sidepanel items to channels and discussions', async () => {
+			const sidepanelItems = ['channels', 'discussions'];
+			const response = await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testTeam.roomId,
+					sidepanel: { items: sidepanelItems },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(response.body).to.have.property('success', true);
+
+			const channelInfoResponse = await request
+				.get(api('channels.info'))
+				.set(credentials)
+				.query({ roomId: response.body.rid })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(channelInfoResponse.body).to.have.property('success', true);
+			expect(channelInfoResponse.body.channel).to.have.property('sidepanel');
+			expect(channelInfoResponse.body.channel.sidepanel).to.have.property('items').that.is.an('array').to.have.deep.members(sidepanelItems);
+		});
+		it('should throw error when updating team sidepanel with incorrect items', async () => {
+			const sidepanelItems = ['wrong'];
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testTeam.roomId,
+					sidepanel: { items: sidepanelItems },
+				})
+				.expect(400);
+		});
+		it('should throw error when updating team sidepanel with more than 2 items', async () => {
+			const sidepanelItems = ['channels', 'discussions', 'extra'];
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testTeam.roomId,
+					sidepanel: { items: sidepanelItems },
+				})
+				.expect(400);
+		});
+		it('should throw error when updating team sidepanel with duplicated items', async () => {
+			const sidepanelItems = ['channels', 'channels'];
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(credentials)
+				.send({
+					rid: testTeam.roomId,
+					sidepanel: { items: sidepanelItems },
+				})
+				.expect(400);
 		});
 	});
 

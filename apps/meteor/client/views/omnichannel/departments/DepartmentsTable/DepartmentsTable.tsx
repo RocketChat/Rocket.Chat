@@ -91,7 +91,7 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 
 	return (
 		<>
-			{((isSuccess && data?.departments.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setText(text)} />}
+			{((isSuccess && data?.departments.length > 0) || queryHasChanged) && <FilterByText onChange={setText} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
