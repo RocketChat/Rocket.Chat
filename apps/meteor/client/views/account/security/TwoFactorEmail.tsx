@@ -5,14 +5,14 @@ import React, { useCallback } from 'react';
 
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
-const TwoFactorEmail = (props: ComponentProps<typeof Box>): JSX.Element | null => {
+const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
 	const t = useTranslation();
 	const user = useUser();
 
-	const disableEmail2FAForOAuth = useSetting('Accounts_TwoFactorAuthentication_email_available_for_oAuth_users');
+	const isEmail2FAAvailableForOAuth = useSetting('Accounts_twoFactorAuthentication_email_available_for_oAuth_users');
 	const isOAuthUser = user?.isOAuthUser;
 	const isEnabled = user?.services?.email2fa?.enabled;
-	const isAllowed = !isOAuthUser || disableEmail2FAForOAuth;
+	const isAllowed = !isOAuthUser || isEmail2FAAvailableForOAuth;
 
 	const enable2faAction = useEndpointAction('POST', '/v1/users.2fa.enableEmail', {
 		successMessage: t('Two-factor_authentication_enabled'),
