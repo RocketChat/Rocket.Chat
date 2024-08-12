@@ -1,6 +1,7 @@
 import type { IDirectMessageRoom, IMessage, IOmnichannelGenericRoom, IRoom, IRoomFederated, ITeam, IUser } from '@rocket.chat/core-typings';
 import type { AggregationCursor, DeleteResult, Document, FindCursor, FindOptions, UpdateOptions, UpdateResult } from 'mongodb';
 
+import type { Updater } from '../updater';
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface IChannelsWithNumberOfMessagesBetweenDate {
@@ -162,6 +163,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	countFederatedRooms(): Promise<number>;
 	incMsgCountById(rid: string, inc: number): Promise<UpdateResult>;
+	getIncMsgCountUpdateQuery(inc: number, roomUpdater: Updater<IRoom>): Updater<IRoom>;
 	decreaseMessageCountById(rid: string, dec: number): Promise<UpdateResult>;
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	setCallStatus(_id: string, callStatus: IRoom['callStatus']): Promise<UpdateResult>;
@@ -234,10 +236,15 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	archiveById(rid: string): Promise<UpdateResult>;
 	unarchiveById(rid: string): Promise<UpdateResult>;
 	setNameById(rid: string, name: string, fname: string): Promise<UpdateResult>;
-	incMsgCountAndSetLastMessageById(rid: IRoom['_id'], inc: number, lastMessageTs: Date, lastMessage?: IMessage): Promise<UpdateResult>;
+	setIncMsgCountAndSetLastMessageUpdateQuery(
+		inc: number,
+		lastMessage: IMessage,
+		shouldStoreLastMessage: boolean,
+		roomUpdater: Updater<IRoom>,
+	): Updater<IRoom>;
 	incUsersCountById(rid: string, inc: number): Promise<UpdateResult>;
 	incUsersCountNotDMsByIds(rids: string[], inc: number): Promise<Document | UpdateResult>;
-	setLastMessageById(rid: string, lastMessage: IRoom['lastMessage']): Promise<UpdateResult>;
+	getLastMessageUpdateQuery(lastMessage: IRoom['lastMessage'], roomUpdater: Updater<IRoom>): Updater<IRoom>;
 	resetLastMessageById(rid: string, lastMessage: IMessage | null, msgCountDelta?: number): Promise<UpdateResult>;
 	replaceUsername(username: string, newUsername: string): Promise<UpdateResult | Document>;
 	replaceMutedUsername(username: string, newUsername: string): Promise<UpdateResult | Document>;
