@@ -149,7 +149,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const handleCreateUser = useMutation({
 		mutationFn: createUserAction,
 		onSuccess: async ({ user: { _id } }) => {
-			dispatchToastMessage({ type: 'success', message: t('User_created_successfully!') });
+			dispatchToastMessage({ type: 'success', message: t('New_user_manually_created') });
 			await eventStats({
 				params: [{ eventName: 'updateCounter', settingsId: 'Manual_Entry_User_Count' }],
 			});
@@ -247,10 +247,10 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<>
 								<FieldRow mbs={12}>
 									<Box display='flex' alignItems='center'>
-										<FieldLabel htmlFor={verifiedId} p={0} disabled={!isSmtpEnabled || !isVerificationNeeded}>
+										<FieldLabel htmlFor={verifiedId} p={0} disabled={!isSmtpEnabled || !isVerificationNeeded} m={0}>
 											{t('Mark_email_as_verified')}
 										</FieldLabel>
-										<Icon name='info-circled' size='x20' mis={8} title={t('Enable_to_bypass_email_verification')} color='default' />
+										<Icon name='info-circled' size='x20' mis={4} title={t('Enable_to_bypass_email_verification')} color='default' />
 									</Box>
 									<Controller
 										control={control}
