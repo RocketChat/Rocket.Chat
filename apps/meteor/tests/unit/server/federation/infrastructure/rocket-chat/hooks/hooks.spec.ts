@@ -9,6 +9,7 @@ import type * as hooksModule from '../../../../../../../server/services/federati
 
 const remove = sinon.stub();
 const verifyFederationReady = sinon.stub();
+const isFederationEnabled = sinon.stub();
 const hooks: Record<string, any> = {};
 
 const { FederationHooks } = proxyquire
@@ -37,6 +38,7 @@ const { FederationHooks } = proxyquire
 		},
 		'../../../utils': {
 			verifyFederationReady,
+			isFederationEnabled,
 		},
 	});
 
@@ -45,6 +47,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		FederationHooks.removeAllListeners();
 		remove.reset();
 		verifyFederationReady.reset();
+		isFederationEnabled.reset();
 	});
 
 	describe('#afterUserLeaveRoom()', () => {
@@ -567,10 +570,9 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT call the Federation module is disabled', async () => {
-			const error = new Error();
-			verifyFederationReady.throws(error);
-			// eslint-disable-next-line @typescript-eslint/no-floating-promises
-			expect(FederationHooks.afterRoomRoleChanged(handlers, undefined)).to.have.rejectedWith(error);
+			isFederationEnabled.returns(false);
+
+			await FederationHooks.afterRoomRoleChanged(handlers, undefined);
 
 			expect(handlers.onRoomOwnerAdded.called).to.be.false;
 			expect(handlers.onRoomOwnerRemoved.called).to.be.false;
@@ -579,6 +581,9 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT call the handler if the event is not for roles we are interested in on Federation', async () => {
+			isFederationEnabled.returns(true);
+			// verifyFederationReady doesn't throw by default in here
+
 			await FederationHooks.afterRoomRoleChanged(handlers, { _id: 'not-interested' });
 
 			expect(handlers.onRoomOwnerAdded.called).to.be.false;
@@ -588,6 +593,8 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT call the handler there is no handler for the event', async () => {
+			isFederationEnabled.returns(true);
+
 			await FederationHooks.afterRoomRoleChanged(handlers, { _id: 'owner', type: 'not-existing-type' });
 
 			expect(handlers.onRoomOwnerAdded.called).to.be.false;
@@ -601,6 +608,8 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			const internalTargetUserId = 'internalTargetUserId';
 			const internalUserId = 'internalUserId';
 			it(`should call the handler for the event ${type}`, async () => {
+				isFederationEnabled.returns(true);
+
 				await FederationHooks.afterRoomRoleChanged(handlers, {
 					_id: type.split('-')[0],
 					type: type.split('-')[1],
