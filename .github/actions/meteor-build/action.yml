@@ -91,7 +91,7 @@ runs:
         meteor node -v
         git version
 
-    - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+    - uses: rharkor/caching-for-turbo@v1.5
 
     - name: Translation check
       shell: bash
@@ -124,7 +124,7 @@ runs:
         tar czf /tmp/Rocket.Chat.tar.gz bundle
 
     - name: Store build
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: build
         path: /tmp/Rocket.Chat.tar.gz
