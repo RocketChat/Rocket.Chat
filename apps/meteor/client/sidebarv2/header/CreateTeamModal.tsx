@@ -145,7 +145,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 					encrypted,
 				},
 			},
-			...(showChannels && { sidepanel: { items: sidepanelItem } }),
+			...((showChannels || showDiscussions) && { sidepanel: { items: sidepanelItem } }),
 		};
 
 		try {
