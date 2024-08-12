@@ -257,7 +257,7 @@ class E2E extends Emitter {
 			return null;
 		}
 
-		if (room.encrypted !== true && !room.e2eKeyId) {
+		if (!room.encrypted) {
 			return null;
 		}
 

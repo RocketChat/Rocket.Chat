@@ -1,4 +1,4 @@
-import type { IAdminUserTabs, IRole, Serialized } from '@rocket.chat/core-typings';
+import type { IRole, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useEffectEvent, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
@@ -17,12 +17,12 @@ import {
 } from '../../../../components/GenericTable';
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import type { UsersFilters, UsersTableSortingOptions } from '../AdminUsersPage';
+import type { AdminUserTab, UsersFilters, UsersTableSortingOptions } from '../AdminUsersPage';
 import UsersTableFilters from './UsersTableFilters';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
-	tab: IAdminUserTabs;
+	tab: AdminUserTab;
 	roleData: { roles: IRole[] } | undefined;
 	onReload: () => void;
 	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
