@@ -3,29 +3,30 @@
 	"version": "0.1.1",
 	"private": true,
 	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
 		"@types/jest": "~29.5.12",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
-		"ts-jest": "^29.1.1",
 		"typescript": "~5.3.3"
 	},
 	"scripts": {
+		"build": "rm -rf dist && tsc",
+		"dev": "tsc --watch --preserveWatchOutput",
+		"typecheck": "tsc --noEmit",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"test": "jest",
-		"testunit": "jest",
-		"build": "rm -rf dist && tsc -p tsconfig.json",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
+		"testunit": "jest"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
-	"volta": {
-		"extends": "../../package.json"
-	},
 	"dependencies": {
 		"jose": "^4.14.4"
+	},
+	"volta": {
+		"extends": "../../package.json"
 	}
 }

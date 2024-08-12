@@ -110,7 +110,7 @@ export abstract class BaseRaw<
 		return this.collectionName;
 	}
 
-	protected getUpdater(): Updater<T> {
+	public getUpdater(): Updater<T> {
 		return new UpdaterImpl<T>(this.col as unknown as IBaseModel<T>);
 	}
 
