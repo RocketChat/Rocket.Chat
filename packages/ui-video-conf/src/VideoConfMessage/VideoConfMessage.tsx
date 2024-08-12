@@ -1,7 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import type { AllHTMLAttributes, ReactElement } from 'react';
 
-const VideoConfMessage = ({ ...props }): ReactElement => (
+type VideoConfMessageProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
+const VideoConfMessage = (props: VideoConfMessageProps): ReactElement => (
 	<Box
 		mbs={4}
 		color='default'
@@ -10,7 +11,7 @@ const VideoConfMessage = ({ ...props }): ReactElement => (
 		borderWidth={1}
 		borderColor='extra-light'
 		borderRadius='x4'
-		className='rcx-videoconf-message-block'
+		rcx-videoconf-message-block
 		{...props}
 	/>
 );

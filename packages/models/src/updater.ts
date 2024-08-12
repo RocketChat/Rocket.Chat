@@ -71,12 +71,12 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 		return Object.keys(this.getUpdateFilter()).length > 0;
 	}
 
-	private getUpdateFilter() {
+	getUpdateFilter() {
 		return {
 			...(this._set && { $set: Object.fromEntries(this._set) }),
 			...(this._unset && { $unset: Object.fromEntries([...this._unset.values()].map((k) => [k, 1])) }),
 			...(this._inc && { $inc: Object.fromEntries(this._inc) }),
-			...(this._addToSet && { $addToSet: { $each: Object.fromEntries(this._addToSet) } }),
+			...(this._addToSet && { $addToSet: Object.fromEntries([...this._addToSet.entries()].map(([k, v]) => [k, { $each: v }])) }),
 		} as unknown as UpdateFilter<T>;
 	}
 }
