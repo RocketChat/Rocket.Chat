@@ -11,9 +11,10 @@ import VoipGroupPage from './groups/VoipGroupPage';
 
 type GroupSelectorProps = {
 	groupId: GroupId;
+	onClickBack?: () => void;
 };
 
-const GroupSelector = ({ groupId }: GroupSelectorProps) => {
+const GroupSelector = ({ groupId, onClickBack }: GroupSelectorProps) => {
 	const group = useSettingStructure(groupId);
 
 	if (!group) {
@@ -21,22 +22,22 @@ const GroupSelector = ({ groupId }: GroupSelectorProps) => {
 	}
 
 	if (groupId === 'Assets') {
-		return <AssetsGroupPage {...group} />;
+		return <AssetsGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
 	if (groupId === 'OAuth') {
-		return <OAuthGroupPage {...group} />;
+		return <OAuthGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
 	if (groupId === 'LDAP') {
-		return <LDAPGroupPage {...group} />;
+		return <LDAPGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
 	if (groupId === 'Call_Center') {
-		return <VoipGroupPage {...group} />;
+		return <VoipGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
-	return <TabbedGroupPage {...group} />;
+	return <TabbedGroupPage {...group} onClickBack={onClickBack} />;
 };
 
 export default GroupSelector;

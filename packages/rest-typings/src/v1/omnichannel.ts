@@ -3746,7 +3746,9 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'/v1/livechat/agents/:agentId/departments': {
-		GET: (params?: GETLivechatAgentsAgentIdDepartmentsParams) => { departments: ILivechatDepartmentAgents[] };
+		GET: (params?: GETLivechatAgentsAgentIdDepartmentsParams) => {
+			departments: (ILivechatDepartmentAgents & { departmentName: string })[];
+		};
 	};
 	'/v1/livechat/business-hour': {
 		GET: (params: GETBusinessHourParams) => { businessHour: ILivechatBusinessHour };

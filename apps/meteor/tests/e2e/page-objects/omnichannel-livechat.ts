@@ -172,6 +172,7 @@ export class OmnichannelLiveChat {
 		await this.onlineAgentMessage.fill(message);
 		await this.btnSendMessageToOnlineAgent.click();
 		await expect(this.txtChatMessage(message)).toBeVisible();
+		await expect(this.page.locator('[data-qa="message-bubble"] >> text="Chat started"')).toBeVisible();
 		await this.closeChat();
 	}
 

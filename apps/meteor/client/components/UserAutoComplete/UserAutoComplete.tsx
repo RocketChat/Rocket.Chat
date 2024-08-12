@@ -1,4 +1,4 @@
-import { AutoComplete, Option, Box, Chip, Options } from '@rocket.chat/fuselage';
+import { AutoComplete, Option, Box, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -46,7 +46,7 @@ const UserAutoComplete = ({ value, onChange, ...props }: UserAutoCompleteProps):
 				</Chip>
 			)}
 			renderItem={({ value, label, ...props }): ReactElement => (
-				<Option key={value} label={label} avatar={<UserAvatar size={Options.AvatarSize} username={value} />} {...props} />
+				<Option key={value} label={label} avatar={<UserAvatar size='x20' username={value} />} {...props} />
 			)}
 			options={options}
 		/>
