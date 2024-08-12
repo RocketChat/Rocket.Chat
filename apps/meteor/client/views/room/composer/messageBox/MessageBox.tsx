@@ -251,9 +251,11 @@ const MessageBox = ({
 		if (filesToUpload.length > 0) {
 			const msg = chat.composer?.text ?? '';
 
-			Object.defineProperty(filesToUpload[0], 'name', {
-				writable: true,
-				value: filesToUpload[0].name,
+			filesToUpload.forEach((file) => {
+				Object.defineProperty(file, 'name', {
+					writable: true,
+					value: file.name,
+				});
 			});
 
 			const e2eRoom = await e2e.getInstanceByRoomId(room._id);
