@@ -10,7 +10,11 @@ import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useEditableSettings } from '../../EditableSettingsContext';
 import TabbedGroupPage from './TabbedGroupPage';
 
-function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
+type LDAPGroupPageProps = ISetting & {
+	onClickBack?: () => void;
+};
+
+function LDAPGroupPage({ _id, onClickBack, ...group }: LDAPGroupPageProps) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const testConnection = useEndpoint('POST', '/v1/ldap.testConnection');
@@ -127,6 +131,7 @@ function LDAPGroupPage({ _id, ...group }: ISetting): JSX.Element {
 	return (
 		<TabbedGroupPage
 			_id={_id}
+			onClickBack={onClickBack}
 			{...group}
 			headerButtons={
 				<>
