@@ -3,10 +3,10 @@ import { eventTypes } from '@rocket.chat/core-typings';
 import { FederationServers, FederationRoomEvents, Rooms, Messages, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
 import EJSON from 'ejson';
 
-import { broadcastMessageSentEvent } from '../../../../server/modules/watchers/lib/messages';
 import { API } from '../../../api/server';
 import { FileUpload } from '../../../file-upload/server';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
+import { notifyOnMessageChange, notifyOnRoomChanged, notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
 import { notifyUsersOnMessage } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendAllNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 import { processThreads } from '../../../threads/server/hooks/aftersavemessage';
@@ -48,12 +48,18 @@ const eventHandlers = {
 					if (persistedRoom) {
 						// Update the federation
 						await Rooms.updateOne({ _id: persistedRoom._id }, { $set: { federation: room.federation } });
+
+						// Notify watch.rooms listener
+						void notifyOnRoomChangedById(room._id);
 					} else {
 						// Denormalize room
 						const denormalizedRoom = normalizers.denormalizeRoom(room);
 
 						// Create the room
-						await Rooms.insertOne(denormalizedRoom);
+						const insertedRoom = await Rooms.insertOne(denormalizedRoom);
+
+						// Notify watch.rooms listener
+						void notifyOnRoomChangedById(insertedRoom.insertedId);
 					}
 				}
 				return eventResult;
@@ -74,6 +80,9 @@ const eventHandlers = {
 		if (persistedRoom) {
 			// Delete the room
 			await deleteRoom(roomId);
+
+			// Notify watch.rooms listener
+			void notifyOnRoomChanged(persistedRoom, 'removed');
 		}
 
 		// Remove all room events
@@ -145,6 +154,9 @@ const eventHandlers = {
 
 				// Update the room's federation property
 				await Rooms.updateOne({ _id: roomId }, { $set: { 'federation.domains': domainsAfterAdd } });
+
+				// Notify watch.rooms listener
+				void notifyOnRoomChangedById(roomId);
 			}
 		}
 
@@ -171,6 +183,9 @@ const eventHandlers = {
 
 			// Update the room's federation property
 			await Rooms.updateOne({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
+
+			// Notify watch.rooms listener
+			void notifyOnRoomChangedById(roomId);
 		}
 
 		return eventResult;
@@ -196,6 +211,9 @@ const eventHandlers = {
 
 			// Update the room's federation property
 			await Rooms.updateOne({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
+
+			// Notify watch.rooms listener
+			void notifyOnRoomChangedById(roomId);
 		}
 
 		return eventResult;
@@ -275,8 +293,12 @@ const eventHandlers = {
 
 					await processThreads(denormalizedMessage, room);
 
-					// Notify users
-					await notifyUsersOnMessage(denormalizedMessage, room);
+					const roomUpdater = Rooms.getUpdater();
+					await notifyUsersOnMessage(denormalizedMessage, room, roomUpdater);
+					if (roomUpdater.hasChanges()) {
+						await roomUpdater.persist({ _id: room._id });
+					}
+
 					sendAllNotifications(denormalizedMessage, room);
 					messageForNotification = denormalizedMessage;
 				} catch (err) {
@@ -284,10 +306,9 @@ const eventHandlers = {
 				}
 			}
 			if (messageForNotification) {
-				void broadcastMessageSentEvent({
+				void notifyOnMessageChange({
 					id: messageForNotification._id,
 					data: messageForNotification,
-					broadcastCallback: (message) => api.broadcast('message.sent', message),
 				});
 			}
 		}
@@ -316,14 +337,13 @@ const eventHandlers = {
 			} else {
 				// Update the message
 				await Messages.updateOne({ _id: persistedMessage._id }, { $set: { msg: message.msg, federation: message.federation } });
-				void broadcastMessageSentEvent({
+				void notifyOnMessageChange({
 					id: persistedMessage._id,
 					data: {
 						...persistedMessage,
 						msg: message.msg,
 						federation: message.federation,
 					},
-					broadcastCallback: (message) => api.broadcast('message.sent', message),
 				});
 			}
 		}
@@ -387,7 +407,7 @@ const eventHandlers = {
 
 			// Update the property
 			await Messages.updateOne({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
-			void broadcastMessageSentEvent({
+			void notifyOnMessageChange({
 				id: persistedMessage._id,
 				data: {
 					...persistedMessage,
@@ -396,7 +416,6 @@ const eventHandlers = {
 						[reaction]: reactionObj,
 					},
 				},
-				broadcastCallback: (message) => api.broadcast('message.sent', message),
 			});
 		}
 
@@ -446,7 +465,7 @@ const eventHandlers = {
 				// Otherwise, update the property
 				await Messages.updateOne({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
 			}
-			void broadcastMessageSentEvent({
+			void notifyOnMessageChange({
 				id: persistedMessage._id,
 				data: {
 					...persistedMessage,
@@ -455,7 +474,6 @@ const eventHandlers = {
 						[reaction]: reactionObj,
 					},
 				},
-				broadcastCallback: (message) => api.broadcast('message.sent', message),
 			});
 		}
 
@@ -479,6 +497,9 @@ const eventHandlers = {
 
 			// Mute user
 			await Rooms.muteUsernameByRoomId(roomId, denormalizedUser.username);
+
+			// Broadcast the unmute event
+			void notifyOnRoomChangedById(roomId);
 		}
 
 		return eventResult;
@@ -501,6 +522,9 @@ const eventHandlers = {
 
 			// Unmute user
 			await Rooms.unmuteMutedUsernameByRoomId(roomId, denormalizedUser.username);
+
+			// Broadcast the unmute event
+			void notifyOnRoomChangedById(roomId);
 		}
 
 		return eventResult;

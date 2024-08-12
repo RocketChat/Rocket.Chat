@@ -119,7 +119,7 @@ const RegisterUsername = () => {
 					<CustomFieldsForm formName='customFields' formControl={control} metadata={customFields} />
 				</Form.Container>
 				<Form.Footer>
-					<ButtonGroup stretch vertical flexGrow={1}>
+					<ButtonGroup stretch vertical>
 						<Button disabled={isLoading} type='submit' primary>
 							{t('Use_this_username')}
 						</Button>

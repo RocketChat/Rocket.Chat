@@ -42,8 +42,9 @@ const EnterE2EPasswordModal = ({
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleConfirm} {...props} />}
 			variant='warning'
 			title={t('Enter_E2E_password')}
+			icon='warning'
 			cancelText={t('Do_It_Later')}
-			confirmText={t('Decode_Key')}
+			confirmText={t('Enable_encryption')}
 			onClose={onClose}
 			onCancel={onCancel}
 		>
@@ -51,13 +52,7 @@ const EnterE2EPasswordModal = ({
 			<FieldGroup mbs={24} w='full'>
 				<Field>
 					<FieldRow>
-						<PasswordInput
-							autoFocus
-							error={passwordError}
-							value={password}
-							onChange={handleChange}
-							placeholder={t('New_Password_Placeholder')}
-						/>
+						<PasswordInput error={passwordError} value={password} onChange={handleChange} placeholder={t('Please_enter_E2EE_password')} />
 					</FieldRow>
 					<FieldError>{passwordError}</FieldError>
 				</Field>

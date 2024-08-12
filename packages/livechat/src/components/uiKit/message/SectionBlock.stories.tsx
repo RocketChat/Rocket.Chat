@@ -2,7 +2,7 @@ import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/preact';
 
 import { renderMessageBlocks } from '.';
-import { accessoryImage } from '../../../helpers.stories';
+import { accessoryImage } from '../../../../.storybook/helpers';
 import { PopoverContainer } from '../../Popover';
 import Surface from './Surface';
 

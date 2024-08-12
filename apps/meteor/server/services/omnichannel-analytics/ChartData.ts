@@ -8,7 +8,9 @@ type ChartDataValidActions =
 	| 'Avg_chat_duration'
 	| 'Total_messages'
 	| 'Avg_first_response_time'
-	| 'Avg_reaction_time';
+	| 'Avg_reaction_time'
+	| 'Best_first_response_time'
+	| 'Avg_response_time';
 
 type DateParam = {
 	gte: Date;
@@ -22,7 +24,15 @@ export class ChartData {
 		if (!action) {
 			return false;
 		}
-		return ['Total_conversations', 'Avg_chat_duration', 'Total_messages', 'Avg_first_response_time', 'Avg_reaction_time'].includes(action);
+		return [
+			'Total_conversations',
+			'Avg_chat_duration',
+			'Total_messages',
+			'Avg_first_response_time',
+			'Avg_reaction_time',
+			'Best_first_response_time',
+			'Avg_response_time',
+		].includes(action);
 	}
 
 	callAction<T extends ChartDataValidActions>(action: T, ...args: [DateParam, string?, Filter<IOmnichannelRoom>?]) {
@@ -37,6 +47,10 @@ export class ChartData {
 				return this.Avg_first_response_time(...args);
 			case 'Avg_reaction_time':
 				return this.Avg_reaction_time(...args);
+			case 'Best_first_response_time':
+				return this.Best_first_response_time(...args);
+			case 'Avg_response_time':
+				return this.Avg_response_time(...args);
 			default:
 				throw new Error('Invalid action');
 		}

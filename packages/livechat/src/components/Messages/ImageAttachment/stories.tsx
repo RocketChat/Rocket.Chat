@@ -2,7 +2,7 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { ImageAttachment } from '.';
-import { sampleImage } from '../../../helpers.stories';
+import { sampleImage } from '../../../../.storybook/helpers';
 
 export default {
 	title: 'Messages/ImageAttachment',

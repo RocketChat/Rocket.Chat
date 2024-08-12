@@ -91,7 +91,7 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 
 	return (
 		<>
-			{((isSuccess && data?.departments.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setText(text)} />}
+			{((isSuccess && data?.departments.length > 0) || queryHasChanged) && <FilterByText onChange={setText} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -108,7 +108,7 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 					description={t('No_departments_yet_description')}
 					buttonAction={handleAddNew}
 					buttonTitle={t('Create_department')}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_departments')}
 				/>
 			)}

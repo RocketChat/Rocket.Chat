@@ -1,5 +1,554 @@
 # @rocket.chat/model-typings
 
+## 0.6.0
+
+### Minor Changes
+
+- ([#32493](https://github.com/RocketChat/Rocket.Chat/pull/32493)) Fixed Livechat rooms being displayed in the Engagement Dashboard's "Channels" tab
+
+- ([#32752](https://github.com/RocketChat/Rocket.Chat/pull/32752)) Added system messages support for Omnichannel PDF transcripts and email transcripts. Currently these transcripts don't render system messages and is shown as an empty message in PDF/email. This PR adds this support for all valid livechat system messages.
+
+  Also added a new setting under transcripts, to toggle the inclusion of system messages in email and PDF transcripts.
+
+- ([#32793](https://github.com/RocketChat/Rocket.Chat/pull/32793)) New Feature: Video Conference Persistent Chat.
+  This feature provides a discussion id for conference provider apps to store the chat messages exchanged during the conferences, so that those users may then access those messages again at any time through Rocket.Chat.
+- ([#32493](https://github.com/RocketChat/Rocket.Chat/pull/32493)) Improved Engagement Dashboard's "Channels" tab performance by not returning rooms that had no activity in the analyzed period
+
+- ([#32800](https://github.com/RocketChat/Rocket.Chat/pull/32800)) Added the ability to filter chats by `queued` on the Current Chats Omnichannel page
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [2d89a0c448, 24f7df4894, b8e5887fb9]:</summary>
+
+  - @rocket.chat/core-typings@6.11.0
+  </details>
+
+## 0.6.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.6
+  </details>
+
+## 0.6.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.5
+  </details>
+
+## 0.6.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.4
+  </details>
+
+## 0.6.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.3
+  </details>
+
+## 0.6.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.2
+  </details>
+
+## 0.6.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.1
+  </details>
+
+## 0.6.0-rc.0
+
+### Minor Changes
+
+- ([#32493](https://github.com/RocketChat/Rocket.Chat/pull/32493)) Fixed Livechat rooms being displayed in the Engagement Dashboard's "Channels" tab
+
+- ([#32752](https://github.com/RocketChat/Rocket.Chat/pull/32752)) Added system messages support for Omnichannel PDF transcripts and email transcripts. Currently these transcripts don't render system messages and is shown as an empty message in PDF/email. This PR adds this support for all valid livechat system messages.
+
+  Also added a new setting under transcripts, to toggle the inclusion of system messages in email and PDF transcripts.
+
+- ([#32793](https://github.com/RocketChat/Rocket.Chat/pull/32793)) New Feature: Video Conference Persistent Chat.
+  This feature provides a discussion id for conference provider apps to store the chat messages exchanged during the conferences, so that those users may then access those messages again at any time through Rocket.Chat.
+- ([#32493](https://github.com/RocketChat/Rocket.Chat/pull/32493)) Improved Engagement Dashboard's "Channels" tab performance by not returning rooms that had no activity in the analyzed period
+
+- ([#32800](https://github.com/RocketChat/Rocket.Chat/pull/32800)) Added the ability to filter chats by `queued` on the Current Chats Omnichannel page
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [2d89a0c448, 24f7df4894, b8e5887fb9]:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.0
+  </details>
+
+## 0.5.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ca6a9d8de8, ca6a9d8de8, ca6a9d8de8, ca6a9d8de8]:</summary>
+
+  - @rocket.chat/core-typings@6.10.2
+  </details>
+
+## 0.5.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.1
+  </details>
+
+## 0.5.0
+
+### Minor Changes
+
+- ([#32197](https://github.com/RocketChat/Rocket.Chat/pull/32197)) Async End-to-End Encrypted rooms key distribution process. Users now don't need to be online to get the keys of their subscribed encrypted rooms, the key distribution process is now async and users can recieve keys even when they are not online.
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- ([#32431](https://github.com/RocketChat/Rocket.Chat/pull/32431)) Fixed last message preview in Sidebar for E2E Ecrypted channels
+
+- <details><summary>Updated dependencies [1240c874a5, 5f95c4ec6b, f75a2cb4bb, 4f72d62aa7, dfa49bdbb2]:</summary>
+
+  - @rocket.chat/core-typings@6.10.0
+  </details>
+
+## 0.5.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.7
+  </details>
+
+## 0.5.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.6
+  </details>
+
+## 0.5.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.5
+  </details>
+
+## 0.5.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.4
+  </details>
+
+## 0.5.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.3
+  </details>
+
+## 0.5.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.2
+  </details>
+
+## 0.5.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.1
+  </details>
+
+## 0.5.0-rc.0
+
+### Minor Changes
+
+- ([#32197](https://github.com/RocketChat/Rocket.Chat/pull/32197)) Async End-to-End Encrypted rooms key distribution process. Users now don't need to be online to get the keys of their subscribed encrypted rooms, the key distribution process is now async and users can recieve keys even when they are not online.
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- ([#32431](https://github.com/RocketChat/Rocket.Chat/pull/32431)) Fixed last message preview in Sidebar for E2E Ecrypted channels
+
+- <details><summary>Updated dependencies [1240c874a5, 5f95c4ec6b, f75a2cb4bb, 4f72d62aa7, dfa49bdbb2]:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.0
+
+## 0.4.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.3
+  </details>
+
+## 0.4.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.2
+  </details>
+
+## 0.4.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.1
+  </details>
+
+## 0.4.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ff4e396416, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/core-typings@6.9.0
+  </details>
+
+## 0.4.1-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.2
+  </details>
+
+## 0.4.1-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.1
+  </details>
+
+## 0.4.1-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ff4e396416, 70ab2a7b7b]:</summary>
+
+  - @rocket.chat/core-typings@6.9.0-rc.0
+  </details>
+
+## 0.4.0
+
+### Minor Changes
+
+- ([#32084](https://github.com/RocketChat/Rocket.Chat/pull/32084)) Added a new setting to automatically disable users from LDAP that can no longer be found by the background sync
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c47a8e3514, b94ca7c30b, 4aba7c8a26]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0
+  </details>
+
+## 0.4.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b94ca7c30b]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.2
+  </details>
+
+## 0.4.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.1
+  </details>
+
+## 0.4.0-rc.0
+
+### Minor Changes
+
+- ([#32084](https://github.com/RocketChat/Rocket.Chat/pull/32084)) Added a new setting to automatically disable users from LDAP that can no longer be found by the background sync
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c47a8e3514, 4aba7c8a26]:</summary>
+
+  - @rocket.chat/core-typings@6.8.0-rc.0
+
+## 0.3.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.2
+  </details>
+
+## 0.3.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.1
+  </details>
+
+## 0.3.7
+
+### Patch Changes
+
+- ([#31890](https://github.com/RocketChat/Rocket.Chat/pull/31890)) Changed logic that process custom fields from visitors when updating its data, making the process more reliable and faster.
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0
+  </details>
+
+## 0.3.7-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.4
+  </details>
+
+## 0.3.7-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.3
+  </details>
+
+## 0.3.7-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.2
+  </details>
+
+## 0.3.7-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.1
+  </details>
+
+## 0.3.7-rc.0
+
+### Patch Changes
+
+- ([#31890](https://github.com/RocketChat/Rocket.Chat/pull/31890)) Changed logic that process custom fields from visitors when updating its data, making the process more reliable and faster.
+
+- <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5]:</summary>
+
+  - @rocket.chat/core-typings@6.7.0-rc.0
+  </details>
+
+## 0.3.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.6
+  </details>
+
+## 0.3.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.5
+  </details>
+
+## 0.3.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.4
+  </details>
+
+## 0.3.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.3
+  </details>
+
+## 0.3.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.2
+  </details>
+
+## 0.3.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.1
+  </details>
+
+## 0.3.0
+
+### Minor Changes
+
+- ([#30554](https://github.com/RocketChat/Rocket.Chat/pull/30554)) **Added ‘Reported Users’ Tab to Moderation Console:** Enhances user monitoring by displaying reported users.
+
+- ([#31417](https://github.com/RocketChat/Rocket.Chat/pull/31417)) Added feature to sync the user's language preference with the autotranslate setting.
+
+### Patch Changes
+
+- ([#31138](https://github.com/RocketChat/Rocket.Chat/pull/31138)) feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+
+- ([#31181](https://github.com/RocketChat/Rocket.Chat/pull/31181)) Fixed issue with notifications for thread messages still being sent after thread has been read
+
+- ([#31336](https://github.com/RocketChat/Rocket.Chat/pull/31336)) Fixed issue with OEmbed cache not being cleared daily
+
+- ([#31328](https://github.com/RocketChat/Rocket.Chat/pull/31328)) Fixed an issue caused by the `Fallback Forward Department` feature. Feature could be configured by admins in a way that mimis a loop, causing a chat to be forwarded "infinitely" between those departments. System will now prevent Self & 1-level deep circular references from being saved, and a new setting is added to control the maximum number of hops that the system will do between fallback departments before considering a transfer failure.
+
+- <details><summary>Updated dependencies [b223cbde14, dbb08ef948, fdd9852079, b4b2cd20a8]:</summary>
+
+  - @rocket.chat/core-typings@6.6.0
+  </details>
+
+## 0.3.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.7
+  </details>
+
+## 0.3.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.6
+  </details>
+
+## 0.3.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.6.0-rc.5
+  </details>
+
+## 0.3.0-rc.4
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.4
+
+## 0.3.0-rc.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.3
+
+## 0.3.0-rc.2
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.2
+
+## 0.3.0-rc.1
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.6.0-rc.1
+
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- 2260c04ec6: **Added ‘Reported Users’ Tab to Moderation Console:** Enhances user monitoring by displaying reported users.
+- e7d3cdeef0: Added feature to sync the user's language preference with the autotranslate setting.
+
+### Patch Changes
+
+- b223cbde14: feat(uikit): Move `@rocket.chat/ui-kit` package to the main monorepo
+- fae558bd5d: Fixed issue with notifications for thread messages still being sent after thread has been read
+- c8ab6583dc: Fixed issue with OEmbed cache not being cleared daily
+- b4b2cd20a8: Fixed an issue caused by the `Fallback Forward Department` feature. Feature could be configured by admins in a way that mimis a loop, causing a chat to be forwarded "infinitely" between those departments. System will now prevent Self & 1-level deep circular references from being saved, and a new setting is added to control the maximum number of hops that the system will do between fallback departments before considering a transfer failure.
+- Updated dependencies [b223cbde14]
+- Updated dependencies [dbb08ef948]
+- Updated dependencies [fdd9852079]
+- Updated dependencies [b4b2cd20a8]
+  - @rocket.chat/core-typings@6.6.0-rc.0
+
+## 0.2.3
+
+### Patch Changes
+
+- @rocket.chat/core-typings@6.5.3
+
 ## 0.2.2
 
 ### Patch Changes

@@ -2,8 +2,8 @@ import { memo } from 'preact/compat';
 import type { JSXInternal } from 'preact/src/jsx';
 
 import { createClassName } from '../../../helpers/createClassName';
-import isBigEmoji from '../../Emoji/isBigEmoji';
-import shortnameToUnicode from '../../Emoji/shortnameToUnicode';
+import isBigEmoji from '../../../lib/emoji/isBigEmoji';
+import shortnameToUnicode from '../../../lib/emoji/shortnameToUnicode';
 import MarkdownBlock from '../../MarkdownBlock';
 import styles from './styles.scss';
 

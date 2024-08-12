@@ -1,6 +1,7 @@
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
-import { getCollectionName } from '@rocket.chat/models';
+import type { Updater } from '@rocket.chat/models';
+import { getCollectionName, UpdaterImpl } from '@rocket.chat/models';
 import { ObjectId } from 'mongodb';
 import type {
 	BulkWriteOptions,
@@ -78,6 +79,8 @@ export abstract class BaseRaw<
 		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
 	}
 
+	private pendingIndexes: Promise<void> | undefined;
+
 	public async createIndexes() {
 		const indexes = this.modelIndexes();
 		if (this.options?._updatedAtIndexOptions) {
@@ -85,7 +88,17 @@ export abstract class BaseRaw<
 		}
 
 		if (indexes?.length) {
-			return this.col.createIndexes(indexes);
+			if (this.pendingIndexes) {
+				await this.pendingIndexes;
+			}
+
+			this.pendingIndexes = this.col.createIndexes(indexes) as unknown as Promise<void>;
+
+			void this.pendingIndexes.finally(() => {
+				this.pendingIndexes = undefined;
+			});
+
+			return this.pendingIndexes;
 		}
 	}
 
@@ -95,6 +108,10 @@ export abstract class BaseRaw<
 
 	getCollectionName(): string {
 		return this.collectionName;
+	}
+
+	public getUpdater(): Updater<T> {
+		return new UpdaterImpl<T>(this.col as unknown as IBaseModel<T>);
 	}
 
 	private doNotMixInclusionAndExclusionFields(options: FindOptions<T> = {}): FindOptions<T> {
@@ -253,6 +270,10 @@ export abstract class BaseRaw<
 
 	removeById(_id: T['_id']): Promise<DeleteResult> {
 		return this.deleteOne({ _id } as Filter<T>);
+	}
+
+	removeByIds(ids: T['_id'][]): Promise<DeleteResult> {
+		return this.deleteMany({ _id: { $in: ids } } as unknown as Filter<T>);
 	}
 
 	async deleteOne(filter: Filter<T>, options?: DeleteOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteResult> {

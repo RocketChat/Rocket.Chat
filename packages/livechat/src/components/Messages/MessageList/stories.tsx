@@ -3,7 +3,7 @@ import type { Meta, Story } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import { MessageList } from '.';
-import { avatarResolver, loremIpsum } from '../../../helpers.stories';
+import { avatarResolver, loremIpsum } from '../../../../.storybook/helpers';
 import { MESSAGE_TYPE_LIVECHAT_TRANSFER_HISTORY } from '../constants';
 
 const now = new Date(Date.parse('2021-01-01T00:00:00.000Z'));

@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 
+import { convertFromDaysToMilliseconds } from '@rocket.chat/tools';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -60,4 +61,4 @@ export const validatePassword = (password: string, bcryptPassword: string): Prom
 	bcrypt.compare(getPassword(password), bcryptPassword);
 
 export const _tokenExpiration = (when: string | Date, expirationInDays: number): Date =>
-	new Date(new Date(when).getTime() + expirationInDays * 60 * 60 * 24 * 1000);
+	new Date(new Date(when).getTime() + convertFromDaysToMilliseconds(expirationInDays));

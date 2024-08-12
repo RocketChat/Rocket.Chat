@@ -1,11 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
-import { Header, HeaderToolbox } from '@rocket.chat/ui-client';
+import { Header, HeaderToolbar } from '@rocket.chat/ui-client';
 import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import BurgerMenu from '../../components/BurgerMenu';
 import NotFoundState from '../../components/NotFoundState';
+import SidebarToggler from '../../components/SidebarToggler';
 import RoomLayout from './layout/RoomLayout';
 
 const RoomNotFound = (): ReactElement => {
@@ -17,9 +17,9 @@ const RoomNotFound = (): ReactElement => {
 			header={
 				isMobile && (
 					<Header justifyContent='start'>
-						<HeaderToolbox>
-							<BurgerMenu />
-						</HeaderToolbox>
+						<HeaderToolbar>
+							<SidebarToggler />
+						</HeaderToolbar>
 					</Header>
 				)
 			}

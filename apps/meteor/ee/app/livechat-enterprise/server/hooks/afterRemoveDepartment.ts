@@ -1,10 +1,13 @@
-import type { ILivechatAgent, ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
+import type { AtLeast, ILivechatAgent, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
-const afterRemoveDepartment = async (options: { department: ILivechatDepartmentRecord; agentsId: ILivechatAgent['_id'][] }) => {
+const afterRemoveDepartment = async (options: {
+	department: AtLeast<ILivechatDepartment, '_id' | 'businessHourId'>;
+	agentsId: ILivechatAgent['_id'][];
+}) => {
 	if (!options?.department) {
 		cbLogger.warn('No department found in options', options);
 		return options;

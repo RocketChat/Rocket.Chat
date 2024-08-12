@@ -10,6 +10,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IRoomsModel, IChannelsWithNumberOfMessagesBetweenDate } from '@rocket.chat/model-typings';
 import { Subscriptions } from '@rocket.chat/models';
+import type { Updater } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
@@ -93,6 +94,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				sparse: true,
 			},
 			{ key: { t: 1, ts: 1 } },
+			{
+				key: {
+					'usersWaitingForE2EKeys.userId': 1,
+				},
+				partialFilterExpression: {
+					'usersWaitingForE2EKeys.userId': {
+						$exists: true,
+					},
+				},
+			},
 		];
 	}
 
@@ -403,18 +414,25 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	getChannelsWithNumberOfMessagesBetweenDateQuery({
+		types,
 		start,
 		end,
 		startOfLastWeek,
 		endOfLastWeek,
 		options,
 	}: {
+		types: Array<IRoom['t']>;
 		start: number;
 		end: number;
 		startOfLastWeek: number;
 		endOfLastWeek: number;
 		options?: any;
 	}) {
+		const typeMatch = {
+			$match: {
+				t: { $in: types },
+			},
+		};
 		const lookup = {
 			$lookup: {
 				from: 'rocketchat_analytics',
@@ -494,30 +512,32 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				diffFromLastWeek: { $subtract: ['$messages', '$lastWeekMessages'] },
 			},
 		};
-		const firstParams = [
-			lookup,
-			messagesProject,
-			messagesUnwind,
-			messagesGroup,
-			lastWeekMessagesUnwind,
-			lastWeekMessagesGroup,
-			presentationProject,
-		];
+		const firstParams = [typeMatch, lookup, messagesProject, messagesUnwind, messagesGroup];
+		const lastParams = [lastWeekMessagesUnwind, lastWeekMessagesGroup, presentationProject];
+
 		const sort = { $sort: options?.sort || { messages: -1 } };
-		const params: Exclude<Parameters<Collection<IRoom>['aggregate']>[0], undefined> = [...firstParams, sort];
+		const sortAndPaginationParams: Exclude<Parameters<Collection<IRoom>['aggregate']>[0], undefined> = [sort];
 
 		if (options?.offset) {
-			params.push({ $skip: options.offset });
+			sortAndPaginationParams.push({ $skip: options.offset });
 		}
 
 		if (options?.count) {
-			params.push({ $limit: options.count });
+			sortAndPaginationParams.push({ $limit: options.count });
+		}
+		const params: Exclude<Parameters<Collection<IRoom>['aggregate']>[0], undefined> = [...firstParams];
+
+		if (options?.sort) {
+			params.push(...lastParams, ...sortAndPaginationParams);
+		} else {
+			params.push(...sortAndPaginationParams, ...lastParams, sort);
 		}
 
 		return params;
 	}
 
-	findChannelsWithNumberOfMessagesBetweenDate(params: {
+	findChannelsByTypesWithNumberOfMessagesBetweenDate(params: {
+		types: Array<IRoom['t']>;
 		start: number;
 		end: number;
 		startOfLastWeek: number;
@@ -526,22 +546,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}): AggregationCursor<IChannelsWithNumberOfMessagesBetweenDate> {
 		const aggregationParams = this.getChannelsWithNumberOfMessagesBetweenDateQuery(params);
 		return this.col.aggregate<IChannelsWithNumberOfMessagesBetweenDate>(aggregationParams, {
-			allowDiskUse: true,
-			readPreference: readSecondaryPreferred(),
-		});
-	}
-
-	countChannelsWithNumberOfMessagesBetweenDate(params: {
-		start: number;
-		end: number;
-		startOfLastWeek: number;
-		endOfLastWeek: number;
-		options?: any;
-	}): AggregationCursor<{ total: number }> {
-		const aggregationParams = this.getChannelsWithNumberOfMessagesBetweenDateQuery(params);
-		aggregationParams.push({ $count: 'total' });
-
-		return this.col.aggregate<{ total: number }>(aggregationParams, {
 			allowDiskUse: true,
 			readPreference: readSecondaryPreferred(),
 		});
@@ -557,6 +561,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 					fname: name,
 				},
 			],
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneByJoinCodeAndId(joinCode: string, rid: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+		const query: Filter<IRoom> = {
+			_id: rid,
+			joinCode,
 		};
 
 		return this.findOne(query, options);
@@ -648,6 +661,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	setRoomNameById(roomId: IRoom['_id'], name: IRoom['name']): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { name } });
+	}
+
+	setSidepanelById(roomId: IRoom['_id'], sidepanel: IRoom['sidepanel']): Promise<UpdateResult> {
+		return this.updateOne({ _id: roomId }, { $set: { sidepanel } });
 	}
 
 	setFnameById(_id: IRoom['_id'], fname: IRoom['fname']): Promise<UpdateResult> {
@@ -870,6 +887,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	getIncMsgCountUpdateQuery(inc: number, roomUpdater: Updater<IRoom>): Updater<IRoom> {
+		return roomUpdater.inc('msgs', inc);
 	}
 
 	decreaseMessageCountById(_id: IRoom['_id'], count = 1) {
@@ -1451,6 +1472,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find({ createdOTR: true });
 	}
 
+	findByUsernamesOrUids(uids: IRoom['u']['_id'][], usernames: IRoom['u']['username'][]): FindCursor<IRoom> {
+		return this.find({ $or: [{ usernames: { $in: usernames } }, { uids: { $in: uids } }] });
+	}
+
+	findDMsByUids(uids: IRoom['u']['_id'][]): FindCursor<IRoom> {
+		return this.find({ uids: { $size: 2, $in: [uids] }, t: 'd' });
+	}
+
 	// UPDATE
 	addImportIds(_id: IRoom['_id'], importIds: string[]): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
@@ -1503,25 +1532,19 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	incMsgCountAndSetLastMessageById(
-		_id: IRoom['_id'],
-		inc = 1,
-		lastMessageTimestamp: NonNullable<IRoom['lm']>,
-		lastMessage: IRoom['lastMessage'],
-	): Promise<UpdateResult> {
-		const query: Filter<IRoom> = { _id };
+	setIncMsgCountAndSetLastMessageUpdateQuery(
+		inc: number,
+		lastMessage: IMessage,
+		shouldStoreLastMessage: boolean,
+		roomUpdater: Updater<IRoom>,
+	): Updater<IRoom> {
+		roomUpdater.inc('msgs', inc).set('lm', lastMessage.ts);
 
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				lm: lastMessageTimestamp,
-				...(lastMessage ? { lastMessage } : {}),
-			},
-			$inc: {
-				msgs: inc,
-			},
-		};
+		if (shouldStoreLastMessage) {
+			roomUpdater.set('lastMessage', lastMessage);
+		}
 
-		return this.updateOne(query, update);
+		return roomUpdater;
 	}
 
 	incUsersCountById(_id: IRoom['_id'], inc = 1): Promise<UpdateResult> {
@@ -1554,16 +1577,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	setLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage']): Promise<UpdateResult> {
-		const query: Filter<IRoom> = { _id };
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				lastMessage,
-			},
-		};
-
-		return this.updateOne(query, update);
+	getLastMessageUpdateQuery(lastMessage: IRoom['lastMessage'], roomUpdater: Updater<IRoom>): Updater<IRoom> {
+		return roomUpdater.set('lastMessage', lastMessage);
 	}
 
 	async resetLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage'] | null, msgCountDelta?: number): Promise<UpdateResult> {
@@ -1821,13 +1836,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	// 5
 	saveRetentionIgnoreThreadsById(_id: IRoom['_id'], value: boolean): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 
 		const update: UpdateFilter<IRoom> = {
-			[value === true ? '$set' : '$unset']: {
-				'retention.ignoreThreads': true,
+			$set: {
+				'retention.ignoreThreads': value === true,
 			},
 		};
 
@@ -1960,5 +1974,107 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	async getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]> {
+		return (
+			await this.col
+				.aggregate([
+					{ $match: { encrypted: true } },
+					{
+						$lookup: {
+							from: 'rocketchat_subscription',
+							localField: '_id',
+							foreignField: 'rid',
+							as: 'subs',
+						},
+					},
+					{
+						$unwind: '$subs',
+					},
+					{
+						$match: {
+							'subs.u._id': uid,
+							'subs.E2EKey': {
+								$exists: false,
+							},
+						},
+					},
+					{
+						$project: {
+							_id: 1,
+						},
+					},
+				])
+				.toArray()
+		).map(({ _id }) => _id);
+	}
+
+	addUserIdToE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
+			'_id': {
+				$in: roomIds,
+			},
+			'usersWaitingForE2EKeys.userId': { $ne: uid },
+			'encrypted': true,
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$push: {
+				usersWaitingForE2EKeys: {
+					$each: [
+						{
+							userId: uid,
+							ts: new Date(),
+						},
+					],
+					$slice: -50,
+				},
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	async removeUsersFromE2EEQueueByRoomId(roomId: IRoom['_id'], uids: IUser['_id'][]): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
+			'_id': roomId,
+			'usersWaitingForE2EKeys.userId': {
+				$in: uids,
+			},
+			'encrypted': true,
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				usersWaitingForE2EKeys: { userId: { $in: uids } },
+			},
+		};
+
+		await this.updateMany(query, update);
+
+		return this.updateMany(
+			{
+				'_id': roomId,
+				'usersWaitingForE2EKeys.0': { $exists: false },
+				'encrypted': true,
+			},
+			{ $unset: { usersWaitingForE2EKeys: 1 } },
+		);
+	}
+
+	async removeUserFromE2EEQueue(uid: IUser['_id']): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
+			'usersWaitingForE2EKeys.userId': uid,
+			'encrypted': true,
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				usersWaitingForE2EKeys: { userId: uid },
+			},
+		};
+
+		return this.updateMany(query, update);
 	}
 }

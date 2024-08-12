@@ -1,11 +1,10 @@
+import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { EnvironmentalVariableBridge } from '@rocket.chat/apps-engine/server/bridges/EnvironmentalVariableBridge';
-
-import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class AppEnvironmentalVariableBridge extends EnvironmentalVariableBridge {
 	allowed: Array<string>;
 
-	constructor(private readonly orch: AppServerOrchestrator) {
+	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 		this.allowed = ['NODE_ENV', 'ROOT_URL', 'INSTANCE_IP'];
 	}

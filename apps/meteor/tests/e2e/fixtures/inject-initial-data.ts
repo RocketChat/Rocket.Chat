@@ -7,7 +7,12 @@ import { Users } from './userStates';
 export default async function injectInitialData() {
 	const connection = await MongoClient.connect(constants.URL_MONGODB);
 
-	const usersFixtures = [createUserFixture(Users.user1), createUserFixture(Users.user2), createUserFixture(Users.user3)];
+	const usersFixtures = [
+		createUserFixture(Users.user1),
+		createUserFixture(Users.user2),
+		createUserFixture(Users.user3),
+		createUserFixture(Users.userE2EE),
+	];
 
 	await Promise.all(
 		usersFixtures.map((user) =>
@@ -55,6 +60,10 @@ export default async function injectInitialData() {
 			},
 			{
 				_id: 'API_Enable_Rate_Limiter_Dev',
+				value: false,
+			},
+			{
+				_id: 'Accounts_OAuth_Google',
 				value: false,
 			},
 		].map((setting) =>

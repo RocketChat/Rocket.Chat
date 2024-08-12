@@ -7,6 +7,8 @@ import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
 
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
+const sidepanelItemValues = ['channels', 'discussions'] as const;
+export type SidepanelItem = (typeof sidepanelItemValues)[number];
 
 export type RoomID = string;
 export type ChannelName = string;
@@ -94,8 +96,28 @@ export interface IRoom extends IRocketChatRecord {
 	/* @deprecated */
 	customFields?: Record<string, any>;
 
-	channel?: { _id: string };
+	usersWaitingForE2EKeys?: { userId: IUser['_id']; ts: Date }[];
+
+	sidepanel?: {
+		items: [SidepanelItem, SidepanelItem?];
+	};
 }
+
+export const isSidepanelItem = (item: any): item is SidepanelItem => {
+	return sidepanelItemValues.includes(item);
+};
+
+export const isValidSidepanel = (sidepanel: IRoom['sidepanel']) => {
+	if (!sidepanel?.items) {
+		return false;
+	}
+	return (
+		Array.isArray(sidepanel.items) &&
+		sidepanel.items.length &&
+		sidepanel.items.every(isSidepanelItem) &&
+		sidepanel.items.length === new Set(sidepanel.items).size
+	);
+};
 
 export const isRoomWithJoinCode = (room: Partial<IRoom>): room is IRoomWithJoinCode =>
 	'joinCodeRequired' in room && (room as any).joinCodeRequired === true;
@@ -129,6 +151,7 @@ export const isPrivateDiscussion = (room: Partial<IRoom>): room is IRoom => isDi
 export const isPublicDiscussion = (room: Partial<IRoom>): room is IRoom => isDiscussion(room) && room.t === 'c';
 
 export const isPublicRoom = (room: Partial<IRoom>): room is IRoom => room.t === 'c';
+export const isPrivateRoom = (room: Partial<IRoom>): room is IRoom => room.t === 'p';
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';
@@ -149,7 +172,7 @@ export enum OmnichannelSourceType {
 	OTHER = 'other', // catch-all source type
 }
 
-export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
+export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast'> {
 	t: 'l' | 'v';
 	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity'> & {
 		lastMessageTs?: Date;
@@ -274,9 +297,12 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 			total: number;
 			avg: number;
 			ft: number;
+			fd?: number;
 		};
 		reaction?: {
+			tt: number;
 			ft: number;
+			fd?: number;
 		};
 	};
 
@@ -330,7 +356,7 @@ export const isOmnichannelRoom = (room: Pick<IRoom, 't'>): room is IOmnichannelR
 
 export const isVoipRoom = (room: IRoom): room is IVoipRoom & IRoom => room.t === 'v';
 
-export const isOmnichannelRoomFromAppSource = (room: IRoom): room is IOmnichannelRoomFromAppSource => {
+export const isOmnichannelRoomFromAppSource = (room: IOmnichannelRoom): room is IOmnichannelRoomFromAppSource => {
 	if (!isOmnichannelRoom(room)) {
 		return false;
 	}

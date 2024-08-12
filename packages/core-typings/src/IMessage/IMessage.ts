@@ -13,11 +13,11 @@ import type { IUser } from '../IUser';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 
-type MessageUrl = {
+export type MessageUrl = {
 	url: string;
 	source?: string;
 	meta: Record<string, string>;
-	headers?: { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string };
+	headers?: { contentLength?: string; contentType?: string };
 	ignoreParse?: boolean;
 	parsedUrl?: Pick<UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
 };
@@ -92,6 +92,7 @@ export type MessageTypesValues =
 	| 'command'
 	| 'videoconf'
 	| 'message_pinned'
+	| 'message_pinned_e2e'
 	| 'new-moderator'
 	| 'moderator-removed'
 	| 'new-owner'
@@ -124,7 +125,10 @@ export type MessageMention = {
 	_id: string;
 	name?: string;
 	username?: string;
+	fname?: string; // incase of channel mentions
 };
+
+export interface IMessageCustomFields {}
 
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
@@ -218,6 +222,13 @@ export interface IMessage extends IRocketChatRecord {
 		definedBy: Pick<IUser, '_id' | 'username'>;
 		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>;
 	};
+
+	customFields?: IMessageCustomFields;
+
+	content?: {
+		algorithm: string; // 'rc.v1.aes-sha2'
+		ciphertext: string; // Encrypted subset JSON of IMessage
+	};
 }
 
 export type MessageSystem = {
@@ -287,9 +298,6 @@ export interface IMessageReactionsNormalized extends IMessage {
 	};
 }
 
-export const isMessageReactionsNormalized = (message: IMessage): message is IMessageReactionsNormalized =>
-	Boolean('reactions' in message && message.reactions && message.reactions[0] && 'names' in message.reactions[0]);
-
 export interface IOmnichannelSystemMessage extends IMessage {
 	navigation?: {
 		page: {
@@ -357,6 +365,10 @@ export type IE2EEMessage = IMessage & {
 	e2e: 'pending' | 'done';
 };
 
+export type IE2EEPinnedMessage = IMessage & {
+	t: 'message_pinned_e2e';
+};
+
 export interface IOTRMessage extends IMessage {
 	t: 'otr';
 	otrAck?: string;
@@ -371,6 +383,7 @@ export type IVideoConfMessage = IMessage & {
 };
 
 export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
+export const isE2EEPinnedMessage = (message: IMessage): message is IE2EEPinnedMessage => message.t === 'message_pinned_e2e';
 export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr';
 export const isOTRAckMessage = (message: IMessage): message is IOTRAckMessage => message.t === 'otr-ack';
 export const isVideoConfMessage = (message: IMessage): message is IVideoConfMessage => message.t === 'videoconf';
@@ -388,3 +401,9 @@ export type IMessageWithPendingFileImport = IMessage & {
 		downloaded?: boolean;
 	};
 };
+
+export interface IMessageFromVisitor extends IMessage {
+	token: string;
+}
+
+export const isMessageFromVisitor = (message: IMessage): message is IMessageFromVisitor => 'token' in message;

@@ -7,6 +7,7 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { OAuthEEManager } from '../lib/oauth/Manager';
+import { syncUserRoles } from '../lib/syncUserRoles';
 
 interface IOAuthUserService {
 	serviceName: string;
@@ -21,8 +22,8 @@ interface IOAuthUserIdentity {
 }
 
 interface IOAuthSettings {
-	mapChannels: string;
-	mergeRoles: string;
+	mapChannels: boolean;
+	mergeRoles: boolean;
 	rolesToSync: string;
 	rolesClaim: string;
 	groupsClaim: string;
@@ -34,13 +35,13 @@ const logger = new Logger('EECustomOAuth');
 
 function getOAuthSettings(serviceName: string): IOAuthSettings {
 	return {
-		mapChannels: settings.get(`Accounts_OAuth_Custom-${serviceName}-map_channels`) as string,
-		mergeRoles: settings.get(`Accounts_OAuth_Custom-${serviceName}-merge_roles`) as string,
-		rolesToSync: settings.get(`Accounts_OAuth_Custom-${serviceName}-roles_to_sync`) as string,
-		rolesClaim: settings.get(`Accounts_OAuth_Custom-${serviceName}-roles_claim`) as string,
-		groupsClaim: settings.get(`Accounts_OAuth_Custom-${serviceName}-groups_claim`) as string,
-		channelsAdmin: settings.get(`Accounts_OAuth_Custom-${serviceName}-channels_admin`) as string,
-		channelsMap: settings.get(`Accounts_OAuth_Custom-${serviceName}-groups_channel_map`) as string,
+		mapChannels: settings.get<boolean>(`Accounts_OAuth_Custom-${serviceName}-map_channels`),
+		mergeRoles: settings.get<boolean>(`Accounts_OAuth_Custom-${serviceName}-merge_roles`),
+		rolesToSync: settings.get<string>(`Accounts_OAuth_Custom-${serviceName}-roles_to_sync`),
+		rolesClaim: settings.get<string>(`Accounts_OAuth_Custom-${serviceName}-roles_claim`),
+		groupsClaim: settings.get<string>(`Accounts_OAuth_Custom-${serviceName}-groups_claim`),
+		channelsAdmin: settings.get<string>(`Accounts_OAuth_Custom-${serviceName}-channels_admin`),
+		channelsMap: settings.get<string>(`Accounts_OAuth_Custom-${serviceName}-groups_channel_map`),
 	};
 }
 
@@ -86,8 +87,13 @@ await License.onLicense('oauth-enterprise', () => {
 		if (settings.mergeRoles) {
 			const rolesFromSSO = await OAuthEEManager.mapRolesFromSSO(auth.identity, settings.rolesClaim);
 			const mappedRoles = (await Roles.findInIdsOrNames(rolesFromSSO).toArray()).map((role) => role._id);
+			const rolesToSync = settings.rolesToSync.split(',').map((role) => role.trim());
 
-			auth.user.roles = mappedRoles;
+			const allowedRoles = (await Roles.findInIdsOrNames(rolesToSync).toArray()).map((role) => role._id);
+
+			await syncUserRoles(auth.user._id, mappedRoles, {
+				allowedRoles,
+			});
 		}
 	});
 });

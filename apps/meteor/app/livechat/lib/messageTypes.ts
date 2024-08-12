@@ -108,19 +108,25 @@ MessageTypes.registerType({
 
 MessageTypes.registerType({
 	id: 'livechat_webrtc_video_call',
-	render(message) {
+	message: 'room_changed_type',
+	data(message) {
 		if (message.msg === 'ended' && message.webRtcCallEndTs && message.ts) {
-			return t('WebRTC_call_ended_message', {
-				callDuration: formatDistance(new Date(message.webRtcCallEndTs), new Date(message.ts)),
-				endTime: moment(message.webRtcCallEndTs).format('h:mm A'),
-			});
+			return {
+				message: t('WebRTC_call_ended_message', {
+					callDuration: formatDistance(new Date(message.webRtcCallEndTs), new Date(message.ts)),
+					endTime: moment(message.webRtcCallEndTs).format('h:mm A'),
+				}),
+			};
 		}
 		if (message.msg === 'declined' && message.webRtcCallEndTs) {
-			return t('WebRTC_call_declined_message');
+			return {
+				message: t('WebRTC_call_declined_message'),
+			};
 		}
-		return escapeHTML(message.msg);
+		return {
+			message: escapeHTML(message.msg),
+		};
 	},
-	message: 'room_changed_type',
 });
 
 MessageTypes.registerType({

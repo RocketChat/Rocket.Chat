@@ -110,9 +110,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button mie={4} onClick={close}>
-						{t('Cancel')}
-					</Button>
+					<Button onClick={close}>{t('Cancel')}</Button>
 					<Button primary onClick={handleSave} disabled={name === ''}>
 						{t('Save')}
 					</Button>

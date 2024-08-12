@@ -6,7 +6,7 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
-import UserInfo from '../../../../components/UserInfo';
+import { UserInfoAction } from '../../../../components/UserInfo';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 type UserInfoActionsProps = {
@@ -45,17 +45,13 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 	// TODO: sanitize Action type to avoid any
 	const actions = useMemo(() => {
 		const mapAction = ([key, { content, icon, onClick }]: any): ReactElement => (
-			<UserInfo.Action key={key} title={content} label={content} onClick={onClick} icon={icon} />
+			<UserInfoAction key={key} title={content} label={content} onClick={onClick} icon={icon} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
 
-	return (
-		<ButtonGroup mi='neg-x4' flexShrink={0} flexWrap='nowrap' withTruncatedText justifyContent='center'>
-			{actions}
-		</ButtonGroup>
-	);
+	return <ButtonGroup align='center'>{actions}</ButtonGroup>;
 };
 
 export default UserInfoActions;

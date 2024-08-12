@@ -1,13 +1,12 @@
 import { render } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-import '@testing-library/jest-dom';
 import { invalidFile, validFile } from '../ChatTranscript.fixtures';
 import { Files } from './Files';
 
 jest.mock('@react-pdf/renderer', () => ({
 	StyleSheet: { create: () => ({ style: '' }) },
-	Image: () => <img src='' />,
+	Image: () => <img src='' alt='' />,
 	Text: ({ children }: { children: ReactNode }) => <div>{children}</div>,
 	View: ({ children }: { children: ReactNode }) => <div>{children}</div>,
 }));

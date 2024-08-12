@@ -1,5 +1,6 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { hashQueryKey, useQuery } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
@@ -17,7 +18,6 @@ import {
 } from '../../../components/GenericTable';
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
-import UserAvatar from '../../../components/avatar/UserAvatar';
 import AddManager from './AddManager';
 import RemoveManagerButton from './RemoveManagerButton';
 
@@ -80,7 +80,7 @@ const ManagersTable = () => {
 	return (
 		<>
 			<AddManager reload={refetch} />
-			{((isSuccess && data?.users.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setText(text)} />}
+			{((isSuccess && data?.users.length > 0) || queryHasChanged) && <FilterByText onChange={setText} />}
 			{isLoading && (
 				<GenericTable aria-busy>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -94,15 +94,15 @@ const ManagersTable = () => {
 					icon='shield'
 					title={t('No_managers_yet')}
 					description={t('No_managers_yet_description')}
-					linkHref='https://go.rocket.chat/omnichannel-docs'
+					linkHref='https://go.rocket.chat/i/omnichannel-docs'
 					linkText={t('Learn_more_about_managers')}
 				/>
 			)}
 			{isSuccess && data.users.length > 0 && (
 				<>
-					<GenericTable aria-busy={text !== debouncedText}>
+					<GenericTable aria-busy={text !== debouncedText} aria-label={t('Managers')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody data-qa-id='GenericTableManagerInfoBody'>
+						<GenericTableBody>
 							{data.users.map((user) => (
 								<GenericTableRow key={user._id} tabIndex={0} qa-user-id={user._id}>
 									<GenericTableCell withTruncatedText>

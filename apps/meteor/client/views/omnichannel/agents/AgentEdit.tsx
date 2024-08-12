@@ -12,6 +12,7 @@ import {
 	Select,
 	ContextualbarFooter,
 	ButtonGroup,
+	CheckOption,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
@@ -28,7 +29,7 @@ import {
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
 } from '../../../components/Contextualbar';
-import UserInfo from '../../../components/UserInfo';
+import { UserInfoAvatar } from '../../../components/UserInfo';
 import { MaxChatsPerAgent } from '../additionalForms';
 
 type AgentEditProps = {
@@ -122,7 +123,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 					<form id={formId} onSubmit={handleSubmit(handleSave)}>
 						{username && (
 							<Box display='flex' flexDirection='column' alignItems='center'>
-								<UserInfo.Avatar data-qa-id='agent-edit-avatar' username={username} />
+								<UserInfoAvatar data-qa-id='agent-edit-avatar' username={username} />
 							</Box>
 						)}
 						<FieldGroup>
@@ -185,6 +186,9 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 												options={departmentsOptions}
 												{...field}
 												placeholder={t('Select_an_option')}
+												renderItem={({ label, ...props }) => (
+													<CheckOption {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />
+												)}
 											/>
 										)}
 									/>

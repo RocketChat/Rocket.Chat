@@ -86,8 +86,6 @@
 	font-size: smaller;
 
 	& a {
-		text-decoration: underline;
-
 		font-weight: bold !important;
 	}
 }
@@ -605,7 +603,7 @@
 	overflow: hidden;
 	flex-direction: column;
 
-	margin: 5px 10px 0;
+	margin: 8px 10px 0;
 
 	transition: transform 0.4s ease, visibility 0.3s ease, opacity 0.3s ease;
 	transform: translateY(-10px);
@@ -779,7 +777,7 @@
 	}
 
 	& .start {
-		margin-top: 12px;
+		margin-top: 44px;
 
 		text-align: center;
 
@@ -795,12 +793,6 @@
 
 	& .editing .body {
 		border-radius: var(--border-radius);
-	}
-
-	&.has-leader {
-		& .wrapper {
-			padding-top: 57px;
-		}
 	}
 }
 

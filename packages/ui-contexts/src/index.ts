@@ -1,4 +1,5 @@
 export { AttachmentContext, AttachmentContextValue } from './AttachmentContext';
+export { AuthenticationContextValue, AuthenticationContext, LoginService } from './AuthenticationContext';
 export { AuthorizationContext, AuthorizationContextValue } from './AuthorizationContext';
 export { AvatarUrlContext, AvatarUrlContextValue } from './AvatarUrlContext';
 export { ConnectionStatusContext, ConnectionStatusContextValue } from './ConnectionStatusContext';
@@ -12,7 +13,7 @@ export { SettingsContext, SettingsContextValue, SettingsContextQuery } from './S
 export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessagesContext';
 export { TooltipContext, TooltipContextValue } from './TooltipContext';
 export { TranslationContext, TranslationContextValue } from './TranslationContext';
-export { UserContext, UserContextValue, LoginService } from './UserContext';
+export { UserContext, UserContextValue } from './UserContext';
 export { DeviceContext, Device, IExperimentalHTMLAudioElement, DeviceContextValue } from './DeviceContext';
 export { ActionManagerContext, IActionManager } from './ActionManagerContext';
 
@@ -29,6 +30,7 @@ export { useCurrentModal } from './hooks/useCurrentModal';
 export { useCurrentRoutePath } from './hooks/useCurrentRoutePath';
 export { useCustomSound } from './hooks/useCustomSound';
 export { useEndpoint } from './hooks/useEndpoint';
+export { useGoToRoom } from './hooks/useGoToRoom';
 export type { EndpointFunction } from './hooks/useEndpoint';
 export { useIsPrivilegedSettingsContext } from './hooks/useIsPrivilegedSettingsContext';
 export { useIsSettingsContextLoading } from './hooks/useIsSettingsContextLoading';
@@ -38,6 +40,7 @@ export { useLayout } from './hooks/useLayout';
 export { useLayoutContextualBarExpanded } from './hooks/useLayoutContextualBarExpanded';
 export { useLayoutContextualBarPosition } from './hooks/useLayoutContextualBarPosition';
 export { useLayoutSizes } from './hooks/useLayoutSizes';
+export { useLayoutHiddenActions } from './hooks/useLayoutHiddenActions';
 export { useLoadLanguage } from './hooks/useLoadLanguage';
 export { useLoginWithPassword } from './hooks/useLoginWithPassword';
 export { useLoginServices } from './hooks/useLoginServices';
@@ -89,21 +92,6 @@ export { useSetOutputMediaDevice } from './hooks/useSetOutputMediaDevice';
 export { useSetInputMediaDevice } from './hooks/useSetInputMediaDevice';
 export { useAccountsCustomFields } from './hooks/useAccountsCustomFields';
 
-export {
-	ServerMethods,
-	ServerMethodName,
-	ServerMethodParameters,
-	ServerMethodReturn,
-	ServerMethodFunction,
-} from '@rocket.chat/ddp-client/src/types/methods';
-export {
-	StreamerEvents,
-	StreamNames,
-	StreamKeys,
-	StreamerConfigs,
-	StreamerConfig,
-	StreamerCallbackArgs,
-} from '@rocket.chat/ddp-client/src/types/streams';
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';
 export { Fields } from './UserContext';

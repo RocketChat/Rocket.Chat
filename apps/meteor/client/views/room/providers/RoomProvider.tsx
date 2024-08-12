@@ -17,7 +17,10 @@ import { useRoomRolesManagement } from '../body/hooks/useRoomRolesManagement';
 import { RoomContext } from '../contexts/RoomContext';
 import ComposerPopupProvider from './ComposerPopupProvider';
 import RoomToolboxProvider from './RoomToolboxProvider';
+import UserCardProvider from './UserCardProvider';
+import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
 import { useRoomQuery } from './hooks/useRoomQuery';
+import { useUsersNameChanged } from './hooks/useUsersNameChanged';
 
 type RoomProviderProps = {
 	children: ReactNode;
@@ -38,6 +41,10 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [isSuccess, room, router]);
 
 	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
+
+	useRedirectOnSettingsChanged(subscriptionQuery.data);
+
+	useUsersNameChanged();
 
 	const pseudoRoom = useMemo(() => {
 		if (!room) {
@@ -93,14 +100,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 			return;
 		}
 
-		UserAction.addStream(rid);
-		return (): void => {
-			try {
-				UserAction.cancel(rid);
-			} catch (error) {
-				// Do nothing
-			}
-		};
+		return UserAction.addStream(rid);
 	}, [rid, subscribed]);
 
 	if (!pseudoRoom) {
@@ -111,7 +111,9 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		<RoomContext.Provider value={context}>
 			<RoomToolboxProvider>
 				<ImageGalleryProvider>
-					<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+					<UserCardProvider>
+						<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+					</UserCardProvider>
 				</ImageGalleryProvider>
 			</RoomToolboxProvider>
 		</RoomContext.Provider>

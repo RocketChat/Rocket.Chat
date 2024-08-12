@@ -123,7 +123,7 @@ const checkNameForStream = (name) => name && !names.has(name) && name.startsWith
 
 const ruleIds = {};
 
-const callback = (msg, name) => (reply, input) => {
+const callback = (msg, name) => async (reply, input) => {
 	if (reply.allowed === false) {
 		rateLimiterLog({ msg, reply, input });
 		metrics.ddpRateLimitExceeded.inc({
@@ -136,7 +136,7 @@ const callback = (msg, name) => (reply, input) => {
 		});
 		// sleep before sending the error to slow down next requests
 		if (slowDownRate > 0 && reply.numInvocationsExceeded) {
-			Promise.await(sleep(slowDownRate * reply.numInvocationsExceeded));
+			await sleep(slowDownRate * reply.numInvocationsExceeded);
 		}
 		// } else {
 		// 	console.log('DDP RATE LIMIT:', message);

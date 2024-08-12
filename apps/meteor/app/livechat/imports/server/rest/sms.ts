@@ -17,6 +17,7 @@ import { Meteor } from 'meteor/meteor';
 import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
 import { API } from '../../../../api/server';
 import { FileUpload } from '../../../../file-upload/server';
+import { checkUrlForSsrf } from '../../../../lib/server/functions/checkUrlForSsrf';
 import { settings } from '../../../../settings/server';
 import type { ILivechatMessage } from '../../../server/lib/LivechatTyped';
 import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
@@ -24,7 +25,12 @@ import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
 const logger = new Logger('SMS');
 
 const getUploadFile = async (details: Omit<IUpload, '_id'>, fileUrl: string) => {
-	const response = await fetch(fileUrl);
+	const isSsrfSafe = await checkUrlForSsrf(fileUrl);
+	if (!isSsrfSafe) {
+		throw new Meteor.Error('error-invalid-url', 'Invalid URL');
+	}
+
+	const response = await fetch(fileUrl, { redirect: 'error' });
 
 	const content = Buffer.from(await response.arrayBuffer());
 
@@ -67,8 +73,13 @@ const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
 		data.department = targetDepartment;
 	}
 
-	const id = await LivechatTyped.registerGuest(data);
-	return LivechatVisitors.findOneEnabledById(id);
+	const livechatVisitor = await LivechatTyped.registerGuest(data);
+
+	if (!livechatVisitor) {
+		throw new Meteor.Error('error-invalid-visitor', 'Invalid visitor');
+	}
+
+	return livechatVisitor;
 };
 
 const normalizeLocationSharing = (payload: ServiceData) => {
@@ -104,12 +115,6 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			return API.v1.success(SMSService.error(new Error('Invalid visitor')));
 		}
 
-		const { token } = visitor;
-		const room = await LivechatRooms.findOneOpenByVisitorTokenAndDepartmentIdAndSource(token, targetDepartment, OmnichannelSourceType.SMS);
-		const roomExists = !!room;
-		const location = normalizeLocationSharing(sms);
-		const rid = room?._id || Random.id();
-
 		const roomInfo = {
 			sms: {
 				from: sms.to,
@@ -120,10 +125,15 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			},
 		};
 
-		// create an empty room first place, so attachments have a place to live
-		if (!roomExists) {
-			await LivechatTyped.getRoom(visitor, { rid, token, msg: '' }, roomInfo, undefined);
-		}
+		const { token } = visitor;
+		const room =
+			(await LivechatRooms.findOneOpenByVisitorTokenAndDepartmentIdAndSource(token, targetDepartment, OmnichannelSourceType.SMS)) ??
+			(await LivechatTyped.createRoom({
+				visitor,
+				roomInfo,
+			}));
+		const location = normalizeLocationSharing(sms);
+		const rid = room?._id;
 
 		let file: ILivechatMessage['file'];
 		const attachments: (MessageAttachment | undefined)[] = [];

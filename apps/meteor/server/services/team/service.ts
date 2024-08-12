@@ -32,11 +32,15 @@ import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { checkUsernameAvailability } from '../../../app/lib/server/functions/checkUsernameAvailability';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { settings } from '../../../app/settings/server';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
 
-	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
+	async create(
+		uid: string,
+		{ team, room = { name: team.name, extraData: {} }, members, owner, sidepanel }: ITeamCreateParams,
+	): Promise<ITeam> {
 		if (!(await checkUsernameAvailability(team.name))) {
 			throw new Error('team-name-already-exists');
 		}
@@ -119,6 +123,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 						teamId,
 						teamMain: true,
 					},
+					sidepanel,
 				};
 
 				const createdRoom = await Room.create(owner || uid, newRoom);
@@ -472,11 +477,21 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		room.teamDefault = isDefault;
 		await Rooms.setTeamDefaultById(rid, isDefault);
 
-		if (room.teamDefault) {
-			const teamMembers = await this.members(uid, room.teamId, true, undefined, undefined);
+		if (isDefault) {
+			const maxNumberOfAutoJoinMembers = settings.get<number>('API_User_Limit');
+			const teamMembers = await this.members(
+				uid,
+				room.teamId,
+				true,
+				{ offset: 0, count: maxNumberOfAutoJoinMembers },
+				// We should not get the owner of the room, since he is already a member
+				{ _id: { $ne: room.u._id } },
+			);
 
 			for await (const m of teamMembers.records) {
-				await addUserToRoom(room._id, m.user, user);
+				if (await addUserToRoom(room._id, m.user, user)) {
+					room.usersCount++;
+				}
 			}
 		}
 
@@ -707,7 +722,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		for await (const member of members) {
 			const user = (await Users.findOneById(member.userId, { projection: { username: 1 } })) as Pick<IUser, '_id' | 'username'>;
-			await addUserToRoom(team.roomId, user, createdBy, false);
+			await addUserToRoom(team.roomId, user, createdBy, { skipSystemMessage: false });
 
 			if (member.roles) {
 				await this.addRolesToMember(teamId, member.userId, member.roles);
@@ -760,7 +775,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const usersToRemove = await Users.findByIds(membersIds, {
 			projection: { _id: 1, username: 1 },
 		}).toArray();
-		const byUser = (await Users.findOneById(uid, { projection: { _id: 1, username: 1 } })) as Pick<IUser, '_id' | 'username'>;
+		const byUser = await Users.findOneById(uid);
 
 		for await (const member of members) {
 			if (!member.userId) {
@@ -791,7 +806,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				await removeUserFromRoom(
 					team.roomId,
 					removedUser,
-					uid !== member.userId
+					uid !== member.userId && byUser
 						? {
 								byUser,
 						  }
@@ -815,7 +830,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					return;
 				}
 
-				await addUserToRoom(team.roomId, user, inviter, false);
+				await addUserToRoom(team.roomId, user, inviter, { skipSystemMessage: false });
 			}),
 		);
 	}
@@ -966,7 +981,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			// at this point, users are already part of the team so we won't check for membership
 			for await (const user of users) {
 				// add each user to the default room
-				await addUserToRoom(room._id, user, inviter, false);
+				await addUserToRoom(room._id, user, inviter, { skipSystemMessage: false });
 			}
 		});
 	}
