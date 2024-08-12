@@ -761,6 +761,8 @@ describe('[Rooms]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-invalid-file-type');
 				});
+
+			await updateSetting('E2E_Enable_Encrypt_Files', true);
 		});
 
 		it('should fail encrypted file upload on blacklisted application/octet-stream media type', async () => {
