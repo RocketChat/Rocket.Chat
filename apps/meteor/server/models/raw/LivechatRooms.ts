@@ -1983,21 +1983,10 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return updater;
 	}
 
-	setNotResponseByRoomId(roomId: string) {
-		return this.updateOne(
-			{
-				_id: roomId,
-				t: 'l',
-			},
-			{
-				$set: {
-					waitingResponse: true,
-				},
-				$unset: {
-					responseBy: 1,
-				},
-			},
-		);
+	getNotResponseByRoomIdUpdateQuery(updater: Updater<IOmnichannelRoom> = this.getUpdater()) {
+		updater.set('waitingResponse', true);
+		updater.unset('responseBy');
+		return updater;
 	}
 
 	getAgentLastMessageTsUpdateQuery(updater: Updater<IOmnichannelRoom> = this.getUpdater()) {
