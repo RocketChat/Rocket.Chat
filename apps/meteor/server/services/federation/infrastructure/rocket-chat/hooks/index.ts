@@ -274,5 +274,7 @@ export class FederationHooks {
 		callbacks.remove('afterSaveMessage', 'federation-v2-after-room-message-updated');
 		callbacks.remove('afterSaveMessage', 'federation-v2-after-room-message-sent');
 		callbacks.remove('afterSaveMessage', 'federation-v2-after-room-message-sent');
+		callbacks.remove('afterRoomNameChange', 'federation-v2-after-room-name-changed');
+		callbacks.remove('afterRoomTopicChange', 'federation-v2-after-room-topic-changed');
 	}
 }
