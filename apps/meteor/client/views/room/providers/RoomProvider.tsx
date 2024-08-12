@@ -9,10 +9,10 @@ import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { UserAction } from '../../../../app/ui/client/lib/UserAction';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
+import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
-import { useTeamInfo } from '../Header/ParentTeam';
 import RoomNotFound from '../RoomNotFound';
 import RoomSkeleton from '../RoomSkeleton';
 import { useRoomRolesManagement } from '../body/hooks/useRoomRolesManagement';
@@ -21,7 +21,6 @@ import ComposerPopupProvider from './ComposerPopupProvider';
 import RoomToolboxProvider from './RoomToolboxProvider';
 import UserCardProvider from './UserCardProvider';
 import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
-import { useRoomQuery } from './hooks/useRoomQuery';
 import { useUsersNameChanged } from './hooks/useUsersNameChanged';
 
 type RoomProviderProps = {
@@ -32,16 +31,15 @@ type RoomProviderProps = {
 const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useRoomRolesManagement(rid);
 
-	const { data: room, isSuccess } = useRoomQuery(rid);
-	const teamResult = useTeamInfo(room?.teamId);
+	const { data, isSuccess } = useRoomInfoEndpoint(rid);
 
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
 	const router = useRouter();
 	useEffect(() => {
-		if (isSuccess && !room) {
+		if (isSuccess && !data.room) {
 			router.navigate('/home');
 		}
-	}, [isSuccess, room, router]);
+	}, [isSuccess, data?.room, router]);
 
 	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
 
@@ -50,17 +48,17 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useUsersNameChanged();
 
 	const pseudoRoom = useMemo(() => {
-		if (!room) {
+		if (!data?.room) {
 			return null;
 		}
 
 		return {
 			...subscriptionQuery.data,
-			...room,
-			name: roomCoordinator.getRoomName(room.t, room),
-			federationOriginalName: room.name,
+			...data.room,
+			name: roomCoordinator.getRoomName(data.room.t, data.room),
+			federationOriginalName: data.room.name,
 		};
-	}, [room, subscriptionQuery.data]);
+	}, [data?.room, subscriptionQuery.data]);
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useReactiveValue(
 		useCallback(() => {
@@ -89,34 +87,43 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		};
 	}, [hasMoreNextMessages, hasMorePreviousMessages, isLoadingMoreMessages, pseudoRoom, rid, subscriptionQuery.data]);
 
-	const isNewNavigationEnabled = useFeaturePreview('newNavigation');
+	const isSidepanelFeatureEnabled = useFeaturePreview('sidepanelNavigation');
 
 	useEffect(() => {
-		if (!isNewNavigationEnabled) {
+		if (!isSidepanelFeatureEnabled) {
 			RoomManager.open(rid);
 			return (): void => {
 				RoomManager.back(rid);
 			};
 		}
 
-		if (room?.teamId && !room?.teamMain) {
-			if (teamResult.isSuccess) {
-				RoomManager.openSecondLevel(teamResult.data.teamInfo.roomId, rid);
+		if (isSuccess && data) {
+			if (data.room?.prid && data.parent?.sidepanel?.items.includes('discussions')) {
+				RoomManager.openSecondLevel(data.parent._id, rid);
+			}
+			if (data.team?.roomId && !data.room?.teamMain && data.parent?.sidepanel?.items.includes('channels')) {
+				RoomManager.openSecondLevel(data.team.roomId, rid);
 			}
 		}
 
-		if (room?.prid) {
-			RoomManager.openSecondLevel(room?.prid, rid);
-		}
-
-		if ((!room?.teamId || room?.teamMain) && !room?.prid) {
+		if ((!data?.room?.teamId || data?.room?.teamMain) && !data?.room?.prid) {
 			RoomManager.open(rid);
 		}
 
 		return (): void => {
 			RoomManager.back(rid);
 		};
-	}, [isNewNavigationEnabled, rid, room?._id, room?.prid, room?.teamId, room?.teamMain, teamResult, teamResult.isSuccess]);
+	}, [
+		isSidepanelFeatureEnabled,
+		rid,
+		data?.room?.prid,
+		data?.room?.teamId,
+		data?.room?.teamMain,
+		isSuccess,
+		data?.parent,
+		data?.team?.roomId,
+		data,
+	]);
 
 	const subscribed = !!subscriptionQuery.data;
 
@@ -129,7 +136,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [rid, subscribed]);
 
 	if (!pseudoRoom) {
-		return isSuccess && !room ? <RoomNotFound /> : <RoomSkeleton />;
+		return isSuccess && !data.room ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	return (
