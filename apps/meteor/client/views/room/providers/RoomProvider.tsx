@@ -97,17 +97,18 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 			};
 		}
 
-		if (isSuccess && data) {
-			if (data.room?.prid && data.parent?.sidepanel?.items.includes('discussions')) {
-				RoomManager.openSecondLevel(data.parent._id, rid);
+		if (isSuccess) {
+			// open team's dicsussion
+			if (data.room?.prid) {
+				data.parent?.sidepanel?.items.includes('discussions') ? RoomManager.openSecondLevel(data.parent._id, rid) : RoomManager.open(rid);
 			}
-			if (data.team?.roomId && !data.room?.teamMain && data.parent?.sidepanel?.items.includes('channels')) {
-				RoomManager.openSecondLevel(data.team.roomId, rid);
+			// open team's channel
+			if (data.team?.roomId && !data.room?.teamMain) {
+				data.parent?.sidepanel?.items.includes('channels') ? RoomManager.openSecondLevel(data.team.roomId, rid) : RoomManager.open(rid);
 			}
-		}
-
-		if ((!data?.room?.teamId || data?.room?.teamMain) && !data?.room?.prid) {
-			RoomManager.open(rid);
+			if ((!data?.room?.teamId || data?.room?.teamMain) && !data?.room?.prid) {
+				RoomManager.open(rid);
+			}
 		}
 
 		return (): void => {
