@@ -212,7 +212,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		responseBy: IOmnichannelRoom['responseBy'],
 		updater?: Updater<IOmnichannelRoom>,
 	): Updater<IOmnichannelRoom>;
-	setNotResponseByRoomId(roomId: string): Promise<UpdateResult>;
+	getNotResponseByRoomIdUpdateQuery(updater: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	getAgentLastMessageTsUpdateQuery(updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	getAnalyticsUpdateQueryByRoomId(
 		room: IOmnichannelRoom,
@@ -252,6 +252,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	changeVisitorByRoomId(roomId: string, visitor: { _id: string; username: string; token: string }): Promise<UpdateResult>;
 	unarchiveOneById(roomId: string): Promise<UpdateResult>;
 	markVisitorActiveForPeriod(rid: string, period: string): Promise<UpdateResult>;
+	getVisitorActiveForPeriodUpdateQuery(period: string, updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	getMACStatisticsForPeriod(period: string): Promise<MACStats[]>;
 	getMACStatisticsBetweenDates(start: Date, end: Date): Promise<MACStats[]>;
 }
