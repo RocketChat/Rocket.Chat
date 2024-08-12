@@ -5,7 +5,7 @@ import { callbacks } from '../../../../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../../../lib/callbacks/afterRemoveFromRoomCallback';
 import type { FederationRoomServiceSender } from '../../../application/room/sender/RoomServiceSender';
-import { verifyFederationReady } from '../../../utils';
+import { isFederationEnabled, verifyFederationReady } from '../../../utils';
 
 export class FederationHooks {
 	public static afterUserLeaveRoom(callback: (user: IUser, room: IRoom) => Promise<void>): void {
@@ -186,6 +186,10 @@ export class FederationHooks {
 
 	public static async afterRoomRoleChanged(federationRoomService: FederationRoomServiceSender, data?: Record<string, any>) {
 		if (!data) {
+			return;
+		}
+
+		if (!isFederationEnabled()) {
 			return;
 		}
 
