@@ -1,4 +1,4 @@
-import { Media } from '@rocket.chat/core-services';
+import { Media, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
@@ -410,7 +410,22 @@ API.v1.addRoute(
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
-			return API.v1.success({ room: (await Rooms.findOneByIdOrName(room._id, { projection: fields })) ?? undefined });
+			const team = room.teamId && (await Team.getOneById(room.teamId, { projection: { name: 1, roomId: 1, type: 1 } }));
+
+			const teamParentRoom =
+				team !== '' &&
+				team?.roomId &&
+				!room.teamMain &&
+				(await Rooms.findOneById(room.prid || team?.roomId, { projection: { name: 1, fname: 1, t: 1, sidepanel: 1 } }));
+
+			const parent = room.prid && (await Rooms.findOneById(room.prid, { projection: { name: 1, fname: 1, t: 1, sidepanel: 1 } }));
+
+			return API.v1.success({
+				room: (await Rooms.findOneById(room._id, { projection: fields })) ?? undefined,
+				...(team && { team }),
+				...(parent && { parent }),
+				...(teamParentRoom && { parent: teamParentRoom }),
+			});
 		},
 	},
 );

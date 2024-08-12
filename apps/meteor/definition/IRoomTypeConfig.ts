@@ -86,6 +86,7 @@ export interface IRoomTypeClientDirectives {
 	showJoinLink: (roomId: string) => boolean;
 	isLivechatRoom: () => boolean;
 	canSendMessage: (rid: string) => boolean;
+	hasSubscription: (rid: string) => boolean;
 	readOnly?: (rid: string, user: AtLeast<IUser, 'username'>) => boolean;
 }
 
