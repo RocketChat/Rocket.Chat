@@ -5,14 +5,13 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { settings } from '../../../settings/server';
-import { notifyOnRoomChangedById } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
 export const updateMessage = async function (
-	message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>,
+	message: AtLeast<IMessage, '_id' | 'rid' | 'msg' | 'customFields'>,
 	user: IUser,
 	originalMsg?: IMessage,
 	previewUrls?: string[],
@@ -102,7 +101,7 @@ export const updateMessage = async function (
 		// so we wait for it to run before broadcasting
 		const data = await callbacks.run('afterSaveMessage', msg, room, user._id);
 
-		void broadcastMessageFromData({
+		void notifyOnMessageChange({
 			id: msg._id,
 			data: data as any, // TODO move "afterSaveMessage" type definition to specify a return value
 		});

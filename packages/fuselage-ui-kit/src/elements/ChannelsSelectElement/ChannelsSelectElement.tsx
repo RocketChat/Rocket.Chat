@@ -1,10 +1,4 @@
-import {
-  AutoComplete,
-  Option,
-  Box,
-  Options,
-  Chip,
-} from '@rocket.chat/fuselage';
+import { AutoComplete, Option, Box, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
@@ -59,7 +53,7 @@ const ChannelsSelectElement = ({
           label={label.name}
           avatar={
             <RoomAvatar
-              size={Options.AvatarSize}
+              size='x20'
               room={{
                 type: label.type,
                 _id: value,
