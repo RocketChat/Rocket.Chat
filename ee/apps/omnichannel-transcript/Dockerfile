@@ -7,6 +7,14 @@ WORKDIR /app
 COPY ./packages/core-services/package.json packages/core-services/package.json
 COPY ./packages/core-services/dist packages/core-services/dist
 
+COPY ./packages/apps-engine/package.json packages/apps-engine/package.json
+COPY ./packages/apps-engine/client packages/apps-engine/client
+COPY ./packages/apps-engine/definition packages/apps-engine/definition
+COPY ./packages/apps-engine/deno-runtime packages/apps-engine/deno-runtime
+COPY ./packages/apps-engine/lib packages/apps-engine/lib
+COPY ./packages/apps-engine/scripts packages/apps-engine/scripts
+COPY ./packages/apps-engine/server packages/apps-engine/server
+
 COPY ./packages/agenda/package.json packages/agenda/package.json
 COPY ./packages/agenda/dist packages/agenda/dist
 
