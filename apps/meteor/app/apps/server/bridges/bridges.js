@@ -5,6 +5,7 @@ import { AppApisBridge } from './api';
 import { AppCloudBridge } from './cloud';
 import { AppCommandsBridge } from './commands';
 import { AppDetailChangesBridge } from './details';
+import { AppEmailBridge } from './email';
 import { AppEnvironmentalVariableBridge } from './environmental';
 import { AppHttpBridge } from './http';
 import { AppInternalBridge } from './internal';
@@ -42,6 +43,7 @@ export class RealAppBridges extends AppBridges {
 		this._internalBridge = new AppInternalBridge(orch);
 		this._setsBridge = new AppSettingBridge(orch);
 		this._userBridge = new AppUserBridge(orch);
+		this._emailBridge = new AppEmailBridge(orch);
 		this._livechatBridge = new AppLivechatBridge(orch);
 		this._uploadBridge = new AppUploadBridge(orch);
 		this._uiInteractionBridge = new UiInteractionBridge(orch);
@@ -117,6 +119,10 @@ export class RealAppBridges extends AppBridges {
 
 	getUploadBridge() {
 		return this._uploadBridge;
+	}
+
+	getEmailBridge() {
+		return this._emailBridge;
 	}
 
 	getUiInteractionBridge() {
