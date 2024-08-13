@@ -15,9 +15,9 @@ test('updater typings', () => {
 			e: string;
 		};
 		e: string[];
-	}>({} as any);
+	}>();
 
-	const omnichannel = new UpdaterImpl<IOmnichannelRoom>({} as any);
+	const omnichannel = new UpdaterImpl<IOmnichannelRoom>();
 	omnichannel.addToSet('v.activity', 'asd');
 	// @ts-expect-error
 	omnichannel.addToSet('v.activity', 1);
@@ -70,8 +70,6 @@ test('updater typings', () => {
 });
 
 test('updater $set operations', async () => {
-	const updateOne = jest.fn();
-
 	const updater = new UpdaterImpl<{
 		_id: string;
 		t: 'l';
@@ -79,29 +77,16 @@ test('updater $set operations', async () => {
 			b: string;
 		};
 		c?: number;
-	}>({
-		updateOne,
-	} as any);
+	}>();
 
 	updater.set('a', {
 		b: 'set',
 	});
 
-	await updater.persist({
-		_id: 'test',
-	});
-
-	expect(updateOne).toBeCalledWith(
-		{
-			_id: 'test',
-		},
-		{ $set: { a: { b: 'set' } } },
-	);
+	expect(updater.getUpdateFilter()).toEqual({ $set: { a: { b: 'set' } } });
 });
 
 test('updater $unset operations', async () => {
-	const updateOne = jest.fn();
-
 	const updater = new UpdaterImpl<{
 		_id: string;
 		t: 'l';
@@ -109,27 +94,12 @@ test('updater $unset operations', async () => {
 			b: string;
 		};
 		c?: number;
-	}>({
-		updateOne,
-	} as any);
-
+	}>();
 	updater.unset('c');
-
-	await updater.persist({
-		_id: 'test',
-	});
-
-	expect(updateOne).toBeCalledWith(
-		{
-			_id: 'test',
-		},
-		{ $unset: { c: 1 } },
-	);
+	expect(updater.getUpdateFilter()).toEqual({ $unset: { c: 1 } });
 });
 
 test('updater inc multiple operations', async () => {
-	const updateOne = jest.fn();
-
 	const updater = new UpdaterImpl<{
 		_id: string;
 		t: 'l';
@@ -137,52 +107,27 @@ test('updater inc multiple operations', async () => {
 			b: string;
 		};
 		c?: number;
-	}>({
-		updateOne,
-	} as any);
+	}>();
 
 	updater.inc('c', 1);
 	updater.inc('c', 1);
 
-	await updater.persist({
-		_id: 'test',
-	});
-
-	expect(updateOne).toBeCalledWith(
-		{
-			_id: 'test',
-		},
-		{ $inc: { c: 2 } },
-	);
+	expect(updater.getUpdateFilter()).toEqual({ $inc: { c: 2 } });
 });
 
 test('it should add items to array', async () => {
-	const updateOne = jest.fn();
 	const updater = new UpdaterImpl<{
 		_id: string;
 		a: string[];
-	}>({
-		updateOne,
-	} as any);
+	}>();
 
 	updater.addToSet('a', 'b');
 	updater.addToSet('a', 'c');
 
-	await updater.persist({
-		_id: 'test',
-	});
-
-	expect(updateOne).toBeCalledWith(
-		{
-			_id: 'test',
-		},
-		{ $addToSet: { a: { $each: ['b', 'c'] } } },
-	);
+	expect(updater.getUpdateFilter()).toEqual({ $addToSet: { a: { $each: ['b', 'c'] } } });
 });
 
-test('it should persist only once', async () => {
-	const updateOne = jest.fn();
-
+test('it should getUpdateFilter only once', async () => {
 	const updater = new UpdaterImpl<{
 		_id: string;
 		t: 'l';
@@ -190,19 +135,12 @@ test('it should persist only once', async () => {
 			b: string;
 		};
 		c?: number;
-	}>({
-		updateOne,
-	} as any);
+	}>();
 
 	updater.set('a', {
 		b: 'set',
 	});
 
-	await updater.persist({
-		_id: 'test',
-	});
-
-	expect(updateOne).toBeCalledTimes(1);
-
-	expect(() => updater.persist({ _id: 'test' })).rejects.toThrow();
+	expect(updater.getUpdateFilter()).toEqual({ $set: { a: { b: 'set' } } });
+	expect(() => updater.getUpdateFilter()).toThrow();
 });

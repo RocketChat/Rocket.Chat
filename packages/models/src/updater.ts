@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import type { IBaseModel, Updater, SetProps, UnsetProps, IncProps, AddToSetProps } from '@rocket.chat/model-typings';
-import type { UpdateFilter, Filter } from 'mongodb';
+import type { Updater, SetProps, UnsetProps, IncProps, AddToSetProps } from '@rocket.chat/model-typings';
+import type { UpdateFilter } from 'mongodb';
 
 type ArrayElementType<T> = T extends (infer E)[] ? E : T;
 
@@ -16,8 +16,6 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 	private _addToSet: Map<keyof AddToSetProps<T>, any[]> | undefined;
 
 	private dirty = false;
-
-	constructor(private model: IBaseModel<T>) {}
 
 	set<P extends SetProps<T>, K extends keyof P>(key: K, value: P[K]) {
 		this._set = this._set ?? new Map<Keys<T>, any>();
@@ -47,31 +45,17 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 		return this;
 	}
 
-	async persist(query: Filter<T>): Promise<void> {
-		if (this.dirty) {
-			throw new Error('Updater is not dirty');
-		}
-
-		if ((process.env.NODE_ENV === 'development' || process.env.TEST_MODE) && !this.hasChanges()) {
-			throw new Error('Nothing to update');
-		}
-
-		this.dirty = true;
-
-		const update = this.getUpdateFilter();
-		try {
-			await this.model.updateOne(query, update);
-		} catch (error) {
-			console.error('Failed to update', JSON.stringify(query), JSON.stringify(update, null, 2));
-			throw error;
-		}
-	}
-
 	hasChanges() {
-		return Object.keys(this.getUpdateFilter()).length > 0;
+		const hasChanges = Object.keys(this.getUpdateFilter()).length > 0;
+		this.dirty = false;
+		return hasChanges;
 	}
 
 	getUpdateFilter() {
+		if (this.dirty) {
+			throw new Error('Updater is dirty');
+		}
+		this.dirty = true;
 		return {
 			...(this._set && { $set: Object.fromEntries(this._set) }),
 			...(this._unset && { $unset: Object.fromEntries([...this._unset.values()].map((k) => [k, 1])) }),

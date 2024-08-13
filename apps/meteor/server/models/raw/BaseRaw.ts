@@ -111,7 +111,11 @@ export abstract class BaseRaw<
 	}
 
 	public getUpdater(): Updater<T> {
-		return new UpdaterImpl<T>(this.col as unknown as IBaseModel<T>);
+		return new UpdaterImpl<T>();
+	}
+
+	public updateFromUpdater(query: Filter<T>, updater: Updater<T>): Promise<UpdateResult> {
+		return this.updateOne(query, updater.getUpdateFilter());
 	}
 
 	private doNotMixInclusionAndExclusionFields(options: FindOptions<T> = {}): FindOptions<T> {
