@@ -3,13 +3,15 @@ import {
 	isPOSTOmnichannelContactsProps,
 	isPOSTUpdateOmnichannelContactsProps,
 	isGETOmnichannelContactsProps,
+	isGETOmnichannelContactsSearchProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
-import { Contacts, createContact, updateContact, getContactById } from '../../lib/Contacts';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { Contacts, createContact, updateContact, getContactById, getContacts } from '../../lib/Contacts';
 
 /**
  * @deprecated to create a contact, use the omnichannel/contacts endpoint
@@ -127,6 +129,24 @@ API.v1.addRoute(
 			const contact = await getContactById(this.queryParams.contactId);
 
 			return API.v1.success({ contact });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/contacts.search',
+	{ authRequired: true, permissionsRequired: ['view-livechat-contact'], validateParams: isGETOmnichannelContactsSearchProps },
+	{
+		async get() {
+			const { searchText } = this.queryParams;
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+
+			console.log({ searchText, offset, count, sort });
+
+			const result = await getContacts({ searchText, offset, count, sort });
+
+			return API.v1.success(result);
 		},
 	},
 );

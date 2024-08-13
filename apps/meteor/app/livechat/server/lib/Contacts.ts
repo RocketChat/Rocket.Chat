@@ -16,9 +16,11 @@ import {
 	Subscriptions,
 	LivechatContacts,
 } from '@rocket.chat/models';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
+import type { Filter, MatchKeysAndValues, OnlyFieldsOfType, RootFilterOperators } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
@@ -56,6 +58,13 @@ type UpdateContactParams = {
 	customFields?: Record<string, unknown>;
 	contactManager?: string;
 	channels?: ILivechatContactChannel[];
+};
+
+type GetContactsParams = {
+	searchText?: string;
+	count: number;
+	offset: number;
+	sort: Record<string, number>;
 };
 
 export const Contacts = {
@@ -239,6 +248,41 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 
 export async function getContactById(contactId: string): Promise<ILivechatContact | null> {
 	return LivechatContacts.findOneById(contactId);
+}
+
+export async function getContacts(params: GetContactsParams): Promise<PaginatedResult<{ contacts: ILivechatContact[] }>> {
+	const { searchText, count, offset, sort } = params;
+
+	// perform a search on the custom fields as well
+	const match: Filter<ILivechatContact & RootFilterOperators<ILivechatContact>> = {};
+	match.$or = [
+		{
+			name: { $regex: escapeRegExp(searchText || ''), $options: 'i' },
+		},
+		{
+			emails: { $regex: escapeRegExp(searchText || ''), $options: 'i' },
+		},
+		{
+			phones: { $regex: escapeRegExp(searchText || ''), $options: 'i' },
+		},
+	];
+
+	const { cursor, totalCount } = LivechatContacts.findPaginated(
+		{ ...match },
+		{
+			sort,
+			skip: offset,
+			limit: count,
+			allowDiskUse: true,
+		},
+	);
+
+	return {
+		contacts: await cursor.toArray(),
+		count,
+		offset,
+		total: await totalCount,
+	};
 }
 
 async function getAllowedCustomFields(): Promise<ILivechatCustomField[]> {
