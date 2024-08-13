@@ -461,7 +461,7 @@ test.describe.serial('e2e-encryption', () => {
 		});
 
 		test('File encryption with whitelisted and blacklisted media types', async ({ page, api }) => {
-			await test.step('create an encrypted channel', async () => {
+			await test.step('create an encrypted room', async () => {
 				const channelName = faker.string.uuid();
 
 				await poHomeChannel.sidenav.openNewByLabel('Channel');
@@ -495,12 +495,12 @@ test.describe.serial('e2e-encryption', () => {
 			await test.step('send text file again with whitelist setting set', async () => {
 				await poHomeChannel.content.dragAndDropTxtFile();
 				await poHomeChannel.content.descriptionInput.fill('message 2');
-				await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+				await poHomeChannel.content.fileNameInput.fill('any_file2.txt');
 				await poHomeChannel.content.btnModalConfirm.click();
 
 				await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 				await expect(poHomeChannel.content.getFileDescription).toHaveText('message 2');
-				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file2.txt');
 			});
 
 			await test.step('set blacklisted media type setting to not accept application/octet-stream media type', async () => {
@@ -510,22 +510,24 @@ test.describe.serial('e2e-encryption', () => {
 			await test.step('send text file again with blacklisted setting set, file upload should fail', async () => {
 				await poHomeChannel.content.dragAndDropTxtFile();
 				await poHomeChannel.content.descriptionInput.fill('message 3');
-				await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+				await poHomeChannel.content.fileNameInput.fill('any_file3.txt');
 				await poHomeChannel.content.btnModalConfirm.click();
 
 				await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 				await expect(poHomeChannel.content.getFileDescription).toHaveText('message 2');
-				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file2.txt');
 			});
 		});
 
 		test.describe('File encryption setting disabled', async () => {
 			test.beforeAll(async ({ api }) => {
 				expect((await api.post('/settings/E2E_Enable_Encrypt_Files', { value: false })).status()).toBe(200);
+				expect((await api.post('/settings/FileUpload_MediaTypeBlackList', { value: 'application/octet-stream' })).status()).toBe(200);
 			});
 
 			test.afterAll(async ({ api }) => {
 				expect((await api.post('/settings/E2E_Enable_Encrypt_Files', { value: true })).status()).toBe(200);
+				expect((await api.post('/settings/FileUpload_MediaTypeBlackList', { value: 'image/svg+xml' })).status()).toBe(200);
 			});
 
 			test('Upload file without encryption in e2ee room', async ({ page }) => {
@@ -552,7 +554,7 @@ test.describe.serial('e2e-encryption', () => {
 					await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 				});
 
-				await test.step('send a text file in channel, file should not be encryption', async () => {
+				await test.step('send a text file in channel, file should not be encrypted', async () => {
 					await poHomeChannel.content.dragAndDropTxtFile();
 					await poHomeChannel.content.descriptionInput.fill('any_description');
 					await poHomeChannel.content.fileNameInput.fill('any_file1.txt');

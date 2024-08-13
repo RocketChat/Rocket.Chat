@@ -70,4 +70,4 @@ export type IE2EEUpload = IUpload & {
 	};
 };
 
-export const isE2EEUpload = (upload: IUpload): upload is IE2EEUpload => Boolean(upload?.content?.ciphertext);
+export const isE2EEUpload = (upload: IUpload): upload is IE2EEUpload => Boolean(upload?.content?.ciphertext && upload?.content?.algorithm);
