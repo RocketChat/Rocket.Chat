@@ -183,14 +183,8 @@ export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomU
 
 callbacks.add(
 	'afterSaveMessage',
-	async (message, room) => {
-		const roomUpdater = Rooms.getUpdater();
+	async (message, room, _, roomUpdater = Rooms.getUpdater()) => {
 		await notifyUsersOnMessage(message, room, roomUpdater);
-
-		if (roomUpdater.hasChanges()) {
-			await roomUpdater.persist({ _id: room._id });
-		}
-
 		return message;
 	},
 	callbacks.priority.MEDIUM,
