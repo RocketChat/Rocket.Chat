@@ -110,6 +110,17 @@ describe('[OAuthApps]', () => {
 					expect(res.body.oauthApp).to.not.have.property('clientSecret');
 				});
 		});
+		it('should fail returning an oauth app when an invalid id is provided (avoid NoSQL injections)', () => {
+			return request
+				.get(api('oauth-apps.get'))
+				.query({ _id: '{ "$ne": "" }' })
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'OAuth app not found.');
+				});
+		});
 	});
 
 	describe('[/oauth-apps.create]', () => {
