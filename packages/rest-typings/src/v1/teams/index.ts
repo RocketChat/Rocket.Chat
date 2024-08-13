@@ -171,7 +171,7 @@ export type TeamsEndpoints = {
 	'/v1/teams.listRooms': {
 		GET: (
 			params: PaginatedRequest<
-				({ teamId: string } | { teamName: string }) & {
+				({ teamId: string } | { teamName: string } | { roomId: string }) & {
 					filter?: string;
 					type?: string;
 				}

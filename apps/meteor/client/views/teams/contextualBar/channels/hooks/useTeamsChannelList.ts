@@ -10,6 +10,7 @@ import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
 
 type TeamsChannelListOptions = {
 	teamId: string;
+	roomId?: string;
 	type: 'all' | 'autoJoin';
 	text: string;
 };
@@ -34,6 +35,7 @@ export const useTeamsChannelList = (
 		async (start, end) => {
 			const { rooms, total } = await apiEndPoint({
 				teamId: options.teamId,
+				roomId: options.roomId,
 				offset: start,
 				count: end,
 				filter: options.text,

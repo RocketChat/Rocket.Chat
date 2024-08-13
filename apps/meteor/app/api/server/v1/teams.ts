@@ -107,13 +107,17 @@ API.v1.addRoute(
 	},
 );
 
-const getTeamByIdOrName = async (params: { teamId: string } | { teamName: string }): Promise<ITeam | null> => {
+const getTeamByIdOrName = async (params: { teamId: string } | { teamName: string } | { roomId: string }): Promise<ITeam | null> => {
 	if ('teamId' in params && params.teamId) {
 		return Team.getOneById<ITeam>(params.teamId);
 	}
 
 	if ('teamName' in params && params.teamName) {
 		return Team.getOneByName(params.teamName);
+	}
+
+	if ('roomId' in params && params.roomId) {
+		return Team.getOneByRoomId(params.roomId);
 	}
 
 	return null;
@@ -266,6 +270,9 @@ API.v1.addRoute(
 					}),
 					Match.ObjectIncluding({
 						teamName: String,
+					}),
+					Match.ObjectIncluding({
+						roomId: String,
 					}),
 				),
 			);
