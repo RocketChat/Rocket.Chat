@@ -15,7 +15,7 @@ type RoomLayoutProps = {
 } & ComponentProps<typeof Box>;
 
 const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps): ReactElement => (
-	<Box h='full' display='flex' flexDirection='column' bg='room' {...props}>
+	<Box h='full' w='full' display='flex' flexDirection='column' bg='room' {...props}>
 		<Suspense
 			fallback={
 				<FeaturePreview feature='newNavigation'>

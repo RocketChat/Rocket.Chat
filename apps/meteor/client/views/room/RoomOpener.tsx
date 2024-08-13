@@ -1,5 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
-import { States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React, { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +11,7 @@ import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
 import { OldUrlRoomError } from '../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../lib/errors/RoomNotFoundError';
 import RoomSkeleton from './RoomSkeleton';
+import RoomSidePanel from './SidePanel/RoomSidePanel';
 import { useOpenRoom } from './hooks/useOpenRoom';
 
 const RoomProvider = lazy(() => import('./providers/RoomProvider'));
@@ -27,12 +29,17 @@ const RoomOpener = ({ type, reference }: RoomOpenerProps): ReactElement => {
 	const { data, error, isSuccess, isError, isLoading } = useOpenRoom({ type, reference });
 	const { t } = useTranslation();
 
+	const isSidepanelFeatureEnabled = useFeaturePreview('sidepanelNavigation');
+
 	return (
 		<Suspense fallback={<RoomSkeleton />}>
 			{isLoading && <RoomSkeleton />}
 			{isSuccess && (
 				<RoomProvider rid={data.rid}>
-					<Room />
+					<Box display='flex' w='full' h='full'>
+						{isSidepanelFeatureEnabled && <RoomSidePanel rid={data.rid} />}
+						<Room />
+					</Box>
 				</RoomProvider>
 			)}
 			{isError &&

@@ -85,7 +85,7 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 
 	get openedSecondLevel(): IRoom['_id'] | undefined {
 		if (!this.parentRid) {
-			throw new Error('no parent');
+			return undefined;
 		}
 		return this.rid;
 	}
