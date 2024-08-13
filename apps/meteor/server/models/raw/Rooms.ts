@@ -10,6 +10,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IRoomsModel, IChannelsWithNumberOfMessagesBetweenDate } from '@rocket.chat/model-typings';
 import { Subscriptions } from '@rocket.chat/models';
+import type { Updater } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
@@ -888,6 +889,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
+	getIncMsgCountUpdateQuery(inc: number, roomUpdater: Updater<IRoom>): Updater<IRoom> {
+		return roomUpdater.inc('msgs', inc);
+	}
+
 	decreaseMessageCountById(_id: IRoom['_id'], count = 1) {
 		return this.incMsgCountById(_id, -count);
 	}
@@ -1527,25 +1532,19 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	incMsgCountAndSetLastMessageById(
-		_id: IRoom['_id'],
-		inc = 1,
-		lastMessageTimestamp: NonNullable<IRoom['lm']>,
-		lastMessage?: IMessage,
-	): Promise<UpdateResult> {
-		const query: Filter<IRoom> = { _id };
+	setIncMsgCountAndSetLastMessageUpdateQuery(
+		inc: number,
+		lastMessage: IMessage,
+		shouldStoreLastMessage: boolean,
+		roomUpdater: Updater<IRoom>,
+	): Updater<IRoom> {
+		roomUpdater.inc('msgs', inc).set('lm', lastMessage.ts);
 
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				lm: lastMessageTimestamp,
-				...(lastMessage ? { lastMessage } : {}),
-			},
-			$inc: {
-				msgs: inc,
-			},
-		};
+		if (shouldStoreLastMessage) {
+			roomUpdater.set('lastMessage', lastMessage);
+		}
 
-		return this.updateOne(query, update);
+		return roomUpdater;
 	}
 
 	incUsersCountById(_id: IRoom['_id'], inc = 1): Promise<UpdateResult> {
@@ -1578,16 +1577,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	setLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage']): Promise<UpdateResult> {
-		const query: Filter<IRoom> = { _id };
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				lastMessage,
-			},
-		};
-
-		return this.updateOne(query, update);
+	getLastMessageUpdateQuery(lastMessage: IRoom['lastMessage'], roomUpdater: Updater<IRoom>): Updater<IRoom> {
+		return roomUpdater.set('lastMessage', lastMessage);
 	}
 
 	async resetLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage'] | null, msgCountDelta?: number): Promise<UpdateResult> {
