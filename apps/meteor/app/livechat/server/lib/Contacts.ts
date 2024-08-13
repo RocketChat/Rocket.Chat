@@ -237,6 +237,10 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 	return updatedContact;
 }
 
+export async function getContactById(contactId: string): Promise<ILivechatContact | null> {
+	return LivechatContacts.findOneById(contactId);
+}
+
 async function getAllowedCustomFields(): Promise<ILivechatCustomField[]> {
 	return LivechatCustomField.findByScope(
 		'visitor',

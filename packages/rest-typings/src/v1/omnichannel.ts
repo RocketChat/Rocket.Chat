@@ -1305,6 +1305,21 @@ const POSTUpdateOmnichannelContactsSchema = {
 
 export const isPOSTUpdateOmnichannelContactsProps = ajv.compile<POSTUpdateOmnichannelContactsProps>(POSTUpdateOmnichannelContactsSchema);
 
+type GETOmnichannelContactsProps = { contactId: string };
+
+const GETOmnichannelContactsSchema = {
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+		},
+	},
+	required: ['contactId'],
+	additionalProperties: false,
+};
+
+export const isGETOmnichannelContactsProps = ajv.compile<GETOmnichannelContactsProps>(GETOmnichannelContactsSchema);
+
 type GETOmnichannelContactProps = { contactId: string };
 
 const GETOmnichannelContactSchema = {
@@ -3748,6 +3763,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/omnichannel/contacts.update': {
 		POST: (params: POSTUpdateOmnichannelContactsProps) => { contact: ILivechatContact };
+	};
+	'/v1/omnichannel/contacts.get': {
+		GET: (params: GETOmnichannelContactsProps) => { contact: ILivechatContact | null };
 	};
 
 	'/v1/omnichannel/contact.search': {

@@ -1,11 +1,15 @@
 import { LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
-import { isPOSTOmnichannelContactsProps, isPOSTUpdateOmnichannelContactsProps } from '@rocket.chat/rest-typings';
+import {
+	isPOSTOmnichannelContactsProps,
+	isPOSTUpdateOmnichannelContactsProps,
+	isGETOmnichannelContactsProps,
+} from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
-import { Contacts, createContact, updateContact } from '../../lib/Contacts';
+import { Contacts, createContact, updateContact, getContactById } from '../../lib/Contacts';
 
 /**
  * @deprecated to create a contact, use the omnichannel/contacts endpoint
@@ -102,12 +106,25 @@ API.v1.addRoute(
 		},
 	},
 );
+
 API.v1.addRoute(
 	'omnichannel/contacts.update',
 	{ authRequired: true, permissionsRequired: ['update-livechat-contact'], validateParams: isPOSTUpdateOmnichannelContactsProps },
 	{
 		async post() {
 			const contact = await updateContact({ ...this.bodyParams });
+
+			return API.v1.success({ contact });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/contacts.get',
+	{ authRequired: true, permissionsRequired: ['view-livechat-contact'], validateParams: isGETOmnichannelContactsProps },
+	{
+		async get() {
+			const contact = await getContactById(this.queryParams.contactId);
 
 			return API.v1.success({ contact });
 		},
