@@ -253,7 +253,6 @@ export async function getContactById(contactId: string): Promise<ILivechatContac
 export async function getContacts(params: GetContactsParams): Promise<PaginatedResult<{ contacts: ILivechatContact[] }>> {
 	const { searchText, count, offset, sort } = params;
 
-	// perform a search on the custom fields as well
 	const match: Filter<ILivechatContact & RootFilterOperators<ILivechatContact>> = {};
 	match.$or = [
 		{
