@@ -289,11 +289,11 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
 	}
 
+	console.log('Calling afterSaveMessage from sendMessage');
+	// TODO: is there an opportunity to send returned data to notifyOnMessageChange?
 	await afterSaveMessage(message, room);
 
-	void notifyOnMessageChange({
-		id: message._id,
-	});
+	void notifyOnMessageChange({ id: message._id });
 
 	void notifyOnRoomChangedById(message.rid);
 

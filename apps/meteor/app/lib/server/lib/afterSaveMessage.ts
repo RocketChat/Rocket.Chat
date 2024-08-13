@@ -10,13 +10,13 @@ export async function afterSaveMessage(
 	uid?: IUser['_id'],
 	roomUpdater: Updater<IRoom> = Rooms.getUpdater(),
 ): Promise<IMessage> {
-	const data = await callbacks.run('afterSaveMessage', message, room, uid, roomUpdater);
+	const data = await callbacks.run('afterSaveMessage', message, { room, uid, roomUpdater });
 
 	if (roomUpdater.hasChanges()) {
 		await roomUpdater.persist({ _id: room._id });
 	}
 
-	// TODO: Fix this type - callback configuration needs to be updated
+	// TODO: Fix type - callback configuration needs to be updated
 	return data as unknown as IMessage;
 }
 
@@ -26,7 +26,7 @@ export function afterSaveMessageAsync(
 	uid?: IUser['_id'],
 	roomUpdater: Updater<IRoom> = Rooms.getUpdater(),
 ): void {
-	callbacks.runAsync('afterSaveMessage', message, room, uid, roomUpdater);
+	callbacks.runAsync('afterSaveMessage', message, { room, uid, roomUpdater });
 
 	if (roomUpdater.hasChanges()) {
 		void roomUpdater.persist({ _id: room._id });
