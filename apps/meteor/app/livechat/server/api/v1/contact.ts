@@ -54,9 +54,16 @@ API.v1.addRoute(
 	},
 );
 
+/**
+ * @deprecated to search for contacts, use the omnichannel/contacts.search endpoint
+ */
 API.v1.addRoute(
 	'omnichannel/contact.search',
-	{ authRequired: true, permissionsRequired: ['view-l-room'] },
+	{
+		authRequired: true,
+		permissionsRequired: ['view-l-room'],
+		deprecation: { version: '8.0.0', alternatives: ['omnichannel/contacts.search'] },
+	},
 	{
 		async get() {
 			check(this.queryParams, {
