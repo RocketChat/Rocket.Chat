@@ -2,11 +2,9 @@ import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { mockAppRoot, MockedRouterContext } from '@rocket.chat/mock-providers';
 import type { UsersInfoParamsGet } from '@rocket.chat/rest-typings';
 import { render, screen } from '@testing-library/react';
-import { type WrapperComponent } from '@testing-library/react-hooks';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 import React from 'react';
-import '@testing-library/jest-dom/extend-expect';
 
 import { createFakeUser } from '../../../../tests/mocks/data';
 import ThreadMetrics from './ThreadMetrics';
@@ -35,9 +33,9 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 
 const mockRoot = () => {
 	const AppRoot = mockAppRoot();
-	const buildWithRouter = (navigate: (...args: any[]) => void): WrapperComponent<{ children: ReactNode }> => {
+	const buildWithRouter = (navigate: (...args: any[]) => void) => {
 		const Wrapper = AppRoot.build();
-		return function Mock({ children }) {
+		return function Mock({ children }: { children: ReactNode }) {
 			return (
 				<Wrapper>
 					<MockedRouterContext router={{ navigate, getRouteName: () => 'thread' as any }}>{children}</MockedRouterContext>
