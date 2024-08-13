@@ -42,7 +42,7 @@ export class BaseDummy<
 	}
 
 	public getUpdater(): Updater<T> {
-		return new UpdaterImpl<T>(this.col as unknown as IBaseModel<T>);
+		return new UpdaterImpl<T>();
 	}
 
 	public updateFromUpdater(query: Filter<T>, updater: Updater<T>): Promise<UpdateResult> {
