@@ -42,7 +42,7 @@ const updateDepartment = async (departmentId: string, departmentData: Partial<Li
 	return response.body.department;
 };
 
-const createDepartmentWithMethod = ({
+export const createDepartmentWithMethod = ({
 	initialAgents = [],
 	allowReceiveForwardOffline = false,
 	fallbackForwardDepartment,
