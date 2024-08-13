@@ -31,18 +31,11 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 
 	const queue = [...files];
 
-	function updateQueue(finalFiles: File[]) {
-		queue.length = 0;
-		finalFiles.forEach((file) => {
-			queue.push(file);
-		});
-	}
-
 	const uploadFile = (
-		file: File[] | File,
-		extraData?: Pick<IMessage, 't' | 'e2e'> & { msg?: string },
-		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
-		fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
+		file: File,
+		extraData?: Pick<IMessage, 't' | 'e2e'> & { description?: string },
+		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
+		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
 	) => {
 		chat.uploads.send(
 			file,
@@ -55,9 +48,11 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 		);
 		chat.composer?.clear();
 		imperativeModal.close();
+		uploadNextFile();
 	};
+
 	const uploadNextFile = (): void => {
-		const file = queue[0];
+		const file = queue.pop();
 		if (!file) {
 			chat.composer?.dismissAllQuotedMessages();
 			return;
@@ -67,133 +62,131 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 			component: FileUploadModal,
 			props: {
 				file,
-				queue,
-				updateQueue,
 				fileName: file.name,
 				fileDescription: chat.composer?.text ?? '',
 				showDescription: room && !isRoomFederated(room),
 				onClose: (): void => {
 					imperativeModal.close();
+					uploadNextFile();
 				},
-				onSubmit: async (fileName: string, msg?: string): Promise<void> => {
+				onSubmit: async (fileName: string, description?: string): Promise<void> => {
 					Object.defineProperty(file, 'name', {
 						writable: true,
 						value: fileName,
 					});
 
+					// encrypt attachment description
 					const e2eRoom = await e2e.getInstanceByRoomId(room._id);
 
 					if (!e2eRoom) {
-						uploadFile(queue, { msg });
+						uploadFile(file, { description });
 						return;
 					}
 
 					const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages({ msg });
 
 					if (!shouldConvertSentMessages) {
-						uploadFile(queue, { msg });
+						uploadFile(file, { description });
 						return;
 					}
 
-					const encryptedFilesarray: any = await Promise.all(queue.map((file) => e2eRoom.encryptFile(file)));
-					const filesarray = encryptedFilesarray.map((file: any) => file?.file);
+					const encryptedFile = await e2eRoom.encryptFile(file);
 
-					if (encryptedFilesarray[0]) {
-						const getContent = async (_id: string[], fileUrl: string[]): Promise<IE2EEMessage['content']> => {
+					if (encryptedFile) {
+						const getContent = async (_id: string, fileUrl: string): Promise<IE2EEMessage['content']> => {
 							const attachments = [];
-							const arrayoffiles = [];
-							for (let i = 0; i < _id.length; i++) {
-								const attachment: FileAttachmentProps = {
-									title: queue[i].name,
-									type: 'file',
-									title_link: fileUrl[i],
-									title_link_download: true,
-									encryption: {
-										key: encryptedFilesarray[i].key,
-										iv: encryptedFilesarray[i].iv,
-									},
-									hashes: {
-										sha256: encryptedFilesarray[i].hash,
-									},
-								};
 
-								if (/^image\/.+/.test(queue[i].type)) {
-									const dimensions = await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(queue[i]));
+							const attachment: FileAttachmentProps = {
+								title: file.name,
+								type: 'file',
+								description,
+								title_link: fileUrl,
+								title_link_download: true,
+								encryption: {
+									key: encryptedFile.key,
+									iv: encryptedFile.iv,
+								},
+								hashes: {
+									sha256: encryptedFile.hash,
+								},
+							};
 
-									attachments.push({
-										...attachment,
-										image_url: fileUrl[i],
-										image_type: queue[i].type,
-										image_size: queue[i].size,
-										...(dimensions && {
-											image_dimensions: dimensions,
-										}),
-									});
-								} else if (/^audio\/.+/.test(queue[i].type)) {
-									attachments.push({
-										...attachment,
-										audio_url: fileUrl[i],
-										audio_type: queue[i].type,
-										audio_size: queue[i].size,
-									});
-								} else if (/^video\/.+/.test(queue[i].type)) {
-									attachments.push({
-										...attachment,
-										video_url: fileUrl[i],
-										video_type: queue[i].type,
-										video_size: queue[i].size,
-									});
-								} else {
-									attachments.push({
-										...attachment,
-										size: queue[i].size,
-										format: getFileExtension(queue[i].name),
-									});
-								}
+							if (/^image\/.+/.test(file.type)) {
+								const dimensions = await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(file));
 
-								const files = {
-									_id: _id[i],
-									name: queue[i].name,
-									type: queue[i].type,
-									size: queue[i].size,
-								};
-								arrayoffiles.push(files);
+								attachments.push({
+									...attachment,
+									image_url: fileUrl,
+									image_type: file.type,
+									image_size: file.size,
+									...(dimensions && {
+										image_dimensions: dimensions,
+									}),
+								});
+							} else if (/^audio\/.+/.test(file.type)) {
+								attachments.push({
+									...attachment,
+									audio_url: fileUrl,
+									audio_type: file.type,
+									audio_size: file.size,
+								});
+							} else if (/^video\/.+/.test(file.type)) {
+								attachments.push({
+									...attachment,
+									video_url: fileUrl,
+									video_type: file.type,
+									video_size: file.size,
+								});
+							} else {
+								attachments.push({
+									...attachment,
+									size: file.size,
+									format: getFileExtension(file.name),
+								});
 							}
+
+							const files = [
+								{
+									_id,
+									name: file.name,
+									type: file.type,
+									size: file.size,
+									// "format": "png"
+								},
+							];
 
 							return e2eRoom.encryptMessageContent({
 								attachments,
-								files: arrayoffiles,
+								files,
 								file: files[0],
 							});
 						};
 
 						const fileContentData = {
-							type: queue[0].type,
-							typeGroup: queue[0].type.split('/')[0],
+							type: file.type,
+							typeGroup: file.type.split('/')[0],
 							name: fileName,
-							msg: msg || '',
 							encryption: {
-								key: encryptedFilesarray[0].key,
-								iv: encryptedFilesarray[0].iv,
+								key: encryptedFile.key,
+								iv: encryptedFile.iv,
 							},
 							hashes: {
-								sha256: encryptedFilesarray[0].hash,
+								sha256: encryptedFile.hash,
 							},
 						};
 
-						const fileContent = await e2eRoom.encryptMessageContent(fileContentData);
-
-						const uploadFileData = {
-							raw: {},
-							encrypted: fileContent,
+						const fileContent = {
+							raw: fileContentData,
+							encrypted: await e2eRoom.encryptMessageContent(fileContentData),
 						};
+
 						uploadFile(
-							filesarray,
+							encryptedFile.file,
 							{
 								t: 'e2e',
 							},
 							getContent,
-							uploadFileData,
+							fileContent,
 						);
 					}
 				},
