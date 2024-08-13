@@ -53,15 +53,6 @@ export interface IRoom extends IRocketChatRecord {
 		_id: string;
 	};
 
-	streamingOptions?: {
-		id?: string;
-		type?: string;
-		url?: string;
-		thumbnail?: string;
-		isAudioOnly?: boolean;
-		message?: string;
-	};
-
 	prid?: string;
 	avatarETag?: string;
 

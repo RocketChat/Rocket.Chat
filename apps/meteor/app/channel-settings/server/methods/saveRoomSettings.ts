@@ -21,7 +21,6 @@ import { saveRoomReadOnly } from '../functions/saveRoomReadOnly';
 import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
 import { saveRoomType } from '../functions/saveRoomType';
-import { saveStreamingOptions } from '../functions/saveStreamingOptions';
 
 type RoomSettings = {
 	roomAvatar: string;
@@ -37,7 +36,6 @@ type RoomSettings = {
 	systemMessages: MessageTypesValues[];
 	default: boolean;
 	joinCode: string;
-	streamingOptions: NonNullable<IRoom['streamingOptions']>;
 	retentionEnabled: boolean;
 	retentionMaxAge: number;
 	retentionExcludePinned: boolean;
@@ -272,9 +270,6 @@ const settingSavers: RoomSettingsSavers = {
 			void Team.update(user._id, room.teamId, { type, updateRoom: false });
 		}
 	},
-	async streamingOptions({ value, rid }) {
-		await saveStreamingOptions(rid, value);
-	},
 	async readOnly({ value, room, rid, user }) {
 		if (value !== room.ro) {
 			await saveRoomReadOnly(rid, value, user);
@@ -354,7 +349,6 @@ const fields: (keyof RoomSettings)[] = [
 	'systemMessages',
 	'default',
 	'joinCode',
-	'streamingOptions',
 	'retentionEnabled',
 	'retentionMaxAge',
 	'retentionExcludePinned',

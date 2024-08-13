@@ -46,7 +46,6 @@ class CachedChatRoom extends CachedCollection<IRoom> {
 					usernames: room.usernames,
 					usersCount: room.usersCount,
 					lastMessage: room.lastMessage,
-					streamingOptions: room.streamingOptions,
 					teamId: room.teamId,
 					teamMain: room.teamMain,
 					v: (room as IOmnichannelRoom | undefined)?.v,
