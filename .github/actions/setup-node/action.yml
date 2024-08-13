@@ -51,3 +51,10 @@ runs:
     - name: yarn install
       shell: bash
       run: yarn
+
+    - name: backup yarn logs if fails
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: yarn-error.log
+        path: yarn-error.log
