@@ -14,9 +14,7 @@ addMigration({
 			},
 			{
 				$set: {
-					retention: {
-						ignoreThreads: false,
-					},
+					'retention.ignoreThreads': false,
 				},
 			},
 		);
