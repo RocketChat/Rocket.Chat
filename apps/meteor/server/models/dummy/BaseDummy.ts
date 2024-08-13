@@ -45,6 +45,10 @@ export class BaseDummy<
 		return new UpdaterImpl<T>(this.col as unknown as IBaseModel<T>);
 	}
 
+	public updateFromUpdater(query: Filter<T>, updater: Updater<T>): Promise<UpdateResult> {
+		return this.updateOne(query, updater);
+	}
+
 	getCollectionName(): string {
 		return this.collectionName;
 	}
