@@ -188,10 +188,8 @@ jobs:
           docker compose -f docker-compose-ci.yml up -d
 
       - name: Clean up temporary files
-        # remove all folders inside /tmp except /tmp/coverage
         run: |
-          cd /tmp
-          sudo find . -mindepth 1 -maxdepth 1 -type d | grep -Ev './(turbogha.log|coverage)' | sudo xargs rm -rf
+          sudo rm -rf /tmp/bundle
 
       - name: Cache Playwright binaries
         if: inputs.type == 'ui'
