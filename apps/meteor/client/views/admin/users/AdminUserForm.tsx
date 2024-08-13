@@ -221,7 +221,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								control={control}
 								name='email'
 								rules={{
-									required: t('The_field_is_required', t('Email')),
+									required: t('Email_is_required'),
 									validate: (email) => (validateEmail(email) ? undefined : t('ensure_email_address_valid')),
 								}}
 								render={({ field }) => (

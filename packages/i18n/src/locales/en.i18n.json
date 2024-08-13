@@ -1893,6 +1893,7 @@
   "Email_Inboxes": "Email inboxes",
   "Email_Inbox_has_been_added": "Email Inbox has been added",
   "Email_Inbox_has_been_removed": "Email Inbox has been removed",
+  "Email_is_required": "Email is required",
   "Email_Notification_Mode": "Offline Email Notifications",
   "Email_Notification_Mode_All": "Every Mention/DM",
   "Email_Notification_Mode_Disabled": "Disabled",
