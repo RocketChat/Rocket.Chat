@@ -46,9 +46,21 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 	}
 
 	hasChanges() {
-		const hasChanges = Object.keys(this.getUpdateFilter()).length > 0;
-		this.dirty = false;
-		return hasChanges;
+		const filter = this._getUpdateFilter();
+		return this._hasChanges(filter);
+	}
+
+	private _hasChanges(filter: UpdateFilter<T>) {
+		return Object.keys(filter).length > 0;
+	}
+
+	private _getUpdateFilter() {
+		return {
+			...(this._set && { $set: Object.fromEntries(this._set) }),
+			...(this._unset && { $unset: Object.fromEntries([...this._unset.values()].map((k) => [k, 1])) }),
+			...(this._inc && { $inc: Object.fromEntries(this._inc) }),
+			...(this._addToSet && { $addToSet: Object.fromEntries([...this._addToSet.entries()].map(([k, v]) => [k, { $each: v }])) }),
+		} as unknown as UpdateFilter<T>;
 	}
 
 	getUpdateFilter() {
@@ -56,12 +68,11 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 			throw new Error('Updater is dirty');
 		}
 		this.dirty = true;
-		return {
-			...(this._set && { $set: Object.fromEntries(this._set) }),
-			...(this._unset && { $unset: Object.fromEntries([...this._unset.values()].map((k) => [k, 1])) }),
-			...(this._inc && { $inc: Object.fromEntries(this._inc) }),
-			...(this._addToSet && { $addToSet: Object.fromEntries([...this._addToSet.entries()].map(([k, v]) => [k, { $each: v }])) }),
-		} as unknown as UpdateFilter<T>;
+		const filter = this._getUpdateFilter();
+		if (!this._hasChanges(filter)) {
+			throw new Error('No changes to update');
+		}
+		return filter;
 	}
 }
 

@@ -115,7 +115,11 @@ export abstract class BaseRaw<
 	}
 
 	public updateFromUpdater(query: Filter<T>, updater: Updater<T>): Promise<UpdateResult> {
-		return this.updateOne(query, updater.getUpdateFilter());
+		const updateFilter = updater.getUpdateFilter();
+		return this.updateOne(query, updateFilter).catch((e) => {
+			console.warn(e, updateFilter);
+			return Promise.reject(e);
+		});
 	}
 
 	private doNotMixInclusionAndExclusionFields(options: FindOptions<T> = {}): FindOptions<T> {
