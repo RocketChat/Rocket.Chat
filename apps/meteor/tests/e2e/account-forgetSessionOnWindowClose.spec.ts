@@ -30,9 +30,8 @@ test.describe.serial('Forget session on window close setting', () => {
 			await page.reload();
 
 			await expect(page.locator('role=heading[name="Welcome to Rocket.Chat"]')).toBeVisible();
-		})
+		});
 	});
-
 
 	test.describe('Setting on', async () => {
 		test.beforeAll(async ({ api }) => {
@@ -53,6 +52,6 @@ test.describe.serial('Forget session on window close setting', () => {
 			await page.reload();
 
 			await expect(page.locator('role=button[name="Login"]')).toBeVisible();
-		})
+		});
 	});
 });
