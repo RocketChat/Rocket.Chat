@@ -90,27 +90,27 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	const isSidepanelFeatureEnabled = useFeaturePreview('sidepanelNavigation');
 
 	useEffect(() => {
-		if (!isSidepanelFeatureEnabled) {
-			RoomManager.open(rid);
+		if (isSidepanelFeatureEnabled) {
+			if (isSuccess) {
+				switch (true) {
+					case data.room?.prid && data.parent && data.parent.sidepanel?.items.includes('discussions'):
+						RoomManager.openSecondLevel(data.parent._id, rid);
+						break;
+					case data.team?.roomId && !data.room?.teamMain && data.parent?.sidepanel?.items.includes('channels'):
+						RoomManager.openSecondLevel(data.team.roomId, rid);
+						break;
+
+					default:
+						RoomManager.open(rid);
+						break;
+				}
+			}
 			return (): void => {
 				RoomManager.back(rid);
 			};
 		}
 
-		if (isSuccess) {
-			// open team's dicsussion
-			if (data.room?.prid) {
-				data.parent?.sidepanel?.items.includes('discussions') ? RoomManager.openSecondLevel(data.parent._id, rid) : RoomManager.open(rid);
-			}
-			// open team's channel
-			if (data.team?.roomId && !data.room?.teamMain) {
-				data.parent?.sidepanel?.items.includes('channels') ? RoomManager.openSecondLevel(data.team.roomId, rid) : RoomManager.open(rid);
-			}
-			if ((!data?.room?.teamId || data?.room?.teamMain) && !data?.room?.prid) {
-				RoomManager.open(rid);
-			}
-		}
-
+		RoomManager.open(rid);
 		return (): void => {
 			RoomManager.back(rid);
 		};
