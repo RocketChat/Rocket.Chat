@@ -70,11 +70,13 @@ export const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, a
 			continue;
 		}
 
-		const officeHourStart = officeDay.start.time.split(':') as unknown as number[];
-		const officeHourEnd = officeDay.finish.time.split(':') as unknown as number[];
+		const [officeStartHour, officeStartMinute] = officeDay.start.time.split(':');
+		const [officeCloseHour, officeCloseMinute] = officeDay.finish.time.split(':');
 		// We should only take in consideration the time where the office is open and the conversation was inactive
-		const todayStartOfficeHours = inactivityDay.clone().set({ hour: officeHourStart[0], minute: officeHourStart[1] });
-		const todayEndOfficeHours = inactivityDay.clone().set({ hour: officeHourEnd[0], minute: officeHourEnd[1] });
+		const todayStartOfficeHours = inactivityDay
+			.clone()
+			.set({ hour: parseInt(officeStartHour, 10), minute: parseInt(officeStartMinute, 10) });
+		const todayEndOfficeHours = inactivityDay.clone().set({ hour: parseInt(officeCloseHour, 10), minute: parseInt(officeCloseMinute, 10) });
 
 		// 1: Room was inactive the whole day, we add the whole time BH is inactive
 		if (startOfInactivity.isBefore(todayStartOfficeHours) && endOfConversation.isAfter(todayEndOfficeHours)) {
