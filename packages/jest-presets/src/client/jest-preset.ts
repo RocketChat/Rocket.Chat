@@ -1,3 +1,4 @@
+import type * as SWC from '@swc/core';
 import type { Config } from 'jest';
 
 export default {
@@ -5,7 +6,7 @@ export default {
 	errorOnDeprecated: true,
 
 	transform: {
-		'^.+\\.(t|j)sx?$': [
+		'^.+\\.m?(t|j)sx?$': [
 			'@swc/jest',
 			{
 				sourceMaps: true,
@@ -23,9 +24,11 @@ export default {
 						dynamicImport: true,
 					},
 				},
-			},
+			} satisfies SWC.Config,
 		],
 	},
+	transformIgnorePatterns: ['<rootDir>/node_modules/@babel', '<rootDir>/node_modules/@jest', '/node_modules/(?!@testing-library/)'],
+	moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node', 'mjs'],
 
 	moduleNameMapper: {
 		'\\.css$': 'identity-obj-proxy',
