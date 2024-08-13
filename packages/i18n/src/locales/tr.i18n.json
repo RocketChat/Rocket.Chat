@@ -3117,8 +3117,6 @@
   "view-d-room_description": "Doğrudan iletileri görüntüleme izni",
   "view-full-other-user-info": "Tam Diğer Kullanıcı Bilgisi",
   "view-full-other-user-info_description": "Hesap oluşturma tarihi, son giriş, vb. De dahil olmak üzere diğer kullanıcıların tam profilini görüntüleme izni.",
-  "view-history": "Geçmişi Görüntüle",
-  "view-history_description": "Kanal geçmişini görüntüleme izni",
   "view-join-code": "Katılma Kodunu Görüntüle",
   "view-join-code_description": "Kanal katılma kodunu görüntüleme izni",
   "view-joined-room": "Katılınmış Oda Görüntüle",

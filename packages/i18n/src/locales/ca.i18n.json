@@ -4466,8 +4466,6 @@
   "View_full_conversation": "Veure conversa completa",
   "view-full-other-user-info": "Veure tota la info d'usuaris",
   "view-full-other-user-info_description": "Permís per veure el perfil complet d'altres usuaris, incloent la data de creació del compte, el darrer accés, etcètera.",
-  "view-history": "Veure historial",
-  "view-history_description": "Permís per veure l'historial del canal",
   "view-join-code": "Veure el codi per unir-se",
   "view-join-code_description": "Permís per veure el codi per unir-se al canal",
   "view-joined-room": "Veure Room unida",

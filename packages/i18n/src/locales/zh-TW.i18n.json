@@ -4289,8 +4289,6 @@
   "view-d-room_description": "檢視直接訊息的權限",
   "view-full-other-user-info": "檢視完整的其他使用者訊息",
   "view-full-other-user-info_description": "允許檢視其他使用者的完整個人資料，包括帳號建立日期，上次登入等。",
-  "view-history": "檢視歷史",
-  "view-history_description": "檢視頻道歷史記錄的權限",
   "view-join-code": "檢視加入代碼",
   "view-join-code_description": "檢視頻道連接代碼的權限",
   "view-joined-room": "檢視加入的 Room",

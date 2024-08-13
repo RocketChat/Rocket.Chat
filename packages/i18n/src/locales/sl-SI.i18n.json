@@ -2616,8 +2616,6 @@
   "view-d-room_description": "Dovoljenje za ogled neposrednih sporočil",
   "view-full-other-user-info": "Ogled polnih drugih informacij o uporabnikih",
   "view-full-other-user-info_description": "Dovoljenje za ogled celotnega profila drugih uporabnikov, vključno z datumom ustvarjanja računa, zadnjo prijavo itd.",
-  "view-history": "Ogled zgodovine",
-  "view-history_description": "Dovoljenje za ogled zgodovine kanalov",
   "view-join-code": "Ogled kode za pridružitev",
   "view-join-code_description": "Dovoljenje za ogled kode za pridružitev kanala",
   "view-joined-room": "Ogled pridružene sobe",

@@ -3896,8 +3896,6 @@
   "view-d-room_description": "Tilladelse til at se direkte meddelelser",
   "view-full-other-user-info": "Se fuld anden brugerinformation",
   "view-full-other-user-info_description": "Tilladelse til at se fuld profil for andre brugere, herunder oprettelse af konto, sidste login osv.",
-  "view-history": "Se historik",
-  "view-history_description": "Tilladelse til at se kanalhistorikken",
   "view-join-code": "View Tilmeld Kode",
   "view-join-code_description": "Tilladelse til at se kanalens adgangskode",
   "view-joined-room": "Se det tilsluttede rum",
