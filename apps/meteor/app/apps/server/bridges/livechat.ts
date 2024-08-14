@@ -352,10 +352,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		}
 
 		const livechatMessages = await LivechatTyped.getRoomMessages({ rid: roomId });
-
-		return Promise.all(
-			livechatMessages.map((message) => messageConverter.convertMessage(message, livechatMessages) as Promise<IAppsEngineMessage>),
-		);
+		return Promise.all(await livechatMessages.map((message) => messageConverter.convertMessage(message, livechatMessages)).toArray());
 	}
 
 	protected async setCustomFields(
