@@ -7,7 +7,7 @@ import React, { memo, useMemo, useState } from 'react';
 import GenericNoResults from '../../../../../components/GenericNoResults';
 import { PageScrollableContentWithShadow } from '../../../../../components/Page';
 import { useEditableSettingsGroupSections } from '../../../EditableSettingsContext';
-import GroupPage from '../../SettingsGroupPage/SettingsGroupPage';
+import SettingsGroupPage from '../../SettingsGroupPage';
 import SettingsSection from '../../SettingsSection';
 import VoipExtensionsPage from './VoipExtensionsPage';
 
@@ -50,7 +50,7 @@ function VoipGroupPage({ _id, onClickBack, ...group }: VoipGroupPageProps) {
 	);
 
 	return (
-		<GroupPage _id={_id} {...group} tabs={tabsComponent} isCustom={true} onClickBack={onClickBack}>
+		<SettingsGroupPage _id={_id} {...group} tabs={tabsComponent} isCustom={true} onClickBack={onClickBack}>
 			{tab === 'Extensions' ? (
 				ExtensionsPageComponent
 			) : (
@@ -64,7 +64,7 @@ function VoipGroupPage({ _id, onClickBack, ...group }: VoipGroupPageProps) {
 					</Box>
 				</PageScrollableContentWithShadow>
 			)}
-		</GroupPage>
+		</SettingsGroupPage>
 	);
 }
 

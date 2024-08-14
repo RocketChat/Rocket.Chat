@@ -1,8 +1,8 @@
 import type { ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
 
-import GroupPage from '../SettingsGroupPage/SettingsGroupPage';
-import Section from '../SettingsSection/SettingsSection';
+import SettingsGroupPage from '../SettingsGroupPage';
+import Section from '../SettingsSection';
 
 type GenericGroupPageProps = {
 	_id: string;
@@ -28,11 +28,11 @@ function GenericGroupPage({
 	const solo = sections.length === 1;
 
 	return (
-		<GroupPage _id={_id} i18nLabel={i18nLabel} onClickBack={onClickBack} tabs={tabs} {...props}>
+		<SettingsGroupPage _id={_id} i18nLabel={i18nLabel} onClickBack={onClickBack} tabs={tabs} {...props}>
 			{sections.map((sectionName) => (
 				<Section key={sectionName || ''} hasReset={hasReset} groupId={_id} sectionName={sectionName} currentTab={currentTab} solo={solo} />
 			))}
-		</GroupPage>
+		</SettingsGroupPage>
 	);
 }
 
