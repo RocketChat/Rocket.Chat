@@ -103,7 +103,7 @@ export class AppMessagesConverter {
 					return undefined;
 				}
 
-				return cache.get('user')(editedBy._id);
+				return cache.get('user.convertById')(editedBy._id);
 			},
 			attachments: async (message) => {
 				const result = await this._convertAttachmentsToApp(message.attachments);
