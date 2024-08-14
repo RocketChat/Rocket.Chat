@@ -223,6 +223,26 @@ describe('OverviewData Analytics', () => {
 				{ title: 'Busiest_time', value: '11AM - 12PM' },
 			]);
 		});
+		it('should return all values as 0 when there is no data in the provided period, but there is data in the previous and following days', async () => {
+			const overview = new OverviewData({
+				getAnalyticsBetweenDate: (date: { gte: Date; lte: Date }) => analytics(date),
+				getOnHoldConversationsBetweenDate: () => 0,
+			} as any);
+
+			// choosing this specific date since the day before and after are not empty
+			const targetDate = moment.utc().set('month', 10).set('year', 2023).set('date', 13);
+
+			const result = await overview.Conversations(targetDate.startOf('day'), targetDate.endOf('day'), '', 'UTC');
+			expect(result).to.be.deep.equal([
+				{ title: 'Total_conversations', value: 0 },
+				{ title: 'Open_conversations', value: 0 },
+				{ title: 'On_Hold_conversations', value: 0 },
+				{ title: 'Total_messages', value: 0 },
+				{ title: 'Busiest_day', value: '-' },
+				{ title: 'Conversations_per_day', value: '0.00' },
+				{ title: 'Busiest_time', value: '-' },
+			]);
+		});
 	});
 
 	describe('Productivity', () => {
@@ -272,6 +292,22 @@ describe('OverviewData Analytics', () => {
 				{ title: 'Avg_response_time', value: '00:00:07' },
 				{ title: 'Avg_first_response_time', value: '00:00:10' },
 				{ title: 'Avg_reaction_time', value: '00:00:49' },
+			]);
+		});
+		it('should return all values as 0 when there is no data in the provided period, but there is data in the previous and following days', async () => {
+			const overview = new OverviewData({
+				getAnalyticsMetricsBetweenDate: (_: any, date: { gte: Date; lte: Date }) => analytics(date),
+			} as any);
+
+			// choosing this specific date since the day before and after are not empty
+			const targetDate = moment.utc().set('month', 10).set('year', 2023).set('date', 13);
+
+			const result = await overview.Productivity(targetDate.startOf('day'), targetDate.endOf('day'), '', 'UTC');
+
+			expect(result).to.be.deep.equal([
+				{ title: 'Avg_response_time', value: '00:00:00' },
+				{ title: 'Avg_first_response_time', value: '00:00:00' },
+				{ title: 'Avg_reaction_time', value: '00:00:00' },
 			]);
 		});
 	});
