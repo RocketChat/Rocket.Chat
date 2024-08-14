@@ -54,15 +54,9 @@ export const userAvatar = async function (req, res) {
 
 	if (settings.get('Accounts_AvatarExternalProviderUrl') !== '' && settings.get('Accounts_AvatarExternalProviderProxy')) {
 		const response = await fetch(settings.get('Accounts_AvatarExternalProviderUrl').replace('{username}', requestUsername));
-		if (response.status === 200) {
-			const blob = Buffer.from(await response.arrayBuffer(), 'base64');
-			res.writeHead(200, {
-				'Content-Type': response.headers.get('content-type'),
-				'Content-Length': blob.length,
-			});
-			res.end(blob);
-			return;
-		}
+		response.headers.forEach((value, key) => res.setHeader(key, value));
+		response.body.pipe(res);
+		return;
 	}
 
 	// if still using "letters fallback"
