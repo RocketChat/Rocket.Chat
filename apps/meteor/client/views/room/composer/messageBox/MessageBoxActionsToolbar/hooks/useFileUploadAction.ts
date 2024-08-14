@@ -3,15 +3,16 @@ import { useEffect } from 'react';
 
 import type { GenericMenuItemProps } from '../../../../../../components/GenericMenu/GenericMenuItem';
 import { useFileInput } from '../../../../../../hooks/useFileInput';
-import { useChat } from '../../../../contexts/ChatContext';
 
 const fileInputProps = { type: 'file', multiple: true };
 
-export const useFileUploadAction = (disabled: boolean, handleFiles?: any): GenericMenuItemProps => {
+export const useFileUploadAction = (
+	disabled: boolean,
+	handleFiles: (filesList: File[], resetFileInput?: () => void) => void,
+): GenericMenuItemProps => {
 	const t = useTranslation();
 	const fileUploadEnabled = useSetting<boolean>('FileUpload_Enabled');
 	const fileInputRef = useFileInput(fileInputProps);
-	const chat = useChat();
 
 	useEffect(() => {
 		const resetFileInput = () => {
@@ -35,7 +36,7 @@ export const useFileUploadAction = (disabled: boolean, handleFiles?: any): Gener
 
 		fileInputRef.current?.addEventListener('change', handleUploadChange);
 		return () => fileInputRef?.current?.removeEventListener('change', handleUploadChange);
-	}, [chat, fileInputRef]);
+	}, [fileInputRef]);
 
 	const handleUpload = () => {
 		fileInputRef?.current?.click();

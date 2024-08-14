@@ -100,6 +100,8 @@ type MessageBoxProps = {
 	isEmbedded?: boolean;
 };
 
+type HandleFilesToUpload = (filesList: File[], resetFileInput?: () => void) => void;
+
 const MessageBox = ({
 	tmid,
 	onSend,
@@ -126,7 +128,7 @@ const MessageBox = ({
 	const dispatchToastMessage = useToastMessageDispatch();
 	const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
 
-	function handleFilesToUpload(filesList: File[], resetFileInput?: () => void) {
+	const handleFilesToUpload: HandleFilesToUpload = (filesList, resetFileInput) => {
 		setFilesToUpload((prevFiles) => {
 			let newFilesToUpload = [...prevFiles, ...filesList];
 			if (newFilesToUpload.length > 6) {
@@ -163,7 +165,7 @@ const MessageBox = ({
 		});
 
 		resetFileInput?.();
-	}
+	};
 
 	const handleRemoveFile = (index: number) => {
 		const temp = [...filesToUpload];

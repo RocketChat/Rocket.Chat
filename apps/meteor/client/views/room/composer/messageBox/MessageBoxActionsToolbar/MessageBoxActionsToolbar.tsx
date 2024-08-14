@@ -28,7 +28,7 @@ type MessageBoxActionsToolbarProps = {
 	isRecording: boolean;
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
-	handleFiles?: any;
+	handleFiles: (filesList: File[], resetFileInput?: () => void) => void;
 };
 
 const isHidden = (hiddenActions: Array<string>, action: GenericMenuItemProps) => {
