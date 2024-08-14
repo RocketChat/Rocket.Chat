@@ -1041,10 +1041,9 @@ describe('LIVECHAT - dashboards', function () {
 				expect(result.body).to.be.an('array');
 
 				const expectedResult = [
-					{ title: 'Total_conversations', value: 0 },
-					{ title: 'Open_conversations', value: 0 },
-					{ title: 'On_Hold_conversations', value: 0 },
-					{ title: 'Conversations_per_day', value: '0.00' },
+					{ title: 'Avg_response_time', value: '00:00:00' },
+					{ title: 'Avg_first_response_time', value: '00:00:00' },
+					{ title: 'Avg_reaction_time', value: '00:00:00' },
 				];
 
 				expectedResult.forEach((expected) => {
