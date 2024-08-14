@@ -5899,6 +5899,7 @@
   "Visitor_page_URL": "Visitor page URL",
   "Visitor_time_on_site": "Visitor time on site",
   "Voice_Call": "Voice Call",
+  "Voice_calling_registration_failed": "Voice calling registration failed",
   "Voice_Call_Extension": "Voice Call Extension",
   "VoIP_Enable_Keep_Alive_For_Unstable_Networks": "Enable SIP Options Keep Alive",
   "VoIP_Enable_Keep_Alive_For_Unstable_Networks_Description": "Monitor the status of multiple external SIP gateways by sending periodic SIP OPTIONS messages. Used for unstable networks.",

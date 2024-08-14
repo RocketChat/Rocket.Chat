@@ -24,6 +24,7 @@ import TranslationProvider from './TranslationProvider';
 import UserPresenceProvider from './UserPresenceProvider';
 import UserProvider from './UserProvider';
 import VideoConfProvider from './VideoConfProvider';
+import VoiceCallProvider from './VoiceCallProvider';
 
 type MeteorProviderProps = {
 	children?: ReactNode;
@@ -51,9 +52,11 @@ const MeteorProvider = ({ children }: MeteorProviderProps) => (
 																			<UserPresenceProvider>
 																				<ActionManagerProvider>
 																					<VideoConfProvider>
-																						<OmnichannelCallProvider>
-																							<OmnichannelProvider>{children}</OmnichannelProvider>
-																						</OmnichannelCallProvider>
+																						<VoiceCallProvider>
+																							<OmnichannelCallProvider>
+																								<OmnichannelProvider>{children}</OmnichannelProvider>
+																							</OmnichannelCallProvider>
+																						</VoiceCallProvider>
 																					</VideoConfProvider>
 																				</ActionManagerProvider>
 																			</UserPresenceProvider>
