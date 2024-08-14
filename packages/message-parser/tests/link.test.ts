@@ -608,6 +608,10 @@ Text after line break`,
       ]),
     ],
   ],
+  [
+    '(https://rocket.chat)',
+    [paragraph([plain('('), link('https://rocket.chat'), plain(')')])],
+  ],
 ])('parses %p', (input, output) => {
   expect(parse(input)).toMatchObject(output);
 });
