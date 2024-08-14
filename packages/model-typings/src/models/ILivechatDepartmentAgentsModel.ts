@@ -1,5 +1,5 @@
 import type { ILivechatDepartmentAgents, IUser } from '@rocket.chat/core-typings';
-import type { DeleteResult, FindCursor, FindOptions, Document, UpdateResult, Filter } from 'mongodb';
+import type { DeleteResult, FindCursor, FindOptions, Document, UpdateResult, Filter, AggregationCursor } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -39,23 +39,6 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 		options?: undefined | FindOptions<ILivechatDepartmentAgents>,
 	): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
 
-	findActiveDepartmentsByAgentId(agentId: string): FindCursor<ILivechatDepartmentAgents>;
-
-	findActiveDepartmentsByAgentId(agentId: string, options: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;
-
-	findActiveDepartmentsByAgentId<P extends Document>(
-		agentId: string,
-		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): FindCursor<P>;
-
-	findActiveDepartmentsByAgentId<P extends Document>(
-		agentId: string,
-		options?:
-			| undefined
-			| FindOptions<ILivechatDepartmentAgents>
-			| FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
-	): FindCursor<ILivechatDepartmentAgents> | FindCursor<P>;
-
 	findByDepartmentIds(departmentIds: string[], options?: Record<string, any>): FindCursor<ILivechatDepartmentAgents>;
 	findAgentsByAgentIdAndBusinessHourId(_agentId: string, _businessHourId: string): Promise<ILivechatDepartmentAgents[]>;
 	setDepartmentEnabledByDepartmentId(departmentId: string, departmentEnabled: boolean): Promise<Document | UpdateResult>;
@@ -67,7 +50,7 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 		options?: FindOptions<ILivechatDepartmentAgents>,
 	): Promise<ILivechatDepartmentAgents | null>;
 	findOneByAgentIdAndDepartmentId(agentId: string, departmentId: string): Promise<ILivechatDepartmentAgents | null>;
-	saveAgent(agent: Omit<ILivechatDepartmentAgents, '_id'>): Promise<UpdateResult>;
+	saveAgent(agent: Omit<ILivechatDepartmentAgents, '_id' | '_updatedAt'>): Promise<UpdateResult>;
 	removeByAgentId(agentId: string): Promise<DeleteResult>;
 	removeByDepartmentIdAndAgentId(departmentId: string, agentId: string): Promise<void>;
 	getNextAgentForDepartment(
@@ -97,4 +80,5 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 		departmentId: ILivechatDepartmentAgents['departmentId'],
 		options?: FindOptions<ILivechatDepartmentAgents>,
 	): FindCursor<ILivechatDepartmentAgents>;
+	findDepartmentsOfAgent(agentId: string, enabled?: boolean): AggregationCursor<ILivechatDepartmentAgents & { departmentName: string }>;
 }

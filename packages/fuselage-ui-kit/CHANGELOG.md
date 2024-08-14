@@ -1,5 +1,75 @@
 # Change Log
 
+## 9.0.0
+
+### Patch Changes
+
+- ([#32679](https://github.com/RocketChat/Rocket.Chat/pull/32679)) Fix validations from "UiKit" modal component
+
+- ([#32719](https://github.com/RocketChat/Rocket.Chat/pull/32719)) Added the `user` param to apps-engine update method call, allowing apps' new `onUpdate` hook to know who triggered the update.
+
+- <details><summary>Updated dependencies [2d89a0c448, 24f7df4894, 4e8aa575a6, b8e5887fb9]:</summary>
+
+  - @rocket.chat/ui-video-conf@9.0.0
+  - @rocket.chat/core-typings@6.11.0
+  - @rocket.chat/ui-contexts@9.0.0
+  - @rocket.chat/ui-kit@0.36.0
+  - @rocket.chat/gazzodown@9.0.0
+  - @rocket.chat/ui-avatar@5.0.0
+  </details>
+
+## 9.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.6
+  - @rocket.chat/gazzodown@9.0.0-rc.6
+  - @rocket.chat/ui-contexts@9.0.0-rc.6
+  - @rocket.chat/ui-avatar@5.0.0-rc.6
+  - @rocket.chat/ui-video-conf@9.0.0-rc.6
+  </details>
+
+## 9.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.5
+  - @rocket.chat/gazzodown@9.0.0-rc.5
+  - @rocket.chat/ui-contexts@9.0.0-rc.5
+  - @rocket.chat/ui-avatar@5.0.0-rc.5
+  - @rocket.chat/ui-video-conf@9.0.0-rc.5
+  </details>
+
+## 9.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.4
+  - @rocket.chat/gazzodown@9.0.0-rc.4
+  - @rocket.chat/ui-contexts@9.0.0-rc.4
+  - @rocket.chat/ui-avatar@5.0.0-rc.4
+  - @rocket.chat/ui-video-conf@9.0.0-rc.4
+  </details>
+
+## 9.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.3
+  - @rocket.chat/gazzodown@9.0.0-rc.3
+  - @rocket.chat/ui-contexts@9.0.0-rc.3
+  - @rocket.chat/ui-avatar@5.0.0-rc.3
+  - @rocket.chat/ui-video-conf@9.0.0-rc.3
+  </details>
+
 ## 9.0.0-rc.2
 
 ### Patch Changes

@@ -1,6 +1,7 @@
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { DefaultFields, FindPaginated, IBaseModel, InsertionModel, ResultFields } from '@rocket.chat/model-typings';
-import { getCollectionName } from '@rocket.chat/models';
+import { getCollectionName, UpdaterImpl } from '@rocket.chat/models';
+import type { Updater } from '@rocket.chat/models';
 import type {
 	BulkWriteOptions,
 	ChangeStream,
@@ -38,6 +39,14 @@ export class BaseDummy<
 
 	public async createIndexes(): Promise<string[] | void> {
 		// nothing to do
+	}
+
+	public getUpdater(): Updater<T> {
+		return new UpdaterImpl<T>();
+	}
+
+	public updateFromUpdater(query: Filter<T>, updater: Updater<T>): Promise<UpdateResult> {
+		return this.updateOne(query, updater);
 	}
 
 	getCollectionName(): string {
