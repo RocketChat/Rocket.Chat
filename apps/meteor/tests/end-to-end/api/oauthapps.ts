@@ -95,7 +95,7 @@ describe('[OAuthApps]', () => {
 					expect(res.body.oauthApp).to.not.have.property('clientSecret');
 				});
 		});
-		it('should return only non sensitive information if user does not have the permission to manage oauth apps when searching by clientId', async () => {
+		it('should return only non sensitive information if user does not have the permission to manage oauth apps when searching by appId', async () => {
 			await updatePermission('manage-oauth-apps', []);
 			await request
 				.get(api('oauth-apps.get'))
