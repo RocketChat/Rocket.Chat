@@ -111,7 +111,15 @@ export abstract class BaseRaw<
 	}
 
 	public getUpdater(): Updater<T> {
-		return new UpdaterImpl<T>(this.col as unknown as IBaseModel<T>);
+		return new UpdaterImpl<T>();
+	}
+
+	public updateFromUpdater(query: Filter<T>, updater: Updater<T>): Promise<UpdateResult> {
+		const updateFilter = updater.getUpdateFilter();
+		return this.updateOne(query, updateFilter).catch((e) => {
+			console.warn(e, updateFilter);
+			return Promise.reject(e);
+		});
 	}
 
 	private doNotMixInclusionAndExclusionFields(options: FindOptions<T> = {}): FindOptions<T> {
