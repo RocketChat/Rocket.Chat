@@ -120,7 +120,7 @@ test.describe.serial('OC - Manage Agents', () => {
 			await poOmnichannelAgents.findRowByUsername('user1').click();
 
 			// mock the endpoint to use the one without pagination
-			await page.route(new RegExp('/api/v1/livechat/department.*'), async (route) => {
+			await page.route('/api/v1/livechat/department?showArchived=true', async (route) => {
 				await route.fulfill({ json: { departments: [] } });
 			});
 
