@@ -124,6 +124,7 @@ const MessageBox = ({
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 
 	const [typing, setTyping] = useReducer(reducer, false);
+	const [isUploading, setIsUploading] = useState(false);
 	const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
@@ -161,6 +162,7 @@ const MessageBox = ({
 				return true;
 			});
 
+			setIsUploading(validFiles.length > 0);
 			return validFiles;
 		});
 
@@ -171,6 +173,7 @@ const MessageBox = ({
 		const temp = [...filesToUpload];
 		temp.splice(index, 1);
 		setFilesToUpload(temp);
+		setIsUploading(temp.length > 0);
 	};
 
 	const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
@@ -384,7 +387,7 @@ const MessageBox = ({
 	});
 
 	const handleSendMessage = useMutableCallback(async () => {
-		if (filesToUpload.length > 0) {
+		if (isUploading) {
 			return handleSendFiles(filesToUpload);
 		}
 		const text = chat.composer?.text ?? '';
@@ -398,6 +401,7 @@ const MessageBox = ({
 			isSlashCommandAllowed,
 		});
 	});
+
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
 		if (chat.currentEditing) {
 			event.preventDefault();
@@ -649,7 +653,7 @@ const MessageBox = ({
 						width: '100%',
 					}}
 				>
-					{filesToUpload.length > 0 && (
+					{isUploading && (
 						<>
 							{filesToUpload.map((file, index) => (
 								<FilePreview key={index} file={file} index={index} onRemove={handleRemoveFile} />
@@ -697,10 +701,10 @@ const MessageBox = ({
 								<MessageComposerAction
 									aria-label={t('Send')}
 									icon='send'
-									disabled={!canSend || (!typing && !isEditing && !(filesToUpload.length > 0))}
+									disabled={!canSend || (!typing && !isEditing && !isUploading)}
 									onClick={handleSendMessage}
-									secondary={typing || isEditing || filesToUpload.length > 0}
-									info={typing || isEditing || filesToUpload.length > 0}
+									secondary={typing || isEditing || isUploading}
+									info={typing || isEditing || isUploading}
 								/>
 							</>
 						)}

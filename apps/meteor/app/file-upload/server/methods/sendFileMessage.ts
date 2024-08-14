@@ -151,7 +151,7 @@ export const parseFileIntoMessageAttachments = async (
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		sendFileMessage: (roomId: string, _store: string, file: Partial<IUpload>[], msgData?: Record<string, any>) => boolean;
+		sendFileMessage: (roomId: string, _store: string, file: Partial<IUpload>, msgData?: Record<string, any>) => boolean;
 	}
 }
 
@@ -241,6 +241,7 @@ Meteor.methods<ServerMethods>({
 				method: 'sendFileMessage',
 			} as any);
 		}
+
 		return sendFileMessage(userId, { roomId, file, msgData });
 	},
 });
