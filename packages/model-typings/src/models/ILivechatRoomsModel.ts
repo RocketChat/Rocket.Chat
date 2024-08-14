@@ -220,22 +220,22 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		analyticsData: Record<string, string | number | Date> | undefined,
 		updater?: Updater<IOmnichannelRoom>,
 	): Promise<Updater<IOmnichannelRoom>>;
-	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lt: Date }, data?: { departmentId: string }): Promise<number>;
+	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lte: Date }, data?: { departmentId: string }): Promise<number>;
 	getAnalyticsMetricsBetweenDate(
 		t: 'l',
-		date: { gte: Date; lt: Date },
+		date: { gte: Date; lte: Date },
 		data?: { departmentId?: string },
 		extraQuery?: Filter<IOmnichannelRoom>,
 	): FindCursor<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs'>>;
 	getAnalyticsMetricsBetweenDateWithMessages(
 		t: string,
-		date: { gte: Date; lt: Date },
+		date: { gte: Date; lte: Date },
 		data?: { departmentId?: string },
 		extraQuery?: Document,
 		extraMatchers?: Document,
 	): AggregationCursor<Pick<IOmnichannelRoom, '_id' | 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs'>>;
 	getAnalyticsBetweenDate(
-		date: { gte: Date; lt: Date },
+		date: { gte: Date; lte: Date },
 		data?: { departmentId: string },
 	): AggregationCursor<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs' | 'onHold'>>;
 	findOpenByAgent(userId: string, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
