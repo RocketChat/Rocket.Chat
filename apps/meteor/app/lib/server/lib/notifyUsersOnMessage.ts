@@ -100,7 +100,7 @@ const getUnreadSettingCount = (roomType: RoomType): UnreadCountType => {
 	return settings.get(unreadSetting);
 };
 
-async function updateUsersSubscriptions(message: IMessage, room: Pick<IRoom, 't' | '_id'>): Promise<void> {
+async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise<void> {
 	// Don't increase unread counter on thread messages
 	if (room != null && !message.tmid) {
 		const { toAll, toHere, mentionIds } = await getMentions(message);

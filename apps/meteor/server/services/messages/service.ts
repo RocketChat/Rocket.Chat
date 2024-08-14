@@ -129,21 +129,23 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			throw new Error('The username cannot be empty.');
 		}
 
-		const { insertedId } = await Messages.createWithTypeRoomIdMessageUserAndUnread(
-			type,
-			rid,
-			message,
-			{ _id: userId, username, name },
-			settings.get('Message_Read_Receipt_Enabled'),
-			extraData,
-		);
+		const [{ insertedId }] = await Promise.all([
+			Messages.createWithTypeRoomIdMessageUserAndUnread(
+				type,
+				rid,
+				message,
+				{ _id: userId, username, name },
+				settings.get('Message_Read_Receipt_Enabled'),
+				extraData,
+			),
+			Rooms.incMsgCountById(rid, 1),
+		]);
 
 		if (!insertedId) {
 			throw new Error('Failed to save system message.');
 		}
 
 		const createdMessage = await Messages.findOneById(insertedId);
-
 		if (!createdMessage) {
 			throw new Error('Failed to find the created message.');
 		}
