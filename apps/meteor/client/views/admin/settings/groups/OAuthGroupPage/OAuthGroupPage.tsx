@@ -5,11 +5,11 @@ import { useToastMessageDispatch, useAbsoluteUrl, useMethod, useTranslation, use
 import type { ReactElement } from 'react';
 import React, { memo, useEffect, useState } from 'react';
 
-import { strRight } from '../../../../../lib/utils/stringUtils';
-import GenericModal from '../../../../components/GenericModal';
-import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
-import GroupPage from '../GroupPage';
-import Section from '../Section';
+import { strRight } from '../../../../../../lib/utils/stringUtils';
+import GenericModal from '../../../../../components/GenericModal';
+import { useEditableSettingsGroupSections } from '../../../EditableSettingsContext';
+import GroupPage from '../../SettingsGroupPage/SettingsGroupPage';
+import Section from '../../SettingsSection/SettingsSection';
 import CreateOAuthModal from './CreateOAuthModal';
 
 type OAuthGroupPageProps = ISetting & {
