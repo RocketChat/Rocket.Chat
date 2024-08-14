@@ -10,9 +10,11 @@ callbacks.add(
 			return roomInfo;
 		}
 
-		const { sla: searchTerm } = extraData;
+		const { sla: searchTerm, customFields } = extraData;
+		const roomInfoWithExtraData = { ...roomInfo, ...(!!customFields && { customFields }) };
+
 		if (!searchTerm) {
-			return roomInfo;
+			return roomInfoWithExtraData;
 		}
 
 		const sla = await OmnichannelServiceLevelAgreements.findOneByIdOrName(searchTerm);
@@ -23,7 +25,7 @@ callbacks.add(
 		}
 
 		const { _id: slaId } = sla;
-		return { ...roomInfo, slaId };
+		return { ...roomInfoWithExtraData, slaId };
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-before-new-room',
