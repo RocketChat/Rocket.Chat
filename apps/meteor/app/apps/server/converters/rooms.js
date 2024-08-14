@@ -210,6 +210,17 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('departments').convertById(departmentId);
 			},
+			closedBy: async (room) => {
+				const { closedBy } = room;
+
+				if (!closedBy) {
+					return undefined;
+				}
+
+				delete room.servedBy;
+
+				return this.orch.getConverters().get('users').convertById(closedBy._id);
+			},
 			servedBy: async (room) => {
 				const { servedBy } = room;
 
