@@ -5432,7 +5432,7 @@
   "onboarding.component.form.action.confirm": "Bestätigen",
   "onboarding.component.form.action.pasteHere": "Hier einfügen...",
   "onboarding.component.form.termsAndConditions": "Ich bin mit den Nutzungsvereinbarung und den Datenschutzbestimmungen einverstanden",
-  "onboarding.component.emailCodeFallback": "Keine E-Mail erhalten? Noch einemal versenden oder E-Mailadresse ändern",
+  "onboarding.component.emailCodeFallback": "Keine E-Mail erhalten? <1>Noch einmal versenden</1> oder <3>E-Mailadresse ändern</3>",
   "onboarding.page.form.title": "Starten wir Ihren Arbeitsbereich",
   "onboarding.page.emailConfirmed.title": "E-Mail bestätigt",
   "onboarding.page.emailConfirmed.subtitle": "Sie können zu Ihrer Rocket.Chat-Anwendung zurückkehren - wir haben Ihren Arbeitsbereich bereits gestartet.",
