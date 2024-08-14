@@ -1251,26 +1251,16 @@ class LivechatClass {
 				_id,
 				username,
 			},
+			...(transferData.transferredBy.userType === 'visitor' && { token: room.v.token }),
 			groupable: false,
 			transferData: {
 				transferredBy,
 				ts: new Date(),
-				msg: '',
-				u: {
-					_id,
-					username,
-				},
-				groupable: false,
-				...(transferData.transferredBy.userType === 'visitor' && { token: room.v.token }),
-				transferData: {
-					transferredBy,
-					ts: new Date(),
-					scope: scopeData,
-					comment,
-					...(previousDepartment && { previousDepartment }),
-					...(nextDepartment && { nextDepartment }),
-					...(transferredTo && { transferredTo }),
-				},
+				scope: scopeData,
+				comment,
+				...(previousDepartment && { previousDepartment }),
+				...(nextDepartment && { nextDepartment }),
+				...(transferredTo && { transferredTo }),
 			},
 		};
 
