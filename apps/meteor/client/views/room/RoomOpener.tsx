@@ -25,6 +25,8 @@ type RoomOpenerProps = {
 	reference: string;
 };
 
+const isDirectMessageRoom = (type: RoomType) => type === 'd';
+
 const RoomOpener = ({ type, reference }: RoomOpenerProps): ReactElement => {
 	const { data, error, isSuccess, isError, isLoading } = useOpenRoom({ type, reference });
 	const { t } = useTranslation();
@@ -37,7 +39,7 @@ const RoomOpener = ({ type, reference }: RoomOpenerProps): ReactElement => {
 			{isSuccess && (
 				<RoomProvider rid={data.rid}>
 					<Box display='flex' w='full' h='full'>
-						{isSidepanelFeatureEnabled && <RoomSidePanel rid={data.rid} />}
+						{!isDirectMessageRoom(type) && isSidepanelFeatureEnabled && <RoomSidePanel rid={data.rid} />}
 						<Room />
 					</Box>
 				</RoomProvider>
