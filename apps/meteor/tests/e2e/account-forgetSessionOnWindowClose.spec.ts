@@ -13,11 +13,7 @@ test.describe.serial('Forget session on window close setting', () => {
 
 	test.describe('Setting off', async () => {
 		test.beforeAll(async ({ api }) => {
-			expect((await api.post('/settings/Accounts_ForgetUserSessionOnWindowClose', { value: false })).status()).toBe(200);
-		});
-
-		test.afterAll(async ({ api }) => {
-			expect((await api.post('/settings/Accounts_ForgetUserSessionOnWindowClose', { value: true })).status()).toBe(200);
+			await api.post('/settings/Accounts_ForgetUserSessionOnWindowClose', { value: false });
 		});
 
 		test('Login using credentials and reload to stay logged in', async ({ page }) => {
@@ -35,11 +31,11 @@ test.describe.serial('Forget session on window close setting', () => {
 
 	test.describe('Setting on', async () => {
 		test.beforeAll(async ({ api }) => {
-			expect((await api.post('/settings/Accounts_ForgetUserSessionOnWindowClose', { value: true })).status()).toBe(200);
+			await api.post('/settings/Accounts_ForgetUserSessionOnWindowClose', { value: true });
 		});
 
 		test.afterAll(async ({ api }) => {
-			expect((await api.post('/settings/Accounts_ForgetUserSessionOnWindowClose', { value: false })).status()).toBe(200);
+			await api.post('/settings/Accounts_ForgetUserSessionOnWindowClose', { value: false });
 		});
 
 		test('Login using credentials and reload to get logged out', async ({ page }) => {

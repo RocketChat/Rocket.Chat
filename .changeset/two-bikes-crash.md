@@ -1,5 +1,5 @@
 ---
-'@rocket.chat/meteor': minor
+'@rocket.chat/meteor': patch
 ---
 
 Fixed an issue related to setting Accounts_ForgetUserSessionOnWindowClose, this setting was not working as expected.
