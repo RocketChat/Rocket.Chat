@@ -111,8 +111,8 @@ export class AppRoomsConverter {
 		return Object.assign(newRoom, room._unmappedProperties_);
 	}
 
-	async convertRoom(room) {
-		if (!room) {
+	async convertRoom(originalRoom) {
+		if (!originalRoom) {
 			return undefined;
 		}
 
@@ -218,9 +218,11 @@ export class AppRoomsConverter {
 					return undefined;
 				}
 
-				delete room.servedBy;
-
-				return this.orch.getConverters().get('users').convertById(closedBy._id);
+				delete room.closedBy;
+				if (originalRoom.closer === 'user') {
+					return this.orch.getConverters().get('users').convertById(closedBy._id);
+				}
+				return this.orch.getConverters().get('visitors').convertById(closedBy._id);
 			},
 			servedBy: async (room) => {
 				const { servedBy } = room;
@@ -257,7 +259,7 @@ export class AppRoomsConverter {
 			},
 		};
 
-		return transformMappedData(room, map);
+		return transformMappedData(originalRoom, map);
 	}
 
 	_convertTypeToApp(typeChar) {
