@@ -6,9 +6,9 @@ import sinon from 'sinon';
 import { OverviewData } from '../../../../../server/services/omnichannel-analytics/OverviewData';
 import { conversations } from './mockData';
 
-const analytics = (date: { gte: Date; lt: Date }) => {
+const analytics = (date: { gte: Date; lte: Date }) => {
 	// filter the mockData array with the date param with moment
-	return conversations.filter((c) => moment(c.ts).isBetween(date.gte, date.lt));
+	return conversations.filter((c) => moment(c.ts).isBetween(date.gte, date.lte, undefined, '[]'));
 };
 
 describe('OverviewData Analytics', () => {
@@ -184,7 +184,7 @@ describe('OverviewData Analytics', () => {
 		});
 		it('should return all values as 0 when theres data but not on the period we pass', async () => {
 			const overview = new OverviewData({
-				getAnalyticsBetweenDate: () => analytics({ gte: moment().set('month', 9).toDate(), lt: moment().set('month', 9).toDate() }),
+				getAnalyticsBetweenDate: () => analytics({ gte: moment().set('month', 9).toDate(), lte: moment().set('month', 9).toDate() }),
 				getOnHoldConversationsBetweenDate: () => 0,
 			} as any);
 			const result = await overview.Conversations(moment(), moment(), '', 'UTC', (v: string): string => v, {});
@@ -200,7 +200,7 @@ describe('OverviewData Analytics', () => {
 		});
 		it('should return the correct values when theres data on the period we pass', async () => {
 			const overview = new OverviewData({
-				getAnalyticsBetweenDate: (date: { gte: Date; lt: Date }) => analytics(date),
+				getAnalyticsBetweenDate: (date: { gte: Date; lte: Date }) => analytics(date),
 				getOnHoldConversationsBetweenDate: () => 1,
 			} as any);
 
@@ -241,7 +241,7 @@ describe('OverviewData Analytics', () => {
 		});
 		it('should return all values as 0 when theres data but not on the period we pass', async () => {
 			const overview = new OverviewData({
-				getAnalyticsMetricsBetweenDate: (_: any, date: { gte: Date; lt: Date }) => analytics(date),
+				getAnalyticsMetricsBetweenDate: (_: any, date: { gte: Date; lte: Date }) => analytics(date),
 			} as any);
 			const result = await overview.Productivity(
 				moment().set('month', 9),
@@ -259,7 +259,7 @@ describe('OverviewData Analytics', () => {
 		});
 		it('should return the correct values when theres data on the period we pass', async () => {
 			const overview = new OverviewData({
-				getAnalyticsMetricsBetweenDate: (_: any, date: { gte: Date; lt: Date }) => analytics(date),
+				getAnalyticsMetricsBetweenDate: (_: any, date: { gte: Date; lte: Date }) => analytics(date),
 			} as any);
 			const result = await overview.Productivity(
 				moment().set('month', 10).set('year', 2023).startOf('month'),
