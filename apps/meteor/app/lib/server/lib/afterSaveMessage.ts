@@ -13,7 +13,7 @@ export async function afterSaveMessage(
 	const data = await callbacks.run('afterSaveMessage', message, { room, uid, roomUpdater });
 
 	if (roomUpdater.hasChanges()) {
-		await roomUpdater.persist({ _id: room._id });
+		await Rooms.updateFromUpdater({ _id: room._id }, roomUpdater);
 	}
 
 	// TODO: Fix type - callback configuration needs to be updated
@@ -29,6 +29,6 @@ export function afterSaveMessageAsync(
 	callbacks.runAsync('afterSaveMessage', message, { room, uid, roomUpdater });
 
 	if (roomUpdater.hasChanges()) {
-		void roomUpdater.persist({ _id: room._id });
+		void Rooms.updateFromUpdater({ _id: room._id }, roomUpdater);
 	}
 }
