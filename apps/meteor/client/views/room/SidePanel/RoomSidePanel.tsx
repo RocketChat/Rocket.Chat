@@ -9,8 +9,8 @@ import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { useTeamsChannelList } from '../../teams/contextualBar/channels/hooks/useTeamsChannelList';
 import { useDiscussionsList } from '../contextualBar/Discussions/useDiscussionsList';
-import RoomSidePanelItem from './RoomSidePanelItem';
 import RoomSidePanelLoading from './RoomSidePanelLoading';
+import RoomSidePanelItem from './SidePanelItem';
 
 type DataResult = {
 	room: IRoom | undefined;
@@ -46,10 +46,15 @@ const RoomSidePanel = ({ rid }: { rid: IRoom['_id'] }) => {
 	);
 
 	// IMPROVE: only fetch discussions IF parent room has sidepanel.items with discussions
+	// TODO: get last message from discussion
+	// TODO: get discussion avatar
+	// TODO: get discussion unread messages
 	const { discussionsList } = useDiscussionsList(dicsussionOptions, data?.room?.u._id || '');
 	const { phase, error, items: discussions } = useRecordList<IDiscussionMessage>(discussionsList);
 
 	// IMPROVE: only fetch channels IF parent room has sidepanel.items with channels
+	// TODO: get channel avatar
+	// TODO: get channel unread messages
 	const { teamsChannelList, reload } = useTeamsChannelList(channelOptions);
 	const { phase: channelsPhase, error: channelsError, items: channels } = useRecordList(teamsChannelList);
 
@@ -71,10 +76,10 @@ const RoomSidePanel = ({ rid }: { rid: IRoom['_id'] }) => {
 			<SidePanelList>
 				<RoomSidePanelItem id={data.parent?._id} name={t('General')} icon={(data.parent || data.room)?.t === 'p' ? 'team-lock' : 'team'} />
 				{shouldShowDiscussions(data) &&
-					discussions.map(({ drid, msg }) => <RoomSidePanelItem key={drid} id={drid} name={msg} icon='baloons' />)}
+					discussions.map((data) => <RoomSidePanelItem key={data.drid} id={data.drid} name={data.msg} icon='baloons' {...data} />)}
 				{shouldShowChannels(data) &&
-					channels.map(({ _id, name, t }) => (
-						<RoomSidePanelItem key={_id} id={_id} name={name} icon={t === 'p' ? 'hashtag-lock' : 'hashtag'} />
+					channels.map((data) => (
+						<RoomSidePanelItem key={data._id} id={data._id} name={data.name} icon={data.t === 'p' ? 'hashtag-lock' : 'hashtag'} {...data} />
 					))}
 			</SidePanelList>
 		</SidePanel>
