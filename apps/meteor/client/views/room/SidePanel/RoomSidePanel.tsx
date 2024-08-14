@@ -13,7 +13,6 @@ import {
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, useCallback, useMemo } from 'react';
 
-import GenericError from '../../../components/GenericError';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import { useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
@@ -25,7 +24,7 @@ import { useDiscussionsList } from '../contextualBar/Discussions/useDiscussionsL
 const RoomSidePanel = ({ rid }: { rid: IRoom['_id'] }) => {
 	const { data } = useRoomInfoEndpoint(rid);
 	const t = useTranslation();
-	const openedRoom = useSecondLevelOpenedRoom() ?? '';
+	const openedRoom = useSecondLevelOpenedRoom();
 
 	const dicsussionOptions = useMemo(
 		() => ({
@@ -48,19 +47,15 @@ const RoomSidePanel = ({ rid }: { rid: IRoom['_id'] }) => {
 	const { discussionsList } = useDiscussionsList(dicsussionOptions, data?.room?.u._id || '');
 	const { phase, error, items: discussions } = useRecordList<IDiscussionMessage>(discussionsList);
 
-	const { teamsChannelList, reload } = useTeamsChannelList(channelOptions);
+	const { teamsChannelList } = useTeamsChannelList(channelOptions);
 	const { phase: channelsPhase, error: channelsError, items: channels } = useRecordList(teamsChannelList);
 
 	const onClick = useCallback((drid) => {
 		goToRoomById(drid);
 	}, []);
 
-	if (error || channelsError) {
-		return (
-			<SidePanel>
-				<GenericError buttonAction={reload} buttonTitle={t('Reload')} />
-			</SidePanel>
-		);
+	if (error || channelsError || !data?.parent?.sidepanel || !data?.parent?.sidepanel) {
+		return null;
 	}
 	if (phase === AsyncStatePhase.LOADING || channelsPhase === AsyncStatePhase.LOADING) {
 		return (
@@ -82,9 +77,23 @@ const RoomSidePanel = ({ rid }: { rid: IRoom['_id'] }) => {
 	return (
 		<SidePanel>
 			<SidePanelList>
-				{discussions.map(({ _id, drid, msg }) => (
-					<SidePanelListItem key={_id}>
-						<SideBarItem selected={_id === openedRoom} onClick={() => onClick(drid)}>
+				<SidePanelListItem key={rid}>
+					<SideBarItem
+						selected={data?.parent?._id === openedRoom}
+						onClick={() => onClick(!data?.parent ? data?.room?._id : data.parent._id)}
+					>
+						<SideBarItemAvatarWrapper>
+							<Avatar size='x20' url='/avatar/julia.foresti' />
+							{/* <Avatar size='x20' url={} alt='avatar' /> */}
+						</SideBarItemAvatarWrapper>
+						<SideBarItemIcon name='team-lock' />
+						<SideBarItemTitle>{t('General')}</SideBarItemTitle>
+						{/* <SideBarItemBadge title='unread messages' children={index + 3} /> */}
+					</SideBarItem>
+				</SidePanelListItem>
+				{discussions.map(({ drid, msg }) => (
+					<SidePanelListItem key={drid}>
+						<SideBarItem selected={drid === openedRoom} onClick={() => onClick(drid)}>
 							<SideBarItemAvatarWrapper>
 								<Avatar size='x20' url='/avatar/julia.foresti' />
 								{/* <Avatar size='x20' url={} alt='avatar' /> */}
