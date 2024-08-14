@@ -1,30 +1,31 @@
-import type { IDiscussionMessage, IRoom } from '@rocket.chat/core-typings';
-import {
-	Avatar,
-	SideBarItem,
-	SideBarItemAvatarWrapper,
-	SideBarItemIcon,
-	SideBarItemTitle,
-	SidePanel,
-	SidePanelList,
-	SidePanelListItem,
-	Skeleton,
-} from '@rocket.chat/fuselage';
+import type { IDiscussionMessage, IRoom, ITeam } from '@rocket.chat/core-typings';
+import { SidePanel, SidePanelList } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 
+import GenericError from '../../../components/GenericError';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
-import { useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
 import { AsyncStatePhase } from '../../../lib/asyncState';
-import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { useTeamsChannelList } from '../../teams/contextualBar/channels/hooks/useTeamsChannelList';
 import { useDiscussionsList } from '../contextualBar/Discussions/useDiscussionsList';
+import RoomSidePanelItem from './RoomSidePanelItem';
+import RoomSidePanelLoading from './RoomSidePanelLoading';
+
+type DataResult = {
+	room: IRoom | undefined;
+	parent?: IRoom | undefined;
+	team?: ITeam | undefined;
+};
+
+const shouldShowDiscussions = (data: DataResult) =>
+	data?.parent?.sidepanel?.items.includes('discussions') || data?.room?.sidepanel?.items.includes('discussions');
+const shouldShowChannels = (data: DataResult) =>
+	data?.parent?.sidepanel?.items.includes('channels') || data?.room?.sidepanel?.items.includes('channels');
 
 const RoomSidePanel = ({ rid }: { rid: IRoom['_id'] }) => {
-	const { data } = useRoomInfoEndpoint(rid);
+	const { data, isSuccess, isError } = useRoomInfoEndpoint(rid);
 	const t = useTranslation();
-	const openedRoom = useSecondLevelOpenedRoom();
 
 	const dicsussionOptions = useMemo(
 		() => ({
@@ -44,80 +45,37 @@ const RoomSidePanel = ({ rid }: { rid: IRoom['_id'] }) => {
 		[data?.parent?._id, data?.room?.teamMain, data?.team?._id],
 	);
 
+	// IMPROVE: only fetch discussions IF parent room has sidepanel.items with discussions
 	const { discussionsList } = useDiscussionsList(dicsussionOptions, data?.room?.u._id || '');
 	const { phase, error, items: discussions } = useRecordList<IDiscussionMessage>(discussionsList);
 
-	const { teamsChannelList } = useTeamsChannelList(channelOptions);
+	// IMPROVE: only fetch channels IF parent room has sidepanel.items with channels
+	const { teamsChannelList, reload } = useTeamsChannelList(channelOptions);
 	const { phase: channelsPhase, error: channelsError, items: channels } = useRecordList(teamsChannelList);
 
-	const onClick = useCallback((drid) => {
-		goToRoomById(drid);
-	}, []);
-
-	if (error || channelsError || !data?.parent?.sidepanel || !data?.parent?.sidepanel) {
+	if (isError || error || channelsError || !isSuccess) {
+		return (
+			<SidePanel>
+				<GenericError buttonAction={reload} buttonTitle={t('Reload')} />
+			</SidePanel>
+		);
+	}
+	if (isSuccess && !data.room?.sidepanel && !data.parent?.sidepanel) {
 		return null;
 	}
 	if (phase === AsyncStatePhase.LOADING || channelsPhase === AsyncStatePhase.LOADING) {
-		return (
-			<SidePanel>
-				<SidePanelList>
-					<SideBarItem>
-						<Skeleton w='full' />
-					</SideBarItem>
-					<SideBarItem>
-						<Skeleton w='full' />
-					</SideBarItem>
-					<SideBarItem>
-						<Skeleton w='full' />
-					</SideBarItem>
-				</SidePanelList>
-			</SidePanel>
-		);
+		return <RoomSidePanelLoading />;
 	}
 	return (
 		<SidePanel>
 			<SidePanelList>
-				<SidePanelListItem key={rid}>
-					<SideBarItem
-						selected={data?.parent?._id === openedRoom}
-						onClick={() => onClick(!data?.parent ? data?.room?._id : data.parent._id)}
-					>
-						<SideBarItemAvatarWrapper>
-							<Avatar size='x20' url='/avatar/julia.foresti' />
-							{/* <Avatar size='x20' url={} alt='avatar' /> */}
-						</SideBarItemAvatarWrapper>
-						<SideBarItemIcon name='team-lock' />
-						<SideBarItemTitle>{t('General')}</SideBarItemTitle>
-						{/* <SideBarItemBadge title='unread messages' children={index + 3} /> */}
-					</SideBarItem>
-				</SidePanelListItem>
-				{discussions.map(({ drid, msg }) => (
-					<SidePanelListItem key={drid}>
-						<SideBarItem selected={drid === openedRoom} onClick={() => onClick(drid)}>
-							<SideBarItemAvatarWrapper>
-								<Avatar size='x20' url='/avatar/julia.foresti' />
-								{/* <Avatar size='x20' url={} alt='avatar' /> */}
-							</SideBarItemAvatarWrapper>
-							<SideBarItemIcon name='baloons' />
-							<SideBarItemTitle>{msg}</SideBarItemTitle>
-							{/* <SideBarItemBadge title='unread messages' children={index + 3} /> */}
-						</SideBarItem>
-					</SidePanelListItem>
-				))}
-				{channels.map(({ _id, name, t }) => (
-					<SidePanelListItem key={_id}>
-						<SideBarItem selected={_id === openedRoom} onClick={() => onClick(_id)}>
-							<SideBarItemAvatarWrapper>
-								<Avatar size='x20' url='/avatar/julia.foresti' />
-								{/* <Avatar size='x20' url={} alt='avatar' /> */}
-							</SideBarItemAvatarWrapper>
-							<SideBarItemIcon name={`hashtag${t === 'p' ? '-lock' : ''}`} />
-							<SideBarItemTitle>{name}</SideBarItemTitle>
-							{/* <SideBarItemBadge title='unread messages' children={index + 3} /> */}
-							{/* <SideBarItemMenu children={<MenuTemplate />} /> */}
-						</SideBarItem>
-					</SidePanelListItem>
-				))}
+				<RoomSidePanelItem id={data.parent?._id} name={t('General')} icon={(data.parent || data.room)?.t === 'p' ? 'team-lock' : 'team'} />
+				{shouldShowDiscussions(data) &&
+					discussions.map(({ drid, msg }) => <RoomSidePanelItem key={drid} id={drid} name={msg} icon='baloons' />)}
+				{shouldShowChannels(data) &&
+					channels.map(({ _id, name, t }) => (
+						<RoomSidePanelItem key={_id} id={_id} name={name} icon={t === 'p' ? 'hashtag-lock' : 'hashtag'} />
+					))}
 			</SidePanelList>
 		</SidePanel>
 	);
