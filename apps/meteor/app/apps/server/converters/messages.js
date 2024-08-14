@@ -52,19 +52,19 @@ export class AppMessagesConverter {
 		return transformMappedData(message, map);
 	}
 
-	async convertMessage(msgObj) {
+	async convertMessage(msgObj, cacheObj = msgObj) {
 		if (!msgObj) {
 			return undefined;
 		}
 
 		const cache =
-			this.mem.get(msgObj) ??
+			this.mem.get(cacheObj) ??
 			new Map([
 				['room', cachedFunction(this.orch.getConverters().get('rooms').convertById.bind(this.orch.getConverters().get('rooms')))],
 				['user', cachedFunction(this.orch.getConverters().get('users').convertById.bind(this.orch.getConverters().get('users')))],
 			]);
 
-		this.mem.set(msgObj, cache);
+		this.mem.set(cacheObj, cache);
 
 		const map = {
 			id: '_id',
