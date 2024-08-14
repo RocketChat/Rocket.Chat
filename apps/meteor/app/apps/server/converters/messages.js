@@ -61,7 +61,14 @@ export class AppMessagesConverter {
 			this.mem.get(cacheObj) ??
 			new Map([
 				['room', cachedFunction(this.orch.getConverters().get('rooms').convertById.bind(this.orch.getConverters().get('rooms')))],
-				['user', cachedFunction(this.orch.getConverters().get('users').convertById.bind(this.orch.getConverters().get('users')))],
+				[
+					'user.convertById',
+					cachedFunction(this.orch.getConverters().get('users').convertById.bind(this.orch.getConverters().get('users'))),
+				],
+				[
+					'user.convertToApp',
+					cachedFunction(this.orch.getConverters().get('users').convertToApp.bind(this.orch.getConverters().get('users'))),
+				],
 			]);
 
 		this.mem.set(cacheObj, cache);
@@ -110,8 +117,8 @@ export class AppMessagesConverter {
 
 				// When the message contains token, means the message is from the visitor(omnichannel)
 				const user = await (isMessageFromVisitor(msgObj)
-					? this.orch.getConverters().get('users').convertToApp(message.u)
-					: cache.get('user')(message.u._id));
+					? cache.get('user.convertToApp')(message.u)
+					: cache.get('user.convertById')(message.u._id));
 
 				delete message.u;
 
@@ -120,7 +127,7 @@ export class AppMessagesConverter {
 				 * `sender` as undefined, so we need to add this fallback here.
 				 */
 
-				return user || this.orch.getConverters().get('users').convertToApp(message.u);
+				return user || cache.get('user.convertToApp')(message.u);
 			},
 		};
 
