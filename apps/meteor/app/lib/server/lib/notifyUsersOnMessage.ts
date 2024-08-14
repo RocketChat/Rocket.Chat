@@ -192,6 +192,10 @@ callbacks.add(
 
 		await notifyUsersOnMessage(message, room, roomUpdater);
 
+		if (roomUpdater.hasChanges()) {
+			await roomUpdater.persist({ _id: room._id });
+		}
+
 		return message;
 	},
 	callbacks.priority.MEDIUM,
