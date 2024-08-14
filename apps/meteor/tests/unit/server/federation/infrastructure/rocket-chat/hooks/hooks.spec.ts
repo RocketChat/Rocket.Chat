@@ -9,6 +9,7 @@ import type * as hooksModule from '../../../../../../../server/services/federati
 
 const remove = sinon.stub();
 const throwIfFederationNotEnabledOrReady = sinon.stub();
+const throwIfFederationNotReady = sinon.stub();
 const isFederationEnabled = sinon.stub();
 const hooks: Record<string, any> = {};
 
@@ -38,6 +39,7 @@ const { FederationHooks } = proxyquire
 		},
 		'../../../utils': {
 			throwIfFederationNotEnabledOrReady,
+			throwIfFederationNotReady,
 			isFederationEnabled,
 		},
 	});
@@ -47,6 +49,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		FederationHooks.removeAllListeners();
 		remove.reset();
 		throwIfFederationNotEnabledOrReady.reset();
+		throwIfFederationNotReady.reset();
 		isFederationEnabled.reset();
 	});
 
@@ -725,7 +728,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 	describe('#removeAllListeners()', () => {
 		it('should remove all the listeners', () => {
 			FederationHooks.removeAllListeners();
-			expect(remove.callCount).to.be.equal(9);
+			expect(remove.callCount).to.be.equal(11);
 			expect(
 				remove.getCall(0).calledWith('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-non-federated-room'),
 			).to.be.equal(true);
@@ -741,6 +744,8 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			expect(remove.getCall(6).calledWith('afterSaveMessage', 'federation-v2-after-room-message-updated')).to.be.equal(true);
 			expect(remove.getCall(7).calledWith('afterSaveMessage', 'federation-v2-after-room-message-sent')).to.be.equal(true);
 			expect(remove.getCall(8).calledWith('afterSaveMessage', 'federation-v2-after-room-message-sent')).to.be.equal(true);
+			expect(remove.getCall(9).calledWith('afterRoomNameChange', 'federation-v2-after-room-name-changed')).to.be.equal(true);
+			expect(remove.getCall(10).calledWith('afterRoomTopicChange', 'federation-v2-after-room-topic-changed')).to.be.equal(true);
 		});
 	});
 });
