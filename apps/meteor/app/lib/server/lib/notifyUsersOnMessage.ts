@@ -182,8 +182,12 @@ export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomU
 }
 
 export async function notifyUsersOnSystemMessage(message: IMessage, room: IRoom): Promise<IMessage> {
-	const shouldStoreLastMessage = settings.get('Store_Last_Message') ? message : undefined;
-	await Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, shouldStoreLastMessage);
+	const roomUpdater = Rooms.getUpdater();
+	Rooms.setIncMsgCountAndSetLastMessageUpdateQuery(1, message, !!settings.get('Store_Last_Message'), roomUpdater);
+
+	if (roomUpdater.hasChanges()) {
+		await Rooms.updateFromUpdater({ _id: room._id }, roomUpdater);
+	}
 
 	// TODO: Rewrite to use just needed calls from the function
 	await updateUsersSubscriptions(message, room);
