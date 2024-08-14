@@ -174,7 +174,19 @@ export async function notifyUsersOnMessage(message: IMessage, room: Pick<IRoom, 
 	}
 
 	// Update all the room activity tracker fields
-	await Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') ? message : undefined);
+	const shouldStoreLastMessage = settings.get('Store_Last_Message') ? message : undefined;
+	await Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, shouldStoreLastMessage);
+
+	await updateUsersSubscriptions(message, room);
+
+	return message;
+}
+
+export async function notifyUsersOnSystemMessage(message: IMessage, room: Pick<IRoom, 'lastMessage' | 't' | '_id'>): Promise<IMessage> {
+	const shouldStoreLastMessage = settings.get('Store_Last_Message') ? message : undefined;
+	await Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, shouldStoreLastMessage);
+
+	// TODO: Rewrite to use just needed calls from the function
 	await updateUsersSubscriptions(message, room);
 
 	return message;

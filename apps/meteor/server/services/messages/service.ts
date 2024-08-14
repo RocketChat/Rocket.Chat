@@ -6,8 +6,8 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
-import { notifyOnRoomChanged, notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
-import { notifyUsersOnMessage } from '../../../app/lib/server/lib/notifyUsersOnMessage';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
+import { notifyUsersOnSystemMessage } from '../../../app/lib/server/lib/notifyUsersOnMessage';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
@@ -98,48 +98,60 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		return executeSetReaction(userId, reaction, messageId, shouldReact);
 	}
 
+	async saveSystemMessageAndNotifyUser<T = IMessage>(
+		type: MessageTypesValues,
+		rid: string,
+		messageText: string,
+		owner: Pick<IUser, '_id' | 'username' | 'name'>,
+		extraData?: Partial<T>,
+	): Promise<IMessage> {
+		const createdMessage = await this.saveSystemMessage(type, rid, messageText, owner, extraData);
+
+		const room = await Rooms.findOneById(rid);
+		if (!room) {
+			throw new Error('Failed to find the room.');
+		}
+
+		await notifyUsersOnSystemMessage(createdMessage, room);
+
+		return createdMessage;
+	}
+
 	async saveSystemMessage<T = IMessage>(
 		type: MessageTypesValues,
 		rid: string,
 		message: string,
 		owner: Pick<IUser, '_id' | 'username' | 'name'>,
 		extraData?: Partial<T>,
-		shouldNotifyUsersOnMessage = true,
 	): Promise<IMessage> {
 		const { _id: userId, username, name } = owner;
 		if (!username) {
 			throw new Error('The username cannot be empty.');
 		}
 
-		const [createdMessage, room] = await Promise.all([
-			Messages.createWithTypeRoomIdMessageUserAndUnread(
-				type,
-				rid,
-				message,
-				{ _id: userId, username, name },
-				settings.get('Message_Read_Receipt_Enabled'),
-				extraData,
-			),
-			Rooms.findOneById(rid, { projection: { _id: 1, lastMessage: 1, t: 1 } }),
-		]);
-		if (!createdMessage?.value || !room) {
-			throw new Error('Could not create system message');
+		const { insertedId } = await Messages.createWithTypeRoomIdMessageUserAndUnread(
+			type,
+			rid,
+			message,
+			{ _id: userId, username, name },
+			settings.get('Message_Read_Receipt_Enabled'),
+			extraData,
+		);
+
+		if (!insertedId) {
+			throw new Error('Failed to save system message.');
 		}
 
-		const messageData = createdMessage.value;
+		const createdMessage = await Messages.findOneById(insertedId);
 
-		if (shouldNotifyUsersOnMessage) {
-			await notifyUsersOnMessage(messageData, {
-				_id: room._id,
-				lastMessage: room.lastMessage,
-				t: room.t,
-			});
+		if (!createdMessage) {
+			throw new Error('Failed to find the created message.');
 		}
 
-		void notifyOnMessageChange({ id: messageData._id });
-		void notifyOnRoomChanged(room);
+		void notifyOnMessageChange({ id: createdMessage._id });
+		void notifyOnRoomChangedById(rid);
 
-		return messageData;
+		return createdMessage;
 	}
 
 	async beforeSave({

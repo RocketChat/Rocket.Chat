@@ -304,7 +304,10 @@ class LivechatClass {
 		const transcriptRequested =
 			!!transcriptRequest || (!settings.get('Livechat_enable_transcript') && settings.get('Livechat_transcript_send_always'));
 
-		await Message.saveSystemMessage('livechat-close', rid, comment ?? '', closeData.closedBy, { groupable: false, transcriptRequested });
+		await Message.saveSystemMessageAndNotifyUser('livechat-close', rid, comment ?? '', closeData.closedBy, {
+			groupable: false,
+			transcriptRequested,
+		});
 
 		if (settings.get('Livechat_enable_transcript') && !settings.get('Livechat_transcript_send_always')) {
 			await Message.saveSystemMessage('command', rid, 'promptTranscript', closeData.closedBy);
@@ -1271,7 +1274,7 @@ class LivechatClass {
 			},
 		};
 
-		await Message.saveSystemMessage('livechat_transfer_history', room._id, '', { _id, username }, transferMessage);
+		await Message.saveSystemMessageAndNotifyUser('livechat_transfer_history', room._id, '', { _id, username }, transferMessage);
 	}
 
 	async saveGuest(guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string }, userId: string) {

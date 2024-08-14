@@ -1,4 +1,4 @@
-import type { IMessage, IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
+import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
 import { isPOSTLivechatPageVisitedParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
@@ -16,7 +16,7 @@ API.v1.addRoute(
 				return API.v1.success();
 			}
 
-			const { msg, navigation }: IMessage & IOmnichannelSystemMessage = message;
+			const { msg, navigation } = message as IOmnichannelSystemMessage;
 			return API.v1.success({ page: { msg, navigation } });
 		},
 	},
