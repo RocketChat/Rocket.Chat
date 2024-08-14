@@ -198,7 +198,7 @@ callbacks.add(
 		await notifyUsersOnMessage(message, room, roomUpdater);
 
 		if (roomUpdater.hasChanges()) {
-			await roomUpdater.persist({ _id: room._id });
+			await Rooms.updateFromUpdater({ _id: room._id }, roomUpdater);
 		}
 
 		return message;
