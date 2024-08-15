@@ -192,10 +192,6 @@ callbacks.add(
 
 		await notifyUsersOnMessage(message, room, roomUpdater);
 
-		if (roomUpdater.hasChanges()) {
-			await Rooms.updateFromUpdater({ _id: room._id }, roomUpdater);
-		}
-
 		return message;
 	},
 	callbacks.priority.MEDIUM,
