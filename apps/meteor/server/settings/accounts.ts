@@ -750,11 +750,6 @@ export const createAccountSettings = () =>
 				public: true,
 			});
 
-			await this.add('Accounts_AvatarExternalProviderProxy', false, {
-				type: 'boolean',
-				public: true,
-			});
-
 			await this.add('Accounts_RoomAvatarExternalProviderUrl', '', {
 				type: 'string',
 				public: true,

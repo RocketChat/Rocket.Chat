@@ -52,7 +52,7 @@ export const userAvatar = async function (req, res) {
 		return FileUpload.get(file, req, res);
 	}
 
-	if (settings.get('Accounts_AvatarExternalProviderUrl') !== '' && settings.get('Accounts_AvatarExternalProviderProxy')) {
+	if (settings.get('Accounts_AvatarExternalProviderUrl')) {
 		const response = await fetch(settings.get('Accounts_AvatarExternalProviderUrl').replace('{username}', requestUsername));
 		response.headers.forEach((value, key) => res.setHeader(key, value));
 		response.body.pipe(res);
