@@ -229,13 +229,11 @@ describe('OverviewData Analytics', () => {
 				getOnHoldConversationsBetweenDate: () => 1,
 			} as any);
 
+			// choosing this specific date since the day before and after are not empty
+			const targetDate = moment.utc().set('month', 10).set('year', 2023).set('date', 23);
+
 			// Fixed date to assure we get the same data
-			const result = await overview.Conversations(
-				moment.utc().set('month', 10).set('year', 2023).set('date', 23).startOf('day'),
-				moment.utc().set('month', 10).set('year', 2023).set('date', 23).endOf('day'),
-				'',
-				'UTC',
-			);
+			const result = await overview.Conversations(targetDate.startOf('day'), targetDate.endOf('day'), '', 'UTC');
 			expect(result).to.be.deep.equal([
 				{ title: 'Total_conversations', value: 1 },
 				{ title: 'Open_conversations', value: 0 },
@@ -321,12 +319,11 @@ describe('OverviewData Analytics', () => {
 			const overview = new OverviewData({
 				getAnalyticsMetricsBetweenDate: (_: any, date: { gte: Date; lte: Date }) => analytics(date),
 			} as any);
-			const result = await overview.Productivity(
-				moment().set('month', 10).set('year', 2023).set('date', 25).startOf('day'),
-				moment().set('month', 10).set('year', 2023).set('date', 25).endOf('day'),
-				'',
-				'UTC',
-			);
+
+			// choosing this specific date since the day before and after are not empty
+			const targetDate = moment.utc().set('month', 10).set('year', 2023).set('date', 25);
+
+			const result = await overview.Productivity(targetDate.startOf('day'), targetDate.endOf('day'), '', 'UTC');
 
 			expect(result).to.be.deep.equal([
 				{ title: 'Avg_response_time', value: '00:00:01' },
