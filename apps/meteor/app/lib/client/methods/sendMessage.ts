@@ -1,7 +1,5 @@
-import type { IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import type { Updater } from '@rocket.chat/models';
-import { Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
@@ -11,26 +9,6 @@ import { trim } from '../../../../lib/utils/stringUtils';
 import { ChatMessage, ChatRoom } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { t } from '../../../utils/lib/i18n';
-
-/**
- * import { afterSaveMessage } from '../../server/lib/afterSaveMessage';
- * Provisional fix for the import error
- **/
-export async function afterSaveMessage(
-	message: IMessage,
-	room: IRoom,
-	uid: IUser['_id'] | undefined = undefined,
-	roomUpdater: Updater<IRoom> = Rooms.getUpdater(),
-): Promise<IMessage> {
-	const data = await callbacks.run('afterSaveMessage', message, { room, uid, roomUpdater });
-
-	if (roomUpdater.hasChanges()) {
-		await Rooms.updateFromUpdater({ _id: room._id }, roomUpdater);
-	}
-
-	// TODO: Fix this type - callback configuration needs to be updated
-	return data as unknown as IMessage;
-}
 
 Meteor.methods<ServerMethods>({
 	async sendMessage(message) {
@@ -59,13 +37,13 @@ Meteor.methods<ServerMethods>({
 
 		// If the room is federated, send the message to matrix only
 		const room = ChatRoom.findOne({ _id: message.rid }, { fields: { federated: 1, name: 1 } });
-		if (room?.federated || !room) {
+		if (room?.federated) {
 			return;
 		}
 
 		await onClientMessageReceived(message as IMessage).then((message) => {
 			ChatMessage.insert(message);
-			return afterSaveMessage(message, room);
+			return callbacks.run('afterSaveMessage', message, room);
 		});
 	},
 });

@@ -8,12 +8,13 @@ export async function afterSaveMessage(
 	message: IMessage,
 	room: IRoom,
 	uid?: IUser['_id'],
-	roomUpdater: Updater<IRoom> = Rooms.getUpdater(),
+	roomUpdater?: Updater<IRoom>,
 ): Promise<IMessage> {
-	const data = await callbacks.run('afterSaveMessage', message, { room, uid, roomUpdater });
+	const updater = roomUpdater ?? Rooms.getUpdater();
+	const data = await callbacks.run('afterSaveMessage', message, { room, uid, roomUpdater: updater });
 
-	if (roomUpdater.hasChanges()) {
-		await Rooms.updateFromUpdater({ _id: room._id }, roomUpdater);
+	if (!roomUpdater && updater.hasChanges()) {
+		await Rooms.updateFromUpdater({ _id: room._id }, updater);
 	}
 
 	// TODO: Fix type - callback configuration needs to be updated
