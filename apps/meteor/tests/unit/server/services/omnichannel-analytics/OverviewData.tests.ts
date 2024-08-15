@@ -323,7 +323,7 @@ describe('OverviewData Analytics', () => {
 			// choosing this specific date since the day before and after are not empty
 			const targetDate = moment().set('month', 10).set('year', 2023).set('date', 25);
 
-			const result = await overview.Productivity(targetDate.startOf('day'), targetDate.endOf('day'), '', 'UTC');
+			const result = await overview.Productivity(targetDate.startOf('day'), targetDate.clone().endOf('day'), '', 'UTC');
 
 			expect(result).to.be.deep.equal([
 				{ title: 'Avg_response_time', value: '00:00:01' },
