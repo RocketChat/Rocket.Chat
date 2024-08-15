@@ -98,6 +98,19 @@ export type MesssageActionButtonUserInteraction = {
 	triggerId: string;
 };
 
+export type MessageToolbarStarsActionButtonUserInteraction = {
+	type: 'actionButton';
+	actionId: string;
+	payload: {
+		context: 'messageToolbarStarsAction';
+		message?: undefined;
+	};
+	mid: string;
+	tmid?: string;
+	rid: string;
+	triggerId: string;
+};
+
 export type RoomActionButtonUserInteraction = {
 	type: 'actionButton';
 	actionId: string;
@@ -119,7 +132,8 @@ export type UserInteraction =
 	| MessageBoxActionButtonUserInteraction
 	| UserDropdownActionButtonUserInteraction
 	| MesssageActionButtonUserInteraction
-	| RoomActionButtonUserInteraction;
+	| RoomActionButtonUserInteraction
+	| MessageToolbarStarsActionButtonUserInteraction;
 
 export const isMessageBlockActionUserInteraction = typia.createIs<MessageBlockActionUserInteraction>();
 export const isViewBlockActionUserInteraction = typia.createIs<ViewBlockActionUserInteraction>();
@@ -129,3 +143,4 @@ export const isMessageBoxActionButtonUserInteraction = typia.createIs<MessageBox
 export const isUserDropdownActionButtonUserInteraction = typia.createIs<UserDropdownActionButtonUserInteraction>();
 export const isMesssageActionButtonUserInteraction = typia.createIs<MesssageActionButtonUserInteraction>();
 export const isRoomActionButtonUserInteraction = typia.createIs<RoomActionButtonUserInteraction>();
+export const isMessageToolbarStarsActionButtonUserInteraction = typia.createIs<MessageToolbarStarsActionButtonUserInteraction>();

@@ -1,7 +1,7 @@
 import { useToolbar } from '@react-aria/toolbar';
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated, isVideoConfMessage, isE2EEMessage } from '@rocket.chat/core-typings';
-import { MessageToolbar as FuselageMessageToolbar, MessageToolbarItem } from '@rocket.chat/fuselage';
+import { MessageToolbar as FuselageMessageToolbar, MenuItem, MenuV2, MessageToolbarItem } from '@rocket.chat/fuselage';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useSettings, useTranslation, useMethod, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -11,7 +11,7 @@ import React, { memo, useMemo, useRef } from 'react';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
-import { useMessageActionAppsActionButtons } from '../../../hooks/useAppActionButtons';
+import { useMessageActionAppsActionButtons, useMessageToolbarStarsAppsAction } from '../../../hooks/useAppActionButtons';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
@@ -77,7 +77,11 @@ const MessageToolbar = ({
 	const { quickReactions, addRecentEmoji } = useEmojiPickerData();
 
 	const actionButtonApps = useMessageActionAppsActionButtons(context);
+	// console.log(actionButtonApps);
 
+	const starsAction = useMessageToolbarStarsAppsAction(context);
+
+	console.log('\n\nstarsAction', starsAction, '\n\n');
 	const { messageToolbox: hiddenActions } = useLayoutHiddenActions();
 
 	// TODO: move this to another place
@@ -135,6 +139,14 @@ const MessageToolbar = ({
 						disabled={action?.disabled?.({ message, room, user, subscription, settings: mapSettings, chat, context })}
 					/>
 				))}
+			{/* <MessageToolbarItem as={"bu"} icon='stars' title='AI' data-qa-id='AI' data-qa-type='message-action-menu' disabled={false}> */}
+			{starsAction.data && starsAction.data.length > 0 && (
+				<MenuV2 icon='stars' title={t('AI')} data-qa-id='AI' data-qa-type='message-action-menu'>
+					<MenuItem>Test</MenuItem>
+				</MenuV2>
+			)}
+			{/* </MessageToolbarItem> */}
+
 			{actionsQueryResult.isSuccess && actionsQueryResult.data.menu.length > 0 && (
 				<MessageActionMenu
 					options={[...actionsQueryResult.data?.menu, ...(actionButtonApps.data ?? [])].filter(Boolean).map((action) => ({

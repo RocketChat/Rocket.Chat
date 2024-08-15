@@ -219,3 +219,63 @@ export const useMessageActionAppsActionButtons = (context?: MessageActionContext
 		data,
 	} as UseQueryResult<MessageActionConfig[]>;
 };
+
+export const useMessageToolbarStarsAppsAction = (context?: MessageActionContext) => {
+	const result = useAppActionButtons('messageToolbarStarsAction');
+	const actionManager = useUiKitActionManager();
+	const applyButtonFilters = useApplyButtonFilters();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const { t } = useTranslation();
+	const data = useMemo(
+		() =>
+			result.data
+				?.filter((action) => {
+					if (
+						context &&
+						!(action.when?.messageActionContext || ['message', 'message-mobile', 'threads', 'starred']).includes(context as any)
+					) {
+						return false;
+					}
+					return applyButtonFilters(action);
+				})
+				.map((action) => {
+					const item: MessageActionConfig = {
+						icon: undefined as any,
+						id: getIdForActionButton(action),
+						label: Utilities.getI18nKeyForApp(action.labelI18n, action.appId),
+						order: 7,
+						type: 'apps',
+						variant: action.variant,
+						action: (_, params) => {
+							void actionManager
+								.emitInteraction(action.appId, {
+									type: 'actionButton',
+									rid: params.message.rid,
+									tmid: params.message.tmid,
+									mid: params.message._id,
+									actionId: action.actionId,
+									payload: { context: action.context },
+								})
+								.catch(async (reason) => {
+									if (reason instanceof UiKitTriggerTimeoutError) {
+										dispatchToastMessage({
+											type: 'error',
+											message: t('UIKit_Interaction_Timeout'),
+										});
+										return;
+									}
+
+									return reason;
+								});
+						},
+					};
+
+					return item;
+				}),
+		[actionManager, applyButtonFilters, context, dispatchToastMessage, result.data, t],
+	);
+	return {
+		...result,
+		data,
+	} as UseQueryResult<MessageActionConfig[]>;
+};
