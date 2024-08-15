@@ -507,7 +507,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageUpdated(stub);
-			hooks['federation-v2-after-room-message-updated'](message, { federated: true, _id: 'roomId' });
+			hooks['federation-v2-after-room-message-updated'](message, { room: { federated: true, _id: 'roomId' } });
 			expect(stub.calledWith(message, 'roomId', 'userId')).to.be.true;
 		});
 	});
@@ -551,7 +551,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageSent(stub);
-			hooks['federation-v2-after-room-message-sent']({ u: { _id: 'userId' } }, { federated: true, _id: 'roomId' });
+			hooks['federation-v2-after-room-message-sent']({ u: { _id: 'userId' } }, { room: { federated: true, _id: 'roomId' } });
 			expect(stub.calledWith({ u: { _id: 'userId' } }, 'roomId', 'userId')).to.be.true;
 		});
 	});
