@@ -2,7 +2,13 @@ import { Media } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
-import { isGETRoomsNameExists, isRoomsImagesProps, isRoomsMuteUnmuteUserProps, isRoomsExportProps } from '@rocket.chat/rest-typings';
+import {
+	isGETRoomsNameExists,
+	isRoomsCleanHistoryProps,
+	isRoomsImagesProps,
+	isRoomsMuteUnmuteUserProps,
+	isRoomsExportProps,
+} from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
@@ -355,7 +361,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.cleanHistory',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomsCleanHistoryProps },
 	{
 		async post() {
 			const { _id } = await findRoomByIdOrName({ params: this.bodyParams });
