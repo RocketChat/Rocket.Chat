@@ -307,6 +307,7 @@ class LivechatClass {
 		await Message.saveSystemMessageAndNotifyUser('livechat-close', rid, comment ?? '', closeData.closedBy, {
 			groupable: false,
 			transcriptRequested,
+			...(isRoomClosedByVisitorParams(params) && { token: params.visitor.token }),
 		});
 
 		if (settings.get('Livechat_enable_transcript') && !settings.get('Livechat_transcript_send_always')) {
@@ -1243,16 +1244,7 @@ class LivechatClass {
 		this.logger.info(`Storing new chat transfer of ${room._id} [Transfered by: ${_id} to ${scopeData}]`);
 
 		const transferMessage = {
-			t: 'livechat_transfer_history',
-			rid: room._id,
-			ts: new Date(),
-			msg: '',
-			u: {
-				_id,
-				username,
-			},
 			...(transferData.transferredBy.userType === 'visitor' && { token: room.v.token }),
-			groupable: false,
 			transferData: {
 				transferredBy,
 				ts: new Date(),

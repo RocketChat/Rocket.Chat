@@ -150,7 +150,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			throw new Error('Failed to find the created message.');
 		}
 
-		void notifyOnMessageChange({ id: createdMessage._id });
+		void notifyOnMessageChange({ id: createdMessage._id, data: createdMessage });
 		void notifyOnRoomChangedById(rid);
 
 		return createdMessage;
