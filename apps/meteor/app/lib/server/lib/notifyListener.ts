@@ -39,6 +39,7 @@ import {
 } from '@rocket.chat/models';
 import mem from 'mem';
 
+import { subscriptionFields } from '../../../../lib/publishFields';
 import { shouldHideSystemMessage } from '../../../../server/lib/systemMessage/hideSystemMessage';
 
 type ClientAction = 'inserted' | 'updated' | 'removed';
@@ -635,52 +636,3 @@ export async function notifyOnSubscriptionChangedByRoomIdAndUserIds(
 		void api.broadcast('watch.subscriptions', { clientAction, subscription });
 	}
 }
-
-const subscriptionFields = {
-	t: 1,
-	ts: 1,
-	ls: 1,
-	lr: 1,
-	name: 1,
-	fname: 1,
-	rid: 1,
-	code: 1,
-	f: 1,
-	u: 1,
-	open: 1,
-	alert: 1,
-	roles: 1,
-	unread: 1,
-	prid: 1,
-	userMentions: 1,
-	groupMentions: 1,
-	archived: 1,
-	audioNotificationValue: 1,
-	desktopNotifications: 1,
-	mobilePushNotifications: 1,
-	emailNotifications: 1,
-	desktopPrefOrigin: 1,
-	mobilePrefOrigin: 1,
-	emailPrefOrigin: 1,
-	unreadAlert: 1,
-	// _updatedAt: 1,
-	blocked: 1,
-	blocker: 1,
-	autoTranslate: 1,
-	autoTranslateLanguage: 1,
-	disableNotifications: 1,
-	hideUnreadStatus: 1,
-	hideMentionStatus: 1,
-	muteGroupMentions: 1,
-	ignored: 1,
-	E2EKey: 1,
-	E2ESuggestedKey: 1,
-	tunread: 1,
-	tunreadGroup: 1,
-	tunreadUser: 1,
-
-	// Omnichannel fields
-	department: 1,
-	v: 1,
-	onHold: 1,
-};
