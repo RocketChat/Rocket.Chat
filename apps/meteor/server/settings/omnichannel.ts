@@ -852,14 +852,5 @@ await settingsRegistry.addGroup('SMS', async function () {
 				value: true,
 			},
 		});
-
-		await this.add('Omnichannel_External_Frame_GenerateKey', 'omnichannelExternalFrameGenerateKey', {
-			type: 'action',
-			actionText: 'Generate_new_key',
-			enableQuery: {
-				_id: 'Omnichannel_External_Frame_Enabled',
-				value: true,
-			},
-		});
 	});
 });
