@@ -2963,8 +2963,6 @@
   "view-d-room_description": "Berechtigung, Direktnachrichten zu erhalten",
   "view-full-other-user-info": "Vollständige Benutzerinformation einsehen",
   "view-full-other-user-info_description": "Berechtigung, die vollständigen Benutzerinformation anderer Benutzer einzusehen (inkl. Erstelldatum, letztem Login etc.)",
-  "view-history": "Historie anzeigen",
-  "view-history_description": "Berechtigung, die Kanal-Historie anzuzeigen",
   "view-join-code": "Beitritts-Code anzeigen",
   "view-join-code_description": "Berechtigung, den Beitritts-Code zu einem Kanal anzuzeigen",
   "view-joined-room": "Beigetretenen Raum anzeigen",

@@ -2648,8 +2648,6 @@
   "view-d-room_description": "查看直接信息的权限",
   "view-full-other-user-info": "查看完整的其他用户信息",
   "view-full-other-user-info_description": "允许查看其他用户的完整个人资料，包括帐户创建日期，上次登录等。",
-  "view-history": "查看历史",
-  "view-history_description": "查看频道历史记录的权限",
   "view-join-code": "查看加入代码",
   "view-join-code_description": "查看频道连接代码的权限",
   "view-joined-room": "查看加入的房间",

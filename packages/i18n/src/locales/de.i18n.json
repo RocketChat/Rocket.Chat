@@ -5130,8 +5130,6 @@
   "View_full_conversation": "Vollständige Konversation anzeigen",
   "view-full-other-user-info": "Vollständige Benutzerinformation einsehen",
   "view-full-other-user-info_description": "Berechtigung, die vollständigen Benutzerinformation anderer Benutzer einzusehen (inkl. Erstelldatum, letztem Login etc.)",
-  "view-history": "Verlauf anzeigen",
-  "view-history_description": "Berechtigung, den Channel-Verlauf anzuzeigen",
   "view-join-code": "Beitritts-Code anzeigen",
   "view-join-code_description": "Berechtigung, den Beitritts-Code zu einem Channel anzuzeigen",
   "view-joined-room": "Beigetretenen Room anzeigen",

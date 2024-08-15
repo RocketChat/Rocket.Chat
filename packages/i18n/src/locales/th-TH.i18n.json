@@ -2614,8 +2614,6 @@
   "view-d-room_description": "อนุญาตให้ดูข้อความโดยตรง",
   "view-full-other-user-info": "ดูข้อมูลผู้ใช้อื่น ๆ",
   "view-full-other-user-info_description": "อนุญาตให้ดูโปรไฟล์แบบเต็มของผู้ใช้รายอื่นรวมถึงวันที่สร้างบัญชีการเข้าสู่ระบบครั้งสุดท้าย ฯลฯ",
-  "view-history": "ดูประวัติ",
-  "view-history_description": "อนุญาตให้ดูประวัติช่อง",
   "view-join-code": "ดูรหัสการเข้าร่วม",
   "view-join-code_description": "อนุญาตให้ดูรหัสเข้าร่วมช่อง",
   "view-joined-room": "ดูห้องที่เข้าร่วม",

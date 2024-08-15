@@ -4329,8 +4329,6 @@
   "view-device-management": "Se enhetsstyring",
   "view-full-other-user-info": "Se full annen brukerinformasjon",
   "view-full-other-user-info_description": "Tillatelse til å se hele profilen til andre brukere, inkludert kontoopprettelsesdato, siste innlogging, etc.",
-  "view-history": "Se historikk",
-  "view-history_description": "Tillatelse til å se kanalhistorikken",
   "onboarding.component.form.action.registerNow": "Registrer deg nå",
   "view-join-code": "Vis Bli medlem",
   "view-join-code_description": "Tillatelse til å vise kanalen bli med koden",

@@ -5805,8 +5805,6 @@
   "View_full_conversation": "View full conversation",
   "view-full-other-user-info": "View Full Other User Info",
   "view-full-other-user-info_description": "Permission to view full profile of other users including account creation date, last login, etc.",
-  "view-history": "View History",
-  "view-history_description": "Permission to view the channel history",
   "onboarding.component.form.action.registerNow": "Register now",
   "view-join-code": "View Join Code",
   "view-join-code_description": "Permission to view the channel join code",
