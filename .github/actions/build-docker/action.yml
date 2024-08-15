@@ -56,18 +56,18 @@ runs:
         rm Rocket.Chat.tar.gz
     - uses: rharkor/caching-for-turbo@v1.5
       # if we are testing a PR from a fork, we already called the turbo cache at this point, so it should be false
-      if: inputs.turbo-cache == "true"
+      if: inputs.turbo-cache == 'true'
 
     - name: Setup NodeJS
       uses: ./.github/actions/setup-node
-      if: inputs.setup == "true"
+      if: inputs.setup == 'true'
       with:
         node-version: ${{ inputs.node-version }}
         cache-modules: true
         install: true
 
     - run: yarn build
-      if: inputs.setup == "true"
+      if: inputs.setup == 'true'
       shell: bash
 
     - name: Build Docker images
