@@ -474,7 +474,7 @@ export const notifyOnMessageChange = withDbWatcherCheck(async ({ id, data }: { i
 });
 
 export const notifyOnSubscriptionChanged = withDbWatcherCheck(
-	async (subscription: ISubscription, clientAction: ClientAction = 'updated'): Promise<void> => {
+	async (subscription: ISubscription, clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
 		void api.broadcast('watch.subscriptions', { clientAction, subscription });
 	},
 );
@@ -502,13 +502,15 @@ export async function notifyOnSubscriptionChangedByRoomIdAndUserId(
 	}
 }
 
-export async function notifyOnSubscriptionChangedById(id: ISubscription['_id'], clientAction: ClientAction = 'updated'): Promise<void> {
+export async function notifyOnSubscriptionChangedById(
+	id: ISubscription['_id'],
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
 	}
 
-	const subscription = clientAction === 'removed' ? await Subscriptions.trashFindOneById(id) : await Subscriptions.findOneById(id);
-
+	const subscription = await Subscriptions.findOneById(id);
 	if (!subscription) {
 		return;
 	}
@@ -516,27 +518,11 @@ export async function notifyOnSubscriptionChangedById(id: ISubscription['_id'], 
 	void api.broadcast('watch.subscriptions', { clientAction, subscription });
 }
 
-export async function notifyOnSubscriptionChangedByRoomIdExcludingUserIds(
-	rid: ISubscription['rid'],
-	uids: ISubscription['u']['_id'][],
-	clientAction: ClientAction = 'updated',
-): Promise<void> {
-	if (!dbWatchersDisabled) {
-		return;
-	}
-
-	const subscriptions = Subscriptions.findByRoomIdExcludingUserIds(rid, uids, { projection: subscriptionFields });
-
-	for await (const subscription of subscriptions) {
-		void api.broadcast('watch.subscriptions', { clientAction, subscription });
-	}
-}
-
 export async function notifyOnSubscriptionChangedByUserPreferences(
 	uid: ISubscription['u']['_id'],
 	notificationOriginField: keyof ISubscription,
 	originFieldNotEqualValue: 'user' | 'subscription',
-	clientAction: ClientAction = 'updated',
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
 ): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
@@ -573,28 +559,9 @@ export async function notifyOnSubscriptionChangedByRoomId(
 	}
 }
 
-export async function notifyOnSubscriptionChangedByToken(token: string, clientAction: ClientAction = 'updated'): Promise<void> {
-	if (!dbWatchersDisabled) {
-		return;
-	}
-
-	const subscriptions =
-		clientAction === 'removed'
-			? Subscriptions.trashFind({ 'v.token': token }, { projection: subscriptionFields })
-			: Subscriptions.findByToken(token, { projection: subscriptionFields });
-
-	if (!subscriptions) {
-		return;
-	}
-
-	for await (const subscription of subscriptions) {
-		void api.broadcast('watch.subscriptions', { clientAction, subscription });
-	}
-}
-
 export async function notifyOnSubscriptionChangedByAutoTranslateAndUserId(
 	uid: ISubscription['u']['_id'],
-	clientAction: ClientAction = 'updated',
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
 ): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
@@ -610,7 +577,7 @@ export async function notifyOnSubscriptionChangedByAutoTranslateAndUserId(
 export async function notifyOnSubscriptionChangedByUserIdAndRoomType(
 	uid: ISubscription['u']['_id'],
 	t: ISubscription['t'],
-	clientAction: ClientAction = 'updated',
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
 ): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
@@ -625,7 +592,7 @@ export async function notifyOnSubscriptionChangedByUserIdAndRoomType(
 
 export async function notifyOnSubscriptionChangedByNameAndRoomType(
 	filter: Partial<Pick<ISubscription, 'name' | 't'>>,
-	clientAction: ClientAction = 'updated',
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
 ): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
@@ -640,7 +607,7 @@ export async function notifyOnSubscriptionChangedByNameAndRoomType(
 
 export async function notifyOnSubscriptionChangedByUserId(
 	uid: ISubscription['u']['_id'],
-	clientAction: ClientAction = 'updated',
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
 ): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
@@ -656,20 +623,13 @@ export async function notifyOnSubscriptionChangedByUserId(
 export async function notifyOnSubscriptionChangedByRoomIdAndUserIds(
 	rid: ISubscription['rid'],
 	uids: ISubscription['u']['_id'][],
-	clientAction: ClientAction = 'updated',
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
 ): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
 	}
 
-	const subscriptions =
-		clientAction === 'removed'
-			? Subscriptions.trashFind({ rid, 'u._id': { $in: uids } }, { projection: subscriptionFields })
-			: Subscriptions.findByRoomIdAndUserIds(rid, uids, { projection: subscriptionFields });
-
-	if (!subscriptions) {
-		return;
-	}
+	const subscriptions = Subscriptions.findByRoomIdAndUserIds(rid, uids, { projection: subscriptionFields });
 
 	for await (const subscription of subscriptions) {
 		void api.broadcast('watch.subscriptions', { clientAction, subscription });

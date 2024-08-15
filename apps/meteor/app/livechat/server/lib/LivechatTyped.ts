@@ -63,7 +63,6 @@ import {
 	notifyOnUserChange,
 	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
 	notifyOnSubscriptionChangedByRoomId,
-	notifyOnSubscriptionChangedByToken,
 } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
@@ -1159,18 +1158,19 @@ class LivechatClass {
 
 		const cursor = LivechatRooms.findByVisitorToken(token);
 		for await (const room of cursor) {
-			await Promise.all([
+			const [{ deletedCount }] = await Promise.all([
+				Subscriptions.removeByRoomId(room._id),
 				FileUpload.removeFilesByRoomId(room._id),
 				Messages.removeByRoomId(room._id),
 				ReadReceipts.removeByRoomId(room._id),
 			]);
+
+			if (deletedCount) {
+				void notifyOnSubscriptionChangedByRoomId(room._id, 'removed');
+			}
 		}
 
-		const responses = await Promise.all([Subscriptions.removeByVisitorToken(token), LivechatRooms.removeByVisitorToken(token)]);
-
-		if (responses[0]?.deletedCount) {
-			void notifyOnSubscriptionChangedByToken(token, 'removed');
-		}
+		await LivechatRooms.removeByVisitorToken(token);
 
 		const livechatInquiries = await LivechatInquiry.findIdsByVisitorToken(token).toArray();
 		await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
