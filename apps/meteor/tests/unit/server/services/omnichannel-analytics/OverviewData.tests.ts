@@ -223,6 +223,29 @@ describe('OverviewData Analytics', () => {
 				{ title: 'Busiest_time', value: '11AM - 12PM' },
 			]);
 		});
+		it('should only return conversation metrics related to the provided period, and not consider previous or following days', async () => {
+			const overview = new OverviewData({
+				getAnalyticsBetweenDate: (date: { gte: Date; lte: Date }) => analytics(date),
+				getOnHoldConversationsBetweenDate: () => 1,
+			} as any);
+
+			// Fixed date to assure we get the same data
+			const result = await overview.Conversations(
+				moment.utc().set('month', 10).set('year', 2023).set('date', 23).startOf('day'),
+				moment.utc().set('month', 10).set('year', 2023).set('date', 23).endOf('day'),
+				'',
+				'UTC',
+			);
+			expect(result).to.be.deep.equal([
+				{ title: 'Total_conversations', value: 1 },
+				{ title: 'Open_conversations', value: 0 },
+				{ title: 'On_Hold_conversations', value: 1 },
+				{ title: 'Total_messages', value: 14 },
+				{ title: 'Busiest_day', value: 'Thursday' },
+				{ title: 'Conversations_per_day', value: '1.00' },
+				{ title: 'Busiest_time', value: '7AM - 8AM' },
+			]);
+		});
 		it('should return all values as 0 when there is no data in the provided period, but there is data in the previous and following days', async () => {
 			const overview = new OverviewData({
 				getAnalyticsBetweenDate: (date: { gte: Date; lte: Date }) => analytics(date),
@@ -292,6 +315,23 @@ describe('OverviewData Analytics', () => {
 				{ title: 'Avg_response_time', value: '00:00:07' },
 				{ title: 'Avg_first_response_time', value: '00:00:10' },
 				{ title: 'Avg_reaction_time', value: '00:00:49' },
+			]);
+		});
+		it('should only return productivity metrics related to the provided period, and not consider previous or following days', async () => {
+			const overview = new OverviewData({
+				getAnalyticsMetricsBetweenDate: (_: any, date: { gte: Date; lte: Date }) => analytics(date),
+			} as any);
+			const result = await overview.Productivity(
+				moment().set('month', 10).set('year', 2023).set('date', 25).startOf('day'),
+				moment().set('month', 10).set('year', 2023).set('date', 25).endOf('day'),
+				'',
+				'UTC',
+			);
+
+			expect(result).to.be.deep.equal([
+				{ title: 'Avg_response_time', value: '00:00:01' },
+				{ title: 'Avg_first_response_time', value: '00:00:04' },
+				{ title: 'Avg_reaction_time', value: '00:02:04' },
 			]);
 		});
 		it('should return all values as 0 when there is no data in the provided period, but there is data in the previous and following days', async () => {
