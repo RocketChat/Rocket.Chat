@@ -130,7 +130,7 @@ jobs:
           node-version: ${{ inputs.node-version }}
           cache-modules: true
           install: true
-
+      - uses: rharkor/caching-for-turbo@v1.5
       # if we are testing a PR from a fork, we need to build the docker image at this point
       - uses: ./.github/actions/build-docker
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
@@ -138,8 +138,6 @@ jobs:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ inputs.node-version }}
-
-      - uses: rharkor/caching-for-turbo@v1.5
 
       - name: Start httpbin container and wait for it to be ready
         if: inputs.type == 'api'
