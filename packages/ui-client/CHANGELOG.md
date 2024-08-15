@@ -1,5 +1,56 @@
 # @rocket.chat/ui-client
 
+## 9.0.0
+
+### Minor Changes
+
+- ([#32517](https://github.com/RocketChat/Rocket.Chat/pull/32517)) Feature Preview: New Navigation - `Header` and `Contextualbar` size improvements consistent with the new global `NavBar`
+
+### Patch Changes
+
+- ([#32024](https://github.com/RocketChat/Rocket.Chat/pull/32024)) Implemented a new tab to the users page called 'Active', this tab lists all users who have logged in for the first time and are active.
+
+- <details><summary>Updated dependencies [2d89a0c448, 4e8aa575a6]:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0
+  </details>
+
+## 9.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0-rc.6
+  </details>
+
+## 9.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0-rc.5
+  </details>
+
+## 9.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0-rc.4
+  </details>
+
+## 9.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0-rc.3
+  </details>
+
 ## 9.0.0-rc.2
 
 ### Patch Changes
