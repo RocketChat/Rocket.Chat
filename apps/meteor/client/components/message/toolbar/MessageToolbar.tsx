@@ -1,7 +1,7 @@
 import { useToolbar } from '@react-aria/toolbar';
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated, isVideoConfMessage, isE2EEMessage } from '@rocket.chat/core-typings';
-import { MessageToolbar as FuselageMessageToolbar, MenuItem, MenuV2, MessageToolbarItem } from '@rocket.chat/fuselage';
+import { MessageToolbar as FuselageMessageToolbar, MessageToolbarItem } from '@rocket.chat/fuselage';
 import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useUser, useSettings, useTranslation, useMethod, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -19,6 +19,7 @@ import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoT
 import { useChat } from '../../../views/room/contexts/ChatContext';
 import { useRoomToolbox } from '../../../views/room/contexts/RoomToolboxContext';
 import MessageActionMenu from './MessageActionMenu';
+import MessageToolbarStarsActionMenu from './MessageToolbarStarsActionMenu';
 import { useWebDAVMessageAction } from './useWebDAVMessageAction';
 
 const getMessageContext = (message: IMessage, room: IRoom, context?: MessageActionContext): MessageActionContext => {
@@ -77,11 +78,9 @@ const MessageToolbar = ({
 	const { quickReactions, addRecentEmoji } = useEmojiPickerData();
 
 	const actionButtonApps = useMessageActionAppsActionButtons(context);
-	// console.log(actionButtonApps);
 
 	const starsAction = useMessageToolbarStarsAppsAction(context);
 
-	console.log('\n\nstarsAction', starsAction, '\n\n');
 	const { messageToolbox: hiddenActions } = useLayoutHiddenActions();
 
 	// TODO: move this to another place
@@ -139,13 +138,18 @@ const MessageToolbar = ({
 						disabled={action?.disabled?.({ message, room, user, subscription, settings: mapSettings, chat, context })}
 					/>
 				))}
-			{/* <MessageToolbarItem as={"bu"} icon='stars' title='AI' data-qa-id='AI' data-qa-type='message-action-menu' disabled={false}> */}
 			{starsAction.data && starsAction.data.length > 0 && (
-				<MenuV2 icon='stars' title={t('AI')} data-qa-id='AI' data-qa-type='message-action-menu'>
-					<MenuItem>Test</MenuItem>
-				</MenuV2>
+				<MessageToolbarStarsActionMenu
+					options={starsAction.data.map((action) => ({
+						...action,
+						action: (e) => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions }),
+					}))}
+					onChangeMenuVisibility={onChangeMenuVisibility}
+					data-qa-type='message-action-stars-menu-options'
+					context={{ message, room, user, subscription, settings: mapSettings, chat, context }}
+					isMessageEncrypted={isE2EEMessage(message)}
+				/>
 			)}
-			{/* </MessageToolbarItem> */}
 
 			{actionsQueryResult.isSuccess && actionsQueryResult.data.menu.length > 0 && (
 				<MessageActionMenu
