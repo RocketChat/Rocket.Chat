@@ -4556,8 +4556,6 @@
   "View_full_conversation": "Afficher la conversation complète",
   "view-full-other-user-info": "Voir les informations des autres utilisateurs",
   "view-full-other-user-info_description": "Autorisation d'afficher le profil complet des autres utilisateurs, y compris la date de création du compte, la dernière connexion, etc.",
-  "view-history": "Voir l'historique",
-  "view-history_description": "Autorisation de consulter l'historique du canal",
   "view-join-code": "Afficher le code de participation",
   "view-join-code_description": "Autorisation d'afficher le code de participation au canal",
   "view-joined-room": "Voir le salon rejoint",

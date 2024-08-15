@@ -3844,8 +3844,6 @@
   "view-d-room_description": "개인 대화방을 볼 수 있는 권한",
   "view-full-other-user-info": "다른 사용자 전체 정보 보기",
   "view-full-other-user-info_description": "계정 생성 날짜, 마지막 로그인 등 다른 사용자의 전체 프로필을 볼 수 있는 권한",
-  "view-history": "기록 보기",
-  "view-history_description": "채널 기록을 볼 수 있는 권한",
   "view-join-code": "가입 코드 보기",
   "view-join-code_description": "채널 가입 코드를 볼 수 있는 권한",
   "view-joined-room": "참여한 대화방 보기",

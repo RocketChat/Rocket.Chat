@@ -4668,8 +4668,6 @@
   "View_full_conversation": "Visualizar conversa completa",
   "view-full-other-user-info": "Visualizar informações completas de outros usuários",
   "view-full-other-user-info_description": "Permissão para visualizar o perfil completo de outros usuários, incluindo a data de criação da conta, último login, etc.",
-  "view-history": "Ver histórico",
-  "view-history_description": "Permissão para visualizar o histórico de canais",
   "view-join-code": "Ver código de associação",
   "view-join-code_description": "Permissão para visualizar o código de associação do canal",
   "view-joined-room": "Ver sala incorporada",

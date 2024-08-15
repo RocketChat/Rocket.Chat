@@ -3215,8 +3215,6 @@
   "view-d-room_description": "Autorizzazione a visualizzare i messaggi diretti",
   "view-full-other-user-info": "Visualizza tutte le altre informazioni utente",
   "view-full-other-user-info_description": "Autorizzazione a visualizzare il profilo completo di altri utenti tra cui data di creazione dell'account, ultimo accesso, ecc.",
-  "view-history": "Visualizza cronologia",
-  "view-history_description": "Autorizzazione a visualizzare la cronologia del canale",
   "view-join-code": "Visualizza unire il codice",
   "view-join-code_description": "Autorizzazione a visualizzare il codice di unione del canale",
   "view-joined-room": "Visualizza camera unita",
