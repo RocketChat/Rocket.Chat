@@ -143,6 +143,8 @@ export async function updateThreadUsersSubscriptions(message: IMessage, replies:
 }
 
 export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomUpdater: Updater<IRoom>): Promise<IMessage> {
+	console.log('notifyUsersOnMessage function');
+
 	// Skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
 	if (isEditedMessage(message)) {
 		if (Math.abs(moment(message.editedAt).diff(Date.now())) > 60000) {
@@ -183,13 +185,12 @@ export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomU
 
 callbacks.add(
 	'afterSaveMessage',
-	async (message, room) => {
-		const roomUpdater = Rooms.getUpdater();
-		await notifyUsersOnMessage(message, room, roomUpdater);
-
-		if (roomUpdater.hasChanges()) {
-			await roomUpdater.persist({ _id: room._id });
+	async (message, { room, roomUpdater }) => {
+		if (!roomUpdater) {
+			return message;
 		}
+
+		await notifyUsersOnMessage(message, room, roomUpdater);
 
 		return message;
 	},
