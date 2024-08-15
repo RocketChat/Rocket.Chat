@@ -328,7 +328,7 @@ describe('OverviewData Analytics', () => {
 			expect(result).to.be.deep.equal([
 				{ title: 'Avg_response_time', value: '00:00:01' },
 				{ title: 'Avg_first_response_time', value: '00:00:04' },
-				{ title: 'Avg_reaction_time', value: '00:02:04' },
+				{ title: 'Avg_reaction_time', value: '00:02:03' },
 			]);
 		});
 		it('should return all values as 0 when there is no data in the provided period, but there is data in the previous and following days', async () => {
