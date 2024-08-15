@@ -608,13 +608,20 @@ export async function notifyOnSubscriptionChangedByNameAndRoomType(
 
 export async function notifyOnSubscriptionChangedByUserId(
 	uid: ISubscription['u']['_id'],
-	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+	clientAction: ClientAction = 'updated',
 ): Promise<void> {
 	if (!dbWatchersDisabled) {
 		return;
 	}
 
-	const subscriptions = Subscriptions.findByUserId(uid, { projection: subscriptionFields });
+	const subscriptions =
+		clientAction === 'removed'
+			? Subscriptions.trashFind({ 'u._id': uid }, { projection: subscriptionFields })
+			: Subscriptions.findByUserId(uid, { projection: subscriptionFields });
+
+	if (!subscriptions) {
+		return;
+	}
 
 	for await (const subscription of subscriptions) {
 		void api.broadcast('watch.subscriptions', { clientAction, subscription });

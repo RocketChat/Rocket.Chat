@@ -115,7 +115,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 		const deletedCount = await Subscriptions.removeByUserId(userId);
 		if (deletedCount) {
-			void notifyOnSubscriptionChangedByUserId(userId);
+			void notifyOnSubscriptionChangedByUserId(userId, 'removed');
 		}
 
 		// Remove user as livechat agent
