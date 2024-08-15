@@ -321,7 +321,7 @@ describe('OverviewData Analytics', () => {
 			} as any);
 
 			// choosing this specific date since the day before and after are not empty
-			const targetDate = moment.utc().set('month', 10).set('year', 2023).set('date', 25);
+			const targetDate = moment().set('month', 10).set('year', 2023).set('date', 25);
 
 			const result = await overview.Productivity(targetDate.startOf('day'), targetDate.endOf('day'), '', 'UTC');
 
