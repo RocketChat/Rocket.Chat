@@ -12,9 +12,11 @@ import GroupPage from '../GroupPage';
 import Section from '../Section';
 import CreateOAuthModal from './CreateOAuthModal';
 
-type OAuthGroupPageProps = ISetting;
+type OAuthGroupPageProps = ISetting & {
+	onClickBack?: () => void;
+};
 
-function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
+function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps): ReactElement {
 	const sections = useEditableSettingsGroupSections(_id);
 	const solo = sections.length === 1;
 	const t = useTranslation();
@@ -95,6 +97,7 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 		<GroupPage
 			_id={_id}
 			{...group}
+			onClickBack={onClickBack}
 			headerButtons={
 				<>
 					<Button onClick={handleRefreshOAuthServicesButtonClick}>{t('Refresh_oauth_services')}</Button>

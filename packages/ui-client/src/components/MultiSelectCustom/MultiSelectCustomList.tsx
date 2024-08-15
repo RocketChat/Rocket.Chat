@@ -20,7 +20,7 @@ const MultiSelectCustomList = ({
 
 	const [text, setText] = useState('');
 
-	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
+	const handleChange = useCallback((event: FormEvent<HTMLInputElement>) => setText(event.currentTarget.value), []);
 
 	const filteredOptions = useFilteredOptions(text, options);
 
