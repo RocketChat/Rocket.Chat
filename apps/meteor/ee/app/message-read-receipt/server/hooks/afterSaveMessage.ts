@@ -1,4 +1,3 @@
-import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../lib/callbacks';
@@ -6,7 +5,7 @@ import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadRec
 
 callbacks.add(
 	'afterSaveMessage',
-	async (message: IMessage, room: IRoom) => {
+	async (message, { room }) => {
 		// skips this callback if the message was edited
 		if (isEditedMessage(message)) {
 			return message;
