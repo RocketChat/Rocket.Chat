@@ -1,14 +1,14 @@
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { isIE11 } from '../../../../lib/utils/isIE11';
+import { isIE11 } from '../../../../../lib/utils/isIE11';
 import GenericPreview from './GenericPreview';
 import MediaPreview from './MediaPreview';
 
 export enum FilePreviewType {
 	IMAGE = 'image',
 	AUDIO = 'audio',
-	VIDEO = 'video',
+	// VIDEO = 'video', // currently showing it in simple generic view
 }
 
 const getFileType = (fileType: File['type']): FilePreviewType | undefined => {
@@ -41,16 +41,23 @@ const shouldShowMediaPreview = (file: File, fileType: FilePreviewType | undefine
 
 type FilePreviewProps = {
 	file: File;
+	key: number;
+	index: number;
+	onRemove: (index: number) => void;
 };
 
-const FilePreview = ({ file }: FilePreviewProps): ReactElement => {
+const FilePreview = ({ file, index, onRemove }: FilePreviewProps): ReactElement => {
 	const fileType = getFileType(file.type);
 
+	const handleRemove = () => {
+		onRemove(index);
+	};
+
 	if (shouldShowMediaPreview(file, fileType)) {
-		return <MediaPreview file={file} fileType={fileType as FilePreviewType} />;
+		return <MediaPreview file={file} fileType={fileType as FilePreviewType} onRemove={handleRemove} index={index} />;
 	}
 
-	return <GenericPreview file={file} />;
+	return <GenericPreview file={file} onRemove={handleRemove} index={index} />;
 };
 
 export default FilePreview;

@@ -49,7 +49,7 @@ import fileSize from 'filesize';
 import { e2e } from '../../../../../app/e2e/client';
 import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
 import { Box } from '@rocket.chat/fuselage';
-import FilePreview from '../../modals/FileUploadModal/FilePreview';
+import FilePreview from './FilePreview/FilePreview';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
