@@ -83,5 +83,6 @@ runs:
         docker compose -f docker-compose-ci.yml push "${args[@]}"
 
     - name: Clean up temporary files
+      shell: bash
       run: |
         sudo rm -rf /tmp/bundle
