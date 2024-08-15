@@ -5255,8 +5255,6 @@
   "View_full_conversation": "Visa hela konversationen",
   "view-full-other-user-info": "Visa fullständig annan användarinformation",
   "view-full-other-user-info_description": "Tillstånd att visa fullständig profil för andra användare, inklusive datum för registrering av konto, senaste inloggning etc.",
-  "view-history": "Se historik",
-  "view-history_description": "Tillstånd att visa kanalhistoriken",
   "onboarding.component.form.action.registerNow": "Registrera dig nu",
   "view-join-code": "Visa koden för deltagande",
   "view-join-code_description": "Tillstånd att se koden för kanalanslutning",
