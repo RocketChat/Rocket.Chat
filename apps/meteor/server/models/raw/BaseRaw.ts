@@ -315,7 +315,7 @@ export abstract class BaseRaw<
 			return this.col.deleteMany(filter);
 		}
 
-		const cursor = this.find(filter);
+		const cursor = this.find(filter, { session: options?.session });
 
 		const ids: T['_id'][] = [];
 		for await (const doc of cursor) {
@@ -332,6 +332,7 @@ export abstract class BaseRaw<
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
 			await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
 				upsert: true,
+				session: options?.session,
 			});
 		}
 
