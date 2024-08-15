@@ -1,5 +1,4 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import type { FC } from 'react';
 import React, { useMemo } from 'react';
 
 import GenericModalSkeleton from '../../../components/GenericModal/GenericModalSkeleton';
@@ -15,7 +14,7 @@ type ConvertToChannelModalProps = {
 	userId: string;
 };
 
-const ConvertToChannelModal: FC<ConvertToChannelModalProps> = ({ onClose, onCancel, onConfirm, teamId, userId }) => {
+const ConvertToChannelModal = ({ onClose, onCancel, onConfirm, teamId, userId }: ConvertToChannelModalProps) => {
 	const { value, phase } = useEndpointData('/v1/teams.listRoomsOfUser', {
 		params: useMemo(() => ({ teamId, userId, canUserDelete: 'true' }), [teamId, userId]),
 	});

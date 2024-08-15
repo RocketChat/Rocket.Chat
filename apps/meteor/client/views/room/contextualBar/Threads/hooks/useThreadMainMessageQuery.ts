@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { withDebouncing } from '../../../../../../lib/utils/highOrderFunctions';
 import type { FieldExpression, Query } from '../../../../../lib/minimongo';
 import { createFilterFromQuery } from '../../../../../lib/minimongo';
+import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useGetMessageByID } from './useGetMessageByID';
 
@@ -107,8 +108,9 @@ export const useThreadMainMessageQuery = (
 		unsubscribeRef.current =
 			unsubscribeRef.current ||
 			subscribeToMessage(mainMessage, {
-				onMutate: (message) => {
-					queryClient.setQueryData(queryKey, () => message);
+				onMutate: async (message) => {
+					const msg = await onClientMessageReceived(message);
+					queryClient.setQueryData(queryKey, () => msg);
 					debouncedInvalidate();
 				},
 				onDelete: () => {

@@ -364,6 +364,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		roomId: IRoom['_id'],
 		types: IMessage['t'][],
 		ts: Date,
+		showSystemMessages: boolean,
 		options?: FindOptions<IMessage>,
 		showThreadMessages = true,
 	): FindCursor<IMessage> {
@@ -387,6 +388,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		if (types.length > 0) {
 			query.t = { $nin: types };
+		}
+
+		if (!showSystemMessages) {
+			query.t = { $exists: false };
 		}
 
 		return this.find(query, options);
@@ -424,14 +429,25 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findLivechatMessagesWithoutClosing(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		return this.find(
-			{
-				rid,
-				t: { $exists: false },
-			},
-			options,
-		);
+	findLivechatMessagesWithoutTypes(
+		rid: IRoom['_id'],
+		ignoredTypes: IMessage['t'][],
+		showSystemMessages: boolean,
+		options?: FindOptions<IMessage>,
+	): FindCursor<IMessage> {
+		const query: Filter<IMessage> = {
+			rid,
+		};
+
+		if (ignoredTypes.length > 0) {
+			query.t = { $nin: ignoredTypes };
+		}
+
+		if (!showSystemMessages) {
+			query.t = { $exists: false };
+		}
+
+		return this.find(query, options);
 	}
 
 	async setBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void> {
@@ -1040,12 +1056,11 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne(query, options);
 	}
 
-	getLastVisibleMessageSentWithNoTypeByRoomId(rid: string, messageId?: string): Promise<IMessage | null> {
-		const query = {
+	getLastVisibleUserMessageSentByRoomId(rid: string, messageId?: string): Promise<IMessage | null> {
+		const query: Filter<IMessage> = {
 			rid,
 			_hidden: { $ne: true },
-			t: { $exists: false },
-			$or: [{ tmid: { $exists: false } }, { tshow: true }],
+			$or: [{ t: 'e2e' }, { t: { $exists: false }, tmid: { $exists: false } }, { t: { $exists: false }, tshow: true }],
 			...(messageId && { _id: { $ne: messageId } }),
 		};
 
@@ -1055,7 +1070,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<IMessage>(query, options);
 	}
 
 	async cloneAndSaveAsHistoryByRecord(record: IMessage, user: IMessage['u']): Promise<InsertOneResult<IMessage>> {

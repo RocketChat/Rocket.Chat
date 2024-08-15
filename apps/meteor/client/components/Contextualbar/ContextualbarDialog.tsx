@@ -1,4 +1,3 @@
-import { Contextualbar } from '@rocket.chat/fuselage';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import { useLayoutSizes, useLayoutContextualBarPosition } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, KeyboardEvent } from 'react';
@@ -7,6 +6,7 @@ import type { AriaDialogProps } from 'react-aria';
 import { FocusScope, useDialog } from 'react-aria';
 
 import { useRoomToolbox } from '../../views/room/contexts/RoomToolboxContext';
+import Contextualbar from './Contextualbar';
 import ContextualbarResizable from './ContextualbarResizable';
 
 type ContextualbarDialogProps = AriaDialogProps & ComponentProps<typeof Contextualbar>;

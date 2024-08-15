@@ -1,18 +1,19 @@
 {
 	"name": "@rocket.chat/core-services",
-	"version": "0.3.14",
+	"version": "0.5.0",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
 		"@babel/preset-env": "~7.22.20",
 		"@babel/preset-typescript": "~7.22.15",
 		"@rocket.chat/eslint-config": "workspace:^",
+		"@rocket.chat/jest-presets": "workspace:~",
 		"@types/babel__core": "^7.20.3",
 		"@types/babel__preset-env": "^7.9.4",
-		"@types/jest": "~29.5.7",
+		"@types/jest": "~29.5.12",
 		"babel-jest": "^29.5.0",
 		"eslint": "~8.45.0",
-		"jest": "~29.6.4",
+		"jest": "~29.7.0",
 		"mongodb": "^4.17.2",
 		"prettier": "~2.8.8",
 		"typescript": "~5.3.3"
@@ -20,10 +21,9 @@
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"jest": "jest",
-		"testunit": "jest --verbose tests/**/*.test.ts",
-		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
-		"build": "rm -rf dist && tsc -p tsconfig.json"
+		"testunit": "jest",
+		"dev": "tsc --watch --preserveWatchOutput",
+		"build": "rm -rf dist && tsc"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -34,9 +34,9 @@
 		"extends": "../../package.json"
 	},
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.42.2",
+		"@rocket.chat/apps-engine": "1.44.0",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/icons": "^0.35.0",
+		"@rocket.chat/icons": "^0.36.0",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",

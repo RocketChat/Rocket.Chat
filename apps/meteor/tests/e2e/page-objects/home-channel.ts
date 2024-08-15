@@ -4,7 +4,7 @@ import { expect } from '../utils/test';
 import { HomeContent, HomeSidenav, HomeFlextab } from './fragments';
 
 export class HomeChannel {
-	private readonly page: Page;
+	public readonly page: Page;
 
 	readonly content: HomeContent;
 
@@ -62,7 +62,7 @@ export class HomeChannel {
 	}
 
 	get readOnlyFooter(): Locator {
-		return this.page.locator('footer', { hasText: 'This room is read only' })
+		return this.page.locator('footer', { hasText: 'This room is read only' });
 	}
 
 	get roomHeaderToolbar(): Locator {

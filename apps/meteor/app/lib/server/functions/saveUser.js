@@ -16,6 +16,7 @@ import { settings } from '../../../settings/server';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { validateEmailDomain } from '../lib';
 import { generatePassword } from '../lib/generatePassword';
+import { notifyOnUserChangeById, notifyOnUserChange } from '../lib/notifyListener';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { checkEmailAvailability } from './checkEmailAvailability';
 import { checkUsernameAvailability } from './checkUsernameAvailability';
@@ -67,6 +68,13 @@ async function _sendUserEmail(subject, html, userData) {
 
 async function validateUserData(userId, userData) {
 	const existingRoles = _.pluck(await getRoles(), '_id');
+
+	if (userData.verified && userData._id && userId === userData._id) {
+		throw new Meteor.Error('error-action-not-allowed', 'Editing email verification is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Editing_user',
+		});
+	}
 
 	if (userData._id && userId !== userData._id && !(await hasPermissionAsync(userId, 'edit-other-user-info'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed', {
@@ -329,6 +337,8 @@ const saveNewUser = async function (userData, sendPassword) {
 		}
 	}
 
+	void notifyOnUserChangeById({ clientAction: 'inserted', id: _id });
+
 	return _id;
 };
 
@@ -401,6 +411,7 @@ export const saveUser = async function (userId, userData) {
 
 	const updateUser = {
 		$set: {},
+		$unset: {},
 	};
 
 	handleBio(updateUser, userData.bio);
@@ -419,6 +430,9 @@ export const saveUser = async function (userId, userData) {
 
 	if (typeof userData.requirePasswordChange !== 'undefined') {
 		updateUser.$set.requirePasswordChange = userData.requirePasswordChange;
+		if (!userData.requirePasswordChange) {
+			updateUser.$unset.requirePasswordChangeReason = 1;
+		}
 	}
 
 	if (typeof userData.verified === 'boolean') {
@@ -428,7 +442,7 @@ export const saveUser = async function (userId, userData) {
 	await Users.updateOne({ _id: userData._id }, updateUser);
 
 	// App IPostUserUpdated event hook
-	const userUpdated = await Users.findOneById(userId);
+	const userUpdated = await Users.findOneById(userData._id);
 
 	await callbacks.run('afterSaveUser', {
 		user: userUpdated,
@@ -444,6 +458,18 @@ export const saveUser = async function (userId, userData) {
 	if (sendPassword) {
 		await _sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
 	}
+
+	if (typeof userData.verified === 'boolean') {
+		delete userData.verified;
+	}
+	void notifyOnUserChange({
+		clientAction: 'updated',
+		id: userData._id,
+		diff: {
+			...userData,
+			emails: userUpdated.emails,
+		},
+	});
 
 	return true;
 };

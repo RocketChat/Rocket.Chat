@@ -20,7 +20,7 @@ const MultiSelectCustomList = ({
 
 	const [text, setText] = useState('');
 
-	const handleChange = useCallback((event) => setText(event.currentTarget.value), []);
+	const handleChange = useCallback((event: FormEvent<HTMLInputElement>) => setText(event.currentTarget.value), []);
 
 	const filteredOptions = useFilteredOptions(text, options);
 
@@ -40,11 +40,7 @@ const MultiSelectCustomList = ({
 			)}
 			{filteredOptions.map((option) => (
 				<Fragment key={option.id}>
-					{option.isGroupTitle ? (
-						<Box mi='x12' mb='x4' fontScale='p2b' color='default'>
-							{t(option.text as TranslationKey)}
-						</Box>
-					) : (
+					{option.hasOwnProperty('checked') ? (
 						<Option key={option.id}>
 							<Box pis='x4' pb='x4' w='full' display='flex' justifyContent='space-between' is='label'>
 								{t(option.text as TranslationKey)}
@@ -52,6 +48,10 @@ const MultiSelectCustomList = ({
 								<CheckBox checked={option.checked} pi={0} name={option.text} id={option.id} onChange={() => onSelected(option)} />
 							</Box>
 						</Option>
+					) : (
+						<Box mi='x12' mb='x4' fontScale='p2b' color='default'>
+							{t(option.text as TranslationKey)}
+						</Box>
 					)}
 				</Fragment>
 			))}

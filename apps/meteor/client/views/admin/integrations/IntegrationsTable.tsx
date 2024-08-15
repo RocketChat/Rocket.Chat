@@ -96,7 +96,7 @@ const IntegrationsTable = ({ type }: { type?: string }) => {
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Integrations')} onChange={({ text }): void => setText(text)} />
+			<FilterByText placeholder={t('Search_Integrations')} onChange={setText} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -107,7 +107,7 @@ const IntegrationsTable = ({ type }: { type?: string }) => {
 			)}
 			{isSuccess && data && data.integrations.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable aria-label={t('Integrations_table')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{isSuccess &&

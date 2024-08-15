@@ -10,6 +10,10 @@ inputs:
   install:
     required: false
     type: boolean
+  deno-dir:
+    required: false
+    type: string
+    default: ~/.deno-cache
 
 outputs:
   node-version:
@@ -19,13 +23,18 @@ runs:
   using: composite
 
   steps:
+    - run: echo 'DENO_DIR=${{ inputs.deno-dir }}' >> $GITHUB_ENV
+      shell: bash
+
     - name: Cache Node Modules
       if: inputs.cache-modules
       id: cache-node-modules
       uses: actions/cache@v3
       with:
         path: |
+          .turbo/cache
           node_modules
+          ${{ env.DENO_DIR }}
           apps/meteor/node_modules
           apps/meteor/ee/server/services/node_modules
         key: node-modules-${{ hashFiles('yarn.lock') }}

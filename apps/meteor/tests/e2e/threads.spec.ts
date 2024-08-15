@@ -142,7 +142,7 @@ test.describe.serial('Threads', () => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await page.locator('role=menuitem[name="Copy text"]').click();
 
-			const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+			const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 			expect(clipboardText).toBe('this is a message for reply');
 		});
 
@@ -151,7 +151,7 @@ test.describe.serial('Threads', () => {
 			await poHomeChannel.content.openLastThreadMessageMenu();
 			await page.locator('role=menuitem[name="Copy link"]').click();
 
-			const clipboardText = await page.evaluate("navigator.clipboard.readText()");
+			const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 			expect(clipboardText).toContain('http');
 		});
 
@@ -161,6 +161,39 @@ test.describe.serial('Threads', () => {
 			await expect(page.locator('[name="msg"]').last()).toBeFocused();
 			await page.keyboard.press('Escape');
 			await expect(page).not.toHaveURL(/.*thread/);
+		});
+
+		test('expect reset the thread composer to original message if user presses escape', async ({ page }) => {
+			await expect(page).toHaveURL(/.*thread/);
+			await expect(page.getByRole('dialog').locator('[data-qa-type="message"]')).toBeVisible();
+
+			await expect(page.locator('[name="msg"]').last()).toBeFocused();
+			await page.locator('[name="msg"]').last().fill('message to be edited');
+			await page.keyboard.press('Enter');
+			await page.keyboard.press('ArrowUp');
+
+			await expect(page.locator('[name="msg"]').last()).toHaveValue('message to be edited');
+			await page.locator('[name="msg"]').last().fill('this message was edited');
+
+			await page.keyboard.press('Escape');
+			await expect(page.locator('[name="msg"]').last()).toHaveValue('message to be edited');
+			await expect(page).toHaveURL(/.*thread/);
+		});
+
+		test('expect clean composer and keep the thread open if user is editing message and presses escape', async ({ page }) => {
+			await expect(page).toHaveURL(/.*thread/);
+			await expect(page.getByRole('dialog').locator('[data-qa-type="message"]')).toBeVisible();
+			await expect(page.locator('[name="msg"]').last()).toBeFocused();
+
+			await page.locator('[name="msg"]').last().fill('message to be edited');
+			await page.keyboard.press('Enter');
+
+			await page.keyboard.press('ArrowUp');
+			await expect(page.locator('[name="msg"]').last()).toHaveValue('message to be edited');
+
+			await page.keyboard.press('Escape');
+			await expect(page.locator('[name="msg"]').last()).toHaveValue('');
+			await expect(page).toHaveURL(/.*thread/);
 		});
 	});
 });

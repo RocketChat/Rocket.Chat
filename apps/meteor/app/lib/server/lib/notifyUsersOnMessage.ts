@@ -1,5 +1,6 @@
 import type { IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
+import type { Updater } from '@rocket.chat/models';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import moment from 'moment';
@@ -141,12 +142,14 @@ export async function updateThreadUsersSubscriptions(message: IMessage, replies:
 	await Subscriptions.setLastReplyForRoomIdAndUserIds(message.rid, repliesPlusSender, new Date());
 }
 
-export async function notifyUsersOnMessage(message: IMessage, room: IRoom): Promise<IMessage> {
+export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomUpdater: Updater<IRoom>): Promise<IMessage> {
+	console.log('notifyUsersOnMessage function');
+
 	// Skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
 	if (isEditedMessage(message)) {
 		if (Math.abs(moment(message.editedAt).diff(Date.now())) > 60000) {
 			// TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
-			await Rooms.incMsgCountById(message.rid, 1);
+			Rooms.getIncMsgCountUpdateQuery(1, roomUpdater);
 			return message;
 		}
 
@@ -156,25 +159,25 @@ export async function notifyUsersOnMessage(message: IMessage, room: IRoom): Prom
 			(!message.tmid || message.tshow) &&
 			(!room.lastMessage || room.lastMessage._id === message._id)
 		) {
-			await Rooms.setLastMessageById(message.rid, message);
+			Rooms.getLastMessageUpdateQuery(message, roomUpdater);
 		}
 
 		return message;
 	}
 
 	if (message.ts && Math.abs(moment(message.ts).diff(Date.now())) > 60000) {
-		await Rooms.incMsgCountById(message.rid, 1);
+		Rooms.getIncMsgCountUpdateQuery(1, roomUpdater);
 		return message;
 	}
 
 	// If message sent ONLY on a thread, skips the rest as it is done on a callback specific to threads
 	if (message.tmid && !message.tshow) {
-		await Rooms.incMsgCountById(message.rid, 1);
+		Rooms.getIncMsgCountUpdateQuery(1, roomUpdater);
 		return message;
 	}
 
 	// Update all the room activity tracker fields
-	await Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') ? message : undefined);
+	Rooms.setIncMsgCountAndSetLastMessageUpdateQuery(1, message, !!settings.get('Store_Last_Message'), roomUpdater);
 	await updateUsersSubscriptions(message, room);
 
 	return message;
@@ -182,7 +185,15 @@ export async function notifyUsersOnMessage(message: IMessage, room: IRoom): Prom
 
 callbacks.add(
 	'afterSaveMessage',
-	(message, room) => notifyUsersOnMessage(message, room),
+	async (message, { room, roomUpdater }) => {
+		if (!roomUpdater) {
+			return message;
+		}
+
+		await notifyUsersOnMessage(message, room, roomUpdater);
+
+		return message;
+	},
 	callbacks.priority.MEDIUM,
 	'notifyUsersOnMessage',
 );

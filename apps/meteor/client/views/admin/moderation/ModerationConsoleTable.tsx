@@ -2,7 +2,6 @@ import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { FC } from 'react';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,7 +19,7 @@ import ModerationConsoleTableRow from './ModerationConsoleTableRow';
 import ModerationFilter from './helpers/ModerationFilter';
 
 // TODO: Missing error state
-const ModerationConsoleTable: FC = () => {
+const ModerationConsoleTable = () => {
 	const [text, setText] = useState('');
 	const router = useRouter();
 	const { t } = useTranslation();
@@ -84,16 +83,6 @@ const ModerationConsoleTable: FC = () => {
 				sort='reports.message.u.username'
 			>
 				{t('User')}
-			</GenericTableHeaderCell>,
-
-			<GenericTableHeaderCell
-				key='reportedMessage'
-				direction={sortDirection}
-				active={sortBy === 'reports.description'}
-				onClick={setSort}
-				sort='reports.description'
-			>
-				{t('Moderation_Reported_message')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key='room' direction={sortDirection}>
 				{t('Room')}
