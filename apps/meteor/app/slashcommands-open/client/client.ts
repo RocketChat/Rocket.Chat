@@ -5,7 +5,7 @@ import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { router } from '../../../client/providers/RouterProvider';
 import { Subscriptions, ChatSubscription } from '../../models/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { slashCommands } from '../../utils/client/slashCommand';
 
 slashCommands.add({
 	command: 'open',
