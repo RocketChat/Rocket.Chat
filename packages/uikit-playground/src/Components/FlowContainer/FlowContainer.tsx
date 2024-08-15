@@ -8,6 +8,8 @@ import ReactFlow, {
   Viewport,
   ReactFlowInstance,
   useReactFlow,
+  Connection,
+  Edge,
 } from 'reactflow';
 
 import 'reactflow/dist/style.css';
@@ -39,10 +41,10 @@ const FlowContainer = () => {
   const edgeUpdateSuccessful = useRef(true);
 
   const onConnect = useCallback(
-    (params) => {
-      if (params.source === params.target) return;
+    (connection: Connection) => {
+      if (connection.source === connection.target) return;
       const newEdge = {
-        ...params,
+        ...connection,
         type: FlowParams.edgeType,
         markerEnd: FlowParams.markerEnd,
         style: FlowParams.style,
@@ -57,7 +59,7 @@ const FlowContainer = () => {
   }, []);
 
   const onEdgeUpdate = useCallback(
-    (oldEdge, newConnection) => {
+    (oldEdge: Edge<unknown>, newConnection: Connection) => {
       edgeUpdateSuccessful.current = true;
       setEdges((els) => updateEdge(oldEdge, newConnection, els));
     },
@@ -65,7 +67,7 @@ const FlowContainer = () => {
   );
 
   const onEdgeUpdateEnd = useCallback(
-    (_, edge) => {
+    (_: MouseEvent | TouchEvent, edge: Edge<unknown>) => {
       if (!edgeUpdateSuccessful.current) {
         setEdges((eds) => {
           return eds.filter((e) => e.id !== edge.id);

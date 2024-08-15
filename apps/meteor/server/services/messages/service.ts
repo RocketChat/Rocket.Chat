@@ -6,12 +6,12 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
+import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
-import { broadcastMessageFromData } from '../../modules/watchers/lib/messages';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
 import { BeforeSaveCheckMAC } from './hooks/BeforeSaveCheckMAC';
 import { BeforeSaveJumpToMessage } from './hooks/BeforeSaveJumpToMessage';
@@ -121,7 +121,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			Rooms.incMsgCountById(rid, 1),
 		]);
 
-		void broadcastMessageFromData({
+		void notifyOnMessageChange({
 			id: result.insertedId,
 		});
 
@@ -142,8 +142,8 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		message = await mentionServer.execute(message);
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
-		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
 		message = await this.badWords.filterBadWords({ message });
+		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
 		message = await this.spotify.convertSpotifyLinks({ message });
 		message = await this.jumpToMessage.createAttachmentForMessageURLs({
 			message,

@@ -26,7 +26,7 @@ const StaticSelectElement = ({
   );
 
   const handleChange = useCallback(
-    (value) => {
+    (value: string) => {
       action({ target: { value } });
     },
     [action]

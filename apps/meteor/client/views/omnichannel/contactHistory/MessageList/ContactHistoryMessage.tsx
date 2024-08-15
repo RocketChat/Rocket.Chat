@@ -19,7 +19,6 @@ import {
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React, { memo } from 'react';
 
 import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
@@ -31,12 +30,14 @@ import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
 import { useUserCard } from '../../../room/contexts/UserCardContext';
 
-const ContactHistoryMessage: FC<{
+type ContactHistoryMessageProps = {
 	message: IMessage;
 	sequential: boolean;
 	isNewDay: boolean;
 	showUserAvatar: boolean;
-}> = ({ message, sequential, isNewDay, showUserAvatar }) => {
+};
+
+const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }: ContactHistoryMessageProps) => {
 	const t = useTranslation();
 	const { triggerProps, openUserCard } = useUserCard();
 

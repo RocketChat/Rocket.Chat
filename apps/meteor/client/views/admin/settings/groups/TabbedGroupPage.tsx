@@ -12,9 +12,10 @@ import GenericGroupPage from './GenericGroupPage';
 
 type TabbedGroupPageProps = ISetting & {
 	headerButtons?: ReactElement;
+	onClickBack?: () => void;
 };
 
-function TabbedGroupPage({ _id, ...props }: TabbedGroupPageProps): JSX.Element {
+function TabbedGroupPage({ _id, onClickBack, ...props }: TabbedGroupPageProps): JSX.Element {
 	const t = useTranslation();
 	const tabs = useEditableSettingsGroupTabs(_id);
 
@@ -25,7 +26,7 @@ function TabbedGroupPage({ _id, ...props }: TabbedGroupPageProps): JSX.Element {
 	const solo = sections.length === 1;
 
 	if (!tabs.length || (tabs.length === 1 && !tabs[0])) {
-		return <GenericGroupPage _id={_id} {...props} />;
+		return <GenericGroupPage _id={_id} onClickBack={onClickBack} {...props} />;
 	}
 
 	if (!tab && tabs[0]) {
@@ -43,7 +44,7 @@ function TabbedGroupPage({ _id, ...props }: TabbedGroupPageProps): JSX.Element {
 	);
 
 	return (
-		<GroupPage _id={_id} {...props} tabs={tabsComponent}>
+		<GroupPage _id={_id} onClickBack={onClickBack} {...props} tabs={tabsComponent}>
 			{sections.map((sectionName) => (
 				<Section key={sectionName || ''} groupId={_id} sectionName={sectionName} tabName={tab} solo={solo} />
 			))}

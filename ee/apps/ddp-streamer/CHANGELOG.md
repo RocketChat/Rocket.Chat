@@ -1,5 +1,324 @@
 # @rocket.chat/ddp-streamer
 
+## 0.3.3
+
+### Patch Changes
+
+- ([#32719](https://github.com/RocketChat/Rocket.Chat/pull/32719)) Added the `user` param to apps-engine update method call, allowing apps' new `onUpdate` hook to know who triggered the update.
+
+- <details><summary>Updated dependencies [439faa87d3, 03c8b066f9, 2d89a0c448, 439faa87d3, 24f7df4894, 4e8aa575a6, 03c8b066f9, 264d7d5496, b8e5887fb9]:</summary>
+
+  - @rocket.chat/model-typings@0.6.0
+  - @rocket.chat/core-services@0.5.0
+  - @rocket.chat/core-typings@6.11.0
+  - @rocket.chat/ui-contexts@9.0.0
+  - @rocket.chat/models@0.2.0
+  - @rocket.chat/rest-typings@6.11.0
+  - @rocket.chat/instance-status@0.1.3
+  </details>
+
+## 0.3.3-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.6
+  - @rocket.chat/rest-typings@6.11.0-rc.6
+  - @rocket.chat/core-services@0.5.0-rc.6
+  - @rocket.chat/model-typings@0.6.0-rc.6
+  - @rocket.chat/ui-contexts@9.0.0-rc.6
+  - @rocket.chat/models@0.2.0-rc.6
+  - @rocket.chat/instance-status@0.1.3-rc.6
+  </details>
+
+## 0.3.3-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.5
+  - @rocket.chat/rest-typings@6.11.0-rc.5
+  - @rocket.chat/core-services@0.5.0-rc.5
+  - @rocket.chat/model-typings@0.6.0-rc.5
+  - @rocket.chat/ui-contexts@9.0.0-rc.5
+  - @rocket.chat/models@0.2.0-rc.5
+  - @rocket.chat/instance-status@0.1.3-rc.5
+  </details>
+
+## 0.3.3-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.4
+  - @rocket.chat/rest-typings@6.11.0-rc.4
+  - @rocket.chat/core-services@0.5.0-rc.4
+  - @rocket.chat/model-typings@0.6.0-rc.4
+  - @rocket.chat/ui-contexts@9.0.0-rc.4
+  - @rocket.chat/models@0.2.0-rc.4
+  - @rocket.chat/instance-status@0.1.3-rc.4
+  </details>
+
+## 0.3.3-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.3
+  - @rocket.chat/rest-typings@6.11.0-rc.3
+  - @rocket.chat/core-services@0.5.0-rc.3
+  - @rocket.chat/model-typings@0.6.0-rc.3
+  - @rocket.chat/ui-contexts@9.0.0-rc.3
+  - @rocket.chat/models@0.2.0-rc.3
+  - @rocket.chat/instance-status@0.1.3-rc.3
+  </details>
+
+## 0.3.3-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.2
+  - @rocket.chat/rest-typings@6.11.0-rc.2
+  - @rocket.chat/core-services@0.5.0-rc.2
+  - @rocket.chat/model-typings@0.6.0-rc.2
+  - @rocket.chat/ui-contexts@9.0.0-rc.2
+  - @rocket.chat/models@0.2.0-rc.2
+  - @rocket.chat/instance-status@0.1.3-rc.2
+  </details>
+
+## 0.3.3-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.0-rc.1
+  - @rocket.chat/rest-typings@6.11.0-rc.1
+  - @rocket.chat/core-services@0.5.0-rc.1
+  - @rocket.chat/model-typings@0.6.0-rc.1
+  - @rocket.chat/ui-contexts@9.0.0-rc.1
+  - @rocket.chat/models@0.2.0-rc.1
+  - @rocket.chat/instance-status@0.1.2-rc.1
+  </details>
+
+## 0.3.3-rc.0
+
+### Patch Changes
+
+- ([#32719](https://github.com/RocketChat/Rocket.Chat/pull/32719)) Added the `user` param to apps-engine update method call, allowing apps' new `onUpdate` hook to know who triggered the update.
+
+- <details><summary>Updated dependencies [439faa87d3, 03c8b066f9, 2d89a0c448, 439faa87d3, 24f7df4894, 4e8aa575a6, 03c8b066f9, 264d7d5496, b8e5887fb9]:</summary>
+
+  - @rocket.chat/model-typings@0.6.0-rc.0
+  - @rocket.chat/core-services@0.5.0-rc.0
+  - @rocket.chat/core-typings@6.11.0-rc.0
+  - @rocket.chat/ui-contexts@9.0.0-rc.0
+  - @rocket.chat/models@0.2.0-rc.0
+  - @rocket.chat/rest-typings@6.11.0-rc.0
+  - @rocket.chat/instance-status@0.1.2-rc.0
+  </details>
+
+## 0.3.2
+
+### Patch Changes
+
+- ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Fixed an issue that prevented apps from being updated or uninstalled in some cases
+
+- ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Fixed an issue that prevented apps from handling errors during execution in some cases
+
+- ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Improved Apps-Engine installation to prevent start up errors on manual installation setups
+
+- ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Fixed an issue that caused the video conference button on rooms to not recognize a video conference provider app in some cases
+
+- <details><summary>Updated dependencies [ca6a9d8de8, ca6a9d8de8, ca6a9d8de8, ca6a9d8de8]:</summary>
+
+  - @rocket.chat/core-services@0.4.2
+  - @rocket.chat/core-typings@6.10.2
+  - @rocket.chat/rest-typings@6.10.2
+  - @rocket.chat/model-typings@0.5.2
+  - @rocket.chat/ui-contexts@8.0.2
+  - @rocket.chat/models@0.1.2
+  - @rocket.chat/instance-status@0.1.2
+  </details>
+
+## 0.3.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.1
+  - @rocket.chat/rest-typings@6.10.1
+  - @rocket.chat/core-services@0.4.1
+  - @rocket.chat/model-typings@0.5.1
+  - @rocket.chat/ui-contexts@8.0.1
+  - @rocket.chat/models@0.1.1
+  - @rocket.chat/instance-status@0.1.1
+  </details>
+
+## 0.3.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [1240c874a5, eaf2f11a6c, 5f95c4ec6b, 495628bce0, f75a2cb4bb, 07c4ca0621, 4f72d62aa7, dfa49bdbb2]:</summary>
+
+  - @rocket.chat/core-typings@6.10.0
+  - @rocket.chat/model-typings@0.5.0
+  - @rocket.chat/rest-typings@6.10.0
+  - @rocket.chat/instance-status@0.1.0
+  - @rocket.chat/core-services@0.4.0
+  - @rocket.chat/ui-contexts@8.0.0
+  - @rocket.chat/models@0.1.0
+  </details>
+
+## 0.3.0-rc.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.7
+  - @rocket.chat/rest-typings@6.10.0-rc.7
+  - @rocket.chat/core-services@0.4.0-rc.7
+  - @rocket.chat/model-typings@0.5.0-rc.7
+  - @rocket.chat/ui-contexts@8.0.0-rc.7
+  - @rocket.chat/models@0.1.0-rc.7
+  - @rocket.chat/instance-status@0.1.0-rc.7
+  </details>
+
+## 0.3.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.6
+  - @rocket.chat/rest-typings@6.10.0-rc.6
+  - @rocket.chat/core-services@0.4.0-rc.6
+  - @rocket.chat/model-typings@0.5.0-rc.6
+  - @rocket.chat/ui-contexts@8.0.0-rc.6
+  - @rocket.chat/models@0.1.0-rc.6
+  - @rocket.chat/instance-status@0.1.0-rc.6
+  </details>
+
+## 0.3.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.5
+  - @rocket.chat/rest-typings@6.10.0-rc.5
+  - @rocket.chat/core-services@0.4.0-rc.5
+  - @rocket.chat/model-typings@0.5.0-rc.5
+  - @rocket.chat/ui-contexts@8.0.0-rc.5
+  - @rocket.chat/models@0.1.0-rc.5
+  - @rocket.chat/instance-status@0.1.0-rc.5
+  </details>
+
+## 0.3.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.4
+  - @rocket.chat/rest-typings@6.10.0-rc.4
+  - @rocket.chat/core-services@0.4.0-rc.4
+  - @rocket.chat/model-typings@0.5.0-rc.4
+  - @rocket.chat/ui-contexts@8.0.0-rc.4
+  - @rocket.chat/models@0.1.0-rc.4
+  - @rocket.chat/instance-status@0.1.0-rc.4
+  </details>
+
+## 0.3.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.3
+  - @rocket.chat/rest-typings@6.10.0-rc.3
+  - @rocket.chat/core-services@0.4.0-rc.3
+  - @rocket.chat/model-typings@0.5.0-rc.3
+  - @rocket.chat/ui-contexts@8.0.0-rc.3
+  - @rocket.chat/models@0.1.0-rc.3
+  - @rocket.chat/instance-status@0.1.0-rc.3
+  </details>
+
+## 0.3.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.2
+  - @rocket.chat/rest-typings@6.10.0-rc.2
+  - @rocket.chat/core-services@0.4.0-rc.2
+  - @rocket.chat/model-typings@0.5.0-rc.2
+  - @rocket.chat/ui-contexts@8.0.0-rc.2
+  - @rocket.chat/models@0.1.0-rc.2
+  - @rocket.chat/instance-status@0.1.0-rc.2
+  </details>
+
+## 0.3.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.1
+  - @rocket.chat/rest-typings@6.10.0-rc.1
+  - @rocket.chat/core-services@0.4.0-rc.1
+  - @rocket.chat/model-typings@0.5.0-rc.1
+  - @rocket.chat/ui-contexts@8.0.0-rc.1
+  - @rocket.chat/models@0.1.0-rc.1
+  - @rocket.chat/instance-status@0.1.0-rc.1
+  </details>
+
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- ([#31821](https://github.com/RocketChat/Rocket.Chat/pull/31821)) New runtime for apps in the Apps-Engine based on the Deno platform
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [1240c874a5, eaf2f11a6c, 5f95c4ec6b, 495628bce0, f75a2cb4bb, 07c4ca0621, 4f72d62aa7, dfa49bdbb2]:</summary>
+
+  - @rocket.chat/core-typings@6.10.0-rc.0
+  - @rocket.chat/model-typings@0.5.0-rc.0
+  - @rocket.chat/rest-typings@6.10.0-rc.0
+  - @rocket.chat/instance-status@0.1.0-rc.0
+  - @rocket.chat/core-services@0.4.0-rc.0
+  - @rocket.chat/ui-contexts@8.0.0-rc.0
+  - @rocket.chat/models@0.1.0-rc.0
+
+## 0.2.17
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.9.3
+  - @rocket.chat/rest-typings@6.9.3
+  - @rocket.chat/core-services@0.3.18
+  - @rocket.chat/model-typings@0.4.4
+  - @rocket.chat/ui-contexts@7.0.3
+  - @rocket.chat/models@0.0.42
+  - @rocket.chat/instance-status@0.0.42
+  </details>
+
 ## 0.2.16
 
 ### Patch Changes

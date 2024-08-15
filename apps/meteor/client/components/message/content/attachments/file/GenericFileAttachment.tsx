@@ -6,11 +6,14 @@ import {
 	MessageGenericPreviewTitle,
 	MessageGenericPreviewDescription,
 } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getFileExtension } from '../../../../../../lib/utils/getFileExtension';
+import { forAttachmentDownload, registerDownloadForUid } from '../../../../../hooks/useDownloadFromServiceWorker';
 import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
@@ -31,18 +34,39 @@ const GenericFileAttachment = ({
 	collapsed,
 }: GenericFileAttachmentProps) => {
 	const getURL = useMediaUrl();
+	const uid = useUniqueId();
+	const { t } = useTranslation();
 
 	const handleTitleClick = (event: UIEvent): void => {
-		if (openDocumentViewer && link && format === 'PDF') {
+		if (!link) {
+			return;
+		}
+
+		if (openDocumentViewer && format === 'PDF') {
 			event.preventDefault();
-			openDocumentViewer(`${getURL(link)}?contentDisposition=inline`, format, '');
+
+			const url = new URL(getURL(link), window.location.origin);
+			url.searchParams.set('contentDisposition', 'inline');
+			openDocumentViewer(url.toString(), format, '');
+			return;
+		}
+
+		if (link.includes('/file-decrypt/')) {
+			event.preventDefault();
+
+			registerDownloadForUid(uid, t, title);
+			forAttachmentDownload(uid, link);
 		}
 	};
 
 	const getExternalUrl = () => {
 		if (!hasDownload || !link) return undefined;
 
-		if (openDocumentViewer) return `${getURL(link)}?download`;
+		if (openDocumentViewer) {
+			const url = new URL(getURL(link), window.location.origin);
+			url.searchParams.set('download', '');
+			return url.toString();
+		}
 
 		return getURL(link);
 	};
