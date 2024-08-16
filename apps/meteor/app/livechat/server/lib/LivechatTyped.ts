@@ -21,6 +21,7 @@ import type {
 	ILivechatDepartmentAgents,
 	LivechatDepartmentDTO,
 	OmnichannelSourceType,
+	ILivechatInquiryRecord,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -225,18 +226,20 @@ class LivechatClass {
 		return Users.findOnlineAgents();
 	}
 
-	async closeRoom(params: CloseRoomParams): Promise<void> {
+	async closeRoom(params: CloseRoomParams, attempts = 2): Promise<void> {
 		let newRoom: IOmnichannelRoom;
 		let chatCloser: ChatCloser;
+		let removedInquiryObj: ILivechatInquiryRecord | null;
 
 		const session = client.startSession();
 		try {
 			session.startTransaction();
-			const { room, closedBy } = await this.doCloseRoom(params, session);
+			const { room, closedBy, removedInquiry } = await this.doCloseRoom(params, session);
 			await session.commitTransaction();
 
 			newRoom = room;
 			chatCloser = closedBy;
+			removedInquiryObj = removedInquiry;
 		} catch (e) {
 			this.logger.error(e);
 			await session.abortTransaction();
@@ -245,6 +248,11 @@ class LivechatClass {
 				(e as unknown as MongoError)?.errorLabels?.includes('UnknownTransactionCommitResult') ||
 				(e as unknown as MongoError)?.errorLabels?.includes('TransientTransactionError')
 			) {
+				if (attempts > 0) {
+					this.logger.debug(`Retrying close room because of transient error. Attempts left: ${attempts}`);
+					return this.closeRoom(params, attempts - 1);
+				}
+
 				throw new Error('error-room-cannot-be-closed-try-again');
 			}
 			throw e;
@@ -254,10 +262,15 @@ class LivechatClass {
 
 		// Note: when reaching this point, the room has been closed
 		// Transaction is commited and so these messages can be sent here.
-		return this.afterRoomClosed(newRoom, chatCloser, params);
+		return this.afterRoomClosed(newRoom, chatCloser, removedInquiryObj, params);
 	}
 
-	async afterRoomClosed(newRoom: IOmnichannelRoom, chatCloser: ChatCloser, params: CloseRoomParams): Promise<void> {
+	async afterRoomClosed(
+		newRoom: IOmnichannelRoom,
+		chatCloser: ChatCloser,
+		inquiry: ILivechatInquiryRecord | null,
+		params: CloseRoomParams,
+	): Promise<void> {
 		if (!chatCloser) {
 			// this should never happen
 			return;
@@ -310,11 +323,17 @@ class LivechatClass {
 		}
 
 		void notifyOnRoomChangedById(newRoom._id);
+		if (inquiry) {
+			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
+		}
 
 		this.logger.debug(`Room ${newRoom._id} was closed`);
 	}
 
-	async doCloseRoom(params: CloseRoomParams, session: ClientSession): Promise<{ room: IOmnichannelRoom; closedBy: ChatCloser }> {
+	async doCloseRoom(
+		params: CloseRoomParams,
+		session: ClientSession,
+	): Promise<{ room: IOmnichannelRoom; closedBy: ChatCloser; removedInquiry: ILivechatInquiryRecord | null }> {
 		const { comment } = params;
 		const { room } = params;
 
@@ -370,13 +389,9 @@ class LivechatClass {
 		this.logger.debug(`Updating DB for room ${room._id} with close data`);
 
 		const inquiry = await LivechatInquiry.findOneByRoomId(rid, { session });
-
 		const removedInquiry = await LivechatInquiry.removeByRoomId(rid, { session });
 		if (removedInquiry && removedInquiry.deletedCount !== 1) {
 			throw new Error('Error removing inquiry');
-		}
-		if (inquiry) {
-			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
 		}
 
 		const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData, { session });
@@ -400,7 +415,7 @@ class LivechatClass {
 			throw new Error('Error: Room not found');
 		}
 
-		return { room: newRoom, closedBy: chatCloser };
+		return { room: newRoom, closedBy: chatCloser, removedInquiry: inquiry };
 	}
 
 	async getRequiredDepartment(onlineRequired = true) {
