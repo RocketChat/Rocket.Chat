@@ -16,7 +16,7 @@ jest.mock('../../../hooks/useEndpointAction', () => ({
 
 describe('TwoFactorEmail Component', () => {
 	it('should render the component without crashing', () => {
-		render(<TwoFactorEmail />);
+		render(<TwoFactorEmail />, { legacyRoot: true });
 		expect(screen.getByText('Enable_two-factor_authentication_email')).toBeInTheDocument();
 	});
 
@@ -24,7 +24,7 @@ describe('TwoFactorEmail Component', () => {
 		(useSetting as jest.Mock).mockReturnValue(true);
 		(useUser as jest.Mock).mockReturnValue({ isOAuthUser: true });
 
-		render(<TwoFactorEmail />);
+		render(<TwoFactorEmail />, { legacyRoot: true });
 		expect(screen.getByText('Enable_two-factor_authentication_email')).toBeInTheDocument();
 	});
 
@@ -32,14 +32,14 @@ describe('TwoFactorEmail Component', () => {
 		(useSetting as jest.Mock).mockReturnValue(false);
 		(useUser as jest.Mock).mockReturnValue({ isOAuthUser: true });
 
-		const { container } = render(<TwoFactorEmail />);
+		const { container } = render(<TwoFactorEmail />, { legacyRoot: true });
 		expect(container).toBeEmptyDOMElement();
 	});
 
 	it('should render button, if user not OAuth user', () => {
 		(useUser as jest.Mock).mockReturnValue({ isOAuthUser: false });
 
-		render(<TwoFactorEmail />);
+		render(<TwoFactorEmail />, { legacyRoot: true });
 		expect(screen.getByText('Enable_two-factor_authentication_email')).toBeInTheDocument();
 	});
 });
