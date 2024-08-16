@@ -44,7 +44,7 @@ const BusinessHoursMultiple = ({ className }: { className?: ComponentProps<typeo
 					<Controller
 						name='name'
 						control={control}
-						rules={{ required: t('error-the-field-is-required', { field: t('Name') }) }}
+						rules={{ required: t('The_field_is_required', t('Name')) }}
 						render={({ field }) => <TextInput id={nameField} {...field} aria-describedby={`${departmentsField}-error`} />}
 					/>
 				</FieldRow>

@@ -154,12 +154,7 @@ const CloseChatModal = ({
 							<FieldRow>
 								<TextInput
 									{...register('comment')}
-									error={
-										errors.comment &&
-										t('error-the-field-is-required', {
-											field: t('Comment'),
-										})
-									}
+									error={errors.comment && t('The_field_is_required', t('Comment'))}
 									flexGrow={1}
 									placeholder={t('Please_add_a_comment')}
 								/>
@@ -206,12 +201,7 @@ const CloseChatModal = ({
 														<TextInput
 															{...register('subject', { required: true })}
 															className='active'
-															error={
-																errors.subject &&
-																t('error-the-field-is-required', {
-																	field: t('Subject'),
-																})
-															}
+															error={errors.subject && t('The_field_is_required', t('Subject'))}
 															flexGrow={1}
 														/>
 													</FieldRow>

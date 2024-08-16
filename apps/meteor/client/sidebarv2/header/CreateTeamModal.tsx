@@ -183,7 +183,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 								id={nameId}
 								aria-invalid={errors.name ? 'true' : 'false'}
 								{...register('name', {
-									required: t('error-the-field-is-required', { field: t('Name') }),
+									required: t('The_field_is_required', t('Name')),
 									validate: (value) => validateTeamName(value),
 								})}
 								addon={<Icon size='x20' name={isPrivate ? 'team-lock' : 'team'} />}

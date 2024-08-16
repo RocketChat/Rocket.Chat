@@ -33,9 +33,13 @@ const RoleForm = ({ className, editing = false, isProtected = false, isDisabled 
 			<Field className={className}>
 				<FieldLabel>{t('Role')}</FieldLabel>
 				<FieldRow>
-					<TextInput disabled={editing || isDisabled} placeholder={t('Role')} {...register('name', { required: true })} />
+					<TextInput
+						disabled={editing || isDisabled}
+						placeholder={t('Role')}
+						{...register('name', { required: t('The_field_is_required', t('Role')) })}
+					/>
 				</FieldRow>
-				{errors?.name && <FieldError>{t('error-the-field-is-required', { field: t('Role') })}</FieldError>}
+				{errors?.name && <FieldError>{errors.name.message}</FieldError>}
 			</Field>
 			<Field className={className}>
 				<FieldLabel>{t('Description')}</FieldLabel>
