@@ -9,7 +9,6 @@ import type {
 	IUser,
 	MessageTypesValues,
 	ILivechatVisitor,
-	IOmnichannelSystemMessage,
 	SelectedAgent,
 	ILivechatAgent,
 	IMessage,
@@ -41,7 +40,6 @@ import {
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import moment from 'moment-timezone';
 import type { Filter, FindCursor } from 'mongodb';
 import UAParser from 'ua-parser-js';
 
@@ -68,12 +66,14 @@ import {
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
-import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { businessHourManager } from '../business-hour';
 import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
+import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
+import { parseTranscriptRequest } from './parseTranscriptRequest';
+import { sendTranscript as sendTranscriptFunc } from './sendTranscript';
 
 type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
 	id?: string;
@@ -81,36 +81,6 @@ type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'depa
 	email?: string;
 	phone?: { number: string };
 };
-
-type GenericCloseRoomParams = {
-	room: IOmnichannelRoom;
-	comment?: string;
-	options?: {
-		clientAction?: boolean;
-		tags?: string[];
-		emailTranscript?:
-			| {
-					sendToVisitor: false;
-			  }
-			| {
-					sendToVisitor: true;
-					requestData: NonNullable<IOmnichannelRoom['transcriptRequest']>;
-			  };
-		pdfTranscript?: {
-			requestedBy: string;
-		};
-	};
-};
-
-export type CloseRoomParamsByUser = {
-	user: IUser | null;
-} & GenericCloseRoomParams;
-
-export type CloseRoomParamsByVisitor = {
-	visitor: ILivechatVisitor;
-} & GenericCloseRoomParams;
-
-export type CloseRoomParams = CloseRoomParamsByUser | CloseRoomParamsByVisitor;
 
 type OfflineMessageData = {
 	message: string;
@@ -326,12 +296,8 @@ class LivechatClass {
 
 		this.logger.debug(`DB updated for room ${room._id}`);
 
-		const message = {
-			t: 'livechat-close',
-			msg: comment,
-			groupable: false,
-			transcriptRequested: !!transcriptRequest,
-		};
+		const transcriptRequested =
+			!!transcriptRequest || (!settings.get('Livechat_enable_transcript') && settings.get('Livechat_transcript_send_always'));
 
 		// Retrieve the closed room
 		const newRoom = await LivechatRooms.findOneById(rid);
@@ -341,9 +307,21 @@ class LivechatClass {
 		}
 
 		this.logger.debug(`Sending closing message to room ${room._id}`);
-		await sendMessage(chatCloser, message, newRoom);
+		await sendMessage(
+			chatCloser,
+			{
+				t: 'livechat-close',
+				msg: comment,
+				groupable: false,
+				transcriptRequested,
+				...(isRoomClosedByVisitorParams(params) && { token: chatCloser.token }),
+			},
+			newRoom,
+		);
 
-		await Message.saveSystemMessage('command', rid, 'promptTranscript', closeData.closedBy);
+		if (settings.get('Livechat_enable_transcript') && !settings.get('Livechat_transcript_send_always')) {
+			await Message.saveSystemMessage('command', rid, 'promptTranscript', closeData.closedBy);
+		}
 
 		this.logger.debug(`Running callbacks for room ${newRoom._id}`);
 
@@ -355,15 +333,18 @@ class LivechatClass {
 			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
 			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
 		});
+
+		const visitor = isRoomClosedByVisitorParams(params) ? params.visitor : undefined;
+		const opts = await parseTranscriptRequest(params.room, options, visitor);
 		if (process.env.TEST_MODE) {
 			await callbacks.run('livechat.closeRoom', {
 				room: newRoom,
-				options,
+				options: opts,
 			});
 		} else {
 			callbacks.runAsync('livechat.closeRoom', {
 				room: newRoom,
-				options,
+				options: opts,
 			});
 		}
 
@@ -562,127 +543,6 @@ class LivechatClass {
 		}
 	}
 
-	async sendTranscript({
-		token,
-		rid,
-		email,
-		subject,
-		user,
-	}: {
-		token: string;
-		rid: string;
-		email: string;
-		subject?: string;
-		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
-	}): Promise<boolean> {
-		check(rid, String);
-		check(email, String);
-		this.logger.debug(`Sending conversation transcript of room ${rid} to user with token ${token}`);
-
-		const room = await LivechatRooms.findOneById(rid);
-
-		const visitor = await LivechatVisitors.getVisitorByToken(token, {
-			projection: { _id: 1, token: 1, language: 1, username: 1, name: 1 },
-		});
-
-		if (!visitor) {
-			throw new Error('error-invalid-token');
-		}
-
-		// @ts-expect-error - Visitor typings should include language?
-		const userLanguage = visitor?.language || settings.get('Language') || 'en';
-		const timezone = getTimezone(user);
-		this.logger.debug(`Transcript will be sent using ${timezone} as timezone`);
-
-		if (!room) {
-			throw new Error('error-invalid-room');
-		}
-
-		// allow to only user to send transcripts from their own chats
-		if (room.t !== 'l' || !room.v || room.v.token !== token) {
-			throw new Error('error-invalid-room');
-		}
-
-		const showAgentInfo = settings.get<boolean>('Livechat_show_agent_info');
-		const closingMessage = await Messages.findLivechatClosingMessage(rid, { projection: { ts: 1 } });
-		const ignoredMessageTypes: MessageTypesValues[] = [
-			'livechat_navigation_history',
-			'livechat_transcript_history',
-			'command',
-			'livechat-close',
-			'livechat-started',
-			'livechat_video_call',
-		];
-		const messages = await Messages.findVisibleByRoomIdNotContainingTypesBeforeTs(
-			rid,
-			ignoredMessageTypes,
-			closingMessage?.ts ? new Date(closingMessage.ts) : new Date(),
-			{
-				sort: { ts: 1 },
-			},
-		);
-
-		let html = '<div> <hr>';
-		await messages.forEach((message) => {
-			let author;
-			if (message.u._id === visitor._id) {
-				author = i18n.t('You', { lng: userLanguage });
-			} else {
-				author = showAgentInfo ? message.u.name || message.u.username : i18n.t('Agent', { lng: userLanguage });
-			}
-
-			const datetime = moment.tz(message.ts, timezone).locale(userLanguage).format('LLL');
-			const singleMessage = `
-				<p><strong>${author}</strong>  <em>${datetime}</em></p>
-				<p>${message.msg}</p>
-			`;
-			html += singleMessage;
-		});
-
-		html = `${html}</div>`;
-
-		const fromEmail = settings.get<string>('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
-		let emailFromRegexp = '';
-		if (fromEmail) {
-			emailFromRegexp = fromEmail[0];
-		} else {
-			emailFromRegexp = settings.get<string>('From_Email');
-		}
-
-		const mailSubject = subject || i18n.t('Transcript_of_your_livechat_conversation', { lng: userLanguage });
-
-		await this.sendEmail(emailFromRegexp, email, emailFromRegexp, mailSubject, html);
-
-		setImmediate(() => {
-			void callbacks.run('livechat.sendTranscript', messages, email);
-		});
-
-		const requestData: IOmnichannelSystemMessage['requestData'] = {
-			type: 'user',
-			visitor,
-			user,
-		};
-
-		if (!user?.username) {
-			const cat = await Users.findOneById('rocket.cat', { projection: { _id: 1, username: 1, name: 1 } });
-			if (cat) {
-				requestData.user = cat;
-				requestData.type = 'visitor';
-			}
-		}
-
-		if (!requestData.user) {
-			this.logger.error('rocket.cat user not found');
-			throw new Error('No user provided and rocket.cat not found');
-		}
-
-		await Message.saveSystemMessage<IOmnichannelSystemMessage>('livechat_transcript_history', room._id, '', requestData.user, {
-			requestData,
-		});
-
-		return true;
-	}
-
 	async registerGuest({
 		id,
 		token,
@@ -712,7 +572,9 @@ class LivechatClass {
 			visitorDataToUpdate.visitorEmails = [{ address: visitorEmail }];
 		}
 
-		if (department) {
+		const livechatVisitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
+
+		if (livechatVisitor?.department !== department && department) {
 			Livechat.logger.debug(`Attempt to find a department with id/name ${department}`);
 			const dep = await LivechatDepartment.findOneByIdOrName(department, { projection: { _id: 1 } });
 			if (!dep) {
@@ -722,8 +584,6 @@ class LivechatClass {
 			Livechat.logger.debug(`Assigning visitor ${token} to department ${dep._id}`);
 			visitorDataToUpdate.department = dep._id;
 		}
-
-		const livechatVisitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 
 		visitorDataToUpdate.token = livechatVisitor?.token || token;
 
@@ -1267,7 +1127,7 @@ class LivechatClass {
 		if (guest.name) {
 			message.alias = guest.name;
 		}
-		return Object.assign(await sendMessage(guest, message, room), {
+		return Object.assign(await sendMessage(guest, { ...message, token: guest.token }, room), {
 			newRoom,
 			showConnecting: this.showConnecting(),
 		});
@@ -1386,7 +1246,7 @@ class LivechatClass {
 				_id: String,
 				username: String,
 				name: Match.Maybe(String),
-				type: String,
+				userType: String,
 			}),
 		);
 
@@ -1394,34 +1254,31 @@ class LivechatClass {
 		const scopeData = scope || (nextDepartment ? 'department' : 'agent');
 		this.logger.info(`Storing new chat transfer of ${room._id} [Transfered by: ${_id} to ${scopeData}]`);
 
-		const transfer = {
-			transferData: {
-				transferredBy,
+		await sendMessage(
+			transferredBy,
+			{
+				t: 'livechat_transfer_history',
+				rid: room._id,
 				ts: new Date(),
-				scope: scopeData,
-				comment,
-				...(previousDepartment && { previousDepartment }),
-				...(nextDepartment && { nextDepartment }),
-				...(transferredTo && { transferredTo }),
+				msg: '',
+				u: {
+					_id,
+					username,
+				},
+				groupable: false,
+				...(transferData.transferredBy.userType === 'visitor' && { token: room.v.token }),
+				transferData: {
+					transferredBy,
+					ts: new Date(),
+					scope: scopeData,
+					comment,
+					...(previousDepartment && { previousDepartment }),
+					...(nextDepartment && { nextDepartment }),
+					...(transferredTo && { transferredTo }),
+				},
 			},
-		};
-
-		const type = 'livechat_transfer_history';
-		const transferMessage = {
-			t: type,
-			rid: room._id,
-			ts: new Date(),
-			msg: '',
-			u: {
-				_id,
-				username,
-			},
-			groupable: false,
-		};
-
-		Object.assign(transferMessage, transfer);
-
-		await sendMessage(transferredBy, transferMessage, room);
+			room,
+		);
 	}
 
 	async saveGuest(guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string }, userId: string) {
@@ -1984,6 +1841,23 @@ class LivechatClass {
 
 		return departmentDB;
 	}
+
+	async sendTranscript({
+		token,
+		rid,
+		email,
+		subject,
+		user,
+	}: {
+		token: string;
+		rid: string;
+		email: string;
+		subject?: string;
+		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
+	}): Promise<boolean> {
+		return sendTranscriptFunc({ token, rid, email, subject, user });
+	}
 }
 
 export const Livechat = new LivechatClass();
+export * from './localTypes';

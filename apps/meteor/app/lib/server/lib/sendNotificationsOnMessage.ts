@@ -266,7 +266,7 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 		return;
 	}
 
-	const sender = await roomCoordinator.getRoomDirectives(room.t).getMsgSender(message.u._id);
+	const sender = await roomCoordinator.getRoomDirectives(room.t).getMsgSender(message);
 	if (!sender) {
 		return message;
 	}
@@ -406,7 +406,7 @@ settings.watch('Troubleshoot_Disable_Notifications', (value) => {
 
 	callbacks.add(
 		'afterSaveMessage',
-		(message, room) => sendAllNotifications(message, room),
+		(message, { room }) => sendAllNotifications(message, room),
 		callbacks.priority.LOW,
 		'sendNotificationsOnMessage',
 	);

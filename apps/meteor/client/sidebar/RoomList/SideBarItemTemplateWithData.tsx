@@ -8,6 +8,7 @@ import React, { memo, useMemo } from 'react';
 
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { useOmnichannelPriorities } from '../../omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../RoomMenu';
 import { OmnichannelBadges } from '../badges/OmnichannelBadges';
@@ -195,6 +196,7 @@ function SideBarItemTemplateWithData({
 			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
 			actions={actions}
 			menu={
+				!isIOsDevice &&
 				!isAnonymous &&
 				(!isQueued || (isQueued && isPriorityEnabled)) &&
 				((): ReactElement => (

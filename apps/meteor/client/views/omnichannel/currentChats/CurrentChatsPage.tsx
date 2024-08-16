@@ -55,6 +55,7 @@ type CurrentChatQuery = {
 	customFields?: string;
 	sort: string;
 	count?: number;
+	queued?: boolean;
 };
 
 type useQueryType = (
@@ -96,8 +97,9 @@ const currentChatQuery: useQueryType = (
 	}
 
 	if (status !== 'all') {
-		query.open = status === 'opened' || status === 'onhold';
+		query.open = status === 'opened' || status === 'onhold' || status === 'queued';
 		query.onhold = status === 'onhold';
+		query.queued = status === 'queued';
 	}
 	if (servedBy && servedBy !== 'all') {
 		query.agents = [servedBy];
@@ -171,8 +173,9 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 	const renderRow = useCallback(
 		(room) => {
 			const { _id, fname, servedBy, ts, lm, department, open, onHold, priorityWeight } = room;
-			const getStatusText = (open: boolean, onHold: boolean): string => {
+			const getStatusText = (open: boolean, onHold: boolean, servedBy: boolean): string => {
 				if (!open) return t('Closed');
+				if (open && !servedBy) return t('Queued');
 				return onHold ? t('On_Hold_Chats') : t('Room_Status_Open');
 			};
 
@@ -199,7 +202,7 @@ const CurrentChatsPage = ({ id, onRowClick }: { id?: string; onRowClick: (_id: s
 						{moment(lm).format('L LTS')}
 					</GenericTableCell>
 					<GenericTableCell withTruncatedText data-qa='current-chats-cell-status'>
-						<RoomActivityIcon room={room} /> {getStatusText(open, onHold)}
+						<RoomActivityIcon room={room} /> {getStatusText(open, onHold, !!servedBy?.username)}
 					</GenericTableCell>
 					{canRemoveClosedChats && !open && <RemoveChatButton _id={_id} />}
 				</GenericTableRow>

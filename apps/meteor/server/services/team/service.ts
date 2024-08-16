@@ -37,7 +37,10 @@ import { settings } from '../../../app/settings/server';
 export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
 
-	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
+	async create(
+		uid: string,
+		{ team, room = { name: team.name, extraData: {} }, members, owner, sidepanel }: ITeamCreateParams,
+	): Promise<ITeam> {
 		if (!(await checkUsernameAvailability(team.name))) {
 			throw new Error('team-name-already-exists');
 		}
@@ -120,6 +123,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 						teamId,
 						teamMain: true,
 					},
+					sidepanel,
 				};
 
 				const createdRoom = await Room.create(owner || uid, newRoom);
@@ -718,7 +722,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		for await (const member of members) {
 			const user = (await Users.findOneById(member.userId, { projection: { username: 1 } })) as Pick<IUser, '_id' | 'username'>;
-			await addUserToRoom(team.roomId, user, createdBy, false);
+			await addUserToRoom(team.roomId, user, createdBy, { skipSystemMessage: false });
 
 			if (member.roles) {
 				await this.addRolesToMember(teamId, member.userId, member.roles);
@@ -826,7 +830,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					return;
 				}
 
-				await addUserToRoom(team.roomId, user, inviter, false);
+				await addUserToRoom(team.roomId, user, inviter, { skipSystemMessage: false });
 			}),
 		);
 	}
@@ -977,7 +981,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			// at this point, users are already part of the team so we won't check for membership
 			for await (const user of users) {
 				// add each user to the default room
-				await addUserToRoom(room._id, user, inviter, false);
+				await addUserToRoom(room._id, user, inviter, { skipSystemMessage: false });
 			}
 		});
 	}
