@@ -6,7 +6,8 @@ import type {
 	SlashCommandPreviewItem,
 	SlashCommandPreviews,
 } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
+
+import { InvalidCommandUsage, InvalidPreview } from '../../../client/lib/errors';
 
 interface ISlashCommandAddParams<T extends string> {
 	command: string;
@@ -69,7 +70,7 @@ export const slashCommands = {
 		}
 
 		if (!message?.rid) {
-			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
+			throw new InvalidCommandUsage();
 		}
 
 		return cmd.callback({ command, params, message, triggerId, userId });
@@ -85,7 +86,7 @@ export const slashCommands = {
 		}
 
 		if (!message?.rid) {
-			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
+			throw new InvalidCommandUsage();
 		}
 
 		const previewInfo = await cmd.previewer(command, params, message);
@@ -114,12 +115,12 @@ export const slashCommands = {
 		}
 
 		if (!message?.rid) {
-			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
+			throw new InvalidCommandUsage();
 		}
 
 		// { id, type, value }
 		if (!preview.id || !preview.type || !preview.value) {
-			throw new Meteor.Error('error-invalid-preview', 'Preview Item must have an id, type, and value.');
+			throw new InvalidPreview();
 		}
 
 		return cmd.previewCallback(command, params, message, preview, triggerId);

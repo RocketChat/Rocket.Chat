@@ -5,7 +5,7 @@ import { callbacks } from '../../../lib/callbacks';
 import { hasPermission } from '../../authorization/client';
 import { ChatRoom } from '../../models/client/models/ChatRoom';
 import { sdk } from '../../utils/client/lib/SDKClient';
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { slashCommands } from '../../utils/client/slashCommand';
 
 slashCommands.add({
 	command: 'topic',
