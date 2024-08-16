@@ -241,7 +241,7 @@ class LivechatClass {
 			chatCloser = closedBy;
 			removedInquiryObj = removedInquiry;
 		} catch (e) {
-			this.logger.error(e);
+			this.logger.error({ error: e, msg: 'Failed to close room', afterAttempts: attempts });
 			await session.abortTransaction();
 			// Dont propagate transaction errors
 			if (
