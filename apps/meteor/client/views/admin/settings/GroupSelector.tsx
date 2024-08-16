@@ -1,6 +1,5 @@
 import type { GroupId } from '@rocket.chat/core-typings';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
-import type { FunctionComponent } from 'react';
 import React from 'react';
 
 import GroupPage from './GroupPage';
@@ -12,9 +11,10 @@ import VoipGroupPage from './groups/VoipGroupPage';
 
 type GroupSelectorProps = {
 	groupId: GroupId;
+	onClickBack?: () => void;
 };
 
-const GroupSelector: FunctionComponent<GroupSelectorProps> = ({ groupId }) => {
+const GroupSelector = ({ groupId, onClickBack }: GroupSelectorProps) => {
 	const group = useSettingStructure(groupId);
 
 	if (!group) {
@@ -22,22 +22,22 @@ const GroupSelector: FunctionComponent<GroupSelectorProps> = ({ groupId }) => {
 	}
 
 	if (groupId === 'Assets') {
-		return <AssetsGroupPage {...group} />;
+		return <AssetsGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
 	if (groupId === 'OAuth') {
-		return <OAuthGroupPage {...group} />;
+		return <OAuthGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
 	if (groupId === 'LDAP') {
-		return <LDAPGroupPage {...group} />;
+		return <LDAPGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
 	if (groupId === 'Call_Center') {
-		return <VoipGroupPage {...group} />;
+		return <VoipGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
-	return <TabbedGroupPage {...group} />;
+	return <TabbedGroupPage {...group} onClickBack={onClickBack} />;
 };
 
 export default GroupSelector;

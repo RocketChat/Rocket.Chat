@@ -73,7 +73,7 @@ const compareSettingsIgnoringKeys =
 			.filter((key) => !keys.includes(key as keyof ISetting))
 			.every((key) => isEqual(a[key as keyof ISetting], b[key as keyof ISetting]));
 
-const compareSettings = compareSettingsIgnoringKeys([
+export const compareSettings = compareSettingsIgnoringKeys([
 	'value',
 	'ts',
 	'createdAt',
@@ -139,6 +139,7 @@ export class SettingsRegistry {
 		const settingFromCodeOverwritten = overwriteSetting(settingFromCode);
 
 		const settingStored = this.store.getSetting(_id);
+
 		const settingStoredOverwritten = settingStored && overwriteSetting(settingStored);
 
 		try {
@@ -166,6 +167,10 @@ export class SettingsRegistry {
 			})();
 
 			await this.saveUpdatedSetting(_id, updatedProps, removedKeys);
+			if ('value' in updatedProps) {
+				this.store.set(updatedProps as ISetting);
+			}
+
 			return;
 		}
 
@@ -175,6 +180,7 @@ export class SettingsRegistry {
 				const removedKeys = Object.keys(settingStored).filter((key) => !['_updatedAt'].includes(key) && !overwrittenKeys.includes(key));
 
 				await this.saveUpdatedSetting(_id, settingProps, removedKeys);
+				this.store.set(settingFromCodeOverwritten);
 			}
 			return;
 		}

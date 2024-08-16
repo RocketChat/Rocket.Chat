@@ -257,7 +257,7 @@ class E2E extends Emitter {
 			return null;
 		}
 
-		if (room.encrypted !== true && !room.e2eKeyId) {
+		if (!room.encrypted) {
 			return null;
 		}
 
@@ -272,7 +272,7 @@ class E2E extends Emitter {
 		delete this.instancesByRoomId[rid];
 	}
 
-	async persistKeys(
+	private async persistKeys(
 		{ public_key, private_key }: KeyPair,
 		password: string,
 		{ force }: { force: boolean } = { force: false },
