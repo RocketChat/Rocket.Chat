@@ -1,6 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { ISMSProvider, ServiceData, SMSProviderResponse, SMSProviderResult } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import type { Request } from 'express';
 import filesize from 'filesize';
 import twilio from 'twilio';
 
@@ -242,6 +243,31 @@ export class Twilio implements ISMSProvider {
 			},
 			body: '<Response></Response>',
 		};
+	}
+
+	isRequestFromTwilio(signature: string, requestBody: object): boolean {
+		const authToken = settings.get<string>('SMS_Twilio_authToken');
+		const siteUrl = settings.get<string>('Site_Url');
+
+		if (!authToken || !siteUrl) {
+			SystemLogger.error(`(Twilio) -> URL or Twilio token not configured.`);
+			return false;
+		}
+
+		const twilioUrl = siteUrl.endsWith('/')
+			? `${siteUrl}api/v1/livechat/sms-incoming/twilio`
+			: `${siteUrl}/api/v1/livechat/sms-incoming/twilio`;
+		return twilio.validateRequest(authToken, signature, twilioUrl, requestBody);
+	}
+
+	validateRequest(request: Request): boolean {
+		// We're not getting original twilio requests on CI :p
+		if (process.env.TEST_MODE === 'true') {
+			return true;
+		}
+		const twilioHeader = request.headers['x-twilio-signature'] || '';
+		const twilioSignature = Array.isArray(twilioHeader) ? twilioHeader[0] : twilioHeader;
+		return this.isRequestFromTwilio(twilioSignature, request.body);
 	}
 
 	error(error: Error & { reason?: string }): SMSProviderResponse {
