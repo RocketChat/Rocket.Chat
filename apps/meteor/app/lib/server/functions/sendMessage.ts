@@ -4,12 +4,12 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
-import { callbacks } from '../../../../lib/callbacks';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import { isURL } from '../../../../lib/utils/isURL';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
+import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
@@ -289,11 +289,10 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
 	}
 
-	await callbacks.run('afterSaveMessage', message, room);
+	// TODO: is there an opportunity to send returned data to notifyOnMessageChange?
+	await afterSaveMessage(message, room);
 
-	void notifyOnMessageChange({
-		id: message._id,
-	});
+	void notifyOnMessageChange({ id: message._id });
 
 	void notifyOnRoomChangedById(message.rid);
 
