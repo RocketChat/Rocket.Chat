@@ -1,9 +1,11 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import { describe, it, beforeEach } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 import { callbacks } from '../../../../../lib/callbacks';
+
+const findStub = sinon.stub();
 
 proxyquire.noCallThru().load('../../../../../ee/app/livechat-enterprise/server/hooks/beforeNewRoom.ts', {
 	'meteor/meteor': {
@@ -13,17 +15,14 @@ proxyquire.noCallThru().load('../../../../../ee/app/livechat-enterprise/server/h
 	},
 	'@rocket.chat/models': {
 		OmnichannelServiceLevelAgreements: {
-			findOneByIdOrName: sinon.stub().callsFake((id) => {
-				if (id === 'high') {
-					return Promise.resolve({ _id: 'high' });
-				}
-				return Promise.resolve(null);
-			}),
+			findOneByIdOrName: findStub,
 		},
 	},
 });
 
 describe('livechat.beforeRoom', () => {
+	beforeEach(() => findStub.withArgs('high').resolves({ _id: 'high' }).withArgs('invalid').resolves(null));
+
 	it('should return roomInfo with customFields when provided', async () => {
 		const roomInfo = { name: 'test' };
 		const extraData = { customFields: { test: 'test' } };
@@ -34,7 +33,7 @@ describe('livechat.beforeRoom', () => {
 	it('should throw an error when provided with an invalid sla', async () => {
 		const roomInfo = { name: 'test' };
 		const extraData = { customFields: { test: 'test' }, sla: 'invalid' };
-		await expect(callbacks.run('livechat.beforeRoom', roomInfo, extraData)).to.be.rejectedWith(Error);
+		await expect(callbacks.run('livechat.beforeRoom', roomInfo, extraData)).to.be.rejectedWith(Error, 'error-invalid-sla');
 	});
 
 	it('should not include field in roomInfo when extraData has field other than customFields, sla', async () => {
