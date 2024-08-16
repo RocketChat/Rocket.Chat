@@ -1,6 +1,7 @@
 import { Box, Button, Chip } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useRoute, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
@@ -14,6 +15,7 @@ const ChatFilterByText = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const directoryRoute = useRoute('omnichannel-directory');
 	const removeClosedChats = useMethod('livechat:removeAllClosedRooms');
+	const queryClient = useQueryClient();
 
 	const { displayFilters, setFiltersQuery, removeFilter } = useChatsFilters();
 
@@ -21,7 +23,7 @@ const ChatFilterByText = () => {
 		const onDeleteAll = async () => {
 			try {
 				await removeClosedChats();
-				reload?.();
+				queryClient.invalidateQueries(['current-chats']);
 				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
