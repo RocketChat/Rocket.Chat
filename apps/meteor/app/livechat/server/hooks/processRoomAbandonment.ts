@@ -44,7 +44,8 @@ export const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, a
 		officeDays = (await businessHourManager.getBusinessHour())?.workHours.reduce(parseDays, {});
 	}
 
-	if (!officeDays || Object.keys(officeDays).length === 0) {
+	// Empty object we assume invalid config
+	if (!officeDays || !Object.keys(officeDays).length) {
 		return getSecondsWhenOfficeHoursIsDisabled(room, agentLastMessage);
 	}
 
