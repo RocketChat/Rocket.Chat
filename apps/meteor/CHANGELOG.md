@@ -1,5 +1,41 @@
 # @rocket.chat/meteor
 
+## 6.11.1
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#33062](https://github.com/RocketChat/Rocket.Chat/pull/33062)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.1
+  - @rocket.chat/rest-typings@6.11.1
+  - @rocket.chat/api-client@0.2.4
+  - @rocket.chat/license@0.2.4
+  - @rocket.chat/omnichannel-services@0.3.1
+  - @rocket.chat/pdf-worker@0.2.1
+  - @rocket.chat/presence@0.2.4
+  - @rocket.chat/apps@0.1.4
+  - @rocket.chat/core-services@0.5.1
+  - @rocket.chat/cron@0.1.4
+  - @rocket.chat/fuselage-ui-kit@9.0.1
+  - @rocket.chat/gazzodown@9.0.1
+  - @rocket.chat/model-typings@0.6.1
+  - @rocket.chat/ui-contexts@9.0.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.2.1
+  - @rocket.chat/ui-theming@0.2.0
+  - @rocket.chat/ui-avatar@5.0.1
+  - @rocket.chat/ui-client@9.0.1
+  - @rocket.chat/ui-video-conf@9.0.1
+  - @rocket.chat/web-ui-registration@9.0.1
+  - @rocket.chat/instance-status@0.1.4
+  </details>
+
 ## 6.11.0
 
 ### Minor Changes

@@ -1,5 +1,15 @@
 # @rocket.chat/ui-video-conf
 
+## 9.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.1
+  - @rocket.chat/ui-avatar@5.0.1
+  </details>
+
 ## 9.0.0
 
 ### Minor Changes
