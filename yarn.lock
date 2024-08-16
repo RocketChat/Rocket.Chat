@@ -9059,7 +9059,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/jest-presets@workspace:packages/jest-presets, @rocket.chat/jest-presets@workspace:~":
+"@rocket.chat/jest-presets@workspace:^, @rocket.chat/jest-presets@workspace:packages/jest-presets, @rocket.chat/jest-presets@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/jest-presets@workspace:packages/jest-presets"
   dependencies:
@@ -10070,14 +10070,18 @@ __metadata:
     "@rocket.chat/apps-engine": 1.44.0
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:~"
+    "@rocket.chat/jest-presets": "workspace:^"
     "@rocket.chat/message-parser": "workspace:^"
-    "@rocket.chat/ui-kit": "workspace:~"
+    "@rocket.chat/ui-kit": "workspace:^"
     "@types/jest": ~29.5.12
     ajv: ^8.11.0
     ajv-formats: ^2.1.1
     eslint: ~8.45.0
     jest: ~29.7.0
     mongodb: ^4.17.2
+    openapi3-ts: ^4.3.3
+    ts-jest: ~29.1.1
+    ts-node: ^10.9.2
     typescript: ~5.3.3
   languageName: unknown
   linkType: soft
@@ -10351,7 +10355,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/ui-kit@workspace:packages/ui-kit, @rocket.chat/ui-kit@workspace:~":
+"@rocket.chat/ui-kit@workspace:^, @rocket.chat/ui-kit@workspace:packages/ui-kit, @rocket.chat/ui-kit@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-kit@workspace:packages/ui-kit"
   dependencies:
@@ -32257,6 +32261,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"openapi3-ts@npm:^4.3.3":
+  version: 4.3.3
+  resolution: "openapi3-ts@npm:4.3.3"
+  dependencies:
+    yaml: ^2.4.5
+  checksum: 6620742dbf57e22a1de47b43149ddbcc7c63d270cd2f796ccd7ab3ca9c1712c19259516f827e541c7d57c21a56eaa03d9d8b9fe07ec968d1c47493d60b02f209
+  languageName: node
+  linkType: hard
+
 "opencollective-postinstall@npm:^2.0.2":
   version: 2.0.3
   resolution: "opencollective-postinstall@npm:2.0.3"
@@ -42955,6 +42968,15 @@ __metadata:
   version: 2.3.4
   resolution: "yaml@npm:2.3.4"
   checksum: e6d1dae1c6383bcc8ba11796eef3b8c02d5082911c6723efeeb5ba50fc8e881df18d645e64de68e421b577296000bea9c75d6d9097c2f6699da3ae0406c030d8
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.4.5":
+  version: 2.5.0
+  resolution: "yaml@npm:2.5.0"
+  bin:
+    yaml: bin.mjs
+  checksum: a116dca5c61641d9bf1f1016c6e71daeb1ed4915f5930ed237d45ab7a605aa5d92c332ff64879a6cd088cabede008c778774e3060ffeb4cd617d28088e4b2d83
   languageName: node
   linkType: hard
 
