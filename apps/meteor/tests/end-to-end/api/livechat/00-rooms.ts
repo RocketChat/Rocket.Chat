@@ -2309,7 +2309,7 @@ describe('LIVECHAT - rooms', () => {
 			expect(invalidResponses[0].value.body).to.have.property('success', false);
 			// This error indicates a conflict in the simultaneous close and that the request was rejected
 			// @ts-expect-error promise typings
-			expect(invalidResponses[0].value.body).to.have.property('error', 'error-room-cannot-be-closed-try-again');
+			expect(invalidResponses[0].value.body).to.have.property('error', 'Error removing inquiry');
 
 			const room = await getLivechatRoomInfo(_id);
 
