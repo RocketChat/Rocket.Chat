@@ -32,16 +32,11 @@ export default {
 
 			testMatch: [
 				'<rootDir>/app/livechat/server/business-hour/**/*.spec.ts?(x)',
-				'<rootDir>/tests/unit/app/livechat/server/hooks/beforeNewRoom.spec.ts',
 				'<rootDir>/app/livechat/server/api/**/*.spec.ts',
 				'<rootDir>/ee/app/authorization/server/validateUserRoles.spec.ts',
 				'<rootDir>/app/cloud/server/functions/supportedVersionsToken/**.spec.ts',
 				'<rootDir>/app/utils/lib/**.spec.ts',
 			],
-
-			moduleNameMapper: {
-				'^meteor/(.*)': '<rootDir>/tests/mocks/client/meteor.ts',
-			},
 		},
 	],
 } satisfies Config;
