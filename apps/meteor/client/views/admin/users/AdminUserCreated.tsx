@@ -14,10 +14,10 @@ const AdminUserCreated = ({ uid }: { uid: string }) => {
 			<ContextualbarEmptyContent icon='user' title={t('You_have_created_user')} />
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button type='reset' w='50%' onClick={() => router.navigate(`/admin/users/new`)}>
+					<Button type='reset' onClick={() => router.navigate(`/admin/users/new`)} flexBasis='0'>
 						{t('Add_more_users')}
 					</Button>
-					<Button primary w='50%' onClick={() => router.navigate(`/admin/users/info/${uid}`)}>
+					<Button primary onClick={() => router.navigate(`/admin/users/info/${uid}`)} flexBasis='0'>
 						{t('Done')}
 					</Button>
 				</ButtonGroup>
