@@ -79,7 +79,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 			validation.forEach((error) =>
 				dispatchToastMessage({
 					type: 'error',
-					message: t('error-the-field-is-required', { field: t(error) }),
+					message: t('The_field_is_required', t(error)),
 				}),
 			);
 		},
@@ -131,9 +131,9 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				</Field>
 				<Field>
 					<FieldLabel alignSelf='stretch'>{t('Sound_File_mp3')}</FieldLabel>
-					<Box display='flex' flexDirection='row' mbs='none'>
+					<Box display='flex' flexDirection='row' mbs='none' alignItems='center'>
 						<Margins inline={4}>
-							<IconButton icon='upload' secondary onClick={clickUpload} />
+							<IconButton secondary small icon='upload' onClick={clickUpload} />
 							{sound?.name || 'none'}
 						</Margins>
 					</Box>

@@ -109,7 +109,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 		formState: { errors, isDirty },
 	} = useForm({
 		defaultValues: getInitialValue({ data: userData, defaultUserRoles, isSmtpEnabled, isEditingExistingUser }),
-		mode: 'onBlur',
+		mode: 'all',
 	});
 
 	const { avatar, username, setRandomPassword } = watch();

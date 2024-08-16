@@ -166,7 +166,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 							<Controller
 								control={control}
 								name='name'
-								rules={{ validate: (name) => (requireName && name === '' ? t('error-the-field-is-required', { field: t('Name') }) : true) }}
+								rules={{
+									required: requireName && t('The_field_is_required', t('Name')),
+								}}
 								render={({ field }) => (
 									<TextInput
 										{...field}
@@ -196,7 +198,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 								control={control}
 								name='username'
 								rules={{
-									required: t('error-the-field-is-required', { field: t('Username') }),
+									required: t('The_field_is_required', t('Username')),
 									validate: (username) => validateUsername(username),
 								}}
 								render={({ field }) => (
@@ -305,7 +307,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						<Controller
 							control={control}
 							name='email'
-							rules={{ validate: { validateEmail: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')) } }}
+							rules={{
+								required: t('The_field_is_required', t('Email')),
+								validate: { validateEmail: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')) },
+							}}
 							render={({ field }) => (
 								<TextInput
 									{...field}
