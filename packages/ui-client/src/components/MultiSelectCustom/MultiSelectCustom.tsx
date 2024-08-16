@@ -62,8 +62,8 @@ export const MultiSelectCustom = ({
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
 	const onClose = useCallback(
-		(e) => {
-			if (isValidReference(reference, e)) {
+		(e: MouseEvent) => {
+			if (isValidReference(reference, e as { target: Node | null })) {
 				toggleCollapsed(false);
 				return;
 			}

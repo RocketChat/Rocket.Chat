@@ -16,7 +16,7 @@ const SurfaceSelect: FC = () => {
       value={`${screens[activeScreen].payload.surface}`}
       placeholder="Surface"
       onChange={(e) => {
-        dispatch(surfaceAction(typeof e === 'string' ? parseInt(e) : e));
+        dispatch(surfaceAction(typeof e === 'string' ? parseInt(e) : Number(e)));
       }}
     />
   );
