@@ -40,6 +40,7 @@ const GenericPreview = ({ file, index, onRemove }: GenericPreviewProps): ReactEl
 			position='relative'
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
+			title={file.name}
 		>
 			<Box style={{ backgroundColor: 'red', borderRadius: '10px', padding: '3px' }}>
 				{file.name.split('.')[1] === 'mp4' || file.name.split('.')[1] === 'webm' ? (

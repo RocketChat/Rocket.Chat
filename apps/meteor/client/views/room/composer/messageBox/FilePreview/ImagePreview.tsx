@@ -43,7 +43,7 @@ const ImagePreview = ({ url, file, onRemove, index }: ImagePreviewProps): ReactE
 	}
 
 	return (
-		<Box position='relative' onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+		<Box position='relative' onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} title={file.name}>
 			{loading && <PreviewSkeleton />}
 			<Box
 				is='img'
