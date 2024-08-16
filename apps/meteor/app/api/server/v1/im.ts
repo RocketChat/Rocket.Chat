@@ -14,8 +14,8 @@ import {
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
-import { eraseRoom } from '../../../../server/methods/eraseRoom';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';

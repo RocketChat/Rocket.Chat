@@ -8,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { isTruthy } from '../../../../lib/isTruthy';
 import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';
-import { eraseRoom } from '../../../../server/methods/eraseRoom';
+import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';

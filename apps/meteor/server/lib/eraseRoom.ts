@@ -1,12 +1,11 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { Message, Team } from '@rocket.chat/core-services';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { deleteRoom } from '../../app/lib/server/functions/deleteRoom';
-import { roomCoordinator } from '../lib/rooms/roomCoordinator';
+import { roomCoordinator } from './rooms/roomCoordinator';
 
 export async function eraseRoom(rid: string, uid: string): Promise<void> {
 	const room = await Rooms.findOneById(rid);
