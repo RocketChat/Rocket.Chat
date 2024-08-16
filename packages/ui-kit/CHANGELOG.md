@@ -1,5 +1,12 @@
 # Change Log
 
+## 0.36.0
+
+### Minor Changes
+
+- ([#32793](https://github.com/RocketChat/Rocket.Chat/pull/32793)) New Feature: Video Conference Persistent Chat.
+  This feature provides a discussion id for conference provider apps to store the chat messages exchanged during the conferences, so that those users may then access those messages again at any time through Rocket.Chat.
+
 ## 0.36.0-rc.0
 
 ### Minor Changes
