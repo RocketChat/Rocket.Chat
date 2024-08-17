@@ -1,4 +1,4 @@
-import { check } from 'meteor/check';
+import { isCloudConfirmationPollProps, isCloudCreateRegistrationIntentProps, isCloudManualRegisterProps } from '@rocket.chat/rest-typings';
 
 import { CloudWorkspaceRegistrationError } from '../../../../lib/errors/CloudWorkspaceRegistrationError';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -19,13 +19,9 @@ import { API } from '../api';
 
 API.v1.addRoute(
 	'cloud.manualRegister',
-	{ authRequired: true, permissionsRequired: ['register-on-cloud'] },
+	{ authRequired: true, permissionsRequired: ['register-on-cloud'], validateParams: isCloudManualRegisterProps },
 	{
 		async post() {
-			check(this.bodyParams, {
-				cloudBlob: String,
-			});
-
 			const registrationInfo = await retrieveRegistrationStatus();
 
 			if (registrationInfo.workspaceRegistered) {
@@ -43,14 +39,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'cloud.createRegistrationIntent',
-	{ authRequired: true, permissionsRequired: ['manage-cloud'] },
+	{ authRequired: true, permissionsRequired: ['manage-cloud'], validateParams: isCloudCreateRegistrationIntentProps },
 	{
 		async post() {
-			check(this.bodyParams, {
-				resend: Boolean,
-				email: String,
-			});
-
 			const intentData = await startRegisterWorkspaceSetupWizard(this.bodyParams.resend, this.bodyParams.email);
 
 			if (intentData) {
@@ -74,17 +65,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'cloud.confirmationPoll',
-	{ authRequired: true, permissionsRequired: ['manage-cloud'] },
+	{ authRequired: true, permissionsRequired: ['manage-cloud'], validateParams: isCloudConfirmationPollProps },
 	{
 		async get() {
 			const { deviceCode } = this.queryParams;
-			check(this.queryParams, {
-				deviceCode: String,
-			});
-
-			if (!deviceCode) {
-				return API.v1.failure('Invalid query');
-			}
 
 			const pollData = await getConfirmationPoll(deviceCode);
 			if (pollData) {
