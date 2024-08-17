@@ -388,6 +388,7 @@ const MessageBox = ({
 
 	const handleSendMessage = useMutableCallback(async () => {
 		if (isUploading) {
+			setIsUploading(!isUploading);
 			return handleSendFiles(filesToUpload);
 		}
 		const text = chat.composer?.text ?? '';
