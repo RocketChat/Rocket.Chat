@@ -47,7 +47,6 @@ const extractLiteralNode = (typeNode: ts.TypeLiteralNode) => {
 
 			const val: any = {};
 			if (ts.isTypeReferenceNode(literalType)) {
-				// not working for all cases => when "importSpecifier" is used
 				const temp = extractReferencedNode(literalType);
 				Object.assign(val, { [key]: temp });
 			} else if (ts.isTypeLiteralNode(literalType)) {
@@ -92,7 +91,6 @@ const extractReferencedNode = (typeNode: ts.TypeReferenceNode) => {
 	if (!typeNode) return {};
 
 	const params: any = {};
-	// Handle case for PaginatedRequest | PaginatedResponse | Pick
 	if (ts.isIdentifier(typeNode.typeName)) {
 		let additionalParams: any = {};
 		const typename = typeNode.typeName.escapedText;
@@ -137,7 +135,11 @@ const extractReferencedNode = (typeNode: ts.TypeReferenceNode) => {
 			if (ts.isImportSpecifier(sym) && sym.name && ts.isIdentifier(sym.name)) {
 				const importName = sym.name.text;
 				const result = extractImportedNode(sym);
-				params[importName] = result;
+				if (typeof result === 'string') {
+					params[importName] = result;
+				} else {
+					Object.assign(params, result);
+				}
 			} else if (ts.isTypeAliasDeclaration(sym) && sym.name && ts.isIdentifier(sym.name)) {
 				const symbolType = sym.type;
 				if (!symbolType) return {};

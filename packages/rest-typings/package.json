@@ -13,7 +13,7 @@
 		"typescript": "~5.3.3"
 	},
 	"scripts": {
-		"start": "ts-node ./src/scripts/convertor.ts",
+		"start": "ts-node ./src/scripts/compiler.ts",
 		"serve-docs": "yarn start && docker run -p 8080:8080 -e SWAGGER_JSON=/foo/apiDoc.json -v \"$(pwd)/oas:/foo\" swaggerapi/swagger-ui",
 		"build": "rm -rf dist && tsc",
 		"dev": "tsc --watch --preserveWatchOutput",
