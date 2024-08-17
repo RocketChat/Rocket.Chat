@@ -8,8 +8,8 @@ import { createDepartment, deleteDepartment } from '../utils/omnichannel/departm
 import { test, expect } from '../utils/test';
 
 const ERROR = {
-	requiredName: 'The field name is required.',
-	requiredEmail: 'The field email is required.',
+	requiredName: 'Name required',
+	requiredEmail: 'Email required',
 	invalidEmail: 'Invalid email address',
 };
 

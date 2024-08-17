@@ -42,7 +42,7 @@ const URL = {
 };
 
 const ERROR = {
-	nameRequired: 'The field Name is required.',
+	nameRequired: 'Name required',
 	invalidEmail: 'Invalid email address',
 	existingEmail: 'Email already exists',
 	existingPhone: 'Phone already exists',
