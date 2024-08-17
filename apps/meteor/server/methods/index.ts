@@ -12,7 +12,6 @@ import './channelsList';
 import './createDirectMessage';
 import './deleteFileMessage';
 import './deleteUser';
-import './eraseRoom';
 import './getAvatarSuggestion';
 import './getPasswordPolicy';
 import './getRoomById';
