@@ -941,7 +941,22 @@ describe('[Rooms]', () => {
 				.end(done);
 		});
 
-		it('should return an error when send an invalid room', (done) => {
+		it('should return false if this room name does not exist', (done) => {
+			void request
+				.get(api('rooms.nameExists'))
+				.set(credentials)
+				.query({
+					roomName: 'foo',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('exists', false);
+				})
+				.end(done);
+		});
+
+		it('should return an error when the require parameter (roomName) is not provided', (done) => {
 			void request
 				.get(api('rooms.nameExists'))
 				.set(credentials)
