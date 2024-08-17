@@ -1,1 +1,1 @@
-export { RocketChatAssets } from './assets';
+export { RocketChatAssets, setAsset, unsetAsset, refreshClients } from './assets';
