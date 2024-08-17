@@ -19,101 +19,100 @@ const checker: ts.TypeChecker = program.getTypeChecker();
 
 /* ###################################################################################### */
 
-const resolveType = (typeNode: ts.TypeNode, temp: any = {}) => {
-	if (ts.isTypeLiteralNode(typeNode)) {
-		extractLiteralNode(typeNode, temp);
-	} else if (ts.isTypeReferenceNode(typeNode)) {
-		extractReferencedNode(typeNode, temp);
-	} else if (ts.isUnionTypeNode(typeNode)) {
-		const unionArr: any = [];
-		temp.unionTypes = extractUnionNode(typeNode, unionArr);
-	} else if (ts.isIntersectionTypeNode(typeNode)) {
-		extractIntersectionNode(typeNode, temp);
-	} else if (ts.isParenthesizedTypeNode(typeNode)) {
-		const parenthesisType = typeNode.type;
-		resolveType(parenthesisType, temp);
-	} else if (ts.isLiteralTypeNode(typeNode)) {
-		const typeLitral = typeNode.literal;
-		temp = typeLitral.getText();
-	}
+const resolveType: any = (typeNode: ts.TypeNode) => {
+	if (ts.isTypeLiteralNode(typeNode)) return extractLiteralNode(typeNode);
+	if (ts.isTypeReferenceNode(typeNode)) return extractReferencedNode(typeNode);
+	if (ts.isUnionTypeNode(typeNode)) return { unionTypes: extractUnionNode(typeNode) };
+	if (ts.isIntersectionTypeNode(typeNode)) return extractIntersectionNode(typeNode);
+	if (ts.isParenthesizedTypeNode(typeNode)) return resolveType(typeNode.type);
+	if (ts.isLiteralTypeNode(typeNode)) return typeNode.literal.getText();
+
+	return {}; // fallback
 };
 
-const extractLiteralNode = (typeNode: ts.TypeLiteralNode, properties: any = {}) => {
+const extractLiteralNode = (typeNode: ts.TypeLiteralNode) => {
 	if (!typeNode) return {};
 
+	const properties: any = {};
 	typeNode.members?.forEach((member) => {
 		if (ts.isPropertySignature(member) && member.name && ts.isIdentifier(member.name)) {
 			let key = member.name.text;
 			const literalType = member.type;
 			if (member.questionToken) key += '?';
+
 			if (!literalType) {
 				console.error(`Type value not present at: ${key}`);
 				return;
 			}
 
-			const temp: any = {};
+			const val: any = {};
 			if (ts.isTypeReferenceNode(literalType)) {
 				// not working for all cases => when "importSpecifier" is used
-				const subTemp: any = {};
-				extractReferencedNode(literalType, subTemp);
-				Object.assign(temp, { [key]: subTemp });
+				const temp = extractReferencedNode(literalType);
+				Object.assign(val, { [key]: temp });
 			} else if (ts.isTypeLiteralNode(literalType)) {
-				const subTemp: any = {};
-				extractLiteralNode(literalType, subTemp);
-				temp[key] = subTemp;
+				const temp = extractLiteralNode(literalType);
+				val[key] = temp;
 			} else {
 				const valueType = checker.getTypeAtLocation(literalType);
 				const value = checker.typeToString(valueType);
-				temp[key] = value;
+				val[key] = value;
 			}
 
-			Object.assign(properties, temp);
+			Object.assign(properties, val);
 		}
 	});
+
+	return properties;
 };
 
-const extractUnionNode = (typeNode: ts.UnionTypeNode, unionArr: any[]) => {
+const extractUnionNode = (typeNode: ts.UnionTypeNode) => {
+	const unionArr: any[] = [];
 	typeNode.types?.forEach((type) => {
-		const unionTemp: any = {};
-		resolveType(type, unionTemp);
-
+		const unionTemp = resolveType(type);
 		unionArr.push(unionTemp);
 	});
+
 	return unionArr;
 };
 
-const extractIntersectionNode = (typeNode: ts.IntersectionTypeNode, temp: any = {}) => {
+const extractIntersectionNode = (typeNode: ts.IntersectionTypeNode) => {
+	const result: any = {};
 	typeNode.types?.forEach((type) => {
-		const subtemp = {};
-		resolveType(type, subtemp);
+		const temp = resolveType(type);
 
-		Object.assign(temp, subtemp);
+		Object.assign(result, temp);
 	});
+
+	return result;
 };
 
 // const processedTypes = new Map<string, any>(); // TODO: Add cache for already processed types
-const extractReferencedNode = (typeNode: ts.TypeReferenceNode, params: any = {}) => {
+const extractReferencedNode = (typeNode: ts.TypeReferenceNode) => {
 	if (!typeNode) return {};
 
+	const params: any = {};
 	// Handle case for PaginatedRequest | PaginatedResponse | Pick
 	if (ts.isIdentifier(typeNode.typeName)) {
 		let additionalParams: any = {};
-		if (typeNode.typeName.escapedText === 'PaginatedRequest') {
+		const typename = typeNode.typeName.escapedText;
+
+		if (typename === 'PaginatedRequest') {
 			additionalParams = {
 				'count?': 'number',
 				'offset?': 'number',
 				'sort?': 'string',
 				'query?': 'string',
 			};
-		} else if (typeNode.typeName.escapedText === 'PaginatedResponse' || typeNode.typeName.escapedText === 'PaginatedResult') {
+		} else if (typename === 'PaginatedResponse' || typename === 'PaginatedResult') {
 			additionalParams = {
 				count: 'number',
 				offset: 'number',
 				total: 'number',
 			};
-		} else if (typeNode.typeName.escapedText === 'Pick') {
+		} else if (typename === 'Pick') {
 			typeNode.typeArguments?.forEach((arg) => {
-				resolveType(arg, additionalParams);
+				Object.assign(additionalParams, resolveType(arg));
 			});
 		}
 		Object.assign(params, additionalParams);
@@ -121,7 +120,7 @@ const extractReferencedNode = (typeNode: ts.TypeReferenceNode, params: any = {})
 
 	if (typeNode.typeArguments) {
 		typeNode.typeArguments?.forEach((arg) => {
-			resolveType(arg, params);
+			Object.assign(params, resolveType(arg));
 		});
 	} else {
 		const typeIdentifier = typeNode.typeName;
@@ -135,22 +134,25 @@ const extractReferencedNode = (typeNode: ts.TypeReferenceNode, params: any = {})
 		}
 
 		symbol.declarations?.forEach((sym) => {
-			const temp: any = {};
-
 			if (ts.isImportSpecifier(sym) && sym.name && ts.isIdentifier(sym.name)) {
-				extractImportedNode(sym, temp);
+				const importName = sym.name.text;
+				const result = extractImportedNode(sym);
+				params[importName] = result;
 			} else if (ts.isTypeAliasDeclaration(sym) && sym.name && ts.isIdentifier(sym.name)) {
 				const symbolType = sym.type;
 				if (!symbolType) return {};
 
-				resolveType(symbolType, temp);
+				Object.assign(params, resolveType(symbolType));
 			}
-			Object.assign(params, temp);
 		});
 	}
+
+	return params;
 };
 
-const extractImportedNode = (typenode: ts.ImportSpecifier, params: any = {}) => {
+const extractImportedNode = (typenode: ts.ImportSpecifier) => {
+	const params: any = {};
+
 	const importedSymbol = checker.getSymbolAtLocation(typenode.name);
 	if (!importedSymbol) return typenode.getText();
 
@@ -160,42 +162,46 @@ const extractImportedNode = (typenode: ts.ImportSpecifier, params: any = {}) => 
 	if (!declarations) return typenode.getText();
 
 	declarations?.forEach((sym) => {
-		const temp: any = {};
 		if (ts.isTypeAliasDeclaration(sym) && sym.name && ts.isIdentifier(sym.name)) {
 			const symbolType = sym.type;
-			if (!symbolType) return {};
+			if (!symbolType) {
+				console.error('No Imported type found!');
+				return {};
+			}
 
-			resolveType(symbolType, temp);
+			Object.assign(params, resolveType(symbolType));
 		}
-		Object.assign(params, temp);
 	});
+
+	return params;
 };
 
-const extractParameters = (method: ts.FunctionTypeNode, params: any = {}) => {
+const extractParameters = (method: ts.FunctionTypeNode) => {
+	const params: any = {};
+
 	method.parameters?.forEach((param) => {
 		const paramType = param.type;
 		if (!paramType) {
 			console.error('Param Type Not Found!');
 			return {};
 		}
-		const tempParam: any = {};
-		resolveType(paramType, tempParam);
 
-		Object.assign(params, tempParam);
+		const subParam = resolveType(paramType);
+
+		Object.assign(params, subParam);
 	});
+
+	return params;
 };
 
-const extractResponses = (method: ts.FunctionTypeNode, response: any = {}) => {
+const extractResponses = (method: ts.FunctionTypeNode) => {
 	const responseType = method.type;
 	if (!responseType) {
 		console.error('Response Not Found');
 		return {};
 	}
 
-	const tempRes: any = {};
-	resolveType(responseType, tempRes);
-
-	Object.assign(response, tempRes);
+	return resolveType(responseType);
 };
 
 const extractEndpoints = (node: ts.Node, endpoints: any = {}) => {
@@ -215,15 +221,9 @@ const extractEndpoints = (node: ts.Node, endpoints: any = {}) => {
 						const methodName = methodMember.name.text;
 						const method = methodMember.type as ts.FunctionTypeNode;
 
-						const params = {};
-						extractParameters(method, params);
-
-						const response: any = {};
-						extractResponses(method, response);
-
 						endpoints[apiPath][methodName] = {
-							params,
-							response,
+							params: extractParameters(method),
+							response: extractResponses(method),
 						};
 					}
 				});
