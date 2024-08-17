@@ -41,7 +41,6 @@ import './removeUserFromRoom';
 import './reportMessage';
 import './requestDataDownload';
 import './resetAvatar';
-import './roomNameExists';
 import './saveUserPreferences';
 import './saveUserProfile';
 import './sendConfirmationEmail';
