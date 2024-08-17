@@ -13,7 +13,6 @@ import './methods/addUserToRoom';
 import './methods/archiveRoom';
 import './methods/blockUser';
 import './methods/checkRegistrationSecretURL';
-import './methods/checkUsernameAvailability';
 import './methods/cleanRoomHistory';
 import './methods/createChannel';
 import './methods/createPrivateGroup';
