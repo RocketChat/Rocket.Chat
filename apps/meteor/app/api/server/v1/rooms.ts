@@ -82,7 +82,9 @@ API.v1.addRoute(
 		async get() {
 			const { roomName } = this.queryParams;
 
-			return API.v1.success({ exists: await Meteor.callAsync('roomNameExists', roomName) });
+			const room = await Rooms.findOneByName(roomName, { projection: { _id: 1 } });
+
+			return API.v1.success({ exists: !!room });
 		},
 	},
 );
