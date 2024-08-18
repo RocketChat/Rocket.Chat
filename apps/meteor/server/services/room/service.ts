@@ -123,19 +123,19 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		return addUserToRoom(room._id, user);
 	}
 
-	async beforeLeave(room: IRoom) {
+	async beforeLeave(room: IRoom): Promise<void> {
 		FederationCheck.blockIfFederationEnabledButNotReady(room);
 	}
 
-	async beforeUserRemoved(room: IRoom) {
+	async beforeUserRemoved(room: IRoom): Promise<void> {
 		FederationCheck.blockIfFederationEnabledButNotReady(room);
 	}
 
-	async beforeNameChange(room: IRoom) {
+	async beforeNameChange(room: IRoom): Promise<void> {
 		FederationCheck.blockIfFederationEnabledButNotReady(room);
 	}
 
-	async beforeTopicChange(room: IRoom) {
+	async beforeTopicChange(room: IRoom): Promise<void> {
 		FederationCheck.blockIfFederationEnabledButNotReady(room);
 	}
 }
