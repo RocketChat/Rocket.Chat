@@ -1,14 +1,14 @@
 import { settings } from '../../../app/settings/server';
 
-export function isFederationEnabled() {
+export function isFederationEnabled(): boolean {
 	return settings.get<boolean>('Federation_Matrix_enabled');
 }
 
-export function isFederationReady() {
+export function isFederationReady(): boolean {
 	return settings.get<string>('Federation_Matrix_configuration_status') === 'Valid';
 }
 
-export function throwIfFederationNotEnabledOrReady() {
+export function throwIfFederationNotEnabledOrReady(): void {
 	if (!isFederationEnabled()) {
 		throw new Error('Federation is not enabled');
 	}
@@ -18,7 +18,7 @@ export function throwIfFederationNotEnabledOrReady() {
 	}
 }
 
-export function throwIfFederationNotReady() {
+export function throwIfFederationNotReady(): void {
 	if (!isFederationReady()) {
 		throw new Error('Federation configuration is invalid');
 	}
