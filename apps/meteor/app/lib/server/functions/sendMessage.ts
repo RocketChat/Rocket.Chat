@@ -15,7 +15,7 @@ import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
-import { parseFileIntoMessageAttachments } from '../../../../app/file-upload/server/methods/sendFileMessage';
+import { parseMultipleFilesIntoMessageAttachments } from '../../../../app/file-upload/server/methods/sendFileMessage';
 
 // TODO: most of the types here are wrong, but I don't want to change them now
 
@@ -247,7 +247,7 @@ export const sendMessage = async function (
 		// await sendFileMessage(uid, { roomId: message.rid, file: filesArray, msgData }, { parseAttachmentsForE2EE: false });
 		if (message?.t !== 'e2e') {
 			const roomId = message.rid;
-			const { files, attachments } = await parseFileIntoMessageAttachments(filesToConfirm, roomId, user);
+			const { files, attachments } = await parseMultipleFilesIntoMessageAttachments(filesToConfirm, user);
 			// message.file = files[0];  // as uploading multiple files
 			message.files = files;
 			message.attachments = attachments;
