@@ -1,11 +1,13 @@
 import { Apps } from '@rocket.chat/apps';
 import { api, Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUpload } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Uploads } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import { isURL } from '../../../../lib/utils/isURL';
+import { API } from '../../../api/server/api';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
@@ -222,22 +224,45 @@ export const sendMessage = async function (
 	room: any,
 	upsert = false,
 	previewUrls?: string[],
-	filesArray?: Partial<IUpload>[] | Partial<IUpload>,
+	uploadIdsToConfirm?: string[],
 ) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
 
-	if (filesArray !== undefined && (typeof filesArray !== undefined || message?.t !== 'e2e')) {
-		const roomId = message.rid;
-		const { files, attachments } = await parseFileIntoMessageAttachments(
-			Array.isArray(filesArray) ? filesArray : [filesArray],
-			roomId,
-			user,
+	if (uploadIdsToConfirm !== undefined) {
+		if (!(await canAccessRoomIdAsync(message.rid, user._id))) {
+			return API.v1.unauthorized();
+		}
+		const filesToConfirm: Partial<IUpload>[] = await Promise.all(
+			uploadIdsToConfirm.map(async (fileid) => {
+				const file = await Uploads.findOneById(fileid);
+				if (!file) {
+					throw new Meteor.Error('invalid-file');
+				}
+				return file;
+			}),
 		);
-		message.file = files[0];
-		message.files = files;
-		message.attachments = attachments;
+
+		// await sendFileMessage(uid, { roomId: message.rid, file: filesArray, msgData }, { parseAttachmentsForE2EE: false });
+		if (message?.t !== 'e2e') {
+			const roomId = message.rid;
+			const { files, attachments } = await parseFileIntoMessageAttachments(filesToConfirm, roomId, user);
+			// message.file = files[0];  // as uploading multiple files
+			message.files = files;
+			message.attachments = attachments;
+		}
+
+		await Promise.all(uploadIdsToConfirm.map((fileid) => Uploads.confirmTemporaryFile(fileid, user._id)));
+
+		// let resmessage;
+		// if (filesArray[0] !== null && filesArray[0]._id !== undefined) {
+		// 	resmessage = await Messages.getMessageByFileIdAndUsername(filesArray[0]._id, uid);
+		// }
+
+		// return API.v1.success({
+		// 	resmessage,
+		// });
 	}
 
 	await validateMessage(message, room, user);

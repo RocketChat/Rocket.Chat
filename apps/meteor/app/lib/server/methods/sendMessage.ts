@@ -1,15 +1,13 @@
 import { api } from '@rocket.chat/core-services';
-import type { AtLeast, IMessage, IUser, IUpload } from '@rocket.chat/core-typings';
+import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Messages, Uploads, Users } from '@rocket.chat/models';
+import { Messages, Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { API } from '../../../api/server/api';
-import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { metrics } from '../../../metrics/server';
@@ -22,7 +20,7 @@ export async function executeSendMessage(
 	uid: IUser['_id'],
 	message: AtLeast<IMessage, 'rid'>,
 	previewUrls?: string[],
-	filesArray?: Partial<IUpload>[],
+	uploadIdsToConfirm?: string[],
 ) {
 	if (message.tshow && !message.tmid) {
 		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
@@ -100,7 +98,7 @@ export async function executeSendMessage(
 		}
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
-		return await sendMessage(user, message, room, false, previewUrls, filesArray);
+		return await sendMessage(user, message, room, false, previewUrls, uploadIdsToConfirm);
 	} catch (err: any) {
 		SystemLogger.error({ msg: 'Error sending message:', err });
 
@@ -121,12 +119,17 @@ export async function executeSendMessage(
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		sendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>, previewUrls?: string[], filesToConfirm?: string[], msgData?: any): any;
+		sendMessage(
+			message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>,
+			previewUrls?: string[],
+			uploadIdsToConfirm?: string[],
+			msgData?: any,
+		): any;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	async sendMessage(message, previewUrls, filesToConfirm, msgData) {
+	async sendMessage(message, previewUrls, uploadIdsToConfirm, msgData) {
 		check(message, Object);
 
 		const uid = Meteor.userId();
@@ -139,42 +142,15 @@ Meteor.methods<ServerMethods>({
 		if (MessageTypes.isSystemMessage(message)) {
 			throw new Error("Cannot send system messages using 'sendMessage'");
 		}
-		let filesArray: Partial<IUpload>[] = [];
-
-		if (filesToConfirm !== undefined) {
-			if (!(await canAccessRoomIdAsync(message.rid, uid))) {
-				return API.v1.unauthorized();
-			}
-			filesArray = await Promise.all(
-				filesToConfirm.map(async (fileid) => {
-					const file = await Uploads.findOneById(fileid);
-					if (!file) {
-						throw new Meteor.Error('invalid-file');
-					}
-					return file;
-				}),
-			);
+		if (msgData !== undefined) {
 			message.msg = msgData?.msg;
 			message.tmid = msgData?.tmid;
-			// description,
 			message.t = msgData?.t;
 			message.content = msgData?.content;
-			// await sendFileMessage(uid, { roomId: message.rid, file: filesArray, msgData }, { parseAttachmentsForE2EE: false });
-
-			await Promise.all(filesToConfirm.map((fileid) => Uploads.confirmTemporaryFile(fileid, uid)));
-
-			// let resmessage;
-			// if (filesArray[0] !== null && filesArray[0]._id !== undefined) {
-			// 	resmessage = await Messages.getMessageByFileIdAndUsername(filesArray[0]._id, uid);
-			// }
-
-			// return API.v1.success({
-			// 	resmessage,
-			// });
 		}
 
 		try {
-			return await executeSendMessage(uid, message, previewUrls, filesArray);
+			return await executeSendMessage(uid, message, previewUrls, uploadIdsToConfirm);
 		} catch (error: any) {
 			if ((error.error || error.message) === 'error-not-allowed') {
 				throw new Meteor.Error(error.error || error.message, error.reason, {
