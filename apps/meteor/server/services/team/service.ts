@@ -76,9 +76,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			roomId: '', // this will be populated at the end
 		};
 
+		let teamId = '';
 		try {
 			const result = await Team.insertOne(teamData);
-			const teamId = result.insertedId;
+			teamId = result.insertedId;
 			// the same uid can be passed at 3 positions: owner, member list or via caller
 			// if the owner is present, remove it from the members list
 			// if the owner is not present, remove the caller from the members list
@@ -137,7 +138,14 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				_id: teamId,
 				...teamData,
 			};
-		} catch (e) {
+		} catch (error) {
+			// Manually deleting team and room if an error occurs, this is a temporary fix due to urgency on version 6.12
+			// and will be refactored on next release.
+			if (teamId) {
+				await Team.deleteOneById(teamId);
+				await TeamMember.deleteByTeamId(teamId);
+			}
+
 			throw new Error('error-team-creation');
 		}
 	}
@@ -433,16 +441,18 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		const room = await Rooms.findOneById<Pick<IRoom, 'name'>>(team.roomId, { projection: { name: 1 } });
-		if (!room) {
-			throw new Error('invalid-room');
-		}
+		// if (!room) {
+		// 	throw new Error('invalid-room');
+		// }
 
 		const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name'>>(uid, { projection: { username: 1, name: 1 } });
 		if (!user) {
 			throw new Error('invalid-user');
 		}
 
-		await Message.saveSystemMessage('user-converted-to-channel', team.roomId, room.name || '', user);
+		if (room) {
+			await Message.saveSystemMessage('user-converted-to-channel', team.roomId, room.name || '', user);
+		}
 
 		await Rooms.unsetTeamId(teamId);
 	}
