@@ -1,13 +1,13 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { type Chart } from 'chart.js';
 import { type TFunction } from 'i18next';
-import { type RefObject } from 'react';
+import { type MutableRefObject } from 'react';
 
 import { updateChart } from '../../../../../app/livechat/client/lib/chartHandler';
 
 type UseUpdateChartDataOptions = {
-	context: RefObject<Chart | undefined>;
-	canvas: RefObject<HTMLCanvasElement | null>;
+	context: MutableRefObject<Chart | undefined>;
+	canvas: MutableRefObject<HTMLCanvasElement | null>;
 	init: (canvas: HTMLCanvasElement, context: undefined, t: TFunction) => Promise<Chart>;
 	t: TFunction;
 };
