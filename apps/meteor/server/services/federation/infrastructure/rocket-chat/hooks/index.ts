@@ -44,11 +44,9 @@ export class FederationHooks {
 		callbacks.add(
 			'federation.beforeAddUserToARoom',
 			async (params: { user: IUser | string; inviter?: IUser }, room: IRoom): Promise<void> => {
-				if (!params?.user || !room) {
+				if (!params?.user || !room || !isFederationEnabled()) {
 					return;
 				}
-
-				throwIfFederationNotEnabledOrNotReady();
 
 				await callback(params.user, room);
 			},
@@ -61,7 +59,7 @@ export class FederationHooks {
 		callbacks.add(
 			'federation.beforeAddUserToARoom',
 			async (params: { user: IUser | string; inviter: IUser }, room: IRoom): Promise<void> => {
-				if (!params?.user || !params.inviter || !room) {
+				if (!params?.user || !params.inviter || !room || !isFederationEnabled()) {
 					return;
 				}
 

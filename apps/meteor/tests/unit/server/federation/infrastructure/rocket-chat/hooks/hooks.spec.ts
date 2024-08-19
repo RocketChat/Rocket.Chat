@@ -204,6 +204,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should execute the callback when everything is correct', () => {
+			isFederationEnabled.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.canAddFederatedUserToNonFederatedRoom(stub);
 			hooks['federation-v2-can-add-federated-user-to-non-federated-room']({ user: 'user' }, { federated: true });
@@ -241,18 +242,15 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 		});
 
 		it('should NOT execute the callback if federation module was disabled', () => {
-			const error = new Error();
-			throwIfFederationNotEnabledOrNotReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooks.canAddFederatedUserToFederatedRoom(stub);
 			// eslint-disable-next-line @typescript-eslint/no-floating-promises
-			expect(
-				hooks['federation-v2-can-add-federated-user-to-federated-room']({ user: 'user', inviter: 'inviter' }, { federated: true }),
-			).to.have.rejectedWith(error);
+			hooks['federation-v2-can-add-federated-user-to-federated-room']({ user: 'user', inviter: 'inviter' }, { federated: true });
 			expect(stub.called).to.be.false;
 		});
 
 		it('should execute the callback when everything is correct', () => {
+			isFederationEnabled.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.canAddFederatedUserToFederatedRoom(stub);
 			hooks['federation-v2-can-add-federated-user-to-federated-room']({ user: 'user', inviter: 'inviter' }, { federated: true });
