@@ -145,8 +145,6 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 
-			console.log({ searchText, offset, count, sort });
-
 			const result = await getContacts({ searchText, offset, count, sort });
 
 			return API.v1.success(result);
