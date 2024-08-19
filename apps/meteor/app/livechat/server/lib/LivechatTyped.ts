@@ -869,7 +869,7 @@ class LivechatClass {
 
 		return Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, {
 			sort: { ts: 1 },
-		}).toArray();
+		});
 	}
 
 	async archiveDepartment(_id: string) {
