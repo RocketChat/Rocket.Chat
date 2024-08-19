@@ -31,6 +31,7 @@ import { setUserAvatar } from './setUserAvatar';
 type ICreateUserParams = UserCreateParamsPOST;
 type IUpdateUserParams = UsersUpdateParamsPOST['data'] & { _id: IUser['_id'] };
 export type ISaveUserDataParams = ICreateUserParams | IUpdateUserParams;
+const isUpdateUserParams = (params: ISaveUserDataParams): params is IUpdateUserParams => '_id' in params && !!params._id;
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
@@ -72,23 +73,23 @@ async function _sendUserEmail(subject: string, html: string, userData: RequiredF
 
 async function validateUserData(userId: IUser['_id'], userData: ISaveUserDataParams) {
 	const existingRoles = _.pluck(await getRoles(), '_id');
-	const isUpdateUserParams = '_id' in userData && userData._id;
+	const isUserUpdate = isUpdateUserParams(userData);
 
-	if (isUpdateUserParams && userData.verified && userId === userData._id) {
+	if (isUserUpdate && userData.verified && userId === userData._id) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing email verification is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Editing_user',
 		});
 	}
 
-	if (isUpdateUserParams && userId !== userData._id && !(await hasPermissionAsync(userId, 'edit-other-user-info'))) {
+	if (isUserUpdate && userId !== userData._id && !(await hasPermissionAsync(userId, 'edit-other-user-info'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Editing_user',
 		});
 	}
 
-	if (!isUpdateUserParams && !(await hasPermissionAsync(userId, 'create-user'))) {
+	if (!isUserUpdate && !(await hasPermissionAsync(userId, 'create-user'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Adding user is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Adding_user',
@@ -109,14 +110,14 @@ async function validateUserData(userId: IUser['_id'], userData: ISaveUserDataPar
 		});
 	}
 
-	if (settings.get('Accounts_RequireNameForSignUp') && !isUpdateUserParams && !trim(userData.name)) {
+	if (settings.get('Accounts_RequireNameForSignUp') && !isUserUpdate && !trim(userData.name)) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Name',
 		});
 	}
 
-	if (!isUpdateUserParams && !trim(userData.username)) {
+	if (!isUserUpdate && !trim(userData.username)) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Username is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Username',
@@ -139,14 +140,14 @@ async function validateUserData(userId: IUser['_id'], userData: ISaveUserDataPar
 		});
 	}
 
-	if (!isUpdateUserParams && !userData.password && !userData.setRandomPassword) {
+	if (!isUserUpdate && !userData.password && !userData.setRandomPassword) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Password is required', {
 			method: 'insertOrUpdateUser',
 			field: 'Password',
 		});
 	}
 
-	if (!isUpdateUserParams) {
+	if (!isUserUpdate) {
 		if (userData.username && !(await checkUsernameAvailability(userData.username))) {
 			throw new Meteor.Error('error-field-unavailable', `${_.escape(userData.username)} is already in use :(`, {
 				method: 'insertOrUpdateUser',
