@@ -281,17 +281,11 @@ class LivechatClass {
 		const transcriptRequested =
 			!!params.room.transcriptRequest || (!settings.get('Livechat_enable_transcript') && settings.get('Livechat_transcript_send_always'));
 		this.logger.debug(`Sending closing message to room ${newRoom._id}`);
-		await sendMessage(
-			chatCloser,
-			{
-				t: 'livechat-close',
-				msg: params.comment,
-				groupable: false,
-				transcriptRequested,
-				...(isRoomClosedByVisitorParams(params) && { token: params.visitor.token }),
-			},
-			newRoom,
-		);
+		await Message.saveSystemMessageAndNotifyUser('livechat-close', newRoom._id, params.comment ?? '', chatCloser, {
+			groupable: false,
+			transcriptRequested,
+			...(isRoomClosedByVisitorParams(params) && { token: params.visitor.token }),
+		});
 
 		if (settings.get('Livechat_enable_transcript') && !settings.get('Livechat_transcript_send_always')) {
 			await Message.saveSystemMessage('command', newRoom._id, 'promptTranscript', { _id: chatCloser._id, username: chatCloser.username });
@@ -372,7 +366,6 @@ class LivechatClass {
 				_id: user?._id || '',
 				username: user?.username,
 			};
-			chatCloser = user;
 		} else if (isRoomClosedByVisitorParams(params)) {
 			const { visitor } = params;
 			this.logger.debug(`Closing by visitor ${params.visitor._id}`);
@@ -381,7 +374,6 @@ class LivechatClass {
 				_id: visitor._id,
 				username: visitor.username,
 			};
-			chatCloser = visitor;
 		} else {
 			throw new Error('Error: Please provide details of the user or visitor who closed the room');
 		}
@@ -1319,31 +1311,20 @@ class LivechatClass {
 		const scopeData = scope || (nextDepartment ? 'department' : 'agent');
 		this.logger.info(`Storing new chat transfer of ${room._id} [Transfered by: ${_id} to ${scopeData}]`);
 
-		await sendMessage(
-			transferredBy,
-			{
-				t: 'livechat_transfer_history',
-				rid: room._id,
+		const transferMessage = {
+			...(transferData.transferredBy.userType === 'visitor' && { token: room.v.token }),
+			transferData: {
+				transferredBy,
 				ts: new Date(),
-				msg: '',
-				u: {
-					_id,
-					username,
-				},
-				groupable: false,
-				...(transferData.transferredBy.userType === 'visitor' && { token: room.v.token }),
-				transferData: {
-					transferredBy,
-					ts: new Date(),
-					scope: scopeData,
-					comment,
-					...(previousDepartment && { previousDepartment }),
-					...(nextDepartment && { nextDepartment }),
-					...(transferredTo && { transferredTo }),
-				},
+				scope: scopeData,
+				comment,
+				...(previousDepartment && { previousDepartment }),
+				...(nextDepartment && { nextDepartment }),
+				...(transferredTo && { transferredTo }),
 			},
-			room,
-		);
+		};
+
+		await Message.saveSystemMessageAndNotifyUser('livechat_transfer_history', room._id, '', { _id, username }, transferMessage);
 	}
 
 	async saveGuest(guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string }, userId: string) {
