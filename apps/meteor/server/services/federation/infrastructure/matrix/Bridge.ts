@@ -757,9 +757,7 @@ export class MatrixBridge implements IFederationBridge {
 				onEvent: (request) => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
 
-					console.log('event', event);
-
-					// TODO(debdut): can we ignore all events from out homeserver?
+					// TODO: can we ignore all events from out homeserver?
 					// This was added particularly to avoid duplicating messages.
 					// Messages sent from rocket.chat also causes a m.room.message event, which if gets to this bridge
 					// before the event id promise is resolved, the respective message does not get event id attached to them any longer,
@@ -797,12 +795,12 @@ export class MatrixBridge implements IFederationBridge {
 		};
 	}
 
-	public async ping(): Promise<{ duration_ms: number }> {
+	public async ping(): Promise<{ durationMs: number }> {
 		if (!this.isRunning || !this.bridgeInstance) {
 			throw new Error("matrix bridge isn't yet running");
 		}
 
-		return this.bridgeInstance.getIntent().matrixClient.doRequest(
+		const { duration_ms: durationMs } = await this.bridgeInstance.getIntent().matrixClient.doRequest(
 			'POST',
 			`/_matrix/client/v1/appservice/${this.internalSettings.getApplicationServiceId()}/ping`,
 			{},
@@ -813,5 +811,7 @@ export class MatrixBridge implements IFederationBridge {
 			{},
 			DEFAULT_TIMEOUT_IN_MS_FOR_PING_EVENT,
 		);
+
+		return { durationMs };
 	}
 }
