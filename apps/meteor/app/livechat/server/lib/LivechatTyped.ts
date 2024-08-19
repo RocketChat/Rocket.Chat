@@ -357,7 +357,6 @@ class LivechatClass {
 		};
 		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.chatDuration})`);
 
-		let chatCloser: ChatCloser;
 		if (isRoomClosedByUserParams(params)) {
 			const { user } = params;
 			this.logger.debug(`Closing by user ${user?._id}`);
@@ -407,7 +406,7 @@ class LivechatClass {
 			throw new Error('Error: Room not found');
 		}
 
-		return { room: newRoom, closedBy: chatCloser, removedInquiry: inquiry };
+		return { room: newRoom, closedBy: closeData.closedBy, removedInquiry: inquiry };
 	}
 
 	async getRequiredDepartment(onlineRequired = true) {
