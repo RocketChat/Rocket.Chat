@@ -3,7 +3,7 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const remove = sinon.stub();
-const throwIfFederationNotEnabledOrReady = sinon.stub();
+const throwIfFederationNotEnabledOrNotReady = sinon.stub();
 const hooks: Record<string, any> = {};
 
 const { FederationHooksEE } = proxyquire
@@ -29,14 +29,14 @@ const { FederationHooksEE } = proxyquire
 			},
 		},
 		'../../../../../../../server/services/federation/utils': {
-			throwIfFederationNotEnabledOrReady,
+			throwIfFederationNotEnabledOrNotReady,
 		},
 	});
 
 describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 	afterEach(() => {
 		remove.reset();
-		throwIfFederationNotEnabledOrReady.reset();
+		throwIfFederationNotEnabledOrNotReady.reset();
 	});
 
 	describe('#onFederatedRoomCreated()', () => {
@@ -77,7 +77,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 
 		it('should NOT execute the callback if federation module was disabled', () => {
 			const error = new Error();
-			throwIfFederationNotEnabledOrReady.throws(error);
+			throwIfFederationNotEnabledOrNotReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.onFederatedRoomCreated(stub);
 			// eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -126,7 +126,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 
 		it('should NOT execute the callback if federation module was disabled', () => {
 			const error = new Error();
-			throwIfFederationNotEnabledOrReady.throws(error);
+			throwIfFederationNotEnabledOrNotReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
 			// eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -188,7 +188,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 
 		it('should NOT execute the callback if federation module was disabled', () => {
 			const error = new Error();
-			throwIfFederationNotEnabledOrReady.throws(error);
+			throwIfFederationNotEnabledOrNotReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.onUsersAddedToARoom(stub);
 			// eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -244,7 +244,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 
 		it('should NOT execute the callback if federation module was disabled', () => {
 			const error = new Error();
-			throwIfFederationNotEnabledOrReady.throws(error);
+			throwIfFederationNotEnabledOrNotReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.onDirectMessageRoomCreated(stub);
 			// eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -272,7 +272,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 
 		it('should NOT execute the callback if federation module was disabled', () => {
 			const error = new Error();
-			throwIfFederationNotEnabledOrReady.throws(error);
+			throwIfFederationNotEnabledOrNotReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.beforeDirectMessageRoomCreate(stub);
 			// eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -319,7 +319,7 @@ describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
 
 		it('should NOT execute the callback if federation module was disabled', () => {
 			const error = new Error();
-			throwIfFederationNotEnabledOrReady.throws(error);
+			throwIfFederationNotEnabledOrNotReady.throws(error);
 			const stub = sinon.stub();
 			FederationHooksEE.beforeAddUserToARoom(stub);
 			// eslint-disable-next-line @typescript-eslint/no-floating-promises
