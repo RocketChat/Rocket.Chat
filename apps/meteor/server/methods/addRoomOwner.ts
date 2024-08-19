@@ -39,7 +39,7 @@ Meteor.methods<ServerMethods>({
 
 		const isFederated = isRoomFederated(room);
 
-		if (!(await hasPermissionAsync(uid, 'set-owner', rid)) && isFederated) {
+		if (!(await hasPermissionAsync(uid, 'set-owner', rid)) && !isFederated) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'addRoomOwner',
 			});
