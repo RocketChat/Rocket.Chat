@@ -37,24 +37,24 @@ describe('Federation helper functions', () => {
 
 	describe('#throwIfFederationNotReady', () => {
 		it('should throw if federation is not ready', () => {
-			expect(throwIfFederationNotReady).to.throw;
+			expect(throwIfFederationNotReady).to.throw();
 		});
 	});
 
 	describe('#throwIfFederationNotEnabledOrNotReady', () => {
 		it('should throw if federation is not enabled', () => {
-			expect(throwIfFederationNotEnabledOrNotReady).to.throw;
+			expect(throwIfFederationNotEnabledOrNotReady).to.throw();
 		});
 
 		it('should throw if federation is enabled but configuration is invalid', () => {
 			settings.enabled = true;
-			expect(throwIfFederationNotEnabledOrNotReady).to.throw;
+			expect(throwIfFederationNotEnabledOrNotReady).to.throw();
 		});
 
 		it('should not throw if both federation is enabled and configuration is valid', () => {
 			settings.enabled = true;
 			settings.ready = true;
-			throwIfFederationNotEnabledOrNotReady();
+			expect(throwIfFederationNotEnabledOrNotReady).to.not.throw();
 		});
 	});
 
@@ -63,14 +63,14 @@ describe('Federation helper functions', () => {
 			settings.enabled = true;
 			settings.ready = false;
 
-			expect(throwIfFederationEnabledButNotReady).to.throw;
+			expect(throwIfFederationEnabledButNotReady).to.throw();
 		});
 
 		it('should not throw if federation is disabled', () => {
-			throwIfFederationEnabledButNotReady();
+			expect(throwIfFederationEnabledButNotReady).to.not.throw();
 
 			settings.ready = true;
-			throwIfFederationEnabledButNotReady();
+			expect(throwIfFederationEnabledButNotReady).to.throw();
 		});
 	});
 });
