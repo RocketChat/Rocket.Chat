@@ -1,4 +1,4 @@
-import { isEditedMessage, isSystemMessage, isMessageFromVisitor } from '@rocket.chat/core-typings';
+import { isEditedMessage, isSystemMessage } from '@rocket.chat/core-typings';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
@@ -70,7 +70,7 @@ callbacks.add(
 			message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
 		}
 
-		const analyticsData = isMessageFromVisitor(message) ? undefined : getAnalyticsData(room, new Date());
+		const analyticsData = getAnalyticsData(room, new Date());
 		await LivechatRooms.getAnalyticsUpdateQueryByRoomId(room, message, analyticsData, roomUpdater);
 
 		return message;
