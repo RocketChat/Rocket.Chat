@@ -196,6 +196,20 @@ export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomU
 	return message;
 }
 
+export async function notifyUsersOnSystemMessage(message: IMessage, room: IRoom): Promise<IMessage> {
+	const roomUpdater = Rooms.getUpdater();
+	Rooms.setIncMsgCountAndSetLastMessageUpdateQuery(1, message, !!settings.get('Store_Last_Message'), roomUpdater);
+
+	if (roomUpdater.hasChanges()) {
+		await Rooms.updateFromUpdater({ _id: room._id }, roomUpdater);
+	}
+
+	// TODO: Rewrite to use just needed calls from the function
+	await updateUsersSubscriptions(message, room);
+
+	return message;
+}
+
 callbacks.add(
 	'afterSaveMessage',
 	async (message, { room, roomUpdater }) => {
