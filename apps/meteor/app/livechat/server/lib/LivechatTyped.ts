@@ -142,7 +142,7 @@ type ICRMData = {
 	crmData?: IOmnichannelRoom['crmData'];
 };
 
-type ChatCloser = { _id: string; username: string };
+type ChatCloser = { _id: string; username: string | undefined };
 
 const isRoomClosedByUserParams = (params: CloseRoomParams): params is CloseRoomParamsByUser =>
 	(params as CloseRoomParamsByUser).user !== undefined;
