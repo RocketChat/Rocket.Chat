@@ -5,11 +5,11 @@ import { useToastMessageDispatch, useAbsoluteUrl, useMethod, useTranslation, use
 import type { ReactElement } from 'react';
 import React, { memo, useEffect, useState } from 'react';
 
-import { strRight } from '../../../../../lib/utils/stringUtils';
-import GenericModal from '../../../../components/GenericModal';
-import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
-import GroupPage from '../GroupPage';
-import Section from '../Section';
+import { strRight } from '../../../../../../lib/utils/stringUtils';
+import GenericModal from '../../../../../components/GenericModal';
+import { useEditableSettingsGroupSections } from '../../../EditableSettingsContext';
+import SettingsGroupPage from '../../SettingsGroupPage';
+import SettingsSection from '../../SettingsSection';
 import CreateOAuthModal from './CreateOAuthModal';
 
 type OAuthGroupPageProps = ISetting & {
@@ -94,7 +94,7 @@ function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps): Re
 		};
 
 	return (
-		<GroupPage
+		<SettingsGroupPage
 			_id={_id}
 			{...group}
 			onClickBack={onClickBack}
@@ -112,7 +112,7 @@ function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps): Re
 					const handleRemoveCustomOAuthButtonClick = removeCustomOauthFactory(id);
 
 					return (
-						<Section
+						<SettingsSection
 							key={sectionName}
 							groupId={_id}
 							help={
@@ -130,13 +130,13 @@ function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps): Re
 									{t('Remove_custom_oauth')}
 								</Button>
 							</div>
-						</Section>
+						</SettingsSection>
 					);
 				}
 
-				return <Section key={sectionName} groupId={_id} sectionName={sectionName} solo={solo} />;
+				return <SettingsSection key={sectionName} groupId={_id} sectionName={sectionName} solo={solo} />;
 			})}
-		</GroupPage>
+		</SettingsGroupPage>
 	);
 }
 

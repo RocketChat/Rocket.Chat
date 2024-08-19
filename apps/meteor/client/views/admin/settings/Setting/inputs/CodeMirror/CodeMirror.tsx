@@ -57,7 +57,7 @@ function CodeMirror({
 		const setupCodeMirror = async (): Promise<void> => {
 			const CodeMirror = await import('codemirror');
 			await Promise.all([
-				import('../../../../../../app/ui/client/lib/codeMirror/codeMirror'),
+				import('../../../../../../../app/ui/client/lib/codeMirror/codeMirror'),
 				import('codemirror/addon/edit/matchbrackets'),
 				import('codemirror/addon/edit/closebrackets'),
 				import('codemirror/addon/edit/matchtags'),
