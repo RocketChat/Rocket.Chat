@@ -155,6 +155,7 @@ export async function findPaginatedUsersByStatus({
 		type: 1,
 		reason: 1,
 		federated: 1,
+		freeSwitchExtension: 1,
 	};
 
 	const actualSort: Record<string, 1 | -1> = sort || { username: 1 };
