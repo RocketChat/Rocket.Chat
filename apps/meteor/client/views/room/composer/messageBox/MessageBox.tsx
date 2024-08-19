@@ -168,12 +168,22 @@ const MessageBox = ({
 
 		resetFileInput?.();
 	};
+	const handleRemoveFile = (indexToRemove: number) => {
+		const updatedFiles = [...filesToUpload];
 
-	const handleRemoveFile = (index: number) => {
-		const temp = [...filesToUpload];
-		temp.splice(index, 1);
-		setFilesToUpload(temp);
-		setIsUploading(temp.length > 0);
+		const element = document.getElementById(`file-preview-${indexToRemove}`);
+		if (element) {
+			element.style.transition = 'opacity 0.3s ease-in-out';
+			element.style.opacity = '0';
+		}
+
+		setTimeout(() => {
+			updatedFiles.splice(indexToRemove, 1);
+			setFilesToUpload(updatedFiles);
+			if (element) {
+				element.style.opacity = '1';
+			}
+		}, 300);
 	};
 
 	const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
@@ -649,18 +659,21 @@ const MessageBox = ({
 				<div ref={shadowRef} style={shadowStyle} />
 				<Box
 					display='flex'
-					style={{
-						gap: '3px',
-						width: '100%',
-					}}
+					flexDirection='row'
+					overflowX='auto'
+					style={{ width: '100%', whiteSpace: 'nowrap', padding: '10px', gap: '10px' }}
 				>
-					{isUploading && (
-						<>
-							{filesToUpload.map((file, index) => (
-								<FilePreview key={index} file={file} index={index} onRemove={handleRemoveFile} />
-							))}
-						</>
-					)}
+					{filesToUpload.map((file, index) => (
+						<div
+							id={`file-preview-${index}`}
+							style={{
+								transition: 'opacity 0.3s ease-in-out',
+								opacity: '1',
+							}}
+						>
+							<FilePreview key={index} file={file} index={index} onRemove={handleRemoveFile} />
+						</div>
+					))}
 				</Box>
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
