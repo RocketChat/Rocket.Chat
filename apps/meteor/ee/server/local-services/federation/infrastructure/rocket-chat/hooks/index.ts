@@ -2,7 +2,7 @@ import type { IRoom, IUser, Username } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../../../lib/callbacks';
-import { throwIfFederationNotEnabledOrReady } from '../../../../../../../server/services/federation/utils';
+import { throwIfFederationNotEnabledOrNotReady } from '../../../../../../../server/services/federation/utils';
 
 export class FederationHooksEE {
 	public static onFederatedRoomCreated(callback: (room: IRoom, owner: IUser, originalMemberList: string[]) => Promise<void>): void {
@@ -13,7 +13,7 @@ export class FederationHooksEE {
 					return;
 				}
 
-				throwIfFederationNotEnabledOrReady();
+				throwIfFederationNotEnabledOrNotReady();
 
 				await callback(room, params.owner, params.originalMemberList);
 			},
@@ -30,7 +30,7 @@ export class FederationHooksEE {
 					return;
 				}
 
-				throwIfFederationNotEnabledOrReady();
+				throwIfFederationNotEnabledOrNotReady();
 
 				await callback(room, params.invitees, params.inviter);
 			},
@@ -44,7 +44,7 @@ export class FederationHooksEE {
 					return;
 				}
 
-				throwIfFederationNotEnabledOrReady();
+				throwIfFederationNotEnabledOrNotReady();
 
 				await callback(room, [params.user], params?.inviter);
 			},
@@ -60,7 +60,7 @@ export class FederationHooksEE {
 				if (!room || !params || !params.creatorId || !params.creatorId) {
 					return;
 				}
-				throwIfFederationNotEnabledOrReady();
+				throwIfFederationNotEnabledOrNotReady();
 				await callback(room, params.creatorId, params.members);
 			},
 			callbacks.priority.HIGH,
@@ -75,7 +75,7 @@ export class FederationHooksEE {
 				if (!members) {
 					return;
 				}
-				throwIfFederationNotEnabledOrReady();
+				throwIfFederationNotEnabledOrNotReady();
 				await callback(members);
 			},
 			callbacks.priority.HIGH,
@@ -90,7 +90,7 @@ export class FederationHooksEE {
 				if (!room || !isRoomFederated(room) || !params || !params.user) {
 					return;
 				}
-				throwIfFederationNotEnabledOrReady();
+				throwIfFederationNotEnabledOrNotReady();
 				await callback(params.user, room, params.inviter);
 			},
 			callbacks.priority.HIGH,
