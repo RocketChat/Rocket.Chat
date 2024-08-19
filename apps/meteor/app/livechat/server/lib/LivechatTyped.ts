@@ -142,7 +142,7 @@ type ICRMData = {
 	crmData?: IOmnichannelRoom['crmData'];
 };
 
-type ChatCloser = IUser | ILivechatVisitor | null;
+type ChatCloser = { _id: string; username: string };
 
 const isRoomClosedByUserParams = (params: CloseRoomParams): params is CloseRoomParamsByUser =>
 	(params as CloseRoomParamsByUser).user !== undefined;
@@ -288,7 +288,7 @@ class LivechatClass {
 		});
 
 		if (settings.get('Livechat_enable_transcript') && !settings.get('Livechat_transcript_send_always')) {
-			await Message.saveSystemMessage('command', newRoom._id, 'promptTranscript', { _id: chatCloser._id, username: chatCloser.username });
+			await Message.saveSystemMessage('command', newRoom._id, 'promptTranscript', chatCloser);
 		}
 
 		this.logger.debug(`Running callbacks for room ${newRoom._id}`);
