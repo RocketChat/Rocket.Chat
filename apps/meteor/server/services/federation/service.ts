@@ -273,7 +273,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		return this.bridge.verifyInviteeIds(matrixIds);
 	}
 
-	public async configurationStatus() {
+	public async configurationStatus(): Promise<FederationConfigurationStatus> {
 		const status: FederationConfigurationStatus = {
 			appservice: {
 				roundTrip: { durationMs: -1 },
@@ -286,7 +286,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 
 		try {
 			const pingResponse = await this.bridge.ping();
-			status.appservice.roundTrip.durationMs = pingResponse.duration_ms;
+			status.appservice.roundTrip.durationMs = pingResponse.durationMs;
 			status.appservice.ok = true;
 		} catch (error) {
 			if (error instanceof IncomingMessage) {
@@ -309,15 +309,15 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		return status;
 	}
 
-	public async markConfigurationValid() {
+	public async markConfigurationValid(): Promise<void> {
 		return this.internalSettingsAdapter.setConfigurationStatus('Valid');
 	}
 
-	public async markConfigurationInvalid() {
+	public async markConfigurationInvalid(): Promise<void> {
 		return this.internalSettingsAdapter.setConfigurationStatus('Invalid');
 	}
 
-	public async verifyConfiguration() {
+	public async verifyConfiguration(): Promise<void> {
 		try {
 			await this.bridge?.ping(); // throws error if fails
 
@@ -437,19 +437,19 @@ export class FederationService extends AbstractBaseFederationService implements 
 		return super.created();
 	}
 
-	public async verifyConfiguration() {
+	public async verifyConfiguration(): Promise<void> {
 		return super.verifyConfiguration();
 	}
 
-	public async markConfigurationValid() {
+	public async markConfigurationValid(): Promise<void> {
 		return super.markConfigurationValid();
 	}
 
-	public async markConfigurationInvalid() {
+	public async markConfigurationInvalid(): Promise<void> {
 		return super.markConfigurationInvalid();
 	}
 
-	public async configurationStatus() {
+	public async configurationStatus(): Promise<FederationConfigurationStatus> {
 		return super.configurationStatus();
 	}
 }
