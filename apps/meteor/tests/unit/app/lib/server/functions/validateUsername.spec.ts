@@ -1,24 +1,33 @@
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
-
-const proxySettings = {
-	settings: {
-		get: (key: string): string | null => {
-			if (key === 'UTF8_User_Names_Validation') {
-				// Default value set at apps/meteor/server/settings/general.ts
-				return '[0-9a-zA-Z-_.]+';
-			}
-			return null;
-		},
-	},
-};
-
-const { validateUsername } = proxyquire.noCallThru().load('../../../../../../app/lib/server/functions/validateUsername', {
-	'../../../settings/server': proxySettings,
-});
+import sinon from 'sinon';
 
 describe('validateUsername', () => {
+	let getStub: sinon.SinonStub;
+
+	const proxySettings = {
+		settings: {
+			get: () => null,
+		},
+	};
+
+	const { validateUsername } = proxyquire.noCallThru().load('../../../../../../app/lib/server/functions/validateUsername', {
+		'../../../settings/server': proxySettings,
+	});
+
+	beforeEach(() => {
+		getStub = sinon.stub(proxySettings.settings, 'get');
+	});
+
+	afterEach(() => {
+		sinon.restore();
+	});
+
 	describe('with default settings', () => {
+		beforeEach(() => {
+			getStub.withArgs('UTF8_User_Names_Validation').returns('[0-9a-zA-Z-_.]+');
+		});
+
 		it('should return true for a valid username', () => {
 			const result = validateUsername('valid_username.123');
 			expect(result).to.be.true;
@@ -47,12 +56,7 @@ describe('validateUsername', () => {
 
 	describe('with custom regex settings', () => {
 		beforeEach(() => {
-			proxySettings.settings.get = (key: string) => {
-				if (key === 'UTF8_User_Names_Validation') {
-					return '[a-zA-Z]+';
-				}
-				return null;
-			};
+			getStub.withArgs('UTF8_User_Names_Validation').returns('[a-zA-Z]+');
 		});
 
 		it('should return true for a username matching the custom regex', () => {
@@ -68,7 +72,7 @@ describe('validateUsername', () => {
 
 	describe('with null regex settings', () => {
 		beforeEach(() => {
-			proxySettings.settings.get = () => null;
+			getStub.withArgs('UTF8_User_Names_Validation').returns(null);
 		});
 
 		it('should fallback to the default regex pattern if the settings value is null', () => {
@@ -79,12 +83,7 @@ describe('validateUsername', () => {
 
 	describe('with invalid regex settings', () => {
 		beforeEach(() => {
-			proxySettings.settings.get = (key: string) => {
-				if (key === 'UTF8_User_Names_Validation') {
-					return 'invalid[';
-				}
-				return null;
-			};
+			getStub.withArgs('UTF8_User_Names_Validation').returns('invalid[');
 		});
 
 		it('should fallback to the default regex pattern if the settings value is invalid', () => {
