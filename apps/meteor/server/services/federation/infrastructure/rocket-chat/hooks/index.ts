@@ -65,8 +65,6 @@ export class FederationHooks {
 					return;
 				}
 
-				throwIfFederationNotEnabledOrNotReady();
-
 				await callback(params.user, params.inviter, room);
 			},
 			callbacks.priority.HIGH,
