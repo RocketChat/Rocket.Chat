@@ -4,6 +4,10 @@ import { isFederationEnabled, isFederationReady } from '../../federation/utils';
 
 export class FederationActions {
 	public static shouldPerformAction(message: IMessage, room: IRoom): boolean {
-		return (isMessageFromMatrixFederation(message) || isRoomFederated(room)) && isFederationEnabled() && isFederationReady();
+		if (isMessageFromMatrixFederation(message) || isRoomFederated(room)) {
+			return isFederationEnabled() && isFederationReady();
+		}
+
+		return true;
 	}
 }

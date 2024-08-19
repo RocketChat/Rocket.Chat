@@ -23,6 +23,10 @@ describe("Don't perform action depending on federation status", () => {
 		isFederationEnabled.reset();
 	});
 
+	it('should return true if neither message nor room is federated', () => {
+		expect(FederationActions.shouldPerformAction({} as IMessage, {} as IRoom)).to.be.true;
+	});
+
 	describe('Federation is enabled', () => {
 		it('should return true if message is federated and configuration is valid', () => {
 			isFederationEnabled.returns(true);
