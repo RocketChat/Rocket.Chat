@@ -9,9 +9,19 @@ const promptTranscript = async () => {
 		config: {
 			messages: { transcriptMessage },
 		},
-		user: { token, visitorEmails },
-		room: { _id },
+		user,
+		room,
 	} = store.state;
+
+	if (!room || !user) {
+		console.warn('Only call promptTranscript when there is a room and a user');
+		return;
+	}
+
+	const { visitorEmails } = user;
+
+	const { _id } = room;
+
 	const email = visitorEmails && visitorEmails.length > 0 ? visitorEmails[0].address : '';
 	if (!email) {
 		return;
@@ -23,12 +33,12 @@ const promptTranscript = async () => {
 		text: message,
 	}).then((result) => {
 		if (typeof result.success === 'boolean' && result.success) {
-			return Livechat.requestTranscript(email, { token, rid: _id });
+			return Livechat.requestTranscript(email, { rid: _id });
 		}
 	});
 };
 
-const transcriptSentAlert = (message) =>
+const transcriptSentAlert = (message: string) =>
 	ModalManager.alert({
 		text: message,
 		timeout: 1000,
@@ -45,7 +55,8 @@ export const handleTranscript = async () => {
 
 	const result = await promptTranscript();
 
-	if (result && result.success) {
+	// TODO: Check why the api results are not returning the correct type
+	if ((result as { message: string; success: boolean })?.success) {
 		transcriptSentAlert(i18next.t('transcript_success'));
 	}
 };
