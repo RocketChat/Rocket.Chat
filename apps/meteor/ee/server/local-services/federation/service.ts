@@ -1,4 +1,8 @@
-import type { IFederationServiceEE, IFederationJoinExternalPublicRoomInput } from '@rocket.chat/core-services';
+import type {
+	IFederationServiceEE,
+	IFederationJoinExternalPublicRoomInput,
+	FederationConfigurationStatus,
+} from '@rocket.chat/core-services';
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
 
 import { AbstractFederationService } from '../../../../server/services/federation/service';
@@ -216,19 +220,19 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 		return super.stopped();
 	}
 
-	public async verifyConfiguration() {
+	public async verifyConfiguration(): Promise<void> {
 		return super.verifyConfiguration();
 	}
 
-	public async markConfigurationValid() {
+	public async markConfigurationValid(): Promise<void> {
 		return super.markConfigurationValid();
 	}
 
-	public async markConfigurationInvalid() {
+	public async markConfigurationInvalid(): Promise<void> {
 		return super.markConfigurationInvalid();
 	}
 
-	public async configurationStatus() {
+	public async configurationStatus(): Promise<FederationConfigurationStatus> {
 		return super.configurationStatus();
 	}
 }
