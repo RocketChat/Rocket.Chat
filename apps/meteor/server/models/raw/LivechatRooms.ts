@@ -78,10 +78,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		];
 	}
 
-	getUpdater(): Updater<IOmnichannelRoom> {
-		return super.getUpdater();
-	}
-
 	getQueueMetrics({
 		departmentId,
 		agentId,
