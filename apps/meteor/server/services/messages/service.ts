@@ -150,7 +150,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
 
-		if ((isMessageFromMatrixFederation(message) || isRoomFederated(room)) && isFederationEnabled() && !isFederationReady()) {
+		if (!FederationActions.shouldPerformAction(message, room)) {
 			throw new FederationMatrixInvalidConfigurationError('Unable to send message');
 		}
 
@@ -183,9 +183,9 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	private getMarkdownConfig() {
 		const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
 			? settings
-				.get<string>('Message_CustomDomain_AutoLink')
-				.split(',')
-				.map((domain) => domain.trim())
+					.get<string>('Message_CustomDomain_AutoLink')
+					.split(',')
+					.map((domain) => domain.trim())
 			: [];
 
 		return {

@@ -1,7 +1,9 @@
+import type { IRoom } from '@rocket.chat/core-typings';
+
 import { throwIfFederationNotEnabledOrNotReady } from '../../federation/utils';
 
-export class FederationCheck {
-	public static blockIfRoomFederatedButServiceNotReady({ federated = false }: { federated?: boolean }) {
+export class FederationActions {
+	public static blockIfRoomFederatedButServiceNotReady({ federated }: Pick<IRoom, 'federated'>) {
 		if (!federated) {
 			return;
 		}
