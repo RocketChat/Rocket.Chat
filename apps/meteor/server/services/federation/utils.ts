@@ -18,6 +18,14 @@ export function throwIfFederationNotEnabledOrNotReady(): void {
 	}
 }
 
+export function throwIfFederationEnabledButNotReady(): void {
+	if (!isFederationEnabled()) {
+		return;
+	}
+
+	throwIfFederationNotReady();
+}
+
 export function throwIfFederationNotReady(): void {
 	if (!isFederationReady()) {
 		throw new Error('Federation configuration is invalid');

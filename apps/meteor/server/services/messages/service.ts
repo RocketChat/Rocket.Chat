@@ -21,6 +21,7 @@ import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
 import { isFederationEnabled, isFederationReady, FederationMatrixInvalidConfigurationError } from '../federation/utils';
+import { FederationActions } from './hooks/BeforeFederationActions';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
 import { BeforeSaveCheckMAC } from './hooks/BeforeSaveCheckMAC';
 import { BeforeSaveJumpToMessage } from './hooks/BeforeSaveJumpToMessage';
@@ -182,9 +183,9 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	private getMarkdownConfig() {
 		const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
 			? settings
-					.get<string>('Message_CustomDomain_AutoLink')
-					.split(',')
-					.map((domain) => domain.trim())
+				.get<string>('Message_CustomDomain_AutoLink')
+				.split(',')
+				.map((domain) => domain.trim())
 			: [];
 
 		return {
@@ -224,13 +225,13 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	// }
 
 	async beforeReacted(message: IMessage, room: IRoom) {
-		if ((isMessageFromMatrixFederation(message) || isRoomFederated(room)) && isFederationEnabled() && !isFederationReady()) {
+		if (!FederationActions.shouldPerformAction(message, room)) {
 			throw new FederationMatrixInvalidConfigurationError('Unable to react to message');
 		}
 	}
 
 	async beforeDelete(message: IMessage, room: IRoom) {
-		if ((isMessageFromMatrixFederation(message) || isRoomFederated(room)) && isFederationEnabled() && !isFederationReady()) {
+		if (!FederationActions.shouldPerformAction(message, room)) {
 			throw new FederationMatrixInvalidConfigurationError('Unable to delete message');
 		}
 	}
