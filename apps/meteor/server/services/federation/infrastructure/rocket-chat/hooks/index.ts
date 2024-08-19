@@ -143,7 +143,7 @@ export class FederationHooks {
 	public static afterMessageUpdated(callback: (message: IMessage, roomId: IRoom['_id'], userId: string) => Promise<void>): void {
 		callbacks.add(
 			'afterSaveMessage',
-			async (message: IMessage, room: IRoom): Promise<IMessage> => {
+			async (message: IMessage, { room }): Promise<IMessage> => {
 				if (!room || !isRoomFederated(room) || !message || !isMessageFromMatrixFederation(message)) {
 					return message;
 				}
@@ -164,7 +164,7 @@ export class FederationHooks {
 	public static afterMessageSent(callback: (message: IMessage, roomId: IRoom['_id'], userId: string) => Promise<void>): void {
 		callbacks.add(
 			'afterSaveMessage',
-			async (message: IMessage, room: IRoom): Promise<IMessage> => {
+			async (message: IMessage, { room }): Promise<IMessage> => {
 				if (!room || !isRoomFederated(room) || !message) {
 					return message;
 				}
