@@ -653,7 +653,7 @@ API.v1.addRoute(
 			}
 
 			if (!validateUsername(this.bodyParams.username)) {
-				return API.v1.failure(`The username provided is not valid. Use only letters, numbers, dots, hyphens and underscores`);
+				return API.v1.failure(`The username provided is not valid`);
 			}
 
 			if (!(await checkUsernameAvailability(this.bodyParams.username))) {

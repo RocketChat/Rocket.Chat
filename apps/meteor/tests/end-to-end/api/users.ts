@@ -619,9 +619,7 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body)
-						.to.have.property('error')
-						.and.to.be.equal('The username provided is not valid. Use only letters, numbers, dots, hyphens and underscores');
+					expect(res.body).to.have.property('error').and.to.be.equal('The username provided is not valid');
 				})
 				.end(done);
 		});

@@ -6120,6 +6120,7 @@
   "registration.component.form.username": "Username",
   "registration.component.form.name": "Name",
   "registration.component.form.nameContainsInvalidChars": "Name contains invalid characters",
+  "registration.component.form.usernameContainsInvalidChars": "Username contains invalid characters",
   "registration.component.form.nameOptional": "Name optional",
   "registration.component.form.createAnAccount": "Create an account",
   "registration.component.form.userAlreadyExist": "Username already exists. Please try another username.",
