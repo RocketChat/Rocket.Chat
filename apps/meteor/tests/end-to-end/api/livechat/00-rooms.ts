@@ -2247,7 +2247,7 @@ describe('LIVECHAT - rooms', () => {
 			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }).expect(400);
 			await deleteVisitor(visitor.token);
 		});
-		it('should fail one of the requests if 2 simultaneous closes are attempted', async () => {
+		it('should fail one of the requests if 3 simultaneous closes are attempted', async () => {
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
 
@@ -2264,9 +2264,12 @@ describe('LIVECHAT - rooms', () => {
 			expect(invalidResponses.length).to.equal(2);
 			// @ts-expect-error promise typings
 			expect(invalidResponses[0].value.body).to.have.property('success', false);
-			// This error indicates a conflict in the simultaneous close and that the request was rejected
 			// @ts-expect-error promise typings
-			expect(invalidResponses[0].value.body).to.have.property('error', 'error-room-cannot-be-closed-try-again');
+			expect(invalidResponses[0].value.body).to.have.property('error');
+			// The transaction is not consistent on the error apparently, sometimes it will reach the point of trying to close the inquiry and abort there (since another call already closed the room and finished)
+			// and sometimes it will abort because the transactions are still running and they're being locked. This is something i'm not liking but since tx should be retried we got this
+			// @ts-expect-error promise typings
+			expect(['error-room-cannot-be-closed-try-again', 'Error removing inquiry']).to.include(invalidResponses[0].value.body.error);
 		});
 
 		it('should allow different rooms to be closed simultaneously', async () => {
@@ -2309,7 +2312,9 @@ describe('LIVECHAT - rooms', () => {
 			expect(invalidResponses[0].value.body).to.have.property('success', false);
 			// This error indicates a conflict in the simultaneous close and that the request was rejected
 			// @ts-expect-error promise typings
-			expect(invalidResponses[0].value.body).to.have.property('error', 'error-room-cannot-be-closed-try-again');
+			expect(invalidResponses[0].value.body).to.have.property('error');
+			// @ts-expect-error promise typings
+			expect(['error-room-cannot-be-closed-try-again', 'Error removing inquiry']).to.include(invalidResponses[0].value.body.error);
 
 			const room = await getLivechatRoomInfo(_id);
 
