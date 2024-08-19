@@ -1,7 +1,7 @@
 import type { OperationParams } from '@rocket.chat/rest-typings';
+import type { TranslationContextValue, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Chart as ChartType } from 'chart.js';
-import type { TFunction } from 'i18next';
 import type { MutableRefObject } from 'react';
 import React, { useRef, useEffect } from 'react';
 
@@ -20,12 +20,12 @@ const initialData = {
 	offline: 0,
 };
 
-const init = (canvas: HTMLCanvasElement, context: undefined, t: TFunction) =>
+const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: TranslationContextValue['translate']): Promise<ChartType> =>
 	drawDoughnutChart(
 		canvas,
 		t('Agents'),
 		context,
-		labels.map((l) => t(l)),
+		labels.map((l) => t(l as TranslationKey)),
 		Object.values(initialData),
 	);
 
@@ -37,8 +37,8 @@ type AgentStatusChartsProps = {
 const AgentStatusChart = ({ params, reloadRef, ...props }: AgentStatusChartsProps) => {
 	const t = useTranslation();
 
-	const canvas = useRef<HTMLCanvasElement | null>(null);
-	const context = useRef<ChartType | null>(null);
+	const canvas: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
+	const context: MutableRefObject<ChartType | undefined> = useRef();
 
 	const updateChartData = useUpdateChartData({
 		context,
@@ -55,7 +55,9 @@ const AgentStatusChart = ({ params, reloadRef, ...props }: AgentStatusChartsProp
 
 	useEffect(() => {
 		const initChart = async () => {
-			context.current = await init(canvas.current, context.current, t);
+			if (canvas?.current) {
+				context.current = await init(canvas.current, context.current, t);
+			}
 		};
 		initChart();
 	}, [t]);
