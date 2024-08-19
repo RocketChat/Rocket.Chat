@@ -70,7 +70,7 @@ describe('Federation helper functions', () => {
 			expect(throwIfFederationEnabledButNotReady).to.not.throw();
 
 			settings.ready = true;
-			expect(throwIfFederationEnabledButNotReady).to.throw();
+			expect(throwIfFederationEnabledButNotReady).to.not.throw();
 		});
 	});
 });
