@@ -8,13 +8,13 @@ import React, { memo, useMemo } from 'react';
 import GenericModal from '../../../../components/GenericModal';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
 import { useEditableSettings } from '../../EditableSettingsContext';
-import TabbedGroupPage from './TabbedGroupPage';
+import BaseGroupPage from './BaseGroupPage';
 
 type LDAPGroupPageProps = ISetting & {
 	onClickBack?: () => void;
 };
 
-function LDAPGroupPage({ _id, onClickBack, ...group }: LDAPGroupPageProps) {
+function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageProps) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const testConnection = useEndpoint('POST', '/v1/ldap.testConnection');
@@ -129,8 +129,9 @@ function LDAPGroupPage({ _id, onClickBack, ...group }: LDAPGroupPageProps) {
 	};
 
 	return (
-		<TabbedGroupPage
+		<BaseGroupPage
 			_id={_id}
+			i18nLabel={i18nLabel}
 			onClickBack={onClickBack}
 			{...group}
 			headerButtons={
