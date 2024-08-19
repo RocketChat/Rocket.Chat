@@ -555,6 +555,12 @@ export type RoomsEndpoints = {
 	'/v1/rooms.info': {
 		GET: (params: RoomsInfoProps) => {
 			room: IRoom | undefined;
+		};
+	};
+
+	'/v1/rooms.info.teamAndParent': {
+		GET: (params: RoomsInfoProps) => {
+			room: IRoom;
 			parent?: IRoom;
 			team?: ITeam;
 		};

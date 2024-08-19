@@ -410,14 +410,38 @@ API.v1.addRoute(
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
+			return API.v1.success({ room: (await Rooms.findOneByIdOrName(room._id, { projection: fields })) ?? undefined });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.info.teamAndParent',
+	{ authRequired: true },
+	{
+		async get() {
+			const room = await findRoomByIdOrName({ params: this.queryParams });
+			const { fields } = await this.parseJsonQuery();
+
+			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+				return API.v1.failure('not-allowed', 'Not Allowed');
+			}
+
 			const team = room.teamId && (await Team.getOneById(room.teamId, { projection: { name: 1, roomId: 1, type: 1 } }));
 
-			const parent = room.prid && (await Rooms.findOneById(room.prid, { projection: { name: 1, fname: 1, t: 1 } }));
+			const teamParentRoom =
+				team !== '' &&
+				team?.roomId &&
+				!room.teamMain &&
+				(await Rooms.findOneById(room.prid || team?.roomId, { projection: { name: 1, fname: 1, t: 1, sidepanel: 1 } }));
+
+			const parent = room.prid && (await Rooms.findOneById(room.prid, { projection: { name: 1, fname: 1, t: 1, sidepanel: 1 } }));
 
 			return API.v1.success({
 				room: (await Rooms.findOneById(room._id, { projection: fields })) ?? undefined,
 				...(team && { team }),
 				...(parent && { parent }),
+				...(teamParentRoom && { parent: teamParentRoom }),
 			});
 		},
 	},

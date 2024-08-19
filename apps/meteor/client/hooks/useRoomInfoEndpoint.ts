@@ -6,8 +6,8 @@ import { useQuery } from '@tanstack/react-query';
 import { minutesToMilliseconds } from 'date-fns';
 import type { Meteor } from 'meteor/meteor';
 
-export const useRoomInfoEndpoint = (rid: IRoom['_id']): UseQueryResult<OperationResult<'GET', '/v1/rooms.info'>> => {
-	const getRoomInfo = useEndpoint('GET', '/v1/rooms.info');
+export const useRoomInfoEndpoint = (rid: IRoom['_id']): UseQueryResult<OperationResult<'GET', '/v1/rooms.info.teamAndParent'>> => {
+	const getRoomInfo = useEndpoint('GET', '/v1/rooms.info.teamAndParent');
 	return useQuery(['/v1/rooms.info', rid], () => getRoomInfo({ roomId: rid }), {
 		cacheTime: minutesToMilliseconds(15),
 		staleTime: minutesToMilliseconds(5),
