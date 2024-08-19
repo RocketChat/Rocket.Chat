@@ -1,9 +1,11 @@
-import { FederationMatrixInvalidConfigurationError, isFederationEnabled, isFederationReady } from '../../federation/utils';
+import { throwIfFederationNotEnabledOrNotReady } from '../../federation/utils';
 
 export class FederationCheck {
-	public static blockIfFederationEnabledButNotReady({ federated = false }: { federated?: boolean }) {
-		if (federated && isFederationEnabled() && !isFederationReady()) {
-			throw new FederationMatrixInvalidConfigurationError();
+	public static blockIfRoomFederatedButServiceNotReady({ federated = false }: { federated?: boolean }) {
+		if (!federated) {
+			return;
 		}
+
+		throwIfFederationNotEnabledOrNotReady();
 	}
 }
