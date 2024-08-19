@@ -39,7 +39,7 @@ const OmnichannelTab = ({ form: { control } }: OmnichannelTabProps): ReactElemen
 						placeholder={t('Username_Placeholder')}
 					/>
 				</FieldRow>
-				{visitorFieldState.error?.type === 'required' && <FieldError>{t('The_field_is_required', t('Visitor'))}</FieldError>}
+				{visitorFieldState.error?.type === 'required' && <FieldError>{t('The_field_is_required', { field: t('Visitor') })}</FieldError>}
 				{visitorFieldState.error?.type === 'validate' && <FieldError>{visitorFieldState.error.message}</FieldError>}
 			</Field>
 			<Field flexShrink={1} marginInlineStart={8}>
@@ -48,7 +48,7 @@ const OmnichannelTab = ({ form: { control } }: OmnichannelTabProps): ReactElemen
 					<AutoCompleteAgent
 						error={(() => {
 							if (agentFieldState.error?.type === 'required') {
-								return t('The_field_is_required', t('Agent'));
+								return t('The_field_is_required', { field: t('Agent') });
 							}
 
 							return agentFieldState.error?.message;
@@ -58,7 +58,7 @@ const OmnichannelTab = ({ form: { control } }: OmnichannelTabProps): ReactElemen
 						placeholder={t('Username_Placeholder')}
 					/>
 				</FieldRow>
-				{agentFieldState.error?.type === 'required' && <FieldError>{t('The_field_is_required', t('Agent'))}</FieldError>}
+				{agentFieldState.error?.type === 'required' && <FieldError>{t('The_field_is_required', { field: t('Agent') })}</FieldError>}
 				{agentFieldState.error?.type === 'validate' && <FieldError>{agentFieldState.error.message}</FieldError>}
 			</Field>
 		</>

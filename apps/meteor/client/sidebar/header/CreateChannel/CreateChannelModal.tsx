@@ -222,7 +222,7 @@ const CreateChannelModal = ({ teamId = '', onClose, reload }: CreateChannelModal
 								id={nameId}
 								data-qa-type='channel-name-input'
 								{...register('name', {
-									required: t('The_field_is_required', t('Name')),
+									required: t('The_field_is_required', { field: t('Name') }),
 									validate: (value) => validateChannelName(value),
 								})}
 								error={errors.name?.message}

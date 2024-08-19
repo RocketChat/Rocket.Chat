@@ -120,7 +120,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 								<Controller
 									control={control}
 									name='parentRoom'
-									rules={{ required: t('The_field_is_required', t('Discussion_target_channel')) }}
+									rules={{ required: t('The_field_is_required', { field: t('Discussion_target_channel') }) }}
 									render={({ field: { name, onBlur, onChange, value } }) => (
 										<RoomAutoComplete
 											name={name}
@@ -152,7 +152,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 							<Controller
 								name='name'
 								control={control}
-								rules={{ required: t('The_field_is_required', t('Name')) }}
+								rules={{ required: t('The_field_is_required', { field: t('Name') }) }}
 								render={({ field }) => (
 									<TextInput
 										id={discussionNameId}

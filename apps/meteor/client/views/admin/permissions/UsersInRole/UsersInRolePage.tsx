@@ -70,7 +70,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 									<Controller
 										control={control}
 										name='rid'
-										rules={{ required: t('The_field_is_required', t('Room')) }}
+										rules={{ required: t('The_field_is_required', { field: t('Room') }) }}
 										render={({ field: { onChange, value } }) => (
 											<RoomAutoComplete
 												id={roomFieldId}
@@ -98,7 +98,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 								<Controller
 									control={control}
 									name='users'
-									rules={{ required: t('The_field_is_required', t('Users')) }}
+									rules={{ required: t('The_field_is_required', { field: t('Users') }) }}
 									render={({ field: { onChange, value } }) => (
 										<UserAutoCompleteMultiple
 											id={usersFieldId}

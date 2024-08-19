@@ -84,7 +84,7 @@ const MailerPage = () => {
 									id={fromEmailId}
 									placeholder={t('Type_your_email')}
 									{...register('fromEmail', {
-										required: t('The_field_is_required', t('From')),
+										required: t('The_field_is_required', { field: t('From') }),
 										validate: (fromEmail) => (validateEmail(fromEmail) ? undefined : t('error-invalid-email-address')),
 									})}
 									error={errors.fromEmail?.message}
@@ -139,7 +139,7 @@ const MailerPage = () => {
 							<FieldRow>
 								<TextInput
 									id={subjectId}
-									{...register('subject', { required: t('The_field_is_required', t('Subject')) })}
+									{...register('subject', { required: t('The_field_is_required', { field: t('Subject') }) })}
 									aria-describedby={`${subjectId}-error`}
 									error={errors.subject?.message}
 									aria-required='true'
@@ -160,7 +160,7 @@ const MailerPage = () => {
 								<TextAreaInput
 									id={emailBodyId}
 									{...register('emailBody', {
-										required: t('The_field_is_required', t('Email_body')),
+										required: t('The_field_is_required', { field: t('Email_body') }),
 										validate: (emailBody) => (emailBody?.indexOf('[unsubscribe]') === -1 ? t('error-missing-unsubscribe-link') : true),
 									})}
 									rows={10}

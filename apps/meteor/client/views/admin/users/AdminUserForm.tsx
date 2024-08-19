@@ -192,7 +192,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 							<Controller
 								control={control}
 								name='name'
-								rules={{ required: t('The_field_is_required', t('Name')) }}
+								rules={{ required: t('The_field_is_required', { field: t('Name') }) }}
 								render={({ field }) => (
 									<TextInput
 										{...field}
@@ -217,7 +217,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 							<Controller
 								control={control}
 								name='username'
-								rules={{ required: t('The_field_is_required', t('Username')) }}
+								rules={{ required: t('The_field_is_required', { field: t('Username') }) }}
 								render={({ field }) => (
 									<TextInput
 										{...field}
@@ -244,7 +244,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 								control={control}
 								name='email'
 								rules={{
-									required: t('The_field_is_required', t('Email')),
+									required: t('The_field_is_required', { field: t('Email') }),
 									validate: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')),
 								}}
 								render={({ field }) => (
@@ -350,7 +350,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 								<Controller
 									control={control}
 									name='password'
-									rules={{ required: !isEditingExistingUser && t('The_field_is_required', t('Password')) }}
+									rules={{ required: !isEditingExistingUser && t('The_field_is_required', { field: t('Password') }) }}
 									render={({ field }) => (
 										<PasswordInput
 											{...field}
@@ -422,7 +422,7 @@ const UserForm = ({ userData, onReload, ...props }: AdminUserFormProps) => {
 								<Controller
 									control={control}
 									name='roles'
-									rules={{ required: t('The_field_is_required', t('Roles')) }}
+									rules={{ required: t('The_field_is_required', { field: t('Roles') }) }}
 									render={({ field: { onChange, value } }) => (
 										<MultiSelectFiltered
 											id={rolesId}

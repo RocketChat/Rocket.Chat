@@ -53,7 +53,7 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 							control={control}
 							name='password'
 							rules={{
-								required: t('The_field_is_required', t('New_password')),
+								required: t('The_field_is_required', { field: t('New_password') }),
 								validate: () => (password?.length && !passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
 							}}
 							render={({ field }) => (
@@ -85,7 +85,7 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 							control={control}
 							name='confirmationPassword'
 							rules={{
-								required: t('The_field_is_required', t('Confirm_password')),
+								required: t('The_field_is_required', { field: t('Confirm_password') }),
 								validate: (confirmationPassword) => (password !== confirmationPassword ? t('Passwords_do_not_match') : true),
 							}}
 							render={({ field }) => (

@@ -69,7 +69,7 @@ const OAuthAddApp = (): ReactElement => {
 				<Field>
 					<FieldLabel>{t('Application_Name')}</FieldLabel>
 					<FieldRow>
-						<TextInput {...register('name', { required: t('The_field_is_required', t('Name')) })} />
+						<TextInput {...register('name', { required: t('The_field_is_required', { field: t('Name') }) })} />
 					</FieldRow>
 					<FieldHint>{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}</FieldHint>
 					{errors?.name && <FieldError>{errors.name.message}</FieldError>}

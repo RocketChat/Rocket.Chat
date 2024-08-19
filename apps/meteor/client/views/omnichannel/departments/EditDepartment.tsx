@@ -258,7 +258,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 									flexGrow={1}
 									error={errors.name?.message as string}
 									placeholder={t('Name')}
-									{...register('name', { required: t('The_field_is_required', t('Name')) })}
+									{...register('name', { required: t('The_field_is_required', { field: t('Name') }) })}
 								/>
 							</FieldRow>
 							{errors.name && (
@@ -296,7 +296,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 									addon={<Icon name='mail' size='x20' />}
 									placeholder={t('Email')}
 									{...register('email', {
-										required: t('The_field_is_required', t('Email')),
+										required: t('The_field_is_required', { field: t('Email') }),
 										validate: (email) => validateEmail(email) || t('error-invalid-email-address'),
 									})}
 									aria-describedby={`${emailField}-error`}

@@ -107,7 +107,7 @@ const RegisterUsername = () => {
 								<FieldRow>
 									<TextInput
 										aria-labelledby='username-label'
-										{...register('username', { required: t('The_field_is_required', t('Username')) })}
+										{...register('username', { required: t('The_field_is_required', { field: t('Username') }) })}
 									/>
 								</FieldRow>
 								{errors.username && (

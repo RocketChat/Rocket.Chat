@@ -47,7 +47,7 @@ const FileUploadModal = ({
 		if (!name) {
 			return dispatchToastMessage({
 				type: 'error',
-				message: t('The_field_is_required', t('Upload_file_name')),
+				message: t('The_field_is_required', { field: t('Upload_file_name') }),
 			});
 		}
 
@@ -99,7 +99,7 @@ const FileUploadModal = ({
 							<FieldRow>
 								<TextInput value={name} onChange={handleName} />
 							</FieldRow>
-							{!name && <FieldError>{t('The_field_is_required', t('Upload_file_name'))}</FieldError>}
+							{!name && <FieldError>{t('The_field_is_required', { field: t('Upload_file_name') })}</FieldError>}
 						</Field>
 						{showDescription && (
 							<Field>

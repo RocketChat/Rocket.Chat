@@ -82,7 +82,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 					<FieldRow>
 						<TextInput value={name} onChange={handleChangeName} placeholder={t('Name')} />
 					</FieldRow>
-					{errors.name && <FieldError>{t('The_field_is_required', t('Name'))}</FieldError>}
+					{errors.name && <FieldError>{t('The_field_is_required', { field: t('Name') })}</FieldError>}
 				</Field>
 				<Field>
 					<FieldLabel>{t('Aliases')}</FieldLabel>
@@ -96,7 +96,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 						{t('Custom_Emoji')}
 						<IconButton secondary small icon='upload' onClick={clickUpload} />
 					</FieldLabel>
-					{errors.emoji && <FieldError>{t('The_field_is_required', t('Custom_Emoji'))}</FieldError>}
+					{errors.emoji && <FieldError>{t('The_field_is_required', { field: t('Custom_Emoji') })}</FieldError>}
 					{newEmojiPreview && (
 						<Box display='flex' flexDirection='row' mi='neg-x4' justifyContent='center'>
 							<Margins inline={4}>

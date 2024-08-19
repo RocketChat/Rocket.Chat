@@ -81,7 +81,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 							<Controller
 								control={control}
 								name='password'
-								rules={{ required: t('The_field_is_required', t('New_encryption_password')) }}
+								rules={{ required: t('The_field_is_required', { field: t('New_encryption_password') }) }}
 								render={({ field }) => (
 									<PasswordInput
 										{...field}
@@ -110,7 +110,7 @@ const EndToEnd = (props: ComponentProps<typeof Box>): ReactElement => {
 									control={control}
 									name='passwordConfirm'
 									rules={{
-										required: t('The_field_is_required', t('Confirm_new_encryption_password')),
+										required: t('The_field_is_required', { field: t('Confirm_new_encryption_password') }),
 										validate: (value: string) => (password !== value ? 'Your passwords do no match' : true),
 									}}
 									render={({ field }) => (

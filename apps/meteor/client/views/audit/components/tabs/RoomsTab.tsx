@@ -34,7 +34,7 @@ const RoomsTab = ({ form: { control }, setSelectedRoom }: RoomsTabProps) => {
 					}
 				/>
 			</FieldRow>
-			{ridFieldState.error?.type === 'required' && <FieldError>{t('The_field_is_required', t('Channel_name'))}</FieldError>}
+			{ridFieldState.error?.type === 'required' && <FieldError>{t('The_field_is_required', { field: t('Channel_name') })}</FieldError>}
 			{ridFieldState.error?.type === 'validate' && <FieldError>{ridFieldState.error.message}</FieldError>}
 		</Field>
 	);

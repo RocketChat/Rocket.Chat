@@ -98,7 +98,7 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 								<Controller
 									name='accountId'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Select_a_webdav_server')) }}
+									rules={{ required: t('The_field_is_required', { field: t('Select_a_webdav_server') }) }}
 									render={({ field }): ReactElement => (
 										<Select {...field} options={accountsOptions} id={accountIdField} placeholder={t('Select_an_option')} />
 									)}

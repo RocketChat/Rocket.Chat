@@ -242,7 +242,7 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='urls'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('URLs')) }}
+									rules={{ required: t('The_field_is_required', { field: t('URLs') }) }}
 									render={({ field }) => (
 										<TextAreaInput
 											id={urlsField}
@@ -280,7 +280,7 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='username'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Post_as')) }}
+									rules={{ required: t('The_field_is_required', { field: t('Post_as') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={usernameField}
@@ -367,7 +367,7 @@ const OutgoingWebhookForm = () => {
 								<Controller
 									name='token'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Token')) }}
+									rules={{ required: t('The_field_is_required', { field: t('Token') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={tokenField}

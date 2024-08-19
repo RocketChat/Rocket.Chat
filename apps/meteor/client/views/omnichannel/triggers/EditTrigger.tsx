@@ -169,7 +169,7 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 								<Controller
 									name='name'
 									control={control}
-									rules={{ required: t('The_field_is_required', t('Name')) }}
+									rules={{ required: t('The_field_is_required', { field: t('Name') }) }}
 									render={({ field }) => (
 										<TextInput
 											{...field}

@@ -46,7 +46,7 @@ export const ExternalServiceActionForm = ({ control, trigger, index, ...props }:
 						name={timeoutFieldName}
 						defaultValue={10000}
 						rules={{
-							required: t('The_field_is_required', t('Timeout_in_miliseconds')),
+							required: t('The_field_is_required', { field: t('Timeout_in_miliseconds') }),
 							min: { value: 0, message: t('Timeout_in_miliseconds_cant_be_negative_number') },
 						}}
 						render={({ field }) => {

@@ -37,7 +37,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 	const { field: nameField } = useController({
 		control,
 		name: 'name',
-		rules: { required: t('The_field_is_required', t('Name')) },
+		rules: { required: t('The_field_is_required', { field: t('Name') }) },
 	});
 
 	const { field: dueTimeField } = useController({
@@ -45,7 +45,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 		name: 'dueTimeInMinutes',
 		rules: {
 			validate(value) {
-				return Number(value || 0) <= 0 ? t('The_field_is_required', t('Estimated_wait_time_in_minutes')) : true;
+				return Number(value || 0) <= 0 ? t('The_field_is_required', { field: t('Estimated_wait_time_in_minutes') }) : true;
 			},
 		},
 	});

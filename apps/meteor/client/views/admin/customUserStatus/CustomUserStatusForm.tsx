@@ -95,7 +95,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 					<Field>
 						<FieldLabel>{t('Name')}</FieldLabel>
 						<FieldRow>
-							<TextInput {...register('name', { required: t('The_field_is_required', t('Name')) })} placeholder={t('Name')} />
+							<TextInput {...register('name', { required: t('The_field_is_required', { field: t('Name') }) })} placeholder={t('Name')} />
 						</FieldRow>
 						{errors.name && <FieldError>{errors.name.message}</FieldError>}
 					</Field>
@@ -105,7 +105,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 							<Controller
 								name='statusType'
 								control={control}
-								rules={{ required: t('The_field_is_required', t('Presence')) }}
+								rules={{ required: t('The_field_is_required', { field: t('Presence') }) }}
 								render={({ field }): ReactElement => <Select {...field} placeholder={t('Presence')} options={presenceOptions} />}
 							/>
 						</FieldRow>

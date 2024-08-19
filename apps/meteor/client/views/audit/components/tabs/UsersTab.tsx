@@ -22,7 +22,7 @@ const UsersTab = ({ form: { control } }: UsersTabProps): ReactElement => {
 			required: true,
 			validate: (value) => {
 				if (value.length < 1) {
-					return t('The_field_is_required', t('Users'));
+					return t('The_field_is_required', { field: t('Users') });
 				}
 			},
 		},
@@ -39,7 +39,7 @@ const UsersTab = ({ form: { control } }: UsersTabProps): ReactElement => {
 					placeholder={t('Username_Placeholder')}
 				/>
 			</FieldRow>
-			{usersFieldState.error?.type === 'required' && <FieldError>{t('The_field_is_required', t('Users'))}</FieldError>}
+			{usersFieldState.error?.type === 'required' && <FieldError>{t('The_field_is_required', { field: t('Users') })}</FieldError>}
 			{usersFieldState.error?.type === 'validate' && <FieldError>{usersFieldState.error.message}</FieldError>}
 		</Field>
 	);

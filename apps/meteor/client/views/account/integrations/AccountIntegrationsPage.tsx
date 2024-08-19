@@ -53,7 +53,7 @@ const AccountIntegrationsPage = () => {
 							<Controller
 								control={control}
 								name='accountSelected'
-								rules={{ required: t('The_field_is_required', t('WebDAV_Accounts')) }}
+								rules={{ required: t('The_field_is_required', { field: t('WebDAV_Accounts') }) }}
 								render={({ field }) => <SelectLegacy {...field} options={options} placeholder={t('Select_an_option')} />}
 							/>
 							<Button type='submit' danger>

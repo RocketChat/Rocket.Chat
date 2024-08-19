@@ -50,7 +50,7 @@ const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 					<FieldLabel>{t('Date')}</FieldLabel>
 					<FieldRow>
 						<DateRangePicker value={dateRangeField.value} onChange={dateRangeField.onChange} display='flex' flexGrow={1} />
-						{dateRangeFieldState.error?.type === 'required' && <FieldError>{t('The_field_is_required', t('Date'))}</FieldError>}
+						{dateRangeFieldState.error?.type === 'required' && <FieldError>{t('The_field_is_required', { field: t('Date') })}</FieldError>}
 						{dateRangeFieldState.error?.type === 'validate' && <FieldError>{dateRangeFieldState.error.message}</FieldError>}
 					</FieldRow>
 				</Field>

@@ -249,7 +249,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 									name='roomName'
 									control={control}
 									rules={{
-										required: t('The_field_is_required', t('Name')),
+										required: t('The_field_is_required', { field: t('Name') }),
 										validate: (value) => validateName(value),
 									}}
 									render={({ field }) => (

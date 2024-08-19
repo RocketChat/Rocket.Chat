@@ -35,7 +35,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 			const validation = validate(soundData, soundFile) as Array<Parameters<typeof t>[0]>;
 
 			validation.forEach((error) => {
-				throw new Error(t('The_field_is_required', t(error)));
+				throw new Error(t('The_field_is_required', { field: t(error) }));
 			});
 
 			try {

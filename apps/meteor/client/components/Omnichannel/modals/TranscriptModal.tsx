@@ -74,7 +74,7 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 								disabled={!!emailDefault || !!transcriptRequest}
 								error={errors.email?.message}
 								flexGrow={1}
-								{...register('email', { required: t('The_field_is_required', t('Email')) })}
+								{...register('email', { required: t('The_field_is_required', { field: t('Email') }) })}
 							/>
 						</FieldRow>
 						<FieldError>{errors.email?.message}</FieldError>
@@ -86,7 +86,7 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 								disabled={!!transcriptRequest}
 								error={errors.subject?.message}
 								flexGrow={1}
-								{...register('subject', { required: t('The_field_is_required', t('Subject')) })}
+								{...register('subject', { required: t('The_field_is_required', { field: t('Subject') }) })}
 							/>
 						</FieldRow>
 						<FieldError>{errors.subject?.message}</FieldError>
