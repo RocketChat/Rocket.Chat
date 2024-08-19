@@ -139,8 +139,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				...teamData,
 			};
 		} catch (error) {
-			// Manually deleting team and room if an error occurs, this is a temporary fix due to urgency on version 6.12
-			// and will be refactored on next release.
+			// Manually deleting team if an error occurs, this is a temporary fix due to urgency
+			// to release version 6.12 and will be refactored on next release.
 			if (teamId) {
 				await Team.deleteOneById(teamId);
 				await TeamMember.deleteByTeamId(teamId);
