@@ -2,9 +2,9 @@ import { Accordion, Box, FieldGroup, Skeleton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import Setting from './Setting';
+import SettingSkeleton from '../Setting/SettingSkeleton';
 
-function SectionSkeleton(): ReactElement {
+function SettingsSectionSkeleton(): ReactElement {
 	return (
 		<Accordion.Item noncollapsible title={<Skeleton />}>
 			<Box is='p' color='hint' fontScale='p2'>
@@ -13,11 +13,11 @@ function SectionSkeleton(): ReactElement {
 
 			<FieldGroup>
 				{Array.from({ length: 10 }).map((_, i) => (
-					<Setting.Skeleton key={i} />
+					<SettingSkeleton key={i} />
 				))}
 			</FieldGroup>
 		</Accordion.Item>
 	);
 }
 
-export default SectionSkeleton;
+export default SettingsSectionSkeleton;
