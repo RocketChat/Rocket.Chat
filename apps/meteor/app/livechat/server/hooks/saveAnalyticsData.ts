@@ -71,10 +71,10 @@ callbacks.add(
 		}
 
 		if (isMessageFromVisitor(message)) {
-			await LivechatRooms.getAnalyticsUpdateQueryBySentByVisitor(room, message, roomUpdater);
+			LivechatRooms.getAnalyticsUpdateQueryBySentByVisitor(room, message, roomUpdater);
 		} else {
 			const analyticsData = getAnalyticsData(room, new Date());
-			await LivechatRooms.getAnalyticsUpdateQueryBySentByAgent(room, message, analyticsData, roomUpdater);
+			LivechatRooms.getAnalyticsUpdateQueryBySentByAgent(room, message, analyticsData, roomUpdater);
 		}
 
 		return message;

@@ -2025,7 +2025,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return updater;
 	}
 
-	async getAnalyticsUpdateQueryBySentByAgent(
+	getAnalyticsUpdateQueryBySentByAgent(
 		room: IOmnichannelRoom,
 		message: IMessage,
 		analyticsData: Record<string, string | number | Date> | undefined,
@@ -2042,7 +2042,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.getAnalyticsUpdateQuery(analyticsData, updater);
 	}
 
-	async getAnalyticsUpdateQueryBySentByVisitor(
+	getAnalyticsUpdateQueryBySentByVisitor(
 		room: IOmnichannelRoom,
 		message: IMessage,
 		updater: Updater<IOmnichannelRoom> = this.getUpdater(),
