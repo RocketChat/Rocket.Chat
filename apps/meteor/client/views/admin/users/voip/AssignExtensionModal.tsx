@@ -29,6 +29,7 @@ const AssignExtensionModal = ({ defaultExtension, defaultUsername, onClose }: As
 	const assignUser = useEndpoint('POST', '/v1/voip-freeswitch.extension.assign');
 	const getAvailableExtensions = useEndpoint('GET', '/v1/voip-freeswitch.extension.list');
 
+	const modalTitleId = useUniqueId();
 	const usersWithoutExtensionsId = useUniqueId();
 	const freeExtensionNumberId = useUniqueId();
 
@@ -78,10 +79,13 @@ const AssignExtensionModal = ({ defaultExtension, defaultUsername, onClose }: As
 	});
 
 	return (
-		<Modal wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit((data) => handleAssignment.mutateAsync(data))} {...props} />}>
+		<Modal
+			aria-labelledby={modalTitleId}
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit((data) => handleAssignment.mutateAsync(data))} {...props} />}
+		>
 			<Modal.Header>
-				<Modal.Title>{t('Associate_User_to_Extension')}</Modal.Title>
-				<Modal.Close onClick={onClose} />
+				<Modal.Title id={modalTitleId}>{t('Associate_User_to_Extension')}</Modal.Title>
+				<Modal.Close aria-label={t('Close')} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>
 				<FieldGroup>
@@ -123,6 +127,7 @@ const AssignExtensionModal = ({ defaultExtension, defaultUsername, onClose }: As
 										placeholder={t('Select_an_option')}
 										value={field.value}
 										onChange={field.onChange}
+										data-testid='input-free-extension-numbers'
 									/>
 								)}
 							/>
