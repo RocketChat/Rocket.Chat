@@ -334,12 +334,16 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		}
 	}
 
-	public async beforeCreateRoom(room: Partial<IRoom>) {
+	public async beforeCreateRoom(room: Partial<IRoom>): Promise<void> {
 		if (!isRoomFederated(room)) {
 			return;
 		}
 
 		throwIfFederationNotEnabledOrNotReady();
+  }
+  
+	protected async deactivateRemoteUser(remoteUserId: string): Promise<void> {
+		return this.bridge.deactivateUser(remoteUserId);
 	}
 }
 
@@ -462,7 +466,11 @@ export class FederationService extends AbstractBaseFederationService implements 
 		return super.configurationStatus();
 	}
 
-	public async beforeCreateRoom(room: Partial<IRoom>) {
+	public async beforeCreateRoom(room: Partial<IRoom>): Promise<void> {
 		return super.beforeCreateRoom(room);
+  }
+  
+	public async deactivateRemoteUser(userId: string): Promise<void> {
+		return super.deactivateRemoteUser(userId);
 	}
 }

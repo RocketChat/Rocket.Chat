@@ -30,6 +30,7 @@ interface IFederationBaseService {
 
 export interface IFederationService extends IFederationBaseService {
 	createDirectMessageRoomAndInviteUser(internalInviterId: string, internalRoomId: string, externalInviteeId: string): Promise<void>;
+	deactivateRemoteUser(userId: string): Promise<void>;
 }
 
 export interface IFederationJoinExternalPublicRoomInput {
@@ -64,4 +65,6 @@ export interface IFederationServiceEE extends IFederationBaseService {
 	joinExternalPublicRoom(input: IFederationJoinExternalPublicRoomInput): Promise<void>;
 
 	verifyMatrixIds(matrixIds: string[]): Promise<Map<string, string>>;
+
+	deactivateRemoteUser(userId: string): Promise<void>;
 }

@@ -237,7 +237,11 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 		return super.configurationStatus();
 	}
 
-	public async beforeCreateRoom(room: Partial<IRoom>) {
+	public async beforeCreateRoom(room: Partial<IRoom>): Promise<void> {
 		return super.beforeCreateRoom(room);
+  }
+
+	async deactivateRemoteUser(userId: string): Promise<void> {
+		return super.deactivateRemoteUser(userId);
 	}
 }
