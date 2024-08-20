@@ -27,13 +27,11 @@ async function createDiscussionMessage(
 	drid: IRoom['_id'],
 	msg: IMessage['msg'],
 	messageEmbedded?: MessageAttachmentDefault,
-): Promise<IMessage | null> {
-	const msgId = await Message.saveSystemMessage('discussion-created', rid, msg, user, {
+): Promise<IMessage> {
+	return Message.saveSystemMessage('discussion-created', rid, msg, user, {
 		drid,
 		...(messageEmbedded && { attachments: [messageEmbedded] }),
 	});
-
-	return Messages.findOneById(msgId);
 }
 
 async function mentionMessage(

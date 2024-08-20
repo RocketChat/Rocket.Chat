@@ -3,8 +3,8 @@ import type { PathPattern } from '@rocket.chat/rest-typings';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import type { AsyncState } from '../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
+import type { AsyncState } from '../../../../../hooks/useAsyncState';
+import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
