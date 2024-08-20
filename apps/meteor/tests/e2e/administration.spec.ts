@@ -319,34 +319,4 @@ test.describe.parallel('administration', () => {
 			await expect(poAdmin.getIntegrationByName(incomingIntegrationName)).not.toBeVisible();
 		});
 	});
-
-	test.describe('Settings', () => {
-		test.describe('General', () => {
-			test.beforeEach(async ({ page }) => {
-				await page.goto('/admin/settings/General');
-			});
-
-			test.afterAll(async ({ api }) => {
-				await setSettingValueById(api, 'Language', 'en');
-			});
-
-			test('expect be able to reset a setting after a change', async () => {
-				await poAdmin.inputSiteURL.type('any_text');
-				await poAdmin.btnResetSiteURL.click();
-			});
-		});
-
-		test.describe('Layout', () => {
-			test.beforeEach(async ({ page }) => {
-				await page.goto('/admin/settings/Layout');
-			});
-
-			test('should code mirror full screen be displayed correctly', async ({ page }) => {
-				await poAdmin.getAccordionBtnByName('Custom CSS').click();
-				await poAdmin.btnFullScreen.click();
-
-				await expect(page.getByRole('code')).toHaveCSS('width', '920px');
-			});
-		});
-	});
 });

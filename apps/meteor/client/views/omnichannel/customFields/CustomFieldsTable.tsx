@@ -75,7 +75,7 @@ const CustomFieldsTable = () => {
 
 	return (
 		<>
-			{((isSuccess && data?.customFields.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }) => setFilter(text)} />}
+			{((isSuccess && data?.customFields.length > 0) || queryHasChanged) && <FilterByText onChange={setFilter} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
