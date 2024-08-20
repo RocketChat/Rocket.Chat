@@ -10,7 +10,7 @@ import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { archiveRoom } from '../../lib/server/functions/archiveRoom';
 import { settings } from '../../settings/server';
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { slashCommands } from '../../utils/server/slashCommand';
 
 slashCommands.add({
 	command: 'archive',

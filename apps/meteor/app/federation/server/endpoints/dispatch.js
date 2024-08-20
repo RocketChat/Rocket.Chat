@@ -3,11 +3,10 @@ import { eventTypes } from '@rocket.chat/core-typings';
 import { FederationServers, FederationRoomEvents, Rooms, Messages, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
 import EJSON from 'ejson';
 
-import { broadcastMessageFromData } from '../../../../server/modules/watchers/lib/messages';
 import { API } from '../../../api/server';
 import { FileUpload } from '../../../file-upload/server';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
-import { notifyOnRoomChanged, notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
+import { notifyOnMessageChange, notifyOnRoomChanged, notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
 import { notifyUsersOnMessage } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendAllNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 import { processThreads } from '../../../threads/server/hooks/aftersavemessage';
@@ -294,8 +293,12 @@ const eventHandlers = {
 
 					await processThreads(denormalizedMessage, room);
 
-					// Notify users
-					await notifyUsersOnMessage(denormalizedMessage, room);
+					const roomUpdater = Rooms.getUpdater();
+					await notifyUsersOnMessage(denormalizedMessage, room, roomUpdater);
+					if (roomUpdater.hasChanges()) {
+						await Rooms.updateFromUpdater({ _id: room._id }, roomUpdater);
+					}
+
 					sendAllNotifications(denormalizedMessage, room);
 					messageForNotification = denormalizedMessage;
 				} catch (err) {
@@ -303,7 +306,7 @@ const eventHandlers = {
 				}
 			}
 			if (messageForNotification) {
-				void broadcastMessageFromData({
+				void notifyOnMessageChange({
 					id: messageForNotification._id,
 					data: messageForNotification,
 				});
@@ -334,7 +337,7 @@ const eventHandlers = {
 			} else {
 				// Update the message
 				await Messages.updateOne({ _id: persistedMessage._id }, { $set: { msg: message.msg, federation: message.federation } });
-				void broadcastMessageFromData({
+				void notifyOnMessageChange({
 					id: persistedMessage._id,
 					data: {
 						...persistedMessage,
@@ -404,7 +407,7 @@ const eventHandlers = {
 
 			// Update the property
 			await Messages.updateOne({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
-			void broadcastMessageFromData({
+			void notifyOnMessageChange({
 				id: persistedMessage._id,
 				data: {
 					...persistedMessage,
@@ -462,7 +465,7 @@ const eventHandlers = {
 				// Otherwise, update the property
 				await Messages.updateOne({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
 			}
-			void broadcastMessageFromData({
+			void notifyOnMessageChange({
 				id: persistedMessage._id,
 				data: {
 					...persistedMessage,

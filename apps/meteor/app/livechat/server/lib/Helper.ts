@@ -36,7 +36,6 @@ import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
-import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import {
 	notifyOnLivechatDepartmentAgentChanged,
 	notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId,
@@ -141,8 +140,7 @@ export const createLivechatRoom = async <
 	}
 
 	await callbacks.run('livechat.newRoom', room);
-
-	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
+	await Message.saveSystemMessageAndNotifyUser('livechat-started', rid, '', { _id, username }, { groupable: false, token: guest.token });
 
 	return result.value as IOmnichannelRoom;
 };
@@ -646,6 +644,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 			'',
 			{ _id, username },
 			{
+				...(transferData.transferredBy.userType === 'visitor' && { token: room.v.token }),
 				transferData: {
 					...transferData,
 					prevDepartment: transferData.originalDepartmentName,
@@ -681,18 +680,23 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	return true;
 };
 
-export const normalizeTransferredByData = (transferredBy: TransferByData, room: IOmnichannelRoom) => {
+type MakePropertyOptional<T, K extends keyof T> = Omit<T, K> & { [P in K]?: T[P] };
+
+export const normalizeTransferredByData = (
+	transferredBy: MakePropertyOptional<TransferByData, 'userType'>,
+	room: IOmnichannelRoom,
+): TransferByData => {
 	if (!transferredBy || !room) {
 		throw new Error('You must provide "transferredBy" and "room" params to "getTransferredByData"');
 	}
 	const { servedBy: { _id: agentId } = {} } = room;
 	const { _id, username, name, userType: transferType } = transferredBy;
-	const type = transferType || (_id === agentId ? 'agent' : 'user');
+	const userType = transferType || (_id === agentId ? 'agent' : 'user');
 	return {
 		_id,
 		username,
 		...(name && { name }),
-		type,
+		userType,
 	};
 };
 

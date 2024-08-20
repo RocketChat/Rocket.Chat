@@ -18,10 +18,18 @@ import ChatsOverview from './overviews/ChatsOverview';
 import ConversationOverview from './overviews/ConversationOverview';
 import ProductivityOverview from './overviews/ProductivityOverview';
 
+const randomizeKeys = (keys) => {
+	keys.current = keys.current.map((_key, i) => {
+		return `${i}_${new Date().getTime()}`;
+	});
+};
+
 const dateRange = getDateRange();
 
 const RealTimeMonitoringPage = () => {
 	const t = useTranslation();
+
+	const keys = useRef([...Array(10).keys()]);
 
 	const [reloadFrequency, setReloadFrequency] = useState(5);
 	const [departmentId, setDepartment] = useState('');
@@ -43,6 +51,10 @@ const RealTimeMonitoringPage = () => {
 		[departmentParams],
 	);
 
+	useEffect(() => {
+		randomizeKeys(keys);
+	}, [allParams]);
+
 	const reloadCharts = useMutableCallback(() => {
 		Object.values(reloadRef.current).forEach((reload) => {
 			reload();
@@ -53,6 +65,7 @@ const RealTimeMonitoringPage = () => {
 		const interval = setInterval(reloadCharts, reloadFrequency * 1000);
 		return () => {
 			clearInterval(interval);
+			randomizeKeys(keys);
 		};
 	}, [reloadCharts, reloadFrequency]);
 
@@ -90,30 +103,54 @@ const RealTimeMonitoringPage = () => {
 						</Box>
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ConversationOverview flexGrow={1} flexShrink={1} width='50%' reloadRef={reloadRef} params={allParams} />
+						<ConversationOverview key={keys?.current[0]} flexGrow={1} flexShrink={1} width='50%' reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ChatsChart flexGrow={1} flexShrink={1} width='50%' mie={2} reloadRef={reloadRef} params={allParams} />
-						<ChatsPerAgentChart flexGrow={1} flexShrink={1} width='50%' mis={2} reloadRef={reloadRef} params={allParams} />
+						<ChatsChart key={keys?.current[1]} flexGrow={1} flexShrink={1} width='50%' mie={2} reloadRef={reloadRef} params={allParams} />
+						<ChatsPerAgentChart
+							key={keys?.current[2]}
+							flexGrow={1}
+							flexShrink={1}
+							width='50%'
+							mis={2}
+							reloadRef={reloadRef}
+							params={allParams}
+						/>
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ChatsOverview flexGrow={1} flexShrink={1} width='50%' reloadRef={reloadRef} params={allParams} />
+						<ChatsOverview key={keys?.current[3]} flexGrow={1} flexShrink={1} width='50%' reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<AgentStatusChart flexGrow={1} flexShrink={1} width='50%' mie={2} reloadRef={reloadRef} params={allParams} />
-						<ChatsPerDepartmentChart flexGrow={1} flexShrink={1} width='50%' mis={2} reloadRef={reloadRef} params={allParams} />
+						<AgentStatusChart
+							key={keys?.current[4]}
+							flexGrow={1}
+							flexShrink={1}
+							width='50%'
+							mie={2}
+							reloadRef={reloadRef}
+							params={allParams}
+						/>
+						<ChatsPerDepartmentChart
+							key={keys?.current[5]}
+							flexGrow={1}
+							flexShrink={1}
+							width='50%'
+							mis={2}
+							reloadRef={reloadRef}
+							params={allParams}
+						/>
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<AgentsOverview flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams} />
+						<AgentsOverview key={keys?.current[6]} flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' w='full' flexShrink={1}>
-						<ChatDurationChart flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams} />
+						<ChatDurationChart key={keys?.current[7]} flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ProductivityOverview flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams} />
+						<ProductivityOverview key={keys?.current[8]} flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' w='full' flexShrink={1}>
-						<ResponseTimesChart flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams} />
+						<ResponseTimesChart key={keys?.current[9]} flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams} />
 					</Box>
 				</Margins>
 			</PageScrollableContentWithShadow>

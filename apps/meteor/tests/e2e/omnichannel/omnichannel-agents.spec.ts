@@ -25,7 +25,7 @@ test.describe.serial('OC - Manage Agents', () => {
 
 	// Ensure that there is no leftover data even if test fails
 	test.afterEach(async ({ api }) => {
-		await await api.delete('/livechat/users/agent/user1');
+		await api.delete('/livechat/users/agent/user1');
 		await api.post('/settings/Omnichannel_enable_department_removal', { value: true }).then((res) => expect(res.status()).toBe(200));
 		await department.delete();
 		await api.post('/settings/Omnichannel_enable_department_removal', { value: false }).then((res) => expect(res.status()).toBe(200));
@@ -103,6 +103,29 @@ test.describe.serial('OC - Manage Agents', () => {
 			await poOmnichannelAgents.inputMaxChats.click();
 			await poOmnichannelAgents.inputMaxChats.fill('2');
 			await poOmnichannelAgents.btnSave.click();
+		});
+	});
+
+	test('OC - Edit agent  - Manage departments', async ({ page }) => {
+		await poOmnichannelAgents.selectUsername('user1');
+		await poOmnichannelAgents.btnAdd.click();
+		await poOmnichannelAgents.inputSearch.fill('user1');
+		await poOmnichannelAgents.findRowByUsername('user1').click();
+
+		await poOmnichannelAgents.btnEdit.click();
+		await poOmnichannelAgents.selectDepartment(department.data.name);
+		await poOmnichannelAgents.btnSave.click();
+
+		await test.step('expect the selected department is visible', async () => {
+			await poOmnichannelAgents.findRowByUsername('user1').click();
+
+			// mock the endpoint to use the one without pagination
+			await page.route('/api/v1/livechat/department?showArchived=true', async (route) => {
+				await route.fulfill({ json: { departments: [] } });
+			});
+
+			await poOmnichannelAgents.btnEdit.click();
+			await expect(poOmnichannelAgents.findSelectedDepartment(department.data.name)).toBeVisible();
 		});
 	});
 });
