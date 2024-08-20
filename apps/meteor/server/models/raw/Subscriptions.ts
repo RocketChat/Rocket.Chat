@@ -1848,21 +1848,21 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return result;
 	}
 
-	async removeByRoomIdAndUserId(roomId: string, userId: string): Promise<number> {
+	async removeByRoomIdAndUserId(roomId: string, userId: string): Promise<ISubscription | null> {
 		const query = {
 			'rid': roomId,
 			'u._id': userId,
 		};
 
-		const result = (await this.deleteMany(query)).deletedCount;
+		const { value: doc } = await this.findOneAndDelete(query);
 
-		if (typeof result === 'number' && result > 0) {
-			await Rooms.incUsersCountById(roomId, -result);
+		if (doc) {
+			await Rooms.incUsersCountById(roomId, -1);
 		}
 
 		await Users.removeRoomByUserId(userId, roomId);
 
-		return result;
+		return doc;
 	}
 
 	async removeByRoomIds(rids: string[]): Promise<DeleteResult> {

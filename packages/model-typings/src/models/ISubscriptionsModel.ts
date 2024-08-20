@@ -283,7 +283,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		users: { user: AtLeast<IUser, '_id' | 'username' | 'name' | 'settings'>; extraData: Record<string, any> }[],
 	): Promise<InsertManyResult<ISubscription>>;
 	removeByRoomIdsAndUserId(rids: string[], userId: string): Promise<number>;
-	removeByRoomIdAndUserId(roomId: string, userId: string): Promise<number>;
+	removeByRoomIdAndUserId(roomId: string, userId: string): Promise<ISubscription | null>;
 
 	removeByRoomIds(rids: string[]): Promise<DeleteResult>;
 

@@ -41,7 +41,7 @@ import {
 	notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId,
 	notifyOnSubscriptionChangedById,
 	notifyOnSubscriptionChangedByRoomId,
-	notifyOnSubscriptionChangedByRoomIdAndUserId,
+	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { Livechat as LivechatTyped } from './LivechatTyped';
@@ -306,9 +306,8 @@ export const removeAgentFromSubscription = async (rid: string, { _id, username }
 	}
 
 	const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(rid, _id);
-
 	if (deletedSubscription) {
-		void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, _id, 'removed');
+		void notifyOnSubscriptionChanged(deletedSubscription, 'removed');
 	}
 
 	await Message.saveSystemMessage('ul', rid, username || '', { _id: user._id, username: user.username, name: user.name });

@@ -8,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 import { beforeLeaveRoomCallback } from '../../../../lib/callbacks/beforeLeaveRoomCallback';
 import { settings } from '../../../settings/server';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
 export const removeUserFromRoom = async function (rid: string, user: IUser, options?: { byUser: IUser }): Promise<void> {
 	const room = await Rooms.findOneById(rid);
@@ -57,9 +57,8 @@ export const removeUserFromRoom = async function (rid: string, user: IUser, opti
 	}
 
 	const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(rid, user._id);
-
 	if (deletedSubscription) {
-		void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, user._id, 'removed');
+		void notifyOnSubscriptionChanged(deletedSubscription, 'removed');
 	}
 
 	if (room.teamId && room.teamMain) {

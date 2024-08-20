@@ -9,7 +9,10 @@ import { Meteor } from 'meteor/meteor';
 import { canAccessRoomAsync, getUsersInRole } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
-import { notifyOnRoomChanged, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../app/lib/server/lib/notifyListener';
+import {
+	notifyOnRoomChanged,
+	notifyOnSubscriptionChanged,
+} from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { callbacks } from '../../lib/callbacks';
@@ -90,9 +93,8 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 	await callbacks.run('beforeRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 
 	const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
-
 	if (deletedSubscription) {
-		void notifyOnSubscriptionChangedByRoomIdAndUserId(data.rid, removedUser._id, 'removed');
+		void notifyOnSubscriptionChanged(deletedSubscription, 'removed');
 	}
 
 	if (['c', 'p'].includes(room.t) === true) {

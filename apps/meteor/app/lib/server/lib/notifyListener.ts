@@ -472,21 +472,18 @@ export const notifyOnMessageChange = withDbWatcherCheck(async ({ id, data }: { i
 });
 
 export const notifyOnSubscriptionChanged = withDbWatcherCheck(
-	async (subscription: ISubscription, clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
+	async (subscription: ISubscription, clientAction: ClientAction = 'updated'): Promise<void> => {
 		void api.broadcast('watch.subscriptions', { clientAction, subscription });
 	},
 );
 
 export const notifyOnSubscriptionChangedByRoomIdAndUserId = withDbWatcherCheck(
-	async (rid: ISubscription['rid'], uid: ISubscription['u']['_id'], clientAction: ClientAction = 'updated'): Promise<void> => {
-		const subscriptions =
-			clientAction === 'removed'
-				? Subscriptions.trashFind({ rid, 'u._id': uid }, { projection: subscriptionFields })
-				: Subscriptions.findByUserIdAndRoomIds(uid, [rid], { projection: subscriptionFields });
-
-		if (!subscriptions) {
-			return;
-		}
+	async (
+		rid: ISubscription['rid'],
+		uid: ISubscription['u']['_id'],
+		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
+	): Promise<void> => {
+		const subscriptions = Subscriptions.findByUserIdAndRoomIds(uid, [rid], { projection: subscriptionFields });
 
 		for await (const subscription of subscriptions) {
 			void api.broadcast('watch.subscriptions', { clientAction, subscription });
