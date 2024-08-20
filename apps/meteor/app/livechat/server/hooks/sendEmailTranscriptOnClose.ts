@@ -3,8 +3,8 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { Livechat } from '../lib/LivechatTyped';
 import type { CloseRoomParams } from '../lib/LivechatTyped';
+import { sendTranscript } from '../lib/sendTranscript';
 
 type LivechatCloseCallbackParams = {
 	room: IOmnichannelRoom;
@@ -30,10 +30,7 @@ const sendEmailTranscriptOnClose = async (params: LivechatCloseCallbackParams): 
 
 	const { email, subject, requestedBy: user } = transcriptData;
 
-	await Promise.all([
-		Livechat.sendTranscript({ token, rid, email, subject, user }),
-		LivechatRooms.unsetEmailTranscriptRequestedByRoomId(rid),
-	]);
+	await Promise.all([sendTranscript({ token, rid, email, subject, user }), LivechatRooms.unsetEmailTranscriptRequestedByRoomId(rid)]);
 
 	delete room.transcriptRequest;
 

@@ -1790,22 +1790,6 @@ class LivechatClass {
 
 		return departmentDB;
 	}
-
-	async sendTranscript({
-		token,
-		rid,
-		email,
-		subject,
-		user,
-	}: {
-		token: string;
-		rid: string;
-		email: string;
-		subject?: string;
-		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
-	}): Promise<boolean> {
-		return sendTranscriptFunc({ token, rid, email, subject, user });
-	}
 }
 
 export const Livechat = new LivechatClass();
