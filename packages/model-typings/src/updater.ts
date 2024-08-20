@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import type { Join, NestedPaths, PropertyType, ArrayElement, NestedPathsOfType, Filter, UpdateFilter } from 'mongodb';
+import type { Join, NestedPaths, PropertyType, ArrayElement, NestedPathsOfType, UpdateFilter } from 'mongodb';
 
 export interface Updater<T extends { _id: string }> {
 	set<P extends SetProps<T>, K extends keyof P>(key: K, value: P[K]): Updater<T>;
 	unset<K extends keyof UnsetProps<T>>(key: K): Updater<T>;
 	inc<K extends keyof IncProps<T>>(key: K, value: number): Updater<T>;
 	addToSet<K extends keyof AddToSetProps<T>>(key: K, value: ArrayElementType<AddToSetProps<T>[K]>): Updater<T>;
-	persist(query: Filter<T>): Promise<void>;
 	hasChanges(): boolean;
 	getUpdateFilter(): UpdateFilter<T>;
 }
