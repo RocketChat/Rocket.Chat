@@ -176,10 +176,6 @@ class LivechatClass {
 		return agentsOnline;
 	}
 
-	getNextAgent(department?: string): Promise<SelectedAgent | null | undefined> {
-		return RoutingManager.getNextAgent(department);
-	}
-
 	async getOnlineAgents(department?: string, agent?: SelectedAgent | null): Promise<FindCursor<ILivechatAgent> | undefined> {
 		if (agent?.agentId) {
 			return Users.findOnlineAgents(agent.agentId);

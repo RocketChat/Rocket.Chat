@@ -7,6 +7,7 @@ import { API } from '../../../../api/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
+import { RoutingManager } from '../../lib/RoutingManager';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
 	async get() {
@@ -48,7 +49,7 @@ API.v1.addRoute(
 				}
 			}
 
-			const agentData = await LivechatTyped.getNextAgent(department);
+			const agentData = await RoutingManager.getNextAgent(department);
 			if (!agentData) {
 				throw new Error('agent-not-found');
 			}
