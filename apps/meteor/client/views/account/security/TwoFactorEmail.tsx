@@ -1,5 +1,5 @@
 import { Box, Button, Margins } from '@rocket.chat/fuselage';
-import { useUser, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React, { useCallback } from 'react';
 
@@ -9,10 +9,7 @@ const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
 	const t = useTranslation();
 	const user = useUser();
 
-	const isEmail2FAAvailableForOAuth = useSetting('Accounts_twoFactorAuthentication_email_available_for_oAuth_users');
-	const isOAuthUser = user?.isOAuthUser;
 	const isEnabled = user?.services?.email2fa?.enabled;
-	const isAllowed = !isOAuthUser || isEmail2FAAvailableForOAuth;
 
 	const enable2faAction = useEndpointAction('POST', '/v1/users.2fa.enableEmail', {
 		successMessage: t('Two-factor_authentication_enabled'),
@@ -27,10 +24,6 @@ const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
 	const handleDisable = useCallback(async () => {
 		await disable2faAction();
 	}, [disable2faAction]);
-
-	if (!isAllowed) {
-		return null;
-	}
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='flex-start' mbs={16} {...props}>
