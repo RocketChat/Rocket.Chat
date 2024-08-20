@@ -45,7 +45,7 @@ test.describe.serial('message-actions', () => {
 			await poHomeChannel.content.sendMessage('this is a message for reply');
 			await page.locator('[data-qa-type="message"]').last().hover();
 			await page.locator('role=button[name="Reply in thread"]').click();
-			await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).fill('this is a reply message');
+			await page.getByRole('dialog').locator(`role=textbox[name="Message #${targetChannel}"]`).fill('this is a reply message');
 			await page.keyboard.press('Enter');
 			await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
 		});
@@ -86,8 +86,8 @@ test.describe.serial('message-actions', () => {
 			await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
 		});
 
-		// close thread before testing because behaviour changes
-		await page.locator('role=button[name="Close"]').click();
+		// close thread before testing because the behavior changes
+		await page.getByRole('dialog').getByRole('button', { name: 'Close', exact: true }).click();
 
 		await test.step('unfollow thread', async () => {
 			const unFollowButton = page.locator('[data-qa-type="message"]').last().getByTitle('Following');
