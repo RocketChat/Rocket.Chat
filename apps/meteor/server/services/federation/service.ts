@@ -341,7 +341,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		}
 
 		throwIfFederationNotEnabledOrNotReady();
-  }
+	}
 
 	protected async deactivateRemoteUser(remoteUserId: string): Promise<void> {
 		return this.bridge.deactivateUser(remoteUserId);
@@ -469,7 +469,7 @@ export class FederationService extends AbstractBaseFederationService implements 
 
 	public async beforeCreateRoom(room: Partial<IRoom>): Promise<void> {
 		return super.beforeCreateRoom(room);
-  }
+	}
 
 	public async deactivateRemoteUser(userId: string): Promise<void> {
 		return super.deactivateRemoteUser(userId);

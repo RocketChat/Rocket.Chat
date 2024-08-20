@@ -813,7 +813,7 @@ export class MatrixBridge implements IFederationBridge {
 		);
 
 		return { durationMs };
-  }
+	}
 
 	public async deactivateUser(uid: string): Promise<void> {
 		/*
