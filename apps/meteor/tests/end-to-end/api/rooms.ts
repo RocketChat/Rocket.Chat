@@ -1157,6 +1157,63 @@ describe('[Rooms]', () => {
 		});
 	});
 
+	describe('[/rooms.info.teamAndParent]', () => {
+		const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
+		const teamName = `test-team-${Date.now()}`;
+		const discussionName = `test-discussion-${Date.now()}`;
+		let testChannel: IRoom;
+		let testDiscussion: IRoom;
+		let testTeam: ITeam;
+
+		before(async () => {
+			testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
+
+			const teamResponse = await request.post(api('teams.create')).set(credentials).send({ name: teamName, type: 1 }).expect(200);
+			testTeam = teamResponse.body.team;
+
+			const resDiscussion = await request.post(api('rooms.createDiscussion')).set(credentials).send({
+				prid: testChannel._id,
+				t_name: discussionName,
+			});
+			testDiscussion = resDiscussion.body.discussion;
+
+			await request
+				.post(api('teams.addRooms'))
+				.set(credentials)
+				.send({ rooms: [testChannel._id], teamId: testTeam._id });
+		});
+
+		after(() =>
+			Promise.all([
+				deleteRoom({ type: 'c', roomId: testChannel._id }),
+				deleteRoom({ type: 'p', roomId: testDiscussion._id }),
+				deleteTeam(credentials, teamName),
+			]),
+		);
+
+		it('should return the channel info, team and parent info', async () => {
+			const result = await request.get(api('rooms.info.teamAndParent')).set(credentials).query({ roomId: testChannel._id }).expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('team');
+			expect(result.body).to.have.property('parent');
+			expect(result.body.parent).to.have.property('_id').and.to.equal(testTeam.roomId);
+		});
+
+		it('should return the dicsussion room info and parent info', async () => {
+			await request
+				.get(api('rooms.info.teamAndParent'))
+				.set(credentials)
+				.query({ roomId: testDiscussion._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('parent').and.to.be.an('object');
+					expect(res.body.parent).to.have.property('_id').and.to.be.equal(testChannel._id);
+				});
+		});
+	});
+
 	describe('[/rooms.leave]', () => {
 		let testChannel: IRoom;
 		let testGroup: IRoom;
