@@ -779,15 +779,6 @@ class LivechatClass {
 		}
 	}
 
-	async updateLastChat(contactId: string, lastChat: Required<ILivechatVisitor['lastChat']>) {
-		const updateUser = {
-			$set: {
-				lastChat,
-			},
-		};
-		await LivechatVisitors.updateById(contactId, updateUser);
-	}
-
 	notifyRoomVisitorChange(roomId: string, visitor: ILivechatVisitor) {
 		void api.broadcast('omnichannel.room', roomId, {
 			type: 'visitorData',

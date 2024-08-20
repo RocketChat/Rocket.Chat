@@ -459,6 +459,17 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			activity: period,
 		});
 	}
+
+	setLastChatById(_id: string, lastChat: Required<ILivechatVisitor['lastChat']>): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id },
+			{
+				$set: {
+					lastChat,
+				},
+			},
+		);
+	}
 }
 
 type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };

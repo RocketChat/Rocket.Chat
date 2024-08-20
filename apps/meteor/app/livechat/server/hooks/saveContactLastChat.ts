@@ -1,7 +1,7 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatVisitors } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { Livechat } from '../lib/LivechatTyped';
 
 callbacks.add(
 	'livechat.newRoom',
@@ -19,7 +19,7 @@ callbacks.add(
 			_id,
 			ts: new Date(),
 		};
-		await Livechat.updateLastChat(guestId, lastChat);
+		await LivechatVisitors.setLastChatById(guestId, lastChat);
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-save-last-chat',
