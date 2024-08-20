@@ -16,12 +16,16 @@ const NewDepartmentData = ((): Partial<ILivechatDepartment> => ({
 	showOnOfflineForm: true,
 }))();
 
-export const createDepartment = async (departmentData: Partial<ILivechatDepartment> = NewDepartmentData): Promise<ILivechatDepartment> => {
+export const createDepartment = async (
+	departmentData: Partial<ILivechatDepartment> = NewDepartmentData,
+	agents?: { agentId: string; count?: string; order?: string }[],
+): Promise<ILivechatDepartment> => {
 	const response = await request
 		.post(api('livechat/department'))
 		.set(credentials)
 		.send({
 			department: departmentData,
+			...(agents && { agents }),
 		})
 		.expect(200);
 	return response.body.department;
@@ -38,7 +42,16 @@ const updateDepartment = async (departmentId: string, departmentData: Partial<Li
 	return response.body.department;
 };
 
-const createDepartmentWithMethod = (initialAgents: { agentId: string; username: string }[] = [], allowReceiveForwardOffline = false) =>
+const createDepartmentWithMethod = (
+	initialAgents: { agentId: string; username: string }[] = [],
+	{
+		allowReceiveForwardOffline = false,
+		fallbackForwardDepartment,
+	}: {
+		allowReceiveForwardOffline?: boolean;
+		fallbackForwardDepartment?: string;
+	} = {},
+) =>
 	new Promise((resolve, reject) => {
 		void request
 			.post(methodCall('livechat:saveDepartment'))
@@ -56,6 +69,7 @@ const createDepartmentWithMethod = (initialAgents: { agentId: string; username: 
 							name: `new department ${Date.now()}`,
 							description: 'created from api',
 							allowReceiveForwardOffline,
+							fallbackForwardDepartment,
 						},
 						initialAgents,
 					],
@@ -126,8 +140,10 @@ export const addOrRemoveAgentFromDepartment = async (
 
 export const createDepartmentWithAnOfflineAgent = async ({
 	allowReceiveForwardOffline = false,
+	fallbackForwardDepartment,
 }: {
-	allowReceiveForwardOffline: boolean;
+	allowReceiveForwardOffline?: boolean;
+	fallbackForwardDepartment?: string;
 }): Promise<{
 	department: ILivechatDepartment;
 	agent: {
@@ -137,7 +153,10 @@ export const createDepartmentWithAnOfflineAgent = async ({
 }> => {
 	const { user, credentials } = await createAnOfflineAgent();
 
-	const department = (await createDepartmentWithMethod(undefined, allowReceiveForwardOffline)) as ILivechatDepartment;
+	const department = (await createDepartmentWithMethod(undefined, {
+		allowReceiveForwardOffline,
+		fallbackForwardDepartment,
+	})) as ILivechatDepartment;
 
 	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
 
