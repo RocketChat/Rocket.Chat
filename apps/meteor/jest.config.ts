@@ -11,6 +11,7 @@ export default {
 
 			testMatch: [
 				'<rootDir>/client/**/**.spec.[jt]s?(x)',
+				'<rootDir>/ee/client/**/**.spec.[jt]s?(x)',
 				'<rootDir>/tests/unit/client/views/**/*.spec.{ts,tsx}',
 				'<rootDir>/tests/unit/client/providers/**/*.spec.{ts,tsx}',
 			],
