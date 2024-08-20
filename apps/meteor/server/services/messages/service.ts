@@ -6,7 +6,8 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
-import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
+import { notifyUsersOnSystemMessage } from '../../../app/lib/server/lib/notifyUsersOnMessage';
 import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
@@ -97,19 +98,38 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		return executeSetReaction(userId, reaction, messageId, shouldReact);
 	}
 
+	async saveSystemMessageAndNotifyUser<T = IMessage>(
+		type: MessageTypesValues,
+		rid: string,
+		messageText: string,
+		owner: Pick<IUser, '_id' | 'username' | 'name'>,
+		extraData?: Partial<T>,
+	): Promise<IMessage> {
+		const createdMessage = await this.saveSystemMessage(type, rid, messageText, owner, extraData);
+
+		const room = await Rooms.findOneById(rid);
+		if (!room) {
+			throw new Error('Failed to find the room.');
+		}
+
+		await notifyUsersOnSystemMessage(createdMessage, room);
+
+		return createdMessage;
+	}
+
 	async saveSystemMessage<T = IMessage>(
 		type: MessageTypesValues,
 		rid: string,
 		message: string,
 		owner: Pick<IUser, '_id' | 'username' | 'name'>,
 		extraData?: Partial<T>,
-	): Promise<IMessage['_id']> {
+	): Promise<IMessage> {
 		const { _id: userId, username, name } = owner;
 		if (!username) {
 			throw new Error('The username cannot be empty.');
 		}
 
-		const [result] = await Promise.all([
+		const [{ insertedId }] = await Promise.all([
 			Messages.createWithTypeRoomIdMessageUserAndUnread(
 				type,
 				rid,
@@ -121,11 +141,19 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			Rooms.incMsgCountById(rid, 1),
 		]);
 
-		void notifyOnMessageChange({
-			id: result.insertedId,
-		});
+		if (!insertedId) {
+			throw new Error('Failed to save system message.');
+		}
 
-		return result.insertedId;
+		const createdMessage = await Messages.findOneById(insertedId);
+		if (!createdMessage) {
+			throw new Error('Failed to find the created message.');
+		}
+
+		void notifyOnMessageChange({ id: createdMessage._id, data: createdMessage });
+		void notifyOnRoomChangedById(rid);
+
+		return createdMessage;
 	}
 
 	async beforeSave({

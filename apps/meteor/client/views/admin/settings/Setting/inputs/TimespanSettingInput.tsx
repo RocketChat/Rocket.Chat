@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FormEventHandler, ReactElement } from 'react';
 import React, { useMemo, useState } from 'react';
 
-import { TIMEUNIT, timeUnitToMs, msToTimeUnit } from '../../../../lib/convertTimeUnit';
+import { TIMEUNIT, timeUnitToMs, msToTimeUnit } from '../../../../../lib/convertTimeUnit';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
