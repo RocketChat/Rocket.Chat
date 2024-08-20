@@ -69,7 +69,7 @@ jest.mock('@rocket.chat/fuselage-hooks', () => {
 
 describe('Thread Metrics', () => {
 	describe('Main component', () => {
-		it('should render large followed with 3 parcipants and unread', async () => {
+		it('should render large followed with 3 participants and unread', async () => {
 			const navigateSpy = jest.fn();
 			const navigateCallback = (route: any) => {
 				navigateSpy(route.name, route.params.rid, route.params.tab, route.params.context);
@@ -104,6 +104,7 @@ describe('Thread Metrics', () => {
 						.withSetting('Message_TimeFormat', 'LT')
 						.withTranslations(...mockedTranslations)
 						.buildWithRouter(navigateCallback),
+					legacyRoot: true,
 				},
 			);
 
@@ -120,7 +121,7 @@ describe('Thread Metrics', () => {
 
 			const replyButton = screen.getByText('View_thread');
 			expect(replyButton).toBeVisible();
-			userEvent.click(replyButton);
+			await userEvent.click(replyButton);
 
 			expect(navigateSpy).toHaveBeenCalledWith('thread', 'rid', 'thread', 'mid');
 
@@ -128,7 +129,7 @@ describe('Thread Metrics', () => {
 			expect(threadCount).toHaveTextContent('5 replies July 1, 2024');
 		});
 
-		it('should render small unfollowed with 3 parcipants and unread', async () => {
+		it('should render small not followed with 3 participants and unread', async () => {
 			const navigateSpy = jest.fn();
 			const navigateCallback = (route: any) => {
 				navigateSpy(route.name, route.params.rid, route.params.tab, route.params.context);
@@ -164,6 +165,7 @@ describe('Thread Metrics', () => {
 						.withSetting('Message_TimeFormat', 'LT')
 						.withTranslations(...mockedTranslations)
 						.buildWithRouter(navigateCallback),
+					legacyRoot: true,
 				},
 			);
 			const followButton = screen.getByTitle('Not_following');
@@ -179,7 +181,7 @@ describe('Thread Metrics', () => {
 
 			const replyButton = screen.getByText('View_thread');
 			expect(replyButton).toBeVisible();
-			userEvent.click(replyButton);
+			await userEvent.click(replyButton);
 
 			expect(navigateSpy).toHaveBeenCalledWith('thread', 'rid', 'thread', 'mid');
 
@@ -189,25 +191,40 @@ describe('Thread Metrics', () => {
 	});
 
 	describe('ThreadMetricsFollow', () => {
-		it('should render unfollowed', (done) => {
+		it('should render not followed', async () => {
 			render(<ThreadMetricsFollow unread={true} mention={false} all={false} mid='mid' rid='rid' following={false} />, {
-				wrapper: mockAppRoot().withEndpoint('POST', '/v1/chat.followMessage', toggleFollowMock(done)).build(),
+				wrapper: mockAppRoot()
+					.withEndpoint(
+						'POST',
+						'/v1/chat.followMessage',
+						toggleFollowMock(() => undefined),
+					)
+					.build(),
+				legacyRoot: true,
 			});
 			const followButton = screen.getByTitle('Not_following');
 			expect(followButton).toBeVisible();
-			userEvent.click(followButton);
+			await userEvent.click(followButton);
 		});
-		it('should render followed', (done) => {
+		it('should render followed', async () => {
 			render(<ThreadMetricsFollow unread={true} mention={false} all={false} mid='mid' rid='rid' following={true} />, {
-				wrapper: mockAppRoot().withEndpoint('POST', '/v1/chat.unfollowMessage', toggleFollowMock(done)).build(),
+				wrapper: mockAppRoot()
+					.withEndpoint(
+						'POST',
+						'/v1/chat.unfollowMessage',
+						toggleFollowMock(() => undefined),
+					)
+					.build(),
+				legacyRoot: true,
 			});
 			const followButton = screen.getByTitle('Following');
 			expect(followButton).toBeVisible();
-			userEvent.click(followButton);
+			await userEvent.click(followButton);
 		});
 		it('should render unread badge', () => {
 			render(<ThreadMetricsFollow unread={true} mention={false} all={false} mid='mid' rid='rid' following={false} />, {
 				wrapper: mockAppRoot().build(),
+				legacyRoot: true,
 			});
 			const badge = screen.getByTitle('Unread');
 			expect(badge).toBeVisible();
@@ -215,6 +232,7 @@ describe('Thread Metrics', () => {
 		it('should render mention-all badge', () => {
 			render(<ThreadMetricsFollow unread={true} mention={false} all={true} mid='mid' rid='rid' following={false} />, {
 				wrapper: mockAppRoot().build(),
+				legacyRoot: true,
 			});
 			const badge = screen.getByTitle('mention-all');
 			expect(badge).toBeVisible();
@@ -222,6 +240,7 @@ describe('Thread Metrics', () => {
 		it('should render Mentions_you badge', () => {
 			render(<ThreadMetricsFollow unread={true} mention={true} all={false} mid='mid' rid='rid' following={false} />, {
 				wrapper: mockAppRoot().build(),
+				legacyRoot: true,
 			});
 			const badge = screen.getByTitle('Mentions_you');
 			expect(badge).toBeVisible();
@@ -234,6 +253,7 @@ describe('Thread Metrics', () => {
 					.withEndpoint('GET', '/v1/users.info', usersInfoMock)
 					.withTranslations(...mockedTranslations)
 					.build(),
+				legacyRoot: true,
 			});
 			expect(await screen.findByTitle('follower')).toBeVisible();
 			expect(await screen.findByTitle('user1')).toBeVisible();
@@ -244,6 +264,7 @@ describe('Thread Metrics', () => {
 					.withEndpoint('GET', '/v1/users.info', usersInfoMock)
 					.withTranslations(...mockedTranslations)
 					.build(),
+				legacyRoot: true,
 			});
 			expect(await screen.findByTitle('followers')).toBeVisible();
 			expect(await screen.findByTitle('user1')).toBeVisible();
@@ -255,6 +276,7 @@ describe('Thread Metrics', () => {
 					.withEndpoint('GET', '/v1/users.info', usersInfoMock)
 					.withTranslations(...mockedTranslations)
 					.build(),
+				legacyRoot: true,
 			});
 			expect(await screen.findByTitle('followers')).toBeVisible();
 			expect(await screen.findByTitle('user1')).toBeVisible();
@@ -267,6 +289,7 @@ describe('Thread Metrics', () => {
 					.withEndpoint('GET', '/v1/users.info', usersInfoMock)
 					.withTranslations(...mockedTranslations)
 					.build(),
+				legacyRoot: true,
 			});
 			expect(await screen.findByTitle('followers')).toBeVisible();
 			expect(await screen.findByTitle('user1')).toBeVisible();
