@@ -29,6 +29,9 @@ inputs:
     required: false
     description: 'Setup node.js'
     default: 'true'
+  NPM_TOKEN:
+    required: false
+    description: 'NPM token'
 
 runs:
   using: composite
@@ -65,6 +68,7 @@ runs:
         node-version: ${{ inputs.node-version }}
         cache-modules: true
         install: true
+        NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
 
     - run: yarn build
       if: inputs.setup == 'true'

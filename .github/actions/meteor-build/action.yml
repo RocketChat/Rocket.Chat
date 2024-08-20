@@ -29,6 +29,7 @@ runs:
         node-version: ${{ inputs.node-version }}
         cache-modules: true
         install: true
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     # - name: Free disk space
     #   run: |
