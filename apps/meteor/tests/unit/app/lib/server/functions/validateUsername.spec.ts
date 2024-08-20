@@ -3,11 +3,11 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 describe('validateUsername', () => {
-	let getStub: sinon.SinonStub;
+	const getStub = sinon.stub();
 
 	const proxySettings = {
 		settings: {
-			get: () => null,
+			get: getStub,
 		},
 	};
 
@@ -16,7 +16,7 @@ describe('validateUsername', () => {
 	});
 
 	beforeEach(() => {
-		getStub = sinon.stub(proxySettings.settings, 'get');
+		getStub.reset();
 	});
 
 	afterEach(() => {
