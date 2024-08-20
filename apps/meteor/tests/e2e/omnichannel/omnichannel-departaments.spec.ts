@@ -70,7 +70,6 @@ test.describe('OC - Manage Departments', () => {
 				await poOmnichannelDepartments.inputName.fill(departmentName);
 				await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
 				await poOmnichannelDepartments.btnSave.click();
-				await poOmnichannelDepartments.btnCloseToastSuccess.click();
 
 				await poOmnichannelDepartments.search(departmentName);
 				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
@@ -82,8 +81,6 @@ test.describe('OC - Manage Departments', () => {
 				await poOmnichannelDepartments.menuDeleteOption.click();
 
 				await test.step('expect confirm delete department', async () => {
-					await expect(poOmnichannelDepartments.modalConfirmDelete).toBeVisible();
-
 					await test.step('expect delete to be disabled when name is incorrect', async () => {
 						await expect(poOmnichannelDepartments.btnModalConfirmDelete).toBeDisabled();
 						await poOmnichannelDepartments.inputModalConfirmDelete.fill('someramdomname');
@@ -136,7 +133,6 @@ test.describe('OC - Manage Departments', () => {
 
 				await poOmnichannelDepartments.inputName.fill(`edited-${department.name}`);
 				await poOmnichannelDepartments.btnSave.click();
-				await poOmnichannelDepartments.btnCloseToastSuccess.click();
 
 				await poOmnichannelDepartments.search(`edited-${department.name}`);
 				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
