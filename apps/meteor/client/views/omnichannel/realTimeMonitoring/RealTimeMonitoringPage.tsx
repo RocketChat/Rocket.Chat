@@ -1,6 +1,8 @@
+import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Select, Margins, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { MutableRefObject } from 'react';
 import React, { useRef, useState, useMemo, useEffect, Fragment } from 'react';
 
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
@@ -18,7 +20,7 @@ import ChatsOverview from './overviews/ChatsOverview';
 import ConversationOverview from './overviews/ConversationOverview';
 import ProductivityOverview from './overviews/ProductivityOverview';
 
-const randomizeKeys = (keys) => {
+const randomizeKeys = (keys: MutableRefObject<string[]>) => {
 	keys.current = keys.current.map((_key, i) => {
 		return `${i}_${new Date().getTime()}`;
 	});
@@ -29,12 +31,12 @@ const dateRange = getDateRange();
 const RealTimeMonitoringPage = () => {
 	const t = useTranslation();
 
-	const keys = useRef([...Array(10).keys()]);
+	const keys = useRef<string[]>([...Array(10).map((_, i) => `${i}_${new Date().getTime()}`)]);
 
-	const [reloadFrequency, setReloadFrequency] = useState(5);
+	const [reloadFrequency, setReloadFrequency] = useState<string>('5');
 	const [departmentId, setDepartment] = useState('');
 
-	const reloadRef = useRef({});
+	const reloadRef = useRef<{ [x: string]: () => void }>({});
 
 	const departmentParams = useMemo(
 		() => ({
@@ -62,20 +64,22 @@ const RealTimeMonitoringPage = () => {
 	});
 
 	useEffect(() => {
-		const interval = setInterval(reloadCharts, reloadFrequency * 1000);
+		const interval = setInterval(reloadCharts, Number(reloadFrequency) * 1000);
 		return () => {
 			clearInterval(interval);
 			randomizeKeys(keys);
 		};
 	}, [reloadCharts, reloadFrequency]);
 
+	// TODO Check if Select Options does indeed accepts Elements as labels
 	const reloadOptions = useMemo(
-		() => [
-			[5, <Fragment key='5 seconds'>5 {t('seconds')}</Fragment>],
-			[10, <Fragment key='10 seconds'>10 {t('seconds')}</Fragment>],
-			[30, <Fragment key='30 seconds'>30 {t('seconds')}</Fragment>],
-			[60, <Fragment key='1 minute'>1 {t('minute')}</Fragment>],
-		],
+		() =>
+			[
+				['5', <Fragment key='5 seconds'>5 {t('seconds')}</Fragment>],
+				['10', <Fragment key='10 seconds'>10 {t('seconds')}</Fragment>],
+				['30', <Fragment key='30 seconds'>30 {t('seconds')}</Fragment>],
+				['60', <Fragment key='1 minute'>1 {t('minute')}</Fragment>],
+			] as unknown as SelectOption[],
 		[t],
 	);
 
@@ -99,7 +103,11 @@ const RealTimeMonitoringPage = () => {
 						</Box>
 						<Box maxWidth='50%' display='flex' mi={4} flexGrow={1} flexDirection='column'>
 							<Label mb={4}>{t('Update_every')}</Label>
-							<Select options={reloadOptions} onChange={useMutableCallback((val) => setReloadFrequency(val))} value={reloadFrequency} />
+							<Select
+								options={reloadOptions}
+								onChange={useMutableCallback((val) => setReloadFrequency(val as string))}
+								value={reloadFrequency}
+							/>
 						</Box>
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
