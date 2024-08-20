@@ -25,6 +25,6 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/tools": "workspace:^",
-		"esl": "git@github.com:pierre-lehnen-rc/esl.git"
+		"esl": "github:pierre-lehnen-rc/esl"
 	}
 }
