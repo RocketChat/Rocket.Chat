@@ -45,7 +45,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (isFederated && isFederationEnabled() && !isFederationReady()) {
+		if (isFederated && (!isFederationEnabled() || !isFederationReady())) {
 			throw new FederationMatrixInvalidConfigurationError('unable to change room owners');
 		}
 
