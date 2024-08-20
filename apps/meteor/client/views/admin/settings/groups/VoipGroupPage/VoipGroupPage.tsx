@@ -4,12 +4,12 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo, useState } from 'react';
 
-import GenericNoResults from '../../../../components/GenericNoResults';
-import { PageScrollableContentWithShadow } from '../../../../components/Page';
-import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
-import GroupPage from '../GroupPage';
-import Section from '../Section';
-import VoipExtensionsPage from './voip/VoipExtensionsPage';
+import GenericNoResults from '../../../../../components/GenericNoResults';
+import { PageScrollableContentWithShadow } from '../../../../../components/Page';
+import { useEditableSettingsGroupSections } from '../../../EditableSettingsContext';
+import SettingsGroupPage from '../../SettingsGroupPage';
+import SettingsSection from '../../SettingsSection';
+import VoipExtensionsPage from './VoipExtensionsPage';
 
 type VoipGroupPageProps = ISetting & {
 	onClickBack?: () => void;
@@ -44,13 +44,13 @@ function VoipGroupPage({ _id, onClickBack, ...group }: VoipGroupPageProps) {
 			voipEnabled ? (
 				<VoipExtensionsPage />
 			) : (
-				<GenericNoResults icon='warning' title={t('Voip_is_disabled')} description={t('Voip_is_disabled_description')}></GenericNoResults>
+				<GenericNoResults icon='warning' title={t('Voip_is_disabled')} description={t('Voip_is_disabled_description')} />
 			),
 		[t, voipEnabled],
 	);
 
 	return (
-		<GroupPage _id={_id} {...group} tabs={tabsComponent} isCustom={true} onClickBack={onClickBack}>
+		<SettingsGroupPage _id={_id} {...group} tabs={tabsComponent} isCustom={true} onClickBack={onClickBack}>
 			{tab === 'Extensions' ? (
 				ExtensionsPageComponent
 			) : (
@@ -58,13 +58,13 @@ function VoipGroupPage({ _id, onClickBack, ...group }: VoipGroupPageProps) {
 					<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
 						<Accordion className='page-settings'>
 							{sections.map((sectionName) => (
-								<Section key={sectionName || ''} groupId={_id} sectionName={sectionName} tabName={tab} solo={false} />
+								<SettingsSection key={sectionName || ''} groupId={_id} sectionName={sectionName} currentTab={tab} solo={false} />
 							))}
 						</Accordion>
 					</Box>
 				</PageScrollableContentWithShadow>
 			)}
-		</GroupPage>
+		</SettingsGroupPage>
 	);
 }
 
