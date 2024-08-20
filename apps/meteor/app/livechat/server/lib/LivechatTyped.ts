@@ -152,10 +152,6 @@ class LivechatClass {
 		this.webhookLogger = this.logger.section('Webhook');
 	}
 
-	enabled() {
-		return Boolean(settings.get('Livechat_enabled'));
-	}
-
 	async online(department?: string, skipNoAgentSetting = false, skipFallbackCheck = false): Promise<boolean> {
 		Livechat.logger.debug(`Checking online agents ${department ? `for department ${department}` : ''}`);
 		if (!skipNoAgentSetting && settings.get('Livechat_accept_chats_with_no_agents')) {
@@ -366,7 +362,7 @@ class LivechatClass {
 		agent?: SelectedAgent;
 		extraData?: Record<string, unknown>;
 	}) {
-		if (!this.enabled()) {
+		if (!settings.get('Livechat_enabled')) {
 			throw new Meteor.Error('error-omnichannel-is-disabled');
 		}
 
@@ -417,7 +413,7 @@ class LivechatClass {
 		agent?: SelectedAgent,
 		extraData?: E,
 	) {
-		if (!this.enabled()) {
+		if (!settings.get('Livechat_enabled')) {
 			throw new Meteor.Error('error-omnichannel-is-disabled');
 		}
 		Livechat.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);

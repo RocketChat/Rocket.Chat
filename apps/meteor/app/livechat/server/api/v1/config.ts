@@ -2,6 +2,7 @@ import { isGETLivechatConfigParams } from '@rocket.chat/rest-typings';
 import mem from 'mem';
 
 import { API } from '../../../../api/server';
+import { settings as serverSettings } from '../../../../settings/server';
 import { Livechat } from '../../lib/LivechatTyped';
 import { settings, findOpenRoom, getExtraConfigInfo, findAgent, findGuest } from '../lib/livechat';
 
@@ -12,7 +13,7 @@ API.v1.addRoute(
 	{ validateParams: isGETLivechatConfigParams },
 	{
 		async get() {
-			const enabled = Livechat.enabled();
+			const enabled = serverSettings.get('Livechat_enabled');
 
 			if (!enabled) {
 				return API.v1.success({ config: { enabled: false } });
