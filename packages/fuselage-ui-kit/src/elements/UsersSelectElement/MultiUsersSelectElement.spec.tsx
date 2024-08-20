@@ -53,7 +53,8 @@ describe('UiKit MultiUsersSelect Element', () => {
           context={BlockContext.FORM}
           surfaceRenderer={contextualBarParser}
         />
-      </MockedServerContext>
+      </MockedServerContext>,
+      { legacyRoot: true }
     );
   });
 

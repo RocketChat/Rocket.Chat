@@ -54,7 +54,7 @@ const getBlocks = (mentions: IMessage['mentions'], messageId: string, lng: strin
 
 callbacks.add(
 	'afterSaveMessage',
-	async (message, room) => {
+	async (message, { room }) => {
 		// TODO: check if I need to test this 60 second rule.
 		// If the message was edited, or is older than 60 seconds (imported)
 		// the notifications will be skipped, so we can also skip this validation

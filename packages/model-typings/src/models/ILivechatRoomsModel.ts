@@ -208,15 +208,23 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		options?: FindOptions<IOmnichannelRoom>,
 		extraQuery?: Filter<IOmnichannelRoom>,
 	): FindCursor<IOmnichannelRoom>;
-	setResponseByRoomId(roomId: string, responseBy: IOmnichannelRoom['responseBy']): Promise<UpdateResult>;
-	setNotResponseByRoomId(roomId: string): Promise<UpdateResult>;
-	setAgentLastMessageTs(roomId: string): Promise<UpdateResult>;
-	getAnalyticsUpdateQueryByRoomId(
+	getResponseByRoomIdUpdateQuery(
+		responseBy: IOmnichannelRoom['responseBy'],
+		updater?: Updater<IOmnichannelRoom>,
+	): Updater<IOmnichannelRoom>;
+	getNotResponseByRoomIdUpdateQuery(updater: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
+	getAgentLastMessageTsUpdateQuery(updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
+	getAnalyticsUpdateQueryBySentByAgent(
 		room: IOmnichannelRoom,
 		message: IMessage,
 		analyticsData: Record<string, string | number | Date> | undefined,
 		updater?: Updater<IOmnichannelRoom>,
-	): Promise<Updater<IOmnichannelRoom>>;
+	): Updater<IOmnichannelRoom>;
+	getAnalyticsUpdateQueryBySentByVisitor(
+		room: IOmnichannelRoom,
+		message: IMessage,
+		updater?: Updater<IOmnichannelRoom>,
+	): Updater<IOmnichannelRoom>;
 	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lt: Date }, data?: { departmentId: string }): Promise<number>;
 	getAnalyticsMetricsBetweenDate(
 		t: 'l',
@@ -244,11 +252,12 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	removeAgentByRoomId(roomId: string): Promise<UpdateResult>;
 	removeByVisitorToken(token: string): Promise<DeleteResult>;
 	removeById(_id: string): Promise<DeleteResult>;
-	setVisitorLastMessageTimestampByRoomId(roomId: string, lastMessageTs: Date): Promise<UpdateResult>;
+	getVisitorLastMessageTsUpdateQueryByRoomId(lastMessageTs: Date, updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	setVisitorInactivityInSecondsById(roomId: string, visitorInactivity: any): Promise<UpdateResult>;
 	changeVisitorByRoomId(roomId: string, visitor: { _id: string; username: string; token: string }): Promise<UpdateResult>;
 	unarchiveOneById(roomId: string): Promise<UpdateResult>;
 	markVisitorActiveForPeriod(rid: string, period: string): Promise<UpdateResult>;
+	getVisitorActiveForPeriodUpdateQuery(period: string, updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	getMACStatisticsForPeriod(period: string): Promise<MACStats[]>;
 	getMACStatisticsBetweenDates(start: Date, end: Date): Promise<MACStats[]>;
 }
