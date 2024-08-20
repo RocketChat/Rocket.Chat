@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-await-sync-events */
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -56,7 +57,7 @@ it('should only enable "Free Extension Numbers" field if username is informed', 
 
 	screen.getByLabelText('User_Without_Extensions').focus();
 	const userOption = await screen.findByRole('option', { name: 'Jane Doe' });
-	userEvent.click(userOption);
+	await userEvent.click(userOption);
 
 	await waitFor(() => expect(screen.getByTestId('input-free-extension-numbers')).not.toHaveClass('disabled'));
 });
@@ -71,13 +72,13 @@ it('should only enable "Associate" button both username and extension is informe
 
 	screen.getByLabelText('User_Without_Extensions').focus();
 	const userOption = await screen.findByRole('option', { name: 'Jane Doe' });
-	userEvent.click(userOption);
+	await userEvent.click(userOption);
 
 	await waitFor(() => expect(screen.getByTestId('input-free-extension-numbers')).not.toHaveClass('disabled'));
 
 	screen.getByTestId('input-free-extension-numbers').click();
 	const extOption = await screen.findByRole('option', { name: '1000' });
-	userEvent.click(extOption);
+	await userEvent.click(extOption);
 
 	expect(screen.getByRole('button', { name: /Associate/i, hidden: true })).toBeEnabled();
 });
@@ -91,13 +92,13 @@ it('should call onClose when extension is associated', async () => {
 
 	screen.getByLabelText('User_Without_Extensions').focus();
 	const userOption = await screen.findByRole('option', { name: 'Jane Doe' });
-	userEvent.click(userOption);
+	await userEvent.click(userOption);
 
 	await waitFor(() => expect(screen.getByTestId('input-free-extension-numbers')).not.toHaveClass('disabled'));
 
 	screen.getByTestId('input-free-extension-numbers').click();
 	const extOption = await screen.findByRole('option', { name: '1000' });
-	userEvent.click(extOption);
+	await userEvent.click(extOption);
 
 	screen.getByRole('button', { name: /Associate/i, hidden: true }).click();
 	await waitFor(() => expect(closeFn).toHaveBeenCalled());
