@@ -632,7 +632,9 @@ API.v1.addRoute(
 			await Team.unsetTeamIdOfRooms(this.userId, team._id);
 
 			// Remove the team's main room
-			await Meteor.callAsync('eraseRoom', team.roomId);
+			if (team.roomId) {
+				await Meteor.callAsync('eraseRoom', team.roomId);
+			}
 
 			// Delete all team memberships
 			await Team.removeAllMembersFromTeam(team._id);
