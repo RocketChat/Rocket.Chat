@@ -48,7 +48,7 @@ async function findDepartments(
 	}));
 }
 
-export function findGuest(token: string): Promise<ILivechatVisitor | null> {
+export function findGuest(token: string, includeActivity = true): Promise<ILivechatVisitor | null> {
 	return LivechatVisitors.getVisitorByToken(token, {
 		projection: {
 			name: 1,
@@ -56,7 +56,7 @@ export function findGuest(token: string): Promise<ILivechatVisitor | null> {
 			token: 1,
 			visitorEmails: 1,
 			department: 1,
-			activity: 1,
+			...(includeActivity && { activity: 1 }),
 		},
 	});
 }

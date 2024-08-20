@@ -152,18 +152,6 @@ class LivechatClass {
 		this.webhookLogger = this.logger.section('Webhook');
 	}
 
-	findGuest(token: string) {
-		return LivechatVisitors.getVisitorByToken(token, {
-			projection: {
-				name: 1,
-				username: 1,
-				token: 1,
-				visitorEmails: 1,
-				department: 1,
-			},
-		});
-	}
-
 	enabled() {
 		return Boolean(settings.get('Livechat_enabled'));
 	}
