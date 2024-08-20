@@ -191,7 +191,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		readThreads = false,
 		alert = false,
 		options: FindOptions<ISubscription> = {},
-	): ReturnType<BaseRaw<ISubscription>['update']> {
+	): ReturnType<BaseRaw<ISubscription>['updateOne']> {
 		const query: Filter<ISubscription> = {
 			rid,
 			'u._id': uid,

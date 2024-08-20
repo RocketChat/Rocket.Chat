@@ -41,7 +41,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		readThreads?: boolean,
 		alert?: boolean,
 		options?: FindOptions<ISubscription>,
-	): ReturnType<IBaseModel<ISubscription>['update']>;
+	): ReturnType<IBaseModel<ISubscription>['updateOne']>;
 
 	removeRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid: IRoom['_id']): Promise<UpdateResult>;
 

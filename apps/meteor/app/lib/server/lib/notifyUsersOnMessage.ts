@@ -7,7 +7,11 @@ import moment from 'moment';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
-import { notifyOnSubscriptionChanged, notifyOnSubscriptionChangedByRoomIdAndUserIds } from './notifyListener';
+import {
+	notifyOnSubscriptionChanged,
+	notifyOnSubscriptionChangedByRoomIdAndUserId,
+	notifyOnSubscriptionChangedByRoomIdAndUserIds,
+} from './notifyListener';
 
 function messageContainsHighlight(message: IMessage, highlights: string[]): boolean {
 	if (!highlights || highlights.length === 0) return false;
@@ -135,10 +139,18 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 		await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1);
 	}
 
+	// update subscriptions of other members of the room
 	await Promise.all([
 		Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id),
 		Subscriptions.setOpenForRoomIdExcludingUserId(message.rid, message.u._id),
 	]);
+
+	// update subscription of the message sender
+	await Subscriptions.setAsReadByRoomIdAndUserId(message.rid, message.u._id);
+	const setAsReadResponse = await Subscriptions.setAsReadByRoomIdAndUserId(message.rid, message.u._id);
+	if (setAsReadResponse.modifiedCount) {
+		void notifyOnSubscriptionChangedByRoomIdAndUserId(message.rid, message.u._id);
+	}
 }
 
 export async function updateThreadUsersSubscriptions(message: IMessage, replies: IUser['_id'][]): Promise<void> {
