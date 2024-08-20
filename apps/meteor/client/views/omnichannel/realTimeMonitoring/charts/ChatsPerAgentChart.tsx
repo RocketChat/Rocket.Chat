@@ -24,7 +24,7 @@ const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: Tran
 	});
 
 type ChatsPerAgentChartProps = {
-	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/charts/timings'>;
+	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/charts/chats-per-agent'>;
 	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
 };
 

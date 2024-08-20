@@ -3819,12 +3819,12 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/analytics/dashboards/charts/chats-per-agent': {
 		GET: (params: GETDashboardTotalizers) => {
-			[k: string]: { open: number; closed: number; onhold: number };
+			[k: string]: { open: number; closed: number; onhold: number } & { success: boolean };
 		};
 	};
 	'/v1/livechat/analytics/dashboards/charts/chats-per-department': {
 		GET: (params: GETDashboardTotalizers) => {
-			[k: string]: { open: number; closed: number };
+			[k: string]: { open: number; closed: number } & { success: boolean };
 		};
 	};
 	'/v1/livechat/analytics/dashboards/charts/timings': {
