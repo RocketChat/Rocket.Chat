@@ -6,8 +6,8 @@ import { isGETAgentNextToken, isPOSTLivechatAgentStatusProps } from '@rocket.cha
 import { API } from '../../../../api/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
-import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 import { RoutingManager } from '../../lib/RoutingManager';
+import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
 	async get() {
