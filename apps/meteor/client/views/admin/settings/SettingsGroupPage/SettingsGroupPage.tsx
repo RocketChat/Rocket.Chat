@@ -6,12 +6,11 @@ import { useToastMessageDispatch, useSettingsDispatch, useSettings, useTranslati
 import type { ReactNode, FormEvent, MouseEvent } from 'react';
 import React, { useMemo, memo } from 'react';
 
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
-import type { EditableSetting } from '../EditableSettingsContext';
-import { useEditableSettingsDispatch, useEditableSettings } from '../EditableSettingsContext';
-import GroupPageSkeleton from './GroupPageSkeleton';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../../components/Page';
+import type { EditableSetting } from '../../EditableSettingsContext';
+import { useEditableSettingsDispatch, useEditableSettings } from '../../EditableSettingsContext';
 
-type GroupPageProps = {
+type SettingsGroupPageProps = {
 	children: ReactNode;
 	headerButtons?: ReactNode;
 	onClickBack?: () => void;
@@ -22,7 +21,7 @@ type GroupPageProps = {
 	isCustom?: boolean;
 };
 
-const GroupPage = ({
+const SettingsGroupPage = ({
 	children = undefined,
 	headerButtons = undefined,
 	onClickBack,
@@ -31,7 +30,7 @@ const GroupPage = ({
 	i18nDescription = undefined,
 	tabs = undefined,
 	isCustom = false,
-}: GroupPageProps) => {
+}: SettingsGroupPageProps) => {
 	const t = useTranslation();
 	const dispatch = useSettingsDispatch();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -133,7 +132,6 @@ const GroupPage = ({
 		return <Page>{children}</Page>;
 	}
 
-	// The settings
 	const isTranslationKey = (key: string): key is TranslationKey => (key as TranslationKey) !== undefined;
 
 	return (
@@ -178,6 +176,4 @@ const GroupPage = ({
 	);
 };
 
-export default Object.assign(memo(GroupPage), {
-	Skeleton: GroupPageSkeleton,
-});
+export default memo(SettingsGroupPage);
