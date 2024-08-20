@@ -4,7 +4,7 @@ import React from 'react';
 
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditableSettingsProvider from './EditableSettingsProvider';
-import GroupSelector from './GroupSelector';
+import SettingsGroupSelector from './SettingsGroupSelector';
 import SettingsPage from './SettingsPage';
 
 export const SettingsRoute = (): ReactElement => {
@@ -22,7 +22,7 @@ export const SettingsRoute = (): ReactElement => {
 
 	return (
 		<EditableSettingsProvider>
-			<GroupSelector groupId={groupId} onClickBack={() => router.navigate('/admin/settings')} />
+			<SettingsGroupSelector groupId={groupId} onClickBack={() => router.navigate('/admin/settings')} />
 		</EditableSettingsProvider>
 	);
 };
