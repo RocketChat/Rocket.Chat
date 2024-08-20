@@ -215,4 +215,8 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 	async stopped(): Promise<void> {
 		return super.stopped();
 	}
+
+	async deactivateRemoteUser(userId: string) {
+		return super.deactivateRemoteUser(userId);
+	}
 }
