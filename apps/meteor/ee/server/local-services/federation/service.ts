@@ -3,6 +3,7 @@ import type {
 	IFederationJoinExternalPublicRoomInput,
 	FederationConfigurationStatus,
 } from '@rocket.chat/core-services';
+import type { IRoom } from '@rocket.chat/core-typings';
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
 
 import { AbstractFederationService } from '../../../../server/services/federation/service';
@@ -234,5 +235,9 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 
 	public async configurationStatus(): Promise<FederationConfigurationStatus> {
 		return super.configurationStatus();
+	}
+
+	public async beforeCreateRoom(room: Partial<IRoom>) {
+		return super.beforeCreateRoom(room);
 	}
 }
