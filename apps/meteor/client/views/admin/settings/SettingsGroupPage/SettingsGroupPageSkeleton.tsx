@@ -1,10 +1,10 @@
 import { Accordion, Box, Skeleton } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 
-import { Page, PageHeader, PageContent } from '../../../components/Page';
-import Section from './Section';
+import { Page, PageHeader, PageContent } from '../../../../components/Page';
+import SettingsSectionSkeleton from '../SettingsSection/SettingsSectionSkeleton';
 
-const GroupPageSkeleton = () => (
+const SettingsGroupPageSkeleton = () => (
 	<Page>
 		<PageHeader title={<Skeleton style={{ width: '20rem' }} />} />
 		<PageContent>
@@ -15,11 +15,11 @@ const GroupPageSkeleton = () => (
 					<Skeleton width='75%' />
 				</Box>
 				<Accordion className='page-settings'>
-					<Section.Skeleton />
+					<SettingsSectionSkeleton />
 				</Accordion>
 			</Box>
 		</PageContent>
 	</Page>
 );
 
-export default GroupPageSkeleton;
+export default SettingsGroupPageSkeleton;
