@@ -47,6 +47,7 @@ const root = mockAppRoot()
 
 it('should only enable "Free Extension Numbers" field if username is informed', async () => {
 	render(<AssignExtensionModal onClose={() => undefined} />, {
+		legacyRoot: true,
 		wrapper: root.build(),
 	});
 
@@ -62,6 +63,7 @@ it('should only enable "Free Extension Numbers" field if username is informed', 
 
 it('should only enable "Associate" button both username and extension is informed', async () => {
 	render(<AssignExtensionModal onClose={() => undefined} />, {
+		legacyRoot: true,
 		wrapper: root.build(),
 	});
 
@@ -83,6 +85,7 @@ it('should only enable "Associate" button both username and extension is informe
 it('should call onClose when extension is associated', async () => {
 	const closeFn = jest.fn();
 	render(<AssignExtensionModal onClose={closeFn} />, {
+		legacyRoot: true,
 		wrapper: root.build(),
 	});
 
@@ -103,6 +106,7 @@ it('should call onClose when extension is associated', async () => {
 it('should call onClose when cancel button is clicked', () => {
 	const closeFn = jest.fn();
 	render(<AssignExtensionModal onClose={closeFn} />, {
+		legacyRoot: true,
 		wrapper: root.build(),
 	});
 
@@ -113,6 +117,7 @@ it('should call onClose when cancel button is clicked', () => {
 it('should call onClose when cancel button is clicked', () => {
 	const closeFn = jest.fn();
 	render(<AssignExtensionModal onClose={closeFn} />, {
+		legacyRoot: true,
 		wrapper: root.build(),
 	});
 

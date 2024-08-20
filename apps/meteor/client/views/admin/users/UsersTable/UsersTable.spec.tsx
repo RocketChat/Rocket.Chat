@@ -34,6 +34,7 @@ it('should not render "Voice Call Extension" column when VoIP is disabled', () =
 			roleData={undefined}
 		/>,
 		{
+			legacyRoot: true,
 			wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', false).build(),
 		},
 	);
@@ -57,6 +58,7 @@ it('should render "Remove_Association" button when user has a associated extensi
 			roleData={undefined}
 		/>,
 		{
+			legacyRoot: true,
 			wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', true).build(),
 		},
 	);
@@ -80,6 +82,7 @@ it('should render "Associate_Extension" button when user has no associated exten
 			roleData={undefined}
 		/>,
 		{
+			legacyRoot: true,
 			wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', true).build(),
 		},
 	);
