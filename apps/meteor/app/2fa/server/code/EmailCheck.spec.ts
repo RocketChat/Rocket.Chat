@@ -61,8 +61,7 @@ describe('EmailCheck', () => {
 	});
 
 	it('should return EmailCheck is not enabled for a OAuth user with setting being false', () => {
-		settingsMock.onFirstCall().returns(true);
-		settingsMock.onSecondCall().returns(true);
+		settingsMock.returns(true);
 
 		const isEmail2FAEnabled = emailCheck.isEnabled(OAuthUserMock);
 
