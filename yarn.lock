@@ -8463,9 +8463,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/api-client@workspace:^, @rocket.chat/api-client@workspace:ee/packages/api-client":
+"@rocket.chat/api-client@workspace:^, @rocket.chat/api-client@workspace:packages/api-client":
   version: 0.0.0-use.local
-  resolution: "@rocket.chat/api-client@workspace:ee/packages/api-client"
+  resolution: "@rocket.chat/api-client@workspace:packages/api-client"
   dependencies:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
@@ -8657,9 +8657,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/ddp-client@workspace:^, @rocket.chat/ddp-client@workspace:ee/packages/ddp-client, @rocket.chat/ddp-client@workspace:~":
+"@rocket.chat/ddp-client@workspace:^, @rocket.chat/ddp-client@workspace:packages/ddp-client, @rocket.chat/ddp-client@workspace:~":
   version: 0.0.0-use.local
-  resolution: "@rocket.chat/ddp-client@workspace:ee/packages/ddp-client"
+  resolution: "@rocket.chat/ddp-client@workspace:packages/ddp-client"
   dependencies:
     "@rocket.chat/api-client": "workspace:^"
     "@rocket.chat/core-typings": "workspace:~"
