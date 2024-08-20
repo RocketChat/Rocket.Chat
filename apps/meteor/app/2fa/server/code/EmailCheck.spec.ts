@@ -3,13 +3,9 @@ import { describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const isOAuthUserMock = sinon.stub();
 const settingsMock = sinon.stub();
 
 const { EmailCheck } = proxyquire.noCallThru().load('./EmailCheck', {
-	'@rocket.chat/core-typings': {
-		isOAuthUser: isOAuthUserMock,
-	},
 	'@rocket.chat/models': {
 		Users: {},
 	},
@@ -43,14 +39,12 @@ const OAuthUserMock = { services: { google: {} }, emails: [{ email: 'abc@gmail.c
 describe('EmailCheck', () => {
 	let emailCheck: typeof EmailCheck;
 	beforeEach(() => {
-		isOAuthUserMock.reset();
 		settingsMock.reset();
 
 		emailCheck = new EmailCheck();
 	});
 
 	it('should return EmailCheck is enabled for a normal user', () => {
-		isOAuthUserMock.returns(false);
 		settingsMock.returns(true);
 
 		const isEmail2FAEnabled = emailCheck.isEnabled(normalUserMock);
@@ -59,7 +53,6 @@ describe('EmailCheck', () => {
 	});
 
 	it('should return EmailCheck is not enabled for a normal user with unverified email', () => {
-		isOAuthUserMock.returns(false);
 		settingsMock.returns(true);
 
 		const isEmail2FAEnabled = emailCheck.isEnabled(normalUserWithUnverifiedEmailMock);
@@ -68,7 +61,6 @@ describe('EmailCheck', () => {
 	});
 
 	it('should return EmailCheck is not enabled for a OAuth user with setting being false', () => {
-		isOAuthUserMock.returns(false);
 		settingsMock.onFirstCall().returns(true);
 		settingsMock.onSecondCall().returns(true);
 
