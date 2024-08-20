@@ -3,7 +3,7 @@ import DOMPurify from 'dompurify';
 
 import { sdk } from '../../../../../app/utils/client/lib/SDKClient';
 
-const OmnichannelRoomIcon = new (class extends Emitter {
+const OmnichannelRoomIconManager = new (class extends Emitter {
 	icons = new Map<string, string>();
 
 	constructor() {
@@ -23,7 +23,7 @@ const OmnichannelRoomIcon = new (class extends Emitter {
 		sdk.rest
 			.send(`/apps/public/${appId}/get-sidebar-icon?icon=${icon}`, 'GET')
 			.then((response: any) => {
-				response.text().then((text: any) => {
+				response.text().then((text: string) => {
 					this.icons.set(
 						`${appId}-${icon}`,
 						DOMPurify.sanitize(text, {
@@ -44,4 +44,4 @@ const OmnichannelRoomIcon = new (class extends Emitter {
 	}
 })();
 
-export default OmnichannelRoomIcon;
+export default OmnichannelRoomIconManager;
