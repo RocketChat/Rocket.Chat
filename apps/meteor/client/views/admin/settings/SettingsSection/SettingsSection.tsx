@@ -6,29 +6,30 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useMemo } from 'react';
 
-import { useEditableSettings, useEditableSettingsDispatch } from '../EditableSettingsContext';
-import SectionSkeleton from './SectionSkeleton';
-import Setting from './Setting';
+import { useEditableSettings, useEditableSettingsDispatch } from '../../EditableSettingsContext';
+import Setting from '../Setting';
 
-type SectionProps = {
+type SettingsSectionProps = {
 	groupId: string;
 	hasReset?: boolean;
 	sectionName: string;
-	tabName?: string;
+	currentTab?: string;
 	solo: boolean;
 	help?: ReactNode;
 	children?: ReactNode;
 };
 
-function Section({ groupId, hasReset = true, sectionName, tabName = '', solo, help, children }: SectionProps): ReactElement {
+function SettingsSection({ groupId, hasReset = true, sectionName, currentTab, solo, help, children }: SettingsSectionProps): ReactElement {
+	const t = useTranslation();
+
 	const editableSettings = useEditableSettings(
 		useMemo(
 			() => ({
 				group: groupId,
 				section: sectionName,
-				tab: tabName,
+				tab: currentTab,
 			}),
-			[groupId, sectionName, tabName],
+			[groupId, sectionName, currentTab],
 		),
 	);
 
@@ -65,8 +66,6 @@ function Section({ groupId, hasReset = true, sectionName, tabName = '', solo, he
 		);
 	});
 
-	const t = useTranslation();
-
 	const handleResetSectionClick = (): void => {
 		reset();
 	};
@@ -82,7 +81,6 @@ function Section({ groupId, hasReset = true, sectionName, tabName = '', solo, he
 					{help}
 				</Box>
 			)}
-
 			<FieldGroup>
 				{editableSettings.map(
 					(setting) => isSetting(setting) && <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />,
@@ -104,6 +102,4 @@ function Section({ groupId, hasReset = true, sectionName, tabName = '', solo, he
 	);
 }
 
-export default Object.assign(Section, {
-	Skeleton: SectionSkeleton,
-});
+export default SettingsSection;
