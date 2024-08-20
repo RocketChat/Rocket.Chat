@@ -6,10 +6,9 @@ import { useSettingStructure, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
-import MarkdownText from '../../../components/MarkdownText';
-import { useEditableSetting, useEditableSettingsDispatch, useIsEnterprise } from '../EditableSettingsContext';
+import MarkdownText from '../../../../components/MarkdownText';
+import { useEditableSetting, useEditableSettingsDispatch, useIsEnterprise } from '../../EditableSettingsContext';
 import MemoizedSetting from './MemoizedSetting';
-import SettingSkeleton from './SettingSkeleton';
 
 type SettingProps = {
 	className?: string;
@@ -165,7 +164,4 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	);
 }
 
-export default Object.assign(Setting, {
-	Memoized: MemoizedSetting,
-	Skeleton: SettingSkeleton,
-});
+export default Setting;

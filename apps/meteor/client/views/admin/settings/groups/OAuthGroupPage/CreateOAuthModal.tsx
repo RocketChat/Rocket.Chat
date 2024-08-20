@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEvent, SyntheticEvent } from 'react';
 import React, { useState } from 'react';
 
-import GenericModal from '../../../../components/GenericModal';
+import GenericModal from '../../../../../components/GenericModal';
 
 type CreateOAuthModalProps = {
 	onConfirm: (text: string) => Promise<void>;
