@@ -13,7 +13,7 @@ API.v1.addRoute(
 	{ validateParams: isGETLivechatConfigParams },
 	{
 		async get() {
-			const enabled = serverSettings.get('Livechat_enabled');
+			const enabled = serverSettings.get<boolean>('Livechat_enabled');
 
 			if (!enabled) {
 				return API.v1.success({ config: { enabled: false } });
