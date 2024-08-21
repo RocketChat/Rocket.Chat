@@ -909,8 +909,8 @@ describe('LIVECHAT - dashboards', function () {
 			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 			roomId = response.room._id;
 
-			const delayInS = 4;
-			await sleep(delayInS * 1000);
+			const delayInSeconds = 4;
+			await sleep(delayInSeconds * 1000);
 
 			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
 
@@ -934,15 +934,15 @@ describe('LIVECHAT - dashboards', function () {
 			expect(agentData).to.have.property('name', agent.user.username);
 			expect(agentData).to.have.property('value');
 			originalBestFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
-			expect(originalBestFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(delayInS);
+			expect(originalBestFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(delayInSeconds);
 		});
 
 		it('should correctly calculate the best first response time for an agent and there are multiple first responses in the period', async () => {
 			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 			roomId = response.room._id;
 
-			const delayInS = 6;
-			await sleep(delayInS * 1000);
+			const delayInSeconds = 6;
+			await sleep(delayInSeconds * 1000);
 
 			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
 
