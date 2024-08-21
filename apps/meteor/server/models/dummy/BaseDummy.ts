@@ -53,6 +53,13 @@ export class BaseDummy<
 		return this.collectionName;
 	}
 
+	async findOneAndDelete(): Promise<ModifyResult<T>> {
+		return {
+			value: null,
+			ok: 1,
+		};
+	}
+
 	async findOneAndUpdate(): Promise<ModifyResult<T>> {
 		return {
 			value: null,
