@@ -62,7 +62,7 @@ export async function markRoomResponded(
 callbacks.add(
 	'afterOmnichannelSaveMessage',
 	async (message, { room, roomUpdater }) => {
-		if (!message || message.t || isEditedMessage(message) || isMessageFromVisitor(message) || isSystemMessage(message)) {
+		if (!message || isEditedMessage(message) || isMessageFromVisitor(message) || isSystemMessage(message)) {
 			return;
 		}
 
