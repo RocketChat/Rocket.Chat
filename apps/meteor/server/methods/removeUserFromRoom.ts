@@ -1,6 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Message, Team } from '@rocket.chat/core-services';
+import { Message, Team, Room } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
@@ -58,6 +58,8 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 	}
 
 	const removedUser = await Users.findOneByUsernameIgnoringCase(data.username);
+
+	await Room.beforeUserRemoved(room);
 
 	if (!canKickAnyUser) {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, {
