@@ -1,6 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { useFeaturePreview } from '@rocket.chat/ui-client';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React, { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,47 +31,49 @@ const RoomOpener = ({ type, reference }: RoomOpenerProps): ReactElement => {
 	const { data, error, isSuccess, isError, isLoading } = useOpenRoom({ type, reference });
 	const { t } = useTranslation();
 
-	const isSidepanelFeatureEnabled = useFeaturePreview('sidepanelNavigation');
-
 	return (
-		<Suspense fallback={<RoomSkeleton />}>
-			{isLoading && <RoomSkeleton />}
-			{isSuccess && (
-				<RoomProvider rid={data.rid}>
-					<Box display='flex' w='full' h='full'>
-						{!isDirectMessageRoom(type) && isSidepanelFeatureEnabled && <RoomSidePanel rid={data.rid} />}
+		<Box display='flex' w='full' h='full'>
+			<FeaturePreview feature='sidepanelNavigation'>
+				<FeaturePreviewOff>{null}</FeaturePreviewOff>
+				<FeaturePreviewOn>{!isDirectMessageRoom(type) && <RoomSidePanel />}</FeaturePreviewOn>
+			</FeaturePreview>
+
+			<Suspense fallback={<RoomSkeleton />}>
+				{isLoading && <RoomSkeleton />}
+				{isSuccess && (
+					<RoomProvider rid={data.rid}>
 						<Room />
-					</Box>
-				</RoomProvider>
-			)}
-			{isError &&
-				(() => {
-					if (error instanceof OldUrlRoomError) {
-						return <RoomSkeleton />;
-					}
+					</RoomProvider>
+				)}
+				{isError &&
+					(() => {
+						if (error instanceof OldUrlRoomError) {
+							return <RoomSkeleton />;
+						}
 
-					if (error instanceof RoomNotFoundError) {
-						return <RoomNotFound />;
-					}
+						if (error instanceof RoomNotFoundError) {
+							return <RoomNotFound />;
+						}
 
-					if (error instanceof NotAuthorizedError) {
-						return <NotAuthorizedPage />;
-					}
+						if (error instanceof NotAuthorizedError) {
+							return <NotAuthorizedPage />;
+						}
 
-					return (
-						<RoomLayout
-							header={<Header />}
-							body={
-								<States>
-									<StatesIcon name='circle-exclamation' variation='danger' />
-									<StatesTitle>{t('core.Error')}</StatesTitle>
-									<StatesSubtitle>{getErrorMessage(error)}</StatesSubtitle>
-								</States>
-							}
-						/>
-					);
-				})()}
-		</Suspense>
+						return (
+							<RoomLayout
+								header={<Header />}
+								body={
+									<States>
+										<StatesIcon name='circle-exclamation' variation='danger' />
+										<StatesTitle>{t('core.Error')}</StatesTitle>
+										<StatesSubtitle>{getErrorMessage(error)}</StatesSubtitle>
+									</States>
+								}
+							/>
+						);
+					})()}
+			</Suspense>
+		</Box>
 	);
 };
 
