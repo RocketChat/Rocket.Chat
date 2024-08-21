@@ -4,7 +4,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { notifyOnSubscriptionChanged } from '../lib/notifyListener';
 import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 
-const bulkRoomCleanUp = async (rids: string[]): Promise<void> => {
+const bulkRoomCleanUp = async (rids: string[]): Promise<unknown> => {
 	// no bulk deletion for files
 	await Promise.all(rids.map((rid) => FileUpload.removeFilesByRoomId(rid)));
 
