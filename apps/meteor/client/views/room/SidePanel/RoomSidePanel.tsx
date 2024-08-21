@@ -1,7 +1,8 @@
 /* eslint-disable react/no-multi-comp */
-import type { IDiscussionMessage, IRoom, ITeam } from '@rocket.chat/core-typings';
+import type { IRoom, ITeam } from '@rocket.chat/core-typings';
 import { SidePanel, SidePanelList } from '@rocket.chat/fuselage';
-import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useTranslation, /* useUserId, */ useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import React, { memo, useMemo } from 'react';
 
 import GenericError from '../../../components/GenericError';
@@ -10,7 +11,7 @@ import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { useTeamsChannelList } from '../../teams/contextualBar/channels/hooks/useTeamsChannelList';
-import { useDiscussionsList } from '../contextualBar/Discussions/useDiscussionsList';
+// import { useDiscussionsList } from '../contextualBar/Discussions/useDiscussionsList';
 import RoomSidePanelLoading from './RoomSidePanelLoading';
 import RoomSidePanelItem from './SidePanelItem';
 
@@ -35,15 +36,8 @@ const shouldShowChannels = (data: DataResult) => data?.room?.sidepanel?.items.in
 
 const RoomSidePanelWithData = ({ parentRid, openedRoom }: { parentRid: string; openedRoom: string }) => {
 	const t = useTranslation();
-	const uid = useUserId();
+	// const uid = useUserId();
 	const { data, isSuccess, isError } = useRoomInfoEndpoint(parentRid);
-
-	const dicsussionOptions = useMemo(
-		() => ({
-			rid: parentRid,
-		}),
-		[parentRid],
-	);
 
 	const channelOptions = useMemo(
 		() =>
@@ -59,8 +53,24 @@ const RoomSidePanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 	// TODO: get last message from discussion
 	// TODO: get discussion avatar
 	// TODO: get discussion unread messages
-	const { discussionsList } = useDiscussionsList(dicsussionOptions, uid);
-	const { phase, error, items: discussions } = useRecordList<IDiscussionMessage>(discussionsList);
+
+	// const dicsussionOptions = useMemo(
+	// 	() => ({
+	// 		rid: parentRid,
+	// 	}),
+	// 	[parentRid],
+	// );
+	// const { discussionsList } = useDiscussionsList(dicsussionOptions, uid);
+	// const { phase, error, items: discussions } = useRecordList<IDiscussionMessage>(discussionsList);
+
+	// New discussions req
+	const getDiscussions2 = useEndpoint('GET', '/v1/chat.getTeamDiscussions');
+
+	const {
+		data: discussionsData,
+		isError: discussionError,
+		isLoading: discussionLoading,
+	} = useQuery(['roomId', parentRid], async () => getDiscussions2({ roomId: parentRid }));
 
 	// IMPROVE: only fetch channels IF parent room has sidepanel.items with channels
 	// TODO: get channel avatar
@@ -68,7 +78,7 @@ const RoomSidePanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 	const { teamsChannelList } = useTeamsChannelList(channelOptions);
 	const { phase: channelsPhase, error: channelsError, items: channels } = useRecordList(teamsChannelList);
 
-	if (isError || error || channelsError || !isSuccess) {
+	if (isError || discussionError || channelsError || !isSuccess) {
 		return (
 			<SidePanel>
 				<GenericError />
@@ -78,7 +88,7 @@ const RoomSidePanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 	if (isSuccess && !data.room?.sidepanel) {
 		return null;
 	}
-	if (phase === AsyncStatePhase.LOADING || channelsPhase === AsyncStatePhase.LOADING) {
+	if (discussionLoading || channelsPhase === AsyncStatePhase.LOADING) {
 		return <RoomSidePanelLoading />;
 	}
 
@@ -87,15 +97,8 @@ const RoomSidePanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 			<SidePanelList>
 				<RoomSidePanelItem id={parentRid} name={t('General')} icon={data.room?.t === 'p' ? 'team-lock' : 'team'} openedRoom={openedRoom} />
 				{shouldShowDiscussions(data) &&
-					discussions.map((discussion) => (
-						<RoomSidePanelItem
-							key={discussion.drid}
-							id={discussion.drid}
-							name={discussion.msg}
-							icon='baloons'
-							openedRoom={openedRoom}
-							{...discussion}
-						/>
+					discussionsData.messages.map(({ drid, msg }) => (
+						<RoomSidePanelItem key={drid} id={drid} name={msg} icon='baloons' openedRoom={openedRoom} />
 					))}
 				{shouldShowChannels(data) &&
 					channels.map((channel) => (

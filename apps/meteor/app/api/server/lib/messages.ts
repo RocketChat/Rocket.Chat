@@ -119,3 +119,21 @@ export async function findDiscussionsFromRoom({
 		total,
 	};
 }
+
+export async function findTeamDiscussions({ uid, roomId }: { uid: string; roomId: string }): Promise<{
+	messages: IMessage[];
+}> {
+	const room = await Rooms.findOneById(roomId);
+
+	if (!room || !(await canAccessRoomAsync(room, { _id: uid }))) {
+		throw new Error('error-not-allowed');
+	}
+
+	const cursor = Messages.findDiscussionsByRoom(roomId);
+
+	const [messages] = await Promise.all([cursor.toArray()]);
+
+	return {
+		messages,
+	};
+}

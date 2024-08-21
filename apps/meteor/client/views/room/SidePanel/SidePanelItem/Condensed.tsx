@@ -4,7 +4,6 @@ import React, { memo } from 'react';
 import type { RoomSidePanelItemProps } from './RoomSidePanelItem';
 
 type CondensedProps = RoomSidePanelItemProps & {
-	openedRoom: string;
 	onClick: (id: string | undefined) => void;
 };
 

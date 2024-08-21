@@ -22,7 +22,7 @@ import { MessageTypes } from '../../../ui-utils/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
+import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages, findTeamDiscussions } from '../lib/messages';
 
 API.v1.addRoute(
 	'chat.delete',
@@ -803,6 +803,24 @@ API.v1.addRoute(
 					count,
 					sort,
 				},
+			});
+			return API.v1.success(messages);
+		},
+	},
+);
+API.v1.addRoute(
+	'chat.getTeamDiscussions',
+	{ authRequired: true },
+	{
+		async get() {
+			const { roomId } = this.queryParams;
+
+			if (!roomId) {
+				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
+			}
+			const messages = await findTeamDiscussions({
+				uid: this.userId,
+				roomId,
 			});
 			return API.v1.success(messages);
 		},

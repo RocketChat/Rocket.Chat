@@ -16,7 +16,6 @@ import React, { memo } from 'react';
 import type { RoomSidePanelItemProps } from './RoomSidePanelItem';
 
 type ExtendedProps = RoomSidePanelItemProps & {
-	openedRoom: string;
 	onClick: (id: string | undefined) => void;
 };
 

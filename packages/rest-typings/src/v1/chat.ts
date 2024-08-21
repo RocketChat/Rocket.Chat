@@ -1,4 +1,12 @@
-import type { IMessage, IRoom, MessageAttachment, ReadReceipt, OtrSystemMessages, MessageUrl } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IRoom,
+	MessageAttachment,
+	ReadReceipt,
+	OtrSystemMessages,
+	MessageUrl,
+	IDiscussionMessage,
+} from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -206,6 +214,10 @@ type ChatGetDiscussions = PaginatedRequest<{
 	roomId: IRoom['_id'];
 	text?: string;
 }>;
+
+type ChatGetTeamDiscussions = {
+	roomId: IRoom['_id'];
+};
 
 const ChatGetDiscussionsSchema = {
 	type: 'object',
@@ -881,6 +893,11 @@ export type ChatEndpoints = {
 		GET: (params: ChatGetDiscussions) => {
 			messages: IMessage[];
 			total: number;
+		};
+	};
+	'/v1/chat.getTeamDiscussions': {
+		GET: (params: ChatGetTeamDiscussions) => {
+			messages: IDiscussionMessage[];
 		};
 	};
 	'/v1/chat.getThreadsList': {

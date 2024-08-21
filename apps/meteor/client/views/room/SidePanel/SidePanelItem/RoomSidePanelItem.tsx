@@ -1,4 +1,3 @@
-import type { IRoom, IDiscussionMessage } from '@rocket.chat/core-typings';
 import type { Keys } from '@rocket.chat/icons';
 import React, { memo, useCallback } from 'react';
 
@@ -10,7 +9,7 @@ export type RoomSidePanelItemProps = {
 	name: string | undefined;
 	icon: Keys;
 	openedRoom: string | undefined;
-} & (Partial<IRoom> | Partial<IDiscussionMessage>);
+};
 
 const RoomSidePanelItem = (props: RoomSidePanelItemProps) => {
 	const SidepanelItem = useTemplateByViewMode();
