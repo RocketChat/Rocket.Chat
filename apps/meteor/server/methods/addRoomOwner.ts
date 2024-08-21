@@ -1,15 +1,16 @@
 import { api, Message, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
+import { isFederationReady, isFederationEnabled, FederationMatrixInvalidConfigurationError } from '../services/federation/utils';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		addRoomOwner(rid: IRoom['_id'], userId: IUser['_id']): boolean;
@@ -36,10 +37,16 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!(await hasPermissionAsync(uid, 'set-owner', rid)) && !isRoomFederated(room)) {
+		const isFederated = isRoomFederated(room);
+
+		if (!(await hasPermissionAsync(uid, 'set-owner', rid)) && !isFederated) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'addRoomOwner',
 			});
+		}
+
+		if (isFederated && (!isFederationEnabled() || !isFederationReady())) {
+			throw new FederationMatrixInvalidConfigurationError('unable to change room owners');
 		}
 
 		const user = await Users.findOneById(userId);

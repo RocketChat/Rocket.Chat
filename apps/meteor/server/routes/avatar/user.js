@@ -1,8 +1,12 @@
 import { Avatars, Users } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { FileUpload } from '../../../app/file-upload/server';
 import { settings } from '../../../app/settings/server';
 import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
+
+const MAX_USER_SVG_AVATAR_SIZE = 1024;
+const MIN_USER_SVG_AVATAR_SIZE = 16;
 
 // request /avatar/@name forces returning the svg
 export const userAvatar = async function (req, res) {
@@ -14,7 +18,10 @@ export const userAvatar = async function (req, res) {
 		return;
 	}
 
-	const avatarSize = req.query.size && parseInt(req.query.size);
+	let avatarSize = req.query.size && parseInt(req.query.size);
+	if (avatarSize) {
+		avatarSize = Math.min(Math.max(avatarSize, MIN_USER_SVG_AVATAR_SIZE), MAX_USER_SVG_AVATAR_SIZE);
+	}
 
 	setCacheAndDispositionHeaders(req, res);
 
@@ -43,6 +50,13 @@ export const userAvatar = async function (req, res) {
 		res.setHeader('Content-Length', file.size);
 
 		return FileUpload.get(file, req, res);
+	}
+
+	if (settings.get('Accounts_AvatarExternalProviderUrl')) {
+		const response = await fetch(settings.get('Accounts_AvatarExternalProviderUrl').replace('{username}', requestUsername));
+		response.headers.forEach((value, key) => res.setHeader(key, value));
+		response.body.pipe(res);
+		return;
 	}
 
 	// if still using "letters fallback"

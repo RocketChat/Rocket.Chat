@@ -3,7 +3,7 @@ import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { slashCommands } from '../../app/utils/lib/slashCommand';
+import { slashCommands } from '../../app/utils/client/slashCommand';
 
 export const useAppSlashCommands = () => {
 	const queryClient = useQueryClient();

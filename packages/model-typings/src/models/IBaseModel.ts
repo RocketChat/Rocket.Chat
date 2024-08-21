@@ -22,6 +22,8 @@ import type {
 	WithId,
 } from 'mongodb';
 
+import type { Updater } from '../updater';
+
 export type DefaultFields<Base> = Record<keyof Base, 1> | Record<keyof Base, 0> | void;
 export type ResultFields<Base, Defaults> = Defaults extends void
 	? Base
@@ -48,6 +50,8 @@ export interface IBaseModel<
 	createIndexes(): Promise<string[] | void>;
 
 	getCollectionName(): string;
+	getUpdater(): Updater<T>;
+	updateFromUpdater(query: Filter<T>, updater: Updater<T>): Promise<UpdateResult>;
 
 	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>>;
 
