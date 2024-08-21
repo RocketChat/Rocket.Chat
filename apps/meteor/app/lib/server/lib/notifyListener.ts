@@ -483,11 +483,11 @@ export const notifyOnSubscriptionChangedByRoomIdAndUserId = withDbWatcherCheck(
 		uid: ISubscription['u']['_id'],
 		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
 	): Promise<void> => {
-		const subscriptions = Subscriptions.findByUserIdAndRoomIds(uid, [rid], { projection: subscriptionFields });
+		const cursor = Subscriptions.findByUserIdAndRoomIds(uid, [rid], { projection: subscriptionFields });
 
-		for await (const subscription of subscriptions) {
+		void cursor.forEach((subscription) => {
 			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		}
+		});
 	},
 );
 
@@ -509,33 +509,33 @@ export const notifyOnSubscriptionChangedByUserPreferences = withDbWatcherCheck(
 		originFieldNotEqualValue: 'user' | 'subscription',
 		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
 	): Promise<void> => {
-		const subscriptions = Subscriptions.findByUserPreferences(uid, notificationOriginField, originFieldNotEqualValue, {
+		const cursor = Subscriptions.findByUserPreferences(uid, notificationOriginField, originFieldNotEqualValue, {
 			projection: subscriptionFields,
 		});
 
-		for await (const subscription of subscriptions) {
+		void cursor.forEach((subscription) => {
 			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		}
+		});
 	},
 );
 
 export const notifyOnSubscriptionChangedByRoomId = withDbWatcherCheck(
 	async (rid: ISubscription['rid'], clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
-		const subscriptions = Subscriptions.findByRoomId(rid, { projection: subscriptionFields });
+		const cursor = Subscriptions.findByRoomId(rid, { projection: subscriptionFields });
 
-		for await (const subscription of subscriptions) {
+		void cursor.forEach((subscription) => {
 			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		}
+		});
 	},
 );
 
 export const notifyOnSubscriptionChangedByAutoTranslateAndUserId = withDbWatcherCheck(
 	async (uid: ISubscription['u']['_id'], clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
-		const subscriptions = Subscriptions.findByAutoTranslateAndUserId(uid, true, { projection: subscriptionFields });
+		const cursor = Subscriptions.findByAutoTranslateAndUserId(uid, true, { projection: subscriptionFields });
 
-		for await (const subscription of subscriptions) {
+		void cursor.forEach((subscription) => {
 			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		}
+		});
 	},
 );
 
@@ -545,31 +545,31 @@ export const notifyOnSubscriptionChangedByUserIdAndRoomType = withDbWatcherCheck
 		t: ISubscription['t'],
 		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
 	): Promise<void> => {
-		const subscriptions = Subscriptions.findByUserIdAndRoomType(uid, t, { projection: subscriptionFields });
+		const cursor = Subscriptions.findByUserIdAndRoomType(uid, t, { projection: subscriptionFields });
 
-		for await (const subscription of subscriptions) {
+		void cursor.forEach((subscription) => {
 			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		}
+		});
 	},
 );
 
 export const notifyOnSubscriptionChangedByNameAndRoomType = withDbWatcherCheck(
 	async (filter: Partial<Pick<ISubscription, 'name' | 't'>>, clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
-		const subscriptions = Subscriptions.findByNameAndRoomType(filter, { projection: subscriptionFields });
+		const cursor = Subscriptions.findByNameAndRoomType(filter, { projection: subscriptionFields });
 
-		for await (const subscription of subscriptions) {
+		void cursor.forEach((subscription) => {
 			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		}
+		});
 	},
 );
 
 export const notifyOnSubscriptionChangedByUserId = withDbWatcherCheck(
 	async (uid: ISubscription['u']['_id'], clientAction: Exclude<ClientAction, 'removed'> = 'updated'): Promise<void> => {
-		const subscriptions = Subscriptions.findByUserId(uid, { projection: subscriptionFields });
+		const cursor = Subscriptions.findByUserId(uid, { projection: subscriptionFields });
 
-		for await (const subscription of subscriptions) {
+		void cursor.forEach((subscription) => {
 			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		}
+		});
 	},
 );
 
@@ -579,10 +579,10 @@ export const notifyOnSubscriptionChangedByRoomIdAndUserIds = withDbWatcherCheck(
 		uids: ISubscription['u']['_id'][],
 		clientAction: Exclude<ClientAction, 'removed'> = 'updated',
 	): Promise<void> => {
-		const subscriptions = Subscriptions.findByRoomIdAndUserIds(rid, uids, { projection: subscriptionFields });
+		const cursor = Subscriptions.findByRoomIdAndUserIds(rid, uids, { projection: subscriptionFields });
 
-		for await (const subscription of subscriptions) {
+		void cursor.forEach((subscription) => {
 			void api.broadcast('watch.subscriptions', { clientAction, subscription });
-		}
+		});
 	},
 );
