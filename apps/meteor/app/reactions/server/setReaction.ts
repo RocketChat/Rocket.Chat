@@ -33,7 +33,7 @@ export const removeUserReaction = (message: IMessage, reaction: string, username
 };
 
 export async function setReaction(
-	room: Pick<IRoom, '_id' | 'muted' | 'unmuted' | 'reactWhenReadOnly' | 'ro' | 'lastMessage'>,
+	room: Pick<IRoom, '_id' | 'muted' | 'unmuted' | 'reactWhenReadOnly' | 'ro' | 'lastMessage' | 'federated'>,
 	user: IUser,
 	message: IMessage,
 	reaction: string,
@@ -138,10 +138,9 @@ export async function executeSetReaction(
 		return;
 	}
 
-	const room = await Rooms.findOneById<Pick<IRoom, '_id' | 'ro' | 'muted' | 'reactWhenReadOnly' | 'lastMessage' | 't' | 'prid'>>(
-		message.rid,
-		{ projection: { _id: 1, ro: 1, muted: 1, reactWhenReadOnly: 1, lastMessage: 1, t: 1, prid: 1 } },
-	);
+	const room = await Rooms.findOneById<
+		Pick<IRoom, '_id' | 'ro' | 'muted' | 'reactWhenReadOnly' | 'lastMessage' | 't' | 'prid' | 'federated'>
+	>(message.rid, { projection: { _id: 1, ro: 1, muted: 1, reactWhenReadOnly: 1, lastMessage: 1, t: 1, prid: 1, federated: 1 } });
 	if (!room) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 	}
