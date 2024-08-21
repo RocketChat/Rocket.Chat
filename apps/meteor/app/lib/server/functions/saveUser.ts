@@ -342,7 +342,7 @@ const saveNewUser = async function (userData: ICreateUserParams, sendPassword: b
 };
 
 export const saveUser = async function (userId: IUser['_id'], userData: ISaveUserDataParams) {
-	const oldUserData = '_id' in userData && userData._id && (await Users.findOneById(userData._id));
+	const oldUserData = isUpdateUserParams(userData) && (await Users.findOneById(userData._id));
 	if (oldUserData && isUserFederated(oldUserData)) {
 		throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
 	}
@@ -366,7 +366,7 @@ export const saveUser = async function (userId: IUser['_id'], userData: ISaveUse
 		delete userData.setRandomPassword;
 	}
 
-	if (!('_id' in userData) || !userData._id) {
+	if (!isUpdateUserParams(userData)) {
 		return saveNewUser(userData as ICreateUserParams, sendPassword);
 	}
 
