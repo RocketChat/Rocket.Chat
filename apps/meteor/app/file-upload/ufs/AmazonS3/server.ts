@@ -1,3 +1,4 @@
+import type { Readable } from 'stream';
 import stream from 'stream';
 
 import { GetObjectCommand, S3 } from '@aws-sdk/client-s3';
@@ -5,6 +6,7 @@ import type { S3ClientConfig } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
+import type { SdkStream } from '@smithy/types';
 import { check } from 'meteor/check';
 import type { OptionalId } from 'mongodb';
 import _ from 'underscore';
@@ -59,12 +61,18 @@ class AmazonS3Store extends UploadFS.Store {
 
 		const classOptions = options;
 
+		const { accessKeyId, secretAccessKey } = classOptions.connection;
+
+		if (!accessKeyId || !secretAccessKey) {
+			throw new Error('AWS credentials missing');
+		}
+
 		const s3Config: S3ClientConfig = {
 			region: options.connection.region,
 			endpoint: options.connection.endpoint,
 			credentials: {
-				accessKeyId: options.connection.accessKeyId,
-				secretAccessKey: options.connection.secretAccessKey,
+				accessKeyId,
+				secretAccessKey,
 			},
 			forcePathStyle: options.connection.s3ForcePathStyle,
 		};
@@ -168,7 +176,11 @@ class AmazonS3Store extends UploadFS.Store {
 			}
 
 			const response = await s3.getObject(params);
-			return response.Body;
+			if (!response.Body) {
+				throw new Error('S3 object not found');
+			}
+
+			return response.Body as SdkStream<Readable>;
 		};
 
 		/**
