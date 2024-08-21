@@ -258,7 +258,7 @@ describe('[Teams]', () => {
 				.expect(400);
 		});
 
-		it('should delete a team if an error occurs when creating a room for it', async () => {
+		it('should not create a team with no associated room', async () => {
 			const teamName = 'invalid*team*name';
 
 			await request

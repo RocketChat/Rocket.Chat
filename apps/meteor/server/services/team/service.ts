@@ -79,9 +79,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		try {
 			let roomId = room.id;
-			if (roomId) {
-				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
-			} else {
+			if (!roomId) {
 				await getValidRoomName(team.name.trim(), undefined);
 				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
 
@@ -132,6 +130,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			await Rooms.setTeamMainById(roomId, teamId);
 			await Team.updateMainRoomForTeam(teamId, roomId);
 			teamData.roomId = roomId;
+
+			if (room.id) {
+				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
+			}
 
 			return {
 				_id: teamId,
