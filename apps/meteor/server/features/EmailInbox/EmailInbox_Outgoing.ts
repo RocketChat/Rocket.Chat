@@ -1,16 +1,16 @@
 import { isIMessageInbox } from '@rocket.chat/core-typings';
-import type { IEmailInbox, IUser, IMessage, IOmnichannelRoom, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import type { IEmailInbox, IUser, IOmnichannelRoom, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Messages, Uploads, LivechatRooms, Rooms, Users } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import type Mail from 'nodemailer/lib/mailer';
 
 import { FileUpload } from '../../../app/file-upload/server';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
+import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { callbacks } from '../../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
-import { broadcastMessageFromData } from '../../modules/watchers/lib/messages';
 import { inboxes } from './EmailInbox';
 import type { Inbox } from './EmailInbox';
 import { logger } from './logger';
@@ -171,7 +171,7 @@ slashCommands.add({
 				},
 			},
 		);
-		void broadcastMessageFromData({
+		void notifyOnMessageChange({
 			id: message._id,
 		});
 
@@ -190,7 +190,9 @@ slashCommands.add({
 
 callbacks.add(
 	'afterSaveMessage',
-	async (message: IMessage, room: any) => {
+	async (message, { room: omnichannelRoom }) => {
+		const room = omnichannelRoom as IOmnichannelRoom;
+
 		if (!room?.email?.inbox) {
 			return message;
 		}
