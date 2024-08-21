@@ -373,6 +373,7 @@ export type RoomAdminFieldsType =
 	| 'cl'
 	| 'u'
 	| 'usernames'
+	| 'ts'
 	| 'usersCount'
 	| 'muted'
 	| 'unmuted'
