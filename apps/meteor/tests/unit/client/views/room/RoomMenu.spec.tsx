@@ -1,4 +1,5 @@
 import type { RoomType } from '@rocket.chat/core-typings';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import React from 'react';
@@ -75,19 +76,28 @@ const defaultProps = {
 
 describe('RoomMenu component', () => {
 	it('renders without crashing', async () => {
-		render(<RoomMenu {...defaultProps} />, { legacyRoot: true });
+		render(<RoomMenu {...defaultProps} />, {
+			legacyRoot: true,
+			wrapper: mockAppRoot().build(),
+		});
 		expect(await screen.findByText('Hide')).toBeInTheDocument();
 	});
 
 	it('displays menu options', () => {
-		render(<RoomMenu {...defaultProps} />, { legacyRoot: true });
+		render(<RoomMenu {...defaultProps} />, {
+			legacyRoot: true,
+			wrapper: mockAppRoot().build(),
+		});
 		expect(screen.getByText('Hide')).toBeInTheDocument();
 		expect(screen.getByText('Mark_unread')).toBeInTheDocument();
 		expect(screen.getByText('Favorite')).toBeInTheDocument();
 	});
 
 	it('displays menu options when omnichannel conversation', () => {
-		render(<RoomMenu {...defaultProps} type='l' />, { legacyRoot: true });
+		render(<RoomMenu {...defaultProps} type='l' />, {
+			legacyRoot: true,
+			wrapper: mockAppRoot().build(),
+		});
 		expect(screen.queryByText('Hide')).not.toBeInTheDocument();
 		expect(screen.getByText('Mark_unread')).toBeInTheDocument();
 		expect(screen.getByText('Favorite')).toBeInTheDocument();
