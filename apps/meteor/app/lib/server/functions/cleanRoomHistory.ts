@@ -86,14 +86,11 @@ export async function cleanRoomHistory({
 		if (threads.size > 0) {
 			const subscriptionIds: string[] = (
 				await Subscriptions.findUnreadThreadsByRoomId(rid, [...threads], { projection: { _id: 1 } }).toArray()
-			).map(({ _id }: { _id: string }) => _id);
+			).map(({ _id }) => _id);
 
-			const removedUnreadThreadsResponse = await Subscriptions.removeUnreadThreadsByRoomId(rid, [...threads]);
-
-			if (removedUnreadThreadsResponse.modifiedCount) {
-				for await (const id of subscriptionIds) {
-					await notifyOnSubscriptionChangedById(id);
-				}
+			const { modifiedCount } = await Subscriptions.removeUnreadThreadsByRoomId(rid, [...threads]);
+			if (modifiedCount) {
+				subscriptionIds.forEach((id) => notifyOnSubscriptionChangedById(id));
 			}
 		}
 	}

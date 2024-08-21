@@ -104,11 +104,7 @@ async function createUsersSubscriptions({
 
 	const { insertedIds } = await Subscriptions.createWithRoomAndManyUsers(room, subs);
 
-	if (Object.keys(insertedIds).length) {
-		for await (const insertedId of Object.values(insertedIds)) {
-			await notifyOnSubscriptionChangedById(insertedId, 'inserted');
-		}
-	}
+	Object.values(insertedIds).forEach((subId) => notifyOnSubscriptionChangedById(subId, 'inserted'));
 
 	await Rooms.incUsersCountById(room._id, subs.length);
 }

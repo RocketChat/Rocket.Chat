@@ -29,8 +29,8 @@ export const saveRoomEncrypted = async function (rid: string, encrypted: boolean
 	}
 
 	if (encrypted) {
-		const disableAutoTranslateResponse = await Subscriptions.disableAutoTranslateByRoomId(rid);
-		if (disableAutoTranslateResponse.modifiedCount) {
+		const { modifiedCount } = await Subscriptions.disableAutoTranslateByRoomId(rid);
+		if (modifiedCount) {
 			void notifyOnSubscriptionChangedByRoomId(rid);
 		}
 	}

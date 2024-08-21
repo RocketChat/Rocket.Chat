@@ -32,7 +32,8 @@ export async function handleSuggestedGroupKey(
 		await Rooms.addUserIdToE2EEQueueByRoomIds([sub.rid], userId);
 	}
 
-	await Subscriptions.unsetGroupE2ESuggestedKey(sub._id);
-
-	void notifyOnSubscriptionChangedById(sub._id);
+	const { modifiedCount } = await Subscriptions.unsetGroupE2ESuggestedKey(sub._id);
+	if (modifiedCount) {
+		void notifyOnSubscriptionChangedById(sub._id);
+	}
 }

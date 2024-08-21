@@ -21,5 +21,8 @@ export const deleteRoom = async function (rid: string): Promise<void> {
 
 	await callbacks.run('afterDeleteRoom', rid);
 
-	(await Rooms.removeById(rid)).deletedCount && void notifyOnRoomChangedById(rid, 'removed');
+	const { deletedCount } = await Rooms.removeById(rid);
+	if (deletedCount) {
+		void notifyOnRoomChangedById(rid, 'removed');
+	}
 };

@@ -18,13 +18,13 @@ export const saveRoomCustomFields = async function (rid: string, roomCustomField
 		});
 	}
 
-	const response = await Rooms.setCustomFieldsById(rid, roomCustomFields);
+	const ret = await Rooms.setCustomFieldsById(rid, roomCustomFields);
 
 	// Update customFields of any user's Subscription related with this rid
-	const updateCustomFields = await Subscriptions.updateCustomFieldsByRoomId(rid, roomCustomFields);
-	if (updateCustomFields.modifiedCount) {
+	const { modifiedCount } = await Subscriptions.updateCustomFieldsByRoomId(rid, roomCustomFields);
+	if (modifiedCount) {
 		void notifyOnSubscriptionChangedByRoomId(rid);
 	}
 
-	return response;
+	return ret;
 };

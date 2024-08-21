@@ -5,7 +5,10 @@ import { notifyOnSubscriptionChanged } from '../lib/notifyListener';
 import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 
 const bulkRoomCleanUp = async (rids: string[]): Promise<void> => {
-	await Promise.all([
+	// no bulk deletion for files
+	await Promise.all(rids.map((rid) => FileUpload.removeFilesByRoomId(rid)));
+
+	return Promise.all([
 		Subscriptions.removeByRoomIds(rids, {
 			async onTrash(doc) {
 				void notifyOnSubscriptionChanged(doc, 'removed');
@@ -14,8 +17,6 @@ const bulkRoomCleanUp = async (rids: string[]): Promise<void> => {
 		Messages.removeByRoomIds(rids),
 		ReadReceipts.removeByRoomIds(rids),
 		Rooms.removeByIds(rids),
-		// no bulk deletion for files
-		...rids.map((rid) => FileUpload.removeFilesByRoomId(rid)),
 	]);
 };
 
