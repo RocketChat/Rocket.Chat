@@ -80,7 +80,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		try {
 			let roomId = room.id;
 			if (!roomId) {
-				await getValidRoomName(team.name.trim(), undefined);
+				await getValidRoomName(team.name.trim());
 				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
 
 				const newRoom = {
