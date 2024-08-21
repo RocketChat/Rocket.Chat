@@ -75,19 +75,19 @@ const defaultProps = {
 
 describe('RoomMenu component', () => {
 	it('renders without crashing', async () => {
-		render(<RoomMenu {...defaultProps} />);
+		render(<RoomMenu {...defaultProps} />, { legacyRoot: true });
 		expect(await screen.findByText('Hide')).toBeInTheDocument();
 	});
 
 	it('displays menu options', () => {
-		render(<RoomMenu {...defaultProps} />);
+		render(<RoomMenu {...defaultProps} />, { legacyRoot: true });
 		expect(screen.getByText('Hide')).toBeInTheDocument();
 		expect(screen.getByText('Mark_unread')).toBeInTheDocument();
 		expect(screen.getByText('Favorite')).toBeInTheDocument();
 	});
 
 	it('displays menu options when omnichannel conversation', () => {
-		render(<RoomMenu {...defaultProps} type='l' />);
+		render(<RoomMenu {...defaultProps} type='l' />, { legacyRoot: true });
 		expect(screen.queryByText('Hide')).not.toBeInTheDocument();
 		expect(screen.getByText('Mark_unread')).toBeInTheDocument();
 		expect(screen.getByText('Favorite')).toBeInTheDocument();
