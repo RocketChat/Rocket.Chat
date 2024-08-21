@@ -8,7 +8,7 @@
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/fuselage": "^0.57.0",
 		"@rocket.chat/fuselage-hooks": "^0.33.1",
-		"@rocket.chat/icons": "^0.36.0",
+		"@rocket.chat/icons": "~0.38.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/styled": "~0.31.25",
 		"@rocket.chat/ui-avatar": "workspace:^",

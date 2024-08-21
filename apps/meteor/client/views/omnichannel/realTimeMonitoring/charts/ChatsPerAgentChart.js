@@ -56,7 +56,7 @@ const ChatsPerAgentChart = ({ params, reloadRef, ...props }) => {
 		}
 	}, [chartData, state, t, updateChartData]);
 
-	return <Chart ref={canvas} {...props} />;
+	return <Chart canvasRef={canvas} {...props} />;
 };
 
 export default ChatsPerAgentChart;
