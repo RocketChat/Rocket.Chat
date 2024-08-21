@@ -13,6 +13,11 @@ import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import notifications from '../../../notifications/server/lib/Notifications';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 
+// TODO: remove this when Apps engine provide this type
+declare module '@rocket.chat/apps-engine/definition/messages' {
+	type Reaction = `:${string}:`;
+}
+
 export class AppMessageBridge extends MessageBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
