@@ -25,7 +25,7 @@ export const RoomIcon = ({
 	}
 
 	if (isOmnichannelRoom(room)) {
-		return <OmnichannelRoomIcon placement={placement} source={room.source} status={room.v.status} size={size} />;
+		return <OmnichannelRoomIcon placement={placement} source={room.source} status={room.v?.status} size={size} />;
 	}
 
 	if (isValidElement<any>(iconPropsOrReactNode)) {

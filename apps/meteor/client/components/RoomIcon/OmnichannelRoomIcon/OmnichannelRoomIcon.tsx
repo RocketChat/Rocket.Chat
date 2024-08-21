@@ -20,7 +20,7 @@ type OmnichannelRoomIconProps = {
 	color?: ComponentProps<typeof Icon>['color'];
 	status?: UserStatus;
 	size: ComponentProps<typeof Icon>['size'];
-	placement: 'sidebar' | 'default';
+	placement?: 'sidebar' | 'default';
 };
 
 export const OmnichannelRoomIcon = ({ source, color, status, size = 'x16', placement = 'default' }: OmnichannelRoomIconProps) => {

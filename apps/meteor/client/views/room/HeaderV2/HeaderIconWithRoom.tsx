@@ -14,7 +14,7 @@ type HeaderIconWithRoomProps = {
 const HeaderIconWithRoom = ({ room }: HeaderIconWithRoomProps): ReactElement => {
 	const icon = useRoomIcon(room);
 	if (isOmnichannelRoom(room)) {
-		return <OmnichannelRoomIcon room={room} size='x20' placement='default' />;
+		return <OmnichannelRoomIcon source={room.source} status={room.v?.status} size='x20' />;
 	}
 
 	return <HeaderIcon icon={icon} />;

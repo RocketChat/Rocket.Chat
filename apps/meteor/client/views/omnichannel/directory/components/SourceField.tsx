@@ -56,7 +56,7 @@ const SourceField = ({ room }: SourceFieldProps) => {
 			<Label>{t('Channel')}</Label>
 			<Info>
 				<Box display='flex' alignItems='center'>
-					<OmnichannelRoomIcon room={room} size='x24' placement='default' />
+					<OmnichannelRoomIcon source={room.source} status={room.v.status} size='x24' />
 					<Label mi={8} mbe='0'>
 						{defaultTypesLabels[room.source.type] || roomSource}
 					</Label>
