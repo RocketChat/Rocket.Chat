@@ -1,13 +1,11 @@
 import { Apps } from '@rocket.chat/apps';
 import { api, Message } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, IUpload } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUpload, FileProp, MessageAttachment } from '@rocket.chat/core-typings';
 import { Messages, Uploads } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import { isURL } from '../../../../lib/utils/isURL';
-import { API } from '../../../api/server/api';
-import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
@@ -15,7 +13,7 @@ import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
-import { parseMultipleFilesIntoMessageAttachments } from '../../../../app/file-upload/server/methods/sendFileMessage';
+import { parseFileIntoMessageAttachments } from '../../../../app/file-upload/server/methods/sendFileMessage';
 
 // TODO: most of the types here are wrong, but I don't want to change them now
 
@@ -231,9 +229,6 @@ export const sendMessage = async function (
 	}
 
 	if (uploadIdsToConfirm !== undefined) {
-		if (!(await canAccessRoomIdAsync(message.rid, user._id))) {
-			return API.v1.unauthorized();
-		}
 		const filesToConfirm: Partial<IUpload>[] = await Promise.all(
 			uploadIdsToConfirm.map(async (fileid) => {
 				const file = await Uploads.findOneById(fileid);
@@ -243,26 +238,18 @@ export const sendMessage = async function (
 				return file;
 			}),
 		);
-
-		// await sendFileMessage(uid, { roomId: message.rid, file: filesArray, msgData }, { parseAttachmentsForE2EE: false });
 		if (message?.t !== 'e2e') {
-			const roomId = message.rid;
-			const { files, attachments } = await parseMultipleFilesIntoMessageAttachments(filesToConfirm, user);
-			// message.file = files[0];  // as uploading multiple files
-			message.files = files;
-			message.attachments = attachments;
+			const messageFiles: FileProp[] = [];
+			const messageAttachments: MessageAttachment[] = [];
+			filesToConfirm.forEach(async (file) => {
+				const roomId = message.rid;
+				const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
+				messageFiles.push(...files);
+				messageAttachments.push(...attachments);
+			});
+			message.files = messageFiles;
+			message.attachments = messageAttachments;
 		}
-
-		await Promise.all(uploadIdsToConfirm.map((fileid) => Uploads.confirmTemporaryFile(fileid, user._id)));
-
-		// let resmessage;
-		// if (filesArray[0] !== null && filesArray[0]._id !== undefined) {
-		// 	resmessage = await Messages.getMessageByFileIdAndUsername(filesArray[0]._id, uid);
-		// }
-
-		// return API.v1.success({
-		// 	resmessage,
-		// });
 	}
 
 	await validateMessage(message, room, user);
@@ -336,6 +323,10 @@ export const sendMessage = async function (
 
 	// TODO: is there an opportunity to send returned data to notifyOnMessageChange?
 	await afterSaveMessage(message, room);
+
+	if (uploadIdsToConfirm !== undefined) {
+		await Promise.all(uploadIdsToConfirm.map((fileid) => Uploads.confirmTemporaryFile(fileid, user._id)));
+	}
 
 	void notifyOnMessageChange({ id: message._id });
 
