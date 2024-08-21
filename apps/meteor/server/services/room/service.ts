@@ -11,6 +11,7 @@ import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { createDirectMessage } from '../../methods/createDirectMessage';
+import { FederationActions } from './hooks/BeforeFederationActions';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
@@ -120,5 +121,21 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		return addUserToRoom(room._id, user);
+	}
+
+	async beforeLeave(room: IRoom): Promise<void> {
+		FederationActions.blockIfRoomFederatedButServiceNotReady(room);
+	}
+
+	async beforeUserRemoved(room: IRoom): Promise<void> {
+		FederationActions.blockIfRoomFederatedButServiceNotReady(room);
+	}
+
+	async beforeNameChange(room: IRoom): Promise<void> {
+		FederationActions.blockIfRoomFederatedButServiceNotReady(room);
+	}
+
+	async beforeTopicChange(room: IRoom): Promise<void> {
+		FederationActions.blockIfRoomFederatedButServiceNotReady(room);
 	}
 }
