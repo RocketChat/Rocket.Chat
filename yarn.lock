@@ -9544,6 +9544,7 @@ __metadata:
     emoji-toolkit: ^7.0.1
     emojione: ^4.5.0
     emojione-assets: ^4.5.0
+    esl: "github:pierre-lehnen-rc/esl"
     eslint: ~8.45.0
     eslint-config-prettier: ~8.8.0
     eslint-plugin-anti-trojan-source: ~1.1.1
