@@ -152,6 +152,7 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           cache-modules: true
           install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Cache vite
         uses: actions/cache@v3
@@ -253,6 +254,7 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           platform: ${{ matrix.platform }}
           build-containers: ${{ matrix.platform == 'alpine' && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   build-gh-docker:
     name: 🚢 Build Docker Images for Production
@@ -280,6 +282,7 @@ jobs:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           platform: ${{ matrix.platform }}
           build-containers: ${{ matrix.platform == 'alpine' && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Rename official Docker tag to GitHub Container Registry
         if: matrix.platform == 'official'
@@ -560,6 +563,7 @@ jobs:
           release: preview
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   docker-image-publish:
     name: 🚀 Publish Docker Image (main)
