@@ -83,7 +83,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		options?: FindOptions<ISubscription>,
 	): FindCursor<ISubscription>;
 
-	removeByRoomId(roomId: ISubscription['rid']): Promise<DeleteResult>;
+	removeByRoomId(roomId: ISubscription['rid'], options?: { onTrash: (doc: ISubscription) => void }): Promise<DeleteResult>;
 
 	findByRoomIdExcludingUserIds(
 		roomId: ISubscription['rid'],
@@ -285,7 +285,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	removeByRoomIdsAndUserId(rids: string[], userId: string): Promise<number>;
 	removeByRoomIdAndUserId(roomId: string, userId: string): Promise<ISubscription | null>;
 
-	removeByRoomIds(rids: string[]): Promise<DeleteResult>;
+	removeByRoomIds(rids: string[], options?: { onTrash: (doc: ISubscription) => void }): Promise<DeleteResult>;
 
 	addUnreadThreadByRoomIdAndUserIds(
 		rid: string,

@@ -8,6 +8,7 @@ import { addUserToRoom } from '../../../../../../app/lib/server/functions/addUse
 import { createRoom } from '../../../../../../app/lib/server/functions/createRoom';
 import { removeUserFromRoom } from '../../../../../../app/lib/server/functions/removeUserFromRoom';
 import {
+	notifyOnSubscriptionChanged,
 	notifyOnSubscriptionChangedById,
 	notifyOnSubscriptionChangedByRoomId,
 	notifyOnSubscriptionChangedByRoomIdAndUserId,
@@ -84,15 +85,15 @@ export class RocketChatRoomAdapter {
 	public async removeDirectMessageRoom(federatedRoom: FederatedRoom): Promise<void> {
 		const roomId = federatedRoom.getInternalId();
 
-		const responses = await Promise.all([
+		await Promise.all([
 			Rooms.removeById(roomId),
-			Subscriptions.removeByRoomId(roomId),
+			Subscriptions.removeByRoomId(roomId, {
+				async onTrash(doc) {
+					void notifyOnSubscriptionChanged(doc, 'removed');
+				}
+			}),
 			MatrixBridgedRoom.removeByLocalRoomId(roomId),
 		]);
-
-		if (responses[0].deletedCount) {
-			void notifyOnSubscriptionChangedByRoomId(roomId, 'removed');
-		}
 	}
 
 	public async createFederatedRoomForDirectMessage(federatedRoom: DirectMessageFederatedRoom): Promise<string> {

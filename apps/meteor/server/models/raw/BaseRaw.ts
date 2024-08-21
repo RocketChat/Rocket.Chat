@@ -347,6 +347,7 @@ export abstract class BaseRaw<
 		return result;
 	}
 
+	async deleteMany(filter: Filter<T>, options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void }): Promise<DeleteResult> {
 		if (!this.trash) {
 			if (options) {
 				return this.col.deleteMany(filter, options);
@@ -372,6 +373,8 @@ export abstract class BaseRaw<
 			await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
 				upsert: true,
 			});
+
+			void options?.onTrash?.(doc);
 		}
 
 		if (options) {

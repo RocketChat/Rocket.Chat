@@ -354,12 +354,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options || {});
 	}
 
-	async removeByRoomId(roomId: ISubscription['rid']): Promise<DeleteResult> {
+	async removeByRoomId(roomId: ISubscription['rid'], options?: { onTrash: (doc: ISubscription) => void }): Promise<DeleteResult> {
 		const query = {
 			rid: roomId,
 		};
 
-		const deleteResult = await this.deleteMany(query);
+		const deleteResult = await this.deleteMany(query, options);
 
 		if (deleteResult?.deletedCount) {
 			await Rooms.incUsersCountByIds([roomId], -deleteResult.deletedCount);
@@ -1865,8 +1865,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return doc;
 	}
 
-	async removeByRoomIds(rids: string[]): Promise<DeleteResult> {
-		const result = await this.deleteMany({ rid: { $in: rids } });
+	async removeByRoomIds(rids: string[], options?: { onTrash: (doc: ISubscription) => void }): Promise<DeleteResult> {
+		const result = await this.deleteMany({ rid: { $in: rids } }, options);
 
 		await Users.removeRoomByRoomIds(rids);
 

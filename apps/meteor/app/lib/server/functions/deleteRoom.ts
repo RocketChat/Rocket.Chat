@@ -2,7 +2,7 @@ import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { FileUpload } from '../../../file-upload/server';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomId } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
 export const deleteRoom = async function (rid: string): Promise<void> {
 	await FileUpload.removeFilesByRoomId(rid);
@@ -11,7 +11,11 @@ export const deleteRoom = async function (rid: string): Promise<void> {
 
 	await callbacks.run('beforeDeleteRoom', rid);
 
-	(await Subscriptions.removeByRoomId(rid)).deletedCount && void notifyOnSubscriptionChangedByRoomId(rid, 'removed');
+	await Subscriptions.removeByRoomId(rid, {
+		async onTrash(doc) {
+			void notifyOnSubscriptionChanged(doc, 'removed');
+		},
+	});
 
 	await FileUpload.getStore('Avatars').deleteByRoomId(rid);
 

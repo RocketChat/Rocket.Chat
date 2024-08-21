@@ -1,24 +1,22 @@
 import { Messages, Roles, Rooms, Subscriptions, ReadReceipts } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../file-upload/server';
-import { notifyOnSubscriptionChangedByRoomId } from '../lib/notifyListener';
+import { notifyOnSubscriptionChanged } from '../lib/notifyListener';
 import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 
 const bulkRoomCleanUp = async (rids: string[]): Promise<void> => {
-	const responses = await Promise.all([
-		Subscriptions.removeByRoomIds(rids),
+	await Promise.all([
+		Subscriptions.removeByRoomIds(rids, {
+			async onTrash(doc) {
+				void notifyOnSubscriptionChanged(doc, 'removed');
+			},
+		}),
 		Messages.removeByRoomIds(rids),
 		ReadReceipts.removeByRoomIds(rids),
 		Rooms.removeByIds(rids),
 		// no bulk deletion for files
 		...rids.map((rid) => FileUpload.removeFilesByRoomId(rid)),
 	]);
-
-	if (responses[0].deletedCount) {
-		for await (const rid of rids) {
-			await notifyOnSubscriptionChangedByRoomId(rid);
-		}
-	}
 };
 
 export const relinquishRoomOwnerships = async function (
