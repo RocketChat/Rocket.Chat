@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-fixed `ContextualbarHeader` expanded prop
+Fixes the `expanded` prop being accidentally forwarded to `ContextualbarHeader`
