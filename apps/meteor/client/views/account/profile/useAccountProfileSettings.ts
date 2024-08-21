@@ -9,9 +9,9 @@ export const useAccountProfileSettings = () => {
 
 	const allowUserAvatarChange = useSetting('Accounts_AllowUserAvatarChange');
 	const requireName = useSetting<boolean>('Accounts_RequireNameForSignUp');
-	const namesRegexSetting = useSetting('UTF8_User_Names_Validation');
 
-	const namesRegex = useMemo(() => new RegExp(`^${namesRegexSetting}$`), [namesRegexSetting]);
+	const nameValidationReg = '^[0-9a-zA-Z-_.]+(?:@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+)?$';
+	const namesRegex = useMemo(() => new RegExp(nameValidationReg), []);
 
 	return {
 		allowRealNameChange,
