@@ -51,8 +51,11 @@ describe('[Teams]', () => {
 		});
 
 		after(async () => {
-			await Promise.all([...createdTeams.map((team) => deleteTeam(credentials, team.name)), deleteUser(testUser)]);
-			await updateSetting('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+');
+			await Promise.all([
+				...createdTeams.map((team) => deleteTeam(credentials, team.name)),
+				deleteUser(testUser),
+				updateSetting('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+'),
+			]);
 		});
 
 		it('should create a public team', (done) => {
