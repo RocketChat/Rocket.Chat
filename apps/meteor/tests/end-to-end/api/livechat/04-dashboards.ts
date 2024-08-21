@@ -860,7 +860,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body).to.have.property('success', true);
 			expect(result.body).to.have.property('head');
 			expect(result.body).to.have.property('data');
-			expect(result.body.data).to.be.an('array');
+			expect(result.body.data).to.be.an('array').that.is.not.empty;
 
 			const agentData = result.body.data.find(
 				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
@@ -925,7 +925,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body).to.have.property('success', true);
 			expect(result.body).to.have.property('head');
 			expect(result.body).to.have.property('data');
-			expect(result.body.data).to.be.an('array');
+			expect(result.body.data).to.be.an('array').that.is.not.empty;
 
 			const agentData = result.body.data.find(
 				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
