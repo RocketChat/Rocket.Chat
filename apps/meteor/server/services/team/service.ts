@@ -33,7 +33,6 @@ import { checkUsernameAvailability } from '../../../app/lib/server/functions/che
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { settings } from '../../../app/settings/server';
-import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
@@ -80,7 +79,6 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		try {
 			let roomId = room.id;
 			if (!roomId) {
-				await getValidRoomName(team.name.trim(), undefined);
 				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
 
 				const newRoom = {
