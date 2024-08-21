@@ -35,11 +35,14 @@ export const closeLivechatRoom = async (
 	}
 
 	if (!room.open) {
-		await Subscriptions.removeByRoomId(roomId, {
+		const { deletedCount } = await Subscriptions.removeByRoomId(roomId, {
 			async onTrash(doc) {
 				void notifyOnSubscriptionChanged(doc, 'removed');
 			},
 		});
+		if (deletedCount) {
+			return;
+		}
 		throw new Error('error-room-already-closed');
 	}
 
