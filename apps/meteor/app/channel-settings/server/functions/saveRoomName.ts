@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, Room } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Integrations, Rooms, Subscriptions } from '@rocket.chat/models';
@@ -48,6 +48,9 @@ export async function saveRoomName(
 			function: 'RocketChat.saveRoomdisplayName',
 		});
 	}
+
+	await Room.beforeNameChange(room);
+
 	if (displayName === room.name) {
 		return;
 	}

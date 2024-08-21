@@ -50,3 +50,6 @@ yarn-error.log*
 *.sublime-workspace
 
 **/.vim/
+
+data/
+registration.yaml
