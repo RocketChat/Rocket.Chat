@@ -33,6 +33,7 @@ import { checkUsernameAvailability } from '../../../app/lib/server/functions/che
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { settings } from '../../../app/settings/server';
+import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
@@ -76,10 +77,31 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			roomId: '', // this will be populated at the end
 		};
 
-		let teamId = '';
 		try {
+			let roomId = room.id;
+			if (roomId) {
+				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
+			} else {
+				await getValidRoomName(team.name.trim(), undefined);
+				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
+
+				const newRoom = {
+					...room,
+					type: roomType,
+					name: team.name,
+					members: memberUsernames as string[],
+					extraData: {
+						...room.extraData,
+					},
+					sidepanel,
+				};
+
+				const createdRoom = await Room.create(owner || uid, newRoom);
+				roomId = createdRoom._id;
+			}
+
 			const result = await Team.insertOne(teamData);
-			teamId = result.insertedId;
+			const teamId = result.insertedId;
 			// the same uid can be passed at 3 positions: owner, member list or via caller
 			// if the owner is present, remove it from the members list
 			// if the owner is not present, remove the caller from the members list
@@ -107,30 +129,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 			await TeamMember.insertMany(membersList);
 
-			let roomId = room.id;
-			if (roomId) {
-				await Rooms.setTeamMainById(roomId, teamId);
-				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
-			} else {
-				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
-
-				const newRoom = {
-					...room,
-					type: roomType,
-					name: team.name,
-					members: memberUsernames as string[],
-					extraData: {
-						...room.extraData,
-						teamId,
-						teamMain: true,
-					},
-					sidepanel,
-				};
-
-				const createdRoom = await Room.create(owner || uid, newRoom);
-				roomId = createdRoom._id;
-			}
-
+			await Rooms.setTeamMainById(roomId, teamId);
 			await Team.updateMainRoomForTeam(teamId, roomId);
 			teamData.roomId = roomId;
 
@@ -138,14 +137,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				_id: teamId,
 				...teamData,
 			};
-		} catch (error) {
-			// Manually deleting team if an error occurs, this is a temporary fix due to urgency
-			// to release version 6.12 and will be refactored on next release.
-			if (teamId) {
-				await Team.deleteOneById(teamId);
-				await TeamMember.deleteByTeamId(teamId);
-			}
-
+		} catch (e) {
 			throw new Error('error-team-creation');
 		}
 	}
