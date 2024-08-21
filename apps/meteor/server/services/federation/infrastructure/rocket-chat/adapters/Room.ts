@@ -90,7 +90,7 @@ export class RocketChatRoomAdapter {
 			Subscriptions.removeByRoomId(roomId, {
 				async onTrash(doc) {
 					void notifyOnSubscriptionChanged(doc, 'removed');
-				}
+				},
 			}),
 			MatrixBridgedRoom.removeByLocalRoomId(roomId),
 		]);

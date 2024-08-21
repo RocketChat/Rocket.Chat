@@ -9,10 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { canAccessRoomAsync, getUsersInRole } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
-import {
-	notifyOnRoomChanged,
-	notifyOnSubscriptionChanged,
-} from '../../app/lib/server/lib/notifyListener';
+import { notifyOnRoomChanged, notifyOnSubscriptionChanged } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { callbacks } from '../../lib/callbacks';
