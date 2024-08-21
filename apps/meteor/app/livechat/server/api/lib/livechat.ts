@@ -48,7 +48,7 @@ async function findDepartments(
 	}));
 }
 
-export function findGuest(token: string, includeActivity = true): Promise<ILivechatVisitor | null> {
+export function findGuest(token: string): Promise<ILivechatVisitor | null> {
 	return LivechatVisitors.getVisitorByToken(token, {
 		projection: {
 			name: 1,
@@ -56,9 +56,13 @@ export function findGuest(token: string, includeActivity = true): Promise<ILivec
 			token: 1,
 			visitorEmails: 1,
 			department: 1,
-			...(includeActivity && { activity: 1 }),
+			activity: 1,
 		},
 	});
+}
+
+export function findGuestWithoutActivity(token: string): Promise<ILivechatVisitor | null> {
+	return LivechatVisitors.getVisitorByToken(token, { projection: { name: 1, username: 1, token: 1, visitorEmails: 1, department: 1 } });
 }
 
 export async function findRoom(token: string, rid?: string): Promise<IOmnichannelRoom | null> {

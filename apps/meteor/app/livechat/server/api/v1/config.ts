@@ -4,7 +4,7 @@ import mem from 'mem';
 import { API } from '../../../../api/server';
 import { settings as serverSettings } from '../../../../settings/server';
 import { Livechat } from '../../lib/LivechatTyped';
-import { settings, findOpenRoom, getExtraConfigInfo, findAgent, findGuest } from '../lib/livechat';
+import { settings, findOpenRoom, getExtraConfigInfo, findAgent, findGuestWithoutActivity } from '../lib/livechat';
 
 const cachedSettings = mem(settings, { maxAge: process.env.TEST_MODE === 'true' ? 1 : 1000, cacheKey: JSON.stringify });
 
@@ -24,7 +24,7 @@ API.v1.addRoute(
 			const config = await cachedSettings({ businessUnit });
 
 			const status = await Livechat.online(department);
-			const guest = token ? await findGuest(token, false) : null;
+			const guest = token ? await findGuestWithoutActivity(token) : null;
 
 			const room = guest ? await findOpenRoom(guest.token) : undefined;
 			const agent = guest && room && room.servedBy && (await findAgent(room.servedBy._id));
