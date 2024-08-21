@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { api } from '@rocket.chat/core-services';
+import { api, Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, EmojiCustom, Rooms, Users } from '@rocket.chat/models';
@@ -39,6 +39,8 @@ export async function setReaction(
 	reaction: string,
 	userAlreadyReacted?: boolean,
 ) {
+	await Message.beforeReacted(message, room);
+
 	if (Array.isArray(room.muted) && room.muted.includes(user.username as string)) {
 		throw new Meteor.Error('error-not-allowed', i18n.t('You_have_been_muted', { lng: user.language }), {
 			rid: room._id,
@@ -53,7 +55,6 @@ export async function setReaction(
 	}
 
 	let isReacted;
-
 	if (userAlreadyReacted) {
 		const oldMessage = JSON.parse(JSON.stringify(message));
 		removeUserReaction(message, reaction, user.username as string);
