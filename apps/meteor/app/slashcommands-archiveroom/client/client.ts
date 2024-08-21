@@ -1,4 +1,4 @@
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { slashCommands } from '../../utils/client/slashCommand';
 
 slashCommands.add({
 	command: 'archive',

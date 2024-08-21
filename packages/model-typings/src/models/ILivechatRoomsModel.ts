@@ -214,12 +214,17 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	): Updater<IOmnichannelRoom>;
 	getNotResponseByRoomIdUpdateQuery(updater: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	getAgentLastMessageTsUpdateQuery(updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
-	getAnalyticsUpdateQueryByRoomId(
+	getAnalyticsUpdateQueryBySentByAgent(
 		room: IOmnichannelRoom,
 		message: IMessage,
 		analyticsData: Record<string, string | number | Date> | undefined,
 		updater?: Updater<IOmnichannelRoom>,
-	): Promise<Updater<IOmnichannelRoom>>;
+	): Updater<IOmnichannelRoom>;
+	getAnalyticsUpdateQueryBySentByVisitor(
+		room: IOmnichannelRoom,
+		message: IMessage,
+		updater?: Updater<IOmnichannelRoom>,
+	): Updater<IOmnichannelRoom>;
 	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lt: Date }, data?: { departmentId: string }): Promise<number>;
 	getAnalyticsMetricsBetweenDate(
 		t: 'l',
