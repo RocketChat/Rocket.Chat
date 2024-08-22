@@ -70,9 +70,7 @@ export const parseFileIntoMessageAttachments = async (
 
 		try {
 			attachment.image_preview = await FileUpload.resizeImagePreview(file);
-			console.log('attachement image preview ' + attachment.image_preview);
 			const thumbResult = await FileUpload.createImageThumbnail(file);
-			console.log('thumbResult ' + thumbResult);
 			if (thumbResult) {
 				const { data: thumbBuffer, width, height, thumbFileType, thumbFileName, originalFileId } = thumbResult;
 				const thumbnail = await FileUpload.uploadImageThumbnail(
@@ -85,7 +83,6 @@ export const parseFileIntoMessageAttachments = async (
 					roomId,
 					user._id,
 				);
-				console.log('thumbnail ' + thumbnail);
 				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
 				attachment.image_url = thumbUrl;
 				attachment.image_type = thumbnail.type;
@@ -100,7 +97,6 @@ export const parseFileIntoMessageAttachments = async (
 					size: thumbnail.size || 0,
 					format: thumbnail.identify?.format || '',
 				});
-				console.log(files);
 			}
 		} catch (e) {
 			SystemLogger.error(e);
