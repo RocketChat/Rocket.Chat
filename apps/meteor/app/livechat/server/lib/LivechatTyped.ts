@@ -77,7 +77,6 @@ import { RoutingManager } from './RoutingManager';
 import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
-import { sendTranscript as sendTranscriptFunc } from './sendTranscript';
 
 type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
 	id?: string;
@@ -163,22 +162,6 @@ class LivechatClass {
 		this.webhookLogger = this.logger.section('Webhook');
 	}
 
-	findGuest(token: string) {
-		return LivechatVisitors.getVisitorByToken(token, {
-			projection: {
-				name: 1,
-				username: 1,
-				token: 1,
-				visitorEmails: 1,
-				department: 1,
-			},
-		});
-	}
-
-	enabled() {
-		return Boolean(settings.get('Livechat_enabled'));
-	}
-
 	async online(department?: string, skipNoAgentSetting = false, skipFallbackCheck = false): Promise<boolean> {
 		Livechat.logger.debug(`Checking online agents ${department ? `for department ${department}` : ''}`);
 		if (!skipNoAgentSetting && settings.get('Livechat_accept_chats_with_no_agents')) {
@@ -201,10 +184,6 @@ class LivechatClass {
 		const agentsOnline = await this.checkOnlineAgents(department, undefined, skipFallbackCheck);
 		Livechat.logger.debug(`Are online agents ${department ? `for department ${department}` : ''}?: ${agentsOnline}`);
 		return agentsOnline;
-	}
-
-	getNextAgent(department?: string): Promise<SelectedAgent | null | undefined> {
-		return RoutingManager.getNextAgent(department);
 	}
 
 	async getOnlineAgents(department?: string, agent?: SelectedAgent | null): Promise<FindCursor<ILivechatAgent> | undefined> {
@@ -451,7 +430,7 @@ class LivechatClass {
 		agent?: SelectedAgent;
 		extraData?: Record<string, unknown>;
 	}) {
-		if (!this.enabled()) {
+		if (!settings.get('Livechat_enabled')) {
 			throw new Meteor.Error('error-omnichannel-is-disabled');
 		}
 
@@ -502,7 +481,7 @@ class LivechatClass {
 		agent?: SelectedAgent,
 		extraData?: E,
 	) {
-		if (!this.enabled()) {
+		if (!settings.get('Livechat_enabled')) {
 			throw new Meteor.Error('error-omnichannel-is-disabled');
 		}
 		Livechat.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
@@ -874,15 +853,6 @@ class LivechatClass {
 
 			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date(), rid }, user as unknown as IUser);
 		}
-	}
-
-	async updateLastChat(contactId: string, lastChat: Required<ILivechatVisitor['lastChat']>) {
-		const updateUser = {
-			$set: {
-				lastChat,
-			},
-		};
-		await LivechatVisitors.updateById(contactId, updateUser);
 	}
 
 	notifyRoomVisitorChange(roomId: string, visitor: ILivechatVisitor) {
@@ -1906,22 +1876,6 @@ class LivechatClass {
 		}
 
 		return departmentDB;
-	}
-
-	async sendTranscript({
-		token,
-		rid,
-		email,
-		subject,
-		user,
-	}: {
-		token: string;
-		rid: string;
-		email: string;
-		subject?: string;
-		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
-	}): Promise<boolean> {
-		return sendTranscriptFunc({ token, rid, email, subject, user });
 	}
 }
 
