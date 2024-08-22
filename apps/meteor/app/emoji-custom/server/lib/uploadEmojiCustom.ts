@@ -8,6 +8,7 @@ import sharp from 'sharp';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFile } from '../../../file/server';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
+import type { EmojiData } from './insertOrUpdateEmoji';
 
 const getFile = async (file: Buffer, extension: string) => {
 	if (extension !== 'svg+xml') {
@@ -17,17 +18,14 @@ const getFile = async (file: Buffer, extension: string) => {
 	return sharp(file).png().toBuffer();
 };
 
-type EmojiData = {
-	_id?: string;
-	name: string;
-	aliases?: string | string[];
-	extension: string;
-	previousName?: string;
-	previousExtension?: string;
-	newFile?: boolean;
-};
+export type EmojiDataWithAliases = Omit<EmojiData, 'aliases'> & { aliases?: string | string[] };
 
-export async function uploadEmojiCustom(userId: string | null, binaryContent: string, contentType: string, emojiData: EmojiData) {
+export async function uploadEmojiCustom(
+	userId: string | null,
+	binaryContent: string,
+	contentType: string,
+	emojiData: EmojiDataWithAliases,
+) {
 	return uploadEmojiCustomWithBuffer(userId, Buffer.from(binaryContent, 'binary'), contentType, emojiData);
 }
 
@@ -35,7 +33,7 @@ export async function uploadEmojiCustomWithBuffer(
 	userId: string | null,
 	buffer: Buffer,
 	contentType: string,
-	emojiData: EmojiData,
+	emojiData: EmojiDataWithAliases,
 ): Promise<void> {
 	// technically, since this method doesnt have any datatype validations, users can
 	// upload videos as emojis. The FE won't play them, but they will waste space for sure.
@@ -74,7 +72,11 @@ export async function uploadEmojiCustomWithBuffer(
 		);
 		ws.on('end', async () => {
 			const etag = Random.hexString(6);
-			await EmojiCustom.setETagByIdOrName(emojiData.name, etag);
+			if (emojiData._id) {
+				await EmojiCustom.setETagById(emojiData._id, etag);
+			} else {
+				await EmojiCustom.setETagByName(emojiData.name, etag);
+			}
 			setTimeout(() => api.broadcast('emoji.updateCustom', { ...emojiData, etag }), 500);
 			resolve();
 		});

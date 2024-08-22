@@ -65,7 +65,7 @@ export async function getUploadFormData<
 		sizeLimit?: number;
 		optional?: boolean;
 	} = {},
-): Promise<UploadResult<K> | OptionalUploadResult<K>> {
+): Promise<OptionalUploadResult<K>> {
 	const limits = {
 		files: 1,
 		...(options.sizeLimit && options.sizeLimit > -1 && { fileSize: options.sizeLimit }),
@@ -74,9 +74,9 @@ export async function getUploadFormData<
 	const bb = busboy({ headers: request.headers, defParamCharset: 'utf8', limits });
 	const fields = Object.create(null) as K;
 
-	let uploadedFile: UploadResult<K> | OptionalUploadResult<K> | undefined;
+	let uploadedFile: OptionalUploadResult<K> | undefined;
 
-	let returnResult = (_value: UploadResult<K> | OptionalUploadResult<K>) => {
+	let returnResult = (_value: OptionalUploadResult<K>) => {
 		// noop
 	};
 	let returnError = (_error?: Error | string | null | undefined) => {
