@@ -1,4 +1,5 @@
 import type { IRole, IUser } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 
 class UsersCollection extends Mongo.Collection<IUser> {
