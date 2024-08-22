@@ -28,6 +28,8 @@ import type {
 	InsertOneResult,
 	InsertManyResult,
 	AggregationCursor,
+	CountDocumentsOptions,
+	DeleteOptions,
 } from 'mongodb';
 
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
@@ -354,7 +356,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options || {});
 	}
 
-	async removeByRoomId(roomId: ISubscription['rid'], options?: { onTrash: (doc: ISubscription) => void }): Promise<DeleteResult> {
+	async removeByRoomId(
+		roomId: ISubscription['rid'],
+		options?: DeleteOptions & { onTrash: (doc: ISubscription) => void },
+	): Promise<DeleteResult> {
 		const query = {
 			rid: roomId,
 		};
@@ -362,10 +367,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		const deleteResult = await this.deleteMany(query, options);
 
 		if (deleteResult?.deletedCount) {
-			await Rooms.incUsersCountByIds([roomId], -deleteResult.deletedCount);
+			await Rooms.incUsersCountByIds([roomId], -deleteResult.deletedCount, { session: options?.session });
 		}
 
-		await Users.removeRoomByRoomId(roomId);
+		await Users.removeRoomByRoomId(roomId, { session: options?.session });
 
 		return deleteResult;
 	}
@@ -1105,10 +1110,14 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.col.countDocuments(query);
 	}
 
-	countByRoomId(roomId: string): Promise<number> {
+	countByRoomId(roomId: string, options?: CountDocumentsOptions): Promise<number> {
 		const query = {
 			rid: roomId,
 		};
+
+		if (options) {
+			return this.col.countDocuments(query, options);
+		}
 
 		return this.col.countDocuments(query);
 	}

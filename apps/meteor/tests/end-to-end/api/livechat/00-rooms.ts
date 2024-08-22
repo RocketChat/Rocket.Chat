@@ -36,6 +36,7 @@ import {
 	deleteVisitor,
 	makeAgentUnavailable,
 	sendAgentMessage,
+	fetchInquiry,
 } from '../../../data/livechat/rooms';
 import { saveTags } from '../../../data/livechat/tags';
 import type { DummyResponse } from '../../../data/livechat/utils';
@@ -2245,6 +2246,105 @@ describe('LIVECHAT - rooms', () => {
 			// try to close again
 			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }).expect(400);
 			await deleteVisitor(visitor.token);
+		});
+		it('should fail one of the requests if 3 simultaneous closes are attempted', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+
+			const results = await Promise.allSettled([
+				request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }),
+				request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }),
+				request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }),
+			]);
+
+			const validResponse = results.filter((res) => (res as any).value.status === 200);
+			const invalidResponses = results.filter((res) => (res as any).value.status !== 200);
+
+			expect(validResponse.length).to.equal(1);
+			expect(invalidResponses.length).to.equal(2);
+			// @ts-expect-error promise typings
+			expect(invalidResponses[0].value.body).to.have.property('success', false);
+			// @ts-expect-error promise typings
+			expect(invalidResponses[0].value.body).to.have.property('error');
+			// The transaction is not consistent on the error apparently, sometimes it will reach the point of trying to close the inquiry and abort there (since another call already closed the room and finished)
+			// and sometimes it will abort because the transactions are still running and they're being locked. This is something i'm not liking but since tx should be retried we got this
+			// @ts-expect-error promise typings
+			expect(['error-room-cannot-be-closed-try-again', 'Error removing inquiry']).to.include(invalidResponses[0].value.body.error);
+		});
+
+		it('should allow different rooms to be closed simultaneously', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+
+			const visitor2 = await createVisitor();
+			const { _id: _id2 } = await createLivechatRoom(visitor2.token);
+
+			const results = await Promise.allSettled([
+				request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }),
+				request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id2, comment: 'test' }),
+			]);
+
+			const validResponse = results.filter((res) => (res as any).value.status === 200);
+			const invalidResponses = results.filter((res) => (res as any).value.status !== 200);
+
+			expect(validResponse.length).to.equal(2);
+			expect(invalidResponses.length).to.equal(0);
+		});
+
+		it('when both user & visitor try to close room, only one will succeed (theres no guarantee who will win)', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+
+			const results = await Promise.allSettled([
+				request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }),
+				request.post(api('livechat/room.close')).set(credentials).send({ rid: _id, token: visitor.token }),
+			]);
+
+			const validResponse = results.filter((res) => (res as any).value.status === 200);
+			const invalidResponses = results.filter((res) => (res as any).value.status !== 200);
+
+			// @ts-expect-error promise typings
+			const whoWon = validResponse[0].value.request.url.includes('closeByUser') ? 'user' : 'visitor';
+
+			expect(validResponse.length).to.equal(1);
+			expect(invalidResponses.length).to.equal(1);
+			// @ts-expect-error promise typings
+			expect(invalidResponses[0].value.body).to.have.property('success', false);
+			// This error indicates a conflict in the simultaneous close and that the request was rejected
+			// @ts-expect-error promise typings
+			expect(invalidResponses[0].value.body).to.have.property('error');
+			// @ts-expect-error promise typings
+			expect(['error-room-cannot-be-closed-try-again', 'Error removing inquiry']).to.include(invalidResponses[0].value.body.error);
+
+			const room = await getLivechatRoomInfo(_id);
+
+			expect(room).to.not.have.property('open');
+			expect(room).to.have.property('closer', whoWon);
+		});
+
+		it('when a close request is tried multiple times, the final state of the room should be valid', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+
+			await Promise.allSettled([
+				request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }),
+				request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }),
+				request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id, comment: 'test' }),
+			]);
+
+			const room = await getLivechatRoomInfo(_id);
+			const inqForRoom = await fetchInquiry(_id);
+			const sub = await request
+				.get(api('subscriptions.getOne'))
+				.set(credentials)
+				.query({ roomId: _id })
+				.expect('Content-Type', 'application/json');
+
+			expect(room).to.not.have.property('open');
+			expect(room).to.have.property('closedAt');
+			expect(room).to.have.property('closer', 'user');
+			expect(inqForRoom).to.be.null;
+			expect(sub.body.subscription).to.be.null;
 		});
 
 		(IS_EE ? it : it.skip)('should close room and generate transcript pdf', async () => {
