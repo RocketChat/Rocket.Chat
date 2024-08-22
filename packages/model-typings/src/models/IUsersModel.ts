@@ -9,7 +9,17 @@ import type {
 	AtLeast,
 	ILivechatAgentStatus,
 } from '@rocket.chat/core-typings';
-import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult, ModifyResult } from 'mongodb';
+import type {
+	Document,
+	UpdateResult,
+	FindCursor,
+	FindOptions,
+	Filter,
+	InsertOneResult,
+	DeleteResult,
+	ModifyResult,
+	UpdateOptions,
+} from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -190,7 +200,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	setAsFederated(userId: string): any;
 
-	removeRoomByRoomId(rid: any): any;
+	removeRoomByRoomId(rid: any, options?: UpdateOptions): any;
 
 	findOneByResetToken(token: string, options: FindOptions<IUser>): Promise<IUser | null>;
 
