@@ -1,5 +1,4 @@
 import type { IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
 import { isPOSTLivechatPageVisitedParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
@@ -11,17 +10,13 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { token, rid, pageInfo } = this.bodyParams;
-			const msgId = await Livechat.savePageHistory(token, rid, pageInfo);
-			if (!msgId) {
-				return API.v1.success();
-			}
 
-			const message = await Messages.findOneById<IOmnichannelSystemMessage>(msgId);
+			const message = await Livechat.savePageHistory(token, rid, pageInfo);
 			if (!message) {
 				return API.v1.success();
 			}
 
-			const { msg, navigation } = message;
+			const { msg, navigation } = message as IOmnichannelSystemMessage;
 			return API.v1.success({ page: { msg, navigation } });
 		},
 	},

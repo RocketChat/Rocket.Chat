@@ -60,7 +60,7 @@ const AgentStatusChart = ({ params, reloadRef, ...props }) => {
 		}
 	}, [available, away, busy, offline, state, t, updateChartData]);
 
-	return <Chart ref={canvas} {...props} />;
+	return <Chart canvasRef={canvas} {...props} />;
 };
 
 export default AgentStatusChart;
