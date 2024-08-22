@@ -5,6 +5,7 @@ import { LivechatRooms, Subscriptions } from '@rocket.chat/models';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import type { CloseRoomParams } from '../../../livechat/server/lib/LivechatTyped';
 import { Livechat } from '../../../livechat/server/lib/LivechatTyped';
+import { notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
 export const closeLivechatRoom = async (
 	user: IUser,
@@ -34,9 +35,12 @@ export const closeLivechatRoom = async (
 	}
 
 	if (!room.open) {
-		const subscriptionsLeft = await Subscriptions.countByRoomId(roomId);
-		if (subscriptionsLeft) {
-			await Subscriptions.removeByRoomId(roomId);
+		const { deletedCount } = await Subscriptions.removeByRoomId(roomId, {
+			async onTrash(doc) {
+				void notifyOnSubscriptionChanged(doc, 'removed');
+			},
+		});
+		if (deletedCount) {
 			return;
 		}
 		throw new Error('error-room-already-closed');

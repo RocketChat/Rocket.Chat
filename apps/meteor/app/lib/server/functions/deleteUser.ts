@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import type { IUser } from '@rocket.chat/core-typings';
+import { isUserFederated, type IUser } from '@rocket.chat/core-typings';
 import {
 	Integrations,
 	FederationServers,
@@ -12,6 +12,7 @@ import {
 	ReadReceipts,
 	LivechatUnitMonitors,
 	ModerationReports,
+	MatrixBridgedUser,
 } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -44,6 +45,19 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 	if (!user) {
 		return;
+	}
+
+	if (isUserFederated(user)) {
+		throw new Meteor.Error('error-not-allowed', 'Deleting federated, external user is not allowed', {
+			method: 'deleteUser',
+		});
+	}
+
+	const remoteUser = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
+	if (remoteUser) {
+		throw new Meteor.Error('error-not-allowed', 'User participated in federation, this user can only be deactivated permanently', {
+			method: 'deleteUser',
+		});
 	}
 
 	const subscribedRooms = await getSubscribedRoomsForUserWithDetails(userId);
@@ -98,7 +112,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		const rids = subscribedRooms.map((room) => room.rid);
 		void notifyOnRoomChangedById(rids);
 
-		await Subscriptions.removeByUserId(userId); // Remove user subscriptions
+		await Subscriptions.removeByUserId(userId);
 
 		// Remove user as livechat agent
 		if (user.roles.includes('livechat-agent')) {

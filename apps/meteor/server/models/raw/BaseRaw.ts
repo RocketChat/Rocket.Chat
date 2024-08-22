@@ -26,6 +26,7 @@ import type {
 	InsertOneResult,
 	DeleteResult,
 	DeleteOptions,
+	FindOneAndDeleteOptions,
 } from 'mongodb';
 
 import { setUpdatedAt } from './setUpdatedAt';
@@ -111,7 +112,15 @@ export abstract class BaseRaw<
 	}
 
 	public getUpdater(): Updater<T> {
-		return new UpdaterImpl<T>(this.col as unknown as IBaseModel<T>);
+		return new UpdaterImpl<T>();
+	}
+
+	public updateFromUpdater(query: Filter<T>, updater: Updater<T>): Promise<UpdateResult> {
+		const updateFilter = updater.getUpdateFilter();
+		return this.updateOne(query, updateFilter).catch((e) => {
+			console.warn(e, updateFilter);
+			return Promise.reject(e);
+		});
 	}
 
 	private doNotMixInclusionAndExclusionFields(options: FindOptions<T> = {}): FindOptions<T> {
@@ -307,7 +316,38 @@ export abstract class BaseRaw<
 		return this.col.deleteOne(filter);
 	}
 
-	async deleteMany(filter: Filter<T>, options?: DeleteOptions): Promise<DeleteResult> {
+	async findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<ModifyResult<T>> {
+		if (!this.trash) {
+			if (options) {
+				return this.col.findOneAndDelete(filter, options);
+			}
+			return this.col.findOneAndDelete(filter);
+		}
+
+		const result = await this.col.findOneAndDelete(filter);
+
+		const { value: doc } = result;
+		if (!doc) {
+			return result;
+		}
+
+		const { _id, ...record } = doc;
+
+		const trash: TDeleted = {
+			...record,
+			_deletedAt: new Date(),
+			__collection__: this.name,
+		} as unknown as TDeleted;
+
+		// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
+		await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
+			upsert: true,
+		});
+
+		return result;
+	}
+
+	async deleteMany(filter: Filter<T>, options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void }): Promise<DeleteResult> {
 		if (!this.trash) {
 			if (options) {
 				return this.col.deleteMany(filter, options);
@@ -333,6 +373,8 @@ export abstract class BaseRaw<
 			await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
 				upsert: true,
 			});
+
+			void options?.onTrash?.(doc);
 		}
 
 		if (options) {

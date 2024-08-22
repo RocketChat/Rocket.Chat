@@ -60,8 +60,10 @@ import {
 	notifyOnLivechatInquiryChangedByRoom,
 	notifyOnRoomChangedById,
 	notifyOnLivechatInquiryChangedByToken,
-	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
 	notifyOnUserChange,
+	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
+	notifyOnSubscriptionChangedByRoomId,
+	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
@@ -252,7 +254,6 @@ class LivechatClass {
 		const isRoomClosedByVisitorParams = (params: CloseRoomParams): params is CloseRoomParamsByVisitor =>
 			(params as CloseRoomParamsByVisitor).visitor !== undefined;
 
-		let chatCloser: any;
 		if (isRoomClosedByUserParams(params)) {
 			const { user } = params;
 			this.logger.debug(`Closing by user ${user?._id}`);
@@ -261,7 +262,6 @@ class LivechatClass {
 				_id: user?._id || '',
 				username: user?.username,
 			};
-			chatCloser = user;
 		} else if (isRoomClosedByVisitorParams(params)) {
 			const { visitor } = params;
 			this.logger.debug(`Closing by visitor ${params.visitor._id}`);
@@ -270,7 +270,6 @@ class LivechatClass {
 				_id: visitor._id,
 				username: visitor.username,
 			};
-			chatCloser = visitor;
 		} else {
 			throw new Error('Error: Please provide details of the user or visitor who closed the room');
 		}
@@ -292,14 +291,14 @@ class LivechatClass {
 			throw new Error('Error closing room');
 		}
 
-		await Subscriptions.removeByRoomId(rid);
+		await Subscriptions.removeByRoomId(rid, {
+			async onTrash(doc) {
+				void notifyOnSubscriptionChanged(doc, 'removed');
+			},
+		});
 
 		this.logger.debug(`DB updated for room ${room._id}`);
 
-		const transcriptRequested =
-			!!transcriptRequest || (!settings.get('Livechat_enable_transcript') && settings.get('Livechat_transcript_send_always'));
-
-		// Retrieve the closed room
 		const newRoom = await LivechatRooms.findOneById(rid);
 
 		if (!newRoom) {
@@ -307,23 +306,19 @@ class LivechatClass {
 		}
 
 		this.logger.debug(`Sending closing message to room ${room._id}`);
-		await sendMessage(
-			chatCloser,
-			{
-				t: 'livechat-close',
-				msg: comment,
-				groupable: false,
-				transcriptRequested,
-				...(isRoomClosedByVisitorParams(params) && { token: chatCloser.token }),
-			},
-			newRoom,
-		);
+
+		const transcriptRequested =
+			!!transcriptRequest || (!settings.get('Livechat_enable_transcript') && settings.get('Livechat_transcript_send_always'));
+
+		await Message.saveSystemMessageAndNotifyUser('livechat-close', rid, comment ?? '', closeData.closedBy, {
+			groupable: false,
+			transcriptRequested,
+			...(isRoomClosedByVisitorParams(params) && { token: params.visitor.token }),
+		});
 
 		if (settings.get('Livechat_enable_transcript') && !settings.get('Livechat_transcript_send_always')) {
 			await Message.saveSystemMessage('command', rid, 'promptTranscript', closeData.closedBy);
 		}
-
-		this.logger.debug(`Running callbacks for room ${newRoom._id}`);
 
 		process.nextTick(() => {
 			/**
@@ -526,12 +521,16 @@ class LivechatClass {
 		const result = await Promise.allSettled([
 			Messages.removeByRoomId(rid),
 			ReadReceipts.removeByRoomId(rid),
-			Subscriptions.removeByRoomId(rid),
+			Subscriptions.removeByRoomId(rid, {
+				async onTrash(doc) {
+					void notifyOnSubscriptionChanged(doc, 'removed');
+				},
+			}),
 			LivechatInquiry.removeByRoomId(rid),
 			LivechatRooms.removeById(rid),
 		]);
 
-		if (inquiry) {
+		if (result[3]?.status === 'fulfilled' && result[3].value?.deletedCount && inquiry) {
 			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
 		}
 
@@ -878,7 +877,7 @@ class LivechatClass {
 
 		return Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, {
 			sort: { ts: 1 },
-		}).toArray();
+		});
 	}
 
 	async archiveDepartment(_id: string) {
@@ -1154,13 +1153,18 @@ class LivechatClass {
 		const cursor = LivechatRooms.findByVisitorToken(token);
 		for await (const room of cursor) {
 			await Promise.all([
+				Subscriptions.removeByRoomId(room._id, {
+					async onTrash(doc) {
+						void notifyOnSubscriptionChanged(doc, 'removed');
+					},
+				}),
 				FileUpload.removeFilesByRoomId(room._id),
 				Messages.removeByRoomId(room._id),
 				ReadReceipts.removeByRoomId(room._id),
 			]);
 		}
 
-		await Promise.all([Subscriptions.removeByVisitorToken(token), LivechatRooms.removeByVisitorToken(token)]);
+		await LivechatRooms.removeByVisitorToken(token);
 
 		const livechatInquiries = await LivechatInquiry.findIdsByVisitorToken(token).toArray();
 		await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
@@ -1254,31 +1258,20 @@ class LivechatClass {
 		const scopeData = scope || (nextDepartment ? 'department' : 'agent');
 		this.logger.info(`Storing new chat transfer of ${room._id} [Transfered by: ${_id} to ${scopeData}]`);
 
-		await sendMessage(
-			transferredBy,
-			{
-				t: 'livechat_transfer_history',
-				rid: room._id,
+		const transferMessage = {
+			...(transferData.transferredBy.userType === 'visitor' && { token: room.v.token }),
+			transferData: {
+				transferredBy,
 				ts: new Date(),
-				msg: '',
-				u: {
-					_id,
-					username,
-				},
-				groupable: false,
-				...(transferData.transferredBy.userType === 'visitor' && { token: room.v.token }),
-				transferData: {
-					transferredBy,
-					ts: new Date(),
-					scope: scopeData,
-					comment,
-					...(previousDepartment && { previousDepartment }),
-					...(nextDepartment && { nextDepartment }),
-					...(transferredTo && { transferredTo }),
-				},
+				scope: scopeData,
+				comment,
+				...(previousDepartment && { previousDepartment }),
+				...(nextDepartment && { nextDepartment }),
+				...(transferredTo && { transferredTo }),
 			},
-			room,
-		);
+		};
+
+		await Message.saveSystemMessageAndNotifyUser('livechat_transfer_history', room._id, '', { _id, username }, transferMessage);
 	}
 
 	async saveGuest(guestData: Pick<ILivechatVisitor, '_id' | 'name' | 'livechatData'> & { email?: string; phone?: string }, userId: string) {
@@ -1723,13 +1716,19 @@ class LivechatClass {
 			const { _id: rid } = roomData;
 			const { name } = guestData;
 
-			await Promise.all([
+			const responses = await Promise.all([
 				Rooms.setFnameById(rid, name),
 				LivechatInquiry.setNameByRoomId(rid, name),
 				Subscriptions.updateDisplayNameByRoomId(rid, name),
 			]);
 
-			void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
+			if (responses[1]?.modifiedCount) {
+				void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
+			}
+
+			if (responses[2]?.modifiedCount) {
+				await notifyOnSubscriptionChangedByRoomId(rid);
+			}
 		}
 
 		void notifyOnRoomChangedById(roomData._id);

@@ -21,7 +21,7 @@
     "@rocket.chat/fuselage-toastbar": "^0.33.0",
     "@rocket.chat/fuselage-tokens": "^0.33.1",
     "@rocket.chat/fuselage-ui-kit": "workspace:~",
-    "@rocket.chat/icons": "^0.36.0",
+    "@rocket.chat/icons": "~0.38.0",
     "@rocket.chat/logo": "^0.31.30",
     "@rocket.chat/styled": "~0.31.25",
     "@rocket.chat/ui-avatar": "workspace:^",
