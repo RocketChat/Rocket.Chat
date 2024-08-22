@@ -10,6 +10,8 @@ import type {
 	InsertOneResult,
 	InsertManyResult,
 	AggregationCursor,
+	DeleteOptions,
+	CountDocumentsOptions,
 } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -83,7 +85,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		options?: FindOptions<ISubscription>,
 	): FindCursor<ISubscription>;
 
-	removeByRoomId(roomId: ISubscription['rid'], options?: { onTrash: (doc: ISubscription) => void }): Promise<DeleteResult>;
+	removeByRoomId(roomId: ISubscription['rid'], options?: DeleteOptions & { onTrash: (doc: ISubscription) => void }): Promise<DeleteResult>;
 
 	findByRoomIdExcludingUserIds(
 		roomId: ISubscription['rid'],
@@ -303,7 +305,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	): FindCursor<ISubscription>;
 
 	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number>;
-	countByRoomId(roomId: string): Promise<number>;
+	countByRoomId(roomId: string, options?: CountDocumentsOptions): Promise<number>;
 	countByUserId(userId: string): Promise<number>;
 	openByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	countByRoomIdAndNotUserId(rid: string, uid: string): Promise<number>;
