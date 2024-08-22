@@ -60,8 +60,10 @@ import {
 	notifyOnLivechatInquiryChangedByRoom,
 	notifyOnRoomChangedById,
 	notifyOnLivechatInquiryChangedByToken,
-	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
 	notifyOnUserChange,
+	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
+	notifyOnSubscriptionChangedByRoomId,
+	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
@@ -289,7 +291,11 @@ class LivechatClass {
 			throw new Error('Error closing room');
 		}
 
-		await Subscriptions.removeByRoomId(rid);
+		await Subscriptions.removeByRoomId(rid, {
+			async onTrash(doc) {
+				void notifyOnSubscriptionChanged(doc, 'removed');
+			},
+		});
 
 		this.logger.debug(`DB updated for room ${room._id}`);
 
@@ -515,12 +521,16 @@ class LivechatClass {
 		const result = await Promise.allSettled([
 			Messages.removeByRoomId(rid),
 			ReadReceipts.removeByRoomId(rid),
-			Subscriptions.removeByRoomId(rid),
+			Subscriptions.removeByRoomId(rid, {
+				async onTrash(doc) {
+					void notifyOnSubscriptionChanged(doc, 'removed');
+				},
+			}),
 			LivechatInquiry.removeByRoomId(rid),
 			LivechatRooms.removeById(rid),
 		]);
 
-		if (inquiry) {
+		if (result[3]?.status === 'fulfilled' && result[3].value?.deletedCount && inquiry) {
 			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
 		}
 
@@ -1143,13 +1153,18 @@ class LivechatClass {
 		const cursor = LivechatRooms.findByVisitorToken(token);
 		for await (const room of cursor) {
 			await Promise.all([
+				Subscriptions.removeByRoomId(room._id, {
+					async onTrash(doc) {
+						void notifyOnSubscriptionChanged(doc, 'removed');
+					},
+				}),
 				FileUpload.removeFilesByRoomId(room._id),
 				Messages.removeByRoomId(room._id),
 				ReadReceipts.removeByRoomId(room._id),
 			]);
 		}
 
-		await Promise.all([Subscriptions.removeByVisitorToken(token), LivechatRooms.removeByVisitorToken(token)]);
+		await LivechatRooms.removeByVisitorToken(token);
 
 		const livechatInquiries = await LivechatInquiry.findIdsByVisitorToken(token).toArray();
 		await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
@@ -1701,13 +1716,19 @@ class LivechatClass {
 			const { _id: rid } = roomData;
 			const { name } = guestData;
 
-			await Promise.all([
+			const responses = await Promise.all([
 				Rooms.setFnameById(rid, name),
 				LivechatInquiry.setNameByRoomId(rid, name),
 				Subscriptions.updateDisplayNameByRoomId(rid, name),
 			]);
 
-			void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
+			if (responses[1]?.modifiedCount) {
+				void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
+			}
+
+			if (responses[2]?.modifiedCount) {
+				await notifyOnSubscriptionChangedByRoomId(rid);
+			}
 		}
 
 		void notifyOnRoomChangedById(roomData._id);
