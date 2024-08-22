@@ -758,7 +758,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const match: Document = {
 			$match: {
 				't': 'l',
-				'servedBy.username': { $exists: true },
+				'servedBy._id': { $exists: true },
 				'open': true,
 				'$or': [
 					{
@@ -792,7 +792,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const match: Document = {
 			$match: {
 				't': 'l',
-				'servedBy.username': { $exists: true },
+				'servedBy._id': { $exists: true },
 				'open': true,
 				'onHold': {
 					$exists: true,
@@ -818,7 +818,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			$match: {
 				't': 'l',
 				'open': { $exists: false },
-				'servedBy.username': { $exists: true },
+				'servedBy._id': { $exists: true },
 				'ts': { $gte: new Date(start) },
 				'closedAt': { $lte: new Date(end) },
 			},
@@ -1075,7 +1075,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				't': 'l',
 				'ts': { $gte: new Date(start), $lte: new Date(end) },
 				'responseBy.lastMessageTs': { $exists: true },
-				'servedBy.ts': { $exists: true },
+				'servedBy._id': { $exists: true },
 			},
 		};
 		const group = {
