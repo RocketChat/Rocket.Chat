@@ -92,6 +92,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['create-livechat-contact'], validateParams: isPOSTOmnichannelContactsProps },
 	{
 		async post() {
+			if (!process.env.TEST_MODE) {
+				throw new Meteor.Error('error-not-allowed', 'This endpoint is only allowed in test mode');
+			}
 			const contactId = await createContact({ ...this.bodyParams, unknown: false });
 
 			return API.v1.success({ contactId });
