@@ -16,20 +16,15 @@ type MarkdownTextParams = {
 	withTruncatedText: boolean;
 } & ComponentProps<typeof Box>;
 
-const walkTokens = (token: marked.Token) => {
-	const boldPattern = /^\*.*\*$|^\*.*|.*\*$/;
-	const italicPattern = /^__(?=\S)([\s\S]*?\S)__(?!_)|^_(?=\S)([\s\S]*?\S)_(?!_)/;
-	if (boldPattern.test(token.raw)) {
-		token.type = 'strong';
-	} else if (italicPattern.test(token.raw)) {
-		token.type = 'em';
-	}
-};
-
-marked.use({ walkTokens });
 const documentRenderer = new marked.Renderer();
 const inlineRenderer = new marked.Renderer();
 const inlineWithoutBreaks = new marked.Renderer();
+
+marked.Lexer.rules.gfm = {
+	...marked.Lexer.rules.gfm,
+	strong: /^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)|^\*(?=\S)([\s\S]*?\S)\*(?!\*)/,
+	em: /^__(?=\S)([\s\S]*?\S)__(?!_)|^_(?=\S)([\s\S]*?\S)_(?!_)/,
+};
 
 const linkMarked = (href: string | null, _title: string | null, text: string): string =>
 	`<a href="${href}" rel="nofollow noopener noreferrer">${text}</a> `;
@@ -117,6 +112,7 @@ const MarkdownText = ({
 				const markedHtml = /inline/.test(variant)
 					? marked.parseInline(new Option(content).innerHTML, markedOptions)
 					: marked.parse(new Option(content).innerHTML, markedOptions);
+
 				if (parseEmoji) {
 					// We are using the old emoji parser here. This could come
 					// with additional processing use, but is the workaround available right now.
