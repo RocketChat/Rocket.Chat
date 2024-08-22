@@ -68,43 +68,43 @@ export const parseFileIntoMessageAttachments = async (
 			attachment.image_dimensions = file.identify.size;
 		}
 
-		// try {
-		// 	attachment.image_preview = await FileUpload.resizeImagePreview(file);
-		// 	console.log('attachement image preview ' + attachment.image_preview);
-		// 	const thumbResult = await FileUpload.createImageThumbnail(file);
-		// 	console.log('thumbResult ' + thumbResult);
-		// 	if (thumbResult) {
-		// 		const { data: thumbBuffer, width, height, thumbFileType, thumbFileName, originalFileId } = thumbResult;
-		// 		const thumbnail = await FileUpload.uploadImageThumbnail(
-		// 			{
-		// 				thumbFileName,
-		// 				thumbFileType,
-		// 				originalFileId,
-		// 			},
-		// 			thumbBuffer,
-		// 			roomId,
-		// 			user._id,
-		// 		);
-		// 		console.log('thumbnail ' + thumbnail);
-		// 		const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
-		// 		attachment.image_url = thumbUrl;
-		// 		attachment.image_type = thumbnail.type;
-		// 		attachment.image_dimensions = {
-		// 			width,
-		// 			height,
-		// 		};
-		// 		files.push({
-		// 			_id: thumbnail._id,
-		// 			name: thumbnail.name || '',
-		// 			type: thumbnail.type || 'file',
-		// 			size: thumbnail.size || 0,
-		// 			format: thumbnail.identify?.format || '',
-		// 		});
-		// 		console.log(files);
-		// 	}
-		// } catch (e) {
-		// 	SystemLogger.error(e);
-		// }
+		try {
+			attachment.image_preview = await FileUpload.resizeImagePreview(file);
+			console.log('attachement image preview ' + attachment.image_preview);
+			const thumbResult = await FileUpload.createImageThumbnail(file);
+			console.log('thumbResult ' + thumbResult);
+			if (thumbResult) {
+				const { data: thumbBuffer, width, height, thumbFileType, thumbFileName, originalFileId } = thumbResult;
+				const thumbnail = await FileUpload.uploadImageThumbnail(
+					{
+						thumbFileName,
+						thumbFileType,
+						originalFileId,
+					},
+					thumbBuffer,
+					roomId,
+					user._id,
+				);
+				console.log('thumbnail ' + thumbnail);
+				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
+				attachment.image_url = thumbUrl;
+				attachment.image_type = thumbnail.type;
+				attachment.image_dimensions = {
+					width,
+					height,
+				};
+				files.push({
+					_id: thumbnail._id,
+					name: thumbnail.name || '',
+					type: thumbnail.type || 'file',
+					size: thumbnail.size || 0,
+					format: thumbnail.identify?.format || '',
+				});
+				console.log(files);
+			}
+		} catch (e) {
+			SystemLogger.error(e);
+		}
 		attachments.push(attachment);
 	} else if (/^audio\/.+/.test(file.type as string)) {
 		const attachment: FileAttachmentProps = {

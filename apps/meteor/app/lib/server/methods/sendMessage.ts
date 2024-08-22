@@ -119,17 +119,12 @@ export async function executeSendMessage(
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		sendMessage(
-			message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>,
-			previewUrls?: string[],
-			uploadIdsToConfirm?: string[],
-			msgData?: any,
-		): any;
+		sendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>, previewUrls?: string[], uploadIdsToConfirm?: string[]): any;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	async sendMessage(message, previewUrls, uploadIdsToConfirm, msgData) {
+	async sendMessage(message, previewUrls, uploadIdsToConfirm) {
 		check(message, Object);
 
 		const uid = Meteor.userId();
@@ -142,13 +137,6 @@ Meteor.methods<ServerMethods>({
 		if (MessageTypes.isSystemMessage(message)) {
 			throw new Error("Cannot send system messages using 'sendMessage'");
 		}
-		if (msgData !== undefined) {
-			message.msg = msgData?.msg;
-			message.tmid = msgData?.tmid;
-			message.t = msgData?.t;
-			message.content = msgData?.content;
-		}
-
 		try {
 			return await executeSendMessage(uid, message, previewUrls, uploadIdsToConfirm);
 		} catch (error: any) {

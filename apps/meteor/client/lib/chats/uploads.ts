@@ -123,28 +123,23 @@ const send = async (
 							msg = '';
 						}
 
-						const text: IMessage = {
-							rid,
-							_id: id,
-							msg: '',
-							ts: new Date(),
-							u: { _id: id, username: id },
-							_updatedAt: new Date(),
-						};
-
 						try {
 							let content;
 							if (getContent) {
 								content = await getContent(fileIds, fileUrls);
 							}
-							const msgData = {
-								msg,
+							const text: IMessage = {
+								rid,
+								_id: id,
+								msg: msg || '',
+								ts: new Date(),
+								u: { _id: id, username: id },
+								_updatedAt: new Date(),
 								tmid,
-								description,
 								t,
 								content,
 							};
-							await sdk.call('sendMessage', text, fileUrls, fileIds, msgData);
+							await sdk.call('sendMessage', text, fileUrls, fileIds);
 
 							updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
 						} catch (error) {

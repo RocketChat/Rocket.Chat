@@ -241,9 +241,13 @@ export const sendMessage = async function (
 		if (message?.t !== 'e2e') {
 			const messageFiles: FileProp[] = [];
 			const messageAttachments: MessageAttachment[] = [];
-			filesToConfirm.forEach(async (file) => {
+			const fileAttachmentPromises = filesToConfirm.map(async (file) => {
 				const roomId = message.rid;
 				const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
+				return { files, attachments };
+			});
+			const filesAndAttachments = await Promise.all(fileAttachmentPromises);
+			filesAndAttachments.forEach(({ files, attachments }) => {
 				messageFiles.push(...files);
 				messageAttachments.push(...attachments);
 			});
