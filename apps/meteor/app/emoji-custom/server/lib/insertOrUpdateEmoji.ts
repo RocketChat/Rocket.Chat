@@ -2,7 +2,6 @@ import { api } from '@rocket.chat/core-services';
 import { EmojiCustom } from '@rocket.chat/models';
 import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { trim } from '../../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -11,7 +10,7 @@ import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 export type EmojiData = {
 	_id?: string;
 	name: string;
-	aliases: string;
+	aliases?: string;
 	extension: string;
 	previousName?: string;
 	previousExtension?: string;
@@ -41,7 +40,7 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 
 	// silently strip colon; this allows for uploading :emojiname: as emojiname
 	emojiData.name = emojiData.name.replace(/:/g, '');
-	emojiData.aliases = emojiData.aliases.replace(/:/g, '');
+	emojiData.aliases = emojiData.aliases?.replace(/:/g, '');
 
 	if (nameValidation.test(emojiData.name)) {
 		throw new Meteor.Error('error-input-is-not-a-valid-field', `${emojiData.name} is not a valid name`, {
@@ -60,13 +59,11 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 				field: 'Alias_Set',
 			});
 		}
-		aliases = _.without(
-			emojiData.aliases
-				.split(/\s*,\s*/)
-				.filter(Boolean)
-				.map((alias) => limax(alias, { replacement: '_' })),
-			emojiData.name,
-		);
+		aliases = emojiData.aliases
+			.split(/\s*,\s*/)
+			.filter(Boolean)
+			.map((alias) => limax(alias, { replacement: '_' }))
+			.filter((alias) => alias !== emojiData.name);
 	}
 
 	emojiData.extension = emojiData.extension === 'svg+xml' ? 'png' : emojiData.extension;
