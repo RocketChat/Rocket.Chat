@@ -1,0 +1,95 @@
+name: 'Meteor Docker'
+
+inputs:
+  CR_USER:
+    required: true
+  CR_PAT:
+    required: true
+  node-version:
+    required: true
+    description: 'Node version'
+    type: string
+  platform:
+    required: false
+    description: 'Platform'
+    type: string
+  build-containers:
+    required: false
+    description: 'Containers to build along with Rocket.Chat'
+    type: string
+  turbo-cache:
+    required: false
+    description: 'Enable turbo cache'
+    default: 'true'
+  publish-image:
+    required: false
+    description: 'Publish image'
+    default: 'true'
+  setup:
+    required: false
+    description: 'Setup node.js'
+    default: 'true'
+  NPM_TOKEN:
+    required: false
+    description: 'NPM token'
+
+runs:
+  using: composite
+
+  steps:
+    - name: Login to GitHub Container Registry
+      if: inputs.publish-image == 'true' &&(github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ inputs.CR_USER }}
+        password: ${{ inputs.CR_PAT }}
+
+    - name: Restore build
+      uses: actions/download-artifact@v4
+      with:
+        name: build
+        path: /tmp/build
+
+    - name: Unpack build
+      shell: bash
+      run: |
+        cd /tmp/build
+        tar xzf Rocket.Chat.tar.gz
+        rm Rocket.Chat.tar.gz
+    - uses: rharkor/caching-for-turbo@v1.5
+      # if we are testing a PR from a fork, we already called the turbo cache at this point, so it should be false
+      if: inputs.turbo-cache == 'true'
+
+    - name: Setup NodeJS
+      uses: ./.github/actions/setup-node
+      if: inputs.setup == 'true'
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache-modules: true
+        install: true
+        NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
+
+    - run: yarn build
+      if: inputs.setup == 'true'
+      shell: bash
+
+    - name: Build Docker images
+      shell: bash
+      run: |
+        args=(rocketchat ${{ inputs.build-containers }})
+
+        docker compose -f docker-compose-ci.yml build "${args[@]}"
+
+    - name: Publish Docker images to GitHub Container Registry
+      if: inputs.publish-image == 'true' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+      shell: bash
+      run: |
+        args=(rocketchat ${{ inputs.build-containers }})
+
+        docker compose -f docker-compose-ci.yml push "${args[@]}"
+
+    - name: Clean up temporary files
+      shell: bash
+      run: |
+        sudo rm -rf /tmp/bundle

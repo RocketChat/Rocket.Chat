@@ -1,0 +1,78 @@
+@import '../../styles/colors';
+@import '../../styles/variables';
+
+.chat {
+	&__messages {
+		position: relative;
+
+		display: flex;
+		overflow: hidden;
+		flex: 1;
+
+		width: 100%;
+
+		&::before {
+			position: absolute;
+			z-index: 1;
+			bottom: -4px;
+
+			width: 100%;
+			height: 4px;
+
+			content: "";
+			transition: all 0.3s;
+
+			border-radius: 50%;
+			box-shadow: 0 0 1px 1px #cccccc;
+		}
+
+		&--atBottom::before {
+			box-shadow: 0 0 1px 1px transparent;
+		}
+
+		&--loading::after {
+			position: absolute;
+			right: 0;
+			left: 0;
+
+			display: block;
+
+			width: 20px;
+			height: 20px;
+
+			margin: $default-padding auto;
+
+			content: "";
+			animation: loader-rotate 1s linear infinite;
+
+			border: 4px solid $color-dark-blue;
+			border-color: $color-dark-blue transparent transparent transparent;
+			border-radius: 50%;
+		}
+	}
+
+	.none__action {
+		margin: 0 6px;
+
+		opacity: 0.6;
+	}
+
+	.emoji-picker-icon {
+		color: #696969;
+
+		&:hover,
+		&:focus {
+			color: black;
+		}
+	}
+}
+
+@keyframes loader-rotate {
+	0% {
+		transform: rotate(0);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}

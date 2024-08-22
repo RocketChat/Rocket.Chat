@@ -1,0 +1,76 @@
+name: Code Checks
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+
+env:
+  TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+
+jobs:
+  code-check:
+    runs-on: ubuntu-20.04
+
+    name: ${{ matrix.check == 'ts' && 'TypeScript' || 'Code Lint' }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        check: ['ts', 'lint']
+
+    steps:
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 4
+
+      - uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache-modules: true
+          install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # - name: Free disk space
+      #   run: |
+      #     sudo apt clean
+      #     docker rmi $(docker image ls -aq)
+      #     df -h
+
+      - uses: rharkor/caching-for-turbo@v1.5
+
+      - name: Cache TypeCheck
+        uses: actions/cache@v3
+        if: matrix.check == 'ts'
+        with:
+          path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
+          key: typecheck-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}-${{ github.event.issue.number }}
+          restore-keys: |
+            typecheck-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}
+            typecheck-cache-${{ runner.OS }}
+            typecheck-cache
+
+      - name: TS TypeCheck
+        if: matrix.check == 'ts'
+        run: yarn turbo run typecheck
+
+      - name: Cache eslint
+        uses: actions/cache@v3
+        if: matrix.check == 'lint'
+        with:
+          path: ./apps/meteor/.eslintcache
+          key: eslintcache-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}-${{ github.event.issue.number }}
+          restore-keys: |
+            eslintcache-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}
+            eslintcache-cache-${{ runner.OS }}
+            eslintcache-cache
+
+      - name: Lint
+        if: matrix.check == 'lint'
+        run: yarn lint

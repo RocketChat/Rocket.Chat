@@ -1,1 +1,0 @@
-export { IRole } from './IUser';

@@ -6,7 +6,7 @@ about: Create a report to help us improve
 
 <!-- 
 
-Please see our guide for opening issues: https://rocket.chat/docs/contributing/reporting-issues
+Please see our guide for opening issues: https://developer.rocket.chat/rocket.chat/contribute-to-rocket.chat/ways-to-contribute/report-bugs
 
 If you have questions or are looking for help/support please see: https://rocket.chat/docs/getting-support
 
@@ -35,6 +35,8 @@ If you are experiencing a bug please search our issues to be sure it is not alre
 ### Server Setup Information:
 
 - Version of Rocket.Chat Server: 
+- License Type:
+- Number of Users: 
 - Operating System: 
 - Deployment Method: <!-- snap/docker/tar/etc -->
 - Number of Running Instances: 

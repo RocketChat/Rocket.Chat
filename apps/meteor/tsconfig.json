@@ -1,0 +1,47 @@
+{
+	"extends": "../../tsconfig.base.json",
+	"compilerOptions": {
+		"target": "es2018",
+		"module": "esNext",
+		"lib": ["esnext", "dom"],
+
+		"allowJs": true,
+		"checkJs": false,
+		"jsx": "react",
+		"noEmit": true,
+
+		/* Strict Type-Checking Options */
+		"strictPropertyInitialization": false,
+
+		/* Additional Checks */
+		"noImplicitReturns": false,
+		"noFallthroughCasesInSwitch": false,
+
+		/* Module Resolution Options */
+		"baseUrl": ".",
+		"paths": {
+			/* Support absolute /imports/* with a leading '/' */
+			"/*": ["*"],
+			"meteor/*": ["./node_modules/@types/meteor/*", ".meteor/local/types/packages.d.ts"]
+		},
+		"preserveSymlinks": true
+
+		// "sourceMap": true,
+		// "declaration": true,
+		// "removeComments": false,
+		// "emitDecoratorMetadata": true,
+		// "experimentalDecorators": true,
+	},
+	"exclude": [
+		"**/node_modules/**",
+		"./.meteor/**",
+		"./imports/client/**",
+		"**/dist/**",
+		"./public/**"
+		// "./ee/server/services/**"
+	],
+	"ts-node": {
+		"files": false,
+		"swc": true
+	}
+}

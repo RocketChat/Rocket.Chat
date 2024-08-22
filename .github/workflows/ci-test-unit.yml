@@ -1,0 +1,53 @@
+name: Tests Unit
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+      enterprise-license:
+        required: false
+        type: string
+    secrets:
+      CODECOV_TOKEN:
+        required: false
+
+env:
+  MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
+  TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+  ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+
+    name: Unit Tests
+
+    steps:
+      - name: Collect Workflow Telemetry
+        uses: catchpoint/workflow-telemetry-action@v2
+        with:
+          theme: dark
+          job_summary: true
+          comment_on_pr: false
+      - uses: actions/checkout@v4
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache-modules: true
+          install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - uses: rharkor/caching-for-turbo@v1.5
+
+      - name: Unit Test
+        run: yarn testunit
+
+      - uses: codecov/codecov-action@v3
+        with:
+          flags: unit
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}

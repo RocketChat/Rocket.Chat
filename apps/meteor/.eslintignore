@@ -1,0 +1,14 @@
+/node_modules/
+#/tests/e2e/
+/packages/
+/app/emoji-emojione/generateEmojiIndex.js
+/public/
+/private/moment-locales/
+/imports/
+/ee/server/services/dist/
+!/.mocharc.js
+!/.mocharc.*.js
+!/.scripts/
+#!/.storybook/
+!/client/.eslintrc.js
+!/ee/client/.eslintrc.js

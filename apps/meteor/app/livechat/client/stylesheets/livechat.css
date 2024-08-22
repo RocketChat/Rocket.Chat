@@ -1,0 +1,42 @@
+:root {
+	--header-min-height: 30px;
+	--footer-min-height: 55px;
+	--link-font-color: #008ce3;
+	--primary-font-color: #444444;
+	--secondary-font-color: #7f7f7f;
+	--info-font-color: #aaaaaa;
+	--color-gray: #9ea2a8;
+}
+
+.external-frame {
+	width: 100%;
+	height: 100%;
+}
+
+.open {
+	padding-left: 4% !important;
+}
+
+.closing-message-body-wrapper {
+	margin-top: 3%;
+}
+
+.closing-message-title {
+	color: var(--color-dark-light);
+
+	font-family: Inter;
+	font-size: 12px;
+	font-weight: bold;
+	font-style: normal;
+	line-height: 16px;
+}
+
+.closing-message-text {
+	color: var(--color-gray);
+
+	font-family: Inter;
+	font-size: 12px;
+	font-weight: 500;
+	font-style: italic;
+	line-height: 16px;
+}

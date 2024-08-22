@@ -1,0 +1,54 @@
+name: Start new release
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        type: choice
+        description: Release type
+        default: next
+        required: true
+        options:
+          - next
+          - patch
+          - cut
+      base-ref:
+        description: Base version
+        default: develop
+        required: false
+
+env:
+  HUSKY: 0
+
+jobs:
+  new-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.base-ref }}
+          fetch-depth: 0
+          token: ${{ secrets.CI_PAT }}
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: 14.21.3
+          cache-modules: true
+          install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - uses: rharkor/caching-for-turbo@v1.5
+
+      - name: Build packages
+        run: yarn build
+
+      - name: 'Start release: ${{ github.event.inputs.name }}'
+        uses: ./packages/release-action
+        with:
+          action: ${{ github.event.inputs.name }}
+          base-ref: ${{ github.event.inputs.base-ref }}
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CI_PAT }}

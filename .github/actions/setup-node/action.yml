@@ -1,0 +1,66 @@
+name: 'Setup Node'
+description: 'Setup NodeJS'
+
+inputs:
+  node-version:
+    required: true
+    description: 'Node version'
+  cache-modules:
+    required: false
+    description: 'Cache node_modules'
+  install:
+    required: false
+    description: 'Install dependencies'
+  deno-dir:
+    required: false
+    description: 'Deno directory'
+    default: ~/.deno-cache
+  NPM_TOKEN:
+    required: false
+    description: 'NPM token'
+
+outputs:
+  node-version:
+    description: 'Node version'
+    value: ${{ steps.node-version.outputs.node-version }}
+
+runs:
+  using: composite
+
+  steps:
+    - run: echo 'DENO_DIR=${{ inputs.deno-dir }}' >> $GITHUB_ENV
+      shell: bash
+
+    - name: Cache Node Modules
+      if: inputs.cache-modules
+      id: cache-node-modules
+      uses: actions/cache@v3
+      with:
+        path: |
+          .turbo/cache
+          node_modules
+          ${{ env.DENO_DIR }}
+          apps/meteor/node_modules
+          apps/meteor/ee/server/services/node_modules
+        key: node-modules-${{ hashFiles('yarn.lock') }}
+    #
+    # Could use this command to list all paths to save:
+    # find . -name 'node_modules' -prune | grep -v "/\.meteor/" | grep -v "/meteor/packages/"
+
+    - name: Use Node.js ${{ inputs.node-version }}
+      id: node-version
+      uses: actions/setup-node@v3.7.0
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'yarn'
+
+    - name: yarn login
+      shell: bash
+      if: inputs.NPM_TOKEN
+      run: |
+        echo "//registry.npmjs.org/:_authToken=${{ inputs.NPM_TOKEN }}" > ~/.npmrc
+
+    - name: yarn install
+      if: inputs.install
+      shell: bash
+      run: yarn

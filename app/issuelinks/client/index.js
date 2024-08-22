@@ -1,1 +1,0 @@
-export { createIssueLinksMessageRenderer } from './client';

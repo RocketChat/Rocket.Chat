@@ -1,9 +1,0 @@
-import '../lib/common';
-import './startup';
-import './tokenChannelsList.html';
-import './tokenChannelsList';
-import './tokenpassChannelSettings.html';
-import './tokenpassChannelSettings';
-import './login-button.css';
-import './channelSettings.css';
-import './styles.css';

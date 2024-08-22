@@ -1,0 +1,10 @@
+.uikit-actions-block {
+	display: flex;
+
+	margin: 0 8px 8px;
+	flex-flow: row wrap;
+
+	&__item {
+		margin: 0 4px 4px;
+	}
+}

@@ -1,0 +1,76 @@
+@use 'sass:math';
+
+@import '../../styles/variables';
+@import '../../styles/colors';
+
+$form-input-border-width: $default-border;
+$form-input-border-radius: $default-border-radius;
+$form-input-padding: (0.75 * $default-gap - $default-border);
+$form-input-small-padding: (0.25 * $default-gap - math.div($default-border, 2)) (0.75 * $default-gap - $default-border);
+$form-input-color: $color-text-dark;
+$form-input-placeholder-color: $color-text-light;
+$form-input-background-color: $bg-color-white;
+$form-input-border-color: $bg-color-grey;
+$form-input-focus-border-color: $color-text-dark;
+$form-input-hover-border-color: $color-text-light;
+$form-input-disabled-background-color: $bg-color-grey;
+$form-input-disabled-color: $color-text-light;
+$form-input-error-color: $color-red;
+$form-input-error-border-color: $color-red;
+$form-input-font-family: $font-family;
+$form-input-font-size: 0.875rem;
+$form-input-font-weight: 500;
+$form-input-line-height: 1.25rem;
+$form-input-disabled-opacity: $disabled-opacity;
+
+@mixin form__input-box {
+	flex: 1 1 auto;
+
+	padding: $form-input-padding;
+
+	transition:
+		border-color $default-time-animation,
+		color $default-time-animation,
+		background-color $default-time-animation,
+		trasform $default-time-animation;
+
+	color: $form-input-color;
+
+	border: $form-input-border-width solid $form-input-border-color;
+	border-radius: $form-input-border-radius;
+	outline: none;
+	background-color: $form-input-background-color;
+
+	font-family: $form-input-font-family;
+	font-size: $form-input-font-size;
+	font-weight: $form-input-font-weight;
+	line-height: $form-input-line-height;
+
+	&:focus {
+		border-color: $form-input-focus-border-color;
+	}
+
+	&:hover {
+		border-color: $form-input-hover-border-color;
+	}
+
+	&--small {
+		padding: $form-input-small-padding;
+	}
+
+	&--disabled {
+		cursor: not-allowed;
+
+		opacity: $form-input-disabled-opacity;
+		color: $form-input-disabled-color;
+		border-color: $form-input-border-color;
+		background-color: $form-input-disabled-background-color;
+	}
+
+	&--error,
+	&--error:focus,
+	&--error:hover {
+		color: $form-input-error-color;
+		border-color: $form-input-error-border-color;
+	}
+}
