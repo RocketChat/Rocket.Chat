@@ -370,7 +370,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			await Rooms.incUsersCountByIds([roomId], -deleteResult.deletedCount, { session: options?.session });
 		}
 
-		await Users.removeRoomByRoomId(roomId, { session: options.session });
+		await Users.removeRoomByRoomId(roomId, { session: options?.session });
 
 		return deleteResult;
 	}

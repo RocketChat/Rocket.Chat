@@ -355,7 +355,7 @@ export abstract class BaseRaw<
 			return this.col.deleteMany(filter);
 		}
 
-		const cursor = this.find(filter, { session: options?.session });
+		const cursor = this.find<ResultFields<T, C>>(filter, { session: options?.session });
 
 		const ids: T['_id'][] = [];
 		for await (const doc of cursor) {
