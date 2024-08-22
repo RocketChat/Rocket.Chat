@@ -7,15 +7,11 @@ import { Meteor } from 'meteor/meteor';
 import { API } from '../../../../api/server';
 import { Contacts, createContact } from '../../lib/Contacts';
 
-/**
- * @deprecated to create a contact, use the omnichannel/contacts endpoint
- */
 API.v1.addRoute(
 	'omnichannel/contact',
 	{
 		authRequired: true,
 		permissionsRequired: ['view-l-room'],
-		deprecation: { version: '8.0.0', alternatives: ['omnichannel/contacts'] },
 	},
 	{
 		async post() {
