@@ -24,13 +24,14 @@ export const useStartCallRoomAction = () => {
 			full: true,
 			order: Math.max(voipCall.order, videoCall.order),
 			featured: true,
-			renderToolboxItem: ({ id, icon, title, disabled }) => (
+			renderToolboxItem: ({ id, icon, title, disabled, className }) => (
 				<GenericMenu
 					button={<HeaderToolbarAction />}
 					key={id}
 					title={title}
 					disabled={disabled}
 					items={[...voipCall.items, ...videoCall.items]}
+					className={className}
 					placement='bottom-start'
 					icon={icon}
 				/>
