@@ -32,6 +32,7 @@ import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { checkUsernameAvailability } from '../../../app/lib/server/functions/checkUsernameAvailability';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
@@ -77,6 +78,21 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		};
 
 		try {
+			const roomId =
+				room.id ||
+				(
+					await Room.create(owner || uid, {
+						...room,
+						type: team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c',
+						name: team.name,
+						members: memberUsernames as string[],
+						extraData: {
+							...room.extraData,
+						},
+						sidepanel,
+					})
+				)._id;
+
 			const result = await Team.insertOne(teamData);
 			const teamId = result.insertedId;
 			// the same uid can be passed at 3 positions: owner, member list or via caller
@@ -106,32 +122,13 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 			await TeamMember.insertMany(membersList);
 
-			let roomId = room.id;
-			if (roomId) {
-				await Rooms.setTeamMainById(roomId, teamId);
-				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
-			} else {
-				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
-
-				const newRoom = {
-					...room,
-					type: roomType,
-					name: team.name,
-					members: memberUsernames as string[],
-					extraData: {
-						...room.extraData,
-						teamId,
-						teamMain: true,
-					},
-					sidepanel,
-				};
-
-				const createdRoom = await Room.create(owner || uid, newRoom);
-				roomId = createdRoom._id;
-			}
-
+			await Rooms.setTeamMainById(roomId, teamId);
 			await Team.updateMainRoomForTeam(teamId, roomId);
 			teamData.roomId = roomId;
+
+			if (room.id) {
+				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
+			}
 
 			return {
 				_id: teamId,
@@ -745,7 +742,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('invalid-team');
 		}
 
-		await Promise.all([
+		const responses = await Promise.all([
 			TeamMember.updateOneByUserIdAndTeamId(member.userId, teamId, memberUpdate),
 			Subscriptions.updateOne(
 				{
@@ -757,6 +754,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				},
 			),
 		]);
+
+		if (responses[1].modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomIdAndUserId(team.roomId, member.userId);
+		}
 	}
 
 	async removeMember(teamId: string, userId: string): Promise<void> {
