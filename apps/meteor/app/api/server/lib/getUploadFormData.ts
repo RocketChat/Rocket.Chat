@@ -170,7 +170,7 @@ export async function getUploadFormData<
 
 	request.pipe(bb);
 
-	return new Promise<UploadResult<K> | OptionalUploadResult<K>>((resolve, reject) => {
+	return new Promise<OptionalUploadResult<K>>((resolve, reject) => {
 		returnResult = resolve;
 		returnError = reject;
 	});
