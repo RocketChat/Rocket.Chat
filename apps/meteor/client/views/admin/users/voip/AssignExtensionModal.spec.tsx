@@ -42,9 +42,9 @@ const root = mockAppRoot()
 		success: true,
 	}));
 
-// TODO: it('should load with default user', async () => {});
+it.todo('should load with default user');
 
-// TODO: it('should load with default extension', async () => {});
+it.todo('should load with default extension');
 
 it('should only enable "Free Extension Numbers" field if username is informed', async () => {
 	render(<AssignExtensionModal onClose={() => undefined} />, {
@@ -52,14 +52,15 @@ it('should only enable "Free Extension Numbers" field if username is informed', 
 		wrapper: root.build(),
 	});
 
-	expect(screen.getByTestId('input-free-extension-numbers')).toHaveClass('disabled');
+	const extensionsSelect = screen.getByRole('button', { name: /Select_an_option/i });
+	expect(extensionsSelect).toHaveClass('disabled');
 	expect(screen.getByLabelText('User_Without_Extensions')).toBeEnabled();
 
 	screen.getByLabelText('User_Without_Extensions').focus();
 	const userOption = await screen.findByRole('option', { name: 'Jane Doe' });
 	await userEvent.click(userOption);
 
-	await waitFor(() => expect(screen.getByTestId('input-free-extension-numbers')).not.toHaveClass('disabled'));
+	await waitFor(() => expect(extensionsSelect).not.toHaveClass('disabled'));
 });
 
 it('should only enable "Associate" button both username and extension is informed', async () => {
@@ -74,9 +75,10 @@ it('should only enable "Associate" button both username and extension is informe
 	const userOption = await screen.findByRole('option', { name: 'Jane Doe' });
 	await userEvent.click(userOption);
 
-	await waitFor(() => expect(screen.getByTestId('input-free-extension-numbers')).not.toHaveClass('disabled'));
+	const extensionsSelect = screen.getByRole('button', { name: /Select_an_option/i });
+	await waitFor(() => expect(extensionsSelect).not.toHaveClass('disabled'));
 
-	screen.getByTestId('input-free-extension-numbers').click();
+	extensionsSelect.click();
 	const extOption = await screen.findByRole('option', { name: '1000' });
 	await userEvent.click(extOption);
 
@@ -94,9 +96,10 @@ it('should call onClose when extension is associated', async () => {
 	const userOption = await screen.findByRole('option', { name: 'Jane Doe' });
 	await userEvent.click(userOption);
 
-	await waitFor(() => expect(screen.getByTestId('input-free-extension-numbers')).not.toHaveClass('disabled'));
+	const extensionsSelect = screen.getByRole('button', { name: /Select_an_option/i });
+	await waitFor(() => expect(extensionsSelect).not.toHaveClass('disabled'));
 
-	screen.getByTestId('input-free-extension-numbers').click();
+	extensionsSelect.click();
 	const extOption = await screen.findByRole('option', { name: '1000' });
 	await userEvent.click(extOption);
 
