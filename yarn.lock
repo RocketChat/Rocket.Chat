@@ -8483,9 +8483,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.45.0-alpha.864":
-  version: 1.45.0-alpha.864
-  resolution: "@rocket.chat/apps-engine@npm:1.45.0-alpha.864"
+"@rocket.chat/apps-engine@npm:1.45.0-alpha.866":
+  version: 1.45.0-alpha.866
+  resolution: "@rocket.chat/apps-engine@npm:1.45.0-alpha.866"
   dependencies:
     "@msgpack/msgpack": 3.0.0-beta2
     adm-zip: ^0.5.9
@@ -8501,7 +8501,7 @@ __metadata:
     uuid: ~8.3.2
   peerDependencies:
     "@rocket.chat/ui-kit": "*"
-  checksum: 4f223dd0671d920e4eaafa465fe87584473f3295061252d1020c0d0e1c076c3b74ee98af1ee5aedfeb72b042e38c3f381d10a151b3a2abcf33a7de8ac6146fa1
+  checksum: 04abb4f712fcca206c6791322b52e2a3d97f3db06f606cd1f58fdda4e63d2123d7004bb445ad7582c52808c3ec4433d465d8855e24f3ab2f8457dafa6b017c5b
   languageName: node
   linkType: hard
 
@@ -8509,7 +8509,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/apps@workspace:packages/apps"
   dependencies:
-    "@rocket.chat/apps-engine": 1.45.0-alpha.864
+    "@rocket.chat/apps-engine": 1.45.0-alpha.866
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     eslint: ~8.45.0
@@ -8582,7 +8582,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@babel/preset-env": ~7.22.20
     "@babel/preset-typescript": ~7.22.15
-    "@rocket.chat/apps-engine": 1.45.0-alpha.864
+    "@rocket.chat/apps-engine": 1.45.0-alpha.866
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/icons": ~0.38.0
@@ -8609,7 +8609,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/core-typings@workspace:packages/core-typings"
   dependencies:
-    "@rocket.chat/apps-engine": 1.45.0-alpha.864
+    "@rocket.chat/apps-engine": 1.45.0-alpha.866
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/icons": ~0.38.0
     "@rocket.chat/message-parser": "workspace:^"
@@ -8681,7 +8681,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer"
   dependencies:
-    "@rocket.chat/apps-engine": 1.45.0-alpha.864
+    "@rocket.chat/apps-engine": 1.45.0-alpha.866
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:~"
@@ -8879,7 +8879,7 @@ __metadata:
     "@babel/preset-env": ~7.22.20
     "@babel/preset-react": ~7.22.15
     "@babel/preset-typescript": ~7.22.15
-    "@rocket.chat/apps-engine": 1.45.0-alpha.864
+    "@rocket.chat/apps-engine": 1.45.0-alpha.866
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/fuselage": ^0.57.0
@@ -9329,7 +9329,7 @@ __metadata:
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
     "@rocket.chat/apps": "workspace:^"
-    "@rocket.chat/apps-engine": 1.45.0-alpha.864
+    "@rocket.chat/apps-engine": 1.45.0-alpha.866
     "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
@@ -9952,7 +9952,7 @@ __metadata:
     "@babel/core": ~7.22.20
     "@babel/preset-env": ~7.22.20
     "@babel/preset-typescript": ~7.22.15
-    "@rocket.chat/apps-engine": 1.45.0-alpha.864
+    "@rocket.chat/apps-engine": 1.45.0-alpha.866
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
@@ -10066,7 +10066,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/rest-typings@workspace:packages/rest-typings"
   dependencies:
-    "@rocket.chat/apps-engine": 1.45.0-alpha.864
+    "@rocket.chat/apps-engine": 1.45.0-alpha.866
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:~"
     "@rocket.chat/message-parser": "workspace:^"
@@ -36694,7 +36694,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "rocketchat-services@workspace:apps/meteor/ee/server/services"
   dependencies:
-    "@rocket.chat/apps-engine": 1.45.0-alpha.864
+    "@rocket.chat/apps-engine": 1.45.0-alpha.866
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": ~0.31.25

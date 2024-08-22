@@ -230,7 +230,7 @@
 		"@rocket.chat/agenda": "workspace:^",
 		"@rocket.chat/api-client": "workspace:^",
 		"@rocket.chat/apps": "workspace:^",
-		"@rocket.chat/apps-engine": "1.45.0-alpha.864",
+		"@rocket.chat/apps-engine": "1.45.0-alpha.866",
 		"@rocket.chat/base64": "workspace:^",
 		"@rocket.chat/cas-validate": "workspace:^",
 		"@rocket.chat/core-services": "workspace:^",
