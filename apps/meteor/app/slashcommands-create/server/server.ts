@@ -6,7 +6,7 @@ import { i18n } from '../../../server/lib/i18n';
 import { createChannelMethod } from '../../lib/server/methods/createChannel';
 import { createPrivateGroupMethod } from '../../lib/server/methods/createPrivateGroup';
 import { settings } from '../../settings/server';
-import { slashCommands } from '../../utils/lib/slashCommand';
+import { slashCommands } from '../../utils/server/slashCommand';
 
 slashCommands.add({
 	command: 'create',

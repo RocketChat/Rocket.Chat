@@ -11,6 +11,7 @@ export interface IOAuthAppsModel extends IBaseModel<IOAuthApps> {
 			| {
 					_id: string;
 			  },
+		options?: FindOptions<IOAuthApps>,
 	): Promise<IOAuthApps | null>;
 
 	findOneActiveByClientId(clientId: string, options?: FindOptions<IOAuthApps>): Promise<IOAuthApps | null>;

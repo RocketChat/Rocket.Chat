@@ -5,7 +5,7 @@ import moment from 'moment';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { convertDateToInt, diffBetweenDaysInclusive, convertIntToDate, getTotalOfWeekItems } from './date';
 
-export const handleMessagesSent = async (message: IMessage, room?: IRoom): Promise<IMessage> => {
+export const handleMessagesSent = async (message: IMessage, { room }: { room?: IRoom }): Promise<IMessage> => {
 	const roomTypesToShow = roomCoordinator.getTypesToShowOnDashboard();
 	if (!room || !roomTypesToShow.includes(room.t)) {
 		return message;
