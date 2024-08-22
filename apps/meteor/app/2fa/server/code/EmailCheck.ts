@@ -24,7 +24,7 @@ export class EmailCheck implements ICodeCheck {
 			return false;
 		}
 
-		if (!settings.get('Accounts_twoFactorAuthentication_email_available_for_oAuth_users') && isOAuthUser(user)) {
+		if (!settings.get('Accounts_twoFactorAuthentication_email_available_for_OAuth_users') && isOAuthUser(user)) {
 			return false;
 		}
 

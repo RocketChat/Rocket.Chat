@@ -17,7 +17,7 @@ const AccountSecurityPage = (): ReactElement => {
 	const t = useTranslation();
 	const user = useUser();
 
-	const isEmail2FAAvailableForOAuth = useSetting('Accounts_twoFactorAuthentication_email_available_for_oAuth_users');
+	const isEmail2FAAvailableForOAuth = useSetting('Accounts_twoFactorAuthentication_email_available_for_OAuth_users');
 	const isOAuthUser = user?.isOAuthUser;
 	const isEmail2FAAllowed = !isOAuthUser || isEmail2FAAvailableForOAuth;
 
