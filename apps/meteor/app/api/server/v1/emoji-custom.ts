@@ -114,16 +114,15 @@ API.v1.addRoute(
 			fields.extension = extension;
 
 			try {
-				await Meteor.callAsync('insertOrUpdateEmoji', {
+				const emojiData = await insertOrUpdateEmoji(this.userId, {
 					...fields,
 					newFile: true,
 					aliases: fields.aliases || '',
+					name: fields.name,
+					extension: fields.extension,
 				});
-				await Meteor.callAsync('uploadEmojiCustom', fileBuffer, mimetype, {
-					...fields,
-					newFile: true,
-					aliases: fields.aliases || '',
-				});
+
+				await uploadEmojiCustomWithBuffer(this.userId, fileBuffer, mimetype, emojiData);
 			} catch (e) {
 				SystemLogger.error(e);
 				return API.v1.failure();

@@ -18,7 +18,7 @@ const getFile = async (file: Buffer, extension: string) => {
 	return sharp(file).png().toBuffer();
 };
 
-export type EmojiDataWithAliases = Omit<EmojiData, 'aliases'> & { aliases?: string | string[] };
+export type EmojiDataWithAliases = Omit<EmojiData, 'aliases' | '_id'> & { _id: string; aliases?: string | string[] };
 
 export async function uploadEmojiCustom(
 	userId: string | null,
@@ -72,11 +72,7 @@ export async function uploadEmojiCustomWithBuffer(
 		);
 		ws.on('end', async () => {
 			const etag = Random.hexString(6);
-			if (emojiData._id) {
-				await EmojiCustom.setETagById(emojiData._id, etag);
-			} else {
-				await EmojiCustom.setETagByName(emojiData.name, etag);
-			}
+			await EmojiCustom.setETagById(emojiData._id, etag);
 			setTimeout(() => api.broadcast('emoji.updateCustom', { ...emojiData, etag }), 500);
 			resolve();
 		});
