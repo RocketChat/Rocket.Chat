@@ -3,7 +3,7 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
+import { before, after, describe, it } from 'mocha';
 import moment from 'moment';
 import type { Response } from 'supertest';
 
@@ -19,6 +19,7 @@ import {
 import { createAnOnlineAgent } from '../../../data/livechat/users';
 import { sleep } from '../../../data/livechat/utils';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting } from '../../../data/permissions.helper';
+import { deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - dashboards', function () {
@@ -777,6 +778,198 @@ describe('LIVECHAT - dashboards', function () {
 		});
 	});
 
+	describe('[livechat/analytics/agent-overview] - Average first response time', () => {
+		let agent: { credentials: Credentials; user: IUser & { username: string } };
+		let originalFirstResponseTimeInSeconds: number;
+		let roomId: string;
+		const firstDelayInSeconds = 4;
+		const secondDelayInSeconds = 8;
+
+		before(async () => {
+			agent = await createAnOnlineAgent();
+		});
+
+		after(async () => {
+			await deleteUser(agent.user);
+		});
+
+		it('should return no average response time for an agent if no response has been sent in the period', async () => {
+			await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Avg_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+			expect(result.body.data).to.not.deep.include({ name: agent.user.username });
+		});
+
+		it("should not consider system messages in agents' first response time metric", async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomId = response.room._id;
+
+			await sleep(firstDelayInSeconds * 1000);
+			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Avg_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+
+			const agentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
+			);
+			expect(agentData).to.not.be.undefined;
+			expect(agentData).to.have.property('name', agent.user.username);
+			expect(agentData).to.have.property('value');
+			originalFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			expect(originalFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(firstDelayInSeconds);
+		});
+
+		it('should correctly calculate the average time of first responses for an agent', async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomId = response.room._id;
+
+			await sleep(secondDelayInSeconds * 1000);
+			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Avg_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array').that.is.not.empty;
+
+			const agentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
+			);
+			expect(agentData).to.not.be.undefined;
+			expect(agentData).to.have.property('name', agent.user.username);
+			expect(agentData).to.have.property('value');
+			const averageFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			expect(averageFirstResponseTimeInSeconds).to.be.greaterThan(originalFirstResponseTimeInSeconds);
+			expect(averageFirstResponseTimeInSeconds).to.be.greaterThanOrEqual((firstDelayInSeconds + secondDelayInSeconds) / 2);
+			expect(averageFirstResponseTimeInSeconds).to.be.lessThan(secondDelayInSeconds);
+		});
+	});
+
+	describe('[livechat/analytics/agent-overview] - Best first response time', () => {
+		let agent: { credentials: Credentials; user: IUser & { username: string } };
+		let originalBestFirstResponseTimeInSeconds: number;
+		let roomId: string;
+
+		before(async () => {
+			agent = await createAnOnlineAgent();
+		});
+
+		after(() => deleteUser(agent.user));
+
+		it('should return no best response time for an agent if no response has been sent in the period', async () => {
+			await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Best_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+			expect(result.body.data).to.not.deep.include({ name: agent.user.username });
+		});
+
+		it("should not consider system messages in agents' best response time metric", async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomId = response.room._id;
+
+			const delayInSeconds = 4;
+			await sleep(delayInSeconds * 1000);
+
+			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Best_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array').that.is.not.empty;
+
+			const agentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
+			);
+			expect(agentData).to.not.be.undefined;
+			expect(agentData).to.have.property('name', agent.user.username);
+			expect(agentData).to.have.property('value');
+			originalBestFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			expect(originalBestFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(delayInSeconds);
+		});
+
+		it('should correctly calculate the best first response time for an agent and there are multiple first responses in the period', async () => {
+			const response = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+			roomId = response.room._id;
+
+			const delayInSeconds = 6;
+			await sleep(delayInSeconds * 1000);
+
+			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
+
+			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: today, to: today, name: 'Best_first_response_time' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array');
+
+			const agentData = result.body.data.find(
+				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
+			);
+			expect(agentData).to.not.be.undefined;
+			expect(agentData).to.have.property('name', agent.user.username);
+			expect(agentData).to.have.property('value');
+			const bestFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			expect(bestFirstResponseTimeInSeconds).to.be.equal(originalBestFirstResponseTimeInSeconds);
+		});
+	});
+
 	describe('livechat/analytics/overview', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
@@ -835,12 +1028,12 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body).to.be.an('array');
 
 			const expectedResult = [
-				{ title: 'Total_conversations', value: 7 },
-				{ title: 'Open_conversations', value: 4 },
+				{ title: 'Total_conversations', value: 13 },
+				{ title: 'Open_conversations', value: 10 },
 				{ title: 'On_Hold_conversations', value: 1 },
 				// { title: 'Total_messages', value: 6 },
 				// { title: 'Busiest_day', value: moment().format('dddd') },
-				{ title: 'Conversations_per_day', value: '3.50' },
+				{ title: 'Conversations_per_day', value: '6.50' },
 				// { title: 'Busiest_time', value: '' },
 			];
 

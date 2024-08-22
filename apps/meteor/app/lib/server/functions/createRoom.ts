@@ -12,7 +12,7 @@ import { beforeCreateRoomCallback } from '../../../../lib/callbacks/beforeCreate
 import { getSubscriptionAutotranslateDefaultConfig } from '../../../../server/lib/getSubscriptionAutotranslateDefaultConfig';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
-import { notifyOnRoomChanged } from '../lib/notifyListener';
+import { notifyOnRoomChanged, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
 import { createDirectRoom } from './createDirectRoom';
 
 const isValidName = (name: unknown): name is string => {
@@ -47,7 +47,11 @@ async function createUsersSubscriptions({
 			...getDefaultSubscriptionPref(owner),
 		};
 
-		await Subscriptions.createWithRoomAndUser(room, owner, extra);
+		const { insertedId } = await Subscriptions.createWithRoomAndUser(room, owner, extra);
+
+		if (insertedId) {
+			await notifyOnRoomChanged(room, 'inserted');
+		}
 
 		return;
 	}
@@ -98,7 +102,9 @@ async function createUsersSubscriptions({
 		await Users.addRoomByUserIds(memberIds, room._id);
 	}
 
-	await Subscriptions.createWithRoomAndManyUsers(room, subs);
+	const { insertedIds } = await Subscriptions.createWithRoomAndManyUsers(room, subs);
+
+	Object.values(insertedIds).forEach((subId) => notifyOnSubscriptionChangedById(subId, 'inserted'));
 
 	await Rooms.incUsersCountById(room._id, subs.length);
 }

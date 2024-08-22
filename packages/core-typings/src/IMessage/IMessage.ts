@@ -22,90 +22,95 @@ export type MessageUrl = {
 	parsedUrl?: Pick<UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
 };
 
-type VoipMessageTypesValues =
-	| 'voip-call-started'
-	| 'voip-call-declined'
-	| 'voip-call-on-hold'
-	| 'voip-call-unhold'
-	| 'voip-call-ended'
-	| 'voip-call-duration'
-	| 'voip-call-wrapup'
-	| 'voip-call-ended-unexpectedly';
+const VoipMessageTypesValues = [
+	'voip-call-started',
+	'voip-call-declined',
+	'voip-call-on-hold',
+	'voip-call-unhold',
+	'voip-call-ended',
+	'voip-call-duration',
+	'voip-call-wrapup',
+	'voip-call-ended-unexpectedly',
+] as const;
 
-type TeamMessageTypes =
-	| 'removed-user-from-team'
-	| 'added-user-to-team'
-	| 'ult'
-	| 'user-converted-to-team'
-	| 'user-converted-to-channel'
-	| 'user-removed-room-from-team'
-	| 'user-deleted-room-from-team'
-	| 'user-added-room-to-team'
-	| 'ujt';
+const TeamMessageTypesValues = [
+	'removed-user-from-team',
+	'added-user-to-team',
+	'ult',
+	'user-converted-to-team',
+	'user-converted-to-channel',
+	'user-removed-room-from-team',
+	'user-deleted-room-from-team',
+	'user-added-room-to-team',
+	'ujt',
+] as const;
 
-type LivechatMessageTypes =
-	| 'livechat_navigation_history'
-	| 'livechat_transfer_history'
-	| 'omnichannel_priority_change_history'
-	| 'omnichannel_sla_change_history'
-	| 'livechat_transcript_history'
-	| 'livechat_video_call'
-	| 'livechat_transfer_history_fallback'
-	| 'livechat-close'
-	| 'livechat_webrtc_video_call'
-	| 'livechat-started';
+const LivechatMessageTypesValues = [
+	'livechat_navigation_history',
+	'livechat_transfer_history',
+	'livechat_transcript_history',
+	'livechat_video_call',
+	'livechat_transfer_history_fallback',
+	'livechat-close',
+	'livechat_webrtc_video_call',
+	'livechat-started',
+	'omnichannel_priority_change_history',
+	'omnichannel_sla_change_history',
+	'omnichannel_placed_chat_on_hold',
+	'omnichannel_on_hold_chat_resumed',
+] as const;
 
-type OmnichannelTypesValues = 'omnichannel_placed_chat_on_hold' | 'omnichannel_on_hold_chat_resumed';
+const OtrMessageTypeValues = ['otr', 'otr-ack'] as const;
 
-type OtrMessageTypeValues = 'otr' | 'otr-ack';
+const OtrSystemMessagesValues = ['user_joined_otr', 'user_requested_otr_key_refresh', 'user_key_refreshed_successfully'] as const;
+export type OtrSystemMessages = (typeof OtrSystemMessagesValues)[number];
 
-export type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
-
-export type MessageTypesValues =
-	| 'e2e'
-	| 'uj'
-	| 'ul'
-	| 'ru'
-	| 'au'
-	| 'mute_unmute'
-	| 'r'
-	| 'ut'
-	| 'wm'
-	| 'rm'
-	| 'subscription-role-added'
-	| 'subscription-role-removed'
-	| 'room-archived'
-	| 'room-unarchived'
-	| 'room_changed_privacy'
-	| 'room_changed_description'
-	| 'room_changed_announcement'
-	| 'room_changed_avatar'
-	| 'room_changed_topic'
-	| 'room_e2e_enabled'
-	| 'room_e2e_disabled'
-	| 'user-muted'
-	| 'user-unmuted'
-	| 'room-removed-read-only'
-	| 'room-set-read-only'
-	| 'room-allowed-reacting'
-	| 'room-disallowed-reacting'
-	| 'command'
-	| 'videoconf'
-	| 'message_pinned'
-	| 'message_pinned_e2e'
-	| 'new-moderator'
-	| 'moderator-removed'
-	| 'new-owner'
-	| 'owner-removed'
-	| 'new-leader'
-	| 'leader-removed'
-	| 'discussion-created'
-	| LivechatMessageTypes
-	| TeamMessageTypes
-	| VoipMessageTypesValues
-	| OmnichannelTypesValues
-	| OtrMessageTypeValues
-	| OtrSystemMessages;
+const MessageTypes = [
+	'e2e',
+	'uj',
+	'ul',
+	'ru',
+	'au',
+	'mute_unmute',
+	'r',
+	'ut',
+	'wm',
+	'rm',
+	'subscription-role-added',
+	'subscription-role-removed',
+	'room-archived',
+	'room-unarchived',
+	'room_changed_privacy',
+	'room_changed_description',
+	'room_changed_announcement',
+	'room_changed_avatar',
+	'room_changed_topic',
+	'room_e2e_enabled',
+	'room_e2e_disabled',
+	'user-muted',
+	'user-unmuted',
+	'room-removed-read-only',
+	'room-set-read-only',
+	'room-allowed-reacting',
+	'room-disallowed-reacting',
+	'command',
+	'videoconf',
+	'message_pinned',
+	'message_pinned_e2e',
+	'new-moderator',
+	'moderator-removed',
+	'new-owner',
+	'owner-removed',
+	'new-leader',
+	'leader-removed',
+	'discussion-created',
+	...TeamMessageTypesValues,
+	...LivechatMessageTypesValues,
+	...VoipMessageTypesValues,
+	...OtrMessageTypeValues,
+	...OtrSystemMessagesValues,
+] as const;
+export type MessageTypesValues = (typeof MessageTypes)[number];
 
 export type TokenType = 'code' | 'inlinecode' | 'bold' | 'italic' | 'strike' | 'link';
 export type Token = {
@@ -231,9 +236,9 @@ export interface IMessage extends IRocketChatRecord {
 	};
 }
 
-export type MessageSystem = {
-	t: 'system';
-};
+export interface ISystemMessage extends IMessage {
+	t: MessageTypesValues;
+}
 
 export interface IEditedMessage extends IMessage {
 	editedAt: Date;
@@ -248,6 +253,9 @@ export const isEditedMessage = (message: IMessage): message is IEditedMessage =>
 	(message as { editedBy?: unknown }).editedBy !== null &&
 	'_id' in (message as IEditedMessage).editedBy &&
 	typeof (message as IEditedMessage).editedBy._id === 'string';
+
+export const isSystemMessage = (message: IMessage): message is ISystemMessage =>
+	message.t !== undefined && MessageTypes.includes(message.t);
 
 export const isDeletedMessage = (message: IMessage): message is IEditedMessage => isEditedMessage(message) && message.t === 'rm';
 export const isMessageFromMatrixFederation = (message: IMessage): boolean =>
