@@ -397,6 +397,28 @@ describe('[EmojiCustom]', () => {
 				})
 				.end(done);
 		});
+
+		it('should return the emoji even when no etag is passed (for old emojis)', async () => {
+			const res = await request.get(`/emoji-custom/${createdCustomEmoji.name}.png`).set(credentials).expect(200);
+
+			expect(res.headers).to.have.property('content-type', 'image/png');
+			expect(res.headers).to.have.property('cache-control', 'public, max-age=31536000');
+			expect(res.headers).to.have.property('content-disposition', 'inline');
+		});
+
+		it('should return success if the etag is invalid', async () => {
+			const res = await request
+				.get(`/emoji-custom/${createdCustomEmoji.name}.png?etag=1234`)
+				.set(credentials)
+				.set({
+					'if-none-match': 'invalid-etag',
+				})
+				.expect(200);
+
+			expect(res.headers).to.have.property('content-type', 'image/png');
+			expect(res.headers).to.have.property('cache-control', 'public, max-age=31536000');
+			expect(res.headers).to.have.property('content-disposition', 'inline');
+		});
 	});
 
 	describe('[/emoji-custom.delete]', () => {

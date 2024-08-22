@@ -161,10 +161,9 @@ API.v1.addRoute(
 			fields.previousExtension = emojiToUpdate.extension;
 			fields.aliases = fields.aliases || '';
 
-			let newFile = false;
+			const newFile = !!fileBuffer?.length;
 
 			if (fileBuffer?.length) {
-				newFile = true;
 				const isUploadable = await Media.isImage(fileBuffer);
 				if (!isUploadable) {
 					throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
