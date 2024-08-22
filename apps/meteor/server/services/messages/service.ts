@@ -13,6 +13,8 @@ import { executeSetReaction } from '../../../app/reactions/server/setReaction';
 import { settings } from '../../../app/settings/server';
 import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
+import { FederationMatrixInvalidConfigurationError } from '../federation/utils';
+import { FederationActions } from './hooks/BeforeFederationActions';
 import { BeforeSaveBadWords } from './hooks/BeforeSaveBadWords';
 import { BeforeSaveCheckMAC } from './hooks/BeforeSaveCheckMAC';
 import { BeforeSaveJumpToMessage } from './hooks/BeforeSaveJumpToMessage';
@@ -168,6 +170,10 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
 
+		if (!FederationActions.shouldPerformAction(message, room)) {
+			throw new FederationMatrixInvalidConfigurationError('Unable to send message');
+		}
+
 		message = await mentionServer.execute(message);
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
 		message = await this.badWords.filterBadWords({ message });
@@ -237,4 +243,16 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 	// 	await Room.join({ room, user });
 	// }
+
+	async beforeReacted(message: IMessage, room: IRoom) {
+		if (!FederationActions.shouldPerformAction(message, room)) {
+			throw new FederationMatrixInvalidConfigurationError('Unable to react to message');
+		}
+	}
+
+	async beforeDelete(message: IMessage, room: IRoom) {
+		if (!FederationActions.shouldPerformAction(message, room)) {
+			throw new FederationMatrixInvalidConfigurationError('Unable to delete message');
+		}
+	}
 }

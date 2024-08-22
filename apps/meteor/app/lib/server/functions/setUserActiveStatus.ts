@@ -1,6 +1,7 @@
+import { Federation, FederationEE, License } from '@rocket.chat/core-services';
 import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
 import { isUserFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
+import { Rooms, Users, Subscriptions, MatrixBridgedUser } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -8,7 +9,12 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import { notifyOnRoomChangedById, notifyOnRoomChangedByUserDM, notifyOnUserChange } from '../lib/notifyListener';
+import {
+	notifyOnRoomChangedById,
+	notifyOnRoomChangedByUserDM,
+	notifyOnSubscriptionChangedByNameAndRoomType,
+	notifyOnUserChange,
+} from '../lib/notifyListener';
 import { closeOmnichannelConversations } from './closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
@@ -38,8 +44,10 @@ async function reactivateDirectConversations(userId: string) {
 		return acc;
 	}, []);
 
-	await Rooms.setDmReadOnlyByUserId(userId, roomsToReactivate, false, false);
-	void notifyOnRoomChangedById(roomsToReactivate);
+	const setDmReadOnlyResponse = await Rooms.setDmReadOnlyByUserId(userId, roomsToReactivate, false, false);
+	if (setDmReadOnlyResponse.modifiedCount) {
+		void notifyOnRoomChangedById(roomsToReactivate);
+	}
 }
 
 export async function setUserActiveStatus(userId: string, active: boolean, confirmRelinquish = false): Promise<boolean | undefined> {
@@ -56,6 +64,22 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 		throw new Meteor.Error('error-user-is-federated', 'Cannot change federated users status', {
 			method: 'setUserActiveStatus',
 		});
+	}
+
+	if (user.active !== active) {
+		const remoteUser = await MatrixBridgedUser.getExternalUserIdByLocalUserId(userId);
+
+		if (remoteUser) {
+			if (active) {
+				throw new Meteor.Error('error-not-allowed', 'Deactivated federated users can not be re-activated', {
+					method: 'setUserActiveStatus',
+				});
+			}
+
+			const federation = (await License.hasValidLicense()) ? FederationEE : Federation;
+
+			await federation.deactivateRemoteUser(remoteUser);
+		}
 	}
 
 	// Users without username can't do anything, so there is no need to check for owned rooms
@@ -101,7 +125,10 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 	}
 
 	if (user.username) {
-		await Subscriptions.setArchivedByUsername(user.username, !active);
+		const { modifiedCount } = await Subscriptions.setArchivedByUsername(user.username, !active);
+		if (modifiedCount) {
+			void notifyOnSubscriptionChangedByNameAndRoomType({ t: 'd', name: user.username });
+		}
 	}
 
 	if (active === false) {
