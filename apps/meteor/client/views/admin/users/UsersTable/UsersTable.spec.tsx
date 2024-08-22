@@ -5,9 +5,6 @@ import '@testing-library/jest-dom';
 
 import UsersTable from './UsersTable';
 
-jest.mock('../../../../../app/models/client/models/Roles', () => ({ Roles: { findOne: () => undefined } }));
-jest.mock('../../../../components/UserStatus', () => ({ UserStatus: () => null }));
-
 const createUser = (freeSwitchExtension?: string) => ({
 	_id: 'john.doe',
 	username: 'john.doe',
