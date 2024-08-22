@@ -400,7 +400,7 @@ class LivechatClass {
 			session,
 		});
 
-		if (removedSubs !== subs) {
+		if (removedSubs.deletedCount !== subs) {
 			throw new Error('Error removing subscriptions');
 		}
 
