@@ -7,7 +7,9 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
+import { isFederationReady, isFederationEnabled, FederationMatrixInvalidConfigurationError } from '../services/federation/utils';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -36,10 +38,16 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!(await hasPermissionAsync(uid, 'set-owner', rid)) && !isRoomFederated(room)) {
+		const isFederated = isRoomFederated(room);
+
+		if (!(await hasPermissionAsync(uid, 'set-owner', rid)) && !isFederated) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'addRoomOwner',
 			});
+		}
+
+		if (isFederated && (!isFederationEnabled() || !isFederationReady())) {
+			throw new FederationMatrixInvalidConfigurationError('unable to change room owners');
 		}
 
 		const user = await Users.findOneById(userId);
@@ -64,7 +72,10 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await Subscriptions.addRoleById(subscription._id, 'owner');
+		const addRoleResponse = await Subscriptions.addRoleById(subscription._id, 'owner');
+		if (addRoleResponse.modifiedCount) {
+			void notifyOnSubscriptionChangedById(subscription._id);
+		}
 
 		const fromUser = await Users.findOneById(uid);
 		if (!fromUser) {

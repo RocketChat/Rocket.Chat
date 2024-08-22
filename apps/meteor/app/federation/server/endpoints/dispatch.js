@@ -6,7 +6,13 @@ import EJSON from 'ejson';
 import { API } from '../../../api/server';
 import { FileUpload } from '../../../file-upload/server';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
-import { notifyOnMessageChange, notifyOnRoomChanged, notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
+import {
+	notifyOnMessageChange,
+	notifyOnRoomChanged,
+	notifyOnRoomChangedById,
+	notifyOnSubscriptionChanged,
+	notifyOnSubscriptionChangedById,
+} from '../../../lib/server/lib/notifyListener';
 import { notifyUsersOnMessage } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendAllNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 import { processThreads } from '../../../threads/server/hooks/aftersavemessage';
@@ -141,7 +147,10 @@ const eventHandlers = {
 					const denormalizedSubscription = normalizers.denormalizeSubscription(subscription);
 
 					// Create the subscription
-					await Subscriptions.insertOne(denormalizedSubscription);
+					const { insertedId } = await Subscriptions.insertOne(denormalizedSubscription);
+					if (insertedId) {
+						void notifyOnSubscriptionChangedById(insertedId);
+					}
 					federationAltered = true;
 				}
 			} catch (ex) {
@@ -176,7 +185,10 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the user's subscription
-			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			if (deletedSubscription) {
+				void notifyOnSubscriptionChanged(deletedSubscription, 'removed');
+			}
 
 			// Refresh the servers list
 			await FederationServers.refreshServers();
@@ -204,7 +216,10 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the user's subscription
-			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			if (deletedSubscription) {
+				void notifyOnSubscriptionChanged(deletedSubscription, 'removed');
+			}
 
 			// Refresh the servers list
 			await FederationServers.refreshServers();
