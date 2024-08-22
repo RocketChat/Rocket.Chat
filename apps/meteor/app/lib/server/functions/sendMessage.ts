@@ -1,6 +1,6 @@
 import { Apps } from '@rocket.chat/apps';
 import { api, Message } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, IUpload, FileProp, MessageAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUpload, FileProp, MessageAttachment, IUser } from '@rocket.chat/core-typings';
 import { Messages, Uploads } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
@@ -8,12 +8,12 @@ import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import { isURL } from '../../../../lib/utils/isURL';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
+import { parseFileIntoMessageAttachments } from '../../../file-upload/server/methods/sendFileMessage';
 import { settings } from '../../../settings/server';
 import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
-import { parseFileIntoMessageAttachments } from '../../../../app/file-upload/server/methods/sendFileMessage';
 
 // TODO: most of the types here are wrong, but I don't want to change them now
 
@@ -213,6 +213,39 @@ export function prepareMessageObject(
 	}
 }
 
+const parseFilesIntoMessageAttachments = async (
+	filesToConfirm: Partial<IUpload>[],
+	roomId: string,
+	user: IUser,
+): Promise<{ files: FileProp[]; attachments: MessageAttachment[] }> => {
+	const messageFiles: FileProp[] = [];
+	const messageAttachments: MessageAttachment[] = [];
+
+	const fileAttachmentPromises = filesToConfirm.map(async (file) => {
+		try {
+			if (!file) {
+				console.warn('Skipping undefined file');
+				return { files: [], attachments: [] };
+			}
+
+			const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
+			return { files, attachments };
+		} catch (error) {
+			console.error('Error processing file:', file, error);
+			return { files: [], attachments: [] };
+		}
+	});
+
+	const filesAndAttachments = await Promise.all(fileAttachmentPromises);
+
+	filesAndAttachments.forEach(({ files, attachments }) => {
+		messageFiles.push(...files);
+		messageAttachments.push(...attachments);
+	});
+
+	return { files: messageFiles, attachments: messageAttachments };
+};
+
 /**
  * Validates and sends the message object.
  */
@@ -239,20 +272,9 @@ export const sendMessage = async function (
 			}),
 		);
 		if (message?.t !== 'e2e') {
-			const messageFiles: FileProp[] = [];
-			const messageAttachments: MessageAttachment[] = [];
-			const fileAttachmentPromises = filesToConfirm.map(async (file) => {
-				const roomId = message.rid;
-				const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
-				return { files, attachments };
-			});
-			const filesAndAttachments = await Promise.all(fileAttachmentPromises);
-			filesAndAttachments.forEach(({ files, attachments }) => {
-				messageFiles.push(...files);
-				messageAttachments.push(...attachments);
-			});
-			message.files = messageFiles;
-			message.attachments = messageAttachments;
+			const { files, attachments } = await parseFilesIntoMessageAttachments(filesToConfirm, message.rid, user);
+			message.files = files;
+			message.attachments = attachments;
 		}
 	}
 
