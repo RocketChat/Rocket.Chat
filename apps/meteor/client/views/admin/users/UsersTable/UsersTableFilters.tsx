@@ -1,11 +1,12 @@
 import type { IRole } from '@rocket.chat/core-typings';
+import { Box, Icon, Margins, TextInput } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
+import type { FormEvent } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import FilterByText from '../../../../components/FilterByText';
 import type { UsersFilters } from '../AdminUsersPage';
 
 type UsersTableFiltersProps = {
@@ -20,9 +21,9 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 	const [text, setText] = useState('');
 
 	const handleSearchTextChange = useCallback(
-		(text) => {
-			setUsersFilters({ text, roles: selectedRoles });
-			setText(text);
+		({ target: { value } }) => {
+			setText(value);
+			setUsersFilters({ text: value, roles: selectedRoles });
 		},
 		[selectedRoles, setUsersFilters],
 	);
@@ -58,20 +59,43 @@ const UsersTableFilters = ({ roleData, setUsersFilters }: UsersTableFiltersProps
 	);
 
 	const breakpoints = useBreakpoints();
-	const fixFiltersSize = breakpoints.includes('lg') ? { maxWidth: 'x224', minWidth: 'x224' } : null;
+	const isLargeScreenOrBigger = breakpoints.includes('lg');
+	const fixFiltersSize = isLargeScreenOrBigger ? { maxWidth: 'x224', minWidth: 'x224' } : null;
 
 	return (
-		<FilterByText shouldAutoFocus placeholder={t('Search_Users')} onChange={handleSearchTextChange}>
-			<MultiSelectCustom
-				dropdownOptions={userRolesFilterStructure}
-				defaultTitle='All_roles'
-				selectedOptionsTitle='Roles'
-				setSelectedOptions={handleRolesChange}
-				selectedOptions={selectedRoles}
-				searchBarText='Search_roles'
-				{...fixFiltersSize}
-			/>
-		</FilterByText>
+		<Box
+			mb={16}
+			is='form'
+			onSubmit={(event: FormEvent<HTMLFormElement>) => {
+				event.preventDefault();
+			}}
+			display='flex'
+			flexWrap='wrap'
+			alignItems='center'
+		>
+			<Margins inlineEnd={isLargeScreenOrBigger ? 16 : 0}>
+				<TextInput
+					placeholder={t('Search_Users')}
+					addon={<Icon name='magnifier' size='x20' />}
+					onChange={handleSearchTextChange}
+					value={text}
+					flexGrow={2}
+					minWidth='x220'
+					aria-label={t('Search_Users')}
+				/>
+			</Margins>
+			<Box mb={4} width={isLargeScreenOrBigger ? 'unset' : '100%'}>
+				<MultiSelectCustom
+					dropdownOptions={userRolesFilterStructure}
+					defaultTitle='All_roles'
+					selectedOptionsTitle='Roles'
+					setSelectedOptions={handleRolesChange}
+					selectedOptions={selectedRoles}
+					searchBarText='Search_roles'
+					{...fixFiltersSize}
+				/>
+			</Box>
+		</Box>
 	);
 };
 
