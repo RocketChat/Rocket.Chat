@@ -185,7 +185,7 @@ API.v1.addRoute(
 			};
 
 			const updatedEmojiData = await insertOrUpdateEmoji(this.userId, emojiData);
-			if (newFile && fileBuffer) {
+			if (newFile) {
 				await uploadEmojiCustomWithBuffer(this.userId, fileBuffer, mimetype, updatedEmojiData);
 			}
 			return API.v1.success();
