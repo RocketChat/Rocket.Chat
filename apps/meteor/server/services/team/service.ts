@@ -78,6 +78,21 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		};
 
 		try {
+			const roomId =
+				room.id ||
+				(
+					await Room.create(owner || uid, {
+						...room,
+						type: team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c',
+						name: team.name,
+						members: memberUsernames as string[],
+						extraData: {
+							...room.extraData,
+						},
+						sidepanel,
+					})
+				)._id;
+
 			const result = await Team.insertOne(teamData);
 			const teamId = result.insertedId;
 			// the same uid can be passed at 3 positions: owner, member list or via caller
@@ -107,32 +122,13 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 			await TeamMember.insertMany(membersList);
 
-			let roomId = room.id;
-			if (roomId) {
-				await Rooms.setTeamMainById(roomId, teamId);
-				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
-			} else {
-				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
-
-				const newRoom = {
-					...room,
-					type: roomType,
-					name: team.name,
-					members: memberUsernames as string[],
-					extraData: {
-						...room.extraData,
-						teamId,
-						teamMain: true,
-					},
-					sidepanel,
-				};
-
-				const createdRoom = await Room.create(owner || uid, newRoom);
-				roomId = createdRoom._id;
-			}
-
+			await Rooms.setTeamMainById(roomId, teamId);
 			await Team.updateMainRoomForTeam(teamId, roomId);
 			teamData.roomId = roomId;
+
+			if (room.id) {
+				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
+			}
 
 			return {
 				_id: teamId,
