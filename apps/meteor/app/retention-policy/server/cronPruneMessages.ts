@@ -6,13 +6,20 @@ import { getCronAdvancedTimerFromPrecisionSetting } from '../../../lib/getCronAd
 import { cleanRoomHistory } from '../../lib/server/functions/cleanRoomHistory';
 import { settings } from '../../settings/server';
 
-const maxTimes = {
-	c: 0,
-	p: 0,
-	d: 0,
+type RetentionRoomTypes = 'c' | 'p' | 'd';
+
+const getMaxAgeSettingIdByRoomType = (type: RetentionRoomTypes) => {
+	switch (type) {
+		case 'c':
+			return settings.get<number>('RetentionPolicy_TTL_Channels');
+		case 'p':
+			return settings.get<number>('RetentionPolicy_TTL_Groups');
+		case 'd':
+			return settings.get<number>('RetentionPolicy_TTL_DMs');
+	}
 };
 
-let types: (keyof typeof maxTimes)[] = [];
+let types: RetentionRoomTypes[] = [];
 
 const oldest = new Date('0001-01-01T00:00:00Z');
 
@@ -29,7 +36,7 @@ async function job(): Promise<void> {
 
 	// get all rooms with default values
 	for await (const type of types) {
-		const maxAge = maxTimes[type] || 0;
+		const maxAge = getMaxAgeSettingIdByRoomType(type) || 0;
 		const latest = new Date(now.getTime() - maxAge);
 
 		const rooms = await Rooms.find(
@@ -95,9 +102,6 @@ settings.watchMultiple(
 		'RetentionPolicy_AppliesToChannels',
 		'RetentionPolicy_AppliesToGroups',
 		'RetentionPolicy_AppliesToDMs',
-		'RetentionPolicy_TTL_Channels',
-		'RetentionPolicy_TTL_Groups',
-		'RetentionPolicy_TTL_DMs',
 		'RetentionPolicy_Advanced_Precision',
 		'RetentionPolicy_Advanced_Precision_Cron',
 		'RetentionPolicy_Precision',
@@ -119,10 +123,6 @@ settings.watchMultiple(
 		if (settings.get('RetentionPolicy_AppliesToDMs')) {
 			types.push('d');
 		}
-
-		maxTimes.c = settings.get<number>('RetentionPolicy_TTL_Channels');
-		maxTimes.p = settings.get<number>('RetentionPolicy_TTL_Groups');
-		maxTimes.d = settings.get<number>('RetentionPolicy_TTL_DMs');
 
 		const precision =
 			(settings.get<boolean>('RetentionPolicy_Advanced_Precision') && settings.get<string>('RetentionPolicy_Advanced_Precision_Cron')) ||
