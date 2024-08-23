@@ -91,10 +91,6 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const installationSuccess = useCallback(
 		async (action: Actions | '', permissionsGranted) => {
 			if (action) {
-				if (action === 'purchase') {
-					setPurchased(true);
-				}
-
 				if (action === 'request') {
 					setRequestedEndUser(true);
 				} else {
@@ -119,6 +115,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		action,
 		onDismiss: closeModal,
 		onSuccess: installationSuccess,
+		setIsPurchased: setPurchased,
 	});
 
 	const handleAcquireApp = useCallback(() => {

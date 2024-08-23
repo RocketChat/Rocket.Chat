@@ -1,15 +1,11 @@
-import { faker } from '@faker-js/faker';
-
+import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
 import { createAgent } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
-const visitor = {
-	name: `${faker.person.firstName()} ${faker.string.uuid()}}`,
-	email: faker.internet.email(),
-};
+const visitor = createFakeVisitor();
 
 // Endpoint defaults are reset after each test, so if not in matrix assume is true
 const endpointMatrix = [

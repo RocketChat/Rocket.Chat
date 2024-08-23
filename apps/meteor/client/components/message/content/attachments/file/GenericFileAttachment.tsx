@@ -38,15 +38,21 @@ const GenericFileAttachment = ({
 	const { t } = useTranslation();
 
 	const handleTitleClick = (event: UIEvent): void => {
-		if (openDocumentViewer && link) {
+		if (!link) {
+			return;
+		}
+
+		if (openDocumentViewer && format === 'PDF') {
 			event.preventDefault();
 
-			if (format === 'PDF') {
-				const url = new URL(getURL(link), window.location.origin);
-				url.searchParams.set('contentDisposition', 'inline');
-				openDocumentViewer(url.toString(), format, '');
-				return;
-			}
+			const url = new URL(getURL(link), window.location.origin);
+			url.searchParams.set('contentDisposition', 'inline');
+			openDocumentViewer(url.toString(), format, '');
+			return;
+		}
+
+		if (link.includes('/file-decrypt/')) {
+			event.preventDefault();
 
 			registerDownloadForUid(uid, t, title);
 			forAttachmentDownload(uid, link);

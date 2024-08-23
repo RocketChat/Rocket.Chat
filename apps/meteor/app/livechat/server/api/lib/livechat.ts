@@ -61,6 +61,10 @@ export function findGuest(token: string): Promise<ILivechatVisitor | null> {
 	});
 }
 
+export function findGuestWithoutActivity(token: string): Promise<ILivechatVisitor | null> {
+	return LivechatVisitors.getVisitorByToken(token, { projection: { name: 1, username: 1, token: 1, visitorEmails: 1, department: 1 } });
+}
+
 export async function findRoom(token: string, rid?: string): Promise<IOmnichannelRoom | null> {
 	const fields = {
 		t: 1,

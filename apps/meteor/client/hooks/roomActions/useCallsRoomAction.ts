@@ -21,7 +21,7 @@ export const useCallsRoomAction = () => {
 
 		return {
 			id: 'calls',
-			groups: ['channel', 'group', 'team'],
+			groups: ['channel', 'group', 'team', 'direct', 'direct_multiple'],
 			icon: 'phone',
 			title: 'Calls',
 			...(federated && {

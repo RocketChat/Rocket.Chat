@@ -56,6 +56,7 @@ export interface IVideoConference extends IRocketChatRecord {
 	providerData?: Record<string, any>;
 
 	ringing?: boolean;
+	discussionRid?: IRoom['_id'];
 }
 
 export interface IDirectVideoConference extends IVideoConference {

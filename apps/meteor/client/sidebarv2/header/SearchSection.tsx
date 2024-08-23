@@ -72,7 +72,7 @@ const SearchSection = () => {
 		<Box className={['rcx-sidebar', isDirty && wrapperStyle]} ref={wrapperRef} role='search'>
 			<Box
 				pi={16}
-				pb={8}
+				h='x44'
 				display='flex'
 				alignItems='center'
 				className={css`

@@ -1,4 +1,4 @@
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -13,7 +13,7 @@ import { startRegisterWorkspace } from './functions/startRegisterWorkspace';
 import { syncWorkspace } from './functions/syncWorkspace';
 import { userLogout } from './functions/userLogout';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'cloud:checkRegisterStatus': () => {

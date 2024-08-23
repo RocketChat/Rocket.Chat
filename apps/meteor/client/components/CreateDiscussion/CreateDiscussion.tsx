@@ -46,11 +46,10 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 	const t = useTranslation();
 
 	const {
-		formState: { isDirty, isSubmitting, isValidating, errors },
+		formState: { isSubmitting, isValidating, errors },
 		handleSubmit,
 		control,
 		watch,
-		register,
 	} = useForm({
 		mode: 'onBlur',
 		defaultValues: {
@@ -175,7 +174,11 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 					<Field>
 						<FieldLabel htmlFor={topicId}>{t('Topic')}</FieldLabel>
 						<FieldRow>
-							<TextInput id={topicId} aria-describedby={`${topicId}-hint`} {...register('topic')} />
+							<Controller
+								name='topic'
+								control={control}
+								render={({ field }) => <TextInput id={topicId} {...field} aria-describedby={`${topicId}-hint`} />}
+							/>
 						</FieldRow>
 						<FieldRow>
 							<FieldHint id={`${topicId}-hint`}>{t('Displayed_next_to_name')}</FieldHint>
@@ -243,7 +246,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button type='submit' primary disabled={!isDirty} loading={isSubmitting || isValidating}>
+					<Button type='submit' primary loading={isSubmitting || isValidating}>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

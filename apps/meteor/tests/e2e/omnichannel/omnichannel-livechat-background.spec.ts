@@ -1,5 +1,4 @@
-import { faker } from '@faker-js/faker';
-
+import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelLiveChatEmbedded } from '../page-objects';
@@ -13,11 +12,6 @@ declare const window: Window & {
 		};
 	};
 };
-
-const createVisitor = () => ({
-	name: `${faker.person.firstName()} ${faker.string.uuid()}`,
-	email: faker.internet.email(),
-});
 
 test.use({ storageState: Users.admin.state });
 
@@ -52,7 +46,7 @@ test.describe('OC - Livechat - Message list background', async () => {
 	});
 
 	test('OC - Livechat - Change message list background', async ({ api, page }) => {
-		const visitor = createVisitor();
+		const visitor = createFakeVisitor();
 
 		await test.step('should initiate Livechat conversation', async () => {
 			await poLiveChat.openLiveChat();

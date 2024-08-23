@@ -13,6 +13,7 @@ export type GenericMenuItemProps = {
 	description?: ReactNode;
 	gap?: boolean;
 	tooltip?: string;
+	variant?: string;
 };
 
 const GenericMenuItem = ({ icon, content, addon, status, gap, tooltip }: GenericMenuItemProps) => (

@@ -1,5 +1,4 @@
-import { faker } from '@faker-js/faker';
-
+import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
@@ -7,10 +6,7 @@ import { OmnichannelRoomInfo } from '../page-objects/omnichannel-room-info';
 import { createConversation } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
-const NEW_USER = {
-	name: faker.person.firstName(),
-	email: faker.internet.email(),
-};
+const visitor = createFakeVisitor();
 
 const getPrioritySystemMessage = (username: string, priority: string) =>
 	`Priority changed: ${username} changed the priority to ${priority}`;
@@ -44,7 +40,7 @@ test.describe.serial('OC - Priorities [Sidebar]', () => {
 	});
 
 	test.beforeEach(async ({ api }) => {
-		await createConversation(api, { visitorName: NEW_USER.name });
+		await createConversation(api, { visitorName: visitor.name });
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -62,21 +58,21 @@ test.describe.serial('OC - Priorities [Sidebar]', () => {
 		await page.emulateMedia({ reducedMotion: 'reduce' });
 
 		await test.step('expect to change inquiry priority using sidebar menu', async () => {
-			await poHomeChannel.sidenav.getSidebarItemByName(NEW_USER.name).click();
+			await poHomeChannel.sidenav.getSidebarItemByName(visitor.name).click();
 			await expect(poHomeChannel.content.btnTakeChat).toBeVisible();
 
 			await expect(poRoomInfo.getLabel('Priority')).not.toBeVisible();
 
-			await poHomeChannel.sidenav.selectPriority(NEW_USER.name, 'Lowest');
+			await poHomeChannel.sidenav.selectPriority(visitor.name, 'Lowest');
 			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Lowest')}"`).waitFor();
 			await expect(poRoomInfo.getLabel('Priority')).toBeVisible();
 			await expect(poRoomInfo.getInfo('Lowest')).toBeVisible();
 
-			await poHomeChannel.sidenav.selectPriority(NEW_USER.name, 'Highest');
+			await poHomeChannel.sidenav.selectPriority(visitor.name, 'Highest');
 			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Highest')}"`).waitFor();
 			await expect(poRoomInfo.getInfo('Highest')).toBeVisible();
 
-			await poHomeChannel.sidenav.selectPriority(NEW_USER.name, 'Unprioritized');
+			await poHomeChannel.sidenav.selectPriority(visitor.name, 'Unprioritized');
 			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Unprioritized')}"`).waitFor();
 			await expect(poRoomInfo.getLabel('Priority')).not.toBeVisible();
 			await expect(poRoomInfo.getInfo('Unprioritized')).not.toBeVisible();
@@ -89,16 +85,16 @@ test.describe.serial('OC - Priorities [Sidebar]', () => {
 
 			await expect(poRoomInfo.getLabel('Priority')).not.toBeVisible();
 
-			await poHomeChannel.sidenav.selectPriority(NEW_USER.name, 'Lowest');
+			await poHomeChannel.sidenav.selectPriority(visitor.name, 'Lowest');
 			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Lowest')}"`).waitFor();
 			await expect(poRoomInfo.getLabel('Priority')).toBeVisible();
 			await expect(poRoomInfo.getInfo('Lowest')).toBeVisible();
 
-			await poHomeChannel.sidenav.selectPriority(NEW_USER.name, 'Highest');
+			await poHomeChannel.sidenav.selectPriority(visitor.name, 'Highest');
 			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Highest')}"`).waitFor();
 			await expect(poRoomInfo.getInfo('Highest')).toBeVisible();
 
-			await poHomeChannel.sidenav.selectPriority(NEW_USER.name, 'Unprioritized');
+			await poHomeChannel.sidenav.selectPriority(visitor.name, 'Unprioritized');
 			await systemMessage.locator(`text="${getPrioritySystemMessage('user1', 'Unprioritized')}"`).waitFor();
 			await expect(poRoomInfo.getLabel('Priority')).not.toBeVisible();
 			await expect(poRoomInfo.getInfo('Unprioritized')).not.toBeVisible();

@@ -73,7 +73,7 @@ const TeamsTable = () => {
 
 	return (
 		<>
-			<FilterByText placeholder={t('Teams_Search_teams')} onChange={({ text }): void => setText(text)} />
+			<FilterByText placeholder={t('Teams_Search_teams')} onChange={setText} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

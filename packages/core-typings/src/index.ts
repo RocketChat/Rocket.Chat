@@ -137,4 +137,7 @@ export * from './ICustomOAuthConfig';
 export * from './IModerationReport';
 export * from './CustomFieldMetadata';
 
+export * from './RoomRouteData';
+
 export * as Cloud from './cloud';
+export * from './themes';

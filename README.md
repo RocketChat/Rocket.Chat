@@ -67,6 +67,10 @@ yarn dsv # run only meteor (front and back) with pre-built packages
 
 After initialized, you can access the server at http://localhost:3000
 
+More details at: [Developer Docs](https://developer.rocket.chat/v1/docs/server-environment-setup)
+PS: For Windows you MUST use WSL2 and have +12Gb RAM
+
+
 # Gitpod Setup
 
 1. Click the button below to open this project in Gitpod.

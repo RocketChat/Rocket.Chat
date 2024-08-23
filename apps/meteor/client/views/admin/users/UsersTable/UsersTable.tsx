@@ -1,7 +1,8 @@
-import type { IAdminUserTabs, IRole, Serialized } from '@rocket.chat/core-typings';
-import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import type { IRole, Serialized } from '@rocket.chat/core-typings';
+import { Pagination } from '@rocket.chat/fuselage';
 import { useEffectEvent, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
@@ -17,12 +18,12 @@ import {
 } from '../../../../components/GenericTable';
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import type { UsersFilters, UsersTableSortingOptions } from '../AdminUsersPage';
+import type { AdminUserTab, UsersFilters, UsersTableSortingOptions } from '../AdminUsersPage';
 import UsersTableFilters from './UsersTableFilters';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
-	tab: IAdminUserTabs;
+	tab: AdminUserTab;
 	roleData: { roles: IRole[] } | undefined;
 	onReload: () => void;
 	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
@@ -129,16 +130,16 @@ const UsersTable = ({
 			)}
 
 			{isError && (
-				<States>
-					<StatesIcon name='warning' variation='danger' />
-					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
-					<StatesActions>
-						<StatesAction onClick={onReload}>{t('Reload_page')}</StatesAction>
-					</StatesActions>
-				</States>
+				<GenericNoResults icon='warning' title={t('Something_went_wrong')} buttonTitle={t('Reload_page')} buttonAction={onReload} />
 			)}
 
-			{isSuccess && data.users.length === 0 && <GenericNoResults />}
+			{isSuccess && data.users.length === 0 && (
+				<GenericNoResults
+					icon='user'
+					title={t('Users_Table_Generic_No_users', t((tab !== 'all' ? tab : '') as TranslationKey))}
+					description={t(`Users_Table_no_${tab}_users_description`)}
+				/>
+			)}
 
 			{isSuccess && !!data?.users && (
 				<>
@@ -163,7 +164,7 @@ const UsersTable = ({
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
+						count={data.total || 0}
 						onSetItemsPerPage={setItemsPerPage}
 						onSetCurrent={setCurrent}
 						{...paginationProps}

@@ -293,8 +293,7 @@ API.v1.addRoute(
 				throw new Error('error-invalid-visitor');
 			}
 
-			const transferedBy = this.user satisfies TransferByData;
-			transferData.transferredBy = normalizeTransferredByData(transferedBy, room);
+			transferData.transferredBy = normalizeTransferredByData(this.user, room);
 			if (transferData.userId) {
 				const userToTransfer = await Users.findOneById(transferData.userId);
 				if (userToTransfer) {

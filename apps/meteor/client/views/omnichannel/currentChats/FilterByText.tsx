@@ -30,6 +30,7 @@ const FilterByText = ({ setFilter, reload, customFields, setCustomFields, hasCus
 		['closed', t('Closed')],
 		['opened', t('Room_Status_Open')],
 		['onhold', t('On_Hold_Chats')],
+		['queued', t('Queued')],
 	];
 
 	const [guest, setGuest] = useLocalStorage('guest', '');

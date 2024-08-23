@@ -1,6 +1,7 @@
-import { faker } from '@faker-js/faker';
+import { faker } from '@faker-js/faker/locale/af_ZA';
 import type { Page } from '@playwright/test';
 
+import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
@@ -56,6 +57,12 @@ declare const window: Window & {
 		};
 	};
 };
+
+const createFakeVisitorRegistration = (extra?: { department?: string }) => ({
+	...createFakeVisitor(),
+	token: faker.string.uuid(),
+	...extra,
+});
 
 test.describe('OC - Livechat API', () => {
 	// TODO: Check if there is a way to add livechat to the global window object
@@ -142,11 +149,7 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test('OC - Livechat API - setTheme', async () => {
-			const registerGuestVisitor = {
-				name: faker.person.firstName(),
-				email: faker.internet.email(),
-				token: faker.string.uuid(),
-			};
+			const registerGuestVisitor = createFakeVisitorRegistration();
 
 			await test.step('Expect setTheme set color', async () => {
 				await poLiveChat.page.evaluate(() => {
@@ -229,7 +232,7 @@ test.describe('OC - Livechat API', () => {
 
 			await addAgentToDepartment(api, { department: departmentA, agentId: agent.data._id });
 			await addAgentToDepartment(api, { department: departmentB, agentId: agent2.data._id });
-			await expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
+			expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
 		});
 
 		test.beforeEach(async ({ browser }, testInfo) => {
@@ -324,12 +327,9 @@ test.describe('OC - Livechat API', () => {
 
 			test('setDepartment - Called during ongoing conversation', async () => {
 				const [departmentA, departmentB] = departments.map(({ data }) => data);
-				const registerGuestVisitor = {
-					name: faker.person.firstName(),
-					email: faker.internet.email(),
-					token: faker.string.uuid(),
+				const registerGuestVisitor = createFakeVisitorRegistration({
 					department: departmentA._id,
-				};
+				});
 
 				// Start Chat
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
@@ -370,10 +370,7 @@ test.describe('OC - Livechat API', () => {
 
 			test('setDepartment - Called before conversation', async () => {
 				const departmentB = departments[1].data;
-				const registerGuestVisitor = {
-					name: faker.person.firstName(),
-					email: faker.internet.email(),
-				};
+				const registerGuestVisitor = createFakeVisitor();
 
 				const depId = departmentB._id;
 
@@ -421,12 +418,9 @@ test.describe('OC - Livechat API', () => {
 
 			test('transferChat - Called during ongoing conversation', async () => {
 				const [departmentA, departmentB] = departments.map(({ data }) => data);
-				const registerGuestVisitor = {
-					name: faker.person.firstName(),
-					email: faker.internet.email(),
-					token: faker.string.uuid(),
+				const registerGuestVisitor = createFakeVisitorRegistration({
 					department: departmentA._id,
-				};
+				});
 
 				// Start Chat
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
@@ -462,11 +456,7 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test('OC - Livechat API - registerGuest', async ({ browser }) => {
-			const registerGuestVisitor = {
-				name: faker.person.firstName(),
-				email: faker.internet.email(),
-				token: faker.string.uuid(),
-			};
+			const registerGuestVisitor = createFakeVisitorRegistration();
 
 			await test.step('Expect registerGuest to create a valid guest', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
@@ -510,17 +500,9 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test('OC - Livechat API - registerGuest different guests', async () => {
-			const registerGuestVisitor1 = {
-				name: faker.person.firstName(),
-				email: faker.internet.email(),
-				token: faker.string.uuid(),
-			};
+			const registerGuestVisitor1 = createFakeVisitorRegistration();
 
-			const registerGuestVisitor2 = {
-				name: faker.person.firstName(),
-				email: faker.internet.email(),
-				token: faker.string.uuid(),
-			};
+			const registerGuestVisitor2 = createFakeVisitorRegistration();
 
 			await test.step('Expect registerGuest to create guest 1', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
@@ -568,11 +550,7 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test('OC - Livechat API - registerGuest multiple times', async () => {
-			const registerGuestVisitor = {
-				name: faker.person.firstName(),
-				email: faker.internet.email(),
-				token: faker.string.uuid(),
-			};
+			const registerGuestVisitor = createFakeVisitorRegistration();
 
 			await test.step('Expect registerGuest work with the same token, multiple times', async () => {
 				await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
@@ -611,11 +589,7 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test('OC - Livechat API - setGuestEmail', async () => {
-			const registerGuestVisitor = {
-				name: faker.person.firstName(),
-				email: faker.internet.email(),
-				token: faker.string.uuid(),
-			};
+			const registerGuestVisitor = createFakeVisitorRegistration();
 			// Start Chat
 			await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
 			await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
@@ -649,11 +623,7 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test('OC - Livechat API - setGuestName', async () => {
-			const registerGuestVisitor = {
-				name: faker.person.firstName(),
-				email: faker.internet.email(),
-				token: faker.string.uuid(),
-			};
+			const registerGuestVisitor = createFakeVisitorRegistration();
 			// Start Chat
 			await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
 			await expect(page.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
@@ -683,11 +653,7 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test('OC - Livechat API - setGuestToken', async ({ browser }) => {
-			const registerGuestVisitor = {
-				name: faker.person.firstName(),
-				email: faker.internet.email(),
-				token: faker.string.uuid(),
-			};
+			const registerGuestVisitor = createFakeVisitorRegistration();
 
 			// Register guest and send a message
 			await poLiveChat.page.evaluate(() => window.RocketChat.livechat.maximizeWidget());
@@ -731,7 +697,7 @@ test.describe('OC - Livechat API', () => {
 
 		test.beforeAll(async ({ api }) => {
 			agent = await createAgent(api, 'user1');
-			await expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
+			expect((await api.post('/settings/Livechat_offline_email', { value: 'test@testing.com' })).status()).toBe(200);
 		});
 
 		test.beforeEach(async ({ browser }, testInfo) => {
@@ -790,10 +756,7 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test('OC - Livechat API - onChatStarted & onChatEnded', async () => {
-			const newVisitor = {
-				name: faker.person.firstName(),
-				email: faker.internet.email(),
-			};
+			const newVisitor = createFakeVisitor();
 
 			await test.step('Expect onChatStarted to trigger callback', async () => {
 				const watchForTrigger = page.waitForFunction(() => window.onChatStarted === true);
@@ -832,10 +795,7 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test('OC - Livechat API - onPrechatFormSubmit & onAssignAgent', async () => {
-			const newVisitor = {
-				name: faker.person.firstName(),
-				email: faker.internet.email(),
-			};
+			const newVisitor = createFakeVisitor();
 
 			await test.step('Expect onPrechatFormSubmit to trigger callback', async () => {
 				const watchForTrigger = page.waitForFunction(() => window.onPrechatFormSubmit === true);
@@ -871,10 +831,7 @@ test.describe('OC - Livechat API', () => {
 
 		// TODO: Fix this Flaky test
 		test.skip('onAgentStatusChange', async () => {
-			const newVisitor = {
-				name: faker.person.firstName(),
-				email: faker.internet.email(),
-			};
+			const newVisitor = createFakeVisitor();
 
 			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, false);
@@ -896,10 +853,7 @@ test.describe('OC - Livechat API', () => {
 		});
 
 		test('OC - Livechat API - onOfflineFormSubmit', async () => {
-			const newVisitor = {
-				name: faker.person.firstName(),
-				email: faker.internet.email(),
-			};
+			const newVisitor = createFakeVisitor();
 
 			await poAuxContext.poHomeOmnichannel.sidenav.switchStatus('offline');
 

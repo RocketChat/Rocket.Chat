@@ -17,6 +17,7 @@ import { Meteor } from 'meteor/meteor';
 import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
 import { API } from '../../../../api/server';
 import { FileUpload } from '../../../../file-upload/server';
+import { checkUrlForSsrf } from '../../../../lib/server/functions/checkUrlForSsrf';
 import { settings } from '../../../../settings/server';
 import type { ILivechatMessage } from '../../../server/lib/LivechatTyped';
 import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
@@ -24,7 +25,12 @@ import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
 const logger = new Logger('SMS');
 
 const getUploadFile = async (details: Omit<IUpload, '_id'>, fileUrl: string) => {
-	const response = await fetch(fileUrl);
+	const isSsrfSafe = await checkUrlForSsrf(fileUrl);
+	if (!isSsrfSafe) {
+		throw new Meteor.Error('error-invalid-url', 'Invalid URL');
+	}
+
+	const response = await fetch(fileUrl, { redirect: 'error' });
 
 	const content = Buffer.from(await response.arrayBuffer());
 

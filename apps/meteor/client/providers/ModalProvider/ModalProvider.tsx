@@ -33,7 +33,7 @@ const ModalProvider = ({ children, region }: ModalProviderProps) => {
 			},
 			region,
 		}),
-		[currentModal, region, setModal],
+		[currentModal?.node, currentModal?.region, region, setModal],
 	);
 
 	return <ModalContext.Provider value={contextValue} children={children} />;

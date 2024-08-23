@@ -69,6 +69,13 @@ async function _sendUserEmail(subject, html, userData) {
 async function validateUserData(userId, userData) {
 	const existingRoles = _.pluck(await getRoles(), '_id');
 
+	if (userData.verified && userData._id && userId === userData._id) {
+		throw new Meteor.Error('error-action-not-allowed', 'Editing email verification is not allowed', {
+			method: 'insertOrUpdateUser',
+			action: 'Editing_user',
+		});
+	}
+
 	if (userData._id && userId !== userData._id && !(await hasPermissionAsync(userId, 'edit-other-user-info'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed', {
 			method: 'insertOrUpdateUser',

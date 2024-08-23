@@ -11,8 +11,12 @@ export class HomeFlextabRoom {
 		return this.page.locator('role=button[name="Edit"]');
 	}
 
-	get btnDelete(): Locator {
-		return this.page.locator('role=button[name="Delete"]');
+	get btnMore(): Locator {
+		return this.page.locator('role=button[name="More"]');
+	}
+
+	get optionDelete(): Locator {
+		return this.page.locator('label[data-key="delete"]');
 	}
 
 	get inputName(): Locator {

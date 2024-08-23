@@ -239,7 +239,7 @@ test.describe.serial('channel-management', () => {
 			await expect(user1Channel.tabs.room.btnEdit).toBeVisible();
 		});
 
-		test('should set user1 as owner', async () => {
+		test('should set user1 as owner', async ({ browser }) => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.tabs.btnTabMembers.click();
 			await poHomeChannel.tabs.members.showAllUsers();
@@ -247,14 +247,19 @@ test.describe.serial('channel-management', () => {
 
 			await expect(poHomeChannel.getSystemMessageByText('set user1 as owner')).toBeVisible();
 
+			const user1Page = await browser.newPage({ storageState: Users.user1.state });
 			const user1Channel = new HomeChannel(user1Page);
 			await user1Page.goto(`/channel/${targetChannel}`);
 			await user1Channel.waitForChannel();
 			await user1Channel.tabs.btnRoomInfo.click();
-			await expect(user1Channel.tabs.room.btnDelete).toBeVisible();
+
+			await user1Channel.tabs.room.btnMore.click();
+
+			await expect(user1Channel.tabs.room.optionDelete).toBeVisible();
 
 			await user1Page.close();
 		});
+
 		test('should ignore user1 messages', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
 			await poHomeChannel.tabs.btnTabMembers.click();
@@ -315,6 +320,7 @@ test.describe.serial('channel-management', () => {
 			await poHomeChannel.sidenav.openNewByLabel('Channel');
 			await poHomeChannel.sidenav.inputChannelName.fill(channelName);
 			await poHomeChannel.sidenav.checkboxPrivateChannel.click();
+			await poHomeChannel.sidenav.advancedSettingsAccordion.click();
 			await poHomeChannel.sidenav.checkboxReadOnly.click();
 			await poHomeChannel.sidenav.btnCreate.click();
 

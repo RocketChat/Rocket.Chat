@@ -714,3 +714,57 @@ Maecenas pretium, sem non eleifend sodales, sapien ligula sollicitudin mauris, v
 		},
 	],
 };
+
+export const dataWithASingleSystemMessage = {
+	agent: {
+		name: 'Juanito De Ponce',
+		username: 'juanito.ponce',
+	},
+	visitor: {
+		name: 'Christian Castro',
+		username: 'christian.castro',
+	},
+	siteName: 'Rocket.Chat',
+	closedAt: '2022-11-21T00:00:00.000Z',
+	dateFormat: 'MMM D, YYYY',
+	timeAndDateFormat: 'MMM D, YYYY H:mm:ss',
+	timezone: 'Etc/GMT+1',
+	translations: [
+		{
+			key: 'Agent',
+			value: 'Agent',
+		},
+		{
+			key: 'Date',
+			value: 'Date',
+		},
+		{
+			key: 'Customer',
+			value: 'Customer',
+		},
+		{
+			key: 'Chat_transcript',
+			value: 'Chat transcript',
+		},
+		{
+			key: 'Time',
+			value: 'Time',
+		},
+		{
+			key: 'This_attachment_is_not_supported',
+			value: 'Attachment format not supported',
+		},
+	],
+	messages: [
+		{
+			ts: '2022-11-21T16:00:00.000Z',
+			u: {
+				_id: '123',
+				name: 'Juanito De Ponce',
+				username: 'juanito.ponce',
+			},
+			t: 'livechat-started',
+			msg: 'livechat started',
+		},
+	],
+};

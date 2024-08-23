@@ -76,13 +76,13 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		isAppPurchased,
 		onDismiss: cancelAction,
 		onSuccess: confirmAction,
+		setIsPurchased: setPurchased,
 	});
 
 	const handleAcquireApp = useCallback(() => {
 		setLoading(true);
-		setPurchased(true);
 		appInstallationHandler();
-	}, [appInstallationHandler, setLoading, setPurchased]);
+	}, [appInstallationHandler, setLoading]);
 
 	// @TODO we should refactor this to not use the label to determine the variant
 	const getStatusVariant = (status: appStatusSpanResponseProps) => {

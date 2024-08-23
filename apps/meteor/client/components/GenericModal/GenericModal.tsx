@@ -1,9 +1,9 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
-import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import type { RequiredModalProps } from './withDoNotAskAgain';
 import { withDoNotAskAgain } from './withDoNotAskAgain';
@@ -78,6 +78,31 @@ const GenericModal = ({
 	const t = useTranslation();
 	const genericModalId = useUniqueId();
 
+	const dismissedRef = useRef(true);
+
+	const handleConfirm = useEffectEvent(() => {
+		dismissedRef.current = false;
+		onConfirm?.();
+	});
+
+	const handleCancel = useEffectEvent(() => {
+		dismissedRef.current = false;
+		onCancel?.();
+	});
+
+	const handleCloseButtonClick = useEffectEvent(() => {
+		dismissedRef.current = true;
+		onClose?.();
+	});
+
+	useEffect(
+		() => () => {
+			if (!dismissedRef.current) return;
+			onClose?.();
+		},
+		[onClose],
+	);
+
 	return (
 		<Modal aria-labelledby={`${genericModalId}-title`} wrapperFunction={wrapperFunction} {...props}>
 			<Modal.Header>
@@ -86,7 +111,7 @@ const GenericModal = ({
 					{tagline && <Modal.Tagline>{tagline}</Modal.Tagline>}
 					<Modal.Title id={`${genericModalId}-title`}>{title ?? t('Are_you_sure')}</Modal.Title>
 				</Modal.HeaderText>
-				<Modal.Close aria-label={t('Close')} onClick={onClose} />
+				<Modal.Close aria-label={t('Close')} onClick={handleCloseButtonClick} />
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>{children}</Modal.Content>
 			<Modal.Footer justifyContent={dontAskAgain ? 'space-between' : 'end'}>
@@ -94,7 +119,7 @@ const GenericModal = ({
 				{annotation && !dontAskAgain && <Modal.FooterAnnotation>{annotation}</Modal.FooterAnnotation>}
 				<Modal.FooterControllers>
 					{onCancel && (
-						<Button secondary onClick={onCancel}>
+						<Button secondary onClick={handleCancel}>
 							{cancelText ?? t('Cancel')}
 						</Button>
 					)}
@@ -104,7 +129,7 @@ const GenericModal = ({
 						</Button>
 					)}
 					{!wrapperFunction && onConfirm && (
-						<Button {...getButtonProps(variant)} onClick={onConfirm} disabled={confirmDisabled}>
+						<Button {...getButtonProps(variant)} onClick={handleConfirm} disabled={confirmDisabled}>
 							{confirmText ?? t('Ok')}
 						</Button>
 					)}

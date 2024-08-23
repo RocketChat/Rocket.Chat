@@ -87,7 +87,7 @@ Meteor.startup(async () => {
 	});
 
 	// Remove when accounts.onLogout is async
-	Accounts.onLogout(({ user }: { user: IUser }) => {
+	Accounts.onLogout(({ user }: { user?: IUser }) => {
 		if (!user?.roles?.includes('livechat-agent') || user?.roles?.includes('bot')) {
 			return;
 		}
