@@ -100,7 +100,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findDefaultRoomsForTeam(teamId: any): FindCursor<IRoom>;
 
-	incUsersCountByIds(ids: Array<IRoom['_id']>, inc: number): Promise<Document | UpdateResult>;
+	incUsersCountByIds(ids: Array<IRoom['_id']>, inc: number, options?: UpdateOptions): Promise<Document | UpdateResult>;
 
 	findOneByNameOrFname(name: NonNullable<IRoom['name'] | IRoom['fname']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
@@ -111,8 +111,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }>;
 
 	findByBroadcast(options?: FindOptions<IRoom>): FindCursor<IRoom>;
-
-	findByActiveLivestream(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
 	setAsFederated(roomId: IRoom['_id']): Promise<UpdateResult>;
 
@@ -176,7 +174,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	setLastMessagePinned(roomId: string, pinnedBy: unknown, pinned?: boolean, pinnedAt?: Date): Promise<UpdateResult>;
 	setLastMessageAsRead(roomId: string): Promise<UpdateResult>;
 	setDescriptionById(roomId: string, description: string): Promise<UpdateResult>;
-	setStreamingOptionsById(roomId: string, streamingOptions: IRoom['streamingOptions']): Promise<UpdateResult>;
 	setReadOnlyById(roomId: string, readOnly: NonNullable<IRoom['ro']>): Promise<UpdateResult>;
 	setDmReadOnlyByUserId(
 		roomId: string,
