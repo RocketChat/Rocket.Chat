@@ -9,117 +9,126 @@ import { settings } from '../../../../settings/server';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 
-API.v1.addRoute('livechat/visitor', {
-	async post() {
-		check(this.bodyParams, {
-			visitor: Match.ObjectIncluding({
-				token: String,
-				name: Match.Maybe(String),
-				email: Match.Maybe(String),
-				department: Match.Maybe(String),
-				phone: Match.Maybe(String),
-				username: Match.Maybe(String),
-				customFields: Match.Maybe([
-					Match.ObjectIncluding({
-						key: String,
-						value: String,
-						overwrite: Boolean,
-					}),
-				]),
-			}),
-		});
-
-		const { customFields, id, token, name, email, department, phone, username, connectionData } = this.bodyParams.visitor;
-
-		if (!token?.trim()) {
-			throw new Meteor.Error('error-invalid-token', 'Token cannot be empty', { method: 'livechat/visitor' });
-		}
-
-		const guest = {
-			token,
-			...(id && { id }),
-			...(name && { name }),
-			...(email && { email }),
-			...(department && { department }),
-			...(username && { username }),
-			...(connectionData && { connectionData }),
-			...(phone && typeof phone === 'string' && { phone: { number: phone as string } }),
-			connectionData: normalizeHttpHeaderData(this.request.headers),
-		};
-
-		const visitorId = await LivechatTyped.registerGuest(guest);
-
-		let visitor: ILivechatVisitor | null = await VisitorsRaw.findOneEnabledById(visitorId, {});
-		if (visitor) {
-			const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
-			// If it's updating an existing visitor, it must also update the roomInfo
-			const rooms = await LivechatRooms.findOpenByVisitorToken(visitor?.token, {}, extraQuery).toArray();
-			await Promise.all(
-				rooms.map(
-					(room: IRoom) =>
-						visitor &&
-						LivechatTyped.saveRoomInfo(room, {
-							_id: visitor._id,
-							name: visitor.name,
-							phone: visitor.phone?.[0]?.phoneNumber,
-							livechatData: visitor.livechatData as { [k: string]: string },
-						}),
-				),
-			);
-		}
-
-		if (customFields && Array.isArray(customFields) && customFields.length > 0) {
-			const keys = customFields.map((field) => field.key);
-			const errors: string[] = [];
-
-			const processedKeys = await Promise.all(
-				await LivechatCustomField.findByIdsAndScope<Pick<ILivechatCustomField, '_id'>>(keys, 'visitor', {
-					projection: { _id: 1 },
-				})
-					.map(async (field) => {
-						const customField = customFields.find((f) => f.key === field._id);
-						if (!customField) {
-							return;
-						}
-
-						const { key, value, overwrite } = customField;
-						// TODO: Change this to Bulk update
-						if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
-							errors.push(key);
-						}
-
-						return key;
-					})
-					.toArray(),
-			);
-
-			if (processedKeys.length !== keys.length) {
-				LivechatTyped.logger.warn({
-					msg: 'Some custom fields were not processed',
-					visitorId,
-					missingKeys: keys.filter((key) => !processedKeys.includes(key)),
-				});
-			}
-
-			if (errors.length > 0) {
-				LivechatTyped.logger.error({
-					msg: 'Error updating custom fields',
-					visitorId,
-					errors,
-				});
-				throw new Error('error-updating-custom-fields');
-			}
-
-			visitor = await VisitorsRaw.findOneEnabledById(visitorId, {});
-		}
-
-		if (!visitor) {
-			throw new Meteor.Error('error-saving-visitor', 'An error ocurred while saving visitor');
-		}
-
-		return API.v1.success({ visitor });
+API.v1.addRoute(
+	'livechat/visitor',
+	{
+		rateLimiterOptions: {
+			numRequestsAllowed: 5,
+			intervalTimeInMS: 60000,
+		},
 	},
-});
+	{
+		async post() {
+			check(this.bodyParams, {
+				visitor: Match.ObjectIncluding({
+					token: String,
+					name: Match.Maybe(String),
+					email: Match.Maybe(String),
+					department: Match.Maybe(String),
+					phone: Match.Maybe(String),
+					username: Match.Maybe(String),
+					customFields: Match.Maybe([
+						Match.ObjectIncluding({
+							key: String,
+							value: String,
+							overwrite: Boolean,
+						}),
+					]),
+				}),
+			});
+
+			const { customFields, id, token, name, email, department, phone, username, connectionData } = this.bodyParams.visitor;
+
+			if (!token?.trim()) {
+				throw new Meteor.Error('error-invalid-token', 'Token cannot be empty', { method: 'livechat/visitor' });
+			}
+
+			const guest = {
+				token,
+				...(id && { id }),
+				...(name && { name }),
+				...(email && { email }),
+				...(department && { department }),
+				...(username && { username }),
+				...(connectionData && { connectionData }),
+				...(phone && typeof phone === 'string' && { phone: { number: phone as string } }),
+				connectionData: normalizeHttpHeaderData(this.request.headers),
+			};
+
+			const visitorId = await LivechatTyped.registerGuest(guest);
+
+			let visitor: ILivechatVisitor | null = await VisitorsRaw.findOneEnabledById(visitorId, {});
+			if (visitor) {
+				const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {});
+				// If it's updating an existing visitor, it must also update the roomInfo
+				const rooms = await LivechatRooms.findOpenByVisitorToken(visitor?.token, {}, extraQuery).toArray();
+				await Promise.all(
+					rooms.map(
+						(room: IRoom) =>
+							visitor &&
+							LivechatTyped.saveRoomInfo(room, {
+								_id: visitor._id,
+								name: visitor.name,
+								phone: visitor.phone?.[0]?.phoneNumber,
+								livechatData: visitor.livechatData as { [k: string]: string },
+							}),
+					),
+				);
+			}
+
+			if (customFields && Array.isArray(customFields) && customFields.length > 0) {
+				const keys = customFields.map((field) => field.key);
+				const errors: string[] = [];
+
+				const processedKeys = await Promise.all(
+					await LivechatCustomField.findByIdsAndScope<Pick<ILivechatCustomField, '_id'>>(keys, 'visitor', {
+						projection: { _id: 1 },
+					})
+						.map(async (field) => {
+							const customField = customFields.find((f) => f.key === field._id);
+							if (!customField) {
+								return;
+							}
+
+							const { key, value, overwrite } = customField;
+							// TODO: Change this to Bulk update
+							if (!(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
+								errors.push(key);
+							}
+
+							return key;
+						})
+						.toArray(),
+				);
+
+				if (processedKeys.length !== keys.length) {
+					LivechatTyped.logger.warn({
+						msg: 'Some custom fields were not processed',
+						visitorId,
+						missingKeys: keys.filter((key) => !processedKeys.includes(key)),
+					});
+				}
+
+				if (errors.length > 0) {
+					LivechatTyped.logger.error({
+						msg: 'Error updating custom fields',
+						visitorId,
+						errors,
+					});
+					throw new Error('error-updating-custom-fields');
+				}
+
+				visitor = await VisitorsRaw.findOneEnabledById(visitorId, {});
+			}
+
+			if (!visitor) {
+				throw new Meteor.Error('error-saving-visitor', 'An error ocurred while saving visitor');
+			}
+
+			return API.v1.success({ visitor });
+		},
+	},
+);
 
 API.v1.addRoute('livechat/visitor/:token', {
 	async get() {
