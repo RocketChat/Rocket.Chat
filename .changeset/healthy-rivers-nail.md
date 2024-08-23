@@ -1,7 +1,7 @@
 ---
-"@rocket.chat/meteor": patch
-"@rocket.chat/i18n": patch
-"@rocket.chat/livechat": patch
+"@rocket.chat/meteor": minor
+"@rocket.chat/i18n": minor
+"@rocket.chat/livechat": minor
 ---
 
 Added new setting `Allow visitors to finish conversations` that allows admins to decide if omnichannel visitors can close a conversation or not. This doesn't affect agent's capabilities of room closing, neither apps using the livechat bridge to close rooms.
