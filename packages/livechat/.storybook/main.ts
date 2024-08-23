@@ -30,7 +30,7 @@ const config: StorybookConfig = {
 			[require.resolve('../src/lib/uiKit')]: require.resolve('./mocks/uiKit.ts'),
 		};
 
-		const isRuleSetRule = (rule: any): rule is RuleSetRule => typeof rule === 'object' && rule.test && rule.use;
+		const isRuleSetRule = (rule: any): rule is RuleSetRule => typeof rule === 'object';
 
 		config.module.rules ??= [];
 
@@ -53,6 +53,15 @@ const config: StorybookConfig = {
 			throw new Error('Invalid webpack config');
 		}
 		urlLoader.test = /\.(webm|wav|m4a|aac|oga)(\?.*)?$/;
+
+		config.module.rules.push({
+			test: /\.mjs$/,
+			include: /node_modules/,
+			type: 'javascript/auto',
+			use: {
+				loader: require.resolve('babel-loader'),
+			},
+		});
 
 		config.module.rules.push({
 			test: /\.scss$/,

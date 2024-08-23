@@ -177,10 +177,9 @@ export const drawDoughnutChart = async (
 	chartContext: { destroy: () => void } | undefined,
 	dataLabels: string[],
 	dataPoints: number[],
-): Promise<ChartType<'doughnut', number[], string> | void> => {
+): Promise<ChartType> => {
 	if (!chart) {
-		console.error('No chart element');
-		return;
+		throw new Error('No chart element');
 	}
 	if (chartContext) {
 		chartContext.destroy();
@@ -200,7 +199,7 @@ export const drawDoughnutChart = async (
 			],
 		},
 		options: doughnutChartConfiguration(title),
-	});
+	}) as ChartType;
 };
 
 /**
@@ -209,12 +208,12 @@ export const drawDoughnutChart = async (
  * @param  {String} label [chart label]
  * @param  {Array(Double)} data  [updated data]
  */
-export const updateChart = async (c: ChartType, label: string, data: { [x: string]: number }): Promise<void> => {
+export const updateChart = async (c: ChartType, label: string, data: number[]): Promise<void> => {
 	const chart = await c;
 	if (chart.data?.labels?.indexOf(label) === -1) {
 		// insert data
 		chart.data.labels.push(label);
-		chart.data.datasets.forEach((dataset: { data: any[] }, idx: string | number) => {
+		chart.data.datasets.forEach((dataset: { data: any[] }, idx: number) => {
 			dataset.data.push(data[idx]);
 		});
 	} else {
@@ -224,7 +223,7 @@ export const updateChart = async (c: ChartType, label: string, data: { [x: strin
 			return;
 		}
 
-		chart.data.datasets.forEach((dataset: { data: { [x: string]: any } }, idx: string | number) => {
+		chart.data.datasets.forEach((dataset: { data: { [x: string]: any } }, idx: number) => {
 			dataset.data[index] = data[idx];
 		});
 	}
