@@ -160,7 +160,7 @@ API.v1.addRoute(
 			fields.previousExtension = emojiToUpdate.extension;
 			fields.aliases = fields.aliases || '';
 
-			const newFile = !!fileBuffer?.length;
+			const newFile = !!fileBuffer && fileBuffer.length > 0;
 
 			if (newFile) {
 				const isUploadable = await Media.isImage(fileBuffer);
