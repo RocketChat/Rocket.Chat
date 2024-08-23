@@ -34,7 +34,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	const prevRoomFilterText = useRef<string>(roomFilters.searchText);
 
-	const { sortBy, sortDirection, setSort } = useSort<'name' | 't' | 'usersCount' | 'msgs' | 'default' | 'featured'>('name');
+	const { sortBy, sortDirection, setSort } = useSort<'name' | 't' | 'usersCount' | 'msgs' | 'default' | 'featured' | 'ts'>('name');
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const searchText = useDebouncedValue(roomFilters.searchText, 500);
 
@@ -109,6 +109,9 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 					>
 						{t('Featured')}
 					</GenericTableHeaderCell>
+					<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts' w='x120'>
+						{t('Created_at')}
+					</GenericTableHeaderCell>
 				</>
 			)}
 		</>
@@ -121,7 +124,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingTable headerCells={mediaQuery ? 6 : 3} />
+						<GenericTableLoadingTable headerCells={mediaQuery ? 7 : 4} />
 					</GenericTableBody>
 				</GenericTable>
 			)}
