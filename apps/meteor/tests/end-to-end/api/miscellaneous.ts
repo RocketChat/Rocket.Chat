@@ -14,7 +14,7 @@ import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login as doLogin } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
-describe.only('miscellaneous', () => {
+describe('miscellaneous', () => {
 	before((done) => getCredentials(done));
 
 	describe('API default', () => {
