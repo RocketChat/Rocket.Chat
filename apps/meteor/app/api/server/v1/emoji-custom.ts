@@ -1,9 +1,11 @@
 import { Media } from '@rocket.chat/core-services';
+import type { IEmojiCustom } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
 import { isEmojiCustomList } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import type { EmojiData } from '../../../emoji-custom/server/lib/insertOrUpdateEmoji';
 import { insertOrUpdateEmoji } from '../../../emoji-custom/server/lib/insertOrUpdateEmoji';
 import { uploadEmojiCustomWithBuffer } from '../../../emoji-custom/server/lib/uploadEmojiCustom';
 import { settings } from '../../../settings/server';
@@ -151,41 +153,39 @@ API.v1.addRoute(
 				throw new Meteor.Error('The required "_id" query param is missing.');
 			}
 
-			const emojiToUpdate = await EmojiCustom.findOneById(fields._id);
+			const emojiToUpdate = await EmojiCustom.findOneById<Pick<IEmojiCustom, 'name' | 'extension'>>(fields._id, {
+				projection: { name: 1, extension: 1 },
+			});
 			if (!emojiToUpdate) {
 				throw new Meteor.Error('Emoji not found.');
 			}
 
-			fields.previousName = emojiToUpdate.name;
-			fields.previousExtension = emojiToUpdate.extension;
-			fields.aliases = fields.aliases || '';
+			const emojiData: EmojiData = {
+				previousName: emojiToUpdate.name,
+				previousExtension: emojiToUpdate.extension,
+				aliases: fields.aliases || '',
+				name: fields.name,
+				extension: fields.extension,
+				_id: fields._id,
+				newFile: false,
+			};
 
-			const newFile = !!fileBuffer && fileBuffer.length > 0;
-
-			if (newFile) {
+			const isNewFile = fileBuffer?.length && !!mimetype;
+			if (isNewFile) {
+				emojiData.newFile = isNewFile;
 				const isUploadable = await Media.isImage(fileBuffer);
 				if (!isUploadable) {
 					throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
 				}
 
 				const [, extension] = mimetype.split('/');
-				fields.extension = extension;
+				emojiData.extension = extension;
 			} else {
-				fields.extension = emojiToUpdate.extension;
+				emojiData.extension = emojiToUpdate.extension;
 			}
 
-			const emojiData = {
-				name: fields.name,
-				_id: fields._id,
-				aliases: fields.aliases,
-				extension: fields.extension,
-				previousName: fields.previousName,
-				previousExtension: fields.previousExtension,
-				newFile,
-			};
-
 			const updatedEmojiData = await insertOrUpdateEmoji(this.userId, emojiData);
-			if (newFile) {
+			if (isNewFile) {
 				await uploadEmojiCustomWithBuffer(this.userId, fileBuffer, mimetype, updatedEmojiData);
 			}
 			return API.v1.success();
