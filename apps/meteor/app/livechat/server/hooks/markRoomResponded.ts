@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom, IMessage } from '@rocket.chat/core-typings';
-import { isEditedMessage, isMessageFromVisitor } from '@rocket.chat/core-typings';
+import { isEditedMessage, isMessageFromVisitor, isSystemMessage } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { LivechatRooms, LivechatVisitors, LivechatInquiry } from '@rocket.chat/models';
 import moment from 'moment';
@@ -12,7 +12,7 @@ export async function markRoomResponded(
 	room: IOmnichannelRoom,
 	roomUpdater: Updater<IOmnichannelRoom>,
 ): Promise<IOmnichannelRoom['responseBy'] | undefined> {
-	if (message.t || isEditedMessage(message) || isMessageFromVisitor(message)) {
+	if (isSystemMessage(message) || isEditedMessage(message) || isMessageFromVisitor(message)) {
 		return;
 	}
 
@@ -62,7 +62,7 @@ export async function markRoomResponded(
 callbacks.add(
 	'afterOmnichannelSaveMessage',
 	async (message, { room, roomUpdater }) => {
-		if (!message || message.t || isEditedMessage(message) || isMessageFromVisitor(message)) {
+		if (!message || isEditedMessage(message) || isMessageFromVisitor(message) || isSystemMessage(message)) {
 			return;
 		}
 

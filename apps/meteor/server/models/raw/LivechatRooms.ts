@@ -26,6 +26,7 @@ import type {
 	FindCursor,
 	UpdateResult,
 	AggregationCursor,
+	UpdateOptions,
 } from 'mongodb';
 
 import { getValue } from '../../../app/settings/server/raw';
@@ -1589,7 +1590,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		);
 	}
 
-	closeRoomById(roomId: string, closeInfo: IOmnichannelRoomClosingInfo) {
+	closeRoomById(roomId: string, closeInfo: IOmnichannelRoomClosingInfo, options?: UpdateOptions) {
 		const { closer, closedBy, closedAt, chatDuration, serviceTimeDuration, tags } = closeInfo;
 
 		return this.updateOne(
@@ -1611,6 +1612,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					open: 1,
 				},
 			},
+			options,
 		);
 	}
 
@@ -2044,12 +2046,12 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return updater;
 	}
 
-	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lt: Date }, { departmentId }: { departmentId?: string } = {}) {
+	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lte: Date }, { departmentId }: { departmentId?: string } = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			t,
 			ts: {
 				$gte: new Date(date.gte), // ISO Date, ts >= date.gte
-				$lt: new Date(date.lt), // ISODate, ts < date.lt
+				$lte: new Date(date.lte), // ISODate, ts <= date.lte
 			},
 			...(departmentId && departmentId !== 'undefined' && { departmentId }),
 		};
@@ -2059,7 +2061,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 	getAnalyticsMetricsBetweenDate(
 		t: 'l',
-		date: { gte: Date; lt: Date },
+		date: { gte: Date; lte: Date },
 		{ departmentId }: { departmentId?: string } = {},
 		extraQuery: Document = {},
 	) {
@@ -2067,7 +2069,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			t,
 			ts: {
 				$gte: new Date(date.gte), // ISO Date, ts >= date.gte
-				$lt: new Date(date.lt), // ISODate, ts < date.lt
+				$lte: new Date(date.lte), // ISODate, ts <= date.lte
 			},
 			...(departmentId && departmentId !== 'undefined' && { departmentId }),
 			...extraQuery,
@@ -2080,7 +2082,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 	getAnalyticsMetricsBetweenDateWithMessages(
 		t: string,
-		date: { gte: Date; lt: Date },
+		date: { gte: Date; lte: Date },
 		{ departmentId }: { departmentId?: string } = {},
 		extraQuery: Document = {},
 		extraMatchers: Document = {},
@@ -2092,7 +2094,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 						t,
 						ts: {
 							$gte: new Date(date.gte), // ISO Date, ts >= date.gte
-							$lt: new Date(date.lt), // ISODate, ts < date.lt
+							$lte: new Date(date.lte), // ISODate, ts <= date.lte
 						},
 						...(departmentId && departmentId !== 'undefined' && { departmentId }),
 						...extraMatchers,
@@ -2162,7 +2164,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		);
 	}
 
-	getAnalyticsBetweenDate(date: { gte: Date; lt: Date }, { departmentId }: { departmentId?: string } = {}) {
+	getAnalyticsBetweenDate(date: { gte: Date; lte: Date }, { departmentId }: { departmentId?: string } = {}) {
 		return this.col.aggregate<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs' | 'onHold'>>(
 			[
 				{
@@ -2170,7 +2172,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 						t: 'l',
 						ts: {
 							$gte: new Date(date.gte), // ISO Date, ts >= date.gte
-							$lt: new Date(date.lt), // ISODate, ts < date.lt
+							$lte: new Date(date.lte), // ISODate, ts <= date.lte
 						},
 						...(departmentId && departmentId !== 'undefined' && { departmentId }),
 					},
