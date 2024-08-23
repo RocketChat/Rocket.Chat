@@ -1068,6 +1068,7 @@ class LivechatClass {
 			'Livechat_background',
 			'Assets_livechat_widget_logo',
 			'Livechat_hide_watermark',
+			'Omnichannel_allow_visitors_to_close_conversation',
 		] as const;
 
 		type SettingTypes = (typeof validSettings)[number] | 'Livechat_Show_Connecting';

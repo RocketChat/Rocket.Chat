@@ -93,6 +93,58 @@ test.describe.serial('OC - Livechat', () => {
 	});
 });
 
+test.describe.serial('OC - Livechat - Visitors closing the room is disabled', () => {
+	let poLiveChat: OmnichannelLiveChat;
+	let poHomeOmnichannel: HomeOmnichannel;
+
+	test.beforeAll(async ({ api }) => {
+		const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
+		expect(statusCode).toBe(200);
+	});
+
+	test.beforeAll(async ({ browser, api }) => {
+		const { page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false);
+
+		poLiveChat = new OmnichannelLiveChat(livechatPage, api);
+	});
+
+	test.beforeAll(async ({ browser, api }) => {
+		await api.post('/settings/Omnichannel_allow_visitors_to_close_conversation', { value: false });
+		const { page: omniPage } = await createAuxContext(browser, Users.user1, '/', true);
+		poHomeOmnichannel = new HomeOmnichannel(omniPage);
+	});
+
+	test.afterAll(async ({ api }) => {
+		await api.post('/settings/Omnichannel_allow_visitors_to_close_conversation', { value: true });
+		await api.delete('/livechat/users/agent/user1');
+		await poLiveChat.page.close();
+	});
+
+	test('OC - Livechat - Close Chat disabled', async () => {
+		await poLiveChat.page.reload();
+		await poLiveChat.openAnyLiveChat();
+		await poLiveChat.sendMessage(firstVisitor, false);
+		await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
+		await poLiveChat.btnSendMessageToOnlineAgent.click();
+
+		await test.step('expect to close a livechat conversation', async () => {
+			await expect(poLiveChat.btnOptions).not.toBeVisible();
+			await expect(poLiveChat.btnCloseChat).not.toBeVisible();
+		});
+	});
+
+	test('OC - Livechat - Close chat disabled, agents can close', async () => {
+		await poHomeOmnichannel.sidenav.openChat(firstVisitor.name);
+
+		await test.step('expect livechat conversation to be closed by agent', async () => {
+			await poHomeOmnichannel.content.btnCloseChat.click();
+			await poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
+			await poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
+			await expect(poHomeOmnichannel.toastSuccess).toBeVisible();
+		});
+	});
+});
+
 test.describe.serial('OC - Livechat - Resub after close room', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let poHomeOmnichannel: HomeOmnichannel;
