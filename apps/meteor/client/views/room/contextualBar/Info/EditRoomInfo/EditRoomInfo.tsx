@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
@@ -224,6 +225,8 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const retentionFilesOnlyField = useUniqueId();
 	const retentionIgnoreThreads = useUniqueId();
 
+	const showAdvancedSettings = canViewEncrypted || canViewReadOnly || readOnly || canViewArchived || canViewJoinCode || canViewHideSysMes;
+
 	return (
 		<>
 			<ContextualbarHeader>
@@ -347,163 +350,166 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						)}
 					</FieldGroup>
 					<Accordion>
-						<AccordionItem title={t('Advanced_settings')}>
-							<FieldGroup>
-								<Box is='h5' fontScale='h5' color='titles-labels'>
-									{t('Security_and_permissions')}
-								</Box>
+						{showAdvancedSettings && (
+							<AccordionItem title={t('Advanced_settings')}>
+								<FieldGroup>
+									<Box is='h5' fontScale='h5' color='titles-labels'>
+										{t('Security_and_permissions')}
+									</Box>
 
-								{canViewEncrypted && (
-									<Field>
-										<FieldRow>
-											<FieldLabel htmlFor={encryptedField}>{t('Encrypted')}</FieldLabel>
-											<Controller
-												control={control}
-												name='encrypted'
-												render={({ field: { value, ...field } }) => (
-													<ToggleSwitch
-														id={encryptedField}
-														aria-describedby={`${encryptedField}-hint`}
-														{...field}
-														disabled={!canToggleEncryption || isFederated}
-														checked={value}
-													/>
-												)}
-											/>
-										</FieldRow>
-										<FieldRow>
-											<FieldHint id={`${encryptedField}-hint`}>{t('Encrypted_field_hint')}</FieldHint>
-										</FieldRow>
-									</Field>
-								)}
-								{canViewReadOnly && (
-									<Field>
-										<FieldRow>
-											<FieldLabel htmlFor={readOnlyField}>{t('Read_only')}</FieldLabel>
-											<Controller
-												control={control}
-												name='readOnly'
-												render={({ field: { value, ...field } }) => (
-													<ToggleSwitch
-														id={readOnlyField}
-														{...field}
-														checked={value}
-														disabled={!canSetReadOnly || isFederated}
-														aria-describedby={`${readOnlyField}-hint`}
-													/>
-												)}
-											/>
-										</FieldRow>
-										<FieldHint id={`${readOnlyField}-hint`}>
-											{readOnly ? t('Read_only_field_hint_enabled', { roomType }) : t('Read_only_field_hint_disabled')}
-										</FieldHint>
-									</Field>
-								)}
-								{readOnly && (
-									<Field>
-										<FieldRow>
-											<FieldLabel htmlFor={reactWhenReadOnlyField}>{t('React_when_read_only')}</FieldLabel>
-											<Controller
-												control={control}
-												name='reactWhenReadOnly'
-												render={({ field: { value, ...field } }) => (
-													<ToggleSwitch
-														id={reactWhenReadOnlyField}
-														{...field}
-														disabled={!canSetReactWhenReadOnly}
-														checked={value}
-														aria-describedby={`${reactWhenReadOnlyField}-hint`}
-													/>
-												)}
-											/>
-										</FieldRow>
-										<FieldRow>
-											<FieldHint id={`${reactWhenReadOnlyField}-hint`}>
-												{reactWhenReadOnly ? t('Anyone_can_react_to_messages') : t('Only_authorized_users_can_react_to_messages')}
-											</FieldHint>
-										</FieldRow>
-									</Field>
-								)}
-								{canViewArchived && (
-									<Field>
-										<FieldRow>
-											<FieldLabel htmlFor={archivedField}>{t('Room_archivation_state_true')}</FieldLabel>
-											<Controller
-												control={control}
-												name='archived'
-												render={({ field: { value, ...field } }) => (
-													<ToggleSwitch
-														id={archivedField}
-														aria-describedby={`${archivedField}-hint`}
-														{...field}
-														disabled={!canArchiveOrUnarchive}
-														checked={value}
-													/>
-												)}
-											/>
-										</FieldRow>
-										{archived && (
+									{canViewEncrypted && (
+										<Field>
 											<FieldRow>
-												<FieldHint id={`${archivedField}-hint`}>{t('New_messages_cannot_be_sent')}</FieldHint>
-											</FieldRow>
-										)}
-									</Field>
-								)}
-								{canViewJoinCode && (
-									<Field>
-										<FieldRow>
-											<FieldLabel htmlFor={joinCodeRequiredField}>{t('Password_to_access')}</FieldLabel>
-											<Controller
-												control={control}
-												name='joinCodeRequired'
-												render={({ field: { value, ...field } }) => (
-													<ToggleSwitch id={joinCodeRequiredField} {...field} disabled={isFederated} checked={value} />
-												)}
-											/>
-										</FieldRow>
-										{joinCodeRequired && (
-											<FieldRow>
+												<FieldLabel htmlFor={encryptedField}>{t('Encrypted')}</FieldLabel>
 												<Controller
-													name='joinCode'
 													control={control}
-													render={({ field }) => (
-														<PasswordInput {...field} placeholder={t('Reset_password')} disabled={!joinCodeRequired} />
+													name='encrypted'
+													render={({ field: { value, ...field } }) => (
+														<ToggleSwitch
+															id={encryptedField}
+															aria-describedby={`${encryptedField}-hint`}
+															{...field}
+															disabled={!canToggleEncryption || isFederated}
+															checked={value}
+														/>
 													)}
 												/>
 											</FieldRow>
-										)}
-									</Field>
-								)}
-								{canViewHideSysMes && (
-									<Field>
-										<FieldRow>
-											<FieldLabel htmlFor={hideSysMesField}>{t('Hide_System_Messages')}</FieldLabel>
-											<Controller
-												control={control}
-												name='hideSysMes'
-												render={({ field: { value, ...field } }) => (
-													<ToggleSwitch id={hideSysMesField} {...field} checked={value} disabled={isFederated} />
-												)}
-											/>
-										</FieldRow>
-										<FieldRow>
-											<Controller
-												control={control}
-												name='systemMessages'
-												render={({ field }) => (
-													<MultiSelect
-														{...field}
-														options={sysMesOptions}
-														disabled={!hideSysMes || isFederated}
-														placeholder={t('Select_messages_to_hide')}
+											<FieldRow>
+												<FieldHint id={`${encryptedField}-hint`}>{t('Encrypted_field_hint')}</FieldHint>
+											</FieldRow>
+										</Field>
+									)}
+									{canViewReadOnly && (
+										<Field>
+											<FieldRow>
+												<FieldLabel htmlFor={readOnlyField}>{t('Read_only')}</FieldLabel>
+												<Controller
+													control={control}
+													name='readOnly'
+													render={({ field: { value, ...field } }) => (
+														<ToggleSwitch
+															id={readOnlyField}
+															{...field}
+															checked={value}
+															disabled={!canSetReadOnly || isFederated}
+															aria-describedby={`${readOnlyField}-hint`}
+														/>
+													)}
+												/>
+											</FieldRow>
+											<FieldHint id={`${readOnlyField}-hint`}>
+												{readOnly ? t('Read_only_field_hint_enabled', { roomType }) : t('Read_only_field_hint_disabled')}
+											</FieldHint>
+										</Field>
+									)}
+									{readOnly && (
+										<Field>
+											<FieldRow>
+												<FieldLabel htmlFor={reactWhenReadOnlyField}>{t('React_when_read_only')}</FieldLabel>
+												<Controller
+													control={control}
+													name='reactWhenReadOnly'
+													render={({ field: { value, ...field } }) => (
+														<ToggleSwitch
+															id={reactWhenReadOnlyField}
+															{...field}
+															disabled={!canSetReactWhenReadOnly}
+															checked={value}
+															aria-describedby={`${reactWhenReadOnlyField}-hint`}
+														/>
+													)}
+												/>
+											</FieldRow>
+											<FieldRow>
+												<FieldHint id={`${reactWhenReadOnlyField}-hint`}>
+													{reactWhenReadOnly ? t('Anyone_can_react_to_messages') : t('Only_authorized_users_can_react_to_messages')}
+												</FieldHint>
+											</FieldRow>
+										</Field>
+									)}
+									{canViewArchived && (
+										<Field>
+											<FieldRow>
+												<FieldLabel htmlFor={archivedField}>{t('Room_archivation_state_true')}</FieldLabel>
+												<Controller
+													control={control}
+													name='archived'
+													render={({ field: { value, ...field } }) => (
+														<ToggleSwitch
+															id={archivedField}
+															aria-describedby={`${archivedField}-hint`}
+															{...field}
+															disabled={!canArchiveOrUnarchive}
+															checked={value}
+														/>
+													)}
+												/>
+											</FieldRow>
+											{archived && (
+												<FieldRow>
+													<FieldHint id={`${archivedField}-hint`}>{t('New_messages_cannot_be_sent')}</FieldHint>
+												</FieldRow>
+											)}
+										</Field>
+									)}
+									{canViewJoinCode && (
+										<Field>
+											<FieldRow>
+												<FieldLabel htmlFor={joinCodeRequiredField}>{t('Password_to_access')}</FieldLabel>
+												<Controller
+													control={control}
+													name='joinCodeRequired'
+													render={({ field: { value, ...field } }) => (
+														<ToggleSwitch id={joinCodeRequiredField} {...field} disabled={isFederated} checked={value} />
+													)}
+												/>
+											</FieldRow>
+											{joinCodeRequired && (
+												<FieldRow>
+													<Controller
+														name='joinCode'
+														control={control}
+														render={({ field }) => (
+															<PasswordInput {...field} placeholder={t('Reset_password')} disabled={!joinCodeRequired} />
+														)}
 													/>
-												)}
-											/>
-										</FieldRow>
-									</Field>
-								)}
-							</FieldGroup>
-						</AccordionItem>
+												</FieldRow>
+											)}
+										</Field>
+									)}
+									{canViewHideSysMes && (
+										<Field>
+											<FieldRow>
+												<FieldLabel htmlFor={hideSysMesField}>{t('Hide_System_Messages')}</FieldLabel>
+												<Controller
+													control={control}
+													name='hideSysMes'
+													render={({ field: { value, ...field } }) => (
+														<ToggleSwitch id={hideSysMesField} {...field} checked={value} disabled={isFederated} />
+													)}
+												/>
+											</FieldRow>
+											<FieldRow>
+												<Controller
+													control={control}
+													name='systemMessages'
+													render={({ field }) => (
+														<MultiSelect
+															{...field}
+															options={sysMesOptions}
+															disabled={!hideSysMes || isFederated}
+															placeholder={t('Select_messages_to_hide')}
+														/>
+													)}
+												/>
+											</FieldRow>
+										</Field>
+									)}
+								</FieldGroup>
+							</AccordionItem>
+						)}
+
 						{canEditRoomRetentionPolicy && retentionPolicy?.enabled && (
 							<AccordionItem title={t('Prune')}>
 								<FieldGroup>
