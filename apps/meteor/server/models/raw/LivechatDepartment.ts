@@ -284,7 +284,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 	}
 
 	findEnabledWithAgents<T extends Partial<ILivechatDepartment> = ILivechatDepartment>(
-		projection: FindOptions<ILivechatDepartment>['projection'] = {},
+		projection: FindOptions<T>['projection'] = {},
 	): FindCursor<T> {
 		const query = {
 			numAgents: { $gt: 0 },
