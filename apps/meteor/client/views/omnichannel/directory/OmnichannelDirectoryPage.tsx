@@ -53,10 +53,10 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 						{t('Contacts')}
 					</Tabs.Item>
 					<Tabs.Item selected={page === 'chats'} onClick={handleTabClick('chats')}>
-						{t('Chats' as 'color')}
+						{t('Chats')}
 					</Tabs.Item>
 					<Tabs.Item selected={page === 'calls'} onClick={handleTabClick('calls')}>
-						{t('Calls' as 'color')}
+						{t('Calls')}
 					</Tabs.Item>
 				</Tabs>
 				<PageContent>
