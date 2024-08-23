@@ -130,7 +130,7 @@ export class AppMessageBridge extends MessageBridge {
 			throw new Error('Invalid reaction');
 		}
 
-		return executeSetReaction(messageId, userId, reaction, true);
+		return executeSetReaction(userId, reaction, messageId, true);
 	}
 
 	protected async removeReaction(messageId: string, userId: string, reaction: Reaction): Promise<void> {
@@ -138,6 +138,6 @@ export class AppMessageBridge extends MessageBridge {
 			throw new Error('Invalid reaction');
 		}
 
-		return executeSetReaction(messageId, userId, reaction, false);
+		return executeSetReaction(userId, reaction, messageId, false);
 	}
 }
