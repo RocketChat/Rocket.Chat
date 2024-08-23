@@ -226,9 +226,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const retentionIgnoreThreads = useUniqueId();
 
 	const showAdvancedSettings = canViewEncrypted || canViewReadOnly || readOnly || canViewArchived || canViewJoinCode || canViewHideSysMes;
-	const showPruneSection = canEditRoomRetentionPolicy && retentionPolicy?.enabled;
+	const showRetentionPolicy = canEditRoomRetentionPolicy && retentionPolicy?.enabled;
 
-	const showAccordion = showAdvancedSettings || showPruneSection;
+	const showAccordion = showAdvancedSettings || showRetentionPolicy;
 
 	return (
 		<>
@@ -322,7 +322,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 								</FieldRow>
 							</Field>
 						)}
-
 						{canViewType && (
 							<Field>
 								<FieldRow>
@@ -360,7 +359,6 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										<Box is='h5' fontScale='h5' color='titles-labels'>
 											{t('Security_and_permissions')}
 										</Box>
-
 										{canViewEncrypted && (
 											<Field>
 												<FieldRow>
@@ -513,8 +511,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 									</FieldGroup>
 								</AccordionItem>
 							)}
-
-							{showPruneSection && (
+							{showRetentionPolicy && (
 								<AccordionItem title={t('Prune')}>
 									<FieldGroup>
 										<Field>
