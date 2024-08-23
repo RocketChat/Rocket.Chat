@@ -179,7 +179,6 @@ export const drawDoughnutChart = async (
 	dataPoints: number[],
 ): Promise<ChartType> => {
 	if (!chart) {
-		console.error('No chart element');
 		throw new Error('No chart element');
 	}
 	if (chartContext) {

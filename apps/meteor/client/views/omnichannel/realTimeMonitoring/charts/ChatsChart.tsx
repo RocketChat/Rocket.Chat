@@ -23,7 +23,7 @@ const initialData = {
 const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: TranslationContextValue['translate']) =>
 	drawDoughnutChart(
 		canvas,
-		t('Chats' as TranslationKey),
+		t('Chats'),
 		context,
 		labels.map((l) => t(l as TranslationKey)),
 		Object.values(initialData),
