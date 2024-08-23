@@ -598,7 +598,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		});
 	}
 
-	incUsersCountByIds(ids: Array<IRoom['_id']>, inc = 1): Promise<Document | UpdateResult> {
+	incUsersCountByIds(ids: Array<IRoom['_id']>, inc = 1, options?: UpdateOptions): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
 			_id: {
 				$in: ids,
@@ -611,7 +611,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 
-		return this.updateMany(query, update);
+		return this.updateMany(query, update, options);
 	}
 
 	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }> {
@@ -637,15 +637,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(
 			{
 				broadcast: true,
-			},
-			options,
-		);
-	}
-
-	findByActiveLivestream(options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		return this.find(
-			{
-				'streamingOptions.type': 'livestream',
 			},
 			options,
 		);
@@ -1028,15 +1019,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 		return this.updateOne(query, update);
-	}
-
-	setStreamingOptionsById(_id: IRoom['_id'], streamingOptions: IRoom['streamingOptions']): Promise<UpdateResult> {
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				streamingOptions,
-			},
-		};
-		return this.updateOne({ _id }, update);
 	}
 
 	setReadOnlyById(_id: IRoom['_id'], readOnly: NonNullable<IRoom['ro']>): Promise<UpdateResult> {
