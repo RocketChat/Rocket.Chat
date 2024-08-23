@@ -130,6 +130,8 @@ jobs:
           node-version: ${{ inputs.node-version }}
           cache-modules: true
           install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - uses: rharkor/caching-for-turbo@v1.5
 
       - run: yarn build
@@ -145,6 +147,7 @@ jobs:
           # the same reason we need to rebuild the docker image at this point is the reason we dont want to publish it
           publish-image: false
           setup: false
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Start httpbin container and wait for it to be ready
         if: inputs.type == 'api'

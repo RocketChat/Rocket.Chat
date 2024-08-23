@@ -2,6 +2,7 @@ import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../lib/callbacks';
+import { isPlainObject } from '../../../../../lib/utils/isPlainObject';
 
 callbacks.add(
 	'livechat.beforeRoom',
@@ -10,9 +11,11 @@ callbacks.add(
 			return roomInfo;
 		}
 
-		const { sla: searchTerm } = extraData;
+		const { sla: searchTerm, customFields } = extraData;
+		const roomInfoWithExtraData = { ...roomInfo, ...(isPlainObject(customFields) && { customFields }) };
+
 		if (!searchTerm) {
-			return roomInfo;
+			return roomInfoWithExtraData;
 		}
 
 		const sla = await OmnichannelServiceLevelAgreements.findOneByIdOrName(searchTerm);
@@ -23,7 +26,7 @@ callbacks.add(
 		}
 
 		const { _id: slaId } = sla;
-		return { ...roomInfo, slaId };
+		return { ...roomInfoWithExtraData, slaId };
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-before-new-room',

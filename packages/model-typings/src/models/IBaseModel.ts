@@ -9,6 +9,7 @@ import type {
 	EnhancedOmit,
 	Filter,
 	FindCursor,
+	FindOneAndDeleteOptions,
 	FindOneAndUpdateOptions,
 	FindOptions,
 	InsertManyResult,
@@ -53,6 +54,7 @@ export interface IBaseModel<
 	getUpdater(): Updater<T>;
 	updateFromUpdater(query: Filter<T>, updater: Updater<T>): Promise<UpdateResult>;
 
+	findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<ModifyResult<T>>;
 	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>>;
 
 	findOneById(_id: T['_id'], options?: FindOptions<T> | undefined): Promise<T | null>;
@@ -93,7 +95,7 @@ export interface IBaseModel<
 
 	deleteOne(filter: Filter<T>, options?: DeleteOptions & { bypassDocumentValidation?: boolean }): Promise<DeleteResult>;
 
-	deleteMany(filter: Filter<T>, options?: DeleteOptions): Promise<DeleteResult>;
+	deleteMany(filter: Filter<T>, options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void }): Promise<DeleteResult>;
 
 	// Trash
 	trashFind<P extends TDeleted>(

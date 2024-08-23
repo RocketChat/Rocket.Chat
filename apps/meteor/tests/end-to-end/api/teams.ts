@@ -47,9 +47,16 @@ describe('[Teams]', () => {
 
 		before(async () => {
 			testUser = await createUser();
+			await updateSetting('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+');
 		});
 
-		after(() => Promise.all([...createdTeams.map((team) => deleteTeam(credentials, team.name)), deleteUser(testUser)]));
+		after(async () => {
+			await Promise.all([
+				...createdTeams.map((team) => deleteTeam(credentials, team.name)),
+				deleteUser(testUser),
+				updateSetting('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+'),
+			]);
+		});
 
 		it('should create a public team', (done) => {
 			void request
@@ -249,6 +256,51 @@ describe('[Teams]', () => {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400);
+		});
+
+		it('should not create a team with no associated room', async () => {
+			const teamName = 'invalid*team*name';
+
+			await request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: teamName,
+					type: 0,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', false);
+					expect(response.body).to.have.property('error');
+					expect(response.body.error).to.be.equal('error-team-creation');
+				});
+
+			await request
+				.get(api('teams.info'))
+				.set(credentials)
+				.query({
+					teamName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', false);
+					expect(response.body).to.have.property('error', 'Team not found');
+				});
+
+			await request
+				.get(api('teams.members'))
+				.set(credentials)
+				.query({
+					teamName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((response) => {
+					expect(response.body).to.have.property('success', false);
+					expect(response.body).to.have.property('error', 'team-does-not-exist');
+				});
 		});
 	});
 
