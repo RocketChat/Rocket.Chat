@@ -227,7 +227,7 @@ const MessageBox = ({
 		if (encryptedFilesarray[0]) {
 			const getContent = async (_id: string[], fileUrl: string[]): Promise<IE2EEMessage['content']> => {
 				const attachments: FileAttachmentProps[] = [];
-				const arrayoffiles: any = [];
+				const uploadFiles: any = [];
 
 				const promises = _id.map(async (id, i) => {
 					const attachment: FileAttachmentProps = {
@@ -288,14 +288,13 @@ const MessageBox = ({
 						size: filesToUpload[i].size,
 					};
 
-					arrayoffiles.push(files);
+					uploadFiles.push(files);
 				});
 				await Promise.all(promises);
-				console.log('messageBox attachments ' + attachments);
-				console.log('messgaeBox files  ' + arrayoffiles);
+
 				return e2eRoom.encryptMessageContent({
 					attachments,
-					files: arrayoffiles,
+					files: uploadFiles,
 					file: filesToUpload[0],
 				});
 			};

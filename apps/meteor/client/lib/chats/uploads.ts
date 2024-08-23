@@ -32,11 +32,13 @@ const wipeFailedOnes = (): void => {
 const send = async (
 	file: File[] | File,
 	{
+		description,
 		msg,
 		rid,
 		tmid,
 		t,
 	}: {
+		description?: string;
 		msg?: string;
 		rid: string;
 		tmid?: string;
@@ -129,7 +131,7 @@ const send = async (
 							const text: IMessage = {
 								rid,
 								_id: id,
-								msg: msg || '',
+								msg: msg || description || '',
 								ts: new Date(),
 								u: { _id: id, username: id },
 								_updatedAt: new Date(),
@@ -138,15 +140,6 @@ const send = async (
 								content,
 							};
 							await sdk.call('sendMessage', text, fileUrls, fileIds);
-
-							// await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${fileIds[0]}`, {
-							// 	msg,
-							// 	tmid,
-							// 	description,
-							// 	t,
-							// 	content,
-							// });
-
 							updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
 						} catch (error) {
 							updateUploads((uploads) =>
@@ -187,8 +180,8 @@ export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMes
 	cancel,
 	send: (
 		file: File[] | File,
-		{ msg, t }: { msg?: string; t?: IMessage['t'] },
+		{ description, msg, t }: { description?: string; msg?: string; t?: IMessage['t'] },
 		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
 		fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
-	): Promise<void> => send(file, { msg, rid, tmid, t }, getContent, fileContent),
+	): Promise<void> => send(file, { description, msg, rid, tmid, t }, getContent, fileContent),
 });
