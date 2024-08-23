@@ -15,6 +15,18 @@
   - @rocket.chat/core-typings@6.12.0-rc.0
   - @rocket.chat/ui-contexts@10.0.0-rc.0
   </details>
+## 9.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.1
+  - @rocket.chat/gazzodown@9.0.1
+  - @rocket.chat/ui-contexts@9.0.1
+  - @rocket.chat/ui-avatar@5.0.1
+  - @rocket.chat/ui-video-conf@9.0.1
+  </details>
 
 ## 9.0.0
 

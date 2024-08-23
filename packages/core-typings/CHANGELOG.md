@@ -26,6 +26,7 @@
 
   - @rocket.chat/ui-kit@0.36.1-rc.0
   </details>
+## 6.11.1
 
 ## 6.11.0
 

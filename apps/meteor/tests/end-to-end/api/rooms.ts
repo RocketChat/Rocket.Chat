@@ -1098,7 +1098,6 @@ describe('[Rooms]', () => {
 				.end(done);
 		});
 	});
-
 	describe('[/rooms.info]', () => {
 		let testChannel: IRoom;
 		let testGroup: IRoom;

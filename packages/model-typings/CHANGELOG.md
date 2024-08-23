@@ -16,6 +16,7 @@
 
   - @rocket.chat/core-typings@6.12.0-rc.0
   </details>
+  </details>
 
 ## 0.6.0
 

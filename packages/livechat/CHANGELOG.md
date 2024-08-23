@@ -11,6 +11,14 @@
   - @rocket.chat/gazzodown@10.0.0-rc.0
   - @rocket.chat/ui-kit@0.36.1-rc.0
   </details>
+## 1.19.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@9.0.1
+  </details>
 
 ## 1.19.0
 
