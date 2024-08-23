@@ -178,7 +178,7 @@ describe('LIVECHAT - Utils', () => {
 			expect(body.config).to.have.property('room');
 			expect(body.config.room).to.have.property('_id', newRoom._id);
 		});
-		it('should return list of departments with at least one agent', async () => {
+		(IS_EE ? it : it.skip)('should return list of departments with at least one agent', async () => {
 			const emptyDepartment = await createDepartment();
 			const { department: forwardDepartment, agent } = await createDepartmentWithAnOnlineAgent();
 			const { department: testDepartment, agent: agent2 } = await createDepartmentWithAnOfflineAgent({
