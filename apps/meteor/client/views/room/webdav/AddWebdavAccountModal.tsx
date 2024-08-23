@@ -57,7 +57,7 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 						<FieldRow>
 							<TextInput
 								placeholder={t('Webdav_Server_URL')}
-								{...register('serverURL', { required: t('The_field_is_required', { field: t('Webdav_Server_URL') }) })}
+								{...register('serverURL', { required: t('Required_field', { field: t('Webdav_Server_URL') }) })}
 							/>
 						</FieldRow>
 						{errors.serverURL && <FieldError>{errors.serverURL.message}</FieldError>}
@@ -67,7 +67,7 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 						<FieldRow>
 							<TextInput
 								placeholder={t('Username')}
-								{...register('username', { required: t('The_field_is_required', { field: t('Username') }) })}
+								{...register('username', { required: t('Required_field', { field: t('Username') }) })}
 							/>
 						</FieldRow>
 						{errors.username && <FieldError>{errors.username.message}</FieldError>}
@@ -77,7 +77,7 @@ const AddWebdavAccountModal = ({ onClose, onConfirm }: AddWebdavAccountModalProp
 						<FieldRow>
 							<PasswordInput
 								placeholder={t('Password')}
-								{...register('password', { required: t('The_field_is_required', { field: t('Password') }) })}
+								{...register('password', { required: t('Required_field', { field: t('Password') }) })}
 							/>
 						</FieldRow>
 						{errors.password && <FieldError>{errors.password.message}</FieldError>}

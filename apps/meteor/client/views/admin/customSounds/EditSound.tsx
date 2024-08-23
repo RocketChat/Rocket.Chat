@@ -79,7 +79,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 			validation.forEach((error) =>
 				dispatchToastMessage({
 					type: 'error',
-					message: t('The_field_is_required', { field: t(error) }),
+					message: t('Required_field', { field: t(error) }),
 				}),
 			);
 		},

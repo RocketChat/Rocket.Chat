@@ -221,7 +221,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								control={control}
 								name='email'
 								rules={{
-									required: t('The_field_is_required', { field: t('Email') }),
+									required: t('Required_field', { field: t('Email') }),
 									validate: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')),
 								}}
 								render={({ field }) => (
@@ -286,7 +286,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<Controller
 								control={control}
 								name='name'
-								rules={{ required: t('The_field_is_required', { field: t('Name') }) }}
+								rules={{ required: t('Required_field', { field: t('Name') }) }}
 								render={({ field }) => (
 									<TextInput
 										{...field}
@@ -311,7 +311,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<Controller
 								control={control}
 								name='username'
-								rules={{ required: t('The_field_is_required', { field: t('Username') }) }}
+								rules={{ required: t('Required_field', { field: t('Username') }) }}
 								render={({ field }) => (
 									<TextInput
 										{...field}
@@ -366,7 +366,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								<Controller
 									control={control}
 									name='roles'
-									rules={{ required: t('The_field_is_required', t('Roles')) }}
+									rules={{ required: t('Required_field', t('Roles')) }}
 									render={({ field: { onChange, value } }) => (
 										<MultiSelectFiltered
 											id={rolesId}
