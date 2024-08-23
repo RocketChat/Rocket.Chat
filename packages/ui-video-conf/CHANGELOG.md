@@ -1,5 +1,17 @@
 # @rocket.chat/ui-video-conf
 
+## 10.0.0-rc.0
+
+### Patch Changes
+
+- ([#32968](https://github.com/RocketChat/Rocket.Chat/pull/32968)) Bumped @rocket.chat/fuselage that fixes the Menu onPointerUp event behavior
+
+- <details><summary>Updated dependencies [8ea6517c4e]:</summary>
+
+  - @rocket.chat/ui-avatar@6.0.0-rc.0
+  - @rocket.chat/ui-contexts@10.0.0-rc.0
+  </details>
+
 ## 9.0.0
 
 ### Minor Changes

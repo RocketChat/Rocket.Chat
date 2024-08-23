@@ -1,5 +1,21 @@
 # @rocket.chat/rest-typings
 
+## 6.12.0-rc.0
+
+### Minor Changes
+
+- ([#32868](https://github.com/RocketChat/Rocket.Chat/pull/32868)) Added `sidepanel` field to `teams.create` and `rooms.saveRoomSettings` endpoints
+
+### Patch Changes
+
+- ([#31525](https://github.com/RocketChat/Rocket.Chat/pull/31525)) Fix: Show correct user info actions for non-members in channels.
+
+- <details><summary>Updated dependencies [c11f3722df, 7937ff741a, 58c0efc732, e28be46db7, 58c0efc732]:</summary>
+
+  - @rocket.chat/ui-kit@0.36.1-rc.0
+  - @rocket.chat/core-typings@6.12.0-rc.0
+  </details>
+
 ## 6.11.0
 
 ### Minor Changes

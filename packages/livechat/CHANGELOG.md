@@ -1,5 +1,17 @@
 # @rocket.chat/livechat Change Log
 
+## 1.19.1-rc.0
+
+### Patch Changes
+
+- ([#32928](https://github.com/RocketChat/Rocket.Chat/pull/32928)) Fixed issue where `after-registration-triggers` would show up in a page when the user was not yet registered
+
+- <details><summary>Updated dependencies [8ea6517c4e, c11f3722df]:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0-rc.0
+  - @rocket.chat/ui-kit@0.36.1-rc.0
+  </details>
+
 ## 1.19.0
 
 ### Minor Changes
