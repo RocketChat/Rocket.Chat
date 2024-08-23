@@ -226,9 +226,10 @@ const MessageBox = ({
 
 		if (encryptedFilesarray[0]) {
 			const getContent = async (_id: string[], fileUrl: string[]): Promise<IE2EEMessage['content']> => {
-				const attachments = [];
-				const arrayoffiles = [];
-				for (let i = 0; i < _id.length; i++) {
+				const attachments: FileAttachmentProps[] = [];
+				const arrayoffiles: any = [];
+
+				const promises = _id.map(async (id, i) => {
 					const attachment: FileAttachmentProps = {
 						title: filesToUpload[i].name,
 						type: 'file',
@@ -243,10 +244,11 @@ const MessageBox = ({
 						},
 					};
 
+					let updatedAttachment;
+
 					if (/^image\/.+/.test(filesToUpload[i].type)) {
 						const dimensions = await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(filesToUpload[i]));
-
-						attachments.push({
+						updatedAttachment = {
 							...attachment,
 							image_url: fileUrl[i],
 							image_type: filesToUpload[i].type,
@@ -254,38 +256,43 @@ const MessageBox = ({
 							...(dimensions && {
 								image_dimensions: dimensions,
 							}),
-						});
+						};
 					} else if (/^audio\/.+/.test(filesToUpload[i].type)) {
-						attachments.push({
+						updatedAttachment = {
 							...attachment,
 							audio_url: fileUrl[i],
 							audio_type: filesToUpload[i].type,
 							audio_size: filesToUpload[i].size,
-						});
+						};
 					} else if (/^video\/.+/.test(filesToUpload[i].type)) {
-						attachments.push({
+						updatedAttachment = {
 							...attachment,
 							video_url: fileUrl[i],
 							video_type: filesToUpload[i].type,
 							video_size: filesToUpload[i].size,
-						});
+						};
 					} else {
-						attachments.push({
+						updatedAttachment = {
 							...attachment,
 							size: filesToUpload[i].size,
 							format: getFileExtension(filesToUpload[i].name),
-						});
+						};
 					}
 
+					attachments.push(updatedAttachment);
+
 					const files = {
-						_id: _id[i],
+						_id: id,
 						name: filesToUpload[i].name,
 						type: filesToUpload[i].type,
 						size: filesToUpload[i].size,
 					};
-					arrayoffiles.push(files);
-				}
 
+					arrayoffiles.push(files);
+				});
+				await Promise.all(promises);
+				console.log('messageBox attachments ' + attachments);
+				console.log('messgaeBox files  ' + arrayoffiles);
 				return e2eRoom.encryptMessageContent({
 					attachments,
 					files: arrayoffiles,
@@ -353,7 +360,6 @@ const MessageBox = ({
 		handleEncryptedFilesShared(filesToUpload, msg, e2eRoom);
 		chat.composer?.clear();
 		setFilesToUpload([]);
-		return;
 	};
 
 	const { isMobile } = useLayout();
@@ -665,6 +671,7 @@ const MessageBox = ({
 				>
 					{filesToUpload.map((file, index) => (
 						<div
+							key={index}
 							id={`file-preview-${index}`}
 							style={{
 								transition: 'opacity 0.3s ease-in-out',
