@@ -33,7 +33,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 
 	const uploadFile = (
 		file: File,
-		extraData?: Pick<IMessage, 't' | 'e2e'> & { description?: string },
+		extraData?: Pick<IMessage, 't' | 'e2e'> & { msg?: string },
 		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
 		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
 	) => {
@@ -79,14 +79,14 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					const e2eRoom = await e2e.getInstanceByRoomId(room._id);
 
 					if (!e2eRoom) {
-						uploadFile(file, { description });
+						uploadFile(file);
 						return;
 					}
 
 					const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages({ msg });
 
 					if (!shouldConvertSentMessages) {
-						uploadFile(file, { description });
+						uploadFile(file);
 						return;
 					}
 
@@ -99,7 +99,6 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 							const attachment: FileAttachmentProps = {
 								title: file.name,
 								type: 'file',
-								description,
 								title_link: fileUrl,
 								title_link_download: true,
 								encryption: {
@@ -166,6 +165,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 							type: file.type,
 							typeGroup: file.type.split('/')[0],
 							name: fileName,
+							msg: description,
 							encryption: {
 								key: encryptedFile.key,
 								iv: encryptedFile.iv,
