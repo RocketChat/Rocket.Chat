@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RateLimiter } from '../../../lib/server';
-import { Livechat } from '../lib/LivechatTyped';
+import { sendTranscript } from '../lib/sendTranscript';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -39,7 +39,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-mac-limit-reached', 'MAC limit reached', { method: 'livechat:sendTranscript' });
 		}
 
-		return Livechat.sendTranscript({ token, rid, email, subject, user });
+		return sendTranscript({ token, rid, email, subject, user });
 	},
 });
 
