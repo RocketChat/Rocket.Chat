@@ -1,54 +1,47 @@
-import type { ISetting } from '@rocket.chat/core-typings';
-import { Tabs } from '@rocket.chat/fuselage';
+import { Tabs, TabsItem } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo, useState, useMemo } from 'react';
 
-import { useEditableSettingsGroupSections, useEditableSettingsGroupTabs } from '../../EditableSettingsContext';
-import GroupPage from '../GroupPage';
-import Section from '../Section';
+import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
 import GenericGroupPage from './GenericGroupPage';
 
-type TabbedGroupPageProps = ISetting & {
+type TabbedGroupPageProps = {
 	headerButtons?: ReactElement;
+	_id: string;
+	i18nLabel: string;
+	tabs: string[];
 	onClickBack?: () => void;
 };
 
-function TabbedGroupPage({ _id, onClickBack, ...props }: TabbedGroupPageProps): JSX.Element {
+function TabbedGroupPage({ _id, tabs, i18nLabel, onClickBack, ...props }: TabbedGroupPageProps) {
 	const t = useTranslation();
-	const tabs = useEditableSettingsGroupTabs(_id);
 
-	const [tab, setTab] = useState(tabs[0]);
-	const handleTabClick = useMemo(() => (tab: string) => (): void => setTab(tab), [setTab]);
-	const sections = useEditableSettingsGroupSections(_id, tab);
-
-	const solo = sections.length === 1;
-
-	if (!tabs.length || (tabs.length === 1 && !tabs[0])) {
-		return <GenericGroupPage _id={_id} onClickBack={onClickBack} {...props} />;
-	}
-
-	if (!tab && tabs[0]) {
-		setTab(tabs[0]);
-	}
+	const [currentTab, setCurrentTab] = useState(tabs[0]);
+	const handleTabClick = useMemo(() => (tab: string) => (): void => setCurrentTab(tab), [setCurrentTab]);
+	const sections = useEditableSettingsGroupSections(_id, currentTab);
 
 	const tabsComponent = (
 		<Tabs>
 			{tabs.map((tabName) => (
-				<Tabs.Item key={tabName || ''} selected={tab === tabName} onClick={handleTabClick(tabName)}>
+				<TabsItem key={tabName || ''} selected={currentTab === tabName} onClick={handleTabClick(tabName)}>
 					{tabName ? t(tabName as TranslationKey) : t(_id as TranslationKey)}
-				</Tabs.Item>
+				</TabsItem>
 			))}
 		</Tabs>
 	);
 
 	return (
-		<GroupPage _id={_id} onClickBack={onClickBack} {...props} tabs={tabsComponent}>
-			{sections.map((sectionName) => (
-				<Section key={sectionName || ''} groupId={_id} sectionName={sectionName} tabName={tab} solo={solo} />
-			))}
-		</GroupPage>
+		<GenericGroupPage
+			_id={_id}
+			i18nLabel={i18nLabel}
+			onClickBack={onClickBack}
+			sections={sections}
+			currentTab={currentTab}
+			tabs={tabsComponent}
+			{...props}
+		/>
 	);
 }
 

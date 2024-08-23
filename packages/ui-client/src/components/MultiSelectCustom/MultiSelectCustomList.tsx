@@ -4,7 +4,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
 import { Fragment, useCallback, useState } from 'react';
 
-import type { OptionProp } from './MultiSelectCustom';
+import { type OptionProp } from './MultiSelectCustom';
 import { useFilteredOptions } from './useFilteredOptions';
 
 const MultiSelectCustomList = ({
@@ -14,7 +14,7 @@ const MultiSelectCustomList = ({
 }: {
 	options: OptionProp[];
 	onSelected: (item: OptionProp, e?: FormEvent<HTMLElement>) => void;
-	searchBarText?: TranslationKey;
+	searchBarText?: string;
 }) => {
 	const t = useTranslation();
 
@@ -25,33 +25,33 @@ const MultiSelectCustomList = ({
 	const filteredOptions = useFilteredOptions(text, options);
 
 	return (
-		<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='light' borderRadius='x2'>
+		<Tile overflow='auto' pb={12} pi={0} elevation='2' w='full' bg='light' borderRadius={2} maxHeight='50vh'>
 			{searchBarText && (
-				<Option>
+				<Box pi={12} mbe={12}>
 					<SearchInput
 						name='select-search'
-						placeholder={t(searchBarText)}
+						placeholder={t(searchBarText as TranslationKey)}
 						autoComplete='off'
 						addon={<Icon name='magnifier' size='x20' />}
 						onChange={handleChange}
 						value={text}
 					/>
-				</Option>
+				</Box>
 			)}
 			{filteredOptions.map((option) => (
 				<Fragment key={option.id}>
-					{option.hasOwnProperty('checked') ? (
+					{!option.hasOwnProperty('checked') ? (
+						<Box mi={12} mb={4} fontScale='p2b' color='default'>
+							{t(option.text as TranslationKey)}
+						</Box>
+					) : (
 						<Option key={option.id}>
-							<Box pis='x4' pb='x4' w='full' display='flex' justifyContent='space-between' is='label'>
+							<Box w='full' display='flex' justifyContent='space-between' is='label'>
 								{t(option.text as TranslationKey)}
 
 								<CheckBox checked={option.checked} pi={0} name={option.text} id={option.id} onChange={() => onSelected(option)} />
 							</Box>
 						</Option>
-					) : (
-						<Box mi='x12' mb='x4' fontScale='p2b' color='default'>
-							{t(option.text as TranslationKey)}
-						</Box>
 					)}
 				</Fragment>
 			))}
