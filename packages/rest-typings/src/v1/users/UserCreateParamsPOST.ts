@@ -19,7 +19,7 @@ export type UserCreateParamsPOST = {
 	setRandomPassword?: boolean;
 	sendWelcomeEmail?: boolean;
 	verified?: boolean;
-	customFields?: object;
+	customFields?: Record<string, any>;
 	/* @deprecated */
 	fields: string;
 };

@@ -5,7 +5,6 @@ import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
@@ -14,6 +13,7 @@ import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { attachMessage } from '../../../lib/server/functions/attachMessage';
 import { createRoom } from '../../../lib/server/functions/createRoom';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { afterSaveMessageAsync } from '../../../lib/server/lib/afterSaveMessage';
 import { settings } from '../../../settings/server';
 
 const getParentRoom = async (rid: IRoom['_id']) => {
@@ -27,13 +27,11 @@ async function createDiscussionMessage(
 	drid: IRoom['_id'],
 	msg: IMessage['msg'],
 	messageEmbedded?: MessageAttachmentDefault,
-): Promise<IMessage | null> {
-	const msgId = await Message.saveSystemMessage('discussion-created', rid, msg, user, {
+): Promise<IMessage> {
+	return Message.saveSystemMessage('discussion-created', rid, msg, user, {
 		drid,
 		...(messageEmbedded && { attachments: [messageEmbedded] }),
 	});
-
-	return Messages.findOneById(msgId);
 }
 
 async function mentionMessage(
@@ -191,8 +189,9 @@ const create = async ({
 	}
 
 	if (discussionMsg) {
-		callbacks.runAsync('afterSaveMessage', discussionMsg, parentRoom);
+		afterSaveMessageAsync(discussionMsg, parentRoom);
 	}
+
 	return discussion;
 };
 

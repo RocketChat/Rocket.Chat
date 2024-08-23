@@ -1,5 +1,60 @@
 # @rocket.chat/ui-video-conf
 
+## 9.0.0
+
+### Minor Changes
+
+- ([#32793](https://github.com/RocketChat/Rocket.Chat/pull/32793)) New Feature: Video Conference Persistent Chat.
+  This feature provides a discussion id for conference provider apps to store the chat messages exchanged during the conferences, so that those users may then access those messages again at any time through Rocket.Chat.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [2d89a0c448, 4e8aa575a6]:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0
+  - @rocket.chat/ui-avatar@5.0.0
+  </details>
+
+## 9.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0-rc.6
+  - @rocket.chat/ui-avatar@5.0.0-rc.6
+  </details>
+
+## 9.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0-rc.5
+  - @rocket.chat/ui-avatar@5.0.0-rc.5
+  </details>
+
+## 9.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0-rc.4
+  - @rocket.chat/ui-avatar@5.0.0-rc.4
+  </details>
+
+## 9.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@9.0.0-rc.3
+  - @rocket.chat/ui-avatar@5.0.0-rc.3
+  </details>
+
 ## 9.0.0-rc.2
 
 ### Patch Changes
