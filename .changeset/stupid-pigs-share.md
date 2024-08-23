@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Added Advanced settings accordion to `EditRoomInfo`
+Wraps some room settings in an accordion advanced settings section in room edit contextual bar to improve organization
