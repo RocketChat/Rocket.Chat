@@ -4,6 +4,8 @@ import { Subscriptions } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../app/lib/server/lib/notifyListener';
+
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
@@ -23,6 +25,12 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return (await Subscriptions.openByRoomIdAndUserId(rid, uid)).modifiedCount;
+		const openByRoomResponse = await Subscriptions.openByRoomIdAndUserId(rid, uid);
+
+		if (openByRoomResponse.modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, uid);
+		}
+
+		return openByRoomResponse.modifiedCount;
 	},
 });

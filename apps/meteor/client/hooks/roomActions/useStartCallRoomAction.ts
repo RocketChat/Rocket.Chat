@@ -15,7 +15,6 @@ export const useStartCallRoomAction = () => {
 	const federated = isRoomFederated(room);
 
 	const ownUser = room.uids?.length === 1 ?? false;
-	const live = room?.streamingOptions?.type === 'call' ?? false;
 
 	const permittedToPostReadonly = usePermission('post-readonly', room._id);
 	const permittedToCallManagement = usePermission('call-management', room._id);
@@ -81,8 +80,8 @@ export const useStartCallRoomAction = () => {
 				disabled: true,
 			}),
 			full: true,
-			order: live ? -1 : 4,
+			order: 4,
 			featured: true,
 		};
-	}, [allowed, disabled, groups, handleOpenVideoConf, live, t]);
+	}, [allowed, disabled, groups, handleOpenVideoConf, t]);
 };

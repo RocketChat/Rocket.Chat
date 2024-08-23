@@ -5,7 +5,11 @@ import type { IOmnichannelRoom, IUser, ILivechatInquiryRecord, IOmnichannelSyste
 import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, Subscriptions, LivechatInquiry } from '@rocket.chat/models';
 
-import { notifyOnLivechatInquiryChangedById, notifyOnRoomChangedById } from '../../../../../app/lib/server/lib/notifyListener';
+import {
+	notifyOnSubscriptionChangedByRoomId,
+	notifyOnLivechatInquiryChangedById,
+	notifyOnRoomChangedById,
+} from '../../../../../app/lib/server/lib/notifyListener';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
@@ -53,15 +57,21 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			throw new Error('error-unserved-rooms-cannot-be-placed-onhold');
 		}
 
-		await Promise.all([
+		const [roomResult, subsResult] = await Promise.all([
 			LivechatRooms.setOnHoldByRoomId(roomId),
 			Subscriptions.setOnHoldByRoomId(roomId),
 			Message.saveSystemMessage<IOmnichannelSystemMessage>('omnichannel_placed_chat_on_hold', roomId, '', onHoldBy, { comment }),
 		]);
 
-		await callbacks.run('livechat:afterOnHold', room);
+		if (roomResult.modifiedCount) {
+			void notifyOnRoomChangedById(roomId);
+		}
 
-		void notifyOnRoomChangedById(roomId);
+		if (subsResult.modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomId(roomId);
+		}
+
+		await callbacks.run('livechat:afterOnHold', room);
 	}
 
 	async resumeRoomOnHold(
@@ -104,15 +114,21 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			clientAction,
 		});
 
-		await Promise.all([
+		const [roomResult, subsResult] = await Promise.all([
 			LivechatRooms.unsetOnHoldByRoomId(roomId),
 			Subscriptions.unsetOnHoldByRoomId(roomId),
 			Message.saveSystemMessage<IOmnichannelSystemMessage>('omnichannel_on_hold_chat_resumed', roomId, '', resumeBy, { comment }),
 		]);
 
-		await callbacks.run('livechat:afterOnHoldChatResumed', room);
+		if (roomResult.modifiedCount) {
+			void notifyOnRoomChangedById(roomId);
+		}
 
-		void notifyOnRoomChangedById(roomId);
+		if (subsResult.modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomId(roomId);
+		}
+
+		await callbacks.run('livechat:afterOnHoldChatResumed', room);
 	}
 
 	private async attemptToAssignRoomToServingAgentElseQueueIt({
