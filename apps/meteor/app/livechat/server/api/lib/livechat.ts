@@ -32,21 +32,16 @@ async function findDepartments(
 ): Promise<Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>[]> {
 	// TODO: check this function usage
 	return (
-		await (
-			await LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
-				_id: 1,
-				name: 1,
-				showOnRegistration: 1,
-				showOnOfflineForm: 1,
-				departmentsAllowedToForward: 1,
-			})
-		).toArray()
-	).map(({ _id, name, showOnRegistration, showOnOfflineForm }) => ({
-		_id,
-		name,
-		showOnRegistration,
-		showOnOfflineForm,
-	}));
+		await LivechatDepartment.findEnabledWithAgentsAndBusinessUnit<
+			Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm' | 'departmentsAllowedToForward'>
+		>(businessUnit, {
+			_id: 1,
+			name: 1,
+			showOnRegistration: 1,
+			showOnOfflineForm: 1,
+			departmentsAllowedToForward: 1,
+		})
+	).toArray();
 }
 
 export function findGuest(token: string): Promise<ILivechatVisitor | null> {
