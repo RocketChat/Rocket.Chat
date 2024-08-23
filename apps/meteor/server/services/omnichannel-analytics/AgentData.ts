@@ -77,7 +77,7 @@ export class AgentOverviewData {
 		const agentConversations = new Map(); // stores total conversations for each agent
 		const date = {
 			gte: from.toDate(),
-			lt: to.add(1, 'days').toDate(),
+			lte: to.toDate(),
 		};
 
 		const data: ConversationData = {
@@ -128,7 +128,7 @@ export class AgentOverviewData {
 		const agentChatDurations = new Map(); // stores total conversations for each agent
 		const date = {
 			gte: from.toDate(),
-			lt: to.add(1, 'days').toDate(),
+			lte: to.toDate(),
 		};
 
 		const data: ConversationData = {
@@ -178,7 +178,7 @@ export class AgentOverviewData {
 		const agentMessages = new Map(); // stores total conversations for each agent
 		const date = {
 			gte: from.toDate(),
-			lt: to.add(1, 'days').toDate(),
+			lte: to.toDate(),
 		};
 
 		const data: ConversationData = {
@@ -220,7 +220,7 @@ export class AgentOverviewData {
 		const agentAvgRespTime = new Map(); // stores avg response time for each agent
 		const date = {
 			gte: from.toDate(),
-			lt: to.add(1, 'days').toDate(),
+			lte: to.toDate(),
 		};
 
 		const data: ConversationData = {
@@ -270,7 +270,7 @@ export class AgentOverviewData {
 		const agentFirstRespTime = new Map(); // stores avg response time for each agent
 		const date = {
 			gte: from.toDate(),
-			lt: to.add(1, 'days').toDate(),
+			lte: to.toDate(),
 		};
 
 		const data: ConversationData = {
@@ -312,7 +312,7 @@ export class AgentOverviewData {
 		const agentAvgRespTime = new Map(); // stores avg response time for each agent
 		const date = {
 			gte: from.toDate(),
-			lt: to.add(1, 'days').toDate(),
+			lte: to.toDate(),
 		};
 
 		const data: ConversationData = {
@@ -362,7 +362,7 @@ export class AgentOverviewData {
 		const agentAvgReactionTime = new Map(); // stores avg reaction time for each agent
 		const date = {
 			gte: from.toDate(),
-			lt: to.add(1, 'days').toDate(),
+			lte: to.toDate(),
 		};
 
 		const data: ConversationData = {
