@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import type { oas31 } from 'openapi3-ts';
 
-import apiData from './compiler';
+import apiData from './compiler/main';
 import { schemas } from './schemas';
 
 const IsArrayREGEX = /\[\]$/;
