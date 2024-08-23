@@ -698,6 +698,10 @@ describe('LIVECHAT - rooms', () => {
 				await updateSetting('Omnichannel_allow_visitors_to_close_conversation', true);
 			});
 			it('should not allow visitor to close a conversation', async () => {
+				const {
+					room,
+					visitor,
+				} = await startANewLivechatRoomAndTakeIt();
 				await request
 					.post(api('livechat/room.close'))
 					.send({
