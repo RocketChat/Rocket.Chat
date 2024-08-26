@@ -1,3 +1,6 @@
+// add schema objects for referencing in api documentation. (Hardcoded)
+// can be automated in future.
+
 import type { SchemaObject } from 'ajv';
 
 export const schemas: SchemaObject = {

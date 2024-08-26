@@ -245,7 +245,7 @@ const generateApiDoc = (apiData: IApiData): oas31.OpenAPIObject => {
 const openApiDoc = generateApiDoc(apiData);
 const JsonDoc = JSON.stringify(openApiDoc, null, 2);
 
-// Code to output generated file to folder
+// Output generated file to folder
 const outputFolder = path.join(__dirname, '../../oas');
 const outputFilePath = path.join(outputFolder, `apiDoc.json`);
 

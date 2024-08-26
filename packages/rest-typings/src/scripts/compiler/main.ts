@@ -6,7 +6,7 @@ import { extractEndpoints } from './endpoints';
 import type { Program, SourceFile, IEndpoints } from './types';
 import { getFormattedFilename } from './utils';
 
-function createProgram(): Program {
+export function createProgram(): Program {
 	const fileName = path.join(__dirname, '../../index.ts');
 	const fileContent = ts.sys.readFile(fileName);
 
@@ -21,7 +21,7 @@ function createProgram(): Program {
 	});
 }
 
-function main(): IEndpoints {
+export function main(): IEndpoints {
 	const program = createProgram();
 	const checker = program.getTypeChecker();
 

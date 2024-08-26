@@ -318,10 +318,12 @@
         ],
         "parameters": [
           {
-            "name": "AutotranslateGetSupportedLanguagesParamsGET",
+            "name": "targetLanguage",
             "in": "query",
             "required": true,
-            "schema": {}
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -369,28 +371,20 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "AutotranslateSaveSettingsParamsPOST": {
-                    "type": "object",
-                    "properties": {
-                      "roomId": {
-                        "type": "string"
-                      },
-                      "field": {},
-                      "value": {},
-                      "defaultLanguage": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "roomId",
-                      "field",
-                      "value",
-                      "defaultLanguage"
-                    ]
+                  "roomId": {
+                    "type": "string"
+                  },
+                  "field": {},
+                  "value": {},
+                  "defaultLanguage": {
+                    "type": "string"
                   }
                 },
                 "required": [
-                  "AutotranslateSaveSettingsParamsPOST"
+                  "roomId",
+                  "field",
+                  "value",
+                  "defaultLanguage"
                 ]
               }
             }
@@ -434,24 +428,16 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "AutotranslateTranslateMessageParamsPOST": {
-                    "type": "object",
-                    "properties": {
-                      "messageId": {
-                        "type": "string"
-                      },
-                      "targetLanguage": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "messageId",
-                      "targetLanguage"
-                    ]
+                  "messageId": {
+                    "type": "string"
+                  },
+                  "targetLanguage": {
+                    "type": "string"
                   }
                 },
                 "required": [
-                  "AutotranslateTranslateMessageParamsPOST"
+                  "messageId",
+                  "targetLanguage"
                 ]
               }
             }
@@ -5689,36 +5675,28 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "MailerProps": {
-                    "type": "object",
-                    "properties": {
-                      "from": {
-                        "type": "string"
-                      },
-                      "subject": {
-                        "type": "string"
-                      },
-                      "body": {
-                        "type": "string"
-                      },
-                      "dryrun": {
-                        "type": "boolean"
-                      },
-                      "query": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "from",
-                      "subject",
-                      "body",
-                      "dryrun",
-                      "query"
-                    ]
+                  "from": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "type": "string"
+                  },
+                  "body": {
+                    "type": "string"
+                  },
+                  "dryrun": {
+                    "type": "boolean"
+                  },
+                  "query": {
+                    "type": "string"
                   }
                 },
                 "required": [
-                  "MailerProps"
+                  "from",
+                  "subject",
+                  "body",
+                  "dryrun",
+                  "query"
                 ]
               }
             }
@@ -5762,24 +5740,16 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "MailerUnsubscribeProps": {
-                    "type": "object",
-                    "properties": {
-                      "_id": {
-                        "type": "string"
-                      },
-                      "createdAt": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "_id",
-                      "createdAt"
-                    ]
+                  "_id": {
+                    "type": "string"
+                  },
+                  "createdAt": {
+                    "type": "string"
                   }
                 },
                 "required": [
-                  "MailerUnsubscribeProps"
+                  "_id",
+                  "createdAt"
                 ]
               }
             }
@@ -9072,20 +9042,6 @@
                     "total": {
                       "type": "integer"
                     },
-                    "PaginatedResult": {
-                      "type": "object",
-                      "properties": {
-                        "count": {
-                          "type": "integer"
-                        },
-                        "offset": {
-                          "type": "integer"
-                        },
-                        "total": {
-                          "type": "integer"
-                        }
-                      }
-                    },
                     "settings": {
                       "type": "object",
                       "properties": {
@@ -9989,20 +9945,12 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "UsersSendConfirmationEmailParamsPOST": {
-                    "type": "object",
-                    "properties": {
-                      "email": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "email"
-                    ]
+                  "email": {
+                    "type": "string"
                   }
                 },
                 "required": [
-                  "UsersSendConfirmationEmailParamsPOST"
+                  "email"
                 ]
               }
             }
@@ -10042,7 +9990,7 @@
         ],
         "parameters": [
           {
-            "name": "UsersListTeamsParamsGET",
+            "name": "userId",
             "in": "query",
             "required": true,
             "schema": {}
@@ -10089,10 +10037,12 @@
         ],
         "parameters": [
           {
-            "name": "UsersAutocompleteParamsGET",
+            "name": "selector",
             "in": "query",
             "required": true,
-            "schema": {}
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -10220,10 +10170,77 @@
         ],
         "parameters": [
           {
-            "name": "UsersListStatusParamsGET",
+            "name": "count",
             "in": "query",
-            "required": true,
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
             "schema": {}
+          },
+          {
+            "name": "hasLoggedIn",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "roles",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "searchTerm",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -10277,20 +10294,12 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "UsersSendWelcomeEmailParamsPOST": {
-                    "type": "object",
-                    "properties": {
-                      "email": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "email"
-                    ]
+                  "email": {
+                    "type": "string"
                   }
                 },
                 "required": [
-                  "UsersSendWelcomeEmailParamsPOST"
+                  "email"
                 ]
               }
             }
@@ -11290,79 +11299,71 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "UserCreateParamsPOST": {
-                    "type": "object",
-                    "properties": {
-                      "email": {
-                        "type": "string"
-                      },
-                      "name": {
-                        "type": "string"
-                      },
-                      "password": {
-                        "type": "string"
-                      },
-                      "username": {
-                        "type": "string"
-                      },
-                      "active": {
-                        "type": "boolean"
-                      },
-                      "bio": {
-                        "type": "string"
-                      },
-                      "nickname": {
-                        "type": "string"
-                      },
-                      "statusText": {
-                        "type": "string"
-                      },
-                      "roles": {
-                        "type": "array",
-                        "items": {}
-                      },
-                      "joinDefaultChannels": {
-                        "type": "boolean"
-                      },
-                      "requirePasswordChange": {
-                        "type": "boolean"
-                      },
-                      "setRandomPassword": {
-                        "type": "boolean"
-                      },
-                      "sendWelcomeEmail": {
-                        "type": "boolean"
-                      },
-                      "verified": {
-                        "type": "boolean"
-                      },
-                      "customFields": {},
-                      "fields": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "email",
-                      "name",
-                      "password",
-                      "username",
-                      "active",
-                      "bio",
-                      "nickname",
-                      "statusText",
-                      "roles",
-                      "joinDefaultChannels",
-                      "requirePasswordChange",
-                      "setRandomPassword",
-                      "sendWelcomeEmail",
-                      "verified",
-                      "customFields",
-                      "fields"
-                    ]
+                  "email": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "active": {
+                    "type": "boolean"
+                  },
+                  "bio": {
+                    "type": "string"
+                  },
+                  "nickname": {
+                    "type": "string"
+                  },
+                  "statusText": {
+                    "type": "string"
+                  },
+                  "roles": {
+                    "type": "array",
+                    "items": {}
+                  },
+                  "joinDefaultChannels": {
+                    "type": "boolean"
+                  },
+                  "requirePasswordChange": {
+                    "type": "boolean"
+                  },
+                  "setRandomPassword": {
+                    "type": "boolean"
+                  },
+                  "sendWelcomeEmail": {
+                    "type": "boolean"
+                  },
+                  "verified": {
+                    "type": "boolean"
+                  },
+                  "customFields": {},
+                  "fields": {
+                    "type": "string"
                   }
                 },
                 "required": [
-                  "UserCreateParamsPOST"
+                  "email",
+                  "name",
+                  "password",
+                  "username",
+                  "active",
+                  "bio",
+                  "nickname",
+                  "statusText",
+                  "roles",
+                  "joinDefaultChannels",
+                  "requirePasswordChange",
+                  "setRandomPassword",
+                  "sendWelcomeEmail",
+                  "verified",
+                  "customFields",
+                  "fields"
                 ]
               }
             }
@@ -11415,98 +11416,90 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "UsersUpdateParamsPOST": {
+                  "userId": {
+                    "type": "string"
+                  },
+                  "data": {
                     "type": "object",
                     "properties": {
-                      "userId": {
+                      "email": {
                         "type": "string"
                       },
-                      "data": {
-                        "type": "object",
-                        "properties": {
-                          "email": {
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string"
-                          },
-                          "password": {
-                            "type": "string"
-                          },
-                          "username": {
-                            "type": "string"
-                          },
-                          "active": {
-                            "type": "boolean"
-                          },
-                          "bio": {
-                            "type": "string"
-                          },
-                          "nickname": {
-                            "type": "string"
-                          },
-                          "statusText": {
-                            "type": "string"
-                          },
-                          "roles": {
-                            "type": "array",
-                            "items": {}
-                          },
-                          "joinDefaultChannels": {
-                            "type": "boolean"
-                          },
-                          "requirePasswordChange": {
-                            "type": "boolean"
-                          },
-                          "setRandomPassword": {
-                            "type": "boolean"
-                          },
-                          "sendWelcomeEmail": {
-                            "type": "boolean"
-                          },
-                          "verified": {
-                            "type": "boolean"
-                          },
-                          "customFields": {
-                            "type": "object",
-                            "properties": {},
-                            "required": []
-                          },
-                          "status": {
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "email",
-                          "name",
-                          "password",
-                          "username",
-                          "active",
-                          "bio",
-                          "nickname",
-                          "statusText",
-                          "roles",
-                          "joinDefaultChannels",
-                          "requirePasswordChange",
-                          "setRandomPassword",
-                          "sendWelcomeEmail",
-                          "verified",
-                          "status"
-                        ]
+                      "name": {
+                        "type": "string"
                       },
-                      "confirmRelinquish": {
+                      "password": {
+                        "type": "string"
+                      },
+                      "username": {
+                        "type": "string"
+                      },
+                      "active": {
                         "type": "boolean"
+                      },
+                      "bio": {
+                        "type": "string"
+                      },
+                      "nickname": {
+                        "type": "string"
+                      },
+                      "statusText": {
+                        "type": "string"
+                      },
+                      "roles": {
+                        "type": "array",
+                        "items": {}
+                      },
+                      "joinDefaultChannels": {
+                        "type": "boolean"
+                      },
+                      "requirePasswordChange": {
+                        "type": "boolean"
+                      },
+                      "setRandomPassword": {
+                        "type": "boolean"
+                      },
+                      "sendWelcomeEmail": {
+                        "type": "boolean"
+                      },
+                      "verified": {
+                        "type": "boolean"
+                      },
+                      "customFields": {
+                        "type": "object",
+                        "properties": {},
+                        "required": []
+                      },
+                      "status": {
+                        "type": "string"
                       }
                     },
                     "required": [
-                      "userId",
-                      "data",
-                      "confirmRelinquish"
+                      "email",
+                      "name",
+                      "password",
+                      "username",
+                      "active",
+                      "bio",
+                      "nickname",
+                      "statusText",
+                      "roles",
+                      "joinDefaultChannels",
+                      "requirePasswordChange",
+                      "setRandomPassword",
+                      "sendWelcomeEmail",
+                      "verified",
+                      "status"
                     ]
+                  },
+                  "confirmRelinquish": {
+                    "type": "boolean"
                   }
                 },
                 "required": [
-                  "UsersUpdateParamsPOST"
+                  "userId",
+                  "data",
+                  "confirmRelinquish"
                 ]
               }
             }
@@ -11559,28 +11552,20 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "UserSetActiveStatusParamsPOST": {
-                    "type": "object",
-                    "properties": {
-                      "userId": {
-                        "type": "string"
-                      },
-                      "activeStatus": {
-                        "type": "boolean"
-                      },
-                      "confirmRelinquish": {
-                        "type": "boolean"
-                      }
-                    },
-                    "required": [
-                      "userId",
-                      "activeStatus",
-                      "confirmRelinquish"
-                    ]
+                  "userId": {
+                    "type": "string"
+                  },
+                  "activeStatus": {
+                    "type": "boolean"
+                  },
+                  "confirmRelinquish": {
+                    "type": "boolean"
                   }
                 },
                 "required": [
-                  "UserSetActiveStatusParamsPOST"
+                  "userId",
+                  "activeStatus",
+                  "confirmRelinquish"
                 ]
               }
             }
@@ -11633,24 +11618,16 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "UserDeactivateIdleParamsPOST": {
-                    "type": "object",
-                    "properties": {
-                      "daysIdle": {
-                        "type": "integer"
-                      },
-                      "role": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "daysIdle",
-                      "role"
-                    ]
+                  "daysIdle": {
+                    "type": "integer"
+                  },
+                  "role": {
+                    "type": "string"
                   }
                 },
                 "required": [
-                  "UserDeactivateIdleParamsPOST"
+                  "daysIdle",
+                  "role"
                 ]
               }
             }
@@ -11902,10 +11879,54 @@
         ],
         "parameters": [
           {
-            "name": "UsersInfoParamsGet",
+            "name": "unionTypes",
             "in": "query",
             "required": true,
-            "schema": {}
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "userId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "userId"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "importId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "importId"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -11950,42 +11971,34 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "UserRegisterParamsPOST": {
-                    "type": "object",
-                    "properties": {
-                      "username": {
-                        "type": "string"
-                      },
-                      "name": {
-                        "type": "string"
-                      },
-                      "email": {
-                        "type": "string"
-                      },
-                      "pass": {
-                        "type": "string"
-                      },
-                      "secret": {
-                        "type": "string"
-                      },
-                      "reason": {
-                        "type": "string"
-                      },
-                      "customFields": {}
-                    },
-                    "required": [
-                      "username",
-                      "name",
-                      "email",
-                      "pass",
-                      "secret",
-                      "reason",
-                      "customFields"
-                    ]
-                  }
+                  "username": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "pass": {
+                    "type": "string"
+                  },
+                  "secret": {
+                    "type": "string"
+                  },
+                  "reason": {
+                    "type": "string"
+                  },
+                  "customFields": {}
                 },
                 "required": [
-                  "UserRegisterParamsPOST"
+                  "username",
+                  "name",
+                  "email",
+                  "pass",
+                  "secret",
+                  "reason",
+                  "customFields"
                 ]
               }
             }
@@ -12038,20 +12051,12 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "UserLogoutParamsPOST": {
-                    "type": "object",
-                    "properties": {
-                      "userId": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "userId"
-                    ]
+                  "userId": {
+                    "type": "string"
                   }
                 },
                 "required": [
-                  "UserLogoutParamsPOST"
+                  "userId"
                 ]
               }
             }
@@ -12099,322 +12104,314 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "UsersSetPreferencesParamsPOST": {
+                  "userId": {
+                    "type": "string"
+                  },
+                  "data": {
                     "type": "object",
                     "properties": {
-                      "userId": {
+                      "newRoomNotification": {
                         "type": "string"
                       },
-                      "data": {
+                      "newMessageNotification": {
+                        "type": "string"
+                      },
+                      "clockMode": {
+                        "type": "integer"
+                      },
+                      "useEmojis": {
+                        "type": "boolean"
+                      },
+                      "convertAsciiEmoji": {
+                        "type": "boolean"
+                      },
+                      "saveMobileBandwidth": {
+                        "type": "boolean"
+                      },
+                      "collapseMediaByDefault": {
+                        "type": "boolean"
+                      },
+                      "autoImageLoad": {
+                        "type": "boolean"
+                      },
+                      "emailNotificationMode": {
+                        "type": "string"
+                      },
+                      "unreadAlert": {
+                        "type": "boolean"
+                      },
+                      "notificationsSoundVolume": {
+                        "type": "integer"
+                      },
+                      "desktopNotifications": {
+                        "type": "string"
+                      },
+                      "pushNotifications": {
+                        "type": "string"
+                      },
+                      "enableAutoAway": {
+                        "type": "boolean"
+                      },
+                      "highlights": {
+                        "type": "array",
+                        "items": {}
+                      },
+                      "alsoSendThreadToChannel": {},
+                      "desktopNotificationRequireInteraction": {
+                        "type": "boolean"
+                      },
+                      "showThreadsInMainChannel": {
+                        "type": "boolean"
+                      },
+                      "hideUsernames": {
+                        "type": "boolean"
+                      },
+                      "hideRoles": {
+                        "type": "boolean"
+                      },
+                      "displayAvatars": {
+                        "type": "boolean"
+                      },
+                      "hideFlexTab": {
+                        "type": "boolean"
+                      },
+                      "sendOnEnter": {
+                        "type": "string"
+                      },
+                      "language": {
+                        "type": "string"
+                      },
+                      "sidebarShowFavorites": {
+                        "type": "boolean"
+                      },
+                      "sidebarShowUnread": {
+                        "type": "boolean"
+                      },
+                      "sidebarSortby": {
+                        "type": "string"
+                      },
+                      "sidebarViewMode": {
+                        "type": "string"
+                      },
+                      "sidebarDisplayAvatar": {
+                        "type": "boolean"
+                      },
+                      "sidebarGroupByType": {
+                        "type": "boolean"
+                      },
+                      "muteFocusedConversations": {
+                        "type": "boolean"
+                      },
+                      "dontAskAgainList": {
                         "type": "object",
                         "properties": {
-                          "newRoomNotification": {
+                          "action": {
                             "type": "string"
                           },
-                          "newMessageNotification": {
+                          "label": {
                             "type": "string"
-                          },
-                          "clockMode": {
-                            "type": "integer"
-                          },
-                          "useEmojis": {
-                            "type": "boolean"
-                          },
-                          "convertAsciiEmoji": {
-                            "type": "boolean"
-                          },
-                          "saveMobileBandwidth": {
-                            "type": "boolean"
-                          },
-                          "collapseMediaByDefault": {
-                            "type": "boolean"
-                          },
-                          "autoImageLoad": {
-                            "type": "boolean"
-                          },
-                          "emailNotificationMode": {
-                            "type": "string"
-                          },
-                          "unreadAlert": {
-                            "type": "boolean"
-                          },
-                          "notificationsSoundVolume": {
-                            "type": "integer"
-                          },
-                          "desktopNotifications": {
-                            "type": "string"
-                          },
-                          "pushNotifications": {
-                            "type": "string"
-                          },
-                          "enableAutoAway": {
-                            "type": "boolean"
-                          },
-                          "highlights": {
-                            "type": "array",
-                            "items": {}
-                          },
-                          "alsoSendThreadToChannel": {},
-                          "desktopNotificationRequireInteraction": {
-                            "type": "boolean"
-                          },
-                          "showThreadsInMainChannel": {
-                            "type": "boolean"
-                          },
-                          "hideUsernames": {
-                            "type": "boolean"
-                          },
-                          "hideRoles": {
-                            "type": "boolean"
-                          },
-                          "displayAvatars": {
-                            "type": "boolean"
-                          },
-                          "hideFlexTab": {
-                            "type": "boolean"
-                          },
-                          "sendOnEnter": {
-                            "type": "string"
-                          },
-                          "language": {
-                            "type": "string"
-                          },
-                          "sidebarShowFavorites": {
-                            "type": "boolean"
-                          },
-                          "sidebarShowUnread": {
-                            "type": "boolean"
-                          },
-                          "sidebarSortby": {
-                            "type": "string"
-                          },
-                          "sidebarViewMode": {
-                            "type": "string"
-                          },
-                          "sidebarDisplayAvatar": {
-                            "type": "boolean"
-                          },
-                          "sidebarGroupByType": {
-                            "type": "boolean"
-                          },
-                          "muteFocusedConversations": {
-                            "type": "boolean"
-                          },
-                          "dontAskAgainList": {
-                            "type": "object",
-                            "properties": {
-                              "action": {
-                                "type": "string"
-                              },
-                              "label": {
-                                "type": "string"
-                              }
-                            },
-                            "required": [
-                              "action",
-                              "label"
-                            ]
-                          },
-                          "featuresPreview": {
-                            "type": "array",
-                            "items": {}
-                          },
-                          "themeAppearence": {
-                            "type": "object",
-                            "properties": {
-                              "ThemePreference": {}
-                            },
-                            "required": [
-                              "ThemePreference"
-                            ]
-                          },
-                          "fontSize": {
-                            "type": "object",
-                            "properties": {
-                              "unionTypes": {
-                                "oneOf": [
-                                  {
-                                    "type": "object",
-                                    "properties": {
-                                      "0": {},
-                                      "1": {},
-                                      "2": {},
-                                      "3": {},
-                                      "4": {},
-                                      "5": {}
-                                    },
-                                    "required": [
-                                      "0",
-                                      "1",
-                                      "2",
-                                      "3",
-                                      "4",
-                                      "5"
-                                    ]
-                                  },
-                                  {
-                                    "type": "object",
-                                    "properties": {
-                                      "0": {},
-                                      "1": {},
-                                      "2": {},
-                                      "3": {},
-                                      "4": {},
-                                      "5": {}
-                                    },
-                                    "required": [
-                                      "0",
-                                      "1",
-                                      "2",
-                                      "3",
-                                      "4",
-                                      "5"
-                                    ]
-                                  },
-                                  {
-                                    "type": "object",
-                                    "properties": {
-                                      "0": {},
-                                      "1": {},
-                                      "2": {},
-                                      "3": {},
-                                      "4": {},
-                                      "5": {}
-                                    },
-                                    "required": [
-                                      "0",
-                                      "1",
-                                      "2",
-                                      "3",
-                                      "4",
-                                      "5"
-                                    ]
-                                  },
-                                  {
-                                    "type": "object",
-                                    "properties": {
-                                      "0": {},
-                                      "1": {},
-                                      "2": {},
-                                      "3": {},
-                                      "4": {},
-                                      "5": {}
-                                    },
-                                    "required": [
-                                      "0",
-                                      "1",
-                                      "2",
-                                      "3",
-                                      "4",
-                                      "5"
-                                    ]
-                                  },
-                                  {
-                                    "type": "object",
-                                    "properties": {
-                                      "0": {},
-                                      "1": {},
-                                      "2": {},
-                                      "3": {},
-                                      "4": {},
-                                      "5": {}
-                                    },
-                                    "required": [
-                                      "0",
-                                      "1",
-                                      "2",
-                                      "3",
-                                      "4",
-                                      "5"
-                                    ]
-                                  }
-                                ]
-                              }
-                            },
-                            "required": [
-                              "unionTypes"
-                            ]
-                          },
-                          "receiveLoginDetectionEmail": {
-                            "type": "boolean"
-                          },
-                          "notifyCalendarEvents": {
-                            "type": "boolean"
-                          },
-                          "idleTimeLimit": {
-                            "type": "integer"
-                          },
-                          "omnichannelTranscriptEmail": {
-                            "type": "boolean"
-                          },
-                          "omnichannelTranscriptPDF": {
-                            "type": "boolean"
-                          },
-                          "omnichannelHideConversationAfterClosing": {
-                            "type": "boolean"
-                          },
-                          "enableMobileRinging": {
-                            "type": "boolean"
-                          },
-                          "mentionsWithSymbol": {
-                            "type": "boolean"
                           }
                         },
                         "required": [
-                          "newRoomNotification",
-                          "newMessageNotification",
-                          "clockMode",
-                          "useEmojis",
-                          "convertAsciiEmoji",
-                          "saveMobileBandwidth",
-                          "collapseMediaByDefault",
-                          "autoImageLoad",
-                          "emailNotificationMode",
-                          "unreadAlert",
-                          "notificationsSoundVolume",
-                          "desktopNotifications",
-                          "pushNotifications",
-                          "enableAutoAway",
-                          "highlights",
-                          "alsoSendThreadToChannel",
-                          "desktopNotificationRequireInteraction",
-                          "showThreadsInMainChannel",
-                          "hideUsernames",
-                          "hideRoles",
-                          "displayAvatars",
-                          "hideFlexTab",
-                          "sendOnEnter",
-                          "language",
-                          "sidebarShowFavorites",
-                          "sidebarShowUnread",
-                          "sidebarSortby",
-                          "sidebarViewMode",
-                          "sidebarDisplayAvatar",
-                          "sidebarGroupByType",
-                          "muteFocusedConversations",
-                          "dontAskAgainList",
-                          "featuresPreview",
-                          "themeAppearence",
-                          "fontSize",
-                          "receiveLoginDetectionEmail",
-                          "notifyCalendarEvents",
-                          "idleTimeLimit",
-                          "omnichannelTranscriptEmail",
-                          "omnichannelTranscriptPDF",
-                          "omnichannelHideConversationAfterClosing",
-                          "enableMobileRinging",
-                          "mentionsWithSymbol"
+                          "action",
+                          "label"
                         ]
+                      },
+                      "featuresPreview": {
+                        "type": "array",
+                        "items": {}
+                      },
+                      "themeAppearence": {
+                        "type": "object",
+                        "properties": {
+                          "ThemePreference": {}
+                        },
+                        "required": [
+                          "ThemePreference"
+                        ]
+                      },
+                      "fontSize": {
+                        "type": "object",
+                        "properties": {
+                          "unionTypes": {
+                            "oneOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "0": {},
+                                  "1": {},
+                                  "2": {},
+                                  "3": {},
+                                  "4": {},
+                                  "5": {}
+                                },
+                                "required": [
+                                  "0",
+                                  "1",
+                                  "2",
+                                  "3",
+                                  "4",
+                                  "5"
+                                ]
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "0": {},
+                                  "1": {},
+                                  "2": {},
+                                  "3": {},
+                                  "4": {},
+                                  "5": {}
+                                },
+                                "required": [
+                                  "0",
+                                  "1",
+                                  "2",
+                                  "3",
+                                  "4",
+                                  "5"
+                                ]
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "0": {},
+                                  "1": {},
+                                  "2": {},
+                                  "3": {},
+                                  "4": {},
+                                  "5": {}
+                                },
+                                "required": [
+                                  "0",
+                                  "1",
+                                  "2",
+                                  "3",
+                                  "4",
+                                  "5"
+                                ]
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "0": {},
+                                  "1": {},
+                                  "2": {},
+                                  "3": {},
+                                  "4": {},
+                                  "5": {}
+                                },
+                                "required": [
+                                  "0",
+                                  "1",
+                                  "2",
+                                  "3",
+                                  "4",
+                                  "5"
+                                ]
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "0": {},
+                                  "1": {},
+                                  "2": {},
+                                  "3": {},
+                                  "4": {},
+                                  "5": {}
+                                },
+                                "required": [
+                                  "0",
+                                  "1",
+                                  "2",
+                                  "3",
+                                  "4",
+                                  "5"
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "unionTypes"
+                        ]
+                      },
+                      "receiveLoginDetectionEmail": {
+                        "type": "boolean"
+                      },
+                      "notifyCalendarEvents": {
+                        "type": "boolean"
+                      },
+                      "idleTimeLimit": {
+                        "type": "integer"
+                      },
+                      "omnichannelTranscriptEmail": {
+                        "type": "boolean"
+                      },
+                      "omnichannelTranscriptPDF": {
+                        "type": "boolean"
+                      },
+                      "omnichannelHideConversationAfterClosing": {
+                        "type": "boolean"
+                      },
+                      "enableMobileRinging": {
+                        "type": "boolean"
+                      },
+                      "mentionsWithSymbol": {
+                        "type": "boolean"
                       }
                     },
                     "required": [
-                      "userId",
-                      "data"
+                      "newRoomNotification",
+                      "newMessageNotification",
+                      "clockMode",
+                      "useEmojis",
+                      "convertAsciiEmoji",
+                      "saveMobileBandwidth",
+                      "collapseMediaByDefault",
+                      "autoImageLoad",
+                      "emailNotificationMode",
+                      "unreadAlert",
+                      "notificationsSoundVolume",
+                      "desktopNotifications",
+                      "pushNotifications",
+                      "enableAutoAway",
+                      "highlights",
+                      "alsoSendThreadToChannel",
+                      "desktopNotificationRequireInteraction",
+                      "showThreadsInMainChannel",
+                      "hideUsernames",
+                      "hideRoles",
+                      "displayAvatars",
+                      "hideFlexTab",
+                      "sendOnEnter",
+                      "language",
+                      "sidebarShowFavorites",
+                      "sidebarShowUnread",
+                      "sidebarSortby",
+                      "sidebarViewMode",
+                      "sidebarDisplayAvatar",
+                      "sidebarGroupByType",
+                      "muteFocusedConversations",
+                      "dontAskAgainList",
+                      "featuresPreview",
+                      "themeAppearence",
+                      "fontSize",
+                      "receiveLoginDetectionEmail",
+                      "notifyCalendarEvents",
+                      "idleTimeLimit",
+                      "omnichannelTranscriptEmail",
+                      "omnichannelTranscriptPDF",
+                      "omnichannelHideConversationAfterClosing",
+                      "enableMobileRinging",
+                      "mentionsWithSymbol"
                     ]
                   }
                 },
                 "required": [
-                  "UsersSetPreferencesParamsPOST"
+                  "userId",
+                  "data"
                 ]
               }
             }
@@ -12579,65 +12576,57 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "UsersUpdateOwnBasicInfoParamsPOST": {
+                  "data": {
                     "type": "object",
                     "properties": {
-                      "data": {
-                        "type": "object",
-                        "properties": {
-                          "email": {
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string"
-                          },
-                          "username": {
-                            "type": "string"
-                          },
-                          "nickname": {
-                            "type": "string"
-                          },
-                          "bio": {
-                            "type": "string"
-                          },
-                          "statusText": {
-                            "type": "string"
-                          },
-                          "statusType": {
-                            "type": "string"
-                          },
-                          "currentPassword": {
-                            "type": "string"
-                          },
-                          "newPassword": {
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "email",
-                          "name",
-                          "username",
-                          "nickname",
-                          "bio",
-                          "statusText",
-                          "statusType",
-                          "currentPassword",
-                          "newPassword"
-                        ]
+                      "email": {
+                        "type": "string"
                       },
-                      "customFields": {
-                        "type": "object",
-                        "properties": {},
-                        "required": []
+                      "name": {
+                        "type": "string"
+                      },
+                      "username": {
+                        "type": "string"
+                      },
+                      "nickname": {
+                        "type": "string"
+                      },
+                      "bio": {
+                        "type": "string"
+                      },
+                      "statusText": {
+                        "type": "string"
+                      },
+                      "statusType": {
+                        "type": "string"
+                      },
+                      "currentPassword": {
+                        "type": "string"
+                      },
+                      "newPassword": {
+                        "type": "string"
                       }
                     },
                     "required": [
-                      "data"
+                      "email",
+                      "name",
+                      "username",
+                      "nickname",
+                      "bio",
+                      "statusText",
+                      "statusType",
+                      "currentPassword",
+                      "newPassword"
                     ]
+                  },
+                  "customFields": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
                   }
                 },
                 "required": [
-                  "UsersUpdateOwnBasicInfoParamsPOST"
+                  "data"
                 ]
               }
             }
