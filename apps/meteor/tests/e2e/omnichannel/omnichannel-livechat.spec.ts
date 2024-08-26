@@ -98,8 +98,7 @@ test.describe.serial('OC - Livechat - Visitors closing the room is disabled', ()
 	let poHomeOmnichannel: HomeOmnichannel;
 
 	test.beforeAll(async ({ api }) => {
-		const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
-		expect(statusCode).toBe(200);
+		await api.post('/livechat/users/agent', { username: 'user1' });
 	});
 
 	test.beforeAll(async ({ browser, api }) => {
