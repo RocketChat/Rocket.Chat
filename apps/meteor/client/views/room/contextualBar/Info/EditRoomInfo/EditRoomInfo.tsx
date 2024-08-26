@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
+import type { IRoomWithRetentionPolicy, SidepanelItem } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
@@ -21,6 +21,7 @@ import {
 	Box,
 	TextAreaInput,
 	AccordionItem,
+	Divider,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -118,6 +119,8 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		retentionOverrideGlobal,
 		roomType: roomTypeP,
 		reactWhenReadOnly,
+		showChannels,
+		showDiscussions,
 	} = watch();
 
 	const {
@@ -158,13 +161,21 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 			retentionIgnoreThreads,
 			...formData
 		}) => {
-			const data = getDirtyFields(formData, dirtyFields);
+			const data = getDirtyFields<Partial<typeof defaultValues>>(formData, dirtyFields);
 			delete data.archived;
+			delete data.showChannels;
+			delete data.showDiscussions;
+
+			const sidepanelItems = [showChannels && 'channels', showDiscussions && 'discussions'].filter(Boolean) as [
+				SidepanelItem,
+				SidepanelItem?,
+			];
 
 			try {
 				await saveAction({
 					rid: room._id,
 					...data,
+					...(sidepanelItems.length > 0 ? { sidepanel: { items: sidepanelItems } } : { sidepanel: null }),
 					...((data.joinCode || 'joinCodeRequired' in data) && { joinCode: joinCodeRequired ? data.joinCode : '' }),
 					...((data.systemMessages || !hideSysMes) && {
 						systemMessages: hideSysMes && data.systemMessages,
@@ -224,6 +235,8 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const retentionExcludePinnedField = useUniqueId();
 	const retentionFilesOnlyField = useUniqueId();
 	const retentionIgnoreThreads = useUniqueId();
+	const showDiscussionsField = useUniqueId();
+	const showChannelsField = useUniqueId();
 
 	const showAdvancedSettings = canViewEncrypted || canViewReadOnly || readOnly || canViewArchived || canViewJoinCode || canViewHideSysMes;
 	const showRetentionPolicy = canEditRoomRetentionPolicy && retentionPolicy?.enabled;
@@ -355,6 +368,42 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 						<Accordion>
 							{showAdvancedSettings && (
 								<AccordionItem title={t('Advanced_settings')}>
+									{roomType === 'team' && (
+										<FieldGroup>
+											<Box is='h5' fontScale='h5' color='titles-labels'>
+												{t('Navigation')}
+											</Box>
+											<Field>
+												<FieldRow>
+													<FieldLabel htmlFor={showChannelsField}>{t('Channels')}</FieldLabel>
+													<Controller
+														control={control}
+														name='showChannels'
+														render={({ field: { value, ...field } }) => <ToggleSwitch id={showChannelsField} checked={value} {...field} />}
+													/>
+												</FieldRow>
+												<FieldRow>
+													<FieldHint id={`${showChannelsField}-hint`}>{t('Show_channels_description')}</FieldHint>
+												</FieldRow>
+											</Field>
+											<Field>
+												<FieldRow>
+													<FieldLabel htmlFor={showDiscussionsField}>{t('Discussions')}</FieldLabel>
+													<Controller
+														control={control}
+														name='showDiscussions'
+														render={({ field: { value, ...field } }) => (
+															<ToggleSwitch id={showDiscussionsField} checked={value} {...field} />
+														)}
+													/>
+												</FieldRow>
+												<FieldRow>
+													<FieldHint id={`${showDiscussionsField}-hint`}>{t('Show_discussions_description')}</FieldHint>
+												</FieldRow>
+											</Field>
+										</FieldGroup>
+									)}
+									<Divider mb={24} />
 									<FieldGroup>
 										<Box is='h5' fontScale='h5' color='titles-labels'>
 											{t('Security_and_permissions')}
