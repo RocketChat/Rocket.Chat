@@ -1,14 +1,13 @@
 import type { Box } from '@rocket.chat/fuselage';
 import type { OperationParams } from '@rocket.chat/rest-typings';
 import type { TranslationContextValue, TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { Chart as ChartType } from 'chart.js';
 import type { ComponentProps, MutableRefObject } from 'react';
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 
 import { drawDoughnutChart } from '../../../../../app/livechat/client/lib/chartHandler';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Chart from './Chart';
 import { useUpdateChartData } from './useUpdateChartData';
 
@@ -32,10 +31,10 @@ const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: Tran
 
 type ChatsChartProps = {
 	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/charts/chats'>;
-	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
+	reloadFrequency: number;
 } & ComponentProps<typeof Box>;
 
-const ChatsChart = ({ params, reloadRef, ...props }: ChatsChartProps) => {
+const ChatsChart = ({ params, reloadFrequency, ...props }: ChatsChartProps) => {
 	const t = useTranslation();
 
 	const canvas: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
@@ -48,9 +47,15 @@ const ChatsChart = ({ params, reloadRef, ...props }: ChatsChartProps) => {
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/analytics/dashboards/charts/chats', { params });
+	const [isInitialized, setIsInitialized] = useState(false);
 
-	reloadRef.current.chatsChart = reload;
+	const memoizedParams = useMemo(() => params, [params]);
+
+	const getChartData = useEndpoint('GET', '/v1/livechat/analytics/dashboards/charts/chats');
+
+	const { data, isLoading } = useQuery(['ChatsChart', memoizedParams], async () => getChartData(memoizedParams), {
+		refetchInterval: reloadFrequency * 1000,
+	});
 
 	const { open, queued, closed, onhold } = data ?? initialData;
 
@@ -58,19 +63,20 @@ const ChatsChart = ({ params, reloadRef, ...props }: ChatsChartProps) => {
 		const initChart = async () => {
 			if (canvas?.current) {
 				context.current = await init(canvas.current, context.current, t);
+				setIsInitialized(true);
 			}
 		};
 		initChart();
 	}, [t]);
 
 	useEffect(() => {
-		if (state === AsyncStatePhase.RESOLVED) {
+		if (!isLoading && isInitialized) {
 			updateChartData(t('Open'), [open]);
 			updateChartData(t('Closed'), [closed]);
 			updateChartData(t('On_Hold_Chats'), [onhold]);
 			updateChartData(t('Queued'), [queued]);
 		}
-	}, [closed, open, queued, onhold, state, t, updateChartData]);
+	}, [closed, open, queued, onhold, t, updateChartData, isLoading, isInitialized]);
 
 	return <Chart canvasRef={canvas} {...props} />;
 };

@@ -1,14 +1,13 @@
 import type { Box } from '@rocket.chat/fuselage';
 import type { OperationParams } from '@rocket.chat/rest-typings';
 import type { TranslationContextValue } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { Chart as ChartType } from 'chart.js';
 import type { ComponentProps, MutableRefObject } from 'react';
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 
 import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Chart from './Chart';
 import { useUpdateChartData } from './useUpdateChartData';
 
@@ -26,10 +25,10 @@ const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: Tran
 
 type ChatsPerDepartmentChartProps = {
 	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/charts/chats-per-department'>;
-	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
+	reloadFrequency: number;
 } & ComponentProps<typeof Box>;
 
-const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }: ChatsPerDepartmentChartProps) => {
+const ChatsPerDepartmentChart = ({ params, reloadFrequency, ...props }: ChatsPerDepartmentChartProps) => {
 	const t = useTranslation();
 
 	const canvas: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
@@ -42,13 +41,15 @@ const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }: ChatsPerDepart
 		init,
 	});
 
-	const {
-		value: data,
-		phase: state,
-		reload,
-	} = useEndpointData('/v1/livechat/analytics/dashboards/charts/chats-per-department', { params });
+	const [isInitialized, setIsInitialized] = useState(false);
 
-	reloadRef.current.chatsPerDepartmentChart = reload;
+	const memoizedParams = useMemo(() => params, [params]);
+
+	const getChartData = useEndpoint('GET', '/v1/livechat/analytics/dashboards/charts/chats-per-department');
+
+	const { data, isLoading } = useQuery(['ChatsPerDepartmentChart', memoizedParams], async () => getChartData(memoizedParams), {
+		refetchInterval: reloadFrequency * 1000,
+	});
 
 	const chartData = data ?? initialData;
 
@@ -56,13 +57,14 @@ const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }: ChatsPerDepart
 		const initChart = async () => {
 			if (canvas?.current) {
 				context.current = await init(canvas.current, context.current, t);
+				setIsInitialized(true);
 			}
 		};
 		initChart();
 	}, [t]);
 
 	useEffect(() => {
-		if (state === AsyncStatePhase.RESOLVED) {
+		if (!isLoading && isInitialized) {
 			if (chartData?.success) {
 				const { success, ...filteredChartData } = chartData;
 				Object.entries(filteredChartData).forEach(([name, value]) => {
@@ -75,7 +77,7 @@ const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }: ChatsPerDepart
 				});
 			}
 		}
-	}, [chartData, state, t, updateChartData]);
+	}, [chartData, isInitialized, isLoading, t, updateChartData]);
 
 	return <Chart canvasRef={canvas} {...props} />;
 };

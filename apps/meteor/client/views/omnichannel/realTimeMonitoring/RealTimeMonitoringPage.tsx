@@ -116,14 +116,22 @@ const RealTimeMonitoringPage = () => {
 						<ConversationOverview key={keys?.current[0]} flexGrow={1} flexShrink={1} width='50%' reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ChatsChart key={keys?.current[1]} flexGrow={1} flexShrink={1} width='50%' mie={2} reloadRef={reloadRef} params={allParams} />
+						<ChatsChart
+							reloadFrequency={reloadFrequency}
+							key={keys?.current[1]}
+							flexGrow={1}
+							flexShrink={1}
+							width='50%'
+							mie={2}
+							params={allParams}
+						/>
 						<ChatsPerAgentChart
+							reloadFrequency={reloadFrequency}
 							key={keys?.current[2]}
 							flexGrow={1}
 							flexShrink={1}
 							width='50%'
 							mis={2}
-							reloadRef={reloadRef}
 							params={allParams}
 						/>
 					</Box>
@@ -141,12 +149,12 @@ const RealTimeMonitoringPage = () => {
 							params={allParams}
 						/>
 						<ChatsPerDepartmentChart
+							reloadFrequency={reloadFrequency}
 							key={keys?.current[5]}
 							flexGrow={1}
 							flexShrink={1}
 							width='50%'
 							mis={2}
-							reloadRef={reloadRef}
 							params={allParams}
 						/>
 					</Box>
@@ -167,7 +175,14 @@ const RealTimeMonitoringPage = () => {
 						<ProductivityOverview key={keys?.current[8]} flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' w='full' flexShrink={1}>
-						<ResponseTimesChart key={keys?.current[9]} flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams} />
+						<ResponseTimesChart
+							reloadFrequency={reloadFrequency}
+							key={keys?.current[9]}
+							flexGrow={1}
+							flexShrink={1}
+							w='100%'
+							params={allParams}
+						/>
 					</Box>
 				</Margins>
 			</PageScrollableContentWithShadow>

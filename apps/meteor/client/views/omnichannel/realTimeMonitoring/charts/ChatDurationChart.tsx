@@ -36,6 +36,13 @@ const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: Tran
 		tooltipCallbacks,
 	});
 
+const defaultData = {
+	chatDuration: {
+		avg: 0,
+		longest: 0,
+	},
+};
+
 type ChatDurationChartProps = {
 	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/charts/timings'>;
 	reloadFrequency: number;
@@ -60,18 +67,11 @@ const ChatDurationChart = ({ params, reloadFrequency, ...props }: ChatDurationCh
 
 	const getChartData = useEndpoint('GET', '/v1/livechat/analytics/dashboards/charts/timings');
 
-	const { data, isLoading } = useQuery(['getChartData'], async () => getChartData(memoizedParams), {
+	const { data, isLoading } = useQuery(['ChatDurationChart', memoizedParams], async () => getChartData(memoizedParams), {
 		refetchInterval: reloadFrequency * 1000,
 	});
 
-	const {
-		chatDuration: { avg, longest },
-	} = data ?? {
-		chatDuration: {
-			avg: 0,
-			longest: 0,
-		},
-	};
+	const { avg, longest } = data?.chatDuration ?? defaultData.chatDuration;
 
 	useEffect(() => {
 		const initChart = async () => {
@@ -88,7 +88,7 @@ const ChatDurationChart = ({ params, reloadFrequency, ...props }: ChatDurationCh
 			const label = getMomentCurrentLabel();
 			updateChartData(label, [avg, longest]);
 		}
-	}, [avg, isInitialized, isLoading, longest, t, updateChartData]);
+	}, [avg, data, isInitialized, isLoading, longest, t, updateChartData]);
 
 	return <Chart canvasRef={canvas} {...props} />;
 };

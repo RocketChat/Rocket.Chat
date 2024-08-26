@@ -52,7 +52,7 @@ const AgentStatusChart = ({ params, reloadFrequency, ...props }: AgentStatusChar
 
 	const getChartData = useEndpoint('GET', '/v1/livechat/analytics/dashboards/charts/agents-status');
 
-	const { data, isLoading } = useQuery(['getChartData'], async () => getChartData(memoizedParams), {
+	const { data, isLoading } = useQuery(['AgentStatusChart', memoizedParams], async () => getChartData(memoizedParams), {
 		refetchInterval: reloadFrequency * 1000,
 	});
 
