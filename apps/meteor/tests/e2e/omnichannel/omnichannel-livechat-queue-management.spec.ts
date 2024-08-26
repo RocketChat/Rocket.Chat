@@ -58,7 +58,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 		await poLiveChat.closeChat();
 	});
 
-	test('OC - Livechat - Queue Management - Change position on Queue', async ({ browser, api }) => {
+	test('OC - Livechat - Queue Management - Update position on Queue', async ({ browser, api }) => {
 		let poLiveChat2: OmnichannelLiveChat;
 
 		await test.step('should start secondary livechat session', async () => {
