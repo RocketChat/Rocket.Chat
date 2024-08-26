@@ -35,7 +35,7 @@ const RealTimeMonitoringPage = () => {
 
 	const keys = useRef<string[]>([...Array(10).map((_, i) => `${i}_${new Date().getTime()}`)]);
 
-	const [reloadFrequency, setReloadFrequency] = useState<string>('5');
+	const [reloadFrequency, setReloadFrequency] = useState<number>(5);
 	const [departmentId, setDepartment] = useState('');
 
 	const reloadRef = useRef<{ [x: string]: () => void }>({});
@@ -107,7 +107,7 @@ const RealTimeMonitoringPage = () => {
 							<Label mb={4}>{t('Update_every')}</Label>
 							<Select
 								options={reloadOptions}
-								onChange={useMutableCallback((val) => setReloadFrequency(val as string))}
+								onChange={useMutableCallback((val) => setReloadFrequency(Number(val)))}
 								value={reloadFrequency}
 							/>
 						</Box>
@@ -154,7 +154,14 @@ const RealTimeMonitoringPage = () => {
 						<AgentsOverview key={keys?.current[6]} flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' w='full' flexShrink={1}>
-						<ChatDurationChart key={keys?.current[7]} flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams} />
+						<ChatDurationChart
+							reloadFrequency={reloadFrequency}
+							key={keys?.current[7]}
+							flexGrow={1}
+							flexShrink={1}
+							w='100%'
+							params={allParams}
+						/>
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
 						<ProductivityOverview key={keys?.current[8]} flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams} />

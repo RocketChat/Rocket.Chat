@@ -1,15 +1,14 @@
 import type { Box } from '@rocket.chat/fuselage';
 import type { OperationParams } from '@rocket.chat/rest-typings';
 import type { TranslationContextValue } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { Chart as ChartType } from 'chart.js';
 import type { ComponentProps, MutableRefObject } from 'react';
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo, useState } from 'react';
 
 import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Chart from './Chart';
 import { getMomentChartLabelsAndData } from './getMomentChartLabelsAndData';
 import { getMomentCurrentLabel } from './getMomentCurrentLabel';
@@ -39,10 +38,10 @@ const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: Tran
 
 type ChatDurationChartProps = {
 	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/charts/timings'>;
-	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
+	reloadFrequency: number;
 } & ComponentProps<typeof Box>;
 
-const ChatDurationChart = ({ params, reloadRef, ...props }: ChatDurationChartProps) => {
+const ChatDurationChart = ({ params, reloadFrequency, ...props }: ChatDurationChartProps) => {
 	const t = useTranslation();
 
 	const canvas: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
@@ -55,9 +54,15 @@ const ChatDurationChart = ({ params, reloadRef, ...props }: ChatDurationChartPro
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/analytics/dashboards/charts/timings', { params });
+	const [isInitialized, setIsInitialized] = useState(false);
 
-	reloadRef.current.chatDurationChart = reload;
+	const memoizedParams = useMemo(() => params, [params]);
+
+	const getChartData = useEndpoint('GET', '/v1/livechat/analytics/dashboards/charts/timings');
+
+	const { data, isLoading } = useQuery(['getChartData'], async () => getChartData(memoizedParams), {
+		refetchInterval: reloadFrequency * 1000,
+	});
 
 	const {
 		chatDuration: { avg, longest },
@@ -72,17 +77,18 @@ const ChatDurationChart = ({ params, reloadRef, ...props }: ChatDurationChartPro
 		const initChart = async () => {
 			if (canvas?.current) {
 				context.current = await init(canvas.current, context.current, t);
+				setIsInitialized(true);
 			}
 		};
 		initChart();
 	}, [t]);
 
 	useEffect(() => {
-		if (state === AsyncStatePhase.RESOLVED) {
+		if (!isLoading && isInitialized) {
 			const label = getMomentCurrentLabel();
 			updateChartData(label, [avg, longest]);
 		}
-	}, [avg, longest, state, t, updateChartData]);
+	}, [avg, isInitialized, isLoading, longest, t, updateChartData]);
 
 	return <Chart canvasRef={canvas} {...props} />;
 };
