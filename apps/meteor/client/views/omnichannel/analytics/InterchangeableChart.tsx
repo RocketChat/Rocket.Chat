@@ -94,7 +94,7 @@ const InterchangeableChart = ({
 		});
 	}, [chartName, departmentId, draw, end, start, t, loadData]);
 
-	return <Chart ref={canvas} {...props} />;
+	return <Chart canvasRef={canvas} {...props} />;
 };
 
 export default InterchangeableChart;

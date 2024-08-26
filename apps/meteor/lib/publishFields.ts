@@ -87,7 +87,6 @@ export const roomFields = {
 	reactWhenReadOnly: 1,
 	sysMes: 1,
 	sentiment: 1,
-	streamingOptions: 1,
 	broadcast: 1,
 	encrypted: 1,
 	e2eKeyId: 1,
