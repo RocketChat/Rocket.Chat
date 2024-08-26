@@ -2,6 +2,7 @@ import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
@@ -108,13 +109,13 @@ test.describe.serial('OC - Livechat - Visitors closing the room is disabled', ()
 	});
 
 	test.beforeAll(async ({ browser, api }) => {
-		await api.post('/settings/Omnichannel_allow_visitors_to_close_conversation', { value: false });
+		await setSettingValueById(api, 'Livechat_allow_visitor_closing_chat', false);
 		const { page: omniPage } = await createAuxContext(browser, Users.user1, '/', true);
 		poHomeOmnichannel = new HomeOmnichannel(omniPage);
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.post('/settings/Omnichannel_allow_visitors_to_close_conversation', { value: true });
+		await setSettingValueById(api, 'Livechat_allow_visitor_closing_chat', true);
 		await api.delete('/livechat/users/agent/user1');
 		await poLiveChat.page.close();
 	});
