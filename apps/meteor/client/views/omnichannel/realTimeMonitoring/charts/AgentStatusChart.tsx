@@ -1,14 +1,13 @@
 import type { Box } from '@rocket.chat/fuselage';
 import type { OperationParams } from '@rocket.chat/rest-typings';
 import type { TranslationContextValue, TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { Chart as ChartType } from 'chart.js';
 import type { ComponentProps, MutableRefObject } from 'react';
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo, useState } from 'react';
 
 import { drawDoughnutChart } from '../../../../../app/livechat/client/lib/chartHandler';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Chart from './Chart';
 import { useUpdateChartData } from './useUpdateChartData';
 
@@ -32,14 +31,15 @@ const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: Tran
 
 type AgentStatusChartsProps = {
 	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/charts/agents-status'>;
-	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
+	reloadFrequency: number;
 } & ComponentProps<typeof Box>;
 
-const AgentStatusChart = ({ params, reloadRef, ...props }: AgentStatusChartsProps) => {
+const AgentStatusChart = ({ params, reloadFrequency, ...props }: AgentStatusChartsProps) => {
 	const t = useTranslation();
 
 	const canvas: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
 	const context: MutableRefObject<ChartType | undefined> = useRef();
+	const [isInitialized, setIsInitialized] = useState(false);
 
 	const updateChartData = useUpdateChartData({
 		context,
@@ -48,9 +48,13 @@ const AgentStatusChart = ({ params, reloadRef, ...props }: AgentStatusChartsProp
 		init,
 	});
 
-	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/analytics/dashboards/charts/agents-status', { params });
+	const memoizedParams = useMemo(() => params, [params]);
 
-	reloadRef.current.agentStatusChart = reload;
+	const getChartData = useEndpoint('GET', '/v1/livechat/analytics/dashboards/charts/agents-status');
+
+	const { data, isLoading } = useQuery(['getChartData'], async () => getChartData(memoizedParams), {
+		refetchInterval: reloadFrequency * 1000,
+	});
 
 	const { offline = 0, available = 0, away = 0, busy = 0 } = data ?? initialData;
 
@@ -58,19 +62,20 @@ const AgentStatusChart = ({ params, reloadRef, ...props }: AgentStatusChartsProp
 		const initChart = async () => {
 			if (canvas?.current) {
 				context.current = await init(canvas.current, context.current, t);
+				setIsInitialized(true);
 			}
 		};
 		initChart();
 	}, [t]);
 
 	useEffect(() => {
-		if (state === AsyncStatePhase.RESOLVED && context.current) {
+		if (!isLoading && isInitialized) {
 			updateChartData(t('Offline'), [offline]);
 			updateChartData(t('Available'), [available]);
 			updateChartData(t('Away'), [away]);
 			updateChartData(t('Busy'), [busy]);
 		}
-	}, [available, away, busy, offline, state, t, updateChartData]);
+	}, [context, available, away, busy, isLoading, offline, t, updateChartData, isInitialized]);
 
 	return <Chart canvasRef={canvas} {...props} />;
 };
