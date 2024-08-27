@@ -21,8 +21,7 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 		handleSubmit,
 		setValue,
 		setFocus,
-		watch,
-		formState: { errors, isValid, isSubmitting },
+		formState: { errors, isSubmitting },
 	} = useForm({
 		defaultValues: { email: emailDefault || '', subject: t('Transcript_of_your_livechat_conversation') },
 	});
@@ -56,7 +55,7 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 		}
 	}, [setValue, transcriptRequest]);
 
-	const canSubmit = isValid && Boolean(watch('subject'));
+	// const canSubmit = isValid && Boolean(watch('subject'));
 
 	return (
 		<Modal open wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(submit)} {...props} />} {...props}>
@@ -103,12 +102,12 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 						</Button>
 					)}
 					{roomOpen && !transcriptRequest && (
-						<Button aria-label='request-button' disabled={!canSubmit} loading={isSubmitting} primary type='submit'>
+						<Button aria-label='request-button' disabled={isSubmitting} loading={isSubmitting} primary type='submit'>
 							{t('Request')}
 						</Button>
 					)}
 					{!roomOpen && (
-						<Button aria-label='send-button' disabled={!canSubmit} loading={isSubmitting} primary type='submit'>
+						<Button aria-label='send-button' disabled={isSubmitting} loading={isSubmitting} primary type='submit'>
 							{t('Send')}
 						</Button>
 					)}

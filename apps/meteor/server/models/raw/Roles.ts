@@ -3,6 +3,7 @@ import type { IRolesModel } from '@rocket.chat/model-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { Collection, FindCursor, Db, Filter, FindOptions, Document } from 'mongodb';
 
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 import { BaseRaw } from './BaseRaw';
 
 export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
@@ -35,14 +36,15 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 				process.env.NODE_ENV === 'development' && console.warn(`[WARN] RolesRaw.addUserRoles: role: ${roleId} not found`);
 				continue;
 			}
-			switch (role.scope) {
-				case 'Subscriptions':
-					// TODO remove dependency from other models - this logic should be inside a function/service
-					await Subscriptions.addRolesByUserId(userId, [role._id], scope);
-					break;
-				case 'Users':
-				default:
-					await Users.addRolesByUserId(userId, [role._id]);
+
+			if (role.scope === 'Subscriptions' && scope) {
+				// TODO remove dependency from other models - this logic should be inside a function/service
+				const addRolesResponse = await Subscriptions.addRolesByUserId(userId, [role._id], scope);
+				if (addRolesResponse.modifiedCount) {
+					void notifyOnSubscriptionChangedByRoomIdAndUserId(scope, userId);
+				}
+			} else {
+				await Users.addRolesByUserId(userId, [role._id]);
 			}
 		}
 		return true;
@@ -88,13 +90,13 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 				continue;
 			}
 
-			switch (role.scope) {
-				case 'Subscriptions':
-					scope && (await Subscriptions.removeRolesByUserId(userId, [roleId], scope));
-					break;
-				case 'Users':
-				default:
-					await Users.removeRolesByUserId(userId, [roleId]);
+			if (role.scope === 'Subscriptions' && scope) {
+				const removeRolesResponse = await Subscriptions.removeRolesByUserId(userId, [roleId], scope);
+				if (removeRolesResponse.modifiedCount) {
+					void notifyOnSubscriptionChangedByRoomIdAndUserId(scope, userId);
+				}
+			} else {
+				await Users.removeRolesByUserId(userId, [roleId]);
 			}
 		}
 		return true;
