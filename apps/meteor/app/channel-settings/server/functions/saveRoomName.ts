@@ -8,11 +8,17 @@ import type { Document, UpdateResult } from 'mongodb';
 import { callbacks } from '../../../../lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
-import { notifyOnIntegrationChangedByChannels } from '../../../lib/server/lib/notifyListener';
+import { notifyOnIntegrationChangedByChannels, notifyOnSubscriptionChangedByRoomId } from '../../../lib/server/lib/notifyListener';
 import { getValidRoomName } from '../../../utils/server/lib/getValidRoomName';
 
 const updateFName = async (rid: string, displayName: string): Promise<(UpdateResult | Document)[]> => {
-	return Promise.all([Rooms.setFnameById(rid, displayName), Subscriptions.updateFnameByRoomId(rid, displayName)]);
+	const responses = await Promise.all([Rooms.setFnameById(rid, displayName), Subscriptions.updateFnameByRoomId(rid, displayName)]);
+
+	if (responses[1]?.modifiedCount) {
+		void notifyOnSubscriptionChangedByRoomId(rid);
+	}
+
+	return responses;
 };
 
 const updateRoomName = async (rid: string, displayName: string, slugifiedRoomName: string) => {
@@ -24,10 +30,16 @@ const updateRoomName = async (rid: string, displayName: string, slugifiedRoomNam
 		});
 	}
 
-	return Promise.all([
+	const responses = await Promise.all([
 		Rooms.setNameById(rid, slugifiedRoomName, displayName),
 		Subscriptions.updateNameAndAlertByRoomId(rid, slugifiedRoomName, displayName),
 	]);
+
+	if (responses[1]?.modifiedCount) {
+		void notifyOnSubscriptionChangedByRoomId(rid);
+	}
+
+	return responses;
 };
 
 export async function saveRoomName(

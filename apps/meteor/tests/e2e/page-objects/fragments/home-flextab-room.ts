@@ -7,12 +7,52 @@ export class HomeFlextabRoom {
 		this.page = page;
 	}
 
+	get roomInfoTab(): Locator {
+		return this.page.getByRole('dialog', { exact: true });
+	}
+
 	get btnEdit(): Locator {
 		return this.page.locator('role=button[name="Edit"]');
 	}
 
 	get btnMore(): Locator {
 		return this.page.locator('role=button[name="More"]');
+	}
+
+	get btnLeave(): Locator {
+		return this.roomInfoTab.locator('role=button[name="Leave"]');
+	}
+
+	get btnDelete(): Locator {
+		return this.roomInfoTab.locator('role=button[name="Delete"]');
+	}
+
+	getMoreOption(option: string) {
+		return this.roomInfoTab.locator(`role=menuitem[name="${option}"]`);
+	}
+
+	get confirmLeaveModal(): Locator {
+		return this.page.getByRole('dialog', { name: 'Confirmation', exact: true });
+	}
+
+	async confirmLeave() {
+		return this.confirmLeaveModal.getByRole('button', { name: 'Leave', exact: true }).click();
+	}
+
+	get confirmDeleteTeamModal(): Locator {
+		return this.page.getByRole('dialog', { name: 'Delete team', exact: true });
+	}
+
+	async confirmDeleteTeam() {
+		return this.confirmDeleteTeamModal.getByRole('button', { name: 'Yes, delete', exact: true }).click();
+	}
+
+	get confirmConvertModal(): Locator {
+		return this.page.getByRole('dialog', { name: 'Confirmation', exact: true });
+	}
+
+	async confirmConvert() {
+		return this.confirmConvertModal.getByRole('button', { name: 'Convert', exact: true }).click();
 	}
 
 	get optionDelete(): Locator {
@@ -49,6 +89,10 @@ export class HomeFlextabRoom {
 
 	get calloutRetentionPolicy(): Locator {
 		return this.page.getByRole('dialog').getByRole('alert', { name: 'Retention policy warning callout' });
+	}
+
+	get advancedSettingsAccordion(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Advanced settings' });
 	}
 
 	get pruneAccordion(): Locator {

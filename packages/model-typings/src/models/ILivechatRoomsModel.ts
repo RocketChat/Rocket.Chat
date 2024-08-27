@@ -6,7 +6,7 @@ import type {
 	ILivechatVisitor,
 	MACStats,
 } from '@rocket.chat/core-typings';
-import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult, Filter } from 'mongodb';
+import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult, Filter, UpdateOptions } from 'mongodb';
 
 import type { FindPaginated } from '..';
 import type { Updater } from '../updater';
@@ -133,7 +133,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	): Promise<UpdateResult>;
 	unsetEmailTranscriptRequestedByRoomId(rid: string): Promise<UpdateResult>;
 
-	closeRoomById(roomId: string, closeInfo: IOmnichannelRoomClosingInfo): Promise<UpdateResult>;
+	closeRoomById(roomId: string, closeInfo: IOmnichannelRoomClosingInfo, options?: UpdateOptions): Promise<UpdateResult>;
 
 	bulkRemoveDepartmentAndUnitsFromRooms(departmentId: string): Promise<Document | UpdateResult>;
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
@@ -225,22 +225,22 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		message: IMessage,
 		updater?: Updater<IOmnichannelRoom>,
 	): Updater<IOmnichannelRoom>;
-	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lt: Date }, data?: { departmentId: string }): Promise<number>;
+	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lte: Date }, data?: { departmentId: string }): Promise<number>;
 	getAnalyticsMetricsBetweenDate(
 		t: 'l',
-		date: { gte: Date; lt: Date },
+		date: { gte: Date; lte: Date },
 		data?: { departmentId?: string },
 		extraQuery?: Filter<IOmnichannelRoom>,
 	): FindCursor<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs'>>;
 	getAnalyticsMetricsBetweenDateWithMessages(
 		t: string,
-		date: { gte: Date; lt: Date },
+		date: { gte: Date; lte: Date },
 		data?: { departmentId?: string },
 		extraQuery?: Document,
 		extraMatchers?: Document,
 	): AggregationCursor<Pick<IOmnichannelRoom, '_id' | 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs'>>;
 	getAnalyticsBetweenDate(
-		date: { gte: Date; lt: Date },
+		date: { gte: Date; lte: Date },
 		data?: { departmentId: string },
 	): AggregationCursor<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs' | 'onHold'>>;
 	findOpenByAgent(userId: string, extraQuery?: Filter<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;

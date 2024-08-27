@@ -1,3 +1,5 @@
+import type { OperationParams } from '@rocket.chat/rest-typings';
+import type { MutableRefObject } from 'react';
 import React from 'react';
 
 import { useEndpointData } from '../../../../hooks/useEndpointData';
@@ -10,7 +12,12 @@ const overviewInitalValue = {
 
 const initialData = [overviewInitalValue, overviewInitalValue, overviewInitalValue, overviewInitalValue];
 
-const ConversationOverview = ({ params, reloadRef, ...props }) => {
+type ConversationOverviewProps = {
+	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/conversation-totalizers'>;
+	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
+};
+
+const ConversationOverview = ({ params, reloadRef, ...props }: ConversationOverviewProps) => {
 	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/analytics/dashboards/conversation-totalizers', { params });
 
 	reloadRef.current.conversationOverview = reload;
