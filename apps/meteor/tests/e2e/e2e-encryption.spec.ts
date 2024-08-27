@@ -280,6 +280,7 @@ test.describe.serial('e2e-encryption', () => {
 
 		await poHomeChannel.tabs.btnRoomInfo.click();
 		await poHomeChannel.tabs.room.btnEdit.click();
+		await poHomeChannel.tabs.room.advancedSettingsAccordion.click();
 
 		await expect(poHomeChannel.tabs.room.checkboxEncrypted).toBeVisible();
 	});

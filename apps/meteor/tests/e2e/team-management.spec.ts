@@ -77,6 +77,7 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.sidenav.openChat(targetTeam);
 		await poHomeTeam.tabs.btnRoomInfo.click();
 		await poHomeTeam.tabs.room.btnEdit.click();
+		await poHomeTeam.tabs.room.advancedSettingsAccordion.click();
 		await poHomeTeam.tabs.room.checkboxReadOnly.click();
 		await poHomeTeam.tabs.room.btnSave.click();
 	});
