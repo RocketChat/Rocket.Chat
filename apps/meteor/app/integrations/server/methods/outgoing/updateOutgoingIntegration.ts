@@ -1,7 +1,7 @@
 import type { IIntegration, INewOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Users } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
@@ -9,7 +9,7 @@ import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyLis
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../lib/validateScriptEngine';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		updateOutgoingIntegration(

@@ -1,4 +1,4 @@
-import { AutoComplete, Box, Option, Options, Chip } from '@rocket.chat/fuselage';
+import { AutoComplete, Box, Option, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -58,7 +58,7 @@ const RoomsAvailableForTeamsAutoComplete = ({ value, onChange, ...props }: Rooms
 					key={value}
 					{...props}
 					label={label.name}
-					avatar={<RoomAvatar room={{ _id: value, type: label.type, avatarETag: label.avatarETag }} size={Options.AvatarSize} />}
+					avatar={<RoomAvatar room={{ _id: value, type: label.type, avatarETag: label.avatarETag }} size='x20' />}
 				/>
 			)}
 			options={options}

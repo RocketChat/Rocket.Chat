@@ -46,6 +46,7 @@ test.describe.serial('teams-management', () => {
 	test('expect create "targetTeamReadOnly" readonly', async ({ page }) => {
 		await poHomeTeam.sidenav.openNewByLabel('Team');
 		await poHomeTeam.inputTeamName.type(targetTeamReadOnly);
+		await poHomeTeam.sidenav.advancedSettingsAccordion.click();
 		await poHomeTeam.textReadOnly.click();
 		await poHomeTeam.addMember('user1');
 		await poHomeTeam.btnTeamCreate.click();
@@ -76,6 +77,7 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.sidenav.openChat(targetTeam);
 		await poHomeTeam.tabs.btnRoomInfo.click();
 		await poHomeTeam.tabs.room.btnEdit.click();
+		await poHomeTeam.tabs.room.advancedSettingsAccordion.click();
 		await poHomeTeam.tabs.room.checkboxReadOnly.click();
 		await poHomeTeam.tabs.room.btnSave.click();
 	});

@@ -2,8 +2,8 @@ import crypto from 'crypto';
 import type { ServerResponse, IncomingMessage } from 'http';
 
 import type { IRocketChatAssets, IRocketChatAsset, ISetting } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Settings } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { NextHandleFunction } from 'connect';
 import sizeOf from 'image-size';
 import { Meteor } from 'meteor/meteor';
@@ -406,7 +406,7 @@ Meteor.startup(() => {
 	}, 200);
 });
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		refreshClients(): boolean;

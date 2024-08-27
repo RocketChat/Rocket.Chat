@@ -6,6 +6,7 @@ import React, { useCallback, useMemo } from 'react';
 
 import { UserInfoAction } from '../../../components/UserInfo';
 import { useActionSpread } from '../../hooks/useActionSpread';
+import type { AdminUserTab } from './AdminUsersPage';
 import { useChangeAdminStatusAction } from './hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from './hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from './hooks/useDeleteUserAction';
@@ -18,6 +19,7 @@ type AdminUserInfoActionsProps = {
 	isFederatedUser: IUser['federated'];
 	isActive: boolean;
 	isAdmin: boolean;
+	tab: AdminUserTab;
 	onChange: () => void;
 	onReload: () => void;
 };
@@ -29,6 +31,7 @@ const AdminUserInfoActions = ({
 	isFederatedUser,
 	isActive,
 	isAdmin,
+	tab,
 	onChange,
 	onReload,
 }: AdminUserInfoActionsProps): ReactElement => {
@@ -62,6 +65,7 @@ const AdminUserInfoActions = ({
 		[userId, userRoute],
 	);
 
+	const isNotPendingDeactivatedNorFederated = tab !== 'pending' && tab !== 'deactivated' && !isFederatedUser;
 	const options = useMemo(
 		() => ({
 			...(canDirectMessage && {
@@ -81,24 +85,25 @@ const AdminUserInfoActions = ({
 					disabled: isFederatedUser,
 				},
 			}),
-			...(changeAdminStatusAction && !isFederatedUser && { makeAdmin: changeAdminStatusAction }),
-			...(resetE2EKeyAction && !isFederatedUser && { resetE2EKey: resetE2EKeyAction }),
-			...(resetTOTPAction && !isFederatedUser && { resetTOTP: resetTOTPAction }),
-			...(deleteUserAction && { delete: deleteUserAction }),
+			...(isNotPendingDeactivatedNorFederated && changeAdminStatusAction && { makeAdmin: changeAdminStatusAction }),
+			...(isNotPendingDeactivatedNorFederated && resetE2EKeyAction && { resetE2EKey: resetE2EKeyAction }),
+			...(isNotPendingDeactivatedNorFederated && resetTOTPAction && { resetTOTP: resetTOTPAction }),
 			...(changeUserStatusAction && !isFederatedUser && { changeActiveStatus: changeUserStatusAction }),
+			...(deleteUserAction && { delete: deleteUserAction }),
 		}),
 		[
-			t,
 			canDirectMessage,
-			directMessageClick,
 			canEditOtherUserInfo,
-			editUserClick,
 			changeAdminStatusAction,
 			changeUserStatusAction,
 			deleteUserAction,
+			directMessageClick,
+			editUserClick,
+			isFederatedUser,
+			isNotPendingDeactivatedNorFederated,
 			resetE2EKeyAction,
 			resetTOTPAction,
-			isFederatedUser,
+			t,
 		],
 	);
 
@@ -117,7 +122,9 @@ const AdminUserInfoActions = ({
 				secondary
 				flexShrink={0}
 				key='menu'
-				renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option label={label} title={label} icon={icon} {...props} />}
+				renderItem={({ label: { label, icon }, ...props }): ReactElement => (
+					<Option label={label} title={label} icon={icon} variant={label === 'Delete' ? 'danger' : ''} {...props} />
+				)}
 				options={menuOptions}
 			/>
 		);

@@ -1211,6 +1211,49 @@ const POSTOmnichannelContactSchema = {
 
 export const isPOSTOmnichannelContactProps = ajv.compile<POSTOmnichannelContactProps>(POSTOmnichannelContactSchema);
 
+type POSTOmnichannelContactsProps = {
+	name: string;
+	emails: string[];
+	phones: string[];
+	customFields?: Record<string, unknown>;
+	contactManager?: string;
+};
+
+const POSTOmnichannelContactsSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+		emails: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			uniqueItems: true,
+		},
+		phones: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			uniqueItems: true,
+		},
+		customFields: {
+			type: 'object',
+			nullable: true,
+		},
+		contactManager: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['name', 'emails', 'phones'],
+	additionalProperties: false,
+};
+
+export const isPOSTOmnichannelContactsProps = ajv.compile<POSTOmnichannelContactsProps>(POSTOmnichannelContactsSchema);
+
 type GETOmnichannelContactProps = { contactId: string };
 
 const GETOmnichannelContactSchema = {
@@ -3649,6 +3692,10 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETOmnichannelContactProps) => { contact: ILivechatVisitor | null };
 	};
 
+	'/v1/omnichannel/contacts': {
+		POST: (params: POSTOmnichannelContactsProps) => { contactId: string };
+	};
+
 	'/v1/omnichannel/contact.search': {
 		GET: (params: GETOmnichannelContactSearchProps) => { contact: ILivechatVisitor | null };
 	};
@@ -3736,7 +3783,9 @@ export type OmnichannelEndpoints = {
 		};
 	};
 	'/v1/livechat/agents/:agentId/departments': {
-		GET: (params?: GETLivechatAgentsAgentIdDepartmentsParams) => { departments: ILivechatDepartmentAgents[] };
+		GET: (params?: GETLivechatAgentsAgentIdDepartmentsParams) => {
+			departments: (ILivechatDepartmentAgents & { departmentName: string })[];
+		};
 	};
 	'/v1/livechat/business-hour': {
 		GET: (params: GETBusinessHourParams) => { businessHour: ILivechatBusinessHour };

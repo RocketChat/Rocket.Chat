@@ -1,4 +1,3 @@
-import type { IAdminUserTabs } from '@rocket.chat/core-typings';
 import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -7,12 +6,12 @@ import { useMemo } from 'react';
 
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import type { UsersTableSortingOptions } from '../AdminUsersPage';
+import type { AdminUserTab, UsersTableSortingOptions } from '../AdminUsersPage';
 
 type UseFilteredUsersOptions = {
 	searchTerm: string;
 	prevSearchTerm: MutableRefObject<string>;
-	tab: IAdminUserTabs;
+	tab: AdminUserTab;
 	paginationData: ReturnType<typeof usePagination>;
 	sortData: ReturnType<typeof useSort<UsersTableSortingOptions>>;
 	selectedRoles: string[];
@@ -27,7 +26,7 @@ const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData
 			setCurrent(0);
 		}
 
-		const listUsersPayload: Partial<Record<IAdminUserTabs, UsersListStatusParamsGET>> = {
+		const listUsersPayload: Partial<Record<AdminUserTab, UsersListStatusParamsGET>> = {
 			all: {},
 			pending: {
 				hasLoggedIn: false,

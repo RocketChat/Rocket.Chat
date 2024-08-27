@@ -41,7 +41,7 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 		await store.setState(initial);
 	}
 
-	Triggers.processTrigger('after-guest-registration');
+	await Triggers.processTrigger('after-guest-registration');
 
 	await loadConfig();
 	parentCall('callback', 'chat-ended');

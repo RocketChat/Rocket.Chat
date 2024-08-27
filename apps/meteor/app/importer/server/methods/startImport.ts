@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Imports } from '@rocket.chat/models';
 import type { StartImportParamsPOST } from '@rocket.chat/rest-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { Importers, Selection, SelectionChannel, SelectionUser } from '..';
@@ -32,7 +32,7 @@ export const executeStartImport = async ({ input }: StartImportParamsPOST, start
 	await instance.startImport(selection, startedByUserId);
 };
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		startImport(params: StartImportParamsPOST): void;

@@ -175,7 +175,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 			setPopup(undefined);
 			setFocused(undefined);
 			event.preventDefault();
-			event.stopPropagation();
+			event.stopImmediatePropagation();
 		}
 	});
 
@@ -192,7 +192,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 			select(focused);
 
 			event.preventDefault();
-			event.stopPropagation();
+			event.stopImmediatePropagation();
 			return true;
 		}
 		if (event.which === keys.ARROW_UP && !(event.shiftKey || event.ctrlKey || event.altKey || event.metaKey)) {
@@ -211,7 +211,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 				return (focusedIndex > 0 ? list[focusedIndex - 1] : list[list.length - 1]) as T;
 			});
 			event.preventDefault();
-			event.stopPropagation();
+			event.stopImmediatePropagation();
 			return true;
 		}
 		if (event.which === keys.ARROW_DOWN && !(event.shiftKey || event.ctrlKey || event.altKey || event.metaKey)) {
@@ -230,7 +230,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 				return (focusedIndex < list.length - 1 ? list[focusedIndex + 1] : list[0]) as T;
 			});
 			event.preventDefault();
-			event.stopPropagation();
+			event.stopImmediatePropagation();
 			return true;
 		}
 	});

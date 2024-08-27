@@ -70,7 +70,7 @@ const TagsTable = () => {
 
 	return (
 		<>
-			{((isSuccess && data?.tags.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setFilter(text)} />}
+			{((isSuccess && data?.tags.length > 0) || queryHasChanged) && <FilterByText onChange={setFilter} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

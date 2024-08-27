@@ -15,8 +15,6 @@ const LoginServicesButton = <T extends LoginService>({
 	className,
 	disabled,
 	setError,
-	buttonColor,
-	buttonLabelColor,
 	...props
 }: T & {
 	className?: string;
@@ -45,8 +43,6 @@ const LoginServicesButton = <T extends LoginService>({
 			alignItems='center'
 			display='flex'
 			justifyContent='center'
-			color={buttonLabelColor}
-			backgroundColor={buttonColor}
 		>
 			{buttonLabelText || t('Sign_in_with__provider__', { provider: title })}
 		</Button>

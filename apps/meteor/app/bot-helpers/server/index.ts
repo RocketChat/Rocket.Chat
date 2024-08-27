@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { Filter, FindCursor } from 'mongodb';
 
@@ -194,7 +194,7 @@ settings.watch<string>('BotHelpers_userFields', (value) => {
 	botHelpers.setupCursors(value);
 });
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		botRequest: (prop: keyof BotHelpers, ...params: unknown[]) => Promise<unknown>;

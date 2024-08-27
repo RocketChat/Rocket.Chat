@@ -1,5 +1,5 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';

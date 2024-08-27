@@ -1,6 +1,7 @@
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
-import { getCollectionName } from '@rocket.chat/models';
+import type { Updater } from '@rocket.chat/models';
+import { getCollectionName, UpdaterImpl } from '@rocket.chat/models';
 import { ObjectId } from 'mongodb';
 import type {
 	BulkWriteOptions,
@@ -25,6 +26,7 @@ import type {
 	InsertOneResult,
 	DeleteResult,
 	DeleteOptions,
+	FindOneAndDeleteOptions,
 } from 'mongodb';
 
 import { setUpdatedAt } from './setUpdatedAt';
@@ -107,6 +109,18 @@ export abstract class BaseRaw<
 
 	getCollectionName(): string {
 		return this.collectionName;
+	}
+
+	public getUpdater(): Updater<T> {
+		return new UpdaterImpl<T>();
+	}
+
+	public updateFromUpdater(query: Filter<T>, updater: Updater<T>): Promise<UpdateResult> {
+		const updateFilter = updater.getUpdateFilter();
+		return this.updateOne(query, updateFilter).catch((e) => {
+			console.warn(e, updateFilter);
+			return Promise.reject(e);
+		});
 	}
 
 	private doNotMixInclusionAndExclusionFields(options: FindOptions<T> = {}): FindOptions<T> {
@@ -302,7 +316,38 @@ export abstract class BaseRaw<
 		return this.col.deleteOne(filter);
 	}
 
-	async deleteMany(filter: Filter<T>, options?: DeleteOptions): Promise<DeleteResult> {
+	async findOneAndDelete(filter: Filter<T>, options?: FindOneAndDeleteOptions): Promise<ModifyResult<T>> {
+		if (!this.trash) {
+			if (options) {
+				return this.col.findOneAndDelete(filter, options);
+			}
+			return this.col.findOneAndDelete(filter);
+		}
+
+		const result = await this.col.findOneAndDelete(filter);
+
+		const { value: doc } = result;
+		if (!doc) {
+			return result;
+		}
+
+		const { _id, ...record } = doc;
+
+		const trash: TDeleted = {
+			...record,
+			_deletedAt: new Date(),
+			__collection__: this.name,
+		} as unknown as TDeleted;
+
+		// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
+		await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
+			upsert: true,
+		});
+
+		return result;
+	}
+
+	async deleteMany(filter: Filter<T>, options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void }): Promise<DeleteResult> {
 		if (!this.trash) {
 			if (options) {
 				return this.col.deleteMany(filter, options);
@@ -310,7 +355,7 @@ export abstract class BaseRaw<
 			return this.col.deleteMany(filter);
 		}
 
-		const cursor = this.find(filter);
+		const cursor = this.find<ResultFields<T, C>>(filter, { session: options?.session });
 
 		const ids: T['_id'][] = [];
 		for await (const doc of cursor) {
@@ -327,7 +372,10 @@ export abstract class BaseRaw<
 			// since the operation is not atomic, we need to make sure that the record is not already deleted/inserted
 			await this.trash?.updateOne({ _id } as Filter<TDeleted>, { $set: trash } as UpdateFilter<TDeleted>, {
 				upsert: true,
+				session: options?.session,
 			});
+
+			void options?.onTrash?.(doc);
 		}
 
 		if (options) {

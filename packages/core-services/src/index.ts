@@ -59,7 +59,12 @@ export { IBroker, IBrokerNode, BaseMetricOptions, IServiceMetrics } from './type
 
 export { IServiceContext, ServiceClass, IServiceClass, ServiceClassInternal } from './types/ServiceClass';
 
-export { IFederationService, IFederationServiceEE, IFederationJoinExternalPublicRoomInput } from './types/IFederationService';
+export {
+	IFederationService,
+	IFederationServiceEE,
+	IFederationJoinExternalPublicRoomInput,
+	FederationConfigurationStatus,
+} from './types/IFederationService';
 
 export {
 	ConversationData,
@@ -138,8 +143,11 @@ export {
 	IUserService,
 };
 
+const disabledEnvVar = String(process.env.DISABLE_DB_WATCHERS).toLowerCase();
+
 export const dbWatchersDisabled =
-	['yes', 'true'].includes(String(process.env.DISABLE_DB_WATCHERS).toLowerCase()) || process.env.NODE_ENV !== 'production';
+	(process.env.NODE_ENV === 'production' && ['yes', 'true'].includes(disabledEnvVar)) ||
+	(process.env.NODE_ENV !== 'production' && !['no', 'false'].includes(disabledEnvVar));
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');

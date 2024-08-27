@@ -320,6 +320,7 @@ test.describe.serial('channel-management', () => {
 			await poHomeChannel.sidenav.openNewByLabel('Channel');
 			await poHomeChannel.sidenav.inputChannelName.fill(channelName);
 			await poHomeChannel.sidenav.checkboxPrivateChannel.click();
+			await poHomeChannel.sidenav.advancedSettingsAccordion.click();
 			await poHomeChannel.sidenav.checkboxReadOnly.click();
 			await poHomeChannel.sidenav.btnCreate.click();
 

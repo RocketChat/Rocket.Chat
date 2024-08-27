@@ -5,7 +5,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
-import type { Control, FieldValues } from 'react-hook-form';
+import type { Control, FieldValues, FieldError as RHFFieldError } from 'react-hook-form';
 import { Controller, useFormState, get } from 'react-hook-form';
 
 type CustomFieldFormProps<T extends FieldValues> = {
@@ -46,10 +46,10 @@ const CustomField = <T extends FieldValues>({
 		[defaultValue, options],
 	);
 
-	const validateRequired = useCallback((value) => (required ? typeof value === 'string' && !!value.trim() : true), [required]);
+	const validateRequired = useCallback((value: string) => (required ? typeof value === 'string' && !!value.trim() : true), [required]);
 
 	const getErrorMessage = useCallback(
-		(error) => {
+		(error: RHFFieldError) => {
 			switch (error?.type) {
 				case 'required':
 					return t('The_field_is_required', label || name);
