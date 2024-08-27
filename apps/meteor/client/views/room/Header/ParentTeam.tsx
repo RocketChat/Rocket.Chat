@@ -7,7 +7,7 @@ import React from 'react';
 import { HeaderTag, HeaderTagIcon } from '../../../components/Header';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
-const ParentTeam = ({ team }: { team: ITeam }): ReactElement | null => {
+const ParentTeam = ({ team }: { team: Pick<ITeam, 'name' | 'roomId' | 'type'> }): ReactElement | null => {
 	const isTeamPublic = team.type === TEAM_TYPE.PUBLIC;
 
 	const subscription = useUserSubscription(team.roomId);

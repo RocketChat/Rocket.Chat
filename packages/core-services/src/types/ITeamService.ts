@@ -128,5 +128,5 @@ export interface ITeamService {
 	addRolesToMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean>;
 	getRoomInfo(
 		room: AtLeast<IRoom, 'teamId' | 'teamMain' | '_id'>,
-	): Promise<{ team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>; parentRoom?: Pick<IRoom, 'name' | 'fname' | 't' | '_id'> }>;
+	): Promise<{ team?: Pick<ITeam, 'name' | 'roomId' | 'type'>; parentRoom?: Pick<IRoom, 'name' | 'fname' | 't' | '_id'> }>;
 }
