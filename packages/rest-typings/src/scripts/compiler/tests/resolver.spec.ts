@@ -11,84 +11,90 @@ jest.mock('../extractors', () => ({
 	extractIntersectionNode: jest.fn(),
 }));
 
-describe('resolver', () => {
-	describe('resolveType', () => {
-		// Mock TypeChecker
-		const mockChecker = {} as ts.TypeChecker;
+describe('resolveType', () => {
+	const mockChecker = {} as ts.TypeChecker;
 
-		beforeEach(() => {
-			jest.clearAllMocks();
-		});
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
 
-		it('should handle TypeLiteralNode', () => {
-			const mockNode = { kind: ts.SyntaxKind.TypeLiteral } as ts.TypeLiteralNode;
-			(extractors.extractLiteralNode as jest.Mock).mockReturnValue({ prop: 'value' });
+	it('should handle TypeLiteralNode', () => {
+		const mockLiteralNode = ts.factory.createTypeLiteralNode([
+			ts.factory.createPropertySignature(
+				undefined,
+				ts.factory.createIdentifier('prop'),
+				undefined,
+				ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+			),
+		]) as ts.TypeLiteralNode;
 
-			const result = resolveType(mockNode, mockChecker);
+		(extractors.extractLiteralNode as jest.Mock).mockReturnValue({ prop: 'value' });
 
-			expect(extractors.extractLiteralNode).toHaveBeenCalledWith(mockNode, mockChecker);
-			expect(result).toEqual({ prop: 'value' });
-		});
+		const result = resolveType(mockLiteralNode, mockChecker);
+		// console.log(result);
 
-		it('should handle TypeReferenceNode', () => {
-			const mockNode = { kind: ts.SyntaxKind.TypeReference } as ts.TypeReferenceNode;
-			(extractors.extractReferencedNode as jest.Mock).mockReturnValue({ refProp: 'refValue' });
+		expect(extractors.extractLiteralNode).toHaveBeenCalledWith(mockLiteralNode, mockChecker);
+		expect(result).toEqual({ prop: 'value' });
+	});
 
-			const result = resolveType(mockNode, mockChecker);
+	it('should handle TypeReferenceNode', () => {
+		const mockNode = { kind: ts.SyntaxKind.TypeReference } as ts.TypeReferenceNode;
+		(extractors.extractReferencedNode as jest.Mock).mockReturnValue({ refProp: 'refValue' });
 
-			expect(extractors.extractReferencedNode).toHaveBeenCalledWith(mockNode, mockChecker);
-			expect(result).toEqual({ refProp: 'refValue' });
-		});
+		const result = resolveType(mockNode, mockChecker);
 
-		it('should handle UnionTypeNode', () => {
-			const mockNode = { kind: ts.SyntaxKind.UnionType } as ts.UnionTypeNode;
-			(extractors.extractUnionNode as jest.Mock).mockReturnValue(['type1', 'type2']);
+		expect(extractors.extractReferencedNode).toHaveBeenCalledWith(mockNode, mockChecker);
+		expect(result).toEqual({ refProp: 'refValue' });
+	});
 
-			const result = resolveType(mockNode, mockChecker);
+	it('should handle UnionTypeNode', () => {
+		const mockNode = { kind: ts.SyntaxKind.UnionType } as ts.UnionTypeNode;
+		(extractors.extractUnionNode as jest.Mock).mockReturnValue(['type1', 'type2']);
 
-			expect(extractors.extractUnionNode).toHaveBeenCalledWith(mockNode, mockChecker);
-			expect(result).toEqual({ unionTypes: ['type1', 'type2'] });
-		});
+		const result = resolveType(mockNode, mockChecker);
 
-		it('should handle IntersectionTypeNode', () => {
-			const mockNode = { kind: ts.SyntaxKind.IntersectionType } as ts.IntersectionTypeNode;
-			(extractors.extractIntersectionNode as jest.Mock).mockReturnValue({ prop1: 'value1', prop2: 'value2' });
+		expect(extractors.extractUnionNode).toHaveBeenCalledWith(mockNode, mockChecker);
+		expect(result).toEqual({ unionTypes: ['type1', 'type2'] });
+	});
 
-			const result = resolveType(mockNode, mockChecker);
+	it('should handle IntersectionTypeNode', () => {
+		const mockNode = { kind: ts.SyntaxKind.IntersectionType } as ts.IntersectionTypeNode;
+		(extractors.extractIntersectionNode as jest.Mock).mockReturnValue({ prop1: 'value1', prop2: 'value2' });
 
-			expect(extractors.extractIntersectionNode).toHaveBeenCalledWith(mockNode, mockChecker);
-			expect(result).toEqual({ prop1: 'value1', prop2: 'value2' });
-		});
+		const result = resolveType(mockNode, mockChecker);
 
-		it('should handle ParenthesizedTypeNode', () => {
-			const innerNode = { kind: ts.SyntaxKind.StringKeyword } as ts.KeywordTypeNode;
-			const mockNode = {
-				kind: ts.SyntaxKind.ParenthesizedType,
-				type: innerNode,
-			} as ts.ParenthesizedTypeNode;
+		expect(extractors.extractIntersectionNode).toHaveBeenCalledWith(mockNode, mockChecker);
+		expect(result).toEqual({ prop1: 'value1', prop2: 'value2' });
+	});
 
-			const result = resolveType(mockNode, mockChecker);
+	it('should handle ParenthesizedTypeNode', () => {
+		const innerNode = { kind: ts.SyntaxKind.StringKeyword } as ts.KeywordTypeNode;
+		const mockNode = {
+			kind: ts.SyntaxKind.ParenthesizedType,
+			type: innerNode,
+		} as ts.ParenthesizedTypeNode;
 
-			expect(result).toEqual({}); // As our mock doesn't handle KeywordTypeNode
-		});
+		const result = resolveType(mockNode, mockChecker);
 
-		it('should handle LiteralTypeNode', () => {
-			const mockNode = {
-				kind: ts.SyntaxKind.LiteralType,
-				literal: { getText: () => '"literal"' },
-			} as unknown as ts.LiteralTypeNode;
+		expect(result).toEqual({}); // As our mock doesn't handle KeywordTypeNode
+	});
 
-			const result = resolveType(mockNode, mockChecker);
+	it('should handle LiteralTypeNode', () => {
+		const mockNode = {
+			kind: ts.SyntaxKind.LiteralType,
+			literal: { getText: () => '"literal"' },
+		} as unknown as ts.LiteralTypeNode;
 
-			expect(result).toBe('"literal"');
-		});
+		const result = resolveType(mockNode, mockChecker);
 
-		it('should return empty object for unknown node types', () => {
-			const mockNode = { kind: ts.SyntaxKind.Unknown } as unknown as ts.TypeNode;
+		expect(result).toBe('"literal"');
+	});
 
-			const result = resolveType(mockNode, mockChecker);
+	it('should return empty object for unknown node types', () => {
+		const mockNode = { kind: ts.SyntaxKind.Unknown } as unknown as ts.TypeNode;
 
-			expect(result).toEqual({});
-		});
+		const result = resolveType(mockNode, mockChecker);
+
+		expect(result).toEqual({});
 	});
 });

@@ -37,7 +37,7 @@ export function main(): IEndpoints {
 		}
 	});
 
-	console.log(JSON.stringify(endpoints));
+	// console.log(JSON.stringify(endpoints));
 	return endpoints;
 }
 
