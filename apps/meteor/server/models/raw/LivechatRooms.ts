@@ -8,9 +8,9 @@ import type {
 	IOmnichannelServiceLevelAgreements,
 	ReportResult,
 	MACStats,
-	LivechatPriorityWeight,
+	IStats,
 } from '@rocket.chat/core-typings';
-import { UserStatus } from '@rocket.chat/core-typings';
+import { UserStatus, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Settings } from '@rocket.chat/models';
@@ -2584,25 +2584,48 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			.toArray();
 	}
 
-	async countLivechatRoomsByPriority(priority: LivechatPriorityWeight): Promise<number> {
+	async countLivechatRoomsByPriority(): Promise<IStats['totalLivechatRoomsWithPriority']> {
 		const pipeline = [
 			{
 				$match: {
 					t: 'l',
-					priorityWeight: priority,
+				},
+			},
+			{
+				$group: {
+					_id: '$priorityWeight',
+					count: { $sum: 1 },
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					lowest: { $cond: [{ $eq: ['$_id', LivechatPriorityWeight.LOWEST] }, '$count', 0] },
+					low: { $cond: [{ $eq: ['$_id', LivechatPriorityWeight.LOW] }, '$count', 0] },
+					medium: { $cond: [{ $eq: ['$_id', LivechatPriorityWeight.MEDIUM] }, '$count', 0] },
+					high: { $cond: [{ $eq: ['$_id', LivechatPriorityWeight.HIGH] }, '$count', 0] },
+					highest: { $cond: [{ $eq: ['$_id', LivechatPriorityWeight.HIGHEST] }, '$count', 0] },
+					notSpecified: { $cond: [{ $eq: ['$_id', LivechatPriorityWeight.NOT_SPECIFIED] }, '$count', 0] },
 				},
 			},
 			{
 				$group: {
 					_id: null,
-					sum: { $sum: 1 },
+					lowest: { $sum: '$lowest' },
+					low: { $sum: '$low' },
+					medium: { $sum: '$medium' },
+					high: { $sum: '$high' },
+					highest: { $sum: '$highest' },
+					notSpecified: { $sum: '$notSpecified' },
 				},
 			},
 		];
 
-		const result = await this.col.aggregate<{ sum: number }>(pipeline).toArray();
+		const result = await this.col.aggregate(pipeline).toArray();
+		const stats = result[0];
+		delete stats._id;
 
-		return result.length ? result[0].sum : 0;
+		return stats as IStats['totalLivechatRoomsWithPriority'];
 	}
 
 	countLivechatRoomsWithDepartment(): Promise<number> {
