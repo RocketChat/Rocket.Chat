@@ -12,7 +12,7 @@ test.describe.serial('file-upload', () => {
 
 	test.beforeAll(async ({ api }) => {
 		await setSettingValueById(api, 'FileUpload_MediaTypeBlackList', 'image/svg+xml');
-		targetChannel = await createTargetChannel(api);
+		targetChannel = await createTargetChannel(api, { members: ['user1'] });
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -74,5 +74,29 @@ test.describe.serial('file-upload', () => {
 		await page.reload();
 		await poHomeChannel.content.sendFileMessage('diagram.drawio');
 		await expect(poHomeChannel.content.btnModalConfirm).not.toBeVisible();
+	});
+});
+test.describe('file-upload-not-member', () => {
+	let poHomeChannel: HomeChannel;
+	let targetChannel: string;
+
+	test.beforeAll(async ({ api }) => {
+		targetChannel = await createTargetChannel(api);
+	});
+
+	test.beforeEach(async ({ page }) => {
+		poHomeChannel = new HomeChannel(page);
+
+		await page.goto('/home');
+		await poHomeChannel.sidenav.openChat(targetChannel);
+	});
+
+	test.afterAll(async ({ api }) => {
+		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
+	});
+
+	test('expect not be able to upload if not a member', async () => {
+		await poHomeChannel.content.dragAndDropTxtFile();
+		await expect(poHomeChannel.content.modalFilePreview).not.toBeVisible();
 	});
 });

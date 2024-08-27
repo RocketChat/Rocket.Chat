@@ -760,7 +760,7 @@ export const createAccountSettings = () =>
 				i18nDescription: 'Accounts_AvatarCacheTime_description',
 			});
 
-			await this.add('Accounts_AvatarBlockUnauthenticatedAccess', false, {
+			await this.add('Accounts_AvatarBlockUnauthenticatedAccess', true, {
 				type: 'boolean',
 				public: true,
 			});

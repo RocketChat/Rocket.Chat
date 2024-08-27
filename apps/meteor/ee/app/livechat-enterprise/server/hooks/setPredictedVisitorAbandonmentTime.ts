@@ -1,53 +1,46 @@
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { isEditedMessage } from '@rocket.chat/core-typings';
-import { LivechatRooms } from '@rocket.chat/models';
+import type { IMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage, isMessageFromVisitor } from '@rocket.chat/core-typings';
 import moment from 'moment';
 
+import { markRoomResponded } from '../../../../../app/livechat/server/hooks/markRoomResponded';
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { setPredictedVisitorAbandonmentTime } from '../lib/Helper';
 
+function shouldSaveInactivity(message: IMessage): boolean {
+	if (message.t || isEditedMessage(message) || isMessageFromVisitor(message)) {
+		return false;
+	}
+
+	const abandonedRoomsAction = settings.get('Livechat_abandoned_rooms_action');
+	const visitorInactivityTimeout = settings.get<number>('Livechat_visitor_inactivity_timeout');
+
+	if (!abandonedRoomsAction || abandonedRoomsAction === 'none' || visitorInactivityTimeout <= 0) {
+		return false;
+	}
+
+	return true;
+}
+
+callbacks.remove('afterOmnichannelSaveMessage', 'markRoomResponded');
+
 callbacks.add(
 	'afterOmnichannelSaveMessage',
-	async (message, { room }) => {
-		if (
-			!settings.get('Livechat_abandoned_rooms_action') ||
-			settings.get('Livechat_abandoned_rooms_action') === 'none' ||
-			settings.get<number>('Livechat_visitor_inactivity_timeout') <= 0
-		) {
-			return message;
-		}
-		// skips this callback if the message was edited
-		if (isEditedMessage(message)) {
-			return message;
-		}
-		// if the message has a type means it is a special message (like the closing comment), so skip it
-		if (message.t) {
-			return message;
-		}
-		// message from visitor
-		if (message.token) {
+	async (message, { room, roomUpdater }) => {
+		const responseBy = await markRoomResponded(message, room, roomUpdater);
+
+		if (!shouldSaveInactivity(message)) {
 			return message;
 		}
 
-		const latestRoom = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 'responseBy' | 'departmentId'>>(room._id, {
-			projection: {
-				_id: 1,
-				responseBy: 1,
-				departmentId: 1,
-			},
-		});
-
-		if (!latestRoom?.responseBy) {
-			return message;
+		if (!responseBy) {
+			return;
 		}
 
-		if (moment(latestRoom.responseBy.firstResponseTs).isSame(moment(message.ts))) {
-			await setPredictedVisitorAbandonmentTime(latestRoom);
+		if (moment(responseBy.firstResponseTs).isSame(moment(message.ts))) {
+			await setPredictedVisitorAbandonmentTime({ ...room, responseBy }, roomUpdater);
 		}
-
-		return message;
 	},
 	callbacks.priority.MEDIUM,
 	'save-visitor-inactivity',
-); // This hook priority should always be less than the priority of hook "markRoomResponded" bcs, the room.responseBy.firstMessage property set there is being used here for determining visitor abandonment
+);
