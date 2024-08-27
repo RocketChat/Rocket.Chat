@@ -38,11 +38,11 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 	return useReactiveValue(
 		useCallback(
 			() =>
-				ChatMessage.find(query, {
+				await ChatMessage.findAsync(query, {
 					sort: {
 						ts: 1,
 					},
-				}).fetch(),
+				}),
 			[query],
 		),
 	);

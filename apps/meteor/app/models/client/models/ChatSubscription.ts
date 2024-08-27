@@ -37,7 +37,7 @@ export const ChatSubscription = Object.assign(CachedChatSubscription.collection,
 				query.rid = scope;
 			}
 
-			const subscriptions = this.find(query).fetch();
+			const subscriptions = await this.findAsync(query);
 
 			const uids = subscriptions
 				.map((subscription) => {

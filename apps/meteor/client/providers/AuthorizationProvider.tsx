@@ -35,8 +35,7 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 	const roles = useReactiveValue(
 		useCallback(
 			() =>
-				Roles.find()
-					.fetch()
+				(await Roles.findAsync())
 					.reduce((ret, obj) => {
 						ret[obj._id] = obj;
 						return ret;

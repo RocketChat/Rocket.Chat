@@ -9,7 +9,7 @@ import { getUserPreference } from '../../app/utils/client';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 
 const fetchSubscriptions = (): ISubscription[] =>
-	ChatSubscription.find(
+	await ChatSubscription.findAsync(
 		{
 			open: true,
 			hideUnreadStatus: { $ne: true },
@@ -28,7 +28,7 @@ const fetchSubscriptions = (): ISubscription[] =>
 				prid: 1,
 			},
 		},
-	).fetch();
+	);
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {

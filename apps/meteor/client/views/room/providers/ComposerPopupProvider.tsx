@@ -47,8 +47,8 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
 					const items: ComposerBoxPopupUserProps[] = [];
 
-					const users = usersFromRoomMessages
-						.find(
+					const users = (await usersFromRoomMessages
+						.findAsync(
 							{
 								ts: { $exists: true },
 								...(filter && {
@@ -59,8 +59,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 								limit: suggestionsCount ?? 5,
 								sort: { ts: -1 },
 							},
-						)
-						.fetch()
+						))
 						.map((u) => {
 							u.suggestion = true;
 							return u;
@@ -89,8 +88,8 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				},
 				getItemsFromServer: async (filter: string) => {
 					const filterRegex = filter && new RegExp(escapeRegExp(filter), 'i');
-					const usernames = usersFromRoomMessages
-						.find(
+					const usernames = (await usersFromRoomMessages
+						.findAsync(
 							{
 								ts: { $exists: true },
 								...(filter && {
@@ -101,8 +100,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 								limit: suggestionsCount ?? 5,
 								sort: { ts: -1 },
 							},
-						)
-						.fetch()
+						))
 						.map((u) => {
 							return u.username;
 						});
@@ -129,7 +127,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				title: t('Channels'),
 				getItemsFromLocal: async (filter: string) => {
 					const filterRegex = new RegExp(escapeRegExp(filter), 'i');
-					const records = Subscriptions.find(
+					const records = await Subscriptions.findAsync(
 						{
 							$and: [
 								{
@@ -149,7 +147,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 								ls: -1,
 							},
 						},
-					).fetch();
+					);
 					return records;
 				},
 				getItemsFromServer: async (filter: string) => {
@@ -327,7 +325,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 					renderItem: ({ item }) => <ComposerBoxPopupCannedResponse {...item} />,
 					getItemsFromLocal: async (filter: string) => {
 						const exp = new RegExp(filter, 'i');
-						return CannedResponse.find(
+						return (await CannedResponse.findAsync(
 							{
 								shortcut: exp,
 							},
@@ -337,8 +335,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 									shortcut: -1,
 								},
 							},
-						)
-							.fetch()
+						))
 							.map((record) => ({
 								_id: record._id,
 								text: record.text,

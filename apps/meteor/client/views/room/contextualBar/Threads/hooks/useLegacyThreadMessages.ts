@@ -15,7 +15,7 @@ export const useLegacyThreadMessages = (
 } => {
 	const messages = useReactiveValue(
 		useCallback(() => {
-			return Messages.find(
+			return (await Messages.findAsync(
 				{
 					$or: [{ tmid }, { _id: tmid }],
 					_hidden: { $ne: true },
@@ -30,8 +30,7 @@ export const useLegacyThreadMessages = (
 					},
 					sort: { ts: 1 },
 				},
-			)
-				.fetch()
+			))
 				.filter(isThreadMessage);
 		}, [tmid]),
 	);

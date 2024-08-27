@@ -73,8 +73,8 @@ const EditableSettingsProvider = ({ children, query = defaultQuery }: EditableSe
 	const queryEditableSettings = useMemo(
 		() =>
 			createReactiveSubscriptionFactory((query = {}) =>
-				getSettingsCollection()
-					.find(
+				await getSettingsCollection()
+					.findAsync(
 						{
 							...('_id' in query && { _id: { $in: query._id } }),
 							...('group' in query && { group: query.group }),
@@ -105,8 +105,7 @@ const EditableSettingsProvider = ({ children, query = defaultQuery }: EditableSe
 								i18nLabel: 1,
 							},
 						},
-					)
-					.fetch(),
+					),
 			),
 		[getSettingsCollection],
 	);
@@ -116,8 +115,8 @@ const EditableSettingsProvider = ({ children, query = defaultQuery }: EditableSe
 			createReactiveSubscriptionFactory((_id: GroupId, tab?: TabId) =>
 				Array.from(
 					new Set(
-						getSettingsCollection()
-							.find(
+						(await getSettingsCollection()
+							.findAsync(
 								{
 									group: _id,
 									...(tab !== undefined
@@ -136,8 +135,7 @@ const EditableSettingsProvider = ({ children, query = defaultQuery }: EditableSe
 										i18nLabel: 1,
 									},
 								},
-							)
-							.fetch()
+							))
 							.map(({ section }) => section || ''),
 					),
 				),
@@ -150,8 +148,8 @@ const EditableSettingsProvider = ({ children, query = defaultQuery }: EditableSe
 			createReactiveSubscriptionFactory((_id: GroupId) =>
 				Array.from(
 					new Set(
-						getSettingsCollection()
-							.find(
+						(await getSettingsCollection()
+							.findAsync(
 								{
 									group: _id,
 								},
@@ -165,8 +163,7 @@ const EditableSettingsProvider = ({ children, query = defaultQuery }: EditableSe
 										i18nLabel: 1,
 									},
 								},
-							)
-							.fetch()
+							))
 							.map(({ tab }) => tab || ''),
 					),
 				),

@@ -225,7 +225,7 @@ class E2E extends Emitter {
 	}
 
 	async handleAsyncE2EESuggestedKey() {
-		const subs = Subscriptions.find({ E2ESuggestedKey: { $exists: true } }).fetch();
+		const subs = await Subscriptions.findAsync({ E2ESuggestedKey: { $exists: true } });
 		await Promise.all(
 			subs
 				.filter((sub) => sub.E2ESuggestedKey && !sub.E2EKey)

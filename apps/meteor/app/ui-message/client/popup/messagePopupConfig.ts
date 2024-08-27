@@ -31,7 +31,7 @@ Meteor.startup(() => {
 
 		const uniqueMessageUsersControl: Record<string, boolean> = {};
 
-		Messages.find(
+		(await Messages.findAsync(
 			{
 				rid,
 				'u.username': { $ne: user.username },
@@ -46,8 +46,7 @@ Meteor.startup(() => {
 				},
 				sort: { ts: -1 },
 			},
-		)
-			.fetch()
+		))
 			.filter(({ u: { username } }) => {
 				const notMapped = !uniqueMessageUsersControl[username];
 				uniqueMessageUsersControl[username] = true;

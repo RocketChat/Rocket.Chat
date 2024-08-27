@@ -136,13 +136,13 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 				return undefined;
 			}
 
-			return LivechatInquiry.find(
+			return await LivechatInquiry.findAsync(
 				{ status: 'queued' },
 				{
 					sort: getOmniChatSortQuery(omnichannelSortingMechanism),
 					limit: omnichannelPoolMaxIncoming,
 				},
-			).fetch();
+			);
 		}, [manuallySelected, omnichannelPoolMaxIncoming, omnichannelSortingMechanism]),
 	);
 

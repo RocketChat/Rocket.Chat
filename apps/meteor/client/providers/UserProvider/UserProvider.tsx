@@ -72,10 +72,10 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			queryRoom: createReactiveSubscriptionFactory<IRoom | undefined>((query, fields) => ChatRoom.findOne(query, { fields })),
 			querySubscriptions: createReactiveSubscriptionFactory<SubscriptionWithRoom[]>((query, options) => {
 				if (userId) {
-					return Subscriptions.find(query, options).fetch();
+					return await Subscriptions.findAsync(query, options);
 				}
 
-				return ChatRoom.find(query, options).fetch();
+				return await ChatRoom.findAsync(query, options);
 			}),
 			logout,
 		}),

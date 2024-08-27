@@ -19,7 +19,7 @@ export const useMessageRoles = (userId: IUser['_id'] | undefined, roomId: IRoom[
 
 			const roles = [...(userRoles?.roles || []), ...(roomRoles?.roles || [])];
 
-			const result = Roles.find(
+			const result = await Roles.findAsync(
 				{
 					_id: {
 						$in: roles,
@@ -34,7 +34,7 @@ export const useMessageRoles = (userId: IUser['_id'] | undefined, roomId: IRoom[
 						description: 1,
 					},
 				},
-			).fetch();
+			);
 			return result.map(({ description }) => description);
 		}, [userId, roomId, shouldLoadRoles]),
 	);

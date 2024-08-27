@@ -63,8 +63,8 @@ const SettingsProvider = ({ children, privileged = false }: SettingsProviderProp
 	const querySettings = useMemo(
 		() =>
 			createReactiveSubscriptionFactory((query = {}) =>
-				cachedCollection.collection
-					.find(
+				await cachedCollection.collection
+					.findAsync(
 						{
 							...('_id' in query && Array.isArray(query._id) && { _id: { $in: query._id } }),
 							...('_id' in query && !Array.isArray(query._id) && { _id: query._id }),
@@ -83,8 +83,7 @@ const SettingsProvider = ({ children, privileged = false }: SettingsProviderProp
 								i18nLabel: 1,
 							},
 						},
-					)
-					.fetch(),
+					),
 			),
 		[cachedCollection],
 	);

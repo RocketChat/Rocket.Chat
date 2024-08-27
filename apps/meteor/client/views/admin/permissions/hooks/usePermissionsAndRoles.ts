@@ -38,7 +38,7 @@ export const usePermissionsAndRoles = (
 
 	const permissions = useReactiveValue(getPermissions);
 	const permissionsTotal = useReactiveValue(getTotalPermissions);
-	const getRoles = useMutableCallback(() => Roles.find().fetch());
+	const getRoles = useMutableCallback(() => await Roles.findAsync());
 	const roles = useReactiveValue(getRoles);
 
 	return { permissions: permissions.fetch(), total: permissionsTotal, roleList: roles, reload: getRoles };

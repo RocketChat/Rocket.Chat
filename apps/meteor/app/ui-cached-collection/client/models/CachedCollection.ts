@@ -212,7 +212,7 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 
 	save = withDebouncing({ wait: 1000 })(async () => {
 		this.log('saving cache');
-		const data = this.collection.find().fetch();
+		const data = await this.collection.findAsync();
 		await localforage.setItem(this.name, {
 			updatedAt: this.updatedAt,
 			version: this.version,
