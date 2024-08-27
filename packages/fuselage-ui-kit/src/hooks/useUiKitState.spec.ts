@@ -12,9 +12,7 @@ const multiStaticSelectElement: MultiStaticSelectElement = {
   actionId: 'multi_static_select',
 };
 
-it("should MultiSelectElement with dispatchActionConfig equal ['on_item_selected'] update value correctly", async () => {
-  multiStaticSelectElement.dispatchActionConfig = ['on_item_selected'];
-
+it('should MultiSelectElement update value correctly', async () => {
   const { result } = renderHook(() =>
     useUiKitState(multiStaticSelectElement, 0)
   );
