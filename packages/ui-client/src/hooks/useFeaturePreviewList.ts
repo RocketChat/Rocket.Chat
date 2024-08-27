@@ -18,6 +18,7 @@ export type FeaturePreviewProps = {
 	enabled: boolean;
 };
 
+// TODO: Move the features preview array to another directory to be acces from both BE and FE.
 export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	{
 		name: 'quickReactions',
@@ -66,7 +67,11 @@ export const enabledDefaultFeatures = defaultFeaturesPreview.filter((feature) =>
 
 export const useFeaturePreviewList = () => {
 	const featurePreviewEnabled = useSetting<boolean>('Accounts_AllowFeaturePreview');
+	// const featurePreviewEnabledByDefault = useSetting<string>('Accounts_Default_User_Preferences_featuresPreview');
+	// console.info(featurePreviewEnabledByDefault);
 	const userFeaturesPreview = useUserPreference<FeaturePreviewProps[]>('featuresPreview');
+
+	console.log(enabledDefaultFeatures)
 
 	if (!featurePreviewEnabled) {
 		return { unseenFeatures: 0, features: [] as FeaturePreviewProps[], featurePreviewEnabled };
@@ -77,7 +82,9 @@ export const useFeaturePreviewList = () => {
 	).length;
 
 	const mergedFeatures = enabledDefaultFeatures.map((feature) => {
-		const userFeature = userFeaturesPreview?.find((userFeature) => userFeature.name === feature.name);
+		const userFeature = 
+						userFeaturesPreview?.find((userFeature) => userFeature.name === feature.name); // ?? 
+						// featurePreviewEnabledByDefault?.find((userFeature) => userFeature.name === feature.name);
 		return { ...feature, ...userFeature };
 	});
 

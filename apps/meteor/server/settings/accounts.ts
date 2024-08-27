@@ -1,4 +1,5 @@
 import { Random } from '@rocket.chat/random';
+import { defaultFeaturesPreview } from '@rocket.chat/ui-client';
 
 import { settingsRegistry } from '../../app/settings/server';
 
@@ -221,6 +222,12 @@ export const createAccountSettings = () =>
 		await this.add('Accounts_AllowFeaturePreview', false, {
 			type: 'boolean',
 			public: true,
+		});
+		await this.add('Accounts_Default_User_Preferences_featuresPreview', null, {
+			type: 'group',
+			hidden: true,
+			// public: false,
+			value: defaultFeaturesPreview,
 		});
 		await this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
 			type: 'string',
