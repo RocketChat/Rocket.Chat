@@ -1,5 +1,5 @@
 import type { MultiStaticSelectElement } from '@rocket.chat/ui-kit';
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react';
 
 import { useUiKitState } from './useUiKitState';
 
@@ -13,8 +13,9 @@ const multiStaticSelectElement: MultiStaticSelectElement = {
 };
 
 it('should MultiSelectElement update value correctly', async () => {
-  const { result } = renderHook(() =>
-    useUiKitState(multiStaticSelectElement, 0)
+  const { result } = renderHook(
+    () => useUiKitState(multiStaticSelectElement, 0),
+    { legacyRoot: true }
   );
 
   // First interaction
