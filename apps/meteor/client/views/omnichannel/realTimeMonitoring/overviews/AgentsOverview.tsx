@@ -1,3 +1,5 @@
+import type { OperationParams } from '@rocket.chat/rest-typings';
+import type { MutableRefObject } from 'react';
 import React from 'react';
 
 import { useEndpointData } from '../../../../hooks/useEndpointData';
@@ -8,9 +10,14 @@ const overviewInitalValue = {
 	value: '-',
 };
 
+type AgentsOverviewChartsProps = {
+	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/agents-productivity-totalizers'>;
+	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
+};
+
 const initialData = [overviewInitalValue, overviewInitalValue, overviewInitalValue];
 
-const AgentsOverview = ({ params, reloadRef, ...props }) => {
+const AgentsOverview = ({ params, reloadRef, ...props }: AgentsOverviewChartsProps) => {
 	const {
 		value: data,
 		phase: state,
