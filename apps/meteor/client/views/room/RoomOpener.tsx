@@ -25,7 +25,7 @@ type RoomOpenerProps = {
 	reference: string;
 };
 
-const isDirectMessageRoom = (type: RoomType) => type === 'd';
+const isDirectOrOmnichannelRoom = (type: RoomType) => type === 'd' || type === 'l';
 
 const RoomOpener = ({ type, reference }: RoomOpenerProps): ReactElement => {
 	const { data, error, isSuccess, isError, isLoading } = useOpenRoom({ type, reference });
@@ -35,7 +35,7 @@ const RoomOpener = ({ type, reference }: RoomOpenerProps): ReactElement => {
 		<Box display='flex' w='full' h='full'>
 			<FeaturePreview feature='sidepanelNavigation'>
 				<FeaturePreviewOff>{null}</FeaturePreviewOff>
-				<FeaturePreviewOn>{!isDirectMessageRoom(type) && <RoomSidePanel />}</FeaturePreviewOn>
+				<FeaturePreviewOn>{!isDirectOrOmnichannelRoom(type) && <RoomSidePanel />}</FeaturePreviewOn>
 			</FeaturePreview>
 
 			<Suspense fallback={<RoomSkeleton />}>
