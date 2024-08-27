@@ -3660,7 +3660,7 @@
   "Message_TimeFormat": "Time Format",
   "Message_TimeFormat_Description": "See also: [Moment.js](http://momentjs.com/docs/#/displaying/format/)",
   "Message_too_long": "Message too long",
-  "Message_too_long_description": "Cannot send message \n {{limit}} character limit exceeded",
+  "Message_too_long_description": "Cannot send message, {{limit}} character limit exceeded",
   "Message_UserId": "User Id",
   "Message_view_mode_info": "This changes the amount of space messages take up on screen.",
   "Message_VideoRecorderEnabled": "Video Recorder Enabled",
