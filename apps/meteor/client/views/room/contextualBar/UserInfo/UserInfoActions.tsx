@@ -1,12 +1,13 @@
 /* eslint-disable react/display-name, react/no-multi-comp */
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { ButtonGroup, IconButton } from '@rocket.chat/fuselage';
+import { ButtonGroup, IconButton, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
 import { UserInfoAction } from '../../../../components/UserInfo';
+import { useMemberExists } from '../../../hooks/useMemberExists';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 type UserInfoActionsProps = {
@@ -17,10 +18,24 @@ type UserInfoActionsProps = {
 
 const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): ReactElement => {
 	const t = useTranslation();
+	const {
+		data: isMemberData,
+		refetch,
+		isSuccess: membershipCheckSuccess,
+		isLoading,
+	} = useMemberExists({ roomId: rid, username: user.username as string });
+
+	const isMember = membershipCheckSuccess && isMemberData?.isMember;
+
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions(
 		{ _id: user._id, username: user.username, name: user.name },
 		rid,
-		backToList,
+		() => {
+			backToList?.();
+			refetch();
+		},
+		undefined,
+		isMember,
 	);
 
 	const menu = useMemo(() => {
@@ -51,6 +66,9 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
 
+	if (isLoading) {
+		return <Skeleton w='full' />;
+	}
 	return <ButtonGroup align='center'>{actions}</ButtonGroup>;
 };
 

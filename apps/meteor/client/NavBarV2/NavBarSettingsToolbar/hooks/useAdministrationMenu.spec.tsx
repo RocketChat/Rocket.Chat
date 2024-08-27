@@ -1,10 +1,11 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 
 import { useAdministrationMenu } from './useAdministrationMenu';
 
 it('should return omnichannel item if has `view-livechat-manager` permission ', async () => {
-	const { result, waitFor } = renderHook(() => useAdministrationMenu(), {
+	const { result } = renderHook(() => useAdministrationMenu(), {
+		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/licenses.info', () => ({
 				// @ts-expect-error this is a mock
@@ -19,17 +20,18 @@ it('should return omnichannel item if has `view-livechat-manager` permission ', 
 			.build(),
 	});
 
-	await waitFor(() => !!result.current.length);
-
-	expect(result.current[0].items[0]).toEqual(
-		expect.objectContaining({
-			id: 'omnichannel',
-		}),
+	await waitFor(() =>
+		expect(result.current[0]?.items[0]).toEqual(
+			expect.objectContaining({
+				id: 'omnichannel',
+			}),
+		),
 	);
 });
 
 it('should show administration item if has at least one admin permission', async () => {
-	const { result, waitFor } = renderHook(() => useAdministrationMenu(), {
+	const { result } = renderHook(() => useAdministrationMenu(), {
+		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/licenses.info', () => ({
 				// @ts-expect-error this is a mock
@@ -44,11 +46,11 @@ it('should show administration item if has at least one admin permission', async
 			.build(),
 	});
 
-	await waitFor(() => !!result.current.length);
-
-	expect(result.current[0].items[0]).toEqual(
-		expect.objectContaining({
-			id: 'workspace',
-		}),
+	await waitFor(() =>
+		expect(result.current[0]?.items[0]).toEqual(
+			expect.objectContaining({
+				id: 'workspace',
+			}),
+		),
 	);
 });

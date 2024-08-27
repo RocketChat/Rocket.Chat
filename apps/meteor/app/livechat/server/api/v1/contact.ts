@@ -11,15 +11,11 @@ import { Meteor } from 'meteor/meteor';
 import { API } from '../../../../api/server';
 import { Contacts, createContact, updateContact, getContactById } from '../../lib/Contacts';
 
-/**
- * @deprecated to create a contact, use the omnichannel/contacts endpoint
- */
 API.v1.addRoute(
 	'omnichannel/contact',
 	{
 		authRequired: true,
 		permissionsRequired: ['view-l-room'],
-		deprecation: { version: '8.0.0', alternatives: ['omnichannel/contacts'] },
 	},
 	{
 		async post() {
@@ -100,6 +96,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['create-livechat-contact'], validateParams: isPOSTOmnichannelContactsProps },
 	{
 		async post() {
+			if (!process.env.TEST_MODE) {
+				throw new Meteor.Error('error-not-allowed', 'This endpoint is only allowed in test mode');
+			}
 			const contactId = await createContact({ ...this.bodyParams, unknown: false });
 
 			return API.v1.success({ contactId });
@@ -112,6 +111,10 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['update-livechat-contact'], validateParams: isPOSTUpdateOmnichannelContactsProps },
 	{
 		async post() {
+			if (!process.env.TEST_MODE) {
+				throw new Meteor.Error('error-not-allowed', 'This endpoint is only allowed in test mode');
+			}
+
 			const contact = await updateContact({ ...this.bodyParams });
 
 			return API.v1.success({ contact });
