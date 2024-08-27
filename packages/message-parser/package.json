@@ -42,9 +42,9 @@
     "build": "run-s .:build:clean .:build:bundle",
     ".:build:clean": "rimraf dist",
     ".:build:bundle": "webpack",
-    "testunit": "jest --runInBand --coverage",
-    "watch": "jest --watch",
-    "lint": "eslint src",
+    "lint": "eslint .",
+    "test": "jest",
+    "testunit": "jest",
     "docs": "typedoc"
   },
   "devDependencies": {
@@ -52,6 +52,7 @@
     "@babel/eslint-parser": "~7.21.3",
     "@babel/preset-env": "~7.21.4",
     "@rocket.chat/eslint-config": "workspace:^",
+    "@rocket.chat/jest-presets": "workspace:~",
     "@rocket.chat/peggy-loader": "workspace:~",
     "@rocket.chat/prettier-config": "~0.31.25",
     "@types/jest": "~29.5.12",
@@ -65,7 +66,6 @@
     "prettier": "~2.8.7",
     "prettier-plugin-pegjs": "~0.5.4",
     "rimraf": "^3.0.2",
-    "ts-jest": "~29.1.0",
     "ts-loader": "~9.4.2",
     "typedoc": "~0.24.1",
     "typescript": "~5.3.3",
@@ -74,5 +74,8 @@
   },
   "dependencies": {
     "tldts": "~5.7.112"
+  },
+  "volta": {
+    "extends": "../../package.json"
   }
 }

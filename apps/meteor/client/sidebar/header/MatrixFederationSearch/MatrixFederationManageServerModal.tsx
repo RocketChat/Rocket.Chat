@@ -1,4 +1,5 @@
-import { Divider, Modal, ButtonGroup, Button, Field, TextInput, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage';
+import { Divider, Modal, ButtonGroup, Button, Field, FieldLabel, FieldRow, FieldError, FieldHint, TextInput } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -55,17 +56,21 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 
 	const { data, isLoading: isLoadingServerList } = useMatrixServerList();
 
+	const titleId = useUniqueId();
+	const serverNameId = useUniqueId();
+
 	return (
-		<Modal maxHeight='x600'>
+		<Modal maxHeight='x600' open aria-labelledby={titleId}>
 			<Modal.Header>
-				<Modal.Title>{t('Manage_servers')}</Modal.Title>
+				<Modal.Title id={titleId}>{t('Manage_servers')}</Modal.Title>
 				<Modal.Close onClick={onClickClose} />
 			</Modal.Header>
 			<Modal.Content>
 				<Field>
-					<FieldLabel>{t('Server_name')}</FieldLabel>
+					<FieldLabel htmlFor={serverNameId}>{t('Server_name')}</FieldLabel>
 					<FieldRow>
 						<TextInput
+							id={serverNameId}
 							disabled={isLoading}
 							value={serverName}
 							onChange={(e: FormEvent<HTMLInputElement>) => {
@@ -76,7 +81,7 @@ const MatrixFederationAddServerModal = ({ onClickClose }: MatrixFederationAddSer
 							}}
 							mie={4}
 						/>
-						<Button onClick={() => addServer()} primary loading={isLoading}>
+						<Button primary loading={isLoading} onClick={() => addServer()}>
 							{t('Add')}
 						</Button>
 					</FieldRow>

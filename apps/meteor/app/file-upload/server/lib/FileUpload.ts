@@ -10,7 +10,7 @@ import URL from 'url';
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import type { IUpload } from '@rocket.chat/core-typings';
+import { isE2EEUpload, type IUpload } from '@rocket.chat/core-typings';
 import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
 import filesize from 'filesize';
@@ -170,7 +170,13 @@ export const FileUpload = {
 			throw new Meteor.Error('error-file-too-large', reason);
 		}
 
-		if (!fileUploadIsValidContentType(file?.type)) {
+		if (!settings.get('E2E_Enable_Encrypt_Files') && isE2EEUpload(file)) {
+			const reason = i18n.t('Encrypted_file_not_allowed', { lng: language });
+			throw new Meteor.Error('error-invalid-file-type', reason);
+		}
+
+		// E2EE files are of type - application/octet-stream, application/octet-stream is whitelisted for E2EE files.
+		if (!fileUploadIsValidContentType(file?.type, isE2EEUpload(file) ? 'application/octet-stream' : undefined)) {
 			const reason = i18n.t('File_type_is_not_accepted', { lng: language });
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}

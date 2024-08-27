@@ -2,10 +2,10 @@
 to: packages/<%= name %>/tsconfig.json
 ---
 {
-	"extends": "../../tsconfig.base.client.json",
+	"extends": "../../tsconfig.base.server.json",
 	"compilerOptions": {
 		"rootDir": "./src",
 		"outDir": "./dist"
 	},
-	"include": ["./src/**/*"]
+	"include": ["./src/**/*"],
 }

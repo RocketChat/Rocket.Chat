@@ -1,9 +1,9 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 
 import { useGroupingListItems } from './useGroupingListItems';
 
 it('should render groupingList items', async () => {
-	const { result } = renderHook(() => useGroupingListItems());
+	const { result } = renderHook(() => useGroupingListItems(), { legacyRoot: true });
 
 	expect(result.current[0]).toEqual(
 		expect.objectContaining({
