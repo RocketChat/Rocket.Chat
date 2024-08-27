@@ -13,11 +13,12 @@ export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessag
 	if (msg.length <= maxAllowedSize) {
 		return false;
 	}
+
 	const fileUploadsEnabled = settings.get('FileUpload_Enabled');
 	const convertLongMessagesToAttachment = settings.get('Message_AllowConvertLongMessagesToAttachment');
 
 	if (chat.currentEditing || !fileUploadsEnabled || !convertLongMessagesToAttachment) {
-		dispatchToastMessage({ type: 'error', message: new Error(t('Message_too_long')) });
+		dispatchToastMessage({ type: 'error', message: new Error(t('Message_too_long_description', { limit: maxAllowedSize })) });
 		chat.composer?.setText(msg);
 		return true;
 	}
