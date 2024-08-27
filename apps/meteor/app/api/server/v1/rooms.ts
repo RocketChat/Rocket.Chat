@@ -416,14 +416,9 @@ API.v1.addRoute(
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
-			const team = room.teamId && (await Team.getOneById(room.teamId, { projection: { name: 1, roomId: 1, type: 1 } }));
 			const discussionParent = room.prid && (await Rooms.findOneById(room.prid, { projection: { name: 1, fname: 1, t: 1 } }));
-			const teamParentRoom =
-				team &&
-				room.teamId &&
-				!room.teamMain && // if a room is the main room of a team, it has no parent room
-				(await Rooms.findOneById(team.roomId, { projection: { name: 1, fname: 1, t: 1 } }));
-			const parent = discussionParent || teamParentRoom;
+			const { team, parentRoom } = await Team.getRoomInfo(room);
+			const parent = discussionParent || parentRoom;
 
 			return API.v1.success({
 				room: (await Rooms.findOneByIdOrName(room._id, { projection: fields })) ?? undefined,

@@ -570,8 +570,8 @@ export type RoomsEndpoints = {
 	'/v1/rooms.info': {
 		GET: (params: RoomsInfoProps) => {
 			room: IRoom | undefined;
-			parent?: IRoom;
-			team?: ITeam;
+			parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't'>;
+			team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
 		};
 	};
 
