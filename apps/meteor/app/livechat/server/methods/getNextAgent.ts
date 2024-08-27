@@ -8,6 +8,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { settings } from '../../../settings/server';
 import { Livechat } from '../lib/LivechatTyped';
+import { RoutingManager } from '../lib/RoutingManager';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -38,7 +39,7 @@ Meteor.methods<ServerMethods>({
 			}
 		}
 
-		const agent = await Livechat.getNextAgent(department);
+		const agent = await RoutingManager.getNextAgent(department);
 		if (!agent) {
 			return;
 		}

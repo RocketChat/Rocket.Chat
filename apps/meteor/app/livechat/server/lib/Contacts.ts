@@ -1,12 +1,25 @@
-import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatVisitors, Users, LivechatRooms, LivechatCustomField, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
+import type { ILivechatContactChannel, ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import {
+	LivechatVisitors,
+	Users,
+	LivechatRooms,
+	LivechatCustomField,
+	LivechatInquiry,
+	Rooms,
+	Subscriptions,
+	LivechatContacts,
+} from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
-import { notifyOnRoomChangedById, notifyOnLivechatInquiryChangedByRoom } from '../../../lib/server/lib/notifyListener';
+import {
+	notifyOnRoomChangedById,
+	notifyOnSubscriptionChangedByRoomId,
+	notifyOnLivechatInquiryChangedByRoom,
+} from '../../../lib/server/lib/notifyListener';
 import { i18n } from '../../../utils/lib/i18n';
 
 type RegisterContactProps = {
@@ -20,6 +33,16 @@ type RegisterContactProps = {
 	contactManager?: {
 		username: string;
 	};
+};
+
+type CreateContactParams = {
+	name: string;
+	emails: string[];
+	phones: string[];
+	unknown: boolean;
+	customFields?: Record<string, string | unknown>;
+	contactManager?: string;
+	channels?: ILivechatContactChannel[];
 };
 
 export const Contacts = {
@@ -138,17 +161,88 @@ export const Contacts = {
 			for await (const room of rooms) {
 				const { _id: rid } = room;
 
-				await Promise.all([
+				const responses = await Promise.all([
 					Rooms.setFnameById(rid, name),
 					LivechatInquiry.setNameByRoomId(rid, name),
 					Subscriptions.updateDisplayNameByRoomId(rid, name),
 				]);
 
-				void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
-				void notifyOnRoomChangedById(rid);
+				if (responses[0]?.modifiedCount) {
+					void notifyOnRoomChangedById(rid);
+				}
+
+				if (responses[1]?.modifiedCount) {
+					void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
+				}
+
+				if (responses[2]?.modifiedCount) {
+					void notifyOnSubscriptionChangedByRoomId(rid);
+				}
 			}
 		}
 
 		return contactId;
 	},
 };
+
+export async function createContact(params: CreateContactParams): Promise<string> {
+	const { name, emails, phones, customFields = {}, contactManager, channels, unknown } = params;
+
+	if (contactManager) {
+		const contactManagerUser = await Users.findOneAgentById<Pick<IUser, 'roles'>>(contactManager, { projection: { roles: 1 } });
+		if (!contactManagerUser) {
+			throw new Error('error-contact-manager-not-found');
+		}
+	}
+
+	const allowedCustomFields = await getAllowedCustomFields();
+	validateCustomFields(allowedCustomFields, customFields);
+
+	const { insertedId } = await LivechatContacts.insertOne({
+		name,
+		emails,
+		phones,
+		contactManager,
+		channels,
+		customFields,
+		unknown,
+	});
+
+	return insertedId;
+}
+
+async function getAllowedCustomFields(): Promise<ILivechatCustomField[]> {
+	return LivechatCustomField.findByScope(
+		'visitor',
+		{
+			projection: { _id: 1, label: 1, regexp: 1, required: 1 },
+		},
+		false,
+	).toArray();
+}
+
+export function validateCustomFields(allowedCustomFields: ILivechatCustomField[], customFields: Record<string, string | unknown>) {
+	for (const cf of allowedCustomFields) {
+		if (!customFields.hasOwnProperty(cf._id)) {
+			if (cf.required) {
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+			}
+			continue;
+		}
+		const cfValue: string = trim(customFields[cf._id]);
+
+		if (!cfValue || typeof cfValue !== 'string') {
+			if (cf.required) {
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+			}
+			continue;
+		}
+
+		if (cf.regexp) {
+			const regex = new RegExp(cf.regexp);
+			if (!regex.test(cfValue)) {
+				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
+			}
+		}
+	}
+}

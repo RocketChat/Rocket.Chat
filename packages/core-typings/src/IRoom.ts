@@ -53,15 +53,6 @@ export interface IRoom extends IRocketChatRecord {
 		_id: string;
 	};
 
-	streamingOptions?: {
-		id?: string;
-		type?: string;
-		url?: string;
-		thumbnail?: string;
-		isAudioOnly?: boolean;
-		message?: string;
-	};
-
 	prid?: string;
 	avatarETag?: string;
 
@@ -373,6 +364,7 @@ export type RoomAdminFieldsType =
 	| 'cl'
 	| 'u'
 	| 'usernames'
+	| 'ts'
 	| 'usersCount'
 	| 'muted'
 	| 'unmuted'

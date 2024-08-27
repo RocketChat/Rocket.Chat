@@ -6,11 +6,12 @@ import moment from 'moment';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
+import type { CloseRoomParams } from '../lib/localTypes';
 
-const getSecondsWhenOfficeHoursIsDisabled = (room: IOmnichannelRoom, agentLastMessage: IMessage) =>
+export const getSecondsWhenOfficeHoursIsDisabled = (room: IOmnichannelRoom, agentLastMessage: IMessage) =>
 	moment(new Date(room.closedAt || new Date())).diff(moment(new Date(agentLastMessage.ts)), 'seconds');
 
-const parseDays = (
+export const parseDays = (
 	acc: Record<string, { start: { day: string; time: string }; finish: { day: string; time: string }; open: boolean }>,
 	day: IBusinessHourWorkHour,
 ) => {
@@ -22,7 +23,7 @@ const parseDays = (
 	return acc;
 };
 
-const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, agentLastMessage: IMessage) => {
+export const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, agentLastMessage: IMessage) => {
 	if (!settings.get('Livechat_enable_business_hours')) {
 		return getSecondsWhenOfficeHoursIsDisabled(room, agentLastMessage);
 	}
@@ -49,65 +50,85 @@ const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, agentLas
 	}
 
 	let totalSeconds = 0;
-	const endOfConversation = moment(new Date(room.closedAt || new Date()));
-	const startOfInactivity = moment(new Date(agentLastMessage.ts));
+	const endOfConversation = moment.utc(new Date(room.closedAt || new Date()));
+	const startOfInactivity = moment.utc(new Date(agentLastMessage.ts));
 	const daysOfInactivity = endOfConversation.clone().startOf('day').diff(startOfInactivity.clone().startOf('day'), 'days');
-	const inactivityDay = moment(new Date(agentLastMessage.ts));
+	const inactivityDay = moment.utc(new Date(agentLastMessage.ts));
+
 	for (let index = 0; index <= daysOfInactivity; index++) {
 		const today = inactivityDay.clone().format('dddd');
 		const officeDay = officeDays[today];
-		// Config doesnt have data for this day, we skip day
 		if (!officeDay) {
 			inactivityDay.add(1, 'days');
 			continue;
 		}
-		const startTodaysOfficeHour = moment(`${officeDay.start.day}:${officeDay.start.time}`, 'dddd:HH:mm').add(index, 'days');
-		const endTodaysOfficeHour = moment(`${officeDay.finish.day}:${officeDay.finish.time}`, 'dddd:HH:mm').add(index, 'days');
-		if (officeDays[today].open) {
-			const firstDayOfInactivity = startOfInactivity.clone().format('D') === inactivityDay.clone().format('D');
-			const lastDayOfInactivity = endOfConversation.clone().format('D') === inactivityDay.clone().format('D');
-
-			if (!firstDayOfInactivity && !lastDayOfInactivity) {
-				totalSeconds += endTodaysOfficeHour.clone().diff(startTodaysOfficeHour, 'seconds');
-			} else {
-				const end = endOfConversation.isBefore(endTodaysOfficeHour) ? endOfConversation : endTodaysOfficeHour;
-				const start = firstDayOfInactivity ? inactivityDay : startTodaysOfficeHour;
-				totalSeconds += end.clone().diff(start, 'seconds');
-			}
+		if (!officeDay.open) {
+			inactivityDay.add(1, 'days');
+			continue;
 		}
+		if (!officeDay?.start?.time || !officeDay?.finish?.time) {
+			inactivityDay.add(1, 'days');
+			continue;
+		}
+
+		const [officeStartHour, officeStartMinute] = officeDay.start.time.split(':');
+		const [officeCloseHour, officeCloseMinute] = officeDay.finish.time.split(':');
+		// We should only take in consideration the time where the office is open and the conversation was inactive
+		const todayStartOfficeHours = inactivityDay
+			.clone()
+			.set({ hour: parseInt(officeStartHour, 10), minute: parseInt(officeStartMinute, 10) });
+		const todayEndOfficeHours = inactivityDay.clone().set({ hour: parseInt(officeCloseHour, 10), minute: parseInt(officeCloseMinute, 10) });
+
+		// 1: Room was inactive the whole day, we add the whole time BH is inactive
+		if (startOfInactivity.isBefore(todayStartOfficeHours) && endOfConversation.isAfter(todayEndOfficeHours)) {
+			totalSeconds += todayEndOfficeHours.diff(todayStartOfficeHours, 'seconds');
+		}
+
+		// 2: Room was inactive before start but was closed before end of BH, we add the inactive time
+		if (startOfInactivity.isBefore(todayStartOfficeHours) && endOfConversation.isBefore(todayEndOfficeHours)) {
+			totalSeconds += endOfConversation.diff(todayStartOfficeHours, 'seconds');
+		}
+
+		// 3: Room was inactive after start and ended after end of BH, we add the inactive time
+		if (startOfInactivity.isAfter(todayStartOfficeHours) && endOfConversation.isAfter(todayEndOfficeHours)) {
+			totalSeconds += todayEndOfficeHours.diff(startOfInactivity, 'seconds');
+		}
+
+		// 4: Room was inactive after start and before end of BH, we add the inactive time
+		if (startOfInactivity.isAfter(todayStartOfficeHours) && endOfConversation.isBefore(todayEndOfficeHours)) {
+			totalSeconds += endOfConversation.diff(startOfInactivity, 'seconds');
+		}
+
 		inactivityDay.add(1, 'days');
 	}
 	return totalSeconds;
 };
 
-callbacks.add(
-	'livechat.closeRoom',
-	async (params) => {
-		const { room } = params;
+export const onCloseRoom = async (params: { room: IOmnichannelRoom; options: CloseRoomParams['options'] }) => {
+	const { room } = params;
 
-		if (!isOmnichannelRoom(room)) {
-			return params;
-		}
-
-		const closedByAgent = room.closer !== 'visitor';
-		const wasTheLastMessageSentByAgent = room.lastMessage && !room.lastMessage.token;
-		if (!closedByAgent || !wasTheLastMessageSentByAgent) {
-			return params;
-		}
-
-		if (!room.v?.lastMessageTs) {
-			return params;
-		}
-
-		const agentLastMessage = await Messages.findAgentLastMessageByVisitorLastMessageTs(room._id, room.v.lastMessageTs);
-		if (!agentLastMessage) {
-			return params;
-		}
-		const secondsSinceLastAgentResponse = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
-		await LivechatRooms.setVisitorInactivityInSecondsById(room._id, secondsSinceLastAgentResponse);
-
+	if (!isOmnichannelRoom(room)) {
 		return params;
-	},
-	callbacks.priority.HIGH,
-	'process-room-abandonment',
-);
+	}
+
+	const closedByAgent = room.closer !== 'visitor';
+	const wasTheLastMessageSentByAgent = room.lastMessage && !room.lastMessage.token;
+	if (!closedByAgent || !wasTheLastMessageSentByAgent) {
+		return params;
+	}
+
+	if (!room.v?.lastMessageTs) {
+		return params;
+	}
+
+	const agentLastMessage = await Messages.findAgentLastMessageByVisitorLastMessageTs(room._id, room.v.lastMessageTs);
+	if (!agentLastMessage) {
+		return params;
+	}
+	const secondsSinceLastAgentResponse = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
+	await LivechatRooms.setVisitorInactivityInSecondsById(room._id, secondsSinceLastAgentResponse);
+
+	return params;
+};
+
+callbacks.add('livechat.closeRoom', onCloseRoom, callbacks.priority.HIGH, 'process-room-abandonment');

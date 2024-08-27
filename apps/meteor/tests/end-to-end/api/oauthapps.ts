@@ -51,8 +51,11 @@ describe('[OAuthApps]', () => {
 	});
 
 	describe('[/oauth-apps.get]', () => {
-		it('should return a single oauthApp by id', (done) => {
-			void request
+		before(() => updatePermission('manage-oauth-apps', ['admin']));
+		after(() => updatePermission('manage-oauth-apps', ['admin']));
+
+		it('should return a single oauthApp by id', () => {
+			return request
 				.get(api('oauth-apps.get'))
 				.query({ appId: 'zapier' })
 				.set(credentials)
@@ -61,11 +64,11 @@ describe('[OAuthApps]', () => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('oauthApp');
 					expect(res.body.oauthApp._id).to.be.equal('zapier');
-				})
-				.end(done);
+					expect(res.body.oauthApp).to.have.property('clientSecret');
+				});
 		});
-		it('should return a single oauthApp by client id', (done) => {
-			void request
+		it('should return a single oauthApp by client id', () => {
+			return request
 				.get(api('oauth-apps.get'))
 				.query({ clientId: 'zapier' })
 				.set(credentials)
@@ -74,36 +77,49 @@ describe('[OAuthApps]', () => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('oauthApp');
 					expect(res.body.oauthApp._id).to.be.equal('zapier');
-				})
-				.end(done);
+					expect(res.body.oauthApp).to.have.property('clientSecret');
+				});
 		});
-		it('should return a 403 Forbidden error when the user does not have the necessary permission by client id', (done) => {
-			void updatePermission('manage-oauth-apps', []).then(() => {
-				void request
-					.get(api('oauth-apps.get'))
-					.query({ clientId: 'zapier' })
-					.set(credentials)
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
-					.end(done);
-			});
+		it('should return only non sensitive information if user does not have the permission to manage oauth apps when searching by clientId', async () => {
+			await updatePermission('manage-oauth-apps', []);
+			await request
+				.get(api('oauth-apps.get'))
+				.query({ clientId: 'zapier' })
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('oauthApp');
+					expect(res.body.oauthApp._id).to.be.equal('zapier');
+					expect(res.body.oauthApp.clientId).to.be.equal('zapier');
+					expect(res.body.oauthApp).to.not.have.property('clientSecret');
+				});
 		});
-		it('should return a 403 Forbidden error when the user does not have the necessary permission by app id', (done) => {
-			void updatePermission('manage-oauth-apps', []).then(() => {
-				void request
-					.get(api('oauth-apps.get'))
-					.query({ appId: 'zapier' })
-					.set(credentials)
-					.expect(403)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
-					.end(done);
-			});
+		it('should return only non sensitive information if user does not have the permission to manage oauth apps when searching by appId', async () => {
+			await updatePermission('manage-oauth-apps', []);
+			await request
+				.get(api('oauth-apps.get'))
+				.query({ appId: 'zapier' })
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('oauthApp');
+					expect(res.body.oauthApp._id).to.be.equal('zapier');
+					expect(res.body.oauthApp.clientId).to.be.equal('zapier');
+					expect(res.body.oauthApp).to.not.have.property('clientSecret');
+				});
+		});
+		it('should fail returning an oauth app when an invalid id is provided (avoid NoSQL injections)', () => {
+			return request
+				.get(api('oauth-apps.get'))
+				.query({ _id: '{ "$ne": "" }' })
+				.set(credentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'OAuth app not found.');
+				});
 		});
 	});
 
