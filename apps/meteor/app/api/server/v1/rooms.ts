@@ -416,7 +416,11 @@ API.v1.addRoute(
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
-			const discussionParent = room.prid && (await Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | 'prid' | 'u'>>(room.prid, { projection: { name: 1, fname: 1, t: 1, prid: 1, u: 1 } }));
+			const discussionParent =
+				room.prid &&
+				(await Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | 'prid' | 'u'>>(room.prid, {
+					projection: { name: 1, fname: 1, t: 1, prid: 1, u: 1 },
+				}));
 			const { team, parentRoom } = await Team.getRoomInfo(room);
 			const parent = discussionParent || parentRoom;
 
