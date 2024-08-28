@@ -462,6 +462,23 @@ describe('LIVECHAT - contacts', () => {
 				expect(res.body).to.have.property('error');
 				expect(res.body.error).to.be.equal('Invalid value for Custom Field 1 field');
 			});
+
+			it('should return an error if additional custom fields are provided', async () => {
+				const res = await request
+					.post(api('omnichannel/contacts.update'))
+					.set(credentials)
+					.send({
+						contactId,
+						customFields: {
+							cf1: '123',
+							cf2: 'invalid',
+						},
+					});
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error');
+				expect(res.body.error).to.be.equal('Custom field cf2 is not allowed');
+			});
 		});
 
 		describe('Fields Validation', () => {

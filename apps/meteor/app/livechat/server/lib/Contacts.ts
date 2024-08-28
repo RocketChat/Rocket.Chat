@@ -282,6 +282,13 @@ export function validateCustomFields(allowedCustomFields: ILivechatCustomField[]
 			}
 		}
 	}
+
+	const allowedCustomFieldIds = new Set(allowedCustomFields.map((cf) => cf._id));
+	for (const key in customFields) {
+		if (!allowedCustomFieldIds.has(key)) {
+			throw new Error(i18n.t('error-custom-field-not-allowed', { key }));
+		}
+	}
 }
 
 export async function validateContactManager(contactManagerUserId: string) {

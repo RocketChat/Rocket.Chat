@@ -38,6 +38,13 @@ describe('[OC] Contacts', () => {
 
 			expect(() => validateCustomFields(allowedCustomFields, customFields)).not.to.throw();
 		});
+
+		it('should throw an error if a extra custom field is passed', () => {
+			const allowedCustomFields = [{ _id: 'field1', label: 'Field 1', required: false }];
+			const customFields = { field2: 'value' };
+
+			expect(() => validateCustomFields(allowedCustomFields, customFields)).to.throw();
+		});
 	});
 
 	describe('validateContactManager', () => {
