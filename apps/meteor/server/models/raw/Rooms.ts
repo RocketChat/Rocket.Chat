@@ -1467,11 +1467,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		filter?: string,
 		options: FindOptions<IRoom> = {},
 	): FindPaginated<FindCursor<IRoom>> {
+		const regxp = filter && new RegExp(escapeRegExp(filter), 'i');
 		const query: Filter<IRoom> = {
 			_id: {
 				$in: ids,
 			},
-			...(filter && { $or: [{ name: new RegExp(escapeRegExp(filter), 'i') }, { fname: new RegExp(escapeRegExp(filter), 'i') }] }),
+			...(regxp && { $or: [{ name: regxp }, { fname: regxp }] }),
 		};
 
 		return this.findPaginated(query, options);

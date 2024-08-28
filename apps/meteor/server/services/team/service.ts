@@ -1094,12 +1094,11 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('error-invalid-team-no-main-room');
 		}
 
-		const discussionIds = await Rooms.findDiscussionsByPrid(mainRoom._id, { projection: { _id: 1 } })
-			.map(({ _id }) => _id)
-			.toArray();
-		const teamRooms = await Rooms.findByTeamId(team._id, {
-			projection: { _id: 1, t: 1 },
-		}).toArray();
+		const [discussionIds, teamRooms] = await Promise.all([
+			Rooms.findDiscussionsByPrid(mainRoom._id, { projection: { _id: 1 } }).map(({ _id }) => _id).toArray(),
+			Rooms.findByTeamId(team._id, { projection: { _id: 1, t: 1 } }).toArray(),
+		]);
+
 		const teamPublicIds = teamRooms.filter(({ t }) => t === 'c').map(({ _id }) => _id);
 		const teamRoomIds = teamRooms.map(({ _id }) => _id);
 		const roomIds = await Subscriptions.findByUserIdAndRoomIds(userId, teamRoomIds, { projection: { rid: 1 } })
