@@ -6,6 +6,8 @@ import { VoipFreeSwitchService } from '../../../../ee/server/local-services/voip
 
 const VoipFreeSwitch = new VoipFreeSwitchService((id) => settings.get(id));
 
+// Those tests still need a proper freeswitch environment configured in order to run
+// So for now they are being deliberately skipped on CI
 describe.skip('VoIP', () => {
 	describe('FreeSwitch', () => {
 		it('should get a list of users from FreeSwitch', async () => {
