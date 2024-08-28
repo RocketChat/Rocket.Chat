@@ -159,7 +159,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const usersUnwind = {
 			$unwind: {
 				path: '$user',
-				preserveNullAndEmptyArrays: true,
 			},
 		};
 		const usersGroup = {
