@@ -347,7 +347,7 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.contact.phones).to.be.deep.equal(phones);
 		});
 
-		it('should set the unknown field to true when updating a contact', async () => {
+		it('should set the unknown field to false when updating a contact', async () => {
 			const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
 				contactId,
 				name: faker.person.fullName(),
@@ -356,7 +356,7 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
 			expect(res.body.contact._id).to.be.equal(contactId);
-			expect(res.body.contact.unknown).to.be.equal(true);
+			expect(res.body.contact.unknown).to.be.equal(false);
 		});
 
 		it('should be able to update the contact manager', async () => {
