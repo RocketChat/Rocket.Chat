@@ -285,7 +285,7 @@ export function validateCustomFields(allowedCustomFields: ILivechatCustomField[]
 }
 
 export async function validateContactManager(contactManagerUserId: string) {
-	const contactManagerUser = await Users.findOneAgentById<Pick<IUser, 'roles'>>(contactManagerUserId, { projection: { roles: 1 } });
+	const contactManagerUser = await Users.findOneAgentById<Pick<IUser, '_id'>>(contactManagerUserId, { projection: { _id: 1 } });
 	if (!contactManagerUser) {
 		throw new Error('error-contact-manager-not-found');
 	}
