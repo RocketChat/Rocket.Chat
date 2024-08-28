@@ -93,7 +93,7 @@ const RealTimeMonitoringPage = () => {
 								placeholder={t('All')}
 								label={t('All')}
 								onlyMyDepartments
-								withTitle={false}
+								withTitle
 								renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
 							/>
 						</Box>
