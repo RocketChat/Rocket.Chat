@@ -262,6 +262,7 @@ export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
 export * from './v1/e2e';
 export * from './v1/import';
 export * from './v1/voip';
+export * from './v1/voip-freeswitch';
 export * from './v1/email-inbox';
 export * from './v1/calendar';
 export * from './v1/federation';
