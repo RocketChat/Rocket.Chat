@@ -115,7 +115,6 @@ test.describe.serial('teams-management', () => {
 	});
 
 	test('should remove user1 from targetTeamNonPrivate', async () => {
-		test.fail();
 		await poHomeTeam.sidenav.openChat(targetTeamNonPrivate);
 		await poHomeTeam.tabs.kebab.click({ force: true });
 		await poHomeTeam.tabs.btnTeamMembers.click();
@@ -129,7 +128,6 @@ test.describe.serial('teams-management', () => {
 	});
 
 	test('should delete targetTeamNonPrivate', async () => {
-		test.fail();
 		await poHomeTeam.sidenav.openChat(targetTeamNonPrivate);
 		await poHomeTeam.tabs.btnRoomInfo.click();
 		await poHomeTeam.tabs.room.btnDelete.click();
@@ -141,7 +139,6 @@ test.describe.serial('teams-management', () => {
 	});
 
 	test('should user1 leave from targetTeam', async ({ browser }) => {
-		test.fail();
 		const user1Page = await browser.newPage({ storageState: Users.user1.state });
 		const user1Channel = new HomeTeam(user1Page);
 		await user1Page.goto(`/group/${targetTeam}`);
@@ -162,7 +159,6 @@ test.describe.serial('teams-management', () => {
 	});
 
 	test('should convert team into a channel', async ({ page }) => {
-		test.fail();
 		await poHomeTeam.sidenav.openChat(targetTeam);
 		await poHomeTeam.tabs.btnRoomInfo.click();
 		await poHomeTeam.tabs.room.btnMore.click();
