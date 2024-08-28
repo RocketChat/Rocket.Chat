@@ -111,7 +111,7 @@ const GenericModal = ({
 					{tagline && <Modal.Tagline>{tagline}</Modal.Tagline>}
 					<Modal.Title id={`${genericModalId}-title`}>{title ?? t('Are_you_sure')}</Modal.Title>
 				</Modal.HeaderText>
-				<Modal.Close aria-label={t('Close')} onClick={handleCloseButtonClick} />
+				{onClose && <Modal.Close aria-label={t('Close')} onClick={handleCloseButtonClick} />}
 			</Modal.Header>
 			<Modal.Content fontScale='p2'>{children}</Modal.Content>
 			<Modal.Footer justifyContent={dontAskAgain ? 'space-between' : 'end'}>
