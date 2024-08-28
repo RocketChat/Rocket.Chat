@@ -223,11 +223,25 @@ export const createAccountSettings = () =>
 			type: 'boolean',
 			public: true,
 		});
-		await this.add('Accounts_Default_User_Preferences_featuresPreview', null, {
-			type: 'group',
+
+		/**
+		 * TODO: Implement new setting type 'object' to store object settings in a more robust and maintanable way.
+		 * For example:
+		 * await this.add('Accounts_Default_User_Preferences_featuresPreview', {}, {
+					type: 'object',
+					as: FeaturePreview[]
+					value: defaultFeaturesPreview,
+				});
+		 */
+		const defaultFeaturesPreviewToStringfy: { [key: string]: boolean } = {};
+		defaultFeaturesPreview.forEach((feature) => {
+			defaultFeaturesPreviewToStringfy[feature.name] = feature.value;
+		});
+		await this.add('Accounts_Default_User_Preferences_featuresPreview', JSON.stringify(defaultFeaturesPreviewToStringfy), {
+			type: 'string',
 			hidden: true,
-			// public: false,
-			value: defaultFeaturesPreview,
+			public: false,
+			value: JSON.stringify(defaultFeaturesPreviewToStringfy),
 		});
 		await this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
 			type: 'string',
