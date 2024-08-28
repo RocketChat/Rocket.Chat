@@ -1462,7 +1462,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find({ uids: { $size: 2, $in: [uids] }, t: 'd' });
 	}
 
-	findPaginatedByNameOrFnameInIds(ids: IRoom['_id'][], filter?: string, options: FindOptions<IRoom> = {}): FindPaginated<FindCursor<IRoom>> {
+	findPaginatedByNameOrFnameInIds(
+		ids: IRoom['_id'][],
+		filter?: string,
+		options: FindOptions<IRoom> = {},
+	): FindPaginated<FindCursor<IRoom>> {
 		const query: Filter<IRoom> = {
 			_id: {
 				$in: ids,
