@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
-import { Badge, Sidebar, SidebarItemAction, SidebarItemActions, Margins } from '@rocket.chat/fuselage';
+import { SideBarAction, SideBarActions, SideBarItemBadge, SideBarItemIcon } from '@rocket.chat/fuselage';
 import type { useTranslation } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
@@ -132,19 +132,19 @@ const SideBarItemTemplateWithData = ({
 
 	const highlighted = Boolean(!hideUnreadStatus && (alert || unread));
 	const icon = (
-		// TODO: Remove icon='at'
-		<Sidebar.Item.Icon highlighted={highlighted} icon='at'>
-			<RoomIcon room={room} placement='sidebar' isIncomingCall={Boolean(videoConfActions)} />
-		</Sidebar.Item.Icon>
+		<SideBarItemIcon
+			highlighted={highlighted}
+			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={Boolean(videoConfActions)} />}
+		/>
 	);
 
 	const actions = useMemo(
 		() =>
 			videoConfActions && (
-				<SidebarItemActions>
-					<SidebarItemAction onClick={videoConfActions.acceptCall} secondary success icon='phone' />
-					<SidebarItemAction onClick={videoConfActions.rejectCall} secondary danger icon='phone-off' />
-				</SidebarItemActions>
+				<SideBarActions>
+					<SideBarAction onClick={videoConfActions.acceptCall} mini secondary success icon='phone' />
+					<SideBarAction onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' />
+				</SideBarActions>
 			),
 		[videoConfActions],
 	);
@@ -165,14 +165,14 @@ const SideBarItemTemplateWithData = ({
 	const badgeTitle = getBadgeTitle(userMentions, tunread.length, groupMentions, unread, t);
 
 	const badges = (
-		<Margins inlineStart={8}>
+		<>
 			{showBadge && isUnread && (
-				<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant} title={badgeTitle}>
+				<SideBarItemBadge variant={variant} title={badgeTitle}>
 					{unread + tunread?.length}
-				</Badge>
+				</SideBarItemBadge>
 			)}
 			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
-		</Margins>
+		</>
 	);
 
 	return (

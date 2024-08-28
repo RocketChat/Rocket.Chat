@@ -14,7 +14,7 @@ const Condensed = ({ id, name, icon, openedRoom, onClick }: CondensedProps) => (
 				<Avatar size='x20' url='/avatar/julia.foresti' />
 				{/* <Avatar size='x20' url={} alt='avatar' /> */}
 			</SideBarItemAvatarWrapper>
-			<SideBarItemIcon name={icon} />
+			<SideBarItemIcon icon={icon} />
 			<SideBarItemTitle>{name}</SideBarItemTitle>
 			{/* <SideBarItemBadge title='unread messages' children={index + 3} /> */}
 			{/* <SideBarItemMenu children={<MenuTemplate />} /> */}

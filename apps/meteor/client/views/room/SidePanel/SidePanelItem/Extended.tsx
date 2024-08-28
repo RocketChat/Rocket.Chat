@@ -30,7 +30,7 @@ const Extended = ({ id, name, icon, openedRoom, onClick, ...props }: ExtendedPro
 
 				<SideBarItemCol>
 					<SideBarItemRow>
-						<SideBarItemIcon name={icon} />
+						<SideBarItemIcon icon={icon} />
 						<SideBarItemTitle>{name}</SideBarItemTitle>
 						<SideBarItemTimestamp>12:00</SideBarItemTimestamp>
 					</SideBarItemRow>

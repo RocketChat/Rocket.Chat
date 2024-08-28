@@ -1,11 +1,10 @@
-import { IconButton, Sidebar } from '@rocket.chat/fuselage';
-import { useEffectEvent, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
+import { SideBarItem, SideBarItemAvatarWrapper, SideBarItemMenu, SideBarItemTitle, SideBarListItem } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactElement } from 'react';
-import React, { memo, useState } from 'react';
+import React, { memo } from 'react';
 
 type CondensedProps = {
-	title: ReactElement | string;
+	title: string;
 	titleIcon?: ReactElement;
 	avatar: ReactElement | boolean;
 	icon?: IconName;
@@ -19,41 +18,19 @@ type CondensedProps = {
 	clickable?: boolean;
 };
 
-const Condensed = ({ icon, title = '', avatar, actions, href, unread, menu, badges, ...props }: CondensedProps) => {
-	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
-
-	const isReduceMotionEnabled = usePrefersReducedMotion();
-
-	const handleMenu = useEffectEvent((e) => {
-		setMenuVisibility(e.target.offsetWidth > 0 && Boolean(menu));
-	});
-	const handleMenuEvent = {
-		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: handleMenu,
-	};
-
+const Condensed = ({ icon, title, avatar, actions, href, unread, menu, badges, ...props }: CondensedProps) => {
+	console.log(props);
 	return (
-		<Sidebar.Item {...props} {...({ href } as any)} clickable={!!href}>
-			{avatar && <Sidebar.Item.Avatar>{avatar}</Sidebar.Item.Avatar>}
-			<Sidebar.Item.Content>
-				<Sidebar.Item.Wrapper>
-					{icon}
-					<Sidebar.Item.Title data-qa='sidebar-item-title' className={(unread && 'rcx-sidebar-item--highlighted') as string}>
-						{title}
-					</Sidebar.Item.Title>
-				</Sidebar.Item.Wrapper>
-				{badges && <Sidebar.Item.Badge>{badges}</Sidebar.Item.Badge>}
-				{menu && (
-					<Sidebar.Item.Menu {...handleMenuEvent}>
-						{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' />}
-					</Sidebar.Item.Menu>
-				)}
-			</Sidebar.Item.Content>
-			{actions && (
-				<Sidebar.Item.Container>
-					<Sidebar.Item.Actions>{actions}</Sidebar.Item.Actions>
-				</Sidebar.Item.Container>
-			)}
-		</Sidebar.Item>
+		<SideBarListItem>
+			<SideBarItem href={href} {...props}>
+				{avatar && <SideBarItemAvatarWrapper>{avatar}</SideBarItemAvatarWrapper>}
+				{icon && icon}
+				<SideBarItemTitle unread={unread}>{title}</SideBarItemTitle>
+				{badges && badges}
+				{actions && actions}
+				{menu && <SideBarItemMenu>{menu()}</SideBarItemMenu>}
+			</SideBarItem>
+		</SideBarListItem>
 	);
 };
 

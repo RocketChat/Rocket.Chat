@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
@@ -15,12 +14,6 @@ const Sidebar = () => {
 	const [bannerDismissed, setBannerDismissed] = useSessionStorage('presence_cap_notifier', false);
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
 
-	const sidebarLink = css`
-		a {
-			text-decoration: none;
-		}
-	`;
-
 	return (
 		<Box
 			display='flex'
@@ -31,7 +24,6 @@ const Sidebar = () => {
 				'rcx-sidebar--main',
 				`rcx-sidebar rcx-sidebar--${sidebarViewMode}`,
 				sidebarHideAvatar && 'rcx-sidebar--hide-avatar',
-				sidebarLink,
 			].filter(Boolean)}
 			aria-label='sidebar'
 		>

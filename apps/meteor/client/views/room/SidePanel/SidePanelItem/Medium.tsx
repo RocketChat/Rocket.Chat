@@ -13,7 +13,7 @@ const Medium = ({ id, name, icon, onClick, openedRoom }: MediumProps) => (
 			<SideBarItemAvatarWrapper>
 				<Avatar size='x28' url='/avatar/julia.foresti' />
 			</SideBarItemAvatarWrapper>
-			<SideBarItemIcon name={icon} />
+			<SideBarItemIcon icon={icon} />
 			<SideBarItemTitle>{name}</SideBarItemTitle>
 			{/* <SideBarItemBadge title='unread messages' children={Math.floor(Math.random() * 10) + 1} />
         <SideBarItemMenu children={<MenuTemplate />} /> */}
