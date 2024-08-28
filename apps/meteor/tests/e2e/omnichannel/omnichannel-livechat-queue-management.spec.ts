@@ -48,6 +48,8 @@ test.describe('OC - Livechat - Queue Management', () => {
 			api.post('/settings/Livechat_waiting_queue_message', { value: '' }),
 			api.delete('/livechat/users/agent/user1'),
 		]);
+		await poHomeOmnichannel.page.close();
+		await poLiveChat.page.close();
 	});
 
 	test.afterEach(async () => {
@@ -56,7 +58,11 @@ test.describe('OC - Livechat - Queue Management', () => {
 
 	test('OC - Queue Management - Waiting Queue Message enabled', async () => {
 		await test.step('should start livechat session', async () => {
-			await poLiveChat.openAnyLiveChatAndSendMessage(firstVisitor, 'Test message', false);
+			await poLiveChat.openAnyLiveChatAndSendMessage({
+				liveChatUser: firstVisitor,
+				message: 'Test message',
+				isOffline: false,
+			});
 		});
 		await test.step('expect to receive Waiting Queue message on chat', async () => {
 			await expect(poLiveChat.page.locator(`div >> text=${waitingQueueMessage}`)).toBeVisible();
@@ -77,13 +83,25 @@ test.describe('OC - Livechat - Queue Management', () => {
 			await poLiveChat2.closeChat();
 		});
 
+		test.afterAll(async () => {
+			await poLiveChat2.page.close();
+		});
+
 		test('Update user position on Queue', async () => {
 			await test.step('should start secondary livechat session', async () => {
-				await poLiveChat2.openAnyLiveChatAndSendMessage(secondVisitor, 'Test message', false);
+				await poLiveChat2.openAnyLiveChatAndSendMessage({
+					liveChatUser: secondVisitor,
+					message: 'Test message',
+					isOffline: false,
+				});
 			});
 
 			await test.step('should start primary livechat session', async () => {
-				await poLiveChat.openAnyLiveChatAndSendMessage(firstVisitor, 'Test message', false);
+				await poLiveChat.openAnyLiveChatAndSendMessage({
+					liveChatUser: firstVisitor,
+					message: 'Test message',
+					isOffline: false,
+				});
 			});
 
 			await test.step('should verify the queue position of the primary user', async () => {
