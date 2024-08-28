@@ -1,11 +1,11 @@
 /* eslint-disable react/no-multi-comp */
-import type { IRoom } from '@rocket.chat/core-typings';
-import { SideBar } from '@rocket.chat/fuselage';
+import type { ISubscription, IRoom } from '@rocket.chat/core-typings';
+import { SideBar, SideBarGroupTitle } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
-import { Virtuoso } from 'react-virtuoso';
+import { GroupedVirtuoso } from 'react-virtuoso';
 
 import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../lib/RoomManager';
@@ -18,7 +18,25 @@ import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 
-const computeItemKey = (index: number, room: IRoom): IRoom['_id'] | number => room._id || index;
+const getRoomsByGroup = (rooms: (ISubscription & IRoom)[]) => {
+	const groupCounts = rooms
+		.reduce((acc, item, index) => {
+			if (typeof item === 'string') {
+				acc.push(index);
+			}
+			return acc;
+		}, [] as number[])
+		.map((item, index, arr) => (arr[index + 1] ? arr[index + 1] : rooms.length) - item - 1);
+
+	const groupList = rooms.filter((item) => typeof item === 'string') as unknown as TranslationKey[];
+	const roomList = rooms.filter((item) => typeof item !== 'string');
+
+	return {
+		groupCounts,
+		groupList,
+		roomList,
+	};
+};
 
 const RoomList = () => {
 	const t = useTranslation();
@@ -47,14 +65,15 @@ const RoomList = () => {
 	usePreventDefault(ref);
 	useShortcutOpenMenu(ref);
 
+	const { groupCounts, groupList, roomList } = getRoomsByGroup(roomsList);
+
 	return (
 		<SideBar ref={ref}>
-			<Virtuoso
-				totalCount={roomsList.length}
-				data={roomsList}
+			<GroupedVirtuoso
+				groupCounts={groupCounts}
+				groupContent={(index) => <SideBarGroupTitle title={t(groupList[index])} />}
+				itemContent={(index) => <RoomListRow data={itemData} item={roomList[index]} />}
 				components={{ Item: RoomListRowWrapper, List: RoomListWrapper, Scroller: VirtuosoScrollbars }}
-				computeItemKey={computeItemKey}
-				itemContent={(_, data): ReactElement => <RoomListRow data={itemData} item={data} />}
 			/>
 		</SideBar>
 	);
