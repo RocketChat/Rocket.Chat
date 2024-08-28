@@ -1,5 +1,4 @@
 import {
-	SideBarListItem,
 	SideBarItem,
 	SideBarItemAvatarWrapper,
 	SideBarItemCol,
@@ -8,9 +7,11 @@ import {
 	SideBarItemTimestamp,
 	SideBarItemContent,
 	SideBarItemMenu,
+	IconButton,
 } from '@rocket.chat/fuselage';
+import { useEffectEvent, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import React, { memo } from 'react';
+import React, { memo, useState } from 'react';
 
 import { useShortTimeAgo } from '../../hooks/useTimeAgo';
 
@@ -48,29 +49,40 @@ const Extended = ({
 	...props
 }: ExtendedProps) => {
 	const formatDate = useShortTimeAgo();
+	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
-	console.log(icon);
+	const isReduceMotionEnabled = usePrefersReducedMotion();
+
+	const handleMenu = useEffectEvent((e) => {
+		setMenuVisibility(e.target.offsetWidth > 0 && Boolean(menu));
+	});
+	const handleMenuEvent = {
+		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: handleMenu,
+	};
+
 	return (
-		<SideBarListItem>
-			<SideBarItem href={href} {...props}>
-				{avatar && <SideBarItemAvatarWrapper>{avatar}</SideBarItemAvatarWrapper>}
+		<SideBarItem href={href} {...props}>
+			{avatar && <SideBarItemAvatarWrapper>{avatar}</SideBarItemAvatarWrapper>}
 
-				<SideBarItemCol>
-					<SideBarItemRow>
-						{icon && icon}
-						<SideBarItemTitle unread={unread}>{title}</SideBarItemTitle>
-						<SideBarItemTimestamp>{formatDate(time)}</SideBarItemTimestamp>
-					</SideBarItemRow>
+			<SideBarItemCol>
+				<SideBarItemRow>
+					{icon && icon}
+					<SideBarItemTitle unread={unread}>{title}</SideBarItemTitle>
+					<SideBarItemTimestamp>{formatDate(time)}</SideBarItemTimestamp>
+				</SideBarItemRow>
 
-					<SideBarItemRow>
-						<SideBarItemContent>{subtitle}</SideBarItemContent>
-						{badges && badges}
-						{actions && actions}
-						{menu && <SideBarItemMenu>{menu()}</SideBarItemMenu>}
-					</SideBarItemRow>
-				</SideBarItemCol>
-			</SideBarItem>
-		</SideBarListItem>
+				<SideBarItemRow>
+					<SideBarItemContent>{subtitle}</SideBarItemContent>
+					{badges && badges}
+					{actions && actions}
+					{menu && (
+						<SideBarItemMenu {...handleMenuEvent}>
+							{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' />}
+						</SideBarItemMenu>
+					)}
+				</SideBarItemRow>
+			</SideBarItemCol>
+		</SideBarItem>
 	);
 };
 

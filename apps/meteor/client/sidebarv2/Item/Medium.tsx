@@ -1,11 +1,13 @@
-import { SideBarListItem, SideBarItem, SideBarItemAvatarWrapper, SideBarItemTitle, SideBarItemMenu } from '@rocket.chat/fuselage';
-import React, { memo } from 'react';
+import { IconButton, SideBarItem, SideBarItemAvatarWrapper, SideBarItemMenu, SideBarItemTitle } from '@rocket.chat/fuselage';
+import { useEffectEvent, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
+import type { Keys as IconName } from '@rocket.chat/icons';
+import React, { memo, useState } from 'react';
 
 type MediumProps = {
 	title: string;
 	titleIcon?: React.ReactNode;
 	avatar: React.ReactNode | boolean;
-	icon?: string;
+	icon?: IconName;
 	actions?: React.ReactNode;
 	href?: string;
 	unread?: boolean;
@@ -16,17 +18,30 @@ type MediumProps = {
 };
 
 const Medium = ({ icon, title, avatar, actions, href, badges, unread, menu, ...props }: MediumProps) => {
+	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
+
+	const isReduceMotionEnabled = usePrefersReducedMotion();
+
+	const handleMenu = useEffectEvent((e) => {
+		setMenuVisibility(e.target.offsetWidth > 0 && Boolean(menu));
+	});
+	const handleMenuEvent = {
+		[isReduceMotionEnabled ? 'onMouseEnter' : 'onTransitionEnd']: handleMenu,
+	};
+
 	return (
-		<SideBarListItem>
-			<SideBarItem href={href} {...props}>
-				<SideBarItemAvatarWrapper>{avatar}</SideBarItemAvatarWrapper>
-				{icon && icon}
-				<SideBarItemTitle unread={unread}>{title}</SideBarItemTitle>
-				{badges && badges}
-				{actions && actions}
-				{menu && <SideBarItemMenu>{menu()}</SideBarItemMenu>}
-			</SideBarItem>
-		</SideBarListItem>
+		<SideBarItem href={href} {...props}>
+			<SideBarItemAvatarWrapper>{avatar}</SideBarItemAvatarWrapper>
+			{icon && icon}
+			<SideBarItemTitle unread={unread}>{title}</SideBarItemTitle>
+			{badges && badges}
+			{actions && actions}
+			{menu && (
+				<SideBarItemMenu {...handleMenuEvent}>
+					{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' />}
+				</SideBarItemMenu>
+			)}
+		</SideBarItem>
 	);
 };
 

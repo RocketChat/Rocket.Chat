@@ -47,6 +47,7 @@ const RoomList = (): ReactElement => {
 	usePreventDefault(ref);
 	useShortcutOpenMenu(ref);
 
+	// This css is being removed on sidebarv2m since it doesn't appear to be used anywhere
 	const roomsListStyle = css`
 		position: relative;
 
