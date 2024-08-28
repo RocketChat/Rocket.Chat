@@ -11,12 +11,26 @@ import { createVisitor, createLivechatRoom, closeOmnichannelRoom, deleteVisitor 
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { deleteUser } from '../../../data/users.helper';
 
+const cleanupRooms = async () => {
+	const {
+		body: { rooms },
+	} = await request.get(api('livechat/rooms')).query({ open: true }).set(credentials);
+
+	await Promise.all(rooms.map((room: IOmnichannelRoom) => closeOmnichannelRoom(room._id)));
+};
+
 describe('LIVECHAT - Queue', () => {
 	before((done) => getCredentials(done));
 
-	before(async () => {
-		await updateSetting('Livechat_enabled', true);
-	});
+	before(async () =>
+		Promise.all([
+			updateSetting('Livechat_enabled', true),
+			updateSetting('Livechat_Routing_Method', 'Auto_Selection'),
+
+			// this cleanup is required since previous tests left the DB dirty
+			cleanupRooms(),
+		]),
+	);
 
 	describe('livechat/queue', () => {
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
