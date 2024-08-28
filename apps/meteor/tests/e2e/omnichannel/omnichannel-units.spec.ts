@@ -191,7 +191,8 @@ test.describe('OC - Manage Units', () => {
 			await expect(poOmnichannelUnits.contextualBar).toBeVisible();
 			await expect(poOmnichannelUnits.selectOptionChip(department2.data.name)).toBeVisible();
 			await poOmnichannelUnits.selectOptionChip(department2.data.name).hover();
-			await expect(page.locator('#tooltip-root')).toHaveCount(1);
+
+			await expect(page.getByRole('tooltip', { name: department2.data.name })).toBeVisible();
 			await poOmnichannelUnits.btnContextualbarClose.click();
 		});
 
