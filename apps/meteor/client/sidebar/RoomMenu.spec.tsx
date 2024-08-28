@@ -43,27 +43,25 @@ const renderOptions = {
 	legacyRoot: true,
 };
 
-describe('RoomMenu component', () => {
-	it('should display the menu options', async () => {
-		render(<RoomMenu {...defaultProps} />, renderOptions);
+it('should display all the menu options for regular rooms', async () => {
+	render(<RoomMenu {...defaultProps} />, renderOptions);
 
-		const menu = screen.queryByRole('button');
-		await userEvent.click(menu as HTMLElement);
+	const menu = screen.queryByRole('button');
+	await userEvent.click(menu as HTMLElement);
 
-		expect(await screen.findByRole('option', { name: 'Hide' })).toBeInTheDocument();
-		expect(await screen.findByRole('option', { name: 'Favorite' })).toBeInTheDocument();
-		expect(await screen.findByRole('option', { name: 'Mark Unread' })).toBeInTheDocument();
-		expect(await screen.findByRole('option', { name: 'Leave' })).toBeInTheDocument();
-	});
+	expect(await screen.findByRole('option', { name: 'Hide' })).toBeInTheDocument();
+	expect(await screen.findByRole('option', { name: 'Favorite' })).toBeInTheDocument();
+	expect(await screen.findByRole('option', { name: 'Mark Unread' })).toBeInTheDocument();
+	expect(await screen.findByRole('option', { name: 'Leave' })).toBeInTheDocument();
+});
 
-	it('should display the menu options mark unread and favorite', async () => {
-		render(<RoomMenu {...defaultProps} type='l' />, renderOptions);
+it('should display only mark unread and favorite for omnichannel rooms', async () => {
+	render(<RoomMenu {...defaultProps} type='l' />, renderOptions);
 
-		const menu = screen.queryByRole('button');
-		await userEvent.click(menu as HTMLElement);
+	const menu = screen.queryByRole('button');
+	await userEvent.click(menu as HTMLElement);
 
-		expect(await screen.findAllByRole('option')).toHaveLength(2);
-		expect(screen.queryByRole('option', { name: 'Hide' })).not.toBeInTheDocument();
-		expect(screen.queryByRole('option', { name: 'Leave' })).not.toBeInTheDocument();
-	});
+	expect(await screen.findAllByRole('option')).toHaveLength(2);
+	expect(screen.queryByRole('option', { name: 'Hide' })).not.toBeInTheDocument();
+	expect(screen.queryByRole('option', { name: 'Leave' })).not.toBeInTheDocument();
 });
