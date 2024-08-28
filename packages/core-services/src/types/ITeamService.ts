@@ -129,4 +129,12 @@ export interface ITeamService {
 	getRoomInfo(
 		room: AtLeast<IRoom, 'teamId' | 'teamMain' | '_id'>,
 	): Promise<{ team?: Pick<ITeam, 'name' | 'roomId' | 'type'>; parentRoom?: Pick<IRoom, 'name' | 'fname' | 't' | '_id'> }>;
+	listRoomsAndDiscussions(
+		userId: string,
+		team: ITeam,
+		filter?: string,
+		sort?: Record<string, 1 | -1>,
+		skip?: number,
+		limit?: number,
+	): Promise<{ total: number; data: IRoom[] }>;
 }

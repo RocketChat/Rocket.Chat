@@ -1462,6 +1462,17 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find({ uids: { $size: 2, $in: [uids] }, t: 'd' });
 	}
 
+	findPaginatedByNameOrFnameInIds(ids: IRoom['_id'][], filter?: string, options: FindOptions<IRoom> = {}): FindPaginated<FindCursor<IRoom>> {
+		const query: Filter<IRoom> = {
+			_id: {
+				$in: ids,
+			},
+			...(filter && { $or: [{ name: new RegExp(escapeRegExp(filter), 'i') }, { fname: new RegExp(escapeRegExp(filter), 'i') }] }),
+		};
+
+		return this.findPaginated(query, options);
+	}
+
 	// UPDATE
 	addImportIds(_id: IRoom['_id'], importIds: string[]): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
@@ -2058,5 +2069,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.updateMany(query, update);
+	}
+
+	findDiscussionsByPrid(prid: string, options?: FindOptions<IRoom>): FindCursor<IRoom> {
+		return this.find({ prid }, options);
 	}
 }
