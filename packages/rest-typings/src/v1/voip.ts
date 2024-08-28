@@ -586,8 +586,3 @@ export type VoipEndpoints = {
 		GET: (params: { extension: string }) => IRegistrationInfo;
 	};
 };
-
-export * from './voip/VoipFreeSwitchExtensionAssignProps';
-export * from './voip/VoipFreeSwitchExtensionGetDetailsProps';
-export * from './voip/VoipFreeSwitchExtensionGetInfoProps';
-export * from './voip/VoipFreeSwitchExtensionListProps';

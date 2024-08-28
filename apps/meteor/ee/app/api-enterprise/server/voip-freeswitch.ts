@@ -1,38 +1,15 @@
 import { VoipFreeSwitch } from '@rocket.chat/core-services';
-import type { FreeSwitchExtension } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import {
 	isVoipFreeSwitchExtensionAssignProps,
 	isVoipFreeSwitchExtensionGetDetailsProps,
 	isVoipFreeSwitchExtensionGetInfoProps,
 	isVoipFreeSwitchExtensionListProps,
-	type VoipFreeSwitchExtensionAssignProps,
-	type VoipFreeSwitchExtensionGetDetailsProps,
-	type VoipFreeSwitchExtensionGetInfoProps,
-	type VoipFreeSwitchExtensionListProps,
 } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 
 import { API } from '../../../../app/api/server';
 import { settings } from '../../../../app/settings/server/cached';
-
-declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface Endpoints {
-		'/v1/voip-freeswitch.extension.list': {
-			GET: (params: VoipFreeSwitchExtensionListProps) => { extensions: FreeSwitchExtension[] };
-		};
-		'/v1/voip-freeswitch.extension.getDetails': {
-			GET: (params: VoipFreeSwitchExtensionGetDetailsProps) => FreeSwitchExtension & { userId?: string; username?: string };
-		};
-		'/v1/voip-freeswitch.extension.assign': {
-			POST: (params: VoipFreeSwitchExtensionAssignProps) => void;
-		};
-		'/v1/voip-freeswitch.extension.getRegistrationInfoByUserId': {
-			GET: (params: VoipFreeSwitchExtensionGetInfoProps) => { extension: FreeSwitchExtension; credentials: { password: string } };
-		};
-	}
-}
 
 API.v1.addRoute(
 	'voip-freeswitch.extension.list',
