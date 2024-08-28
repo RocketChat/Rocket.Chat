@@ -67,7 +67,7 @@ const AnalyticsPage = () => {
 									value={department || undefined}
 									onChange={setDepartment}
 									onlyMyDepartments
-									withTitle
+									withTitle={false}
 									renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
 								/>
 							</Box>

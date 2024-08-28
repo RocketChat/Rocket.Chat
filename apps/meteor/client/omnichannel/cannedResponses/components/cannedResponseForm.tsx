@@ -178,7 +178,7 @@ const CannedResponseForm = () => {
 											aria-describedby={`${departmentField}-error`}
 											aria-required={true}
 											aria-invalid={Boolean(errors?.departmentId)}
-											withTitle
+											withTitle={false}
 											renderItem={({ label, ...props }) => (
 												<Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />
 											)}

@@ -107,7 +107,7 @@ const ForwardChatModal = ({
 						<FieldLabel>{t('Forward_to_department')}</FieldLabel>
 						<FieldRow>
 							<PaginatedSelectFiltered
-								withTitle
+								withTitle={false}
 								filter={departmentsFilter as string}
 								setFilter={setDepartmentsFilter}
 								options={departments}
