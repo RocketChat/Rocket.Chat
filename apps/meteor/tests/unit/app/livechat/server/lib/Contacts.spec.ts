@@ -6,8 +6,12 @@ const modelsMock = {
 	Users: {
 		findOneAgentById: sinon.stub(),
 	},
+	LivechatContacts: {
+		findOneById: sinon.stub(),
+		updateContact: sinon.stub(),
+	},
 };
-const { validateCustomFields, validateContactManager } = proxyquire
+const { validateCustomFields, validateContactManager, updateContact } = proxyquire
 	.noCallThru()
 	.load('../../../../../../app/livechat/server/lib/Contacts', {
 		'meteor/check': sinon.stub(),
@@ -69,6 +73,30 @@ describe('[OC] Contacts', () => {
 
 			await expect(validateContactManager('userId')).to.not.be.rejected;
 			expect(modelsMock.Users.findOneAgentById.getCall(0).firstArg).to.be.equal('userId');
+		});
+	});
+
+	describe('updateContact', () => {
+		beforeEach(() => {
+			modelsMock.LivechatContacts.findOneById.reset();
+			modelsMock.LivechatContacts.updateContact.reset();
+		});
+
+		it('should throw an error if the contact does not exist', async () => {
+			modelsMock.LivechatContacts.findOneById.resolves(undefined);
+			await expect(updateContact('any_id')).to.be.rejectedWith('error-contact-not-found');
+			expect(modelsMock.LivechatContacts.updateContact.getCall(0)).to.be.null;
+		});
+
+		it('should update the contact with correct params', async () => {
+			modelsMock.LivechatContacts.findOneById.resolves({ _id: 'contactId' });
+			modelsMock.LivechatContacts.updateContact.resolves({ _id: 'contactId', name: 'John Doe' } as any);
+
+			const updatedContact = await updateContact({ contactId: 'contactId', name: 'John Doe' });
+
+			expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[0]).to.be.equal('contactId');
+			expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[1]).to.be.deep.contain({ name: 'John Doe' });
+			expect(updatedContact).to.be.deep.equal({ _id: 'contactId', name: 'John Doe' });
 		});
 	});
 });
