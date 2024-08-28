@@ -1095,7 +1095,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		const [discussionIds, teamRooms] = await Promise.all([
-			Rooms.findDiscussionsByPrid(mainRoom._id, { projection: { _id: 1 } }).map(({ _id }) => _id).toArray(),
+			Rooms.findDiscussionsByPrid(mainRoom._id, { projection: { _id: 1 } })
+				.map(({ _id }) => _id)
+				.toArray(),
 			Rooms.findByTeamId(team._id, { projection: { _id: 1, t: 1 } }).toArray(),
 		]);
 
