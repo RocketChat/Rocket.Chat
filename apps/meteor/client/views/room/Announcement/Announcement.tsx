@@ -30,7 +30,7 @@ const Announcement = ({ announcement, announcementDetails }: AnnouncementProps) 
 			? announcementDetails()
 			: setModal(
 					<GenericModal icon={null} title={t('Announcement')} confirmText={t('Close')} onConfirm={closeModal} onClose={closeModal}>
-						<Box>
+						<Box overflow='hidden' wordBreak='break-word'>
 							<MarkdownText content={announcement} parseEmoji />
 						</Box>
 					</GenericModal>,

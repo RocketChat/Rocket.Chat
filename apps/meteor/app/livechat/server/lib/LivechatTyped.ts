@@ -21,6 +21,7 @@ import type {
 	ILivechatDepartmentAgents,
 	LivechatDepartmentDTO,
 	OmnichannelSourceType,
+	ILivechatInquiryRecord,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Logger, type MainLogger } from '@rocket.chat/logger';
@@ -40,11 +41,12 @@ import {
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { Filter, FindCursor } from 'mongodb';
+import type { Filter, FindCursor, ClientSession, MongoError } from 'mongodb';
 import UAParser from 'ua-parser-js';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
+import { client } from '../../../../server/database/utils';
 import { i18n } from '../../../../server/lib/i18n';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
@@ -60,8 +62,10 @@ import {
 	notifyOnLivechatInquiryChangedByRoom,
 	notifyOnRoomChangedById,
 	notifyOnLivechatInquiryChangedByToken,
-	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
 	notifyOnUserChange,
+	notifyOnLivechatDepartmentAgentChangedByDepartmentId,
+	notifyOnSubscriptionChangedByRoomId,
+	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
@@ -73,7 +77,6 @@ import { RoutingManager } from './RoutingManager';
 import { isDepartmentCreationAvailable } from './isDepartmentCreationAvailable';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './localTypes';
 import { parseTranscriptRequest } from './parseTranscriptRequest';
-import { sendTranscript as sendTranscriptFunc } from './sendTranscript';
 
 type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'department' | 'status' | 'username'>> & {
 	id?: string;
@@ -140,6 +143,13 @@ type ICRMData = {
 	crmData?: IOmnichannelRoom['crmData'];
 };
 
+type ChatCloser = { _id: string; username: string | undefined };
+
+const isRoomClosedByUserParams = (params: CloseRoomParams): params is CloseRoomParamsByUser =>
+	(params as CloseRoomParamsByUser).user !== undefined;
+const isRoomClosedByVisitorParams = (params: CloseRoomParams): params is CloseRoomParamsByVisitor =>
+	(params as CloseRoomParamsByVisitor).visitor !== undefined;
+
 const dnsResolveMx = util.promisify(dns.resolveMx);
 
 class LivechatClass {
@@ -150,22 +160,6 @@ class LivechatClass {
 	constructor() {
 		this.logger = new Logger('Livechat');
 		this.webhookLogger = this.logger.section('Webhook');
-	}
-
-	findGuest(token: string) {
-		return LivechatVisitors.getVisitorByToken(token, {
-			projection: {
-				name: 1,
-				username: 1,
-				token: 1,
-				visitorEmails: 1,
-				department: 1,
-			},
-		});
-	}
-
-	enabled() {
-		return Boolean(settings.get('Livechat_enabled'));
 	}
 
 	async online(department?: string, skipNoAgentSetting = false, skipFallbackCheck = false): Promise<boolean> {
@@ -192,10 +186,6 @@ class LivechatClass {
 		return agentsOnline;
 	}
 
-	getNextAgent(department?: string): Promise<SelectedAgent | null | undefined> {
-		return RoutingManager.getNextAgent(department);
-	}
-
 	async getOnlineAgents(department?: string, agent?: SelectedAgent | null): Promise<FindCursor<ILivechatAgent> | undefined> {
 		if (agent?.agentId) {
 			return Users.findOnlineAgents(agent.agentId);
@@ -217,14 +207,115 @@ class LivechatClass {
 		return Users.findOnlineAgents();
 	}
 
-	async closeRoom(params: CloseRoomParams): Promise<void> {
+	async closeRoom(params: CloseRoomParams, attempts = 2): Promise<void> {
+		let newRoom: IOmnichannelRoom;
+		let chatCloser: ChatCloser;
+		let removedInquiryObj: ILivechatInquiryRecord | null;
+
+		const session = client.startSession();
+		try {
+			session.startTransaction();
+			const { room, closedBy, removedInquiry } = await this.doCloseRoom(params, session);
+			await session.commitTransaction();
+
+			newRoom = room;
+			chatCloser = closedBy;
+			removedInquiryObj = removedInquiry;
+		} catch (e) {
+			this.logger.error({ err: e, msg: 'Failed to close room', afterAttempts: attempts });
+			await session.abortTransaction();
+			// Dont propagate transaction errors
+			if (
+				(e as unknown as MongoError)?.errorLabels?.includes('UnknownTransactionCommitResult') ||
+				(e as unknown as MongoError)?.errorLabels?.includes('TransientTransactionError')
+			) {
+				if (attempts > 0) {
+					this.logger.debug(`Retrying close room because of transient error. Attempts left: ${attempts}`);
+					return this.closeRoom(params, attempts - 1);
+				}
+
+				throw new Error('error-room-cannot-be-closed-try-again');
+			}
+			throw e;
+		} finally {
+			await session.endSession();
+		}
+
+		// Note: when reaching this point, the room has been closed
+		// Transaction is commited and so these messages can be sent here.
+		return this.afterRoomClosed(newRoom, chatCloser, removedInquiryObj, params);
+	}
+
+	async afterRoomClosed(
+		newRoom: IOmnichannelRoom,
+		chatCloser: ChatCloser,
+		inquiry: ILivechatInquiryRecord | null,
+		params: CloseRoomParams,
+	): Promise<void> {
+		if (!chatCloser) {
+			// this should never happen
+			return;
+		}
+		// Note: we are okay with these messages being sent outside of the transaction. The process of sending a message
+		// is huge and involves multiple db calls. Making it transactionable this way would be really hard.
+		// And passing just _some_ actions to the transaction creates some deadlocks since messages are updated in the afterSaveMessages callbacks.
+		const transcriptRequested =
+			!!params.room.transcriptRequest || (!settings.get('Livechat_enable_transcript') && settings.get('Livechat_transcript_send_always'));
+		this.logger.debug(`Sending closing message to room ${newRoom._id}`);
+		await Message.saveSystemMessageAndNotifyUser('livechat-close', newRoom._id, params.comment ?? '', chatCloser, {
+			groupable: false,
+			transcriptRequested,
+			...(isRoomClosedByVisitorParams(params) && { token: params.visitor.token }),
+		});
+
+		if (settings.get('Livechat_enable_transcript') && !settings.get('Livechat_transcript_send_always')) {
+			await Message.saveSystemMessage('command', newRoom._id, 'promptTranscript', chatCloser);
+		}
+
+		this.logger.debug(`Running callbacks for room ${newRoom._id}`);
+
+		process.nextTick(() => {
+			/**
+			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
+			 * in the next major version of the Apps-Engine
+			 */
+			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
+			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
+		});
+
+		const visitor = isRoomClosedByVisitorParams(params) ? params.visitor : undefined;
+		const opts = await parseTranscriptRequest(params.room, params.options, visitor);
+		if (process.env.TEST_MODE) {
+			await callbacks.run('livechat.closeRoom', {
+				room: newRoom,
+				options: opts,
+			});
+		} else {
+			callbacks.runAsync('livechat.closeRoom', {
+				room: newRoom,
+				options: opts,
+			});
+		}
+
+		void notifyOnRoomChangedById(newRoom._id);
+		if (inquiry) {
+			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
+		}
+
+		this.logger.debug(`Room ${newRoom._id} was closed`);
+	}
+
+	async doCloseRoom(
+		params: CloseRoomParams,
+		session: ClientSession,
+	): Promise<{ room: IOmnichannelRoom; closedBy: ChatCloser; removedInquiry: ILivechatInquiryRecord | null }> {
 		const { comment } = params;
 		const { room } = params;
 
 		this.logger.debug(`Attempting to close room ${room._id}`);
 		if (!room || !isOmnichannelRoom(room) || !room.open) {
 			this.logger.debug(`Room ${room._id} is not open`);
-			return;
+			throw new Error('error-room-closed');
 		}
 
 		const commentRequired = settings.get('Livechat_request_comment_when_closing_conversation');
@@ -236,7 +327,7 @@ class LivechatClass {
 		this.logger.debug(`Resolved chat tags for room ${room._id}`);
 
 		const now = new Date();
-		const { _id: rid, servedBy, transcriptRequest } = room;
+		const { _id: rid, servedBy } = room;
 		const serviceTimeDuration = servedBy && (now.getTime() - new Date(servedBy.ts).getTime()) / 1000;
 
 		const closeData: IOmnichannelRoomClosingInfo = {
@@ -246,11 +337,6 @@ class LivechatClass {
 			...options,
 		};
 		this.logger.debug(`Room ${room._id} was closed at ${closeData.closedAt} (duration ${closeData.chatDuration})`);
-
-		const isRoomClosedByUserParams = (params: CloseRoomParams): params is CloseRoomParamsByUser =>
-			(params as CloseRoomParamsByUser).user !== undefined;
-		const isRoomClosedByVisitorParams = (params: CloseRoomParams): params is CloseRoomParamsByVisitor =>
-			(params as CloseRoomParamsByVisitor).visitor !== undefined;
 
 		if (isRoomClosedByUserParams(params)) {
 			const { user } = params;
@@ -274,72 +360,38 @@ class LivechatClass {
 
 		this.logger.debug(`Updating DB for room ${room._id} with close data`);
 
-		const inquiry = await LivechatInquiry.findOneByRoomId(rid);
-
-		const removedInquiry = await LivechatInquiry.removeByRoomId(rid);
+		const inquiry = await LivechatInquiry.findOneByRoomId(rid, { session });
+		const removedInquiry = await LivechatInquiry.removeByRoomId(rid, { session });
 		if (removedInquiry && removedInquiry.deletedCount !== 1) {
 			throw new Error('Error removing inquiry');
 		}
-		if (inquiry) {
-			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
-		}
 
-		const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData);
+		const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData, { session });
 		if (!updatedRoom || updatedRoom.modifiedCount !== 1) {
 			throw new Error('Error closing room');
 		}
 
-		await Subscriptions.removeByRoomId(rid);
+		const subs = await Subscriptions.countByRoomId(rid, { session });
+		const removedSubs = await Subscriptions.removeByRoomId(rid, {
+			async onTrash(doc) {
+				void notifyOnSubscriptionChanged(doc, 'removed');
+			},
+			session,
+		});
+
+		if (removedSubs.deletedCount !== subs) {
+			throw new Error('Error removing subscriptions');
+		}
 
 		this.logger.debug(`DB updated for room ${room._id}`);
 
-		const newRoom = await LivechatRooms.findOneById(rid);
-
+		// Retrieve the closed room
+		const newRoom = await LivechatRooms.findOneById(rid, { session });
 		if (!newRoom) {
 			throw new Error('Error: Room not found');
 		}
 
-		this.logger.debug(`Sending closing message to room ${room._id}`);
-
-		const transcriptRequested =
-			!!transcriptRequest || (!settings.get('Livechat_enable_transcript') && settings.get('Livechat_transcript_send_always'));
-
-		await Message.saveSystemMessageAndNotifyUser('livechat-close', rid, comment ?? '', closeData.closedBy, {
-			groupable: false,
-			transcriptRequested,
-			...(isRoomClosedByVisitorParams(params) && { token: params.visitor.token }),
-		});
-
-		if (settings.get('Livechat_enable_transcript') && !settings.get('Livechat_transcript_send_always')) {
-			await Message.saveSystemMessage('command', rid, 'promptTranscript', closeData.closedBy);
-		}
-
-		process.nextTick(() => {
-			/**
-			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
-			 * in the next major version of the Apps-Engine
-			 */
-			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
-			void Apps.self?.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
-		});
-
-		const visitor = isRoomClosedByVisitorParams(params) ? params.visitor : undefined;
-		const opts = await parseTranscriptRequest(params.room, options, visitor);
-		if (process.env.TEST_MODE) {
-			await callbacks.run('livechat.closeRoom', {
-				room: newRoom,
-				options: opts,
-			});
-		} else {
-			callbacks.runAsync('livechat.closeRoom', {
-				room: newRoom,
-				options: opts,
-			});
-		}
-
-		void notifyOnRoomChangedById(newRoom._id);
-
-		this.logger.debug(`Room ${newRoom._id} was closed`);
+		return { room: newRoom, closedBy: closeData.closedBy, removedInquiry: inquiry };
 	}
 
 	async getRequiredDepartment(onlineRequired = true) {
@@ -378,7 +430,7 @@ class LivechatClass {
 		agent?: SelectedAgent;
 		extraData?: Record<string, unknown>;
 	}) {
-		if (!this.enabled()) {
+		if (!settings.get('Livechat_enabled')) {
 			throw new Meteor.Error('error-omnichannel-is-disabled');
 		}
 
@@ -429,7 +481,7 @@ class LivechatClass {
 		agent?: SelectedAgent,
 		extraData?: E,
 	) {
-		if (!this.enabled()) {
+		if (!settings.get('Livechat_enabled')) {
 			throw new Meteor.Error('error-omnichannel-is-disabled');
 		}
 		Livechat.logger.debug(`Attempting to find or create a room for visitor ${guest._id}`);
@@ -515,12 +567,16 @@ class LivechatClass {
 		const result = await Promise.allSettled([
 			Messages.removeByRoomId(rid),
 			ReadReceipts.removeByRoomId(rid),
-			Subscriptions.removeByRoomId(rid),
+			Subscriptions.removeByRoomId(rid, {
+				async onTrash(doc) {
+					void notifyOnSubscriptionChanged(doc, 'removed');
+				},
+			}),
 			LivechatInquiry.removeByRoomId(rid),
 			LivechatRooms.removeById(rid),
 		]);
 
-		if (inquiry) {
+		if (result[3]?.status === 'fulfilled' && result[3].value?.deletedCount && inquiry) {
 			void notifyOnLivechatInquiryChanged(inquiry, 'removed');
 		}
 
@@ -797,15 +853,6 @@ class LivechatClass {
 
 			return updateMessage({ _id: callId, msg: status, actionLinks: [], webRtcCallEndTs: new Date(), rid }, user as unknown as IUser);
 		}
-	}
-
-	async updateLastChat(contactId: string, lastChat: Required<ILivechatVisitor['lastChat']>) {
-		const updateUser = {
-			$set: {
-				lastChat,
-			},
-		};
-		await LivechatVisitors.updateById(contactId, updateUser);
 	}
 
 	notifyRoomVisitorChange(roomId: string, visitor: ILivechatVisitor) {
@@ -1143,13 +1190,18 @@ class LivechatClass {
 		const cursor = LivechatRooms.findByVisitorToken(token);
 		for await (const room of cursor) {
 			await Promise.all([
+				Subscriptions.removeByRoomId(room._id, {
+					async onTrash(doc) {
+						void notifyOnSubscriptionChanged(doc, 'removed');
+					},
+				}),
 				FileUpload.removeFilesByRoomId(room._id),
 				Messages.removeByRoomId(room._id),
 				ReadReceipts.removeByRoomId(room._id),
 			]);
 		}
 
-		await Promise.all([Subscriptions.removeByVisitorToken(token), LivechatRooms.removeByVisitorToken(token)]);
+		await LivechatRooms.removeByVisitorToken(token);
 
 		const livechatInquiries = await LivechatInquiry.findIdsByVisitorToken(token).toArray();
 		await LivechatInquiry.removeByIds(livechatInquiries.map(({ _id }) => _id));
@@ -1701,13 +1753,19 @@ class LivechatClass {
 			const { _id: rid } = roomData;
 			const { name } = guestData;
 
-			await Promise.all([
+			const responses = await Promise.all([
 				Rooms.setFnameById(rid, name),
 				LivechatInquiry.setNameByRoomId(rid, name),
 				Subscriptions.updateDisplayNameByRoomId(rid, name),
 			]);
 
-			void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
+			if (responses[1]?.modifiedCount) {
+				void notifyOnLivechatInquiryChangedByRoom(rid, 'updated', { name });
+			}
+
+			if (responses[2]?.modifiedCount) {
+				await notifyOnSubscriptionChangedByRoomId(rid);
+			}
 		}
 
 		void notifyOnRoomChangedById(roomData._id);
@@ -1818,22 +1876,6 @@ class LivechatClass {
 		}
 
 		return departmentDB;
-	}
-
-	async sendTranscript({
-		token,
-		rid,
-		email,
-		subject,
-		user,
-	}: {
-		token: string;
-		rid: string;
-		email: string;
-		subject?: string;
-		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
-	}): Promise<boolean> {
-		return sendTranscriptFunc({ token, rid, email, subject, user });
 	}
 }
 

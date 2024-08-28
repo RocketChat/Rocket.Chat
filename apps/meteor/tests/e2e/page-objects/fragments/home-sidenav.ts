@@ -95,7 +95,16 @@ export class HomeSidenav {
 	}
 
 	async openSearch(): Promise<void> {
-		await this.page.locator('role=button[name="Search"]').click();
+		await this.page.locator('role=navigation >> role=button[name=Search]').click();
+	}
+
+	getSearchRoomByName(name: string): Locator {
+		return this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`);
+	}
+
+	async searchRoom(name: string): Promise<void> {
+		await this.openSearch();
+		await this.page.locator('role=search >> role=searchbox').fill(name);
 	}
 
 	async logout(): Promise<void> {
@@ -109,9 +118,8 @@ export class HomeSidenav {
 	}
 
 	async openChat(name: string): Promise<void> {
-		await this.page.locator('role=navigation >> role=button[name=Search]').click();
-		await this.page.locator('role=search >> role=searchbox').fill(name);
-		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
+		await this.searchRoom(name);
+		await this.getSearchRoomByName(name).click();
 		await this.waitForChannel();
 	}
 
