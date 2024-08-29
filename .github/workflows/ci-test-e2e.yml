@@ -130,7 +130,9 @@ jobs:
           node-version: ${{ inputs.node-version }}
           cache-modules: true
           install: true
+      - uses: rharkor/caching-for-turbo@v1.5
 
+      - run: yarn build
       # if we are testing a PR from a fork, we need to build the docker image at this point
       - uses: ./.github/actions/build-docker
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
@@ -138,8 +140,11 @@ jobs:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
           node-version: ${{ inputs.node-version }}
-
-      - uses: rharkor/caching-for-turbo@v1.5
+          # we already called the turbo cache at this point, so it should be false
+          turbo-cache: false
+          # the same reason we need to rebuild the docker image at this point is the reason we dont want to publish it
+          publish-image: false
+          setup: false
 
       - name: Start httpbin container and wait for it to be ready
         if: inputs.type == 'api'
@@ -158,8 +163,6 @@ jobs:
             echo "Failed to verify httpbin is running"
             exit 1
           fi
-
-      - run: yarn build
 
       - name: Prepare code coverage directory
         if: inputs.release == 'ee'
@@ -186,12 +189,6 @@ jobs:
           DISABLE_DB_WATCHERS: ${{ inputs.db-watcher-disabled }}
         run: |
           docker compose -f docker-compose-ci.yml up -d
-
-      - name: Clean up temporary files
-        # remove all folders inside /tmp except /tmp/coverage
-        run: |
-          cd /tmp
-          sudo find . -mindepth 1 -maxdepth 1 -type d | grep -v './coverage' | sudo xargs rm -rf
 
       - name: Cache Playwright binaries
         if: inputs.type == 'ui'

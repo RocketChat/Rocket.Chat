@@ -290,9 +290,9 @@ const RoomBody = (): ReactElement => {
 														{hasMorePreviousMessages ? (
 															<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 														) : (
-															<li className='start color-info-font-color'>
-																{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
+															<li>
 																<RoomForeword user={user} room={room} />
+																{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
 															</li>
 														)}
 													</>

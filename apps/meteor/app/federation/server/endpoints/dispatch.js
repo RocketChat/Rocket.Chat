@@ -296,7 +296,7 @@ const eventHandlers = {
 					const roomUpdater = Rooms.getUpdater();
 					await notifyUsersOnMessage(denormalizedMessage, room, roomUpdater);
 					if (roomUpdater.hasChanges()) {
-						await roomUpdater.persist({ _id: room._id });
+						await Rooms.updateFromUpdater({ _id: room._id }, roomUpdater);
 					}
 
 					sendAllNotifications(denormalizedMessage, room);

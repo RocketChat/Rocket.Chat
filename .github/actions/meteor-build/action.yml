@@ -128,3 +128,4 @@ runs:
       with:
         name: build
         path: /tmp/Rocket.Chat.tar.gz
+        overwrite: true
