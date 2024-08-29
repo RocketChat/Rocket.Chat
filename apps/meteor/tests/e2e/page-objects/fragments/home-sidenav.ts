@@ -122,6 +122,12 @@ export class HomeSidenav {
 		await this.waitForChannel();
 	}
 
+	async searchChat(name: string): Promise<void> {
+		await this.page.locator('role=navigation >> role=button[name=Search]').click();
+		await this.page.locator('role=search >> role=searchbox').fill(name);
+		await expect(this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`).first()).toBeVisible();
+	}
+
 	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
 		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
@@ -172,5 +178,9 @@ export class HomeSidenav {
 
 	getChannelBadge(sidebarItem: Locator): Locator {
 		return sidebarItem.locator('.rcx-badge');
+	}
+
+	getSearchChannelBadge(name: string): Locator {
+		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`).first().locator('.rcx-badge');
 	}
 }

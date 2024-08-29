@@ -37,6 +37,14 @@ test.describe('Mark Unread - Sidebar Action', () => {
 		await expect(poHomeChannel.sidenav.getChannelBadge(sidebarItem)).toBeVisible();
 	});
 
+	test('should mark a populated room as unread - search', async () => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('this is a message for reply');
+		await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel);
+		await poHomeChannel.sidenav.searchChat(targetChannel);
+		await expect(poHomeChannel.sidenav.getSearchChannelBadge(targetChannel)).toBeVisible();
+	});
+
 	test.describe('Mark Unread - Message Action', () => {
 		let poHomeChannelUser2: HomeChannel;
 
