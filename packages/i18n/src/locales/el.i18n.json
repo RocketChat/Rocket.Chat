@@ -2481,8 +2481,6 @@
   "Type_your_password": "Πληκτρολογήστε τον κωδικό πρόσβασης",
   "Type_your_username": "Πληκτρολογήστε το όνομα χρήστη σας",
   "UI_Allow_room_names_with_special_chars": "Αφήστε τους ειδικούς χαρακτήρες στα ονόματα των δωματίων",
-  "UI_Click_Direct_Message": "Κάντε κλικ στο στοιχείο Δημιουργία άμεσου μηνύματος",
-  "UI_Click_Direct_Message_Description": "Παράλειψη καρτέλας προφίλ ανοίγματος, αντί να πάτε κατευθείαν σε συνομιλία",
   "UI_DisplayRoles": "Ρόλοι οθόνη",
   "UI_Group_Channels_By_Type": "Ομαδοποιήστε τα κανάλια ανά τύπο",
   "UI_Merge_Channels_Groups": "Συγχώνευση ιδιωτικές ομάδες με τα κανάλια",

@@ -4942,8 +4942,6 @@
   "Type_your_password": "Kirjoita salasanasi",
   "Type_your_username": "Kirjoita käyttäjätunnuksesi",
   "UI_Allow_room_names_with_special_chars": "Salli erikoismerkit huoneiden nimessä",
-  "UI_Click_Direct_Message": "Napsauta jotta luot suoran viestin",
-  "UI_Click_Direct_Message_Description": "Ohita Profiili-välilehti ja siirry suoraan keskusteluun",
   "UI_DisplayRoles": "Näytä roolit",
   "UI_Group_Channels_By_Type": "Ryhmittele kanavat tyypin mukaan",
   "UI_Merge_Channels_Groups": "Yhdistä yksityisiä ryhmiä kanaviin",
