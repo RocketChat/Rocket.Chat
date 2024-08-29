@@ -385,9 +385,9 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
-			const { teamId, filter } = this.queryParams;
+			const { filter } = this.queryParams;
 
-			const team = await getTeamByIdOrName({ teamId });
+			const team = await getTeamByIdOrName(this.queryParams);
 			if (!team) {
 				return API.v1.notFound();
 			}

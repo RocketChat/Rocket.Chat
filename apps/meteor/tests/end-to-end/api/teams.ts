@@ -2237,16 +2237,8 @@ describe('[Teams]', () => {
 			testUser = await createUser();
 			testUserCredentials = await login(testUser.username, password);
 
-			testTeam = (
-				await request
-					.post(api('teams.create'))
-					.set(credentials)
-					.send({
-						name: teamName,
-						type: 0,
-						members: [testUser.username],
-					})
-			).body.team;
+			const members = testUser.username ? [testUser.username] : [];
+			testTeam = await createTeam(credentials, teamName, 0, members);
 		});
 
 		before('make user owner', async () => {
@@ -2330,6 +2322,7 @@ describe('[Teams]', () => {
 				deleteRoom({ type: 'c', roomId: discussionOnPublicRoom._id }),
 				deleteRoom({ type: 'c', roomId: discussionOnMainRoom._id }),
 				deleteTeam(credentials, teamName),
+				deleteUser({ _id: testUser._id }),
 			]);
 		});
 
@@ -2343,6 +2336,26 @@ describe('[Teams]', () => {
 
 		it('should fail if teamId is not valid', async () => {
 			await request.get(api('teams.listRoomsAndDiscussions')).set(credentials).query({ teamId: 'invalid' }).expect(404);
+		});
+
+		it('should fail if teamId is empty', async () => {
+			await request.get(api('teams.listRoomsAndDiscussions')).set(credentials).query({ teamId: '' }).expect(404);
+		});
+
+		it('should fail if both properties are passed', async () => {
+			await request
+				.get(api('teams.listRoomsAndDiscussions'))
+				.set(credentials)
+				.query({ teamId: testTeam._id, teamName: testTeam.name })
+				.expect(400);
+		});
+
+		it('should fail if teamName is empty', async () => {
+			await request.get(api('teams.listRoomsAndDiscussions')).set(credentials).query({ teamName: '' }).expect(404);
+		});
+
+		it('should fail if teamName is invalid', async () => {
+			await request.get(api('teams.listRoomsAndDiscussions')).set(credentials).query({ teamName: 'invalid' }).expect(404);
 		});
 
 		it('should return a list of valid rooms for user', async () => {
@@ -2380,7 +2393,7 @@ describe('[Teams]', () => {
 		it('should return a valid list of rooms for non admin member too', async () => {
 			const res = await request
 				.get(api('teams.listRoomsAndDiscussions'))
-				.query({ teamId: testTeam._id })
+				.query({ teamName: testTeam.name })
 				.set(testUserCredentials)
 				.expect(200);
 
