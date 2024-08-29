@@ -49,11 +49,11 @@ test.describe('OC - Livechat - Queue Management', () => {
 			api.delete('/livechat/users/agent/user1'),
 		]);
 		await poHomeOmnichannel.page.close();
-		await poLiveChat.page.close();
 	});
 
 	test.afterEach(async () => {
 		await poLiveChat.closeChat();
+		await poLiveChat.page.close();
 	});
 
 	test('OC - Queue Management - Waiting Queue Message enabled', async () => {
@@ -81,9 +81,6 @@ test.describe('OC - Livechat - Queue Management', () => {
 
 		test.afterEach(async () => {
 			await poLiveChat2.closeChat();
-		});
-
-		test.afterAll(async () => {
 			await poLiveChat2.page.close();
 		});
 
