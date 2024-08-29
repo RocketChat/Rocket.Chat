@@ -5,7 +5,6 @@ import { useTranslation, /* useUserId, */ useEndpoint } from '@rocket.chat/ui-co
 import { useQuery } from '@tanstack/react-query';
 import React, { memo, useMemo } from 'react';
 
-import GenericError from '../../../components/GenericError';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
@@ -78,14 +77,7 @@ const RoomSidePanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 	const { teamsChannelList } = useTeamsChannelList(channelOptions);
 	const { phase: channelsPhase, error: channelsError, items: channels } = useRecordList(teamsChannelList);
 
-	if (isError || discussionError || channelsError || !isSuccess) {
-		return (
-			<SidePanel>
-				<GenericError />
-			</SidePanel>
-		);
-	}
-	if (isSuccess && !data.room?.sidepanel) {
+	if (isError || discussionError || channelsError || !isSuccess || (isSuccess && !data.room?.sidepanel)) {
 		return null;
 	}
 	if (discussionLoading || channelsPhase === AsyncStatePhase.LOADING) {
