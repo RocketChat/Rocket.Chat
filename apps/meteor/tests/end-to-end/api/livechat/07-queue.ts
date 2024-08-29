@@ -6,17 +6,25 @@ import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../../data/livechat/department';
+import { createDepartmentWithAnOnlineAgent, deleteDepartment, addOrRemoveAgentFromDepartment } from '../../../data/livechat/department';
 import { createVisitor, createLivechatRoom, closeOmnichannelRoom, deleteVisitor } from '../../../data/livechat/rooms';
+import { createAnOnlineAgent } from '../../../data/livechat/users';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { deleteUser } from '../../../data/users.helper';
+import { IS_EE } from '../../../e2e/config/constants';
 
 const cleanupRooms = async () => {
-	const {
-		body: { rooms },
-	} = await request.get(api('livechat/rooms')).query({ open: true }).set(credentials);
+	const response = await request.get(api('livechat/queue')).set(credentials).expect('Content-Type', 'application/json').expect(200);
 
-	await Promise.all(rooms.map((room: IOmnichannelRoom) => closeOmnichannelRoom(room._id)));
+	const { queue } = response.body;
+
+	for await (const item of queue) {
+		const {
+			body: { rooms },
+		} = await request.get(api('livechat/rooms')).query({ 'agents[]': item.user._id }).set(credentials);
+
+		await Promise.all(rooms.map((room: IOmnichannelRoom) => closeOmnichannelRoom(room._id)));
+	}
 };
 
 describe('LIVECHAT - Queue', () => {
@@ -76,11 +84,13 @@ describe('LIVECHAT - Queue', () => {
 	describe('queue position', () => {
 		let agent1: { user: IUser };
 		let agent2: { user: IUser };
+		let agent3: { user: IUser };
 		let deptd1: ILivechatDepartment;
 		let deptd2: ILivechatDepartment;
 
 		const roomsToClose: IOmnichannelRoom[] = [];
 		const visitors: ILivechatVisitor[] = [];
+		const usersToDelete: IUser[] = [];
 
 		before(async () => {
 			const { department, agent } = await createDepartmentWithAnOnlineAgent();
@@ -88,10 +98,7 @@ describe('LIVECHAT - Queue', () => {
 			deptd1 = department;
 			agent1 = agent;
 
-			const { department: dep2, agent: ag2 } = await createDepartmentWithAnOnlineAgent();
-
-			deptd2 = dep2;
-			agent2 = ag2;
+			usersToDelete.push(agent.user);
 
 			const newVisitor = await createVisitor(deptd1._id);
 			const newRoom = await createLivechatRoom(newVisitor.token);
@@ -102,19 +109,14 @@ describe('LIVECHAT - Queue', () => {
 
 		after(async () => {
 			await deleteDepartment(deptd1._id);
-			await deleteDepartment(deptd2._id);
 
-			// await closeOmnichannelRoom(room1._id);
-			// await deleteVisitor(visitor1.token);
+			if (deptd2) {
+				await deleteDepartment(deptd2._id);
+			}
 
 			await Promise.all(roomsToClose.map((room) => closeOmnichannelRoom(room._id)));
 			await Promise.all(visitors.map((visitor) => deleteVisitor(visitor.token)));
-
-			await deleteUser(agent1.user);
-			await deleteUser(agent2.user);
-
-			// console.log('visitor1 ->', visitor1);
-			// console.log('result ->', result);
+			await Promise.all(usersToDelete.map((user) => deleteUser(user)));
 		});
 
 		it('should have one item in the queue', async () => {
@@ -155,7 +157,7 @@ describe('LIVECHAT - Queue', () => {
 		});
 
 		it('should increase chats when a new room for same department is created', async () => {
-			const newVisitor = await createVisitor(deptd1._id);
+			const newVisitor = await createVisitor();
 			const newRoom = await createLivechatRoom(newVisitor.token);
 
 			roomsToClose.push(newRoom);
@@ -181,8 +183,15 @@ describe('LIVECHAT - Queue', () => {
 				});
 		});
 
-		it('should have two items when create room for another department', async () => {
-			const newVisitor = await createVisitor(deptd2._id);
+		it('should have two items when create room for another agent', async () => {
+			const { user } = await createAnOnlineAgent();
+			await addOrRemoveAgentFromDepartment(deptd1._id, { agentId: user._id, username: user.username }, true);
+
+			agent2 = { user };
+
+			usersToDelete.push(user);
+
+			const newVisitor = await createVisitor(deptd1._id);
 			const newRoom = await createLivechatRoom(newVisitor.token);
 
 			roomsToClose.push(newRoom);
@@ -208,7 +217,7 @@ describe('LIVECHAT - Queue', () => {
 
 					expect(queue2).to.have.property('chats', 1);
 					expect(queue2).to.have.nested.property('user._id', agent2.user._id);
-					expect(queue2).to.have.nested.property('department._id', deptd2._id);
+					expect(queue2).to.have.nested.property('department._id', deptd1._id);
 				});
 		});
 
@@ -230,7 +239,23 @@ describe('LIVECHAT - Queue', () => {
 
 					expect(queue1).to.have.property('chats', 1);
 					expect(queue1).to.have.nested.property('user._id', agent2.user._id);
-					expect(queue1).to.have.nested.property('department._id', deptd2._id);
+					expect(queue1).to.have.nested.property('department._id', deptd1._id);
+				});
+		});
+
+		it('should return empty if filter for a department without chats', async () => {
+			await request
+				.get(api('livechat/queue'))
+				.query({ departmentId: 'no-chats' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total', 0);
+					expect(res.body).to.have.property('count', 0);
+					expect(res.body.queue).to.be.an('array').of.length(0);
 				});
 		});
 
@@ -246,7 +271,7 @@ describe('LIVECHAT - Queue', () => {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
-					expect(res.body.queue).to.be.an('array').of.length(1);
+					expect(res.body.queue).to.be.an('array').of.length(2);
 
 					const [queue1] = res.body.queue;
 
@@ -256,7 +281,45 @@ describe('LIVECHAT - Queue', () => {
 				});
 		});
 
-		it('should change the order when second department gets more rooms', async () => {
+		(IS_EE ? it : it.skip)('should have three items when create room for another department', async () => {
+			const { department: dep2, agent: ag3 } = await createDepartmentWithAnOnlineAgent();
+
+			agent3 = ag3;
+
+			usersToDelete.push(ag3.user);
+
+			deptd2 = dep2;
+
+			const newVisitor = await createVisitor(deptd2._id);
+			const newRoom = await createLivechatRoom(newVisitor.token);
+
+			roomsToClose.push(newRoom);
+			visitors.push(newVisitor);
+
+			await request
+				.get(api('livechat/queue'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+					expect(res.body.queue).to.be.an('array').of.length(3);
+
+					const [queue1, queue2, queue3] = res.body.queue;
+
+					expect(queue1).to.have.property('chats', 2);
+					expect(queue1).to.have.nested.property('user._id', agent1.user._id);
+					expect(queue1).to.have.nested.property('department._id', deptd1._id);
+
+					expect(queue2).to.have.property('chats', 1);
+					expect(queue3).to.have.property('chats', 1);
+				});
+		});
+
+		(IS_EE ? it : it.skip)('should change the order when second department gets more rooms', async () => {
 			const newVisitor1 = await createVisitor(deptd2._id);
 			const newRoom1 = await createLivechatRoom(newVisitor1.token);
 
@@ -279,17 +342,21 @@ describe('LIVECHAT - Queue', () => {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
-					expect(res.body.queue).to.be.an('array').of.length(2);
+					expect(res.body.queue).to.be.an('array').of.length(3);
 
-					const [queue1, queue2] = res.body.queue;
+					const [queue1, queue2, queue3] = res.body.queue;
 
 					expect(queue1).to.have.property('chats', 3);
-					expect(queue1).to.have.nested.property('user._id', agent2.user._id);
+					expect(queue1).to.have.nested.property('user._id', agent3.user._id);
 					expect(queue1).to.have.nested.property('department._id', deptd2._id);
 
 					expect(queue2).to.have.property('chats', 2);
 					expect(queue2).to.have.nested.property('user._id', agent1.user._id);
 					expect(queue2).to.have.nested.property('department._id', deptd1._id);
+
+					expect(queue3).to.have.property('chats', 1);
+					expect(queue3).to.have.nested.property('user._id', agent2.user._id);
+					expect(queue3).to.have.nested.property('department._id', deptd1._id);
 				});
 		});
 	});
