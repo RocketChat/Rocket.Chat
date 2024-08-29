@@ -228,7 +228,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments }: UnitEditProps) =>
 											value={value}
 											onChange={onChange}
 											onBlur={onBlur}
-											withTitle={false}
+											withTitle
 											filter={departmentsFilter}
 											setFilter={setDepartmentsFilter}
 											options={departmentsOptions}

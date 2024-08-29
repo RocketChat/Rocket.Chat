@@ -10,6 +10,7 @@ import LocalTime from '../../../components/LocalTime';
 import { UserCard, UserCardAction, UserCardRole, UserCardSkeleton } from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
+import { useMemberExists } from '../../hooks/useMemberExists';
 import { useUserInfoActions } from '../hooks/useUserInfoActions';
 
 type UserCardWithDataProps = {
@@ -24,7 +25,16 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const getRoles = useRolesDescription();
 	const showRealNames = Boolean(useSetting('UI_Use_Real_Name'));
 
-	const { data, isLoading } = useUserInfoQuery({ username });
+	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username });
+	const {
+		data: isMemberData,
+		refetch,
+		isSuccess: membershipCheckSuccess,
+		isLoading: isMembershipStatusLoading,
+	} = useMemberExists({ roomId: rid, username });
+
+	const isLoading = isUserInfoLoading || isMembershipStatusLoading;
+	const isMember = membershipCheckSuccess && isMemberData?.isMember;
 
 	const user = useMemo(() => {
 		const defaultValue = isLoading ? undefined : null;
@@ -62,6 +72,9 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions(
 		{ _id: user._id ?? '', username: user.username, name: user.name },
 		rid,
+		refetch,
+		undefined,
+		isMember,
 	);
 
 	const menu = useMemo(() => {
