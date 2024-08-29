@@ -162,6 +162,7 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 				handleEnableUnlimitedApps={() => {
 					openExternalLink(manageSubscriptionUrl);
 					setModal(null);
+					setInstalling(false);
 				}}
 			/>,
 		);
