@@ -311,7 +311,6 @@ describe('LIVECHAT - contacts', () => {
 		let contactId: string;
 
 		before(async () => {
-			await updatePermission('update-livechat-contact', ['admin']);
 			const { body } = await request
 				.post(api('omnichannel/contacts'))
 				.set(credentials)
