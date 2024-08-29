@@ -114,8 +114,12 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 	};
 
 	const extractManifestFromAppFile = async (appFile: File) => {
-		const manifest = await getManifestFromZippedApp(appFile);
-		return manifest;
+		try {
+			const manifest = await getManifestFromZippedApp(appFile);
+			return manifest;
+		} catch (error) {
+			handleInstallError(error as Error);
+		}
 	};
 
 	const install = async () => {
