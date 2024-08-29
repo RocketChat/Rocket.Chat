@@ -1,4 +1,4 @@
-import { Sidebar } from '@rocket.chat/fuselage';
+import { NavBarItem } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentProps } from 'react';
@@ -6,7 +6,7 @@ import React from 'react';
 
 import { useOmnichannelAgentAvailable } from '../../hooks/omnichannel/useOmnichannelAgentAvailable';
 
-type NavBarItemOmnichannelLivechatToggleProps = Omit<ComponentProps<typeof Sidebar.TopBar.Action>, 'icon'>;
+type NavBarItemOmnichannelLivechatToggleProps = Omit<ComponentProps<typeof NavBarItem>, 'icon'>;
 
 const NavBarItemOmnichannelLivechatToggle = (props: NavBarItemOmnichannelLivechatToggleProps): ReactElement => {
 	const t = useTranslation();
@@ -23,7 +23,7 @@ const NavBarItemOmnichannelLivechatToggle = (props: NavBarItemOmnichannelLivecha
 	});
 
 	return (
-		<Sidebar.TopBar.Action
+		<NavBarItem
 			{...props}
 			id='omnichannel-status-toggle'
 			title={agentAvailable ? t('Turn_off_answer_chats') : t('Turn_on_answer_chats')}

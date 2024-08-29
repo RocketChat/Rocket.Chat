@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Sidebar } from '@rocket.chat/fuselage';
+import { SideBarItemIcon } from '@rocket.chat/fuselage';
 import React, { memo } from 'react';
 
 import { ReactiveUserStatus } from '../../components/UserStatus';
@@ -22,11 +22,7 @@ type UserItemProps = {
 
 const UserItem = ({ item, id, style, t, SideBarItemTemplate, AvatarTemplate, useRealName }: UserItemProps) => {
 	const title = useRealName ? item.fname || item.name : item.name || item.fname;
-	const icon = (
-		<Sidebar.Item.Icon icon={'' as any}>
-			<ReactiveUserStatus uid={item._id} />
-		</Sidebar.Item.Icon>
-	);
+	const icon = <SideBarItemIcon icon={<ReactiveUserStatus uid={item._id} />} />;
 	const href = roomCoordinator.getRouteLink(item.t, { name: item.name });
 
 	return (
