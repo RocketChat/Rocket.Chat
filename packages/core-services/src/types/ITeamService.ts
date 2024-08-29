@@ -125,4 +125,12 @@ export interface ITeamService {
 	getStatistics(): Promise<ITeamStats>;
 	findBySubscribedUserIds(userId: string, callerId?: string): Promise<ITeam[]>;
 	addRolesToMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean>;
+	listRoomsAndDiscussions(
+		userId: string,
+		team: ITeam,
+		filter?: string,
+		sort?: Record<string, 1 | -1>,
+		skip?: number,
+		limit?: number,
+	): Promise<{ total: number; data: IRoom[] }>;
 }

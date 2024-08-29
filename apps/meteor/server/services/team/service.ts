@@ -1053,4 +1053,50 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		return rooms;
 	}
+
+	// Returns the list of rooms and discussions a user has access to inside a team
+	// Rooms returned are a composition of the rooms the user is in + public rooms + discussions from the main room (if any)
+	async listRoomsAndDiscussions(
+		userId: string,
+		team: ITeam,
+		filter?: string,
+		sort?: Record<string, 1 | -1>,
+		skip = 0,
+		limit = 10,
+	): Promise<{ total: number; data: IRoom[] }> {
+		const mainRoom = await Rooms.findOneById(team.roomId, { projection: { _id: 1 } });
+		if (!mainRoom) {
+			throw new Error('error-invalid-team-no-main-room');
+		}
+
+		const [discussionIds, teamRooms] = await Promise.all([
+			Rooms.findDiscussionsByPrid(mainRoom._id, { projection: { _id: 1 } })
+				.map(({ _id }) => _id)
+				.toArray(),
+			Rooms.findByTeamId(team._id, { projection: { _id: 1, t: 1 } }).toArray(),
+		]);
+
+		const teamPublicIds = teamRooms.filter(({ t }) => t === 'c').map(({ _id }) => _id);
+		const teamRoomIds = teamRooms.map(({ _id }) => _id);
+		const roomIds = await Subscriptions.findByUserIdAndRoomIds(userId, teamRoomIds, { projection: { rid: 1 } })
+			.map(({ rid }) => rid)
+			.toArray();
+
+		const { cursor, totalCount } = Rooms.findPaginatedByNameOrFnameInIds(
+			[...new Set([mainRoom._id, ...roomIds, ...discussionIds, ...teamPublicIds])],
+			filter,
+			{
+				skip,
+				limit,
+				sort,
+			},
+		);
+
+		const [data, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return {
+			total,
+			data,
+		};
+	}
 }

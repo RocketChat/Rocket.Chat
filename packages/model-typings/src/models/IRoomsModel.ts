@@ -159,6 +159,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findSmallestFederatedRoomInNumberOfUsers(options?: FindOptions<IRoom>): Promise<IRoom | undefined>;
 
+	findPaginatedByNameOrFnameInIds(ids: IRoom['_id'][], filter?: string, options?: FindOptions<IRoom>): FindPaginated<FindCursor<IRoom>>;
+
 	countFederatedRooms(): Promise<number>;
 	incMsgCountById(rid: string, inc: number): Promise<UpdateResult>;
 	getIncMsgCountUpdateQuery(inc: number, roomUpdater: Updater<IRoom>): Updater<IRoom>;
@@ -281,4 +283,5 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]>;
 	removeUsersFromE2EEQueueByRoomId(roomId: IRoom['_id'], uids: IUser['_id'][]): Promise<Document | UpdateResult>;
 	removeUserFromE2EEQueue(uid: IUser['_id']): Promise<Document | UpdateResult>;
+	findDiscussionsByPrid(prid: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 }

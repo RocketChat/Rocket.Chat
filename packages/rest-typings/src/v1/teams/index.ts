@@ -6,6 +6,7 @@ import type { TeamsAddMembersProps } from './TeamsAddMembersProps';
 import type { TeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
 import type { TeamsDeleteProps } from './TeamsDeleteProps';
 import type { TeamsLeaveProps } from './TeamsLeaveProps';
+import type { TeamsListRoomsAndDiscussionsProps } from './TeamsListRoomsAndDiscussions';
 import type { TeamsRemoveMemberProps } from './TeamsRemoveMemberProps';
 import type { TeamsRemoveRoomProps } from './TeamsRemoveRoomProps';
 import type { TeamsUpdateMemberProps } from './TeamsUpdateMemberProps';
@@ -19,6 +20,7 @@ export * from './TeamsRemoveMemberProps';
 export * from './TeamsRemoveRoomProps';
 export * from './TeamsUpdateMemberProps';
 export * from './TeamsUpdateProps';
+export * from './TeamsListRoomsAndDiscussions';
 
 type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'>;
 
@@ -135,7 +137,7 @@ export type TeamsEndpoints = {
 
 	'/v1/teams.info': {
 		GET: (params: ({ teamId: string } | { teamName: string }) & Record<string, string | number | boolean | object>) => {
-			teamInfo: ITeam;
+			teamInfo: Partial<ITeam>;
 		};
 	};
 
@@ -171,7 +173,7 @@ export type TeamsEndpoints = {
 	'/v1/teams.listRooms': {
 		GET: (
 			params: PaginatedRequest<
-				({ teamId: string } | { teamName: string } | { roomId: string }) & {
+				({ teamId: string } | { teamName: string }) & {
 					filter?: string;
 					type?: string;
 				}
@@ -183,5 +185,9 @@ export type TeamsEndpoints = {
 		POST: (params: { roomId: IRoom['_id']; isDefault: boolean }) => {
 			room: IRoom;
 		};
+	};
+
+	'/v1/teams.listRoomsAndDiscussions': {
+		GET: (params: TeamsListRoomsAndDiscussionsProps) => PaginatedResult<{ data: IRoom[] }>;
 	};
 };
