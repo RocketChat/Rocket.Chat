@@ -13,6 +13,7 @@ import {
 	useTranslation,
 	useEndpoint,
 } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
 
@@ -100,6 +101,8 @@ const RoomMenu = ({
 	const isOmnichannelRoom = type === 'l';
 	const prioritiesMenu = useOmnichannelPrioritiesMenu(rid);
 
+	const queryClient = useQueryClient();
+
 	const canLeave = ((): boolean => {
 		if (type === 'c' && !canLeaveChannel) {
 			return false;
@@ -173,6 +176,8 @@ const RoomMenu = ({
 
 	const handleToggleRead = useEffectEvent(async () => {
 		try {
+			queryClient.invalidateQueries(['sidebar/search/spotlight']);
+
 			if (isUnread) {
 				await readMessages({ rid, readThreads: true });
 				return;
@@ -184,7 +189,9 @@ const RoomMenu = ({
 
 			LegacyRoomManager.close(subscription.t + subscription.name);
 
-			router.navigate('/home');
+			if (roomOpen) {
+				router.navigate('/home');
+			}
 
 			await unreadMessages(undefined, rid);
 		} catch (error) {
