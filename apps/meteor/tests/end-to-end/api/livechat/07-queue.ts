@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 
+import { faker } from '@faker-js/faker';
 import type { ILivechatDepartment, ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
@@ -23,7 +24,11 @@ const cleanupRooms = async () => {
 			body: { rooms },
 		} = await request.get(api('livechat/rooms')).query({ 'agents[]': item.user._id }).set(credentials);
 
-		await Promise.all(rooms.map((room: IOmnichannelRoom) => closeOmnichannelRoom(room._id)));
+		await Promise.all(
+			rooms.map((room: IOmnichannelRoom) =>
+				request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: room._id, comment: faker.lorem.sentence() }),
+			),
+		);
 	}
 };
 
