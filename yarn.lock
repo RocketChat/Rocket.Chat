@@ -2937,12 +2937,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.17.2, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.20.1, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.22.5, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.23.9, @babel/runtime@npm:^7.5.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.6.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.13.10, @babel/runtime@npm:^7.15.4, @babel/runtime@npm:^7.17.2, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.20.1, @babel/runtime@npm:^7.20.13, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.5.0, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.6.2, @babel/runtime@npm:^7.7.6, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.2":
   version: 7.24.4
   resolution: "@babel/runtime@npm:7.24.4"
   dependencies:
     regenerator-runtime: ^0.14.0
   checksum: 2f27d4c0ffac7ae7999ac0385e1106f2a06992a8bdcbf3da06adcac7413863cd08c198c2e4e970041bbea849e17f02e1df18875539b6afba76c781b6b59a07c3
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:^7.24.8":
+  version: 7.25.6
+  resolution: "@babel/runtime@npm:7.25.6"
+  dependencies:
+    regenerator-runtime: ^0.14.0
+  checksum: ee1a69d3ac7802803f5ee6a96e652b78b8addc28c6a38c725a4ad7d61a059d9e6cb9f6550ed2f63cce67a1bd82e0b1ef66a1079d895be6bfb536a5cfbd9ccc32
   languageName: node
   linkType: hard
 
@@ -8913,14 +8922,14 @@ __metadata:
     babel-loader: ~8.2.5
     cross-env: ^7.0.3
     eslint: ~8.45.0
-    i18next: ^23.10.1
+    i18next: ~23.14.0
     jest: ~29.7.0
     normalize.css: ^8.0.1
     npm-run-all: ^4.1.5
     prettier: ~2.8.8
     react-docgen-typescript-plugin: ~1.0.5
     react-dom: ^17.0.2
-    react-i18next: ^14.1.0
+    react-i18next: ~15.0.1
     rimraf: ^3.0.2
     storybook-dark-mode: ~3.0.1
     tslib: ^2.5.3
@@ -9177,7 +9186,7 @@ __metadata:
     history: ~5.3.0
     html-webpack-plugin: ^5.5.3
     husky: ^4.3.8
-    i18next: ~23.4.9
+    i18next: ~23.14.0
     if-env: ^1.0.4
     image-webpack-loader: ~8.1.0
     lorem-ipsum: ^2.0.8
@@ -9200,7 +9209,7 @@ __metadata:
     query-string: ^7.1.3
     react-dom: ~17.0.2
     react-hook-form: ~7.45.4
-    react-i18next: ~13.2.2
+    react-i18next: ~15.0.1
     rimraf: ^3.0.2
     sass: ~1.62.1
     sass-loader: ~10.4.1
@@ -9558,7 +9567,7 @@ __metadata:
     hljs9: "npm:highlight.js@^9.18.5"
     http-proxy-agent: ^5.0.0
     human-interval: ^2.0.1
-    i18next: ~23.4.9
+    i18next: ~23.14.0
     i18next-http-backend: ^1.4.5
     i18next-sprintf-postprocessor: ^0.2.2
     iconv-lite: ^0.6.3
@@ -9635,7 +9644,7 @@ __metadata:
     react-dom: ~17.0.2
     react-error-boundary: ^3.1.4
     react-hook-form: ~7.45.4
-    react-i18next: ~13.2.2
+    react-i18next: ~15.0.1
     react-keyed-flatten-children: ^1.3.0
     react-virtuoso: ^4.7.1
     redis: ^4.0.6
@@ -9696,9 +9705,9 @@ __metadata:
     "@tanstack/react-query": ^4.16.1
     "@types/use-sync-external-store": ^0.0.5
     eslint: ~8.45.0
-    i18next: ~23.4.9
+    i18next: ~23.14.0
     react: ~17.0.2
-    react-i18next: ~13.2.2
+    react-i18next: ~15.0.1
     typescript: ~5.5.4
     use-sync-external-store: ~1.2.2
   peerDependencies:
@@ -10530,7 +10539,7 @@ __metadata:
     eslint: ~8.45.0
     react: ~17.0.2
     react-hook-form: ~7.45.4
-    react-i18next: ~13.2.2
+    react-i18next: ~15.0.1
     storybook-dark-mode: ~3.0.1
     typescript: ~5.5.4
   peerDependencies:
@@ -26005,7 +26014,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:>=17.0.11, i18next@npm:^23.10.1":
+"i18next@npm:>=17.0.11":
   version: 23.10.1
   resolution: "i18next@npm:23.10.1"
   dependencies:
@@ -26023,12 +26032,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:~23.4.9":
-  version: 23.4.9
-  resolution: "i18next@npm:23.4.9"
+"i18next@npm:~23.14.0":
+  version: 23.14.0
+  resolution: "i18next@npm:23.14.0"
   dependencies:
-    "@babel/runtime": ^7.22.5
-  checksum: 46ac2415dc817c0e25e1c5e64332249825cd63b5fb9a5d42e3a2329d4ecd098c0f15a243f56b53e03db02e2e9931ca9bb4447370b2436f9ad6556de40ce981cf
+    "@babel/runtime": ^7.23.2
+  checksum: 4239843691181907d0570eabebf53b81499f54733c87b7554432022b0eeb2ff38df21d03dd907bc3baab8432d746e0fd16949507bbf3c7ccf5b2071e474d5f52
   languageName: node
   linkType: hard
 
@@ -35380,11 +35389,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:^14.1.0":
-  version: 14.1.0
-  resolution: "react-i18next@npm:14.1.0"
+"react-i18next@npm:15.0.1":
+  version: 15.0.1
+  resolution: "react-i18next@npm:15.0.1"
   dependencies:
-    "@babel/runtime": ^7.23.9
+    "@babel/runtime": ^7.24.8
     html-parse-stringify: ^3.0.1
   peerDependencies:
     i18next: ">= 23.2.3"
@@ -35394,15 +35403,15 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 96fbc4b0919b9f0c639f9f3eb35eecac528174aa97e3b1af469cfdbff4b34e40ae8969c26c0b737691a5fa9b56bb13093524cfca79b93cbd58f1319530da31b2
+  checksum: fdff560f1a7988677fbccab2934d5d253515f5b07ea33d9a6dff8852be4df5cd72a41235d412be7016cbc96c0a33c8471e5ff7e02ee1e149654918082ea43827
   languageName: node
   linkType: hard
 
-"react-i18next@npm:~13.2.2":
-  version: 13.2.2
-  resolution: "react-i18next@npm:13.2.2"
+"react-i18next@patch:react-i18next@npm%3A15.0.1#./.yarn/patches/react-i18next-npm-15.0.1-0812bb73aa.patch::locator=rocket.chat%40workspace%3A.":
+  version: 15.0.1
+  resolution: "react-i18next@patch:react-i18next@npm%3A15.0.1#./.yarn/patches/react-i18next-npm-15.0.1-0812bb73aa.patch::version=15.0.1&hash=90570d&locator=rocket.chat%40workspace%3A."
   dependencies:
-    "@babel/runtime": ^7.22.5
+    "@babel/runtime": ^7.24.8
     html-parse-stringify: ^3.0.1
   peerDependencies:
     i18next: ">= 23.2.3"
@@ -35412,7 +35421,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 2b85bfb347af1a00add1c02901025706f7d2037fade4e8aa08159287ddf012e8cf35626eb9f5c578b9d1c24c065c69f2ad4b5a3087fb5cdbea540f8bc18c0f59
+  checksum: 76bda74c294a66e3330edd217dcd453b48f3e76fe4a89c411a8c1d31fdff932f7c314a1aa5f83bd948b233ded958a6c66674e12ccb399dc6f7790f2c325742b2
   languageName: node
   linkType: hard
 
