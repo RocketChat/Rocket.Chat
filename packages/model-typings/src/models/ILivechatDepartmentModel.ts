@@ -52,10 +52,10 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	updateById(_id: string, update: Partial<ILivechatDepartment>): Promise<Document | UpdateResult>;
 	updateNumAgentsById(_id: string, numAgents: number): Promise<Document | UpdateResult>;
 	decreaseNumberOfAgentsByIds(_ids: string[]): Promise<Document | UpdateResult>;
-	findEnabledWithAgents<T extends Partial<ILivechatDepartment> = ILivechatDepartment>(
+	findEnabledWithAgents<T extends Document = ILivechatDepartment>(
 		projection?: FindOptions<ILivechatDepartment>['projection'],
 	): FindCursor<T>;
-	findEnabledWithAgentsAndBusinessUnit<T extends Partial<ILivechatDepartment> = ILivechatDepartment>(
+	findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
 		_: any,
 		projection: FindOptions<T>['projection'],
 	): Promise<FindCursor<T>>;

@@ -283,9 +283,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.updateMany({ _id: { $in: _ids } }, { $inc: { numAgents: -1 } });
 	}
 
-	findEnabledWithAgents<T extends Partial<ILivechatDepartment> = ILivechatDepartment>(
-		projection: FindOptions<T>['projection'] = {},
-	): FindCursor<T> {
+	findEnabledWithAgents<T extends Document = ILivechatDepartment>(projection: FindOptions<T>['projection'] = {}): FindCursor<T> {
 		const query = {
 			numAgents: { $gt: 0 },
 			enabled: true,
@@ -293,7 +291,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find<T>(query, projection && { projection });
 	}
 
-	async findEnabledWithAgentsAndBusinessUnit<T extends Partial<ILivechatDepartment> = ILivechatDepartment>(
+	async findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
 		_: any,
 		projection: FindOptions<T>['projection'] = {},
 	): Promise<FindCursor<T>> {
@@ -330,10 +328,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find(query, options);
 	}
 
-	findActiveByUnitIds<T extends Partial<ILivechatDepartment> = ILivechatDepartment>(
-		unitIds: string[],
-		options: FindOptions<T> = {},
-	): FindCursor<T> {
+	findActiveByUnitIds<T extends Document = ILivechatDepartment>(unitIds: string[], options: FindOptions<T> = {}): FindCursor<T> {
 		const query = {
 			enabled: true,
 			numAgents: { $gt: 0 },

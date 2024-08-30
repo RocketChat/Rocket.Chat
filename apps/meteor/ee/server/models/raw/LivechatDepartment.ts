@@ -28,7 +28,7 @@ declare module '@rocket.chat/model-typings' {
 		): Promise<UpdateResult>;
 		unfilteredRemove(query: Filter<ILivechatDepartment>): Promise<DeleteResult>;
 		removeParentAndAncestorById(id: string): Promise<UpdateResult | Document>;
-		findEnabledWithAgentsAndBusinessUnit<T extends Partial<ILivechatDepartment> = ILivechatDepartment>(
+		findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
 			businessUnit: string,
 			projection: FindOptions<T>['projection'],
 		): Promise<FindCursor<T>>;
@@ -74,7 +74,7 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 		return this.updateMany({ parentId: id }, { $unset: { parentId: 1 }, $pull: { ancestors: id } });
 	}
 
-	async findEnabledWithAgentsAndBusinessUnit<T extends Partial<ILivechatDepartment> = ILivechatDepartment>(
+	async findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
 		businessUnit: string,
 		projection: FindOptions<T>['projection'],
 	): Promise<FindCursor<T>> {
