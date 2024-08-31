@@ -1,5 +1,5 @@
 /* eslint-disable complexity */
-import type { IMessage, ISubscription, IUpload, IE2EEMessage, FileAttachmentProps } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -21,12 +21,10 @@ import React, { memo, useRef, useReducer, useCallback, useState } from 'react';
 import { Trans } from 'react-i18next';
 import { useSubscription } from 'use-subscription';
 
-import { e2e } from '../../../../../app/e2e/client';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
-import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
@@ -45,6 +43,7 @@ import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import FilePreview from './FilePreview/FilePreview';
+import { handleSendFiles } from './HandleFileUploads';
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
@@ -186,181 +185,6 @@ const MessageBox = ({
 		}, 300);
 	};
 
-	const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
-		return new Promise((resolve) => {
-			const img = new Image();
-			img.onload = () => {
-				resolve({
-					height: img.height,
-					width: img.width,
-				});
-			};
-			img.src = dataURL;
-		});
-	};
-	const uploadFile = (
-		file: File[] | File,
-		extraData?: Pick<IMessage, 't' | 'e2e'> & { msg?: string },
-		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
-		fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
-	) => {
-		if (!chat) {
-			console.error('Chat context not found');
-			return;
-		}
-		chat.uploads.send(
-			file,
-			{
-				...extraData,
-			},
-			getContent,
-			fileContent,
-		);
-		chat.composer?.clear();
-		setFilesToUpload([]);
-	};
-
-	const handleEncryptedFilesShared = async (filesToUpload: File[], msg: string, e2eRoom: any) => {
-		const encryptedFilesarray: any = await Promise.all(filesToUpload.map((file) => e2eRoom.encryptFile(file)));
-		const filesarray = encryptedFilesarray.map((file: any) => file?.file);
-
-		if (encryptedFilesarray[0]) {
-			const getContent = async (_id: string[], fileUrl: string[]): Promise<IE2EEMessage['content']> => {
-				const attachments: FileAttachmentProps[] = [];
-				const uploadFiles: any = [];
-
-				const promises = _id.map(async (id, i) => {
-					const attachment: FileAttachmentProps = {
-						title: filesToUpload[i].name,
-						type: 'file',
-						title_link: fileUrl[i],
-						title_link_download: true,
-						encryption: {
-							key: encryptedFilesarray[i].key,
-							iv: encryptedFilesarray[i].iv,
-						},
-						hashes: {
-							sha256: encryptedFilesarray[i].hash,
-						},
-					};
-
-					let updatedAttachment;
-
-					if (/^image\/.+/.test(filesToUpload[i].type)) {
-						const dimensions = await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(filesToUpload[i]));
-						updatedAttachment = {
-							...attachment,
-							image_url: fileUrl[i],
-							image_type: filesToUpload[i].type,
-							image_size: filesToUpload[i].size,
-							...(dimensions && {
-								image_dimensions: dimensions,
-							}),
-						};
-					} else if (/^audio\/.+/.test(filesToUpload[i].type)) {
-						updatedAttachment = {
-							...attachment,
-							audio_url: fileUrl[i],
-							audio_type: filesToUpload[i].type,
-							audio_size: filesToUpload[i].size,
-						};
-					} else if (/^video\/.+/.test(filesToUpload[i].type)) {
-						updatedAttachment = {
-							...attachment,
-							video_url: fileUrl[i],
-							video_type: filesToUpload[i].type,
-							video_size: filesToUpload[i].size,
-						};
-					} else {
-						updatedAttachment = {
-							...attachment,
-							size: filesToUpload[i].size,
-							format: getFileExtension(filesToUpload[i].name),
-						};
-					}
-
-					attachments.push(updatedAttachment);
-
-					const files = {
-						_id: id,
-						name: filesToUpload[i].name,
-						type: filesToUpload[i].type,
-						size: filesToUpload[i].size,
-					};
-
-					uploadFiles.push(files);
-				});
-				await Promise.all(promises);
-
-				return e2eRoom.encryptMessageContent({
-					attachments,
-					files: uploadFiles,
-					file: filesToUpload[0],
-				});
-			};
-
-			const fileContentData = {
-				type: filesToUpload[0].type,
-				typeGroup: filesToUpload[0].type.split('/')[0],
-				name: filesToUpload[0].name,
-				msg: msg || '',
-				encryption: {
-					key: encryptedFilesarray[0].key,
-					iv: encryptedFilesarray[0].iv,
-				},
-				hashes: {
-					sha256: encryptedFilesarray[0].hash,
-				},
-			};
-
-			const fileContent = await e2eRoom.encryptMessageContent(fileContentData);
-
-			const uploadFileData = {
-				raw: {},
-				encrypted: fileContent,
-			};
-			uploadFile(
-				filesarray,
-				{
-					t: 'e2e',
-				},
-				getContent,
-				uploadFileData,
-			);
-		}
-	};
-	const handleSendFiles = async (filesToUpload: File[]) => {
-		if (!chat || !room) {
-			return;
-		}
-
-		const msg = chat.composer?.text ?? '';
-
-		filesToUpload.forEach((file) => {
-			Object.defineProperty(file, 'name', {
-				writable: true,
-				value: file.name,
-			});
-		});
-
-		const e2eRoom = await e2e.getInstanceByRoomId(room._id);
-
-		if (!e2eRoom) {
-			uploadFile(filesToUpload, { msg });
-			return;
-		}
-
-		const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages({ msg });
-
-		if (!shouldConvertSentMessages) {
-			uploadFile(filesToUpload, { msg });
-			return;
-		}
-		handleEncryptedFilesShared(filesToUpload, msg, e2eRoom);
-		chat.composer?.clear();
-		setFilesToUpload([]);
-	};
-
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
 	const sendOnEnter = sendOnEnterBehavior == null || sendOnEnterBehavior === 'normal' || (sendOnEnterBehavior === 'desktop' && !isMobile);
@@ -404,7 +228,7 @@ const MessageBox = ({
 	const handleSendMessage = useMutableCallback(async () => {
 		if (isUploading) {
 			setIsUploading(!isUploading);
-			return handleSendFiles(filesToUpload);
+			return handleSendFiles(filesToUpload, chat, room, setFilesToUpload);
 		}
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
