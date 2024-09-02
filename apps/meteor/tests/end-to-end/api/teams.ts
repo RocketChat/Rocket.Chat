@@ -2343,11 +2343,7 @@ describe('[Teams]', () => {
 		});
 
 		it('should fail if both properties are passed', async () => {
-			await request
-				.get(api('teams.listChildren'))
-				.set(credentials)
-				.query({ teamId: testTeam._id, teamName: testTeam.name })
-				.expect(400);
+			await request.get(api('teams.listChildren')).set(credentials).query({ teamId: testTeam._id, teamName: testTeam.name }).expect(400);
 		});
 
 		it('should fail if teamName is empty', async () => {
@@ -2391,11 +2387,7 @@ describe('[Teams]', () => {
 		});
 
 		it('should return a valid list of rooms for non admin member too', async () => {
-			const res = await request
-				.get(api('teams.listChildren'))
-				.query({ teamName: testTeam.name })
-				.set(testUserCredentials)
-				.expect(200);
+			const res = await request.get(api('teams.listChildren')).query({ teamName: testTeam.name }).set(testUserCredentials).expect(200);
 
 			expect(res.body).to.have.property('total').to.be.equal(5);
 			expect(res.body).to.have.property('data').to.be.an('array');
