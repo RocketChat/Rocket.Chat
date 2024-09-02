@@ -20,11 +20,11 @@ const deprecationWarning = log('useEndpointData is deprecated, use @tanstack/rea
  */
 export const useEndpointData = <TPathPattern extends PathPattern>(
 	endpoint: TPathPattern,
-	options: {
+	options: NoInfer<{
 		keys?: UrlParams<TPathPattern>;
 		params?: OperationParams<'GET', TPathPattern>;
 		initialValue?: Serialized<OperationResult<'GET', TPathPattern>> | (() => Serialized<OperationResult<'GET', TPathPattern>>);
-	} = {},
+	}> = {},
 ): AsyncState<Serialized<OperationResult<'GET', TPathPattern>>> & {
 	reload: () => void;
 } => {
