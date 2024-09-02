@@ -6,6 +6,7 @@ import React, { memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
+import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
 import RoomSidePanelListWrapper from './RoomSidePanelListWrapper';
 import RoomSidePanelLoading from './RoomSidePanelLoading';
@@ -23,17 +24,23 @@ const RoomSidePanel = () => {
 };
 
 const RoomSidePanelWithData = ({ parentRid, openedRoom }: { parentRid: string; openedRoom: string }) => {
-	const listRoomsAndDiscussions = useEndpoint('GET', '/v1/teams.listRoomsAndDiscussions');
+	const sidebarViewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode');
+
+	const listRoomsAndDiscussions = useEndpoint('GET', '/v1/teams.listChildren');
 	const result = useQuery(['room-list', parentRid], async () =>
 		listRoomsAndDiscussions({ roomId: parentRid, sort: JSON.stringify({ lm: -1 }) }),
 	);
-	const sidebarViewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode') || 'extended';
+	const roomInfo = useRoomInfoEndpoint(parentRid);
 
-	if (result.isLoading) {
+	if (roomInfo.isSuccess && !roomInfo.data.room?.sidepanel && !roomInfo.data.parent?.sidepanel) {
+		return null;
+	}
+
+	if (result.isLoading || roomInfo.isLoading) {
 		return <RoomSidePanelLoading />;
 	}
 
-	if (!result.isSuccess) {
+	if (!result.isSuccess || !roomInfo.isSuccess) {
 		return null;
 	}
 

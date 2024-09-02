@@ -10,7 +10,7 @@ export type RoomSidePanelItemProps = {
 	openedRoom?: string;
 	room: Serialized<IRoom>;
 	parentRid: string;
-	viewMode: 'extended' | 'medium' | 'condensed';
+	viewMode?: 'extended' | 'medium' | 'condensed';
 };
 
 const RoomSidePanelItem = ({ room, openedRoom, viewMode }: RoomSidePanelItemProps) => {

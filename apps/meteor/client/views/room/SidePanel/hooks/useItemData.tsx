@@ -10,7 +10,7 @@ import { useAvatarTemplate } from '../../../../sidebarv2/hooks/useAvatarTemplate
 
 export const useItemData = (
 	room: ISubscription & IRoom,
-	{ openedRoom, viewMode }: { openedRoom: string | undefined; viewMode: 'extended' | 'medium' | 'condensed' },
+	{ openedRoom, viewMode }: { openedRoom: string | undefined; viewMode?: 'extended' | 'medium' | 'condensed' },
 ) => {
 	const t = useTranslation();
 	const AvatarTemplate = useAvatarTemplate();
