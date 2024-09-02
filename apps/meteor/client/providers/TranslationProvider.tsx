@@ -84,7 +84,7 @@ const useI18next = (lng: string): typeof i18next => {
 				loadPath: 'i18n/{{lng}}.json',
 				parse: (data: string, _lngs?: string | string[], namespaces: string | string[] = []) =>
 					extractTranslationKeys(JSON.parse(data), namespaces),
-				request: (_options, url, _payload, callback) => {
+				request: (_options: unknown, url: string, _payload: unknown, callback: (error: unknown, data: unknown) => void) => {
 					const params = url.split('/');
 
 					const lng = params[params.length - 1];

@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Random } from '@rocket.chat/random';
-import type { Device, IExperimentalHTMLAudioElement } from '@rocket.chat/ui-contexts';
+import type { Device } from '@rocket.chat/ui-contexts';
 import {
 	useRouter,
 	useUser,
@@ -65,7 +65,7 @@ export const CallProvider = ({ children }: CallProviderProps) => {
 
 	const hasVoIPEnterpriseLicense = useIsVoipEnterprise();
 
-	const remoteAudioMediaRef = useRef<IExperimentalHTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
+	const remoteAudioMediaRef = useRef<HTMLAudioElement>(null); // TODO: Create a dedicated file for the AUDIO and make the controls accessible
 
 	const [queueCounter, setQueueCounter] = useState(0);
 	const [queueName, setQueueName] = useState('');
