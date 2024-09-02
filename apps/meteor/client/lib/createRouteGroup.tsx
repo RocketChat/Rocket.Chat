@@ -1,4 +1,4 @@
-import { type IRouterPaths, type RouteName, type RouterPathPattern } from '@rocket.chat/ui-contexts';
+import type { IRouterPaths, RouteName, RouterPathPattern } from '@rocket.chat/ui-contexts';
 import React, { type ElementType, type ReactNode } from 'react';
 
 import { router } from '../providers/RouterProvider';
@@ -9,21 +9,21 @@ type GroupName = 'omnichannel' | 'marketplace' | 'account' | 'admin';
 
 type GroupPrefix<TGroupName extends GroupName> = IRouterPaths[`${TGroupName}-index`]['pattern'];
 
-type RouteNamesOf<TGroupName extends GroupName> = Extract<
+type RouteNamesOf<TGroupName extends GroupName> = (
 	| keyof {
 			[TRouteName in RouteName as IRouterPaths[TRouteName]['pattern'] extends `${GroupPrefix<TGroupName>}/${string}`
 				? TRouteName
 				: never]: never;
 	  }
-	| `${GroupName}-index`,
-	RouteName
->;
+	| `${GroupName}-index`
+) &
+	RouteName;
 
-type TrimPrefix<T extends string, P extends string> = T extends `${P}${infer U}` ? U : T;
+type TrimPrefix<T, P extends string> = T extends `${P}${infer U}` ? U : T;
 
 export const createRouteGroup = <TGroupName extends GroupName>(
 	name: TGroupName,
-	prefix: GroupPrefix<TGroupName>,
+	prefix: NoInfer<GroupPrefix<TGroupName>>,
 	RouterComponent: ElementType<{
 		children?: ReactNode;
 	}>,
