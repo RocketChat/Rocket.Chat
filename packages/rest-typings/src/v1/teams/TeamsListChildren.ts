@@ -3,14 +3,14 @@ import type { ITeam } from '@rocket.chat/core-typings';
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajv } from '../Ajv';
 
-export type TeamsListRoomsAndDiscussionsProps =
+export type TeamsListChildrenProps =
 	| PaginatedRequest<{
 			teamId: ITeam['_id'];
 			filter?: string;
 	  }>
 	| PaginatedRequest<{ teamName: ITeam['name']; filter?: string }>;
 
-const TeamsListRoomsAndDiscussionsPropsSchema = {
+const TeamsListChildrenPropsSchema = {
 	type: 'object',
 	properties: {
 		teamId: { type: 'string' },
@@ -24,4 +24,4 @@ const TeamsListRoomsAndDiscussionsPropsSchema = {
 	oneOf: [{ required: ['teamId'] }, { required: ['teamName'] }],
 };
 
-export const isTeamsListRoomsAndDiscussionsProps = ajv.compile<TeamsListRoomsAndDiscussionsProps>(TeamsListRoomsAndDiscussionsPropsSchema);
+export const isTeamsListChildrenProps = ajv.compile<TeamsListChildrenProps>(TeamsListChildrenPropsSchema);

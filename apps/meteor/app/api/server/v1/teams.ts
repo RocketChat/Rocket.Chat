@@ -11,7 +11,7 @@ import {
 	isTeamsDeleteProps,
 	isTeamsLeaveProps,
 	isTeamsUpdateProps,
-	isTeamsListRoomsAndDiscussionsProps,
+	isTeamsListChildrenProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
@@ -379,8 +379,8 @@ API.v1.addRoute(
 // This should accept a teamId, filter (search by name on rooms collection) and sort/pagination
 // should return a list of rooms/discussions from the team. the discussions will only be returned from the main room
 API.v1.addRoute(
-	'teams.listRoomsAndDiscussions',
-	{ authRequired: true, validateParams: isTeamsListRoomsAndDiscussionsProps },
+	'teams.listChildren',
+	{ authRequired: true, validateParams: isTeamsListChildrenProps },
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -392,7 +392,7 @@ API.v1.addRoute(
 				return API.v1.notFound();
 			}
 
-			const data = await Team.listRoomsAndDiscussions(this.userId, team, filter, sort, offset, count);
+			const data = await Team.listChildren(this.userId, team, filter, sort, offset, count);
 
 			return API.v1.success({ ...data, offset, count });
 		},

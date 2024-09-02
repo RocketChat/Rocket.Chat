@@ -1081,7 +1081,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	// Returns the list of rooms and discussions a user has access to inside a team
 	// Rooms returned are a composition of the rooms the user is in + public rooms + discussions from the main room (if any)
-	async listRoomsAndDiscussions(
+	async listChildren(
 		userId: string,
 		team: ITeam,
 		filter?: string,
