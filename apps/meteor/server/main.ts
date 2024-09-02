@@ -1,6 +1,5 @@
 import './models/startup';
 
-
 /**
  * ./settings uses top level await, in theory the settings creation
  * and the startup should be done in parallel
