@@ -2218,7 +2218,7 @@ describe('[Teams]', () => {
 		});
 	});
 
-	describe('[teams.listRoomsAndDiscussions]', () => {
+	describe('[teams.listChildren]', () => {
 		const teamName = `team-${Date.now()}`;
 		let testTeam: ITeam;
 		let testUser: IUser;
@@ -2327,39 +2327,35 @@ describe('[Teams]', () => {
 		});
 
 		it('should fail if user is not logged in', async () => {
-			await request.get(api('teams.listRoomsAndDiscussions')).expect(401);
+			await request.get(api('teams.listChildren')).expect(401);
 		});
 
 		it('should fail if teamId is not passed as queryparam', async () => {
-			await request.get(api('teams.listRoomsAndDiscussions')).set(credentials).expect(400);
+			await request.get(api('teams.listChildren')).set(credentials).expect(400);
 		});
 
 		it('should fail if teamId is not valid', async () => {
-			await request.get(api('teams.listRoomsAndDiscussions')).set(credentials).query({ teamId: 'invalid' }).expect(404);
+			await request.get(api('teams.listChildren')).set(credentials).query({ teamId: 'invalid' }).expect(404);
 		});
 
 		it('should fail if teamId is empty', async () => {
-			await request.get(api('teams.listRoomsAndDiscussions')).set(credentials).query({ teamId: '' }).expect(404);
+			await request.get(api('teams.listChildren')).set(credentials).query({ teamId: '' }).expect(404);
 		});
 
 		it('should fail if both properties are passed', async () => {
-			await request
-				.get(api('teams.listRoomsAndDiscussions'))
-				.set(credentials)
-				.query({ teamId: testTeam._id, teamName: testTeam.name })
-				.expect(400);
+			await request.get(api('teams.listChildren')).set(credentials).query({ teamId: testTeam._id, teamName: testTeam.name }).expect(400);
 		});
 
 		it('should fail if teamName is empty', async () => {
-			await request.get(api('teams.listRoomsAndDiscussions')).set(credentials).query({ teamName: '' }).expect(404);
+			await request.get(api('teams.listChildren')).set(credentials).query({ teamName: '' }).expect(404);
 		});
 
 		it('should fail if teamName is invalid', async () => {
-			await request.get(api('teams.listRoomsAndDiscussions')).set(credentials).query({ teamName: 'invalid' }).expect(404);
+			await request.get(api('teams.listChildren')).set(credentials).query({ teamName: 'invalid' }).expect(404);
 		});
 
 		it('should return a list of valid rooms for user', async () => {
-			const res = await request.get(api('teams.listRoomsAndDiscussions')).query({ teamId: testTeam._id }).set(credentials).expect(200);
+			const res = await request.get(api('teams.listChildren')).query({ teamId: testTeam._id }).set(credentials).expect(200);
 
 			expect(res.body).to.have.property('total').to.be.equal(5);
 			expect(res.body).to.have.property('data').to.be.an('array');
@@ -2391,11 +2387,39 @@ describe('[Teams]', () => {
 		});
 
 		it('should return a valid list of rooms for non admin member too', async () => {
-			const res = await request
-				.get(api('teams.listRoomsAndDiscussions'))
-				.query({ teamName: testTeam.name })
-				.set(testUserCredentials)
-				.expect(200);
+			const res = await request.get(api('teams.listChildren')).query({ teamName: testTeam.name }).set(testUserCredentials).expect(200);
+
+			expect(res.body).to.have.property('total').to.be.equal(5);
+			expect(res.body).to.have.property('data').to.be.an('array');
+			expect(res.body.data).to.have.lengthOf(5);
+
+			const mainRoom = res.body.data.find((room: IRoom) => room._id === testTeam.roomId);
+			expect(mainRoom).to.be.an('object');
+
+			const publicChannel1 = res.body.data.find((room: IRoom) => room._id === publicRoom._id);
+			expect(publicChannel1).to.be.an('object');
+
+			const publicChannel2 = res.body.data.find((room: IRoom) => room._id === publicRoom2._id);
+			expect(publicChannel2).to.be.an('object');
+
+			const privateChannel1 = res.body.data.find((room: IRoom) => room._id === privateRoom._id);
+			expect(privateChannel1).to.be.undefined;
+
+			const privateChannel2 = res.body.data.find((room: IRoom) => room._id === privateRoom2._id);
+			expect(privateChannel2).to.be.an('object');
+
+			const discussionOnP = res.body.data.find((room: IRoom) => room._id === discussionOnPrivateRoom._id);
+			expect(discussionOnP).to.be.undefined;
+
+			const discussionOnC = res.body.data.find((room: IRoom) => room._id === discussionOnPublicRoom._id);
+			expect(discussionOnC).to.be.undefined;
+
+			const mainDiscussion = res.body.data.find((room: IRoom) => room._id === discussionOnMainRoom._id);
+			expect(mainDiscussion).to.be.an('object');
+		});
+
+		it('should return a valid list of rooms for non admin member too when filtering by teams main room id', async () => {
+			const res = await request.get(api('teams.listChildren')).query({ roomId: testTeam.roomId }).set(testUserCredentials).expect(200);
 
 			expect(res.body).to.have.property('total').to.be.equal(5);
 			expect(res.body).to.have.property('data').to.be.an('array');
@@ -2428,7 +2452,7 @@ describe('[Teams]', () => {
 
 		it('should return a list of rooms filtered by name using the filter parameter', async () => {
 			const res = await request
-				.get(api('teams.listRoomsAndDiscussions'))
+				.get(api('teams.listChildren'))
 				.query({ teamId: testTeam._id, filter: 'test-p' })
 				.set(credentials)
 				.expect(200);
@@ -2441,7 +2465,7 @@ describe('[Teams]', () => {
 
 		it('should paginate results', async () => {
 			const res = await request
-				.get(api('teams.listRoomsAndDiscussions'))
+				.get(api('teams.listChildren'))
 				.query({ teamId: testTeam._id, offset: 1, count: 2 })
 				.set(credentials)
 				.expect(200);

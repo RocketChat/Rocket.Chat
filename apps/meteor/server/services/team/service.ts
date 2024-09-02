@@ -1056,7 +1056,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	// Returns the list of rooms and discussions a user has access to inside a team
 	// Rooms returned are a composition of the rooms the user is in + public rooms + discussions from the main room (if any)
-	async listRoomsAndDiscussions(
+	async listChildren(
 		userId: string,
 		team: ITeam,
 		filter?: string,
@@ -1069,30 +1069,12 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('error-invalid-team-no-main-room');
 		}
 
-		const [discussionIds, teamRooms] = await Promise.all([
-			Rooms.findDiscussionsByPrid(mainRoom._id, { projection: { _id: 1 } })
-				.map(({ _id }) => _id)
-				.toArray(),
-			Rooms.findByTeamId(team._id, { projection: { _id: 1, t: 1 } }).toArray(),
-		]);
-
-		const teamPublicIds = teamRooms.filter(({ t }) => t === 'c').map(({ _id }) => _id);
-		const teamRoomIds = teamRooms.map(({ _id }) => _id);
-		const roomIds = await Subscriptions.findByUserIdAndRoomIds(userId, teamRoomIds, { projection: { rid: 1 } })
-			.map(({ rid }) => rid)
-			.toArray();
-
-		const { cursor, totalCount } = Rooms.findPaginatedByNameOrFnameInIds(
-			[...new Set([mainRoom._id, ...roomIds, ...discussionIds, ...teamPublicIds])],
-			filter,
+		const [
 			{
-				skip,
-				limit,
-				sort,
+				totalCount: [{ count: total }],
+				paginatedResults: data,
 			},
-		);
-
-		const [data, total] = await Promise.all([cursor.toArray(), totalCount]);
+		] = await Rooms.findChildrenOfTeam(team._id, mainRoom._id, userId, filter, { skip, limit, sort }).toArray();
 
 		return {
 			total,

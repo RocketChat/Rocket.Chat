@@ -125,7 +125,7 @@ export interface ITeamService {
 	getStatistics(): Promise<ITeamStats>;
 	findBySubscribedUserIds(userId: string, callerId?: string): Promise<ITeam[]>;
 	addRolesToMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean>;
-	listRoomsAndDiscussions(
+	listChildren(
 		userId: string,
 		team: ITeam,
 		filter?: string,

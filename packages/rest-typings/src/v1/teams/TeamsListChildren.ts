@@ -1,25 +1,22 @@
-import type { IRoom, ITeam } from '@rocket.chat/core-typings';
+import type { ITeam } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajv } from '../Ajv';
 
-export type TeamsListRoomsAndDiscussionsProps =
+export type TeamsListChildrenProps =
 	| PaginatedRequest<{
 			teamId: ITeam['_id'];
 			filter?: string;
 	  }>
 	| PaginatedRequest<{ teamName: ITeam['name']; filter?: string }>
-	| PaginatedRequest<{
-			roomId: IRoom['_id'];
-			filter?: string;
-	  }>;
+	| PaginatedRequest<{ roomId: ITeam['roomId']; filter?: string }>;
 
-const TeamsListRoomsAndDiscussionsPropsSchema = {
+const TeamsListChildrenPropsSchema = {
 	type: 'object',
 	properties: {
-		roomId: { type: 'string' },
 		teamId: { type: 'string' },
 		teamName: { type: 'string' },
+		roomId: { type: 'string' },
 		filter: { type: 'string' },
 		offset: { type: 'number' },
 		count: { type: 'number' },
@@ -29,4 +26,4 @@ const TeamsListRoomsAndDiscussionsPropsSchema = {
 	oneOf: [{ required: ['teamId'] }, { required: ['teamName'] }, { required: ['roomId'] }],
 };
 
-export const isTeamsListRoomsAndDiscussionsProps = ajv.compile<TeamsListRoomsAndDiscussionsProps>(TeamsListRoomsAndDiscussionsPropsSchema);
+export const isTeamsListChildrenProps = ajv.compile<TeamsListChildrenProps>(TeamsListChildrenPropsSchema);
