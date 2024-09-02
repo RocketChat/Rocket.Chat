@@ -42,7 +42,7 @@
 		"react-hook-form": "~7.45.4",
 		"react-i18next": "~13.2.2",
 		"storybook-dark-mode": "~3.0.1",
-		"typescript": "~5.3.3"
+		"typescript": "~5.5.4"
 	},
 	"peerDependencies": {
 		"@rocket.chat/layout": "*",
