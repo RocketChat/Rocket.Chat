@@ -45,8 +45,7 @@ const RoomHeader = ({ room, slots = {}, roomToolbox }: RoomHeaderProps) => {
 				<HeaderContentRow>
 					<RoomTitle room={room} />
 					<Favorite room={room} />
-					{room.prid && <ParentRoomWithData room={room} />}
-					{room.teamId && !room.teamMain && <ParentTeam room={room} />}
+					{(room.prid || room.teamId) && <ParentRoomWithData room={room} />}
 					{isRoomFederated(room) && <FederatedRoomOriginServer room={room} />}
 					<Encrypted room={room} />
 					<Translate room={room} />

@@ -63,6 +63,9 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			canSendMessage(rid: string): boolean {
 				return ChatSubscription.find({ rid }).count() > 0;
 			},
+			hasSubscription(rid: string): boolean {
+				return ChatSubscription.find({ rid }).count() > 0;
+			},
 			...directives,
 			config: roomConfig,
 		});
