@@ -1,3 +1,6 @@
+import { defaultFeaturesPreview, FeaturePreviewBadge } from '@rocket.chat/ui-client';
+import React from 'react';
+
 import { hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../../app/authorization/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
 
@@ -128,6 +131,13 @@ export const {
 		i18nLabel: 'Emoji',
 		icon: 'emoji',
 		permissionGranted: (): boolean => hasPermission('manage-emoji'),
+	},
+	{
+		href: '/admin/feature-preview',
+		i18nLabel: 'Feature_preview',
+		icon: 'flask',
+		badge: () => <FeaturePreviewBadge />,
+		permissionGranted: () => defaultFeaturesPreview?.length > 0,
 	},
 	{
 		href: '/admin/settings',

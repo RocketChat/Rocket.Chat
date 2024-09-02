@@ -1,9 +1,9 @@
 import { Badge } from '@rocket.chat/fuselage';
-import { useFeaturePreviewList } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React from 'react';
 
-const AccountFeaturePreviewBadge = () => {
+import { useFeaturePreviewList } from '../../hooks/useFeaturePreviewList';
+
+const FeaturePreviewBadge = () => {
 	const t = useTranslation();
 	const { unseenFeatures } = useFeaturePreviewList();
 
@@ -18,4 +18,4 @@ const AccountFeaturePreviewBadge = () => {
 	);
 };
 
-export default AccountFeaturePreviewBadge;
+export default FeaturePreviewBadge;
