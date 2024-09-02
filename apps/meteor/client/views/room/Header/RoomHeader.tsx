@@ -8,6 +8,7 @@ import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderSubtitle, 
 import MarkdownText from '../../../components/MarkdownText';
 import FederatedRoomOriginServer from './FederatedRoomOriginServer';
 import ParentRoomWithData from './ParentRoomWithData';
+import ParentTeam from './ParentTeam';
 import RoomTitle from './RoomTitle';
 import RoomToolbox from './RoomToolbox';
 import Encrypted from './icons/Encrypted';
@@ -46,7 +47,8 @@ const RoomHeader = ({ room, topic = '', slots = {}, roomToolbox }: RoomHeaderPro
 				<HeaderContentRow>
 					<RoomTitle room={room} />
 					<Favorite room={room} />
-					{(room.prid || room.teamId) && <ParentRoomWithData room={room} />}
+					{room.prid && <ParentRoomWithData room={room} />}
+					{room.teamId && !room.teamMain && <ParentTeam room={room} />}
 					{isRoomFederated(room) && <FederatedRoomOriginServer room={room} />}
 					<Encrypted room={room} />
 					<Translate room={room} />
