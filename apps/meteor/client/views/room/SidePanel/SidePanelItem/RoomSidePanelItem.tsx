@@ -1,23 +1,29 @@
-import type { Keys } from '@rocket.chat/icons';
-import React, { memo, useCallback } from 'react';
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
+import { useUserSubscription } from '@rocket.chat/ui-contexts';
+import React, { memo } from 'react';
 
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
-import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
+import { useTemplateByViewMode } from '../../../../sidebarv2/hooks/useTemplateByViewMode';
+import { useItemData } from '../hooks/useItemData';
 
 export type RoomSidePanelItemProps = {
-	id: string | undefined;
-	name: string | undefined;
-	icon: Keys;
-	openedRoom: string | undefined;
+	openedRoom?: string;
+	room: Serialized<IRoom>;
+	parentRid: string;
+	viewMode: 'extended' | 'medium' | 'condensed';
 };
 
-const RoomSidePanelItem = (props: RoomSidePanelItemProps) => {
+const RoomSidePanelItem = ({ room, openedRoom, viewMode }: RoomSidePanelItemProps) => {
 	const SidepanelItem = useTemplateByViewMode();
-	const onClick = useCallback((id) => {
-		goToRoomById(id);
-	}, []);
+	const subscription = useUserSubscription(room._id);
 
-	return <SidepanelItem onClick={onClick} {...props} />;
+	const itemData = useItemData({ ...subscription, ...room } as any, { viewMode, openedRoom }); // as any because of divergent and overlaping timestamp types in subs and room (type Date vs type string)
+
+	if (!subscription) {
+		return <SidepanelItem onClick={goToRoomById} is='a' {...room} {...itemData} />;
+	}
+
+	return <SidepanelItem onClick={goToRoomById} {...subscription} {...itemData} />;
 };
 
 export default memo(RoomSidePanelItem);

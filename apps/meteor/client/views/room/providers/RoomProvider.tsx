@@ -92,6 +92,17 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useEffect(() => {
 		if (isSidepanelFeatureEnabled) {
 			if (isSuccess) {
+				if (data.room?.teamMain) {
+					if (data.room.sidepanel?.items.includes('channels') || data.room?.sidepanel?.items.includes('discussions')) {
+						RoomManager.openSecondLevel(rid, rid);
+					} else {
+						RoomManager.open(rid);
+					}
+					return (): void => {
+						RoomManager.back(rid);
+					};
+				}
+
 				switch (true) {
 					case data.room?.prid && data.parent && data.parent.sidepanel?.items.includes('discussions'):
 						RoomManager.openSecondLevel(data.parent._id, rid);
@@ -101,7 +112,11 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 						break;
 
 					default:
-						RoomManager.open(rid);
+						if (data.parent?.sidepanel?.items.includes('channels') || data.parent?.sidepanel?.items.includes('discussions')) {
+							RoomManager.openSecondLevel(rid, rid);
+						} else {
+							RoomManager.open(rid);
+						}
 						break;
 				}
 			}
