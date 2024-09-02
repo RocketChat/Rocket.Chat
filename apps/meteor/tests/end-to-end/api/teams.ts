@@ -2218,7 +2218,7 @@ describe('[Teams]', () => {
 		});
 	});
 
-	describe.only('[teams.listChildren]', () => {
+	describe('[teams.listChildren]', () => {
 		const teamName = `team-${Date.now()}`;
 		let testTeam: ITeam;
 		let testUser: IUser;
