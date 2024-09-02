@@ -133,7 +133,7 @@ const VideoConferenceBlock = ({
               <VideoConfMessageButton onClick={callAgainHandler}>
                 {isUserCaller ? t('Call_again') : t('Call_back')}
               </VideoConfMessageButton>
-              {data.status === 2 && (
+              {[2, 4].includes(data.status) && (
                 <VideoConfMessageFooterText>
                   {t('Call_was_not_answered')}
                 </VideoConfMessageFooterText>
@@ -153,7 +153,7 @@ const VideoConferenceBlock = ({
                 </VideoConfMessageFooterText>
               </>
             ) : (
-              data.status === 2 && (
+              [2, 4].includes(data.status) && (
                 <VideoConfMessageFooterText>
                   {t('Call_was_not_answered')}
                 </VideoConfMessageFooterText>
