@@ -1,6 +1,8 @@
+import type { Box } from '@rocket.chat/fuselage';
 import { Skeleton } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ComponentProps } from 'react';
 import React, { useEffect, useState } from 'react';
 
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
@@ -17,17 +19,17 @@ type Totalizers = {
 };
 
 type CounterContainerProps = {
-	data?: Totalizers;
+	counterData?: Totalizers;
 	state: AsyncStatePhase;
 	initialData: DataType;
-};
+} & ComponentProps<typeof Box>;
 
-const CounterContainer = ({ data, state, initialData, ...props }: CounterContainerProps) => {
+const CounterContainer = ({ counterData, state, initialData, ...props }: CounterContainerProps) => {
 	const t = useTranslation();
 
 	const [displayData, setDisplayData] = useState<DataType>(initialData);
 
-	const { totalizers } = data || { totalizers: initialData };
+	const { totalizers } = counterData || { totalizers: initialData };
 
 	useEffect(() => {
 		if (state === AsyncStatePhase.RESOLVED) {

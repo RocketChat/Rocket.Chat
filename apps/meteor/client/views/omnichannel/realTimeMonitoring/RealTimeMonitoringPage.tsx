@@ -111,7 +111,7 @@ const RealTimeMonitoringPage = () => {
 						</Box>
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ConversationOverview key={keys?.current[0]} flexGrow={1} flexShrink={1} width='50%' reloadRef={reloadRef} params={allParams} />
+						<ConversationOverview key={keys?.current[0]} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
 						<ChatsChart key={keys?.current[1]} flexGrow={1} flexShrink={1} width='50%' mie={2} reloadRef={reloadRef} params={allParams} />
@@ -126,7 +126,7 @@ const RealTimeMonitoringPage = () => {
 						/>
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ChatsOverview key={keys?.current[3]} flexGrow={1} flexShrink={1} width='50%' reloadRef={reloadRef} params={allParams} />
+						<ChatsOverview key={keys?.current[3]} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
 						<AgentStatusChart
@@ -149,16 +149,16 @@ const RealTimeMonitoringPage = () => {
 						/>
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<AgentsOverview key={keys?.current[6]} flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams} />
+						<AgentsOverview key={keys?.current[6]} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' w='full' flexShrink={1}>
-						<ChatDurationChart key={keys?.current[7]} flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams} />
+						<ChatDurationChart key={keys?.current[7]} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' flexDirection='row' w='full' alignItems='stretch' flexShrink={1}>
-						<ProductivityOverview key={keys?.current[8]} flexGrow={1} flexShrink={1} reloadRef={reloadRef} params={allParams} />
+						<ProductivityOverview key={keys?.current[8]} reloadRef={reloadRef} params={allParams} />
 					</Box>
 					<Box display='flex' w='full' flexShrink={1}>
-						<ResponseTimesChart key={keys?.current[9]} flexGrow={1} flexShrink={1} w='100%' reloadRef={reloadRef} params={allParams} />
+						<ResponseTimesChart key={keys?.current[9]} reloadRef={reloadRef} params={allParams} />
 					</Box>
 				</Margins>
 			</PageScrollableContentWithShadow>

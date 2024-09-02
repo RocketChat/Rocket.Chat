@@ -19,7 +19,7 @@ const ProductivityOverview = ({ params, reloadRef, ...props }: ProductivityOverv
 
 	reloadRef.current.productivityOverview = reload;
 
-	return <CounterContainer state={state} data={data} initialData={initialData} {...props} />;
+	return <CounterContainer state={state} counterData={data} initialData={initialData} flexGrow={1} flexShrink={1} {...props} />;
 };
 
 export default ProductivityOverview;

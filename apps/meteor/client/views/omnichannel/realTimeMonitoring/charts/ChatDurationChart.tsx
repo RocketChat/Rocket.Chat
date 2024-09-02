@@ -84,7 +84,7 @@ const ChatDurationChart = ({ params, reloadRef, ...props }: ChatDurationChartPro
 		}
 	}, [avg, longest, state, t, updateChartData]);
 
-	return <Chart canvasRef={canvas} {...props} />;
+	return <Chart canvasRef={canvas} flexGrow={1} flexShrink={1} w='100%' {...props} />;
 };
 
 export default ChatDurationChart;

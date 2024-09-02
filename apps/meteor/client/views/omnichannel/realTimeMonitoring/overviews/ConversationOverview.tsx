@@ -22,7 +22,7 @@ const ConversationOverview = ({ params, reloadRef, ...props }: ConversationOverv
 
 	reloadRef.current.conversationOverview = reload;
 
-	return <CounterContainer state={state} data={data} initialData={initialData} {...props} />;
+	return <CounterContainer state={state} counterData={data} initialData={initialData} flexGrow={1} flexShrink={1} width='50%' {...props} />;
 };
 
 export default ConversationOverview;

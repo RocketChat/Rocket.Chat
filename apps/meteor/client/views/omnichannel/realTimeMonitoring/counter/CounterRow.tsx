@@ -1,11 +1,11 @@
 import { Box, Divider } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactChild } from 'react';
+import type { ReactChild } from 'react';
 import React, { Fragment } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
 type CounterRowProps = {
 	children: ReactChild[];
-} & ComponentProps<typeof Box>;
+};
 
 const CounterRow = ({ children, ...props }: CounterRowProps) => (
 	<Box pb={28} pi={20} display='flex' flexDirection='row' justifyContent='space-around' alignItems='center' flexGrow={1} {...props}>
