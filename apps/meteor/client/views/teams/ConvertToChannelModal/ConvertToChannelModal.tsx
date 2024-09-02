@@ -20,7 +20,7 @@ const ConvertToChannelModal = ({ onClose, onCancel, onConfirm, teamId, userId }:
 	});
 
 	if (phase === AsyncStatePhase.LOADING) {
-		return <GenericModalSkeleton onClose={onClose} />;
+		return <GenericModalSkeleton />;
 	}
 
 	return <BaseConvertToChannelModal onClose={onClose} onCancel={onCancel} onConfirm={onConfirm} rooms={value?.rooms} />;
