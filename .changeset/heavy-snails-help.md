@@ -3,4 +3,4 @@
 "@rocket.chat/rest-typings": minor
 ---
 
-implemented "omnichannel/contacts.update" endpoint to update contacts
+Implemented "omnichannel/contacts.update" endpoint to update contacts
