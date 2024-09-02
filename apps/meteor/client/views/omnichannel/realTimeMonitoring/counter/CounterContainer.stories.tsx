@@ -12,10 +12,10 @@ export const Default: ComponentStory<typeof CounterContainer> = (args) => <Count
 Default.storyName = 'CounterContainer';
 Default.args = {
 	initialData: [
-		{ title: 'total conversations', value: 10 },
-		{ title: 'open conversations', value: 10 },
-		{ title: 'total messages', value: 10 },
-		{ title: 'total visitors' },
+		{ title: 'Total_conversations', value: 10 },
+		{ title: 'Open_conversations', value: 10 },
+		{ title: 'Total_messages', value: 10 },
+		{ title: 'Total_visitors', value: 0 },
 	],
-	data: [],
+	data: { totalizers: [] },
 };
