@@ -147,7 +147,7 @@ const send = async (
 		};
 		await sdk.call('sendMessage', text, fileUrls, fileIds);
 		updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
-	} catch (error) {
+	} catch (error: unknown) {
 		updateUploads((uploads) =>
 			uploads.map((upload) => {
 				if (upload.id !== id) {

@@ -174,7 +174,6 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 							type: file.type,
 							typeGroup: file.type.split('/')[0],
 							name: fileName,
-							description,
 							encryption: {
 								key: encryptedFile.key,
 								iv: encryptedFile.iv,

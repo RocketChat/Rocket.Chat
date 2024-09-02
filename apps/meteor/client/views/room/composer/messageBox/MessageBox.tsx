@@ -225,7 +225,7 @@ const MessageBox = ({
 		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
 	});
 
-	const handleSendMessage = useMutableCallback(async () => {
+	const handleSendMessage = useMutableCallback(() => {
 		if (isUploading) {
 			setIsUploading(!isUploading);
 			return handleSendFiles(filesToUpload, chat, room, setFilesToUpload);
