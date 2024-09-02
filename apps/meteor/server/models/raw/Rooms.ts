@@ -1462,22 +1462,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find({ uids: { $size: 2, $in: [uids] }, t: 'd' });
 	}
 
-	findPaginatedByNameOrFnameInIds(
-		ids: IRoom['_id'][],
-		filter?: string,
-		options: FindOptions<IRoom> = {},
-	): FindPaginated<FindCursor<IRoom>> {
-		const regxp = filter && new RegExp(escapeRegExp(filter), 'i');
-		const query: Filter<IRoom> = {
-			_id: {
-				$in: ids,
-			},
-			...(regxp && { $or: [{ name: regxp }, { fname: regxp }] }),
-		};
-
-		return this.findPaginated(query, options);
-	}
-
 	// UPDATE
 	addImportIds(_id: IRoom['_id'], importIds: string[]): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
@@ -2076,7 +2060,83 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	findDiscussionsByPrid(prid: string, options?: FindOptions<IRoom>): FindCursor<IRoom> {
-		return this.find({ prid }, options);
+	findChildrenOfTeam(
+		teamId: string,
+		teamRoomId: string,
+		userId: string,
+		filter?: string,
+		options?: FindOptions<IRoom>,
+	): AggregationCursor<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }> {
+		const nameFilter = filter ? new RegExp(escapeRegExp(filter), 'i') : undefined;
+		return this.col.aggregate<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }>([
+			{
+				$match: {
+					$and: [
+						{
+							$or: [
+								{
+									teamId,
+								},
+								{ prid: teamRoomId },
+							],
+						},
+						...(nameFilter ? [{ $or: [{ fname: nameFilter }, { name: nameFilter }] }] : []),
+					],
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_subscription',
+					let: {
+						roomId: '$_id',
+					},
+					pipeline: [
+						{
+							$match: {
+								$and: [
+									{
+										$expr: {
+											$eq: ['$rid', '$$roomId'],
+										},
+									},
+									{
+										$expr: {
+											$eq: ['$u._id', userId],
+										},
+									},
+								],
+							},
+						},
+						{
+							$project: { _id: 1 },
+						},
+					],
+					as: 'subscription',
+				},
+			},
+			{
+				$match: {
+					$or: [
+						{ t: 'c' },
+						{
+							$expr: {
+								$ne: [{ $size: '$subscription' }, 0],
+							},
+						},
+					],
+				},
+			},
+			{ $project: { subscription: 0 } },
+			{ $sort: options?.sort || { ts: 1 } },
+			{
+				$facet: {
+					totalCount: [{ $count: 'count' }],
+					paginatedResults: [
+						{ $skip: options?.skip || 0 }, // Replace 0 with your skip value
+						{ $limit: options?.limit || 50 }, // Replace 10 with your limit value
+					],
+				},
+			},
+		]);
 	}
 }
