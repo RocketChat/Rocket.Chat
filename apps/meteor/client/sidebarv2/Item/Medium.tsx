@@ -17,7 +17,7 @@ type MediumProps = {
 	menuOptions?: any;
 };
 
-const Medium = ({ icon, title, avatar, actions, href, badges, unread, menu, ...props }: MediumProps) => {
+const Medium = ({ icon, title, avatar, actions, href, badges, unread, menu, selected }: MediumProps) => {
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
 
 	const isReduceMotionEnabled = usePrefersReducedMotion();
@@ -30,7 +30,7 @@ const Medium = ({ icon, title, avatar, actions, href, badges, unread, menu, ...p
 	};
 
 	return (
-		<SideBarItem href={href} {...props}>
+		<SideBarItem href={href} selected={selected}>
 			<SideBarItemAvatarWrapper>{avatar}</SideBarItemAvatarWrapper>
 			{icon && icon}
 			<SideBarItemTitle unread={unread}>{title}</SideBarItemTitle>

@@ -77,7 +77,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isFederated = useMemo(() => isRoomFederated(room), [room]);
 	// eslint-disable-next-line no-nested-ternary
-	const roomType = 'prid' in room ? 'discussion' : room.teamId ? 'team' : 'channel';
+	const roomType = 'prid' in room ? 'discussion' : room.teamMain ? 'team' : 'channel';
 
 	const retentionPolicy = useRetentionPolicy(room);
 	const retentionMaxAgeDefault = msToTimeUnit(TIMEUNIT.days, Number(useSetting<number>(getRetentionSetting(room.t)))) ?? 30;
@@ -369,41 +369,45 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 							{showAdvancedSettings && (
 								<AccordionItem title={t('Advanced_settings')}>
 									{roomType === 'team' && (
-										<FieldGroup>
-											<Box is='h5' fontScale='h5' color='titles-labels'>
-												{t('Navigation')}
-											</Box>
-											<Field>
-												<FieldRow>
-													<FieldLabel htmlFor={showChannelsField}>{t('Channels')}</FieldLabel>
-													<Controller
-														control={control}
-														name='showChannels'
-														render={({ field: { value, ...field } }) => <ToggleSwitch id={showChannelsField} checked={value} {...field} />}
-													/>
-												</FieldRow>
-												<FieldRow>
-													<FieldHint id={`${showChannelsField}-hint`}>{t('Show_channels_description')}</FieldHint>
-												</FieldRow>
-											</Field>
-											<Field>
-												<FieldRow>
-													<FieldLabel htmlFor={showDiscussionsField}>{t('Discussions')}</FieldLabel>
-													<Controller
-														control={control}
-														name='showDiscussions'
-														render={({ field: { value, ...field } }) => (
-															<ToggleSwitch id={showDiscussionsField} checked={value} {...field} />
-														)}
-													/>
-												</FieldRow>
-												<FieldRow>
-													<FieldHint id={`${showDiscussionsField}-hint`}>{t('Show_discussions_description')}</FieldHint>
-												</FieldRow>
-											</Field>
-										</FieldGroup>
+										<>
+											<FieldGroup>
+												<Box is='h5' fontScale='h5' color='titles-labels'>
+													{t('Navigation')}
+												</Box>
+												<Field>
+													<FieldRow>
+														<FieldLabel htmlFor={showChannelsField}>{t('Channels')}</FieldLabel>
+														<Controller
+															control={control}
+															name='showChannels'
+															render={({ field: { value, ...field } }) => (
+																<ToggleSwitch id={showChannelsField} checked={value} {...field} />
+															)}
+														/>
+													</FieldRow>
+													<FieldRow>
+														<FieldHint id={`${showChannelsField}-hint`}>{t('Show_channels_description')}</FieldHint>
+													</FieldRow>
+												</Field>
+												<Field>
+													<FieldRow>
+														<FieldLabel htmlFor={showDiscussionsField}>{t('Discussions')}</FieldLabel>
+														<Controller
+															control={control}
+															name='showDiscussions'
+															render={({ field: { value, ...field } }) => (
+																<ToggleSwitch id={showDiscussionsField} checked={value} {...field} />
+															)}
+														/>
+													</FieldRow>
+													<FieldRow>
+														<FieldHint id={`${showDiscussionsField}-hint`}>{t('Show_discussions_description')}</FieldHint>
+													</FieldRow>
+												</Field>
+											</FieldGroup>
+											<Divider mb={24} />
+										</>
 									)}
-									<Divider mb={24} />
 									<FieldGroup>
 										<Box is='h5' fontScale='h5' color='titles-labels'>
 											{t('Security_and_permissions')}

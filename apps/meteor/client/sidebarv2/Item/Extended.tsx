@@ -46,7 +46,7 @@ const Extended = ({
 	badges,
 	threadUnread: _threadUnread,
 	unread,
-	...props
+	selected,
 }: ExtendedProps) => {
 	const formatDate = useShortTimeAgo();
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
@@ -61,18 +61,18 @@ const Extended = ({
 	};
 
 	return (
-		<SideBarItem href={href} {...props}>
+		<SideBarItem href={href} selected={selected}>
 			{avatar && <SideBarItemAvatarWrapper>{avatar}</SideBarItemAvatarWrapper>}
 
 			<SideBarItemCol>
 				<SideBarItemRow>
 					{icon && icon}
 					<SideBarItemTitle unread={unread}>{title}</SideBarItemTitle>
-					<SideBarItemTimestamp>{formatDate(time)}</SideBarItemTimestamp>
+					{time && <SideBarItemTimestamp>{formatDate(time)}</SideBarItemTimestamp>}
 				</SideBarItemRow>
 
 				<SideBarItemRow>
-					<SideBarItemContent>{subtitle}</SideBarItemContent>
+					<SideBarItemContent unread={unread}>{subtitle}</SideBarItemContent>
 					{badges && badges}
 					{actions && actions}
 					{menu && (

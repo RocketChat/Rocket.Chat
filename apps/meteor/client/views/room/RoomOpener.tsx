@@ -33,10 +33,14 @@ const RoomOpener = ({ type, reference }: RoomOpenerProps): ReactElement => {
 
 	return (
 		<Box display='flex' w='full' h='full'>
-			<FeaturePreview feature='sidepanelNavigation'>
-				<FeaturePreviewOff>{null}</FeaturePreviewOff>
-				<FeaturePreviewOn>{!isDirectOrOmnichannelRoom(type) && <RoomSidePanel />}</FeaturePreviewOn>
-			</FeaturePreview>
+			{!isDirectOrOmnichannelRoom(type) && (
+				<FeaturePreview feature='sidepanelNavigation'>
+					<FeaturePreviewOff>{null}</FeaturePreviewOff>
+					<FeaturePreviewOn>
+						<RoomSidePanel />
+					</FeaturePreviewOn>
+				</FeaturePreview>
+			)}
 
 			<Suspense fallback={<RoomSkeleton />}>
 				{isLoading && <RoomSkeleton />}
