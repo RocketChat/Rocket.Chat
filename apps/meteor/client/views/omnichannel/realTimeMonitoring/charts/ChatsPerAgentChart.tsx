@@ -1,8 +1,9 @@
+import type { Box } from '@rocket.chat/fuselage';
 import type { OperationParams } from '@rocket.chat/rest-typings';
 import type { TranslationContextValue } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Chart as ChartType } from 'chart.js';
-import type { MutableRefObject } from 'react';
+import type { ComponentProps, MutableRefObject } from 'react';
 import React, { useRef, useEffect } from 'react';
 
 import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
@@ -26,7 +27,7 @@ const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: Tran
 type ChatsPerAgentChartProps = {
 	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/charts/chats-per-agent'>;
 	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
-};
+} & ComponentProps<typeof Box>;
 
 const ChatsPerAgentChart = ({ params, reloadRef, ...props }: ChatsPerAgentChartProps) => {
 	const t = useTranslation();

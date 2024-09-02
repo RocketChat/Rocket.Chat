@@ -1,9 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { MutableRefObject } from 'react';
+import type { ComponentProps, MutableRefObject } from 'react';
 import React from 'react';
 
-type ChartProps = { canvasRef: MutableRefObject<HTMLCanvasElement | null> };
-
+type ChartProps = { canvasRef: MutableRefObject<HTMLCanvasElement | null> } & ComponentProps<typeof Box>;
 const style = {
 	minHeight: '250px',
 };
