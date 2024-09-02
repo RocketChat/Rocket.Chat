@@ -10,27 +10,20 @@ type ParentRoomWithDataProps = {
 	room: IRoom;
 };
 
-const getParentId = ({ prid, teamId }: IRoom): string => {
-	if (prid) {
-		return prid;
-	}
-
-	if (teamId) {
-		return teamId;
-	}
-
-	throw new Error('Parent room ID is missing');
-};
-
 const ParentRoomWithData = ({ room }: ParentRoomWithDataProps): ReactElement => {
-	const parentId = getParentId(room);
+	const { prid } = room;
 
-	const subscription = useUserSubscription(parentId);
-	if (subscription) {
-		return <ParentRoom room={{ ...subscription, _id: subscription.rid }} />;
+	if (!prid) {
+		throw new Error('Parent room ID is missing');
 	}
 
-	return <ParentRoomWithEndpointData rid={room._id} />;
+	const subscription = useUserSubscription(prid);
+
+	if (subscription) {
+		return <ParentRoom room={subscription} />;
+	}
+
+	return <ParentRoomWithEndpointData rid={prid} />;
 };
 
 export default ParentRoomWithData;
