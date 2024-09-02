@@ -24,7 +24,9 @@ const RoomSidePanel = () => {
 
 const RoomSidePanelWithData = ({ parentRid, openedRoom }: { parentRid: string; openedRoom: string }) => {
 	const listRoomsAndDiscussions = useEndpoint('GET', '/v1/teams.listRoomsAndDiscussions');
-	const result = useQuery(['room-list', parentRid], async () => listRoomsAndDiscussions({ roomId: parentRid }));
+	const result = useQuery(['room-list', parentRid], async () =>
+		listRoomsAndDiscussions({ roomId: parentRid, sort: JSON.stringify({ lm: -1 }) }),
+	);
 	const sidebarViewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode') || 'extended';
 
 	if (result.isLoading) {
