@@ -171,11 +171,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 				SidepanelItem?,
 			];
 
+			const sidepanel = sidepanelItems.length > 0 ? { items: sidepanelItems } : { sidepanel: null };
+
 			try {
 				await saveAction({
 					rid: room._id,
 					...data,
-					...(sidepanelItems.length > 0 ? { sidepanel: { items: sidepanelItems } } : { sidepanel: null }),
+					...(roomType === 'team' ? { sidepanel } : null),
 					...((data.joinCode || 'joinCodeRequired' in data) && { joinCode: joinCodeRequired ? data.joinCode : '' }),
 					...((data.systemMessages || !hideSysMes) && {
 						systemMessages: hideSysMes && data.systemMessages,
