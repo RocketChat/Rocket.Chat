@@ -85,11 +85,12 @@ export const enabledDefaultFeatures = defaultFeaturesPreview.filter((feature) =>
 
 export const useFeaturePreviewList = () => {
 	const featurePreviewEnabled = useSetting<boolean>('Accounts_AllowFeaturePreview');
-	// const featurePreviewEnabledByDefault = useSetting<string>('Accounts_Default_User_Preferences_featuresPreview');
-	// console.info(featurePreviewEnabledByDefault);
-	const userFeaturesPreview = useUserPreference<FeaturePreviewProps[]>('featuresPreview');
+	let userFeaturesPreview = useUserPreference<FeaturePreviewProps[]>('featuresPreview');
 
-	console.log(enabledDefaultFeatures)
+	// TODO: Remove this statement after we improve the default settings to accept objects in the settings config.
+	if (typeof userFeaturesPreview === 'string') {
+		userFeaturesPreview = JSON.parse(userFeaturesPreview);
+	}
 
 	if (!featurePreviewEnabled) {
 		return { unseenFeatures: 0, features: [] as FeaturePreviewProps[], featurePreviewEnabled };
@@ -100,9 +101,7 @@ export const useFeaturePreviewList = () => {
 	).length;
 
 	const mergedFeatures = enabledDefaultFeatures.map((feature) => {
-		const userFeature = 
-						userFeaturesPreview?.find((userFeature) => userFeature.name === feature.name); // ?? 
-						// featurePreviewEnabledByDefault?.find((userFeature) => userFeature.name === feature.name);
+		const userFeature = userFeaturesPreview?.find((userFeature) => userFeature.name === feature.name);
 		return { ...feature, ...userFeature };
 	});
 

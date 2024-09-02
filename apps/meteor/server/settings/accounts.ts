@@ -1,5 +1,4 @@
 import { Random } from '@rocket.chat/random';
-import { defaultFeaturesPreview } from '@rocket.chat/ui-client';
 
 import { settingsRegistry } from '../../app/settings/server';
 
@@ -225,7 +224,7 @@ export const createAccountSettings = () =>
 		});
 
 		/**
-		 * TODO: Implement new setting type 'object' to store object settings in a more robust and maintanable way.
+		 * TODO: Implement new setting type 'object' to store object settings.
 		 * For example:
 		 * await this.add('Accounts_Default_User_Preferences_featuresPreview', {}, {
 					type: 'object',
@@ -233,15 +232,66 @@ export const createAccountSettings = () =>
 					value: defaultFeaturesPreview,
 				});
 		 */
-		const defaultFeaturesPreviewToStringfy: { [key: string]: boolean } = {};
-		defaultFeaturesPreview.forEach((feature) => {
-			defaultFeaturesPreviewToStringfy[feature.name] = feature.value;
-		});
+		// The object below replicates 'defaultFeaturesPreview' defined on @rocket.chat/ui-client/src/hooks/useFeaturePreviewList.ts
+		const defaultFeaturesPreviewToStringfy = [
+			{
+				name: 'quickReactions',
+				i18n: 'Quick_reactions',
+				description: 'Quick_reactions_description',
+				group: 'Message',
+				imageUrl: 'images/featurePreview/quick-reactions.png',
+				value: false,
+				enabled: true,
+			},
+			{
+				name: 'navigationBar',
+				i18n: 'Navigation_bar',
+				description: 'Navigation_bar_description',
+				group: 'Navigation',
+				value: false,
+				enabled: false,
+			},
+			{
+				name: 'enable-timestamp-message-parser',
+				i18n: 'Enable_timestamp',
+				description: 'Enable_timestamp_description',
+				group: 'Message',
+				value: false,
+				enabled: true,
+			},
+			{
+				name: 'contextualbarResizable',
+				i18n: 'Contextualbar_resizable',
+				description: 'Contextualbar_resizable_description',
+				group: 'Navigation',
+				value: false,
+				enabled: true,
+			},
+			{
+				name: 'newNavigation',
+				i18n: 'New_navigation',
+				description: 'New_navigation_description',
+				group: 'Navigation',
+				value: false,
+				enabled: true,
+			},
+			{
+				name: 'sidepanelNavigation',
+				i18n: 'Sidepanel_navigation',
+				description: 'Sidepanel_navigation_description',
+				group: 'Navigation',
+				value: false,
+				enabled: false,
+				enableQuery: {
+					name: 'newNavigation',
+					value: true,
+				},
+			},
+		];
 		await this.add('Accounts_Default_User_Preferences_featuresPreview', JSON.stringify(defaultFeaturesPreviewToStringfy), {
 			type: 'string',
 			hidden: true,
 			public: false,
-			value: JSON.stringify(defaultFeaturesPreviewToStringfy),
 		});
 		await this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
 			type: 'string',
