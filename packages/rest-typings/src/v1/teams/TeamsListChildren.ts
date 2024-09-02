@@ -8,20 +8,22 @@ export type TeamsListChildrenProps =
 			teamId: ITeam['_id'];
 			filter?: string;
 	  }>
-	| PaginatedRequest<{ teamName: ITeam['name']; filter?: string }>;
+	| PaginatedRequest<{ teamName: ITeam['name']; filter?: string }>
+	| PaginatedRequest<{ roomId: ITeam['roomId']; filter?: string }>;
 
 const TeamsListChildrenPropsSchema = {
 	type: 'object',
 	properties: {
 		teamId: { type: 'string' },
 		teamName: { type: 'string' },
+		roomId: { type: 'string' },
 		filter: { type: 'string' },
 		offset: { type: 'number' },
 		count: { type: 'number' },
 		sort: { type: 'string' },
 	},
 	additionalProperties: false,
-	oneOf: [{ required: ['teamId'] }, { required: ['teamName'] }],
+	oneOf: [{ required: ['teamId'] }, { required: ['teamName'] }, { required: ['roomId'] }],
 };
 
 export const isTeamsListChildrenProps = ajv.compile<TeamsListChildrenProps>(TeamsListChildrenPropsSchema);
