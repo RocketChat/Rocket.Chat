@@ -1,22 +1,22 @@
 diff --git a/lib/factories/internal/metadata/iterate_metadata_intersection.js b/lib/factories/internal/metadata/iterate_metadata_intersection.js
-index 260670b8ea37b63dcacadeffa26450f81087c90e..f07b44b16099d896ab40c46f03df86ee2f2c1a90 100644
+index da05ef3ac6f397d68b8fa10285f62d1794c57579..0f2b9b26e01cebd0b9c04a2db8857f911cfbaf57 100644
 --- a/lib/factories/internal/metadata/iterate_metadata_intersection.js
 +++ b/lib/factories/internal/metadata/iterate_metadata_intersection.js
-@@ -247,7 +247,7 @@ var iterate_metadata_intersection = function (checker) {
+@@ -181,7 +181,7 @@ var iterate_metadata_intersection = function (checker) {
                          var tags = MetadataTypeTagFactory_1.MetadataTypeTagFactory.analyze(errors)(target)(objects.map(function (om) { return om.objects; }).flat(), explore);
                          if (tags.length)
                              if (target === "array")
 -                                meta.arrays.at(-1).tags.push(tags);
 +                                meta.arrays.slice(-1)[0].tags.push(tags);
-                             else if (booleanLiteral === null)
+                             else if (atomics.size)
                                  meta.atomics.find(function (a) { return a.type === target; }).tags.push(tags);
-                             else {
+                             else if (constants.length) {
 diff --git a/lib/programmers/CheckerProgrammer.js b/lib/programmers/CheckerProgrammer.js
-index bbec09f22798d144b96f59bb946e7e32e3438c05..dc13cb47b72358b8e6165b768cff2360db2bd617 100644
+index 662e6ff51c91598229c88f691b7ce07200957167..4028a50cc92ee293e98b13822293d0fb35c64c1f 100644
 --- a/lib/programmers/CheckerProgrammer.js
 +++ b/lib/programmers/CheckerProgrammer.js
-@@ -458,8 +458,8 @@ var CheckerProgrammer;
-                                 ? "".concat(explore.postfix.slice(0, -1), "[").concat(index, "]\"")
+@@ -529,8 +529,8 @@ var CheckerProgrammer;
+                                 ? "".concat((0, postfix_of_tuple_1.postfix_of_tuple)(explore.postfix), "[").concat(index, "]\"")
                                  : "\"[".concat(index, "]\"") }));
                      });
 -                    var rest = tuple.elements.length && tuple.elements.at(-1).rest !== null
@@ -27,7 +27,7 @@ index bbec09f22798d144b96f59bb946e7e32e3438c05..dc13cb47b72358b8e6165b768cff2360
                      var arrayLength = typescript_1.default.factory.createPropertyAccessExpression(input, "length");
                      return config.combiner(explore)("and")(input, __spreadArray(__spreadArray(__spreadArray([], __read((rest === null
 diff --git a/lib/programmers/TypiaProgrammer.js b/lib/programmers/TypiaProgrammer.js
-index c75ab1bc077b788e36c32834ea4916c22df34500..99452220e2dd090d4d562296e26fb266faa617f9 100644
+index db244cb5e40fd68e15b7a06936b0f92802e5e4c9..c2f64885f67cc543c62b0b09e141c88684f99253 100644
 --- a/lib/programmers/TypiaProgrammer.js
 +++ b/lib/programmers/TypiaProgrammer.js
 @@ -165,7 +165,7 @@ var TypiaProgrammer;
@@ -39,34 +39,53 @@ index c75ab1bc077b788e36c32834ea4916c22df34500..99452220e2dd090d4d562296e26fb266
                              })()
                              : [0, 0], 2), line = _k[0], pos = _k[1];
                          console.error("".concat(file, ":").concat(line, ":").concat(pos, " - ").concat(category, " TS").concat(diag.code, ": ").concat(diag.messageText));
-diff --git a/lib/programmers/internal/application_tuple.js b/lib/programmers/internal/application_tuple.js
-index 5c1853a3a1692f95fe702bdae9813e958f54ac4c..04ca996c2ffe72d1cd5969e45a38e91937b975b1 100644
---- a/lib/programmers/internal/application_tuple.js
-+++ b/lib/programmers/internal/application_tuple.js
-@@ -22,15 +22,15 @@ var application_tuple = function (options) {
-                 var schema = __assign(__assign({ type: "array", items: tuple.type.elements.map(function (meta, i) {
-                         var _a;
-                         return (0, application_schema_1.application_schema)(options)(false)(components)((_a = meta.rest) !== null && _a !== void 0 ? _a : meta)(__assign(__assign({}, attribute), { "x-typia-rest": i === tuple.type.elements.length - 1 && meta.rest !== null, "x-typia-required": meta.required, "x-typia-optional": meta.optional }));
--                    }) }, attribute), { minItems: !!((_a = tuple.type.elements.at(-1)) === null || _a === void 0 ? void 0 : _a.rest)
-+                    }) }, attribute), { minItems: !!((_a = tuple.type.elements.slice(-1)[0]) === null || _a === void 0 ? void 0 : _a.rest)
-                         ? tuple.type.elements.length - 1
--                        : tuple.type.elements.filter(function (x) { return !x.optional; }).length, maxItems: !!((_b = tuple.type.elements.at(-1)) === null || _b === void 0 ? void 0 : _b.rest)
-+                        : tuple.type.elements.filter(function (x) { return !x.optional; }).length, maxItems: !!((_b = tuple.type.elements.slice(-1)[0]) === null || _b === void 0 ? void 0 : _b.rest)
-                         ? undefined
-                         : tuple.type.elements.length });
-                 if (options.purpose === "ajv")
-                     if (tuple.type.elements.length === 0)
-                         return schema;
--                    else if (!((_c = tuple.type.elements.at(-1)) === null || _c === void 0 ? void 0 : _c.rest))
-+                    else if (!((_c = tuple.type.elements.slice(-1)[0]) === null || _c === void 0 ? void 0 : _c.rest))
-                         return schema;
-                 var wrapper = __assign(__assign({}, schema), { items: (0, application_schema_1.application_schema)(options)(false)(components)(tuple.type.elements.reduce(function (x, y) { var _a, _b; return Metadata_1.Metadata.merge((_a = x.rest) !== null && _a !== void 0 ? _a : x, (_b = y.rest) !== null && _b !== void 0 ? _b : y); }, Metadata_1.Metadata.initialize()))(tuple.type.recursive ? {} : attribute), "x-typia-tuple": schema, minItems: schema.minItems, maxItems: schema.maxItems });
-                 return wrapper;
+diff --git a/lib/programmers/internal/application_v30_tuple.js b/lib/programmers/internal/application_v30_tuple.js
+index 94e8827fd94df3792c1d7b2cdacac604175ba8ca..c9a3a1bcdd978b97a080ed2c467188d808d10c8f 100644
+--- a/lib/programmers/internal/application_v30_tuple.js
++++ b/lib/programmers/internal/application_v30_tuple.js
+@@ -21,9 +21,9 @@ var application_v30_tuple = function (components) {
+     return function (tuple) {
+         return function (attribute) {
+             var _a, _b;
+-            return (__assign(__assign({}, attribute), { type: "array", items: (0, application_v30_schema_1.application_v30_schema)(false)(components)(tuple.type.recursive ? {} : attribute)(tuple.type.elements.reduce(function (x, y) { var _a, _b; return Metadata_1.Metadata.merge((_a = x.rest) !== null && _a !== void 0 ? _a : x, (_b = y.rest) !== null && _b !== void 0 ? _b : y); }, Metadata_1.Metadata.initialize())), minItems: !!((_a = tuple.type.elements.at(-1)) === null || _a === void 0 ? void 0 : _a.rest)
++            return (__assign(__assign({}, attribute), { type: "array", items: (0, application_v30_schema_1.application_v30_schema)(false)(components)(tuple.type.recursive ? {} : attribute)(tuple.type.elements.reduce(function (x, y) { var _a, _b; return Metadata_1.Metadata.merge((_a = x.rest) !== null && _a !== void 0 ? _a : x, (_b = y.rest) !== null && _b !== void 0 ? _b : y); }, Metadata_1.Metadata.initialize())), minItems: !!((_a = tuple.type.elements.slice(-1)[0]) === null || _a === void 0 ? void 0 : _a.rest)
+                     ? tuple.type.elements.length - 1
+-                    : tuple.type.elements.filter(function (x) { return !x.optional; }).length, maxItems: !!((_b = tuple.type.elements.at(-1)) === null || _b === void 0 ? void 0 : _b.rest)
++                    : tuple.type.elements.filter(function (x) { return !x.optional; }).length, maxItems: !!((_b = tuple.type.elements.slice(-1)[0]) === null || _b === void 0 ? void 0 : _b.rest)
+                     ? undefined
+                     : tuple.type.elements.length }));
+         };
+diff --git a/lib/programmers/internal/application_v31_tuple.js b/lib/programmers/internal/application_v31_tuple.js
+index af7bbbe1536244eec93d7311e289fc8b34245c0f..e7f126b72a3480f761f57e4d43826a26b8b06e3f 100644
+--- a/lib/programmers/internal/application_v31_tuple.js
++++ b/lib/programmers/internal/application_v31_tuple.js
+@@ -7,7 +7,7 @@ exports.application_v31_tuple = void 0;
+ var application_v31_tuple = function (generator) {
+     return function (tuple) {
+         var _a, _b;
+-        var tail = (_b = (_a = tuple.type.elements.at(-1)) === null || _a === void 0 ? void 0 : _a.rest) !== null && _b !== void 0 ? _b : null;
++        var tail = (_b = (_a = tuple.type.elements.slice(-1)[0]) === null || _a === void 0 ? void 0 : _a.rest) !== null && _b !== void 0 ? _b : null;
+         var prefixItems = tuple.type.isRest()
+             ? tuple.type.elements.slice(0, -1)
+             : tuple.type.elements;
+diff --git a/lib/programmers/internal/decode_union_object.js b/lib/programmers/internal/decode_union_object.js
+index c283bdfdcfb99f26954e6d76d35ccef4f78ddcee..7cdef1aeec80238014cf9457ca4351f02e99b638 100644
+--- a/lib/programmers/internal/decode_union_object.js
++++ b/lib/programmers/internal/decode_union_object.js
+@@ -72,7 +72,7 @@ var iterate = function (escaper) {
+                 ? typescript_1.default.factory.createIfStatement(b.condition, typescript_1.default.factory.createReturnStatement(b.value), undefined)
+                 : typescript_1.default.factory.createReturnStatement(b.value);
+         });
+-        if (branches.at(-1).condition !== null)
++        if (branches.slice(-1)[0].condition !== null)
+             statements.push(escaper(input, expected));
+         return typescript_1.default.factory.createBlock(statements, true);
+     };
 diff --git a/lib/programmers/json/JsonStringifyProgrammer.js b/lib/programmers/json/JsonStringifyProgrammer.js
-index ce0ae787164f7eba68ef35b05232b4b94ad8e7d7..8f70cfc8c8e9d82cd1ec5004ca5637487f57b3bc 100644
+index 77f2812cb509f5b9093dc311f8ae8558e4469a74..54a6c4e22f9cfa87cd30f8ade50e6cb8ccda9957 100644
 --- a/lib/programmers/json/JsonStringifyProgrammer.js
 +++ b/lib/programmers/json/JsonStringifyProgrammer.js
-@@ -424,10 +424,10 @@ var JsonStringifyProgrammer;
+@@ -469,10 +469,10 @@ var JsonStringifyProgrammer;
                      var rest = (function () {
                          if (tuple.elements.length === 0)
                              return null;
@@ -80,10 +99,10 @@ index ce0ae787164f7eba68ef35b05232b4b94ad8e7d7..8f70cfc8c8e9d82cd1ec5004ca563748
                      })();
                      return StringifyJoinder_1.StringifyJoiner.tuple(children, rest);
 diff --git a/lib/programmers/misc/MiscCloneProgrammer.js b/lib/programmers/misc/MiscCloneProgrammer.js
-index 3db6bc92637284468c5fe47ef59f51a9b41d06eb..0b3fa9deaaadf28d4f348225c0d44f49700c1bca 100644
+index 38bec89fba26db7a9c3ee71abd49086692c7e78b..9b9d7a9b0606da78224ce083bcbd7e07cd6ce82e 100644
 --- a/lib/programmers/misc/MiscCloneProgrammer.js
 +++ b/lib/programmers/misc/MiscCloneProgrammer.js
-@@ -291,11 +291,11 @@ var MiscCloneProgrammer;
+@@ -318,11 +318,11 @@ var MiscCloneProgrammer;
                      var rest = (function () {
                          if (tuple.elements.length === 0)
                              return null;
@@ -98,10 +117,10 @@ index 3db6bc92637284468c5fe47ef59f51a9b41d06eb..0b3fa9deaaadf28d4f348225c0d44f49
                      return CloneJoiner_1.CloneJoiner.tuple(children, rest);
                  };
 diff --git a/lib/programmers/misc/MiscPruneProgrammer.js b/lib/programmers/misc/MiscPruneProgrammer.js
-index 8440aaba9e449dae2468e96dfd7035ac7e170cfc..e97ceec78427b7eed08db23cc4775fdb10c6b2ff 100644
+index d4a9c66c0b5508b4ffdc4b7684364a9d748f6508..33f9356bab69faffadb8c2b49997d2c3ca429810 100644
 --- a/lib/programmers/misc/MiscPruneProgrammer.js
 +++ b/lib/programmers/misc/MiscPruneProgrammer.js
-@@ -272,11 +272,11 @@ var MiscPruneProgrammer;
+@@ -305,11 +305,11 @@ var MiscPruneProgrammer;
                      var rest = (function () {
                          if (tuple.elements.length === 0)
                              return null;
@@ -116,10 +135,10 @@ index 8440aaba9e449dae2468e96dfd7035ac7e170cfc..e97ceec78427b7eed08db23cc4775fdb
                      return PruneJoiner_1.PruneJoiner.tuple(children, rest);
                  };
 diff --git a/lib/programmers/notations/NotationGeneralProgrammer.js b/lib/programmers/notations/NotationGeneralProgrammer.js
-index 6e0b582a802180d7671c00b999469e7e59193b30..f11cc1d523875a040d3e27ce9a850b083c5d0275 100644
+index dfe64a21a5a81a7e887ab5ae02d73e6d3bdddb03..aa4b6070ed6a83c49018384e3a0c1dbd4a7c540b 100644
 --- a/lib/programmers/notations/NotationGeneralProgrammer.js
 +++ b/lib/programmers/notations/NotationGeneralProgrammer.js
-@@ -301,11 +301,11 @@ var NotationGeneralProgrammer;
+@@ -328,11 +328,11 @@ var NotationGeneralProgrammer;
                      var rest = (function () {
                          if (tuple.elements.length === 0)
                              return null;
@@ -134,36 +153,36 @@ index 6e0b582a802180d7671c00b999469e7e59193b30..f11cc1d523875a040d3e27ce9a850b08
                      return NotationJoiner_1.NotationJoiner.tuple(children, rest);
                  };
 diff --git a/lib/transformers/CallExpressionTransformer.js b/lib/transformers/CallExpressionTransformer.js
-index 2c5a23879d171ee271ebf6857dc9c65ec29c0ea7..96a40845614f6c54fe8e4ebc48a7d8efeba52a41 100644
+index f7be23d98552526d8c2348ba0f3d32b8d31e522b..133af0caa37ffcf7330811ef7bda79e75b9ecd89 100644
 --- a/lib/transformers/CallExpressionTransformer.js
 +++ b/lib/transformers/CallExpressionTransformer.js
-@@ -101,7 +101,7 @@ var CallExpressionTransformer;
-             var location = path_1.default.resolve(declaration.getSourceFile().fileName);
-             if (isTarget(location) === false)
-                 return expression;
+@@ -129,7 +129,7 @@ var CallExpressionTransformer;
+             // TRANSFORMATION
+             //----
+             // FUNCTION NAME
 -            var module = location.split(path_1.default.sep).at(-1).split(".")[0];
 +            var module = location.split(path_1.default.sep).slice(-1)[0].split(".")[0];
              var name = project.checker.getTypeAtLocation(declaration).symbol.name;
+             // FIND TRANSFORMER
              var functor = (_b = FUNCTORS[module]) === null || _b === void 0 ? void 0 : _b[name];
-             if (functor === undefined)
 diff --git a/src/factories/internal/metadata/iterate_metadata_intersection.ts b/src/factories/internal/metadata/iterate_metadata_intersection.ts
-index f46caa25c987092597073e046ae3b9e8130bd994..1eedd727c74f173a5b98a9572b865e058885811d 100644
+index c4d93a961385c09abb6f448896ad4636b648703b..99b1547e6a501caf28a452390fe721cd47dc2ca1 100644
 --- a/src/factories/internal/metadata/iterate_metadata_intersection.ts
 +++ b/src/factories/internal/metadata/iterate_metadata_intersection.ts
-@@ -214,7 +214,7 @@ export const iterate_metadata_intersection =
+@@ -188,7 +188,7 @@ export const iterate_metadata_intersection =
          target,
        )(objects.map((om) => om.objects).flat(), explore);
        if (tags.length)
 -        if (target === "array") meta.arrays.at(-1)!.tags.push(tags);
 +        if (target === "array") meta.arrays.slice(-1)[0]!.tags.push(tags);
-         else if (booleanLiteral === null)
+         else if (atomics.size)
            meta.atomics.find((a) => a.type === target)!.tags.push(tags);
-         else {
+         else if (constants.length) {
 diff --git a/src/programmers/CheckerProgrammer.ts b/src/programmers/CheckerProgrammer.ts
-index 892748b80755b89d1449f4d515aa3166534c6b19..8cb5ce35fe6f918545c82066f0583dead2661c89 100644
+index 40f46e8212a5173e19e0214422086655de908933..18a1a2371cac697e1b621a8fbc6b090b691e3072 100644
 --- a/src/programmers/CheckerProgrammer.ts
 +++ b/src/programmers/CheckerProgrammer.ts
-@@ -702,14 +702,14 @@ export namespace CheckerProgrammer {
+@@ -785,14 +785,14 @@ export namespace CheckerProgrammer {
            ),
          );
        const rest: ts.Expression | null =
@@ -181,7 +200,7 @@ index 892748b80755b89d1449f4d515aa3166534c6b19..8cb5ce35fe6f918545c82066f0583dea
                  ...explore,
                  start: tuple.elements.length - 1,
 diff --git a/src/programmers/TypiaProgrammer.ts b/src/programmers/TypiaProgrammer.ts
-index e01eccf62eccd73e1f0720db897f539256a6bbc1..cae5eb6fc702d359d4886acefdb68d42691edf97 100644
+index 67d9fc138483832aae43574fd2753bbe40a27d14..4397517aa620a8733c51917eebfa467f2922bf6d 100644
 --- a/src/programmers/TypiaProgrammer.ts
 +++ b/src/programmers/TypiaProgrammer.ts
 @@ -101,7 +101,7 @@ export namespace TypiaProgrammer {
@@ -193,35 +212,54 @@ index e01eccf62eccd73e1f0720db897f539256a6bbc1..cae5eb6fc702d359d4886acefdb68d42
            })()
          : [0, 0];
        console.error(
-diff --git a/src/programmers/internal/application_tuple.ts b/src/programmers/internal/application_tuple.ts
-index 5e10b9051e4a846f298aa8f086109e8d6bb38bf9..a8e24d5c2a2a4a4d5d1dc49eb45b4784654a4b66 100644
---- a/src/programmers/internal/application_tuple.ts
-+++ b/src/programmers/internal/application_tuple.ts
-@@ -28,16 +28,16 @@ export const application_tuple =
-         }),
+diff --git a/src/programmers/internal/application_v30_tuple.ts b/src/programmers/internal/application_v30_tuple.ts
+index 0431273d439c6069a1bb5fbfd7808c5e8d0ea255..4b27cfc3ebde7ce9dcdb5161d34e70004a327b1e 100644
+--- a/src/programmers/internal/application_v30_tuple.ts
++++ b/src/programmers/internal/application_v30_tuple.ts
+@@ -24,10 +24,10 @@ export const application_v30_tuple =
+         Metadata.initialize(),
        ),
-       ...attribute,
--      minItems: !!tuple.type.elements.at(-1)?.rest
-+      minItems: !!tuple.type.elements.slice(-1)[0]?.rest
-         ? tuple.type.elements.length - 1
-         : tuple.type.elements.filter((x) => !x.optional).length,
--      maxItems: !!tuple.type.elements.at(-1)?.rest
-+      maxItems: !!tuple.type.elements.slice(-1)[0]?.rest
-         ? undefined
-         : tuple.type.elements.length,
-     };
-     if (options.purpose === "ajv")
-       if (tuple.type.elements.length === 0) return schema;
--      else if (!tuple.type.elements.at(-1)?.rest) return schema;
-+      else if (!tuple.type.elements.slice(-1)[0]?.rest) return schema;
- 
-     const wrapper: IJsonSchema.IArray = {
-       ...schema,
+     ),
+-    minItems: !!tuple.type.elements.at(-1)?.rest
++    minItems: !!tuple.type.elements.slice(-1)[0]?.rest
+       ? tuple.type.elements.length - 1
+       : tuple.type.elements.filter((x) => !x.optional).length,
+-    maxItems: !!tuple.type.elements.at(-1)?.rest
++    maxItems: !!tuple.type.elements.slice(-1)[0]?.rest
+       ? undefined!
+       : tuple.type.elements.length,
+   });
+diff --git a/src/programmers/internal/application_v31_tuple.ts b/src/programmers/internal/application_v31_tuple.ts
+index 426abad3423de706c368b35b2cf6b4845f6f3d91..be15ec0fda1725bf1ea882c9901e0f837c052fde 100644
+--- a/src/programmers/internal/application_v31_tuple.ts
++++ b/src/programmers/internal/application_v31_tuple.ts
+@@ -9,7 +9,7 @@ import { MetadataTuple } from "../../schemas/metadata/MetadataTuple";
+ export const application_v31_tuple =
+   (generator: (meta: Metadata) => OpenApi.IJsonSchema) =>
+   (tuple: MetadataTuple): OpenApi.IJsonSchema.ITuple => {
+-    const tail: Metadata | null = tuple.type.elements.at(-1)?.rest ?? null;
++    const tail: Metadata | null = tuple.type.elements.slice(-1)[0]?.rest ?? null;
+     const prefixItems: Metadata[] = tuple.type.isRest()
+       ? tuple.type.elements.slice(0, -1)
+       : tuple.type.elements;
+diff --git a/src/programmers/internal/decode_union_object.ts b/src/programmers/internal/decode_union_object.ts
+index f60bf69f91f35dee2efc807475fd6eca71aab052..ef8d51160f7eb9853ec0c827827aaa6c65db1587 100644
+--- a/src/programmers/internal/decode_union_object.ts
++++ b/src/programmers/internal/decode_union_object.ts
+@@ -87,7 +87,7 @@ const iterate =
+           )
+         : ts.factory.createReturnStatement(b.value),
+     );
+-    if (branches.at(-1)!.condition !== null)
++    if (branches.slice(-1)[0]!.condition !== null)
+       statements.push(escaper(input, expected));
+     return ts.factory.createBlock(statements, true);
+   };
 diff --git a/src/programmers/json/JsonStringifyProgrammer.ts b/src/programmers/json/JsonStringifyProgrammer.ts
-index c317cec2c78e984a6e64c7bf287d0c67e530e309..5974830c62dbd2b865aa2e64e2e757283258d872 100644
+index 558e5bf4b79f5cc28791ba0f5e40ebe6599361ce..c43d77b5d15343af90f7362d1757fc758659d5c9 100644
 --- a/src/programmers/json/JsonStringifyProgrammer.ts
 +++ b/src/programmers/json/JsonStringifyProgrammer.ts
-@@ -543,7 +543,7 @@ export namespace JsonStringifyProgrammer {
+@@ -560,7 +560,7 @@ export namespace JsonStringifyProgrammer {
          );
        const rest = (() => {
          if (tuple.elements.length === 0) return null;
@@ -230,7 +268,7 @@ index c317cec2c78e984a6e64c7bf287d0c67e530e309..5974830c62dbd2b865aa2e64e2e75728
          if (last.rest === null) return null;
  
          const code = decode(project)(config)(importer)(
-@@ -552,7 +552,7 @@ export namespace JsonStringifyProgrammer {
+@@ -569,7 +569,7 @@ export namespace JsonStringifyProgrammer {
              undefined,
              [ExpressionFactory.number(tuple.elements.length - 1)],
            ),
@@ -240,10 +278,10 @@ index c317cec2c78e984a6e64c7bf287d0c67e530e309..5974830c62dbd2b865aa2e64e2e75728
              ...explore,
              start: tuple.elements.length - 1,
 diff --git a/src/programmers/misc/MiscCloneProgrammer.ts b/src/programmers/misc/MiscCloneProgrammer.ts
-index 94d768b0a0738c0caccd711671351d1f22fa3848..739fd5f2baf4d2eb8e9dd65d73179242a0244707 100644
+index c8c9cb90085eff7dd68ac332a362674ca33d93d8..76a810816bc4ad57ff5e1787a33cd7f01471ffbe 100644
 --- a/src/programmers/misc/MiscCloneProgrammer.ts
 +++ b/src/programmers/misc/MiscCloneProgrammer.ts
-@@ -343,7 +343,7 @@ export namespace MiscCloneProgrammer {
+@@ -395,7 +395,7 @@ export namespace MiscCloneProgrammer {
        const rest = (() => {
          if (tuple.elements.length === 0) return null;
  
@@ -252,7 +290,7 @@ index 94d768b0a0738c0caccd711671351d1f22fa3848..739fd5f2baf4d2eb8e9dd65d73179242
          const rest: Metadata | null = last.rest;
          if (rest === null) return null;
  
-@@ -353,7 +353,7 @@ export namespace MiscCloneProgrammer {
+@@ -405,7 +405,7 @@ export namespace MiscCloneProgrammer {
              undefined,
              [ExpressionFactory.number(tuple.elements.length - 1)],
            ),
@@ -262,10 +300,10 @@ index 94d768b0a0738c0caccd711671351d1f22fa3848..739fd5f2baf4d2eb8e9dd65d73179242
              ...explore,
              start: tuple.elements.length - 1,
 diff --git a/src/programmers/misc/MiscPruneProgrammer.ts b/src/programmers/misc/MiscPruneProgrammer.ts
-index ed1465267066e382ae6696a25a806c2489597593..661f3cd93ae66070c978bd3e8d2b8db07189fe47 100644
+index 1051204a00041ddfb39da9de77b35ab8b44b75ee..73db30fdc06955f43dc2f563cbfc174e50a1bc6f 100644
 --- a/src/programmers/misc/MiscPruneProgrammer.ts
 +++ b/src/programmers/misc/MiscPruneProgrammer.ts
-@@ -310,7 +310,7 @@ export namespace MiscPruneProgrammer {
+@@ -347,7 +347,7 @@ export namespace MiscPruneProgrammer {
        const rest = (() => {
          if (tuple.elements.length === 0) return null;
  
@@ -274,7 +312,7 @@ index ed1465267066e382ae6696a25a806c2489597593..661f3cd93ae66070c978bd3e8d2b8db0
          const rest: Metadata | null = last.rest;
          if (rest === null || filter(rest) === false) return null;
  
-@@ -320,7 +320,7 @@ export namespace MiscPruneProgrammer {
+@@ -357,7 +357,7 @@ export namespace MiscPruneProgrammer {
              undefined,
              [ExpressionFactory.number(tuple.elements.length - 1)],
            ),
@@ -284,10 +322,10 @@ index ed1465267066e382ae6696a25a806c2489597593..661f3cd93ae66070c978bd3e8d2b8db0
              ...explore,
              start: tuple.elements.length - 1,
 diff --git a/src/programmers/notations/NotationGeneralProgrammer.ts b/src/programmers/notations/NotationGeneralProgrammer.ts
-index bd49b1e34002b1a1ec4f5444a8f91fa0ab794360..71d676de290986045910602ab10c6ef09a19c07d 100644
+index d8b2e22a8f9f3bfcb8f3e7987edaa7bf19a48720..96632214cb02b1534dc1987a0f892a3bf41e892f 100644
 --- a/src/programmers/notations/NotationGeneralProgrammer.ts
 +++ b/src/programmers/notations/NotationGeneralProgrammer.ts
-@@ -353,7 +353,7 @@ export namespace NotationGeneralProgrammer {
+@@ -411,7 +411,7 @@ export namespace NotationGeneralProgrammer {
        const rest = (() => {
          if (tuple.elements.length === 0) return null;
  
@@ -296,7 +334,7 @@ index bd49b1e34002b1a1ec4f5444a8f91fa0ab794360..71d676de290986045910602ab10c6ef0
          const rest: Metadata | null = last.rest;
          if (rest === null) return null;
  
-@@ -363,7 +363,7 @@ export namespace NotationGeneralProgrammer {
+@@ -421,7 +421,7 @@ export namespace NotationGeneralProgrammer {
              undefined,
              [ExpressionFactory.number(tuple.elements.length - 1)],
            ),
@@ -306,10 +344,10 @@ index bd49b1e34002b1a1ec4f5444a8f91fa0ab794360..71d676de290986045910602ab10c6ef0
              ...explore,
              start: tuple.elements.length - 1,
 diff --git a/src/transformers/CallExpressionTransformer.ts b/src/transformers/CallExpressionTransformer.ts
-index c58a1b143ce4f204bb249a4858c9d16a26f97408..9e9ffcf73e4c01aa6ac8c213669fdcd50e0181b9 100644
+index 99a4604f1a1944336b4d93dc61390269c346c243..c31ba72f1d206c441d6c237314a1c4d5c808dd09 100644
 --- a/src/transformers/CallExpressionTransformer.ts
 +++ b/src/transformers/CallExpressionTransformer.ts
-@@ -111,7 +111,7 @@ export namespace CallExpressionTransformer {
+@@ -131,7 +131,7 @@ export namespace CallExpressionTransformer {
        // TRANSFORMATION
        //----
        // FUNCTION NAME

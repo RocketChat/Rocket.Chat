@@ -311,7 +311,6 @@ describe('LIVECHAT - contacts', () => {
 		let contactId: string;
 
 		before(async () => {
-			await updatePermission('update-livechat-contact', ['admin']);
 			const { body } = await request
 				.post(api('omnichannel/contacts'))
 				.set(credentials)
@@ -347,7 +346,7 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.contact.phones).to.be.deep.equal(phones);
 		});
 
-		it('should set the unknown field to true when updating a contact', async () => {
+		it('should set the unknown field to false when updating a contact', async () => {
 			const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
 				contactId,
 				name: faker.person.fullName(),
@@ -356,7 +355,7 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
 			expect(res.body.contact._id).to.be.equal(contactId);
-			expect(res.body.contact.unknown).to.be.equal(true);
+			expect(res.body.contact.unknown).to.be.equal(false);
 		});
 
 		it('should be able to update the contact manager', async () => {
@@ -398,18 +397,24 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.error).to.be.equal('error-contact-manager-not-found');
 		});
 
-		it("should return an error if user doesn't have 'update-livechat-contact' permission", async () => {
-			await removePermissionFromAllRoles('update-livechat-contact');
-
-			const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
-				contactId,
+		describe('Permissions', () => {
+			before(async () => {
+				await removePermissionFromAllRoles('update-livechat-contact');
 			});
 
-			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error');
-			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			after(async () => {
+				await restorePermissionToRoles('update-livechat-contact');
+			});
 
-			await restorePermissionToRoles('update-livechat-contact');
+			it("should return an error if user doesn't have 'update-livechat-contact' permission", async () => {
+				const res = await request.post(api('omnichannel/contacts.update')).set(credentials).send({
+					contactId,
+				});
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error');
+				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			});
 		});
 
 		describe('Custom Fields', () => {
@@ -461,6 +466,23 @@ describe('LIVECHAT - contacts', () => {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
 				expect(res.body.error).to.be.equal('Invalid value for Custom Field 1 field');
+			});
+
+			it('should return an error if additional custom fields are provided', async () => {
+				const res = await request
+					.post(api('omnichannel/contacts.update'))
+					.set(credentials)
+					.send({
+						contactId,
+						customFields: {
+							cf1: '123',
+							cf2: 'invalid',
+						},
+					});
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error');
+				expect(res.body.error).to.be.equal('Custom field cf2 is not allowed');
 			});
 		});
 

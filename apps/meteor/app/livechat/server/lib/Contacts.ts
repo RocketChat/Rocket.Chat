@@ -215,8 +215,7 @@ export async function createContact(params: CreateContactParams): Promise<string
 	const { name, emails, phones, customFields = {}, contactManager, channels, unknown } = params;
 
 	if (contactManager) {
-		const contactManagerUser = await Users.findOneAgentById<Pick<IUser, 'roles'>>(contactManager, { projection: { roles: 1 } });
-		await validateContactManager(contactManagerUser);
+		await validateContactManager(contactManager);
 	}
 
 	const allowedCustomFields = await getAllowedCustomFields();
@@ -238,15 +237,14 @@ export async function createContact(params: CreateContactParams): Promise<string
 export async function updateContact(params: UpdateContactParams): Promise<ILivechatContact> {
 	const { contactId, name, emails, phones, customFields, contactManager, channels } = params;
 
-	const contact = await LivechatContacts.findOneById(contactId, { projection: { _id: 1 } });
+	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id'>>(contactId, { projection: { _id: 1 } });
 
 	if (!contact) {
 		throw new Error('error-contact-not-found');
 	}
 
 	if (contactManager) {
-		const contactManagerUser = await Users.findOneById<Pick<IUser, 'roles'>>(contactManager, { projection: { roles: 1 } });
-		await validateContactManager(contactManagerUser);
+		await validateContactManager(contactManager);
 	}
 
 	if (customFields) {
@@ -331,10 +329,18 @@ export function validateCustomFields(allowedCustomFields: ILivechatCustomField[]
 			}
 		}
 	}
+
+	const allowedCustomFieldIds = new Set(allowedCustomFields.map((cf) => cf._id));
+	for (const key in customFields) {
+		if (!allowedCustomFieldIds.has(key)) {
+			throw new Error(i18n.t('error-custom-field-not-allowed', { key }));
+		}
+	}
 }
 
-export async function validateContactManager(user: Pick<IUser, 'roles'> | null) {
-	if (!user) {
+export async function validateContactManager(contactManagerUserId: string) {
+	const contactManagerUser = await Users.findOneAgentById<Pick<IUser, '_id'>>(contactManagerUserId, { projection: { _id: 1 } });
+	if (!contactManagerUser) {
 		throw new Error('error-contact-manager-not-found');
 	}
 }
