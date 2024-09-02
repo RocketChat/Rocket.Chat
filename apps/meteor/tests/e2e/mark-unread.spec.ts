@@ -6,16 +6,15 @@ import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.describe('Mark Unread - Sidebar Action', () => {
+test.describe.serial('mark-unread', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
 
 	test.beforeEach(async ({ page, api }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.emulateMedia({ reducedMotion: 'reduce' });
-
 		targetChannel = await createTargetChannel(api, { members: ['user2'] });
 
+		await page.emulateMedia({ reducedMotion: 'reduce' });
 		await page.goto('/home');
 	});
 
@@ -23,50 +22,49 @@ test.describe('Mark Unread - Sidebar Action', () => {
 		await api.post('/channels.delete', { roomName: targetChannel });
 	});
 
-	test('should not mark empty room as unread', async () => {
-		const sidebarItem = poHomeChannel.sidenav.getSidebarItemByName(targetChannel);
-		await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel);
-		await expect(poHomeChannel.sidenav.getChannelBadge(sidebarItem)).not.toBeVisible();
-	});
+	test.describe('Mark Unread - Sidebar Action', () => {
+		test('should not mark empty room as unread', async () => {
+			await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel);
 
-	test('should mark a populated room as unread', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.sendMessage('this is a message for reply');
-		const sidebarItem = poHomeChannel.sidenav.getSidebarItemByName(targetChannel);
-		await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel);
-		await expect(poHomeChannel.sidenav.getChannelBadge(sidebarItem)).toBeVisible();
-	});
+			await expect(poHomeChannel.sidenav.getRoomBadge(targetChannel)).not.toBeVisible();
+		});
 
-	test('should mark a populated room as unread - search', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.sendMessage('this is a message for reply');
-		await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel);
-		await poHomeChannel.sidenav.searchChat(targetChannel);
-		await expect(poHomeChannel.sidenav.getSearchChannelBadge(targetChannel)).toBeVisible();
+		test('should mark a populated room as unread', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.content.sendMessage('this is a message for reply');
+			await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel);
+
+			await expect(poHomeChannel.sidenav.getRoomBadge(targetChannel)).toBeVisible();
+		});
+
+		test('should mark a populated room as unread - search', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.content.sendMessage('this is a message for reply');
+			await poHomeChannel.sidenav.selectMarkAsUnread(targetChannel);
+			await poHomeChannel.sidenav.searchRoom(targetChannel);
+
+			await expect(poHomeChannel.sidenav.getSearchChannelBadge(targetChannel)).toBeVisible();
+		});
 	});
 
 	test.describe('Mark Unread - Message Action', () => {
 		let poHomeChannelUser2: HomeChannel;
 
-		test.beforeEach(async ({ browser }) => {
+		test('should mark a populated room as unread', async ({ page, browser }) => {
 			const { page: user2Page } = await createAuxContext(browser, Users.user2);
 			poHomeChannelUser2 = new HomeChannel(user2Page);
 
 			await poHomeChannelUser2.sidenav.openChat(targetChannel);
 			await poHomeChannelUser2.content.sendMessage('this is a message for reply');
-		});
+			await user2Page.close();
 
-		test('should mark a populated room as unread', async () => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
-
 			await poHomeChannel.content.openLastMessageMenu();
 			await poHomeChannel.markUnread.click();
-			const sidebarItem = poHomeChannel.sidenav.getSidebarItemByName(targetChannel);
-			await expect(poHomeChannel.sidenav.getChannelBadge(sidebarItem)).toBeVisible();
-		});
+			await page.waitForURL('/home');
 
-		test.afterEach(async () => {
-			await poHomeChannelUser2.page.close();
+			await expect(page.locator('role=main >> role=heading[level=1]')).toBeVisible();
+			await expect(poHomeChannel.sidenav.getRoomBadge(targetChannel)).toBeVisible();
 		});
 	});
 });
