@@ -2354,6 +2354,14 @@ describe('[Teams]', () => {
 			await request.get(api('teams.listChildren')).set(credentials).query({ teamName: 'invalid' }).expect(404);
 		});
 
+		it('should fail if roomId is empty', async () => {
+			await request.get(api('teams.listChildren')).set(credentials).query({ roomId: '' }).expect(404);
+		});
+
+		it('should fail if roomId is invalid', async () => {
+			await request.get(api('teams.listChildren')).set(credentials).query({ teamName: 'invalid' }).expect(404);
+		});
+
 		it('should return a list of valid rooms for user', async () => {
 			const res = await request.get(api('teams.listChildren')).query({ teamId: testTeam._id }).set(credentials).expect(200);
 
