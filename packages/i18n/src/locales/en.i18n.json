@@ -6533,5 +6533,9 @@
   "Sidebar_Sections_Order_Description": "Select the categories in your preferred order",
   "Incoming_Calls": "Incoming calls",
   "Advanced_settings": "Advanced settings",
-  "Security_and_permissions": "Security and permissions"
+  "Security_and_permissions": "Security and permissions",
+  "Sidepanel_navigation": "Sidepanel navigation for teams",
+  "Sidepanel_navigation_description": "Option to open a sidepanel with channels and/or discussions associated with the team. This allows team owners to customize communication methods to best meet their team’s needs. This feature is only available when Enhanced navigation experience is enabled.",
+  "Show_channels_description": "Show team channels in second sidebar",
+  "Show_discussions_description": "Show team discussions in second sidebar"
 }
