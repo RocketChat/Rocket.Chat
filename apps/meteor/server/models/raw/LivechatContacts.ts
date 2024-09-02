@@ -10,8 +10,12 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 	}
 
 	async updateContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact> {
-		await this.updateOne({ _id: contactId }, { $set: { ...data, unknown: true } });
-		return this.findOneById(contactId) as Promise<ILivechatContact>;
+		const updatedValue = await this.findOneAndUpdate(
+			{ _id: contactId },
+			{ $set: { ...data, unknown: false } },
+			{ returnDocument: 'after' },
+		);
+		return updatedValue.value as ILivechatContact;
 	}
 
 	async findVerifiedContactByEmail(email: string): Promise<ILivechatContact | null> {

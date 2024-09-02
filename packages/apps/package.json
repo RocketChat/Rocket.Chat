@@ -4,7 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"eslint": "~8.45.0",
-		"typescript": "~5.3.3"
+		"typescript": "~5.5.4"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -18,7 +18,7 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.45.0-alpha.866",
+		"@rocket.chat/apps-engine": "1.45.0-alpha.868",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^"
 	}
