@@ -286,7 +286,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		teamRoomId: string,
 		userId: string,
 		filter?: string,
-		type?: 'channel' | 'discussion',
+		type?: 'channels' | 'discussions',
 		options?: FindOptions<IRoom>,
 	): AggregationCursor<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }>;
 }

@@ -378,15 +378,15 @@ API.v1.addRoute(
 
 const getTeamByIdOrNameOrParentRoom = async (
 	params: { teamId: string } | { teamName: string } | { roomId: string },
-): Promise<ITeam | null> => {
+): Promise<Pick<ITeam, 'type'| 'roomId' | '_id'> | null> => {
 	if ('teamId' in params && params.teamId) {
-		return Team.getOneById<ITeam>(params.teamId);
+		return Team.getOneById<ITeam>(params.teamId, { projection: { type: 1, roomId: 1 } });
 	}
 	if ('teamName' in params && params.teamName) {
-		return Team.getOneByName(params.teamName);
+		return Team.getOneByName(params.teamName, { projection: { type: 1, roomId: 1 } });
 	}
 	if ('roomId' in params && params.roomId) {
-		return Team.getOneByRoomId(params.roomId);
+		return Team.getOneByRoomId(params.roomId, { projection: { type: 1, roomId: 1 } });
 	}
 	return null;
 };

@@ -913,8 +913,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		});
 	}
 
-	async getOneByRoomId(roomId: string): Promise<ITeam | null> {
-		const room = await Rooms.findOneById(roomId);
+	async getOneByRoomId(roomId: string, options?: FindOptions<ITeam>): Promise<ITeam | null> {
+		const room = await Rooms.findOneById(roomId, { projection: { teamId: 1 } });
 
 		if (!room) {
 			throw new Error('invalid-room');
@@ -924,7 +924,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('room-not-on-team');
 		}
 
-		return Team.findOneById(room.teamId);
+		return Team.findOneById(room.teamId, options);
 	}
 
 	async addRolesToMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean> {
@@ -1083,7 +1083,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	// Rooms returned are a composition of the rooms the user is in + public rooms + discussions from the main room (if any)
 	async listChildren(
 		userId: string,
-		team: AtLeast<ITeam, '_id' | 'roomId'>,
+		team: AtLeast<ITeam, '_id' | 'roomId' | 'type'>,
 		filter?: string,
 		type?: 'channels' | 'discussions',
 		sort?: Record<string, 1 | -1>,
