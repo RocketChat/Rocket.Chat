@@ -3,6 +3,8 @@ import { EmojiCustom } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { insertOrUpdateEmoji } from '../../../emoji-custom/server/lib/insertOrUpdateEmoji';
+import { uploadEmojiCustomWithBuffer } from '../../../emoji-custom/server/lib/uploadEmojiCustom';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -148,9 +150,19 @@ API.v1.addRoute(
 				fields.extension = emojiToUpdate.extension;
 			}
 
-			await Meteor.callAsync('insertOrUpdateEmoji', { ...fields, newFile });
+			const emojiData = {
+				name: fields.name,
+				_id: fields._id,
+				aliases: fields.aliases,
+				extension: fields.extension,
+				previousName: fields.previousName,
+				previousExtension: fields.previousExtension,
+				newFile,
+			};
+
+			await insertOrUpdateEmoji(this.userId, emojiData);
 			if (fields.newFile) {
-				await Meteor.callAsync('uploadEmojiCustom', fileBuffer, mimetype, { ...fields, newFile });
+				await uploadEmojiCustomWithBuffer(this.userId, fileBuffer, mimetype, emojiData);
 			}
 			return API.v1.success();
 		},

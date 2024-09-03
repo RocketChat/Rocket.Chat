@@ -223,7 +223,7 @@ export class QueueManager {
 
 		const name = (roomInfo?.fname as string) || guest.name || guest.username;
 
-		const room = await createLivechatRoom(rid, name, guest, roomInfo, {
+		const room = await createLivechatRoom(rid, name, { ...guest, ...(department && { department }) }, roomInfo, {
 			...extraData,
 			...(Boolean(customFields) && { customFields }),
 		});

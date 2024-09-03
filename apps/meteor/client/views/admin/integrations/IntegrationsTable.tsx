@@ -96,7 +96,7 @@ const IntegrationsTable = ({ type }: { type?: string }) => {
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Integrations')} onChange={({ text }): void => setText(text)} />
+			<FilterByText placeholder={t('Search_Integrations')} onChange={setText} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

@@ -28,9 +28,8 @@ const FederatedRoomList = ({ serverName, roomName, count }: FederatedRoomListPro
 
 	const { mutate: onClickJoin, isLoading: isLoadingMutation } = useMutation(
 		['federation/joinExternalPublicRoom'],
-		async ({ id, pageToken }: IFederationPublicRooms) => {
-			return joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}`, roomName, pageToken });
-		},
+		async ({ id, pageToken }: IFederationPublicRooms) =>
+			joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}`, roomName, pageToken }),
 		{
 			onSuccess: (_, data) => {
 				dispatchToastMessage({

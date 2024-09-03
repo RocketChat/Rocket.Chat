@@ -23,6 +23,7 @@ export interface ITeamCreateParams {
 	room: ITeamCreateRoom;
 	members?: Array<string> | null; // list of user _ids
 	owner?: string | null; // the team owner. If not present, owner = requester
+	sidepanel?: IRoom['sidepanel'];
 }
 
 export interface ITeamMemberParams {

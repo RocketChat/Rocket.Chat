@@ -24,6 +24,8 @@ let MatrixUserInstance: any;
 
 const DEFAULT_TIMEOUT_IN_MS_FOR_JOINING_ROOMS = 180000;
 
+const DEFAULT_TIMEOUT_IN_MS_FOR_PING_EVENT = 60 * 1000;
+
 export class MatrixBridge implements IFederationBridge {
 	protected bridgeInstance: Bridge;
 
@@ -44,6 +46,32 @@ export class MatrixBridge implements IFederationBridge {
 
 			if (!this.isRunning) {
 				await this.bridgeInstance.run(this.internalSettings.getBridgePort());
+
+				this.bridgeInstance.addAppServicePath({
+					method: 'POST',
+					path: '/_matrix/app/v1/ping',
+					checkToken: true,
+					handler: (_req, res, _next) => {
+						/*
+						 * https://spec.matrix.org/v1.11/application-service-api/#post_matrixappv1ping
+						 * Spec does not talk about what to do with the id. It is safe to ignore it as we are already checking for
+						 * homeserver token to be correct.
+						 * From the spec this might be a bit confusing, as it shows a txn id for post, but app service doing nothing with it afterwards
+						 * when receiving from the homeserver.
+						 * From spec directly -
+							AS ---> HS : /_matrix/client/v1/appservice/{appserviceId}/ping {"transaction_id": "meow"}
+								HS ---> AS : /_matrix/app/v1/ping {"transaction_id": "meow"}
+								HS <--- AS : 200 OK {}
+							AS <--- HS : 200 OK {"duration_ms": 123}
+						 * https://github.com/matrix-org/matrix-spec/blob/e53e6ea8764b95f0bdb738549fca6f9f3f901298/content/application-service-api.md?plain=1#L229-L232
+						 * Code - wise, also doesn't care what happens with the response.
+						 * https://github.com/element-hq/synapse/blob/cb6f4a84a6a8f2b79b80851f37eb5fa4c7c5264a/synapse/rest/client/appservice_ping.py#L80 - nothing done on return
+						 * https://github.com/element-hq/synapse/blob/cb6f4a84a6a8f2b79b80851f37eb5fa4c7c5264a/synapse/appservice/api.py#L321-L332 - not even returning the response, caring for just the http status code - https://github.com/element-hq/synapse/blob/cb6f4a84a6a8f2b79b80851f37eb5fa4c7c5264a/synapse/http/client.py#L532-L537
+						 */
+						res.status(200).json({});
+					},
+				});
+
 				this.isRunning = true;
 			}
 		} catch (err) {
@@ -657,6 +685,10 @@ export class MatrixBridge implements IFederationBridge {
 		return MatrixEnumSendMessageType.FILE;
 	}
 
+	private getMyHomeServerOrigin() {
+		return new URL(`https://${this.internalSettings.getHomeServerDomain()}`).hostname;
+	}
+
 	public async uploadContent(
 		externalSenderId: string,
 		content: Buffer,
@@ -724,6 +756,16 @@ export class MatrixBridge implements IFederationBridge {
 			controller: {
 				onEvent: (request) => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
+
+					// TODO: can we ignore all events from out homeserver?
+					// This was added particularly to avoid duplicating messages.
+					// Messages sent from rocket.chat also causes a m.room.message event, which if gets to this bridge
+					// before the event id promise is resolved, the respective message does not get event id attached to them any longer,
+					// thus this event handler "resends" the message to the rocket.chat room (not to matrix though).
+					if (event.type === 'm.room.message' && this.extractHomeserverOrigin(event.sender) === this.getMyHomeServerOrigin()) {
+						return;
+					}
+
 					this.eventHandler(event);
 				},
 				onLog: (line, isError) => {
@@ -751,5 +793,38 @@ export class MatrixBridge implements IFederationBridge {
 			'namespaces': registrationFile.listenTo,
 			'de.sorunome.msc2409.push_ephemeral': registrationFile.enableEphemeralEvents,
 		};
+	}
+
+	public async ping(): Promise<{ durationMs: number }> {
+		if (!this.isRunning || !this.bridgeInstance) {
+			throw new Error("matrix bridge isn't yet running");
+		}
+
+		const { duration_ms: durationMs } = await this.bridgeInstance.getIntent().matrixClient.doRequest(
+			'POST',
+			`/_matrix/client/v1/appservice/${this.internalSettings.getApplicationServiceId()}/ping`,
+			{},
+			/*
+			 * Empty txn id as it is optional, neither does the spec says exactly what to do with it.
+			 * https://github.com/matrix-org/matrix-spec/blob/1fc8f8856fe47849f90344cfa91601c984627acb/data/api/client-server/appservice_ping.yaml#L55-L56
+			 */
+			{},
+			DEFAULT_TIMEOUT_IN_MS_FOR_PING_EVENT,
+		);
+
+		return { durationMs };
+	}
+
+	public async deactivateUser(uid: string): Promise<void> {
+		/*
+		 * https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3accountdeactivate
+		 * Using { erase: false } since rocket.chat side on deactivation we do not delete anything.
+		 */
+		const resp = await this.bridgeInstance
+			.getIntent()
+			.matrixClient.doRequest('POST', '/_matrix/client/v3/account/deactivate', { user_id: uid }, { erase: false });
+		if (resp.id_server_unbind_result !== 'success') {
+			throw new Error('Failed to deactivate matrix user');
+		}
 	}
 }

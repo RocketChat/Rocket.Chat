@@ -144,7 +144,7 @@ const MonitorsTable = () => {
 					</FieldRow>
 				</Field>
 			</Box>
-			{((isSuccess && data?.monitors.length > 0) || queryHasChanged) && <FilterByText onChange={({ text }): void => setText(text)} />}
+			{((isSuccess && data?.monitors.length > 0) || queryHasChanged) && <FilterByText onChange={setText} />}
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

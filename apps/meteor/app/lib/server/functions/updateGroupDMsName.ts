@@ -1,6 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
+import { notifyOnSubscriptionChangedByRoomId } from '../lib/notifyListener';
+
 const getFname = (members: IUser[]): string => members.map(({ name, username }) => name || username).join(', ');
 const getName = (members: IUser[]): string => members.map(({ username }) => username).join(',');
 
@@ -63,7 +65,10 @@ export const updateGroupDMsName = async (userThatChangedName: IUser): Promise<vo
 		const subs = Subscriptions.findByRoomId(room._id, { projection: { '_id': 1, 'u._id': 1 } });
 		for await (const sub of subs) {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== sub.u._id);
-			await Subscriptions.updateNameAndFnameById(sub._id, getName(otherMembers), getFname(otherMembers));
+			const updateNameRespose = await Subscriptions.updateNameAndFnameById(sub._id, getName(otherMembers), getFname(otherMembers));
+			if (updateNameRespose.modifiedCount) {
+				void notifyOnSubscriptionChangedByRoomId(room._id);
+			}
 		}
 	}
 };
