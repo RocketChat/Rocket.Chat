@@ -68,6 +68,7 @@ export class HomeSidenav {
 		return this.page.locator('role=menuitemcheckbox[name="Profile"]');
 	}
 
+	// TODO: refactor getSidebarItemByName to not use data-qa
 	getSidebarItemByName(name: string): Locator {
 		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
 	}
@@ -130,12 +131,6 @@ export class HomeSidenav {
 		await this.waitForChannel();
 	}
 
-	async searchChat(name: string): Promise<void> {
-		await this.page.locator('role=navigation >> role=button[name=Search]').click();
-		await this.page.locator('role=search >> role=searchbox').fill(name);
-		await expect(this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`).first()).toBeVisible();
-	}
-
 	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
 		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
@@ -184,11 +179,11 @@ export class HomeSidenav {
 		await this.btnCreate.click();
 	}
 
-	getChannelBadge(sidebarItem: Locator): Locator {
-		return sidebarItem.locator('.rcx-badge');
+	getRoomBadge(roomName: string): Locator {
+		return this.getSidebarItemByName(roomName).getByRole('status', { exact: true });
 	}
 
 	getSearchChannelBadge(name: string): Locator {
-		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`).first().locator('.rcx-badge');
+		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`).first().getByRole('status', { exact: true });
 	}
 }
