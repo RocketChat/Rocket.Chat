@@ -13,16 +13,20 @@ import {
 	FieldLabel,
 	FieldRow,
 	FieldHint,
+	Callout,
 } from '@rocket.chat/fuselage';
 import type { FeaturePreviewProps } from '@rocket.chat/ui-client';
 import { useFeaturePreviewList } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect, Fragment, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
+import { useEditableSetting } from '../EditableSettingsContext';
+import Setting from '../settings/Setting';
+import SettingsGroupPageSkeleton from '../settings/SettingsGroupPage/SettingsGroupPageSkeleton';
 
 const handleEnableQuery = (features: FeaturePreviewProps[]) => {
 	return features.map((item) => {
@@ -44,18 +48,18 @@ const AdminFeaturePreviewPage = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { features, unseenFeatures } = useFeaturePreviewList();
 
-	// const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
+	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
-	// useEffect(() => {
-	// 	if (unseenFeatures) {
-	// 		const featuresPreview = features.map((feature) => ({
-	// 			name: feature.name,
-	// 			value: feature.value,
-	// 		}));
+	useEffect(() => {
+		if (unseenFeatures) {
+			const featuresPreview = features.map((feature) => ({
+				name: feature.name,
+				value: feature.value,
+			}));
 
-	// 		void setUserPreferences({ data: { featuresPreview } });
-	// 	}
-	// }, [setUserPreferences, features, unseenFeatures]);
+			void setUserPreferences({ data: { featuresPreview } });
+		}
+	}, [setUserPreferences, features, unseenFeatures]);
 
 	const {
 		watch,
@@ -71,7 +75,7 @@ const AdminFeaturePreviewPage = () => {
 
 	const handleSave = async () => {
 		try {
-			// await setUserPreferences({ data: { featuresPreview } });
+			await setUserPreferences({ data: { featuresPreview } });
 			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -91,6 +95,14 @@ const AdminFeaturePreviewPage = () => {
 			return result;
 		}, {} as Record<FeaturePreviewProps['group'], FeaturePreviewProps[]>),
 	);
+
+	const accountsAllowFeaturePreviewSetting = useEditableSetting('Accounts_AllowFeaturePreview');
+	const changed = useMemo(() => accountsAllowFeaturePreviewSetting?.changed, [accountsAllowFeaturePreviewSetting]);
+
+	if (!accountsAllowFeaturePreviewSetting) {
+		// TODO: Implement FeaturePreviewSkeleton component
+		return <SettingsGroupPageSkeleton />;
+	}
 
 	return (
 		<Page>
@@ -112,8 +124,13 @@ const AdminFeaturePreviewPage = () => {
 								pbe={24}
 								fontScale='p1'
 							>
-								{t('Feature_preview_page_description')}
+								{t('Feature_preview_admin_page_description')}
+								<Callout className=''>{t('Feature_preview_admin_page_callout_2_text')}</Callout>
+								<Callout className=''>{t('Feature_preview_admin_page_callout_1_text')}</Callout>
 							</Box>
+
+							<Setting settingId='Accounts_AllowFeaturePreview' sectionChanged={changed} />
+
 							<Accordion>
 								{grouppedFeaturesPreview?.map(([group, features], index) => (
 									<Accordion.Item defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
