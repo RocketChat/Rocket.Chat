@@ -2486,7 +2486,7 @@ describe('[Teams]', () => {
 		it('should return only items of type channel', async () => {
 			const res = await request
 				.get(api('teams.listChildren'))
-				.query({ teamId: testTeam._id, type: 'channel' })
+				.query({ teamId: testTeam._id, type: 'channels' })
 				.set(credentials)
 				.expect(200);
 
@@ -2499,7 +2499,7 @@ describe('[Teams]', () => {
 		it('should return only items of type discussion', async () => {
 			const res = await request
 				.get(api('teams.listChildren'))
-				.query({ teamId: testTeam._id, type: 'discussion' })
+				.query({ teamId: testTeam._id, type: 'discussions' })
 				.set(credentials)
 				.expect(200);
 

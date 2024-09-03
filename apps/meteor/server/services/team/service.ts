@@ -1083,9 +1083,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	// Rooms returned are a composition of the rooms the user is in + public rooms + discussions from the main room (if any)
 	async listChildren(
 		userId: string,
-		team: ITeam,
+		team: AtLeast<ITeam, '_id' | 'roomId'>,
 		filter?: string,
-		type?: 'channel' | 'discussion',
+		type?: 'channels' | 'discussions',
 		sort?: Record<string, 1 | -1>,
 		skip = 0,
 		limit = 10,
