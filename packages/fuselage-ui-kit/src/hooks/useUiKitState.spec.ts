@@ -1,41 +1,69 @@
-import type { MultiStaticSelectElement } from '@rocket.chat/ui-kit';
+import {
+  BlockContext,
+  type MultiStaticSelectElement,
+} from '@rocket.chat/ui-kit';
 import { act, renderHook } from '@testing-library/react';
 
 import { useUiKitState } from './useUiKitState';
 
-const multiStaticSelectElement: MultiStaticSelectElement = {
-  type: 'multi_static_select',
-  placeholder: { type: 'plain_text', text: 'placeholder test' },
-  options: [{ text: { type: 'plain_text', text: 'A' }, value: 'A' }],
-  appId: 'test_app',
-  blockId: 'multi_static_select_block',
-  actionId: 'multi_static_select',
-};
+describe('state function', () => {
+  const context = BlockContext.NONE;
 
-it('should MultiSelectElement update value correctly', async () => {
-  const { result } = renderHook(
-    () => useUiKitState(multiStaticSelectElement, 0),
-    { legacyRoot: true }
-  );
+  it('should handle arrays', async () => {
+    const element: MultiStaticSelectElement = {
+      type: 'multi_static_select',
+      placeholder: { type: 'plain_text', text: '' },
+      options: [],
+      initialValue: ['A', 'B'],
+      appId: 'app-id',
+      blockId: 'block-id',
+      actionId: 'action-id',
+    };
 
-  // First interaction
-  const event = { target: { value: ['A'] } };
-  await act(async () => result.current[1](event));
+    const { result } = renderHook(() => useUiKitState(element, context), {
+      legacyRoot: true,
+    });
 
-  expect(result.current[0].value).toContain('A');
+    await act(async () => {
+      const [, state] = result.current;
+      await state({
+        target: {
+          value: ['C', 'D'],
+        },
+      });
+    });
 
-  // Second interaction
-  event.target.value = ['A', 'B'];
-  await act(async () => result.current[1](event));
+    expect(result.current[0].value).toEqual(['C', 'D']);
+  });
+});
 
-  event.target.value.map((value) =>
-    expect(result.current[0].value).toContain(value)
-  );
+describe('action function', () => {
+  const context = BlockContext.ACTION;
 
-  // Third interaction
-  event.target.value = ['B'];
-  await act(async () => result.current[1](event));
+  it('should handle arrays', async () => {
+    const element: MultiStaticSelectElement = {
+      type: 'multi_static_select',
+      placeholder: { type: 'plain_text', text: '' },
+      options: [],
+      initialValue: ['A', 'B'],
+      appId: 'app-id',
+      blockId: 'block-id',
+      actionId: 'action-id',
+    };
 
-  expect(result.current[0].value).not.toContain('A');
-  expect(result.current[0].value).toContain('B');
+    const { result } = renderHook(() => useUiKitState(element, context), {
+      legacyRoot: true,
+    });
+
+    await act(async () => {
+      const [, action] = result.current;
+      await action({
+        target: {
+          value: ['C', 'D'],
+        },
+      });
+    });
+
+    expect(result.current[0].value).toEqual(['C', 'D']);
+  });
 });

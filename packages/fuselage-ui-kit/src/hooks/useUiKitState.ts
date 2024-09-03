@@ -42,7 +42,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
       | Event
       | { target: EventTarget }
       | { target: { value: UiKit.ActionOf<TElement> } }
-  ) => void
+  ) => Promise<void>
 ] => {
   const { blockId, actionId, appId, dispatchActionConfig } = element;
   const {
