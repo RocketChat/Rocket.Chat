@@ -1,11 +1,10 @@
 # @rocket.chat/rest-typings
 
-## 6.12.0-rc.3
 
+## 6.12.0-rc.3
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.3
   </details>
 
@@ -41,6 +40,13 @@
 
   - @rocket.chat/ui-kit@0.36.1-rc.0
   - @rocket.chat/core-typings@6.12.0-rc.0
+  </details>
+## 6.11.2
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.2
   </details>
 
 ## 6.11.1

@@ -1,10 +1,11 @@
 # @rocket.chat/omnichannel-transcript
 
-## 0.4.5-rc.3
 
+## 0.4.6-rc.3
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
+
 
   - @rocket.chat/core-typings@6.12.0-rc.3
   - @rocket.chat/omnichannel-services@0.3.2-rc.3
@@ -14,7 +15,7 @@
   - @rocket.chat/models@0.2.2-rc.3
   </details>
 
-## 0.4.5-rc.2
+## 0.4.6-rc.2
 
 ### Patch Changes
 
@@ -28,7 +29,7 @@
   - @rocket.chat/models@0.2.2-rc.2
   </details>
 
-## 0.4.5-rc.1
+## 0.4.6-rc.1
 
 ### Patch Changes
 
@@ -42,7 +43,7 @@
   - @rocket.chat/models@0.2.2-rc.1
   </details>
 
-## 0.4.5-rc.0
+## 0.4.6-rc.0
 
 ### Patch Changes
 
@@ -54,6 +55,18 @@
   - @rocket.chat/omnichannel-services@0.3.1-rc.0
   - @rocket.chat/models@0.2.1-rc.0
   - @rocket.chat/pdf-worker@0.2.1-rc.0
+</details>
+## 0.4.5
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.2
+  - @rocket.chat/omnichannel-services@0.3.2
+  - @rocket.chat/pdf-worker@0.2.2
+  - @rocket.chat/core-services@0.5.2
+  - @rocket.chat/model-typings@0.6.2
+  - @rocket.chat/models@0.2.2
   </details>
 
 ## 0.4.4

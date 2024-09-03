@@ -1,7 +1,11 @@
 # @rocket.chat/meteor
 
-## 6.12.0-rc.3
+## 6.11.2
+### Patch Changes
 
+- Bump @rocket.chat/meteor version.
+
+## 6.12.0-rc.3
 ### Patch Changes
 
 - Bump @rocket.chat/meteor version.
@@ -213,6 +217,45 @@
   - @rocket.chat/cron@0.1.4-rc.0
   - @rocket.chat/instance-status@0.1.4-rc.0
   - @rocket.chat/server-cloud-communication@0.0.2
+  </details>
+- Bump @rocket.chat/meteor version.
+
+- ([#33084](https://github.com/RocketChat/Rocket.Chat/pull/33084) by [@dionisio-bot](https://github.com/dionisio-bot)) Prevent `processRoomAbandonment` callback from erroring out when a room was inactive during a day Business Hours was not configured for.
+
+- ([#33153](https://github.com/RocketChat/Rocket.Chat/pull/33153) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#33185](https://github.com/RocketChat/Rocket.Chat/pull/33185) by [@dionisio-bot](https://github.com/dionisio-bot)) Restored tooltips to the unit edit department field selected options
+
+- ([#33129](https://github.com/RocketChat/Rocket.Chat/pull/33129) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixed an issue related to setting Accounts_ForgetUserSessionOnWindowClose, this setting was not working as expected.
+
+  The new meteor 2.16 release introduced a new option to configure the Accounts package and choose between the local storage or session storage. They also changed how Meteor.\_localstorage works internally. Due to these changes in Meteor, our setting to use session storage wasn't working as expected. This PR fixes this issue and configures the Accounts package according to the workspace settings.
+
+- ([#33178](https://github.com/RocketChat/Rocket.Chat/pull/33178) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue where multi-step modals were closing unexpectedly
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.2
+  - @rocket.chat/rest-typings@6.11.2
+  - @rocket.chat/api-client@0.2.5
+  - @rocket.chat/license@0.2.5
+  - @rocket.chat/omnichannel-services@0.3.2
+  - @rocket.chat/pdf-worker@0.2.2
+  - @rocket.chat/presence@0.2.5
+  - @rocket.chat/apps@0.1.5
+  - @rocket.chat/core-services@0.5.2
+  - @rocket.chat/cron@0.1.5
+  - @rocket.chat/fuselage-ui-kit@9.0.2
+  - @rocket.chat/gazzodown@9.0.2
+  - @rocket.chat/model-typings@0.6.2
+  - @rocket.chat/ui-contexts@9.0.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.2.2
+  - @rocket.chat/ui-theming@0.2.0
+  - @rocket.chat/ui-avatar@5.0.2
+  - @rocket.chat/ui-client@9.0.2
+  - @rocket.chat/ui-video-conf@9.0.2
+  - @rocket.chat/web-ui-registration@9.0.2
+  - @rocket.chat/instance-status@0.1.5
   </details>
 
 ## 6.11.1
