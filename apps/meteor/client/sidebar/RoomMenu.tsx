@@ -1,6 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { Option, Menu } from '@rocket.chat/fuselage';
-import { useEffectEvent, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey, Fields } from '@rocket.chat/ui-contexts';
 import {
 	useRouter,
@@ -174,7 +174,7 @@ const RoomMenu = ({
 		);
 	});
 
-	const handleToggleRead = useEffectEvent(async () => {
+	const handleToggleRead = useMutableCallback(async () => {
 		try {
 			queryClient.invalidateQueries(['sidebar/search/spotlight']);
 
