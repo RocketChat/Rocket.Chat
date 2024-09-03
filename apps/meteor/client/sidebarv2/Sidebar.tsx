@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { SideBar } from '@rocket.chat/fuselage';
 import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
@@ -15,23 +15,17 @@ const Sidebar = () => {
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
 
 	return (
-		<Box
-			display='flex'
-			flexDirection='column'
-			height='100%'
-			is='nav'
-			className={[
-				'rcx-sidebar--main',
-				`rcx-sidebar rcx-sidebar--${sidebarViewMode}`,
-				sidebarHideAvatar && 'rcx-sidebar--hide-avatar',
-			].filter(Boolean)}
+		<SideBar
 			aria-label='sidebar'
+			className={['rcx-sidebar--main', `rcx-sidebar rcx-sidebar--${sidebarViewMode}`, sidebarHideAvatar && 'rcx-sidebar--hide-avatar']
+				.filter(Boolean)
+				.join(' ')}
 		>
 			<SearchSection />
 			{presenceDisabled && !bannerDismissed && <StatusDisabledSection onDismiss={() => setBannerDismissed(true)} />}
 			<SidebarRoomList />
 			<SidebarFooter />
-		</Box>
+		</SideBar>
 	);
 };
 

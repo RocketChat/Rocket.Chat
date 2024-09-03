@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import type { ISubscription, IRoom } from '@rocket.chat/core-typings';
-import { SideBar, SideBarGroupTitle } from '@rocket.chat/fuselage';
+import { Box, SideBarGroupTitle } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
@@ -68,14 +68,14 @@ const RoomList = () => {
 	const { groupCounts, groupList, roomList } = getRoomsByGroup(roomsList);
 
 	return (
-		<SideBar ref={ref}>
+		<Box position='relative' display='flex' overflow='hidden' height='full' flexGrow={1} flexShrink={1} flexBasis='auto' ref={ref}>
 			<GroupedVirtuoso
 				groupCounts={groupCounts}
 				groupContent={(index) => <SideBarGroupTitle title={t(groupList[index])} />}
 				itemContent={(index) => <RoomListRow data={itemData} item={roomList[index]} />}
 				components={{ Item: RoomListRowWrapper, List: RoomListWrapper, Scroller: VirtuosoScrollbars }}
 			/>
-		</SideBar>
+		</Box>
 	);
 };
 
