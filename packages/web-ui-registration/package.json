@@ -9,11 +9,11 @@
 		"/dist"
 	],
 	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"storybook": "start-storybook -p 6006 --no-version-updates",
-		"build": "tsc -p tsconfig.build.json",
-		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput"
+		"storybook": "start-storybook -p 6006 --no-version-updates"
 	},
 	"devDependencies": {
 		"@babel/core": "~7.22.20",

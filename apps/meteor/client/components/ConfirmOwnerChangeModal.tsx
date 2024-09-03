@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from './GenericModal';
 import RawText from './RawText';
@@ -20,7 +20,7 @@ const ConfirmOwnerChangeModal = ({
 	onConfirm,
 	onCancel,
 }: ConfirmOwnerChangeModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	let changeOwnerRooms = '';
 	if (shouldChangeOwner.length > 0) {

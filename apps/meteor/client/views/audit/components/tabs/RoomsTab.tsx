@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, Icon } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import RoomAutoComplete from '../../../../components/RoomAutoComplete';
 import type { AuditFields } from '../../hooks/useAuditForm';
@@ -14,7 +14,7 @@ type RoomsTabProps = {
 };
 
 const RoomsTab = ({ form: { control }, setSelectedRoom }: RoomsTabProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { field: ridField, fieldState: ridFieldState } = useController({ name: 'rid', control, rules: { required: true } });
 

@@ -99,6 +99,10 @@ export type RocketchatI18nKeys = keyof RocketchatI18n;
 declare module 'i18next' {
 	interface TFunction {
 		<TKey extends keyof RocketchatI18n>(key: TKey, options?: TOptions): string;
+		<TKey extends \`\${string}_\$\{'one' | 'other' | 'zero' | 'few' | 'many' | 'two' | 'three' | 'four'}\`>(
+			key: TKey,
+			options?: TOptions,
+		): string;
 	}
 }
 
