@@ -400,14 +400,14 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
-			const { filter } = this.queryParams;
+			const { filter, type } = this.queryParams;
 
 			const team = await getTeamByIdOrNameOrParentRoom(this.queryParams);
 			if (!team) {
 				return API.v1.notFound();
 			}
 
-			const data = await Team.listChildren(this.userId, team, filter, sort, offset, count);
+			const data = await Team.listChildren(this.userId, team, filter, type, sort, offset, count);
 
 			return API.v1.success({ ...data, offset, count });
 		},

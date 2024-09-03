@@ -2482,5 +2482,53 @@ describe('[Teams]', () => {
 			expect(res.body).to.have.property('data').to.be.an('array');
 			expect(res.body.data).to.have.lengthOf(2);
 		});
+
+		it('should return only items of type channel', async () => {
+			const res = await request
+				.get(api('teams.listChildren'))
+				.query({ teamId: testTeam._id, type: 'channel' })
+				.set(credentials)
+				.expect(200);
+
+			expect(res.body).to.have.property('total').to.be.equal(4);
+			expect(res.body).to.have.property('data').to.be.an('array');
+			expect(res.body.data).to.have.lengthOf(4);
+			expect(res.body.data.some((room: IRoom) => !!room.prid)).to.be.false;
+		});
+
+		it('should return only items of type discussion', async () => {
+			const res = await request
+				.get(api('teams.listChildren'))
+				.query({ teamId: testTeam._id, type: 'discussion' })
+				.set(credentials)
+				.expect(200);
+
+			expect(res.body).to.have.property('total').to.be.equal(1);
+			expect(res.body).to.have.property('data').to.be.an('array');
+			expect(res.body.data).to.have.lengthOf(1);
+			expect(res.body.data.every((room: IRoom) => !!room.prid)).to.be.true;
+		});
+
+		it('should return both when type is not passed', async () => {
+			const res = await request
+				.get(api('teams.listChildren'))
+				.query({ teamId: testTeam._id })
+				.set(credentials)
+				.expect(200);
+
+			expect(res.body).to.have.property('total').to.be.equal(5);
+			expect(res.body).to.have.property('data').to.be.an('array');
+			expect(res.body.data).to.have.lengthOf(5);
+			expect(res.body.data.some((room: IRoom) => !!room.prid)).to.be.true;
+			expect(res.body.data.some((room: IRoom) => !room.prid)).to.be.true;
+		});
+
+		it('should fail if type is other than channel or discussion', async () => {
+			await request
+				.get(api('teams.listChildren'))
+				.query({ teamId: testTeam._id, type: 'other' })
+				.set(credentials)
+				.expect(400);
+		});
 	});
 });

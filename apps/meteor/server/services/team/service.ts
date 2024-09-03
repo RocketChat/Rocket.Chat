@@ -1085,6 +1085,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		userId: string,
 		team: ITeam,
 		filter?: string,
+		type?: 'channel' | 'discussion',
 		sort?: Record<string, 1 | -1>,
 		skip = 0,
 		limit = 10,
@@ -1099,7 +1100,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				totalCount: [{ count: total }],
 				paginatedResults: data,
 			},
-		] = await Rooms.findChildrenOfTeam(team._id, mainRoom._id, userId, filter, { skip, limit, sort }).toArray();
+		] = await Rooms.findChildrenOfTeam(team._id, mainRoom._id, userId, filter, type, { skip, limit, sort }).toArray();
 
 		return {
 			total,
