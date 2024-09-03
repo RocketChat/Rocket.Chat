@@ -180,6 +180,7 @@ const SideBarItemTemplateWithData = ({
 			is='a'
 			id={id}
 			data-qa='sidebar-item'
+			data-unread={highlighted}
 			unread={highlighted}
 			selected={selected}
 			href={href}

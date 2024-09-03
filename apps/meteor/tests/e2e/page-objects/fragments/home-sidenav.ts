@@ -69,8 +69,10 @@ export class HomeSidenav {
 	}
 
 	// TODO: refactor getSidebarItemByName to not use data-qa
-	getSidebarItemByName(name: string): Locator {
-		return this.page.locator(`[data-qa="sidebar-item"][aria-label="${name}"]`);
+	getSidebarItemByName(name: string, isRead?: boolean): Locator {
+		return this.page.locator(
+			['[data-qa="sidebar-item"]', `[aria-label="${name}"]`, isRead && '[data-unread="false"]'].filter(Boolean).join(''),
+		);
 	}
 
 	async selectMarkAsUnread(name: string) {

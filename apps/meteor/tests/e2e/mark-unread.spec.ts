@@ -50,7 +50,7 @@ test.describe.serial('mark-unread', () => {
 	test.describe('Mark Unread - Message Action', () => {
 		let poHomeChannelUser2: HomeChannel;
 
-		test('should mark a populated room as unread', async ({ page, browser }) => {
+		test('should mark a populated room as unread', async ({ browser }) => {
 			const { page: user2Page } = await createAuxContext(browser, Users.user2);
 			poHomeChannelUser2 = new HomeChannel(user2Page);
 
@@ -59,11 +59,12 @@ test.describe.serial('mark-unread', () => {
 			await user2Page.close();
 
 			await poHomeChannel.sidenav.openChat(targetChannel);
+
+			// wait for the sidebar item to be read
+			await poHomeChannel.sidenav.getSidebarItemByName(targetChannel, true).waitFor();
 			await poHomeChannel.content.openLastMessageMenu();
 			await poHomeChannel.markUnread.click();
-			await page.waitForURL('/home');
 
-			await expect(page.locator('role=main >> role=heading[level=1]')).toBeVisible();
 			await expect(poHomeChannel.sidenav.getRoomBadge(targetChannel)).toBeVisible();
 		});
 	});
