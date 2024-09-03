@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import { SidePanel, SidePanelListItem } from '@rocket.chat/fuselage';
+import { Box, SidePanel, SidePanelListItem } from '@rocket.chat/fuselage';
 import { useEndpoint, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { memo } from 'react';
@@ -26,11 +26,20 @@ const RoomSidePanel = () => {
 const RoomSidePanelWithData = ({ parentRid, openedRoom }: { parentRid: string; openedRoom: string }) => {
 	const sidebarViewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode');
 
-	const listRoomsAndDiscussions = useEndpoint('GET', '/v1/teams.listChildren');
-	const result = useQuery(['room-list', parentRid], async () =>
-		listRoomsAndDiscussions({ roomId: parentRid, sort: JSON.stringify({ lm: -1 }) }),
-	);
 	const roomInfo = useRoomInfoEndpoint(parentRid);
+	const sidepanelItems = roomInfo.data?.room?.sidepanel?.items || roomInfo.data?.parent?.sidepanel?.items;
+
+	const listRoomsAndDiscussions = useEndpoint('GET', '/v1/teams.listChildren');
+	const result = useQuery({
+		queryKey: ['sidepanel', parentRid],
+		queryFn: () =>
+			listRoomsAndDiscussions({
+				roomId: parentRid,
+				sort: JSON.stringify({ lm: -1 }),
+				type: sidepanelItems?.length === 1 ? sidepanelItems[0] : undefined,
+			}),
+		enabled: !!sidepanelItems,
+	});
 
 	if (roomInfo.isSuccess && !roomInfo.data.room?.sidepanel && !roomInfo.data.parent?.sidepanel) {
 		return null;
@@ -46,14 +55,16 @@ const RoomSidePanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 
 	return (
 		<SidePanel>
-			<Virtuoso
-				totalCount={result.data.data.length}
-				data={result.data.data}
-				components={{ Item: SidePanelListItem, List: RoomSidePanelListWrapper, Scroller: VirtuosoScrollbars }}
-				itemContent={(_, data) => (
-					<RoomSidePanelItem openedRoom={openedRoom} room={data} parentRid={parentRid} viewMode={sidebarViewMode} />
-				)}
-			/>
+			<Box pb={8} h='full'>
+				<Virtuoso
+					totalCount={result.data.data.length}
+					data={result.data.data}
+					components={{ Item: SidePanelListItem, List: RoomSidePanelListWrapper, Scroller: VirtuosoScrollbars }}
+					itemContent={(_, data) => (
+						<RoomSidePanelItem openedRoom={openedRoom} room={data} parentRid={parentRid} viewMode={sidebarViewMode} />
+					)}
+				/>
+			</Box>
 		</SidePanel>
 	);
 };
