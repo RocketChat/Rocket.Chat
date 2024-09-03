@@ -1060,7 +1060,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		userId: string,
 		team: ITeam,
 		filter?: string,
-		type?: 'channel' | 'discussion',
+		type?: 'channels' | 'discussions',
 		sort?: Record<string, 1 | -1>,
 		skip = 0,
 		limit = 10,

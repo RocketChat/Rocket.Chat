@@ -2065,7 +2065,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		teamRoomId: string,
 		userId: string,
 		filter?: string,
-		type?: 'channel' | 'discussion',
+		type?: 'channels' | 'discussions',
 		options?: FindOptions<IRoom>,
 	): AggregationCursor<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }> {
 		const nameFilter = filter ? new RegExp(escapeRegExp(filter), 'i') : undefined;
@@ -2075,8 +2075,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 					$and: [
 						{
 							$or: [
-								...(!type || type === 'channel' ? [{ teamId }] : []),
-								...(!type || type === 'discussion' ? [{ prid: teamRoomId }] : []),
+								...(!type || type === 'channels' ? [{ teamId }] : []),
+								...(!type || type === 'discussions' ? [{ prid: teamRoomId }] : []),
 							],
 						},
 						...(nameFilter ? [{ $or: [{ fname: nameFilter }, { name: nameFilter }] }] : []),

@@ -5,7 +5,7 @@ import { ajv } from '../Ajv';
 
 type GeneralProps = {
 	filter?: string;
-	type?: 'channel' | 'discussion';
+	type?: 'channels' | 'discussions';
 };
 
 export type TeamsListChildrenProps =
@@ -22,7 +22,7 @@ const TeamsListChildrenPropsSchema = {
 	properties: {
 		teamId: { type: 'string' },
 		teamName: { type: 'string' },
-		type: { type: 'string', enum: ['channel', 'discussion'] },
+		type: { type: 'string', enum: ['channels', 'discussions'] },
 		roomId: { type: 'string' },
 		filter: { type: 'string' },
 		offset: { type: 'number' },

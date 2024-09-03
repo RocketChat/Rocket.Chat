@@ -222,7 +222,7 @@ describe('[Teams]', () => {
 					name: `test-team-with-sidepanel-error-${Date.now()}`,
 					type: 0,
 					sidepanel: {
-						items: ['channels', 'discussion', 'other'],
+						items: ['channels', 'discussions', 'other'],
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -451,7 +451,7 @@ describe('[Teams]', () => {
 						.expect(200)
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
-							expect(response.body).to.have.property('channel');
+							expect(response.body).to.have.property('channels');
 							expect(response.body.channel).to.have.property('_id', channelToKeepId);
 							expect(response.body.channel).to.not.have.property('teamId');
 						});
@@ -467,7 +467,7 @@ describe('[Teams]', () => {
 						.expect(200)
 						.expect((response) => {
 							expect(response.body).to.have.property('success', true);
-							expect(response.body).to.have.property('channel');
+							expect(response.body).to.have.property('channels');
 							expect(response.body.channel).to.have.property('_id', testTeam.roomId);
 							expect(response.body.channel).to.not.have.property('teamId');
 							expect(response.body.channel).to.not.have.property('teamMain');
@@ -1403,7 +1403,7 @@ describe('[Teams]', () => {
 									.expect(200)
 									.expect((response) => {
 										expect(response.body).to.have.property('success', true);
-										expect(response.body).to.have.property('channel');
+										expect(response.body).to.have.property('channels');
 										expect(response.body.channel).to.have.property('_id', channel1Id);
 										expect(response.body.channel).to.not.have.property('teamId');
 									})
@@ -2478,7 +2478,7 @@ describe('[Teams]', () => {
 		it('should return only items of type channel', async () => {
 			const res = await request
 				.get(api('teams.listChildren'))
-				.query({ teamId: testTeam._id, type: 'channel' })
+				.query({ teamId: testTeam._id, type: 'channels' })
 				.set(credentials)
 				.expect(200);
 
@@ -2491,7 +2491,7 @@ describe('[Teams]', () => {
 		it('should return only items of type discussion', async () => {
 			const res = await request
 				.get(api('teams.listChildren'))
-				.query({ teamId: testTeam._id, type: 'discussion' })
+				.query({ teamId: testTeam._id, type: 'discussions' })
 				.set(credentials)
 				.expect(200);
 
@@ -2502,11 +2502,7 @@ describe('[Teams]', () => {
 		});
 
 		it('should return both when type is not passed', async () => {
-			const res = await request
-				.get(api('teams.listChildren'))
-				.query({ teamId: testTeam._id })
-				.set(credentials)
-				.expect(200);
+			const res = await request.get(api('teams.listChildren')).query({ teamId: testTeam._id }).set(credentials).expect(200);
 
 			expect(res.body).to.have.property('total').to.be.equal(5);
 			expect(res.body).to.have.property('data').to.be.an('array');
@@ -2516,11 +2512,7 @@ describe('[Teams]', () => {
 		});
 
 		it('should fail if type is other than channel or discussion', async () => {
-			await request
-				.get(api('teams.listChildren'))
-				.query({ teamId: testTeam._id, type: 'other' })
-				.set(credentials)
-				.expect(400);
+			await request.get(api('teams.listChildren')).query({ teamId: testTeam._id, type: 'other' }).set(credentials).expect(400);
 		});
 	});
 });
