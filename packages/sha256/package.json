@@ -22,7 +22,7 @@
 		"@typescript-eslint/parser": "~5.60.1",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
-		"typescript": "~5.3.3"
+		"typescript": "~5.5.4"
 	},
 	"volta": {
 		"extends": "../../package.json"

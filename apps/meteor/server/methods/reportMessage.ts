@@ -3,6 +3,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { ModerationReports, Rooms, Users, Messages } from '@rocket.chat/models';
 import { check } from 'meteor/check';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../app/authorization/server/functions/canAccessRoom';
@@ -82,3 +83,15 @@ Meteor.methods<ServerMethods>({
 		return true;
 	},
 });
+
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'reportMessage',
+		userId() {
+			return true;
+		},
+	},
+	5,
+	60000,
+);

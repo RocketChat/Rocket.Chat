@@ -185,11 +185,14 @@ test.describe('OC - Manage Units', () => {
 			await poOmnichannelUnits.btnSave.click();
 		});
 
-		await test.step('expect department to be in the chosen departments list', async () => {
+		await test.step('expect department to be in the chosen departments list and have title', async () => {
 			await poOmnichannelUnits.search(unit.name);
 			await poOmnichannelUnits.findRowByName(unit.name).click();
 			await expect(poOmnichannelUnits.contextualBar).toBeVisible();
-			await expect(page.getByRole('option', { name: department2.data.name })).toBeVisible();
+			await expect(poOmnichannelUnits.selectOptionChip(department2.data.name)).toBeVisible();
+			await poOmnichannelUnits.selectOptionChip(department2.data.name).hover();
+
+			await expect(page.getByRole('tooltip', { name: department2.data.name })).toBeVisible();
 			await poOmnichannelUnits.btnContextualbarClose.click();
 		});
 
