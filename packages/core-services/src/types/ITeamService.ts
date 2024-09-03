@@ -129,6 +129,7 @@ export interface ITeamService {
 		userId: string,
 		team: ITeam,
 		filter?: string,
+		type?: 'channel' | 'discussion',
 		sort?: Record<string, 1 | -1>,
 		skip?: number,
 		limit?: number,
