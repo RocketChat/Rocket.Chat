@@ -77,7 +77,7 @@ const Extended = ({
 					{actions && actions}
 					{menu && (
 						<SideBarItemMenu {...handleMenuEvent}>
-							{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' />}
+							{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
 						</SideBarItemMenu>
 					)}
 				</SideBarItemRow>

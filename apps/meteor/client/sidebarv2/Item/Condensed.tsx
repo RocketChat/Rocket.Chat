@@ -40,7 +40,7 @@ const Condensed = ({ icon, title, avatar, actions, href, unread, menu, badges, s
 			{actions && actions}
 			{menu && (
 				<SideBarItemMenu {...handleMenuEvent}>
-					{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' />}
+					{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
 				</SideBarItemMenu>
 			)}
 		</SideBarItem>
