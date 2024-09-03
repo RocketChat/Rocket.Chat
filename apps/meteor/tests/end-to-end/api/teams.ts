@@ -2510,11 +2510,7 @@ describe('[Teams]', () => {
 		});
 
 		it('should return both when type is not passed', async () => {
-			const res = await request
-				.get(api('teams.listChildren'))
-				.query({ teamId: testTeam._id })
-				.set(credentials)
-				.expect(200);
+			const res = await request.get(api('teams.listChildren')).query({ teamId: testTeam._id }).set(credentials).expect(200);
 
 			expect(res.body).to.have.property('total').to.be.equal(5);
 			expect(res.body).to.have.property('data').to.be.an('array');
@@ -2524,11 +2520,7 @@ describe('[Teams]', () => {
 		});
 
 		it('should fail if type is other than channel or discussion', async () => {
-			await request
-				.get(api('teams.listChildren'))
-				.query({ teamId: testTeam._id, type: 'other' })
-				.set(credentials)
-				.expect(400);
+			await request.get(api('teams.listChildren')).query({ teamId: testTeam._id, type: 'other' }).set(credentials).expect(400);
 		});
 	});
 });
