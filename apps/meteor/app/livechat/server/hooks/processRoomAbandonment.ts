@@ -43,7 +43,8 @@ const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, agentLas
 		officeDays = (await businessHourManager.getBusinessHour())?.workHours.reduce(parseDays, {});
 	}
 
-	if (!officeDays) {
+	// Empty object we assume invalid config
+	if (!officeDays || !Object.keys(officeDays).length) {
 		return getSecondsWhenOfficeHoursIsDisabled(room, agentLastMessage);
 	}
 
@@ -55,6 +56,11 @@ const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, agentLas
 	for (let index = 0; index <= daysOfInactivity; index++) {
 		const today = inactivityDay.clone().format('dddd');
 		const officeDay = officeDays[today];
+		// Config doesnt have data for this day, we skip day
+		if (!officeDay) {
+			inactivityDay.add(1, 'days');
+			continue;
+		}
 		const startTodaysOfficeHour = moment(`${officeDay.start.day}:${officeDay.start.time}`, 'dddd:HH:mm').add(index, 'days');
 		const endTodaysOfficeHour = moment(`${officeDay.finish.day}:${officeDay.finish.time}`, 'dddd:HH:mm').add(index, 'days');
 		if (officeDays[today].open) {
