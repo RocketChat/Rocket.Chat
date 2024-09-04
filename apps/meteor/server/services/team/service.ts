@@ -1095,12 +1095,16 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('error-invalid-team-no-main-room');
 		}
 
-		const [
-			{
-				totalCount: [{ count: total }],
-				paginatedResults: data,
-			},
-		] = await Rooms.findChildrenOfTeam(team._id, mainRoom._id, userId, filter, type, { skip, limit, sort }).toArray();
+		const isMember = await TeamMember.findOneByUserIdAndTeamId(userId, team._id, {
+			projection: { _id: 1 },
+		});
+
+		if (!isMember) {
+			throw new Error('error-invalid-team-not-a-member');
+		}
+
+		const [{ totalCount: [{ count: total }] = [], paginatedResults: data = [] }] =
+			(await Rooms.findChildrenOfTeam(team._id, mainRoom._id, userId, filter, type, { skip, limit, sort }).toArray()) || [];
 
 		return {
 			total,

@@ -2221,6 +2221,7 @@ describe('[Teams]', () => {
 	describe('[teams.listChildren]', () => {
 		const teamName = `team-${Date.now()}`;
 		let testTeam: ITeam;
+		let testPrivateTeam: ITeam;
 		let testUser: IUser;
 		let testUserCredentials: Credentials;
 
@@ -2239,6 +2240,7 @@ describe('[Teams]', () => {
 
 			const members = testUser.username ? [testUser.username] : [];
 			testTeam = await createTeam(credentials, teamName, 0, members);
+			testPrivateTeam = await createTeam(testUserCredentials, `${teamName}private`, 1, []);
 		});
 
 		before('make user owner', async () => {
@@ -2521,6 +2523,18 @@ describe('[Teams]', () => {
 
 		it('should fail if type is other than channel or discussion', async () => {
 			await request.get(api('teams.listChildren')).query({ teamId: testTeam._id, type: 'other' }).set(credentials).expect(400);
+		});
+
+		it('should properly list children of a private team', async () => {
+			const res = await request.get(api('teams.listChildren')).query({ teamId: testPrivateTeam._id }).set(testUserCredentials).expect(200);
+
+			expect(res.body).to.have.property('total').to.be.equal(1);
+			expect(res.body).to.have.property('data').to.be.an('array');
+			expect(res.body.data).to.have.lengthOf(1);
+		});
+
+		it('should throw an error when a non member user tries to fetch info for team', async () => {
+			await request.get(api('teams.listChildren')).query({ teamId: testPrivateTeam._id }).set(credentials).expect(400);
 		});
 	});
 });
