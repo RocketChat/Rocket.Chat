@@ -85,6 +85,7 @@
   "Accounts_AllowEmailChange": "Allow Email Change",
   "Accounts_AllowEmailNotifications": "Allow Email Notifications",
   "Accounts_AllowFeaturePreview": "Allow Feature Preview",
+  "Accounts_AllowFeaturePreview_Description": "Make feature preview available to all workspace members.",
   "Accounts_AllowPasswordChange": "Allow Password Change",
   "Accounts_AllowPasswordChangeForOAuthUsers": "Allow Password Change for OAuth Users",
   "Accounts_AllowRealNameChange": "Allow Name Change",

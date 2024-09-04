@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import {
 	ButtonGroup,
 	Button,
@@ -45,7 +44,7 @@ const AdminFeaturePreviewPage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const allowFeaturePreviewSetting = useEditableSetting('Accounts_AllowFeaturePreview');
-	const { features, unseenFeatures, featurePreviewEnabled } = useFeaturePreviewList();
+	const { features, unseenFeatures } = useFeaturePreviewList();
 
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
@@ -67,31 +66,28 @@ const AdminFeaturePreviewPage = () => {
 		handleSubmit,
 		reset,
 	} = useForm({
-		defaultValues: { featuresPreview: features, enabled: allowFeaturePreviewSetting?.value },
+		defaultValues: { featuresPreview: features },
 	});
-	console.log('isDirty ->', isDirty);
-	const { featuresPreview, enabled } = watch();
+	const { featuresPreview } = watch();
 	const dispatch = useSettingsDispatch();
-	console.log('enabled ->', enabled);
 
 	const handleSave = async () => {
 		try {
 			if (!allowFeaturePreviewSetting) {
 				throw Error(`AdminFeaturePreviewPage-handleSave-SettingNotFound`);
 			}
+			const featuresToBeSaved = featuresPreview.map((feature) => ({ name: feature.name, value: feature.value }));
 
-			await dispatch([{ _id: allowFeaturePreviewSetting._id, value: allowFeaturePreviewSetting.changed }]);
-			await setUserPreferences({ data: { featuresPreview } });
+			await dispatch([
+				{ _id: allowFeaturePreviewSetting._id, value: allowFeaturePreviewSetting.value },
+				{ _id: 'Accounts_Default_User_Preferences_featuresPreview', value: JSON.stringify(featuresToBeSaved) },
+			]);
 			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
 			reset({ featuresPreview });
 		}
-	};
-
-	const handleSetting = (e: ChangeEvent<HTMLInputElement>) => {
-		setValue('enabled', e.target.checked, { shouldDirty: true });
 	};
 
 	const handleFeatures = (e: ChangeEvent<HTMLInputElement>) => {
@@ -116,66 +112,55 @@ const AdminFeaturePreviewPage = () => {
 			<PageHeader title={t('Feature_preview')} />
 			<PageScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
-					<>
-						<Box
-							className={css`
-								white-space: break-spaces;
-							`}
-							pbe={24}
-							fontScale='p1'
-						>
-							{t('Feature_preview_admin_page_description')}
-							<Callout className=''>{t('Feature_preview_admin_page_callout_2_text')}</Callout>
-							<Callout className=''>{t('Feature_preview_admin_page_callout_1_text')}</Callout>
-						</Box>
-
-						<Setting settingId='Accounts_AllowFeaturePreview' sectionChanged={allowFeaturePreviewSetting.changed} />
+					<FieldGroup marginBlockEnd={16}>
+						<Field>
+							<FieldRow>{t('Feature_preview_admin_page_description')}</FieldRow>
+						</Field>
 						<Field>
 							<FieldRow>
-								<FieldLabel htmlFor={allowFeaturePreviewSetting._id}>{t(allowFeaturePreviewSetting.i18nLabel)}</FieldLabel>
-								<ToggleSwitch
-									id={allowFeaturePreviewSetting._id}
-									checked={allowFeaturePreviewSetting.value}
-									name={allowFeaturePreviewSetting.name}
-									onChange={handleFeatures}
-									disabled={!allowFeaturePreviewSetting.value}
-								/>
+								<Callout>{t('Feature_preview_admin_page_callout_2_text')}</Callout>
 							</FieldRow>
-							{allowFeaturePreviewSetting.description && <FieldHint mbs={12}>{t(allowFeaturePreviewSetting.description)}</FieldHint>}
 						</Field>
-						<Accordion>
-							{grouppedFeaturesPreview?.map(([group, features], index) => (
-								<Accordion.Item defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
-									<FieldGroup>
-										{features.map((feature) => (
-											<Fragment key={feature.name}>
-												<Field>
-													<FieldRow>
-														<FieldLabel htmlFor={feature.name}>{t(feature.i18n)}</FieldLabel>
-														<ToggleSwitch
-															id={feature.name}
-															checked={feature.value}
-															name={feature.name}
-															onChange={handleFeatures}
-															disabled={feature.disabled || !allowFeaturePreviewSetting.value}
-														/>
-													</FieldRow>
-													{feature.description && <FieldHint mbs={12}>{t(feature.description)}</FieldHint>}
-												</Field>
-												{feature.imageUrl && <Box is='img' width='100%' height='auto' mbs={16} src={feature.imageUrl} alt='' />}
-											</Fragment>
-										))}
-									</FieldGroup>
-								</Accordion.Item>
-							))}
-						</Accordion>
-					</>
+						<Field>
+							<FieldRow>
+								<Callout>{t('Feature_preview_admin_page_callout_1_text')}</Callout>
+							</FieldRow>
+						</Field>
+						<Setting settingId='Accounts_AllowFeaturePreview' sectionChanged={allowFeaturePreviewSetting.changed} />
+					</FieldGroup>
+
+					<Accordion>
+						{grouppedFeaturesPreview?.map(([group, features], index) => (
+							<Accordion.Item defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
+								<FieldGroup>
+									{features.map((feature) => (
+										<Fragment key={feature.name}>
+											<Field>
+												<FieldRow>
+													<FieldLabel htmlFor={feature.name}>{t(feature.i18n)}</FieldLabel>
+													<ToggleSwitch
+														id={feature.name}
+														checked={feature.value}
+														name={feature.name}
+														onChange={handleFeatures}
+														disabled={feature.disabled || !allowFeaturePreviewSetting.value}
+													/>
+												</FieldRow>
+												{feature.description && <FieldHint mbs={12}>{t(feature.description)}</FieldHint>}
+											</Field>
+											{feature.imageUrl && <Box is='img' width='100%' height='auto' mbs={16} src={feature.imageUrl} alt='' />}
+										</Fragment>
+									))}
+								</FieldGroup>
+							</Accordion.Item>
+						))}
+					</Accordion>
 				</Box>
 			</PageScrollableContentWithShadow>
-			<PageFooter isDirty={true}>
+			<PageFooter isDirty={isDirty || allowFeaturePreviewSetting.changed}>
 				<ButtonGroup>
 					<Button onClick={() => reset({ featuresPreview: features })}>{t('Cancel')}</Button>
-					<Button primary disabled={false} onClick={handleSubmit(handleSave)}>
+					<Button primary disabled={!(isDirty || allowFeaturePreviewSetting.changed)} onClick={handleSubmit(handleSave)}>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

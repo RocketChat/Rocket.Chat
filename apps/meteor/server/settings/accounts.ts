@@ -223,75 +223,9 @@ export const createAccountSettings = () =>
 			public: true,
 		});
 
-		/**
-		 * TODO: Implement new setting type 'object' to store object settings.
-		 * For example:
-		 * await this.add('Accounts_Default_User_Preferences_featuresPreview', {}, {
-					type: 'object',
-					as: FeaturePreview[]
-					value: defaultFeaturesPreview,
-				});
-		 */
-		// The object below replicates 'defaultFeaturesPreview' defined on @rocket.chat/ui-client/src/hooks/useFeaturePreviewList.ts
-		const defaultFeaturesPreviewToStringfy = [
-			{
-				name: 'quickReactions',
-				i18n: 'Quick_reactions',
-				description: 'Quick_reactions_description',
-				group: 'Message',
-				imageUrl: 'images/featurePreview/quick-reactions.png',
-				value: false,
-				enabled: true,
-			},
-			{
-				name: 'navigationBar',
-				i18n: 'Navigation_bar',
-				description: 'Navigation_bar_description',
-				group: 'Navigation',
-				value: false,
-				enabled: false,
-			},
-			{
-				name: 'enable-timestamp-message-parser',
-				i18n: 'Enable_timestamp',
-				description: 'Enable_timestamp_description',
-				group: 'Message',
-				value: false,
-				enabled: true,
-			},
-			{
-				name: 'contextualbarResizable',
-				i18n: 'Contextualbar_resizable',
-				description: 'Contextualbar_resizable_description',
-				group: 'Navigation',
-				value: false,
-				enabled: true,
-			},
-			{
-				name: 'newNavigation',
-				i18n: 'New_navigation',
-				description: 'New_navigation_description',
-				group: 'Navigation',
-				value: false,
-				enabled: true,
-			},
-			{
-				name: 'sidepanelNavigation',
-				i18n: 'Sidepanel_navigation',
-				description: 'Sidepanel_navigation_description',
-				group: 'Navigation',
-				value: false,
-				enabled: false,
-				enableQuery: {
-					name: 'newNavigation',
-					value: true,
-				},
-			},
-		];
-		await this.add('Accounts_Default_User_Preferences_featuresPreview', JSON.stringify(defaultFeaturesPreviewToStringfy), {
+		await this.add('Accounts_Default_User_Preferences_featuresPreview', '[]', {
 			type: 'string',
-			hidden: true,
-			public: false,
+			public: true,
 		});
 		await this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
 			type: 'string',

@@ -1,5 +1,6 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
+import { useMemo } from 'react';
 
 export type FeaturesAvailable =
 	| 'quickReactions'
@@ -41,7 +42,7 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		description: 'Navigation_bar_description',
 		group: 'Navigation',
 		value: false,
-		enabled: false,
+		enabled: true,
 	},
 	{
 		name: 'enable-timestamp-message-parser',
@@ -85,15 +86,17 @@ export const enabledDefaultFeatures = defaultFeaturesPreview.filter((feature) =>
 
 export const useFeaturePreviewList = () => {
 	const featurePreviewEnabled = useSetting<boolean>('Accounts_AllowFeaturePreview');
-	let userFeaturesPreview = useUserPreference<FeaturePreviewProps[]>('featuresPreview');
-
-	// TODO: Remove this statement after we improve the default settings to accept objects in the settings config.
-	if (typeof userFeaturesPreview === 'string') {
-		userFeaturesPreview = JSON.parse(userFeaturesPreview);
-	}
+	const userPreferenceFeaturesPreview = useUserPreference<FeaturePreviewProps[]>('featuresPreview');
+	// TODO: Remove this memo after we improve the default settings to accept objects in the settings config.
+	const userFeaturesPreview = useMemo<FeaturePreviewProps[]>(() => {
+		if (typeof userPreferenceFeaturesPreview === 'string') {
+			return JSON.parse(userPreferenceFeaturesPreview);
+		}
+		return userPreferenceFeaturesPreview;
+	}, [userPreferenceFeaturesPreview]);
 
 	if (!featurePreviewEnabled) {
-		return { unseenFeatures: 0, features: [] as FeaturePreviewProps[], featurePreviewEnabled };
+		return { unseenFeatures: 0, features: enabledDefaultFeatures, featurePreviewEnabled };
 	}
 
 	const unseenFeatures = enabledDefaultFeatures.filter(
