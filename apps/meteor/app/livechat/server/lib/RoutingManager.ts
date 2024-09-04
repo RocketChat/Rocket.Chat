@@ -265,11 +265,21 @@ export const RoutingManager: Routing = {
 
 		logger.info(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
 
+		// assignAgent changes the room data to add the agent serving the conversation. afterTakeInquiry expects room object to be updated
+		const inq = await this.assignAgent(inquiry as InquiryWithAgentInfo, room, agent);
+		const roomAfterUpdate = await LivechatRooms.findOneById(rid);
+
+		if (!roomAfterUpdate) {
+			// This should never happen
+			throw new Error('error-room-not-found');
+		}
+
 		callbacks.runAsync(
 			'livechat.afterTakeInquiry',
 			{
-				inquiry: await this.assignAgent(inquiry as InquiryWithAgentInfo, room, agent),
-				room,
+				inquiry: inq,
+				// @eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				room: roomAfterUpdate,
 			},
 			agent,
 		);
@@ -282,7 +292,7 @@ export const RoutingManager: Routing = {
 			queuedAt: undefined,
 		});
 
-		return LivechatRooms.findOneById(rid);
+		return roomAfterUpdate;
 	},
 
 	async transferRoom(room, guest, transferData) {
