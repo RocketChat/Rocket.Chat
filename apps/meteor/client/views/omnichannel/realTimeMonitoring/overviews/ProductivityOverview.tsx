@@ -1,3 +1,5 @@
+import type { OperationParams } from '@rocket.chat/rest-typings';
+import type { MutableRefObject } from 'react';
 import React from 'react';
 
 import { useEndpointData } from '../../../../hooks/useEndpointData';
@@ -7,7 +9,12 @@ const defaultValue = { title: '', value: '00:00:00' };
 
 const initialData = [defaultValue, defaultValue, defaultValue, defaultValue];
 
-const ProductivityOverview = ({ params, reloadRef, ...props }) => {
+type ProductivityOverviewProps = {
+	params: OperationParams<'GET', '/v1/livechat/analytics/dashboards/productivity-totalizers'>;
+	reloadRef: MutableRefObject<{ [x: string]: () => void }>;
+};
+
+const ProductivityOverview = ({ params, reloadRef, ...props }: ProductivityOverviewProps) => {
 	const { value: data, phase: state, reload } = useEndpointData('/v1/livechat/analytics/dashboards/productivity-totalizers', { params });
 
 	reloadRef.current.productivityOverview = reload;

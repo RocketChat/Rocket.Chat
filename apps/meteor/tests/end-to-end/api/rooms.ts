@@ -747,6 +747,42 @@ describe('[Rooms]', () => {
 				});
 		});
 
+		it('should correctly save encrypted file with the default media type even if another type is provided', async () => {
+			let fileId;
+
+			await request
+				.post(api(`rooms.media/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../mocks/files/sample-jpeg.jpg')), {
+					contentType: 'image/jpeg',
+				})
+				.field({ content: JSON.stringify({ algorithm: 'rc.v1.aes-sha2', ciphertext: 'something' }) })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('file');
+					expect(res.body.file).to.have.property('_id');
+					expect(res.body.file).to.have.property('url');
+
+					fileId = res.body.file._id;
+				});
+
+			await request
+				.post(api(`rooms.mediaConfirm/${testChannel._id}/${fileId}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.have.property('files');
+					expect(res.body.message.files).to.be.an('array').of.length(1);
+					expect(res.body.message.files[0]).to.have.property('type', 'application/octet-stream');
+					expect(res.body.message.files[0]).to.have.property('name', 'sample-jpeg.jpg');
+				});
+		});
+
 		it('should fail encrypted file upload when files encryption is disabled', async () => {
 			await updateSetting('E2E_Enable_Encrypt_Files', false);
 
@@ -1098,7 +1134,6 @@ describe('[Rooms]', () => {
 				.end(done);
 		});
 	});
-
 	describe('[/rooms.info]', () => {
 		let testChannel: IRoom;
 		let testGroup: IRoom;

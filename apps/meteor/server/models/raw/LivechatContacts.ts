@@ -8,4 +8,13 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatContact>>) {
 		super(db, 'livechat_contact', trash);
 	}
+
+	async updateContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact> {
+		const updatedValue = await this.findOneAndUpdate(
+			{ _id: contactId },
+			{ $set: { ...data, unknown: false } },
+			{ returnDocument: 'after' },
+		);
+		return updatedValue.value as ILivechatContact;
+	}
 }

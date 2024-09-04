@@ -30,7 +30,7 @@
 		"@types/uuid": "^9",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
-		"typescript": "~5.4.5"
+		"typescript": "~5.5.4"
 	},
 	"volta": {
 		"extends": "../../package.json"

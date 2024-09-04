@@ -8,6 +8,7 @@ import {
 	isRoomsMuteUnmuteUserProps,
 	isRoomsExportProps,
 	isRoomsIsMemberProps,
+	isRoomsCleanHistoryProps,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -361,7 +362,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.cleanHistory',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomsCleanHistoryProps },
 	{
 		async post() {
 			const { _id } = await findRoomByIdOrName({ params: this.bodyParams });
