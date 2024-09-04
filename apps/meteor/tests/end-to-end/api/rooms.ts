@@ -1246,7 +1246,7 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		describe.only('with team and parent data', () => {
+		describe('with team and parent data', () => {
 			const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
 			const teamName = `test-team-${Date.now()}`;
 			const discussionName = `test-discussion-${Date.now()}`;
