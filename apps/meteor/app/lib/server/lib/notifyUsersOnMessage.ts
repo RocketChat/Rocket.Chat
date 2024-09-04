@@ -168,8 +168,6 @@ export async function updateThreadUsersSubscriptions(message: IMessage, replies:
 }
 
 export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomUpdater: Updater<IRoom>): Promise<IMessage> {
-	console.log('notifyUsersOnMessage function');
-
 	// Skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
 	if (isEditedMessage(message)) {
 		if (Math.abs(moment(message.editedAt).diff(Date.now())) > 60000) {
