@@ -2103,6 +2103,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 											$eq: ['$u._id', userId],
 										},
 									},
+									{
+										$expr: {
+											$ne: ['$t', 'c'],
+										},
+									},
 								],
 							},
 						},
