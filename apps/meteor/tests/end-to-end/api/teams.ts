@@ -2324,6 +2324,7 @@ describe('[Teams]', () => {
 				deleteRoom({ type: 'c', roomId: discussionOnPublicRoom._id }),
 				deleteRoom({ type: 'c', roomId: discussionOnMainRoom._id }),
 				deleteTeam(credentials, teamName),
+				deleteTeam(credentials, testPrivateTeam.name),
 				deleteUser({ _id: testUser._id }),
 			]);
 		});
