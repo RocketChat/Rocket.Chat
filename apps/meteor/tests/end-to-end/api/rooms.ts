@@ -1246,13 +1246,14 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		describe('with team and parent data', () => {
+		describe.only('with team and parent data', () => {
 			const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
 			const teamName = `test-team-${Date.now()}`;
 			const discussionName = `test-discussion-${Date.now()}`;
 			const testChannelOutsideTeamname = `channel.test.outside.${Date.now()}-${Math.random()}`;
 			let testChannel: IRoom;
 			let testDiscussion: IRoom;
+			let testDiscussionMainRoom: IRoom;
 			let testTeam: ITeam;
 			let testChannelOutside: IRoom;
 			let testDiscussionOutsideTeam: IRoom;
@@ -1268,6 +1269,16 @@ describe('[Rooms]', () => {
 					t_name: discussionName,
 				});
 				testDiscussion = resDiscussion.body.discussion;
+
+				testDiscussionMainRoom = (
+					await request
+						.post(api('rooms.createDiscussion'))
+						.set(credentials)
+						.send({
+							prid: testTeam.roomId,
+							t_name: `test-discussion-${Date.now()}-team`,
+						})
+				).body.discussion;
 
 				await request
 					.post(api('teams.addRooms'))
@@ -1294,6 +1305,7 @@ describe('[Rooms]', () => {
 					deleteRoom({ type: 'p', roomId: testDiscussion._id }),
 					deleteRoom({ type: 'c', roomId: testChannelOutside._id }),
 					deleteRoom({ type: 'p', roomId: testDiscussionOutsideTeam._id }),
+					deleteRoom({ type: 'p', roomId: testDiscussionMainRoom._id }),
 					deleteTeam(credentials, teamName),
 				]),
 			);
@@ -1356,6 +1368,20 @@ describe('[Rooms]', () => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('parent').and.to.be.an('object');
 						expect(res.body.parent).to.have.property('_id').and.to.be.equal(testChannelOutside._id);
+						expect(res.body).to.not.have.property('team');
+					});
+			});
+
+			it('should return the parent for a discussion created from team main room', async () => {
+				await request
+					.get(api('rooms.info'))
+					.set(credentials)
+					.query({ roomId: testDiscussionMainRoom._id })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('parent').and.to.be.an('object');
+						expect(res.body.parent).to.have.property('_id').and.to.be.equal(testTeam.roomId);
 						expect(res.body).to.not.have.property('team');
 					});
 			});
