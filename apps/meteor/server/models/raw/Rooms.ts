@@ -2131,8 +2131,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				$facet: {
 					totalCount: [{ $count: 'count' }],
 					paginatedResults: [
-						{ $skip: options?.skip || 0 }, // Replace 0 with your skip value
-						{ $limit: options?.limit || 50 }, // Replace 10 with your limit value
+						{ $skip: options?.skip || 0 },
+						{ $limit: options?.limit || 50 },
 					],
 				},
 			},
