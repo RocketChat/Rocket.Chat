@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
-import { SideBarAction, SideBarActions, SideBarItemBadge, SideBarItemIcon } from '@rocket.chat/fuselage';
+import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemBadge, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
 import type { useTranslation } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
@@ -61,7 +61,7 @@ export const getBadgeTitle = (
 type RoomListRowProps = {
 	extended: boolean;
 	t: ReturnType<typeof useTranslation>;
-	SideBarItemTemplate: ComponentType<
+	SidebarItemTemplate: ComponentType<
 		{
 			icon: ReactNode;
 			title: ReactNode;
@@ -98,13 +98,13 @@ type RoomListRowProps = {
 	};
 };
 
-const SideBarItemTemplateWithData = ({
+const SidebarItemTemplateWithData = ({
 	room,
 	id,
 	selected,
 	style,
 	extended,
-	SideBarItemTemplate,
+	SidebarItemTemplate,
 	AvatarTemplate,
 	t,
 	isAnonymous,
@@ -132,7 +132,7 @@ const SideBarItemTemplateWithData = ({
 
 	const highlighted = Boolean(!hideUnreadStatus && (alert || unread));
 	const icon = (
-		<SideBarItemIcon
+		<SidebarV2ItemIcon
 			highlighted={highlighted}
 			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={Boolean(videoConfActions)} />}
 		/>
@@ -141,10 +141,10 @@ const SideBarItemTemplateWithData = ({
 	const actions = useMemo(
 		() =>
 			videoConfActions && (
-				<SideBarActions>
-					<SideBarAction onClick={videoConfActions.acceptCall} mini secondary success icon='phone' />
-					<SideBarAction onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' />
-				</SideBarActions>
+				<SidebarV2Actions>
+					<SidebarV2Action onClick={videoConfActions.acceptCall} mini secondary success icon='phone' />
+					<SidebarV2Action onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' />
+				</SidebarV2Actions>
 			),
 		[videoConfActions],
 	);
@@ -167,16 +167,16 @@ const SideBarItemTemplateWithData = ({
 	const badges = (
 		<>
 			{showBadge && isUnread && (
-				<SideBarItemBadge variant={variant} title={badgeTitle}>
+				<SidebarV2ItemBadge variant={variant} title={badgeTitle}>
 					{unread + tunread?.length}
-				</SideBarItemBadge>
+				</SidebarV2ItemBadge>
 			)}
 			{isOmnichannelRoom(room) && <OmnichannelBadges room={room} />}
 		</>
 	);
 
 	return (
-		<SideBarItemTemplate
+		<SidebarItemTemplate
 			is='a'
 			id={id}
 			data-qa='sidebar-item'
@@ -229,7 +229,7 @@ const keys: (keyof RoomListRowProps)[] = [
 	'style',
 	'extended',
 	'selected',
-	'SideBarItemTemplate',
+	'SidebarItemTemplate',
 	'AvatarTemplate',
 	't',
 	'sidebarViewMode',
@@ -237,7 +237,7 @@ const keys: (keyof RoomListRowProps)[] = [
 ];
 
 // eslint-disable-next-line react/no-multi-comp
-export default memo(SideBarItemTemplateWithData, (prevProps, nextProps) => {
+export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
 		return false;
 	}

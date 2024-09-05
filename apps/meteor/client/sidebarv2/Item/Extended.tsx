@@ -1,12 +1,12 @@
 import {
-	SideBarItem,
-	SideBarItemAvatarWrapper,
-	SideBarItemCol,
-	SideBarItemRow,
-	SideBarItemTitle,
-	SideBarItemTimestamp,
-	SideBarItemContent,
-	SideBarItemMenu,
+	SidebarV2Item,
+	SidebarV2ItemAvatarWrapper,
+	SidebarV2ItemCol,
+	SidebarV2ItemRow,
+	SidebarV2ItemTitle,
+	SidebarV2ItemTimestamp,
+	SidebarV2ItemContent,
+	SidebarV2ItemMenu,
 	IconButton,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
@@ -61,28 +61,28 @@ const Extended = ({
 	};
 
 	return (
-		<SideBarItem href={href} selected={selected}>
-			{avatar && <SideBarItemAvatarWrapper>{avatar}</SideBarItemAvatarWrapper>}
+		<SidebarV2Item href={href} selected={selected}>
+			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 
-			<SideBarItemCol>
-				<SideBarItemRow>
+			<SidebarV2ItemCol>
+				<SidebarV2ItemRow>
 					{icon && icon}
-					<SideBarItemTitle unread={unread}>{title}</SideBarItemTitle>
-					{time && <SideBarItemTimestamp>{formatDate(time)}</SideBarItemTimestamp>}
-				</SideBarItemRow>
+					<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
+					{time && <SidebarV2ItemTimestamp>{formatDate(time)}</SidebarV2ItemTimestamp>}
+				</SidebarV2ItemRow>
 
-				<SideBarItemRow>
-					<SideBarItemContent unread={unread}>{subtitle}</SideBarItemContent>
+				<SidebarV2ItemRow>
+					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>
 					{badges && badges}
 					{actions && actions}
 					{menu && (
-						<SideBarItemMenu {...handleMenuEvent}>
+						<SidebarV2ItemMenu {...handleMenuEvent}>
 							{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
-						</SideBarItemMenu>
+						</SidebarV2ItemMenu>
 					)}
-				</SideBarItemRow>
-			</SideBarItemCol>
-		</SideBarItem>
+				</SidebarV2ItemRow>
+			</SidebarV2ItemCol>
+		</SidebarV2Item>
 	);
 };
 

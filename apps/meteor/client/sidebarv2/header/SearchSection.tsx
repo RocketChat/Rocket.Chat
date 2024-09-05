@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Icon, TextInput, Palette, SideBarSection } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Palette, SidebarV2Section } from '@rocket.chat/fuselage';
 import { useMergedRefs, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect, useRef } from 'react';
@@ -70,7 +70,7 @@ const SearchSection = () => {
 
 	return (
 		<Box className={['rcx-sidebar', isDirty && wrapperStyle]} ref={wrapperRef} role='search'>
-			<SideBarSection>
+			<SidebarV2Section>
 				<TextInput
 					placeholder={t('Search')}
 					{...rest}
@@ -86,7 +86,7 @@ const SearchSection = () => {
 						<CreateRoom />
 					</>
 				)}
-			</SideBarSection>
+			</SidebarV2Section>
 			{isDirty && <SearchList filterText={filterText} onEscSearch={handleEscSearch} />}
 		</Box>
 	);
