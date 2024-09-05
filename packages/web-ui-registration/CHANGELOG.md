@@ -1,5 +1,16 @@
 # @rocket.chat/web-ui-registration
 
+## 10.0.0
+
+### Patch Changes
+
+- ([#32743](https://github.com/RocketChat/Rocket.Chat/pull/32743)) Fixes an issue where creating a new user with an invalid username (containing special characters) resulted in an error message, but the user was still created. The user creation process now properly aborts when an invalid username is provided.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@10.0.0
+  </details>
+
 ## 10.0.0-rc.6
 
 ### Patch Changes
