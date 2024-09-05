@@ -31,7 +31,7 @@
     "build": "run-s .:build:clean .:build:esm .:build:cjs",
     ".:build:clean": "rimraf dist",
     ".:build:esm": "tsc -p tsconfig.json",
-    ".:build:cjs": "tsc -p tsconfig-cjs.json",
+    ".:build:cjs": "tsc -p tsconfig.cjs.json",
     "lint": "eslint src"
   },
   "bugs": {
@@ -50,8 +50,10 @@
     "peggy": "3.0.2",
     "prettier": "~2.8.7",
     "rimraf": "^3.0.2",
-    "ts-jest": "~29.1.0",
     "typescript": "~5.3.3",
     "webpack": "~5.78.0"
+  },
+  "volta": {
+    "extends": "../../package.json"
   }
 }

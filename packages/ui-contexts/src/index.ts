@@ -92,21 +92,6 @@ export { useSetOutputMediaDevice } from './hooks/useSetOutputMediaDevice';
 export { useSetInputMediaDevice } from './hooks/useSetInputMediaDevice';
 export { useAccountsCustomFields } from './hooks/useAccountsCustomFields';
 
-export {
-	ServerMethods,
-	ServerMethodName,
-	ServerMethodParameters,
-	ServerMethodReturn,
-	ServerMethodFunction,
-} from '@rocket.chat/ddp-client/src/types/methods';
-export {
-	StreamerEvents,
-	StreamNames,
-	StreamKeys,
-	StreamerConfigs,
-	StreamerConfig,
-	StreamerCallbackArgs,
-} from '@rocket.chat/ddp-client/src/types/streams';
 export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';
 export { Fields } from './UserContext';

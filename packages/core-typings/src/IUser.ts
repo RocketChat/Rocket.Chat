@@ -152,9 +152,7 @@ export interface IUser extends IRocketChatRecord {
 		private_key: string;
 		public_key: string;
 	};
-	customFields?: {
-		[key: string]: any;
-	};
+	customFields?: Record<string, any>;
 	settings?: IUserSettings;
 	defaultRoom?: string;
 	ldap?: boolean;
@@ -231,5 +229,3 @@ export type AvatarServiceObject = {
 };
 
 export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarServiceObject;
-
-export type IAdminUserTabs = 'all' | 'active' | 'deactivated' | 'pending';

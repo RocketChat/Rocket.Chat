@@ -7,7 +7,7 @@ import type { ReactElement } from 'react';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
-import StringSettingInput from '../../views/admin/settings/inputs/StringSettingInput';
+import StringSettingInput from '../../views/admin/settings/Setting/inputs/StringSettingInput';
 
 export type PriorityFormData = { name: string; reset: boolean };
 

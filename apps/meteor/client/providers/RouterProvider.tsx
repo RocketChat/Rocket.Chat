@@ -1,4 +1,5 @@
 import type { RoomType, RoomRouteData } from '@rocket.chat/core-typings';
+import { RouterContext } from '@rocket.chat/ui-contexts';
 import type {
 	RouterContextValue,
 	RouteName,
@@ -7,9 +8,8 @@ import type {
 	SearchParameters,
 	To,
 	RouteObject,
+	LocationSearch,
 } from '@rocket.chat/ui-contexts';
-import { RouterContext } from '@rocket.chat/ui-contexts';
-import type { LocationSearch } from '@rocket.chat/ui-contexts/src/RouterContext';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
 import type { ReactNode } from 'react';

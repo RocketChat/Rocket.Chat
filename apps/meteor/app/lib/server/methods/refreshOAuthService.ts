@@ -1,10 +1,10 @@
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { refreshLoginServices } from '../../../../server/lib/refreshLoginServices';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		refreshOAuthService(): Promise<void>;

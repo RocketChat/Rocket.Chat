@@ -28,7 +28,12 @@ Meteor.startup(() => {
 			removeLocalUserData();
 			return;
 		}
+
 		if (!Meteor.status().connected) {
+			return;
+		}
+
+		if (Meteor.loggingIn()) {
 			return;
 		}
 

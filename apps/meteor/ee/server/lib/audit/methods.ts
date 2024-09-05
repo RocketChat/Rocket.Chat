@@ -1,7 +1,7 @@
 import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser, IAuditLog } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatRooms, Messages, Rooms, Users, AuditLog } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
@@ -57,7 +57,7 @@ const getRoomInfoByAuditParams = async ({
 	}
 };
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		auditGetAuditions: (params: { startDate: Date; endDate: Date }) => IAuditLog[];

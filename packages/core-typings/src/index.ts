@@ -140,3 +140,4 @@ export * from './CustomFieldMetadata';
 export * from './RoomRouteData';
 
 export * as Cloud from './cloud';
+export * from './themes';

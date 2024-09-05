@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, SidebarDivider, Palette, SidebarFooter as Footer } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import { useThemeMode } from '@rocket.chat/ui-theming/src/hooks/useThemeMode';
+import { useThemeMode } from '@rocket.chat/ui-theming';
 import type { ReactElement } from 'react';
 import React from 'react';
 

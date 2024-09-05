@@ -1,5 +1,5 @@
 import { UserStatus as Status } from '@rocket.chat/core-typings';
-import type { IAdminUserTabs, IRole, IUser, Serialized } from '@rocket.chat/core-typings';
+import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, Menu, Option } from '@rocket.chat/fuselage';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
@@ -10,6 +10,7 @@ import React, { useMemo } from 'react';
 import { Roles } from '../../../../../app/models/client';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { UserStatus } from '../../../../components/UserStatus';
+import type { AdminUserTab } from '../AdminUsersPage';
 import { useChangeAdminStatusAction } from '../hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from '../hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
@@ -23,7 +24,7 @@ type UsersTableRowProps = {
 	isMobile: boolean;
 	isLaptop: boolean;
 	onReload: () => void;
-	tab: IAdminUserTabs;
+	tab: AdminUserTab;
 	isSeatsCapExceeded: boolean;
 };
 
@@ -65,33 +66,44 @@ const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSea
 	const resendWelcomeEmail = useSendWelcomeEmailMutation();
 
 	const isNotPendingDeactivatedNorFederated = tab !== 'pending' && tab !== 'deactivated' && !isFederatedUser;
-	const menuOptions = {
-		...(isNotPendingDeactivatedNorFederated &&
-			changeAdminStatusAction && {
-				makeAdmin: {
-					label: { label: changeAdminStatusAction.label, icon: changeAdminStatusAction.icon },
-					action: changeAdminStatusAction.action,
-				},
+	const menuOptions = useMemo(
+		() => ({
+			...(isNotPendingDeactivatedNorFederated &&
+				changeAdminStatusAction && {
+					makeAdmin: {
+						label: { label: changeAdminStatusAction.label, icon: changeAdminStatusAction.icon },
+						action: changeAdminStatusAction.action,
+					},
+				}),
+			...(isNotPendingDeactivatedNorFederated &&
+				resetE2EKeyAction && {
+					resetE2EKey: { label: { label: resetE2EKeyAction.label, icon: resetE2EKeyAction.icon }, action: resetE2EKeyAction.action },
+				}),
+			...(isNotPendingDeactivatedNorFederated &&
+				resetTOTPAction && {
+					resetTOTP: { label: { label: resetTOTPAction.label, icon: resetTOTPAction.icon }, action: resetTOTPAction.action },
+				}),
+			...(changeUserStatusAction &&
+				!isFederatedUser && {
+					changeActiveStatus: {
+						label: { label: changeUserStatusAction.label, icon: changeUserStatusAction.icon },
+						action: changeUserStatusAction.action,
+					},
+				}),
+			...(deleteUserAction && {
+				delete: { label: { label: deleteUserAction.label, icon: deleteUserAction.icon }, action: deleteUserAction.action },
 			}),
-		...(isNotPendingDeactivatedNorFederated &&
-			resetE2EKeyAction && {
-				resetE2EKey: { label: { label: resetE2EKeyAction.label, icon: resetE2EKeyAction.icon }, action: resetE2EKeyAction.action },
-			}),
-		...(isNotPendingDeactivatedNorFederated &&
-			resetTOTPAction && {
-				resetTOTP: { label: { label: resetTOTPAction.label, icon: resetTOTPAction.icon }, action: resetTOTPAction.action },
-			}),
-		...(changeUserStatusAction &&
-			!isFederatedUser && {
-				changeActiveStatus: {
-					label: { label: changeUserStatusAction.label, icon: changeUserStatusAction.icon },
-					action: changeUserStatusAction.action,
-				},
-			}),
-		...(deleteUserAction && {
-			delete: { label: { label: deleteUserAction.label, icon: deleteUserAction.icon }, action: deleteUserAction.action },
 		}),
-	};
+		[
+			changeAdminStatusAction,
+			changeUserStatusAction,
+			deleteUserAction,
+			isFederatedUser,
+			isNotPendingDeactivatedNorFederated,
+			resetE2EKeyAction,
+			resetTOTPAction,
+		],
+	);
 
 	const handleResendWelcomeEmail = () => resendWelcomeEmail.mutateAsync({ email: emails?.[0].address });
 
@@ -143,40 +155,36 @@ const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSea
 			)}
 
 			<GenericTableCell
-				display='flex'
-				justifyContent='flex-end'
 				onClick={(e): void => {
 					e.stopPropagation();
 				}}
 			>
-				{tab === 'pending' && (
-					<>
-						{active ? (
-							<Button small secondary onClick={handleResendWelcomeEmail}>
-								{t('Resend_welcome_email')}
-							</Button>
-						) : (
-							<Button small primary onClick={changeUserStatusAction?.action} disabled={isSeatsCapExceeded}>
-								{t('Activate')}
-							</Button>
-						)}
-					</>
-				)}
+				<Box display='flex' justifyContent='flex-end'>
+					{tab === 'pending' && (
+						<>
+							{active ? (
+								<Button small secondary onClick={handleResendWelcomeEmail}>
+									{t('Resend_welcome_email')}
+								</Button>
+							) : (
+								<Button small primary onClick={changeUserStatusAction?.action} disabled={isSeatsCapExceeded}>
+									{t('Activate')}
+								</Button>
+							)}
+						</>
+					)}
 
-				<Menu
-					mi={4}
-					placement='bottom-start'
-					flexShrink={0}
-					key='menu'
-					renderItem={({ label: { label, icon }, ...props }): ReactElement =>
-						label === 'Delete' ? (
-							<Option label={label} title={label} icon={icon} variant='danger' {...props} />
-						) : (
-							<Option label={label} title={label} icon={icon} {...props} />
-						)
-					}
-					options={menuOptions}
-				/>
+					<Menu
+						mi={4}
+						placement='bottom-start'
+						flexShrink={0}
+						key='menu'
+						renderItem={({ label: { label, icon }, ...props }): ReactElement => (
+							<Option label={label} title={label} icon={icon} variant={label === 'Delete' ? 'danger' : ''} {...props} />
+						)}
+						options={menuOptions}
+					/>
+				</Box>
 			</GenericTableCell>
 		</GenericTableRow>
 	);

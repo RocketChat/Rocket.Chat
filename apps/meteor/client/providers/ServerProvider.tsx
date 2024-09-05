@@ -1,14 +1,14 @@
 import type { Serialized } from '@rocket.chat/core-typings';
-import type { Method, PathFor, OperationParams, OperationResult, UrlParams, PathPattern } from '@rocket.chat/rest-typings';
 import type {
 	ServerMethodName,
 	ServerMethodParameters,
 	ServerMethodReturn,
 	StreamerCallbackArgs,
-	UploadResult,
 	StreamNames,
 	StreamKeys,
-} from '@rocket.chat/ui-contexts';
+} from '@rocket.chat/ddp-client';
+import type { Method, PathFor, OperationParams, OperationResult, UrlParams, PathPattern } from '@rocket.chat/rest-typings';
+import type { UploadResult } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { compile } from 'path-to-regexp';

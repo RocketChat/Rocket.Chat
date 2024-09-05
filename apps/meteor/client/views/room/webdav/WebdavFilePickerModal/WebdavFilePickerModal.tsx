@@ -196,7 +196,7 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 					</Box>
 				</Box>
 				<Box display='flex' flexDirection='column'>
-					<FilterByText onChange={({ text }): void => setFilterText(text)}>
+					<FilterByText onChange={setFilterText}>
 						{typeView === 'grid' && (
 							<Select value={sortBy} onChange={(value): void => handleSort(value as WebdavSortOptions)} options={options} />
 						)}

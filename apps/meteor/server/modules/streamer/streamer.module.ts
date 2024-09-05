@@ -1,5 +1,5 @@
 import { MeteorError } from '@rocket.chat/core-services';
-import type { StreamerEvents } from '@rocket.chat/ui-contexts';
+import type { StreamerEvents } from '@rocket.chat/ddp-client';
 import { EventEmitter } from 'eventemitter3';
 import type { IPublication, Rule, Connection, DDPSubscription, IStreamer, IRules, TransformMessage } from 'meteor/rocketchat:streamer';
 

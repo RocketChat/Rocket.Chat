@@ -9,6 +9,10 @@ export class HomeSidenav {
 		this.page = page;
 	}
 
+	get advancedSettingsAccordion(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Advanced settings', exact: true });
+	}
+
 	get checkboxPrivateChannel(): Locator {
 		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Private' }) });
 	}
@@ -91,7 +95,16 @@ export class HomeSidenav {
 	}
 
 	async openSearch(): Promise<void> {
-		await this.page.locator('role=button[name="Search"]').click();
+		await this.page.locator('role=navigation >> role=button[name=Search]').click();
+	}
+
+	getSearchRoomByName(name: string): Locator {
+		return this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`);
+	}
+
+	async searchRoom(name: string): Promise<void> {
+		await this.openSearch();
+		await this.page.locator('role=search >> role=searchbox').fill(name);
 	}
 
 	async logout(): Promise<void> {
@@ -105,9 +118,8 @@ export class HomeSidenav {
 	}
 
 	async openChat(name: string): Promise<void> {
-		await this.page.locator('role=navigation >> role=button[name=Search]').click();
-		await this.page.locator('role=search >> role=searchbox').fill(name);
-		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
+		await this.searchRoom(name);
+		await this.getSearchRoomByName(name).click();
 		await this.waitForChannel();
 	}
 
@@ -154,6 +166,7 @@ export class HomeSidenav {
 	async createEncryptedChannel(name: string) {
 		await this.openNewByLabel('Channel');
 		await this.inputChannelName.type(name);
+		await this.advancedSettingsAccordion.click();
 		await this.checkboxEncryption.click();
 		await this.btnCreate.click();
 	}

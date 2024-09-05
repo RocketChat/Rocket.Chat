@@ -11,12 +11,13 @@ import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { createDirectMessage } from '../../methods/createDirectMessage';
+import { FederationActions } from './hooks/BeforeFederationActions';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
 
 	async create(uid: string, params: ICreateRoomParams): Promise<IRoom> {
-		const { type, name, members = [], readOnly, extraData, options } = params;
+		const { type, name, members = [], readOnly, extraData, options, sidepanel } = params;
 
 		const hasPermission = await Authorization.hasPermission(uid, `create-${type}`);
 		if (!hasPermission) {
@@ -29,7 +30,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		// TODO convert `createRoom` function to "raw" and move to here
-		return createRoom(type, name, user, members, false, readOnly, extraData, options) as unknown as IRoom;
+		return createRoom(type, name, user, members, false, readOnly, extraData, options, sidepanel) as unknown as IRoom;
 	}
 
 	async createDirectMessage({ to, from }: { to: string; from: string }): Promise<{ rid: string }> {
@@ -120,5 +121,21 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		return addUserToRoom(room._id, user);
+	}
+
+	async beforeLeave(room: IRoom): Promise<void> {
+		FederationActions.blockIfRoomFederatedButServiceNotReady(room);
+	}
+
+	async beforeUserRemoved(room: IRoom): Promise<void> {
+		FederationActions.blockIfRoomFederatedButServiceNotReady(room);
+	}
+
+	async beforeNameChange(room: IRoom): Promise<void> {
+		FederationActions.blockIfRoomFederatedButServiceNotReady(room);
+	}
+
+	async beforeTopicChange(room: IRoom): Promise<void> {
+		FederationActions.blockIfRoomFederatedButServiceNotReady(room);
 	}
 }

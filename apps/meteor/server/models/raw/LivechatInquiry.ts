@@ -20,6 +20,7 @@ import type {
 	IndexDescription,
 	FindCursor,
 	UpdateFilter,
+	DeleteOptions,
 } from 'mongodb';
 
 import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
@@ -154,10 +155,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 						},
 					},
 					{
-						locked: false,
-					},
-					{
-						locked: { $exists: false },
+						locked: { $ne: true },
 					},
 				],
 			},
@@ -189,7 +187,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 	async unlockAll(): Promise<UpdateResult | Document> {
 		return this.updateMany(
-			{ $or: [{ lockedAt: { $exists: true } }, { locked: { $exists: true } }] },
+			{ locked: { $exists: true } },
 			{ $unset: { locked: 1, lockedAt: 1 }, $set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() } },
 		);
 	}
@@ -277,8 +275,8 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		throw new Error('Method not implemented on the community edition.');
 	}
 
-	async removeByRoomId(rid: string): Promise<DeleteResult> {
-		return this.deleteOne({ rid });
+	async removeByRoomId(rid: string, options?: DeleteOptions): Promise<DeleteResult> {
+		return this.deleteOne({ rid }, options);
 	}
 
 	getQueuedInquiries(options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord> {

@@ -1,9 +1,9 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 
 import { useViewModeItems } from './useViewModeItems';
 
 it('should render viewMode items', async () => {
-	const { result } = renderHook(() => useViewModeItems());
+	const { result } = renderHook(() => useViewModeItems(), { legacyRoot: true });
 
 	expect(result.current[0]).toEqual(
 		expect.objectContaining({

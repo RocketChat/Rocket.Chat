@@ -36,10 +36,12 @@ import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
 import { i18n } from '../../../../server/lib/i18n';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { sendNotification } from '../../../lib/server';
-import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import {
 	notifyOnLivechatDepartmentAgentChanged,
 	notifyOnLivechatDepartmentAgentChangedByAgentsAndDepartmentId,
+	notifyOnSubscriptionChangedById,
+	notifyOnSubscriptionChangedByRoomId,
+	notifyOnSubscriptionChanged,
 } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { Livechat as LivechatTyped } from './LivechatTyped';
@@ -141,10 +143,7 @@ export const createLivechatRoom = async <
 	}
 
 	await callbacks.run('livechat.newRoom', room);
-
-	// TODO: replace with `Message.saveSystemMessage`
-
-	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false, token: guest.token }, room);
+	await Message.saveSystemMessageAndNotifyUser('livechat-started', rid, '', { _id, username }, { groupable: false, token: guest.token });
 
 	return result.value as IOmnichannelRoom;
 };
@@ -289,7 +288,13 @@ export const createLivechatSubscription = async (
 		...(department && { department }),
 	} as InsertionModel<ISubscription>;
 
-	return Subscriptions.insertOne(subscriptionData);
+	const response = await Subscriptions.insertOne(subscriptionData);
+
+	if (response?.insertedId) {
+		void notifyOnSubscriptionChangedById(response.insertedId, 'inserted');
+	}
+
+	return response;
 };
 
 export const removeAgentFromSubscription = async (rid: string, { _id, username }: Pick<IUser, '_id' | 'username'>) => {
@@ -300,7 +305,11 @@ export const removeAgentFromSubscription = async (rid: string, { _id, username }
 		return;
 	}
 
-	await Subscriptions.removeByRoomIdAndUserId(rid, _id);
+	const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(rid, _id);
+	if (deletedSubscription) {
+		void notifyOnSubscriptionChanged(deletedSubscription, 'removed');
+	}
+
 	await Message.saveSystemMessage('ul', rid, username || '', { _id: user._id, username: user.username, name: user.name });
 
 	setImmediate(() => {
@@ -517,11 +526,15 @@ export const updateChatDepartment = async ({
 	newDepartmentId: string;
 	oldDepartmentId?: string;
 }) => {
-	await Promise.all([
+	const responses = await Promise.all([
 		LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId),
 		LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId),
 		Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId),
 	]);
+
+	if (responses[2].modifiedCount) {
+		void notifyOnSubscriptionChangedByRoomId(rid);
+	}
 
 	setImmediate(() => {
 		void Apps.self?.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {

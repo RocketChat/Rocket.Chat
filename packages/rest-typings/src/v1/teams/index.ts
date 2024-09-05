@@ -89,6 +89,7 @@ export type TeamsEndpoints = {
 				};
 			};
 			owner?: IUser['_id'];
+			sidepanel?: IRoom['sidepanel'];
 		}) => {
 			team: ITeam;
 		};

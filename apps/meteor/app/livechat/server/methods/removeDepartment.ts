@@ -1,4 +1,4 @@
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { DeleteResult } from 'mongodb';
@@ -7,7 +7,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { DepartmentHelper } from '../lib/Departments';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'livechat:removeDepartment'(_id: string): DeleteResult;
