@@ -118,12 +118,12 @@ const AdminFeaturePreviewPage = () => {
 						</Field>
 						<Field>
 							<FieldRow>
-								<Callout>{t('Feature_preview_admin_page_callout_2_text')}</Callout>
+								<Callout>{t('Feature_preview_page_callout')}</Callout>
 							</FieldRow>
 						</Field>
 						<Field>
 							<FieldRow>
-								<Callout>{t('Feature_preview_admin_page_callout_1_text')}</Callout>
+								<Callout>{t('Feature_preview_admin_page_callout')}</Callout>
 							</FieldRow>
 						</Field>
 						<Setting settingId='Accounts_AllowFeaturePreview' sectionChanged={allowFeaturePreviewSetting.changed} />

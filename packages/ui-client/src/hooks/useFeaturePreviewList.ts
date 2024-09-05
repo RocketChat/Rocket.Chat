@@ -25,7 +25,7 @@ export type FeaturePreviewProps = {
 	};
 };
 
-// TODO: Move the features preview array to another directory to be acces from both BE and FE.
+// TODO: Move the features preview array to another directory to be accessed from both BE and FE.
 export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	{
 		name: 'quickReactions',
@@ -49,6 +49,7 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		i18n: 'Enable_timestamp',
 		description: 'Enable_timestamp_description',
 		group: 'Message',
+		imageUrl: 'images/featurePreview/timestamp.png',
 		value: false,
 		enabled: true,
 	},
@@ -57,6 +58,7 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		i18n: 'Contextualbar_resizable',
 		description: 'Contextualbar_resizable_description',
 		group: 'Navigation',
+		imageUrl: 'images/featurePreview/resizable-contextual-bar.png',
 		value: false,
 		enabled: true,
 	},
@@ -65,6 +67,7 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		i18n: 'New_navigation',
 		description: 'New_navigation_description',
 		group: 'Navigation',
+		imageUrl: 'images/featurePreview/enhanced-navigation.png',
 		value: false,
 		enabled: true,
 	},

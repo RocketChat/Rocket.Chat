@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import {
 	ButtonGroup,
 	Button,
@@ -13,6 +12,7 @@ import {
 	FieldLabel,
 	FieldRow,
 	FieldHint,
+	Callout,
 } from '@rocket.chat/fuselage';
 import type { FeaturePreviewProps } from '@rocket.chat/ui-client';
 import { useFeaturePreviewList } from '@rocket.chat/ui-client';
@@ -105,15 +105,16 @@ const AccountFeaturePreviewPage = () => {
 					)}
 					{featuresPreview.length > 0 && (
 						<>
-							<Box
-								className={css`
-									white-space: break-spaces;
-								`}
-								pbe={24}
-								fontScale='p1'
-							>
-								{t('Feature_preview_page_description')}
-							</Box>
+							<FieldGroup marginBlockEnd={16}>
+								<Field>
+									<FieldRow>{t('Feature_preview_page_description')}</FieldRow>
+								</Field>
+								<Field>
+									<FieldRow>
+										<Callout>{t('Feature_preview_page_callout')}</Callout>
+									</FieldRow>
+								</Field>
+							</FieldGroup>
 							<Accordion>
 								{grouppedFeaturesPreview?.map(([group, features], index) => (
 									<Accordion.Item defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
