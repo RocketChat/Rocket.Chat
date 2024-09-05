@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import { Message } from '@rocket.chat/core-services';
 import {
 	type IUser,
