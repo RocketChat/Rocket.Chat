@@ -2602,6 +2602,158 @@ describe('Meteor.methods', () => {
 				updateSetting('Message_AllowEditing_BlockEditInMinutes', 0),
 			]);
 		});
+
+		describe('message deletion when user is not part of the room', () => {
+			let ridTestRoom: IRoom['_id'];
+			let messageIdTestRoom: IMessage['_id'];
+			let testUser: TestUser<IUser>;
+			let testUserCredentials: Credentials;
+
+			before('create room, add new owner, and leave room', async () => {
+				testUser = await createUser();
+				testUserCredentials = await login(testUser.username, password);
+				const channelName = `methods-test-channel-${Date.now()}`;
+
+				await request
+					.post(api('groups.create'))
+					.set(testUserCredentials)
+					.send({
+						name: channelName,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.nested.property('group._id');
+						expect(res.body).to.have.nested.property('group.name', channelName);
+						expect(res.body).to.have.nested.property('group.t', 'p');
+						expect(res.body).to.have.nested.property('group.msgs', 0);
+						ridTestRoom = res.body.group._id;
+					});
+
+				await request
+					.post(methodCall('sendMessage'))
+					.set(testUserCredentials)
+					.send({
+						message: JSON.stringify({
+							method: 'sendMessage',
+							params: [
+								{
+									_id: `${Date.now() + Math.random()}`,
+									rid: ridTestRoom,
+									msg: 'just a random test message',
+								},
+							],
+							id: 'id',
+							msg: 'method',
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('message').that.is.a('string');
+						const data = JSON.parse(res.body.message);
+						expect(data).to.have.a.property('result').that.is.an('object');
+						messageIdTestRoom = data.result._id;
+					});
+
+				await request
+					.post(methodCall('addUsersToRoom'))
+					.set(testUserCredentials)
+					.send({
+						message: JSON.stringify({
+							method: 'addUsersToRoom',
+							params: [
+								{
+									rid: ridTestRoom,
+									users: ['rocket.cat'],
+								},
+							],
+							id: 'id',
+							msg: 'method',
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('message').that.is.a('string');
+					});
+
+				await request
+					.post(api('groups.addOwner'))
+					.set(testUserCredentials)
+					.send({
+						roomId: ridTestRoom,
+						userId: 'rocket.cat',
+					})
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+					});
+
+				await request
+					.post(api('groups.leave'))
+					.set(testUserCredentials)
+					.send({
+						roomId: ridTestRoom,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+					});
+			});
+
+			it('should not delete a message if the user is no longer member of the room', async () => {
+				await request
+					.post(methodCall('deleteMessage'))
+					.set(testUserCredentials)
+					.send({
+						message: JSON.stringify({
+							method: 'deleteMessage',
+							params: [{ _id: messageIdTestRoom, rid: ridTestRoom }],
+							id: 'id',
+							msg: 'method',
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('message').that.is.a('string');
+						const data = JSON.parse(res.body.message);
+						expect(data).to.have.a.property('msg', 'result');
+						expect(data).to.have.a.property('id', 'id');
+						expect(data.error).to.have.a.property('error', 'error-action-not-allowed');
+					});
+			});
+
+			it('should not delete a message if the user was never part of the room', async () => {
+				await request
+					.post(methodCall('deleteMessage'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'deleteMessage',
+							params: [{ _id: messageIdTestRoom, rid: ridTestRoom }],
+							id: 'id',
+							msg: 'method',
+						}),
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('message').that.is.a('string');
+						const data = JSON.parse(res.body.message);
+						expect(data).to.have.a.property('msg', 'result');
+						expect(data).to.have.a.property('id', 'id');
+						expect(data.error).to.have.a.property('error', 'error-action-not-allowed');
+					});
+			});
+
+			after(() => Promise.all([deleteRoom({ type: 'p', roomId: ridTestRoom }), deleteUser(testUser)]));
+		});
 	});
 
 	describe('[@setUserActiveStatus]', () => {
@@ -3348,6 +3500,7 @@ describe('Meteor.methods', () => {
 				.end(done);
 		});
 	});
+
 	(IS_EE ? describe : describe.skip)('[@auditGetAuditions] EE', () => {
 		let testUser: TestUser<IUser>;
 		let testUserCredentials: Credentials;
@@ -3448,6 +3601,307 @@ describe('Meteor.methods', () => {
 						expect(item.u).to.not.have.property('statusConnection');
 						expect(item.u).to.not.have.property('emails');
 					});
+				});
+		});
+	});
+
+	describe('UpdateOTRAck', () => {
+		let testUser: TestUser<IUser>;
+		let testUser2: TestUser<IUser>;
+		let testUserCredentials: Credentials;
+		let dmTestId: IRoom['_id'];
+
+		before(async () => {
+			testUser = await createUser();
+			testUser2 = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+		});
+
+		before('create direct conversation between both users', (done) => {
+			void request
+				.post(methodCall('createDirectMessage'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'createDirectMessage',
+						params: [testUser2.username],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.end((_err, res) => {
+					const result = JSON.parse(res.body.message);
+					expect(result.result).to.be.an('object');
+					expect(result.result).to.have.property('rid').that.is.an('string');
+
+					dmTestId = result.result.rid;
+					done();
+				});
+		});
+
+		after(() => Promise.all([deleteRoom({ type: 'd', roomId: dmTestId }), deleteUser(testUser), deleteUser(testUser2)]));
+
+		it('should fail if required parameters are not present', async () => {
+			await request
+				.post(methodCall('updateOTRAck'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateOTRAck',
+						params: [
+							{
+								message: {
+									_id: 'czjFdkFab7H5bWxYq',
+									// rid: 'test',
+									msg: 'test',
+									t: 'otr',
+									ts: { $date: 1725447664093 },
+									u: {
+										_id: 'test',
+										username: 'test',
+										name: 'test',
+									},
+								},
+								ack: 'test',
+							},
+						],
+						id: '18',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('message');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error');
+					expect(data.error).to.have.a.property('message', "Match error: Missing key 'rid'");
+				});
+		});
+
+		it('should fail if required parameters have a different type', async () => {
+			await request
+				.post(methodCall('updateOTRAck'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateOTRAck',
+						params: [
+							{
+								message: {
+									_id: 'czjFdkFab7H5bWxYq',
+									rid: { $ne: 'test' },
+									msg: 'test',
+									t: 'otr',
+									ts: { $date: 1725447664093 },
+									u: {
+										_id: 'test',
+										username: 'test',
+										name: 'test',
+									},
+								},
+								ack: 'test',
+							},
+						],
+						id: '18',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('message');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error');
+					expect(data.error).to.have.a.property('message', 'Match error: Expected string, got object in field rid');
+				});
+		});
+
+		it('should fail if "t" is not "otr"', async () => {
+			await request
+				.post(methodCall('updateOTRAck'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateOTRAck',
+						params: [
+							{
+								message: {
+									_id: 'czjFdkFab7H5bWxYq',
+									rid: 'test',
+									msg: 'test',
+									t: 'notOTR',
+									ts: { $date: 1725447664093 },
+									u: {
+										_id: 'test',
+										username: 'test',
+										name: 'test',
+									},
+								},
+								ack: 'test',
+							},
+						],
+						id: '18',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('message');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error');
+					expect(data.error).to.have.a.property('message', 'Invalid message type [error-invalid-message]');
+				});
+		});
+
+		it('should fail if room does not exist', async () => {
+			await request
+				.post(methodCall('updateOTRAck'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateOTRAck',
+						params: [
+							{
+								message: {
+									_id: 'czjFdkFab7H5bWxYq',
+									rid: 'test',
+									msg: 'test',
+									t: 'otr',
+									ts: { $date: 1725447664093 },
+									u: {
+										_id: 'test',
+										username: 'test',
+										name: 'test',
+									},
+								},
+								ack: 'test',
+							},
+						],
+						id: '18',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('message');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error');
+					expect(data.error).to.have.a.property('message', 'Invalid room [error-invalid-room]');
+				});
+		});
+
+		it('should fail if room is not a DM', async () => {
+			await request
+				.post(methodCall('updateOTRAck'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateOTRAck',
+						params: [
+							{
+								message: {
+									_id: 'czjFdkFab7H5bWxYq',
+									rid: 'GENERAL',
+									msg: 'test',
+									t: 'otr',
+									ts: { $date: 1725447664093 },
+									u: {
+										_id: 'test',
+										username: 'test',
+										name: 'test',
+									},
+								},
+								ack: 'test',
+							},
+						],
+						id: '18',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('message');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error');
+					expect(data.error).to.have.a.property('message', 'Invalid room [error-invalid-room]');
+				});
+		});
+
+		it('should fail if user is not part of DM room', async () => {
+			await request
+				.post(methodCall('updateOTRAck'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateOTRAck',
+						params: [
+							{
+								message: {
+									_id: 'czjFdkFab7H5bWxYq',
+									rid: dmTestId,
+									msg: 'test',
+									t: 'otr',
+									ts: { $date: 1725447664093 },
+									u: {
+										_id: testUser._id,
+										username: testUser.username,
+										name: 'test',
+									},
+								},
+								ack: 'test',
+							},
+						],
+						id: '18',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('message');
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error');
+					expect(data.error).to.have.a.property('message', 'Invalid user, not in room [error-invalid-user]');
+				});
+		});
+
+		it('should pass if all parameters are present and user is part of DM room', async () => {
+			await request
+				.post(methodCall('updateOTRAck'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'updateOTRAck',
+						params: [
+							{
+								message: {
+									_id: 'czjFdkFab7H5bWxYq',
+									rid: dmTestId,
+									msg: 'test',
+									t: 'otr',
+									ts: { $date: 1725447664093 },
+									u: {
+										_id: testUser._id,
+										username: testUser.username,
+										name: 'test',
+									},
+								},
+								ack: 'test',
+							},
+						],
+						id: '18',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('message');
+					expect(res.body).to.have.a.property('success', true);
 				});
 		});
 	});
