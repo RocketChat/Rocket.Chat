@@ -1,4 +1,4 @@
-import { IconButton, SideBarItem, SideBarItemAvatarWrapper, SideBarItemMenu, SideBarItemTitle } from '@rocket.chat/fuselage';
+import { IconButton, SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemMenu, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
 import { useEffectEvent, usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactElement } from 'react';
@@ -32,18 +32,18 @@ const Condensed = ({ icon, title, avatar, actions, href, unread, menu, badges, s
 	};
 
 	return (
-		<SideBarItem href={href} selected={selected}>
-			{avatar && <SideBarItemAvatarWrapper>{avatar}</SideBarItemAvatarWrapper>}
+		<SidebarV2Item href={href} selected={selected}>
+			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 			{icon && icon}
-			<SideBarItemTitle unread={unread}>{title}</SideBarItemTitle>
+			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
 			{badges && badges}
 			{actions && actions}
 			{menu && (
-				<SideBarItemMenu {...handleMenuEvent}>
+				<SidebarV2ItemMenu {...handleMenuEvent}>
 					{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
-				</SideBarItemMenu>
+				</SidebarV2ItemMenu>
 			)}
-		</SideBarItem>
+		</SidebarV2Item>
 	);
 };
 
