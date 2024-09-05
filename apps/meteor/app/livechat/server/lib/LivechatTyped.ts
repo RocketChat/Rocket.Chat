@@ -467,14 +467,14 @@ class LivechatClass {
 
 			const contact = await LivechatContacts.findOne({ _id: visitorContact?.contactId });
 
-			if (contact?.channels) {
-				const channel = contact.channels.find((channel) => channel.name === roomInfo.source?.type && channel.visitorId === visitor._id);
+			if (contact) {
+				const channel = contact.channels?.find((channel) => channel.name === roomInfo.source?.type && channel.visitorId === visitor._id);
 
 				if (!channel) {
 					Livechat.logger.debug(`Adding channel for contact ${contact._id}`);
 
 					await LivechatContacts.addChannel(contact._id, {
-						name: roomInfo.source?.type.toString() || 'widget',
+						name: roomInfo.source?.type.toString() || 'other',
 						visitorId: visitor._id,
 						blocked: false,
 						verified: false,
