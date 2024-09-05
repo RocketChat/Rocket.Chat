@@ -2,68 +2,88 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const stubs = {
-	Users: {
-		findOneById: sinon.stub(),
-		setUsername: sinon.stub(),
-	},
-	Accounts: {
-		sendEnrollmentEmail: sinon.stub(),
-	},
-	settings: {
-		get: sinon.stub(),
-	},
-	api: {
-		broadcast: sinon.stub(),
-	},
-	Invites: {
-		findOneById: sinon.stub(),
-	},
-	callbacks: {
-		run: sinon.stub(),
-	},
-	checkUsernameAvailability: sinon.stub(),
-	validateUsername: sinon.stub(),
-	saveUserIdentity: sinon.stub(),
-	joinDefaultChannels: sinon.stub(),
-	getAvatarSuggestionForUser: sinon.stub(),
-	setUserAvatar: sinon.stub(),
-	addUserToRoom: sinon.stub(),
-	notifyOnUserChange: sinon.stub(),
-	RateLimiter: {
-		limitFunction: sinon.stub(),
-	},
-	underscore: {
-		escape: sinon.stub(),
-	},
-};
-
-const { setUsernameWithValidation, _setUsername } = proxyquire.noCallThru().load('../../../../../../app/lib/server/functions/setUsername', {
-	'meteor/meteor': { Meteor: { Error } },
-	'@rocket.chat/core-services': { api: stubs.api },
-	'@rocket.chat/models': { Users: stubs.Users, Invites: stubs.Invites },
-	'meteor/accounts-base': { Accounts: stubs.Accounts },
-	'underscore': stubs.underscore,
-	'../../../settings/server': { settings: stubs.settings },
-	'../lib': { notifyOnUserChange: stubs.notifyOnUserChange, RateLimiter: stubs.RateLimiter },
-	'./addUserToRoom': { addUserToRoom: stubs.addUserToRoom },
-	'./checkUsernameAvailability': { checkUsernameAvailability: stubs.checkUsernameAvailability },
-	'./getAvatarSuggestionForUser': { getAvatarSuggestionForUser: stubs.getAvatarSuggestionForUser },
-	'./joinDefaultChannels': { joinDefaultChannels: stubs.joinDefaultChannels },
-	'./saveUserIdentity': { saveUserIdentity: stubs.saveUserIdentity },
-	'./setUserAvatar': { setUserAvatar: stubs.setUserAvatar },
-	'./validateUsername': { validateUsername: stubs.validateUsername },
-	'../../../../lib/callbacks': { callbacks: stubs.callbacks },
-	'../../../../server/lib/logger/system': { SystemLogger: sinon.stub() },
-});
-
 describe('setUsername', () => {
-	afterEach(() => {
-		sinon.reset();
-	});
-
 	const userId = 'userId';
 	const username = 'validUsername';
+
+	const stubs = {
+		Users: {
+			findOneById: sinon.stub(),
+			setUsername: sinon.stub(),
+		},
+		Accounts: {
+			sendEnrollmentEmail: sinon.stub(),
+		},
+		settings: {
+			get: sinon.stub(),
+		},
+		api: {
+			broadcast: sinon.stub(),
+		},
+		Invites: {
+			findOneById: sinon.stub(),
+		},
+		callbacks: {
+			run: sinon.stub(),
+		},
+		checkUsernameAvailability: sinon.stub(),
+		validateUsername: sinon.stub(),
+		saveUserIdentity: sinon.stub(),
+		joinDefaultChannels: sinon.stub(),
+		getAvatarSuggestionForUser: sinon.stub(),
+		setUserAvatar: sinon.stub(),
+		addUserToRoom: sinon.stub(),
+		notifyOnUserChange: sinon.stub(),
+		RateLimiter: {
+			limitFunction: sinon.stub(),
+		},
+		underscore: {
+			escape: sinon.stub(),
+		},
+		SystemLogger: sinon.stub(),
+	};
+
+	const { setUsernameWithValidation, _setUsername } = proxyquire
+		.noCallThru()
+		.load('../../../../../../app/lib/server/functions/setUsername', {
+			'meteor/meteor': { Meteor: { Error } },
+			'@rocket.chat/core-services': { api: stubs.api },
+			'@rocket.chat/models': { Users: stubs.Users, Invites: stubs.Invites },
+			'meteor/accounts-base': { Accounts: stubs.Accounts },
+			'underscore': stubs.underscore,
+			'../../../settings/server': { settings: stubs.settings },
+			'../lib': { notifyOnUserChange: stubs.notifyOnUserChange, RateLimiter: stubs.RateLimiter },
+			'./addUserToRoom': { addUserToRoom: stubs.addUserToRoom },
+			'./checkUsernameAvailability': { checkUsernameAvailability: stubs.checkUsernameAvailability },
+			'./getAvatarSuggestionForUser': { getAvatarSuggestionForUser: stubs.getAvatarSuggestionForUser },
+			'./joinDefaultChannels': { joinDefaultChannels: stubs.joinDefaultChannels },
+			'./saveUserIdentity': { saveUserIdentity: stubs.saveUserIdentity },
+			'./setUserAvatar': { setUserAvatar: stubs.setUserAvatar },
+			'./validateUsername': { validateUsername: stubs.validateUsername },
+			'../../../../lib/callbacks': { callbacks: stubs.callbacks },
+			'../../../../server/lib/logger/system': { SystemLogger: stubs.SystemLogger },
+		});
+
+	afterEach(() => {
+		stubs.Users.findOneById.reset();
+		stubs.Users.setUsername.reset();
+		stubs.Accounts.sendEnrollmentEmail.reset();
+		stubs.settings.get.reset();
+		stubs.api.broadcast.reset();
+		stubs.Invites.findOneById.reset();
+		stubs.callbacks.run.reset();
+		stubs.checkUsernameAvailability.reset();
+		stubs.validateUsername.reset();
+		stubs.saveUserIdentity.reset();
+		stubs.joinDefaultChannels.reset();
+		stubs.getAvatarSuggestionForUser.reset();
+		stubs.setUserAvatar.reset();
+		stubs.addUserToRoom.reset();
+		stubs.notifyOnUserChange.reset();
+		stubs.RateLimiter.limitFunction.reset();
+		stubs.underscore.escape.reset();
+		stubs.SystemLogger.reset();
+	});
 
 	describe('setUsernameWithValidation', () => {
 		it('should throw an error if username is invalid', async () => {
