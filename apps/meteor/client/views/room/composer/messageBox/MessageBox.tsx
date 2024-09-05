@@ -486,25 +486,29 @@ const MessageBox = ({
 					aria-activedescendant={ariaActiveDescendant}
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
-				<Box
-					display='flex'
-					flexDirection='row'
-					overflowX='auto'
-					style={{ width: '100%', whiteSpace: 'nowrap', padding: '10px', gap: '10px' }}
-				>
-					{filesToUpload.map((file, index) => (
-						<div
-							key={index}
-							id={`file-preview-${index}`}
-							style={{
-								transition: 'opacity 0.3s ease-in-out',
-								opacity: '1',
-							}}
+				{isUploading && (
+					<>
+						<Box
+							display='flex'
+							flexDirection='row'
+							overflowX='auto'
+							style={{ width: '100%', whiteSpace: 'nowrap', padding: '10px', gap: '10px' }}
 						>
-							<FilePreview key={index} file={file} index={index} onRemove={handleRemoveFile} />
-						</div>
-					))}
-				</Box>
+							{filesToUpload.map((file, index) => (
+								<div
+									key={index}
+									id={`file-preview-${index}`}
+									style={{
+										transition: 'opacity 0.3s ease-in-out',
+										opacity: '1',
+									}}
+								>
+									<FilePreview key={index} file={file} index={index} onRemove={handleRemoveFile} />
+								</div>
+							))}
+						</Box>
+					</>
+				)}
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
