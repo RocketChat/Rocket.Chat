@@ -747,6 +747,42 @@ describe('[Rooms]', () => {
 				});
 		});
 
+		it('should correctly save encrypted file with the default media type even if another type is provided', async () => {
+			let fileId;
+
+			await request
+				.post(api(`rooms.media/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../mocks/files/sample-jpeg.jpg')), {
+					contentType: 'image/jpeg',
+				})
+				.field({ content: JSON.stringify({ algorithm: 'rc.v1.aes-sha2', ciphertext: 'something' }) })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('file');
+					expect(res.body.file).to.have.property('_id');
+					expect(res.body.file).to.have.property('url');
+
+					fileId = res.body.file._id;
+				});
+
+			await request
+				.post(api(`rooms.mediaConfirm/${testChannel._id}/${fileId}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.have.property('files');
+					expect(res.body.message.files).to.be.an('array').of.length(1);
+					expect(res.body.message.files[0]).to.have.property('type', 'application/octet-stream');
+					expect(res.body.message.files[0]).to.have.property('name', 'sample-jpeg.jpg');
+				});
+		});
+
 		it('should fail encrypted file upload when files encryption is disabled', async () => {
 			await updateSetting('E2E_Enable_Encrypt_Files', false);
 
@@ -1098,7 +1134,6 @@ describe('[Rooms]', () => {
 				.end(done);
 		});
 	});
-
 	describe('[/rooms.info]', () => {
 		let testChannel: IRoom;
 		let testGroup: IRoom;
@@ -1229,8 +1264,164 @@ describe('[Rooms]', () => {
 				})
 				.end(done);
 		});
-	});
 
+		it('should not return parent & team for room thats not on a team nor is a discussion', async () => {
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('room').and.to.be.an('object');
+					expect(res.body.room).to.not.have.property('team');
+					expect(res.body.room).to.not.have.property('prid');
+				});
+		});
+
+		describe('with team and parent data', () => {
+			const testChannelName = `channel.test.${Date.now()}-${Math.random()}`;
+			const teamName = `test-team-${Date.now()}`;
+			const discussionName = `test-discussion-${Date.now()}`;
+			const testChannelOutsideTeamname = `channel.test.outside.${Date.now()}-${Math.random()}`;
+			let testChannel: IRoom;
+			let testDiscussion: IRoom;
+			let testDiscussionMainRoom: IRoom;
+			let testTeam: ITeam;
+			let testChannelOutside: IRoom;
+			let testDiscussionOutsideTeam: IRoom;
+
+			before(async () => {
+				testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
+
+				const teamResponse = await request.post(api('teams.create')).set(credentials).send({ name: teamName, type: 1 }).expect(200);
+				testTeam = teamResponse.body.team;
+
+				const resDiscussion = await request.post(api('rooms.createDiscussion')).set(credentials).send({
+					prid: testChannel._id,
+					t_name: discussionName,
+				});
+				testDiscussion = resDiscussion.body.discussion;
+
+				testDiscussionMainRoom = (
+					await request
+						.post(api('rooms.createDiscussion'))
+						.set(credentials)
+						.send({
+							prid: testTeam.roomId,
+							t_name: `test-discussion-${Date.now()}-team`,
+						})
+				).body.discussion;
+
+				await request
+					.post(api('teams.addRooms'))
+					.set(credentials)
+					.send({ rooms: [testChannel._id], teamId: testTeam._id });
+			});
+
+			before(async () => {
+				testChannelOutside = (await createRoom({ type: 'c', name: testChannelOutsideTeamname })).body.channel;
+				testDiscussionOutsideTeam = (
+					await request
+						.post(api('rooms.createDiscussion'))
+						.set(credentials)
+						.send({
+							prid: testChannelOutside._id,
+							t_name: `test-discussion-${Date.now()}`,
+						})
+				).body.discussion;
+			});
+
+			after(() =>
+				Promise.all([
+					deleteRoom({ type: 'c', roomId: testChannel._id }),
+					deleteRoom({ type: 'p', roomId: testDiscussion._id }),
+					deleteRoom({ type: 'c', roomId: testChannelOutside._id }),
+					deleteRoom({ type: 'p', roomId: testDiscussionOutsideTeam._id }),
+					deleteRoom({ type: 'p', roomId: testDiscussionMainRoom._id }),
+					deleteTeam(credentials, teamName),
+				]),
+			);
+
+			it('should return the channel info, team and parent info', async () => {
+				const result = await request.get(api('rooms.info')).set(credentials).query({ roomId: testChannel._id }).expect(200);
+
+				expect(result.body).to.have.property('success', true);
+				expect(result.body).to.have.property('team');
+				expect(result.body).to.have.property('parent');
+				expect(result.body.parent).to.have.property('_id').and.to.equal(testTeam.roomId);
+			});
+
+			it('should return the dicsussion room info and parent info', async () => {
+				await request
+					.get(api('rooms.info'))
+					.set(credentials)
+					.query({ roomId: testDiscussion._id })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('parent').and.to.be.an('object');
+						expect(res.body.parent).to.have.property('_id').and.to.be.equal(testChannel._id);
+					});
+			});
+
+			it('should not return parent info for the main room of the team', async () => {
+				await request
+					.get(api('rooms.info'))
+					.set(credentials)
+					.query({ roomId: testTeam.roomId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.property('parent');
+						expect(res.body).to.have.property('team');
+					});
+			});
+
+			it('should not return team for room outside team', async () => {
+				await request
+					.get(api('rooms.info'))
+					.set(credentials)
+					.query({ roomId: testChannelOutside._id })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.not.have.property('team');
+						expect(res.body).to.not.have.property('parent');
+					});
+			});
+
+			it('should return the parent for discussion outside team', async () => {
+				await request
+					.get(api('rooms.info'))
+					.set(credentials)
+					.query({ roomId: testDiscussionOutsideTeam._id })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('parent').and.to.be.an('object');
+						expect(res.body.parent).to.have.property('_id').and.to.be.equal(testChannelOutside._id);
+						expect(res.body).to.not.have.property('team');
+					});
+			});
+
+			it('should return the parent for a discussion created from team main room', async () => {
+				await request
+					.get(api('rooms.info'))
+					.set(credentials)
+					.query({ roomId: testDiscussionMainRoom._id })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('parent').and.to.be.an('object');
+						expect(res.body.parent).to.have.property('_id').and.to.be.equal(testTeam.roomId);
+						expect(res.body).to.not.have.property('team');
+					});
+			});
+		});
+	});
 	describe('[/rooms.leave]', () => {
 		let testChannel: IRoom;
 		let testGroup: IRoom;
