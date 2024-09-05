@@ -1,6 +1,6 @@
 import { Badge } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { defaultFeaturesPreview, useFeaturePreviewList } from '@rocket.chat/ui-client';
+import { defaultFeaturesPreview, usePreferenceFeaturePreviewList } from '@rocket.chat/ui-client';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -10,7 +10,7 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();
 	const router = useRouter();
 
-	const { unseenFeatures, featurePreviewEnabled } = useFeaturePreviewList();
+	const { unseenFeatures, featurePreviewEnabled } = usePreferenceFeaturePreviewList();
 
 	const handleMyAccount = useEffectEvent(() => {
 		router.navigate('/account');

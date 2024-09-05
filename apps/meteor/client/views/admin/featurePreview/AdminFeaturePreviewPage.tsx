@@ -12,7 +12,7 @@ import {
 	Callout,
 } from '@rocket.chat/fuselage';
 import type { FeaturePreviewProps } from '@rocket.chat/ui-client';
-import { useFeaturePreviewList } from '@rocket.chat/ui-client';
+import { useDefaultSettingFeaturePreviewList } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useTranslation, useEndpoint, useSettingsDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
@@ -44,7 +44,7 @@ const AdminFeaturePreviewPage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const allowFeaturePreviewSetting = useEditableSetting('Accounts_AllowFeaturePreview');
-	const { features, unseenFeatures } = useFeaturePreviewList();
+	const { features, unseenFeatures } = useDefaultSettingFeaturePreviewList();
 
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 

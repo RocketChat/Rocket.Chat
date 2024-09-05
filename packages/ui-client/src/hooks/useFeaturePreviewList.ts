@@ -42,7 +42,7 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		description: 'Navigation_bar_description',
 		group: 'Navigation',
 		value: false,
-		enabled: true,
+		enabled: false,
 	},
 	{
 		name: 'enable-timestamp-message-parser',
@@ -87,29 +87,47 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 
 export const enabledDefaultFeatures = defaultFeaturesPreview.filter((feature) => feature.enabled);
 
-export const useFeaturePreviewList = () => {
-	const featurePreviewEnabled = useSetting<boolean>('Accounts_AllowFeaturePreview');
-	const userPreferenceFeaturesPreview = useUserPreference<FeaturePreviewProps[]>('featuresPreview');
-	// TODO: Remove this memo after we improve the default settings to accept objects in the settings config.
+export const usePreferenceFeaturePreviewList = () => {
+	const userFeaturesPreviewPreference = useUserPreference<FeaturePreviewProps[]>('featuresPreview');
+
 	const userFeaturesPreview = useMemo<FeaturePreviewProps[]>(() => {
-		if (typeof userPreferenceFeaturesPreview === 'string') {
-			return JSON.parse(userPreferenceFeaturesPreview);
+		if (typeof userFeaturesPreviewPreference === 'string') {
+			return JSON.parse(userFeaturesPreviewPreference);
 		}
-		return userPreferenceFeaturesPreview;
-	}, [userPreferenceFeaturesPreview]);
+		return userFeaturesPreviewPreference;
+	}, [userFeaturesPreviewPreference]);
+
+	return useFeaturePreviewList(userFeaturesPreview);
+};
+
+export const useDefaultSettingFeaturePreviewList = () => {
+	const featurePreviewSettingJSON = useSetting<string>('Accounts_Default_User_Preferences_featuresPreview');
+
+	const settingFeaturePreview = useMemo<FeaturePreviewProps[]>(() => {
+		if (typeof featurePreviewSettingJSON === 'string') {
+			return JSON.parse(featurePreviewSettingJSON);
+		}
+		return featurePreviewSettingJSON;
+	}, [featurePreviewSettingJSON]);
+	console.log('useDefaultSettingFeaturePreviewList:', settingFeaturePreview);
+	return useFeaturePreviewList(settingFeaturePreview);
+};
+
+export const useFeaturePreviewList = (featuresList: Pick<FeaturePreviewProps, 'name' | 'value'>[]) => {
+	const featurePreviewEnabled = useSetting<boolean>('Accounts_AllowFeaturePreview');
 
 	if (!featurePreviewEnabled) {
-		return { unseenFeatures: 0, features: enabledDefaultFeatures, featurePreviewEnabled };
+		return { unseenFeatures: 0, features: [] as FeaturePreviewProps[], featurePreviewEnabled };
 	}
 
 	const unseenFeatures = enabledDefaultFeatures.filter(
-		(feature) => !userFeaturesPreview?.find((userFeature) => userFeature.name === feature.name),
+		(defaultFeature) => !featuresList?.find((feature) => feature.name === defaultFeature.name),
 	).length;
 
-	const mergedFeatures = enabledDefaultFeatures.map((feature) => {
-		const userFeature = userFeaturesPreview?.find((userFeature) => userFeature.name === feature.name);
-		return { ...feature, ...userFeature };
+	const mergedFeatures = enabledDefaultFeatures.map((defaultFeature) => {
+		const features = featuresList?.find((feature) => feature.name === defaultFeature.name);
+		return { ...defaultFeature, ...features };
 	});
-
+	console.log('useFeaturePreviewList.mergedFeatures: ', mergedFeatures);
 	return { unseenFeatures, features: mergedFeatures, featurePreviewEnabled };
 };
