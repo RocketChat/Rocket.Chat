@@ -1,4 +1,4 @@
-import { Media } from '@rocket.chat/core-services';
+import { Media, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
@@ -417,7 +417,19 @@ API.v1.addRoute(
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
-			return API.v1.success({ room: (await Rooms.findOneByIdOrName(room._id, { projection: fields })) ?? undefined });
+			const discussionParent =
+				room.prid &&
+				(await Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | 'prid' | 'u'>>(room.prid, {
+					projection: { name: 1, fname: 1, t: 1, prid: 1, u: 1 },
+				}));
+			const { team, parentRoom } = await Team.getRoomInfo(room);
+			const parent = discussionParent || parentRoom;
+
+			return API.v1.success({
+				room: (await Rooms.findOneByIdOrName(room._id, { projection: fields })) ?? undefined,
+				...(team && { team }),
+				...(parent && { parent }),
+			});
 		},
 	},
 );
