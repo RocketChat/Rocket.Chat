@@ -1,5 +1,4 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { SidebarSection } from '@rocket.chat/fuselage';
 import type { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo } from 'react';
 
@@ -37,14 +36,6 @@ const RoomListRow = ({ data, item }: RoomListRowProps) => {
 			},
 		[acceptCall, rejectCall, currentCall],
 	);
-
-	if (typeof item === 'string') {
-		return (
-			<SidebarSection>
-				<SidebarSection.Title>{t(item)}</SidebarSection.Title>
-			</SidebarSection>
-		);
-	}
 
 	return (
 		<SideBarItemTemplateWithData
