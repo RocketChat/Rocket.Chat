@@ -37,6 +37,7 @@ import {
 	ReadReceipts,
 	Rooms,
 	LivechatCustomField,
+	LivechatContacts,
 } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Match, check } from 'meteor/check';
@@ -458,6 +459,29 @@ class LivechatClass {
 			agent: defaultAgent,
 			extraData,
 		});
+
+		if (process.env.TEST_MODE?.toUpperCase() === 'TRUE') {
+			const visitorContact = await LivechatVisitors.findOne<Pick<ILivechatVisitor, 'contactId'>>(visitor._id, {
+				projection: { contactId: 1 },
+			});
+
+			const contact = await LivechatContacts.findOne({ _id: visitorContact?.contactId });
+
+			if (contact?.channels) {
+				const channel = contact.channels.find((channel) => channel.name === roomInfo.source?.type && channel.visitorId === visitor._id);
+
+				if (!channel) {
+					Livechat.logger.debug(`Adding channel for contact ${contact._id}`);
+
+					await LivechatContacts.addChannel(contact._id, {
+						name: roomInfo.source?.type.toString() || 'widget',
+						visitorId: visitor._id,
+						blocked: false,
+						verified: false,
+					});
+				}
+			}
+		}
 
 		Livechat.logger.debug(`Room obtained for visitor ${visitor._id} -> ${room._id}`);
 

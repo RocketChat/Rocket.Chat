@@ -1,4 +1,4 @@
-import type { ILivechatContact, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { ILivechatContact, ILivechatContactChannel, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatContactsModel } from '@rocket.chat/model-typings';
 import type { Collection, Db } from 'mongodb';
 
@@ -17,5 +17,9 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 	async findVerifiedContactByEmail(email: string): Promise<ILivechatContact | null> {
 		// TODO: find only contacts with verified channels
 		return this.findOne({ emails: { $elemMatch: { address: email } }, channels: { $elemMatch: { verified: true } } });
+	}
+
+	async addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void> {
+		await this.updateOne({ _id: contactId }, { $push: { channels: channel } });
 	}
 }
