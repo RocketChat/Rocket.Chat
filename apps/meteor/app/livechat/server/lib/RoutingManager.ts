@@ -278,7 +278,6 @@ export const RoutingManager: Routing = {
 			'livechat.afterTakeInquiry',
 			{
 				inquiry: inq,
-				// @eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				room: roomAfterUpdate,
 			},
 			agent,
