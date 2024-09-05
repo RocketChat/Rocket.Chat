@@ -222,11 +222,6 @@ export const createAccountSettings = () =>
 			type: 'boolean',
 			public: true,
 		});
-
-		await this.add('Accounts_Default_User_Preferences_featuresPreview', '[]', {
-			type: 'string',
-			public: true,
-		});
 		await this.add('Accounts_CustomFieldsToShowInUserInfo', '', {
 			type: 'string',
 			public: true,
@@ -735,6 +730,11 @@ export const createAccountSettings = () =>
 				values: defaultUserPreferencesSidebarSectionsOrder.map((key) => ({ key, i18nLabel: key })),
 				i18nLabel: 'Sidebar_Sections_Order',
 				i18nDescription: 'Sidebar_Sections_Order_Description',
+			});
+
+			await this.add('Accounts_Default_User_Preferences_featuresPreview', '[]', {
+				type: 'string',
+				public: true,
 			});
 		});
 
