@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
-import type { ILivechatAgent, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatVisitor, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
-import { createAgent } from '../../../data/livechat/rooms';
+import { closeOmnichannelRoom, createAgent, createVisitor, deleteVisitor } from '../../../data/livechat/rooms';
 import { removeAgent } from '../../../data/livechat/users';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, deleteUser } from '../../../data/users.helper';
@@ -697,6 +697,56 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 
 			await restorePermissionToRoles('view-livechat-contact');
+		});
+	});
+
+	describe('Contact Channels', () => {
+		let visitor: ILivechatVisitor;
+
+		beforeEach(async () => {
+			visitor = await createVisitor();
+		});
+
+		afterEach(async () => {
+			await deleteVisitor(visitor.token);
+		});
+
+		it('should add a channel to a contact when creating a new room', async () => {
+			visitor = await createVisitor();
+			await request.get(api('livechat/room')).query({ token: visitor.token });
+
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contact.channels).to.be.an('array');
+			expect(res.body.contact.channels.length).to.be.equal(1);
+			expect(res.body.contact.channels[0].name).to.be.equal('api');
+			expect(res.body.contact.channels[0].verified).to.be.false;
+			expect(res.body.contact.channels[0].blocked).to.be.false;
+			expect(res.body.contact.channels[0].visitorId).to.be.equal(visitor._id);
+		});
+
+		it('should not add a channel if visitor already has one with same type', async () => {
+			visitor = await createVisitor();
+			const roomResult = await request.get(api('livechat/room')).query({ token: visitor.token });
+
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contact.channels).to.be.an('array');
+			expect(res.body.contact.channels.length).to.be.equal(1);
+
+			await closeOmnichannelRoom(roomResult.body.room._id);
+			await request.get(api('livechat/room')).query({ token: visitor.token });
+
+			const secondResponse = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
+
+			expect(secondResponse.status).to.be.equal(200);
+			expect(secondResponse.body).to.have.property('success', true);
+			expect(secondResponse.body.contact.channels).to.be.an('array');
+			expect(secondResponse.body.contact.channels.length).to.be.equal(1);
 		});
 	});
 });
