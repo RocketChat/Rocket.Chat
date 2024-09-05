@@ -4,7 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"eslint": "~8.45.0",
-		"typescript": "~5.3.3"
+		"typescript": "~5.5.4"
 	},
 	"main": "./src/index.js",
 	"typings": "./dist/index.d.ts"

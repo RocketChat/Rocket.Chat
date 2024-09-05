@@ -1272,7 +1272,6 @@ const POSTUpdateOmnichannelContactsSchema = {
 		},
 		name: {
 			type: 'string',
-			nullable: true,
 		},
 		emails: {
 			type: 'array',

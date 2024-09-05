@@ -109,12 +109,13 @@ const TeamsInfo = ({
 				flexGrow={0}
 				key='menu'
 				maxHeight='initial'
+				title={t('More')}
 				secondary
 				renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option {...props} label={label} icon={icon} />}
 				options={menuOptions}
 			/>
 		);
-	}, [menuOptions]);
+	}, [t, menuOptions]);
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { label, icon, action }]: [string, Action]): ReactElement => (
