@@ -18,11 +18,6 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return updatedValue.value as ILivechatContact;
 	}
 
-	async findVerifiedContactByEmail(email: string): Promise<ILivechatContact | null> {
-		// TODO: find only contacts with verified channels
-		return this.findOne({ emails: { $elemMatch: { address: email } }, channels: { $elemMatch: { verified: true } } });
-	}
-
 	async addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void> {
 		await this.updateOne({ _id: contactId }, { $push: { channels: channel } });
 	}

@@ -27,12 +27,14 @@ Accounts.onEmailVerificationLink((token: string) => {
 });
 
 Meteor.startup(() => {
-	Tracker.autorun(() => {
+	Tracker.autorun((computation) => {
 		const forgetUserSessionOnWindowClose = settings.get('Accounts_ForgetUserSessionOnWindowClose');
 
 		if (forgetUserSessionOnWindowClose === undefined) {
 			return;
 		}
+
+		computation.stop();
 
 		Accounts.config({ clientStorage: forgetUserSessionOnWindowClose ? 'session' : 'local' });
 	});
