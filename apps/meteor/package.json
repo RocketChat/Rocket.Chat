@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/meteor",
 	"description": "The Ultimate Open Source WebChat Platform",
-	"version": "6.12.0-develop",
+	"version": "6.13.0-develop",
 	"private": true,
 	"author": {
 		"name": "Rocket.Chat",
@@ -210,7 +210,7 @@
 		"supports-color": "~7.2.0",
 		"template-file": "^6.0.1",
 		"ts-node": "^10.9.1",
-		"typescript": "~5.3.3"
+		"typescript": "~5.5.4"
 	},
 	"dependencies": {
 		"@babel/runtime": "~7.22.15",
@@ -230,7 +230,7 @@
 		"@rocket.chat/agenda": "workspace:^",
 		"@rocket.chat/api-client": "workspace:^",
 		"@rocket.chat/apps": "workspace:^",
-		"@rocket.chat/apps-engine": "1.45.0-alpha.866",
+		"@rocket.chat/apps-engine": "1.45.0-alpha.868",
 		"@rocket.chat/base64": "workspace:^",
 		"@rocket.chat/cas-validate": "workspace:^",
 		"@rocket.chat/core-services": "workspace:^",
@@ -241,7 +241,7 @@
 		"@rocket.chat/favicon": "workspace:^",
 		"@rocket.chat/forked-matrix-appservice-bridge": "^4.0.2",
 		"@rocket.chat/forked-matrix-bot-sdk": "^0.6.0-beta.3",
-		"@rocket.chat/fuselage": "^0.57.0",
+		"@rocket.chat/fuselage": "^0.59.0",
 		"@rocket.chat/fuselage-hooks": "^0.33.1",
 		"@rocket.chat/fuselage-polyfills": "~0.31.25",
 		"@rocket.chat/fuselage-toastbar": "^0.33.0",
@@ -430,7 +430,7 @@
 		"turndown": "^7.1.2",
 		"twilio": "^3.76.1",
 		"twit": "^2.2.11",
-		"typia": "^5.3.3",
+		"typia": "~6.9.0",
 		"ua-parser-js": "^1.0.37",
 		"underscore": "^1.13.6",
 		"universal-perf-hooks": "^1.0.1",

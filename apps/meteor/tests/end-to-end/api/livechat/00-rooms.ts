@@ -2468,6 +2468,10 @@ describe('LIVECHAT - rooms', () => {
 			await updateSetting('Unread_Count_Omni', 'all_messages');
 		});
 
+		after(async () => {
+			await deleteDepartment(departmentWithAgent.department._id);
+		});
+
 		it('it should prepare the required data for further tests', async () => {
 			departmentWithAgent = await createDepartmentWithAnOnlineAgent();
 			visitor = await createVisitor(departmentWithAgent.department._id);

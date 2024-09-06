@@ -1,11 +1,11 @@
 import { LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
-import { isPOSTOmnichannelContactsProps } from '@rocket.chat/rest-typings';
+import { isPOSTOmnichannelContactsProps, isPOSTUpdateOmnichannelContactsProps } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
-import { Contacts, createContact } from '../../lib/Contacts';
+import { Contacts, createContact, updateContact } from '../../lib/Contacts';
 
 API.v1.addRoute(
 	'omnichannel/contact',
@@ -98,6 +98,21 @@ API.v1.addRoute(
 			const contactId = await createContact({ ...this.bodyParams, unknown: false });
 
 			return API.v1.success({ contactId });
+		},
+	},
+);
+API.v1.addRoute(
+	'omnichannel/contacts.update',
+	{ authRequired: true, permissionsRequired: ['update-livechat-contact'], validateParams: isPOSTUpdateOmnichannelContactsProps },
+	{
+		async post() {
+			if (!process.env.TEST_MODE) {
+				throw new Meteor.Error('error-not-allowed', 'This endpoint is only allowed in test mode');
+			}
+
+			const contact = await updateContact({ ...this.bodyParams });
+
+			return API.v1.success({ contact });
 		},
 	},
 );

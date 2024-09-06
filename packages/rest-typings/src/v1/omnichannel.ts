@@ -27,6 +27,7 @@ import type {
 	ReportWithUnmatchingElements,
 	SMSProviderResponse,
 	ILivechatTriggerActionResponse,
+	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
@@ -1253,6 +1254,55 @@ const POSTOmnichannelContactsSchema = {
 };
 
 export const isPOSTOmnichannelContactsProps = ajv.compile<POSTOmnichannelContactsProps>(POSTOmnichannelContactsSchema);
+
+type POSTUpdateOmnichannelContactsProps = {
+	contactId: string;
+	name?: string;
+	emails?: string[];
+	phones?: string[];
+	customFields?: Record<string, unknown>;
+	contactManager?: string;
+};
+
+const POSTUpdateOmnichannelContactsSchema = {
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+		},
+		name: {
+			type: 'string',
+		},
+		emails: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			uniqueItems: true,
+			nullable: true,
+		},
+		phones: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			uniqueItems: true,
+			nullable: true,
+		},
+		customFields: {
+			type: 'object',
+			nullable: true,
+		},
+		contactManager: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['contactId'],
+	additionalProperties: false,
+};
+
+export const isPOSTUpdateOmnichannelContactsProps = ajv.compile<POSTUpdateOmnichannelContactsProps>(POSTUpdateOmnichannelContactsSchema);
 
 type GETOmnichannelContactProps = { contactId: string };
 
@@ -3694,6 +3744,9 @@ export type OmnichannelEndpoints = {
 
 	'/v1/omnichannel/contacts': {
 		POST: (params: POSTOmnichannelContactsProps) => { contactId: string };
+	};
+	'/v1/omnichannel/contacts.update': {
+		POST: (params: POSTUpdateOmnichannelContactsProps) => { contact: ILivechatContact };
 	};
 
 	'/v1/omnichannel/contact.search': {
