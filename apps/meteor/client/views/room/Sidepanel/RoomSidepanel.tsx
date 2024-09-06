@@ -27,6 +27,7 @@ const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 	const sidebarViewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode');
 
 	const roomInfo = useRoomInfoEndpoint(parentRid);
+
 	const sidepanelItems = roomInfo.data?.room?.sidepanel?.items || roomInfo.data?.parent?.sidepanel?.items;
 
 	const listRoomsAndDiscussions = useEndpoint('GET', '/v1/teams.listChildren');
