@@ -52,7 +52,7 @@ const CustomField = <T extends FieldValues>({
 		(error: RHFFieldError) => {
 			switch (error?.type) {
 				case 'required':
-					return t('Required_field', label || name);
+					return t('Required_field', { field: label || name });
 				case 'minLength':
 					return t('Min_length_is', props?.minLength);
 				case 'maxLength':

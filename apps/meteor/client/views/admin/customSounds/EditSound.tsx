@@ -76,10 +76,10 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				}
 			}
 
-			validation.forEach((error) =>
+			validation.forEach((invalidFieldName) =>
 				dispatchToastMessage({
 					type: 'error',
-					message: t('Required_field', { field: t(error) }),
+					message: t('Required_field', { field: t(invalidFieldName) }),
 				}),
 			);
 		},

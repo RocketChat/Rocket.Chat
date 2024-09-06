@@ -47,7 +47,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 		const { name } = getValues();
 
 		if (!isValid) {
-			return dispatchToastMessage({ type: 'error', message: t('Required_field') });
+			return dispatchToastMessage({ type: 'error', message: t('Required_field', { field: t('Name') }) });
 		}
 
 		try {
