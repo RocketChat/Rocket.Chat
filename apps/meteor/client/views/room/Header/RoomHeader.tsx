@@ -8,7 +8,6 @@ import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderSubtitle, 
 import MarkdownText from '../../../components/MarkdownText';
 import FederatedRoomOriginServer from './FederatedRoomOriginServer';
 import ParentRoomWithData from './ParentRoomWithData';
-import ParentTeam from './ParentTeam';
 import RoomTitle from './RoomTitle';
 import RoomToolbox from './RoomToolbox';
 import Encrypted from './icons/Encrypted';
