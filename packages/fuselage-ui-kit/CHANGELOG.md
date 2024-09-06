@@ -1,5 +1,17 @@
 # Change Log
 
+## 6.0.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@6.0.6
+  - @rocket.chat/ui-contexts@6.0.6
+  - @rocket.chat/ui-avatar@2.0.6
+  - @rocket.chat/ui-video-conf@6.0.6
+  </details>
+
 ## 6.0.5
 
 ### Patch Changes
