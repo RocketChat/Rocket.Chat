@@ -127,6 +127,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-contact'], validateParams: isGETOmnichannelContactsProps },
 	{
 		async get() {
+			if (process.env.TEST_MODE?.toUpperCase() !== 'TRUE') {
+				throw new Meteor.Error('error-not-allowed', 'This endpoint is only allowed in test mode');
+			}
 			const contact = await getContactById(this.queryParams.contactId);
 
 			return API.v1.success({ contact });
