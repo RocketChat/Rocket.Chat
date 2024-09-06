@@ -1,5 +1,0 @@
-{
-	"$schema": "https://json.schemastore.org/eslintrc",
-	"extends": ["@rocket.chat/eslint-config"],
-	"ignorePatterns": ["/dist/**", "/client/**", "/server/**"]
-}
