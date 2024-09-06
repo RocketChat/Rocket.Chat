@@ -59,7 +59,7 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 				[layout, contextualbarPosition, contextualbarSize],
 			)}
 		>
-			<Box h='full' display='flex' flexDirection='column' bg='room' {...props} ref={ref}>
+			<Box h='full' w='full' display='flex' flexDirection='column' bg='room' {...props} ref={ref}>
 				<Suspense
 					fallback={
 						<FeaturePreview feature='newNavigation'>
@@ -82,7 +82,7 @@ const RoomLayout = ({ header, body, footer, aside, ...props }: RoomLayoutProps):
 						{footer && <Suspense fallback={null}>{footer}</Suspense>}
 					</Box>
 					{aside && (
-						<ContextualbarDialog>
+						<ContextualbarDialog position={contextualbarPosition}>
 							<Suspense fallback={null}>{aside}</Suspense>
 						</ContextualbarDialog>
 					)}
