@@ -2643,18 +2643,37 @@ describe('[Users]', () => {
 	});
 
 	describe('[/users.forgotPassword]', () => {
+		it('should return an error when "Accounts_PasswordReset" is disabled', (done) => {
+			void updateSetting('Accounts_PasswordReset', false).then(() => {
+				void request
+					.post(api('users.forgotPassword'))
+					.send({
+						email: adminEmail,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'Password reset is not enabled');
+					})
+					.end(done);
+			});
+		});
+
 		it('should send email to user (return success), when is a valid email', (done) => {
-			void request
-				.post(api('users.forgotPassword'))
-				.send({
-					email: adminEmail,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				})
-				.end(done);
+			void updateSetting('Accounts_PasswordReset', true).then(() => {
+				void request
+					.post(api('users.forgotPassword'))
+					.send({
+						email: adminEmail,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					})
+					.end(done);
+			});
 		});
 
 		it('should not send email to user(return error), when is a invalid email', (done) => {
