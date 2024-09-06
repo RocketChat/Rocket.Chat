@@ -873,7 +873,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			{
 				$match: {
 					federated: true,
-					$or: [{ archived: false }, { archived: { $exists: false } }],
+					archived: { $ne: true },
 				},
 			},
 			{

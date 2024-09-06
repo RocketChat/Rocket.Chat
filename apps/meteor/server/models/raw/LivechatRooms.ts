@@ -2592,40 +2592,53 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				},
 			},
 			{
+				$project: {
+					priorityWeight: 1,
+				},
+			},
+			{
 				$group: {
 					_id: '$priorityWeight',
 					count: { $sum: 1 },
 				},
 			},
-			{
-				$project: {
-					_id: 0,
-					lowest: { $cond: [{ $eq: ['$_id', LivechatPriorityWeight.LOWEST] }, '$count', 0] },
-					low: { $cond: [{ $eq: ['$_id', LivechatPriorityWeight.LOW] }, '$count', 0] },
-					medium: { $cond: [{ $eq: ['$_id', LivechatPriorityWeight.MEDIUM] }, '$count', 0] },
-					high: { $cond: [{ $eq: ['$_id', LivechatPriorityWeight.HIGH] }, '$count', 0] },
-					highest: { $cond: [{ $eq: ['$_id', LivechatPriorityWeight.HIGHEST] }, '$count', 0] },
-					notSpecified: { $cond: [{ $eq: ['$_id', LivechatPriorityWeight.NOT_SPECIFIED] }, '$count', 0] },
-				},
-			},
-			{
-				$group: {
-					_id: null,
-					lowest: { $sum: '$lowest' },
-					low: { $sum: '$low' },
-					medium: { $sum: '$medium' },
-					high: { $sum: '$high' },
-					highest: { $sum: '$highest' },
-					notSpecified: { $sum: '$notSpecified' },
-				},
-			},
 		];
 
 		const result = await this.col.aggregate(pipeline).toArray();
-		const stats = result[0];
-		delete stats._id;
 
-		return stats as IStats['totalLivechatRoomsWithPriority'];
+		const output: IStats['totalLivechatRoomsWithPriority'] = {
+			lowest: 0,
+			low: 0,
+			medium: 0,
+			high: 0,
+			highest: 0,
+			notSpecified: 0,
+		};
+
+		result.forEach((item) => {
+			switch (item._id) {
+				case LivechatPriorityWeight.LOWEST:
+					output.lowest = item.count;
+					break;
+				case LivechatPriorityWeight.LOW:
+					output.low = item.count;
+					break;
+				case LivechatPriorityWeight.MEDIUM:
+					output.medium = item.count;
+					break;
+				case LivechatPriorityWeight.HIGH:
+					output.high = item.count;
+					break;
+				case LivechatPriorityWeight.HIGHEST:
+					output.highest = item.count;
+					break;
+				case LivechatPriorityWeight.NOT_SPECIFIED:
+					output.notSpecified = item.count;
+					break;
+			}
+		});
+
+		return output;
 	}
 
 	countLivechatRoomsWithDepartment(): Promise<number> {
