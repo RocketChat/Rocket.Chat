@@ -14,7 +14,7 @@
 	"devDependencies": {
 		"@types/debug": "^4.1.10",
 		"eslint": "~8.45.0",
-		"typescript": "~5.3.3"
+		"typescript": "~5.5.4"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
