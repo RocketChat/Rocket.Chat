@@ -185,6 +185,36 @@ test.each([
       ]),
     ],
   ],
+  [
+    '**bold ~~and strike~~** **not bold ~~but strike** ~~ not strike~~',
+    [
+      paragraph([
+        bold([plain('bold '), strike([plain('and strike')])]),
+        plain(' **not bold '),
+        strike([plain('but strike** ')]),
+        plain(' not strike~~'),
+      ]),
+    ],
+  ],
+  [
+    '**bold** **another bold** ~~strike~~ ~~another strike~~ **bold ~~and strike~~** **not bold ~~but strike** ~~ not strike~~',
+    [
+      paragraph([
+        bold([plain('bold')]),
+        plain(' '),
+        bold([plain('another bold')]),
+        plain(' '),
+        strike([plain('strike')]),
+        plain(' '),
+        strike([plain('another strike')]),
+        plain(' '),
+        bold([plain('bold '), strike([plain('and strike')])]),
+        plain(' **not bold '),
+        strike([plain('but strike** ')]),
+        plain(' not strike~~'),
+      ]),
+    ],
+  ],
 ])('parses %p', (input, output) => {
   expect(parse(input)).toMatchObject(output);
 });

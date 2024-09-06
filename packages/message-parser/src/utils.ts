@@ -200,6 +200,7 @@ export const reducePlainTexts = (
 ): Paragraph['value'] =>
   values
     .flatMap((item) => item)
+    .filter((item) => item)
     .reduce((result, item, index, values) => {
       const next = values[index + 1];
       const current = joinEmoji(item, values[index - 1], next);
