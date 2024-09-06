@@ -6,14 +6,14 @@ import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import { useTemplateByViewMode } from '../../../../sidebarv2/hooks/useTemplateByViewMode';
 import { useItemData } from '../hooks/useItemData';
 
-export type RoomSidePanelItemProps = {
+export type RoomSidepanelItemProps = {
 	openedRoom?: string;
 	room: Serialized<IRoom>;
 	parentRid: string;
 	viewMode?: 'extended' | 'medium' | 'condensed';
 };
 
-const RoomSidePanelItem = ({ room, openedRoom, viewMode }: RoomSidePanelItemProps) => {
+const RoomSidepanelItem = ({ room, openedRoom, viewMode }: RoomSidepanelItemProps) => {
 	const SidepanelItem = useTemplateByViewMode();
 	const subscription = useUserSubscription(room._id);
 
@@ -26,4 +26,4 @@ const RoomSidePanelItem = ({ room, openedRoom, viewMode }: RoomSidePanelItemProp
 	return <SidepanelItem onClick={goToRoomById} {...subscription} {...itemData} />;
 };
 
-export default memo(RoomSidePanelItem);
+export default memo(RoomSidepanelItem);

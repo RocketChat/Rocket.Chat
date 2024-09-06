@@ -11,7 +11,7 @@ import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
 import { OldUrlRoomError } from '../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../lib/errors/RoomNotFoundError';
 import RoomSkeleton from './RoomSkeleton';
-import RoomSidePanel from './SidePanel/RoomSidePanel';
+import RoomSidepanel from './Sidepanel/RoomSidepanel';
 import { useOpenRoom } from './hooks/useOpenRoom';
 
 const RoomProvider = lazy(() => import('./providers/RoomProvider'));
@@ -37,7 +37,7 @@ const RoomOpener = ({ type, reference }: RoomOpenerProps): ReactElement => {
 				<FeaturePreview feature='sidepanelNavigation'>
 					<FeaturePreviewOff>{null}</FeaturePreviewOff>
 					<FeaturePreviewOn>
-						<RoomSidePanel />
+						<RoomSidepanel />
 					</FeaturePreviewOn>
 				</FeaturePreview>
 			)}

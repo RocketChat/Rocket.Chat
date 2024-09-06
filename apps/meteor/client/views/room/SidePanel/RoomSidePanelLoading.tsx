@@ -1,20 +1,20 @@
-import { SideBarItem, SidePanel, SidePanelList, Skeleton } from '@rocket.chat/fuselage';
+import { SidebarV2Item as SidebarItem, Sidepanel, SidepanelList, Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
 
-const RoomSidePanelLoading = () => (
-	<SidePanel>
-		<SidePanelList>
-			<SideBarItem>
+const RoomSidepanelLoading = () => (
+	<Sidepanel>
+		<SidepanelList>
+			<SidebarItem>
 				<Skeleton w='full' />
-			</SideBarItem>
-			<SideBarItem>
+			</SidebarItem>
+			<SidebarItem>
 				<Skeleton w='full' />
-			</SideBarItem>
-			<SideBarItem>
+			</SidebarItem>
+			<SidebarItem>
 				<Skeleton w='full' />
-			</SideBarItem>
-		</SidePanelList>
-	</SidePanel>
+			</SidebarItem>
+		</SidepanelList>
+	</Sidepanel>
 );
 
-export default RoomSidePanelLoading;
+export default RoomSidepanelLoading;

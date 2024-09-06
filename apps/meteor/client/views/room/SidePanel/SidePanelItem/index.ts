@@ -1,1 +1,1 @@
-export { default } from './RoomSidePanelItem';
+export { default } from './RoomSidepanelItem';

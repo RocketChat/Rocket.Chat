@@ -1,11 +1,11 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { SideBarItemBadge, SideBarItemIcon } from '@rocket.chat/fuselage';
+import { SidebarV2ItemBadge as SidebarItemBadge, SidebarV2ItemIcon as SidebarItemIcon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { getBadgeTitle, getMessage } from '../../../../sidebarv2/RoomList/SideBarItemTemplateWithData';
+import { getBadgeTitle, getMessage } from '../../../../sidebarv2/RoomList/SidebarItemTemplateWithData';
 import { useAvatarTemplate } from '../../../../sidebarv2/hooks/useAvatarTemplate';
 
 export const useItemData = (
@@ -18,7 +18,7 @@ export const useItemData = (
 	const highlighted = Boolean(!room.hideUnreadStatus && (room.alert || room.unread));
 
 	const icon = useMemo(
-		() => <SideBarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />,
+		() => <SidebarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />,
 		[highlighted, room],
 	);
 	const time = 'lastMessage' in room ? room.lastMessage?.ts : undefined;
@@ -39,9 +39,9 @@ export const useItemData = (
 		() => (
 			<>
 				{showBadge && isUnread && (
-					<SideBarItemBadge variant={variant} title={badgeTitle}>
+					<SidebarItemBadge variant={variant} title={badgeTitle}>
 						{room.unread + (room.tunread?.length || 0)}
-					</SideBarItemBadge>
+					</SidebarItemBadge>
 				)}
 			</>
 		),

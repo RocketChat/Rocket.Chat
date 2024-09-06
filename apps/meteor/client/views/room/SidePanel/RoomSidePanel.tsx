@@ -1,5 +1,5 @@
 /* eslint-disable react/no-multi-comp */
-import { Box, SidePanel, SidePanelListItem } from '@rocket.chat/fuselage';
+import { Box, Sidepanel, SidepanelListItem } from '@rocket.chat/fuselage';
 import { useEndpoint, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { memo } from 'react';
@@ -8,11 +8,11 @@ import { Virtuoso } from 'react-virtuoso';
 import { VirtuosoScrollbars } from '../../../components/CustomScrollbars';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
 import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManager';
-import RoomSidePanelListWrapper from './RoomSidePanelListWrapper';
-import RoomSidePanelLoading from './RoomSidePanelLoading';
-import RoomSidePanelItem from './SidePanelItem';
+import RoomSidepanelListWrapper from './RoomSidepanelListWrapper';
+import RoomSidepanelLoading from './RoomSidepanelLoading';
+import RoomSidepanelItem from './SidepanelItem';
 
-const RoomSidePanel = () => {
+const RoomSidepanel = () => {
 	const parentRid = useOpenedRoom();
 	const secondLevelOpenedRoom = useSecondLevelOpenedRoom() ?? parentRid;
 
@@ -20,10 +20,10 @@ const RoomSidePanel = () => {
 		return null;
 	}
 
-	return <RoomSidePanelWithData parentRid={parentRid} openedRoom={secondLevelOpenedRoom} />;
+	return <RoomSidepanelWithData parentRid={parentRid} openedRoom={secondLevelOpenedRoom} />;
 };
 
-const RoomSidePanelWithData = ({ parentRid, openedRoom }: { parentRid: string; openedRoom: string }) => {
+const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; openedRoom: string }) => {
 	const sidebarViewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode');
 
 	const roomInfo = useRoomInfoEndpoint(parentRid);
@@ -46,7 +46,7 @@ const RoomSidePanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 	}
 
 	if (result.isLoading || roomInfo.isLoading) {
-		return <RoomSidePanelLoading />;
+		return <RoomSidepanelLoading />;
 	}
 
 	if (!result.isSuccess || !roomInfo.isSuccess) {
@@ -54,19 +54,19 @@ const RoomSidePanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 	}
 
 	return (
-		<SidePanel>
+		<Sidepanel>
 			<Box pb={8} h='full'>
 				<Virtuoso
 					totalCount={result.data.data.length}
 					data={result.data.data}
-					components={{ Item: SidePanelListItem, List: RoomSidePanelListWrapper, Scroller: VirtuosoScrollbars }}
+					components={{ Item: SidepanelListItem, List: RoomSidepanelListWrapper, Scroller: VirtuosoScrollbars }}
 					itemContent={(_, data) => (
-						<RoomSidePanelItem openedRoom={openedRoom} room={data} parentRid={parentRid} viewMode={sidebarViewMode} />
+						<RoomSidepanelItem openedRoom={openedRoom} room={data} parentRid={parentRid} viewMode={sidebarViewMode} />
 					)}
 				/>
 			</Box>
-		</SidePanel>
+		</Sidepanel>
 	);
 };
 
-export default memo(RoomSidePanel);
+export default memo(RoomSidepanel);
