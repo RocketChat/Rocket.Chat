@@ -7,7 +7,6 @@ import React, { Suspense } from 'react';
 import { Header, HeaderAvatar, HeaderContent, HeaderContentRow, HeaderToolbar } from '../../../components/Header';
 import FederatedRoomOriginServer from './FederatedRoomOriginServer';
 import ParentRoomWithData from './ParentRoomWithData';
-import ParentTeam from './ParentTeam';
 import RoomTitle from './RoomTitle';
 import RoomToolbox from './RoomToolbox';
 import Encrypted from './icons/Encrypted';
