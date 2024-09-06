@@ -665,13 +665,15 @@ class LivechatClass {
 			}
 		}
 
-		const contactId = await createContact({
-			name: name ?? (visitorDataToUpdate.username as string),
-			emails: email ? [email] : [],
-			phones: phone ? [phone.number] : [],
-			unknown: true,
-		});
-		visitorDataToUpdate.contactId = contactId;
+		if (process.env.TEST_MODE?.toUpperCase() === 'TRUE') {
+			const contactId = await createContact({
+				name: name ?? (visitorDataToUpdate.username as string),
+				emails: email ? [email] : [],
+				phones: phone ? [phone.number] : [],
+				unknown: true,
+			});
+			visitorDataToUpdate.contactId = contactId;
+		}
 
 		const upsertedLivechatVisitor = await LivechatVisitors.updateOneByIdOrToken(visitorDataToUpdate, {
 			upsert: true,
