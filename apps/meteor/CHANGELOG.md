@@ -1,5 +1,47 @@
 # @rocket.chat/meteor
 
+## 6.10.5
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#33085](https://github.com/RocketChat/Rocket.Chat/pull/33085) by [@dionisio-bot](https://github.com/dionisio-bot)) Prevent `processRoomAbandonment` callback from erroring out when a room was inactive during a day Business Hours was not configured for.
+
+- ([#33142](https://github.com/RocketChat/Rocket.Chat/pull/33142) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#33130](https://github.com/RocketChat/Rocket.Chat/pull/33130) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixed an issue related to setting Accounts_ForgetUserSessionOnWindowClose, this setting was not working as expected.
+
+  The new meteor 2.16 release introduced a new option to configure the Accounts package and choose between the local storage or session storage. They also changed how Meteor.\_localstorage works internally. Due to these changes in Meteor, our setting to use session storage wasn't working as expected. This PR fixes this issue and configures the Accounts package according to the workspace settings.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.5
+  - @rocket.chat/rest-typings@6.10.5
+  - @rocket.chat/api-client@0.2.5
+  - @rocket.chat/license@0.2.5
+  - @rocket.chat/omnichannel-services@0.2.5
+  - @rocket.chat/pdf-worker@0.1.5
+  - @rocket.chat/presence@0.2.5
+  - @rocket.chat/apps@0.1.5
+  - @rocket.chat/core-services@0.4.5
+  - @rocket.chat/cron@0.1.5
+  - @rocket.chat/fuselage-ui-kit@8.0.5
+  - @rocket.chat/gazzodown@8.0.5
+  - @rocket.chat/model-typings@0.5.5
+  - @rocket.chat/ui-contexts@8.0.5
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.1.5
+  - @rocket.chat/ui-theming@0.2.0
+  - @rocket.chat/ui-avatar@4.0.5
+  - @rocket.chat/ui-client@8.0.5
+  - @rocket.chat/ui-video-conf@8.0.5
+  - @rocket.chat/web-ui-registration@8.0.5
+  - @rocket.chat/instance-status@0.1.5
+  </details>
+
 ## 6.10.4
 
 ### Patch Changes

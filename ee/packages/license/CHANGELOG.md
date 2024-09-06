@@ -1,5 +1,14 @@
 # @rocket.chat/license
 
+## 0.2.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.10.5
+  </details>
+
 ## 0.2.4
 
 ### Patch Changes
