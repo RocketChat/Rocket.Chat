@@ -1,3 +1,4 @@
+export { default as AnchorPortal, AnchorPortalProps } from './AnchorPortal';
 export * from './EmojiPicker';
 export * from './ExternalLink';
 export * from './DotLeader';
