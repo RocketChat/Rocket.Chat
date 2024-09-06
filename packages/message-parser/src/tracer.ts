@@ -1,4 +1,4 @@
-import type { ParserTracer, ParserOptions } from 'peggy';
+import type { ParserTracer, ParserTracerEvent, ParserOptions } from 'peggy';
 
 export type Options = {
   colors?: boolean;
@@ -17,7 +17,7 @@ export class Tracer implements ParserTracer {
     //
   }
 
-  trace(event: any): void {
+  trace(event: ParserTracerEvent): void {
     if (event.type === 'rule.enter') {
       this.options.ruleStack.push(event.rule);
       return;
