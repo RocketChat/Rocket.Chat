@@ -171,7 +171,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 				SidepanelItem?,
 			];
 
-			const sidepanel = sidepanelItems.length > 0 ? { items: sidepanelItems } : { sidepanel: null };
+			const sidepanel = sidepanelItems.length > 0 ? { items: sidepanelItems } : null;
 
 			try {
 				await saveAction({
