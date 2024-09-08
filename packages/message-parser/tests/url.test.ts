@@ -291,6 +291,10 @@ test.each([
 describe('autoLink with custom hosts settings comming from Rocket.Chat', () => {
   test.each([
     [
+      'http://local',
+      [paragraph([autoLink('http://local', ['local'])])],
+    ],
+    [
       'http://gitlab.local',
       [paragraph([autoLink('http://gitlab.local', ['local'])])],
     ],
