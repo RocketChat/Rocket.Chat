@@ -17,7 +17,7 @@ import { useTranslation, useUserPreference, useLayout, useSetting, useToastMessa
 import { useMutation } from '@tanstack/react-query';
 import fileSize from 'filesize';
 import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler, MouseEvent } from 'react';
-import React, { memo, useRef, useReducer, useCallback, useState } from 'react';
+import React, { memo, useRef, useReducer, useCallback, useState, useEffect } from 'react';
 import { Trans } from 'react-i18next';
 import { useSubscription } from 'use-subscription';
 
@@ -82,6 +82,8 @@ const a: any[] = [];
 const getEmptyArray = () => a;
 
 type MessageBoxProps = {
+	filesToUpload: File[];
+	setFilesToUpload: any;
 	tmid?: IMessage['_id'];
 	readOnly: boolean;
 	onSend?: (params: { value: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean }) => Promise<void>;
@@ -102,6 +104,8 @@ type MessageBoxProps = {
 type HandleFilesToUpload = (filesList: File[], resetFileInput?: () => void) => void;
 
 const MessageBox = ({
+	filesToUpload,
+	setFilesToUpload,
 	tmid,
 	onSend,
 	onJoin,
@@ -124,12 +128,16 @@ const MessageBox = ({
 
 	const [typing, setTyping] = useReducer(reducer, false);
 	const [isUploading, setIsUploading] = useState(false);
-	const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
+
+	useEffect(() => {
+		setIsUploading(filesToUpload.length > 0);
+	}, [filesToUpload]);
+
 	const dispatchToastMessage = useToastMessageDispatch();
 	const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
 
-	const handleFilesToUpload: HandleFilesToUpload = (filesList, resetFileInput) => {
-		setFilesToUpload((prevFiles) => {
+	const handleFilesToUpload: HandleFilesToUpload = (filesList: File[], resetFileInput?: () => void) => {
+		setFilesToUpload((prevFiles: File[]) => {
 			let newFilesToUpload = [...prevFiles, ...filesList];
 			if (newFilesToUpload.length > 6) {
 				newFilesToUpload = newFilesToUpload.slice(0, 6);

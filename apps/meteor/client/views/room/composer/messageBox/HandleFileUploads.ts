@@ -2,6 +2,7 @@ import type { IMessage, IUpload, IE2EEMessage, FileAttachmentProps } from '@rock
 
 import { e2e } from '../../../../../app/e2e/client';
 import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
+import { prependReplies } from '../../../../lib/utils/prependReplies';
 
 const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
 	return new Promise((resolve) => {
@@ -68,6 +69,7 @@ const handleEncryptedFilesShared = async (
 					title: filesToUpload[i].name,
 					type: 'file',
 					title_link: fileUrl[i],
+					description: i === 0 ? msg : undefined,
 					title_link_download: true,
 					encryption: {
 						key: encryptedFilesarray[i].key,
@@ -131,7 +133,6 @@ const handleEncryptedFilesShared = async (
 			type: filesToUpload[0].type,
 			typeGroup: filesToUpload[0].type.split('/')[0],
 			name: filesToUpload[0].name,
-			msg: msg || '',
 			encryption: {
 				key: encryptedFilesarray[0].key,
 				iv: encryptedFilesarray[0].iv,
@@ -141,11 +142,9 @@ const handleEncryptedFilesShared = async (
 			},
 		};
 
-		const fileContent = await e2eRoom.encryptMessageContent(fileContentData);
-
-		const uploadFileData = {
-			raw: {},
-			encrypted: fileContent,
+		const fileContent = {
+			raw: fileContentData,
+			encrypted: await e2eRoom.encryptMessageContent(fileContentData),
 		};
 		uploadFile(
 			filesarray,
@@ -154,7 +153,7 @@ const handleEncryptedFilesShared = async (
 				t: 'e2e',
 			},
 			getContent,
-			uploadFileData,
+			fileContent,
 			setFilesToUpload,
 		);
 	}
@@ -163,8 +162,8 @@ export const handleSendFiles = async (filesToUpload: File[], chat: any, room: an
 	if (!chat || !room) {
 		return;
 	}
-
-	const msg = chat.composer?.text ?? '';
+	const replies = chat.composer?.quotedMessages.get() ?? [];
+	const msg = await prependReplies(chat.composer?.text || '', replies);
 
 	filesToUpload.forEach((file) => {
 		Object.defineProperty(file, 'name', {
