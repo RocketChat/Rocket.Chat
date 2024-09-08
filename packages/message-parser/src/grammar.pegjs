@@ -32,6 +32,7 @@
     tasks,
     unorderedList,
     timestamp,
+    isValidCustomDomain
   } = require('./utils');
 }}
 
@@ -273,19 +274,22 @@ URLAuthorityPassword = $(AlphaDigit / ![@/] Safe)+
 URLAuthorityHost = URLAuthorityHostName (":" URLAuthorityPort)?
 
 URLAuthorityHostName
-  = SingleLabelHost // Added to handle single label hostnames like "server"
-  / DomainName
+  = DomainName
   / $(Digits |4, "."|) // TODO: IPv4 and IPv6
 
-SingleLabelHost
-  = $(AlphaDigit+ ("-" AlphaDigit+)*)
 
 URLAuthorityPort
   = Digits // TODO: from "0" to "65535"
 
 DomainName
   = "localhost"
+  / CustomDomain
   / $(DomainNameLabel ("." DomainChar DomainNameLabel*)+)
+
+CustomDomain
+  = d:DomainNameLabel &{ 
+      return isValidCustomDomain(d, options.customDomains); 
+    }
 
 DomainNameLabel = $(DomainChar+ ("-" DomainChar+)*)
 
