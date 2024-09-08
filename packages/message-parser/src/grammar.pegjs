@@ -273,8 +273,12 @@ URLAuthorityPassword = $(AlphaDigit / ![@/] Safe)+
 URLAuthorityHost = URLAuthorityHostName (":" URLAuthorityPort)?
 
 URLAuthorityHostName
-  = DomainName
+  = SingleLabelHost // Added to handle single label hostnames like "server"
+  / DomainName
   / $(Digits |4, "."|) // TODO: IPv4 and IPv6
+
+SingleLabelHost
+  = $(AlphaDigit+ ("-" AlphaDigit+)*)
 
 URLAuthorityPort
   = Digits // TODO: from "0" to "65535"
