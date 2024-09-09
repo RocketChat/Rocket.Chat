@@ -11,7 +11,7 @@ export function getCommandListUsers(): string {
 
 export async function getExtensionList(options: FreeSwitchOptions): Promise<FreeSwitchExtension[]> {
 	const response = await runCommand(options, getCommandListUsers());
-	const users = await parseUserList(response);
+	const users = parseUserList(response);
 
 	return users.map((item) => mapUserData(item));
 }

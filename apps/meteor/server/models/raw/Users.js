@@ -2443,18 +2443,11 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	findAssignedFreeSwitchExtensions() {
-		return this.find(
-			{
-				freeSwitchExtension: {
-					$exists: 1,
-				},
+		return this.findUsersWithAssignedFreeSwitchExtensions({
+			projection: {
+				freeSwitchExtension: 1,
 			},
-			{
-				projection: {
-					freeSwitchExtension: 1,
-				},
-			},
-		).map(({ freeSwitchExtension }) => freeSwitchExtension);
+		}).map(({ freeSwitchExtension }) => freeSwitchExtension);
 	}
 
 	findUsersWithAssignedFreeSwitchExtensions(options = {}) {

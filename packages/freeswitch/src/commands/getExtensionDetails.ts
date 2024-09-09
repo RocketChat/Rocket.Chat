@@ -16,7 +16,7 @@ export async function getExtensionDetails(
 	const { extension, group } = requestParams;
 	const response = await runCommand(options, getCommandListFilteredUser(extension, group));
 
-	const users = await parseUserList(response);
+	const users = parseUserList(response);
 
 	if (!users.length) {
 		throw new Error('Extension not found.');

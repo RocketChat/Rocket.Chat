@@ -1,16 +1,16 @@
 import type { StringMap } from 'esl';
 
-export async function parseUserList(commandResponse: StringMap): Promise<Record<string, string>[]> {
+export function parseUserList(commandResponse: StringMap): Record<string, string>[] {
 	const { _body: text } = commandResponse;
 
-	if (!text) {
+	if (!text || typeof text !== 'string') {
 		throw new Error('Invalid response from FreeSwitch server.');
 	}
 
 	const lines = text.split('\n');
 	const columnsLine = lines.shift();
 	if (!columnsLine) {
-		throw new Error('Invalid resonse from FreeSwitch server.');
+		throw new Error('Invalid response from FreeSwitch server.');
 	}
 
 	const columns = columnsLine.split('|');
