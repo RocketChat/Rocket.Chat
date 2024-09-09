@@ -215,6 +215,38 @@ test.each([
       ]),
     ],
   ],
+  [
+    'some_snake_case_text and even_more',
+    [paragraph([plain('some_snake_case_text and even_more')])],
+  ],
+  [
+    'some_snake_case_text and some __italic__ text',
+    [
+      paragraph([
+        plain('some_snake_case_text and some '),
+        italic([plain('italic')]),
+        plain(' text'),
+      ]),
+    ],
+  ],
+  [
+    'some__double__snake__case__text and even_more',
+    [paragraph([plain('some__double__snake__case__text and even_more')])],
+  ],
+  [
+    'some__double__snake__case__text and some __italic__ text',
+    [
+      paragraph([
+        plain('some__double__snake__case__text and some '),
+        italic([plain('italic')]),
+        plain(' text'),
+      ]),
+    ],
+  ],
+  [
+    'something__ __and italic__',
+    [paragraph([plain('something__ '), italic([plain('and italic')])])],
+  ],
 ])('parses %p', (input, output) => {
   expect(parse(input)).toMatchObject(output);
 });
