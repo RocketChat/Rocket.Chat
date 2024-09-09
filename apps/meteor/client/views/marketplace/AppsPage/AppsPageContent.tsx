@@ -1,6 +1,6 @@
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, useRouter, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { MutableRefObject, ReactElement } from 'react';
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
@@ -20,8 +20,13 @@ import NoInstalledAppMatchesEmptyState from './NoInstalledAppMatchesEmptyState';
 import NoInstalledAppsEmptyState from './NoInstalledAppsEmptyState';
 import NoMarketplaceOrInstalledAppMatchesEmptyState from './NoMarketplaceOrInstalledAppMatchesEmptyState';
 import PrivateEmptyState from './PrivateEmptyState';
+import UnsupportedEmptyState from './UnsupportedEmptyState';
 
-const AppsPageContent = (): ReactElement => {
+type AppsPageContentProps = {
+	unsupportedVersion: MutableRefObject<boolean>;
+};
+
+const AppsPageContent = ({ unsupportedVersion }: AppsPageContentProps): ReactElement => {
 	const t = useTranslation();
 	const { marketplaceApps, installedApps, privateApps, reload } = useAppsResult();
 	const [text, setText] = useDebouncedState('', 500);
@@ -134,6 +139,8 @@ const AppsPageContent = (): ReactElement => {
 
 	const noInstalledApps = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value?.totalAppsLength === 0;
 
+	unsupportedVersion.current = appsResult.phase === AsyncStatePhase.REJECTED && appsResult.error.message === 'unsupported version';
+
 	const noMarketplaceOrInstalledAppMatches =
 		appsResult.phase === AsyncStatePhase.RESOLVED && (isMarketplace || isPremium) && appsResult.value?.count === 0;
 
@@ -189,6 +196,10 @@ const AppsPageContent = (): ReactElement => {
 	}, [isMarketplace, isRequested, sortFilterOnSelected, t, toggleInitialSortOption]);
 
 	const getEmptyState = () => {
+		if (unsupportedVersion.current) {
+			return <UnsupportedEmptyState />;
+		}
+
 		if (noAppRequests) {
 			return <NoAppRequestsEmptyState />;
 		}
@@ -229,7 +240,7 @@ const AppsPageContent = (): ReactElement => {
 				context={context || 'explore'}
 			/>
 			{appsResult.phase === AsyncStatePhase.LOADING && <AppsPageContentSkeleton />}
-			{appsResult.phase === AsyncStatePhase.RESOLVED && noErrorsOcurred && (
+			{appsResult.phase === AsyncStatePhase.RESOLVED && noErrorsOcurred && !unsupportedVersion.current && (
 				<AppsPageContentBody
 					isMarketplace={isMarketplace}
 					isFiltered={isFiltered}
@@ -243,7 +254,7 @@ const AppsPageContent = (): ReactElement => {
 				/>
 			)}
 			{getEmptyState()}
-			{appsResult.phase === AsyncStatePhase.REJECTED && <AppsPageConnectionError onButtonClick={reload} />}
+			{appsResult.phase === AsyncStatePhase.REJECTED && !unsupportedVersion.current && <AppsPageConnectionError onButtonClick={reload} />}
 		</>
 	);
 };
