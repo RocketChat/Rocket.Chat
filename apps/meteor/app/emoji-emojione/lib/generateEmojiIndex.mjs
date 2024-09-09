@@ -8,12 +8,12 @@ import nsg from 'node-sprite-generator';
 import _ from 'underscore';
 import gm from 'gm'; // lgtm[js/unused-local-variable]
 
-const assetFolder = '../../../node_modules/emojione-assets';
+const assetFolder = '../../../node_modules/emoji-toolkit';
 const emojiJsonFile = `${assetFolder}/emoji.json`;
 
 if (!fs.existsSync(emojiJsonFile)) {
 	console.error(`${emojiJsonFile} doesn't exist.`);
-	console.error("Maybe you need to run 'meteor npm install emojione-assets' or 'meteor npm install'?");
+	console.error("Maybe you need to run 'meteor npm install emoji-toolkit' or 'meteor npm install'?");
 } else {
 	const emojiJson = fs.readFileSync(emojiJsonFile);
 	generateEmojiPicker(emojiJson);
