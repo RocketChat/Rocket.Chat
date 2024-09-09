@@ -20,6 +20,7 @@ import NoInstalledAppMatchesEmptyState from './NoInstalledAppMatchesEmptyState';
 import NoInstalledAppsEmptyState from './NoInstalledAppsEmptyState';
 import NoMarketplaceOrInstalledAppMatchesEmptyState from './NoMarketplaceOrInstalledAppMatchesEmptyState';
 import PrivateEmptyState from './PrivateEmptyState';
+import UnsupportedEmptyState from './UnsupportedEmptyState';
 
 const AppsPageContent = (): ReactElement => {
 	const t = useTranslation();
@@ -134,6 +135,9 @@ const AppsPageContent = (): ReactElement => {
 
 	const noInstalledApps = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value?.totalAppsLength === 0;
 
+	// TODO, add api error return when https://rocketchat.atlassian.net/browse/CONN-334 is done
+	const unsupportedVersion = appsResult.phase === AsyncStatePhase.REJECTED && appsResult.error === 'unsupported version';
+
 	const noMarketplaceOrInstalledAppMatches =
 		appsResult.phase === AsyncStatePhase.RESOLVED && (isMarketplace || isPremium) && appsResult.value?.count === 0;
 
@@ -210,6 +214,9 @@ const AppsPageContent = (): ReactElement => {
 		if (noInstalledApps) {
 			return context === 'private' ? <PrivateEmptyState /> : <NoInstalledAppsEmptyState onButtonClick={handleReturn} />;
 		}
+		if (unsupportedVersion) {
+			return <UnsupportedEmptyState />;
+		}
 	};
 
 	return (
@@ -229,7 +236,7 @@ const AppsPageContent = (): ReactElement => {
 				context={context || 'explore'}
 			/>
 			{appsResult.phase === AsyncStatePhase.LOADING && <AppsPageContentSkeleton />}
-			{appsResult.phase === AsyncStatePhase.RESOLVED && noErrorsOcurred && (
+			{appsResult.phase === AsyncStatePhase.RESOLVED && noErrorsOcurred && !unsupportedVersion && (
 				<AppsPageContentBody
 					isMarketplace={isMarketplace}
 					isFiltered={isFiltered}

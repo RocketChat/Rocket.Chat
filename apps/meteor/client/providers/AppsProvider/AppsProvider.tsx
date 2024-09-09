@@ -17,14 +17,12 @@ import { storeQueryFunction } from './storeQueryFunction';
 const getAppState = (
 	loading: boolean,
 	apps: App[] | undefined,
-): Omit<
-	AsyncState<{
-		apps: App[];
-	}>,
-	'error'
-> => ({
+): AsyncState<{
+	apps: App[];
+}> => ({
 	phase: loading ? AsyncStatePhase.LOADING : AsyncStatePhase.RESOLVED,
 	value: { apps: apps || [] },
+	error: undefined,
 });
 
 type AppsProviderProps = {

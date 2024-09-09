@@ -27,9 +27,9 @@ export interface IAppsOrchestrator {
 }
 
 export type AppsContextValue = {
-	installedApps: Omit<AsyncState<{ apps: App[] }>, 'error'>;
-	marketplaceApps: Omit<AsyncState<{ apps: App[] }>, 'error'>;
-	privateApps: Omit<AsyncState<{ apps: App[] }>, 'error'>;
+	installedApps: AsyncState<{ apps: App[] }>;
+	marketplaceApps: AsyncState<{ apps: App[] }>;
+	privateApps: AsyncState<{ apps: App[] }>;
 	reload: () => Promise<void>;
 	orchestrator?: IAppsOrchestrator;
 };
@@ -38,14 +38,17 @@ export const AppsContext = createContext<AppsContextValue>({
 	installedApps: {
 		phase: AsyncStatePhase.LOADING,
 		value: undefined,
+		error: undefined,
 	},
 	marketplaceApps: {
 		phase: AsyncStatePhase.LOADING,
 		value: undefined,
+		error: undefined,
 	},
 	privateApps: {
 		phase: AsyncStatePhase.LOADING,
 		value: undefined,
+		error: undefined,
 	},
 	reload: () => Promise.resolve(),
 	orchestrator: undefined,
