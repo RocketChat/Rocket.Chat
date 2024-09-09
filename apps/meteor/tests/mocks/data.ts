@@ -21,7 +21,7 @@ export function createFakeUser(overrides?: Partial<IUser>): IUser {
 	};
 }
 
-export const createFakeRoom = (overrides?: Partial<IRoom>): IRoom => ({
+export const createFakeRoom = (overrides?: Partial<IRoom & { retention?: { enabled: boolean } }>): IRoom => ({
 	_id: faker.database.mongodbObjectId(),
 	_updatedAt: faker.date.recent(),
 	t: faker.helpers.arrayElement(['c', 'p', 'd']),

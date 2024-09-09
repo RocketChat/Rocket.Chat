@@ -642,15 +642,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	findByActiveLivestream(options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		return this.find(
-			{
-				'streamingOptions.type': 'livestream',
-			},
-			options,
-		);
-	}
-
 	setAsFederated(roomId: IRoom['_id']): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { federated: true } });
 	}
@@ -1028,15 +1019,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 		return this.updateOne(query, update);
-	}
-
-	setStreamingOptionsById(_id: IRoom['_id'], streamingOptions: IRoom['streamingOptions']): Promise<UpdateResult> {
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				streamingOptions,
-			},
-		};
-		return this.updateOne({ _id }, update);
 	}
 
 	setReadOnlyById(_id: IRoom['_id'], readOnly: NonNullable<IRoom['ro']>): Promise<UpdateResult> {

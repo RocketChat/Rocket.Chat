@@ -8,6 +8,7 @@ import {
 	FieldRow,
 	FieldError,
 	FieldHint,
+	PasswordInput,
 	TextAreaInput,
 	ToggleSwitch,
 	FieldGroup,
@@ -136,7 +137,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 				<Field>
 					<FieldLabel>{t('Client_Secret')}</FieldLabel>
 					<FieldRow>
-						<TextInput value={data.clientSecret} />
+						<PasswordInput value={data.clientSecret} />
 					</FieldRow>
 				</Field>
 				<Field>
