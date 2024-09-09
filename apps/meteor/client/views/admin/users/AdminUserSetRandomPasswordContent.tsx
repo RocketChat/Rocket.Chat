@@ -83,7 +83,7 @@ const AdminUserSetRandomPasswordContent = ({
 						control={control}
 						name='passwordConfirmation'
 						rules={{
-							required: isNewUserPage && t('Required_field', t('Confirm_password')),
+							required: isNewUserPage && t('Required_field', { field: t('Confirm_password') }),
 							deps: ['password'],
 							validate: (confirmationPassword) => (password !== confirmationPassword ? t('Invalid_confirm_pass') : true),
 						}}

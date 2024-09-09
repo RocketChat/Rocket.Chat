@@ -366,7 +366,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								<Controller
 									control={control}
 									name='roles'
-									rules={{ required: t('Required_field', t('Roles')) }}
+									rules={{ required: t('Required_field', { field: t('Roles') }) }}
 									render={({ field: { onChange, value } }) => (
 										<MultiSelectFiltered
 											id={rolesId}
