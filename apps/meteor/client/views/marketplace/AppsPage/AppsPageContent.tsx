@@ -136,7 +136,7 @@ const AppsPageContent = (): ReactElement => {
 	const noInstalledApps = appsResult.phase === AsyncStatePhase.RESOLVED && !isMarketplace && appsResult.value?.totalAppsLength === 0;
 
 	// TODO, add api error return when https://rocketchat.atlassian.net/browse/CONN-334 is done
-	const unsupportedVersion = appsResult.phase === AsyncStatePhase.REJECTED && appsResult.error === 'unsupported version';
+	const unsupportedVersion = appsResult.phase === AsyncStatePhase.REJECTED && appsResult?.error?.cause === 'unsupported version';
 
 	const noMarketplaceOrInstalledAppMatches =
 		appsResult.phase === AsyncStatePhase.RESOLVED && (isMarketplace || isPremium) && appsResult.value?.count === 0;
