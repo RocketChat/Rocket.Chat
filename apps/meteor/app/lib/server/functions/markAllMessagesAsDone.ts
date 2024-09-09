@@ -15,7 +15,7 @@ export async function markAllMessagesAsDone({
 		userId
 	);
 
-	const lastMessage = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(rid);
+	const lastMessage = await Messages.getLastVisibleUserMessageSentByRoomId(rid);
 	await Rooms.resetLastMessageById(rid, lastMessage);
 	/*
 	void api.broadcast('notify.deleteMessageBulk', rid, {
