@@ -177,15 +177,42 @@ describe('setUsername', () => {
 			expect(result).to.equal(mockUser);
 		});
 
-		it('should set the new username if available', async () => {
-			const mockUser = { _id: userId, username: 'oldUsername', emails: [{ address: 'test@example.com' }] };
+		it('should set username when user has no previous username', async () => {
+			const mockUser = { _id: userId, emails: [{ address: 'test@example.com' }] };
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
-			stubs.checkUsernameAvailability.resolves(true); // Username available
+			stubs.checkUsernameAvailability.resolves(true);
 
 			await _setUsername(userId, username, mockUser);
 
 			expect(stubs.Users.setUsername.calledOnceWith(userId, username));
+			expect(stubs.checkUsernameAvailability.calledOnceWith(username));
+			expect(stubs.api.broadcast.calledOnceWith('user.autoupdate', { user: mockUser }));
+		});
+
+		it('should set username when user has and old that is different from new', async () => {
+			const mockUser = { _id: userId, username: 'oldUsername', emails: [{ address: 'test@example.com' }] };
+			stubs.validateUsername.returns(true);
+			stubs.Users.findOneById.resolves(mockUser);
+			stubs.checkUsernameAvailability.resolves(true);
+
+			await _setUsername(userId, username, mockUser);
+
+			expect(stubs.Users.setUsername.calledOnceWith(userId, username));
+			expect(stubs.checkUsernameAvailability.calledOnceWith(username));
+			expect(stubs.api.broadcast.calledOnceWith('user.autoupdate', { user: mockUser }));
+		});
+
+		it('should set username when user has and old that is different from new', async () => {
+			const mockUser = { _id: userId, username: 'oldUsername', emails: [{ address: 'test@example.com' }] };
+			stubs.validateUsername.returns(true);
+			stubs.Users.findOneById.resolves(mockUser);
+			stubs.checkUsernameAvailability.resolves(true);
+
+			await _setUsername(userId, username, mockUser);
+
+			expect(stubs.Users.setUsername.calledOnceWith(userId, username));
+			expect(stubs.checkUsernameAvailability.calledOnceWith(username));
 			expect(stubs.api.broadcast.calledOnceWith('user.autoupdate', { user: mockUser }));
 		});
 
