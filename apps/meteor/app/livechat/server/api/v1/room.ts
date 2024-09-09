@@ -107,6 +107,10 @@ API.v1.addRoute(
 		async post() {
 			const { rid, token } = this.bodyParams;
 
+			if (!rcSettings.get('Omnichannel_allow_visitors_to_close_conversation')) {
+				throw new Error('error-not-allowed-to-close-conversation');
+			}
+
 			const visitor = await findGuest(token);
 			if (!visitor) {
 				throw new Error('invalid-token');
