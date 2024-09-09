@@ -2,7 +2,7 @@ import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { AppClientOrchestratorInstance } from '../../apps/orchestrator';
 import { AppsContext } from '../../contexts/AppsContext';
@@ -16,15 +16,24 @@ import { storeQueryFunction } from './storeQueryFunction';
 const getAppState = (
 	loading: boolean,
 	apps: App[] | undefined,
-): Omit<
-	AsyncState<{
-		apps: App[];
-	}>,
-	'error'
-> => ({
-	phase: loading ? AsyncStatePhase.LOADING : AsyncStatePhase.RESOLVED,
-	value: { apps: apps || [] },
-});
+	error?: Error,
+): AsyncState<{
+	apps: App[];
+}> => {
+	if (error) {
+		return {
+			phase: AsyncStatePhase.REJECTED,
+			value: undefined,
+			error,
+		};
+	}
+
+	return {
+		phase: loading ? AsyncStatePhase.LOADING : AsyncStatePhase.RESOLVED,
+		value: { apps: apps || [] },
+		error,
+	};
+};
 
 type AppsProviderProps = {
 	children: ReactNode;
@@ -37,6 +46,8 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 
 	const { isLoading: isLicenseInformationLoading, data: { license, limits } = {} } = useLicense({ loadValues: true });
 	const isEnterprise = isLicenseInformationLoading ? undefined : !!license;
+
+	const [marketplaceError, setMarketplaceError] = useState<Error>();
 
 	const invalidateAppsCountQuery = useInvalidateAppsCountQueryCallback();
 	const invalidateLicenseQuery = useInvalidateLicense();
@@ -65,10 +76,14 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 
 	const marketplace = useQuery(
 		['marketplace', 'apps-marketplace', isAdminUser],
-		() => {
-			const result = AppClientOrchestratorInstance.getAppsFromMarketplace(isAdminUser);
+		async () => {
+			const result = await AppClientOrchestratorInstance.getAppsFromMarketplace(isAdminUser);
 			queryClient.invalidateQueries(['marketplace', 'apps-stored']);
-			return result;
+			if (result.error && typeof result.error === 'string') {
+				setMarketplaceError(new Error(result.error));
+				return [];
+			}
+			return result.apps;
 		},
 		{
 			staleTime: Infinity,
@@ -110,8 +125,9 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 			children={children}
 			value={{
 				installedApps: getAppState(isMarketplaceDataLoading, installedAppsData),
-				marketplaceApps: getAppState(isMarketplaceDataLoading, marketplaceAppsData),
+				marketplaceApps: getAppState(isMarketplaceDataLoading, marketplaceAppsData, marketplaceError),
 				privateApps: getAppState(isMarketplaceDataLoading, privateAppsData),
+
 				reload: async () => {
 					await Promise.all([queryClient.invalidateQueries(['marketplace'])]);
 				},

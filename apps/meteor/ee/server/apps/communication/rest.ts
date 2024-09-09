@@ -125,6 +125,12 @@ export class AppsRestApi {
 								...(this.queryParams.isAdminUser === 'false' && { endUserID: this.user._id }),
 							},
 						});
+
+						if (request.status === 426) {
+							orchestrator.getRocketChatLogger().error('Workspace out of support window:', await request.json());
+							return API.v1.failure({ error: 'unsupported version' });
+						}
+
 						if (request.status !== 200) {
 							orchestrator.getRocketChatLogger().error('Error getting the Apps:', await request.json());
 							return API.v1.failure();
