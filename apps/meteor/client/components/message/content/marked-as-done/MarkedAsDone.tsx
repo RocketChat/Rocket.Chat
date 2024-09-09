@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
-import UserAvatar from '../../../avatar/UserAvatar';
+import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useMembersList } from '/client/views/hooks/useMembersList';
 import { useUserRoom } from '@rocket.chat/ui-contexts';
 import './MarkedAsDone.styles.css';
