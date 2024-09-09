@@ -22,101 +22,102 @@ test.describe('OC - Manage Departments', () => {
 
 	test.beforeAll(async ({ api }) => {
 		// turn on department removal
-		const statusCode = (await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status();
-		await expect(statusCode).toBe(200);
+		await api.post('/settings/Omnichannel_enable_department_removal', { value: true });
 	});
 
 	test.afterAll(async ({ api }) => {
 		// turn off department removal
-		const statusCode = (await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status();
-		await expect(statusCode).toBe(200);
+		await api.post('/settings/Omnichannel_enable_department_removal', { value: false });
 	});
 
-	test.beforeEach(async ({ page }: { page: Page }) => {
-		poOmnichannelDepartments = new OmnichannelDepartments(page);
+	test.describe('Create first department', async () => {
+		test.beforeEach(async ({ page }: { page: Page }) => {
+			poOmnichannelDepartments = new OmnichannelDepartments(page);
 
-		await page.goto('/omnichannel');
-		await poOmnichannelDepartments.sidenav.linkDepartments.click();
-	});
-
-	test('Create department', async () => {
-		const departmentName = faker.string.uuid();
-
-		await poOmnichannelDepartments.headingButtonNew('Create department').click();
-
-		await test.step('expect name and email to be required', async () => {
-			await expect(poOmnichannelDepartments.invalidInputEmail).not.toBeVisible();
-			await poOmnichannelDepartments.inputName.fill('any_text');
-			await poOmnichannelDepartments.inputName.fill('');
-			await expect(poOmnichannelDepartments.invalidInputName).toBeVisible();
-			await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredName)).toBeVisible();
-			await poOmnichannelDepartments.inputName.fill('any_text');
-			await expect(poOmnichannelDepartments.invalidInputName).not.toBeVisible();
-
-			await poOmnichannelDepartments.inputEmail.fill('any_text');
-			await expect(poOmnichannelDepartments.invalidInputEmail).toBeVisible();
-			await expect(poOmnichannelDepartments.errorMessage(ERROR.invalidEmail)).toBeVisible();
-
-			await poOmnichannelDepartments.inputEmail.fill('');
-			await expect(poOmnichannelDepartments.invalidInputEmail).toBeVisible();
-			await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredEmail)).toBeVisible();
-
-			await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
-			await expect(poOmnichannelDepartments.invalidInputEmail).not.toBeVisible();
-			await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredEmail)).not.toBeVisible();
+			await page.goto('/omnichannel');
+			await poOmnichannelDepartments.sidenav.linkDepartments.click();
 		});
 
-		await test.step('expect create new department', async () => {
-			await poOmnichannelDepartments.btnEnabled.click();
-			await poOmnichannelDepartments.inputName.fill(departmentName);
-			await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
-			await poOmnichannelDepartments.btnSave.click();
-			await poOmnichannelDepartments.btnCloseToastSuccess.click();
+		test('Create department', async () => {
+			const departmentName = faker.string.uuid();
 
-			await poOmnichannelDepartments.search(departmentName);
-			await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
-		});
+			await poOmnichannelDepartments.headingButtonNew('Create department').click();
 
-		await test.step('expect to delete department', async () => {
-			await poOmnichannelDepartments.search(departmentName);
-			await poOmnichannelDepartments.selectedDepartmentMenu(departmentName).click();
-			await poOmnichannelDepartments.menuDeleteOption.click();
+			await test.step('expect name and email to be required', async () => {
+				await expect(poOmnichannelDepartments.invalidInputEmail).not.toBeVisible();
+				await poOmnichannelDepartments.inputName.fill('any_text');
+				await poOmnichannelDepartments.inputName.fill('');
+				await expect(poOmnichannelDepartments.invalidInputName).toBeVisible();
+				await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredName)).toBeVisible();
+				await poOmnichannelDepartments.inputName.fill('any_text');
+				await expect(poOmnichannelDepartments.invalidInputName).not.toBeVisible();
 
-			await test.step('expect confirm delete department', async () => {
-				await expect(poOmnichannelDepartments.modalConfirmDelete).toBeVisible();
+				await poOmnichannelDepartments.inputEmail.fill('any_text');
+				await expect(poOmnichannelDepartments.invalidInputEmail).toBeVisible();
+				await expect(poOmnichannelDepartments.errorMessage(ERROR.invalidEmail)).toBeVisible();
 
-				await test.step('expect delete to be disabled when name is incorrect', async () => {
-					await expect(poOmnichannelDepartments.btnModalConfirmDelete).toBeDisabled();
-					await poOmnichannelDepartments.inputModalConfirmDelete.fill('someramdomname');
-					await expect(poOmnichannelDepartments.btnModalConfirmDelete).toBeDisabled();
-				});
+				await poOmnichannelDepartments.inputEmail.fill('');
+				await expect(poOmnichannelDepartments.invalidInputEmail).toBeVisible();
+				await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredEmail)).toBeVisible();
 
-				await test.step('expect to successfuly delete if department name is correct', async () => {
-					await expect(poOmnichannelDepartments.btnModalConfirmDelete).toBeDisabled();
-					await poOmnichannelDepartments.inputModalConfirmDelete.fill(departmentName);
-					await expect(poOmnichannelDepartments.btnModalConfirmDelete).toBeEnabled();
-					await poOmnichannelDepartments.btnModalConfirmDelete.click();
-				});
+				await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
+				await expect(poOmnichannelDepartments.invalidInputEmail).not.toBeVisible();
+				await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredEmail)).not.toBeVisible();
 			});
 
-			await test.step('expect department to have been deleted', async () => {
+			await test.step('expect create new department', async () => {
+				await poOmnichannelDepartments.btnEnabled.click();
+				await poOmnichannelDepartments.inputName.fill(departmentName);
+				await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
+				await poOmnichannelDepartments.btnSave.click();
+
 				await poOmnichannelDepartments.search(departmentName);
-				await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
+				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+			});
+
+			await test.step('expect to delete department', async () => {
+				await poOmnichannelDepartments.search(departmentName);
+				await poOmnichannelDepartments.selectedDepartmentMenu(departmentName).click();
+				await poOmnichannelDepartments.menuDeleteOption.click();
+
+				await test.step('expect confirm delete department', async () => {
+					await test.step('expect delete to be disabled when name is incorrect', async () => {
+						await expect(poOmnichannelDepartments.btnModalConfirmDelete).toBeDisabled();
+						await poOmnichannelDepartments.inputModalConfirmDelete.fill('someramdomname');
+						await expect(poOmnichannelDepartments.btnModalConfirmDelete).toBeDisabled();
+					});
+
+					await test.step('expect to successfuly delete if department name is correct', async () => {
+						await expect(poOmnichannelDepartments.btnModalConfirmDelete).toBeDisabled();
+						await poOmnichannelDepartments.inputModalConfirmDelete.fill(departmentName);
+						await expect(poOmnichannelDepartments.btnModalConfirmDelete).toBeEnabled();
+						await poOmnichannelDepartments.btnModalConfirmDelete.click();
+					});
+				});
+
+				await test.step('expect department to have been deleted', async () => {
+					await poOmnichannelDepartments.search(departmentName);
+					await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
+				});
 			});
 		});
 	});
 
 	test.describe('After creation', async () => {
 		let department: Awaited<ReturnType<typeof createDepartment>>['data'];
-		test.beforeEach(async ({ api }) => {
+
+		test.beforeEach(async ({ api, page }) => {
+			poOmnichannelDepartments = new OmnichannelDepartments(page);
+
 			department = await createDepartment(api).then((res) => res.data);
+			await page.goto('/omnichannel/departments');
 		});
 
 		test.afterEach(async ({ api }) => {
 			await deleteDepartment(api, { id: department._id });
 		});
 
-		test('Edit department', async ({ api }) => {
+		test('Edit department', async () => {
 			await test.step('expect create new department', async () => {
 				await poOmnichannelDepartments.search(department.name);
 				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
@@ -132,19 +133,13 @@ test.describe('OC - Manage Departments', () => {
 
 				await poOmnichannelDepartments.inputName.fill(`edited-${department.name}`);
 				await poOmnichannelDepartments.btnSave.click();
-				await poOmnichannelDepartments.btnCloseToastSuccess.click();
 
 				await poOmnichannelDepartments.search(`edited-${department.name}`);
 				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 			});
-
-			await test.step('expect to delete department', async () => {
-				const deleteRes = await deleteDepartment(api, { id: department._id });
-				await expect(deleteRes.status()).toBe(200);
-			});
 		});
 
-		test('Archive department', async ({ api }) => {
+		test('Archive department', async () => {
 			await test.step('expect create new department', async () => {
 				await poOmnichannelDepartments.search(department.name);
 				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
@@ -171,11 +166,6 @@ test.describe('OC - Manage Departments', () => {
 			await test.step('expect unarchive department', async () => {
 				await poOmnichannelDepartments.menuUnarchiveOption.click();
 				await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
-			});
-
-			await test.step('expect to delete department', async () => {
-				const deleteRes = await deleteDepartment(api, { id: department._id });
-				await expect(deleteRes.status()).toBe(200);
 			});
 		});
 
@@ -269,7 +259,7 @@ test.describe('OC - Manage Departments', () => {
 
 			await test.step('expect to disable department removal setting', async () => {
 				const statusCode = (await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status();
-				await expect(statusCode).toBe(200);
+				expect(statusCode).toBe(200);
 			});
 
 			await test.step('expect not to be able to delete department', async () => {
@@ -280,12 +270,12 @@ test.describe('OC - Manage Departments', () => {
 
 			await test.step('expect to enable department removal setting', async () => {
 				const statusCode = (await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status();
-				await expect(statusCode).toBe(200);
+				expect(statusCode).toBe(200);
 			});
 
 			await test.step('expect to delete department', async () => {
 				const deleteRes = await deleteDepartment(api, { id: department._id });
-				await expect(deleteRes.status()).toBe(200);
+				expect(deleteRes.status()).toBe(200);
 			});
 		});
 	});

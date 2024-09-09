@@ -184,9 +184,7 @@ export interface IUser extends IRocketChatRecord {
 		private_key: string;
 		public_key: string;
 	};
-	customFields?: {
-		[key: string]: any;
-	};
+	customFields?: Record<string, any>;
 	settings?: IUserSettings;
 	defaultRoom?: string;
 	ldap?: boolean;

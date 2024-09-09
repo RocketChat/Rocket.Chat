@@ -45,6 +45,7 @@ import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
 import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
 import { validateNameChars } from '../../../lib/server/functions/validateNameChars';
+import { validateUsername } from '../../../lib/server/functions/validateUsername';
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../lib/server/lib/notifyListener';
 import { generateAccessToken } from '../../../lib/server/methods/createToken';
 import { settings } from '../../../settings/server';
@@ -651,6 +652,10 @@ API.v1.addRoute(
 				return API.v1.failure('Name contains invalid characters');
 			}
 
+			if (!validateUsername(this.bodyParams.username)) {
+				return API.v1.failure(`The username provided is not valid`);
+			}
+
 			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
 				return API.v1.failure('Username is already in use');
 			}
@@ -750,6 +755,12 @@ API.v1.addRoute(
 	{ authRequired: false },
 	{
 		async post() {
+			const isPasswordResetEnabled = settings.get('Accounts_PasswordReset');
+
+			if (!isPasswordResetEnabled) {
+				return API.v1.failure('Password reset is not enabled');
+			}
+
 			const { email } = this.bodyParams;
 			if (!email) {
 				return API.v1.failure("The 'email' param is required");
