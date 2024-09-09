@@ -71,6 +71,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
+import { createContact } from './Contacts';
 import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -662,6 +663,16 @@ class LivechatClass {
 					visitorDataToUpdate.host = httpHeaders?.host;
 				}
 			}
+		}
+
+		if (process.env.TEST_MODE?.toUpperCase() === 'TRUE') {
+			const contactId = await createContact({
+				name: name ?? (visitorDataToUpdate.username as string),
+				emails: email ? [email] : [],
+				phones: phone ? [phone.number] : [],
+				unknown: true,
+			});
+			visitorDataToUpdate.contactId = contactId;
 		}
 
 		const upsertedLivechatVisitor = await LivechatVisitors.updateOneByIdOrToken(visitorDataToUpdate, {
