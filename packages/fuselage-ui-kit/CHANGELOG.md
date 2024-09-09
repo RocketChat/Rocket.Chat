@@ -1,5 +1,140 @@
 # Change Log
 
+## 10.0.0
+
+### Patch Changes
+
+- ([#32968](https://github.com/RocketChat/Rocket.Chat/pull/32968)) Bumped @rocket.chat/fuselage that fixes the Menu onPointerUp event behavior
+
+- <details><summary>Updated dependencies [8ea6517c4e, c11f3722df, 7937ff741a, 58c0efc732, e28be46db7, 58c0efc732]:</summary>
+
+  - @rocket.chat/ui-video-conf@10.0.0
+  - @rocket.chat/gazzodown@10.0.0
+  - @rocket.chat/ui-avatar@6.0.0
+  - @rocket.chat/ui-kit@0.36.1
+  - @rocket.chat/core-typings@6.12.0
+  - @rocket.chat/ui-contexts@10.0.0
+  </details>
+
+## 10.0.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.6
+  - @rocket.chat/gazzodown@10.0.0-rc.6
+  - @rocket.chat/ui-contexts@10.0.0-rc.6
+  - @rocket.chat/ui-avatar@6.0.0-rc.6
+  - @rocket.chat/ui-video-conf@10.0.0-rc.6
+  </details>
+
+## 10.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.5
+  - @rocket.chat/gazzodown@10.0.0-rc.5
+  - @rocket.chat/ui-contexts@10.0.0-rc.5
+  - @rocket.chat/ui-avatar@6.0.0-rc.5
+  - @rocket.chat/ui-video-conf@10.0.0-rc.5
+  </details>
+
+## 10.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.4
+  - @rocket.chat/gazzodown@10.0.0-rc.4
+  - @rocket.chat/ui-contexts@10.0.0-rc.4
+  - @rocket.chat/ui-avatar@6.0.0-rc.4
+  - @rocket.chat/ui-video-conf@10.0.0-rc.4
+  </details>
+
+## 10.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@6.12.0-rc.3
+  - @rocket.chat/gazzodown@10.0.0-rc.3
+  - @rocket.chat/ui-contexts@10.0.0-rc.3
+  - @rocket.chat/ui-avatar@6.0.0-rc.3
+  - @rocket.chat/ui-video-conf@10.0.0-rc.3
+  </details>
+
+## 10.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.2
+  - @rocket.chat/gazzodown@10.0.0-rc.2
+  - @rocket.chat/ui-contexts@10.0.0-rc.2
+  - @rocket.chat/ui-avatar@6.0.0-rc.2
+  - @rocket.chat/ui-video-conf@10.0.0-rc.2
+  </details>
+
+## 10.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.1
+  - @rocket.chat/gazzodown@10.0.0-rc.1
+  - @rocket.chat/ui-contexts@10.0.0-rc.1
+  - @rocket.chat/ui-avatar@6.0.0-rc.1
+  - @rocket.chat/ui-video-conf@10.0.0-rc.1
+  </details>
+
+## 10.0.0-rc.0
+
+### Patch Changes
+
+- ([#32968](https://github.com/RocketChat/Rocket.Chat/pull/32968)) Bumped @rocket.chat/fuselage that fixes the Menu onPointerUp event behavior
+
+- <details><summary>Updated dependencies [8ea6517c4e, c11f3722df, 7937ff741a, 58c0efc732, e28be46db7, 58c0efc732]:</summary>
+
+  - @rocket.chat/ui-video-conf@10.0.0-rc.0
+  - @rocket.chat/gazzodown@10.0.0-rc.0
+  - @rocket.chat/ui-avatar@6.0.0-rc.0
+  - @rocket.chat/ui-kit@0.36.1-rc.0
+  - @rocket.chat/core-typings@6.12.0-rc.0
+  - @rocket.chat/ui-contexts@10.0.0-rc.0
+  </details>
+
+## 9.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.2
+  - @rocket.chat/gazzodown@9.0.2
+  - @rocket.chat/ui-contexts@9.0.2
+  - @rocket.chat/ui-avatar@5.0.2
+  - @rocket.chat/ui-video-conf@9.0.2
+  </details>
+
+## 9.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.11.1
+  - @rocket.chat/gazzodown@9.0.1
+  - @rocket.chat/ui-contexts@9.0.1
+  - @rocket.chat/ui-avatar@5.0.1
+  - @rocket.chat/ui-video-conf@9.0.1
+  </details>
+
 ## 9.0.0
 
 ### Patch Changes
