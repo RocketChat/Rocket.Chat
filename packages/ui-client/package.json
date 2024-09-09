@@ -1,12 +1,12 @@
 {
 	"name": "@rocket.chat/ui-client",
-	"version": "10.0.0-rc.4",
+	"version": "10.0.0",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
 		"@react-aria/toolbar": "^3.0.0-beta.1",
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.57.1",
+		"@rocket.chat/fuselage": "^0.59.0",
 		"@rocket.chat/fuselage-hooks": "^0.33.1",
 		"@rocket.chat/icons": "~0.38.0",
 		"@rocket.chat/jest-presets": "workspace:~",
@@ -60,7 +60,7 @@
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
-		"@rocket.chat/ui-contexts": "10.0.0-rc.4",
+		"@rocket.chat/ui-contexts": "10.0.0",
 		"react": "~17.0.2"
 	},
 	"volta": {

@@ -4037,6 +4037,8 @@
   "Omnichannel_Reports_Summary": "Gain insights into your operation and export your metrics.",
   "Omnichannel_max_fallback_forward_depth": "Maximum fallback forward departments depth",
   "Omnichannel_max_fallback_forward_depth_Description": "Maximum number of hops that a room being transfered will do when the target department has a Fallback Forward Department set up. When limit is reached, chat won't be transferred and process will stop. Depending on your configuration, setting a high number may cause performance issues.",
+  "Omnichannel_allow_visitors_to_close_conversation": "Allow visitors to finish conversations",
+  "Omnichannel_allow_visitors_to_close_conversation_Description": "When disabled, visitors won't be able to finish an ongoing conversation either via UI or via API.",
   "On": "On",
   "on-hold-livechat-room": "On Hold Omnichannel Room",
   "on-hold-livechat-room_description": "Permission to on hold omnichannel room",

@@ -1,5 +1,43 @@
 # @rocket.chat/core-services
 
+## 0.6.0
+
+### Minor Changes
+
+- ([#32868](https://github.com/RocketChat/Rocket.Chat/pull/32868)) Added `sidepanel` field to `teams.create` and `rooms.saveRoomSettings` endpoints
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [c11f3722df, b764c415dc, 7937ff741a, 58c0efc732, e28be46db7, 58c0efc732]:</summary>
+
+  - @rocket.chat/ui-kit@0.36.1
+  - @rocket.chat/rest-typings@6.12.0
+  - @rocket.chat/core-typings@6.12.0
+  - @rocket.chat/models@0.2.3
+  </details>
+
+## 0.6.0-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.6
+  - @rocket.chat/rest-typings@6.12.0-rc.6
+  - @rocket.chat/models@0.2.3-rc.6
+  </details>
+
+## 0.6.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.5
+  - @rocket.chat/rest-typings@6.12.0-rc.5
+  - @rocket.chat/models@0.2.3-rc.5
+  </details>
+
 ## 0.6.0-rc.4
 
 ### Patch Changes
