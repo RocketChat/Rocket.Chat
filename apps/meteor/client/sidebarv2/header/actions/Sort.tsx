@@ -1,4 +1,4 @@
-import { Sidebar } from '@rocket.chat/fuselage';
+import { SidebarV2Action } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
 import React from 'react';
@@ -13,9 +13,7 @@ const Sort = (props: SortProps) => {
 
 	const sections = useSortMenu();
 
-	return (
-		<GenericMenu icon='sort' sections={sections} title={t('Display')} selectionMode='multiple' is={Sidebar.TopBar.Action} {...props} />
-	);
+	return <GenericMenu icon='sort' sections={sections} title={t('Display')} selectionMode='multiple' is={SidebarV2Action} {...props} />;
 };
 
 export default Sort;

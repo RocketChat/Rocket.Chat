@@ -142,6 +142,7 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 			hiddenSystemMessages: initSettings.Livechat_hide_system_messages,
 			livechatLogo: initSettings.Assets_livechat_widget_logo,
 			hideWatermark: initSettings.Livechat_hide_watermark || false,
+			visitorsCanCloseChat: initSettings.Omnichannel_allow_visitors_to_close_conversation,
 		},
 		theme: {
 			title: initSettings.Livechat_title,

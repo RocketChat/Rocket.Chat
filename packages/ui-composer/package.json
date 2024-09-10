@@ -1,6 +1,6 @@
 {
   "name": "@rocket.chat/ui-composer",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
@@ -19,7 +19,7 @@
     "@babel/core": "~7.22.20",
     "@react-aria/toolbar": "^3.0.0-beta.1",
     "@rocket.chat/eslint-config": "workspace:^",
-    "@rocket.chat/fuselage": "^0.57.0",
+    "@rocket.chat/fuselage": "^0.59.0",
     "@rocket.chat/icons": "~0.38.0",
     "@storybook/addon-actions": "~6.5.16",
     "@storybook/addon-docs": "~6.5.16",
@@ -38,7 +38,7 @@
     "react": "~17.0.2",
     "react-docgen-typescript-plugin": "~1.0.5",
     "react-dom": "~17.0.2",
-    "typescript": "~5.3.3"
+    "typescript": "~5.5.4"
   },
   "peerDependencies": {
     "@react-aria/toolbar": "*",

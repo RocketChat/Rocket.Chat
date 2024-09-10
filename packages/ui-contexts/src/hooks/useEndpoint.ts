@@ -14,7 +14,7 @@ export type EndpointFunction<TMethod extends Method, TPathPattern extends PathPa
 export function useEndpoint<TMethod extends Method, TPathPattern extends PathPattern>(
 	method: TMethod,
 	pathPattern: TPathPattern,
-	...[keys]: undefined extends UrlParams<TPathPattern> ? [keys?: UrlParams<TPathPattern>] : [keys: UrlParams<TPathPattern>]
+	...[keys]: NoInfer<undefined extends UrlParams<TPathPattern> ? [keys?: UrlParams<TPathPattern>] : [keys: UrlParams<TPathPattern>]>
 ): EndpointFunction<TMethod, TPathPattern> {
 	const { callEndpoint } = useContext(ServerContext);
 	const keysRef = useRef(keys);

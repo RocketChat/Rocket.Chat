@@ -5,6 +5,7 @@ import { AppApisBridge } from './api';
 import { AppCloudBridge } from './cloud';
 import { AppCommandsBridge } from './commands';
 import { AppDetailChangesBridge } from './details';
+import { AppEmailBridge } from './email';
 import { AppEnvironmentalVariableBridge } from './environmental';
 import { AppHttpBridge } from './http';
 import { AppInternalBridge } from './internal';
@@ -53,6 +54,7 @@ export class RealAppBridges extends AppBridges {
 		this._moderationBridge = new AppModerationBridge(orch);
 		this._threadBridge = new AppThreadBridge(orch);
 		this._roleBridge = new AppRoleBridge(orch);
+		this._emailBridge = new AppEmailBridge(orch);
 	}
 
 	getCommandBridge() {
@@ -149,5 +151,9 @@ export class RealAppBridges extends AppBridges {
 
 	getRoleBridge() {
 		return this._roleBridge;
+	}
+
+	getEmailBridge() {
+		return this._emailBridge;
 	}
 }

@@ -7,6 +7,7 @@ import _ from 'underscore';
 import { getMethodArgs } from '../../../../server/lib/logger/logPayloads';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
+import { getModifiedHttpHeaders } from '../functions/getModifiedHttpHeaders';
 
 const logger = new Logger('Meteor');
 
@@ -41,7 +42,7 @@ const traceConnection = (enable, filter, prefix, name, connection, userId) => {
 		console.log(name, {
 			id: connection.id,
 			clientAddress: connection.clientAddress,
-			httpHeaders: connection.httpHeaders,
+			httpHeaders: getModifiedHttpHeaders(connection.httpHeaders),
 			userId,
 		});
 	} else {

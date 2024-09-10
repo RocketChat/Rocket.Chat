@@ -51,6 +51,7 @@ API.v1.addRoute(
 				'Livechat_background',
 				'Livechat_widget_position',
 				'Livechat_hide_system_messages',
+				'Omnichannel_allow_visitors_to_close_conversation',
 			];
 
 			const valid = settings.every((setting) => validSettingList.includes(setting._id));
