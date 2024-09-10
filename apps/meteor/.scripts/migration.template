@@ -1,9 +1,0 @@
-import { addMigration } from '../../lib/migrations';
-
-{{ comment }}
-addMigration({
-	version: {{ number }},
-	up() {
-
-	},
-});

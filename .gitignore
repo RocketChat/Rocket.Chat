@@ -43,3 +43,13 @@ yarn-error.log*
 
 .nvmrc
 .idea/
+.exrc
+.history
+.envrc
+
+*.sublime-workspace
+
+**/.vim/
+
+data/
+registration.yaml
