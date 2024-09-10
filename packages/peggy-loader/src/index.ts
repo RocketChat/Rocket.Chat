@@ -32,8 +32,6 @@ function peggyLoader(
 
   return peggy.generate(grammarContent, {
     output: 'source',
-    // We rely on a tracer to prevent recurrence on rules like Bold, Italic, Strikethrough and References
-    trace: true,
     ...options,
   });
 }

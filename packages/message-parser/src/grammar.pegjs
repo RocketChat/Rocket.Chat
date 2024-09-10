@@ -10,6 +10,7 @@
     emoji,
     emojiUnicode,
     emoticon,
+    extractFirstResult,
     heading,
     image,
     inlineCode,
@@ -33,6 +34,11 @@
     unorderedList,
     timestamp,
   } = require('./utils');
+
+let skipBold = false;
+let skipItalic = false;
+let skipStrikethrough = false;
+let skipReferences = false;
 }}
 
 Start
@@ -358,13 +364,62 @@ Emphasis = MaybeBold / MaybeItalic / MaybeStrikethrough
  *
  */
 
-MaybeBold = (! { return options.ruleStack.includes('Bold'); }) text:Bold { return text; }
+// This rule is used inside expressions that have a JS code ensuring they always fail,
+// Without any pattern to match, peggy will think the rule may end up succedding without consuming any input, which could cause infinite loops
+// So this unreachable rule is added to them to satisfy peggy's requirement.
+BlockedByJavascript = 'unreachable'
 
-MaybeStrikethrough = (! { return options.ruleStack.includes('Strikethrough'); }) text:Strikethrough { return text; }
+MaybeBold
+  = result:(
+    & {
+      if (skipBold) { return false; }
+      skipBold = true;
+      return true;
+    }
+    (
+      (text:Bold { skipBold = false; return text; })
+      / (& { skipBold = false; return false; } BlockedByJavascript)
+    )
+  ) { return extractFirstResult(result); }
 
-MaybeItalic = (! { return options.ruleStack.includes('Italic'); }) text:Italic { return text; }
+MaybeStrikethrough
+  = result:(
+    & {
+      if (skipStrikethrough) { return false; }
+      skipStrikethrough = true;
+      return true;
+    }
+    (
+      (text:Strikethrough { skipStrikethrough = false; return text; })
+      / (& { skipStrikethrough = false; return false; } BlockedByJavascript)
+    )
+  ) { return extractFirstResult(result); }
 
-MaybeReferences = (! { return options.ruleStack.includes('References'); }) text:References { return text; }
+MaybeItalic
+  = result:(
+    & {
+      if (skipItalic) { return false; }
+      skipItalic = true;
+      return true;
+    }
+    (
+      (text:Italic { skipItalic = false; return text; })
+      / (& { skipItalic = false; return false; } BlockedByJavascript)
+    )
+  ) { return extractFirstResult(result); }
+
+MaybeReferences
+  = result:(
+    & {
+      if (skipReferences) { return false; }
+      skipReferences = true;
+      return true;
+    }
+    (
+      (text:References { skipReferences = false; return text; })
+      / (& { skipReferences = false; return false; } BlockedByJavascript)
+    )
+  ) { return extractFirstResult(result); }
 
 /* Italic */
 Italic
