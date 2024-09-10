@@ -1,6 +1,5 @@
 import { MenuItemColumn, MenuItemContent, MenuItemIcon, MenuItemInput } from '@rocket.chat/fuselage';
 import type { ComponentProps, MouseEvent, ReactNode } from 'react';
-import React from 'react';
 
 export type GenericMenuItemProps = {
 	id: string;
@@ -16,7 +15,7 @@ export type GenericMenuItemProps = {
 	variant?: string;
 };
 
-const GenericMenuItem = ({ icon, content, addon, status, gap, tooltip }: GenericMenuItemProps) => (
+export const GenericMenuItem = ({ icon, content, addon, status, gap, tooltip }: GenericMenuItemProps) => (
 	<>
 		{gap && <MenuItemColumn />}
 		{icon && <MenuItemIcon name={icon} />}

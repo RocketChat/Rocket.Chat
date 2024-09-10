@@ -1,7 +1,6 @@
 import { IconButton, MenuItem, MenuSection, MenuV2 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode } from 'react';
-import React from 'react';
 
 import type { GenericMenuItemProps } from './GenericMenuItem';
 import GenericMenuItem from './GenericMenuItem';
@@ -29,7 +28,7 @@ type GenericMenuConditionalProps =
 
 type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof MenuV2>, 'children'>;
 
-const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction, ...props }: GenericMenuProps) => {
+export const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction, ...props }: GenericMenuProps) => {
 	const t = useTranslation();
 
 	const sections = 'sections' in props && props.sections;
