@@ -92,7 +92,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['create-livechat-contact'], validateParams: isPOSTOmnichannelContactsProps },
 	{
 		async post() {
-			if (!process.env.TEST_MODE) {
+			if (process.env.TEST_MODE?.toUpperCase() !== 'TRUE') {
 				throw new Meteor.Error('error-not-allowed', 'This endpoint is only allowed in test mode');
 			}
 			const contactId = await createContact({ ...this.bodyParams, unknown: false });
@@ -106,7 +106,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['update-livechat-contact'], validateParams: isPOSTUpdateOmnichannelContactsProps },
 	{
 		async post() {
-			if (!process.env.TEST_MODE) {
+			if (process.env.TEST_MODE?.toUpperCase() !== 'TRUE') {
 				throw new Meteor.Error('error-not-allowed', 'This endpoint is only allowed in test mode');
 			}
 

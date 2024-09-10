@@ -1,4 +1,4 @@
-import { Sidebar } from '@rocket.chat/fuselage';
+import { SidebarV2Action } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
 import React from 'react';
@@ -13,7 +13,7 @@ const CreateRoom = (props: CreateRoomProps) => {
 
 	const sections = useCreateRoom();
 
-	return <GenericMenu icon='edit-rounded' sections={sections} title={t('Create_new')} is={Sidebar.TopBar.Action} {...props} />;
+	return <GenericMenu icon='edit-rounded' sections={sections} title={t('Create_new')} is={SidebarV2Action} {...props} />;
 };
 
 export default CreateRoom;

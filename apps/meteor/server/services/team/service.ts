@@ -20,6 +20,7 @@ import type {
 	ITeam,
 	ITeamMember,
 	ITeamStats,
+	AtLeast,
 } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
@@ -1052,5 +1053,29 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		).toArray();
 
 		return rooms;
+	}
+
+	private getParentRoom(team: AtLeast<ITeam, 'roomId'>): Promise<Pick<IRoom, 'name' | 'fname' | 't' | '_id'> | null> {
+		return Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | '_id'>>(team.roomId, { projection: { name: 1, fname: 1, t: 1 } });
+	}
+
+	async getRoomInfo(
+		room: AtLeast<IRoom, 'teamId' | 'teamMain' | '_id'>,
+	): Promise<{ team?: Pick<ITeam, 'name' | 'roomId' | 'type'>; parentRoom?: Pick<IRoom, 'name' | 'fname' | 't' | '_id'> }> {
+		if (!room.teamId) {
+			return {};
+		}
+
+		const team = await Team.findOneById(room.teamId, { projection: { _id: 1, name: 1, roomId: 1, type: 1 } });
+		if (!team) {
+			return {};
+		}
+
+		if (room.teamMain) {
+			return { team };
+		}
+
+		const parentRoom = await this.getParentRoom(team);
+		return { team, ...(parentRoom && { parentRoom }) };
 	}
 }
