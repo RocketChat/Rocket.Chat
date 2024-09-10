@@ -80,7 +80,7 @@ const OAuthAddApp = (): ReactElement => {
 						<TextAreaInput rows={5} {...register('redirectUri', { required: true })} />
 					</FieldRow>
 					<FieldHint>{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}</FieldHint>
-					{errors?.redirectUri && <FieldError>{t('error-the-field-is-required', { field: t('Redirect_URI') })}</FieldError>}
+					{errors?.redirectUri && <FieldError>{t('Required_field', { field: t('Redirect_URI') })}</FieldError>}
 				</Field>
 				<Field>
 					<FieldRow>
