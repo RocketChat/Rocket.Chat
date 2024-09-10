@@ -159,6 +159,7 @@ jobs:
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           cache-modules: true
           install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Cache vite
         uses: actions/cache@v3
@@ -263,6 +264,7 @@ jobs:
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           platform: ${{ matrix.platform }}
           build-containers: ${{ matrix.platform == 'alpine' && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   build-gh-docker:
     name: 🚢 Build Docker Images for Production
@@ -291,6 +293,7 @@ jobs:
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           platform: ${{ matrix.platform }}
           build-containers: ${{ matrix.platform == 'alpine' && 'authorization-service account-service ddp-streamer-service presence-service stream-hub-service queue-worker-service omnichannel-transcript-service' || '' }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Rename official Docker tag to GitHub Container Registry
         if: matrix.platform == 'official'
@@ -578,6 +581,7 @@ jobs:
           release: preview
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
 
   docker-image-publish:
@@ -595,13 +599,13 @@ jobs:
 
     steps:
       - name: Login to DockerHub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
@@ -702,13 +706,13 @@ jobs:
 
     steps:
       - name: Login to DockerHub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
@@ -839,7 +843,7 @@ jobs:
         with:
           token: ${{ secrets.DISTRIBUTION_TOKEN }}
           event-type: new_release
-          repository: RocketChat/Release.Distributions
+          repository: RocketChat/public-releases
           client-payload: '{"tag": "${{ github.ref_name }}"}'
 
   docs-update:

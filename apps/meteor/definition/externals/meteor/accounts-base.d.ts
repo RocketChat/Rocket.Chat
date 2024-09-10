@@ -42,6 +42,8 @@ declare module 'meteor/accounts-base' {
 
 		function _clearAllLoginTokens(userId: string | null): void;
 
+		function config(options: { clientStorage: 'session' | 'local' }): void;
+
 		class ConfigError extends Error {}
 
 		class LoginCancelledError extends Error {

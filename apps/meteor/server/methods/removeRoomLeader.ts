@@ -6,6 +6,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { notifyOnSubscriptionChangedById } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 
 declare module '@rocket.chat/ddp-client' {
@@ -56,7 +57,10 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		await Subscriptions.removeRoleById(subscription._id, 'leader');
+		const removeRoleResponse = await Subscriptions.removeRoleById(subscription._id, 'leader');
+		if (removeRoleResponse.modifiedCount) {
+			void notifyOnSubscriptionChangedById(subscription._id);
+		}
 
 		const fromUser = await Users.findOneById(uid);
 		if (!fromUser) {

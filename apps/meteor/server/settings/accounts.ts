@@ -31,6 +31,18 @@ export const createAccountSettings = () =>
 				public: true,
 			});
 
+			await this.add('Accounts_twoFactorAuthentication_email_available_for_OAuth_users', true, {
+				type: 'boolean',
+				enableQuery: [
+					enable2FA,
+					{
+						_id: 'Accounts_TwoFactorAuthentication_By_Email_Enabled',
+						value: true,
+					},
+				],
+				public: true,
+			});
+
 			await this.add('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In', true, {
 				type: 'boolean',
 				enableQuery: [
@@ -760,7 +772,7 @@ export const createAccountSettings = () =>
 				i18nDescription: 'Accounts_AvatarCacheTime_description',
 			});
 
-			await this.add('Accounts_AvatarBlockUnauthenticatedAccess', false, {
+			await this.add('Accounts_AvatarBlockUnauthenticatedAccess', true, {
 				type: 'boolean',
 				public: true,
 			});

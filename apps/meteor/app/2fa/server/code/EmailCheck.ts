@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import { isOAuthUser, type IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import bcrypt from 'bcrypt';
@@ -21,6 +21,10 @@ export class EmailCheck implements ICodeCheck {
 
 	public isEnabled(user: IUser): boolean {
 		if (!settings.get('Accounts_TwoFactorAuthentication_By_Email_Enabled')) {
+			return false;
+		}
+
+		if (!settings.get('Accounts_twoFactorAuthentication_email_available_for_OAuth_users') && isOAuthUser(user)) {
 			return false;
 		}
 

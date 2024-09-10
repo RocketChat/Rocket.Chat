@@ -6,7 +6,7 @@
 		"@types/chalk": "^2.2.0",
 		"@types/ejson": "^2.2.1",
 		"eslint": "~8.45.0",
-		"typescript": "~5.3.3"
+		"typescript": "~5.5.4"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",

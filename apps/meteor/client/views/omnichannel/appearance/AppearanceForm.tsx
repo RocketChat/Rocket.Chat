@@ -52,6 +52,7 @@ const AppearanceForm = () => {
 	const livechatWidgetPositionField = useUniqueId();
 	const livechatBackgroundField = useUniqueId();
 	const livechatHideSystemMessagesField = useUniqueId();
+	const omnichannelVisitorsCanCloseConversationField = useUniqueId();
 
 	return (
 		<Accordion>
@@ -136,6 +137,20 @@ const AppearanceForm = () => {
 											['livechat_transfer_history', t('Message_HideType_livechat_transfer_history')],
 										]}
 									/>
+								)}
+							/>
+						</FieldRow>
+					</Field>
+					<Field>
+						<FieldRow>
+							<FieldLabel htmlFor={omnichannelVisitorsCanCloseConversationField}>
+								{t('Omnichannel_allow_visitors_to_close_conversation')}
+							</FieldLabel>
+							<Controller
+								name='Omnichannel_allow_visitors_to_close_conversation'
+								control={control}
+								render={({ field: { value, ...field } }) => (
+									<ToggleSwitch id={omnichannelVisitorsCanCloseConversationField} {...field} checked={value} />
 								)}
 							/>
 						</FieldRow>
