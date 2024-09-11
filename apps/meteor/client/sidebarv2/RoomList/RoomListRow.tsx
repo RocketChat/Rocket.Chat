@@ -1,18 +1,17 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { SidebarSection } from '@rocket.chat/fuselage';
 import type { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo } from 'react';
 
 import { useVideoConfAcceptCall, useVideoConfRejectIncomingCall, useVideoConfIncomingCalls } from '../../contexts/VideoConfContext';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
-import SideBarItemTemplateWithData from './SideBarItemTemplateWithData';
+import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
 
 type RoomListRowProps = {
 	data: {
 		extended: boolean;
 		t: ReturnType<typeof useTranslation>;
-		SideBarItemTemplate: ReturnType<typeof useTemplateByViewMode>;
+		SidebarItemTemplate: ReturnType<typeof useTemplateByViewMode>;
 		AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
 		openedRoom: string;
 		sidebarViewMode: 'extended' | 'condensed' | 'medium';
@@ -22,7 +21,7 @@ type RoomListRowProps = {
 };
 
 const RoomListRow = ({ data, item }: RoomListRowProps) => {
-	const { extended, t, SideBarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode } = data;
+	const { extended, t, SidebarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode } = data;
 
 	const acceptCall = useVideoConfAcceptCall();
 	const rejectCall = useVideoConfRejectIncomingCall();
@@ -38,22 +37,14 @@ const RoomListRow = ({ data, item }: RoomListRowProps) => {
 		[acceptCall, rejectCall, currentCall],
 	);
 
-	if (typeof item === 'string') {
-		return (
-			<SidebarSection>
-				<SidebarSection.Title>{t(item)}</SidebarSection.Title>
-			</SidebarSection>
-		);
-	}
-
 	return (
-		<SideBarItemTemplateWithData
+		<SidebarItemTemplateWithData
 			sidebarViewMode={sidebarViewMode}
 			selected={item.rid === openedRoom}
 			t={t}
 			room={item}
 			extended={extended}
-			SideBarItemTemplate={SideBarItemTemplate}
+			SidebarItemTemplate={SidebarItemTemplate}
 			AvatarTemplate={AvatarTemplate}
 			videoConfActions={videoConfActions}
 		/>

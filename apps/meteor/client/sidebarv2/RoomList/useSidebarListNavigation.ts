@@ -1,8 +1,8 @@
 import { useFocusManager } from '@react-aria/focus';
 import { useCallback } from 'react';
 
-const isListItem = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-item');
-const isListItemMenu = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-item__menu');
+const isListItem = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-v2-item');
+const isListItemMenu = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-v2-item__menu');
 
 /**
  * Custom hook to provide the sidebar navigation by keyboard.
