@@ -8,6 +8,10 @@ LABEL maintainer="buildmaster@rocket.chat"
 
 ENV LANG=C.UTF-8
 
+## Alpine 3.16 does not have a deno package, but newer versions have it
+## So as soon as we can update the Alpine version, we can replace the following
+## GLIBC installation part by an `apk add deno`
+
 # Installing glibc deps required by Deno
 # This replaces libc6-compat
 # Copied from https://github.com/Docker-Hub-frolvlad/docker-alpine-glibc, which denoland/deno:alpine-1.37.1 uses

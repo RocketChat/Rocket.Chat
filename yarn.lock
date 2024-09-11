@@ -8666,10 +8666,9 @@ __metadata:
     uglify-es: ^3.3.9
     uuid: ~8.3.2
   peerDependencies:
-    "@rocket.chat/ui-kit": "*"
-  checksum: 3ac41e3de76be67e856e4bca888f113360628e510f9d4c66d70ed71d84f25bda6ca6659ead6c7a87d21c117c47bfa090b4508cce66e8630d2e935d3ed3158835
-  languageName: node
-  linkType: hard
+    "@rocket.chat/ui-kit": "workspace:^"
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/apps@workspace:^, @rocket.chat/apps@workspace:packages/apps":
   version: 0.0.0-use.local
@@ -41247,6 +41246,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ts-node@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "ts-node@npm:6.2.0"
+  dependencies:
+    arrify: ^1.0.0
+    buffer-from: ^1.1.0
+    diff: ^3.1.0
+    make-error: ^1.1.1
+    minimist: ^1.2.0
+    mkdirp: ^0.5.1
+    source-map-support: ^0.5.6
+    yn: ^2.0.0
+  bin:
+    ts-node: dist/bin.js
+  checksum: 3d481305250f7026dcfd435bda227324c2e155574cd9a0858eeb5ba40f3f5c411bdb5a4701e74ac9ada31de4bfb75341e7cee7cdbc3cf9e1f89c412b810c60e8
+  languageName: node
+  linkType: hard
+
+"ts-node@npm:^7.0.0":
+  version: 7.0.1
+  resolution: "ts-node@npm:7.0.1"
+  dependencies:
+    arrify: ^1.0.0
+    buffer-from: ^1.1.0
+    diff: ^3.1.0
+    make-error: ^1.1.1
+    minimist: ^1.2.0
+    mkdirp: ^0.5.1
+    source-map-support: ^0.5.6
+    yn: ^2.0.0
+  bin:
+    ts-node: dist/bin.js
+  checksum: 07ed6ea1805361828737a767cfd6c57ea6e267ee8679282afb933610af02405e1a87c1f2aea1d38ed8e66b34fcbf6272b6021ab95d78849105d2e57fc283870b
+  languageName: node
+  linkType: hard
+
 "ts-patch@npm:~3.2.1":
   version: 3.2.1
   resolution: "ts-patch@npm:3.2.1"
@@ -41744,6 +41779,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:~5.1.6":
+  version: 5.1.6
+  resolution: "typescript@npm:5.1.6"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: b2f2c35096035fe1f5facd1e38922ccb8558996331405eb00a5111cc948b2e733163cc22fab5db46992aba7dd520fff637f2c1df4996ff0e134e77d3249a7350
+  languageName: node
+  linkType: hard
+
 "typescript@npm:~5.5.4":
   version: 5.5.4
   resolution: "typescript@npm:5.5.4"
@@ -41751,6 +41796,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: b309040f3a1cd91c68a5a58af6b9fdd4e849b8c42d837b2c2e73f9a4f96a98c4f1ed398a9aab576ee0a4748f5690cf594e6b99dbe61de7839da748c41e6d6ca8
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@~5.1.6#~builtin<compat/typescript>":
+  version: 5.1.6
+  resolution: "typescript@patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=85af82"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 21e88b0a0c0226f9cb9fd25b9626fb05b4c0f3fddac521844a13e1f30beb8f14e90bd409a9ac43c812c5946d714d6e0dee12d5d02dfc1c562c5aacfa1f49b606
   languageName: node
   linkType: hard
 
