@@ -1,5 +1,5 @@
 # .github/workflows/ci-preview-deploy.yml
-name: Deploy PR
+name: Deploy GitHub Pages
 concurrency: preview-deploy-${{ github.ref }}
 on:
   push:
