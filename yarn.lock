@@ -10455,9 +10455,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/uikit-playground@workspace:packages/uikit-playground":
+"@rocket.chat/uikit-playground@workspace:apps/uikit-playground":
   version: 0.0.0-use.local
-  resolution: "@rocket.chat/uikit-playground@workspace:packages/uikit-playground"
+  resolution: "@rocket.chat/uikit-playground@workspace:apps/uikit-playground"
   dependencies:
     "@codemirror/lang-javascript": ^6.1.9
     "@codemirror/lang-json": ^6.0.1
