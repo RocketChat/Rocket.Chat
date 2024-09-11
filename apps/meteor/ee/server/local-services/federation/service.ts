@@ -214,7 +214,7 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 	}
 
 	async started(): Promise<void> {
-		return super.created();
+		return super.started();
 	}
 
 	async stopped(): Promise<void> {
