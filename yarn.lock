@@ -9458,6 +9458,7 @@ __metadata:
     "@rocket.chat/ui-kit": "workspace:~"
     "@rocket.chat/ui-theming": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:^"
+    "@rocket.chat/ui-voice-call": "workspace:^"
     "@rocket.chat/web-ui-registration": "workspace:^"
     "@settlin/spacebars-loader": ^1.0.9
     "@slack/bolt": ^3.14.0
@@ -10527,7 +10528,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/ui-voice-call@workspace:packages/ui-voice-call":
+"@rocket.chat/ui-voice-call@workspace:^, @rocket.chat/ui-voice-call@workspace:packages/ui-voice-call":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-voice-call@workspace:packages/ui-voice-call"
   dependencies:
