@@ -25,5 +25,6 @@ await settingsRegistry.addGroup('Enterprise', async function () {
 		hidden: true,
 		readonly: true,
 		secret: true,
+		public: true,
 	});
 });
