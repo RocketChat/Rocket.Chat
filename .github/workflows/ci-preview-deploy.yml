@@ -1,25 +1,21 @@
-# .github/workflows/ci-preview.yml
+# .github/workflows/ci-preview-deploy.yml
 name: Deploy PR previews
 concurrency: preview-${{ github.ref }}
 on:
-  pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
-      - closed
+  push:
+    branches:
+      - main
+      - master
+      - develop
 jobs:
   deploy-preview:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
       - uses: rharkor/caching-for-turbo@v1.5
-        if: github.event.action != 'closed'
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
-        if: github.event.action != 'closed'
         with:
           node-version: 14.21.3
           cache-modules: true
@@ -30,10 +26,13 @@ jobs:
           yarn turbo run build-preview
           yarn turbo run .:build-preview-move
           npx indexifier .preview --html  --extensions .html  > .preview/index.html
+          mv .preview ${{ github.ref_name }}
+          mkdir .preview
+          mv ${{ github.ref_name }} .preview
 
-      - uses: rossjrw/pr-preview-action@v1
+      - uses: crazy-max/ghaction-github-pages@v2
         with:
-          source-dir: .preview
-          preview-branch: gh-pages
-          umbrella-dir: pr-preview
-          action: auto
+          build_dir: .preview
+          target_branch: gh-pages
+          commit_message: 'Deploy to Github Pages [skip ci]'
+          jekyll: false
