@@ -1,0 +1,41 @@
+# .github/workflows/ci-preview.yml
+name: Deploy PR previews
+concurrency: preview-${{ github.ref }}
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: rharkor/caching-for-turbo@v1.5
+        if: github.event.action != 'closed'
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        if: github.event.action != 'closed'
+        with:
+          node-version: 14.21.3
+          cache-modules: true
+          install: true
+
+      - name: Build
+        if: github.event.action != 'closed'
+        run: |
+          yarn turbo run build-preview
+          yarn turbo run .:build-preview-move
+          npx indexifier .preview --html  --extensions .html  > .preview/index.html
+
+      - uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: .preview
+          preview-branch: gh-pages
+          umbrella-dir: pr-preview
+          action: auto
