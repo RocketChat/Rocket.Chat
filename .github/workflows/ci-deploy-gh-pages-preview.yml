@@ -8,11 +8,7 @@ on:
       - reopened
       - synchronize
       - closed
-  push:
-    branches:
-      - main
-      - master
-      - develop
+
 jobs:
   deploy-preview:
     runs-on: ubuntu-latest
@@ -35,6 +31,7 @@ jobs:
         run: |
           yarn turbo run build-preview
           yarn turbo run .:build-preview-move
+          npx indexifier .preview --html  --extensions .html  > .preview/index.html
 
       - uses: rossjrw/pr-preview-action@v1
         with:
