@@ -1,6 +1,6 @@
 # .github/workflows/ci-preview-deploy.yml
-name: Deploy PR previews
-concurrency: preview-${{ github.ref }}
+name: Deploy PR
+concurrency: preview-deploy-${{ github.ref }}
 on:
   push:
     branches:
@@ -30,9 +30,9 @@ jobs:
           mkdir .preview
           mv ${{ github.ref_name }} .preview
 
-      - uses: crazy-max/ghaction-github-pages@v2
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          build_dir: .preview
-          target_branch: gh-pages
-          commit_message: 'Deploy to Github Pages [skip ci]'
-          jekyll: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .preview
+          keep_files: true

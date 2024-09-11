@@ -8,6 +8,7 @@ on:
       - reopened
       - synchronize
       - closed
+
 jobs:
   deploy-preview:
     runs-on: ubuntu-latest
@@ -26,6 +27,7 @@ jobs:
           install: true
 
       - name: Build
+        if: github.event.action != 'closed'
         run: |
           yarn turbo run build-preview
           yarn turbo run .:build-preview-move
