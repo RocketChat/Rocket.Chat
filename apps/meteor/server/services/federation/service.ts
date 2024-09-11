@@ -414,7 +414,7 @@ abstract class AbstractBaseFederationService extends AbstractFederationService {
 		await super.cleanUpSettingObserver();
 	}
 
-	public async created(): Promise<void> {
+	public async started(): Promise<void> {
 		await super.setupFederation();
 		await this.startFederation();
 	}
@@ -447,8 +447,8 @@ export class FederationService extends AbstractBaseFederationService implements 
 		return super.stopped();
 	}
 
-	public async created(): Promise<void> {
-		return super.created();
+	public async started(): Promise<void> {
+		return super.started();
 	}
 
 	public async verifyConfiguration(): Promise<void> {
