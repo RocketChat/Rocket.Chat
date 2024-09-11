@@ -69,7 +69,6 @@ const handleEncryptedFilesShared = async (
 					title: filesToUpload[i].name,
 					type: 'file',
 					title_link: fileUrl[i],
-					description: i === 0 ? msg : undefined,
 					title_link_download: true,
 					encryption: {
 						key: encryptedFilesarray[i].key,
@@ -126,6 +125,7 @@ const handleEncryptedFilesShared = async (
 				attachments,
 				files: arrayoffiles,
 				file: filesToUpload[0],
+				msg,
 			});
 		};
 
