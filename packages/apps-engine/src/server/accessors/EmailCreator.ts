@@ -1,6 +1,6 @@
-import type { AppBridges } from '../bridges';
 import type { IEmailCreator } from '../../definition/accessors/IEmailCreator';
 import type { IEmail } from '../../definition/email';
+import type { AppBridges } from '../bridges';
 
 export class EmailCreator implements IEmailCreator {
     constructor(private readonly bridges: AppBridges, private readonly appId: string) {}

@@ -9,6 +9,7 @@ import type {
     IPersistence,
     IRead,
 } from '../../definition/accessors';
+import type { AppManager } from '../AppManager';
 import {
     ApiExtend,
     ConfigurationExtend,
@@ -47,7 +48,6 @@ import {
 import { CloudWorkspaceRead } from '../accessors/CloudWorkspaceRead';
 import { ThreadRead } from '../accessors/ThreadRead';
 import { UIExtend } from '../accessors/UIExtend';
-import type { AppManager } from '../AppManager';
 import type { AppBridges } from '../bridges/AppBridges';
 
 export class AppAccessorManager {

@@ -1,3 +1,5 @@
+import { AppStatus } from './AppStatus';
+import type { IApp } from './IApp';
 import type {
     IAppAccessors,
     IAppInstallationContext,
@@ -12,8 +14,6 @@ import type {
     IRead,
     IAppUpdateContext,
 } from './accessors';
-import { AppStatus } from './AppStatus';
-import type { IApp } from './IApp';
 import type { IAppAuthorInfo } from './metadata/IAppAuthorInfo';
 import type { IAppInfo } from './metadata/IAppInfo';
 import type { ISetting } from './settings';

@@ -3,9 +3,9 @@ import type { UserBridge } from '../bridges';
 import type { IInternalUserBridge } from '../bridges/IInternalUserBridge';
 import { InvalidLicenseError } from '../errors';
 import type { IMarketplaceInfo } from '../marketplace';
+import { MarketplacePurchaseType } from '../marketplace/MarketplacePurchaseType';
 import { Crypto } from '../marketplace/license';
 import type { AppLicenseValidationResult } from '../marketplace/license';
-import { MarketplacePurchaseType } from '../marketplace/MarketplacePurchaseType';
 
 enum LicenseVersion {
     v1 = 1,

@@ -18,19 +18,19 @@ import { UIActionButtonContext } from '../../definition/ui';
 import type { IUIKitResponse, IUIKitSurface, UIKitIncomingInteraction } from '../../definition/uikit';
 import { UIKitIncomingInteractionType } from '../../definition/uikit';
 import { isUIKitIncomingInteractionActionButtonMessageBox } from '../../definition/uikit/IUIKitIncomingInteractionActionButton';
-import type { IUIKitLivechatIncomingInteraction } from '../../definition/uikit/livechat';
-import { UIKitLivechatBlockInteractionContext } from '../../definition/uikit/livechat';
 import type {
     IUIKitIncomingInteractionMessageContainer,
     IUIKitIncomingInteractionModalContainer,
 } from '../../definition/uikit/UIKitIncomingInteractionContainer';
+import type { IUIKitLivechatIncomingInteraction } from '../../definition/uikit/livechat';
+import { UIKitLivechatBlockInteractionContext } from '../../definition/uikit/livechat';
 import type { IFileUploadContext } from '../../definition/uploads/IFileUploadContext';
 import type { IUser, IUserContext, IUserStatusContext, IUserUpdateContext } from '../../definition/users';
 import type { AppManager } from '../AppManager';
 import type { ProxiedApp } from '../ProxiedApp';
-import type { AppAccessorManager } from './AppAccessorManager';
 import { Utilities } from '../misc/Utilities';
 import { JSONRPC_METHOD_NOT_FOUND } from '../runtime/deno/AppsEngineDenoRuntime';
+import type { AppAccessorManager } from './AppAccessorManager';
 
 interface IListenerExecutor {
     [AppInterface.IPreMessageSentPrevent]: {

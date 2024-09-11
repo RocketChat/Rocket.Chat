@@ -1,5 +1,5 @@
-import { HttpStatusCode } from '../accessors';
 import type { IApp } from '../IApp';
+import { HttpStatusCode } from '../accessors';
 import type { IApiEndpoint } from './IApiEndpoint';
 import type { IApiResponse, IApiResponseJSON } from './IResponse';
 

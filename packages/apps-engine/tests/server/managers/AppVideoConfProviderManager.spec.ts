@@ -1,17 +1,17 @@
 import { AsyncTest, Expect, Setup, SetupFixture, SpyOn, Teardown, Test } from 'alsatian';
 
-import { TestsAppBridges } from '../../test-data/bridges/appBridges';
-import { TestsAppLogStorage } from '../../test-data/storage/logStorage';
-import { TestData } from '../../test-data/utilities';
 import type { AppManager } from '../../../src/server/AppManager';
+import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { AppBridges } from '../../../src/server/bridges';
 import { VideoConfProviderAlreadyExistsError, VideoConfProviderNotRegisteredError } from '../../../src/server/errors';
 import type { AppApiManager, AppExternalComponentManager, AppSchedulerManager, AppSlashCommandManager } from '../../../src/server/managers';
 import { AppAccessorManager, AppVideoConfProviderManager } from '../../../src/server/managers';
 import { AppVideoConfProvider } from '../../../src/server/managers/AppVideoConfProvider';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
-import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { AppLogStorage } from '../../../src/server/storage';
+import { TestsAppBridges } from '../../test-data/bridges/appBridges';
+import { TestsAppLogStorage } from '../../test-data/storage/logStorage';
+import { TestData } from '../../test-data/utilities';
 
 export class AppVideoConfProviderManagerTestFixture {
     public static doThrow = false;

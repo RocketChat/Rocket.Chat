@@ -2,9 +2,10 @@ import type { ILivechatMessage } from '../livechat';
 import type { IMessage } from '../messages';
 import type { IRoom } from '../rooms';
 import type { BlockBuilder } from '../uikit';
-import type { AppVideoConference } from '../videoConferences';
 import type { IBotUser } from '../users/IBotUser';
+import type { AppVideoConference } from '../videoConferences';
 import type { IDiscussionBuilder } from './IDiscussionBuilder';
+import type { IEmailCreator } from './IEmailCreator';
 import type { ILivechatCreator } from './ILivechatCreator';
 import type { ILivechatMessageBuilder } from './ILivechatMessageBuilder';
 import type { IMessageBuilder } from './IMessageBuilder';
@@ -12,7 +13,6 @@ import type { IRoomBuilder } from './IRoomBuilder';
 import type { IUploadCreator } from './IUploadCreator';
 import type { IUserBuilder } from './IUserBuilder';
 import type { IVideoConferenceBuilder } from './IVideoConferenceBuilder';
-import type { IEmailCreator } from './IEmailCreator';
 
 export interface IModifyCreator {
     /**

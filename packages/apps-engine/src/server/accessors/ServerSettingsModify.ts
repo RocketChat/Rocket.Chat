@@ -1,6 +1,6 @@
-import type { ServerSettingBridge } from '../bridges/ServerSettingBridge';
 import type { IServerSettingsModify } from '../../definition/accessors';
 import type { ISetting } from '../../definition/settings';
+import type { ServerSettingBridge } from '../bridges/ServerSettingBridge';
 
 export class ServerSettingsModify implements IServerSettingsModify {
     constructor(private readonly bridge: ServerSettingBridge, private readonly appId: string) {}

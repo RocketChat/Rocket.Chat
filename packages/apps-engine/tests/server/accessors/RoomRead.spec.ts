@@ -1,11 +1,11 @@
 import { AsyncTest, Expect, SetupFixture } from 'alsatian';
 
+import type { IMessageRaw } from '../../../src/definition/messages';
 import type { IRoom } from '../../../src/definition/rooms';
 import type { IUser } from '../../../src/definition/users';
 import { RoomRead } from '../../../src/server/accessors';
 import type { RoomBridge } from '../../../src/server/bridges';
 import { TestData } from '../../test-data/utilities';
-import type { IMessageRaw } from '../../../src/definition/messages';
 
 export class RoomReadAccessorTestFixture {
     private room: IRoom;

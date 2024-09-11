@@ -1,6 +1,6 @@
 import type { IAppInfo } from '../definition/metadata';
-import { AppsEngineUIHost } from './AppsEngineUIHost';
 import { AppServerCommunicator } from './AppServerCommunicator';
+import { AppsEngineUIHost } from './AppsEngineUIHost';
 
 export class AppClientManager {
     private apps: Array<IAppInfo>;

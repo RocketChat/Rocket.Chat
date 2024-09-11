@@ -1,6 +1,6 @@
+import type { IVideoConfProvider } from '../../definition/videoConfProviders';
 import type { AppVideoConference } from '../../definition/videoConferences/AppVideoConference';
 import type { VideoConference } from '../../definition/videoConferences/IVideoConference';
-import type { IVideoConfProvider } from '../../definition/videoConfProviders';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';

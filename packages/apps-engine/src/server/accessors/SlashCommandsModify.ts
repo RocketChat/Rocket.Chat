@@ -1,6 +1,6 @@
-import type { AppSlashCommandManager } from '../managers';
 import type { ISlashCommandsModify } from '../../definition/accessors';
 import type { ISlashCommand } from '../../definition/slashcommands';
+import type { AppSlashCommandManager } from '../managers';
 
 export class SlashCommandsModify implements ISlashCommandsModify {
     constructor(private readonly manager: AppSlashCommandManager, private readonly appId: string) {}

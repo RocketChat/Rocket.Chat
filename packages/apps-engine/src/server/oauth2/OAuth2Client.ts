@@ -1,10 +1,10 @@
 import { URL } from 'url';
 
+import type { App } from '../../definition/App';
 import type { IConfigurationExtend, IHttp, IModify, IPersistence, IRead } from '../../definition/accessors';
 import { HttpStatusCode } from '../../definition/accessors';
 import type { IApiEndpointInfo, IApiRequest, IApiResponse } from '../../definition/api';
 import { ApiSecurity, ApiVisibility } from '../../definition/api';
-import type { App } from '../../definition/App';
 import { RocketChatAssociationModel, RocketChatAssociationRecord } from '../../definition/metadata';
 import type { IAuthData, IOAuth2Client, IOAuth2ClientOptions } from '../../definition/oauth2/IOAuth2';
 import { SettingType } from '../../definition/settings';

@@ -1,6 +1,6 @@
-import type { ProxiedApp } from '../ProxiedApp';
 import type { ISettingsExtend } from '../../definition/accessors';
 import type { ISetting } from '../../definition/settings';
+import type { ProxiedApp } from '../ProxiedApp';
 
 export class SettingsExtend implements ISettingsExtend {
     constructor(private readonly app: ProxiedApp) {}

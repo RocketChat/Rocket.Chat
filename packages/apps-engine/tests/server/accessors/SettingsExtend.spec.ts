@@ -2,8 +2,8 @@ import { AsyncTest, Expect, Test } from 'alsatian';
 
 import type { ISetting } from '../../../src/definition/settings';
 import { SettingType } from '../../../src/definition/settings';
-import { SettingsExtend } from '../../../src/server/accessors';
 import type { ProxiedApp } from '../../../src/server/ProxiedApp';
+import { SettingsExtend } from '../../../src/server/accessors';
 import type { IAppStorageItem } from '../../../src/server/storage';
 
 export class SettingsExtendAccessorTestFixture {

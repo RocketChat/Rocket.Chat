@@ -61,7 +61,7 @@ export class RoomRead implements IRoomRead {
     // If there are any invalid fields or values, throw
     private validateSort(sort: Record<string, unknown>) {
         Object.entries(sort).forEach(([key, value]) => {
-            if (!GetMessagesSortableFields.includes(key as typeof GetMessagesSortableFields[number])) {
+            if (!GetMessagesSortableFields.includes(key as (typeof GetMessagesSortableFields)[number])) {
                 throw new Error(`Invalid key "${key}" used in sort. Available keys for sorting are ${GetMessagesSortableFields.join(', ')}`);
             }
 

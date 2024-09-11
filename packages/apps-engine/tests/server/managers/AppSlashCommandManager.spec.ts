@@ -5,10 +5,8 @@ import { AppStatus } from '../../../src/definition/AppStatus';
 import type { AppMethod } from '../../../src/definition/metadata';
 import type { ISlashCommandPreviewItem } from '../../../src/definition/slashcommands';
 import { SlashCommandContext } from '../../../src/definition/slashcommands';
-import { TestsAppBridges } from '../../test-data/bridges/appBridges';
-import { TestsAppLogStorage } from '../../test-data/storage/logStorage';
-import { TestData } from '../../test-data/utilities';
 import type { AppManager } from '../../../src/server/AppManager';
+import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { AppBridges } from '../../../src/server/bridges';
 import { CommandAlreadyExistsError, CommandHasAlreadyBeenTouchedError } from '../../../src/server/errors';
 import { AppConsole } from '../../../src/server/logging';
@@ -16,11 +14,13 @@ import type { AppApiManager, AppExternalComponentManager, AppSchedulerManager, A
 import { AppAccessorManager, AppSlashCommandManager } from '../../../src/server/managers';
 import { AppSlashCommand } from '../../../src/server/managers/AppSlashCommand';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
-import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import { Room } from '../../../src/server/rooms/Room';
 import type { AppsEngineRuntime } from '../../../src/server/runtime/AppsEngineRuntime';
-import type { AppLogStorage } from '../../../src/server/storage';
 import type { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
+import type { AppLogStorage } from '../../../src/server/storage';
+import { TestsAppBridges } from '../../test-data/bridges/appBridges';
+import { TestsAppLogStorage } from '../../test-data/storage/logStorage';
+import { TestData } from '../../test-data/utilities';
 
 export class AppSlashCommandManagerTestFixture {
     public static doThrow = false;

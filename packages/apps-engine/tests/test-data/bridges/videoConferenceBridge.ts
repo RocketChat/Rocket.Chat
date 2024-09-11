@@ -1,5 +1,5 @@
-import type { VideoConference, AppVideoConference } from '../../../src/definition/videoConferences';
 import type { IVideoConfProvider } from '../../../src/definition/videoConfProviders';
+import type { VideoConference, AppVideoConference } from '../../../src/definition/videoConferences';
 import { VideoConferenceBridge } from '../../../src/server/bridges';
 
 export class TestsVideoConferenceBridge extends VideoConferenceBridge {

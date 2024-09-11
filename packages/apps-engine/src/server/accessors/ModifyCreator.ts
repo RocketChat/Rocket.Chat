@@ -9,18 +9,20 @@ import type {
     IUserBuilder,
     IVideoConferenceBuilder,
 } from '../../definition/accessors';
+import type { IEmailCreator } from '../../definition/accessors/IEmailCreator';
 import type { ILivechatMessage } from '../../definition/livechat/ILivechatMessage';
 import type { IMessage } from '../../definition/messages';
 import { RocketChatAssociationModel } from '../../definition/metadata';
 import type { IRoom } from '../../definition/rooms';
 import { RoomType } from '../../definition/rooms';
 import { BlockBuilder } from '../../definition/uikit';
+import type { IBotUser } from '../../definition/users/IBotUser';
+import { UserType } from '../../definition/users/UserType';
 import type { AppVideoConference } from '../../definition/videoConferences';
 import type { AppBridges } from '../bridges';
 import { UIHelper } from '../misc/UIHelper';
-import type { IBotUser } from '../../definition/users/IBotUser';
-import { UserType } from '../../definition/users/UserType';
 import { DiscussionBuilder } from './DiscussionBuilder';
+import { EmailCreator } from './EmailCreator';
 import { LivechatCreator } from './LivechatCreator';
 import { LivechatMessageBuilder } from './LivechatMessageBuilder';
 import { MessageBuilder } from './MessageBuilder';
@@ -28,8 +30,6 @@ import { RoomBuilder } from './RoomBuilder';
 import { UploadCreator } from './UploadCreator';
 import { UserBuilder } from './UserBuilder';
 import { VideoConferenceBuilder } from './VideoConferenceBuilder';
-import { EmailCreator } from './EmailCreator';
-import type { IEmailCreator } from '../../definition/accessors/IEmailCreator';
 
 export class ModifyCreator implements IModifyCreator {
     private livechatCreator: LivechatCreator;

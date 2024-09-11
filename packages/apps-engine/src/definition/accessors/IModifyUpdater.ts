@@ -1,9 +1,9 @@
 import type { IUser } from '../users';
 import type { ILivechatUpdater } from './ILivechatUpdater';
 import type { IMessageBuilder } from './IMessageBuilder';
+import type { IMessageUpdater } from './IMessageUpdater';
 import type { IRoomBuilder } from './IRoomBuilder';
 import type { IUserUpdater } from './IUserUpdater';
-import type { IMessageUpdater } from './IMessageUpdater';
 
 export interface IModifyUpdater {
     /**

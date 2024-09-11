@@ -1,6 +1,6 @@
 import type { AppStatus } from '../../../src/definition/AppStatus';
-import { AppActivationBridge } from '../../../src/server/bridges';
 import type { ProxiedApp } from '../../../src/server/ProxiedApp';
+import { AppActivationBridge } from '../../../src/server/bridges';
 
 export class TestsActivationBridge extends AppActivationBridge {
     public async appAdded(app: ProxiedApp): Promise<void> {

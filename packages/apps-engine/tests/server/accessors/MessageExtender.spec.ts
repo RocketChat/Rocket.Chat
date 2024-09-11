@@ -1,8 +1,8 @@
 import { Expect, Test } from 'alsatian';
 
 import type { IMessage } from '../../../src/definition/messages';
-import { TestData } from '../../test-data/utilities';
 import { MessageExtender } from '../../../src/server/accessors';
+import { TestData } from '../../test-data/utilities';
 
 export class MessageExtenderAccessorTestFixture {
     @Test()
