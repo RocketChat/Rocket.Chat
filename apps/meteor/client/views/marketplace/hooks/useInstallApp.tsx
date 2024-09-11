@@ -114,8 +114,11 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 	};
 
 	const extractManifestFromAppFile = async (appFile: File) => {
-		const manifest = await getManifestFromZippedApp(appFile);
-		return manifest;
+		try {
+			return getManifestFromZippedApp(appFile);
+		} catch (error) {
+			handleInstallError(error as Error);
+		}
 	};
 
 	const install = async () => {
@@ -158,6 +161,7 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 				handleEnableUnlimitedApps={() => {
 					openExternalLink(manageSubscriptionUrl);
 					setModal(null);
+					setInstalling(false);
 				}}
 			/>,
 		);
