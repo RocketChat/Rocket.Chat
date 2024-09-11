@@ -81,6 +81,9 @@ test.each([
   ['**  **', [paragraph([plain('**  **')])]],
   ['* Hello*', [paragraph([bold([plain(' Hello')])])]],
   ['*Hello *', [paragraph([bold([plain('Hello ')])])]],
+  ['*bold:*', [paragraph([bold([plain('bold:')])])]],
+  ['*bold :*', [paragraph([bold([plain('bold :')])])]],
+  ['*bold :smile: bold2*', [paragraph([bold([plain('bold '), emoji('smile'), plain(' bold2')])])]],
   [
     ':custom*emoji*case:',
     [paragraph([plain(':custom'), bold([plain('emoji')]), plain('case:')])],

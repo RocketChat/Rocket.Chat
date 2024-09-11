@@ -349,7 +349,7 @@ AutoLinkURLBody =  !(Extra* (Whitespace / EndOfLine)) .
  * Emphasis
  *
 */
-Emphasis = Bold / Italic / Strikethrough
+Emphasis = BoldWithAsterisk / Bold / Italic / Strikethrough
 
 /**
  *
@@ -400,6 +400,13 @@ Bold = [\x2A] [\x2A] @BoldContent [\x2A] [\x2A] / [\x2A] @BoldContent [\x2A]
 BoldContent = text:BoldContentItem+ { return bold(reducePlainTexts(text)); }
 
 BoldContentItem = Whitespace / InlineCode / References / UserMention / ChannelMention / Italic / Strikethrough / Emoji / Emoticon / AnyBold / Line
+
+/* Bold with Asterisk */
+BoldWithAsterisk  = [\x2A] @BoldWithAsteriskContent [\x2A] ![\x2A] / [\x2A] [\x2A] @BoldWithAsteriskContent [\x2A] [\x2A] ![\x2A]
+
+BoldWithAsteriskContent = text:BoldWithAsteriskContentItem+ { return bold(reducePlainTexts(text)); }
+
+BoldWithAsteriskContentItem = t:$(Whitespace / InlineCode / References / UserMention / ChannelMention / Italic / Strikethrough / [^\x0a\*\:])+ ":" { return plain(t + ":"); }
 
 /* Strike */
 Strikethrough = [\x7E] [\x7E] @StrikethroughContent [\x7E] [\x7E] / [\x7E] @StrikethroughContent [\x7E]
