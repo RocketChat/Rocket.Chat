@@ -1,4 +1,4 @@
-import type { IMessage } from '../../../src/definition/messages';
+import type { IMessage, Reaction } from '../../../src/definition/messages';
 import type { IRoom } from '../../../src/definition/rooms';
 import type { IUser } from '../../../src/definition/users';
 import { MessageBridge } from '../../../src/server/bridges';
@@ -30,6 +30,14 @@ export class TestsMessageBridge extends MessageBridge {
     }
 
     public typing(options: ITypingDescriptor): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
+
+    public addReaction(_messageId: string, _userId: string, _reaction: Reaction): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
+
+    public removeReaction(_messageId: string, _userId: string, _reaction: Reaction): Promise<void> {
         throw new Error('Method not implemented.');
     }
 }

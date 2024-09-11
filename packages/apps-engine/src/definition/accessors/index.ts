@@ -21,6 +21,7 @@ export * from './ILogger';
 export * from './IMessageBuilder';
 export * from './IMessageExtender';
 export * from './IMessageRead';
+export * from './IMessageUpdater';
 export * from './IModify';
 export * from './IModifyCreator';
 export * from './IModifyDeleter';

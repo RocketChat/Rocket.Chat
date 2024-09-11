@@ -1,4 +1,4 @@
-import type { ILivechatUpdater, IMessageBuilder, IModifyUpdater, IRoomBuilder } from '../../definition/accessors';
+import type { ILivechatUpdater, IMessageBuilder, IMessageUpdater, IModifyUpdater, IRoomBuilder } from '../../definition/accessors';
 import type { IUserUpdater } from '../../definition/accessors/IUserUpdater';
 import { RocketChatAssociationModel } from '../../definition/metadata';
 import { RoomType } from '../../definition/rooms';
@@ -15,6 +15,8 @@ export class ModifyUpdater implements IModifyUpdater {
 
     private userUpdater: IUserUpdater;
 
+    private messageUpdater: IMessageUpdater;
+
     constructor(private readonly bridges: AppBridges, private readonly appId: string) {
         this.livechatUpdater = new LivechatUpdater(this.bridges, this.appId);
         this.userUpdater = new UserUpdater(this.bridges, this.appId);
@@ -26,6 +28,10 @@ export class ModifyUpdater implements IModifyUpdater {
 
     public getUserUpdater(): IUserUpdater {
         return this.userUpdater;
+    }
+
+    public getMessageUpdater(): IMessageUpdater {
+        return this.messageUpdater;
     }
 
     public async message(messageId: string, updater: IUser): Promise<IMessageBuilder> {

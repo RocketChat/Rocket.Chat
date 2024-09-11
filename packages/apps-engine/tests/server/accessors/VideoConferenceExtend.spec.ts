@@ -59,6 +59,16 @@ export class VideoConferenceExtendAccessorTestFixture {
     }
 
     @Test()
+    public setDiscussionRid() {
+        const call = {} as VideoConference;
+        const extend = new VideoConferenceExtender(call);
+
+        Expect(call.discussionRid).not.toBeDefined();
+        Expect(extend.setDiscussionRid('testId')).toBe(extend);
+        Expect(call.discussionRid).toBe('testId');
+    }
+
+    @Test()
     public addUser() {
         const call = { users: [] } as VideoConference;
         const extend = new VideoConferenceExtender(call);

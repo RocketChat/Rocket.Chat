@@ -2,9 +2,8 @@ import { Expect, Setup, SetupFixture, Test } from 'alsatian';
 
 import { AppStatus } from '../../../src/definition/AppStatus';
 import type { AppMethod } from '../../../src/definition/metadata';
-import type { AppManager } from '../../../src/server/AppManager';
-import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import { AppAccessors } from '../../../src/server/accessors';
+import type { AppManager } from '../../../src/server/AppManager';
 import type { AppBridges } from '../../../src/server/bridges';
 import { AppConsole } from '../../../src/server/logging';
 import type {
@@ -16,6 +15,7 @@ import type {
 } from '../../../src/server/managers';
 import { AppAccessorManager, AppApiManager } from '../../../src/server/managers';
 import type { UIActionButtonManager } from '../../../src/server/managers/UIActionButtonManager';
+import type { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { AppsEngineRuntime } from '../../../src/server/runtime/AppsEngineRuntime';
 import type { AppLogStorage } from '../../../src/server/storage';
 import { TestsAppBridges } from '../../test-data/bridges/appBridges';

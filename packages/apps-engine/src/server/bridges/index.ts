@@ -4,6 +4,7 @@ import { AppBridges } from './AppBridges';
 import { AppDetailChangesBridge } from './AppDetailChangesBridge';
 import { CloudWorkspaceBridge } from './CloudWorkspaceBridge';
 import { CommandBridge } from './CommandBridge';
+import { EmailBridge } from './EmailBridge';
 import { EnvironmentalVariableBridge } from './EnvironmentalVariableBridge';
 import { HttpBridge, IHttpBridgeRequestInfo } from './HttpBridge';
 import { IInternalBridge } from './IInternalBridge';
@@ -40,6 +41,7 @@ export {
     ServerSettingBridge,
     UserBridge,
     UploadBridge,
+    EmailBridge,
     UiInteractionBridge,
     SchedulerBridge,
     AppBridges,

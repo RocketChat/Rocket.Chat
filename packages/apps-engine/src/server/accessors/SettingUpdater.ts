@@ -1,7 +1,7 @@
 import type { ISettingUpdater } from '../../definition/accessors/ISettingUpdater';
 import type { ISetting } from '../../definition/settings';
-import type { ProxiedApp } from '../ProxiedApp';
 import type { AppSettingsManager } from '../managers';
+import type { ProxiedApp } from '../ProxiedApp';
 
 export class SettingUpdater implements ISettingUpdater {
     constructor(private readonly app: ProxiedApp, private readonly manager: AppSettingsManager) {}

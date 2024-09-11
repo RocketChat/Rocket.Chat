@@ -33,6 +33,10 @@ export class TestLivechatBridge extends LivechatBridge {
         throw new Error('Method not implemented');
     }
 
+    public createAndReturnVisitor(visitor: IVisitor, appId: string): Promise<IVisitor | undefined> {
+        throw new Error('Method not implemented');
+    }
+
     public transferVisitor(visitor: IVisitor, transferData: ILivechatTransferData, appId: string): Promise<boolean> {
         throw new Error('Method not implemented');
     }

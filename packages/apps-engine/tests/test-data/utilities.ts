@@ -1,10 +1,6 @@
-import { AppStatus } from '../../src/definition/AppStatus';
 import type { IHttp, IModify, IPersistence, IRead } from '../../src/definition/accessors';
 import { HttpStatusCode } from '../../src/definition/accessors';
-import type { IApi, IApiRequest, IApiResponse } from '../../src/definition/api';
-import { ApiSecurity, ApiVisibility } from '../../src/definition/api';
-import type { IApiEndpointInfo } from '../../src/definition/api/IApiEndpointInfo';
-import type { IMessage } from '../../src/definition/messages';
+import type { IMessage, IMessageAttachment, IMessageRaw } from '../../src/definition/messages';
 import type { IRoom } from '../../src/definition/rooms';
 import { RoomType } from '../../src/definition/rooms';
 import type { ISetting } from '../../src/definition/settings';
@@ -12,15 +8,23 @@ import { SettingType } from '../../src/definition/settings';
 import type { ISlashCommand, ISlashCommandPreview, ISlashCommandPreviewItem, SlashCommandContext } from '../../src/definition/slashcommands';
 import type { IUser } from '../../src/definition/users';
 import { UserStatusConnection, UserType } from '../../src/definition/users';
-import type { IVideoConferenceOptions, IVideoConfProvider, VideoConfData, VideoConfDataExtended } from '../../src/definition/videoConfProviders';
+import { TestsAppBridges } from './bridges/appBridges';
+import { TestsAppLogStorage } from './storage/logStorage';
+import { TestsAppStorage } from './storage/storage';
+import { TestSourceStorage } from './storage/TestSourceStorage';
+import type { IApi, IApiRequest, IApiResponse } from '../../src/definition/api';
+import { ApiSecurity, ApiVisibility } from '../../src/definition/api';
+import type { IApiEndpointInfo } from '../../src/definition/api/IApiEndpointInfo';
+import { AppStatus } from '../../src/definition/AppStatus';
 import type { AppVideoConference } from '../../src/definition/videoConferences/AppVideoConference';
 import type { VideoConference } from '../../src/definition/videoConferences/IVideoConference';
 import { VideoConferenceStatus } from '../../src/definition/videoConferences/IVideoConference';
 import type { IVideoConferenceUser } from '../../src/definition/videoConferences/IVideoConferenceUser';
+import type { IVideoConferenceOptions, IVideoConfProvider, VideoConfData, VideoConfDataExtended } from '../../src/definition/videoConfProviders';
 import type { AppManager } from '../../src/server/AppManager';
-import { ProxiedApp } from '../../src/server/ProxiedApp';
 import type { AppBridges } from '../../src/server/bridges';
-import { AppPackageParser } from '../../src/server/compiler';
+import { ProxiedApp } from '../../src/server/ProxiedApp';
+import type { AppLogStorage, AppMetadataStorage, AppSourceStorage, IAppStorageItem } from '../../src/server/storage';
 import type {
     AppExternalComponentManager,
     AppSchedulerManager,
@@ -28,14 +32,10 @@ import type {
     AppSlashCommandManager,
     AppVideoConfProviderManager,
 } from '../../src/server/managers';
-import type { AppRuntimeManager } from '../../src/server/managers/AppRuntimeManager';
 import type { UIActionButtonManager } from '../../src/server/managers/UIActionButtonManager';
 import type { DenoRuntimeSubprocessController } from '../../src/server/runtime/deno/AppsEngineDenoRuntime';
-import type { AppLogStorage, AppMetadataStorage, AppSourceStorage, IAppStorageItem } from '../../src/server/storage';
-import { TestsAppBridges } from './bridges/appBridges';
-import { TestSourceStorage } from './storage/TestSourceStorage';
-import { TestsAppLogStorage } from './storage/logStorage';
-import { TestsAppStorage } from './storage/storage';
+import { AppPackageParser } from '../../src/server/compiler';
+import type { AppRuntimeManager } from '../../src/server/managers/AppRuntimeManager';
 
 export class TestInfastructureSetup {
     private appStorage: TestsAppStorage;
@@ -128,6 +128,39 @@ export class TestInfastructureSetup {
 }
 
 const date = new Date();
+
+const DEFAULT_ATTACHMENT = {
+    color: '#00b2b2',
+    collapsed: false,
+    text: 'Just an attachment that is used for testing',
+    timestampLink: 'https://google.com/',
+    thumbnailUrl: 'https://avatars0.githubusercontent.com/u/850391?s=88&v=4',
+    author: {
+        name: 'Author Name',
+        link: 'https://github.com/graywolf336',
+        icon: 'https://avatars0.githubusercontent.com/u/850391?s=88&v=4',
+    },
+    title: {
+        value: 'Attachment Title',
+        link: 'https://github.com/RocketChat',
+        displayDownloadLink: false,
+    },
+    imageUrl: 'https://rocket.chat/images/default/logo.svg',
+    audioUrl: 'http://www.w3schools.com/tags/horse.mp3',
+    videoUrl: 'http://www.w3schools.com/tags/movie.mp4',
+    fields: [
+        {
+            short: true,
+            title: 'Test',
+            value: 'Testing out something or other',
+        },
+        {
+            short: true,
+            title: 'Another Test',
+            value: '[Link](https://google.com/) something and this and that.',
+        },
+    ],
+};
 export class TestData {
     public static getDate(): Date {
         return date;
@@ -193,41 +226,42 @@ export class TestData {
             emoji: ':see_no_evil:',
             avatarUrl: 'https://avatars0.githubusercontent.com/u/850391?s=88&v=4',
             alias: 'Testing Bot',
-            attachments: [
-                {
-                    collapsed: false,
-                    color: '#00b2b2',
-                    text: 'Just an attachment that is used for testing',
-                    timestamp: new Date(),
-                    timestampLink: 'https://google.com/',
-                    thumbnailUrl: 'https://avatars0.githubusercontent.com/u/850391?s=88&v=4',
-                    author: {
-                        name: 'Author Name',
-                        link: 'https://github.com/graywolf336',
-                        icon: 'https://avatars0.githubusercontent.com/u/850391?s=88&v=4',
-                    },
-                    title: {
-                        value: 'Attachment Title',
-                        link: 'https://github.com/RocketChat',
-                        displayDownloadLink: false,
-                    },
-                    imageUrl: 'https://rocket.chat/images/default/logo.svg',
-                    audioUrl: 'http://www.w3schools.com/tags/horse.mp3',
-                    videoUrl: 'http://www.w3schools.com/tags/movie.mp4',
-                    fields: [
-                        {
-                            short: true,
-                            title: 'Test',
-                            value: 'Testing out something or other',
-                        },
-                        {
-                            short: true,
-                            title: 'Another Test',
-                            value: '[Link](https://google.com/) something and this and that.',
-                        },
-                    ],
-                },
-            ],
+            attachments: [this.createAttachment()],
+        };
+    }
+
+    public static getMessageRaw(id?: string, text?: string): IMessageRaw {
+        const editorUser = TestData.getUser();
+        const senderUser = TestData.getUser();
+
+        return {
+            id: id || '4bShvoOXqB',
+            roomId: TestData.getRoom().id,
+            sender: {
+                _id: senderUser.id,
+                username: senderUser.username,
+                name: senderUser?.name,
+            },
+            text: text || 'This is just a test, do not be alarmed',
+            createdAt: date,
+            updatedAt: new Date(),
+            editor: {
+                _id: editorUser.id,
+                username: editorUser.username,
+            },
+            editedAt: new Date(),
+            emoji: ':see_no_evil:',
+            avatarUrl: 'https://avatars0.githubusercontent.com/u/850391?s=88&v=4',
+            alias: 'Testing Bot',
+            attachments: [this.createAttachment()],
+        };
+    }
+
+    private static createAttachment(attachment?: IMessageAttachment): IMessageAttachment {
+        attachment = attachment || DEFAULT_ATTACHMENT;
+        return {
+            timestamp: new Date(),
+            ...attachment,
         };
     }
 

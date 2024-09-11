@@ -22,8 +22,8 @@ import { AppBridges } from '../../../src/server/bridges';
 import type { CloudWorkspaceBridge } from '../../../src/server/bridges/CloudWorkspaceBridge';
 import type { IInternalFederationBridge } from '../../../src/server/bridges/IInternalFederationBridge';
 import type { OAuthAppsBridge } from '../../../src/server/bridges/OAuthAppsBridge';
+import type { EmailBridge } from '../../../src/server/bridges/EmailBridge';
 import type { ThreadBridge } from '../../../src/server/bridges/ThreadBridge';
-import { TestOAuthAppsBridge } from './OAuthAppsBridge';
 import { TestsActivationBridge } from './activationBridge';
 import { TestsApiBridge } from './apiBridge';
 import { TestsAppDetailChangesBridge } from './appDetailChanges';
@@ -36,11 +36,13 @@ import { TestsInternalFederationBridge } from './internalFederationBridge';
 import { TestLivechatBridge } from './livechatBridge';
 import { TestsMessageBridge } from './messageBridge';
 import { TestsModerationBridge } from './moderationBridge';
+import { TestOAuthAppsBridge } from './OAuthAppsBridge';
 import { TestsPersisBridge } from './persisBridge';
 import { TestsRoleBridge } from './roleBridge';
 import { TestsRoomBridge } from './roomBridge';
 import { TestSchedulerBridge } from './schedulerBridge';
 import { TestsServerSettingBridge } from './serverSettingBridge';
+import { TestsEmailBridge } from './emailBridge';
 import { TestsThreadBridge } from './threadBridge';
 import { TestsUiIntegrationBridge } from './uiIntegrationBridge';
 import { TestUploadBridge } from './uploadBridge';
@@ -79,6 +81,8 @@ export class TestsAppBridges extends AppBridges {
     private readonly livechatBridge: TestLivechatBridge;
 
     private readonly uploadBridge: TestUploadBridge;
+
+    private readonly emailBridge: EmailBridge;
 
     private readonly uiIntegrationBridge: TestsUiIntegrationBridge;
 
@@ -119,6 +123,7 @@ export class TestsAppBridges extends AppBridges {
         this.oauthBridge = new TestOAuthAppsBridge();
         this.internalFederationBridge = new TestsInternalFederationBridge();
         this.threadBridge = new TestsThreadBridge();
+        this.emailBridge = new TestsEmailBridge();
     }
 
     public getCommandBridge(): TestsCommandBridge {
@@ -187,6 +192,10 @@ export class TestsAppBridges extends AppBridges {
 
     public getLivechatBridge(): LivechatBridge {
         return this.livechatBridge;
+    }
+
+    public getEmailBridge(): EmailBridge {
+        return this.emailBridge;
     }
 
     public getUploadBridge(): UploadBridge {

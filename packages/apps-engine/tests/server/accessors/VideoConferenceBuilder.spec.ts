@@ -1,8 +1,8 @@
 import { Expect, Test } from 'alsatian';
 
 import type { AppVideoConference } from '../../../src/definition/videoConferences';
-import { VideoConferenceBuilder } from '../../../src/server/accessors';
 import { TestData } from '../../test-data/utilities';
+import { VideoConferenceBuilder } from '../../../src/server/accessors';
 
 export class VideoConferenceBuilderAccessorTestFixture {
     @Test()
@@ -75,6 +75,18 @@ export class VideoConferenceBuilderAccessorTestFixture {
         Expect(builder.setTitle('Video Conference')).toBe(builder);
         Expect(call.title).toBe('Video Conference');
         Expect(builder.getTitle()).toBe('Video Conference');
+
+        Expect(builder.getVideoConference()).toBe(call);
+    }
+
+    @Test()
+    public setDiscussionRid() {
+        const call = {} as AppVideoConference;
+        const builder = new VideoConferenceBuilder(call);
+
+        Expect(builder.setDiscussionRid('testId')).toBe(builder);
+        Expect(call.discussionRid).toBe('testId');
+        Expect(builder.getDiscussionRid()).toBe('testId');
 
         Expect(builder.getVideoConference()).toBe(call);
     }

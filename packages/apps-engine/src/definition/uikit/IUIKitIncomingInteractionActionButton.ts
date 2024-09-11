@@ -64,6 +64,16 @@ interface IUIKitIncomingInteractionActionButtonRoom extends IUIKitIncomingIntera
     };
 }
 
+interface IUIKitIncomingInteractionActionButtonMessageToolbarStars extends IUIKitIncomingInteractionActionButtonBase {
+    message: IMessage;
+    room: IRoom;
+    tmid?: string;
+
+    payload: {
+        context: 'messageToolbarStarsAction';
+    };
+}
+
 interface IUIKitIncomingInteractionActionButtonUserDropdown extends IUIKitIncomingInteractionActionButtonBase {
     payload: {
         context: 'userDropdownAction';
@@ -71,6 +81,7 @@ interface IUIKitIncomingInteractionActionButtonUserDropdown extends IUIKitIncomi
 }
 
 export type IUIKitIncomingInteractionActionButton =
+    | IUIKitIncomingInteractionActionButtonMessageToolbarStars
     | IUIKitIncomingInteractionActionButtonMessageBox
     | IUIKitIncomingInteractionActionButtonMessage
     | IUIKitIncomingInteractionActionButtonRoomSidebar

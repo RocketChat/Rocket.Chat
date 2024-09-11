@@ -1,6 +1,6 @@
 import type { IAppInfo } from '../../definition/metadata';
-import type { ProxiedApp } from '../ProxiedApp';
 import { AppLicenseValidationResult } from '../marketplace/license';
+import type { ProxiedApp } from '../ProxiedApp';
 
 export class AppFabricationFulfillment {
     public info: IAppInfo;

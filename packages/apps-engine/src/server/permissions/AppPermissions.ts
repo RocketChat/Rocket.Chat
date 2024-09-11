@@ -25,6 +25,9 @@ export const AppPermissions = {
         read: { name: 'upload.read' },
         write: { name: 'upload.write' },
     },
+    email: {
+        send: { name: 'email.send' },
+    },
     ui: {
         interaction: { name: 'ui.interact' },
         registerButtons: { name: 'ui.registerButtons' },

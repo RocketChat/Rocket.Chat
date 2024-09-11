@@ -1,8 +1,8 @@
-import type { IWorkspaceToken } from '../../definition/cloud/IWorkspaceToken';
-import { PermissionDeniedError } from '../errors/PermissionDeniedError';
+import { BaseBridge } from './BaseBridge';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
-import { BaseBridge } from './BaseBridge';
+import { PermissionDeniedError } from '../errors/PermissionDeniedError';
+import type { IWorkspaceToken } from '../../definition/cloud/IWorkspaceToken';
 
 export abstract class CloudWorkspaceBridge extends BaseBridge {
     public doGetWorkspaceToken(scope: string, appId: string): Promise<IWorkspaceToken> {

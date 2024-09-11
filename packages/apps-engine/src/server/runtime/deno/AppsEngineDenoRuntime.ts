@@ -2,20 +2,20 @@ import * as child_process from 'child_process';
 import * as path from 'path';
 import { type Readable, EventEmitter } from 'stream';
 
-import debugFactory from 'debug';
 import * as jsonrpc from 'jsonrpc-lite';
+import debugFactory from 'debug';
 
-import { AppStatus } from '../../../definition/AppStatus';
+import { decoder } from './codec';
 import type { AppManager } from '../../AppManager';
+import type { AppLogStorage } from '../../storage';
 import type { AppBridges } from '../../bridges';
 import type { IParseAppPackageResult } from '../../compiler';
-import type { ILoggerStorageEntry } from '../../logging';
 import type { AppAccessorManager, AppApiManager } from '../../managers';
-import type { AppLogStorage } from '../../storage';
-import { LivenessManager } from './LivenessManager';
-import { ProcessMessenger } from './ProcessMessenger';
+import type { ILoggerStorageEntry } from '../../logging';
+import { AppStatus } from '../../../definition/AppStatus';
 import { bundleLegacyApp } from './bundler';
-import { decoder } from './codec';
+import { ProcessMessenger } from './ProcessMessenger';
+import { LivenessManager } from './LivenessManager';
 
 const baseDebug = debugFactory('appsEngine:runtime:deno');
 
@@ -52,8 +52,17 @@ const COMMAND_PONG = '_zPONG';
 
 export const JSONRPC_METHOD_NOT_FOUND = -32601;
 
-export function isValidOrigin(accessor: string): accessor is (typeof ALLOWED_ACCESSOR_METHODS)[number] {
+export function isValidOrigin(accessor: string): accessor is typeof ALLOWED_ACCESSOR_METHODS[number] {
     return ALLOWED_ACCESSOR_METHODS.includes(accessor as any);
+}
+
+/**
+ * Resolves the absolute path of the Deno executable
+ * installed by deno-bin.
+ */
+export function getDenoExecutablePath(): string {
+    // require.resolve returns correctly even after Meteor's bundle magic
+    return path.join(path.dirname(require.resolve('deno-bin')), 'bin', 'deno');
 }
 
 export function getDenoWrapperPath(): string {
@@ -115,11 +124,11 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
     public spawnProcess(): void {
         try {
-            const denoExePath = 'deno';
+            const denoExePath = getDenoExecutablePath();
             const denoWrapperPath = getDenoWrapperPath();
             // During development, the appsEngineDir is enough to run the deno process
             const appsEngineDir = path.dirname(path.join(denoWrapperPath, '..'));
-            const DENO_DIR = process.env.DENO_DIR ?? path.join(appsEngineDir, '.deno-cache');
+            const DENO_DIR = path.join(appsEngineDir, '.deno-cache');
             // When running in production, we're likely inside a node_modules which the Deno
             // process must be able to read in order to include files that use NPM packages
             const parentNodeModulesDir = path.dirname(path.join(appsEngineDir, '..'));
@@ -365,7 +374,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
         // Need to fix typing of return value
         const getAccessorForOrigin = (
             accessorMethods: string[],
-            managerOrigin: (typeof ALLOWED_ACCESSOR_METHODS)[number],
+            managerOrigin: typeof ALLOWED_ACCESSOR_METHODS[number],
             accessorManager: AppAccessorManager,
         ) => {
             const origin = accessorManager[managerOrigin](this.appPackage.info.id);

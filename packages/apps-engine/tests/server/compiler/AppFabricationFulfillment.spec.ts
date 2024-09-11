@@ -4,10 +4,10 @@ import { AppStatus } from '../../../src/definition/AppStatus';
 import type { IAppInfo } from '../../../src/definition/metadata';
 import { AppInterface } from '../../../src/definition/metadata';
 import type { AppManager } from '../../../src/server/AppManager';
-import { ProxiedApp } from '../../../src/server/ProxiedApp';
 import { AppFabricationFulfillment } from '../../../src/server/compiler';
-import type { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
+import { ProxiedApp } from '../../../src/server/ProxiedApp';
 import type { IAppStorageItem } from '../../../src/server/storage';
+import type { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
 
 export class AppFabricationFulfillmentTestFixture {
     @Test()
