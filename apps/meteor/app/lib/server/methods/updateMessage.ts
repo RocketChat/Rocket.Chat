@@ -7,6 +7,7 @@ import moment from 'moment';
 
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { settings } from '../../../settings/server';
 import { updateMessage } from '../functions/updateMessage';
 
@@ -115,6 +116,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateMessage' });
 		}
 
-		return executeUpdateMessage(uid, message, previewUrls);
+		return applyAirGappedRestrictionsValidation(() => executeUpdateMessage(uid, message, previewUrls));
 	},
 });
