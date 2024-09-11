@@ -185,6 +185,12 @@ test.each([
       ]),
     ],
   ],
+  ['_1.1_', [paragraph([italic([plain('1.1')])])]],
+  ['__1.1__', [paragraph([italic([plain('1.1')])])]],
+  ['_example.word_', [paragraph([italic([plain('example.word')])])]],
+  ['__example.word__', [paragraph([italic([plain('example.word')])])]],
+  ['_mix.123_', [paragraph([italic([plain('mix.123')])])]],
+  ['__mix.123__', [paragraph([italic([plain('mix.123')])])]],
 ])('parses %p', (input, output) => {
   expect(parse(input)).toMatchObject(output);
 });
