@@ -35,6 +35,7 @@ jobs:
         run: |
           yarn turbo run build-preview
           yarn turbo run .:build-preview-move
+          npx indexifier .preview --html  --extensions .html  > .preview/index.html
 
       - uses: rossjrw/pr-preview-action@v1
         with:
