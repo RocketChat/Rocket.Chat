@@ -1,5 +1,0 @@
-{
-	"added": {
-		"ignore": ["packages/accounts-linkedin/**/*", "packages/linkedin-oauth/**/*", "tests/cypress/integration/08-resolutions.spec.js", "**/.eslintrc.js", "packages/eslint-config/**", "**/babel.config.js"]
-	}
-}
