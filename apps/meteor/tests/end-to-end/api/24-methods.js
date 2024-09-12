@@ -3533,7 +3533,7 @@ describe('Meteor.methods', function () {
 					expect(data.result.length).to.be.greaterThan(0);
 					expect(data).to.have.a.property('msg', 'result');
 					expect(data).to.have.a.property('id', '18');
-					data.result.forEach((item: any) => {
+					data.result.forEach((item) => {
 						expect(item).to.have.all.keys('_id', 'ts', 'results', 'u', 'fields', '_updatedAt');
 						expect(item.u).to.not.have.property('services');
 						expect(item.u).to.not.have.property('roles');
