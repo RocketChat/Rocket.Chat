@@ -2550,6 +2550,8 @@ describe('Meteor.methods', function () {
 			let testUserCredentials;
 
 			before('create room, add new owner, and leave room', async () => {
+				await updatePermission('leave-p', ['admin', 'user']);
+				await updatePermission('leave-c', ['admin', 'user']);
 				testUser = await createUser();
 				testUserCredentials = await login(testUser.username, password);
 				const channelName = `methods-test-channel-${Date.now()}`;
@@ -2692,7 +2694,14 @@ describe('Meteor.methods', function () {
 					});
 			});
 
-			after(() => Promise.all([deleteRoom({ type: 'p', roomId: ridTestRoom }), deleteUser(testUser)]));
+			after(() =>
+				Promise.all([
+					deleteRoom({ type: 'p', roomId: ridTestRoom }),
+					deleteUser(testUser),
+					updatePermission('leave-p', ['admin', 'user']),
+					updatePermission('leave-c', ['admin', 'user']),
+				]),
+			);
 		});
 	});
 
