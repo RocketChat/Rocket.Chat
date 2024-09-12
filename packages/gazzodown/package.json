@@ -66,13 +66,15 @@
 		"@rocket.chat/fuselage-tokens": "*",
 		"@rocket.chat/message-parser": "0.31.29",
 		"@rocket.chat/styled": "*",
-		"@rocket.chat/ui-client": "10.0.0",
-		"@rocket.chat/ui-contexts": "10.0.0",
+		"@rocket.chat/ui-client": "*",
+		"@rocket.chat/ui-contexts": "*",
 		"katex": "*",
 		"react": "*"
 	},
 	"dependencies": {
+		"@types/dompurify": "^3.0.5",
 		"date-fns": "^3.3.1",
+		"dompurify": "^3.1.6",
 		"highlight.js": "^11.5.1",
 		"react-error-boundary": "^3.1.4"
 	},

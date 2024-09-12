@@ -60,7 +60,7 @@
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
-		"@rocket.chat/ui-contexts": "10.0.0",
+		"@rocket.chat/ui-contexts": "*",
 		"react": "~17.0.2"
 	},
 	"volta": {
