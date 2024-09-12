@@ -2698,8 +2698,8 @@ describe('Meteor.methods', function () {
 				Promise.all([
 					deleteRoom({ type: 'p', roomId: ridTestRoom }),
 					deleteUser(testUser),
-					updatePermission('leave-p', ['admin', 'user']),
-					updatePermission('leave-c', ['admin', 'user']),
+					updatePermission('leave-p', ['admin']),
+					updatePermission('leave-c', ['admin']),
 				]),
 			);
 		});
