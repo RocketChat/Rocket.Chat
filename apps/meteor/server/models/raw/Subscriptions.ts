@@ -1988,4 +1988,58 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 		return this.updateOne(query, update);
 	}
+
+	findBySubscriptionUserId2(
+		userId: IUser['_id'],
+		_updatedAt: IRoom['_updatedAt'] | undefined,
+		options: FindOptions<IRoom> = {},
+	): AggregationCursor<IRoom & { subUpdatedAt: Date }> {
+		const pipeline = [
+			{
+				$match: {
+					'u._id': userId,
+				},
+			},
+			{ $skip: options.skip || 0 },
+			{ $limit: options.limit || 1000 },
+			{
+				$lookup: {
+					from: 'rocketchat_room',
+					let: { rid: '$rid' },
+					pipeline: [
+						{
+							$match: {
+								$expr: { $eq: ['$$rid', '$_id'] },
+								...(_updatedAt instanceof Date ? { _updatedAt: { $gt: _updatedAt } } : {}),
+							},
+						},
+						...(options.projection
+							? [
+									{
+										$project: {
+											// ...roomFields
+											...options.projection,
+										},
+									},
+							  ]
+							: []),
+					],
+					as: 'room',
+				},
+			},
+			{
+				$unwind: {
+					path: '$room',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{
+				$replaceRoot: {
+					newRoot: '$room',
+				},
+			},
+		];
+
+		return this.col.aggregate<IRoom & { subUpdatedAt: Date }>(pipeline);
+	}
 }

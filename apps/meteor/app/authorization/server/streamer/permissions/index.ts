@@ -15,13 +15,13 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 Meteor.methods<ServerMethods>({
-	async 'permissions/get'(updatedAt?: Date) {
+	async 'permissions/get'(updatedAt?: Date, limit = 1000, skip = 0) {
 		check(updatedAt, Match.Maybe(Date));
 
 		// TODO: should we return this for non logged users?
 		// TODO: we could cache this collection
 
-		const records = await Permissions.find(updatedAt && { _updatedAt: { $gt: updatedAt } }).toArray();
+		const records = await Permissions.find(updatedAt && { _updatedAt: { $gt: updatedAt } }, { limit, skip }).toArray();
 
 		if (updatedAt instanceof Date) {
 			return {

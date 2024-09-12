@@ -1,6 +1,7 @@
 import type { IOmnichannelRoom, IRoom, RoomType } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Rooms } from '@rocket.chat/models';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
@@ -26,8 +27,9 @@ const roomMap = (record: IRoom | IOmnichannelRoom) => {
 };
 
 Meteor.methods<ServerMethods>({
-	async 'rooms/get'(updatedAt) {
-		const options = { projection: roomFields };
+	async 'rooms/get'(updatedAt, limit = 500, skip = 0) {
+		check(limit, Match.Optional(Number));
+		const options = { projection: roomFields, limit, skip };
 		const user = Meteor.userId();
 
 		if (!user) {
@@ -37,14 +39,16 @@ Meteor.methods<ServerMethods>({
 			return [];
 		}
 
+		const data = await Subscriptions.findBySubscriptionUserId2(user, updatedAt, options).toArray();
+
 		if (updatedAt instanceof Date) {
 			return {
-				update: await (await Rooms.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options)).toArray(),
+				update: data,
 				remove: await Rooms.trashFindDeletedAfter(updatedAt, {}, { projection: { _id: 1, _deletedAt: 1 } }).toArray(),
 			};
 		}
 
-		return (await Rooms.findBySubscriptionUserId(user, options)).toArray();
+		return data;
 	},
 
 	async 'getRoomByTypeAndName'(type, name) {

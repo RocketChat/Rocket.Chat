@@ -60,6 +60,8 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 
 	public timer: ReturnType<typeof setTimeout>;
 
+	private data = [];
+
 	constructor({ name, eventType = 'notify-user', userRelated = true }: { name: Name; eventType?: StreamNames; userRelated?: boolean }) {
 		super();
 
@@ -170,13 +172,20 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 		return data as unknown as { update: U[]; remove: U[] };
 	}
 
-	private async loadFromServer() {
+	private async callLoadWithPagination(updatedSince?: Date, skip: number, limit: number) {
+		const data = await sdk.call(`${this.name}/get`, updatedSince, limit, skip);
+		return data as unknown as { update: U[]; remove: U[] };
+	}
+
+	private async loadFromServer(skip = 0, limit = 1000) {
 		const startTime = new Date();
 		const lastTime = this.updatedAt;
-		const data = await this.callLoad();
-		this.log(`${data.length} records loaded from server`);
+		const data = await this.callLoadWithPagination(undefined, skip, limit);
 
-		data.forEach((record) => {
+		const dataArr = Array.isArray(data) ? data : data.update;
+		this.log(`${dataArr.length} records loaded from server`);
+
+		dataArr.forEach((record) => {
 			const newRecord = this.handleLoadFromServer(record);
 			if (!hasId(newRecord)) {
 				return;
@@ -190,6 +199,13 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 				this.updatedAt = newRecord._updatedAt;
 			}
 		});
+
+		this.data.concat(dataArr);
+
+		if (dataArr.length === limit) {
+			this.log('loading next batch', skip, limit, skip+limit);
+			return this.loadFromServer(skip + limit, limit);
+		}
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
 	}
 
@@ -210,15 +226,17 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 		await this.save();
 	}
 
+	loadFromServerAndPopulateDebounced = withDebouncing({ wait: 1000 })(this.loadFromServerAndPopulate);
+
 	save = withDebouncing({ wait: 1000 })(async () => {
 		this.log('saving cache');
-		const data = this.collection.find().fetch();
 		await localforage.setItem(this.name, {
 			updatedAt: this.updatedAt,
 			version: this.version,
 			token: this.getToken(),
-			records: data,
+			records: this.data,
 		});
+		this.data = [];
 		this.log('saving cache (done)');
 	});
 
@@ -347,7 +365,7 @@ export class CachedCollection<T extends { _id: string }, U = T> extends Emitter<
 		if (await this.loadFromCache()) {
 			this.trySync();
 		} else {
-			await this.loadFromServerAndPopulate();
+			void this.loadFromServerAndPopulateDebounced();
 		}
 
 		this.ready.set(true);

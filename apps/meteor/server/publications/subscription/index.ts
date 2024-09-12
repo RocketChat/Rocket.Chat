@@ -13,13 +13,13 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 Meteor.methods<ServerMethods>({
-	async 'subscriptions/get'(updatedAt) {
+	async 'subscriptions/get'(updatedAt, limit = 1000, skip = 0) {
 		const uid = Meteor.userId();
 		if (!uid) {
 			return [];
 		}
 
-		const options = { projection: subscriptionFields };
+		const options = { projection: subscriptionFields, limit, skip };
 
 		const records: ISubscription[] = await Subscriptions.findByUserId(uid, options).toArray();
 
