@@ -1,10 +1,10 @@
 {
 	"name": "@rocket.chat/ui-theming",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.57.0",
+		"@rocket.chat/fuselage": "^0.59.0",
 		"@rocket.chat/fuselage-hooks": "^0.33.1",
 		"@rocket.chat/icons": "~0.38.0",
 		"@rocket.chat/ui-contexts": "workspace:~",
@@ -16,7 +16,7 @@
 		"eslint-plugin-testing-library": "^5.11.1",
 		"react": "~17.0.2",
 		"react-docgen-typescript-plugin": "~1.0.5",
-		"typescript": "~5.3.3"
+		"typescript": "~5.5.4"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
