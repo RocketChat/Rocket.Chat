@@ -247,7 +247,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							<FieldRow>
 								<PasswordInput
 									{...register('passwordConfirmation', {
-										required: t('Required_Field', { field: t('registration.component.form.confirmPassword') }),
+										required: t('Required_field', { field: t('registration.component.form.confirmPassword') }),
 										deps: ['password'],
 										validate: (val: string) => (watch('password') === val ? true : t('registration.component.form.invalidConfirmPass')),
 									})}
