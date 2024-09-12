@@ -115,6 +115,7 @@ test.describe.serial('retention-policy', () => {
 				await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
 				await auxContext.poHomeChannel.tabs.btnRoomInfo.click();
 				await auxContext.poHomeChannel.tabs.room.btnEdit.click();
+				await auxContext.poHomeChannel.tabs.room.advancedSettingsAccordion.click();
 				await auxContext.poHomeChannel.tabs.room.checkboxReadOnly.check();
 				await auxContext.poHomeChannel.tabs.room.btnSave.click();
 

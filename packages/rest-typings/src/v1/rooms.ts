@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage, ITeam } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
@@ -626,6 +626,8 @@ export type RoomsEndpoints = {
 	'/v1/rooms.info': {
 		GET: (params: RoomsInfoProps) => {
 			room: IRoom | undefined;
+			parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>;
+			team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
 		};
 	};
 

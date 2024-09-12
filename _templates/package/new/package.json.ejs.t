@@ -19,6 +19,7 @@ to: packages/<%= name %>/package.json
 		"test": "jest",
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
+		"build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/<%= name.toLowerCase() %>"
 	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
