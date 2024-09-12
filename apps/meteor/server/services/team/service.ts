@@ -20,6 +20,7 @@ import type {
 	ITeam,
 	ITeamMember,
 	ITeamStats,
+	AtLeast,
 } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
@@ -78,6 +79,21 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		};
 
 		try {
+			const roomId =
+				room.id ||
+				(
+					await Room.create(owner || uid, {
+						...room,
+						type: team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c',
+						name: team.name,
+						members: memberUsernames as string[],
+						extraData: {
+							...room.extraData,
+						},
+						sidepanel,
+					})
+				)._id;
+
 			const result = await Team.insertOne(teamData);
 			const teamId = result.insertedId;
 			// the same uid can be passed at 3 positions: owner, member list or via caller
@@ -107,32 +123,13 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 			await TeamMember.insertMany(membersList);
 
-			let roomId = room.id;
-			if (roomId) {
-				await Rooms.setTeamMainById(roomId, teamId);
-				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
-			} else {
-				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
-
-				const newRoom = {
-					...room,
-					type: roomType,
-					name: team.name,
-					members: memberUsernames as string[],
-					extraData: {
-						...room.extraData,
-						teamId,
-						teamMain: true,
-					},
-					sidepanel,
-				};
-
-				const createdRoom = await Room.create(owner || uid, newRoom);
-				roomId = createdRoom._id;
-			}
-
+			await Rooms.setTeamMainById(roomId, teamId);
 			await Team.updateMainRoomForTeam(teamId, roomId);
 			teamData.roomId = roomId;
+
+			if (room.id) {
+				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
+			}
 
 			return {
 				_id: teamId,
@@ -1056,5 +1053,29 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		).toArray();
 
 		return rooms;
+	}
+
+	private getParentRoom(team: AtLeast<ITeam, 'roomId'>): Promise<Pick<IRoom, 'name' | 'fname' | 't' | '_id'> | null> {
+		return Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | '_id'>>(team.roomId, { projection: { name: 1, fname: 1, t: 1 } });
+	}
+
+	async getRoomInfo(
+		room: AtLeast<IRoom, 'teamId' | 'teamMain' | '_id'>,
+	): Promise<{ team?: Pick<ITeam, 'name' | 'roomId' | 'type'>; parentRoom?: Pick<IRoom, 'name' | 'fname' | 't' | '_id'> }> {
+		if (!room.teamId) {
+			return {};
+		}
+
+		const team = await Team.findOneById(room.teamId, { projection: { _id: 1, name: 1, roomId: 1, type: 1 } });
+		if (!team) {
+			return {};
+		}
+
+		if (room.teamMain) {
+			return { team };
+		}
+
+		const parentRoom = await this.getParentRoom(team);
+		return { team, ...(parentRoom && { parentRoom }) };
 	}
 }

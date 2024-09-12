@@ -776,6 +776,147 @@ describe('LIVECHAT - dashboards', function () {
 			expect(user1Data).to.have.property('value', '28.57%');
 			expect(user2Data).to.have.property('value', '71.43%');
 		});
+		(IS_EE ? it : it.skip)('should only return results in the provided date interval when searching for total conversations', async () => {
+			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: yesterday, to: yesterday, name: 'Total_conversations', departmentId: department._id })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body.head).to.be.an('array').with.lengthOf(2);
+			expect(result.body.head[0]).to.have.property('name', 'Agent');
+			expect(result.body.head[1]).to.have.property('name', '%_of_conversations');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array').that.is.empty;
+		});
+		(IS_EE ? it : it.skip)(
+			'should only return results in the provided date interval when searching for average chat durations',
+			async () => {
+				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+				const result = await request
+					.get(api('livechat/analytics/agent-overview'))
+					.query({ from: yesterday, to: yesterday, name: 'Avg_chat_duration', departmentId: department._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(result.body).to.have.property('success', true);
+				expect(result.body).to.have.property('head');
+				expect(result.body.head).to.be.an('array').with.lengthOf(2);
+				expect(result.body.head[0]).to.have.property('name', 'Agent');
+				expect(result.body.head[1]).to.have.property('name', 'Avg_chat_duration');
+				expect(result.body).to.have.property('data');
+				expect(result.body.data).to.be.an('array').that.is.empty;
+			},
+		);
+		(IS_EE ? it : it.skip)('should only return results in the provided date interval when searching for total messages', async () => {
+			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+			const result = await request
+				.get(api('livechat/analytics/agent-overview'))
+				.query({ from: yesterday, to: yesterday, name: 'Total_messages', departmentId: department._id })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(result.body).to.have.property('success', true);
+			expect(result.body).to.have.property('head');
+			expect(result.body.head).to.be.an('array').with.lengthOf(2);
+			expect(result.body.head[0]).to.have.property('name', 'Agent');
+			expect(result.body.head[1]).to.have.property('name', 'Total_messages');
+			expect(result.body).to.have.property('data');
+			expect(result.body.data).to.be.an('array').that.is.empty;
+		});
+		(IS_EE ? it : it.skip)(
+			'should only return results in the provided date interval when searching for average first response times',
+			async () => {
+				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+				const result = await request
+					.get(api('livechat/analytics/agent-overview'))
+					.query({ from: yesterday, to: yesterday, name: 'Avg_first_response_time', departmentId: department._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(result.body).to.have.property('success', true);
+				expect(result.body).to.have.property('head');
+				expect(result.body.head).to.be.an('array').with.lengthOf(2);
+				expect(result.body.head[0]).to.have.property('name', 'Agent');
+				expect(result.body.head[1]).to.have.property('name', 'Avg_first_response_time');
+				expect(result.body).to.have.property('data');
+				expect(result.body.data).to.be.an('array').that.is.empty;
+			},
+		);
+		(IS_EE ? it : it.skip)(
+			'should only return results in the provided date interval when searching for best first response times',
+			async () => {
+				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+				const result = await request
+					.get(api('livechat/analytics/agent-overview'))
+					.query({ from: yesterday, to: yesterday, name: 'Best_first_response_time', departmentId: department._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(result.body).to.have.property('success', true);
+				expect(result.body).to.have.property('head');
+				expect(result.body.head).to.be.an('array').with.lengthOf(2);
+				expect(result.body.head[0]).to.have.property('name', 'Agent');
+				expect(result.body.head[1]).to.have.property('name', 'Best_first_response_time');
+				expect(result.body).to.have.property('data');
+				expect(result.body.data).to.be.an('array').that.is.empty;
+			},
+		);
+		(IS_EE ? it : it.skip)(
+			'should only return results in the provided date interval when searching for average response times',
+			async () => {
+				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+				const result = await request
+					.get(api('livechat/analytics/agent-overview'))
+					.query({ from: yesterday, to: yesterday, name: 'Avg_response_time', departmentId: department._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(result.body).to.have.property('success', true);
+				expect(result.body).to.have.property('head');
+				expect(result.body.head).to.be.an('array').with.lengthOf(2);
+				expect(result.body.head[0]).to.have.property('name', 'Agent');
+				expect(result.body.head[1]).to.have.property('name', 'Avg_response_time');
+				expect(result.body).to.have.property('data');
+				expect(result.body.data).to.be.an('array').that.is.empty;
+			},
+		);
+		(IS_EE ? it : it.skip)(
+			'should only return results in the provided date interval when searching for average reaction times',
+			async () => {
+				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+				const result = await request
+					.get(api('livechat/analytics/agent-overview'))
+					.query({ from: yesterday, to: yesterday, name: 'Avg_reaction_time', departmentId: department._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(result.body).to.have.property('success', true);
+				expect(result.body).to.have.property('head');
+				expect(result.body.head).to.be.an('array').with.lengthOf(2);
+				expect(result.body.head[0]).to.have.property('name', 'Agent');
+				expect(result.body.head[1]).to.have.property('name', 'Avg_reaction_time');
+				expect(result.body).to.have.property('data');
+				expect(result.body.data).to.be.an('array').that.is.empty;
+			},
+		);
 	});
 
 	describe('[livechat/analytics/agent-overview] - Average first response time', () => {
@@ -1050,5 +1191,60 @@ describe('LIVECHAT - dashboards', function () {
 			const totalMessagesValue = parseInt(totalMessages.value);
 			expect(totalMessagesValue).to.be.greaterThanOrEqual(minMessages);
 		});
+		(IS_EE ? it : it.skip)(
+			'should only consider conversations in the provided time range when returning analytics conversations overview data',
+			async () => {
+				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+				const result = await request
+					.get(api('livechat/analytics/overview'))
+					.query({ from: yesterday, to: yesterday, name: 'Conversations', departmentId: department._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(result.body).to.be.an('array');
+
+				const expectedResult = [
+					{ title: 'Total_conversations', value: 0 },
+					{ title: 'Open_conversations', value: 0 },
+					{ title: 'On_Hold_conversations', value: 0 },
+					{ title: 'Conversations_per_day', value: '0.00' },
+				];
+
+				expectedResult.forEach((expected) => {
+					const resultItem = result.body.find((item: any) => item.title === expected.title);
+					expect(resultItem).to.not.be.undefined;
+					expect(resultItem).to.have.property('value', expected.value);
+				});
+			},
+		);
+		(IS_EE ? it : it.skip)(
+			'should only consider conversations in the provided time range when returning analytics productivity overview data',
+			async () => {
+				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+				const result = await request
+					.get(api('livechat/analytics/overview'))
+					.query({ from: yesterday, to: yesterday, name: 'Productivity', departmentId: department._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(result.body).to.be.an('array');
+
+				const expectedResult = [
+					{ title: 'Avg_response_time', value: '00:00:00' },
+					{ title: 'Avg_first_response_time', value: '00:00:00' },
+					{ title: 'Avg_reaction_time', value: '00:00:00' },
+				];
+
+				expectedResult.forEach((expected) => {
+					const resultItem = result.body.find((item: any) => item.title === expected.title);
+					expect(resultItem).to.not.be.undefined;
+					expect(resultItem).to.have.property('value', expected.value);
+				});
+			},
+		);
 	});
 });

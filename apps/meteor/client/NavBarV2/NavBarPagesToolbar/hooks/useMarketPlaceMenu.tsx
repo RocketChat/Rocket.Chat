@@ -1,8 +1,8 @@
 import { Badge, Skeleton } from '@rocket.chat/fuselage';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 import { useUserDropdownAppsActionButtons } from '../../../hooks/useAppActionButtons';
 import { useAppRequestStats } from '../../../views/marketplace/hooks/useAppRequestStats';
 

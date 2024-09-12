@@ -1341,7 +1341,7 @@ export class UsersRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	removeRoomByRoomId(rid) {
+	removeRoomByRoomId(rid, options) {
 		return this.updateMany(
 			{
 				__rooms: rid,
@@ -1349,6 +1349,7 @@ export class UsersRaw extends BaseRaw {
 			{
 				$pull: { __rooms: rid },
 			},
+			options,
 		);
 	}
 

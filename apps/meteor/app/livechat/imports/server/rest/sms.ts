@@ -97,12 +97,18 @@ const normalizeLocationSharing = (payload: ServiceData) => {
 // @ts-expect-error - this is an special endpoint that requires the return to not be wrapped as regular returns
 API.v1.addRoute('livechat/sms-incoming/:service', {
 	async post() {
-		if (!(await OmnichannelIntegration.isConfiguredSmsService(this.urlParams.service))) {
+		const { service } = this.urlParams;
+		if (!(await OmnichannelIntegration.isConfiguredSmsService(service))) {
 			return API.v1.failure('Invalid service');
 		}
 
 		const smsDepartment = settings.get<string>('SMS_Default_Omnichannel_Department');
-		const SMSService = await OmnichannelIntegration.getSmsService(this.urlParams.service);
+		const SMSService = await OmnichannelIntegration.getSmsService(service);
+
+		if (!SMSService.validateRequest(this.request)) {
+			return API.v1.failure('Invalid request');
+		}
+
 		const sms = SMSService.parse(this.bodyParams);
 		const { department } = this.queryParams;
 		let targetDepartment = await defineDepartment(department || smsDepartment);
@@ -121,7 +127,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			},
 			source: {
 				type: OmnichannelSourceType.SMS,
-				alias: this.urlParams.service,
+				alias: service,
 			},
 		};
 

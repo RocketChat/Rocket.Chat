@@ -26,6 +26,7 @@ import type {
 	FindCursor,
 	UpdateResult,
 	AggregationCursor,
+	UpdateOptions,
 } from 'mongodb';
 
 import { getValue } from '../../../app/settings/server/raw';
@@ -90,22 +91,31 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
 	}) {
 		const match: Document = { $match: { t: 'l', open: true, servedBy: { $exists: true } } };
-		const matchUsers: Document = { $match: {} };
+
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		if (agentId) {
-			matchUsers.$match['user._id'] = agentId;
-		}
-		if (!includeOfflineAgents) {
-			matchUsers.$match['user.status'] = { $ne: 'offline' };
-			matchUsers.$match['user.statusLivechat'] = { $eq: 'available' };
-		}
+
 		const departmentsLookup = {
 			$lookup: {
 				from: 'rocketchat_livechat_department',
-				localField: 'departmentId',
-				foreignField: '_id',
+				let: {
+					deptId: '$departmentId',
+				},
+				pipeline: [
+					{
+						$match: {
+							$expr: {
+								$eq: ['$_id', '$$deptId'],
+							},
+						},
+					},
+					{
+						$project: {
+							name: 1,
+						},
+					},
+				],
 				as: 'departments',
 			},
 		};
@@ -115,27 +125,40 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				preserveNullAndEmptyArrays: true,
 			},
 		};
-		const departmentsGroup = {
-			$group: {
-				_id: {
-					departmentId: '$departmentId',
-					name: '$departments.name',
-					room: '$$ROOT',
-				},
-			},
-		};
+
 		const usersLookup = {
 			$lookup: {
 				from: 'users',
-				localField: '_id.room.servedBy._id',
-				foreignField: '_id',
+				let: {
+					servedById: '$servedBy._id',
+				},
+				pipeline: [
+					{
+						$match: {
+							$expr: {
+								$eq: ['$_id', '$$servedById'],
+							},
+							...(!includeOfflineAgents && {
+								status: { $ne: 'offline' },
+								statusLivechat: 'available',
+							}),
+							...(agentId && { _id: agentId }),
+						},
+					},
+					{
+						$project: {
+							_id: 1,
+							username: 1,
+							status: 1,
+						},
+					},
+				],
 				as: 'user',
 			},
 		};
 		const usersUnwind = {
 			$unwind: {
 				path: '$user',
-				preserveNullAndEmptyArrays: true,
 			},
 		};
 		const usersGroup = {
@@ -144,8 +167,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					userId: '$user._id',
 					username: '$user.username',
 					status: '$user.status',
-					departmentId: '$_id.departmentId',
-					departmentName: '$_id.name',
+					departmentId: '$departmentId',
+					departmentName: '$departments.name',
 				},
 				chats: { $sum: 1 },
 			},
@@ -159,16 +182,13 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					status: '$_id.status',
 				},
 				department: {
-					_id: { $ifNull: ['$_id.departmentId', null] },
-					name: { $ifNull: ['$_id.departmentName', null] },
+					_id: '$_id.departmentId',
+					name: '$_id.departmentName',
 				},
 				chats: 1,
 			},
 		};
-		const firstParams = [match, departmentsLookup, departmentsUnwind, departmentsGroup, usersLookup, usersUnwind];
-		if (Object.keys(matchUsers.$match)) {
-			firstParams.push(matchUsers);
-		}
+		const firstParams = [match, departmentsLookup, departmentsUnwind, usersLookup, usersUnwind];
 		const sort: Document = { $sort: options.sort || { chats: -1 } };
 		const pagination = [sort];
 
@@ -187,6 +207,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		};
 
 		const params = [...firstParams, usersGroup, project, facet];
+
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred(), allowDiskUse: true }).toArray();
 	}
 
@@ -1589,7 +1610,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		);
 	}
 
-	closeRoomById(roomId: string, closeInfo: IOmnichannelRoomClosingInfo) {
+	closeRoomById(roomId: string, closeInfo: IOmnichannelRoomClosingInfo, options?: UpdateOptions) {
 		const { closer, closedBy, closedAt, chatDuration, serviceTimeDuration, tags } = closeInfo;
 
 		return this.updateOne(
@@ -1611,6 +1632,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					open: 1,
 				},
 			},
+			options,
 		);
 	}
 
@@ -2044,12 +2066,12 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return updater;
 	}
 
-	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lt: Date }, { departmentId }: { departmentId?: string } = {}) {
+	getTotalConversationsBetweenDate(t: 'l', date: { gte: Date; lte: Date }, { departmentId }: { departmentId?: string } = {}) {
 		const query: Filter<IOmnichannelRoom> = {
 			t,
 			ts: {
 				$gte: new Date(date.gte), // ISO Date, ts >= date.gte
-				$lt: new Date(date.lt), // ISODate, ts < date.lt
+				$lte: new Date(date.lte), // ISODate, ts <= date.lte
 			},
 			...(departmentId && departmentId !== 'undefined' && { departmentId }),
 		};
@@ -2059,7 +2081,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 	getAnalyticsMetricsBetweenDate(
 		t: 'l',
-		date: { gte: Date; lt: Date },
+		date: { gte: Date; lte: Date },
 		{ departmentId }: { departmentId?: string } = {},
 		extraQuery: Document = {},
 	) {
@@ -2067,7 +2089,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			t,
 			ts: {
 				$gte: new Date(date.gte), // ISO Date, ts >= date.gte
-				$lt: new Date(date.lt), // ISODate, ts < date.lt
+				$lte: new Date(date.lte), // ISODate, ts <= date.lte
 			},
 			...(departmentId && departmentId !== 'undefined' && { departmentId }),
 			...extraQuery,
@@ -2080,7 +2102,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 
 	getAnalyticsMetricsBetweenDateWithMessages(
 		t: string,
-		date: { gte: Date; lt: Date },
+		date: { gte: Date; lte: Date },
 		{ departmentId }: { departmentId?: string } = {},
 		extraQuery: Document = {},
 		extraMatchers: Document = {},
@@ -2092,7 +2114,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 						t,
 						ts: {
 							$gte: new Date(date.gte), // ISO Date, ts >= date.gte
-							$lt: new Date(date.lt), // ISODate, ts < date.lt
+							$lte: new Date(date.lte), // ISODate, ts <= date.lte
 						},
 						...(departmentId && departmentId !== 'undefined' && { departmentId }),
 						...extraMatchers,
@@ -2162,7 +2184,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		);
 	}
 
-	getAnalyticsBetweenDate(date: { gte: Date; lt: Date }, { departmentId }: { departmentId?: string } = {}) {
+	getAnalyticsBetweenDate(date: { gte: Date; lte: Date }, { departmentId }: { departmentId?: string } = {}) {
 		return this.col.aggregate<Pick<IOmnichannelRoom, 'ts' | 'departmentId' | 'open' | 'servedBy' | 'metrics' | 'msgs' | 'onHold'>>(
 			[
 				{
@@ -2170,7 +2192,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 						t: 'l',
 						ts: {
 							$gte: new Date(date.gte), // ISO Date, ts >= date.gte
-							$lt: new Date(date.lt), // ISODate, ts < date.lt
+							$lte: new Date(date.lte), // ISODate, ts <= date.lte
 						},
 						...(departmentId && departmentId !== 'undefined' && { departmentId }),
 					},

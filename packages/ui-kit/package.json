@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-kit",
-	"version": "0.36.0",
+	"version": "0.36.1",
 	"description": "Interactive UI elements for Rocket.Chat Apps",
 	"homepage": "https://rocket.chat",
 	"author": {
@@ -52,11 +52,11 @@
 		"ts-jest": "~29.1.1",
 		"ts-loader": "~9.4.2",
 		"ts-node": "~10.9.1",
-		"ts-patch": "~3.0.2",
-		"typescript": "~5.3.3"
+		"ts-patch": "~3.2.1",
+		"typescript": "~5.5.4"
 	},
 	"dependencies": {
-		"typia": "~5.3.3"
+		"typia": "~6.9.0"
 	},
 	"peerDependencies": {
 		"@rocket.chat/icons": "*"

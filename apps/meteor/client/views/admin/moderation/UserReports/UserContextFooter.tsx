@@ -1,8 +1,8 @@
 import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
 import useDeactivateUserAction from '../hooks/useDeactivateUserAction';
 import useDismissUserAction from '../hooks/useDismissUserAction';
 import useResetAvatarAction from '../hooks/useResetAvatarAction';
