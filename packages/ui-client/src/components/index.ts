@@ -13,3 +13,4 @@ export * from './HeaderV2';
 export * from './MultiSelectCustom/MultiSelectCustom';
 export * from './FeaturePreview/FeaturePreview';
 export * from './RoomBanner';
+export { default as UserAutoComplete } from './UserAutoComplete';
