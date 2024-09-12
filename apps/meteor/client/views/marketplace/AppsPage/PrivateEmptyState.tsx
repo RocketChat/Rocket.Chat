@@ -1,19 +1,19 @@
-import { States, StatesIcon, StatesTitle, StatesSubtitle, Box } from '@rocket.chat/fuselage';
+import { Box, Skeleton } from '@rocket.chat/fuselage';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+
+import { useLicense } from '../../../hooks/useLicense';
+import PrivateEmptyStateDefault from './PrivateEmptyStateDefault';
+import PrivateEmptyStateUpgrade from './PrivateEmptyStateUpgrade';
 
 const PrivateEmptyState = () => {
-	const { t } = useTranslation();
+	const { data, isLoading } = useLicense({ loadValues: true });
+	const { limits } = data || {};
 
-	return (
-		<Box mbs='24px'>
-			<States>
-				<StatesIcon name='lock' />
-				<StatesTitle>{t('No_private_apps_installed')}</StatesTitle>
-				<StatesSubtitle>{t('Private_apps_are_side-loaded')}</StatesSubtitle>
-			</States>
-		</Box>
-	);
+	if (isLoading) {
+		return <Skeleton />;
+	}
+
+	return <Box mbs='24px'>{limits?.privateApps?.max === 0 ? <PrivateEmptyStateUpgrade /> : <PrivateEmptyStateDefault />}</Box>;
 };
 
 export default PrivateEmptyState;
