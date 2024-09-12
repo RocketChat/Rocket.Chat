@@ -12,6 +12,7 @@ type GenericMenuCommonProps = {
 	disabled?: boolean;
 	callbackAction?: () => void;
 };
+
 type GenericMenuConditionalProps =
 	| {
 			sections?: {
@@ -28,7 +29,7 @@ type GenericMenuConditionalProps =
 
 type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof MenuV2>, 'children'>;
 
-export const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction, ...props }: GenericMenuProps) => {
+const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction, ...props }: GenericMenuProps) => {
 	const t = useTranslation();
 
 	const sections = 'sections' in props && props.sections;

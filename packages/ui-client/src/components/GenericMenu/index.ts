@@ -1,4 +1,3 @@
-export { default } from './GenericMenu';
-export * from './GenericMenu';
-export * from './GenericMenuItem';
-export * from './hooks/useHandleMenuAction';
+export { default as GenericMenu } from './GenericMenu';
+export { default as GenericMenuItem, GenericMenuItemProps } from './GenericMenuItem';
+export { useHandleMenuAction } from './hooks/useHandleMenuAction';

@@ -15,7 +15,7 @@ export type GenericMenuItemProps = {
 	variant?: string;
 };
 
-export const GenericMenuItem = ({ icon, content, addon, status, gap, tooltip }: GenericMenuItemProps) => (
+const GenericMenuItem = ({ icon, content, addon, status, gap, tooltip }: GenericMenuItemProps) => (
 	<>
 		{gap && <MenuItemColumn />}
 		{icon && <MenuItemIcon name={icon} />}
