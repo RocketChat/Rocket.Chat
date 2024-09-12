@@ -6,7 +6,6 @@ import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 
 export const useListIsAtBottom = () => {
 	const atBottomRef = useRef(true);
-
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
 
 	const sendToBottom = useCallback(() => {
@@ -18,6 +17,10 @@ export const useListIsAtBottom = () => {
 			sendToBottom();
 		}
 	}, [atBottomRef, sendToBottom]);
+
+	const handleJumpToBottom=useCallback(()=>{
+		sendToBottom()
+	},[])
 
 	const isAtBottom = useCallback((threshold = 0) => {
 		if (!innerBoxRef.current) {
@@ -46,24 +49,31 @@ export const useListIsAtBottom = () => {
 
 			observer.observe(messageList);
 
+			const handleScroll = withThrottling({ wait: 100 })(() => {
+				atBottomRef.current = isAtBottom(100);
+			});
+
 			node.addEventListener(
 				'scroll',
-				withThrottling({ wait: 100 })(() => {
-					atBottomRef.current = isAtBottom(100);
-				}),
+				handleScroll,
 				{
 					passive: true,
 				},
 			);
+
+			return () => {
+				node.removeEventListener('scroll', handleScroll);
+			};
 		},
 		[isAtBottom],
 	);
-
 	return {
 		atBottomRef,
 		innerRef: useMergedRefs(ref, innerBoxRef) as unknown as React.MutableRefObject<HTMLDivElement | null>,
 		sendToBottom,
 		sendToBottomIfNecessary,
 		isAtBottom,
+		handleJumpToBottom,
 	};
 };
+

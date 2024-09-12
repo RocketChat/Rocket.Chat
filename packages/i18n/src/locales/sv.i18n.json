@@ -2650,6 +2650,7 @@
   "JSON": "JSON",
   "Jump": "Hoppa",
   "Jump_to_first_unread": "Hoppa till första olästa",
+  "Jump_to_bottom":"Hoppa till botten",
   "Jump_to_message": "Hoppa till meddelande",
   "Jump_to_recent_messages": "Hoppa till senaste meddelanden",
   "Just_invited_people_can_access_this_channel": "Bara inbjudna personer kan komma åt den här kanalen.",

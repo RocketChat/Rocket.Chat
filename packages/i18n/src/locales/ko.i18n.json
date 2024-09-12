@@ -2050,6 +2050,7 @@
   "Joined_at": "에 가입",
   "Jump": "이동",
   "Jump_to_first_unread": "읽지않은 첫 메시지로 이동",
+  "Jump_to_bottom":"맨 아래로 이동",
   "Jump_to_message": "메시지로 이동",
   "Jump_to_recent_messages": "최근 메시지로 이동",
   "Just_invited_people_can_access_this_channel": "초대 된 사용자 만이 채널에 액세스 할 수 있습니다.",

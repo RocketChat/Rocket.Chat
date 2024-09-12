@@ -2278,6 +2278,7 @@
   "Joined_at": "已加入到",
   "Jump": "跳",
   "Jump_to_first_unread": "跳轉到首個未讀",
+  "Jump_to_bottom":"跳到底部",
   "Jump_to_message": "跳轉到訊息",
   "Jump_to_recent_messages": "跳轉至最近的訊息",
   "Just_invited_people_can_access_this_channel": "只有受邀對象能存取此頻道",

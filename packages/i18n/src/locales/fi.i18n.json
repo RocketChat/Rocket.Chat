@@ -2645,6 +2645,7 @@
   "JSON": "JSON",
   "Jump": "Siirry",
   "Jump_to_first_unread": "Siirry ensimmäiseen lukemattomaan",
+  "Jump_to_bottom":"Mene alas",
   "Jump_to_message": "Siirry viestiin",
   "Jump_to_recent_messages": "Siirry viimeisimpiin viesteihin",
   "Just_invited_people_can_access_this_channel": "Vain kutsutut ihmiset voivat käyttää tätä kanavaa.",

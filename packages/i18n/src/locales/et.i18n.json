@@ -49,6 +49,7 @@
   "How_responsive_was_the_chat_agent": "Kui vastuvõtlik oli sinuga vestelnud agent? ",
   "How_satisfied_were_you_with_this_chat": "Kui rahul olite selle vestlusega?",
   "Installation": "Paigaldamine",
+  "Jump_to_bottom":"Hüppa alla",
   "meteor_status_connected": "Ühendatud",
   "meteor_status_connecting": "Ühendan...",
   "meteor_status_failed": "Ei saa serveriga ühendust",
