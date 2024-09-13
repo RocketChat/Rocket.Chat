@@ -1,7 +1,8 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
 import { getValue } from '../../../settings/server/raw';
+import { canAccessRoomAsync } from './canAccessRoom';
 import { hasPermissionAsync } from './hasPermission';
 
 const elapsedTime = (ts: Date): number => {
@@ -13,6 +14,25 @@ export const canDeleteMessageAsync = async (
 	uid: string,
 	{ u, rid, ts }: { u: Pick<IUser, '_id' | 'username'>; rid: string; ts: Date },
 ): Promise<boolean> => {
+	const room = await Rooms.findOneById<Pick<IRoom, '_id' | 'ro' | 'unmuted' | 't' | 'teamId' | 'prid'>>(rid, {
+		projection: {
+			_id: 1,
+			ro: 1,
+			unmuted: 1,
+			t: 1,
+			teamId: 1,
+			prid: 1,
+		},
+	});
+
+	if (!room) {
+		return false;
+	}
+
+	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
+		return false;
+	}
+
 	const forceDelete = await hasPermissionAsync(uid, 'force-delete-message', rid);
 
 	if (forceDelete) {
@@ -43,12 +63,6 @@ export const canDeleteMessageAsync = async (
 			const timeElapsedForMessage = elapsedTime(ts);
 			return timeElapsedForMessage <= blockDeleteInMinutes;
 		}
-	}
-
-	const room = await Rooms.findOneById(rid, { projection: { ro: 1, unmuted: 1 } });
-
-	if (!room) {
-		return false;
 	}
 
 	if (room.ro === true && !(await hasPermissionAsync(uid, 'post-readonly', rid))) {
