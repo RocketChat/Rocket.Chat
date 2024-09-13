@@ -1,5 +1,16 @@
 # @rocket.chat/ui-contexts
 
+## 5.0.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.7.9
+  - @rocket.chat/rest-typings@6.7.9
+  - @rocket.chat/ddp-client@0.2.29
+  </details>
+
 ## 5.0.8
 
 ### Patch Changes
