@@ -12,6 +12,7 @@ import type {
 	AggregationCursor,
 	DeleteOptions,
 	CountDocumentsOptions,
+	ModifyResult,
 } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -310,4 +311,5 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	openByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	countByRoomIdAndNotUserId(rid: string, uid: string): Promise<number>;
 	countByRoomIdWhenUsernameExists(rid: string): Promise<number>;
+	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<ModifyResult<ISubscription>>;
 }
