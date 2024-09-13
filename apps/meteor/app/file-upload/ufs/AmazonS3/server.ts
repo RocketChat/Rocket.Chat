@@ -1,8 +1,12 @@
+import type { Readable } from 'stream';
 import stream from 'stream';
 
+import { GetObjectCommand, S3 } from '@aws-sdk/client-s3';
+import type { S3ClientConfig } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-import S3 from 'aws-sdk/clients/s3';
+import type { SdkStream } from '@smithy/types';
 import { check } from 'meteor/check';
 import type { OptionalId } from 'mongodb';
 import _ from 'underscore';
@@ -29,6 +33,11 @@ export type S3Options = StoreOptions & {
 };
 
 class AmazonS3Store extends UploadFS.Store {
+	private params: {
+		Bucket: string;
+		ACL: string;
+	};
+
 	protected getPath: (file: IUpload) => string;
 
 	constructor(options: S3Options) {
@@ -52,7 +61,23 @@ class AmazonS3Store extends UploadFS.Store {
 
 		const classOptions = options;
 
-		const s3 = new S3(options.connection);
+		const { accessKeyId, secretAccessKey } = classOptions.connection;
+
+		if (!accessKeyId || !secretAccessKey) {
+			throw new Error('AWS credentials missing');
+		}
+
+		const s3Config: S3ClientConfig = {
+			region: options.connection.region,
+			endpoint: options.connection.endpoint,
+			credentials: {
+				accessKeyId,
+				secretAccessKey,
+			},
+			forcePathStyle: options.connection.s3ForcePathStyle,
+		};
+		const s3 = new S3(s3Config);
+		this.params = options.connection.params;
 
 		options.getPath =
 			options.getPath ||
@@ -75,12 +100,14 @@ class AmazonS3Store extends UploadFS.Store {
 
 		this.getRedirectURL = async (file, forceDownload = false) => {
 			const params = {
+				...this.params,
 				Key: this.getPath(file),
-				Expires: classOptions.URLExpiryTimeSpan,
 				ResponseContentDisposition: `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(file.name || '')}"`,
 			};
 
-			return s3.getSignedUrlPromise('getObject', params);
+			return getSignedUrl(s3, new GetObjectCommand(params), {
+				expiresIn: classOptions.URLExpiryTimeSpan,
+			});
 		};
 
 		/**
@@ -121,7 +148,7 @@ class AmazonS3Store extends UploadFS.Store {
 			};
 
 			try {
-				return s3.deleteObject(params).promise();
+				return s3.deleteObject(params);
 			} catch (err: any) {
 				SystemLogger.error(err);
 			}
@@ -148,7 +175,12 @@ class AmazonS3Store extends UploadFS.Store {
 				params.Range = `${options.start} - ${options.end}`;
 			}
 
-			return s3.getObject(params).createReadStream();
+			const response = await s3.getObject(params);
+			if (!response.Body) {
+				throw new Error('S3 object not found');
+			}
+
+			return response.Body as SdkStream<Readable>;
 		};
 
 		/**
