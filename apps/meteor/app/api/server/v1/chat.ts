@@ -97,7 +97,7 @@ API.v1.addRoute(
 				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
 				...(next && { next }),
 				...(previous && { previous }),
-				...(count && { count: parseInt(count, 10) }),
+				...(count && { count }),
 			};
 
 			const result = await Meteor.callAsync('messages/get', roomId, getMessagesQuery);
