@@ -1,5 +1,14 @@
 # @rocket.chat/ui-client
 
+## 10.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@10.0.1
+  </details>
+
 ## 10.0.0
 
 ### Patch Changes
