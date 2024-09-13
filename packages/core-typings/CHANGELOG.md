@@ -1,5 +1,14 @@
 # @rocket.chat/core-typings
 
+## 6.8.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [9a687358b7]:</summary>
+
+  - @rocket.chat/message-parser@0.31.30
+  </details>
+
 ## 6.8.6
 
 ## 6.8.5
