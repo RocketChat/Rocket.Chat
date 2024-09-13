@@ -1,5 +1,44 @@
 # @rocket.chat/meteor
 
+## 6.10.6
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#33270](https://github.com/RocketChat/Rocket.Chat/pull/33270) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#33267](https://github.com/RocketChat/Rocket.Chat/pull/33267) by [@dionisio-bot](https://github.com/dionisio-bot)) fixed retention policy max age settings not being respected after upgrade
+
+- <details><summary>Updated dependencies [a45b88cdf2]:</summary>
+
+  - @rocket.chat/message-parser@0.31.30
+  - @rocket.chat/core-services@0.4.6
+  - @rocket.chat/core-typings@6.10.6
+  - @rocket.chat/gazzodown@8.0.6
+  - @rocket.chat/rest-typings@6.10.6
+  - @rocket.chat/omnichannel-services@0.2.6
+  - @rocket.chat/presence@0.2.6
+  - @rocket.chat/api-client@0.2.6
+  - @rocket.chat/license@0.2.6
+  - @rocket.chat/pdf-worker@0.1.6
+  - @rocket.chat/apps@0.1.6
+  - @rocket.chat/cron@0.1.6
+  - @rocket.chat/fuselage-ui-kit@8.0.6
+  - @rocket.chat/model-typings@0.5.6
+  - @rocket.chat/ui-contexts@8.0.6
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.1.6
+  - @rocket.chat/ui-theming@0.2.0
+  - @rocket.chat/ui-avatar@4.0.6
+  - @rocket.chat/ui-client@8.0.6
+  - @rocket.chat/ui-video-conf@8.0.6
+  - @rocket.chat/web-ui-registration@8.0.6
+  - @rocket.chat/instance-status@0.1.6
+  </details>
+
 ## 6.10.5
 
 ### Patch Changes

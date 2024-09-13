@@ -1,5 +1,17 @@
 # @rocket.chat/core-services
 
+## 0.4.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a45b88cdf2]:</summary>
+
+  - @rocket.chat/message-parser@0.31.30
+  - @rocket.chat/core-typings@6.10.6
+  - @rocket.chat/rest-typings@6.10.6
+  - @rocket.chat/models@0.1.6
+  </details>
+
 ## 0.4.5
 
 ### Patch Changes

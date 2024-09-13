@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.31.26
+
+### Patch Changes
+
+- ([#33256](https://github.com/RocketChat/Rocket.Chat/pull/33256) by [@dionisio-bot](https://github.com/dionisio-bot)) Improved the performance of the message parser
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
