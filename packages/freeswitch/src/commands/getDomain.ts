@@ -11,7 +11,7 @@ export function getCommandGetDomain(): string {
 export function parseDomainResponse(response: StringMap): string {
 	const { _body: domain } = response;
 
-	if (domain === undefined) {
+	if (typeof domain !== 'string') {
 		logger.error({ msg: 'Failed to load user domain', response });
 		throw new Error('Failed to load user domain from FreeSwitch.');
 	}
