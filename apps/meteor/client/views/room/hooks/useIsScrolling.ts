@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { withThrottling } from '/lib/utils/highOrderFunctions';
 
-export const useIsScrolling = () => {
+export const useIsScrolling = (inactivityTimeout=0) => {
   const [isScrolling, setIsScrolling] = useSafely(useState<boolean>(false));
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -16,7 +16,7 @@ export const useIsScrolling = () => {
 
     timeoutRef.current = setTimeout(() => {
       setIsScrolling(false);
-    }, 4000);
+    }, inactivityTimeout);
   });
 
   const innerRef = useCallback((node: HTMLElement | null) => {

@@ -103,7 +103,7 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
-	const {innerRef : isScrollingRef,isScrolling}=useIsScrolling()
+	const {innerRef : isScrollingRef,isScrolling}=useIsScrolling(4000)
 
 	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom ,handleJumpToBottom} = useListIsAtBottom();
 
