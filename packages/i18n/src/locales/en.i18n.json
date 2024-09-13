@@ -559,6 +559,8 @@
   "Apps_Count_Enabled_other": "{{count}} apps enabled",
   "Private_Apps_Count_Enabled_one": "{{count}} private app enabled",
   "Private_Apps_Count_Enabled_other": "{{count}} private apps enabled",
+  "Private_apps_upgrade_empty_state_title": "Upgrade to unlock private apps",
+  "Private_apps_upgrade_empty_state_description": "Tailor Rocket.Chat according to your needs with private apps.",
   "Apps_Count_Enabled_tooltip": "Community workspaces can enable up to {{number}} {{context}} apps",
   "Apps_disabled_when_Premium_trial_ended": "Apps disabled when Premium plan trial ended",
   "Apps_disabled_when_Premium_trial_ended_description": "Workspaces on Community can have up to 5 marketplace apps and 3 private apps enabled. Ask your workspace admin to reenable apps.",
