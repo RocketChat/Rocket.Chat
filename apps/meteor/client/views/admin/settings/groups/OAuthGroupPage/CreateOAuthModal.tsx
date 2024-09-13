@@ -18,7 +18,7 @@ const CreateOAuthModal = ({ onConfirm, onClose }: CreateOAuthModalProps): ReactE
 	const handleConfirm = (e: SyntheticEvent): void => {
 		e.preventDefault();
 		if (!text.length) {
-			setError(t('Name_cant_be_empty'));
+			setError(t('Required_field', { field: t('Name') }));
 			return;
 		}
 		onConfirm(text);
