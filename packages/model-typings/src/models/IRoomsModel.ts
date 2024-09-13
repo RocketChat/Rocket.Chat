@@ -190,6 +190,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	unsetAvatarData(roomId: string): Promise<UpdateResult>;
 	setSystemMessagesById(roomId: string, systemMessages: IRoom['sysMes']): Promise<UpdateResult>;
 	setE2eKeyId(roomId: string, e2eKeyId: string, options?: FindOptions<IRoom>): Promise<UpdateResult>;
+	unsetE2eKeyId(_id: IRoom['_id'], options?: UpdateOptions): Promise<UpdateResult>;
 	findOneByImportId(importId: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findOneByNameAndNotId(name: string, rid: string): Promise<IRoom | null>;
 	findOneByIdAndType(roomId: IRoom['_id'], type: IRoom['t'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
