@@ -1,10 +1,10 @@
 import { Field, FieldError, FieldLabel, FieldRow, TextAreaInput } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import React from 'react';
 import type { Control } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import type { TriggersPayload } from '../EditTrigger';
 import { useFieldError } from '../hooks';
@@ -16,7 +16,7 @@ type SendMessageActionFormType = ComponentProps<typeof Field> & {
 };
 
 export const SendMessageActionForm = ({ control, index, ...props }: SendMessageActionFormType) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const messageFieldId = useUniqueId();
 	const name = `actions.${index}.params.msg` as const;
 	const [messageError] = useFieldError({ control, name });

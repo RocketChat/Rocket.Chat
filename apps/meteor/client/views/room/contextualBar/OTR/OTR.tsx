@@ -1,8 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, Throbber } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';
 import {
@@ -27,7 +27,7 @@ type OTRProps = {
 };
 
 const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh, otrState, peerUsername }: OTRProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const room = useRoom();
 
 	const renderOTRState = (): ReactElement => {
