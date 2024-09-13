@@ -586,6 +586,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
+	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<ModifyResult<ISubscription>> {
+		const query = { rid, 'u._id': userId };
+		const update = { $set: { E2EKey: key } };
+
+		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
+	}
+
 	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<ModifyResult<ISubscription>> {
 		const query = { rid, 'u._id': uid };
 		const update = { $set: { E2ESuggestedKey: key } };
@@ -1693,6 +1700,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
+		// @ts-expect-error - :(
 		return this.updateMany(query, update);
 	}
 
@@ -1702,6 +1710,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		notificationField: keyof ISubscription,
 		notificationOriginField: keyof ISubscription,
 	): Promise<UpdateResult | Document> {
+		// @ts-expect-error - :(
 		const query: Filter<ISubscription> = {
 			'u._id': userId,
 			[notificationOriginField]: {
@@ -1728,6 +1737,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	): FindCursor<ISubscription> {
 		const value = notificationOriginValue === 'user' ? 'user' : { $ne: 'subscription' };
 
+		// @ts-expect-error - :(
 		const query: Filter<ISubscription> = {
 			'u._id': userId,
 			[notificationOriginField]: value,

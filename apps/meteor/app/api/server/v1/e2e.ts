@@ -7,13 +7,21 @@ import {
 	ise2eUpdateGroupKeyParamsPOST,
 	isE2EProvideUsersGroupKeyProps,
 	isE2EFetchUsersWaitingForGroupKeyProps,
+	isE2EResetRoomKeyProps,
 } from '@rocket.chat/rest-typings';
+import ExpiryMap from 'expiry-map';
 import { Meteor } from 'meteor/meteor';
 
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { handleSuggestedGroupKey } from '../../../e2e/server/functions/handleSuggestedGroupKey';
 import { provideUsersSuggestedGroupKeys } from '../../../e2e/server/functions/provideUsersSuggestedGroupKeys';
+import { resetRoomKey } from '../../../e2e/server/functions/resetRoomKey';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
+
+// After 10s the room lock will expire, meaning that if for some reason the process never completed
+// The next reset will be available 10s after
+const LockMap = new ExpiryMap<string, boolean>(10000);
 
 API.v1.addRoute(
 	'e2e.fetchMyKeys',
@@ -281,6 +289,35 @@ API.v1.addRoute(
 			await provideUsersSuggestedGroupKeys(this.userId, this.bodyParams.usersSuggestedGroupKeys);
 
 			return API.v1.success();
+		},
+	},
+);
+
+// This should have permissions
+API.v1.addRoute(
+	'e2e.resetRoomKey',
+	{ authRequired: true, validateParams: isE2EResetRoomKeyProps },
+	{
+		async post() {
+			if (LockMap.has(this.bodyParams.rid)) {
+				throw new Error('error-e2e-key-reset-in-progress');
+			}
+
+			LockMap.set(this.bodyParams.rid, true);
+
+			if (!(await canAccessRoomIdAsync(this.bodyParams.rid, this.userId))) {
+				throw new Error('error-not-allowed');
+			}
+
+			try {
+				await resetRoomKey(this.bodyParams.rid, this.userId, this.bodyParams.e2eKey, this.bodyParams.e2eKeyId);
+				return API.v1.success();
+			} catch (e) {
+				console.error(e);
+				return API.v1.failure(e);
+			} finally {
+				LockMap.delete(this.bodyParams.rid);
+			}
 		},
 	},
 );
