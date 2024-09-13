@@ -56,15 +56,6 @@ export function isValidOrigin(accessor: string): accessor is (typeof ALLOWED_ACC
     return ALLOWED_ACCESSOR_METHODS.includes(accessor as any);
 }
 
-/**
- * Resolves the absolute path of the Deno executable
- * installed by deno-bin.
- */
-export function getDenoExecutablePath(): string {
-    // require.resolve returns correctly even after Meteor's bundle magic
-    return path.join(path.dirname(require.resolve('deno-bin')), 'bin', 'deno');
-}
-
 export function getDenoWrapperPath(): string {
     try {
         // This path is relative to the compiled version of the Apps-Engine source
@@ -124,11 +115,12 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
     public spawnProcess(): void {
         try {
-            const denoExePath = getDenoExecutablePath();
+            const denoExePath = 'deno';
+
             const denoWrapperPath = getDenoWrapperPath();
             // During development, the appsEngineDir is enough to run the deno process
             const appsEngineDir = path.dirname(path.join(denoWrapperPath, '..'));
-            const DENO_DIR = path.join(appsEngineDir, '.deno-cache');
+            const DENO_DIR = process.env.DENO_DIR ?? path.join(appsEngineDir, '.deno-cache');
             // When running in production, we're likely inside a node_modules which the Deno
             // process must be able to read in order to include files that use NPM packages
             const parentNodeModulesDir = path.dirname(path.join(appsEngineDir, '..'));
@@ -151,11 +143,13 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
                 this.appPackage.info.id,
             ];
 
-            this.deno = child_process.spawn(denoExePath, options, { env: { DENO_DIR } });
+            const environment = { env: { DENO_DIR } };
+
+            this.deno = child_process.spawn(denoExePath, options, environment);
             this.messenger.setReceiver(this.deno);
             this.livenessManager.attach(this.deno);
 
-            this.debug('Started subprocess %d with options %O', this.deno.pid, options);
+            this.debug('Started subprocess %d with options %O and env %O', this.deno.pid, options, environment);
 
             this.setupListeners();
         } catch (e) {
