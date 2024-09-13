@@ -1,7 +1,7 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, FieldError, IconButton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
 import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';
@@ -13,7 +13,7 @@ type AddCustomEmojiProps = {
 };
 
 const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [name, setName] = useState('');
 	const [aliases, setAliases] = useState('');
 	const [emojiFile, setEmojiFile] = useState<Blob>();

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build-preview": "tsc && vite build",
+    ".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./dist ../../.preview/uikit-playground",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -15,7 +16,7 @@
     "@codemirror/tooltip": "^0.19.16",
     "@lezer/highlight": "^1.1.6",
     "@rocket.chat/css-in-js": "~0.31.25",
-    "@rocket.chat/fuselage": "^0.57.1",
+    "@rocket.chat/fuselage": "^0.59.0",
     "@rocket.chat/fuselage-hooks": "^0.33.1",
     "@rocket.chat/fuselage-polyfills": "~0.31.25",
     "@rocket.chat/fuselage-toastbar": "^0.33.0",

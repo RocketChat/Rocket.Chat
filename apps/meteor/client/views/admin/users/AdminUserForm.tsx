@@ -237,7 +237,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							/>
 						</FieldRow>
 						{errors?.email && (
-							<FieldError aria-live='assertive' id={`${emailId}-error`} fontScale='c1' mbs={12}>
+							<FieldError aria-live='assertive' id={`${emailId}-error`}>
 								{errors.email.message}
 							</FieldError>
 						)}

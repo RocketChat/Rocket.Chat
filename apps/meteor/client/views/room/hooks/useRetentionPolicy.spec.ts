@@ -72,16 +72,13 @@ it('should return enabled and active true global retention is active for rooms o
 	expect(result.current).toEqual(expect.objectContaining({ ...defaultValue, enabled: true, isActive: true }));
 });
 
-it.failing(
-	'should isActive be false if global retention is active for rooms of the type and room has retention.enabled false',
-	async () => {
-		const fakeRoom = createFakeRoom({ t: CHANNELS_TYPE, retention: { enabled: false } });
+it('should isActive be false if global retention is active for rooms of the type and room has retention.enabled false', async () => {
+	const fakeRoom = createFakeRoom({ t: CHANNELS_TYPE, retention: { enabled: false } });
 
-		const { result } = renderHook(() => useRetentionPolicy(fakeRoom), {
-			legacyRoot: true,
-			wrapper: getGlobalSettings({ enabled: true, ...roomTypeConfig[CHANNELS_TYPE] }).build(),
-		});
+	const { result } = renderHook(() => useRetentionPolicy(fakeRoom), {
+		legacyRoot: true,
+		wrapper: getGlobalSettings({ enabled: true, ...roomTypeConfig[CHANNELS_TYPE] }).build(),
+	});
 
-		expect(result.current?.isActive).toBe(false);
-	},
-);
+	expect(result.current?.isActive).toBe(false);
+});
