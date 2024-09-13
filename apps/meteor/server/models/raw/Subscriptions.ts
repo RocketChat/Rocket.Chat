@@ -998,6 +998,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				$unset: {
 					E2EKey: '',
 					E2ESuggestedKey: 1,
+					oldRoomKeys: 1,
 				},
 			},
 		);
