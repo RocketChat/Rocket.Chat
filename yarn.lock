@@ -8600,8 +8600,6 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:~"
-    "@types/babel__core": ^7.20.3
-    "@types/babel__preset-env": ^7.9.4
     "@types/fibers": ^3.1.3
     "@types/jest": ~29.5.12
     babel-jest: ^29.5.0
@@ -8915,8 +8913,6 @@ __metadata:
     "@tanstack/react-query": ^4.16.1
     "@testing-library/react": ~16.0.0
     "@testing-library/user-event": ~14.5.2
-    "@types/babel__core": ^7.20.3
-    "@types/babel__preset-env": ^7.9.4
     "@types/react": ~17.0.69
     "@types/react-dom": ~17.0.22
     babel-loader: ~8.2.5
@@ -10223,14 +10219,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/ui-avatar@workspace:^, @rocket.chat/ui-avatar@workspace:packages/ui-avatar":
+"@rocket.chat/ui-avatar@workspace:^, @rocket.chat/ui-avatar@workspace:packages/ui-avatar, @rocket.chat/ui-avatar@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-avatar@workspace:packages/ui-avatar"
   dependencies:
     "@babel/core": ~7.22.20
     "@rocket.chat/fuselage": ^0.59.0
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@types/babel__core": ~7.20.3
     "@types/react": ~17.0.69
     "@types/react-dom": ~17.0.22
     eslint: ~8.45.0
@@ -10259,6 +10254,7 @@ __metadata:
     "@rocket.chat/icons": ~0.38.0
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:^"
+    "@rocket.chat/ui-avatar": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:~"
     "@storybook/addon-actions": ~6.5.16
     "@storybook/addon-docs": ~6.5.16
@@ -10271,7 +10267,6 @@ __metadata:
     "@storybook/react": ~6.5.16
     "@storybook/testing-library": ~0.0.13
     "@testing-library/react": ~16.0.0
-    "@types/babel__core": ~7.20.3
     "@types/jest": ~29.5.12
     "@types/react": ~17.0.69
     "@types/react-dom": ~17.0.22
@@ -10293,6 +10288,7 @@ __metadata:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
+    "@rocket.chat/ui-avatar": "workspace:~"
     "@rocket.chat/ui-contexts": "*"
     react: "*"
     react-i18next: "*"
@@ -10315,7 +10311,6 @@ __metadata:
     "@storybook/manager-webpack4": ~6.5.16
     "@storybook/react": ~6.5.16
     "@storybook/testing-library": ~0.0.13
-    "@types/babel__core": ~7.20.3
     "@types/react": ~17.0.69
     "@types/react-dom": ~17.0.22
     eslint: ~8.45.0
@@ -10447,7 +10442,6 @@ __metadata:
     "@storybook/react": ~6.5.16
     "@storybook/testing-library": ~0.0.13
     "@storybook/testing-react": ~1.3.0
-    "@types/babel__core": ~7.20.3
     "@types/jest": ~29.5.12
     "@types/jest-axe": ~3.5.9
     eslint: ~8.45.0
@@ -12800,7 +12794,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/babel__core@npm:^7.0.0, @types/babel__core@npm:^7.1.14, @types/babel__core@npm:^7.20.3, @types/babel__core@npm:~7.20.3":
+"@types/babel__core@npm:^7.0.0, @types/babel__core@npm:^7.1.14":
   version: 7.20.3
   resolution: "@types/babel__core@npm:7.20.3"
   dependencies:
@@ -12819,13 +12813,6 @@ __metadata:
   dependencies:
     "@babel/types": ^7.0.0
   checksum: 20effbbb5f8a3a0211e95959d06ae70c097fb6191011b73b38fe86deebefad8e09ee014605e0fd3cdaedc73d158be555866810e9166e1f09e4cfd880b874dcb0
-  languageName: node
-  linkType: hard
-
-"@types/babel__preset-env@npm:^7.9.4":
-  version: 7.9.4
-  resolution: "@types/babel__preset-env@npm:7.9.4"
-  checksum: a4580b541d4fe7bdf9ecb9695cb90827f96c75e5c807e6fcf6cbca3beeb9106019dc322b2d08de03025d57c6f3f1431d80eb3ea6d9416e90bc8ee15460efa27d
   languageName: node
   linkType: hard
 

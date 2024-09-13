@@ -8,8 +8,6 @@
 		"@babel/preset-typescript": "~7.22.15",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
-		"@types/babel__core": "^7.20.3",
-		"@types/babel__preset-env": "^7.9.4",
 		"@types/jest": "~29.5.12",
 		"babel-jest": "^29.5.0",
 		"eslint": "~8.45.0",

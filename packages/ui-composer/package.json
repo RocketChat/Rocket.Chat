@@ -28,7 +28,6 @@
     "@storybook/manager-webpack4": "~6.5.16",
     "@storybook/react": "~6.5.16",
     "@storybook/testing-library": "~0.0.13",
-    "@types/babel__core": "~7.20.3",
     "@types/react": "~17.0.69",
     "@types/react-dom": "~17.0.22",
     "eslint": "~8.45.0",

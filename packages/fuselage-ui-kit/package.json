@@ -88,8 +88,6 @@
     "@tanstack/react-query": "^4.16.1",
     "@testing-library/react": "~16.0.0",
     "@testing-library/user-event": "~14.5.2",
-    "@types/babel__core": "^7.20.3",
-    "@types/babel__preset-env": "^7.9.4",
     "@types/react": "~17.0.69",
     "@types/react-dom": "~17.0.22",
     "babel-loader": "~8.2.5",
