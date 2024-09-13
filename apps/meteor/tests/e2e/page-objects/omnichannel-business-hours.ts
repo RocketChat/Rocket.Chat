@@ -20,7 +20,7 @@ export class OmnichannelBusinessHours extends OmnichannelAdministration {
 	}
 
 	get inputSearch(): Locator {
-		return this.page.locator('[placeholder="Search"]');
+		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	get inputName(): Locator {

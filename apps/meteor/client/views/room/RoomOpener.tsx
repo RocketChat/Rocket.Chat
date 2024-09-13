@@ -1,10 +1,10 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { Header } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React, { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { Header } from '../../components/Header';
 import { getErrorMessage } from '../../lib/errorHandling';
 import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
 import { OldUrlRoomError } from '../../lib/errors/OldUrlRoomError';

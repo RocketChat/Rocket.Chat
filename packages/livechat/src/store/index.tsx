@@ -58,6 +58,8 @@ export type StoreState = {
 			hiddenSystemMessages?: LivechatHiddenSytemMessageType[];
 			hideWatermark?: boolean;
 			livechatLogo?: { url: string };
+			transcript?: boolean;
+			visitorsCanCloseChat?: boolean;
 		};
 		online?: boolean;
 		departments: Department[];
@@ -113,7 +115,6 @@ export type StoreState = {
 	room?: { _id: string };
 	noMoreMessages?: boolean;
 	loading?: boolean;
-	department?: string;
 	lastReadMessageId?: any;
 	triggerAgent?: any;
 	queueInfo?: any;

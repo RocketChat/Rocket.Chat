@@ -5,9 +5,7 @@ import { getCredentials, api, request, credentials } from '../../../data/api-dat
 import { createLivechatRoom, createVisitor, fetchMessages, sendMessage } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
-describe('LIVECHAT - WebRTC video call', function () {
-	this.retries(0);
-
+describe('LIVECHAT - WebRTC video call', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {

@@ -7,7 +7,7 @@ const UsersSendWelcomeEmailParamsPostSchema = {
 	properties: {
 		email: {
 			type: 'string',
-			format: 'email',
+			format: 'basic_email',
 		},
 	},
 	required: ['email'],

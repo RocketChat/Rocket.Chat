@@ -7,6 +7,8 @@ import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
 
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
+const sidepanelItemValues = ['channels', 'discussions'] as const;
+export type SidepanelItem = (typeof sidepanelItemValues)[number];
 
 export type RoomID = string;
 export type ChannelName = string;
@@ -51,15 +53,6 @@ export interface IRoom extends IRocketChatRecord {
 		_id: string;
 	};
 
-	streamingOptions?: {
-		id?: string;
-		type?: string;
-		url?: string;
-		thumbnail?: string;
-		isAudioOnly?: boolean;
-		message?: string;
-	};
-
 	prid?: string;
 	avatarETag?: string;
 
@@ -94,8 +87,28 @@ export interface IRoom extends IRocketChatRecord {
 	/* @deprecated */
 	customFields?: Record<string, any>;
 
-	channel?: { _id: string };
+	usersWaitingForE2EKeys?: { userId: IUser['_id']; ts: Date }[];
+
+	sidepanel?: {
+		items: [SidepanelItem, SidepanelItem?];
+	};
 }
+
+export const isSidepanelItem = (item: any): item is SidepanelItem => {
+	return sidepanelItemValues.includes(item);
+};
+
+export const isValidSidepanel = (sidepanel: IRoom['sidepanel']) => {
+	if (!sidepanel?.items) {
+		return false;
+	}
+	return (
+		Array.isArray(sidepanel.items) &&
+		sidepanel.items.length &&
+		sidepanel.items.every(isSidepanelItem) &&
+		sidepanel.items.length === new Set(sidepanel.items).size
+	);
+};
 
 export const isRoomWithJoinCode = (room: Partial<IRoom>): room is IRoomWithJoinCode =>
 	'joinCodeRequired' in room && (room as any).joinCodeRequired === true;
@@ -129,6 +142,7 @@ export const isPrivateDiscussion = (room: Partial<IRoom>): room is IRoom => isDi
 export const isPublicDiscussion = (room: Partial<IRoom>): room is IRoom => isDiscussion(room) && room.t === 'c';
 
 export const isPublicRoom = (room: Partial<IRoom>): room is IRoom => room.t === 'c';
+export const isPrivateRoom = (room: Partial<IRoom>): room is IRoom => room.t === 'p';
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';
@@ -149,7 +163,32 @@ export enum OmnichannelSourceType {
 	OTHER = 'other', // catch-all source type
 }
 
-export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
+export interface IOmnichannelSource {
+	// TODO: looks like this is not so required as the definition suggests
+	// The source, or client, which created the Omnichannel room
+	type: OmnichannelSourceType;
+	// An optional identification of external sources, such as an App
+	id?: string;
+	// A human readable alias that goes with the ID, for post analytical purposes
+	alias?: string;
+	// A label to be shown in the room info
+	label?: string;
+	// The sidebar icon
+	sidebarIcon?: string;
+	// The default sidebar icon
+	defaultIcon?: string;
+}
+
+export interface IOmnichannelSourceFromApp extends IOmnichannelSource {
+	type: OmnichannelSourceType.APP;
+	id: string;
+	label: string;
+	sidebarIcon?: string;
+	defaultIcon?: string;
+	alias?: string;
+}
+
+export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast'> {
 	t: 'l' | 'v';
 	v: Pick<ILivechatVisitor, '_id' | 'username' | 'status' | 'name' | 'token' | 'activity'> & {
 		lastMessageTs?: Date;
@@ -162,21 +201,7 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 		replyTo: string;
 		subject: string;
 	};
-	source: {
-		// TODO: looks like this is not so required as the definition suggests
-		// The source, or client, which created the Omnichannel room
-		type: OmnichannelSourceType;
-		// An optional identification of external sources, such as an App
-		id?: string;
-		// A human readable alias that goes with the ID, for post analytical purposes
-		alias?: string;
-		// A label to be shown in the room info
-		label?: string;
-		// The sidebar icon
-		sidebarIcon?: string;
-		// The default sidebar icon
-		defaultIcon?: string;
-	};
+	source: IOmnichannelSource;
 
 	// Note: this field is used only for email transcripts. For Pdf transcripts, we have a separate field.
 	transcriptRequest?: IRequestTranscript;
@@ -274,9 +299,12 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 			total: number;
 			avg: number;
 			ft: number;
+			fd?: number;
 		};
 		reaction?: {
+			tt: number;
 			ft: number;
+			fd?: number;
 		};
 	};
 
@@ -307,13 +335,7 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 }
 
 export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
-	source: {
-		type: OmnichannelSourceType.APP;
-		id: string;
-		alias?: string;
-		sidebarIcon?: string;
-		defaultIcon?: string;
-	};
+	source: IOmnichannelSourceFromApp;
 }
 
 export type IVoipRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> &
@@ -330,12 +352,8 @@ export const isOmnichannelRoom = (room: Pick<IRoom, 't'>): room is IOmnichannelR
 
 export const isVoipRoom = (room: IRoom): room is IVoipRoom & IRoom => room.t === 'v';
 
-export const isOmnichannelRoomFromAppSource = (room: IRoom): room is IOmnichannelRoomFromAppSource => {
-	if (!isOmnichannelRoom(room)) {
-		return false;
-	}
-
-	return room.source?.type === OmnichannelSourceType.APP;
+export const isOmnichannelSourceFromApp = (source: IOmnichannelSource): source is IOmnichannelSourceFromApp => {
+	return source?.type === OmnichannelSourceType.APP;
 };
 
 export type RoomAdminFieldsType =
@@ -347,6 +365,7 @@ export type RoomAdminFieldsType =
 	| 'cl'
 	| 'u'
 	| 'usernames'
+	| 'ts'
 	| 'usersCount'
 	| 'muted'
 	| 'unmuted'

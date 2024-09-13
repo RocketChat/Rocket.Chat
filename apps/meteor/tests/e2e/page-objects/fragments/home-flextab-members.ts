@@ -46,6 +46,11 @@ export class HomeFlextabMembers {
 		await this.page.getByRole('dialog').getByRole('button').first().click();
 	}
 
+	async unmuteUser(username: string) {
+		await this.openMemberOptionMoreActions(username);
+		await this.getMenuItemAction('Unmute user').click();
+	}
+
 	async setUserAsModerator(username: string) {
 		await this.openMemberOptionMoreActions(username);
 		await this.getMenuItemAction('Set as moderator').click();
@@ -73,5 +78,13 @@ export class HomeFlextabMembers {
 
 	async unignoreUser(username: string) {
 		await this.ignoreUserAction('Unignore', username);
+	}
+
+	get confirmRemoveUserModal() {
+		return this.page.getByRole('dialog', { name: 'Confirmation', exact: true });
+	}
+
+	async confirmRemoveUser() {
+		return this.confirmRemoveUserModal.getByRole('button', { name: 'Remove', exact: true }).click();
 	}
 }

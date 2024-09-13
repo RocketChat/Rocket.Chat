@@ -2,7 +2,7 @@ import type { IRole } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { AuthorizationContext } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React, { useCallback, useEffect } from 'react';
 
 import { hasPermission, hasAtLeastOnePermission, hasAllPermission, hasRole } from '../../app/authorization/client';
@@ -27,7 +27,11 @@ const contextValue = {
 	roleStore: new RoleStore(),
 };
 
-const AuthorizationProvider: FC = ({ children }) => {
+type AuthorizationProviderProps = {
+	children?: ReactNode;
+};
+
+const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 	const roles = useReactiveValue(
 		useCallback(
 			() =>

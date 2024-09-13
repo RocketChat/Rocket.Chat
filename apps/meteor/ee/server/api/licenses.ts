@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 
 import { API } from '../../../app/api/server/api';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
+import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
 
 API.v1.addRoute(
 	'licenses.get',
@@ -56,7 +57,8 @@ API.v1.addRoute(
 				return API.v1.failure('Invalid license');
 			}
 
-			await Settings.updateValueById('Enterprise_License', license);
+			(await Settings.updateValueById('Enterprise_License', license)).modifiedCount &&
+				void notifyOnSettingChangedById('Enterprise_License');
 
 			return API.v1.success();
 		},

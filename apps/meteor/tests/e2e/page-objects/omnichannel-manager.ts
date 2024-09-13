@@ -13,7 +13,7 @@ export class OmnichannelManager {
 	}
 
 	private get inputSearch() {
-		return this.page.locator('[placeholder="Search"]');
+		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	async search(text: string) {
@@ -27,7 +27,7 @@ export class OmnichannelManager {
 	}
 
 	get inputUsername(): Locator {
-		return this.page.locator('input').first();
+		return this.page.getByRole('main').getByLabel('Username');
 	}
 
 	async selectUsername(username: string) {

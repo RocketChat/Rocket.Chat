@@ -8,6 +8,7 @@ import { useSubscription } from 'use-subscription';
 
 import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
 import { QuoteAttachment } from '../../../../components/message/content/attachments/QuoteAttachment';
+import AttachmentProvider from '../../../../providers/AttachmentProvider';
 import { useChat } from '../../contexts/ChatContext';
 
 const MessageBoxReplies = (): ReactElement | null => {
@@ -39,19 +40,21 @@ const MessageBoxReplies = (): ReactElement | null => {
 			{replies.map((reply, key) => (
 				<Margins block={4} key={key}>
 					<Box display='flex' position='relative'>
-						<QuoteAttachment
-							attachment={
-								{
-									text: reply.msg,
-									md: reply.md,
-									author_name: reply.alias || getUserDisplayName(reply.u.name, reply.u.username, useRealName),
-									author_icon: `/avatar/${reply.u.username}`,
-									ts: reply.ts,
-									attachments: reply?.attachments?.map((obj) => ({ ...obj, collapsed: true })),
-									collapsed: true,
-								} as MessageQuoteAttachment
-							}
-						/>
+						<AttachmentProvider>
+							<QuoteAttachment
+								attachment={
+									{
+										text: reply.msg,
+										md: reply.md,
+										author_name: reply.alias || getUserDisplayName(reply.u.name, reply.u.username, useRealName),
+										author_icon: `/avatar/${reply.u.username}`,
+										ts: reply.ts,
+										attachments: reply?.attachments?.map((obj) => ({ ...obj, collapsed: true })),
+										collapsed: true,
+									} as MessageQuoteAttachment
+								}
+							/>
+						</AttachmentProvider>
 						<Box
 							className={closeWrapperStyle}
 							data-mid={reply._id}

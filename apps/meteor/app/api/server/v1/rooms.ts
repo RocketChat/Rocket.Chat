@@ -1,11 +1,19 @@
-import { Media } from '@rocket.chat/core-services';
+import { Media, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Users, Uploads } from '@rocket.chat/models';
+import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
-import { isGETRoomsNameExists, isRoomsImagesProps, isRoomsMuteUnmuteUserProps, isRoomsExportProps } from '@rocket.chat/rest-typings';
+import {
+	isGETRoomsNameExists,
+	isRoomsImagesProps,
+	isRoomsMuteUnmuteUserProps,
+	isRoomsExportProps,
+	isRoomsIsMemberProps,
+	isRoomsCleanHistoryProps,
+} from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { isTruthy } from '../../../../lib/isTruthy';
+import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/methods/eraseRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
@@ -141,7 +149,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.upload/:rid',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		deprecation: {
+			version: '8.0.0',
+			alternatives: ['rooms.media'],
+		},
+	},
 	{
 		async post() {
 			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
@@ -186,6 +200,112 @@ API.v1.addRoute(
 			await sendFileMessage(this.userId, { roomId: this.urlParams.rid, file: uploadedFile, msgData: fields });
 
 			const message = await Messages.getMessageByFileIdAndUsername(uploadedFile._id, this.userId);
+
+			return API.v1.success({
+				message,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.media/:rid',
+	{ authRequired: true },
+	{
+		async post() {
+			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
+				return API.v1.unauthorized();
+			}
+
+			const file = await getUploadFormData(
+				{
+					request: this.request,
+				},
+				{ field: 'file', sizeLimit: settings.get<number>('FileUpload_MaxFileSize') },
+			);
+
+			if (!file) {
+				throw new Meteor.Error('invalid-field');
+			}
+
+			let { fileBuffer } = file;
+
+			const expiresAt = new Date();
+			expiresAt.setHours(expiresAt.getHours() + 24);
+
+			const { fields } = file;
+
+			let content;
+
+			if (fields.content) {
+				try {
+					content = JSON.parse(fields.content);
+				} catch (e) {
+					console.error(e);
+					throw new Meteor.Error('invalid-field-content');
+				}
+			}
+
+			const details = {
+				name: file.filename,
+				size: fileBuffer.length,
+				type: file.mimetype,
+				rid: this.urlParams.rid,
+				userId: this.userId,
+				content,
+				expiresAt,
+			};
+
+			const stripExif = settings.get('Message_Attachments_Strip_Exif');
+			if (stripExif) {
+				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
+				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
+			}
+
+			const fileStore = FileUpload.getStore('Uploads');
+			const uploadedFile = await fileStore.insert(details, fileBuffer);
+
+			uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
+
+			await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
+
+			return API.v1.success({
+				file: {
+					_id: uploadedFile._id,
+					url: uploadedFile.path,
+				},
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.mediaConfirm/:rid/:fileId',
+	{ authRequired: true },
+	{
+		async post() {
+			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
+				return API.v1.unauthorized();
+			}
+
+			const file = await Uploads.findOneById(this.urlParams.fileId);
+
+			if (!file) {
+				throw new Meteor.Error('invalid-file');
+			}
+
+			file.description = this.bodyParams.description;
+			delete this.bodyParams.description;
+
+			await sendFileMessage(
+				this.userId,
+				{ roomId: this.urlParams.rid, file, msgData: this.bodyParams },
+				{ parseAttachmentsForE2EE: false },
+			);
+
+			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
+
+			const message = await Messages.getMessageByFileIdAndUsername(file._id, this.userId);
 
 			return API.v1.success({
 				message,
@@ -242,7 +362,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.cleanHistory',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomsCleanHistoryProps },
 	{
 		async post() {
 			const { _id } = await findRoomByIdOrName({ params: this.bodyParams });
@@ -297,7 +417,19 @@ API.v1.addRoute(
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
-			return API.v1.success({ room: (await Rooms.findOneByIdOrName(room._id, { projection: fields })) ?? undefined });
+			const discussionParent =
+				room.prid &&
+				(await Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | 'prid' | 'u'>>(room.prid, {
+					projection: { name: 1, fname: 1, t: 1, prid: 1, u: 1 },
+				}));
+			const { team, parentRoom } = await Team.getRoomInfo(room);
+			const parent = discussionParent || parentRoom;
+
+			return API.v1.success({
+				room: (await Rooms.findOneByIdOrName(room._id, { projection: fields })) ?? undefined,
+				...(team && { team }),
+				...(parent && { parent }),
+			});
 		},
 	},
 );
@@ -666,6 +798,36 @@ API.v1.addRoute(
 			}
 
 			return API.v1.failure();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.isMember',
+	{
+		authRequired: true,
+		validateParams: isRoomsIsMemberProps,
+	},
+	{
+		async get() {
+			const { roomId, userId, username } = this.queryParams;
+			const [room, user] = await Promise.all([
+				findRoomByIdOrName({
+					params: { roomId },
+				}) as Promise<IRoom>,
+				Users.findOneByIdOrUsername(userId || username),
+			]);
+
+			if (!user?._id) {
+				return API.v1.failure('error-user-not-found');
+			}
+
+			if (await canAccessRoomAsync(room, { _id: this.user._id })) {
+				return API.v1.success({
+					isMember: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0,
+				});
+			}
+			return API.v1.unauthorized();
 		},
 	},
 );

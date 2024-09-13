@@ -186,7 +186,7 @@ test.describe.serial('permissions', () => {
 		});
 	});
 
-	test.describe.skip('Filter words', () => {
+	test.describe.serial('Filter words', () => {
 		test.beforeAll(async ({ api }) => {
 			const statusCode1 = (await api.post('/settings/Message_AllowBadWordsFilter', { value: true })).status();
 			const statusCode2 = (await api.post('/settings/Message_BadWordsFilterList', { value: 'badword' })).status();

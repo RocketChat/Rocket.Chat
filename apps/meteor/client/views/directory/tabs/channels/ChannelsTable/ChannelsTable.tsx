@@ -96,7 +96,7 @@ const ChannelsTable = () => {
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Channels')} onChange={({ text }): void => setText(text)} />
+			<FilterByText placeholder={t('Search_Channels')} onChange={setText} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

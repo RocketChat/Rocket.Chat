@@ -47,7 +47,7 @@ const BusinessHoursTable = () => {
 
 	return (
 		<>
-			<FilterByText onChange={({ text }) => setText(text)} />
+			<FilterByText onChange={setText} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>

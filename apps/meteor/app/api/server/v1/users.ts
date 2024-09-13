@@ -19,6 +19,7 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
+import { getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -43,6 +44,9 @@ import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
 import { validateCustomFields } from '../../../lib/server/functions/validateCustomFields';
+import { validateNameChars } from '../../../lib/server/functions/validateNameChars';
+import { validateUsername } from '../../../lib/server/functions/validateUsername';
+import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../lib/server/lib/notifyListener';
 import { generateAccessToken } from '../../../lib/server/methods/createToken';
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/server/getURL';
@@ -93,6 +97,10 @@ API.v1.addRoute(
 		async post() {
 			const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
 
+			if (userData.name && !validateNameChars(userData.name)) {
+				return API.v1.failure('Name contains invalid characters');
+			}
+
 			await saveUser(this.userId, userData);
 
 			if (this.bodyParams.data.customFields) {
@@ -136,6 +144,10 @@ API.v1.addRoute(
 				newPassword: this.bodyParams.data.newPassword,
 				typedPassword: this.bodyParams.data.currentPassword,
 			};
+
+			if (userData.realname && !validateNameChars(userData.realname)) {
+				return API.v1.failure('Name contains invalid characters');
+			}
 
 			// saveUserProfile now uses the default two factor authentication procedures, so we need to provide that
 			const twoFactorOptions = !userData.typedPassword
@@ -279,6 +291,10 @@ API.v1.addRoute(
 				this.bodyParams.joinDefaultChannels = true;
 			}
 
+			if (this.bodyParams.name && !validateNameChars(this.bodyParams.name)) {
+				return API.v1.failure('Name contains invalid characters');
+			}
+
 			if (this.bodyParams.customFields) {
 				validateCustomFields(this.bodyParams.customFields);
 			}
@@ -387,7 +403,8 @@ API.v1.addRoute(
 			const lastLoggedIn = new Date();
 			lastLoggedIn.setDate(lastLoggedIn.getDate() - daysIdle);
 
-			const count = (await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false)).modifiedCount;
+			// since we're deactiving users that are not logged in, there is no need to send data through WS
+			const { modifiedCount: count } = await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
 
 			return API.v1.success({
 				count,
@@ -625,15 +642,23 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			const { secret: secretURL, ...params } = this.bodyParams;
+
 			if (this.userId) {
 				return API.v1.failure('Logged in users can not register again.');
+			}
+
+			if (params.name && !validateNameChars(params.name)) {
+				return API.v1.failure('Name contains invalid characters');
+			}
+
+			if (!validateUsername(this.bodyParams.username)) {
+				return API.v1.failure(`The username provided is not valid`);
 			}
 
 			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
 				return API.v1.failure('Username is already in use');
 			}
-
-			const { secret: secretURL, ...params } = this.bodyParams;
 
 			if (this.bodyParams.customFields) {
 				try {
@@ -730,6 +755,12 @@ API.v1.addRoute(
 	{ authRequired: false },
 	{
 		async post() {
+			const isPasswordResetEnabled = settings.get('Accounts_PasswordReset');
+
+			if (!isPasswordResetEnabled) {
+				return API.v1.failure('Password reset is not enabled');
+			}
+
 			const { email } = this.bodyParams;
 			if (!email) {
 				return API.v1.failure("The 'email' param is required");
@@ -861,13 +892,30 @@ API.v1.addRoute(
 
 			// When 2FA is enable we logout all other clients
 			const xAuthToken = this.request.headers['x-auth-token'] as string;
-			if (xAuthToken) {
-				const hashedToken = Accounts._hashLoginToken(xAuthToken);
-
-				if (!(await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
-					throw new MeteorError('error-logging-out-other-clients', 'Error logging out other clients');
-				}
+			if (!xAuthToken) {
+				return API.v1.success();
 			}
+
+			const hashedToken = Accounts._hashLoginToken(xAuthToken);
+
+			if (!(await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
+				throw new MeteorError('error-logging-out-other-clients', 'Error logging out other clients');
+			}
+
+			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
+			// instead of having to listen to every watch.users event
+			void notifyOnUserChangeAsync(async () => {
+				const userTokens = await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } });
+				if (!userTokens) {
+					return;
+				}
+
+				return {
+					clientAction: 'updated',
+					id: this.user._id,
+					diff: { 'services.resume.loginTokens': userTokens.services?.resume?.loginTokens },
+				};
+			});
 
 			return API.v1.success();
 		},
@@ -1021,10 +1069,17 @@ API.v1.addRoute(
 
 			const me = (await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } })) as Pick<IUser, 'services'>;
 
+			void notifyOnUserChange({
+				clientAction: 'updated',
+				id: this.userId,
+				diff: { 'services.resume.loginTokens': me.services?.resume?.loginTokens },
+			});
+
 			const token = me.services?.resume?.loginTokens?.find((token) => token.hashedToken === hashedToken);
 
-			const tokenExpires =
-				(token && 'when' in token && new Date(token.when.getTime() + settings.get<number>('Accounts_LoginExpiration') * 1000)) || undefined;
+			const loginExp = settings.get<number>('Accounts_LoginExpiration');
+
+			const tokenExpires = (token && 'when' in token && new Date(token.when.getTime() + getLoginExpirationInMs(loginExp))) || undefined;
 
 			return API.v1.success({
 				token: xAuthToken,
@@ -1172,6 +1227,8 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 			}
 
+			void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [] } });
+
 			return API.v1.success({
 				message: `User ${userId} has been logged out!`,
 			});
@@ -1241,6 +1298,8 @@ API.v1.addRoute(
 			if (!user) {
 				return API.v1.unauthorized();
 			}
+
+			// TODO refactor to not update the user twice (one inside of `setStatusText` and then later just the status + statusDefault)
 
 			if (this.bodyParams.message || this.bodyParams.message === '') {
 				await setStatusText(user._id, this.bodyParams.message);

@@ -7,6 +7,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../lib/callbacks/afterLeaveRoomCallback';
 import { afterLogoutCleanUpCallback } from '../../../../lib/callbacks/afterLogoutCleanUpCallback';
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import * as servers from '../servers';
 import * as localCommandHandlers from './localHandlers';
 import * as peerCommandHandlers from './peerHandlers';
@@ -19,15 +20,13 @@ const updateLastPing = withThrottling({ wait: 10_000 })(() => {
 	if (removed) {
 		return;
 	}
-	void Settings.updateOne(
-		{ _id: 'IRC_Bridge_Last_Ping' },
-		{
-			$set: {
-				value: new Date(),
-			},
-		},
-		{ upsert: true },
-	);
+
+	void (async () => {
+		const updatedValue = await Settings.updateValueById('IRC_Bridge_Last_Ping', new Date(), { upsert: true });
+		if (updatedValue.modifiedCount || updatedValue.upsertedCount) {
+			void notifyOnSettingChangedById('IRC_Bridge_Last_Ping');
+		}
+	})();
 });
 
 class Bridge {

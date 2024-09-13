@@ -24,7 +24,7 @@ export class OmnichannelTags extends OmnichannelAdministration {
 	}
 
 	get inputSearch(): Locator {
-		return this.page.locator('[placeholder="Search"]');
+		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	get confirmDeleteModal(): Locator {

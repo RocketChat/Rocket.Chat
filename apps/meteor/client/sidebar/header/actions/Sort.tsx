@@ -1,13 +1,15 @@
 import { Sidebar } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { VFC, HTMLAttributes } from 'react';
+import { GenericMenu } from '@rocket.chat/ui-client';
+import type { HTMLAttributes } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import GenericMenu from '../../../components/GenericMenu/GenericMenu';
 import { useSortMenu } from './hooks/useSortMenu';
 
-const Sort: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => {
-	const t = useTranslation();
+type SortProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+
+const Sort = (props: SortProps) => {
+	const { t } = useTranslation();
 
 	const sections = useSortMenu();
 

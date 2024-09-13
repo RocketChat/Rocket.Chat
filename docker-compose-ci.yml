@@ -30,6 +30,7 @@ services:
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
       traefik.http.routers.rocketchat.service: rocketchat
       traefik.http.routers.rocketchat.rule: PathPrefix(`/`)
+      traefik.http.middlewares.test-retry.retry.attempts: 4
 
   authorization-service:
     platform: linux/amd64
@@ -162,9 +163,10 @@ services:
     image: nats:2.6-alpine
 
   traefik:
-    image: traefik:v2.8
+    image: traefik:v3.1
     command:
       - --providers.docker=true
+      - '--serverstransport.maxidleconnsperhost=-1'
     ports:
       - 3000:80
     volumes:

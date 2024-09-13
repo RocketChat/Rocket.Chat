@@ -2,6 +2,7 @@ import { Apps, AppEvents } from '@rocket.chat/apps';
 import { User } from '@rocket.chat/core-services';
 import { Roles, Settings, Users } from '@rocket.chat/models';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
+import { getLoginExpirationInDays } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -19,6 +20,7 @@ import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUser
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { joinDefaultChannels } from '../../../lib/server/functions/joinDefaultChannels';
 import { setAvatarFromServiceWithValidation } from '../../../lib/server/functions/setUserAvatar';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
@@ -30,7 +32,7 @@ Accounts.config({
 
 Meteor.startup(() => {
 	settings.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {
-		Accounts._options.loginExpirationInDays = settings.get('Accounts_LoginExpiration');
+		Accounts._options.loginExpirationInDays = getLoginExpirationInDays(settings.get('Accounts_LoginExpiration'));
 
 		Accounts.emailTemplates.siteName = settings.get('Site_Name');
 
@@ -323,7 +325,8 @@ const insertUserDocAsync = async function (options, user) {
 		if (!roles.includes('admin') && !hasAdmin) {
 			roles.push('admin');
 			if (settings.get('Show_Setup_Wizard') === 'pending') {
-				await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
+				(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount &&
+					void notifyOnSettingChangedById('Show_Setup_Wizard');
 			}
 		}
 	}

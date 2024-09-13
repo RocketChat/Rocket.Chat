@@ -1,4 +1,5 @@
-import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
@@ -6,7 +7,7 @@ import { settings } from '../../settings/server';
 import { CROWD } from './crowd';
 import { logger } from './logger';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		crowd_test_connection(): { message: TranslationKey; params: string[] };

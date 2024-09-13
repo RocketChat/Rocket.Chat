@@ -1,10 +1,9 @@
 import type { IVoipRoom } from '@rocket.chat/core-typings';
-import { HeaderToolbar } from '@rocket.chat/ui-client';
 import { useLayout, useRouter } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React, { useCallback, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
+import { HeaderToolbar } from '../../../../components/Header';
 import SidebarToggler from '../../../../components/SidebarToggler';
 import { parseOutboundPhoneNumber } from '../../../../lib/voip/parseOutboundPhoneNumber';
 import type { RoomHeaderProps } from '../RoomHeader';
@@ -15,7 +14,7 @@ type VoipRoomHeaderProps = {
 	room: IVoipRoom;
 } & Omit<RoomHeaderProps, 'room'>;
 
-const VoipRoomHeader: FC<VoipRoomHeaderProps> = ({ slots: parentSlot, room }) => {
+const VoipRoomHeader = ({ slots: parentSlot, room }: VoipRoomHeaderProps) => {
 	const router = useRouter();
 
 	const currentRouteName = useSyncExternalStore(

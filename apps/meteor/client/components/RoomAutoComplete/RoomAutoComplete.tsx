@@ -1,9 +1,10 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useState } from 'react';
 
 const generateQuery = (
@@ -12,7 +13,11 @@ const generateQuery = (
 	selector: string;
 } => ({ selector: JSON.stringify({ name: term }) });
 
-type RoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & { scope?: 'admin' | 'regular' };
+type RoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
+	scope?: 'admin' | 'regular';
+	renderRoomIcon?: (props: { encrypted: IRoom['encrypted']; type: IRoom['t'] }) => ReactElement | null;
+	setSelectedRoom?: React.Dispatch<React.SetStateAction<IRoom | undefined>>;
+};
 
 const AVATAR_SIZE = 'x20';
 
@@ -27,7 +32,7 @@ const ROOM_AUTOCOMPLETE_PARAMS = {
 	},
 } as const;
 
-const RoomAutoComplete = ({ value, onChange, scope = 'regular', ...props }: RoomAutoCompleteProps) => {
+const RoomAutoComplete = ({ value, onChange, scope = 'regular', renderRoomIcon, setSelectedRoom, ...props }: RoomAutoCompleteProps) => {
 	const [filter, setFilter] = useState('');
 	const filterDebounced = useDebouncedValue(filter, 300);
 	const roomsAutoCompleteEndpoint = useEndpoint('GET', ROOM_AUTOCOMPLETE_PARAMS[scope].endpoint);
@@ -43,9 +48,9 @@ const RoomAutoComplete = ({ value, onChange, scope = 'regular', ...props }: Room
 	const options = useMemo(
 		() =>
 			result.isSuccess
-				? result.data.items.map(({ name, fname, _id, avatarETag, t }) => ({
+				? result.data.items.map(({ name, fname, _id, avatarETag, t, encrypted }) => ({
 						value: _id,
-						label: { name: fname || name, avatarETag, type: t },
+						label: { name: fname || name, avatarETag, type: t, encrypted },
 				  }))
 				: [],
 		[result.data?.items, result.isSuccess],
@@ -55,7 +60,14 @@ const RoomAutoComplete = ({ value, onChange, scope = 'regular', ...props }: Room
 		<AutoComplete
 			{...props}
 			value={value}
-			onChange={onChange}
+			onChange={(val) => {
+				onChange(val);
+
+				if (setSelectedRoom && typeof setSelectedRoom === 'function') {
+					const selectedRoom = result?.data?.items.find(({ _id }) => _id === val) as unknown as IRoom;
+					setSelectedRoom(selectedRoom);
+				}
+			}}
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ selected: { value, label } }) => (
@@ -66,6 +78,7 @@ const RoomAutoComplete = ({ value, onChange, scope = 'regular', ...props }: Room
 					<Box margin='none' mi={2}>
 						{label?.name}
 					</Box>
+					{renderRoomIcon?.({ ...label })}
 				</>
 			)}
 			renderItem={({ value, label, ...props }) => (

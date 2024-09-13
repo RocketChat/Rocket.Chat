@@ -1,15 +1,16 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import { useSetting, useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
-import GenericMenu from '../../../components/GenericMenu/GenericMenu';
 import LocalTime from '../../../components/LocalTime';
 import { UserCard, UserCardAction, UserCardRole, UserCardSkeleton } from '../../../components/UserCard';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
+import { useMemberExists } from '../../hooks/useMemberExists';
 import { useUserInfoActions } from '../hooks/useUserInfoActions';
 
 type UserCardWithDataProps = {
@@ -24,7 +25,16 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const getRoles = useRolesDescription();
 	const showRealNames = Boolean(useSetting('UI_Use_Real_Name'));
 
-	const { data, isLoading } = useUserInfoQuery({ username });
+	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username });
+	const {
+		data: isMemberData,
+		refetch,
+		isSuccess: membershipCheckSuccess,
+		isLoading: isMembershipStatusLoading,
+	} = useMemberExists({ roomId: rid, username });
+
+	const isLoading = isUserInfoLoading || isMembershipStatusLoading;
+	const isMember = membershipCheckSuccess && isMemberData?.isMember;
 
 	const user = useMemo(() => {
 		const defaultValue = isLoading ? undefined : null;
@@ -62,6 +72,9 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions(
 		{ _id: user._id ?? '', username: user.username, name: user.name },
 		rid,
+		refetch,
+		undefined,
+		isMember,
 	);
 
 	const menu = useMemo(() => {
@@ -69,8 +82,17 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			return null;
 		}
 
-		return <GenericMenu title={t('More')} key='menu' data-qa-id='menu' sections={menuOptions} placement='bottom-start' />;
-	}, [menuOptions, t]);
+		return (
+			<GenericMenu
+				title={t('More')}
+				key='menu'
+				data-qa-id='menu'
+				sections={menuOptions}
+				placement='bottom-start'
+				callbackAction={onClose}
+			/>
+		);
+	}, [menuOptions, onClose, t]);
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { content, icon, onClick }]: any): ReactElement => (

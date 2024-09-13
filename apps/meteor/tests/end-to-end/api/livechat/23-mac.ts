@@ -78,7 +78,8 @@ describe('MAC', () => {
 
 		it('visitor should be marked as active for period', async () => {
 			const { body } = await request
-				.get(api(`livechat/visitors.info?visitorId=${visitor._id}`))
+				.get(api('livechat/visitors.info'))
+				.query({ visitorId: visitor._id })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(200);

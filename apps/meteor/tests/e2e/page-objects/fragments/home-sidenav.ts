@@ -9,6 +9,10 @@ export class HomeSidenav {
 		this.page = page;
 	}
 
+	get advancedSettingsAccordion(): Locator {
+		return this.page.getByRole('dialog').getByRole('button', { name: 'Advanced settings', exact: true });
+	}
+
 	get checkboxPrivateChannel(): Locator {
 		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Private' }) });
 	}
@@ -38,7 +42,7 @@ export class HomeSidenav {
 	}
 
 	get userProfileMenu(): Locator {
-		return this.page.getByRole('button', { name: 'User menu' });
+		return this.page.getByRole('button', { name: 'User menu', exact: true });
 	}
 
 	get sidebarChannelsList(): Locator {
@@ -50,7 +54,7 @@ export class HomeSidenav {
 	}
 
 	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
-		await this.sidebarToolbar.getByRole('button', { name: 'Display' }).click();
+		await this.sidebarToolbar.getByRole('button', { name: 'Display', exact: true }).click();
 		await this.sidebarToolbar.getByRole('menuitemcheckbox', { name: mode }).click();
 		await this.sidebarToolbar.click();
 	}
@@ -91,7 +95,16 @@ export class HomeSidenav {
 	}
 
 	async openSearch(): Promise<void> {
-		await this.page.locator('role=button[name="Search"]').click();
+		await this.page.locator('role=navigation >> role=button[name=Search]').click();
+	}
+
+	getSearchRoomByName(name: string): Locator {
+		return this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`);
+	}
+
+	async searchRoom(name: string): Promise<void> {
+		await this.openSearch();
+		await this.page.locator('role=search >> role=searchbox').fill(name);
 	}
 
 	async logout(): Promise<void> {
@@ -105,17 +118,16 @@ export class HomeSidenav {
 	}
 
 	async openChat(name: string): Promise<void> {
-		await this.page.locator('role=navigation >> role=button[name=Search]').click();
-		await this.page.locator('role=search >> role=searchbox').fill(name);
-		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
+		await this.searchRoom(name);
+		await this.getSearchRoomByName(name).click();
 		await this.waitForChannel();
 	}
 
 	async waitForChannel(): Promise<void> {
 		await this.page.locator('role=main').waitFor();
 		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
+		await this.page.locator('role=main >> role=list').waitFor();
 
-		await expect(this.page.locator('role=main >> .rcx-skeleton')).toHaveCount(0);
 		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
 	}
 
@@ -154,6 +166,7 @@ export class HomeSidenav {
 	async createEncryptedChannel(name: string) {
 		await this.openNewByLabel('Channel');
 		await this.inputChannelName.type(name);
+		await this.advancedSettingsAccordion.click();
 		await this.checkboxEncryption.click();
 		await this.btnCreate.click();
 	}

@@ -2,6 +2,7 @@ import { Settings } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
@@ -15,7 +16,7 @@ export async function startRegisterWorkspace(resend = false) {
 		return true;
 	}
 
-	await Settings.updateValueById('Register_Server', true);
+	(await Settings.updateValueById('Register_Server', true)).modifiedCount && void notifyOnSettingChangedById('Register_Server');
 
 	const regInfo = await buildWorkspaceRegistrationData(undefined);
 

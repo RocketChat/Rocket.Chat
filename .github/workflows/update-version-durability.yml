@@ -1,0 +1,35 @@
+name: Update Version Durability
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    secrets:
+      CI_PAT:
+        required: true
+      D360_TOKEN:
+        required: true
+
+jobs:
+  update-versions:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v4.0.3
+      with:
+        node-version: '20.15.1'
+
+    - name: Install dependencies
+      run: |
+        cd ./.github/actions/update-version-durability
+        npm install
+
+    - name: Update Version Durability
+      uses: ./.github/actions/update-version-durability
+      with:
+        GH_TOKEN: ${{ secrets.CI_PAT }}
+        D360_TOKEN: ${{ secrets.D360_TOKEN }}
+        D360_ARTICLE_ID: 800f8d52-409d-478d-b560-f82a2c0eb7fb
+        PUBLISH: true

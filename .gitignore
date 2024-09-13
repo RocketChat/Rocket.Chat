@@ -47,6 +47,11 @@ yarn-error.log*
 .history
 .envrc
 
+.preview
+
 *.sublime-workspace
 
 **/.vim/
+
+data/
+registration.yaml

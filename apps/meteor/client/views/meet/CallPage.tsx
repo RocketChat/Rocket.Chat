@@ -2,7 +2,6 @@ import { Box, Flex, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useStream } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import type { FC } from 'react';
 import React, { useEffect, useState } from 'react';
 
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
@@ -23,7 +22,7 @@ type CallPageProps = {
 	callStartTime: any;
 };
 
-const CallPage: FC<CallPageProps> = ({
+const CallPage = ({
 	roomId,
 	visitorToken,
 	visitorId,
@@ -33,7 +32,7 @@ const CallPage: FC<CallPageProps> = ({
 	visitorName,
 	agentName,
 	callStartTime,
-}) => {
+}: CallPageProps) => {
 	if (!roomId) {
 		throw new Error('Call Page - no room id');
 	}

@@ -1,14 +1,15 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { ModerationReports, Rooms, Users, Messages } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../app/authorization/server/functions/canAccessRoom';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		reportMessage(messageId: IMessage['_id'], description: string): Promise<boolean>;
@@ -82,3 +83,15 @@ Meteor.methods<ServerMethods>({
 		return true;
 	},
 });
+
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'reportMessage',
+		userId() {
+			return true;
+		},
+	},
+	5,
+	60000,
+);

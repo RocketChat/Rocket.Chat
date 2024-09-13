@@ -1,4 +1,5 @@
 import type { LayoutBlockType } from '../LayoutBlockType';
+import type { LayoutBlockish } from '../LayoutBlockish';
 import type { TextObject } from '../TextObject';
 import type { ContextBlock } from './ContextBlock';
 
@@ -10,12 +11,12 @@ type Image = {
 	};
 };
 
-export type PreviewBlockBase = {
+export type PreviewBlockBase = LayoutBlockish<{
 	type: `${LayoutBlockType.PREVIEW}`;
 	title: TextObject[];
 	description: TextObject[];
 	footer?: ContextBlock;
-};
+}>;
 
 export type PreviewBlockWithThumb = PreviewBlockBase & {
 	thumb: Image;

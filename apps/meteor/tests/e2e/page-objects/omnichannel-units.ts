@@ -4,7 +4,7 @@ import { OmnichannelAdministration } from './omnichannel-administration';
 
 export class OmnichannelUnits extends OmnichannelAdministration {
 	get inputSearch() {
-		return this.page.locator('[placeholder="Search"]');
+		return this.page.getByRole('main').getByRole('textbox', { name: 'Search' });
 	}
 
 	async search(text: string) {
@@ -41,6 +41,10 @@ export class OmnichannelUnits extends OmnichannelAdministration {
 
 	private selectOption(name: string) {
 		return this.page.locator(`[role=option][value="${name}"]`);
+	}
+
+	public selectOptionChip(name: string) {
+		return this.page.getByRole('option', { name });
 	}
 
 	async selectDepartment({ name, _id }: { name: string; _id: string }) {

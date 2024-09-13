@@ -84,6 +84,14 @@ class ChatContainer extends Component {
 			return user;
 		}
 
+		const {
+			iframe: { defaultDepartment },
+		} = store.state;
+
+		if (!guest?.department && defaultDepartment) {
+			guest.department = defaultDepartment;
+		}
+
 		const visitor = { token, ...guest };
 		const { visitor: newUser } = await Livechat.grantVisitor({ visitor });
 		await dispatch({ user: newUser });
@@ -280,8 +288,8 @@ class ChatContainer extends Component {
 	};
 
 	canFinishChat = () => {
-		const { room, connecting } = this.props;
-		return room !== undefined || connecting;
+		const { room, connecting, visitorsCanCloseChat } = this.props;
+		return visitorsCanCloseChat && (room !== undefined || connecting);
 	};
 
 	canRemoveUserData = () => {

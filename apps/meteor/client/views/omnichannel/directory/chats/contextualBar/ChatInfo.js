@@ -6,13 +6,12 @@ import moment from 'moment';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../../../components/Contextualbar';
+import { InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../../components/InfoPanel';
+import MarkdownText from '../../../../../components/MarkdownText';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
 import CustomField from '../../../components/CustomField';
-import Field from '../../../components/Field';
-import Info from '../../../components/Info';
-import Label from '../../../components/Label';
 import { AgentField, SlaField, ContactField, SourceField } from '../../components';
 import PriorityField from '../../components/PriorityField';
 import { useOmnichannelRoomInfo } from '../../hooks/useOmnichannelRoomInfo';
@@ -105,9 +104,9 @@ function ChatInfo({ id, route }) {
 					{servedBy && <AgentField agent={servedBy} />}
 					{departmentId && <DepartmentField departmentId={departmentId} />}
 					{tags && tags.length > 0 && (
-						<Field>
-							<Label>{t('Tags')}</Label>
-							<Info>
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Tags')}</InfoPanelLabel>
+							<InfoPanelText>
 								{tags.map((tag) => (
 									<Box key={tag} mie={4} display='inline'>
 										<Tag style={{ display: 'inline' }} disabled>
@@ -115,56 +114,58 @@ function ChatInfo({ id, route }) {
 										</Tag>
 									</Box>
 								))}
-							</Info>
-						</Field>
+							</InfoPanelText>
+						</InfoPanelField>
 					)}
 					{topic && (
-						<Field>
-							<Label>{t('Topic')}</Label>
-							<Info>{topic}</Info>
-						</Field>
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Topic')}</InfoPanelLabel>
+							<InfoPanelText withTruncatedText={false}>
+								<MarkdownText variant='inline' content={topic} />
+							</InfoPanelText>
+						</InfoPanelField>
 					)}
 					{queueStartedAt && (
-						<Field>
-							<Label>{t('Queue_Time')}</Label>
-							<Info>{queueTime}</Info>
-						</Field>
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Queue_Time')}</InfoPanelLabel>
+							<InfoPanelText>{queueTime}</InfoPanelText>
+						</InfoPanelField>
 					)}
 					{closedAt && (
-						<Field>
-							<Label>{t('Chat_Duration')}</Label>
-							<Info>{moment(closedAt).from(moment(ts), true)}</Info>
-						</Field>
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Chat_Duration')}</InfoPanelLabel>
+							<InfoPanelText>{moment(closedAt).from(moment(ts), true)}</InfoPanelText>
+						</InfoPanelField>
 					)}
 					{ts && (
-						<Field>
-							<Label>{t('Created_at')}</Label>
-							<Info>{formatDateAndTime(ts)}</Info>
-						</Field>
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Created_at')}</InfoPanelLabel>
+							<InfoPanelText>{formatDateAndTime(ts)}</InfoPanelText>
+						</InfoPanelField>
 					)}
 					{closedAt && (
-						<Field>
-							<Label>{t('Closed_At')}</Label>
-							<Info>{formatDateAndTime(closedAt)}</Info>
-						</Field>
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Closed_At')}</InfoPanelLabel>
+							<InfoPanelText>{formatDateAndTime(closedAt)}</InfoPanelText>
+						</InfoPanelField>
 					)}
 					{servedBy?.ts && (
-						<Field>
-							<Label>{t('Taken_at')}</Label>
-							<Info>{formatDateAndTime(servedBy.ts)}</Info>
-						</Field>
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Taken_at')}</InfoPanelLabel>
+							<InfoPanelText>{formatDateAndTime(servedBy.ts)}</InfoPanelText>
+						</InfoPanelField>
 					)}
 					{metrics?.response?.avg && formatDuration(metrics.response.avg) && (
-						<Field>
-							<Label>{t('Avg_response_time')}</Label>
-							<Info>{formatDuration(metrics.response.avg)}</Info>
-						</Field>
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Avg_response_time')}</InfoPanelLabel>
+							<InfoPanelText>{formatDuration(metrics.response.avg)}</InfoPanelText>
+						</InfoPanelField>
 					)}
 					{!waitingResponse && responseBy?.lastMessageTs && (
-						<Field>
-							<Label>{t('Inactivity_Time')}</Label>
-							<Info>{moment(responseBy.lastMessageTs).fromNow(true)}</Info>
-						</Field>
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Inactivity_Time')}</InfoPanelLabel>
+							<InfoPanelText>{moment(responseBy.lastMessageTs).fromNow(true)}</InfoPanelText>
+						</InfoPanelField>
 					)}
 					{canViewCustomFields && customFieldEntries.map(([key, value]) => <CustomField key={key} id={key} value={value} />)}
 					{slaId && <SlaField id={slaId} />}

@@ -1,11 +1,12 @@
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Settings } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'livechat:saveAppearance'(settings: { _id: string; value: any }[]): Promise<void>;
@@ -15,6 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 Meteor.methods<ServerMethods>({
 	async 'livechat:saveAppearance'(settings) {
 		methodDeprecationLogger.method('livechat:saveAppearance', '7.0.0');
+
 		const uid = Meteor.userId();
 		if (!uid || !(await hasPermissionAsync(uid, 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -50,10 +52,12 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('invalid-setting');
 		}
 
-		await Promise.all(
-			settings.map((setting) => {
-				return Settings.updateValueById(setting._id, setting.value);
-			}),
-		);
+		const promises = settings.map((setting) => Settings.updateValueById(setting._id, setting.value));
+
+		(await Promise.all(promises)).forEach((value, index) => {
+			if (value?.modifiedCount) {
+				void notifyOnSettingChangedById(settings[index]._id);
+			}
+		});
 	},
 });

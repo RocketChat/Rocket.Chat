@@ -1,12 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
 import React from 'react';
 
 type SortIconProps = {
 	direction?: 'asc' | 'desc';
 };
 
-const SortIcon: FC<SortIconProps> = ({ direction }) => (
+const SortIcon = ({ direction }: SortIconProps) => (
 	<Box is='svg' width='x16' height='x16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'>
 		<path
 			d='M5.33337 5.99999L8.00004 3.33333L10.6667 5.99999'

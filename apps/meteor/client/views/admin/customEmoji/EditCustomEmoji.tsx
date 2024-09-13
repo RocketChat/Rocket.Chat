@@ -12,7 +12,7 @@ import {
 	IconButton,
 } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC, ChangeEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
 import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
@@ -32,7 +32,7 @@ type EditCustomEmojiProps = {
 	};
 };
 
-const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...props }) => {
+const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiProps) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -150,7 +150,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 						<FieldRow>
 							<TextInput value={name} onChange={handleChangeName} placeholder={t('Name')} />
 						</FieldRow>
-						{errors.name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
+						{errors.name && <FieldError>{t('Required_field', { field: t('Name') })}</FieldError>}
 					</Field>
 					<Field>
 						<FieldLabel>{t('Aliases')}</FieldLabel>

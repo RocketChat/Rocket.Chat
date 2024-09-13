@@ -17,9 +17,11 @@ const generateFingerprint = function () {
 };
 
 const updateFingerprint = async function (fingerprint: string, verified: boolean) {
-	await Settings.updateValueById('Deployment_FingerPrint_Hash', fingerprint);
-
-	await Settings.updateValueById('Deployment_FingerPrint_Verified', verified);
+	// No need to call ws listener because current function is called on startup
+	await Promise.all([
+		Settings.updateValueById('Deployment_FingerPrint_Hash', fingerprint),
+		Settings.updateValueById('Deployment_FingerPrint_Verified', verified),
+	]);
 };
 
 const verifyFingerPrint = async function () {

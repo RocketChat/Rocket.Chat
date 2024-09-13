@@ -19,9 +19,17 @@ export type AppInstallationHandlerParams = {
 	isAppPurchased?: boolean;
 	onDismiss: () => void;
 	onSuccess: (action: Actions | '', appPermissions?: App['permissions']) => void;
+	setIsPurchased: (purchased: boolean) => void;
 };
 
-export function useAppInstallationHandler({ app, action, isAppPurchased, onDismiss, onSuccess }: AppInstallationHandlerParams) {
+export function useAppInstallationHandler({
+	app,
+	action,
+	isAppPurchased,
+	onDismiss,
+	onSuccess,
+	setIsPurchased,
+}: AppInstallationHandlerParams) {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
@@ -62,7 +70,16 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 		if (action === 'purchase' && !isAppPurchased) {
 			try {
 				const data = await appsOrchestrator.buildExternalUrl(app.id, app.purchaseType, false);
-				setModal(<IframeModal url={data.url} cancel={onDismiss} confirm={openPermissionModal} />);
+				setModal(
+					<IframeModal
+						url={data.url}
+						cancel={onDismiss}
+						confirm={() => {
+							setIsPurchased(true);
+							openPermissionModal();
+						}}
+					/>,
+				);
 			} catch (error) {
 				handleAPIError(error);
 			}
@@ -70,7 +87,7 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 		}
 
 		openPermissionModal();
-	}, [action, isAppPurchased, openPermissionModal, appsOrchestrator, app.id, app.purchaseType, setModal, onDismiss]);
+	}, [action, isAppPurchased, openPermissionModal, appsOrchestrator, app.id, app.purchaseType, setModal, onDismiss, setIsPurchased]);
 
 	return useCallback(async () => {
 		if (app?.versionIncompatible) {

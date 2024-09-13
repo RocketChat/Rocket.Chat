@@ -21,7 +21,7 @@ export function createFakeUser(overrides?: Partial<IUser>): IUser {
 	};
 }
 
-export const createFakeRoom = (overrides?: Partial<IRoom>): IRoom => ({
+export const createFakeRoom = (overrides?: Partial<IRoom & { retention?: { enabled: boolean } }>): IRoom => ({
 	_id: faker.database.mongodbObjectId(),
 	_updatedAt: faker.date.recent(),
 	t: faker.helpers.arrayElement(['c', 'p', 'd']),
@@ -254,4 +254,23 @@ export function createFakeMessageWithAttachment(overrides?: Partial<IMessage>): 
 		],
 		...overrides,
 	};
+}
+
+const guestNames = faker.helpers.uniqueArray(faker.person.firstName, 1000);
+
+function pullNextVisitorName() {
+	const guestName = guestNames.pop();
+
+	if (!guestName) {
+		throw new Error('exhausted guest names');
+	}
+
+	return guestName;
+}
+
+export function createFakeVisitor() {
+	return {
+		name: pullNextVisitorName(),
+		email: faker.internet.email(),
+	} as const;
 }

@@ -13,7 +13,7 @@ type GenericCardProps = {
 	type?: 'info' | 'success' | 'warning' | 'danger' | 'neutral';
 } & ComponentProps<typeof Card>;
 
-export const GenericCard: React.FC<GenericCardProps> = ({ title, body, buttons, icon, type, ...props }) => {
+export const GenericCard = ({ title, body, buttons, icon, type, ...props }: GenericCardProps) => {
 	const cardId = useUniqueId();
 	const descriptionId = useUniqueId();
 

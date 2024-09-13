@@ -1,10 +1,10 @@
 import type { IUpload } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, IconButton, Palette, Throbber } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useState } from 'react';
 import { FocusScope } from 'react-aria';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import { Keyboard, Navigation, Zoom, A11y } from 'swiper';
 import type { SwiperRef } from 'swiper/react';
 import { type SwiperClass, Swiper, SwiperSlide } from 'swiper/react';
@@ -108,7 +108,7 @@ const swiperStyle = css`
 `;
 
 export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[]; onClose: () => void; loadMore?: () => void }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();
 	const [zoomScale, setZoomScale] = useState(1);
@@ -182,14 +182,14 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 						onReachBeginning={loadMore}
 						initialSlide={images.length - 1}
 					>
-						{[...images].reverse().map(({ _id, url }) => (
+						{[...images].reverse().map(({ _id, path, url }) => (
 							<SwiperSlide key={_id}>
 								<div className='swiper-zoom-container'>
 									{/* eslint-disable-next-line
 										jsx-a11y/no-noninteractive-element-interactions,
 										jsx-a11y/click-events-have-key-events
 									*/}
-									<img src={url} loading='lazy' alt='' data-qa-zoom-scale={zoomScale} onClick={preventPropagation} />
+									<img src={path || url} loading='lazy' alt='' data-qa-zoom-scale={zoomScale} onClick={preventPropagation} />
 									<div className='rcx-lazy-preloader'>
 										<Throbber inheritColor />
 									</div>

@@ -2,6 +2,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
+import { settings } from '../../app/settings/client';
 import { mainReady } from '../../app/ui-utils/client';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
 import { t } from '../../app/utils/lib/i18n';
@@ -22,5 +23,19 @@ Accounts.onEmailVerificationLink((token: string) => {
 				}
 			}
 		});
+	});
+});
+
+Meteor.startup(() => {
+	Tracker.autorun((computation) => {
+		const forgetUserSessionOnWindowClose = settings.get('Accounts_ForgetUserSessionOnWindowClose');
+
+		if (forgetUserSessionOnWindowClose === undefined) {
+			return;
+		}
+
+		computation.stop();
+
+		Accounts.config({ clientStorage: forgetUserSessionOnWindowClose ? 'session' : 'local' });
 	});
 });

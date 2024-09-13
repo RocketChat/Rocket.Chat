@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import type { ReactNode } from 'react';
 import React from 'react';
 
 import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
@@ -25,7 +25,11 @@ import UserPresenceProvider from './UserPresenceProvider';
 import UserProvider from './UserProvider';
 import VideoConfProvider from './VideoConfProvider';
 
-const MeteorProvider: FC = ({ children }) => (
+type MeteorProviderProps = {
+	children?: ReactNode;
+};
+
+const MeteorProvider = ({ children }: MeteorProviderProps) => (
 	<ConnectionStatusProvider>
 		<ServerProvider>
 			<RouterProvider>

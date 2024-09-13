@@ -1,5 +1,7 @@
 import { TableRow } from '@rocket.chat/fuselage';
-import type { ComponentProps, FC } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import React from 'react';
 
-export const GenericTableRow: FC<ComponentProps<typeof TableRow>> = (props) => <TableRow {...props} />;
+type GenericTableRowProps = ComponentPropsWithoutRef<typeof TableRow>;
+
+export const GenericTableRow = (props: GenericTableRowProps) => <TableRow {...props} />;

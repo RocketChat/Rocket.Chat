@@ -35,7 +35,6 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISub
 				lm: 1,
 				lastMessage: 1,
 				uids: 1,
-				streamingOptions: 1,
 				usernames: 1,
 				usersCount: 1,
 				topic: 1,
@@ -96,7 +95,6 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISub
 			avatarETag: room?.avatarETag,
 			retention: (room as IRoomWithRetentionPolicy | undefined)?.retention,
 			lastMessage: room?.lastMessage,
-			streamingOptions: room?.streamingOptions,
 			teamId: room?.teamId,
 			teamMain: room?.teamMain,
 			uids: room?.uids,
@@ -141,6 +139,6 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISub
 const instance = new CachedChatSubscription();
 
 export {
-	/** @deprecated */
+	/** @deprecated new code refer to Minimongo collections like this one; prefer fetching data from the REST API, listening to changes via streamer events, and storing the state in a Tanstack Query */
 	instance as CachedChatSubscription,
 };

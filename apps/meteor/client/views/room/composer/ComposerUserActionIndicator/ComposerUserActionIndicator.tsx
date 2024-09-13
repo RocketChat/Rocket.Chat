@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { UserAction } from '../../../../../app/ui/client/lib/UserAction';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
@@ -9,7 +9,7 @@ import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 const maxUsernames = 5;
 
 const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string }): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const actions = useReactiveValue(
 		useCallback(() => {
 			const roomAction = UserAction.get(tmid || rid) || {};
@@ -37,7 +37,15 @@ const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string
 		}, [rid, tmid]),
 	);
 	return (
-		<Box h='24px' className='rc-message-box__activity-wrapper' fontScale='p2' color='annotation' aria-live='polite'>
+		<Box
+			h='x20'
+			className='rc-message-box__activity-wrapper'
+			fontScale='c1'
+			color='annotation'
+			aria-live='polite'
+			display='flex'
+			alignItems='center'
+		>
 			{actions.map(({ action, users }, index) => (
 				<Fragment key={action}>
 					{index > 0 && ', '}

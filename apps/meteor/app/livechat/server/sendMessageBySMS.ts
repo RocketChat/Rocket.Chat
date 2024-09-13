@@ -1,5 +1,5 @@
 import { OmnichannelIntegration } from '@rocket.chat/core-services';
-import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 
 import { callbacks } from '../../../lib/callbacks';
@@ -8,8 +8,8 @@ import { normalizeMessageFileUpload } from '../../utils/server/functions/normali
 import { callbackLogger } from './lib/logger';
 
 callbacks.add(
-	'afterSaveMessage',
-	async (message, room) => {
+	'afterOmnichannelSaveMessage',
+	async (message, { room }) => {
 		// skips this callback if the message was edited
 		if (isEditedMessage(message)) {
 			return message;
@@ -20,7 +20,7 @@ callbacks.add(
 		}
 
 		// only send the sms by SMS if it is a livechat room with SMS set to true
-		if (!(isOmnichannelRoom(room) && room.sms && room.v && room.v.token)) {
+		if (!(room.sms && room.v && room.v.token)) {
 			return message;
 		}
 

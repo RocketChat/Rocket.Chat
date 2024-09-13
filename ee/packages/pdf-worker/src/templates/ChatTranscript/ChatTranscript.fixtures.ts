@@ -1,3 +1,5 @@
+import type { MessageTypesValues } from '@rocket.chat/core-typings';
+
 import type { Data } from '../../types/Data';
 
 const base64Image =
@@ -14,6 +16,7 @@ export const validData = {
 	messages: [
 		{ ts: '2022-11-21T16:00:00.000Z', text: 'Hello, how can I help you today?' },
 		{ ts: '2022-11-21T16:00:00.000Z', text: 'I am having trouble with my account.' },
+		{ ts: '2022-11-21T16:00:00.000Z', t: 'livechat-started' },
 	],
 	translations: [
 		{ key: 'transcript', value: 'Transcript' },
@@ -71,6 +74,17 @@ export const validMessage = {
 		name: 'Juanito De Ponce',
 		username: 'juanito.ponce',
 	},
+};
+
+export const validSystemMessage = {
+	msg: 'livechat-started',
+	ts: '2022-11-21T16:00:00.000Z',
+	u: {
+		_id: '123',
+		name: 'Juanito De Ponce',
+		username: 'juanito.ponce',
+	},
+	t: 'livechat-started' as MessageTypesValues,
 };
 
 export const exampleData = {

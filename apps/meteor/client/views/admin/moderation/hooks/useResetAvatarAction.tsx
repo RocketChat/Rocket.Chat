@@ -1,8 +1,8 @@
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 
-import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import GenericModal from '../../../../components/GenericModal';
 
 const useResetAvatarAction = (userId: string): GenericMenuItemProps => {
