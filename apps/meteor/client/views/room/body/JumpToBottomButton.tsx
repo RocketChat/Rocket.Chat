@@ -23,10 +23,6 @@ const buttonStyle = css`
 		visibility: hidden;
 	}
 
-	&.clicked {
-		animation: fadeout 1s linear forwards;
-	}
-
 	@keyframes fadeout {
 		50% {
 			visibility: visible;
@@ -41,6 +37,7 @@ const buttonStyle = css`
 `;
 
 const JumpToBottomButton = ({ visible, onClick, text }: JumpToBottomButtonProps): ReactElement => {
+
 	return (
 		<Box className={[buttonStyle, !visible && 'not'].filter(isTruthy)}>
 			<Bubble
