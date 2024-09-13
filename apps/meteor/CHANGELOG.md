@@ -1,5 +1,46 @@
 # @rocket.chat/meteor
 
+## 6.11.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#33244](https://github.com/RocketChat/Rocket.Chat/pull/33244) by [@dionisio-bot](https://github.com/dionisio-bot)) Allow to use the token from `room.v` when requesting transcript instead of visitor token. Visitors may change their tokens at any time, rendering old conversations impossible to access for them (or for APIs depending on token) as the visitor token won't match the `room.v` token.
+
+- ([#33269](https://github.com/RocketChat/Rocket.Chat/pull/33269) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- ([#33266](https://github.com/RocketChat/Rocket.Chat/pull/33266) by [@dionisio-bot](https://github.com/dionisio-bot)) fixed retention policy max age settings not being respected after upgrade
+
+- <details><summary>Updated dependencies [f07a6cd73a]:</summary>
+
+  - @rocket.chat/message-parser@0.31.30
+  - @rocket.chat/core-services@0.5.3
+  - @rocket.chat/core-typings@6.11.3
+  - @rocket.chat/gazzodown@9.0.3
+  - @rocket.chat/rest-typings@6.11.3
+  - @rocket.chat/omnichannel-services@0.3.3
+  - @rocket.chat/presence@0.2.6
+  - @rocket.chat/api-client@0.2.6
+  - @rocket.chat/license@0.2.6
+  - @rocket.chat/pdf-worker@0.2.3
+  - @rocket.chat/apps@0.1.6
+  - @rocket.chat/cron@0.1.6
+  - @rocket.chat/fuselage-ui-kit@9.0.3
+  - @rocket.chat/model-typings@0.6.3
+  - @rocket.chat/ui-contexts@9.0.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.2.3
+  - @rocket.chat/ui-theming@0.2.0
+  - @rocket.chat/ui-avatar@5.0.3
+  - @rocket.chat/ui-client@9.0.3
+  - @rocket.chat/ui-video-conf@9.0.3
+  - @rocket.chat/web-ui-registration@9.0.3
+  - @rocket.chat/instance-status@0.1.6
+  </details>
+
 ## 6.11.2
 
 ### Patch Changes

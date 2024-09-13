@@ -1,5 +1,15 @@
 # @rocket.chat/livechat Change Log
 
+## 1.19.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f07a6cd73a]:</summary>
+
+  - @rocket.chat/message-parser@0.31.30
+  - @rocket.chat/gazzodown@9.0.3
+  </details>
+
 ## 1.19.2
 
 ### Patch Changes

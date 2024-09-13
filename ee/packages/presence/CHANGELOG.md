@@ -1,5 +1,16 @@
 # @rocket.chat/presence
 
+## 0.2.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-services@0.5.3
+  - @rocket.chat/core-typings@6.11.3
+  - @rocket.chat/models@0.2.3
+  </details>
+
 ## 0.2.5
 
 ### Patch Changes
