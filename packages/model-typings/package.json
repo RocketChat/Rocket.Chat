@@ -3,7 +3,7 @@
 	"version": "0.7.0",
 	"private": true,
 	"devDependencies": {
-		"@types/node-rsa": "^1.1.3",
+		"@types/node-rsa": "^1.1.4",
 		"eslint": "~8.45.0",
 		"mongodb": "^4.17.2",
 		"typescript": "~5.5.4"
