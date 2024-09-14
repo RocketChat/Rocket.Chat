@@ -46,7 +46,7 @@ jobs:
       - uses: rharkor/caching-for-turbo@v1.5
 
       - name: Cache TypeCheck
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         if: matrix.check == 'ts'
         with:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
@@ -61,7 +61,7 @@ jobs:
         run: yarn turbo run typecheck
 
       - name: Cache eslint
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         if: matrix.check == 'lint'
         with:
           path: ./apps/meteor/.eslintcache

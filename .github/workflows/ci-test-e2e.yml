@@ -195,7 +195,7 @@ jobs:
 
       - name: Cache Playwright binaries
         if: inputs.type == 'ui'
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-playwright
         with:
           path: |
