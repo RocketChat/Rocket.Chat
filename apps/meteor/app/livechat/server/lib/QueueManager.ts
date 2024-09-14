@@ -223,7 +223,7 @@ export class QueueManager {
 
 		const name = (roomInfo?.fname as string) || guest.name || guest.username;
 
-		const room = await createLivechatRoom(rid, name, guest, roomInfo, {
+		const room = await createLivechatRoom(rid, name, { ...guest, ...(department && { department }) }, roomInfo, {
 			...extraData,
 			...(Boolean(customFields) && { customFields }),
 		});
@@ -371,8 +371,8 @@ export class QueueManager {
 				hasMentionToHere: false,
 				message: { _id: '', u: v, msg: '' },
 				// we should use server's language for this type of messages instead of user's
-				notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName }, language),
-				room: { ...room, name: i18n.t('New_chat_in_queue', {}, language) },
+				notificationMessage: i18n.t('User_started_a_new_conversation', { username: notificationUserName, lng: language }),
+				room: { ...room, name: i18n.t('New_chat_in_queue', { lng: language }) },
 				mentionIds: [],
 			});
 		}

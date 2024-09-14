@@ -448,7 +448,7 @@ describe('Settings', () => {
 			.to.not.have.any.keys('section');
 	});
 
-	it('should ignore setting object from code if only value changes and setting already stored', async () => {
+	it('should ignore setting object from code if only value changes in code and setting already stored', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initialized();
@@ -467,7 +467,60 @@ describe('Settings', () => {
 		expect(Settings.upsertCalls).to.be.equal(0);
 	});
 
-	it('should ignore value from environment if setting is already stored', async () => {
+	it('should not update (reset) cached setting with value in code if some prop in code changes (including value)', async () => {
+		Settings.setDelay(1000);
+		const settings = new CachedSettings();
+		process.env[`OVERWRITE_SETTING_${testSetting._id}`] = 'false';
+		const storedSetting = { ...testSetting, value: true, packageValue: true };
+		settings.set(storedSetting);
+
+		Settings.settings = settings;
+
+		settings.initialized();
+
+		expect(settings.get(storedSetting._id)).to.be.equal(true);
+
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		const settingFromCodeFaked = {
+			...storedSetting,
+			value: true,
+			enterprise: true,
+			invalidValue: '',
+		};
+
+		await settingsRegistry.add(settingFromCodeFaked._id, settingFromCodeFaked.value, settingFromCodeFaked);
+
+		expect(Settings.insertCalls).to.be.equal(0);
+		expect(Settings.upsertCalls).to.be.equal(1);
+
+		expect(settings.get(storedSetting._id)).to.be.equal(false);
+	});
+
+	it('should update cached setting with value from environment if some prop including value in code changes', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
+
+		expect(Settings.insertCalls).to.be.equal(1);
+		Settings.insertCalls = 0;
+
+		const settingFromCodeFaked = { ...testSetting, value: Date.now().toString(), enterprise: true, invalidValue: '' };
+
+		process.env[`OVERWRITE_SETTING_${testSetting._id}`] = Date.now().toString();
+
+		await settingsRegistry.add(settingFromCodeFaked._id, settingFromCodeFaked.value, settingFromCodeFaked);
+
+		expect(Settings.insertCalls).to.be.equal(0);
+		expect(Settings.upsertCalls).to.be.equal(1);
+
+		expect(settings.get(testSetting._id)).to.be.equal(process.env[`OVERWRITE_SETTING_${testSetting._id}`]);
+	});
+
+	it('should ignore default value from environment if setting is already stored', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initialized();
@@ -482,11 +535,13 @@ describe('Settings', () => {
 		expect(Settings.findOne({ _id: testSetting._id }).value).to.be.equal(testSetting.value);
 	});
 
-	it('should update setting cache synchronously if overwrite is available in enviornment', async () => {
+	it('should update setting cache synchronously if overwrite is available in environment', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initialized();
 		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		settings.set(testSetting);
 
 		process.env[`OVERWRITE_SETTING_${testSetting._id}`] = Date.now().toString();
 
@@ -495,7 +550,7 @@ describe('Settings', () => {
 		expect(settings.get(testSetting._id)).to.be.equal(process.env[`OVERWRITE_SETTING_${testSetting._id}`]);
 	});
 
-	it('should update cached value with OVERWRITE_SETTING value even if both with-prefixed and without-prefixed variables exist', async () => {
+	it('should update cached value with OVERWRITE_SETTING value even if both overwrite and default overwrite variables both exist', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
 		settings.initialized();
@@ -506,7 +561,8 @@ describe('Settings', () => {
 
 		await settingsRegistry.add(testSetting._id, testSetting.value, testSetting);
 
-		expect(Settings.findOne({ _id: testSetting._id }).value).to.be.equal(process.env[`OVERWRITE_SETTING_${testSetting._id}`]);
+		expect(Settings.insertCalls).to.be.equal(1);
+		expect(settings.get(testSetting._id)).to.be.equal(process.env[`OVERWRITE_SETTING_${testSetting._id}`]);
 	});
 
 	it('should call `settings.get` callback on setting added', async () => {

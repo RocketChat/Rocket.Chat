@@ -5,15 +5,14 @@ import { callbacks } from '../../../../lib/callbacks';
 
 callbacks.add(
 	'afterOmnichannelSaveMessage',
-	async (message, { room }) => {
-		if (message.t) {
-			return message;
-		}
-		if (!isMessageFromVisitor(message)) {
+	async (message, { roomUpdater }) => {
+		if (message.t || !isMessageFromVisitor(message)) {
 			return message;
 		}
 
-		await LivechatRooms.setVisitorLastMessageTimestampByRoomId(room._id, message.ts);
+		await LivechatRooms.getVisitorLastMessageTsUpdateQueryByRoomId(message.ts, roomUpdater);
+
+		return message;
 	},
 	callbacks.priority.HIGH,
 	'save-last-visitor-message-timestamp',

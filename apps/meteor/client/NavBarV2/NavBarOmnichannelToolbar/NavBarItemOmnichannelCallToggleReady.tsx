@@ -1,14 +1,14 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef } from 'react';
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useCallerInfo, useCallRegisterClient, useCallUnregisterClient, useVoipNetworkStatus } from '../../contexts/CallContext';
 
 type NavBarItemOmnichannelCallToggleReadyProps = ComponentPropsWithoutRef<typeof NavBarItem>;
 
 const NavBarItemOmnichannelCallToggleReady = (props: NavBarItemOmnichannelCallToggleReadyProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const caller = useCallerInfo();
 	const unregister = useCallUnregisterClient();

@@ -21,6 +21,7 @@ export * from './models/IInvitesModel';
 export * from './models/IImportDataModel';
 export * from './models/ILivechatAgentActivityModel';
 export * from './models/ILivechatBusinessHoursModel';
+export * from './models/ILivechatContactsModel';
 export * from './models/ILivechatCustomFieldModel';
 export * from './models/ILivechatDepartmentAgentsModel';
 export * from './models/ILivechatDepartmentModel';

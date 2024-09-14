@@ -9,6 +9,7 @@ import type {
 	IRoom,
 	IUser,
 	IRole,
+	AtLeast,
 } from '@rocket.chat/core-typings';
 import type { Document, Filter, FindOptions } from 'mongodb';
 
@@ -23,6 +24,7 @@ export interface ITeamCreateParams {
 	room: ITeamCreateRoom;
 	members?: Array<string> | null; // list of user _ids
 	owner?: string | null; // the team owner. If not present, owner = requester
+	sidepanel?: IRoom['sidepanel'];
 }
 
 export interface ITeamMemberParams {
@@ -124,4 +126,7 @@ export interface ITeamService {
 	getStatistics(): Promise<ITeamStats>;
 	findBySubscribedUserIds(userId: string, callerId?: string): Promise<ITeam[]>;
 	addRolesToMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean>;
+	getRoomInfo(
+		room: AtLeast<IRoom, 'teamId' | 'teamMain' | '_id'>,
+	): Promise<{ team?: Pick<ITeam, 'name' | 'roomId' | 'type'>; parentRoom?: Pick<IRoom, 'name' | 'fname' | 't' | '_id'> }>;
 }

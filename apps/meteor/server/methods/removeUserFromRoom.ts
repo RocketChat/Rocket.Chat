@@ -1,6 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Message, Team } from '@rocket.chat/core-services';
+import { Message, Team, Room } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
@@ -9,7 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { canAccessRoomAsync, getUsersInRole } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
-import { notifyOnRoomChanged } from '../../app/lib/server/lib/notifyListener';
+import { notifyOnRoomChanged, notifyOnSubscriptionChanged } from '../../app/lib/server/lib/notifyListener';
 import { settings } from '../../app/settings/server';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 import { callbacks } from '../../lib/callbacks';
@@ -56,6 +56,8 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 
 	const removedUser = await Users.findOneByUsernameIgnoringCase(data.username);
 
+	await Room.beforeUserRemoved(room);
+
 	if (!canKickAnyUser) {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, {
 			projection: { _id: 1 },
@@ -89,7 +91,10 @@ export const removeUserFromRoomMethod = async (fromId: string, data: { rid: stri
 
 	await callbacks.run('beforeRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 
-	await Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
+	const deletedSubscription = await Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
+	if (deletedSubscription) {
+		void notifyOnSubscriptionChanged(deletedSubscription, 'removed');
+	}
 
 	if (['c', 'p'].includes(room.t) === true) {
 		await removeUserFromRolesAsync(removedUser._id, ['moderator', 'owner'], data.rid);

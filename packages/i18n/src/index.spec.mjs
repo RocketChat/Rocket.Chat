@@ -9,6 +9,8 @@ describe('i18n', () => {
 		jest.spyOn(fs, 'readdirSync').mockReturnValue(['en.i18n.json']);
 		jest.spyOn(fs, 'writeFileSync').mockImplementation(() => {});
 		jest.spyOn(fs, 'readFileSync').mockImplementation(() => JSON.stringify({}));
+		jest.spyOn(fs, 'existsSync').mockReturnValue(true);
+		jest.spyOn(fs, 'rmdirSync').mockImplementation(() => {});
 	});
 
 	afterEach(() => {

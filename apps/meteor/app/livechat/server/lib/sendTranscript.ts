@@ -3,12 +3,13 @@ import {
 	type IUser,
 	type MessageTypesValues,
 	type IOmnichannelSystemMessage,
+	type ILivechatVisitor,
 	isFileAttachment,
 	isFileImageAttachment,
 } from '@rocket.chat/core-typings';
 import colors from '@rocket.chat/fuselage-tokens/colors';
 import { Logger } from '@rocket.chat/logger';
-import { LivechatRooms, LivechatVisitors, Messages, Uploads, Users } from '@rocket.chat/models';
+import { LivechatRooms, Messages, Uploads, Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import moment from 'moment-timezone';
 
@@ -41,16 +42,12 @@ export async function sendTranscript({
 
 	const room = await LivechatRooms.findOneById(rid);
 
-	const visitor = await LivechatVisitors.getVisitorByToken(token, {
-		projection: { _id: 1, token: 1, language: 1, username: 1, name: 1 },
-	});
-
-	if (!visitor) {
-		throw new Error('error-invalid-token');
+	const visitor = room?.v as ILivechatVisitor;
+	if (token !== visitor?.token) {
+		throw new Error('error-invalid-visitor');
 	}
 
-	// @ts-expect-error - Visitor typings should include language?
-	const userLanguage = visitor?.language || settings.get('Language') || 'en';
+	const userLanguage = settings.get<string>('Language') || 'en';
 	const timezone = getTimezone(user);
 	logger.debug(`Transcript will be sent using ${timezone} as timezone`);
 
@@ -59,7 +56,7 @@ export async function sendTranscript({
 	}
 
 	// allow to only user to send transcripts from their own chats
-	if (room.t !== 'l' || !room.v || room.v.token !== token) {
+	if (room.t !== 'l') {
 		throw new Error('error-invalid-room');
 	}
 

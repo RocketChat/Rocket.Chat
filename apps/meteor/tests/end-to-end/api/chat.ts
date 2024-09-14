@@ -1415,8 +1415,15 @@ describe('[Chat]', () => {
 		let simpleMessageId: IMessage['_id'];
 
 		before('should send simple message in room', async () => {
+			await updateSetting('Message_CustomFields_Enabled', true);
+			await updateSetting('Message_CustomFields', JSON.stringify({ properties: { test: { type: 'string' } } }));
 			const res = await sendSimpleMessage({ roomId: 'GENERAL' });
 			simpleMessageId = res.body.message._id;
+		});
+
+		after(async () => {
+			await updateSetting('Message_CustomFields_Enabled', false);
+			await updateSetting('Message_CustomFields', '');
 		});
 
 		it('should update a message successfully', (done) => {
@@ -1514,6 +1521,62 @@ describe('[Chat]', () => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
 					expect(res.body.message).to.have.property('attachments').that.is.an('array').that.has.lengthOf(0);
+				});
+		});
+
+		it('should do nothing if the message text hasnt changed and theres no custom fields', async () => {
+			await request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					msgId: message._id,
+					text: 'This message was edited via API',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API');
+					expect(res.body).to.not.have.nested.property('message.customFields');
+				});
+		});
+
+		it('should update message custom fields along with msg', async () => {
+			await request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					msgId: message._id,
+					text: 'This message was edited via API 2',
+					customFields: { test: 'test' },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API 2');
+					expect(res.body.message).to.have.property('customFields').that.is.an('object').that.deep.equals({ test: 'test' });
+				});
+		});
+
+		it('should update message custom fields without changes to msg', async () => {
+			await request
+				.post(api('chat.update'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					msgId: message._id,
+					text: 'This message was edited via API 2',
+					customFields: { test: 'test 2' },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', 'This message was edited via API 2');
+					expect(res.body.message).to.have.property('customFields').that.is.an('object').that.deep.equals({ test: 'test 2' });
 				});
 		});
 

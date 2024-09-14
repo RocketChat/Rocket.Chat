@@ -2,10 +2,10 @@ import { ResponsiveBar } from '@nivo/bar';
 import { Box, Flex, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
@@ -29,7 +29,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 	const utc = timezone === 'utc';
 	const { data } = useNewUsers({ period, utc });
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const formatDate = useFormatDate();
 

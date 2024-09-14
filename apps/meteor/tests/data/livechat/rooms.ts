@@ -33,10 +33,10 @@ export const createLivechatRoom = async (visitorToken: string, extraRoomParams?:
 	return response.body.room;
 };
 
-export const createVisitor = (department?: string, visitorName?: string): Promise<ILivechatVisitor> =>
+export const createVisitor = (department?: string, visitorName?: string, customEmail?: string): Promise<ILivechatVisitor> =>
 	new Promise((resolve, reject) => {
 		const token = getRandomVisitorToken();
-		const email = `${token}@${token}.com`;
+		const email = customEmail || `${token}@${token}.com`;
 		const phone = `${Math.floor(Math.random() * 10000000000)}`;
 		void request.get(api(`livechat/visitor/${token}`)).end((err: Error, res: DummyResponse<ILivechatVisitor>) => {
 			if (!err && res && res.body && res.body.visitor) {
@@ -240,11 +240,11 @@ export const uploadFile = (roomId: string, visitorToken: string): Promise<IMessa
 };
 
 // Sends a message using sendMessage method from agent
-export const sendAgentMessage = (roomId: string, msg?: string): Promise<IMessage> => {
+export const sendAgentMessage = (roomId: string, msg?: string, userCredentials: Credentials = credentials): Promise<IMessage> => {
 	return new Promise((resolve, reject) => {
 		void request
 			.post(methodCall('sendMessage'))
-			.set(credentials)
+			.set(userCredentials)
 			.send({
 				message: JSON.stringify({
 					method: 'sendMessage',

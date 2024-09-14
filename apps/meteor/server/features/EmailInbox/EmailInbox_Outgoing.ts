@@ -1,5 +1,5 @@
 import { isIMessageInbox } from '@rocket.chat/core-typings';
-import type { IEmailInbox, IUser, IMessage, IOmnichannelRoom, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import type { IEmailInbox, IUser, IOmnichannelRoom, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Messages, Uploads, LivechatRooms, Rooms, Users } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import type Mail from 'nodemailer/lib/mailer';
@@ -20,7 +20,7 @@ const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\
 const getRocketCatUser = async (): Promise<IUser | null> => Users.findOneById('rocket.cat');
 
 const language = settings.get<string>('Language') || 'en';
-const t = (s: string): string => i18n.t(s, { lng: language });
+const t = i18n.getFixedT(language);
 
 // TODO: change these messages with room notifications
 const sendErrorReplyMessage = async (error: string, options: any) => {
@@ -190,7 +190,9 @@ slashCommands.add({
 
 callbacks.add(
 	'afterSaveMessage',
-	async (message: IMessage, room: any) => {
+	async (message, { room: omnichannelRoom }) => {
+		const room = omnichannelRoom as IOmnichannelRoom;
+
 		if (!room?.email?.inbox) {
 			return message;
 		}

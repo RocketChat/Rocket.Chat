@@ -2,9 +2,9 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { InputBox, Field, MultiSelect, FieldGroup, Box, Select, FieldLabel, FieldRow, Callout } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { useFormContext, Controller, useFieldArray } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useTimezoneNameList } from '../../../hooks/useTimezoneNameList';
 import { BusinessHoursMultiple } from '../additionalForms';
@@ -38,7 +38,7 @@ export type BusinessHoursFormData = {
 // TODO: add time validation for start and finish not be equal on UI
 // TODO: add time validation for start not be higher than finish on UI
 const BusinessHoursForm = ({ type }: { type?: 'default' | 'custom' }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const timeZones = useTimezoneNameList();
 	const timeZonesOptions: SelectOption[] = useMemo(() => timeZones.map((name) => [name, t(name as TranslationKey)]), [t, timeZones]);
 	const daysOptions: SelectOption[] = useMemo(() => DAYS_OF_WEEK.map((day) => [day, t(day as TranslationKey)]), [t]);

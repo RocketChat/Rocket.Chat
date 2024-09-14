@@ -46,7 +46,15 @@ const InputBlock = ({
         {surfaceRenderer.renderInputBlockElement(inputElement, 0)}
       </FieldRow>
       {error && <FieldError>{error}</FieldError>}
-      {block.hint && <FieldHint>{block.hint}</FieldHint>}
+      {block.hint && (
+        <FieldHint>
+          {surfaceRenderer.renderTextObject(
+            block.hint,
+            0,
+            UiKit.BlockContext.NONE
+          )}
+        </FieldHint>
+      )}
     </Field>
   );
 };
