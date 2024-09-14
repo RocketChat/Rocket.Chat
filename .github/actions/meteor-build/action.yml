@@ -138,3 +138,4 @@ runs:
         name: build
         path: /tmp/Rocket.Chat.tar.gz
         overwrite: true
+        include-hidden-files: true

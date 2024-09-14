@@ -1,6 +1,6 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type ReturnChatQueueModalProps = {
 	onMoveChat: () => void;
@@ -8,7 +8,7 @@ type ReturnChatQueueModalProps = {
 };
 
 const ReturnChatQueueModal = ({ onCancel, onMoveChat, ...props }: ReturnChatQueueModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Modal {...props} data-qa-id='return-to-queue-modal'>

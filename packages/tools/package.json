@@ -4,7 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
-		"@types/jest": "~29.5.12",
+		"@types/jest": "~29.5.13",
 		"eslint": "~8.45.0",
 		"jest": "~29.7.0",
 		"typescript": "~5.5.4"
@@ -24,6 +24,6 @@
 		"/dist"
 	],
 	"dependencies": {
-		"moment-timezone": "^0.5.43"
+		"moment-timezone": "^0.5.45"
 	}
 }

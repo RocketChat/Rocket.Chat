@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useDeleteRoom } from '../../../../hooks/roomActions/useDeleteRoom';
 import { useRoomConvertToTeam } from './actions/useRoomConvertToTeam';
@@ -17,7 +17,7 @@ type UseRoomActionsOptions = {
 export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 	const { onClickEnterRoom, onClickEdit, resetState } = options;
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const handleHide = useRoomHide(room);
 	const handleLeave = useRoomLeave(room);
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload: resetState });

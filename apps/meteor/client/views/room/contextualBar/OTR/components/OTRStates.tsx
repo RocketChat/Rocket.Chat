@@ -1,8 +1,8 @@
 import { States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type OTRStatesProps = {
 	title: string;
@@ -12,7 +12,7 @@ type OTRStatesProps = {
 };
 
 const OTRStates = ({ title, description, icon, onClickStart }: OTRStatesProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<States>
