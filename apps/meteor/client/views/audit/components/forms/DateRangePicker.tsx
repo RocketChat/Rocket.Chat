@@ -1,9 +1,9 @@
 import { Box, InputBox, Menu, Margins, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 import type { ReactElement, ComponentProps, SetStateAction } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { DateRange } from '../../utils/dateRange';
 
@@ -138,7 +138,7 @@ const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): R
 	const minEndDate = startDate;
 	const maxEndDate = useMemo(() => formatToDateInput(new Date()), []);
 
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const presets = useMemo(
 		() =>
