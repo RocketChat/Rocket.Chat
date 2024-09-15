@@ -12,6 +12,7 @@ import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
+import { queryClient } from '/client/lib/queryClient';
 
 const getWarningModalForFederatedRooms = (
 	closeModalFn: () => void,
@@ -59,9 +60,15 @@ export const useChangeModeratorAction = (user: Pick<IUser, '_id' | 'username'>, 
 		? 'User__username__removed_from__room_name__moderators'
 		: 'User__username__is_now_a_moderator_of__room_name_';
 
-	const changeModerator = useEndpointAction('POST', `${endpointPrefix}.${changeModeratorEndpoint}`, {
+	const mutateModeratorAsync = useEndpointAction('POST', `${endpointPrefix}.${changeModeratorEndpoint}`, {
 		successMessage: t(changeModeratorMessage, { username: user.username, room_name: roomName }),
 	});
+
+	const changeModerator = useCallback(
+		(params: { roomId: IRoom['_id']; userId: IUser['_id'] }) =>
+			mutateModeratorAsync(params).then(() => queryClient.invalidateQueries({ queryKey: ['roomRoles'] })),
+		[mutateModeratorAsync],
+	);
 
 	const handleConfirm = useCallback(() => {
 		changeModerator({ roomId: rid, userId: uid });
