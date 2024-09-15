@@ -18,8 +18,8 @@ import {
 	MessageSystemTimestamp,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
@@ -38,7 +38,7 @@ type ContactHistoryMessageProps = {
 };
 
 const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }: ContactHistoryMessageProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { triggerProps, openUserCard } = useUserCard();
 
 	const format = useFormatDate();

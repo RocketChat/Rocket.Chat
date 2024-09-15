@@ -1,7 +1,7 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type CardEmpryStateProps = {
 	icon?: Keys;
@@ -9,7 +9,7 @@ type CardEmpryStateProps = {
 };
 
 export const ReportCardEmptyState = ({ icon, subtitle }: CardEmpryStateProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<States width='100%' height='100%'>

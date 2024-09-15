@@ -2,6 +2,14 @@
 	"$schema": "https://turborepo.org/schema.json",
 	"globalDependencies": ["tsconfig.base.json", "tsconfig.base.server.json", "tsconfig.base.client.json"],
 	"tasks": {
+		"build-preview": {
+			"dependsOn": ["^build"],
+			"outputs": ["storybook-static/**", ".storybook/**", "dist/**"]
+		},
+		".:build-preview-move": {
+			"dependsOn": ["^build-preview"],
+			"cache": false
+		},
 		"build": {
 			"dependsOn": ["^build"],
 			"outputs": ["dist/**"]

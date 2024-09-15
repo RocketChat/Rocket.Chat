@@ -2,9 +2,9 @@ import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { Box, Icon, Palette, StatusBullet } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
 
@@ -37,7 +37,7 @@ const PRIORITY_ICONS: Record<number, { iconName: Keys; color: string }> = {
 };
 
 export const PriorityIcon = ({ level, size = 20, showUnprioritized = false, ...props }: PriorityIconProps): ReactElement | null => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { iconName, color } = PRIORITY_ICONS[level] || {};
 	const { data: priorities } = useOmnichannelPriorities();
 
