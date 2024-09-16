@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, Option, Menu } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
 	ContextualbarHeader,
@@ -50,7 +50,7 @@ const TeamsInfo = ({
 	onClickViewChannels,
 	onClickConvertToChannel,
 }: TeamsInfoProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const retentionPolicy = useRetentionPolicy(room);
 
@@ -109,12 +109,13 @@ const TeamsInfo = ({
 				flexGrow={0}
 				key='menu'
 				maxHeight='initial'
+				title={t('More')}
 				secondary
 				renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option {...props} label={label} icon={icon} />}
 				options={menuOptions}
 			/>
 		);
-	}, [menuOptions]);
+	}, [t, menuOptions]);
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { label, icon, action }]: [string, Action]): ReactElement => (

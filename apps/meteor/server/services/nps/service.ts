@@ -21,7 +21,10 @@ export class NPSService extends ServiceClassInternal implements INPSService {
 
 		const any = await Nps.findOne({}, { projection: { _id: 1 } });
 		if (!any) {
-			await Banner.create(getBannerForAdmins(nps.startAt));
+			if (nps.expireAt < nps.startAt || nps.expireAt < new Date()) {
+				throw new Error('NPS already expired');
+			}
+			await Banner.create(getBannerForAdmins(nps.expireAt));
 
 			await notifyAdmins(nps.startAt);
 		}

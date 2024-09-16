@@ -185,6 +185,68 @@ test.each([
       ]),
     ],
   ],
+  [
+    '**bold ~~and strike~~** **not bold ~~but strike** ~~ not strike~~',
+    [
+      paragraph([
+        bold([plain('bold '), strike([plain('and strike')])]),
+        plain(' **not bold '),
+        strike([plain('but strike** ')]),
+        plain(' not strike~~'),
+      ]),
+    ],
+  ],
+  [
+    '**bold** **another bold** ~~strike~~ ~~another strike~~ **bold ~~and strike~~** **not bold ~~but strike** ~~ not strike~~',
+    [
+      paragraph([
+        bold([plain('bold')]),
+        plain(' '),
+        bold([plain('another bold')]),
+        plain(' '),
+        strike([plain('strike')]),
+        plain(' '),
+        strike([plain('another strike')]),
+        plain(' '),
+        bold([plain('bold '), strike([plain('and strike')])]),
+        plain(' **not bold '),
+        strike([plain('but strike** ')]),
+        plain(' not strike~~'),
+      ]),
+    ],
+  ],
+  [
+    'some_snake_case_text and even_more',
+    [paragraph([plain('some_snake_case_text and even_more')])],
+  ],
+  [
+    'some_snake_case_text and some __italic__ text',
+    [
+      paragraph([
+        plain('some_snake_case_text and some '),
+        italic([plain('italic')]),
+        plain(' text'),
+      ]),
+    ],
+  ],
+  [
+    'some__double__snake__case__text and even_more',
+    [paragraph([plain('some__double__snake__case__text and even_more')])],
+  ],
+  [
+    'some__double__snake__case__text and some __italic__ text',
+    [
+      paragraph([
+        plain('some__double__snake__case__text and some '),
+        italic([plain('italic')]),
+        plain(' text'),
+      ]),
+    ],
+  ],
+  [
+    'something__ __and italic__',
+    [paragraph([plain('something__ '), italic([plain('and italic')])])],
+  ],
 ])('parses %p', (input, output) => {
   expect(parse(input)).toMatchObject(output);
 });

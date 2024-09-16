@@ -1,10 +1,9 @@
 import { Badge } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { defaultFeaturesPreview, useFeaturePreviewList } from '@rocket.chat/ui-client';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
-
-import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 
 export const useAccountItems = (): GenericMenuItemProps[] => {
 	const t = useTranslation();

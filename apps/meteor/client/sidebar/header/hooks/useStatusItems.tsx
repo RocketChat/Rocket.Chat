@@ -1,11 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { callbacks } from '../../../../lib/callbacks';
-import type { GenericMenuItemProps } from '../../../components/GenericMenu/GenericMenuItem';
 import MarkdownText from '../../../components/MarkdownText';
 import { UserStatus } from '../../../components/UserStatus';
 import { userStatuses } from '../../../lib/userStatuses';
