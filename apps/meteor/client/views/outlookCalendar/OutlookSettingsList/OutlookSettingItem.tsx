@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Palette } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type OutlookSettingItemProps = {
 	id: string;
@@ -12,7 +12,7 @@ type OutlookSettingItemProps = {
 };
 
 const OutlookSettingItem = ({ id, title, subTitle, enabled, handleEnable }: OutlookSettingItemProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const hovered = css`
 		&:hover,

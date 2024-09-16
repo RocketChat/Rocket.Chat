@@ -1,9 +1,9 @@
 import { Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../../../components/AutoCompleteAgent';
 import type { AuditFields } from '../../hooks/useAuditForm';
@@ -14,7 +14,7 @@ type OmnichannelTabProps = {
 };
 
 const OmnichannelTab = ({ form: { control } }: OmnichannelTabProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { field: visitorField, fieldState: visitorFieldState } = useController({
 		name: 'visitor',
@@ -39,7 +39,7 @@ const OmnichannelTab = ({ form: { control } }: OmnichannelTabProps): ReactElemen
 						placeholder={t('Username_Placeholder')}
 					/>
 				</FieldRow>
-				{visitorFieldState.error?.type === 'required' && <FieldError>{t('The_field_is_required', t('Visitor'))}</FieldError>}
+				{visitorFieldState.error?.type === 'required' && <FieldError>{t('Required_field', { field: t('Visitor') })}</FieldError>}
 				{visitorFieldState.error?.type === 'validate' && <FieldError>{visitorFieldState.error.message}</FieldError>}
 			</Field>
 			<Field flexShrink={1} marginInlineStart={8}>
@@ -48,7 +48,7 @@ const OmnichannelTab = ({ form: { control } }: OmnichannelTabProps): ReactElemen
 					<AutoCompleteAgent
 						error={(() => {
 							if (agentFieldState.error?.type === 'required') {
-								return t('The_field_is_required', t('Agent'));
+								return t('Required_field', { field: t('Agent') });
 							}
 
 							return agentFieldState.error?.message;
@@ -58,7 +58,7 @@ const OmnichannelTab = ({ form: { control } }: OmnichannelTabProps): ReactElemen
 						placeholder={t('Username_Placeholder')}
 					/>
 				</FieldRow>
-				{agentFieldState.error?.type === 'required' && <FieldError>{t('The_field_is_required', t('Agent'))}</FieldError>}
+				{agentFieldState.error?.type === 'required' && <FieldError>{t('Required_field', { field: t('Agent') })}</FieldError>}
 				{agentFieldState.error?.type === 'validate' && <FieldError>{agentFieldState.error.message}</FieldError>}
 			</Field>
 		</>

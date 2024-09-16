@@ -1,9 +1,9 @@
 import { Field, FieldLabel, FieldRow, ButtonGroup, Button, CheckBox, Callout } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import {
 	ContextualbarHeader,
@@ -25,7 +25,7 @@ type PruneMessagesProps = {
 };
 
 const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }: PruneMessagesProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { control, register } = useFormContext();
 
 	const inclusiveCheckboxId = useUniqueId();

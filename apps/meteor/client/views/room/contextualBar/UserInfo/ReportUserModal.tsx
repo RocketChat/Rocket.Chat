@@ -1,4 +1,5 @@
 import { Box, FieldGroup, Field, FieldLabel, FieldRow, FieldError, TextAreaInput } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps } from 'react';
 import React from 'react';
@@ -8,14 +9,14 @@ import { useTranslation } from 'react-i18next';
 import GenericModal from '../../../../components/GenericModal/GenericModal';
 
 type ReportUserModalProps = {
-	onConfirm: (description: string) => void;
+	onConfirm: (reasonForReport: string) => void;
 	onClose: () => void;
 	displayName: string;
 	username: string;
 };
 
 type ReportUserModalsFields = {
-	description: string;
+	reasonForReport: string;
 };
 
 const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUserModalProps) => {
@@ -25,16 +26,18 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 		formState: { errors },
 	} = useForm<ReportUserModalsFields>({
 		defaultValues: {
-			description: '',
+			reasonForReport: '',
 		},
 	});
 
 	const { t } = useTranslation();
 
+	const reasonForReportId = useUniqueId();
+
 	return (
 		<GenericModal
 			wrapperFunction={(props: ComponentProps<typeof Box>) => (
-				<Box is='form' onSubmit={handleSubmit(({ description }) => onConfirm(description))} {...props} />
+				<Box is='form' onSubmit={handleSubmit(({ reasonForReport }) => onConfirm(reasonForReport))} {...props} />
 			)}
 			variant='danger'
 			title={t('Report_User')}
@@ -44,7 +47,7 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 		>
 			<FieldGroup>
 				<Field>
-					<FieldLabel>
+					<FieldLabel htmlFor={reasonForReportId}>
 						<Box mbe='x12' display='flex' alignItems='center'>
 							<UserAvatar username={username} />
 							<Box mis='x12' fontScale='p1' fontWeight='700'>
@@ -56,12 +59,13 @@ const ReportUserModal = ({ username, displayName, onConfirm, onClose }: ReportUs
 						<TextAreaInput
 							rows={3}
 							placeholder={t('Why_do_you_want_to_report_question_mark')}
-							{...register('description', { required: t('Please_fill_out_reason_for_report') })}
+							{...register('reasonForReport', { required: t('Required_field', { field: t('Reason_for_report') }) })}
 							width='full'
 							mbe='x4'
+							aria-label={t('Reason_for_report')}
 						/>
 					</FieldRow>
-					{errors.description && <FieldError>{errors.description.message}</FieldError>}
+					{errors.reasonForReport && <FieldError>{errors.reasonForReport.message}</FieldError>}
 				</Field>
 			</FieldGroup>
 		</GenericModal>

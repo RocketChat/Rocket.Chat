@@ -1,7 +1,7 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../../../components/GenericModal';
 
@@ -15,7 +15,7 @@ type LeaveTeamModalConfirmationProps = {
 };
 
 const LeaveTeamModalConfirmation = ({ selectedRooms, onConfirm, onCancel, onClose }: LeaveTeamModalConfirmationProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<GenericModal
