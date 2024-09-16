@@ -1145,6 +1145,7 @@
   "Contextualbar_resizable_description": "Adjust the size of the contextual bar by clicking and dragging the edge, giving you instant customization and flexibility.",
   "Free_Edition": "Free edition",
   "Composer_not_available_phone_calls": "Messages are not available on phone calls",
+  "Composer_readonly_airgapped": "<0>Workspace in read-only mode.</0> Admins can restore full functionality by connecting it to internet or upgrading to a premium plan.",
   "Condensed": "Condensed",
   "Condition": "Condition",
   "Commit_details": "Commit Details",

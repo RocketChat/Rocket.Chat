@@ -1,9 +1,10 @@
 import { isOmnichannelRoom, isRoomFederated, isVoipRoom } from '@rocket.chat/core-typings';
-import { usePermission } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import { useRoom } from '../contexts/RoomContext';
+import ComposerAirGappedRestricted from './ComposerAirGappedRestricted';
 import ComposerAnonymous from './ComposerAnonymous';
 import ComposerArchived from './ComposerArchived';
 import ComposerBlocked from './ComposerBlocked';
@@ -22,6 +23,7 @@ import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOn
 const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactElement => {
 	const room = useRoom();
 	const canJoinWithoutCode = usePermission('join-without-join-code');
+	const airGappedRestrictionRemainingDays = useSetting('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days');
 	const mustJoinWithCode = !props.subscription && room.joinCodeRequired && !canJoinWithoutCode;
 
 	const isAnonymous = useMessageComposerIsAnonymous();
@@ -32,6 +34,12 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactE
 	const isOmnichannel = isOmnichannelRoom(room);
 	const isFederation = isRoomFederated(room);
 	const isVoip = isVoipRoom(room);
+
+	console.log(airGappedRestrictionRemainingDays);
+
+	if (airGappedRestrictionRemainingDays === 0) {
+		return <ComposerAirGappedRestricted />;
+	}
 
 	if (isOmnichannel) {
 		return <ComposerOmnichannel {...props} />;
