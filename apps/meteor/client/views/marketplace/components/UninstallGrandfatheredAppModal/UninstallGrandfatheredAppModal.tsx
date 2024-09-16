@@ -16,6 +16,9 @@ type UninstallGrandfatheredAppModalProps = {
 const UninstallGrandfatheredAppModal = ({ context, limit, appName, handleUninstall, handleClose }: UninstallGrandfatheredAppModalProps) => {
 	const { t } = useTranslation();
 
+	const modalContent =
+		context === 'private' ? t('App_will_lose_grandfathered_status_private') : t('App_will_lose_grandfathered_status', { limit });
+
 	return (
 		<Modal>
 			<Modal.Header>
@@ -25,7 +28,7 @@ const UninstallGrandfatheredAppModal = ({ context, limit, appName, handleUninsta
 				<Modal.Close onClick={handleClose} />
 			</Modal.Header>
 			<Modal.Content>
-				<MarkdownText content={t('App_will_lose_grandfathered_status', { limit, context: context === 'private' ? context : '' })} />
+				<MarkdownText content={modalContent} />
 			</Modal.Content>
 			<Modal.Footer>
 				<Modal.FooterControllers>
