@@ -2,9 +2,9 @@ import { isSetting, isSettingColor } from '@rocket.chat/core-typings';
 import { Accordion, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useEditableSettings, useEditableSettingsDispatch } from '../../EditableSettingsContext';
 import Setting from '../Setting';
@@ -20,7 +20,7 @@ type SettingsSectionProps = {
 };
 
 function SettingsSection({ groupId, hasReset = true, sectionName, currentTab, solo, help, children }: SettingsSectionProps): ReactElement {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const editableSettings = useEditableSettings(
 		useMemo(

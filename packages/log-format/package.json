@@ -4,7 +4,7 @@
 	"private": true,
 	"devDependencies": {
 		"@types/chalk": "^2.2.0",
-		"@types/ejson": "^2.2.1",
+		"@types/ejson": "^2.2.2",
 		"eslint": "~8.45.0",
 		"typescript": "~5.5.4"
 	},

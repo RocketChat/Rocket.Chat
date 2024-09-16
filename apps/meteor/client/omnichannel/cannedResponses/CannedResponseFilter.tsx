@@ -1,8 +1,8 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../components/AutoCompleteAgent';
 
@@ -18,7 +18,7 @@ type CannedResponsesFilterProps = {
 };
 
 const CannedResponsesFilter = ({ createdBy, setCreatedBy, sharing, setSharing, text, setText }: CannedResponsesFilterProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const sharingList: SelectOption[] = [
 		['', t('All')],

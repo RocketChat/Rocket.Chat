@@ -48,6 +48,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 			active: data.active,
 			redirectUri: Array.isArray(data.redirectUri) ? data.redirectUri.join('\n') : data.redirectUri,
 		},
+		mode: 'all',
 	});
 
 	const setModal = useSetModal();
@@ -118,7 +119,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 						<TextInput {...register('name', { required: true })} />
 					</FieldRow>
 					<FieldHint>{t('Give_the_application_a_name_This_will_be_seen_by_your_users')}</FieldHint>
-					{errors?.name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
+					{errors?.name && <FieldError>{t('Required_field', { field: t('Name') })}</FieldError>}
 				</Field>
 				<Field>
 					<FieldLabel>{t('Redirect_URI')}</FieldLabel>
@@ -126,7 +127,7 @@ const EditOauthApp = ({ onChange, data, ...props }: EditOauthAppProps): ReactEle
 						<TextAreaInput rows={5} {...register('redirectUri', { required: true })} />
 					</FieldRow>
 					<FieldHint>{t('After_OAuth2_authentication_users_will_be_redirected_to_this_URL')}</FieldHint>
-					{errors?.redirectUri && <FieldError>{t('error-the-field-is-required', { field: t('Redirect_URI') })}</FieldError>}
+					{errors?.redirectUri && <FieldError>{t('Required_field', { field: t('Redirect_URI') })}</FieldError>}
 				</Field>
 				<Field>
 					<FieldLabel>{t('Client_ID')}</FieldLabel>

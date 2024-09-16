@@ -1,10 +1,10 @@
 import { Box, InputBox, Menu, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Moment } from 'moment';
 import moment from 'moment';
 import type { ComponentProps } from 'react';
 import React, { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 moment.locale('en');
 
@@ -27,7 +27,7 @@ const getWeekRange = (daysToSubtractFromStart: number, daysToSubtractFromEnd: nu
 });
 
 const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePickerProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [range, setRange] = useState({ start: '', end: '' });
 
 	const { start, end } = range;

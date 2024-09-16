@@ -1,4 +1,4 @@
-import { LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
+import { LivechatContacts, LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
 import {
 	isPOSTOmnichannelContactsProps,
 	isPOSTUpdateOmnichannelContactsProps,
@@ -11,7 +11,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { Contacts, createContact, updateContact, getContactById, getContacts } from '../../lib/Contacts';
+import { Contacts, createContact, updateContact, getContacts } from '../../lib/Contacts';
 
 API.v1.addRoute(
 	'omnichannel/contact',
@@ -135,7 +135,7 @@ API.v1.addRoute(
 			if (process.env.TEST_MODE?.toUpperCase() !== 'TRUE') {
 				throw new Meteor.Error('error-not-allowed', 'This endpoint is only allowed in test mode');
 			}
-			const contact = await getContactById(this.queryParams.contactId);
+			const contact = await LivechatContacts.findOneById(this.queryParams.contactId);
 
 			return API.v1.success({ contact });
 		},
