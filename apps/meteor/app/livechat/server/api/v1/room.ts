@@ -107,6 +107,10 @@ API.v1.addRoute(
 		async post() {
 			const { rid, token } = this.bodyParams;
 
+			if (!rcSettings.get('Omnichannel_allow_visitors_to_close_conversation')) {
+				throw new Error('error-not-allowed-to-close-conversation');
+			}
+
 			const visitor = await findGuest(token);
 			if (!visitor) {
 				throw new Error('invalid-token');
@@ -155,7 +159,7 @@ API.v1.addRoute(
 					const visitorEmail = visitor.visitorEmails?.[0]?.address;
 
 					const language = servingAgent.language || rcSettings.get<string>('Language') || 'en';
-					const t = (s: string): string => i18n.t(s, { lng: language });
+					const t = i18n.getFixedT(language);
 					const subject = t('Transcript_of_your_livechat_conversation');
 
 					options.emailTranscript = {

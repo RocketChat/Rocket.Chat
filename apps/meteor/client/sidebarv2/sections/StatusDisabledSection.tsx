@@ -1,21 +1,21 @@
-import { SidebarBanner } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { SidebarV2Banner } from '@rocket.chat/fuselage';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useStatusDisabledModal } from '../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 
 type StatusDisabledSectionProps = { onDismiss: () => void };
 
 const StatusDisabledSection = ({ onDismiss }: StatusDisabledSectionProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const handleStatusDisabledModal = useStatusDisabledModal();
 
 	return (
-		<SidebarBanner
-			text={t('User_status_temporarily_disabled')}
-			description={t('Learn_more')}
+		<SidebarV2Banner
+			title={t('User_status_temporarily_disabled')}
+			linkText={t('Learn_more')}
 			onClose={onDismiss}
-			onClick={handleStatusDisabledModal}
+			linkProps={{ onClick: handleStatusDisabledModal, tabIndex: 0 }}
 		/>
 	);
 };

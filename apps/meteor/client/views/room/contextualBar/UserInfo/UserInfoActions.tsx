@@ -1,11 +1,11 @@
 /* eslint-disable react/display-name, react/no-multi-comp */
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { ButtonGroup, IconButton, Skeleton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
 import { UserInfoAction } from '../../../../components/UserInfo';
 import { useMemberExists } from '../../../hooks/useMemberExists';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
@@ -17,7 +17,7 @@ type UserInfoActionsProps = {
 };
 
 const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const {
 		data: isMemberData,
 		refetch,

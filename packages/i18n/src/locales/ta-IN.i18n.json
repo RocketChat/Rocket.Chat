@@ -2366,7 +2366,6 @@
   "The_application_name_is_required": "விண்ணப்ப பெயர் தேவை",
   "The_channel_name_is_required": "சேனல் பெயர் தேவைப்படுகிறது",
   "The_emails_are_being_sent": "மின்னஞ்சல்களை அனுப்பி வைக்கப்படுகின்றனர்.",
-  "The_field_is_required": "துறையில்% கள் தேவை.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "நாங்கள் ImageMagick அல்லது GraphicsMagick உங்கள் சர்வரில் நிறுவப்பட்ட கண்டறிய முடியாது, ஏனெனில் படஅளவை இயங்காது.",
   "The_redirectUri_is_required": "redirecturi தேவை",
   "The_server_will_restart_in_s_seconds": "சர்வர் %s வினாடிகள் மீண்டும் தொடங்கும்",
