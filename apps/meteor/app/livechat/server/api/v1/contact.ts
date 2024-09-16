@@ -11,7 +11,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { Contacts, createContact, updateContact, getContacts } from '../../lib/Contacts';
+import { Contacts, createContact, updateContact, getContactById, getContacts } from '../../lib/Contacts';
 
 API.v1.addRoute(
 	'omnichannel/contact',
