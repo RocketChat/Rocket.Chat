@@ -8823,6 +8823,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/freeswitch@workspace:^, @rocket.chat/freeswitch@workspace:packages/freeswitch":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/freeswitch@workspace:packages/freeswitch"
+  dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/logger": "workspace:^"
+    "@rocket.chat/tools": "workspace:^"
+    "@types/jest": ~29.5.12
+    esl: "github:pierre-lehnen-rc/esl"
+    eslint: ~8.45.0
+    jest: ~29.7.0
+    typescript: ~5.3.3
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/fuselage-hooks@npm:^0.33.1":
   version: 0.33.1
   resolution: "@rocket.chat/fuselage-hooks@npm:0.33.1"
@@ -8992,6 +9008,7 @@ __metadata:
     "@storybook/react": ~6.5.16
     "@storybook/testing-library": ~0.0.13
     "@testing-library/react": ~16.0.0
+    "@types/dompurify": ^3.0.5
     "@types/jest": ~29.5.12
     "@types/katex": ~0.16.5
     "@types/react": ~17.0.69
@@ -9000,6 +9017,7 @@ __metadata:
     "@typescript-eslint/parser": ~5.60.1
     babel-loader: ^8.3.0
     date-fns: ^3.3.1
+    dompurify: ^3.1.6
     eslint: ~8.45.0
     eslint-plugin-anti-trojan-source: ~1.1.1
     eslint-plugin-react: ~7.32.2
@@ -9342,6 +9360,7 @@ __metadata:
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/forked-matrix-appservice-bridge": ^4.0.2
     "@rocket.chat/forked-matrix-bot-sdk": ^0.6.0-beta.3
+    "@rocket.chat/freeswitch": "workspace:^"
     "@rocket.chat/fuselage": ^0.59.0
     "@rocket.chat/fuselage-hooks": ^0.33.1
     "@rocket.chat/fuselage-polyfills": ~0.31.25
@@ -9528,6 +9547,7 @@ __metadata:
     emoji-toolkit: ^7.0.1
     emojione: ^4.5.0
     emojione-assets: ^4.5.0
+    esl: "github:pierre-lehnen-rc/esl"
     eslint: ~8.45.0
     eslint-config-prettier: ~8.8.0
     eslint-plugin-anti-trojan-source: ~1.1.1
@@ -13379,6 +13399,15 @@ __metadata:
   dependencies:
     "@types/trusted-types": "*"
   checksum: 427e2dc60d94d13d7860a293b926b376727cb2f545a3334a3f2e7de695a2bb23058dd15108e49e0651378229b443ee8ae0028034b6f2df9a9008c04fb7ad6f8f
+  languageName: node
+  linkType: hard
+
+"@types/dompurify@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "@types/dompurify@npm:3.0.5"
+  dependencies:
+    "@types/trusted-types": "*"
+  checksum: ffc34eca6a4536e1c8c16a47cce2623c5a118a9785492e71230052d92933ff096d14326ff449031e8dfaac509413222372d8f2b28786a13159de6241df716185
   languageName: node
   linkType: hard
 
@@ -21370,6 +21399,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dompurify@npm:^3.1.6":
+  version: 3.1.6
+  resolution: "dompurify@npm:3.1.6"
+  checksum: cc4fc4ccd9261fbceb2a1627a985c70af231274a26ddd3f643fd0616a0a44099bd9e4480940ce3655612063be4a1fe9f5e9309967526f8c0a99f931602323866
+  languageName: node
+  linkType: hard
+
 "domutils@npm:^1.7.0":
   version: 1.7.0
   resolution: "domutils@npm:1.7.0"
@@ -22324,6 +22360,13 @@ __metadata:
     escodegen: bin/escodegen.js
     esgenerate: bin/esgenerate.js
   checksum: 5aa6b2966fafe0545e4e77936300cc94ad57cfe4dc4ebff9950492eaba83eef634503f12d7e3cbd644ecc1bab388ad0e92b06fd32222c9281a75d1cf02ec6cef
+  languageName: node
+  linkType: hard
+
+"esl@github:pierre-lehnen-rc/esl":
+  version: 11.1.1
+  resolution: "esl@https://github.com/pierre-lehnen-rc/esl.git#commit=22f2167a4acaa129d214592cfb0d46a419d08663"
+  checksum: 1e24a130650d916980ba3d332bc3fbac90a78ec9b13db7f7300318de3094e178d5c851c4b1c36d99c8a8ea800279ca07137d6a0c6335168cec01870cf61d820c
   languageName: node
   linkType: hard
 
@@ -40564,6 +40607,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:~5.3.3":
+  version: 5.3.3
+  resolution: "typescript@npm:5.3.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 2007ccb6e51bbbf6fde0a78099efe04dc1c3dfbdff04ca3b6a8bc717991862b39fd6126c0c3ebf2d2d98ac5e960bcaa873826bb2bb241f14277034148f41f6a2
+  languageName: node
+  linkType: hard
+
 "typescript@npm:~5.5.4":
   version: 5.5.4
   resolution: "typescript@npm:5.5.4"
@@ -40571,6 +40624,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: b309040f3a1cd91c68a5a58af6b9fdd4e849b8c42d837b2c2e73f9a4f96a98c4f1ed398a9aab576ee0a4748f5690cf594e6b99dbe61de7839da748c41e6d6ca8
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@~5.3.3#~builtin<compat/typescript>":
+  version: 5.3.3
+  resolution: "typescript@patch:typescript@npm%3A5.3.3#~builtin<compat/typescript>::version=5.3.3&hash=85af82"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: f61375590b3162599f0f0d5b8737877ac0a7bc52761dbb585d67e7b8753a3a4c42d9a554c4cc929f591ffcf3a2b0602f65ae3ce74714fd5652623a816862b610
   languageName: node
   linkType: hard
 
