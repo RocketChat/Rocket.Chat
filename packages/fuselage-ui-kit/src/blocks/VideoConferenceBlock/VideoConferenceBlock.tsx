@@ -1,3 +1,4 @@
+import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import {
   useGoToRoom,
   useTranslation,
@@ -153,7 +154,10 @@ const VideoConferenceBlock = ({
                 </VideoConfMessageFooterText>
               </>
             ) : (
-              [2, 4].includes(data.status) && (
+              [
+                VideoConferenceStatus.EXPIRED,
+                VideoConferenceStatus.DECLINED,
+              ].includes(data.status) && (
                 <VideoConfMessageFooterText>
                   {t('Call_was_not_answered')}
                 </VideoConfMessageFooterText>
@@ -164,7 +168,7 @@ const VideoConferenceBlock = ({
     );
   }
 
-  if (data.type === 'direct' && data.status === 0) {
+  if (data.type === 'direct' && data.status === VideoConferenceStatus.CALLING) {
     return (
       <VideoConfMessage>
         <VideoConfMessageRow>
