@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes the parameter order in callbackHandler and updates the integration logic, autotranslate, and the EngagementDashboard.afterSaveMessage trigger to correctly pass the room parameter. This resolves the malfunction in outgoing webhooks and other use cases impacted by the format change introduced in version 6.12.0.
+Resolves the issue where outgoing integrations failed to trigger after the version 6.12.0 upgrade by correcting the parameter order from the `afterSaveMessage` callback to listener functions. This ensures the correct room information is passed, restoring the functionality of outgoing webhooks, IRC bridge, Autotranslate, and Engagement Dashboard.
