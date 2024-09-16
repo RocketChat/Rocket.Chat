@@ -2,7 +2,7 @@ import type { ISubscription, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { AnyBulkWriteOperation } from 'mongodb';
 
-import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../lib/server/lib/notifyListener';
+import { notifyOnRoomChanged, notifyOnSubscriptionChanged } from '../../../lib/server/lib/notifyListener';
 
 export async function resetRoomKey(roomId: string, userId: string, newRoomKey: string, newRoomKeyId: string) {
 	const user = await Users.findOneById<Pick<IUser, 'e2e'>>(userId, { projection: { e2e: 1 } });
@@ -23,15 +23,10 @@ export async function resetRoomKey(roomId: string, userId: string, newRoomKey: s
 		throw new Error('error-room-not-encrypted');
 	}
 
-	// 1: Remove the keyId from the room
-	// 2. Update the subscriptions to move the key from the e2eKey prop to the oldRoomKeys array
-	// 3. Enjoy
-
-	await Rooms.setE2eKeyId(roomId, newRoomKeyId);
-
-	// We will update the subs of everyone who has a key for the room. For the ones that don't have, we will
+	// We will update the subs of everyone who has a key for the room. For the ones that don't have, we will do nothing
 	const notifySubs = [];
 	const updateOps: AnyBulkWriteOperation<ISubscription>[] = [];
+	const e2eQueue: IRoom['usersWaitingForE2EKeys'] = [];
 
 	for await (const sub of Subscriptions.find({ rid: roomId })) {
 		// This replicates the oldRoomKeys array modifications allowing us to have the changes locally without finding them again
@@ -39,6 +34,12 @@ export async function resetRoomKey(roomId: string, userId: string, newRoomKey: s
 		const keys = replicateMongoSlice(room.e2eKeyId, sub);
 		delete sub.E2ESuggestedKey;
 		delete sub.E2EKey;
+
+		// If you're requesting the reset but you don't have the key, that means you won't have a complete "oldRoomKeys"
+		// So we'll put you on the list to get one
+		if (sub.u._id === userId && !sub.E2EKey) {
+			e2eQueue.push({ userId: sub.u._id, ts: new Date() });
+		}
 
 		const updateSet = {
 			$set: {
@@ -61,24 +62,30 @@ export async function resetRoomKey(roomId: string, userId: string, newRoomKey: s
 				...(keys && { oldRoomKeys: keys }),
 			});
 
+		// This is for allowing the key distribution process to start inmediately
+		pushToLimit(e2eQueue, { userId: sub.u._id, ts: new Date() });
+
 		if (updateOps.length >= 100) {
 			await writeAndNotify(updateOps, notifySubs);
-			notifySubs.length = 0;
-			updateOps.length = 0;
 		}
 	}
 
 	if (updateOps.length > 0) {
 		await writeAndNotify(updateOps, notifySubs);
-		notifySubs.length = 0;
-		updateOps.length = 0;
 	}
 
+	// after the old keys have been moved to the new prop, store the room key for the user calling the func
+	const roomResult = await Rooms.findOneAndUpdate({ _id: roomId }, { $set: { e2eKeyId: newRoomKeyId, ...(e2eQueue.length && { usersWaitingForE2EKeys: e2eQueue }) } });
 	const result = await Subscriptions.setE2EKeyByUserIdAndRoomId(userId, roomId, newRoomKey);
 
 	void notifyOnSubscriptionChanged(result.value!);
-	// after the old keys have been moved to the new prop, store the room key for the user calling the func
-	void notifyOnRoomChangedById(roomId);
+	void notifyOnRoomChanged(roomResult.value!);
+}
+
+function pushToLimit(arr: NonNullable<IRoom['usersWaitingForE2EKeys']>, item: NonNullable<IRoom['usersWaitingForE2EKeys']>[number], limit = 49) {
+	if (arr.length < limit) {
+		arr.push(item);
+	}
 }
 
 async function writeAndNotify(updateOps: AnyBulkWriteOperation<ISubscription>[], notifySubs: ISubscription[]) {
@@ -86,6 +93,8 @@ async function writeAndNotify(updateOps: AnyBulkWriteOperation<ISubscription>[],
 	notifySubs.forEach((sub) => {
 		void notifyOnSubscriptionChanged(sub);
 	});
+	notifySubs.length = 0;
+	updateOps.length = 0;
 }
 
 function replicateMongoSlice(keyId: string, sub: ISubscription) {
