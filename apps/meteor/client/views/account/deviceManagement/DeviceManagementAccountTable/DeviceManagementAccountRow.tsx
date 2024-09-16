@@ -1,8 +1,8 @@
 import { Box, Button } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';
 import DeviceIcon from '../../../../components/deviceManagement/DeviceIcon';
@@ -26,7 +26,7 @@ const DeviceManagementAccountRow = ({
 	loginAt,
 	onReload,
 }: DevicesRowProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 

@@ -9,11 +9,11 @@
 		"/dist"
 	],
 	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"storybook": "start-storybook -p 6006 --no-version-updates",
-		"build": "tsc -p tsconfig.build.json",
-		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput"
+		"storybook": "start-storybook -p 6006 --no-version-updates"
 	},
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
@@ -21,7 +21,7 @@
 		"@babel/preset-react": "~7.22.15",
 		"@babel/preset-typescript": "~7.22.15",
 		"@rocket.chat/i18n": "workspace:~",
-		"@rocket.chat/layout": "~0.31.26",
+		"@rocket.chat/layout": "~0.31.27",
 		"@rocket.chat/mock-providers": "workspace:~",
 		"@rocket.chat/tools": "workspace:~",
 		"@rocket.chat/ui-client": "workspace:^",
@@ -34,14 +34,14 @@
 		"@storybook/react": "~6.5.16",
 		"@storybook/testing-library": "^0.2.2",
 		"@tanstack/react-query": "^4.16.1",
-		"@testing-library/react": "~16.0.0",
-		"@types/react": "~17.0.69",
+		"@testing-library/react": "~16.0.1",
+		"@types/react": "~17.0.80",
 		"babel-loader": "~8.3.0",
 		"eslint": "~8.45.0",
 		"react": "~17.0.2",
 		"react-hook-form": "~7.45.4",
-		"react-i18next": "~13.2.2",
-		"storybook-dark-mode": "~3.0.1",
+		"react-i18next": "~15.0.1",
+		"storybook-dark-mode": "~3.0.3",
 		"typescript": "~5.5.4"
 	},
 	"peerDependencies": {

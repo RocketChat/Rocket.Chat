@@ -1,5 +1,6 @@
 import type { IUIActionButton, UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useEndpoint, useStream, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -10,7 +11,6 @@ import { UiKitTriggerTimeoutError } from '../../app/ui-message/client/UiKitTrigg
 import type { MessageActionConfig, MessageActionContext } from '../../app/ui-utils/client/lib/MessageAction';
 import type { MessageBoxAction } from '../../app/ui-utils/client/lib/messageBox';
 import { Utilities } from '../../ee/lib/misc/Utilities';
-import type { GenericMenuItemProps } from '../components/GenericMenu/GenericMenuItem';
 import { useUiKitActionManager } from '../uikit/hooks/useUiKitActionManager';
 import { useApplyButtonFilters, useApplyButtonAuthFilter } from './useApplyButtonFilters';
 
