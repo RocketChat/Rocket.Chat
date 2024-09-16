@@ -23,7 +23,7 @@ const AccountSecurityPage = (): ReactElement => {
 
 	const methods = useForm({
 		defaultValues: passwordDefaultValues,
-		mode: 'onBlur',
+		mode: 'all',
 	});
 	const {
 		reset,
