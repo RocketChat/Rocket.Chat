@@ -13,6 +13,7 @@ import {
 	StatesAction,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useMethod, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, hashQueryKey } from '@tanstack/react-query';
 import React, { useMemo, useState } from 'react';
@@ -31,7 +32,6 @@ import {
 } from '../../components/GenericTable';
 import { usePagination } from '../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../components/GenericTable/hooks/useSort';
-import UserAutoComplete from '../../components/UserAutoComplete';
 import { queryClient } from '../../lib/queryClient';
 
 const MonitorsTable = () => {

@@ -3165,7 +3165,6 @@
   "The_channel_name_is_required": "საჭიროა არხის სახელი",
   "The_emails_are_being_sent": "ელ.ფოსტა იგზავნება.",
   "The_empty_room__roomName__will_be_removed_automatically": "ცარიელი ოთახი <span style=\"font-weight: bold;\">{{roomName}}</span> ავტომატურად მოიხსნება.",
-  "The_field_is_required": "ველი %s აუცილებელია.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "სურათის ზომის შეცვლა არ იმუშავებს, რადგან ჩვენ ვერ ვპოულობთ თქვენს სერვერზე დაყენებულ ImageMagick ან GraphicsMagick-ს.",
   "The_message_is_a_discussion_you_will_not_be_able_to_recover": "შეტყობინება არის განხილვა და თქვენ ვერ შეძლებთ შეტყობინებების აღდგენას",
   "The_redirectUri_is_required": "გადამისამართების ლინკია საჭირო",

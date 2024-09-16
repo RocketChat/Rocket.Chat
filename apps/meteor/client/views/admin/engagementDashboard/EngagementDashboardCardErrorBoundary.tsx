@@ -1,16 +1,16 @@
 import { States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { useTranslation } from 'react-i18next';
 
 type EngagementDashboardCardErrorBoundaryProps = {
 	children?: ReactNode;
 };
 
 const EngagementDashboardCardErrorBoundary = ({ children }: EngagementDashboardCardErrorBoundaryProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const [error, setError] = useState<Error>();
 	const isError = (error: unknown): error is Error => error instanceof Error;

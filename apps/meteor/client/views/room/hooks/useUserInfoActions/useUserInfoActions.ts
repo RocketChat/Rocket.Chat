@@ -1,10 +1,10 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 
-import type { GenericMenuItemProps } from '../../../../components/GenericMenu/GenericMenuItem';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useAddUserAction } from './actions/useAddUserAction';
 import { useBlockUserAction } from './actions/useBlockUserAction';

@@ -1,7 +1,7 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/OmnichannelRoomIcon';
 import Field from '../../components/Field';
@@ -13,7 +13,7 @@ type SourceFieldProps = {
 };
 
 const SourceField = ({ room }: SourceFieldProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const roomSource = room.source.alias || room.source.id || room.source.type;
 

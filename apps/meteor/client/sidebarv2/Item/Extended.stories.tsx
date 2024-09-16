@@ -25,14 +25,7 @@ export default {
 const Template: ComponentStory<typeof Extended> = (args) => (
 	<Extended
 		{...args}
-		title={
-			<Box display='flex' flexDirection='row' w='full' alignItems='center'>
-				<Box flexGrow='1' withTruncatedText>
-					John Doe
-				</Box>
-				<Box fontScale='micro'>15:38</Box>
-			</Box>
-		}
+		title='John Doe'
 		subtitle={
 			<Box display='flex' flexDirection='row' w='full' alignItems='center'>
 				<Box flexGrow='1' withTruncatedText>
