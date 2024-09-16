@@ -1,6 +1,6 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type AppUpdateModalProps = {
 	confirm: () => void;
@@ -8,7 +8,7 @@ type AppUpdateModalProps = {
 };
 
 const AppUpdateModal = ({ confirm, cancel, ...props }: AppUpdateModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const handleCloseButtonClick = (): void => {
 		cancel();

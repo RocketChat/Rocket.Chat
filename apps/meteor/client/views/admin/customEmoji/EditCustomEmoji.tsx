@@ -150,7 +150,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 						<FieldRow>
 							<TextInput value={name} onChange={handleChangeName} placeholder={t('Name')} />
 						</FieldRow>
-						{errors.name && <FieldError>{t('error-the-field-is-required', { field: t('Name') })}</FieldError>}
+						{errors.name && <FieldError>{t('Required_field', { field: t('Name') })}</FieldError>}
 					</Field>
 					<Field>
 						<FieldLabel>{t('Aliases')}</FieldLabel>

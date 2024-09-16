@@ -1,7 +1,7 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { EmojiCategory } from '../../../../app/emoji/client';
 
@@ -47,7 +47,7 @@ const mapCategoryIcon = (category: string) => {
 };
 
 const EmojiPickerCategoryItem = ({ category, index, active, handleGoToCategory, ...props }: EmojiPickerCategoryItemProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const icon = mapCategoryIcon(category.key);
 

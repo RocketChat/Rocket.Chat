@@ -689,6 +689,25 @@ describe('LIVECHAT - rooms', () => {
 				expect(latestRoom).to.not.have.property('pdfTranscriptFileId');
 			},
 		);
+
+		describe('Special case: visitors closing is disabled', () => {
+			before(async () => {
+				await updateSetting('Omnichannel_allow_visitors_to_close_conversation', false);
+			});
+			after(async () => {
+				await updateSetting('Omnichannel_allow_visitors_to_close_conversation', true);
+			});
+			it('should not allow visitor to close a conversation', async () => {
+				const { room, visitor } = await startANewLivechatRoomAndTakeIt();
+				await request
+					.post(api('livechat/room.close'))
+					.send({
+						token: visitor.token,
+						rid: room._id,
+					})
+					.expect(400);
+			});
+		});
 	});
 
 	describe('livechat/room.forward', () => {
@@ -2466,6 +2485,10 @@ describe('LIVECHAT - rooms', () => {
 		before(async () => {
 			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 			await updateSetting('Unread_Count_Omni', 'all_messages');
+		});
+
+		after(async () => {
+			await deleteDepartment(departmentWithAgent.department._id);
 		});
 
 		it('it should prepare the required data for further tests', async () => {

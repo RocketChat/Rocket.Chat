@@ -1,7 +1,8 @@
 import { Palette } from '@rocket.chat/fuselage';
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { getPeriodRange } from '../../../components/dashboards/periods';
 import { usePeriodSelectorStorage } from '../../../components/dashboards/usePeriodSelectorStorage';
@@ -23,7 +24,7 @@ const formatChartData = (data: { label: string; value: number }[] | undefined = 
 	}));
 
 export const useTagsSection = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [period, periodSelectorProps] = usePeriodSelectorStorage('reports-tags-period', PERIOD_OPTIONS);
 	const getConversationsByTags = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-tags');
 

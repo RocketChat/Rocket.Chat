@@ -5,7 +5,7 @@ import type { IInstance } from '@rocket.chat/rest-typings';
 import { AssertionError, expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
@@ -701,6 +701,141 @@ describe('miscellaneous', () => {
 					expect(res.body).to.have.property('policy').and.to.be.an('array');
 				})
 				.end(done);
+		});
+	});
+
+	describe('[/stdout.queue]', () => {
+		let testUser: TestUser<IUser>;
+		let testUsername: string;
+		let testUserPassword: string;
+		before(async () => {
+			testUser = await createUser();
+			testUsername = testUser.username;
+			testUserPassword = password;
+			await updateSetting('Log_Trace_Methods', true);
+			await updateSetting('Log_Level', '2');
+
+			// populate the logs by sending method calls
+			const populateLogsPromises = [];
+			populateLogsPromises.push(
+				request
+					.post(methodCall('getRoomRoles'))
+					.set(credentials)
+					.set('Cookie', `rc_token=${credentials['X-Auth-Token']}`)
+					.send({
+						message: JSON.stringify({
+							method: 'getRoomRoles',
+							params: ['GENERAL'],
+							id: 'id',
+							msg: 'method',
+						}),
+					}),
+			);
+
+			populateLogsPromises.push(
+				request
+					.post(methodCall('private-settings:get'))
+					.set(credentials)
+					.send({
+						message: JSON.stringify({
+							method: 'private-settings/get',
+							params: [
+								{
+									$date: new Date().getTime(),
+								},
+							],
+							id: 'id',
+							msg: 'method',
+						}),
+					}),
+			);
+
+			populateLogsPromises.push(
+				request.post(api('login')).send({
+					user: {
+						username: testUsername,
+					},
+					password: testUserPassword,
+				}),
+			);
+
+			await Promise.all(populateLogsPromises);
+		});
+
+		after(async () => {
+			await Promise.all([updateSetting('Log_Trace_Methods', false), updateSetting('Log_Level', '0'), deleteUser(testUser)]);
+		});
+
+		it('if log trace enabled, x-auth-token should be redacted', async () => {
+			await request
+				.get(api('stdout.queue'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('queue').that.is.an('array');
+
+					const { queue } = res.body;
+					let foundRedactedToken = false;
+
+					for (const log of queue) {
+						if (log.string.includes("'x-auth-token': '[redacted]'")) {
+							foundRedactedToken = true;
+							break;
+						}
+					}
+
+					expect(foundRedactedToken).to.be.true;
+				});
+		});
+
+		it('if log trace enabled, rc_token should be redacted', async () => {
+			await request
+				.get(api('stdout.queue'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('queue').that.is.an('array');
+
+					const { queue } = res.body;
+					let foundRedactedCookie = false;
+
+					for (const log of queue) {
+						if (log.string.includes('rc_token=[redacted]')) {
+							foundRedactedCookie = true;
+							break;
+						}
+					}
+
+					expect(foundRedactedCookie).to.be.true;
+				});
+		});
+
+		it('should not return user token anywhere in the log stream', async () => {
+			await request
+				.get(api('stdout.queue'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('queue').that.is.an('array');
+
+					const { queue } = res.body;
+					let foundTokenValue = false;
+
+					for (const log of queue) {
+						if (log.string.includes(credentials['X-Auth-Token'])) {
+							foundTokenValue = true;
+							break;
+						}
+					}
+
+					expect(foundTokenValue).to.be.false;
+				});
 		});
 	});
 });
