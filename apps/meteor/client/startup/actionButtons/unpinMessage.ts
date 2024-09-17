@@ -25,12 +25,12 @@ Meteor.startup(() => {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		condition({ message, subscription }) {
+		condition({ message, subscription,room }) {
 			if (!subscription || !settings.get('Message_AllowPinning') || !message.pinned) {
 				return false;
 			}
 
-			return hasAtLeastOnePermission('pin-message', message.rid);
+			return  room.t==='d' || hasAtLeastOnePermission('pin-message', message.rid);
 		},
 		order: 2,
 		group: 'menu',
