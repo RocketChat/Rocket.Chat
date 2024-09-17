@@ -1,27 +1,24 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
-import '@testing-library/jest-dom';
 
+import { createFakeUser } from '../../../../../tests/mocks/data';
 import UsersTable from './UsersTable';
 
-const createUser = (freeSwitchExtension?: string) => ({
-	_id: 'john.doe',
-	username: 'john.doe',
-	name: 'John Doe',
-	createdAt: new Date(),
-	active: true,
-	_updatedAt: new Date(),
-	roles: ['admin'],
-	type: 'user',
-	freeSwitchExtension,
-});
+const createFakeAdminUser = (freeSwitchExtension?: string) =>
+	createFakeUser({
+		active: true,
+		roles: ['admin'],
+		type: 'user',
+		freeSwitchExtension,
+	});
 
 it('should not render "Voice Call Extension" column when VoIP is disabled', () => {
-	const mockUser = createUser('1000');
+	const user = createFakeAdminUser('1000');
+
 	render(
 		<UsersTable
-			filteredUsersQueryResult={{ isSuccess: true, data: { users: [mockUser], count: 1, offset: 1, total: 1 } } as any}
+			filteredUsersQueryResult={{ isSuccess: true, data: { users: [user], count: 1, offset: 1, total: 1 } } as any}
 			setUserFilters={() => undefined}
 			tab='all'
 			onReload={() => undefined}
@@ -32,7 +29,7 @@ it('should not render "Voice Call Extension" column when VoIP is disabled', () =
 		/>,
 		{
 			legacyRoot: true,
-			wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', false).build(),
+			wrapper: mockAppRoot().withUser(user).withSetting('VoIP_TeamCollab_Enabled', false).build(),
 		},
 	);
 
@@ -42,10 +39,11 @@ it('should not render "Voice Call Extension" column when VoIP is disabled', () =
 });
 
 it('should render "Remove_Association" button when user has a associated extension', () => {
-	const mockUser = createUser('1000');
+	const user = createFakeAdminUser('1000');
+
 	render(
 		<UsersTable
-			filteredUsersQueryResult={{ isSuccess: true, data: { users: [mockUser], count: 1, offset: 1, total: 1 } } as any}
+			filteredUsersQueryResult={{ isSuccess: true, data: { users: [user], count: 1, offset: 1, total: 1 } } as any}
 			setUserFilters={() => undefined}
 			tab='all'
 			onReload={() => undefined}
@@ -56,7 +54,7 @@ it('should render "Remove_Association" button when user has a associated extensi
 		/>,
 		{
 			legacyRoot: true,
-			wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', true).build(),
+			wrapper: mockAppRoot().withUser(user).withSetting('VoIP_TeamCollab_Enabled', true).build(),
 		},
 	);
 
@@ -66,10 +64,11 @@ it('should render "Remove_Association" button when user has a associated extensi
 });
 
 it('should render "Associate_Extension" button when user has no associated extension', () => {
-	const mockUser = createUser();
+	const user = createFakeAdminUser();
+
 	render(
 		<UsersTable
-			filteredUsersQueryResult={{ isSuccess: true, data: { users: [mockUser], count: 1, offset: 1, total: 1 } } as any}
+			filteredUsersQueryResult={{ isSuccess: true, data: { users: [user], count: 1, offset: 1, total: 1 } } as any}
 			setUserFilters={() => undefined}
 			tab='all'
 			onReload={() => undefined}
@@ -80,7 +79,7 @@ it('should render "Associate_Extension" button when user has no associated exten
 		/>,
 		{
 			legacyRoot: true,
-			wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', true).build(),
+			wrapper: mockAppRoot().withUser(user).withSetting('VoIP_TeamCollab_Enabled', true).build(),
 		},
 	);
 

@@ -1,13 +1,14 @@
 /* eslint-disable testing-library/no-await-sync-events */
+import { faker } from '@faker-js/faker';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
-import '@testing-library/jest-dom';
 import AssignExtensionModal from './AssignExtensionModal';
 
-const root = mockAppRoot()
+const appRoot = mockAppRoot()
 	.withJohnDoe()
 	.withEndpoint('POST', '/v1/voip-freeswitch.extension.assign', () => null)
 	.withEndpoint('GET', '/v1/voip-freeswitch.extension.list', () => ({
@@ -29,15 +30,13 @@ const root = mockAppRoot()
 	.withEndpoint('GET', '/v1/users.autocomplete', () => ({
 		items: [
 			{
-				_id: 'janedoe',
-				score: 2,
+				_id: faker.database.mongodbObjectId(),
 				name: 'Jane Doe',
 				username: 'jane.doe',
-				nickname: null,
-				status: 'offline',
-				statusText: '',
-				avatarETag: null,
-			} as any,
+				nickname: '',
+				status: UserStatus.OFFLINE,
+				avatarETag: '',
+			},
 		],
 		success: true,
 	}));
@@ -49,7 +48,7 @@ it.todo('should load with default extension');
 it('should only enable "Free Extension Numbers" field if username is informed', async () => {
 	render(<AssignExtensionModal onClose={() => undefined} />, {
 		legacyRoot: true,
-		wrapper: root.build(),
+		wrapper: appRoot.build(),
 	});
 
 	const extensionsSelect = screen.getByRole('button', { name: /Select_an_option/i });
@@ -66,7 +65,7 @@ it('should only enable "Free Extension Numbers" field if username is informed', 
 it('should only enable "Associate" button both username and extension is informed', async () => {
 	render(<AssignExtensionModal onClose={() => undefined} />, {
 		legacyRoot: true,
-		wrapper: root.build(),
+		wrapper: appRoot.build(),
 	});
 
 	expect(screen.getByRole('button', { name: /Associate/i, hidden: true })).toBeDisabled();
@@ -89,7 +88,7 @@ it('should call onClose when extension is associated', async () => {
 	const closeFn = jest.fn();
 	render(<AssignExtensionModal onClose={closeFn} />, {
 		legacyRoot: true,
-		wrapper: root.build(),
+		wrapper: appRoot.build(),
 	});
 
 	screen.getByLabelText('User_Without_Extensions').focus();
@@ -111,7 +110,7 @@ it('should call onClose when cancel button is clicked', () => {
 	const closeFn = jest.fn();
 	render(<AssignExtensionModal onClose={closeFn} />, {
 		legacyRoot: true,
-		wrapper: root.build(),
+		wrapper: appRoot.build(),
 	});
 
 	screen.getByRole('button', { name: /Cancel/i, hidden: true }).click();
@@ -122,7 +121,7 @@ it('should call onClose when cancel button is clicked', () => {
 	const closeFn = jest.fn();
 	render(<AssignExtensionModal onClose={closeFn} />, {
 		legacyRoot: true,
-		wrapper: root.build(),
+		wrapper: appRoot.build(),
 	});
 
 	screen.getByRole('button', { name: /Close/i, hidden: true }).click();
