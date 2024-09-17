@@ -99,8 +99,8 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 			encrypted: (e2eEnabledForPrivateByDefault as boolean) ?? false,
 			broadcast: false,
 			members: [],
-			showChannels: false,
-			showDiscussions: false,
+			showChannels: true,
+			showDiscussions: true,
 		},
 	});
 
