@@ -114,14 +114,14 @@ const UsersTable = ({
 			),
 			tab === 'all' && isVoIPEnabled && (
 				<GenericTableHeaderCell
-					w='x100'
+					w='x180'
 					key='freeSwitchExtension'
 					direction={sortDirection}
 					active={sortBy === 'freeSwitchExtension'}
 					onClick={setSort}
 					sort='freeSwitchExtension'
 				>
-					{t('Voice_Call_Extension')}
+					{t('Voice_call_extension')}
 				</GenericTableHeaderCell>
 			),
 			<GenericTableHeaderCell key='actions' w={tab === 'pending' ? 'x204' : 'x50'} />,

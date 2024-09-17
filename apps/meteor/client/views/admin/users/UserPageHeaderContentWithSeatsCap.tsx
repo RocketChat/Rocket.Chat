@@ -43,8 +43,8 @@ const UserPageHeaderContentWithSeatsCap = ({
 			</Margins>
 			<ButtonGroup>
 				{canRegisterExtension && (
-					<Button primary onClick={(): void => setModal(<AssignExtensionModal onClose={(): void => setModal(null)} />)}>
-						{t('Associate_Extension')}
+					<Button icon='phone' onClick={(): void => setModal(<AssignExtensionModal onClose={(): void => setModal(null)} />)}>
+						{t('Assign_extension')}
 					</Button>
 				)}
 				<Button icon='mail' onClick={handleInviteButtonClick} disabled={isSeatsCapExceeded}>

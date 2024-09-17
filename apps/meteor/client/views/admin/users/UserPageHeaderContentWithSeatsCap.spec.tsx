@@ -11,7 +11,7 @@ it('should render "Associate Extension" button when VoIP_TeamCollab_Enabled sett
 		wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', true).build(),
 	});
 
-	expect(screen.getByRole('button', { name: 'Associate_Extension' })).toBeEnabled();
+	expect(screen.getByRole('button', { name: 'Assign_extension' })).toBeEnabled();
 });
 
 it('should not render "Associate Extension" button when VoIP_TeamCollab_Enabled setting is disabled', async () => {
@@ -20,5 +20,5 @@ it('should not render "Associate Extension" button when VoIP_TeamCollab_Enabled 
 		wrapper: mockAppRoot().withJohnDoe().withSetting('VoIP_TeamCollab_Enabled', false).build(),
 	});
 
-	expect(screen.queryByRole('button', { name: 'Associate_Extension' })).not.toBeInTheDocument();
+	expect(screen.queryByRole('button', { name: 'Assign_extension' })).not.toBeInTheDocument();
 });

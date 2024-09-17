@@ -53,9 +53,9 @@ it('should only enable "Free Extension Numbers" field if username is informed', 
 
 	const extensionsSelect = screen.getByRole('button', { name: /Select_an_option/i });
 	expect(extensionsSelect).toHaveClass('disabled');
-	expect(screen.getByLabelText('User_Without_Extensions')).toBeEnabled();
+	expect(screen.getByLabelText('User')).toBeEnabled();
 
-	screen.getByLabelText('User_Without_Extensions').focus();
+	screen.getByLabelText('User').focus();
 	const userOption = await screen.findByRole('option', { name: 'Jane Doe' });
 	await userEvent.click(userOption);
 
@@ -70,7 +70,7 @@ it('should only enable "Associate" button both username and extension is informe
 
 	expect(screen.getByRole('button', { name: /Associate/i, hidden: true })).toBeDisabled();
 
-	screen.getByLabelText('User_Without_Extensions').focus();
+	screen.getByLabelText('User').focus();
 	const userOption = await screen.findByRole('option', { name: 'Jane Doe' });
 	await userEvent.click(userOption);
 
@@ -91,7 +91,7 @@ it('should call onClose when extension is associated', async () => {
 		wrapper: appRoot.build(),
 	});
 
-	screen.getByLabelText('User_Without_Extensions').focus();
+	screen.getByLabelText('User').focus();
 	const userOption = await screen.findByRole('option', { name: 'Jane Doe' });
 	await userEvent.click(userOption);
 

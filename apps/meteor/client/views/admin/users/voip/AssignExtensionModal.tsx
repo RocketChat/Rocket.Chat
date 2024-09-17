@@ -83,13 +83,13 @@ const AssignExtensionModal = ({ defaultExtension, defaultUsername, onClose }: As
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit((data) => handleAssignment.mutateAsync(data))} {...props} />}
 		>
 			<Modal.Header>
-				<Modal.Title id={modalTitleId}>{t('Associate_User_to_Extension')}</Modal.Title>
+				<Modal.Title id={modalTitleId}>{t('Assign_extension')}</Modal.Title>
 				<Modal.Close aria-label={t('Close')} onClick={onClose} />
 			</Modal.Header>
 			<Modal.Content>
 				<FieldGroup>
 					<Field>
-						<FieldLabel htmlFor={usersWithoutExtensionsId}>{t('User_Without_Extensions')}</FieldLabel>
+						<FieldLabel htmlFor={usersWithoutExtensionsId}>{t('User')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								control={control}

@@ -17,8 +17,7 @@ import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
 import { useResetE2EEKeyAction } from '../hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
 import { useSendWelcomeEmailMutation } from '../hooks/useSendWelcomeEmailMutation';
-import AssignExtensionButton from '../voip/AssignExtensionButton';
-import RemoveExtensionButton from '../voip/RemoveExtensionButton';
+import { useVoiceCallExtensionAction } from '../hooks/useVoiceCallExtensionAction';
 
 type UsersTableRowProps = {
 	user: Serialized<DefaultUserInfo>;
@@ -43,7 +42,7 @@ const UsersTableRow = ({
 }: UsersTableRowProps): ReactElement => {
 	const { t } = useTranslation();
 
-	const { _id, emails, username, name, roles, status, active, avatarETag, lastLogin, type, freeSwitchExtension } = user;
+	const { _id, emails, username = '', name = '', roles, status, active, avatarETag, lastLogin, type, freeSwitchExtension } = user;
 	const registrationStatusText = useMemo(() => {
 		const usersExcludedFromPending = ['bot', 'app'];
 
@@ -76,10 +75,17 @@ const UsersTableRow = ({
 	const resetTOTPAction = useResetTOTPAction(userId);
 	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
 	const resendWelcomeEmail = useSendWelcomeEmailMutation();
+	const voiceCallExtensionAction = useVoiceCallExtensionAction({ extension: freeSwitchExtension, username, name });
 
 	const isNotPendingDeactivatedNorFederated = tab !== 'pending' && tab !== 'deactivated' && !isFederatedUser;
 	const menuOptions = useMemo(
 		() => ({
+			...(voiceCallExtensionAction && {
+				voiceCallExtensionAction: {
+					label: { label: voiceCallExtensionAction.label, icon: voiceCallExtensionAction.icon },
+					action: voiceCallExtensionAction.action,
+				},
+			}),
 			...(isNotPendingDeactivatedNorFederated &&
 				changeAdminStatusAction && {
 					makeAdmin: {
@@ -114,6 +120,7 @@ const UsersTableRow = ({
 			isNotPendingDeactivatedNorFederated,
 			resetE2EKeyAction,
 			resetTOTPAction,
+			voiceCallExtensionAction,
 		],
 	);
 
@@ -167,13 +174,9 @@ const UsersTableRow = ({
 			)}
 
 			{tab === 'all' && showVoipExtension && username && (
-				<>
-					{freeSwitchExtension ? (
-						<RemoveExtensionButton username={username} extension={freeSwitchExtension} />
-					) : (
-						<AssignExtensionButton username={username} />
-					)}
-				</>
+				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+					{freeSwitchExtension || t('Not_assigned')}
+				</GenericTableCell>
 			)}
 
 			<GenericTableCell
