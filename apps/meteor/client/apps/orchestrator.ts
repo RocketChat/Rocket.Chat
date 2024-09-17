@@ -57,7 +57,7 @@ class AppClientOrchestrator {
 	}
 
 	public async getAppsFromMarketplace(isAdminUser?: boolean): Promise<{ apps: App[]; error?: unknown }> {
-		let result = [];
+		let result: App[] = [];
 		try {
 			result = await sdk.rest.get('/apps/marketplace', { isAdminUser: isAdminUser ? isAdminUser.toString() : 'false' });
 		} catch (e) {
