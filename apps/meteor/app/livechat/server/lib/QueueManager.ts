@@ -119,18 +119,18 @@ export class QueueManager {
 		}
 
 		if (RoutingManager.getConfig()?.autoAssignAgent) {
-			return LivechatInquiryStatus.TAKEN;
+			return LivechatInquiryStatus.READY;
 		}
 
 		if (!agent || !(await allowAgentSkipQueue(agent))) {
 			return LivechatInquiryStatus.QUEUED;
 		}
 
-		return LivechatInquiryStatus.TAKEN;
+		return LivechatInquiryStatus.READY;
 	}
 
 	static async queueInquiry(inquiry: ILivechatInquiryRecord, room: IOmnichannelRoom, defaultAgent?: SelectedAgent | null) {
-		if (inquiry.status === 'taken') {
+		if (inquiry.status === 'ready') {
 			return RoutingManager.delegateInquiry(inquiry, defaultAgent, undefined, room);
 		}
 

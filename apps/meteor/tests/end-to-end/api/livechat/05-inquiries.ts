@@ -188,12 +188,15 @@ describe('LIVECHAT - inquiries', () => {
 			expect(inquiry2.source?.type).to.equal('api');
 			expect(inquiry2.status).to.equal('taken');
 		});
-		it('should mark a taken room as servedBy me', async () => {
+
+		it('should mark a mannualy taken room as servedBy me', async () => {
 			const agent = await createAgent();
 			const visitor = await createVisitor();
 			await makeAgentAvailable();
 			const room = await createLivechatRoom(visitor.token);
 			const inquiry = await fetchInquiry(room._id);
+
+			expect(inquiry.status).to.equal('queued');
 
 			await request
 				.post(api('livechat/inquiries.take'))
@@ -209,9 +212,34 @@ describe('LIVECHAT - inquiries', () => {
 				});
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
+			const takenInquiry = await fetchInquiry(room._id);
 
 			expect(roomInfo).to.have.property('servedBy').that.is.an('object');
 			expect(roomInfo.servedBy).to.have.property('_id', 'rocketchat.internal.admin.test');
+			expect(takenInquiry.status).to.equal('taken');
+		});
+
+		it('should throw an error if the inquiry is already taken', async () => {
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+
+			const agent = await createAgent();
+			const visitor = await createVisitor();
+			await makeAgentAvailable();
+			const room = await createLivechatRoom(visitor.token);
+			const inquiry = await fetchInquiry(room._id);
+
+			expect(room.servedBy).to.be.an('object');
+			expect(room.servedBy).to.have.property('_id', agent._id);
+			expect(inquiry.status).to.equal('taken');
+
+			const response = await request.post(api('livechat/inquiries.take')).set(credentials).send({
+				inquiryId: inquiry._id,
+				userId: agent._id,
+			});
+
+			expect(response.status).to.equal(400);
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error', 'Inquiry already taken [error-inquiry-taken]');
 		});
 	});
 

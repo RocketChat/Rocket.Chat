@@ -265,9 +265,7 @@ export const RoutingManager: Routing = {
 			return cbRoom;
 		}
 
-		if (inquiry.status !== LivechatInquiryStatus.TAKEN) {
-			await LivechatInquiry.takeInquiry(_id);
-		}
+		await LivechatInquiry.takeInquiry(_id);
 
 		logger.info(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
 
