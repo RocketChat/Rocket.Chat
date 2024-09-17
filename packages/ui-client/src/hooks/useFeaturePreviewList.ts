@@ -88,8 +88,15 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 export const enabledDefaultFeatures = defaultFeaturesPreview.filter((feature) => feature.enabled);
 
 export const usePreferenceFeaturePreviewList = () => {
+	const featurePreviewEnabled = useSetting<boolean>('Accounts_AllowFeaturePreview');
+
+	if (!featurePreviewEnabled) {
+		return { unseenFeatures: 0, features: [] as FeaturePreviewProps[], featurePreviewEnabled };
+	}
+
 	const userFeaturesPreviewPreference = useUserPreference<FeaturePreviewProps[]>('featuresPreview');
 
+	// TODO: Remove this logic after we have a way to store object settings.
 	const userFeaturesPreview = useMemo<FeaturePreviewProps[]>(() => {
 		if (typeof userFeaturesPreviewPreference === 'string') {
 			return JSON.parse(userFeaturesPreviewPreference);
@@ -97,29 +104,25 @@ export const usePreferenceFeaturePreviewList = () => {
 		return userFeaturesPreviewPreference;
 	}, [userFeaturesPreviewPreference]);
 
-	return useFeaturePreviewList(userFeaturesPreview);
+	const { unseenFeatures, features } = useFeaturePreviewList(userFeaturesPreview);
+	return { unseenFeatures, features, featurePreviewEnabled };
 };
 
 export const useDefaultSettingFeaturePreviewList = () => {
 	const featurePreviewSettingJSON = useSetting<string>('Accounts_Default_User_Preferences_featuresPreview');
 
+	// TODO: Remove this logic after we have a way to store object settings.
 	const settingFeaturePreview = useMemo<FeaturePreviewProps[]>(() => {
 		if (typeof featurePreviewSettingJSON === 'string') {
 			return JSON.parse(featurePreviewSettingJSON);
 		}
 		return featurePreviewSettingJSON;
 	}, [featurePreviewSettingJSON]);
-	console.log('useDefaultSettingFeaturePreviewList:', settingFeaturePreview);
+
 	return useFeaturePreviewList(settingFeaturePreview);
 };
 
 export const useFeaturePreviewList = (featuresList: Pick<FeaturePreviewProps, 'name' | 'value'>[]) => {
-	const featurePreviewEnabled = useSetting<boolean>('Accounts_AllowFeaturePreview');
-
-	if (!featurePreviewEnabled) {
-		return { unseenFeatures: 0, features: [] as FeaturePreviewProps[], featurePreviewEnabled };
-	}
-
 	const unseenFeatures = enabledDefaultFeatures.filter(
 		(defaultFeature) => !featuresList?.find((feature) => feature.name === defaultFeature.name),
 	).length;
@@ -128,6 +131,6 @@ export const useFeaturePreviewList = (featuresList: Pick<FeaturePreviewProps, 'n
 		const features = featuresList?.find((feature) => feature.name === defaultFeature.name);
 		return { ...defaultFeature, ...features };
 	});
-	console.log('useFeaturePreviewList.mergedFeatures: ', mergedFeatures);
-	return { unseenFeatures, features: mergedFeatures, featurePreviewEnabled };
+
+	return { unseenFeatures, features: mergedFeatures };
 };
