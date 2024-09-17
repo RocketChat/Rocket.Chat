@@ -1,9 +1,9 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, FieldError, FieldHint, TextInput, Select, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 type RoleFormProps = {
 	className?: string;
@@ -13,7 +13,7 @@ type RoleFormProps = {
 };
 
 const RoleForm = ({ className, editing = false, isProtected = false, isDisabled = false }: RoleFormProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const {
 		register,
 		control,
@@ -33,9 +33,13 @@ const RoleForm = ({ className, editing = false, isProtected = false, isDisabled 
 			<Field className={className}>
 				<FieldLabel>{t('Role')}</FieldLabel>
 				<FieldRow>
-					<TextInput disabled={editing || isDisabled} placeholder={t('Role')} {...register('name', { required: true })} />
+					<TextInput
+						disabled={editing || isDisabled}
+						placeholder={t('Role')}
+						{...register('name', { required: t('Required_field', { field: t('Role') }) })}
+					/>
 				</FieldRow>
-				{errors?.name && <FieldError>{t('error-the-field-is-required', { field: t('Role') })}</FieldError>}
+				{errors?.name && <FieldError>{errors.name.message}</FieldError>}
 			</Field>
 			<Field className={className}>
 				<FieldLabel>{t('Description')}</FieldLabel>

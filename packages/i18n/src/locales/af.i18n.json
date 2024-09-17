@@ -2367,7 +2367,6 @@
   "The_application_name_is_required": "Die aansoek naam is nodig",
   "The_channel_name_is_required": "Die kanaal naam is nodig",
   "The_emails_are_being_sent": "Die e-posse word gestuur.",
-  "The_field_is_required": "Die veld%s is nodig.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Die grootte van die prentjie sal nie werk nie omdat ons ImageMagick of GraphicsMagick nie op u bediener geïnstalleer het nie.",
   "The_redirectUri_is_required": "Die redirectUri is nodig",
   "The_server_will_restart_in_s_seconds": "Die bediener sal herbegin in%s sekondes",

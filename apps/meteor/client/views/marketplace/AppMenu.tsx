@@ -1,9 +1,9 @@
 import type { App } from '@rocket.chat/core-typings';
 import { MenuItem, MenuItemContent, MenuSection, MenuV2, Skeleton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useHandleMenuAction } from '@rocket.chat/ui-client';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { useHandleMenuAction } from '../../components/GenericMenu/hooks/useHandleMenuAction';
 import type { AppMenuOption } from './hooks/useAppMenu';
 import { useAppMenu } from './hooks/useAppMenu';
 
@@ -13,7 +13,7 @@ type AppMenuProps = {
 };
 
 const AppMenu = ({ app, isAppDetailsPage }: AppMenuProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { isLoading, isAdminUser, sections } = useAppMenu(app, isAppDetailsPage);
 
