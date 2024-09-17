@@ -17,6 +17,7 @@ import {
 	AccordionItem,
 } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import {
 	useEndpoint,
 	usePermission,
@@ -248,49 +249,56 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 				</FieldGroup>
 				<Accordion>
 					<AccordionItem title={t('Advanced_settings')}>
-						<FieldGroup>
-							<Box is='h5' fontScale='h5' color='titles-labels'>
-								{t('Navigation')}
-							</Box>
-							<Field>
-								<FieldRow>
-									<FieldLabel htmlFor={showChannelsId}>{t('Channels')}</FieldLabel>
-									<Controller
-										control={control}
-										name='showChannels'
-										render={({ field: { onChange, value, ref } }): ReactElement => (
-											<ToggleSwitch
-												aria-describedby={`${showChannelsId}-hint`}
-												id={showChannelsId}
-												onChange={onChange}
-												checked={value}
-												ref={ref}
+						<FeaturePreview feature='sidepanelNavigation'>
+							<FeaturePreviewOff>{null}</FeaturePreviewOff>
+							<FeaturePreviewOn>
+								<FieldGroup>
+									<Box is='h5' fontScale='h5' color='titles-labels'>
+										{t('Navigation')}
+									</Box>
+									<Field>
+										<FieldRow>
+											<FieldLabel htmlFor={showChannelsId}>{t('Channels')}</FieldLabel>
+											<Controller
+												control={control}
+												name='showChannels'
+												render={({ field: { onChange, value, ref } }): ReactElement => (
+													<ToggleSwitch
+														aria-describedby={`${showChannelsId}-hint`}
+														id={showChannelsId}
+														onChange={onChange}
+														checked={value}
+														ref={ref}
+													/>
+												)}
 											/>
-										)}
-									/>
-								</FieldRow>
-								<FieldDescription id={`${showChannelsId}-hint`}>{t('Show_channels_description')}</FieldDescription>
-							</Field>
+										</FieldRow>
+										<FieldDescription id={`${showChannelsId}-hint`}>{t('Show_channels_description')}</FieldDescription>
+									</Field>
 
-							<Field>
-								<FieldRow>
-									<FieldLabel htmlFor={showDiscussionsId}>{t('Discussions')}</FieldLabel>
-									<Controller
-										control={control}
-										name='showDiscussions'
-										render={({ field: { onChange, value, ref } }): ReactElement => (
-											<ToggleSwitch
-												aria-describedby={`${showDiscussionsId}-hint`}
-												id={showDiscussionsId}
-												onChange={onChange}
-												checked={value}
-												ref={ref}
+									<Field>
+										<FieldRow>
+											<FieldLabel htmlFor={showDiscussionsId}>{t('Discussions')}</FieldLabel>
+											<Controller
+												control={control}
+												name='showDiscussions'
+												render={({ field: { onChange, value, ref } }): ReactElement => (
+													<ToggleSwitch
+														aria-describedby={`${showDiscussionsId}-hint`}
+														id={showDiscussionsId}
+														onChange={onChange}
+														checked={value}
+														ref={ref}
+													/>
+												)}
 											/>
-										)}
-									/>
-								</FieldRow>
-								<FieldDescription id={`${showDiscussionsId}-hint`}>{t('Show_discussions_description')}</FieldDescription>
-							</Field>
+										</FieldRow>
+										<FieldDescription id={`${showDiscussionsId}-hint`}>{t('Show_discussions_description')}</FieldDescription>
+									</Field>
+								</FieldGroup>
+							</FeaturePreviewOn>
+						</FeaturePreview>
+						<FieldGroup>
 							<Box is='h5' fontScale='h5' color='titles-labels'>
 								{t('Security_and_permissions')}
 							</Box>

@@ -24,6 +24,7 @@ import {
 	Divider,
 } from '@rocket.chat/fuselage';
 import { useEffectEvent, useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
@@ -371,44 +372,47 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 							{showAdvancedSettings && (
 								<AccordionItem title={t('Advanced_settings')}>
 									{roomType === 'team' && (
-										<>
-											<FieldGroup>
-												<Box is='h5' fontScale='h5' color='titles-labels'>
-													{t('Navigation')}
-												</Box>
-												<Field>
-													<FieldRow>
-														<FieldLabel htmlFor={showChannelsField}>{t('Channels')}</FieldLabel>
-														<Controller
-															control={control}
-															name='showChannels'
-															render={({ field: { value, ...field } }) => (
-																<ToggleSwitch id={showChannelsField} checked={value} {...field} />
-															)}
-														/>
-													</FieldRow>
-													<FieldRow>
-														<FieldHint id={`${showChannelsField}-hint`}>{t('Show_channels_description')}</FieldHint>
-													</FieldRow>
-												</Field>
-												<Field>
-													<FieldRow>
-														<FieldLabel htmlFor={showDiscussionsField}>{t('Discussions')}</FieldLabel>
-														<Controller
-															control={control}
-															name='showDiscussions'
-															render={({ field: { value, ...field } }) => (
-																<ToggleSwitch id={showDiscussionsField} checked={value} {...field} />
-															)}
-														/>
-													</FieldRow>
-													<FieldRow>
-														<FieldHint id={`${showDiscussionsField}-hint`}>{t('Show_discussions_description')}</FieldHint>
-													</FieldRow>
-												</Field>
-											</FieldGroup>
-											<Divider mb={24} />
-										</>
+										<FeaturePreview feature='sidepanelNavigation'>
+											<FeaturePreviewOff>{null}</FeaturePreviewOff>
+											<FeaturePreviewOn>
+												<FieldGroup>
+													<Box is='h5' fontScale='h5' color='titles-labels'>
+														{t('Navigation')}
+													</Box>
+													<Field>
+														<FieldRow>
+															<FieldLabel htmlFor={showChannelsField}>{t('Channels')}</FieldLabel>
+															<Controller
+																control={control}
+																name='showChannels'
+																render={({ field: { value, ...field } }) => (
+																	<ToggleSwitch id={showChannelsField} checked={value} {...field} />
+																)}
+															/>
+														</FieldRow>
+														<FieldRow>
+															<FieldHint id={`${showChannelsField}-hint`}>{t('Show_channels_description')}</FieldHint>
+														</FieldRow>
+													</Field>
+													<Field>
+														<FieldRow>
+															<FieldLabel htmlFor={showDiscussionsField}>{t('Discussions')}</FieldLabel>
+															<Controller
+																control={control}
+																name='showDiscussions'
+																render={({ field: { value, ...field } }) => (
+																	<ToggleSwitch id={showDiscussionsField} checked={value} {...field} />
+																)}
+															/>
+														</FieldRow>
+														<FieldRow>
+															<FieldHint id={`${showDiscussionsField}-hint`}>{t('Show_discussions_description')}</FieldHint>
+														</FieldRow>
+													</Field>
+												</FieldGroup>
+												<Divider mb={24} />
+											</FeaturePreviewOn>
+										</FeaturePreview>
 									)}
 									<FieldGroup>
 										<Box is='h5' fontScale='h5' color='titles-labels'>
