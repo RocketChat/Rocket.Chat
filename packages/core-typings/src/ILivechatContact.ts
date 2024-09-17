@@ -4,6 +4,10 @@ export interface ILivechatContactChannel {
 	name: string;
 	verified: boolean;
 	visitorId: string;
+	blocked: boolean;
+	field?: string;
+	value?: string;
+	verifiedAt?: Date;
 }
 
 export interface ILivechatContactConflictingField {
