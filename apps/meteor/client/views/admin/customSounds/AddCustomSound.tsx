@@ -1,4 +1,4 @@
-import { Field, FieldLabel, FieldRow, TextInput, Box, Icon, Margins, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, TextInput, Box, Margins, Button, ButtonGroup, IconButton } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEvent } from 'react';
 import React, { useState, useCallback } from 'react';
@@ -34,8 +34,8 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 			const soundData = createSoundData(soundFile, name);
 			const validation = validate(soundData, soundFile) as Array<Parameters<typeof t>[0]>;
 
-			validation.forEach((error) => {
-				throw new Error(t('error-the-field-is-required', { field: t(error) }));
+			validation.forEach((invalidFieldName) => {
+				throw new Error(t('Required_field', { field: t(invalidFieldName) }));
 			});
 
 			try {
@@ -97,12 +97,9 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 				</Field>
 				<Field>
 					<FieldLabel alignSelf='stretch'>{t('Sound_File_mp3')}</FieldLabel>
-					<Box display='flex' flexDirection='row' mbs='none'>
+					<Box display='flex' flexDirection='row' mbs='none' alignItems='center'>
 						<Margins inline={4}>
-							{/* FIXME: replace to IconButton */}
-							<Button square onClick={clickUpload}>
-								<Icon name='upload' size='x20' />
-							</Button>
+							<IconButton secondary small icon='upload' onClick={clickUpload} />
 							{sound?.name || t('None')}
 						</Margins>
 					</Box>
@@ -111,7 +108,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={close}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSave} disabled={name === ''}>
+					<Button primary onClick={handleSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
