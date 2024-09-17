@@ -11,6 +11,6 @@
         "uuid": "npm:uuid@8.3.2"
     },
     "tasks": {
-        "test": "deno test --no-check --allow-read=../"
+        "test": "deno test --no-check --allow-read=../../../"
     }
 }
