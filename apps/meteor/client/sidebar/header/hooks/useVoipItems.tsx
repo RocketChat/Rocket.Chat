@@ -10,7 +10,7 @@ const useVoipItems = (): GenericMenuItemProps[] => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const { error, isEnabled, isReady, isRegistered } = useVoipState();
+	const { clientError, isEnabled, isReady, isRegistered } = useVoipState();
 	const { register, unregister } = useVoipAPI();
 
 	const toggleVoip = useMutation({
@@ -32,8 +32,8 @@ const useVoipItems = (): GenericMenuItemProps[] => {
 	});
 
 	const tooltip = useMemo(() => {
-		if (error) {
-			return error.message;
+		if (clientError) {
+			return t(clientError.message);
 		}
 
 		if (!isReady || toggleVoip.isLoading) {
@@ -41,7 +41,7 @@ const useVoipItems = (): GenericMenuItemProps[] => {
 		}
 
 		return '';
-	}, [error, isReady, toggleVoip.isLoading, t]);
+	}, [clientError, isReady, toggleVoip.isLoading, t]);
 
 	return useMemo(() => {
 		if (!isEnabled) {
