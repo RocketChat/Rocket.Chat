@@ -31,14 +31,16 @@ const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 
 	const listRoomsAndDiscussions = useEndpoint('GET', '/v1/teams.listChildren');
 	const result = useQuery({
-		queryKey: ['sidepanel', parentRid],
+		queryKey: ['sidepanel', 'list', parentRid, sidepanelItems],
 		queryFn: () =>
 			listRoomsAndDiscussions({
 				roomId: parentRid,
 				sort: JSON.stringify({ lm: -1 }),
 				type: sidepanelItems?.length === 1 ? sidepanelItems[0] : undefined,
 			}),
-		enabled: !!sidepanelItems,
+		enabled: roomInfo.isFetched && !!sidepanelItems,
+		staleTime: Infinity,
+		keepPreviousData: true,
 	});
 
 	if (roomInfo.isSuccess && !roomInfo.data.room?.sidepanel && !roomInfo.data.parent?.sidepanel) {
