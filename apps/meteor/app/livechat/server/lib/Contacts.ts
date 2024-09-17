@@ -257,10 +257,6 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 	return updatedContact;
 }
 
-export async function getContactById(contactId: string): Promise<ILivechatContact | null> {
-	return LivechatContacts.findOneById(contactId);
-}
-
 export async function getContacts(params: GetContactsParams): Promise<PaginatedResult<{ contacts: ILivechatContact[] }>> {
 	const { searchText, count, offset, sort } = params;
 
