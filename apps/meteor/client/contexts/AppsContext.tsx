@@ -14,7 +14,7 @@ export interface IAppsOrchestrator {
 	getAppClientManager(): AppClientManager;
 	handleError(error: unknown): void;
 	getInstalledApps(): Promise<App[]>;
-	getAppsFromMarketplace(isAdminUser?: boolean): Promise<App[]>;
+	getAppsFromMarketplace(isAdminUser?: boolean): Promise<{ apps: App[]; error?: unknown }>;
 	getAppsOnBundle(bundleId: string): Promise<App[]>;
 	getApp(appId: string): Promise<App>;
 	setAppSettings(appId: string, settings: ISetting[]): Promise<void>;

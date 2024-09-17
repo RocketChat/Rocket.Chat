@@ -21,10 +21,10 @@ const UnsupportedEmptyState = (): ReactElement => {
 				<StatesTitle>{title}</StatesTitle>
 				<StatesSubtitle>{description}</StatesSubtitle>
 				<StatesActions>
-					<Button secondary is='a' href='https://docs.rocket.chat/docs/support-prerequisites' external>
+					<Button secondary is='a' href='https://go.rocket.chat/i/support-prerequisites ' external>
 						{t('Learn_more')}
 					</Button>
-					<UpdateRocketChatBtn />
+					{isAdmin && <UpdateRocketChatBtn />}
 				</StatesActions>
 			</States>
 		</Box>

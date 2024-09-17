@@ -2,7 +2,7 @@ import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { AppClientOrchestratorInstance } from '../../apps/orchestrator';
 import { AppsContext } from '../../contexts/AppsContext';
@@ -17,13 +17,24 @@ import { storeQueryFunction } from './storeQueryFunction';
 const getAppState = (
 	loading: boolean,
 	apps: App[] | undefined,
+	error?: Error,
 ): AsyncState<{
 	apps: App[];
-}> => ({
-	phase: loading ? AsyncStatePhase.LOADING : AsyncStatePhase.RESOLVED,
-	value: { apps: apps || [] },
-	error: undefined,
-});
+}> => {
+	if (error) {
+		return {
+			phase: AsyncStatePhase.REJECTED,
+			value: undefined,
+			error,
+		};
+	}
+
+	return {
+		phase: loading ? AsyncStatePhase.LOADING : AsyncStatePhase.RESOLVED,
+		value: { apps: apps || [] },
+		error,
+	};
+};
 
 type AppsProviderProps = {
 	children: ReactNode;
@@ -36,6 +47,8 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 
 	const { data } = useIsEnterprise();
 	const isEnterprise = !!data?.isEnterprise;
+
+	const [marketplaceError, setMarketplaceError] = useState<Error>();
 
 	const invalidateAppsCountQuery = useInvalidateAppsCountQueryCallback();
 	const invalidateLicenseQuery = useInvalidateLicense();
@@ -64,10 +77,14 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 
 	const marketplace = useQuery(
 		['marketplace', 'apps-marketplace', isAdminUser],
-		() => {
-			const result = AppClientOrchestratorInstance.getAppsFromMarketplace(isAdminUser);
+		async () => {
+			const result = await AppClientOrchestratorInstance.getAppsFromMarketplace(isAdminUser);
 			queryClient.invalidateQueries(['marketplace', 'apps-stored']);
-			return result;
+			if (result.error && typeof result.error === 'string') {
+				setMarketplaceError(new Error(result.error));
+				return [];
+			}
+			return result.apps;
 		},
 		{
 			staleTime: Infinity,
@@ -106,7 +123,7 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 			children={children}
 			value={{
 				installedApps: getAppState(isLoading, installedAppsData),
-				marketplaceApps: getAppState(isLoading, marketplaceAppsData),
+				marketplaceApps: getAppState(isLoading, marketplaceAppsData, marketplaceError),
 				privateApps: getAppState(isLoading, privateAppsData),
 				reload: async () => {
 					await Promise.all([queryClient.invalidateQueries(['marketplace'])]);
