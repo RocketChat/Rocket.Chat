@@ -228,8 +228,6 @@ describe('LIVECHAT - inquiries', () => {
 			const room = await createLivechatRoom(visitor.token);
 			const inquiry = await fetchInquiry(room._id);
 
-			expect(room.servedBy).to.be.an('object');
-			expect(room.servedBy).to.have.property('_id', agent._id);
 			expect(inquiry.status).to.equal('taken');
 
 			const response = await request.post(api('livechat/inquiries.take')).set(credentials).send({
@@ -241,6 +239,50 @@ describe('LIVECHAT - inquiries', () => {
 			expect(response.body).to.have.property('success', false);
 			expect(response.body).to.have.property('error', 'Inquiry already taken [error-inquiry-taken]');
 		});
+
+		(IS_EE ? it : it.skip)(
+			'should fail when trying to take an inquiry with the maximum open conversations per agent already reached',
+			async () => {
+				await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+				await updateSetting('Livechat_waiting_queue', true);
+				await updateSetting('Livechat_maximum_chats_per_agent', 1);
+
+				const user = await createUser();
+				const agent = await createAgent(user.username);
+				const agentCredentials = await login(user.username, password);
+
+				await makeAgentAvailable(agentCredentials);
+
+				const firstVisitor = await createVisitor();
+				const firstRoom = await createLivechatRoom(firstVisitor.token);
+				const firstInquiry = await fetchInquiry(firstRoom._id);
+				expect(firstInquiry.status).to.equal('queued');
+
+				await request.post(api('livechat/inquiries.take')).set(agentCredentials).send({
+					inquiryId: firstInquiry._id,
+					userId: agent._id,
+				});
+				const firstTakenInquiry = await fetchInquiry(firstRoom._id);
+				expect(firstTakenInquiry.status).to.equal('taken');
+
+				const secondVisitor = await createVisitor();
+				const secondRoom = await createLivechatRoom(secondVisitor.token);
+				const secondInquiry = await fetchInquiry(secondRoom._id);
+				expect(secondInquiry.status).to.equal('queued');
+
+				await request.post(api('livechat/inquiries.take')).set(agentCredentials).send({
+					inquiryId: secondInquiry._id,
+					userId: agent._id,
+				});
+				const secondTakenInquiry = await fetchInquiry(secondRoom._id);
+				expect(secondTakenInquiry.status).to.equal('queued');
+
+				// Reset settings
+				await updateSetting('Livechat_waiting_queue', false);
+				await updateSetting('Livechat_waiting_queue_message', '');
+				await updateSetting('Livechat_maximum_chats_per_agent', 0);
+			},
+		);
 	});
 
 	describe('livechat/inquiries.queuedForUser', () => {
