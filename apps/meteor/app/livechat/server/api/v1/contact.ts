@@ -1,5 +1,9 @@
-import { LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
-import { isPOSTOmnichannelContactsProps, isPOSTUpdateOmnichannelContactsProps } from '@rocket.chat/rest-typings';
+import { LivechatContacts, LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
+import {
+	isPOSTOmnichannelContactsProps,
+	isPOSTUpdateOmnichannelContactsProps,
+	isGETOmnichannelContactsProps,
+} from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -101,6 +105,7 @@ API.v1.addRoute(
 		},
 	},
 );
+
 API.v1.addRoute(
 	'omnichannel/contacts.update',
 	{ authRequired: true, permissionsRequired: ['update-livechat-contact'], validateParams: isPOSTUpdateOmnichannelContactsProps },
@@ -111,6 +116,21 @@ API.v1.addRoute(
 			}
 
 			const contact = await updateContact({ ...this.bodyParams });
+
+			return API.v1.success({ contact });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/contacts.get',
+	{ authRequired: true, permissionsRequired: ['view-livechat-contact'], validateParams: isGETOmnichannelContactsProps },
+	{
+		async get() {
+			if (process.env.TEST_MODE?.toUpperCase() !== 'TRUE') {
+				throw new Meteor.Error('error-not-allowed', 'This endpoint is only allowed in test mode');
+			}
+			const contact = await LivechatContacts.findOneById(this.queryParams.contactId);
 
 			return API.v1.success({ contact });
 		},
