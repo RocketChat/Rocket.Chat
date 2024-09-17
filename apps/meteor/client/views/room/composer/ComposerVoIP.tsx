@@ -1,10 +1,10 @@
 import { MessageFooterCallout } from '@rocket.chat/ui-composer';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const ComposerVoIP = (): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	return <MessageFooterCallout>{t('Composer_not_available_phone_calls')}</MessageFooterCallout>;
 };
 

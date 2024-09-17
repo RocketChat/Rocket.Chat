@@ -1,8 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { IconButton, ModalBackdrop, Throbber } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 
 const closeButtonStyle = css`
 	position: absolute;
@@ -12,7 +12,7 @@ const closeButtonStyle = css`
 `;
 
 export const ImageGalleryLoading = ({ onClose }: { onClose: () => void }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return createPortal(
 		<ModalBackdrop display='flex' justifyContent='center' color='pure-white'>

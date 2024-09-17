@@ -2374,7 +2374,6 @@
   "The_application_name_is_required": "Nama aplikasi diperlukan",
   "The_channel_name_is_required": "Nama channel diperlukan",
   "The_emails_are_being_sent": "Email telah dikirim.",
-  "The_field_is_required": "Kolom %s wajib diisi",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Gambar resize tidak akan bekerja karena kita tidak dapat mendeteksi ImageMagick atau GraphicsMagick diinstal pada server Anda.",
   "The_redirectUri_is_required": "The redirectUri diperlukan",
   "The_server_will_restart_in_s_seconds": "server akan restart%s detik",

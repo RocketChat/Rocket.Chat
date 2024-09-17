@@ -1,7 +1,7 @@
 import { EmojiPickerNotFound } from '@rocket.chat/ui-client';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import React, { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { VirtuosoGridHandle } from 'react-virtuoso';
 import { VirtuosoGrid } from 'react-virtuoso';
 
@@ -21,7 +21,7 @@ type SearchingResultProps = {
 };
 
 const SearchingResult = ({ searchResults, handleSelectEmoji }: SearchingResultProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const ref = useRef<VirtuosoGridHandle>(null);
 
 	if (searchResults.length === 0) {

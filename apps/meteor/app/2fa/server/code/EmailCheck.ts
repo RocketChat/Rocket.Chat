@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import { isOAuthUser, type IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import bcrypt from 'bcrypt';
@@ -24,6 +24,10 @@ export class EmailCheck implements ICodeCheck {
 			return false;
 		}
 
+		if (!settings.get('Accounts_twoFactorAuthentication_email_available_for_OAuth_users') && isOAuthUser(user)) {
+			return false;
+		}
+
 		if (!user.services?.email2fa?.enabled) {
 			return false;
 		}
@@ -34,7 +38,7 @@ export class EmailCheck implements ICodeCheck {
 	private async send2FAEmail(address: string, random: string, user: IUser): Promise<void> {
 		const language = user.language || settings.get('Language') || 'en';
 
-		const t = (s: string): string => i18n.t(s, { lng: language });
+		const t = i18n.getFixedT(language);
 
 		await Mailer.send({
 			to: address,

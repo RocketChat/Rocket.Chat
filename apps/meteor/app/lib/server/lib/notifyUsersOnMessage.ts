@@ -111,7 +111,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 		roomId: room._id,
 		uidsExclude: [message.u._id],
 		uidsInclude: userIds,
-		onlyRead: !toAll && !toHere,
+		onlyRead: !toAll && !toHere && unreadCount !== 'all_messages',
 	}).forEach((sub) => {
 		const hasUserMention = userIds.includes(sub.u._id);
 		const shouldIncUnread = hasUserMention || toAll || toHere || unreadCount === 'all_messages';
@@ -168,8 +168,6 @@ export async function updateThreadUsersSubscriptions(message: IMessage, replies:
 }
 
 export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomUpdater: Updater<IRoom>): Promise<IMessage> {
-	console.log('notifyUsersOnMessage function');
-
 	// Skips this callback if the message was edited and increments it if the edit was way in the past (aka imported)
 	if (isEditedMessage(message)) {
 		if (Math.abs(moment(message.editedAt).diff(Date.now())) > 60000) {

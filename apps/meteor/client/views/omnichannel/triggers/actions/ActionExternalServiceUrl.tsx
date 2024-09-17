@@ -69,7 +69,7 @@ export const ActionExternalServiceUrl = ({ control, trigger, index, disabled, ..
 					control={control}
 					defaultValue=''
 					rules={{
-						required: t('The_field_is_required', t('External_service_url')),
+						required: t('Required_field', { field: t('External_service_url') }),
 						validate: testExternalService,
 						deps: serviceTimeoutFieldName,
 					}}

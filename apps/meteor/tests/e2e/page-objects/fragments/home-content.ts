@@ -2,6 +2,8 @@ import fs from 'fs/promises';
 
 import type { Locator, Page } from '@playwright/test';
 
+import { expect } from '../../utils/test';
+
 export class HomeContent {
 	protected readonly page: Page;
 
@@ -376,7 +378,19 @@ export class HomeContent {
 		return this.page.locator('div[class="swiper-slide swiper-slide-active"] img');
 	}
 
+	// TODO: use getSystemMessageByText instead
 	findSystemMessage(text: string): Locator {
 		return this.page.locator(`[data-qa-type="system-message-body"] >> text="${text}"`);
+	}
+
+	getSystemMessageByText(text: string): Locator {
+		return this.page.locator('[aria-roledescription="system message"]', { hasText: text });
+	}
+
+	async waitForChannel(): Promise<void> {
+		await this.page.locator('role=main').waitFor();
+		await this.page.locator('role=main >> role=heading[level=1]').waitFor();
+
+		await expect(this.page.locator('role=main >> role=list')).not.toHaveAttribute('aria-busy', 'true');
 	}
 }

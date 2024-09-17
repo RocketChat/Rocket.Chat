@@ -288,8 +288,8 @@ class ChatContainer extends Component {
 	};
 
 	canFinishChat = () => {
-		const { room, connecting } = this.props;
-		return room !== undefined || connecting;
+		const { room, connecting, visitorsCanCloseChat } = this.props;
+		return visitorsCanCloseChat && (room !== undefined || connecting);
 	};
 
 	canRemoveUserData = () => {

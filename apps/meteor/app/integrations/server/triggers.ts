@@ -8,7 +8,12 @@ const callbackHandler = function _callbackHandler(eventType: string) {
 	};
 };
 
-callbacks.add('afterSaveMessage', callbackHandler('sendMessage'), callbacks.priority.LOW, 'integrations-sendMessage');
+callbacks.add(
+	'afterSaveMessage',
+	(message, { room }) => callbackHandler('sendMessage')(message, room),
+	callbacks.priority.LOW,
+	'integrations-sendMessage',
+);
 callbacks.add('afterCreateChannel', callbackHandler('roomCreated'), callbacks.priority.LOW, 'integrations-roomCreated');
 callbacks.add('afterCreatePrivateGroup', callbackHandler('roomCreated'), callbacks.priority.LOW, 'integrations-roomCreated');
 callbacks.add('afterCreateUser', callbackHandler('userCreated'), callbacks.priority.LOW, 'integrations-userCreated');
