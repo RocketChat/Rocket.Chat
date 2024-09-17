@@ -13,7 +13,7 @@ import { settings } from '../../../../app/settings/server/cached';
 
 API.v1.addRoute(
 	'voip-freeswitch.extension.list',
-	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'], validateParams: isVoipFreeSwitchExtensionListProps },
+	{ authRequired: true, permissionsRequired: ['manage-voip-extensions'], validateParams: isVoipFreeSwitchExtensionListProps },
 	{
 		async get() {
 			const { username, type = 'all' } = this.queryParams;
@@ -55,7 +55,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'voip-freeswitch.extension.assign',
-	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'], validateParams: isVoipFreeSwitchExtensionAssignProps },
+	{ authRequired: true, permissionsRequired: ['manage-voip-extensions'], validateParams: isVoipFreeSwitchExtensionAssignProps },
 	{
 		async post() {
 			const { extension, username } = this.bodyParams;
@@ -86,7 +86,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'voip-freeswitch.extension.getDetails',
-	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'], validateParams: isVoipFreeSwitchExtensionGetDetailsProps },
+	{ authRequired: true, permissionsRequired: ['view-voip-extension-details'], validateParams: isVoipFreeSwitchExtensionGetDetailsProps },
 	{
 		async get() {
 			const { extension, group } = this.queryParams;
@@ -112,7 +112,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'voip-freeswitch.extension.getRegistrationInfoByUserId',
-	{ authRequired: true, permissionsRequired: ['manage-voip-call-settings'], validateParams: isVoipFreeSwitchExtensionGetInfoProps },
+	{ authRequired: true, permissionsRequired: ['view-user-voip-extension'], validateParams: isVoipFreeSwitchExtensionGetInfoProps },
 	{
 		async get() {
 			const { userId } = this.queryParams;
