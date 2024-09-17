@@ -1,11 +1,11 @@
 import { Box, Button, Margins } from '@rocket.chat/fuselage';
 import { useUser, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import React, { useCallback } from 'react';
 
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 
-const TwoFactorEmail = (props: ComponentProps<typeof Box>): ReactElement => {
+const TwoFactorEmail = (props: ComponentProps<typeof Box>) => {
 	const t = useTranslation();
 	const user = useUser();
 

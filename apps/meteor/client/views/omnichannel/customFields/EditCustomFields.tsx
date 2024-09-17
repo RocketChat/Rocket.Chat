@@ -112,7 +112,7 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 										name='field'
 										control={control}
 										rules={{
-											required: t('The_field_is_required', t('Field')),
+											required: t('Required_field', { field: t('Field') }),
 											validate: (value) => (!/^[0-9a-zA-Z-_]+$/.test(value) ? t('error-invalid-custom-field-name') : undefined),
 										}}
 										render={({ field }) => (
@@ -141,7 +141,7 @@ const EditCustomFields = ({ customFieldData }: { customFieldData?: Serialized<IL
 									<Controller
 										name='label'
 										control={control}
-										rules={{ required: t('The_field_is_required', t('Label')) }}
+										rules={{ required: t('Required_field', { field: t('Label') }) }}
 										render={({ field }) => (
 											<TextInput
 												id={labelField}

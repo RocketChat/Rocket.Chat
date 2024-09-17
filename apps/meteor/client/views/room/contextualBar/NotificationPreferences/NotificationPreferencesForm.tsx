@@ -1,8 +1,8 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldGroup, IconButton, Margins } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import NotificationByDevice from './components/NotificationByDevice';
 import NotificationPreference from './components/NotificationPreference';
@@ -16,7 +16,7 @@ type NotificationPreferencesFormProps = {
 };
 
 const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: NotificationPreferencesFormProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { watch, control } = useFormContext();
 
 	const { showCounter } = watch();

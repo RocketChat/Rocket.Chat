@@ -2,6 +2,7 @@ import { Settings } from '@rocket.chat/models';
 import type { UpdateResult } from 'mongodb';
 
 import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
+import { settings } from '../../../app/settings/server';
 import { migrateDatabase, onServerVersionChange } from '../../lib/migrations';
 import { ensureCloudWorkspaceRegistered } from '../cloudRegistration';
 
@@ -23,9 +24,12 @@ const moveRetentionSetting = async () => {
 		{ _id: { $in: Array.from(maxAgeSettingMap.keys()) }, value: { $ne: -1 } },
 		{ projection: { _id: 1, value: 1 } },
 	).forEach(({ _id, value }) => {
-		if (!maxAgeSettingMap.has(_id)) {
+		const newSettingId = maxAgeSettingMap.get(_id);
+		if (!newSettingId) {
 			throw new Error(`moveRetentionSetting - Setting ${_id} equivalent does not exist`);
 		}
+
+		const newValue = convertDaysToMs(Number(value));
 
 		promises.push(
 			Settings.updateOne(
@@ -34,11 +38,17 @@ const moveRetentionSetting = async () => {
 				},
 				{
 					$set: {
-						value: convertDaysToMs(Number(value)),
+						value: newValue,
 					},
 				},
 			),
 		);
+
+		const currentCache = settings.getSetting(newSettingId);
+		if (!currentCache) {
+			return;
+		}
+		settings.set({ ...currentCache, value: newValue });
 	});
 
 	await Promise.all(promises);

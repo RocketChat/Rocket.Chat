@@ -584,6 +584,30 @@ Text after line break`,
       ]),
     ],
   ],
+  [
+    '[test **bold** and __italic__](https://rocket.chat)',
+    [
+      paragraph([
+        link('https://rocket.chat', [
+          plain('test '),
+          bold([plain('bold')]),
+          plain(' and '),
+          italic([plain('italic')]),
+        ]),
+      ]),
+    ],
+  ],
+  [
+    '[test **bold with __italic__**](https://rocket.chat)',
+    [
+      paragraph([
+        link('https://rocket.chat', [
+          plain('test '),
+          bold([plain('bold with '), italic([plain('italic')])]),
+        ]),
+      ]),
+    ],
+  ],
 ])('parses %p', (input, output) => {
   expect(parse(input)).toMatchObject(output);
 });

@@ -1,5 +1,101 @@
 # @rocket.chat/livechat Change Log
 
+## 1.19.3
+
+### Patch Changes
+
+- ([#32928](https://github.com/RocketChat/Rocket.Chat/pull/32928)) Fixed issue where `after-registration-triggers` would show up in a page when the user was not yet registered
+
+- <details><summary>Updated dependencies [8ea6517c4e, c11f3722df]:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0
+  - @rocket.chat/ui-kit@0.36.1
+  </details>
+
+## 1.19.3-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0-rc.6
+  </details>
+
+## 1.19.3-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0-rc.5
+  </details>
+
+## 1.19.3-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0-rc.4
+  </details>
+
+## 1.19.3-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0-rc.3
+  </details>
+
+## 1.19.3-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0-rc.2
+  </details>
+
+## 1.19.3-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0-rc.1
+  </details>
+
+## 1.19.3-rc.0
+
+### Patch Changes
+
+- ([#32928](https://github.com/RocketChat/Rocket.Chat/pull/32928)) Fixed issue where `after-registration-triggers` would show up in a page when the user was not yet registered
+
+- <details><summary>Updated dependencies [8ea6517c4e, c11f3722df]:</summary>
+
+  - @rocket.chat/gazzodown@10.0.0-rc.0
+  - @rocket.chat/ui-kit@0.36.1-rc.0
+  </details>
+
+## 1.19.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@9.0.2
+  </details>
+
+## 1.19.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@9.0.1
+  </details>
+
 ## 1.19.0
 
 ### Minor Changes

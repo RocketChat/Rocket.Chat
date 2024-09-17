@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage, ITeam } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
@@ -542,6 +542,62 @@ const roomsImagesPropsSchema = {
 
 export const isRoomsImagesProps = ajv.compile<RoomsImagesProps>(roomsImagesPropsSchema);
 
+export type RoomsCleanHistoryProps = {
+	roomId: IRoom['_id'];
+	latest: string;
+	oldest: string;
+	inclusive?: boolean;
+	excludePinned?: boolean;
+	filesOnly?: boolean;
+	users?: IUser['username'][];
+	limit?: number;
+	ignoreDiscussion?: boolean;
+	ignoreThreads?: boolean;
+};
+
+const roomsCleanHistorySchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		latest: {
+			type: 'string',
+		},
+		oldest: {
+			type: 'string',
+		},
+		inclusive: {
+			type: 'boolean',
+		},
+		excludePinned: {
+			type: 'boolean',
+		},
+		filesOnly: {
+			type: 'boolean',
+		},
+		users: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+		},
+		limit: {
+			type: 'number',
+		},
+		ignoreDiscussion: {
+			type: 'boolean',
+		},
+		ignoreThreads: {
+			type: 'boolean',
+		},
+	},
+	required: ['roomId', 'latest', 'oldest'],
+	additionalProperties: false,
+};
+
+export const isRoomsCleanHistoryProps = ajv.compile<RoomsCleanHistoryProps>(roomsCleanHistorySchema);
+
 export type RoomsEndpoints = {
 	'/v1/rooms.autocomplete.channelAndPrivate': {
 		GET: (params: RoomsAutoCompleteChannelAndPrivateProps) => {
@@ -570,22 +626,13 @@ export type RoomsEndpoints = {
 	'/v1/rooms.info': {
 		GET: (params: RoomsInfoProps) => {
 			room: IRoom | undefined;
+			parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>;
+			team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
 		};
 	};
 
 	'/v1/rooms.cleanHistory': {
-		POST: (params: {
-			roomId: IRoom['_id'];
-			latest: string;
-			oldest: string;
-			inclusive?: boolean;
-			excludePinned?: boolean;
-			filesOnly?: boolean;
-			users?: IUser['username'][];
-			limit?: number;
-			ignoreDiscussion?: boolean;
-			ignoreThreads?: boolean;
-		}) => { _id: IRoom['_id']; count: number; success: boolean };
+		POST: (params: RoomsCleanHistoryProps) => { _id: IRoom['_id']; count: number; success: boolean };
 	};
 
 	'/v1/rooms.createDiscussion': {

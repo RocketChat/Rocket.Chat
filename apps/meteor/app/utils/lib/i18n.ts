@@ -1,4 +1,5 @@
 import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
+import type { TOptions } from 'i18next';
 import i18next from 'i18next';
 import sprintf from 'i18next-sprintf-postprocessor';
 
@@ -13,7 +14,7 @@ export const addSprinfToI18n = function (t: (typeof i18n)['t']) {
 		}
 
 		if (isObject(replaces[0]) && !Array.isArray(replaces[0])) {
-			return t(key, replaces[0]);
+			return t(key, replaces[0] as TOptions);
 		}
 
 		return t(key, {
