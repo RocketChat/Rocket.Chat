@@ -20,7 +20,7 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 	const marketplaceAppsPercentage = Math.round((marketplaceAppsEnabled / marketplaceAppsLimitCount) * 100);
 
 	const privateAppsEnabled = privateAppsLimit?.value || 0;
-	const privateAppsLimitCount = privateAppsLimit?.max || 3;
+	const privateAppsLimitCount = privateAppsLimit?.max || 0;
 	const privateAppsPercentage = Math.round((privateAppsEnabled / privateAppsLimitCount) * 100);
 
 	const card: CardProps = {
@@ -43,6 +43,11 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 		}),
 	};
 
+	const privateAppsDisabled = privateAppsLimitCount === 0;
+	const privateAppsTitle = privateAppsDisabled ? t('Private_apps_premium_message') : undefined;
+	const privateAppsVariant = privateAppsDisabled || (privateAppsPercentage || 0) >= 80 ? 'danger' : 'success';
+	const privateAppsFontColor = privateAppsDisabled || (privateAppsPercentage || 0) >= 80 ? 'font-danger' : 'status-font-on-success';
+
 	if (!privateAppsLimit || !marketplaceAppsLimit) {
 		return (
 			<FeatureUsageCard card={card}>
@@ -63,15 +68,15 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 
 				<ProgressBar percentage={marketplaceAppsPercentage || 0} variant={(marketplaceAppsPercentage || 0) >= 80 ? 'danger' : 'success'} />
 			</Box>
-			<Box fontScale='c1' mb={12}>
+			<Box fontScale='c1' mb={12} title={privateAppsTitle}>
 				<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
 					<div>{t('Private_apps')}</div>
-					<Box color={(privateAppsPercentage || 0) >= 80 ? 'font-danger' : 'status-font-on-success'}>
+					<Box color={privateAppsFontColor}>
 						{privateAppsEnabled} / {privateAppsLimitCount}
 					</Box>
 				</Box>
 
-				<ProgressBar percentage={privateAppsPercentage || 0} variant={(privateAppsPercentage || 0) >= 80 ? 'danger' : 'success'} />
+				<ProgressBar percentage={privateAppsDisabled ? 100 : privateAppsPercentage || 0} variant={privateAppsVariant} />
 			</Box>
 		</FeatureUsageCard>
 	);

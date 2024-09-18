@@ -10,6 +10,7 @@ const GenericResourceUsage = ({
 	threshold = 80,
 	variant = percentage < threshold ? 'success' : 'danger',
 	subTitle,
+	tooltip,
 	...props
 }: {
 	title: string;
@@ -19,9 +20,20 @@ const GenericResourceUsage = ({
 	percentage: number;
 	threshold?: number;
 	variant?: 'warning' | 'danger' | 'success';
+	tooltip?: string;
 }) => {
 	return (
-		<Box w='x180' h='x40' mi={8} fontScale='c1' display='flex' flexDirection='column' justifyContent='space-around' {...props}>
+		<Box
+			title={tooltip}
+			w='x180'
+			h='x40'
+			mi={8}
+			fontScale='c1'
+			display='flex'
+			flexDirection='column'
+			justifyContent='space-around'
+			{...props}
+		>
 			<Box display='flex' justifyContent='space-between'>
 				<Box color='default'>{title}</Box>
 				{subTitle && <Box color='hint'>{subTitle}</Box>}
