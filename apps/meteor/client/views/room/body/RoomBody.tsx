@@ -44,7 +44,6 @@ import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useHandleUnread } from './hooks/useUnreadMessages';
 import { useIsScrolling } from '../hooks/useIsScrolling';
 
-
 const RoomBody = (): ReactElement => {
 	const chat = useChat();
 	if (!chat) {
@@ -103,9 +102,16 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
-	const {innerRef : isScrollingRef,isScrolling}=useIsScrolling(4000)
+	const { innerRef: isScrollingRef, isScrolling } = useIsScrolling(4000);
 
-	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom ,handleJumpToBottom} = useListIsAtBottom();
+	const {
+		innerRef: isAtBottomInnerRef,
+		atBottomRef,
+		sendToBottom,
+		sendToBottomIfNecessary,
+		isAtBottom,
+		handleJumpToBottom,
+	} = useListIsAtBottom();
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, atBottomRef);
 
@@ -265,7 +271,11 @@ const RoomBody = (): ReactElement => {
 							</Box>
 
 							<div className={['messages-box', roomLeader && !hideLeaderHeader && 'has-leader'].filter(isTruthy).join(' ')}>
-								<JumpToBottomButton visible={!hasNewMessages && !isAtBottom() && isScrolling} onClick={handleJumpToBottom} text={t('Jump_to_bottom')}/>
+								<JumpToBottomButton
+									visible={!hasNewMessages && !isAtBottom() && isScrolling}
+									onClick={handleJumpToBottom}
+									text={t('Jump_to_bottom')}
+								/>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
 								<JumpToRecentMessageButton
 									visible={hasMoreNextMessages}

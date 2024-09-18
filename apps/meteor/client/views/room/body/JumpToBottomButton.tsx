@@ -37,7 +37,6 @@ const buttonStyle = css`
 `;
 
 const JumpToBottomButton = ({ visible, onClick, text }: JumpToBottomButtonProps): ReactElement => {
-
 	return (
 		<Box className={[buttonStyle, !visible && 'not'].filter(isTruthy)}>
 			<Bubble

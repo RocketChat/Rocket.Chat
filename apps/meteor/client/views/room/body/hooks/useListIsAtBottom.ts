@@ -18,9 +18,9 @@ export const useListIsAtBottom = () => {
 		}
 	}, [atBottomRef, sendToBottom]);
 
-	const handleJumpToBottom=useCallback(()=>{
-		sendToBottom()
-	},[])
+	const handleJumpToBottom = useCallback(() => {
+		sendToBottom();
+	}, []);
 
 	const isAtBottom = useCallback((threshold = 0) => {
 		if (!innerBoxRef.current) {
@@ -53,13 +53,9 @@ export const useListIsAtBottom = () => {
 				atBottomRef.current = isAtBottom(100);
 			});
 
-			node.addEventListener(
-				'scroll',
-				handleScroll,
-				{
-					passive: true,
-				},
-			);
+			node.addEventListener('scroll', handleScroll, {
+				passive: true,
+			});
 
 			return () => {
 				node.removeEventListener('scroll', handleScroll);
@@ -76,4 +72,3 @@ export const useListIsAtBottom = () => {
 		handleJumpToBottom,
 	};
 };
-
