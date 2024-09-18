@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Callout, Margins, States, StatesIcon, StatesSubtitle, StatesTitle, Tabs } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../components/Page';
 import MessageListSkeleton from '../../components/message/list/MessageListSkeleton';
@@ -15,7 +15,7 @@ const AuditPage = () => {
 	const [type, setType] = useAuditTab();
 	const [selectedRoom, setSelectedRoom] = useState<IRoom | undefined>();
 	const auditMutation = useAuditMutation(type);
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Page background='room'>
