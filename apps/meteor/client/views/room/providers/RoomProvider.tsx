@@ -1,5 +1,4 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType, ReactElement } from 'react';
 import React, { useMemo, memo, useEffect, useCallback } from 'react';
@@ -10,6 +9,7 @@ import { UserAction } from '../../../../app/ui/client/lib/UserAction';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useRoomInfoEndpoint } from '../../../hooks/useRoomInfoEndpoint';
+import { useSidePanelNavigation } from '../../../hooks/useSidePanelNavigation';
 import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
@@ -92,7 +92,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		};
 	}, [hasMoreNextMessages, hasMorePreviousMessages, isLoadingMoreMessages, pseudoRoom, rid, subscriptionQuery.data]);
 
-	const isSidepanelFeatureEnabled = useFeaturePreview('sidepanelNavigation');
+	const isSidepanelFeatureEnabled = useSidePanelNavigation();
 
 	useEffect(() => {
 		if (isSidepanelFeatureEnabled) {

@@ -1,10 +1,11 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
+import { FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React, { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { FeaturePreviewSidePanelNavigation } from '../../components/FeaturePreviewSidePanelNavigation';
 import { Header } from '../../components/Header';
 import { getErrorMessage } from '../../lib/errorHandling';
 import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
@@ -34,12 +35,12 @@ const RoomOpener = ({ type, reference }: RoomOpenerProps): ReactElement => {
 	return (
 		<Box display='flex' w='full' h='full'>
 			{!isDirectOrOmnichannelRoom(type) && (
-				<FeaturePreview feature='sidepanelNavigation'>
+				<FeaturePreviewSidePanelNavigation>
 					<FeaturePreviewOff>{null}</FeaturePreviewOff>
 					<FeaturePreviewOn>
 						<RoomSidepanel />
 					</FeaturePreviewOn>
-				</FeaturePreview>
+				</FeaturePreviewSidePanelNavigation>
 			)}
 
 			<Suspense fallback={<RoomSkeleton />}>
