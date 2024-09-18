@@ -12,7 +12,6 @@ import {
 	Callout,
 	Margins,
 } from '@rocket.chat/fuselage';
-import type { FeaturePreviewProps } from '@rocket.chat/ui-client';
 import { useDefaultSettingFeaturePreviewList } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useTranslation, useEndpoint, useSettingsDispatch } from '@rocket.chat/ui-contexts';
@@ -24,28 +23,14 @@ import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '.
 import { useEditableSetting } from '../EditableSettingsContext';
 import Setting from '../settings/Setting';
 import SettingsGroupPageSkeleton from '../settings/SettingsGroupPage/SettingsGroupPageSkeleton';
-
-const handleEnableQuery = (features: FeaturePreviewProps[]) => {
-	return features.map((item) => {
-		if (item.enableQuery) {
-			const expected = item.enableQuery.value;
-			const received = features.find((el) => el.name === item.enableQuery?.name)?.value;
-			if (expected !== received) {
-				item.disabled = true;
-				item.value = false;
-			} else {
-				item.disabled = false;
-			}
-		}
-		return item;
-	});
-};
+import { useFeaturePreviewEnableQuery } from '/client/hooks/useFeaturePreviewEnableQuery';
 
 const AdminFeaturePreviewPage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const allowFeaturePreviewSetting = useEditableSetting('Accounts_AllowFeaturePreview');
 	const { features, unseenFeatures } = useDefaultSettingFeaturePreviewList();
+
 
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
@@ -98,12 +83,7 @@ const AdminFeaturePreviewPage = () => {
 		setValue('featuresPreview', updated, { shouldDirty: true });
 	};
 
-	const grouppedFeaturesPreview = Object.entries(
-		handleEnableQuery(featuresPreview).reduce((result, currentValue) => {
-			(result[currentValue.group] = result[currentValue.group] || []).push(currentValue);
-			return result;
-		}, {} as Record<FeaturePreviewProps['group'], FeaturePreviewProps[]>),
-	);
+	const grouppedFeaturesPreview = useFeaturePreviewEnableQuery(featuresPreview);
 
 	if (!allowFeaturePreviewSetting) {
 		// TODO: Implement FeaturePreviewSkeleton component
