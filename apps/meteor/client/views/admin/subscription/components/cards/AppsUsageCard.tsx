@@ -1,7 +1,7 @@
 import { Box, ProgressBar, Skeleton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
@@ -20,12 +20,20 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 	const marketplaceAppsPercentage = Math.round((marketplaceAppsEnabled / marketplaceAppsLimitCount) * 100);
 
 	const privateAppsEnabled = privateAppsLimit?.value || 0;
-	const privateAppsLimitCount = privateAppsLimit?.max || 3;
+	const privateAppsLimitCount = privateAppsLimit?.max || 0;
 	const privateAppsPercentage = Math.round((privateAppsEnabled / privateAppsLimitCount) * 100);
 
 	const card: CardProps = {
 		title: t('Apps'),
-		infoText: t('Apps_InfoText'),
+		infoText: (
+			<Trans i18nKey='Apps_InfoText'>
+				Community workspaces can enable up to 5 marketplace apps. Private apps can only be enabled in
+				<Box is='a' href='https://www.rocket.chat/pricing' target='_blank' color='info'>
+					premium plans
+				</Box>
+				.
+			</Trans>
+		),
 		...((marketplaceAppsPercentage || 0) >= 80 && {
 			upgradeButton: (
 				<UpgradeButton target='app-usage-card' action='upgrade' small>
@@ -34,6 +42,11 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 			),
 		}),
 	};
+
+	const privateAppsDisabled = privateAppsLimitCount === 0;
+	const privateAppsTitle = privateAppsDisabled ? t('Private_apps_premium_message') : undefined;
+	const privateAppsVariant = privateAppsDisabled || (privateAppsPercentage || 0) >= 80 ? 'danger' : 'success';
+	const privateAppsFontColor = privateAppsDisabled || (privateAppsPercentage || 0) >= 80 ? 'font-danger' : 'status-font-on-success';
 
 	if (!privateAppsLimit || !marketplaceAppsLimit) {
 		return (
@@ -55,15 +68,15 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 
 				<ProgressBar percentage={marketplaceAppsPercentage || 0} variant={(marketplaceAppsPercentage || 0) >= 80 ? 'danger' : 'success'} />
 			</Box>
-			<Box fontScale='c1' mb={12}>
+			<Box fontScale='c1' mb={12} title={privateAppsTitle}>
 				<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
 					<div>{t('Private_apps')}</div>
-					<Box color={(privateAppsPercentage || 0) >= 80 ? 'font-danger' : 'status-font-on-success'}>
+					<Box color={privateAppsFontColor}>
 						{privateAppsEnabled} / {privateAppsLimitCount}
 					</Box>
 				</Box>
 
-				<ProgressBar percentage={privateAppsPercentage || 0} variant={(privateAppsPercentage || 0) >= 80 ? 'danger' : 'success'} />
+				<ProgressBar percentage={privateAppsDisabled ? 100 : privateAppsPercentage || 0} variant={privateAppsVariant} />
 			</Box>
 		</FeatureUsageCard>
 	);

@@ -10,12 +10,14 @@ const EnabledAppsCount = ({
 	limit,
 	enabled,
 	context,
+	tooltip,
 }: {
 	variant: 'warning' | 'danger' | 'success';
 	percentage: number;
 	limit: number;
 	enabled: number;
 	context: 'private' | 'explore' | 'installed' | 'premium' | 'requested';
+	tooltip?: string;
 }): ReactElement | null => {
 	const { t } = useTranslation();
 
@@ -27,6 +29,7 @@ const EnabledAppsCount = ({
 			percentage={percentage}
 			threshold={80}
 			variant={variant}
+			tooltip={tooltip}
 		/>
 	);
 };

@@ -1,6 +1,6 @@
 import { useTranslation, useRouteParameter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { useRef } from 'react';
 
 import { Page, PageContent } from '../../../components/Page';
 import MarketplaceHeader from '../components/MarketplaceHeader';
@@ -13,11 +13,13 @@ const AppsPage = (): ReactElement => {
 
 	const context = useRouteParameter('context') as AppsContext;
 
+	const unsupportedVersion = useRef<boolean>(false);
+
 	return (
 		<Page background='tint'>
-			<MarketplaceHeader title={t(`Apps_context_${context}`)} />
+			<MarketplaceHeader unsupportedVersion={unsupportedVersion} title={t(`Apps_context_${context}`)} />
 			<PageContent paddingInline='0'>
-				<AppsPageContent />
+				<AppsPageContent unsupportedVersion={unsupportedVersion} />
 			</PageContent>
 		</Page>
 	);
