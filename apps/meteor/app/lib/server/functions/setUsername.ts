@@ -17,6 +17,7 @@ import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
 import { joinDefaultChannels } from './joinDefaultChannels';
 import { saveUserIdentity } from './saveUserIdentity';
 import { setUserAvatar } from './setUserAvatar';
+import { validateUsername } from './validateUsername';
 
 export const setUsernameWithValidation = async (userId: string, username: string, joinDefaultChannelsSilenced?: boolean): Promise<void> => {
 	if (!username) {
@@ -37,14 +38,7 @@ export const setUsernameWithValidation = async (userId: string, username: string
 		return;
 	}
 
-	let nameValidation;
-	try {
-		nameValidation = new RegExp(`^${settings.get('UTF8_User_Names_Validation')}$`);
-	} catch (error) {
-		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
-	}
-
-	if (!nameValidation.test(username)) {
+	if (!validateUsername(username)) {
 		throw new Meteor.Error(
 			'username-invalid',
 			`${_.escape(username)} is not a valid username, use only letters, numbers, dots, hyphens and underscores`,
@@ -74,18 +68,15 @@ export const setUsernameWithValidation = async (userId: string, username: string
 
 export const _setUsername = async function (userId: string, u: string, fullUser: IUser): Promise<unknown> {
 	const username = u.trim();
+
 	if (!userId || !username) {
 		return false;
 	}
-	let nameValidation;
-	try {
-		nameValidation = new RegExp(`^${settings.get('UTF8_User_Names_Validation')}$`);
-	} catch (error) {
-		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
-	}
-	if (!nameValidation.test(username)) {
+
+	if (!validateUsername(username)) {
 		return false;
 	}
+
 	const user = fullUser || (await Users.findOneById(userId));
 	// User already has desired username, return
 	if (user.username === username) {
@@ -111,23 +102,22 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 	// Set new username*
 	await Users.setUsername(user._id, username);
 	user.username = username;
+
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
-		// eslint-disable-next-line @typescript-eslint/ban-types
-		const avatarSuggestions = (await getAvatarSuggestionForUser(user)) as {};
-		let gravatar;
-		for await (const service of Object.keys(avatarSuggestions)) {
-			const avatarData = avatarSuggestions[+service as keyof typeof avatarSuggestions];
+		const avatarSuggestions = await getAvatarSuggestionForUser(user);
+		let avatarData;
+		let serviceName = 'gravatar';
+
+		for (const service of Object.keys(avatarSuggestions)) {
+			avatarData = avatarSuggestions[service];
 			if (service !== 'gravatar') {
-				// eslint-disable-next-line dot-notation
-				await setUserAvatar(user, avatarData['blob'], avatarData['contentType'], service);
-				gravatar = null;
+				serviceName = service;
 				break;
 			}
-			gravatar = avatarData;
 		}
-		if (gravatar != null) {
-			// eslint-disable-next-line dot-notation
-			await setUserAvatar(user, gravatar['blob'], gravatar['contentType'], 'gravatar');
+
+		if (avatarData) {
+			await setUserAvatar(user, avatarData.blob, avatarData.contentType, serviceName);
 		}
 	}
 

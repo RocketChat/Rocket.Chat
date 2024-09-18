@@ -100,6 +100,12 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					if (/Username is already in use/.test(error.error)) {
 						setError('username', { type: 'username-already-exists', message: t('registration.component.form.userAlreadyExist') });
 					}
+					if (/The username provided is not valid/.test(error.error)) {
+						setError('username', {
+							type: 'username-contains-invalid-chars',
+							message: t('registration.component.form.usernameContainsInvalidChars'),
+						});
+					}
 					if (/Name contains invalid characters/.test(error.error)) {
 						setError('name', { type: 'name-contains-invalid-chars', message: t('registration.component.form.nameContainsInvalidChars') });
 					}
@@ -142,7 +148,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						<FieldRow>
 							<TextInput
 								{...register('name', {
-									required: requireNameForRegister ? t('registration.component.form.requiredField') : false,
+									required: requireNameForRegister ? t('Required_field', { field: t('registration.component.form.name') }) : false,
 								})}
 								error={errors?.name?.message}
 								aria-required={requireNameForRegister}
@@ -165,7 +171,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						<FieldRow>
 							<TextInput
 								{...register('email', {
-									required: t('registration.component.form.requiredField'),
+									required: t('Required_field', { field: t('registration.component.form.email') }),
 									pattern: {
 										value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
 										message: t('registration.component.form.invalidEmail'),
@@ -192,7 +198,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						<FieldRow>
 							<TextInput
 								{...register('username', {
-									required: t('registration.component.form.requiredField'),
+									required: t('Required_field', { field: t('registration.component.form.username') }),
 								})}
 								error={errors?.username?.message}
 								aria-required='true'
@@ -215,7 +221,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						<FieldRow>
 							<PasswordInput
 								{...register('password', {
-									required: t('registration.component.form.requiredField'),
+									required: t('Required_field', { field: t('registration.component.form.password') }),
 									validate: () => (!passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
 								})}
 								error={errors.password?.message}
@@ -241,7 +247,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							<FieldRow>
 								<PasswordInput
 									{...register('passwordConfirmation', {
-										required: t('registration.component.form.requiredField'),
+										required: t('Required_field', { field: t('registration.component.form.confirmPassword') }),
 										deps: ['password'],
 										validate: (val: string) => (watch('password') === val ? true : t('registration.component.form.invalidConfirmPass')),
 									})}
@@ -269,7 +275,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 							<FieldRow>
 								<TextAreaInput
 									{...register('reason', {
-										required: t('registration.component.form.requiredField'),
+										required: t('Required_field', { field: t('registration.component.form.reasonToJoin') }),
 									})}
 									error={errors?.reason?.message}
 									aria-required='true'

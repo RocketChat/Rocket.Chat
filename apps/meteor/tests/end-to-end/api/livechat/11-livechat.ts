@@ -283,6 +283,27 @@ describe('LIVECHAT - Utils', () => {
 				.send({ token: visitor.token, rid: room._id, email: 'visitor@notadomain.com' });
 			expect(body).to.have.property('success', true);
 		});
+		it('should allow a visitor to get a transcript even if token changed by using an old token that matches room.v', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(room._id);
+			const visitor2 = await createVisitor(undefined, undefined, visitor.visitorEmails?.[0].address);
+			const room2 = await createLivechatRoom(visitor2.token);
+			await closeOmnichannelRoom(room2._id);
+
+			expect(visitor.token !== visitor2.token).to.be.true;
+			const { body } = await request
+				.post(api('livechat/transcript'))
+				.set(credentials)
+				.send({ token: visitor.token, rid: room._id, email: 'visitor@notadomain.com' });
+			expect(body).to.have.property('success', true);
+
+			const { body: body2 } = await request
+				.post(api('livechat/transcript'))
+				.set(credentials)
+				.send({ token: visitor2.token, rid: room2._id, email: 'visitor@notadomain.com' });
+			expect(body2).to.have.property('success', true);
+		});
 	});
 
 	describe('livechat/transcript/:rid', () => {

@@ -20,6 +20,7 @@ import type {
 	ITeam,
 	ITeamMember,
 	ITeamStats,
+	AtLeast,
 } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
@@ -32,6 +33,7 @@ import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { checkUsernameAvailability } from '../../../app/lib/server/functions/checkUsernameAvailability';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 
 export class TeamService extends ServiceClassInternal implements ITeamService {
@@ -77,6 +79,21 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		};
 
 		try {
+			const roomId =
+				room.id ||
+				(
+					await Room.create(owner || uid, {
+						...room,
+						type: team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c',
+						name: team.name,
+						members: memberUsernames as string[],
+						extraData: {
+							...room.extraData,
+						},
+						sidepanel,
+					})
+				)._id;
+
 			const result = await Team.insertOne(teamData);
 			const teamId = result.insertedId;
 			// the same uid can be passed at 3 positions: owner, member list or via caller
@@ -106,32 +123,13 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 			await TeamMember.insertMany(membersList);
 
-			let roomId = room.id;
-			if (roomId) {
-				await Rooms.setTeamMainById(roomId, teamId);
-				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
-			} else {
-				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
-
-				const newRoom = {
-					...room,
-					type: roomType,
-					name: team.name,
-					members: memberUsernames as string[],
-					extraData: {
-						...room.extraData,
-						teamId,
-						teamMain: true,
-					},
-					sidepanel,
-				};
-
-				const createdRoom = await Room.create(owner || uid, newRoom);
-				roomId = createdRoom._id;
-			}
-
+			await Rooms.setTeamMainById(roomId, teamId);
 			await Team.updateMainRoomForTeam(teamId, roomId);
 			teamData.roomId = roomId;
+
+			if (room.id) {
+				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
+			}
 
 			return {
 				_id: teamId,
@@ -745,7 +743,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('invalid-team');
 		}
 
-		await Promise.all([
+		const responses = await Promise.all([
 			TeamMember.updateOneByUserIdAndTeamId(member.userId, teamId, memberUpdate),
 			Subscriptions.updateOne(
 				{
@@ -757,6 +755,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				},
 			),
 		]);
+
+		if (responses[1].modifiedCount) {
+			void notifyOnSubscriptionChangedByRoomIdAndUserId(team.roomId, member.userId);
+		}
 	}
 
 	async removeMember(teamId: string, userId: string): Promise<void> {
@@ -911,8 +913,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		});
 	}
 
-	async getOneByRoomId(roomId: string): Promise<ITeam | null> {
-		const room = await Rooms.findOneById(roomId);
+	async getOneByRoomId(roomId: string, options?: FindOptions<ITeam>): Promise<ITeam | null> {
+		const room = await Rooms.findOneById(roomId, { projection: { teamId: 1 } });
 
 		if (!room) {
 			throw new Error('invalid-room');
@@ -922,7 +924,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('room-not-on-team');
 		}
 
-		return Team.findOneById(room.teamId);
+		return Team.findOneById(room.teamId, options);
 	}
 
 	async addRolesToMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean> {
@@ -1051,5 +1053,62 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		).toArray();
 
 		return rooms;
+	}
+
+	private getParentRoom(team: AtLeast<ITeam, 'roomId'>): Promise<Pick<IRoom, 'name' | 'fname' | 't' | '_id'> | null> {
+		return Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | '_id'>>(team.roomId, { projection: { name: 1, fname: 1, t: 1 } });
+	}
+
+	async getRoomInfo(
+		room: AtLeast<IRoom, 'teamId' | 'teamMain' | '_id'>,
+	): Promise<{ team?: Pick<ITeam, 'name' | 'roomId' | 'type'>; parentRoom?: Pick<IRoom, 'name' | 'fname' | 't' | '_id'> }> {
+		if (!room.teamId) {
+			return {};
+		}
+
+		const team = await Team.findOneById(room.teamId, { projection: { _id: 1, name: 1, roomId: 1, type: 1 } });
+		if (!team) {
+			return {};
+		}
+
+		if (room.teamMain) {
+			return { team };
+		}
+
+		const parentRoom = await this.getParentRoom(team);
+		return { team, ...(parentRoom && { parentRoom }) };
+	}
+
+	// Returns the list of rooms and discussions a user has access to inside a team
+	// Rooms returned are a composition of the rooms the user is in + public rooms + discussions from the main room (if any)
+	async listChildren(
+		userId: string,
+		team: AtLeast<ITeam, '_id' | 'roomId' | 'type'>,
+		filter?: string,
+		type?: 'channels' | 'discussions',
+		sort?: Record<string, 1 | -1>,
+		skip = 0,
+		limit = 10,
+	): Promise<{ total: number; data: IRoom[] }> {
+		const mainRoom = await Rooms.findOneById(team.roomId, { projection: { _id: 1 } });
+		if (!mainRoom) {
+			throw new Error('error-invalid-team-no-main-room');
+		}
+
+		const isMember = await TeamMember.findOneByUserIdAndTeamId(userId, team._id, {
+			projection: { _id: 1 },
+		});
+
+		if (!isMember) {
+			throw new Error('error-invalid-team-not-a-member');
+		}
+
+		const [{ totalCount: [{ count: total }] = [], paginatedResults: data = [] }] =
+			(await Rooms.findChildrenOfTeam(team._id, mainRoom._id, userId, filter, type, { skip, limit, sort }).toArray()) || [];
+
+		return {
+			total,
+			data,
+		};
 	}
 }

@@ -1,7 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Select, Margins, Field, FieldLabel, FieldRow, Label, Option } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import AutoCompleteDepartment from '../../../components/AutoCompleteDepartment';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
@@ -11,7 +11,7 @@ import InterchangeableChart from './InterchangeableChart';
 import Overview from './Overview';
 
 const useOptions = (type: string): SelectOption[] => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	return useMemo(() => {
 		if (type === 'Conversations') {
 			return [
@@ -30,7 +30,7 @@ const useOptions = (type: string): SelectOption[] => {
 };
 
 const AnalyticsPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [type, setType] = useState('Conversations');
 	const [department, setDepartment] = useState<string | null>(null);
 	const [dateRange, setDateRange] = useState({ start: '', end: '' });

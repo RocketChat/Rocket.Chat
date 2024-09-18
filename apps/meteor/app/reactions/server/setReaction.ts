@@ -87,6 +87,7 @@ export async function setReaction(
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setReactionsInLastMessage(room._id, message.reactions);
 		}
+
 		void callbacks.run('afterSetReaction', message, { user, reaction, shouldReact: true });
 
 		isReacted = true;

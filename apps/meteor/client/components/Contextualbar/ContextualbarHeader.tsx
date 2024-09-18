@@ -8,10 +8,10 @@ type ContextualbarHeaderProps = {
 	children: ReactNode;
 } & ComponentPropsWithoutRef<typeof ContextualbarHeaderComponent>;
 
-const ContextualbarHeader = (props: ContextualbarHeaderProps) => (
+const ContextualbarHeader = ({ expanded, ...props }: ContextualbarHeaderProps) => (
 	<FeaturePreview feature='newNavigation'>
 		<FeaturePreviewOff>
-			<ContextualbarHeaderComponent height={props.expanded ? '64px' : '56px'} {...props} />
+			<ContextualbarHeaderComponent height={expanded ? '64px' : '56px'} {...props} />
 		</FeaturePreviewOff>
 		<FeaturePreviewOn>
 			<ContextualbarV2Header mbs={-1} {...props} />

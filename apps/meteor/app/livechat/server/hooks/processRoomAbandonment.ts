@@ -58,14 +58,17 @@ export const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, a
 	for (let index = 0; index <= daysOfInactivity; index++) {
 		const today = inactivityDay.clone().format('dddd');
 		const officeDay = officeDays[today];
+
 		if (!officeDay) {
 			inactivityDay.add(1, 'days');
 			continue;
 		}
+
 		if (!officeDay.open) {
 			inactivityDay.add(1, 'days');
 			continue;
 		}
+
 		if (!officeDay?.start?.time || !officeDay?.finish?.time) {
 			inactivityDay.add(1, 'days');
 			continue;
