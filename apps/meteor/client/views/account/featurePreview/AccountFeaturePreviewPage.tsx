@@ -13,6 +13,7 @@ import {
 	FieldRow,
 	FieldHint,
 	Callout,
+	Margins,
 } from '@rocket.chat/fuselage';
 import type { FeaturePreviewProps } from '@rocket.chat/ui-client';
 import { usePreferenceFeaturePreviewList } from '@rocket.chat/ui-client';
@@ -105,16 +106,14 @@ const AccountFeaturePreviewPage = () => {
 					)}
 					{featuresPreview.length > 0 && (
 						<>
-							<FieldGroup marginBlockEnd={16}>
-								<Field>
-									<FieldRow>{t('Feature_preview_page_description')}</FieldRow>
-								</Field>
-								<Field>
-									<FieldRow>
-										<Callout>{t('Feature_preview_page_callout')}</Callout>
-									</FieldRow>
-								</Field>
-							</FieldGroup>
+							<Box>
+								<Margins block={24}>
+									<Box fontScale='p1'>
+										{t('Feature_preview_page_description')}
+									</Box>
+									<Callout>{t('Feature_preview_page_callout')}</Callout>
+								</Margins>
+							</Box>
 							<Accordion>
 								{grouppedFeaturesPreview?.map(([group, features], index) => (
 									<Accordion.Item defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>

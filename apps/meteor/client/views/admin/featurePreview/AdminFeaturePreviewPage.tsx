@@ -10,6 +10,7 @@ import {
 	FieldRow,
 	FieldHint,
 	Callout,
+	Margins,
 } from '@rocket.chat/fuselage';
 import type { FeaturePreviewProps } from '@rocket.chat/ui-client';
 import { useDefaultSettingFeaturePreviewList } from '@rocket.chat/ui-client';
@@ -114,23 +115,16 @@ const AdminFeaturePreviewPage = () => {
 			<PageHeader title={t('Feature_preview')} />
 			<PageScrollableContentWithShadow>
 				<Box maxWidth='x600' w='full' alignSelf='center'>
-					<FieldGroup marginBlockEnd={16}>
-						<Field>
-							<FieldRow>{t('Feature_preview_admin_page_description')}</FieldRow>
-						</Field>
-						<Field>
-							<FieldRow>
-								<Callout>{t('Feature_preview_page_callout')}</Callout>
-							</FieldRow>
-						</Field>
-						<Field>
-							<FieldRow>
-								<Callout>{t('Feature_preview_admin_page_callout')}</Callout>
-							</FieldRow>
-						</Field>
-						<Setting settingId='Accounts_AllowFeaturePreview' sectionChanged={allowFeaturePreviewSetting.changed} />
-					</FieldGroup>
-
+					<Box>
+						<Margins block={24}>
+							<Box fontScale='p1'>
+								{t('Feature_preview_admin_page_description')}
+							</Box>
+							<Callout>{t('Feature_preview_page_callout')}</Callout>
+							<Callout>{t('Feature_preview_admin_page_callout')}</Callout>
+							<Setting settingId='Accounts_AllowFeaturePreview' sectionChanged={allowFeaturePreviewSetting.changed} />
+						</Margins>
+					</Box>
 					<Accordion>
 						{grouppedFeaturesPreview?.map(([group, features], index) => (
 							<Accordion.Item defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
