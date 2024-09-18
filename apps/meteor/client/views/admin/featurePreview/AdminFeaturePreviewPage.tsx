@@ -20,17 +20,16 @@ import React, { useEffect, Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
+import { useFeaturePreviewEnableQuery } from '../../../hooks/useFeaturePreviewEnableQuery';
 import { useEditableSetting } from '../EditableSettingsContext';
 import Setting from '../settings/Setting';
 import SettingsGroupPageSkeleton from '../settings/SettingsGroupPage/SettingsGroupPageSkeleton';
-import { useFeaturePreviewEnableQuery } from '/client/hooks/useFeaturePreviewEnableQuery';
 
 const AdminFeaturePreviewPage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const allowFeaturePreviewSetting = useEditableSetting('Accounts_AllowFeaturePreview');
 	const { features, unseenFeatures } = useDefaultSettingFeaturePreviewList();
-
 
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 

@@ -23,7 +23,7 @@ import React, { useEffect, Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
-import { useFeaturePreviewEnableQuery } from '/client/hooks/useFeaturePreviewEnableQuery';
+import { useFeaturePreviewEnableQuery } from '../../../hooks/useFeaturePreviewEnableQuery';
 
 const AccountFeaturePreviewPage = () => {
 	const t = useTranslation();
