@@ -14,6 +14,7 @@ import {
 	fetchInquiry,
 	getLivechatRoomInfo,
 	makeAgentAvailable,
+	makeAgentUnavailable,
 	takeInquiry,
 } from '../../../data/livechat/rooms';
 import { parseMethodResponse } from '../../../data/livechat/utils';
@@ -131,6 +132,11 @@ describe('LIVECHAT - inquiries', () => {
 	});
 
 	describe('POST livechat/inquiries.take', () => {
+		after(async () => {
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+			await makeAgentUnavailable();
+		});
+
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('view-l-room', []);
 			await request
@@ -188,7 +194,6 @@ describe('LIVECHAT - inquiries', () => {
 			expect(inquiry2.source?.type).to.equal('api');
 			expect(inquiry2.status).to.equal('taken');
 		});
-
 		it('should mark a mannualy taken room as servedBy me', async () => {
 			const agent = await createAgent();
 			const visitor = await createVisitor();
@@ -218,7 +223,6 @@ describe('LIVECHAT - inquiries', () => {
 			expect(roomInfo.servedBy).to.have.property('_id', 'rocketchat.internal.admin.test');
 			expect(takenInquiry.status).to.equal('taken');
 		});
-
 		it('should throw an error if the inquiry is already taken', async () => {
 			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 
@@ -239,7 +243,6 @@ describe('LIVECHAT - inquiries', () => {
 			expect(response.body).to.have.property('success', false);
 			expect(response.body).to.have.property('error', 'Inquiry already taken [error-inquiry-taken]');
 		});
-
 		(IS_EE ? it : it.skip)(
 			'should fail when trying to take an inquiry with the maximum open conversations per agent already reached',
 			async () => {
