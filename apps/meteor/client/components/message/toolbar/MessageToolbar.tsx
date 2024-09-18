@@ -1,4 +1,5 @@
 import { useToolbar } from '@react-aria/toolbar';
+import { UIActionButtonCategory } from '@rocket.chat/apps-engine/definition/ui';
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated, isVideoConfMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import { MessageToolbar as FuselageMessageToolbar, MessageToolbarItem } from '@rocket.chat/fuselage';
@@ -11,7 +12,7 @@ import React, { memo, useMemo, useRef } from 'react';
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { MessageAction } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
-import { useMessageActionAppsActionButtons, useMessageToolbarStarsAppsAction } from '../../../hooks/useAppActionButtons';
+import { useMessageActionAppsActionButtons } from '../../../hooks/useAppActionButtons';
 import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 import { useIsSelecting } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
@@ -79,7 +80,7 @@ const MessageToolbar = ({
 
 	const actionButtonApps = useMessageActionAppsActionButtons(context);
 
-	const starsAction = useMessageToolbarStarsAppsAction(context);
+	const starsAction = useMessageActionAppsActionButtons(context, UIActionButtonCategory.AI);
 
 	const { messageToolbox: hiddenActions } = useLayoutHiddenActions();
 
