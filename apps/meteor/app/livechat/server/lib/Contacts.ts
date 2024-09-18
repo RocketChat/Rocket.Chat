@@ -44,8 +44,8 @@ type RegisterContactProps = {
 
 type CreateContactParams = {
 	name: string;
-	emails: string[];
-	phones: string[];
+	emails?: string[];
+	phones?: string[];
 	unknown: boolean;
 	customFields?: Record<string, string | unknown>;
 	contactManager?: string;

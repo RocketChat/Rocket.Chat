@@ -569,4 +569,67 @@ describe('LIVECHAT - contacts', () => {
 			});
 		});
 	});
+
+	describe('[GET] omnichannel/contacts.get', () => {
+		let contactId: string;
+		const contact = {
+			name: faker.person.fullName(),
+			emails: [faker.internet.email().toLowerCase()],
+			phones: [faker.phone.number()],
+			contactManager: agentUser?._id,
+		};
+
+		before(async () => {
+			await updatePermission('view-livechat-contact', ['admin']);
+			const { body } = await request
+				.post(api('omnichannel/contacts'))
+				.set(credentials)
+				.send({ ...contact });
+			contactId = body.contactId;
+		});
+
+		after(async () => {
+			await restorePermissionToRoles('view-livechat-contact');
+		});
+
+		it('should be able get a contact by id', async () => {
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contact._id).to.be.equal(contactId);
+			expect(res.body.contact.name).to.be.equal(contact.name);
+			expect(res.body.contact.emails).to.be.deep.equal(contact.emails);
+			expect(res.body.contact.phones).to.be.deep.equal(contact.phones);
+			expect(res.body.contact.contactManager).to.be.equal(contact.contactManager);
+		});
+
+		it('should return null if contact does not exist', async () => {
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: 'invalid' });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contact).to.be.null;
+		});
+
+		it("should return an error if user doesn't have 'view-livechat-contact' permission", async () => {
+			await removePermissionFromAllRoles('view-livechat-contact');
+
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId });
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+
+			await restorePermissionToRoles('view-livechat-contact');
+		});
+
+		it('should return an error if contactId is missing', async () => {
+			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error');
+			expect(res.body.error).to.be.equal("must have required property 'contactId' [invalid-params]");
+			expect(res.body.errorType).to.be.equal('invalid-params');
+		});
+	});
 });

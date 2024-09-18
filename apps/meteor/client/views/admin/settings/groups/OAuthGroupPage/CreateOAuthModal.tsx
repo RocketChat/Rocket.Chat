@@ -1,7 +1,7 @@
 import { TextInput, Field, FieldLabel, FieldRow, FieldError, Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEvent, SyntheticEvent } from 'react';
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../../components/GenericModal';
 
@@ -13,12 +13,12 @@ type CreateOAuthModalProps = {
 const CreateOAuthModal = ({ onConfirm, onClose }: CreateOAuthModalProps): ReactElement => {
 	const [text, setText] = useState<string>('');
 	const [error, setError] = useState<string>('');
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const handleConfirm = (e: SyntheticEvent): void => {
 		e.preventDefault();
 		if (!text.length) {
-			setError(t('Name_cant_be_empty'));
+			setError(t('Required_field', { field: t('Name') }));
 			return;
 		}
 		onConfirm(text);
