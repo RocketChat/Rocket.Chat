@@ -112,7 +112,7 @@ export interface ITeamService {
 	getOneById<P extends Document>(teamId: string, options?: FindOptions<P extends ITeam ? ITeam : P>): Promise<ITeam | P | null>;
 	getOneByName(teamName: string | RegExp, options?: FindOptions<ITeam>): Promise<ITeam | null>;
 	getOneByMainRoomId(teamId: string): Promise<Pick<ITeam, '_id'> | null>;
-	getOneByRoomId(teamId: string): Promise<ITeam | null>;
+	getOneByRoomId(teamId: string, options?: FindOptions<ITeam>): Promise<ITeam | null>;
 	getMatchingTeamRooms(teamId: string, rids: Array<string>): Promise<Array<string>>;
 	autocomplete(uid: string, name: string): Promise<ITeamAutocompleteResult[]>;
 	getAllPublicTeams(options?: FindOptions<ITeam>): Promise<Array<ITeam>>;
@@ -129,4 +129,13 @@ export interface ITeamService {
 	getRoomInfo(
 		room: AtLeast<IRoom, 'teamId' | 'teamMain' | '_id'>,
 	): Promise<{ team?: Pick<ITeam, 'name' | 'roomId' | 'type'>; parentRoom?: Pick<IRoom, 'name' | 'fname' | 't' | '_id'> }>;
+	listChildren(
+		userId: string,
+		team: AtLeast<ITeam, '_id' | 'roomId' | 'type'>,
+		filter?: string,
+		type?: 'channels' | 'discussions',
+		sort?: Record<string, 1 | -1>,
+		skip?: number,
+		limit?: number,
+	): Promise<{ total: number; data: IRoom[] }>;
 }
