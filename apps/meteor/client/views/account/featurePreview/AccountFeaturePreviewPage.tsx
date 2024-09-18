@@ -108,9 +108,7 @@ const AccountFeaturePreviewPage = () => {
 						<>
 							<Box>
 								<Margins block={24}>
-									<Box fontScale='p1'>
-										{t('Feature_preview_page_description')}
-									</Box>
+									<Box fontScale='p1'>{t('Feature_preview_page_description')}</Box>
 									<Callout>{t('Feature_preview_page_callout')}</Callout>
 								</Margins>
 							</Box>
