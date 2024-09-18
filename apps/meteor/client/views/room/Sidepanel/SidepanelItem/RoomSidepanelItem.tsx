@@ -17,13 +17,13 @@ const RoomSidepanelItem = ({ room, openedRoom, viewMode }: RoomSidepanelItemProp
 	const SidepanelItem = useTemplateByViewMode();
 	const subscription = useUserSubscription(room._id);
 
-	const itemData = useItemData({ ...subscription, ...room } as any, { viewMode, openedRoom }); // as any because of divergent and overlaping timestamp types in subs and room (type Date vs type string)
+	const itemData = useItemData({ ...room, ...subscription } as any, { viewMode, openedRoom }); // as any because of divergent and overlaping timestamp types in subs and room (type Date vs type string)
 
 	if (!subscription) {
-		return <SidepanelItem onClick={goToRoomById} is='a' {...room} {...itemData} />;
+		return <SidepanelItem onClick={goToRoomById} is='a' {...itemData} />;
 	}
 
-	return <SidepanelItem onClick={goToRoomById} {...subscription} {...itemData} />;
+	return <SidepanelItem onClick={goToRoomById} {...itemData} />;
 };
 
 export default memo(RoomSidepanelItem);
