@@ -85,7 +85,6 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 				await Rooms.setReactionsInLastMessage(room._id, message.reactions);
 			}
 		}
-		await callbacks.run('unsetReaction', message._id, reaction);
 		await callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact, oldMessage });
 
 		isReacted = false;
@@ -104,7 +103,6 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 			await Rooms.setReactionsInLastMessage(room._id, message.reactions);
 			void notifyOnRoomChangedById(room._id);
 		}
-		await callbacks.run('setReaction', message._id, reaction);
 		await callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
 
 		isReacted = true;
