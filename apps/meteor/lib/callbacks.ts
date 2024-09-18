@@ -225,6 +225,7 @@ type ChainedCallbackSignatures = {
 	'unarchiveRoom': (room: IRoom) => void;
 	'roomAvatarChanged': (room: IRoom) => void;
 	'beforeGetMentions': (mentionIds: string[], teamMentions: MessageMention[]) => Promise<string[]>;
+	'livechat.manageDepartmentUnit': (params: { userId: string; departmentId: string; unitId?: string }) => void;
 };
 
 export type Hook =
@@ -247,6 +248,7 @@ export type Hook =
 	| 'livechat.offlineMessage'
 	| 'livechat.onCheckRoomApiParams'
 	| 'livechat.onLoadConfigApi'
+	| 'livechat.manageDepartmentUnit'
 	| 'loginPageStateChange'
 	| 'mapLDAPUserData'
 	| 'onCreateUser'
