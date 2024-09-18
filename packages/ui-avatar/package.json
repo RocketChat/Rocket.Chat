@@ -1,17 +1,16 @@
 {
 	"name": "@rocket.chat/ui-avatar",
-	"version": "6.0.0-rc.4",
+	"version": "6.0.0",
 	"private": true,
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
-		"@rocket.chat/fuselage": "^0.57.1",
+		"@rocket.chat/fuselage": "^0.59.0",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@types/babel__core": "~7.20.3",
-		"@types/react": "~17.0.69",
-		"@types/react-dom": "~17.0.22",
+		"@types/react": "~17.0.80",
+		"@types/react-dom": "~17.0.25",
 		"eslint": "~8.45.0",
 		"eslint-plugin-react": "~7.32.2",
-		"eslint-plugin-react-hooks": "~4.6.0",
+		"eslint-plugin-react-hooks": "~4.6.2",
 		"eslint-plugin-storybook": "~0.6.15",
 		"eslint-plugin-testing-library": "~5.11.1",
 		"react": "^17.0.2",
@@ -31,7 +30,7 @@
 	],
 	"peerDependencies": {
 		"@rocket.chat/fuselage": "*",
-		"@rocket.chat/ui-contexts": "10.0.0-rc.4",
+		"@rocket.chat/ui-contexts": "*",
 		"react": "~17.0.2"
 	},
 	"volta": {

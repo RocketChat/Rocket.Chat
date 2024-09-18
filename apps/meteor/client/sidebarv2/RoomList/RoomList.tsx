@@ -1,11 +1,11 @@
-import type { IRoom } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+/* eslint-disable react/no-multi-comp */
+import type { ISubscription, IRoom } from '@rocket.chat/core-typings';
+import { Box, SidebarV2GroupTitle } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserId, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
-import { Virtuoso } from 'react-virtuoso';
+import { GroupedVirtuoso } from 'react-virtuoso';
 
 import { VirtuosoScrollbars } from '../../components/CustomScrollbars';
 import { useOpenedRoom } from '../../lib/RoomManager';
@@ -18,7 +18,25 @@ import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 
-const computeItemKey = (index: number, room: IRoom): IRoom['_id'] | number => room._id || index;
+const getRoomsByGroup = (rooms: (ISubscription & IRoom)[]) => {
+	const groupCounts = rooms
+		.reduce((acc, item, index) => {
+			if (typeof item === 'string') {
+				acc.push(index);
+			}
+			return acc;
+		}, [] as number[])
+		.map((item, index, arr) => (arr[index + 1] ? arr[index + 1] : rooms.length) - item - 1);
+
+	const groupList = rooms.filter((item) => typeof item === 'string') as unknown as TranslationKey[];
+	const roomList = rooms.filter((item) => typeof item !== 'string');
+
+	return {
+		groupCounts,
+		groupList,
+		roomList,
+	};
+};
 
 const RoomList = () => {
 	const t = useTranslation();
@@ -26,7 +44,7 @@ const RoomList = () => {
 	const roomsList = useRoomList();
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
-	const { ref } = useResizeObserver({ debounceDelay: 100 });
+	const { ref } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
 	const openedRoom = useOpenedRoom() ?? '';
 	const sidebarViewMode = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode') || 'extended';
 
@@ -35,7 +53,7 @@ const RoomList = () => {
 		() => ({
 			extended,
 			t,
-			SideBarItemTemplate: sideBarItemTemplate,
+			SidebarItemTemplate: sideBarItemTemplate,
 			AvatarTemplate: avatarTemplate,
 			openedRoom,
 			sidebarViewMode,
@@ -47,87 +65,16 @@ const RoomList = () => {
 	usePreventDefault(ref);
 	useShortcutOpenMenu(ref);
 
-	const roomsListStyle = css`
-		position: relative;
-
-		display: flex;
-
-		overflow-x: hidden;
-		overflow-y: hidden;
-
-		flex: 1 1 auto;
-
-		height: 100%;
-
-		&--embedded {
-			margin-top: 2rem;
-		}
-
-		&__list:not(:last-child) {
-			margin-bottom: 22px;
-		}
-
-		&__type {
-			display: flex;
-
-			flex-direction: row;
-
-			padding: 0 var(--sidebar-default-padding) 1rem var(--sidebar-default-padding);
-
-			color: var(--rooms-list-title-color);
-
-			font-size: var(--rooms-list-title-text-size);
-			align-items: center;
-			justify-content: space-between;
-
-			&-text--livechat {
-				flex: 1;
-			}
-		}
-
-		&__empty-room {
-			padding: 0 var(--sidebar-default-padding);
-
-			color: var(--rooms-list-empty-text-color);
-
-			font-size: var(--rooms-list-empty-text-size);
-		}
-
-		&__toolbar-search {
-			position: absolute;
-			z-index: 10;
-			left: 0;
-
-			overflow-y: scroll;
-
-			height: 100%;
-
-			background-color: var(--sidebar-background);
-
-			padding-block-start: 12px;
-		}
-
-		@media (max-width: 400px) {
-			padding: 0 calc(var(--sidebar-small-default-padding) - 4px);
-
-			&__type,
-			&__empty-room {
-				padding: 0 calc(var(--sidebar-small-default-padding) - 4px) 0.5rem calc(var(--sidebar-small-default-padding) - 4px);
-			}
-		}
-	`;
+	const { groupCounts, groupList, roomList } = getRoomsByGroup(roomsList);
 
 	return (
-		<Box className={[roomsListStyle, 'sidebar--custom-colors'].filter(Boolean)}>
-			<Box h='full' w='full' ref={ref}>
-				<Virtuoso
-					totalCount={roomsList.length}
-					data={roomsList}
-					components={{ Item: RoomListRowWrapper, List: RoomListWrapper, Scroller: VirtuosoScrollbars }}
-					computeItemKey={computeItemKey}
-					itemContent={(_, data): ReactElement => <RoomListRow data={itemData} item={data} />}
-				/>
-			</Box>
+		<Box position='relative' display='flex' overflow='hidden' height='full' flexGrow={1} flexShrink={1} flexBasis='auto' ref={ref}>
+			<GroupedVirtuoso
+				groupCounts={groupCounts}
+				groupContent={(index) => <SidebarV2GroupTitle title={t(groupList[index])} />}
+				itemContent={(index) => <RoomListRow data={itemData} item={roomList[index]} />}
+				components={{ Item: RoomListRowWrapper, List: RoomListWrapper, Scroller: VirtuosoScrollbars }}
+			/>
 		</Box>
 	);
 };

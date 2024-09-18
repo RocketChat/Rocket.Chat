@@ -1,11 +1,10 @@
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import type { MouseEvent, ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { MessageActionConditionProps, MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
-import GenericMenu from '../../GenericMenu/GenericMenu';
-import type { GenericMenuItemProps } from '../../GenericMenu/GenericMenuItem';
 
 type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order' | 'action'> & {
 	action: (e?: MouseEvent<HTMLElement>) => void;
@@ -25,7 +24,7 @@ type MessageActionMenuProps = {
 };
 
 const MessageActionMenu = ({ options, onChangeMenuVisibility, context, isMessageEncrypted }: MessageActionMenuProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const id = useUniqueId();
 	const groupOptions = options
 		.map((option) => ({

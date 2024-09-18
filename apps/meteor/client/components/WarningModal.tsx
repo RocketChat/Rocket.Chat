@@ -1,7 +1,7 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 type WarningModalProps = {
 	text: ReactNode;
@@ -13,7 +13,7 @@ type WarningModalProps = {
 };
 
 const WarningModal = ({ text, confirmText, close, cancel, cancelText, confirm, ...props }: WarningModalProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	return (
 		<Modal open {...props}>
 			<Modal.Header>

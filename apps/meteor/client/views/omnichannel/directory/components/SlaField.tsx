@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import Field from '../../components/Field';
 import Info from '../../components/Info';
@@ -13,7 +13,7 @@ type SlaFieldProps = {
 };
 
 const SlaField = ({ id }: SlaFieldProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const { data, isInitialLoading, isError } = useSlaInfo(id);
 
 	if (isInitialLoading) {
