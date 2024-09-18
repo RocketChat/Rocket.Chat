@@ -89,13 +89,7 @@ export const enabledDefaultFeatures = defaultFeaturesPreview.filter((feature) =>
 
 export const usePreferenceFeaturePreviewList = () => {
 	const featurePreviewEnabled = useSetting<boolean>('Accounts_AllowFeaturePreview');
-
-	if (!featurePreviewEnabled) {
-		return { unseenFeatures: 0, features: [] as FeaturePreviewProps[], featurePreviewEnabled };
-	}
-
 	const userFeaturesPreviewPreference = useUserPreference<FeaturePreviewProps[]>('featuresPreview');
-
 	// TODO: Remove this logic after we have a way to store object settings.
 	const userFeaturesPreview = useMemo<FeaturePreviewProps[]>(() => {
 		if (typeof userFeaturesPreviewPreference === 'string') {
@@ -103,14 +97,16 @@ export const usePreferenceFeaturePreviewList = () => {
 		}
 		return userFeaturesPreviewPreference;
 	}, [userFeaturesPreviewPreference]);
-
 	const { unseenFeatures, features } = useFeaturePreviewList(userFeaturesPreview);
+
+	if (!featurePreviewEnabled) {
+		return { unseenFeatures: 0, features: [] as FeaturePreviewProps[], featurePreviewEnabled };
+	}
 	return { unseenFeatures, features, featurePreviewEnabled };
 };
 
 export const useDefaultSettingFeaturePreviewList = () => {
 	const featurePreviewSettingJSON = useSetting<string>('Accounts_Default_User_Preferences_featuresPreview');
-
 	// TODO: Remove this logic after we have a way to store object settings.
 	const settingFeaturePreview = useMemo<FeaturePreviewProps[]>(() => {
 		if (typeof featurePreviewSettingJSON === 'string') {
