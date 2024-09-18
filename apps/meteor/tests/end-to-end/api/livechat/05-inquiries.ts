@@ -230,9 +230,11 @@ describe('LIVECHAT - inquiries', () => {
 			const visitor = await createVisitor();
 			await makeAgentAvailable();
 			const room = await createLivechatRoom(visitor.token);
-			const inquiry = await fetchInquiry(room._id);
+			const inquiry = (await fetchInquiry(room._id)) as ILivechatInquiryRecord & { takenAt?: string };
 
 			expect(inquiry.status).to.equal('taken');
+			expect(inquiry.takenAt).to.be.an('string');
+			expect(room.servedBy).to.be.an('object');
 
 			const response = await request.post(api('livechat/inquiries.take')).set(credentials).send({
 				inquiryId: inquiry._id,
