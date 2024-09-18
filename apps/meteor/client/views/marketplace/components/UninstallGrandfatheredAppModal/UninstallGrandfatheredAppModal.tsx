@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
 import type { MarketplaceRouteContext } from '../../hooks/useAppsCountQuery';
+import { usePrivateAppsDisabled } from '../../hooks/usePrivateAppsDisabled';
 
 type UninstallGrandfatheredAppModalProps = {
 	context: MarketplaceRouteContext;
@@ -15,9 +16,12 @@ type UninstallGrandfatheredAppModalProps = {
 
 const UninstallGrandfatheredAppModal = ({ context, limit, appName, handleUninstall, handleClose }: UninstallGrandfatheredAppModalProps) => {
 	const { t } = useTranslation();
+	const privateAppsDisabled = usePrivateAppsDisabled();
 
 	const modalContent =
-		context === 'private' ? t('App_will_lose_grandfathered_status_private') : t('App_will_lose_grandfathered_status', { limit });
+		context === 'private' && privateAppsDisabled
+			? t('App_will_lose_grandfathered_status_private')
+			: t('App_will_lose_grandfathered_status', { limit });
 
 	return (
 		<Modal>

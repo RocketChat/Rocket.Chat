@@ -20,19 +20,21 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 	const marketplaceAppsPercentage = Math.round((marketplaceAppsEnabled / marketplaceAppsLimitCount) * 100);
 
 	const privateAppsEnabled = privateAppsLimit?.value || 0;
-	const privateAppsLimitCount = privateAppsLimit?.max || 0;
+	const privateAppsLimitCount = privateAppsLimit?.max || 3;
 	const privateAppsPercentage = Math.round((privateAppsEnabled / privateAppsLimitCount) * 100);
 
 	const card: CardProps = {
 		title: t('Apps'),
-		infoText: (
-			<Trans i18nKey='Apps_InfoText'>
+		infoText: privateAppsEnabled ? (
+			<Trans i18nKey='Apps_InfoText_limited'>
 				Community workspaces can enable up to 5 marketplace apps. Private apps can only be enabled in
 				<Box is='a' href='https://www.rocket.chat/pricing' target='_blank' color='info'>
 					premium plans
 				</Box>
 				.
 			</Trans>
+		) : (
+			t('Apps_InfoText')
 		),
 		...((marketplaceAppsPercentage || 0) >= 80 && {
 			upgradeButton: (

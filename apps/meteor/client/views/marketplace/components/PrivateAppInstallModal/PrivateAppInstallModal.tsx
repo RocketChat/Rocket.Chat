@@ -15,7 +15,7 @@ const PrivateAppInstallModal = ({ onClose, onProceed }: PrivateAppInstallModalPr
 	const { t } = useTranslation();
 
 	const openExternalLink = useExternalLink();
-	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'new-departments-page', action: 'upgrade' });
+	const manageSubscriptionUrl = useCheckoutUrl()({ target: 'private-apps-page', action: 'upgrade' });
 
 	const goToManageSubscriptionPage = (): void => {
 		openExternalLink(manageSubscriptionUrl);

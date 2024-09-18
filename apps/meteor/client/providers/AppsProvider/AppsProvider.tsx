@@ -7,7 +7,7 @@ import React, { useEffect } from 'react';
 import { AppClientOrchestratorInstance } from '../../apps/orchestrator';
 import { AppsContext } from '../../contexts/AppsContext';
 import { useIsEnterprise } from '../../hooks/useIsEnterprise';
-import { useInvalidateLicense } from '../../hooks/useLicense';
+import { useInvalidateLicense, useLicense } from '../../hooks/useLicense';
 import type { AsyncState } from '../../lib/asyncState';
 import { AsyncStatePhase } from '../../lib/asyncState';
 import { useInvalidateAppsCountQueryCallback } from '../../views/marketplace/hooks/useAppsCountQuery';
@@ -38,6 +38,9 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 
 	const { data } = useIsEnterprise();
 	const isEnterprise = !!data?.isEnterprise;
+
+	const { data: licensesData } = useLicense({ loadValues: true });
+	const { limits } = licensesData || {};
 
 	const invalidateAppsCountQuery = useInvalidateAppsCountQueryCallback();
 	const invalidateLicenseQuery = useInvalidateLicense();
@@ -114,6 +117,7 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 					await Promise.all([queryClient.invalidateQueries(['marketplace'])]);
 				},
 				orchestrator: AppClientOrchestratorInstance,
+				privateAppsDisabled: limits?.privateApps?.max === 0,
 			}}
 		/>
 	);

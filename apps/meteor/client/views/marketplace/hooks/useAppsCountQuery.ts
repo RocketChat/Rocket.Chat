@@ -3,6 +3,8 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { usePrivateAppsDisabled } from './usePrivateAppsDisabled';
+
 type Variant = 'success' | 'warning' | 'danger';
 
 const getProgressBarValues = (numberOfEnabledApps: number, enabledAppsLimit: number): { variant: Variant; percentage: number } => ({
@@ -21,6 +23,7 @@ export function isMarketplaceRouteContext(context: string): context is Marketpla
 export const useAppsCountQuery = (context: MarketplaceRouteContext) => {
 	const getAppsCount = useEndpoint('GET', '/apps/count');
 	const { t } = useTranslation();
+	const privateAppsDisabled = usePrivateAppsDisabled();
 
 	return useQuery(
 		['apps/count', context],
@@ -30,7 +33,7 @@ export const useAppsCountQuery = (context: MarketplaceRouteContext) => {
 			const numberOfEnabledApps = context === 'private' ? data.totalPrivateEnabled : data.totalMarketplaceEnabled;
 			const enabledAppsLimit = context === 'private' ? data.maxPrivateApps : data.maxMarketplaceApps;
 			const hasUnlimitedApps = enabledAppsLimit === -1;
-			const tooltip = context === 'private' && enabledAppsLimit === 0 ? t('Private_apps_premium_message') : undefined;
+			const tooltip = context === 'private' && privateAppsDisabled ? t('Private_apps_premium_message') : undefined;
 			return {
 				hasUnlimitedApps,
 				enabled: numberOfEnabledApps,

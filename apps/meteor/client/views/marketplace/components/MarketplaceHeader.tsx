@@ -8,6 +8,7 @@ import { PageHeader } from '../../../components/Page';
 import UpgradeButton from '../../admin/subscription/components/UpgradeButton';
 import UnlimitedAppsUpsellModal from '../UnlimitedAppsUpsellModal';
 import { useAppsCountQuery } from '../hooks/useAppsCountQuery';
+import { usePrivateAppsDisabled } from '../hooks/usePrivateAppsDisabled';
 import EnabledAppsCount from './EnabledAppsCount';
 import PrivateAppInstallModal from './PrivateAppInstallModal/PrivateAppInstallModal';
 
@@ -19,13 +20,15 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 	const setModal = useSetModal();
 	const result = useAppsCountQuery(context);
 
+	const privateAppsDisabled = usePrivateAppsDisabled();
+
 	const handleProceed = (): void => {
 		setModal(null);
 		route.push({ context, page: 'install' });
 	};
 
 	const handleClickPrivate = () => {
-		result?.data?.limit === 0
+		privateAppsDisabled
 			? setModal(<PrivateAppInstallModal onClose={() => setModal(null)} onProceed={handleProceed} />)
 			: route.push({ context, page: 'install' });
 	};
@@ -39,7 +42,7 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 			<ButtonGroup wrap align='end'>
 				{result.isLoading && <GenericResourceUsageSkeleton />}
 
-				{!result.isSuccess && !result.data.hasUnlimitedApps && <EnabledAppsCount {...result.data} context={context} />}
+				{result.isSuccess && !result.data.hasUnlimitedApps && <EnabledAppsCount {...result.data} context={context} />}
 
 				{isAdmin && result.isSuccess && !result.data.hasUnlimitedApps && context !== 'private' && (
 					<Button
@@ -53,7 +56,7 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 
 				{isAdmin && context === 'private' && <Button onClick={handleClickPrivate}>{t('Upload_private_app')}</Button>}
 
-				{isAdmin && result.isSuccess && result.data.limit === 0 && context === 'private' && (
+				{isAdmin && result.isSuccess && privateAppsDisabled && context === 'private' && (
 					<UpgradeButton primary icon={undefined} target='private-apps-header' action='upgrade'>
 						{t('Upgrade')}
 					</UpgradeButton>
