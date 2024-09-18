@@ -1,7 +1,7 @@
 import { Box, ProgressBar, Skeleton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
@@ -25,7 +25,15 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 
 	const card: CardProps = {
 		title: t('Apps'),
-		infoText: t('Apps_InfoText'),
+		infoText: (
+			<Trans i18nKey='Apps_InfoText'>
+				Community workspaces can enable up to 5 marketplace apps. Private apps can only be enabled in
+				<Box is='a' href='https://www.rocket.chat/pricing' target='_blank' color='info'>
+					premium plans
+				</Box>
+				.
+			</Trans>
+		),
 		...((marketplaceAppsPercentage || 0) >= 80 && {
 			upgradeButton: (
 				<UpgradeButton target='app-usage-card' action='upgrade' small>
