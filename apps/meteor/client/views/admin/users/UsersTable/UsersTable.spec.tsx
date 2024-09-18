@@ -13,7 +13,7 @@ const createFakeAdminUser = (freeSwitchExtension?: string) =>
 		freeSwitchExtension,
 	});
 
-it('should not render "Voice Call Extension" column when VoIP is disabled', () => {
+it('should not render "Voice call extension" column when voice call is disabled', async () => {
 	const user = createFakeAdminUser('1000');
 
 	render(
@@ -33,12 +33,15 @@ it('should not render "Voice Call Extension" column when VoIP is disabled', () =
 		},
 	);
 
-	expect(screen.queryByText('Voice_Call_Extension')).not.toBeInTheDocument();
-	expect(screen.queryByTitle('Remove_Association')).not.toBeInTheDocument();
-	expect(screen.queryByTitle('Associate_Extension')).not.toBeInTheDocument();
+	expect(screen.queryByText('Voice_call_extension')).not.toBeInTheDocument();
+
+	screen.getByRole('button', { name: 'More_actions' }).click();
+	expect(await screen.findByRole('listbox')).toBeInTheDocument();
+	expect(screen.queryByRole('option', { name: /Assign_extension/ })).not.toBeInTheDocument();
+	expect(screen.queryByRole('option', { name: /Unassign_extension/ })).not.toBeInTheDocument();
 });
 
-it('should render "Remove_Association" button when user has a associated extension', () => {
+it('should render "Unassign_extension" button when user has a associated extension', async () => {
 	const user = createFakeAdminUser('1000');
 
 	render(
@@ -58,12 +61,15 @@ it('should render "Remove_Association" button when user has a associated extensi
 		},
 	);
 
-	expect(screen.getByText('Voice_Call_Extension')).toBeInTheDocument();
-	expect(screen.queryByTitle('Associate_Extension')).not.toBeInTheDocument();
-	expect(screen.getByTitle('Remove_Association')).toBeEnabled();
+	expect(screen.getByText('Voice_call_extension')).toBeInTheDocument();
+
+	screen.getByRole('button', { name: 'More_actions' }).click();
+	expect(await screen.findByRole('listbox')).toBeInTheDocument();
+	expect(screen.queryByRole('option', { name: /Assign_extension/ })).not.toBeInTheDocument();
+	expect(screen.getByRole('option', { name: /Unassign_extension/ })).toBeInTheDocument();
 });
 
-it('should render "Associate_Extension" button when user has no associated extension', () => {
+it('should render "Assign_extension" button when user has no associated extension', async () => {
 	const user = createFakeAdminUser();
 
 	render(
@@ -83,7 +89,10 @@ it('should render "Associate_Extension" button when user has no associated exten
 		},
 	);
 
-	expect(screen.getByText('Voice_Call_Extension')).toBeInTheDocument();
-	expect(screen.queryByTitle('Remove_Association')).not.toBeInTheDocument();
-	expect(screen.getByTitle('Associate_Extension')).toBeEnabled();
+	expect(screen.getByText('Voice_call_extension')).toBeInTheDocument();
+
+	screen.getByRole('button', { name: 'More_actions' }).click();
+	expect(await screen.findByRole('listbox')).toBeInTheDocument();
+	expect(screen.getByRole('option', { name: /Assign_extension/ })).toBeInTheDocument();
+	expect(screen.queryByRole('option', { name: /Unassign_extension/ })).not.toBeInTheDocument();
 });

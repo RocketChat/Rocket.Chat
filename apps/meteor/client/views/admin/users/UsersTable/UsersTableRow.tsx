@@ -204,6 +204,8 @@ const UsersTableRow = ({
 						placement='bottom-start'
 						flexShrink={0}
 						key='menu'
+						aria-label={t('More_actions')}
+						title={t('More_actions')}
 						renderItem={({ label: { label, icon }, ...props }): ReactElement => (
 							<Option label={label} title={label} icon={icon} variant={label === 'Delete' ? 'danger' : ''} {...props} />
 						)}
