@@ -667,8 +667,32 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.offset).to.be.an('number');
 		});
 
-		it('should return only contacts that match the searchText', async () => {
+		it('should return only contacts that match the searchText using email', async () => {
 			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials).query({ searchText: contact.emails[0] });
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts.length).to.be.equal(1);
+			expect(res.body.total).to.be.equal(1);
+			expect(res.body.contacts[0]._id).to.be.equal(contactId);
+			expect(res.body.contacts[0].name).to.be.equal(contact.name);
+			expect(res.body.contacts[0].emails[0]).to.be.equal(contact.emails[0]);
+		});
+
+		it('should return only contacts that match the searchText using phone number', async () => {
+			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials).query({ searchText: contact.phones[0] });
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.contacts).to.be.an('array');
+			expect(res.body.contacts.length).to.be.equal(1);
+			expect(res.body.total).to.be.equal(1);
+			expect(res.body.contacts[0]._id).to.be.equal(contactId);
+			expect(res.body.contacts[0].name).to.be.equal(contact.name);
+			expect(res.body.contacts[0].emails[0]).to.be.equal(contact.emails[0]);
+		});
+
+		it('should return only contacts that match the searchText using name', async () => {
+			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials).query({ searchText: contact.name });
 			expect(res.status).to.be.equal(200);
 			expect(res.body).to.have.property('success', true);
 			expect(res.body.contacts).to.be.an('array');
