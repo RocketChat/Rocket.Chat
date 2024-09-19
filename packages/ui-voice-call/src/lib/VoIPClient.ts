@@ -1,7 +1,7 @@
 import type { IMediaStreamRenderer, SignalingSocketEvents, VoipEvents } from '@rocket.chat/core-typings';
 import { type VoIPUserConfiguration } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import type { InvitationAcceptOptions, Referral, Session, SessionInviteOptions } from 'sip.js';
+import type { InvitationAcceptOptions, Message, Referral, Session, SessionInviteOptions } from 'sip.js';
 import { Registerer, RequestPendingError, SessionState, UserAgent, Invitation, Inviter, RegistererState, UserAgentState } from 'sip.js';
 import type { IncomingResponse, OutgoingByeRequest, URI } from 'sip.js/lib/core';
 import type { SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
@@ -45,6 +45,8 @@ class VoIPClient extends Emitter<VoiceCallEvents> {
 
 	private error: SessionError | null = null;
 
+	private contactInfo: ContactInfo | null = null;
+
 	constructor(private readonly config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer) {
 		super();
 
@@ -78,6 +80,7 @@ class VoIPClient extends Emitter<VoiceCallEvents> {
 			delegate: {
 				onInvite: this.onIncomingCall,
 				onRefer: this.onTransferedCall,
+				onMessage: this.onMessageReceived,
 			},
 		});
 
@@ -106,6 +109,8 @@ class VoIPClient extends Emitter<VoiceCallEvents> {
 
 	protected initSession(session: Session): void {
 		this.session = session;
+
+		this.updateContactInfoFromSession(session);
 
 		this.session?.stateChange.addListener((state: SessionState) => {
 			if (this.session !== session) {
@@ -203,7 +208,11 @@ class VoIPClient extends Emitter<VoiceCallEvents> {
 			throw new Error(`Failed to create valid URI ${calleeURI}`);
 		}
 
-		await this.session.refer(target);
+		await this.session.refer(target, {
+			requestDelegate: {
+				onAccept: () => this.sendContactUpdateMessage(target),
+			},
+		});
 	};
 
 	public answer = (): Promise<void> => {
@@ -442,6 +451,11 @@ class VoIPClient extends Emitter<VoiceCallEvents> {
 		this.remoteStream.play();
 	}
 
+	private setContactInfo(contact: ContactInfo) {
+		this.contactInfo = contact;
+		this.emit('stateChanged');
+	}
+
 	public getContactInfo() {
 		if (this.error) {
 			return this.error.contact;
@@ -451,12 +465,7 @@ class VoIPClient extends Emitter<VoiceCallEvents> {
 			return null;
 		}
 
-		const { remoteIdentity } = this.session;
-		return {
-			id: remoteIdentity.uri.user ?? '',
-			name: remoteIdentity.displayName,
-			host: remoteIdentity.uri.host,
-		};
+		return this.contactInfo;
 	}
 
 	public getReferredBy() {
@@ -665,6 +674,64 @@ class VoIPClient extends Emitter<VoiceCallEvents> {
 		this.emit('stateChanged');
 	}
 
+	private updateContactInfoFromMessage(message: Message): void {
+		const contentType = message.request.getHeader('Content-Type');
+		const messageType = message.request.getHeader('X-Message-Type');
+
+		try {
+			if (messageType !== 'contactUpdate' || contentType !== 'application/json') {
+				throw new Error('Failed to parse contact update message');
+			}
+
+			const data = JSON.parse(message.request.body);
+			const uri = UserAgent.makeURI(data.uri);
+
+			if (!uri) {
+				throw new Error('Failed to parse contact update message');
+			}
+
+			this.setContactInfo({
+				id: uri.user ?? '',
+				host: uri.host,
+				name: uri.user,
+			});
+		} catch (e) {
+			const error = e as Error;
+			console.warn(error.message);
+		}
+	}
+
+	private updateContactInfoFromSession(session: Session) {
+		if (!session) {
+			return;
+		}
+
+		const { remoteIdentity } = session;
+
+		this.setContactInfo({
+			id: remoteIdentity.uri.user ?? '',
+			name: remoteIdentity.displayName,
+			host: remoteIdentity.uri.host,
+		});
+	}
+
+	private sendContactUpdateMessage(contactURI: URI) {
+		if (!this.session) {
+			return;
+		}
+
+		this.session.message({
+			requestOptions: {
+				extraHeaders: ['X-Message-Type: contactUpdate'],
+				body: {
+					contentDisposition: 'render',
+					contentType: 'application/json',
+					content: JSON.stringify({ uri: contactURI.toString() }),
+				},
+			},
+		});
+	}
+
 	private get sessionDescriptionHandler(): SessionDescriptionHandler {
 		if (!this.session) {
 			throw new Error('No active call.');
@@ -732,6 +799,20 @@ class VoIPClient extends Emitter<VoiceCallEvents> {
 	private onTransferedCall = async (referral: Referral) => {
 		await referral.accept();
 		this.sendInvite(referral.makeInviter());
+	};
+
+	private onMessageReceived = async (message: Message): Promise<void> => {
+		if (!message.request.hasHeader('X-Message-Type')) {
+			message.reject();
+			return;
+		}
+
+		const messageType = message.request.getHeader('X-Message-Type');
+
+		switch (messageType) {
+			case 'contactUpdate':
+				return this.updateContactInfoFromMessage(message);
+		}
 	};
 
 	private onSessionStablishing = (): void => {
