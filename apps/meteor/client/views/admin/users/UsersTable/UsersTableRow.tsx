@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { Roles } from '../../../../../app/models/client/models/Roles';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { UserStatus } from '../../../../components/UserStatus';
-import type { AdminUserTab } from '../AdminUsersPage';
+import type { AdminUsersTab } from '../AdminUsersPage';
 import { useChangeAdminStatusAction } from '../hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from '../hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
@@ -25,7 +25,7 @@ type UsersTableRowProps = {
 	isMobile: boolean;
 	isLaptop: boolean;
 	onReload: () => void;
-	tab: AdminUserTab;
+	tab: AdminUsersTab;
 	isSeatsCapExceeded: boolean;
 	showVoipExtension: boolean;
 };

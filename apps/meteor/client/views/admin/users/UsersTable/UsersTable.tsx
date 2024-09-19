@@ -18,18 +18,18 @@ import {
 } from '../../../../components/GenericTable';
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import type { AdminUserTab, UsersFilters, UsersTableSortingOptions } from '../AdminUsersPage';
+import type { AdminUsersTab, UsersFilters, UsersTableSortingOption } from '../AdminUsersPage';
 import UsersTableFilters from './UsersTableFilters';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
-	tab: AdminUserTab;
+	tab: AdminUsersTab;
 	roleData: { roles: IRole[] } | undefined;
 	onReload: () => void;
 	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
 	filteredUsersQueryResult: UseQueryResult<PaginatedResult<{ users: Serialized<DefaultUserInfo>[] }>>;
 	paginationData: ReturnType<typeof usePagination>;
-	sortData: ReturnType<typeof useSort<UsersTableSortingOptions>>;
+	sortData: ReturnType<typeof useSort<UsersTableSortingOption>>;
 	isSeatsCapExceeded: boolean;
 };
 
