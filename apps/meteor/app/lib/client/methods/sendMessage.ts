@@ -43,7 +43,7 @@ Meteor.methods<ServerMethods>({
 
 		await onClientMessageReceived(message as IMessage).then((message) => {
 			ChatMessage.insert(message);
-			return callbacks.run('afterSaveMessage', message, room);
+			return callbacks.run('afterSaveMessage', message, { room });
 		});
 	},
 });
