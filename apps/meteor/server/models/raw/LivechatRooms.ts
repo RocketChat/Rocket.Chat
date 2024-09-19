@@ -2584,61 +2584,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			.toArray();
 	}
 
-	async countLivechatRoomsByPriority(): Promise<IStats['totalLivechatRoomsWithPriority']> {
-		const pipeline = [
-			{
-				$match: {
-					t: 'l',
-				},
-			},
-			{
-				$project: {
-					priorityWeight: 1,
-				},
-			},
-			{
-				$group: {
-					_id: '$priorityWeight',
-					count: { $sum: 1 },
-				},
-			},
-		];
-
-		const result = await this.col.aggregate(pipeline).toArray();
-
-		const output: IStats['totalLivechatRoomsWithPriority'] = {
-			lowest: 0,
-			low: 0,
-			medium: 0,
-			high: 0,
-			highest: 0,
-			notSpecified: 0,
-		};
-
-		result.forEach((item) => {
-			switch (item._id) {
-				case LivechatPriorityWeight.LOWEST:
-					output.lowest = item.count;
-					break;
-				case LivechatPriorityWeight.LOW:
-					output.low = item.count;
-					break;
-				case LivechatPriorityWeight.MEDIUM:
-					output.medium = item.count;
-					break;
-				case LivechatPriorityWeight.HIGH:
-					output.high = item.count;
-					break;
-				case LivechatPriorityWeight.HIGHEST:
-					output.highest = item.count;
-					break;
-				case LivechatPriorityWeight.NOT_SPECIFIED:
-					output.notSpecified = item.count;
-					break;
-			}
-		});
-
-		return output;
+	async countLivechatRoomsByPriority(): Promise<number> {
+		return this.col.countDocuments({ priorityWeight: { $exists: true, $ne: 99 } });
 	}
 
 	countLivechatRoomsWithDepartment(): Promise<number> {
