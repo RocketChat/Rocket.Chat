@@ -260,18 +260,14 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 export async function getContacts(params: GetContactsParams): Promise<PaginatedResult<{ contacts: ILivechatContact[] }>> {
 	const { searchText, count, offset, sort } = params;
 
-	const match: Filter<ILivechatContact & RootFilterOperators<ILivechatContact>> = {};
-	match.$or = [
-		{
-			name: { $regex: escapeRegExp(searchText || ''), $options: 'i' },
-		},
-		{
-			emails: { $regex: escapeRegExp(searchText || ''), $options: 'i' },
-		},
-		{
-			phones: { $regex: escapeRegExp(searchText || ''), $options: 'i' },
-		},
-	];
+	const searchRegex = escapeRegExp(searchText || '');
+	const match: Filter<ILivechatContact & RootFilterOperators<ILivechatContact>> = {
+		$or: [
+			{ name: { $regex: searchRegex }, $options: 'i'},
+			{ emails: { $regex: searchRegex }, $options: 'i'},
+			{ phones: { $regex: searchRegex }, $options: 'i'},
+		]
+	};
 
 	const { cursor, totalCount } = LivechatContacts.findPaginated(
 		{ ...match },
