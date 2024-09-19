@@ -1,5 +1,4 @@
-import { defaultFeaturesPreview, FeaturePreviewBadge } from '@rocket.chat/ui-client';
-import React from 'react';
+import { defaultFeaturesPreview } from '@rocket.chat/ui-client';
 
 import { hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../../app/authorization/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
@@ -136,7 +135,6 @@ export const {
 		href: '/admin/feature-preview',
 		i18nLabel: 'Feature_preview',
 		icon: 'flask',
-		badge: () => <FeaturePreviewBadge />,
 		permissionGranted: () => defaultFeaturesPreview?.length > 0,
 	},
 	{

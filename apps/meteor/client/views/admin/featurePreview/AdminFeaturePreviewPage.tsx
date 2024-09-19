@@ -14,9 +14,9 @@ import {
 } from '@rocket.chat/fuselage';
 import { useDefaultSettingFeaturePreviewList } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useTranslation, useEndpoint, useSettingsDispatch } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation, useSettingsDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
-import React, { useEffect, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
@@ -29,20 +29,7 @@ const AdminFeaturePreviewPage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const allowFeaturePreviewSetting = useEditableSetting('Accounts_AllowFeaturePreview');
-	const { features, unseenFeatures } = useDefaultSettingFeaturePreviewList();
-
-	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
-
-	useEffect(() => {
-		if (unseenFeatures) {
-			const featuresPreview = features.map((feature) => ({
-				name: feature.name,
-				value: feature.value,
-			}));
-
-			void setUserPreferences({ data: { featuresPreview } });
-		}
-	}, [setUserPreferences, features, unseenFeatures]);
+	const { features } = useDefaultSettingFeaturePreviewList();
 
 	const {
 		watch,
