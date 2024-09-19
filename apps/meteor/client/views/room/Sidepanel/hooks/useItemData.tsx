@@ -51,7 +51,7 @@ export const useItemData = (
 	const itemData = useMemo(
 		() => ({
 			unread: highlighted,
-			selected: room._id === openedRoom,
+			selected: room.rid === openedRoom,
 			t,
 			href: roomCoordinator.getRouteLink(room.t, room) || '',
 			title: roomCoordinator.getRoomName(room.t, room) || '',

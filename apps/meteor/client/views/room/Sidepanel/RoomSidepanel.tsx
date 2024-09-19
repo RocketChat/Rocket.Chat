@@ -1,7 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import { Box, Sidepanel, SidepanelListItem } from '@rocket.chat/fuselage';
-import { useEndpoint, useUserPreference } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -11,6 +10,7 @@ import { useOpenedRoom, useSecondLevelOpenedRoom } from '../../../lib/RoomManage
 import RoomSidepanelListWrapper from './RoomSidepanelListWrapper';
 import RoomSidepanelLoading from './RoomSidepanelLoading';
 import RoomSidepanelItem from './SidepanelItem';
+import { useTeamsListChildrenUpdate } from './hooks/useTeamslistChildren';
 
 const RoomSidepanel = () => {
 	const parentRid = useOpenedRoom();
@@ -29,20 +29,12 @@ const RoomSidepanelWithData = ({ parentRid, openedRoom }: { parentRid: string; o
 	const roomInfo = useRoomInfoEndpoint(parentRid);
 	const sidepanelItems = roomInfo.data?.room?.sidepanel?.items || roomInfo.data?.parent?.sidepanel?.items;
 
-	const listRoomsAndDiscussions = useEndpoint('GET', '/v1/teams.listChildren');
-	const result = useQuery({
-		queryKey: ['sidepanel', 'list', parentRid, sidepanelItems],
-		queryFn: () =>
-			listRoomsAndDiscussions({
-				roomId: parentRid,
-				sort: JSON.stringify({ lm: -1 }),
-				type: sidepanelItems?.length === 1 ? sidepanelItems[0] : undefined,
-			}),
-		enabled: roomInfo.isFetched && !!sidepanelItems,
-		staleTime: Infinity,
-		keepPreviousData: true,
-	});
-
+	const result = useTeamsListChildrenUpdate(
+		parentRid,
+		!roomInfo.data ? null : roomInfo.data.room?.teamId,
+		// eslint-disable-next-line no-nested-ternary
+		!sidepanelItems ? null : sidepanelItems?.length === 1 ? sidepanelItems[0] : undefined,
+	);
 	if (roomInfo.isSuccess && !roomInfo.data.room?.sidepanel && !roomInfo.data.parent?.sidepanel) {
 		return null;
 	}

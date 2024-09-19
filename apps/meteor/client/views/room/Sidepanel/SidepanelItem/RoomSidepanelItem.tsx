@@ -1,4 +1,4 @@
-import type { IRoom, Serialized } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, Serialized } from '@rocket.chat/core-typings';
 import { useUserSubscription } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
@@ -17,7 +17,7 @@ const RoomSidepanelItem = ({ room, openedRoom, viewMode }: RoomSidepanelItemProp
 	const SidepanelItem = useTemplateByViewMode();
 	const subscription = useUserSubscription(room._id);
 
-	const itemData = useItemData({ ...room, ...subscription } as any, { viewMode, openedRoom }); // as any because of divergent and overlaping timestamp types in subs and room (type Date vs type string)
+	const itemData = useItemData({ ...room, ...subscription } as ISubscription & IRoom, { viewMode, openedRoom }); // as any because of divergent and overlaping timestamp types in subs and room (type Date vs type string)
 
 	if (!subscription) {
 		return <SidepanelItem onClick={goToRoomById} is='a' {...itemData} />;
