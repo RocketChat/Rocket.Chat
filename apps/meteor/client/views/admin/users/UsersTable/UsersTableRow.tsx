@@ -17,7 +17,7 @@ import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
 import { useResetE2EEKeyAction } from '../hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
 import { useSendWelcomeEmailMutation } from '../hooks/useSendWelcomeEmailMutation';
-import { useVoiceCallExtensionAction } from '../hooks/useVoiceCallExtensionAction';
+import { useVoipExtensionAction } from '../hooks/useVoipExtensionAction';
 
 type UsersTableRowProps = {
 	user: Serialized<DefaultUserInfo>;
@@ -75,15 +75,15 @@ const UsersTableRow = ({
 	const resetTOTPAction = useResetTOTPAction(userId);
 	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
 	const resendWelcomeEmail = useSendWelcomeEmailMutation();
-	const voiceCallExtensionAction = useVoiceCallExtensionAction({ extension: freeSwitchExtension, username, name });
+	const voipExtensionAction = useVoipExtensionAction({ extension: freeSwitchExtension, username, name });
 
 	const isNotPendingDeactivatedNorFederated = tab !== 'pending' && tab !== 'deactivated' && !isFederatedUser;
 	const menuOptions = useMemo(
 		() => ({
-			...(voiceCallExtensionAction && {
-				voiceCallExtensionAction: {
-					label: { label: voiceCallExtensionAction.label, icon: voiceCallExtensionAction.icon },
-					action: voiceCallExtensionAction.action,
+			...(voipExtensionAction && {
+				voipExtensionAction: {
+					label: { label: voipExtensionAction.label, icon: voipExtensionAction.icon },
+					action: voipExtensionAction.action,
 				},
 			}),
 			...(isNotPendingDeactivatedNorFederated &&
@@ -120,7 +120,7 @@ const UsersTableRow = ({
 			isNotPendingDeactivatedNorFederated,
 			resetE2EKeyAction,
 			resetTOTPAction,
-			voiceCallExtensionAction,
+			voipExtensionAction,
 		],
 	);
 

@@ -7,14 +7,14 @@ import type { Action } from '../../../hooks/useActionSpread';
 import AssignExtensionModal from '../voip/AssignExtensionModal';
 import RemoveExtensionModal from '../voip/RemoveExtensionModal';
 
-type VoiceCallExtensionActionParams = {
+type VoipExtensionActionParams = {
 	name: string;
 	username: string;
 	extension?: string;
 };
 
-export const useVoiceCallExtensionAction = ({ name, username, extension }: VoiceCallExtensionActionParams): Action | undefined => {
-	const isVoiceCallEnabled = useSetting('VoIP_TeamCollab_Enabled');
+export const useVoipExtensionAction = ({ name, username, extension }: VoipExtensionActionParams): Action | undefined => {
+	const isVoipEnabled = useSetting('VoIP_TeamCollab_Enabled');
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
@@ -27,7 +27,7 @@ export const useVoiceCallExtensionAction = ({ name, username, extension }: Voice
 		setModal(<AssignExtensionModal defaultUsername={username} onClose={(): void => setModal(null)} />);
 	});
 
-	return isVoiceCallEnabled
+	return isVoipEnabled
 		? {
 				icon: extension ? 'phone-disabled' : 'phone',
 				label: extension ? t('Unassign_extension') : t('Assign_extension'),
