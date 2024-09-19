@@ -76,6 +76,7 @@ test.describe.serial('file-upload', () => {
 		await expect(poHomeChannel.content.btnModalConfirm).not.toBeVisible();
 	});
 });
+
 test.describe('file-upload-not-member', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
@@ -98,5 +99,45 @@ test.describe('file-upload-not-member', () => {
 	test('expect not be able to upload if not a member', async () => {
 		await poHomeChannel.content.dragAndDropTxtFile();
 		await expect(poHomeChannel.content.modalFilePreview).not.toBeVisible();
+	});
+});
+
+test.describe('file-upload-character-limit', () => {
+	let poHomeChannel: HomeChannel;
+	let targetChannel: string;
+
+	test.beforeAll(async ({ api }) => {
+		await setSettingValueById(api, 'Message_MaxAllowedSize', 10);
+		targetChannel = await createTargetChannel(api, { members: ['user1'] });
+	});
+
+	test.beforeEach(async ({ page }) => {
+		poHomeChannel = new HomeChannel(page);
+
+		await page.goto('/home');
+		await poHomeChannel.sidenav.openChat(targetChannel);
+	});
+
+	test.afterAll(async ({ api }) => {
+		await setSettingValueById(api, 'Message_MaxAllowedSize', 5000);
+		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
+	});
+
+	test('expect send file with correct character limit', async () => {
+		await poHomeChannel.content.dragAndDropTxtFile();
+		await poHomeChannel.content.descriptionInput.fill('123456789');
+		await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+		await poHomeChannel.content.btnModalConfirm.click();
+
+		await expect(poHomeChannel.content.getFileDescription).toHaveText('123456789');
+		await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+	});
+
+	test('expect not send file with incorrect character limit', async () => {
+		await poHomeChannel.content.dragAndDropTxtFile();
+		await poHomeChannel.content.descriptionInput.fill('12345678910');
+		await poHomeChannel.content.fileNameInput.fill('any_file1.txt');
+
+		await expect(poHomeChannel.content.btnModalConfirm).toBeDisabled();
 	});
 });
