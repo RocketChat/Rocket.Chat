@@ -57,10 +57,18 @@ API.v1.addRoute(
 			check(this.bodyParams, {
 				department: Object,
 				agents: Match.Maybe(Array),
+				departmentUnit: Match.Maybe({ _id: Match.Optional(String) }),
 			});
 
 			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
-			const department = await LivechatTs.saveDepartment(null, this.bodyParams.department as ILivechatDepartment, agents);
+			const { departmentUnit } = this.bodyParams;
+			const department = await LivechatTs.saveDepartment(
+				this.userId,
+				null,
+				this.bodyParams.department as ILivechatDepartment,
+				agents,
+				departmentUnit || {},
+			);
 
 			if (department) {
 				return API.v1.success({
@@ -112,17 +120,18 @@ API.v1.addRoute(
 			check(this.bodyParams, {
 				department: Object,
 				agents: Match.Maybe(Array),
+				departmentUnit: Match.Maybe({ _id: Match.Optional(String) }),
 			});
 
 			const { _id } = this.urlParams;
-			const { department, agents } = this.bodyParams;
+			const { department, agents, departmentUnit } = this.bodyParams;
 
 			if (!permissionToSave) {
 				throw new Error('error-not-allowed');
 			}
 
 			const agentParam = permissionToAddAgents && agents ? { upsert: agents } : {};
-			await LivechatTs.saveDepartment(_id, department, agentParam);
+			await LivechatTs.saveDepartment(this.userId, _id, department, agentParam, departmentUnit || {});
 
 			return API.v1.success({
 				department: await LivechatDepartment.findOneById(_id),

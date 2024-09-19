@@ -71,6 +71,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
+import { createContact } from './Contacts';
 import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -664,6 +665,16 @@ class LivechatClass {
 			}
 		}
 
+		if (process.env.TEST_MODE?.toUpperCase() === 'TRUE') {
+			const contactId = await createContact({
+				name: name ?? (visitorDataToUpdate.username as string),
+				emails: email ? [email] : [],
+				phones: phone ? [phone.number] : [],
+				unknown: true,
+			});
+			visitorDataToUpdate.contactId = contactId;
+		}
+
 		const upsertedLivechatVisitor = await LivechatVisitors.updateOneByIdOrToken(visitorDataToUpdate, {
 			upsert: true,
 			returnDocument: 'after',
@@ -1068,6 +1079,7 @@ class LivechatClass {
 			'Livechat_background',
 			'Assets_livechat_widget_logo',
 			'Livechat_hide_watermark',
+			'Omnichannel_allow_visitors_to_close_conversation',
 		] as const;
 
 		type SettingTypes = (typeof validSettings)[number] | 'Livechat_Show_Connecting';
@@ -1777,18 +1789,37 @@ class LivechatClass {
 	 * @param {string|null} _id - The department id
 	 * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
 	 * @param {{upsert?: { agentId: string; count?: number; order?: number; }[], remove?: { agentId: string; count?: number; order?: number; }}} [departmentAgents] - The department agents
+	 * @param {{_id?: string}} [departmentUnit] - The department's unit id
 	 */
 	async saveDepartment(
+		userId: string,
 		_id: string | null,
 		departmentData: LivechatDepartmentDTO,
 		departmentAgents?: {
 			upsert?: { agentId: string; count?: number; order?: number }[];
 			remove?: { agentId: string; count?: number; order?: number };
 		},
+		departmentUnit?: { _id?: string },
 	) {
 		check(_id, Match.Maybe(String));
+		if (departmentUnit?._id !== undefined && typeof departmentUnit._id !== 'string') {
+			throw new Meteor.Error('error-invalid-department-unit', 'Invalid department unit id provided', {
+				method: 'livechat:saveDepartment',
+			});
+		}
 
-		const department = _id ? await LivechatDepartment.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1 } }) : null;
+		const department = _id
+			? await LivechatDepartment.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1, parentId: 1 } })
+			: null;
+
+		if (departmentUnit && !departmentUnit._id && department && department.parentId) {
+			const isLastDepartmentInUnit = (await LivechatDepartment.countDepartmentsInUnit(department.parentId)) === 1;
+			if (isLastDepartmentInUnit) {
+				throw new Meteor.Error('error-unit-cant-be-empty', "The last department in a unit can't be removed", {
+					method: 'livechat:saveDepartment',
+				});
+			}
+		}
 
 		if (!department && !(await isDepartmentCreationAvailable())) {
 			throw new Meteor.Error('error-max-departments-number-reached', 'Maximum number of departments reached', {
@@ -1873,6 +1904,10 @@ class LivechatClass {
 		// Disable event
 		if (department?.enabled && !departmentDB?.enabled) {
 			await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
+		}
+
+		if (departmentUnit) {
+			await callbacks.run('livechat.manageDepartmentUnit', { userId, departmentId: departmentDB._id, unitId: departmentUnit._id });
 		}
 
 		return departmentDB;

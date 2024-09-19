@@ -1,9 +1,9 @@
 import { useToolbar } from '@react-aria/toolbar';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageReactions, MessageReactionAction } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes, KeyboardEvent, ReactElement } from 'react';
 import React, { useContext, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { MessageListContext, useOpenEmojiPicker, useUserHasReacted } from '../list/MessageListContext';
 import Reaction from './reactions/Reaction';
@@ -14,7 +14,7 @@ type ReactionsProps = {
 } & HTMLAttributes<HTMLDivElement>;
 
 const Reactions = ({ message, ...props }: ReactionsProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const ref = useRef(null);
 	const hasReacted = useUserHasReacted(message);
 	const openEmojiPicker = useOpenEmojiPicker(message);

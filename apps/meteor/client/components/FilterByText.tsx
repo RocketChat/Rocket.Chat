@@ -1,8 +1,8 @@
 import { Box, Icon, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useAutoFocus, useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, FormEvent, HTMLAttributes } from 'react';
 import React, { forwardRef, memo, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type FilterByTextProps = {
 	onChange: (filter: string) => void;
@@ -13,7 +13,7 @@ const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function Fi
 	{ placeholder, onChange: setFilter, shouldAutoFocus = false, children, ...props },
 	ref,
 ) {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [text, setText] = useState('');
 	const autoFocusRef = useAutoFocus(shouldAutoFocus);
 	const mergedRefs = useMergedRefs(ref, autoFocusRef);
