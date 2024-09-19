@@ -74,15 +74,24 @@ export async function resetRoomKey(roomId: string, userId: string, newRoomKey: s
 		await writeAndNotify(updateOps, notifySubs);
 	}
 
-	// after the old keys have been moved to the new prop, store the room key for the user calling the func
-	const roomResult = await Rooms.findOneAndUpdate({ _id: roomId }, { $set: { e2eKeyId: newRoomKeyId, ...(e2eQueue.length && { usersWaitingForE2EKeys: e2eQueue }) } });
+	// after the old keys have been moved to the new prop, store room key on room + the e2e queue so key can be exchanged
+	// todo move to model method
+	const roomResult = await Rooms.findOneAndUpdate(
+		{ _id: roomId },
+		{ $set: { e2eKeyId: newRoomKeyId, ...(e2eQueue.length && { usersWaitingForE2EKeys: e2eQueue }) } },
+	);
+	// And set the new key to the user that called the func
 	const result = await Subscriptions.setE2EKeyByUserIdAndRoomId(userId, roomId, newRoomKey);
 
 	void notifyOnSubscriptionChanged(result.value!);
 	void notifyOnRoomChanged(roomResult.value!);
 }
 
-function pushToLimit(arr: NonNullable<IRoom['usersWaitingForE2EKeys']>, item: NonNullable<IRoom['usersWaitingForE2EKeys']>[number], limit = 49) {
+function pushToLimit(
+	arr: NonNullable<IRoom['usersWaitingForE2EKeys']>,
+	item: NonNullable<IRoom['usersWaitingForE2EKeys']>[number],
+	limit = 49,
+) {
 	if (arr.length < limit) {
 		arr.push(item);
 	}
