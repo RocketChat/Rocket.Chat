@@ -63,6 +63,7 @@ export async function setReaction(
 			await Messages.unsetReactions(message._id);
 			if (isTheLastMessage(room, message)) {
 				await Rooms.unsetReactionsInLastMessage(room._id);
+				void notifyOnRoomChangedById(room._id);
 			}
 		} else {
 			await Messages.setReactions(message._id, message.reactions);
