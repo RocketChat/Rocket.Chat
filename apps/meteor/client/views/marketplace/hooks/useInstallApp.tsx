@@ -11,6 +11,7 @@ import AppPermissionsReviewModal from '../AppPermissionsReviewModal';
 import AppUpdateModal from '../AppUpdateModal';
 import AppInstallationModal from '../components/AppInstallModal/AppInstallModal';
 import { handleAPIError } from '../helpers/handleAPIError';
+import { handleInstallError } from '../helpers/handleInstallError';
 import { getManifestFromZippedApp } from '../lib/getManifestFromZippedApp';
 import { useAppsCountQuery } from './useAppsCountQuery';
 
