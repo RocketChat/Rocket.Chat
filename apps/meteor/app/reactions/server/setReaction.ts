@@ -68,6 +68,7 @@ export async function setReaction(
 			await Messages.setReactions(message._id, message.reactions);
 			if (isTheLastMessage(room, message)) {
 				await Rooms.setReactionsInLastMessage(room._id, message.reactions);
+				void notifyOnRoomChangedById(room._id);
 			}
 		}
 		void callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact: false, oldMessage });
@@ -86,6 +87,7 @@ export async function setReaction(
 		await Messages.setReactions(message._id, message.reactions);
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setReactionsInLastMessage(room._id, message.reactions);
+			void notifyOnRoomChangedById(room._id);
 		}
 
 		void callbacks.run('afterSetReaction', message, { user, reaction, shouldReact: true });
@@ -95,7 +97,6 @@ export async function setReaction(
 
 	void Apps.self?.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
 
-	void notifyOnRoomChangedById(room._id);
 	void notifyOnMessageChange({
 		id: message._id,
 	});
