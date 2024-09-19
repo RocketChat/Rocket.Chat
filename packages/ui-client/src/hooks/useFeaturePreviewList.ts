@@ -87,16 +87,21 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 
 export const enabledDefaultFeatures = defaultFeaturesPreview.filter((feature) => feature.enabled);
 
+// TODO: Remove this logic after we have a way to store object settings.
+const parseSetting = (setting: FeaturePreviewProps[] | string) => {
+	if (typeof setting === 'string') {
+		return JSON.parse(setting);
+	}
+	return setting;
+};
+
 export const usePreferenceFeaturePreviewList = () => {
 	const featurePreviewEnabled = useSetting<boolean>('Accounts_AllowFeaturePreview');
 	const userFeaturesPreviewPreference = useUserPreference<FeaturePreviewProps[]>('featuresPreview');
-	// TODO: Remove this logic after we have a way to store object settings.
-	const userFeaturesPreview = useMemo<FeaturePreviewProps[]>(() => {
-		if (typeof userFeaturesPreviewPreference === 'string') {
-			return JSON.parse(userFeaturesPreviewPreference);
-		}
-		return userFeaturesPreviewPreference;
-	}, [userFeaturesPreviewPreference]);
+	const userFeaturesPreview = useMemo<FeaturePreviewProps[]>(
+		() => parseSetting(userFeaturesPreviewPreference!),
+		[userFeaturesPreviewPreference],
+	);
 	const { unseenFeatures, features } = useFeaturePreviewList(userFeaturesPreview);
 
 	if (!featurePreviewEnabled) {
@@ -107,13 +112,8 @@ export const usePreferenceFeaturePreviewList = () => {
 
 export const useDefaultSettingFeaturePreviewList = () => {
 	const featurePreviewSettingJSON = useSetting<string>('Accounts_Default_User_Preferences_featuresPreview');
-	// TODO: Remove this logic after we have a way to store object settings.
-	const settingFeaturePreview = useMemo<FeaturePreviewProps[]>(() => {
-		if (typeof featurePreviewSettingJSON === 'string') {
-			return JSON.parse(featurePreviewSettingJSON);
-		}
-		return featurePreviewSettingJSON;
-	}, [featurePreviewSettingJSON]);
+
+	const settingFeaturePreview = useMemo<FeaturePreviewProps[]>(() => parseSetting(featurePreviewSettingJSON!), [featurePreviewSettingJSON]);
 
 	return useFeaturePreviewList(settingFeaturePreview);
 };

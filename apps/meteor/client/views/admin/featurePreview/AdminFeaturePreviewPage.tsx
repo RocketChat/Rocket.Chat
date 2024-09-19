@@ -46,7 +46,7 @@ const AdminFeaturePreviewPage = () => {
 	const handleSave = async () => {
 		try {
 			if (!allowFeaturePreviewSetting) {
-				throw Error(`AdminFeaturePreviewPage-handleSave-SettingNotFound`);
+				throw Error(`Setting Not Found`);
 			}
 			const featuresToBeSaved = featuresPreview.map((feature) => ({ name: feature.name, value: feature.value }));
 
