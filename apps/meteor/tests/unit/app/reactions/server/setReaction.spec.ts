@@ -25,7 +25,6 @@ const modelsMock = {
 };
 const canAccessRoomAsyncMock = sinon.stub();
 const isTheLastMessageMock = sinon.stub();
-const notifyOnRoomChangedByIdMock = sinon.stub();
 const notifyOnMessageChangeMock = sinon.stub();
 const hasPermissionAsyncMock = sinon.stub();
 const i18nMock = { t: sinon.stub() };
@@ -47,7 +46,6 @@ const { removeUserReaction, executeSetReaction, setReaction } = p.noCallThru().l
 	'../../emoji/server': { emoji: { list: emojiList } },
 	'../../lib/server/functions/isTheLastMessage': { isTheLastMessage: isTheLastMessageMock },
 	'../../lib/server/lib/notifyListener': {
-		notifyOnRoomChangedById: notifyOnRoomChangedByIdMock,
 		notifyOnMessageChange: notifyOnMessageChangeMock,
 	},
 });
