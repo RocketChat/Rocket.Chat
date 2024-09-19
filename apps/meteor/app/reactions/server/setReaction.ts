@@ -11,7 +11,7 @@ import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
-import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
+import { notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 
 export const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
 	if (!message.reactions) {
@@ -63,13 +63,11 @@ export async function setReaction(
 			await Messages.unsetReactions(message._id);
 			if (isTheLastMessage(room, message)) {
 				await Rooms.unsetReactionsInLastMessage(room._id);
-				void notifyOnRoomChangedById(room._id);
 			}
 		} else {
 			await Messages.setReactions(message._id, message.reactions);
 			if (isTheLastMessage(room, message)) {
 				await Rooms.setReactionsInLastMessage(room._id, message.reactions);
-				void notifyOnRoomChangedById(room._id);
 			}
 		}
 		void callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact: false, oldMessage });
@@ -88,7 +86,6 @@ export async function setReaction(
 		await Messages.setReactions(message._id, message.reactions);
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setReactionsInLastMessage(room._id, message.reactions);
-			void notifyOnRoomChangedById(room._id);
 		}
 
 		void callbacks.run('afterSetReaction', message, { user, reaction, shouldReact: true });
