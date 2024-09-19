@@ -4,16 +4,19 @@ export const useFeaturePreviewEnableQuery = (features: FeaturePreviewProps[]) =>
 	return Object.entries(
 		features
 			.map((item) => {
-				if (item.enableQuery) {
-					const expected = item.enableQuery.value;
-					const received = features.find((el) => el.name === item.enableQuery?.name)?.value;
-					if (expected !== received) {
-						item.disabled = true;
-						item.value = false;
-					} else {
-						item.disabled = false;
-					}
+				if (!item.enableQuery) {
+					return item;
 				}
+
+				const expected = item.enableQuery.value;
+				const received = features.find((el) => el.name === item.enableQuery?.name)?.value;
+				if (expected !== received) {
+					item.disabled = true;
+					item.value = false;
+				} else {
+					item.disabled = false;
+				}
+
 				return item;
 			})
 			.reduce((result, currentValue) => {
