@@ -75,9 +75,14 @@ test.describe.serial('OC - Livechat', () => {
 			await expect(poLiveChat.unreadMessagesBadge(1)).toBeVisible();
 		});
 
+		await test.step('expect multiple messages to be received by minimized livechat', async () => {
+			await poHomeOmnichannel.content.sendMessage('this_a_test_message_once_again_from_agent');
+			await expect(poLiveChat.unreadMessagesBadge(2)).toBeVisible();
+		});
+
 		await test.step('expect unread messages to be visible after a reload', async () => {
 			await poLiveChat.page.reload();
-			await expect(poLiveChat.unreadMessagesBadge(1)).toBeVisible();
+			await expect(poLiveChat.unreadMessagesBadge(2)).toBeVisible();
 		});
 	});
 
