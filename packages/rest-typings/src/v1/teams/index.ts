@@ -167,7 +167,7 @@ export type TeamsEndpoints = {
 						canUserDelete?: string;
 				  }
 			>,
-		) => PaginatedResult & { rooms: IRoom[] };
+		) => PaginatedResult & { rooms: Array<IRoom & { isLastOwner?: boolean }> };
 	};
 
 	'/v1/teams.listRooms': {
