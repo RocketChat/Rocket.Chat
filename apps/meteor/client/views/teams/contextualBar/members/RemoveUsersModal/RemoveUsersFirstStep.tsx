@@ -1,26 +1,33 @@
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import React from 'react';
+import React, { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericModal from '../../../../../components/GenericModal';
 import ChannelDesertionTable from '../../../ChannelDesertionTable';
 
+type RemoveUsersFirstStepProps = {
+	onClose?: () => void;
+	onCancel?: () => void;
+	onConfirm?: () => void;
+	rooms: (Serialized<IRoom> & { isLastOwner?: boolean })[];
+	onToggleAllRooms: () => void;
+	onChangeRoomSelection: (room: Serialized<IRoom>) => void;
+	selectedRooms: Record<string, Serialized<IRoom>>;
+	eligibleRoomsLength: number;
+} & ComponentProps<typeof GenericModal>;
+
 const RemoveUsersFirstStep = ({
 	onClose,
 	onCancel,
 	onConfirm,
-	username,
-	results,
 	rooms,
-	// params,
-	// onChangeParams,
 	onToggleAllRooms,
 	onChangeRoomSelection,
 	selectedRooms,
-	// onChangeParams={(...args) => console.log(args)}
 	eligibleRoomsLength,
 	...props
-}) => {
+}: RemoveUsersFirstStepProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -42,8 +49,6 @@ const RemoveUsersFirstStep = ({
 				lastOwnerWarning={t('Teams_channels_last_owner_leave_channel_warning')}
 				onToggleAllRooms={onToggleAllRooms}
 				rooms={rooms}
-				params={{}}
-				onChangeParams={() => {}}
 				onChangeRoomSelection={onChangeRoomSelection}
 				selectedRooms={selectedRooms}
 				eligibleRoomsLength={eligibleRoomsLength}

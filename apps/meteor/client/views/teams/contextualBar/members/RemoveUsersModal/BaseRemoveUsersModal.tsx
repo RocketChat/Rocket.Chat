@@ -1,3 +1,4 @@
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback } from 'react';
@@ -8,6 +9,15 @@ import RemoveUsersSecondStep from './RemoveUsersSecondStep';
 const STEPS = {
 	LIST_ROOMS: 'LIST_ROOMS',
 	CONFIRM_DELETE: 'CONFIRM_DELETE',
+} as const;
+
+type BaseRemoveUsersModalProps = {
+	onClose?: () => void;
+	onCancel?: () => void;
+	onConfirm?: () => void;
+	rooms: (Serialized<IRoom> & { isLastOwner?: boolean })[];
+	currentStep?: keyof typeof STEPS;
+	username: string;
 };
 
 const BaseRemoveUsersModal = ({
@@ -17,10 +27,10 @@ const BaseRemoveUsersModal = ({
 	rooms,
 	currentStep = rooms?.length === 0 ? STEPS.CONFIRM_DELETE : STEPS.LIST_ROOMS,
 	username,
-}) => {
-	const [step, setStep] = useState(currentStep);
+}: BaseRemoveUsersModalProps) => {
+	const [step, setStep] = useState<keyof typeof STEPS>(currentStep);
 
-	const [selectedRooms, setSelectedRooms] = useState({});
+	const [selectedRooms, setSelectedRooms] = useState<Record<string, Serialized<IRoom>>>({});
 
 	const onContinue = useMutableCallback(() => setStep(STEPS.CONFIRM_DELETE));
 	const onReturn = useMutableCallback(() => setStep(STEPS.LIST_ROOMS));
@@ -65,10 +75,8 @@ const BaseRemoveUsersModal = ({
 			onClose={onClose}
 			onCancel={onCancel}
 			rooms={rooms}
-			params={{}}
 			selectedRooms={selectedRooms}
 			onToggleAllRooms={onToggleAllRooms}
-			// onChangeParams={(...args) => console.log(args)}
 			onChangeRoomSelection={onChangeRoomSelection}
 			eligibleRoomsLength={eligibleRooms.length}
 		/>
