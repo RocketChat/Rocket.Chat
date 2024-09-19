@@ -1055,8 +1055,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		return rooms;
 	}
 
-	private getParentRoom(team: AtLeast<ITeam, 'roomId'>): Promise<Pick<IRoom, 'name' | 'fname' | 't' | '_id'> | null> {
-		return Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | '_id'>>(team.roomId, { projection: { name: 1, fname: 1, t: 1 } });
+	private getParentRoom(team: AtLeast<ITeam, 'roomId'>): Promise<Pick<IRoom, 'name' | 'fname' | 't' | '_id' | 'sidepanel'> | null> {
+		return Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | '_id' | 'sidepanel'>>(team.roomId, {
+			projection: { name: 1, fname: 1, t: 1, sidepanel: 1 },
+		});
 	}
 
 	async getRoomInfo(
