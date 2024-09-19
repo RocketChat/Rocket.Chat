@@ -45,13 +45,10 @@ const AdminFeaturePreviewPage = () => {
 
 	const handleSave = async () => {
 		try {
-			if (!allowFeaturePreviewSetting) {
-				throw Error(`Setting Not Found`);
-			}
 			const featuresToBeSaved = featuresPreview.map((feature) => ({ name: feature.name, value: feature.value }));
 
 			await dispatch([
-				{ _id: allowFeaturePreviewSetting._id, value: allowFeaturePreviewSetting.value },
+				{ _id: allowFeaturePreviewSetting!._id, value: allowFeaturePreviewSetting!.value },
 				{ _id: 'Accounts_Default_User_Preferences_featuresPreview', value: JSON.stringify(featuresToBeSaved) },
 			]);
 			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
