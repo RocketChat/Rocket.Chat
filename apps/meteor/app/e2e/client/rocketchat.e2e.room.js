@@ -1,5 +1,6 @@
 import { Base64 } from '@rocket.chat/base64';
 import { Emitter } from '@rocket.chat/emitter';
+import { Random } from '@rocket.chat/random';
 import EJSON from 'ejson';
 
 import { RoomManager } from '../../../client/lib/RoomManager';
@@ -67,12 +68,13 @@ export class E2ERoom extends Emitter {
 
 	[PAUSED] = undefined;
 
-	constructor(userId, roomId, t) {
+	constructor(userId, room, t) {
 		super();
 
 		this.userId = userId;
-		this.roomId = roomId;
+		this.roomId = room._id;
 		this.typeOfRoom = t;
+		this.roomKeyId = room.e2eKeyId;
 
 		this.once(E2ERoomState.READY, () => this.decryptPendingMessages());
 		this.once(E2ERoomState.READY, () => this.decryptSubscription());
@@ -264,6 +266,19 @@ export class E2ERoom extends Emitter {
 		return roomCoordinator.getRoomDirectives(type).allowRoomSettingChange({}, RoomSettingsEnum.E2E);
 	}
 
+	async decryptSessionKey(key) {
+		key = key.slice(12);
+		key = Base64.decode(key);
+
+		try {
+			const decryptedKey = await decryptRSA(e2e.privateKey, key);
+			return importAESKey(JSON.parse(toString(decryptedKey)));
+		} catch (error) {
+			this.error('Error decrypting key: ', error);
+			return null;
+		}
+	}
+
 	async importGroupKey(groupKey) {
 		this.log('Importing room key ->', this.roomId);
 		// Get existing group key
@@ -280,7 +295,7 @@ export class E2ERoom extends Emitter {
 			return false;
 		}
 
-		this.keyID = Base64.encode(this.sessionKeyExportedString).slice(0, 12);
+		this.keyID = this.roomKeyId;
 
 		// Import session key for use.
 		try {
@@ -308,8 +323,10 @@ export class E2ERoom extends Emitter {
 		try {
 			const sessionKeyExported = await exportJWKKey(this.groupSessionKey);
 			this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
-			this.keyID = Base64.encode(this.sessionKeyExportedString).slice(0, 12);
+			console.log(this.groupSessionKey, sessionKeyExported);
+			this.keyID = Random.id(12);
 
+			this.log(sessionKeyExported, this.sessionKeyExportedString, this.keyID, this.groupSessionKey);
 			await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
 			await this.encryptKeyForOtherParticipants();
 		} catch (error) {
@@ -503,8 +520,20 @@ export class E2ERoom extends Emitter {
 	async decrypt(message) {
 		const keyID = message.slice(0, 12);
 
+		let oldKey = '';
 		if (keyID !== this.keyID) {
-			return message;
+			const sub = Subscriptions.findOne({ rid: this.roomId });
+			const { oldRoomKeys = [] } = sub;
+			const oldRoomKey = oldRoomKeys.find((key) => key.e2eKeyId === keyID);
+			if (oldRoomKey) {
+				oldKey = oldRoomKey.E2EKey;
+			} else if (oldRoomKeys.length) {
+				oldKey = oldRoomKeys[oldRoomKeys.length - 1]?.E2EKey;
+			}
+		}
+
+		if (oldKey) {
+			oldKey = await this.decryptSessionKey(oldKey);
 		}
 
 		message = message.slice(12);
@@ -512,7 +541,7 @@ export class E2ERoom extends Emitter {
 		const [vector, cipherText] = splitVectorAndEcryptedData(Base64.decode(message));
 
 		try {
-			const result = await decryptAES(vector, this.groupSessionKey, cipherText);
+			const result = await decryptAES(vector, oldKey || this.groupSessionKey, cipherText);
 			return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
 		} catch (error) {
 			return this.error('Error decrypting message: ', error, message);
