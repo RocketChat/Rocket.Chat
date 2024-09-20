@@ -1,5 +1,6 @@
 import { Base64 } from '@rocket.chat/base64';
 import { Emitter } from '@rocket.chat/emitter';
+import { Random } from '@rocket.chat/random';
 import EJSON from 'ejson';
 
 import { RoomManager } from '../../../client/lib/RoomManager';
@@ -67,12 +68,13 @@ export class E2ERoom extends Emitter {
 
 	[PAUSED] = undefined;
 
-	constructor(userId, roomId, t) {
+	constructor(userId, room) {
 		super();
 
 		this.userId = userId;
-		this.roomId = roomId;
-		this.typeOfRoom = t;
+		this.roomId = room._id;
+		this.typeOfRoom = room.t;
+		this.roomKeyId = room.e2eKeyId;
 
 		this.once(E2ERoomState.READY, () => this.decryptPendingMessages());
 		this.once(E2ERoomState.READY, () => this.decryptSubscription());
@@ -280,7 +282,7 @@ export class E2ERoom extends Emitter {
 			return false;
 		}
 
-		this.keyID = Base64.encode(this.sessionKeyExportedString).slice(0, 12);
+		this.keyID = this.roomKeyId;
 
 		// Import session key for use.
 		try {
@@ -308,7 +310,7 @@ export class E2ERoom extends Emitter {
 		try {
 			const sessionKeyExported = await exportJWKKey(this.groupSessionKey);
 			this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
-			this.keyID = Base64.encode(this.sessionKeyExportedString).slice(0, 12);
+			this.keyID = Random.id(12);
 
 			await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
 			await this.encryptKeyForOtherParticipants();
