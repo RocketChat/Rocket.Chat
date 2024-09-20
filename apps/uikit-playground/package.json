@@ -15,6 +15,7 @@
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/tooltip": "^0.19.16",
     "@lezer/highlight": "^1.1.6",
+    "@rocket.chat/core-typings": "workspace:^",
     "@rocket.chat/css-in-js": "~0.31.25",
     "@rocket.chat/fuselage": "^0.59.0",
     "@rocket.chat/fuselage-hooks": "^0.33.1",
