@@ -70,6 +70,7 @@ export class E2ERoom extends Emitter {
 
 	constructor(userId, room) {
 		super();
+		this.log('init', userId, room);
 
 		this.userId = userId;
 		this.roomId = room._id;
@@ -282,7 +283,9 @@ export class E2ERoom extends Emitter {
 			return false;
 		}
 
-		this.keyID = this.roomKeyId;
+		// When a new e2e room is created, it will be initialized without an e2e key id
+		// This will prevent new rooms from storing `undefined` as the keyid
+		this.keyID = this.roomKeyId || Random.id(12);
 
 		// Import session key for use.
 		try {
