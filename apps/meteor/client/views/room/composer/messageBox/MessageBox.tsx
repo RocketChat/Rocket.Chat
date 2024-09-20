@@ -146,28 +146,38 @@ const MessageBox = ({
 					message: "You can't upload more than 6 files at once. Only the first 6 files will be uploaded.",
 				});
 			}
+			let nameError = 0;
+			let sizeError = 0;
 
 			const validFiles = newFilesToUpload.filter((queuedFile) => {
 				const { name, size } = queuedFile;
 
 				if (!name) {
-					dispatchToastMessage({
-						type: 'error',
-						message: t('error-the-field-is-required', { field: t('Name') }),
-					});
+					nameError = 1;
 					return false;
 				}
 
 				if (maxFileSize > -1 && (size || 0) > maxFileSize) {
-					dispatchToastMessage({
-						type: 'error',
-						message: `${t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })}`,
-					});
+					sizeError = 1;
 					return false;
 				}
 
 				return true;
 			});
+
+			if (nameError) {
+				dispatchToastMessage({
+					type: 'error',
+					message: t('error-the-field-is-required', { field: t('Name') }),
+				});
+			}
+
+			if (sizeError) {
+				dispatchToastMessage({
+					type: 'error',
+					message: `${t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })}`,
+				});
+			}
 
 			setIsUploading(validFiles.length > 0);
 			return validFiles;
