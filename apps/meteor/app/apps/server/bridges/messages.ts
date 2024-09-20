@@ -1,12 +1,13 @@
 import type { IAppServerOrchestrator, IAppsMessage, IAppsUser } from '@rocket.chat/apps';
-import type { IMessage as IAppsEngineMessage } from '@rocket.chat/apps-engine/definition/messages';
-import type { Reaction } from '@rocket.chat/apps-engine/definition/messages';
+import type { IMessageRaw, Reaction } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { ITypingDescriptor } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
 import { MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
+import type { GetMessagesOptions } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import { api } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
+import type { Sort } from 'mongodb';
 
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -41,13 +42,9 @@ export class AppMessageBridge extends MessageBridge {
 	protected async getUnreadByRoomAndUser(
 		roomId: string,
 		userId: string,
-		options: {
-			limit: number;
-			skip?: number;
-			sort?: Record<string, 1 | -1>;
-		},
+		options: GetMessagesOptions,
 		appId: string,
-	): Promise<Array<IAppsEngineMessage>> {
+	): Promise<Array<IMessageRaw>> {
 		this.orch.debugLog(`The App ${appId} is getting the unread messages for the user: "${userId}" in the room: "${roomId}"`);
 
 		const messageConverter = this.orch.getConverters()?.get('messages');
@@ -61,33 +58,22 @@ export class AppMessageBridge extends MessageBridge {
 			throw new Error('Room not found');
 		}
 
-		if (!Number.isFinite(options.limit) || options.limit < 1) {
-			options.limit = 100;
-		}
-
-		const { limit, skip, sort = { ts: 1 } } = options;
-
-		const messageQueryOptions = {
-			limit: Math.min(limit, 100),
-			skip,
-			sort,
-		};
 		const lastSeen = (await Subscriptions.findOneByRoomIdAndUserId(roomId, userId))?.ls;
 
 		if (!lastSeen) {
 			return [];
 		}
 
-		const messages = await Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
-			roomId,
-			lastSeen,
-			new Date(),
-			[],
-			messageQueryOptions,
-		).toArray();
+		const sort: Sort | undefined = options.sort?.createdAt ? { ts: options.sort.createdAt } : undefined;
 
-		const convertedMessages = Promise.all(messages.map((msg) => messageConverter.convertMessage(msg)));
-		return convertedMessages;
+		const cursor = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, lastSeen, new Date(), [], {
+			...options,
+			sort,
+		});
+
+		const messagePromises = await cursor.map((msg) => messageConverter.convertMessageRaw(msg)).toArray();
+
+		return Promise.all(messagePromises);
 	}
 
 	protected async update(message: IAppsMessage, appId: string): Promise<void> {
