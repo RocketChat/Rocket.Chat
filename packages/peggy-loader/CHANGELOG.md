@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.31.26-rc.0
+
+### Patch Changes
+
+- ([#33227](https://github.com/RocketChat/Rocket.Chat/pull/33227)) Improved the performance of the message parser
+
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
