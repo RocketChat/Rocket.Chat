@@ -474,10 +474,12 @@ class LivechatClass {
 					Livechat.logger.debug(`Adding channel for contact ${contact._id}`);
 
 					await LivechatContacts.addChannel(contact._id, {
-						name: roomInfo.source?.type.toString() || 'other',
+						name: roomInfo.source?.label || roomInfo.source?.type.toString() || 'other',
 						visitorId: visitor._id,
 						blocked: false,
 						verified: false,
+						details: roomInfo.source,
+						channelIdentifier: roomInfo.source?.destination,
 					});
 				}
 			}

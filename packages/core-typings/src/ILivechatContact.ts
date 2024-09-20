@@ -1,4 +1,5 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IOmnichannelSource } from './IRoom';
 
 export interface ILivechatContactChannel {
 	name: string;
@@ -8,6 +9,8 @@ export interface ILivechatContactChannel {
 	field?: string;
 	value?: string;
 	verifiedAt?: Date;
+	channelIdentifier?: string;
+	details?: IOmnichannelSource;
 }
 
 export interface ILivechatContactConflictingField {
