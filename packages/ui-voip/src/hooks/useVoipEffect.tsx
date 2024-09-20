@@ -1,11 +1,11 @@
 import { useContext, useMemo, useRef } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { VoiceCallContext } from '../contexts/VoiceCallContext';
-import type VoIPClient from '../lib/VoIPClient';
+import { VoipContext } from '../contexts/VoipContext';
+import type VoIPClient from '../lib/VoipClient';
 
-export const useVoiceCallEffect = <T,>(transform: (voipClient: VoIPClient) => T, initialValue: T) => {
-	const { voipClient } = useContext(VoiceCallContext);
+export const useVoipEffect = <T,>(transform: (voipClient: VoIPClient) => T, initialValue: T) => {
+	const { voipClient } = useContext(VoipContext);
 	const initValue = useRef<T>(initialValue);
 	const transformFn = useRef(transform);
 
@@ -29,4 +29,4 @@ export const useVoiceCallEffect = <T,>(transform: (voipClient: VoIPClient) => T,
 	return useSyncExternalStore(subscribe, getSnapshot);
 };
 
-export default useVoiceCallEffect;
+export default useVoipEffect;

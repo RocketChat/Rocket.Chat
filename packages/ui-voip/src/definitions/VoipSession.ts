@@ -4,7 +4,7 @@ export type ContactInfo = {
 	host: string;
 };
 
-export type VoiceCallGenericSession = {
+export type VoipGenericSession = {
 	type: 'INCOMING' | 'OUTGOING' | 'ONGOING' | 'ERROR';
 	contact: ContactInfo | null;
 	transferedBy?: ContactInfo | null;
@@ -18,7 +18,7 @@ export type VoiceCallGenericSession = {
 	dtmf?(digit: string): void;
 };
 
-export type VoiceCallOngoingSession = VoiceCallGenericSession & {
+export type VoipOngoingSession = VoipGenericSession & {
 	type: 'ONGOING';
 	contact: ContactInfo;
 	isMuted: boolean;
@@ -29,7 +29,7 @@ export type VoiceCallOngoingSession = VoiceCallGenericSession & {
 	dtmf(digit: string): void;
 };
 
-export type VoiceCallIncomingSession = VoiceCallGenericSession & {
+export type VoipIncomingSession = VoipGenericSession & {
 	type: 'INCOMING';
 	contact: ContactInfo;
 	transferedBy: ContactInfo | null;
@@ -37,33 +37,33 @@ export type VoiceCallIncomingSession = VoiceCallGenericSession & {
 	accept(): Promise<void>;
 };
 
-export type VoiceCallOutgoingSession = VoiceCallGenericSession & {
+export type VoipOutgoingSession = VoipGenericSession & {
 	type: 'OUTGOING';
 	contact: ContactInfo;
 	end(): void;
 };
 
-export type VoiceCallErrorSession = VoiceCallGenericSession & {
+export type VoipErrorSession = VoipGenericSession & {
 	type: 'ERROR';
 	contact: ContactInfo;
 	error: { status?: number; reason: string };
 	end(): void;
 };
 
-export type VoiceCallSession = VoiceCallIncomingSession | VoiceCallOngoingSession | VoiceCallOutgoingSession | VoiceCallErrorSession;
+export type VoipSession = VoipIncomingSession | VoipOngoingSession | VoipOutgoingSession | VoipErrorSession;
 
-export const isVoiceCallIncomingSession = (session: VoiceCallSession | null | undefined): session is VoiceCallIncomingSession => {
+export const isVoipIncomingSession = (session: VoipSession | null | undefined): session is VoipIncomingSession => {
 	return session?.type === 'INCOMING';
 };
 
-export const isVoiceCallOngoingSession = (session: VoiceCallSession | null | undefined): session is VoiceCallOngoingSession => {
+export const isVoipOngoingSession = (session: VoipSession | null | undefined): session is VoipOngoingSession => {
 	return session?.type === 'ONGOING';
 };
 
-export const isVoiceCallOutgoingSession = (session: VoiceCallSession | null | undefined): session is VoiceCallOutgoingSession => {
+export const isVoipOutgoingSession = (session: VoipSession | null | undefined): session is VoipOutgoingSession => {
 	return session?.type === 'OUTGOING';
 };
 
-export const isVoiceCallErrorSession = (session: VoiceCallSession | null | undefined): session is VoiceCallErrorSession => {
+export const isVoipErrorSession = (session: VoipSession | null | undefined): session is VoipErrorSession => {
 	return session?.type === 'ERROR';
 };

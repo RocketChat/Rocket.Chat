@@ -2,28 +2,28 @@ import { useUser, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 
-import VoIPClient from '../lib/VoIPClient';
+import VoipClient from '../lib/VoipClient';
 import { useWebRtcServers } from './useWebRtcServers';
 
-type VoiceCallClientParams = {
+type VoipClientParams = {
 	autoRegister?: boolean;
 };
 
-type VoiceCallClientResult = {
-	voipClient: VoIPClient | null;
+type VoipClientResult = {
+	voipClient: VoipClient | null;
 	error: Error | null;
 };
 
-export const useVoiceCallClient = ({ autoRegister = true }: VoiceCallClientParams): VoiceCallClientResult => {
+export const useVoipClient = ({ autoRegister = true }: VoipClientParams): VoipClientResult => {
 	const { _id: userId } = useUser() || {};
 	const isVoipEnabled = useSetting<boolean>('VoIP_TeamCollab_Enabled');
-	const voipClientRef = useRef<VoIPClient | null>(null);
+	const voipClientRef = useRef<VoipClient | null>(null);
 
 	const getRegistrationInfo = useEndpoint('GET', '/v1/voip-freeswitch.extension.getRegistrationInfoByUserId');
 
 	const iceServers = useWebRtcServers();
 
-	const { data: voipClient, error } = useQuery<VoIPClient | null, Error>(
+	const { data: voipClient, error } = useQuery<VoipClient | null, Error>(
 		['voice-call-client', isVoipEnabled, userId, iceServers],
 		async () => {
 			if (voipClientRef.current) {
@@ -65,7 +65,7 @@ export const useVoiceCallClient = ({ autoRegister = true }: VoiceCallClientParam
 				enableKeepAliveUsingOptionsForUnstableNetworks: true, // TODO: get from settings
 			};
 
-			const voipClient = await VoIPClient.create(config);
+			const voipClient = await VoipClient.create(config);
 
 			if (autoRegister) {
 				voipClient.register();
@@ -88,4 +88,4 @@ export const useVoiceCallClient = ({ autoRegister = true }: VoiceCallClientParam
 	return { voipClient, error };
 };
 
-export default useVoiceCallClient;
+export default useVoipClient;

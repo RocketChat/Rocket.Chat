@@ -1,4 +1,4 @@
-import type { IMediaStreamRenderer, SignalingSocketEvents, VoipEvents } from '@rocket.chat/core-typings';
+import type { IMediaStreamRenderer, SignalingSocketEvents, VoipEvents as CoreVoipEvents } from '@rocket.chat/core-typings';
 import { type VoIPUserConfiguration } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { InvitationAcceptOptions, Message, Referral, Session, SessionInviteOptions } from 'sip.js';
@@ -7,11 +7,11 @@ import type { IncomingResponse, OutgoingByeRequest, URI } from 'sip.js/lib/core'
 import type { SessionDescriptionHandlerOptions } from 'sip.js/lib/platform/web';
 import { SessionDescriptionHandler } from 'sip.js/lib/platform/web';
 
-import type { ContactInfo, VoiceCallSession } from '../definitions';
+import type { ContactInfo, VoipSession } from '../definitions';
 import LocalStream from './LocalStream';
 import RemoteStream from './RemoteStream';
 
-export type VoiceCallEvents = Omit<VoipEvents, 'ringing' | 'callestablished' | 'incomingcall'> & {
+export type VoipEvents = Omit<CoreVoipEvents, 'ringing' | 'callestablished' | 'incomingcall'> & {
 	callestablished: ContactInfo;
 	incomingcall: ContactInfo;
 	outgoingcall: ContactInfo;
@@ -24,7 +24,7 @@ type SessionError = {
 	contact: ContactInfo;
 };
 
-class VoIPClient extends Emitter<VoiceCallEvents> {
+class VoipClient extends Emitter<VoipEvents> {
 	protected registerer: Registerer | undefined;
 
 	protected session: Session | undefined;
@@ -101,8 +101,8 @@ class VoIPClient extends Emitter<VoiceCallEvents> {
 		}
 	}
 
-	static async create(config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer): Promise<VoIPClient> {
-		const voip = new VoIPClient(config, mediaRenderer);
+	static async create(config: VoIPUserConfiguration, mediaRenderer?: IMediaStreamRenderer): Promise<VoipClient> {
+		const voip = new VoipClient(config, mediaRenderer);
 		await voip.init();
 		return voip;
 	}
@@ -547,7 +547,7 @@ class VoIPClient extends Emitter<VoiceCallEvents> {
 		this.setError(null);
 	};
 
-	public getSessionType(): VoiceCallSession['type'] | null {
+	public getSessionType(): VoipSession['type'] | null {
 		if (this.error) {
 			return 'ERROR';
 		}
@@ -567,7 +567,7 @@ class VoIPClient extends Emitter<VoiceCallEvents> {
 		return null;
 	}
 
-	public getSession(): VoiceCallSession | null {
+	public getSession(): VoipSession | null {
 		const type = this.getSessionType();
 
 		switch (type) {
@@ -865,4 +865,4 @@ class VoIPClient extends Emitter<VoiceCallEvents> {
 	};
 }
 
-export default VoIPClient;
+export default VoipClient;

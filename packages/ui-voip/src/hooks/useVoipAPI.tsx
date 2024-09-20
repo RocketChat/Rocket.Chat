@@ -1,9 +1,9 @@
 import { useContext, useMemo } from 'react';
 
-import type { VoiceCallContextReady } from '../contexts/VoiceCallContext';
-import { VoiceCallContext, isVoiceCallContextReady } from '../contexts/VoiceCallContext';
+import type { VoipContextReady } from '../contexts/VoipContext';
+import { VoipContext, isVoipContextReady } from '../contexts/VoipContext';
 
-type VoiceCallAPI = {
+type VoipAPI = {
 	makeCall(calleeURI: string): void;
 	endCall(): void;
 	register(): Promise<void>;
@@ -11,17 +11,17 @@ type VoiceCallAPI = {
 	openDialer(): void;
 	closeDialer(): void;
 	transferCall(calleeURL: string): Promise<void>;
-	changeAudioOutputDevice: VoiceCallContextReady['changeAudioOutputDevice'];
-	changeAudioInputDevice: VoiceCallContextReady['changeAudioInputDevice'];
+	changeAudioOutputDevice: VoipContextReady['changeAudioOutputDevice'];
+	changeAudioInputDevice: VoipContextReady['changeAudioInputDevice'];
 };
 
 const NOOP = (..._args: any[]): any => undefined;
 
-export const useVoiceCallAPI = (): VoiceCallAPI => {
-	const context = useContext(VoiceCallContext);
+export const useVoipAPI = (): VoipAPI => {
+	const context = useContext(VoipContext);
 
 	return useMemo(() => {
-		if (!isVoiceCallContextReady(context)) {
+		if (!isVoipContextReady(context)) {
 			return {
 				makeCall: NOOP,
 				endCall: NOOP,
@@ -32,7 +32,7 @@ export const useVoiceCallAPI = (): VoiceCallAPI => {
 				transferCall: NOOP,
 				changeAudioInputDevice: NOOP,
 				changeAudioOutputDevice: NOOP,
-			} as VoiceCallAPI;
+			} as VoipAPI;
 		}
 
 		const { voipClient, changeAudioInputDevice, changeAudioOutputDevice } = context;
@@ -51,4 +51,4 @@ export const useVoiceCallAPI = (): VoiceCallAPI => {
 	}, [context]);
 };
 
-export default useVoiceCallAPI;
+export default useVoipAPI;

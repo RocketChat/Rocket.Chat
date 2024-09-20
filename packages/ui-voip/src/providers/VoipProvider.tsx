@@ -6,19 +6,19 @@ import { useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
-import type { VoiceCallContextValue } from '../contexts/VoiceCallContext';
-import { VoiceCallContext } from '../contexts/VoiceCallContext';
-import { useVoiceCallClient } from '../hooks/useVoiceCallClient';
+import type { VoipContextValue } from '../contexts/VoipContext';
+import { VoipContext } from '../contexts/VoipContext';
+import { useVoipClient } from '../hooks/useVoipClient';
 import { useVoipSounds } from '../hooks/useVoipSounds';
 
-const VoiceCallProvider = ({ children }: { children: ReactNode }) => {
+const VoipProvider = ({ children }: { children: ReactNode }) => {
 	// Settings
 	const isVoipEnabled = useSetting<boolean>('VoIP_TeamCollab_Enabled') || false;
 	const [isLocalRegistered, setStorageRegistered] = useLocalStorage('voice-call-registered', true);
 
 	// Hooks
 	const voipSounds = useVoipSounds();
-	const { voipClient, error } = useVoiceCallClient({ autoRegister: isLocalRegistered });
+	const { voipClient, error } = useVoipClient({ autoRegister: isLocalRegistered });
 	const setOutputMediaDevice = useSetOutputMediaDevice();
 	const setInputMediaDevice = useSetInputMediaDevice();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -124,7 +124,7 @@ const VoiceCallProvider = ({ children }: { children: ReactNode }) => {
 		setInputMediaDevice(selectedAudioDevice);
 	});
 
-	const contextValue = useMemo<VoiceCallContextValue>(() => {
+	const contextValue = useMemo<VoipContextValue>(() => {
 		if (!isVoipEnabled) {
 			return {
 				isEnabled: false,
@@ -155,7 +155,7 @@ const VoiceCallProvider = ({ children }: { children: ReactNode }) => {
 	}, [voipClient, isVoipEnabled, error, changeAudioInputDevice, changeAudioOutputDevice]);
 
 	return (
-		<VoiceCallContext.Provider value={contextValue}>
+		<VoipContext.Provider value={contextValue}>
 			{children}
 			{contextValue.isEnabled &&
 				createPortal(
@@ -164,8 +164,8 @@ const VoiceCallProvider = ({ children }: { children: ReactNode }) => {
 					</audio>,
 					document.body,
 				)}
-		</VoiceCallContext.Provider>
+		</VoipContext.Provider>
 	);
 };
 
-export default VoiceCallProvider;
+export default VoipProvider;

@@ -1,5 +1,5 @@
 {
-	"name": "@rocket.chat/ui-voice-call",
+	"name": "@rocket.chat/ui-voip",
 	"version": "1.0.0",
 	"private": true,
 	"scripts": {

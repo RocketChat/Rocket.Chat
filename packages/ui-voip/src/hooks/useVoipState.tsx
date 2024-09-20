@@ -1,9 +1,9 @@
 import { useContext, useMemo } from 'react';
 
-import { VoiceCallContext } from '../contexts/VoiceCallContext';
-import useVoiceCallEffect from './useVoiceCallEffect';
+import { VoipContext } from '../contexts/VoipContext';
+import useVoipEffect from './useVoipEffect';
 
-export type VoiceCallState = {
+export type VoipState = {
 	isEnabled: boolean;
 	isRegistered: boolean;
 	isReady: boolean;
@@ -28,10 +28,10 @@ const DEFAULT_STATE = {
 	isError: false,
 };
 
-export const useVoiceCallState = (): VoiceCallState => {
-	const { isEnabled, error: clientError } = useContext(VoiceCallContext);
+export const useVoipState = (): VoipState => {
+	const { isEnabled, error: clientError } = useContext(VoipContext);
 
-	const callState = useVoiceCallEffect((client) => client.getState(), DEFAULT_STATE);
+	const callState = useVoipEffect((client) => client.getState(), DEFAULT_STATE);
 
 	return useMemo(
 		() => ({
@@ -44,4 +44,4 @@ export const useVoiceCallState = (): VoiceCallState => {
 	);
 };
 
-export default useVoiceCallState;
+export default useVoipState;

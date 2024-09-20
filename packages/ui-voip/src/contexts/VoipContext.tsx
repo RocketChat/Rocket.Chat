@@ -1,15 +1,15 @@
 import { type Device } from '@rocket.chat/ui-contexts';
 import { createContext } from 'react';
 
-import type VoIPClient from '../lib/VoIPClient';
+import type VoIPClient from '../lib/VoipClient';
 
-type VoiceCallContextDisabled = {
+type VoipContextDisabled = {
 	isEnabled: false;
 	voipClient?: null;
 	error?: null;
 };
 
-export type VoiceCallContextError = {
+export type VoipContextError = {
 	isEnabled: true;
 	error: Error;
 	voipClient: null;
@@ -17,7 +17,7 @@ export type VoiceCallContextError = {
 	changeAudioInputDevice: (selectedAudioDevices: Device) => Promise<void>;
 };
 
-export type VoiceCallContextEnabled = {
+export type VoipContextEnabled = {
 	isEnabled: true;
 	voipClient: VoIPClient | null;
 	error?: null;
@@ -25,7 +25,7 @@ export type VoiceCallContextEnabled = {
 	changeAudioInputDevice: (selectedAudioDevices: Device) => Promise<void>;
 };
 
-export type VoiceCallContextReady = {
+export type VoipContextReady = {
 	isEnabled: true;
 	voipClient: VoIPClient;
 	error: null;
@@ -33,14 +33,14 @@ export type VoiceCallContextReady = {
 	changeAudioInputDevice: (selectedAudioDevices: Device) => Promise<void>;
 };
 
-export type VoiceCallContextValue = VoiceCallContextDisabled | VoiceCallContextEnabled | VoiceCallContextReady | VoiceCallContextError;
+export type VoipContextValue = VoipContextDisabled | VoipContextEnabled | VoipContextReady | VoipContextError;
 
-export const isVoiceCallContextReady = (context: VoiceCallContextValue): context is VoiceCallContextReady =>
+export const isVoipContextReady = (context: VoipContextValue): context is VoipContextReady =>
 	context.isEnabled && context.voipClient !== null;
 
-export const VoiceCallContext = createContext<VoiceCallContextValue>({
+export const VoipContext = createContext<VoipContextValue>({
 	isEnabled: false,
 	voipClient: null,
 });
 
-export default VoiceCallContext;
+export default VoipContext;

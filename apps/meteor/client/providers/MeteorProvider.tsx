@@ -1,4 +1,4 @@
-import { VoiceCallProvider } from '@rocket.chat/ui-voice-call';
+import { VoipProvider } from '@rocket.chat/ui-voip';
 import type { ReactNode } from 'react';
 import React from 'react';
 
@@ -52,11 +52,11 @@ const MeteorProvider = ({ children }: MeteorProviderProps) => (
 																			<UserPresenceProvider>
 																				<ActionManagerProvider>
 																					<VideoConfProvider>
-																						<VoiceCallProvider>
+																						<VoipProvider>
 																							<OmnichannelCallProvider>
 																								<OmnichannelProvider>{children}</OmnichannelProvider>
 																							</OmnichannelCallProvider>
-																						</VoiceCallProvider>
+																						</VoipProvider>
 																					</VideoConfProvider>
 																				</ActionManagerProvider>
 																			</UserPresenceProvider>
