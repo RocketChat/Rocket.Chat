@@ -1805,6 +1805,8 @@
   "E2E_Enabled": "E2E Enabled",
   "E2E_Enabled_Default_DirectRooms": "Enable encryption for Direct Rooms by default",
   "E2E_Enabled_Default_PrivateRooms": "Enable encryption for Private Rooms by default",
+  "E2E_Enabled_Mentions": "Mentions",
+  "E2E_Enabled_Mentions_Description": "Notify people, and highlight user, channel, and team mentions in encrypted content.",
   "E2E_Enable_Encrypt_Files": "Encrypt files",
   "E2E_Enable_Encrypt_Files_Description": "Encrypt files sent inside encrypted rooms. Check for possible conflicts in [file upload settings.](admin/settings/FileUpload)",
   "E2E_Encryption_Password_Change": "Change Encryption Password",
