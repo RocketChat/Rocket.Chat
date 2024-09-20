@@ -1,0 +1,35 @@
+name: Release candidate cut
+on:
+  schedule:
+    - cron: '28 0 20 * *' # run at minute 28 to avoid the chance of delay due to high load on GH
+jobs:
+  new-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          token: ${{ secrets.CI_PAT }}
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: 14.21.3
+          cache-modules: true
+          install: true
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - uses: rharkor/caching-for-turbo@v1.5
+
+      - name: Build packages
+        run: yarn build
+
+      - name: 'Start release candidate'
+        uses: ./packages/release-action
+        with:
+          action: next
+          base-ref: ${{ github.ref_name }}
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CI_PAT }}
