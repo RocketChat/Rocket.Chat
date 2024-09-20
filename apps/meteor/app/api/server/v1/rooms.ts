@@ -40,7 +40,7 @@ import {
 	findRoomsAvailableForTeams,
 } from '../lib/rooms';
 
-async function findRoomByIdOrName({
+export async function findRoomByIdOrName({
 	params,
 	checkedArchived = true,
 }: {
