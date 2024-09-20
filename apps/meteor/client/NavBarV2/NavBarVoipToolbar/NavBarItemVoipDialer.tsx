@@ -6,7 +6,9 @@ import type { HTMLAttributes } from 'react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type NavBarItemVoipDialerProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+type NavBarItemVoipDialerProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
+	primary?: boolean;
+};
 
 const NavBarItemVoipDialer = (props: NavBarItemVoipDialerProps) => {
 	const { t } = useTranslation();
@@ -28,13 +30,12 @@ const NavBarItemVoipDialer = (props: NavBarItemVoipDialerProps) => {
 			return t('Voice_calling_disabled');
 		}
 
-		return t('New_call');
+		return t('New_Call');
 	}, [isReady, isRegistered, t]);
 
 	return isEnabled ? (
 		<NavBarItem
 			{...props}
-			primary
 			title={title}
 			icon='phone'
 			onClick={handleToggleDialer}

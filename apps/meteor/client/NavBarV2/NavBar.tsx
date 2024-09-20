@@ -69,7 +69,7 @@ const NavBar = () => {
 					<>
 						<NavBarDivider />
 						<NavBarGroup role='toolbar' ref={voipToolbarRef} {...voipToolbarProps}>
-							<NavBarItemVoipDialer />
+							<NavBarItemVoipDialer primary={isCallEnabled} />
 						</NavBarGroup>
 					</>
 				)}
