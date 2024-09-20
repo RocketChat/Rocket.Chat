@@ -1,39 +1,24 @@
-import { Icon } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Box, Bubble } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { useFormatRelativeTime } from '../../../hooks/useFormatRelativeTime';
+import { withErrorBoundary } from '../../../components/withErrorBoundary';
+import { usePruneWarningMessage } from '../../../hooks/usePruneWarningMessage';
 
-type RetentionPolicyWarningProps = {
-	filesOnly: boolean;
-	excludePinned: boolean;
-	maxAge: number;
-};
+const RetentionPolicyWarning = ({ room }: { room: IRoom }): ReactElement => {
+	const { t } = useTranslation();
 
-const RetentionPolicyWarning = ({ filesOnly, excludePinned, maxAge }: RetentionPolicyWarningProps): ReactElement => {
-	const t = useTranslation();
-
-	const formatRelativeTime = useFormatRelativeTime();
-	const time = useMemo(() => formatRelativeTime(maxAge), [formatRelativeTime, maxAge]);
-
-	if (filesOnly) {
-		return (
-			<div className='start__purge-warning error-background error-border error-color'>
-				<Icon name='warning' size='x20' />{' '}
-				{excludePinned
-					? t('RetentionPolicy_RoomWarning_UnpinnedFilesOnly', { time })
-					: t('RetentionPolicy_RoomWarning_FilesOnly', { time })}
-			</div>
-		);
-	}
+	const message = usePruneWarningMessage(room);
 
 	return (
-		<div className='start__purge-warning error-background error-border error-color'>
-			<Icon name='warning' size='x20' />{' '}
-			{excludePinned ? t('RetentionPolicy_RoomWarning_Unpinned', { time }) : t('RetentionPolicy_RoomWarning', { time })}
-		</div>
+		<Box display='flex' justifyContent='center' pi={20} mb={8}>
+			<Bubble role='alert' aria-live='polite' aria-label={t('Retention_policy_warning_banner')} small secondary>
+				{message}
+			</Bubble>
+		</Box>
 	);
 };
 
-export default RetentionPolicyWarning;
+export default withErrorBoundary(RetentionPolicyWarning);

@@ -1,12 +1,13 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { loadMessageHistory } from '../../../lib/server/functions/loadMessageHistory';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'livechat:loadHistory'(params: { token: string; rid: string; end?: Date; limit?: number; ls: Date }):
@@ -23,9 +24,11 @@ Meteor.methods<ServerMethods>({
 	async 'livechat:loadHistory'({ token, rid, end, limit = 20, ls }) {
 		methodDeprecationLogger.method('livechat:loadHistory', '7.0.0');
 
-		if (!token || typeof token !== 'string') {
-			return;
-		}
+		check(token, String);
+		check(rid, String);
+		check(end, Date);
+		check(ls, Match.OneOf(String, Date));
+		check(limit, Number);
 
 		const visitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
 

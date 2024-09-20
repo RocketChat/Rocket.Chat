@@ -1,11 +1,12 @@
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Permissions } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
+import { notifyOnPermissionChangedById } from '../../../lib/server/lib/notifyListener';
 import { CONSTANTS } from '../../lib';
 import { hasPermissionAsync } from '../functions/hasPermission';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'authorization:removeRoleFromPermission'(permissionId: string, role: string): void;
@@ -36,10 +37,12 @@ Meteor.methods<ServerMethods>({
 
 		// for setting based permissions, revoke the group permission once all setting permissions
 		// related to this group have been removed
-
 		if (permission.groupPermissionId) {
 			await Permissions.removeRole(permission.groupPermissionId, role);
+			void notifyOnPermissionChangedById(permission.groupPermissionId);
 		}
+
 		await Permissions.removeRole(permission._id, role);
+		void notifyOnPermissionChangedById(permission._id);
 	},
 });

@@ -5,8 +5,8 @@ import { useToastMessageDispatch, useMethod, useTranslation, useRouter } from '@
 import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
-import { useRemoveBusinessHour } from '../../../../ee/client/omnichannel/businessHours/useRemoveBusinessHour';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
+import { useRemoveBusinessHour } from '../../../omnichannel/businessHours/useRemoveBusinessHour';
 import type { BusinessHoursFormData } from './BusinessHoursForm';
 import BusinessHoursForm from './BusinessHoursForm';
 import { defaultWorkHours } from './mapBusinessHoursForm';

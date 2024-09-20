@@ -1,6 +1,5 @@
 import http from 'http';
 import https from 'https';
-import URL from 'url';
 
 import _ from 'underscore';
 
@@ -8,12 +7,12 @@ import { settings } from '../../../settings/server';
 import type { S3Options } from '../../ufs/AmazonS3/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import '../../ufs/AmazonS3/server';
+import { forceDownload } from './helper';
 
 const get: FileUploadClass['get'] = async function (this: FileUploadClass, file, req, res) {
-	const { query } = URL.parse(req.url || '', true);
-	const forceDownload = typeof query.download !== 'undefined';
+	const forcedDownload = forceDownload(req);
 
-	const fileUrl = await this.store.getRedirectURL(file, forceDownload);
+	const fileUrl = await this.store.getRedirectURL(file, forcedDownload);
 	if (!fileUrl || !file.store) {
 		res.end();
 		return;
@@ -23,7 +22,7 @@ const get: FileUploadClass['get'] = async function (this: FileUploadClass, file,
 	if (settings.get(`FileUpload_S3_Proxy_${storeType}`)) {
 		const request = /^https:/.test(fileUrl) ? https : http;
 
-		FileUpload.proxyFile(file.name || '', fileUrl, forceDownload, request, req, res);
+		FileUpload.proxyFile(file.name || '', fileUrl, forcedDownload, request, req, res);
 		return;
 	}
 

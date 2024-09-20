@@ -1,10 +1,10 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
+import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import type { MouseEvent, ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
-import GenericMenu from '../../GenericMenu/GenericMenu';
-import type { GenericMenuItemProps } from '../../GenericMenu/GenericMenuItem';
+import type { MessageActionConditionProps, MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 
 type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order' | 'action'> & {
 	action: (e?: MouseEvent<HTMLElement>) => void;
@@ -19,11 +19,13 @@ type MessageActionSection = {
 type MessageActionMenuProps = {
 	onChangeMenuVisibility: (visible: boolean) => void;
 	options: MessageActionConfigOption[];
+	context: MessageActionConditionProps;
+	isMessageEncrypted: boolean;
 };
 
-const MessageActionMenu = ({ options, onChangeMenuVisibility }: MessageActionMenuProps): ReactElement => {
-	const t = useTranslation();
-
+const MessageActionMenu = ({ options, onChangeMenuVisibility, context, isMessageEncrypted }: MessageActionMenuProps): ReactElement => {
+	const { t } = useTranslation();
+	const id = useUniqueId();
 	const groupOptions = options
 		.map((option) => ({
 			variant: option.color === 'alert' ? 'danger' : '',
@@ -32,6 +34,9 @@ const MessageActionMenu = ({ options, onChangeMenuVisibility }: MessageActionMen
 			content: t(option.label),
 			onClick: option.action,
 			type: option.type,
+			...(option.disabled && { disabled: option?.disabled?.(context) }),
+			...(option.disabled &&
+				option?.disabled?.(context) && { tooltip: t('Action_not_available_encrypted_content', { action: t(option.label) }) }),
 		}))
 		.reduce((acc, option) => {
 			const group = option.type ? option.type : '';
@@ -44,7 +49,31 @@ const MessageActionMenu = ({ options, onChangeMenuVisibility }: MessageActionMen
 			acc.push(newSection);
 
 			return acc;
-		}, [] as unknown as MessageActionSection[]);
+		}, [] as unknown as MessageActionSection[])
+		.map((section) => {
+			if (section.id !== 'apps') {
+				return section;
+			}
+
+			if (!isMessageEncrypted) {
+				return section;
+			}
+
+			return {
+				id: 'apps',
+				title: t('Apps'),
+				items: [
+					{
+						content: t('Unavailable'),
+						type: 'apps',
+						id,
+						disabled: true,
+						gap: false,
+						tooltip: t('Action_not_available_encrypted_content', { action: t('Apps') }),
+					},
+				],
+			};
+		});
 
 	return (
 		<GenericMenu

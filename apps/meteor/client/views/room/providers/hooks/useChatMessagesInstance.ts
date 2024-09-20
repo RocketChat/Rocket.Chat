@@ -9,7 +9,15 @@ import { useUiKitActionManager } from '../../../../uikit/hooks/useUiKitActionMan
 import { useRoomSubscription } from '../../contexts/RoomContext';
 import { useInstance } from './useInstance';
 
-export function useChatMessagesInstance({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): ChatAPI {
+export function useChatMessagesInstance({
+	rid,
+	tmid,
+	encrypted,
+}: {
+	rid: IRoom['_id'];
+	tmid?: IMessage['_id'];
+	encrypted: IRoom['encrypted'];
+}): ChatAPI {
 	const uid = useUserId();
 	const subscription = useRoomSubscription();
 	const actionManager = useUiKitActionManager();
@@ -17,7 +25,7 @@ export function useChatMessagesInstance({ rid, tmid }: { rid: IRoom['_id']; tmid
 		const instance = new ChatMessages({ rid, tmid, uid, actionManager });
 
 		return [instance, () => instance.release()];
-	}, [rid, tmid, uid]);
+	}, [rid, tmid, uid, encrypted]);
 
 	useEffect(() => {
 		if (subscription) {

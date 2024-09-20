@@ -1,12 +1,13 @@
 import type { MessageAttachmentAction } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
 import React from 'react';
 
 import { useExternalLink } from '../../../../../hooks/useExternalLink';
 import ActionAttachmentButton from './ActionAttachmentButton';
 
-export const ActionAttachment: FC<MessageAttachmentAction> = ({ actions }) => {
+type ActionAttachmentProps = MessageAttachmentAction;
+
+export const ActionAttachment = ({ actions }: ActionAttachmentProps) => {
 	const handleLinkClick = useExternalLink();
 
 	return (

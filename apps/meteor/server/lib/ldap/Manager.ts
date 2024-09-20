@@ -44,6 +44,8 @@ export class LDAPManager {
 			const slugifiedUsername = this.slugifyUsername(ldapUser, username);
 			const user = await this.findExistingUser(ldapUser, slugifiedUsername);
 
+			// Bind connection to the admin user so that RC has full access to groups in the next steps
+			await ldap.bindAuthenticationUser();
 			if (user) {
 				return await this.loginExistingUser(ldap, user, ldapUser, password);
 			}
@@ -163,7 +165,7 @@ export class LDAPManager {
 
 		const { attribute: idAttribute, value: id } = uniqueId;
 		const username = this.slugifyUsername(ldapUser, usedUsername || id || '') || undefined;
-		const emails = this.getLdapEmails(ldapUser, username);
+		const emails = this.getLdapEmails(ldapUser, username).map((email) => email.trim());
 		const name = this.getLdapName(ldapUser) || undefined;
 
 		const userData: IImportUser = {

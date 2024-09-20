@@ -1,4 +1,5 @@
 {
+	"extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "target": "ES5",
     "module": "ES2020",
@@ -6,7 +7,6 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "outDir": "./dist/esm/",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -15,5 +15,6 @@
     "resolveJsonModule": true,
     "plugins": [{ "transform": "typia/lib/transform" }]
   },
-  "exclude": ["dist/", "src/**/*.spec.ts"]
+	"include": ["./src/**/*.ts"],
+	"exclude": []
 }

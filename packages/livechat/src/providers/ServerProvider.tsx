@@ -1,15 +1,15 @@
 import type { Serialized } from '@rocket.chat/core-typings';
-import { Emitter } from '@rocket.chat/emitter';
-import type { Method, PathFor, OperationParams, OperationResult, UrlParams, PathPattern } from '@rocket.chat/rest-typings';
 import type {
 	ServerMethodName,
 	ServerMethodParameters,
 	ServerMethodReturn,
 	StreamerCallbackArgs,
-	UploadResult,
 	StreamNames,
 	StreamKeys,
-} from '@rocket.chat/ui-contexts';
+} from '@rocket.chat/ddp-client';
+import { Emitter } from '@rocket.chat/emitter';
+import type { Method, PathFor, OperationParams, OperationResult, UrlParams, PathPattern } from '@rocket.chat/rest-typings';
+import type { UploadResult } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { compile } from 'path-to-regexp';
 import { useMemo } from 'preact/hooks';

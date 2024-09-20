@@ -75,7 +75,10 @@ API.v1.addRoute(
 		authRequired: true,
 		permissionsRequired: ['view-l-room'],
 		validateParams: isGETLivechatInquiriesQueuedParams,
-		deprecationVersion: '7.0.0',
+		deprecation: {
+			version: '7.0.0',
+			alternatives: ['livechat/inquiries.queuedForUser'],
+		},
 	},
 	{
 		async get() {

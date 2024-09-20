@@ -1,5 +1,6 @@
 import type { IAppServerOrchestrator, IAppsMessage, IAppsUser } from '@rocket.chat/apps';
 import type { IMessage as IAppsEngineMessage } from '@rocket.chat/apps-engine/definition/messages';
+import type { Reaction } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { ITypingDescriptor } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
 import { MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
@@ -11,6 +12,7 @@ import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import notifications from '../../../notifications/server/lib/Notifications';
+import { executeSetReaction } from '../../../reactions/server/setReaction';
 
 export class AppMessageBridge extends MessageBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
@@ -170,5 +172,25 @@ export class AppMessageBridge extends MessageBridge {
 			default:
 				throw new Error('Unrecognized typing scope provided');
 		}
+	}
+
+	private isValidReaction(reaction: Reaction): boolean {
+		return reaction.startsWith(':') && reaction.endsWith(':');
+	}
+
+	protected async addReaction(messageId: string, userId: string, reaction: Reaction): Promise<void> {
+		if (!this.isValidReaction(reaction)) {
+			throw new Error('Invalid reaction');
+		}
+
+		return executeSetReaction(userId, reaction, messageId, true);
+	}
+
+	protected async removeReaction(messageId: string, userId: string, reaction: Reaction): Promise<void> {
+		if (!this.isValidReaction(reaction)) {
+			throw new Error('Invalid reaction');
+		}
+
+		return executeSetReaction(userId, reaction, messageId, false);
 	}
 }

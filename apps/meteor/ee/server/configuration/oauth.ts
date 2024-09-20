@@ -7,6 +7,7 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { OAuthEEManager } from '../lib/oauth/Manager';
+import { syncUserRoles } from '../lib/syncUserRoles';
 
 interface IOAuthUserService {
 	serviceName: string;
@@ -86,8 +87,13 @@ await License.onLicense('oauth-enterprise', () => {
 		if (settings.mergeRoles) {
 			const rolesFromSSO = await OAuthEEManager.mapRolesFromSSO(auth.identity, settings.rolesClaim);
 			const mappedRoles = (await Roles.findInIdsOrNames(rolesFromSSO).toArray()).map((role) => role._id);
+			const rolesToSync = settings.rolesToSync.split(',').map((role) => role.trim());
 
-			auth.user.roles = mappedRoles;
+			const allowedRoles = (await Roles.findInIdsOrNames(rolesToSync).toArray()).map((role) => role._id);
+
+			await syncUserRoles(auth.user._id, mappedRoles, {
+				allowedRoles,
+			});
 		}
 	});
 });

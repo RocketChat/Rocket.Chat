@@ -1,7 +1,7 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { isSettingCode } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Settings } from '@rocket.chat/models';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -9,8 +9,9 @@ import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
+import { notifyOnSettingChangedById } from '../lib/notifyListener';
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		saveSettings(
@@ -81,8 +82,15 @@ Meteor.methods<ServerMethods>({
 						case 'boolean':
 							check(value, Boolean);
 							break;
+						case 'timespan':
 						case 'int':
 							check(value, Number);
+							if (!Number.isInteger(value)) {
+								throw new Meteor.Error(`Invalid setting value ${value}`, 'Invalid setting value', {
+									method: 'saveSettings',
+								});
+							}
+
 							break;
 						case 'multiSelect':
 							check(value, Array);
@@ -107,7 +115,13 @@ Meteor.methods<ServerMethods>({
 				});
 			}
 
-			await Promise.all(params.map(({ _id, value }) => Settings.updateValueById(_id, value)));
+			const promises = params.map(({ _id, value }) => Settings.updateValueById(_id, value));
+
+			(await Promise.all(promises)).forEach((value, index) => {
+				if (value?.modifiedCount) {
+					void notifyOnSettingChangedById(params[index]._id);
+				}
+			});
 
 			return true;
 		},

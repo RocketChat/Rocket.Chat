@@ -25,6 +25,7 @@ type Payload = {
 	bot?: IMessage['bot'];
 	groupable?: IMessage['groupable'];
 	tmid?: IMessage['tmid'];
+	customFields?: IMessage['customFields'];
 };
 
 type DefaultValues = {
@@ -109,6 +110,7 @@ export const processWebhookMessage = async function (
 			bot: messageObj.bot,
 			groupable: messageObj.groupable !== undefined ? messageObj.groupable : false,
 			tmid: messageObj.tmid,
+			customFields: messageObj.customFields,
 		};
 
 		if (!_.isEmpty(messageObj.icon_url) || !_.isEmpty(messageObj.avatar)) {

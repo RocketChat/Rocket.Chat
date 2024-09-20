@@ -72,3 +72,5 @@ export function serverFetch(input: string, options?: ExtendedFetchOptions, allow
 }
 
 export { Response } from 'node-fetch';
+
+export { ExtendedFetchOptions };

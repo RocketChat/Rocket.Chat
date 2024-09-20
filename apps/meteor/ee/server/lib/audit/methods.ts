@@ -1,7 +1,7 @@
 import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser, IAuditLog } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatRooms, Messages, Rooms, Users, AuditLog } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
@@ -57,7 +57,7 @@ const getRoomInfoByAuditParams = async ({
 	}
 };
 
-declare module '@rocket.chat/ui-contexts' {
+declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		auditGetAuditions: (params: { startDate: Date; endDate: Date }) => IAuditLog[];
@@ -88,10 +88,17 @@ Meteor.methods<ServerMethods>({
 		check(startDate, Date);
 		check(endDate, Date);
 
-		const user = await Meteor.userAsync();
+		const user = (await Meteor.userAsync()) as IUser;
 		if (!user || !(await hasPermissionAsync(user._id, 'can-audit'))) {
 			throw new Meteor.Error('Not allowed');
 		}
+
+		const userFields = {
+			_id: user._id,
+			username: user.username,
+			...(user.name && { name: user.name }),
+			...(user.avatarETag && { avatarETag: user.avatarETag }),
+		};
 
 		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
 			projection: { _id: 1 },
@@ -118,7 +125,7 @@ Meteor.methods<ServerMethods>({
 		await AuditLog.insertOne({
 			ts: new Date(),
 			results: messages.length,
-			u: user,
+			u: userFields,
 			fields: { msg, users: usernames, rids, room: name, startDate, endDate, type, visitor, agent },
 		});
 
@@ -128,10 +135,17 @@ Meteor.methods<ServerMethods>({
 		check(startDate, Date);
 		check(endDate, Date);
 
-		const user = await Meteor.userAsync();
+		const user = (await Meteor.userAsync()) as IUser;
 		if (!user || !(await hasPermissionAsync(user._id, 'can-audit'))) {
 			throw new Meteor.Error('Not allowed');
 		}
+
+		const userFields = {
+			_id: user._id,
+			username: user.username,
+			...(user.name && { name: user.name }),
+			...(user.avatarETag && { avatarETag: user.avatarETag }),
+		};
 
 		let rids;
 		let name;
@@ -169,9 +183,10 @@ Meteor.methods<ServerMethods>({
 		await AuditLog.insertOne({
 			ts: new Date(),
 			results: messages.length,
-			u: user,
+			u: userFields,
 			fields: { msg, users: usernames, rids, room: name, startDate, endDate, type, visitor, agent },
 		});
+
 		updateCounter({ settingsId: 'Message_Auditing_Panel_Load_Count' });
 
 		return messages;
@@ -183,13 +198,24 @@ Meteor.methods<ServerMethods>({
 		if (!uid || !(await hasPermissionAsync(uid, 'can-audit-log'))) {
 			throw new Meteor.Error('Not allowed');
 		}
-		return AuditLog.find({
-			// 'u._id': userId,
-			ts: {
-				$gt: startDate,
-				$lt: endDate,
+		return AuditLog.find(
+			{
+				// 'u._id': userId,
+				ts: {
+					$gt: startDate,
+					$lt: endDate,
+				},
 			},
-		}).toArray();
+			{
+				projection: {
+					'u.services': 0,
+					'u.roles': 0,
+					'u.lastLogin': 0,
+					'u.statusConnection': 0,
+					'u.emails': 0,
+				},
+			},
+		).toArray();
 	},
 });
 

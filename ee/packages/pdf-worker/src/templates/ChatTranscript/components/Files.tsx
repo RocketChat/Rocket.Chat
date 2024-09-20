@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
 });
 
 export const Files = ({ files, invalidMessage }: { files: PDFFile[]; invalidMessage: string }) => (
-	<View>
+	<View wrap={false}>
 		{files?.map((file, index) => (
 			<View style={styles.file} key={index}>
 				<Text>{file.name}</Text>

@@ -1,8 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps, FC } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 import React from 'react';
 
-const ImageBox: FC<ComponentProps<typeof Box>> = (props) => (
+type ImageBoxProps = ComponentPropsWithoutRef<typeof Box>;
+
+const ImageBox = (props: ImageBoxProps) => (
 	<Box
 		display='flex'
 		maxWidth='full'

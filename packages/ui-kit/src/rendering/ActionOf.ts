@@ -21,7 +21,7 @@ import type { UsersSelectElement } from '../blocks/elements/UsersSelectElement';
 export type ActionOf<TElement extends ActionableElement> = TElement extends ButtonElement
 	? ButtonElement['value']
 	: TElement extends ChannelsSelectElement
-	? unknown
+	? Option['value']
 	: TElement extends ConversationsSelectElement
 	? unknown
 	: TElement extends DatePickerElement
@@ -29,13 +29,13 @@ export type ActionOf<TElement extends ActionableElement> = TElement extends Butt
 	: TElement extends LinearScaleElement
 	? LinearScaleElement['initialValue']
 	: TElement extends MultiChannelsSelectElement
-	? unknown
+	? Option['value'][]
 	: TElement extends MultiConversationsSelectElement
 	? unknown
 	: TElement extends MultiStaticSelectElement
 	? MultiStaticSelectElement['initialValue']
 	: TElement extends MultiUsersSelectElement
-	? unknown
+	? Option['value'][]
 	: TElement extends OverflowElement
 	? OverflowElement['options'][number]['value']
 	: TElement extends PlainTextInputElement
@@ -43,7 +43,7 @@ export type ActionOf<TElement extends ActionableElement> = TElement extends Butt
 	: TElement extends StaticSelectElement
 	? StaticSelectElement['initialValue']
 	: TElement extends UsersSelectElement
-	? unknown
+	? Option['value']
 	: TElement extends ToggleSwitchElement
 	? Option['value'][]
 	: TElement extends RadioButtonElement

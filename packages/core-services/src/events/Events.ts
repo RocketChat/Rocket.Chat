@@ -33,6 +33,7 @@ import type {
 	LicenseLimitKind,
 	ICustomUserStatus,
 	IWebdavAccount,
+	IOTRMessage,
 } from '@rocket.chat/core-typings';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
@@ -49,7 +50,7 @@ type LoginServiceConfigurationEvent = {
 	  }
 	| {
 			clientAction: Omit<ClientAction, 'removed'>;
-			data: Partial<ILoginServiceConfiguration>;
+			data: Omit<Partial<ILoginServiceConfiguration>, 'secret'> & { secret?: never };
 	  }
 );
 
@@ -129,6 +130,7 @@ export type EventSignatures = {
 			  },
 	): void;
 	'user.deleteCustomStatus'(userStatus: Omit<ICustomUserStatus, '_updatedAt'>): void;
+	'user.forceLogout': (uid: string) => void;
 	'user.nameChanged'(user: Pick<IUser, '_id' | 'name' | 'username'>): void;
 	'user.realNameChanged'(user: Partial<IUser>): void;
 	'user.roleUpdate'(update: {
@@ -285,12 +287,7 @@ export type EventSignatures = {
 	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
 	'connector.statuschanged'(enabled: boolean): void;
 	'federation.userRoleChanged'(update: Record<string, any>): void;
-	'watch.priorities'(data: {
-		clientAction: ClientAction;
-		data: Partial<ILivechatPriority>;
-		id: string;
-		diff?: Record<string, string>;
-	}): void;
+	'watch.priorities'(data: { clientAction: ClientAction; id: ILivechatPriority['_id']; diff?: Record<string, string> }): void;
 	'apps.added'(appId: string): void;
 	'apps.removed'(appId: string): void;
 	'apps.updated'(appId: string): void;
@@ -301,4 +298,6 @@ export type EventSignatures = {
 	'command.updated'(command: string): void;
 	'command.removed'(command: string): void;
 	'actions.changed'(): void;
+	'otrMessage'(data: { roomId: string; message: IMessage; room: IRoom; user: IUser }): void;
+	'otrAckUpdate'(data: { roomId: string; acknowledgeMessage: IOTRMessage }): void;
 };

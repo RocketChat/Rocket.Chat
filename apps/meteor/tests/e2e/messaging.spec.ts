@@ -1,3 +1,5 @@
+import type { Page } from '@playwright/test';
+
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
@@ -49,15 +51,28 @@ test.describe.serial('Messaging', () => {
 		await expect(page.locator('[data-qa-type="message"]:has-text("msg1")')).toBeFocused();
 
 		// move focus to the message toolbar
-		await page.locator('[data-qa-type="message"]:has-text("msg1")').locator('[role=toolbar][aria-label="Message actions"]').getByRole('button', { name: 'Add reaction' }).waitFor();
-		
+		await page
+			.locator('[data-qa-type="message"]:has-text("msg1")')
+			.locator('[role=toolbar][aria-label="Message actions"]')
+			.getByRole('button', { name: 'Add reaction' })
+			.waitFor();
+
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
-		await expect(page.locator('[data-qa-type="message"]:has-text("msg1")').locator('[role=toolbar][aria-label="Message actions"]').getByRole('button', { name: 'Add reaction' })).toBeFocused();
-		
+		await expect(
+			page
+				.locator('[data-qa-type="message"]:has-text("msg1")')
+				.locator('[role=toolbar][aria-label="Message actions"]')
+				.getByRole('button', { name: 'Add reaction' }),
+		).toBeFocused();
+
 		// move focus to the composer
 		await page.keyboard.press('Tab');
-		await page.locator('[data-qa-type="message"]:has-text("msg2")').locator('[role=toolbar][aria-label="Message actions"]').getByRole('button', { name: 'Add reaction' }).waitFor();
+		await page
+			.locator('[data-qa-type="message"]:has-text("msg2")')
+			.locator('[role=toolbar][aria-label="Message actions"]')
+			.getByRole('button', { name: 'Add reaction' })
+			.waitFor();
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Tab');
 		await expect(poHomeChannel.composer).toBeFocused();
@@ -87,47 +102,77 @@ test.describe.serial('Messaging', () => {
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Space');
 		await expect(poHomeChannel.userCardToolbar).not.toBeVisible();
-	})
+	});
 
 	test('should not restore focus on the last focused if it was triggered by click', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		await page.locator('[data-qa-type="message"]:has-text("msg1")').click();	
+		await page.locator('[data-qa-type="message"]:has-text("msg1")').click();
 		await poHomeChannel.composer.click();
-		await page.locator('[data-qa-type="message"]:has-text("msg2")').click();
+		await page.keyboard.press('Shift+Tab');
 
 		await expect(page.locator('[data-qa-type="message"]:has-text("msg2")')).toBeFocused();
 	});
 
-	test('expect show "hello word" in both contexts (targetChannel)', async ({ browser }) => {
+	test('should not focus on the last message when focusing by click', async ({ page }) => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
-		const { page } = await createAuxContext(browser, Users.user2);
-		const auxContext = { page, poHomeChannel: new HomeChannel(page) };
+		await page.locator('[data-qa-type="message"]:has-text("msg1")').click();
 
-		await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
-
-		await poHomeChannel.content.sendMessage('hello world');
-
-		await expect(async () => {
-			await expect(auxContext.poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-		}).toPass();
-
-		await auxContext.page.close();
+		await expect(page.locator('[data-qa-type="message"]').last()).not.toBeFocused();
 	});
 
-	test('expect show "hello word" in both contexts (direct)', async ({ browser }) => {
-		await poHomeChannel.sidenav.openChat('user2');
-		const { page } = await createAuxContext(browser, Users.user2);
-		const auxContext = { page, poHomeChannel: new HomeChannel(page) };
-		await auxContext.poHomeChannel.sidenav.openChat('user1');
+	test('should focus the latest message when moving the focus on the list and theres no previous focus', async ({ page }) => {
+		await poHomeChannel.sidenav.openChat(targetChannel);
+		await page.getByRole('button', { name: targetChannel }).first().focus();
 
-		await poHomeChannel.content.sendMessage('hello world');
+		// move focus to the list
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
 
-		await expect(async () => {
-			await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-			await expect(auxContext.poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
-		}).toPass();
+		await page.getByRole('button', { name: targetChannel }).first().focus();
 
-		await auxContext.page.close();
+		// move focus to the list again
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await page.keyboard.press('Tab');
+		await expect(page.locator('[data-qa-type="message"]').last()).toBeFocused();
+	});
+
+	test.describe('Both contexts', () => {
+		let auxContext: { page: Page; poHomeChannel: HomeChannel };
+		test.beforeEach(async ({ browser }) => {
+			const { page } = await createAuxContext(browser, Users.user2);
+			auxContext = { page, poHomeChannel: new HomeChannel(page) };
+		});
+
+		test.afterEach(async () => {
+			await auxContext.page.close();
+		});
+
+		test('expect show "hello word" in both contexts (targetChannel)', async () => {
+			await poHomeChannel.sidenav.openChat(targetChannel);
+
+			await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
+
+			await poHomeChannel.content.sendMessage('hello world');
+
+			await expect(async () => {
+				await expect(auxContext.poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+				await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+			}).toPass();
+		});
+
+		test('expect show "hello word" in both contexts (direct)', async () => {
+			await poHomeChannel.sidenav.openChat('user2');
+			await auxContext.poHomeChannel.sidenav.openChat('user1');
+
+			await poHomeChannel.content.sendMessage('hello world');
+
+			await expect(async () => {
+				await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+				await expect(auxContext.poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+			}).toPass();
+		});
 	});
 });

@@ -36,7 +36,7 @@ export const updateBusinessUnit = async (newBusinessUnit) => {
 };
 
 export const loadConfig = async () => {
-	const { token, businessUnit = null, iframe: { guest: { department } = {} } = {} } = store.state;
+	const { renderedTriggers, token, businessUnit = null, iframe: { guest: { department } = {} } = {} } = store.state;
 
 	Livechat.credentials.token = token;
 
@@ -60,7 +60,7 @@ export const loadConfig = async () => {
 		user,
 		queueInfo,
 		sound: { src, enabled: true, play: false },
-		messages: [],
+		messages: [...renderedTriggers],
 		typing: [],
 		noMoreMessages: false,
 		visible: true,

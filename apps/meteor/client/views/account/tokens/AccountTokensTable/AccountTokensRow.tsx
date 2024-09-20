@@ -1,8 +1,7 @@
 import type { IPersonalAccessToken, Serialized } from '@rocket.chat/core-typings';
 import { ButtonGroup, IconButton } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
@@ -13,16 +12,8 @@ type AccountTokensRowProps = {
 	onRemove: (name: string) => void;
 } & Serialized<Pick<IPersonalAccessToken, 'name' | 'createdAt' | 'lastTokenPart' | 'bypassTwoFactor'>>;
 
-const AccountTokensRow: FC<AccountTokensRowProps> = ({
-	bypassTwoFactor,
-	createdAt,
-	isMedium,
-	lastTokenPart,
-	name,
-	onRegenerate,
-	onRemove,
-}) => {
-	const t = useTranslation();
+const AccountTokensRow = ({ bypassTwoFactor, createdAt, isMedium, lastTokenPart, name, onRegenerate, onRemove }: AccountTokensRowProps) => {
+	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const handleRegenerate = useCallback(() => onRegenerate(name), [name, onRegenerate]);
 	const handleRemove = useCallback(() => onRemove(name), [name, onRemove]);

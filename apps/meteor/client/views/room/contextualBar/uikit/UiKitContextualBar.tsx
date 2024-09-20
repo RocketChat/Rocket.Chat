@@ -1,5 +1,5 @@
 import { Avatar, Box, Button, ButtonGroup, ContextualbarFooter, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	UiKitComponent,
 	UiKitContextualBar as UiKitContextualBarSurfaceRender,
@@ -32,63 +32,51 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 
 	const { closeTab } = useRoomToolbox();
 
-	const handleSubmit = useMutableCallback((e: FormEvent) => {
+	const handleSubmit = useEffectEvent((e: FormEvent) => {
 		preventSyntheticEvent(e);
 		closeTab();
-		void actionManager
-			.emitInteraction(view.appId, {
-				type: 'viewSubmit',
-				payload: {
-					view: {
-						...view,
-						state,
-					},
+		void actionManager.emitInteraction(view.appId, {
+			type: 'viewSubmit',
+			payload: {
+				view: {
+					...view,
+					state,
 				},
+			},
+			viewId: view.id,
+		});
+	});
+
+	const handleCancel = useEffectEvent((e: UIEvent) => {
+		preventSyntheticEvent(e);
+		closeTab();
+		void actionManager.emitInteraction(view.appId, {
+			type: 'viewClosed',
+			payload: {
 				viewId: view.id,
-			})
-			.finally(() => {
-				actionManager.disposeView(view.id);
-			});
+				view: {
+					...view,
+					state,
+				},
+				isCleared: false,
+			},
+		});
 	});
 
-	const handleCancel = useMutableCallback((e: UIEvent) => {
+	const handleClose = useEffectEvent((e: UIEvent) => {
 		preventSyntheticEvent(e);
 		closeTab();
-		void actionManager
-			.emitInteraction(view.appId, {
-				type: 'viewClosed',
-				payload: {
-					viewId: view.id,
-					view: {
-						...view,
-						state,
-					},
-					isCleared: false,
+		void actionManager.emitInteraction(view.appId, {
+			type: 'viewClosed',
+			payload: {
+				viewId: view.id,
+				view: {
+					...view,
+					state,
 				},
-			})
-			.finally(() => {
-				actionManager.disposeView(view.id);
-			});
-	});
-
-	const handleClose = useMutableCallback((e: UIEvent) => {
-		preventSyntheticEvent(e);
-		closeTab();
-		void actionManager
-			.emitInteraction(view.appId, {
-				type: 'viewClosed',
-				payload: {
-					viewId: view.id,
-					view: {
-						...view,
-						state,
-					},
-					isCleared: true,
-				},
-			})
-			.finally(() => {
-				actionManager.disposeView(view.id);
-			});
+				isCleared: true,
+			},
+		});
 	});
 
 	return (

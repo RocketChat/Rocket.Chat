@@ -54,7 +54,7 @@ export class SAML {
 			case 'sloRedirect':
 				return this.processSLORedirectAction(req, res);
 			case 'authorize':
-				return this.processAuthorizeAction(res, service, samlObject);
+				return this.processAuthorizeAction(req, res, service, samlObject);
 			case 'validate':
 				return this.processValidateAction(req, res, service, samlObject);
 			default:
@@ -198,11 +198,6 @@ export class SAML {
 			updateData.emails = emails;
 		}
 
-		// Overwrite fullname if needed
-		if (nameOverwrite === true) {
-			updateData.name = fullName;
-		}
-
 		// When updating an user, we only update the roles if we received them from the mapping
 		if (userObject.roles?.length) {
 			updateData.roles = userObject.roles;
@@ -221,8 +216,8 @@ export class SAML {
 			},
 		);
 
-		if ((username && username !== user.username) || (fullName && fullName !== user.name)) {
-			await saveUserIdentity({ _id: user._id, name: fullName || undefined, username });
+		if ((username && username !== user.username) || (nameOverwrite && fullName && fullName !== user.name)) {
+			await saveUserIdentity({ _id: user._id, name: nameOverwrite ? fullName || undefined : user.name, username });
 		}
 
 		// sending token along with the userId
@@ -378,11 +373,19 @@ export class SAML {
 	}
 
 	private static async processAuthorizeAction(
+		req: IIncomingMessage,
 		res: ServerResponse,
 		service: IServiceProviderOptions,
 		samlObject: ISAMLAction,
 	): Promise<void> {
 		service.id = samlObject.credentialToken;
+
+		// Allow redirecting to internal domains when login process is complete
+		const { referer } = req.headers;
+		const siteUrl = settings.get<string>('Site_Url');
+		if (typeof referer === 'string' && referer.startsWith(siteUrl)) {
+			service.redirectUrl = referer;
+		}
 
 		const serviceProvider = new SAMLServiceProvider(service);
 		let url: string | undefined;
@@ -430,7 +433,7 @@ export class SAML {
 				};
 
 				await this.storeCredential(credentialToken, loginResult);
-				const url = Meteor.absoluteUrl(SAMLUtils.getValidationActionRedirectPath(credentialToken));
+				const url = Meteor.absoluteUrl(SAMLUtils.getValidationActionRedirectPath(credentialToken, service.redirectUrl));
 				res.writeHead(302, {
 					Location: url,
 				});

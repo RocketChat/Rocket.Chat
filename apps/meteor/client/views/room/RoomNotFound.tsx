@@ -4,8 +4,8 @@ import { useLayout, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import BurgerMenu from '../../components/BurgerMenu';
 import NotFoundState from '../../components/NotFoundState';
+import SidebarToggler from '../../components/SidebarToggler';
 import RoomLayout from './layout/RoomLayout';
 
 const RoomNotFound = (): ReactElement => {
@@ -18,7 +18,7 @@ const RoomNotFound = (): ReactElement => {
 				isMobile && (
 					<Header justifyContent='start'>
 						<HeaderToolbar>
-							<BurgerMenu />
+							<SidebarToggler />
 						</HeaderToolbar>
 					</Header>
 				)

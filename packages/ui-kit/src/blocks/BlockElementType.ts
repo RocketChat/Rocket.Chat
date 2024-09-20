@@ -1,5 +1,3 @@
-import type { BlockElement } from './BlockElement';
-
 export enum BlockElementType {
 	BUTTON = 'button',
 	IMAGE = 'image',
@@ -29,8 +27,3 @@ export enum BlockElementType {
 	TIME_PICKER = 'time_picker',
 	TAB = 'tab',
 }
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type AssertEnumKeysFromBlockUnionTypes = {
-	[B in BlockElement as Uppercase<B['type']>]: (typeof BlockElementType)[Uppercase<B['type']>];
-};

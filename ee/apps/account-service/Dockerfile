@@ -43,6 +43,9 @@ COPY ./ee/packages/license/dist packages/license/dist
 COPY ./packages/ui-kit/package.json packages/ui-kit/package.json
 COPY ./packages/ui-kit/dist packages/ui-kit/dist
 
+COPY ./packages/tools/package.json packages/tools/package.json
+COPY ./packages/tools/dist packages/tools/dist
+
 COPY ./ee/apps/${SERVICE}/dist .
 
 COPY ./package.json .

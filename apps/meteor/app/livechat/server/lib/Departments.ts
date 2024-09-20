@@ -1,8 +1,9 @@
-import type { ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
+import { notifyOnLivechatDepartmentAgentChanged } from '../../../lib/server/lib/notifyListener';
 
 class DepartmentHelperClass {
 	logger = new Logger('Omnichannel:DepartmentHelper');
@@ -24,29 +25,42 @@ class DepartmentHelperClass {
 			throw new Error('error-failed-to-delete-department');
 		}
 
-		const agentsIds: string[] = await LivechatDepartmentAgents.findAgentsByDepartmentId<Pick<ILivechatDepartmentAgents, 'agentId'>>(
-			department._id,
-			{ projection: { agentId: 1 } },
-		)
-			.cursor.map((agent) => agent.agentId)
-			.toArray();
+		const removedAgents = await LivechatDepartmentAgents.findByDepartmentId(department._id, { projection: { agentId: 1 } }).toArray();
 
 		this.logger.debug(
 			`Performing post-department-removal actions: ${_id}. Removing department agents, unsetting fallback department and removing department from rooms`,
 		);
 
+		const removeByDept = LivechatDepartmentAgents.removeByDepartmentId(_id);
+
 		const promiseResponses = await Promise.allSettled([
-			LivechatDepartmentAgents.removeByDepartmentId(_id),
+			removeByDept,
 			LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id),
 			LivechatRooms.bulkRemoveDepartmentAndUnitsFromRooms(_id),
 		]);
+
 		promiseResponses.forEach((response, index) => {
 			if (response.status === 'rejected') {
 				this.logger.error(`Error while performing post-department-removal actions: ${_id}. Action No: ${index}. Error:`, response.reason);
 			}
 		});
 
-		await callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
+		const { deletedCount } = await removeByDept;
+
+		if (deletedCount > 0) {
+			removedAgents.forEach(({ _id: docId, agentId }) => {
+				void notifyOnLivechatDepartmentAgentChanged(
+					{
+						_id: docId,
+						agentId,
+						departmentId: _id,
+					},
+					'removed',
+				);
+			});
+		}
+
+		await callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds: removedAgents.map(({ agentId }) => agentId) });
 
 		return ret;
 	}

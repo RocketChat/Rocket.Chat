@@ -3,7 +3,7 @@ import { useRouter, useSetModal, useUpload, useEndpoint } from '@rocket.chat/ui-
 import { useMutation } from '@tanstack/react-query';
 import React, { useCallback, useState } from 'react';
 
-import { AppClientOrchestratorInstance } from '../../../../ee/client/apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
 import { useAppsReload } from '../../../contexts/hooks/useAppsReload';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
@@ -114,8 +114,11 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 	};
 
 	const extractManifestFromAppFile = async (appFile: File) => {
-		const manifest = await getManifestFromZippedApp(appFile);
-		return manifest;
+		try {
+			return getManifestFromZippedApp(appFile);
+		} catch (error) {
+			handleInstallError(error as Error);
+		}
 	};
 
 	const install = async () => {
@@ -158,6 +161,7 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 				handleEnableUnlimitedApps={() => {
 					openExternalLink(manageSubscriptionUrl);
 					setModal(null);
+					setInstalling(false);
 				}}
 			/>,
 		);

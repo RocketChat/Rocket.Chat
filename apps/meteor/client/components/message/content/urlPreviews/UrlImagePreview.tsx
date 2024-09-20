@@ -10,7 +10,7 @@ const UrlImagePreview = ({ url }: Pick<UrlPreviewMetadata, 'url'>): ReactElement
 
 	return (
 		<Box maxHeight={oembedMaxHeight} maxWidth='100%'>
-			<MessageGenericPreviewImage className='gallery-item' url={url || ''} />
+			<MessageGenericPreviewImage data-id={url} className='preview-image' url={url || ''} alt='' />
 		</Box>
 	);
 };

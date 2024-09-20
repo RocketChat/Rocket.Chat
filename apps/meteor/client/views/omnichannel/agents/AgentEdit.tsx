@@ -12,6 +12,7 @@ import {
 	Select,
 	ContextualbarFooter,
 	ButtonGroup,
+	CheckOption,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
@@ -28,12 +29,12 @@ import {
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
 } from '../../../components/Contextualbar';
-import UserInfo from '../../../components/UserInfo';
+import { UserInfoAvatar } from '../../../components/UserInfo';
 import { MaxChatsPerAgent } from '../additionalForms';
 
 type AgentEditProps = {
 	agentData: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'>;
-	userDepartments: Pick<ILivechatDepartmentAgents, 'departmentId'>[];
+	userDepartments: (Pick<ILivechatDepartmentAgents, 'departmentId'> & { departmentName: string })[];
 	availableDepartments: Pick<ILivechatDepartment, '_id' | 'name' | 'archived'>[];
 };
 
@@ -49,15 +50,26 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 
 	const email = getUserEmailAddress(agentData);
 
+	const departments: Pick<ILivechatDepartment, '_id' | 'name' | 'archived'>[] = useMemo(() => {
+		const pending = userDepartments
+			.filter(({ departmentId }) => !availableDepartments.find((dep) => dep._id === departmentId))
+			.map((dep) => ({
+				_id: dep.departmentId,
+				name: dep.departmentName,
+			}));
+
+		return [...availableDepartments, ...pending];
+	}, [availableDepartments, userDepartments]);
+
 	const departmentsOptions: SelectOption[] = useMemo(() => {
 		const archivedDepartment = (name: string, archived?: boolean) => (archived ? `${name} [${t('Archived')}]` : name);
 
 		return (
-			availableDepartments.map(({ _id, name, archived }) =>
+			departments.map(({ _id, name, archived }) =>
 				name ? [_id, archivedDepartment(name, archived)] : [_id, archivedDepartment(_id, archived)],
 			) || []
 		);
-	}, [availableDepartments, t]);
+	}, [departments, t]);
 
 	const statusOptions: SelectOption[] = useMemo(
 		() => [
@@ -122,7 +134,7 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 					<form id={formId} onSubmit={handleSubmit(handleSave)}>
 						{username && (
 							<Box display='flex' flexDirection='column' alignItems='center'>
-								<UserInfo.Avatar data-qa-id='agent-edit-avatar' username={username} />
+								<UserInfoAvatar data-qa-id='agent-edit-avatar' username={username} />
 							</Box>
 						)}
 						<FieldGroup>
@@ -185,6 +197,9 @@ const AgentEdit = ({ agentData, userDepartments, availableDepartments }: AgentEd
 												options={departmentsOptions}
 												{...field}
 												placeholder={t('Select_an_option')}
+												renderItem={({ label, ...props }) => (
+													<CheckOption {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />
+												)}
 											/>
 										)}
 									/>

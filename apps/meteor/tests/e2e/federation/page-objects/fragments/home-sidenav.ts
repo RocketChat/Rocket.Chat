@@ -36,7 +36,7 @@ export class FederationSidenav {
 	}
 
 	async logout(): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-avatar-button"]').click();
+		await this.page.getByRole('button', { name: 'User menu' }).click();
 		await this.page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
 	}
 

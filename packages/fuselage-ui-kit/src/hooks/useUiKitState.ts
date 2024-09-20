@@ -42,7 +42,7 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
       | Event
       | { target: EventTarget }
       | { target: { value: UiKit.ActionOf<TElement> } }
-  ) => void
+  ) => Promise<void>
 ] => {
   const { blockId, actionId, appId, dispatchActionConfig } = element;
   const {
@@ -57,7 +57,11 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
   const { values, errors } = useContext(UiKitContext);
 
   const _value = getElementValueFromState(actionId, values, initialValue);
-  const error = errors?.[actionId];
+  const error = Array.isArray(errors)
+    ? errors.find((error) =>
+        Object.keys(error).find((key) => key === actionId)
+      )?.[actionId]
+    : errors?.[actionId];
 
   const [value, setValue] = useSafely(useState(_value));
   const [loading, setLoading] = useSafely(useState(false));
@@ -66,15 +70,20 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
     const {
       target: { value: elValue },
     } = e;
+
     setLoading(true);
 
     if (Array.isArray(value)) {
-      const idx = value.findIndex((value) => value === elValue);
-
-      if (idx > -1) {
-        setValue(value.filter((_, i) => i !== idx));
+      if (Array.isArray(elValue)) {
+        setValue(elValue);
       } else {
-        setValue([...value, elValue]);
+        const idx = value.findIndex((value) => value === elValue);
+
+        if (idx > -1) {
+          setValue(value.filter((_, i) => i !== idx));
+        } else {
+          setValue([...value, elValue]);
+        }
       }
     } else {
       setValue(elValue);

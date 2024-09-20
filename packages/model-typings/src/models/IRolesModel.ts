@@ -1,5 +1,5 @@
 import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
-import type { FindCursor, FindOptions, InsertOneResult, UpdateResult, WithId } from 'mongodb';
+import type { FindCursor, FindOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -32,7 +32,7 @@ export interface IRolesModel extends IBaseModel<IRole> {
 		scope: IRole['scope'],
 		description?: IRole['description'],
 		mandatory2fa?: IRole['mandatory2fa'],
-	): Promise<UpdateResult>;
+	): Promise<IRole>;
 	findUsersInRole(roleId: IRole['_id'], scope?: IRoom['_id']): Promise<FindCursor<IUser>>;
 
 	findUsersInRole(roleId: IRole['_id'], scope: IRoom['_id'] | undefined, options: FindOptions<IUser>): Promise<FindCursor<IUser>>;
@@ -58,7 +58,7 @@ export interface IRolesModel extends IBaseModel<IRole> {
 		description?: string,
 		protectedRole?: boolean,
 		mandatory2fa?: boolean,
-	): Promise<InsertOneResult<WithId<IRole>>>;
+	): Promise<IRole>;
 
 	canAddUserToRole(uid: IUser['_id'], roleId: IRole['_id'], scope?: IRoom['_id']): Promise<boolean>;
 }

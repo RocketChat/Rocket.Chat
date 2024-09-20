@@ -1,11 +1,12 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../../components/MarkdownText';
+import type { MarketplaceRouteContext } from '../../hooks/useAppsCountQuery';
 
 type UninstallGrandfatheredAppModalProps = {
-	context: 'explore' | 'marketplace' | 'private';
+	context: MarketplaceRouteContext;
 	limit: number;
 	appName: string;
 	handleUninstall: () => void;
@@ -13,7 +14,7 @@ type UninstallGrandfatheredAppModalProps = {
 };
 
 const UninstallGrandfatheredAppModal = ({ context, limit, appName, handleUninstall, handleClose }: UninstallGrandfatheredAppModalProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<Modal>

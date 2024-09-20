@@ -2,7 +2,6 @@ import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitl
 import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { FC } from 'react';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,7 +18,7 @@ import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import ModerationFilter from '../helpers/ModerationFilter';
 import ModConsoleUserTableRow from './ModConsoleUserTableRow';
 
-const ModConsoleUsersTable: FC = () => {
+const ModConsoleUsersTable = () => {
 	const [text, setText] = useState('');
 	const router = useRouter();
 	const { t } = useTranslation();

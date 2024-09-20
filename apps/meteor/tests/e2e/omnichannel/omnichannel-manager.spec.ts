@@ -16,26 +16,23 @@ test.describe.serial('omnichannel-manager', () => {
 
 	test('OC - Manage Managers - Add, Search and Remove', async ({ page }) => {
 		await test.step('expect "user1" be first ', async () => {
-			await poOmnichannelManagers.inputUsername.type('user');
+			await poOmnichannelManagers.inputUsername.fill('user');
 			await expect(page.locator('role=option[name="user1"]')).toContainText('user1');
-
-			await poOmnichannelManagers.inputUsername.type('');
 		});
-			
+
 		await test.step('expect add "user1" as manager', async () => {
-			await poOmnichannelManagers.inputUsername.type('user1');
-			await page.locator('role=option[name="user1"]').click();
+			await poOmnichannelManagers.selectUsername('user1');
 			await poOmnichannelManagers.btnAdd.click();
 
-			await expect(poOmnichannelManagers.firstRowInTable('user1')).toBeVisible();
+			await expect(poOmnichannelManagers.findRowByName('user1')).toBeVisible();
 		});
 
 		await test.step('expect search for manager', async () => {
 			await poOmnichannelManagers.search('user1');
-			await expect(poOmnichannelManagers.firstRowInTable('user1')).toBeVisible();
-			
+			await expect(poOmnichannelManagers.findRowByName('user1')).toBeVisible();
+
 			await poOmnichannelManagers.search('NonExistingUser');
-			await expect(poOmnichannelManagers.firstRowInTable('user1')).toBeHidden();
+			await expect(poOmnichannelManagers.findRowByName('user1')).toBeHidden();
 
 			await poOmnichannelManagers.clearSearch();
 		});
@@ -45,7 +42,7 @@ test.describe.serial('omnichannel-manager', () => {
 			await poOmnichannelManagers.btnDeleteSelectedAgent('user1').click();
 			await poOmnichannelManagers.btnModalRemove.click();
 
-			await expect(poOmnichannelManagers.firstRowInTable('user1')).toBeHidden();
+			await expect(poOmnichannelManagers.findRowByName('user1')).toBeHidden();
 		});
 	});
 });

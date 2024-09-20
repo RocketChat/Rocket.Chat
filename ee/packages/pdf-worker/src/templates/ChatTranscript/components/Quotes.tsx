@@ -12,12 +12,13 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: colors.n250,
 		borderLeftColor: colors.n600,
-		padding: 16,
 		borderTopWidth: 1,
-		borderBottomWidth: 1,
+		paddingLeft: 16,
+		paddingRight: 16,
 	},
 	quoteMessage: {
-		marginTop: 6,
+		paddingTop: 6,
+		paddingBottom: 6,
 		fontSize: fontScales.p2.fontSize,
 	},
 });
@@ -29,11 +30,9 @@ const Quote = ({ quote, children, index }: { quote: QuoteType; children: JSX.Ele
 			marginTop: !index ? 4 : 16,
 		}}
 	>
-		<View>
-			<MessageHeader name={quote.name} time={quote.ts} light />
-			<View style={styles.quoteMessage}>
-				<Markup tokens={quote.md} />
-			</View>
+		<MessageHeader name={quote.name} time={quote.ts} light />
+		<View style={styles.quoteMessage}>
+			<Markup tokens={quote.md} />
 		</View>
 
 		{children}

@@ -2,16 +2,79 @@ import type { IAppsTokens, RequiredField, Optional, IPushNotificationConfig } fr
 import { AppsTokens } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { pick } from '@rocket.chat/tools';
+import Ajv from 'ajv';
+import { JWT } from 'google-auth-library';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings/server';
 import { initAPN, sendAPN } from './apn';
 import type { PushOptions, PendingPushNotification } from './definition';
+import { sendFCM } from './fcm';
 import { sendGCM } from './gcm';
 import { logger } from './logger';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
+
+const ajv = new Ajv({
+	coerceTypes: true,
+});
+
+export type FCMCredentials = {
+	type: string;
+	project_id: string;
+	private_key_id: string;
+	private_key: string;
+	client_email: string;
+	client_id: string;
+	auth_uri: string;
+	token_uri: string;
+	auth_provider_x509_cert_url: string;
+	client_x509_cert_url: string;
+	universe_domain: string;
+};
+
+export const FCMCredentialsValidationSchema = {
+	type: 'object',
+	properties: {
+		type: {
+			type: 'string',
+		},
+		project_id: {
+			type: 'string',
+		},
+		private_key_id: {
+			type: 'string',
+		},
+		private_key: {
+			type: 'string',
+		},
+		client_email: {
+			type: 'string',
+		},
+		client_id: {
+			type: 'string',
+		},
+		auth_uri: {
+			type: 'string',
+		},
+		token_uri: {
+			type: 'string',
+		},
+		auth_provider_x509_cert_url: {
+			type: 'string',
+		},
+		client_x509_cert_url: {
+			type: 'string',
+		},
+		universe_domain: {
+			type: 'string',
+		},
+	},
+	required: ['client_email', 'project_id', 'private_key_id', 'private_key'],
+};
+
+export const isFCMCredentials = ajv.compile<FCMCredentials>(FCMCredentialsValidationSchema);
 
 // This type must match the type defined in the push gateway
 type GatewayNotification = {
@@ -56,6 +119,14 @@ type GatewayNotification = {
 	delayUntil?: Date;
 	createdAt: Date;
 	createdBy?: string;
+};
+
+export type NativeNotificationParameters = {
+	userTokens: string | string[];
+	notification: PendingPushNotification;
+	_replaceToken: (currentToken: IAppsTokens['token'], newToken: IAppsTokens['token']) => void;
+	_removeToken: (token: IAppsTokens['token']) => void;
+	options: RequiredField<PushOptions, 'gcm'>;
 };
 
 class PushClass {
@@ -109,7 +180,12 @@ class PushClass {
 		return Boolean(!!this.options.gateways && settings.get('Register_Server') && settings.get('Cloud_Service_Agree_PrivacyTerms'));
 	}
 
-	private sendNotificationNative(app: IAppsTokens, notification: PendingPushNotification, countApn: string[], countGcm: string[]): void {
+	private async sendNotificationNative(
+		app: IAppsTokens,
+		notification: PendingPushNotification,
+		countApn: string[],
+		countGcm: string[],
+	): Promise<void> {
 		logger.debug('send to token', app.token);
 
 		if ('apn' in app.token && app.token.apn) {
@@ -124,7 +200,29 @@ class PushClass {
 			// Send to GCM
 			// We do support multiple here - so we should construct an array
 			// and send it bulk - Investigate limit count of id's
-			if (this.options.gcm?.apiKey) {
+			// TODO: Remove this after the legacy provider is removed
+			const useLegacyProvider = settings.get<boolean>('Push_UseLegacy');
+
+			if (!useLegacyProvider) {
+				// override this.options.gcm.apiKey with the oauth2 token
+				const { projectId, token } = await this.getNativeNotificationAuthorizationCredentials();
+				const sendGCMOptions = {
+					...this.options,
+					gcm: {
+						...this.options.gcm,
+						apiKey: token,
+						projectNumber: projectId,
+					},
+				};
+
+				sendFCM({
+					userTokens: app.token.gcm,
+					notification,
+					_replaceToken: this.replaceToken,
+					_removeToken: this.removeToken,
+					options: sendGCMOptions as RequiredField<PushOptions, 'gcm'>,
+				});
+			} else if (this.options.gcm?.apiKey) {
 				sendGCM({
 					userTokens: app.token.gcm,
 					notification,
@@ -135,6 +233,37 @@ class PushClass {
 			}
 		} else {
 			throw new Error('send got a faulty query');
+		}
+	}
+
+	private async getNativeNotificationAuthorizationCredentials(): Promise<{ token: string; projectId: string }> {
+		const credentialsString = settings.get<string>('Push_google_api_credentials');
+		if (!credentialsString.trim()) {
+			throw new Error('Push_google_api_credentials is not set');
+		}
+
+		try {
+			const credentials = JSON.parse(credentialsString);
+			if (!isFCMCredentials(credentials)) {
+				throw new Error('Push_google_api_credentials is not in the correct format');
+			}
+
+			const client = new JWT({
+				email: credentials.client_email,
+				key: credentials.private_key,
+				keyId: credentials.private_key_id,
+				scopes: 'https://www.googleapis.com/auth/firebase.messaging',
+			});
+
+			await client.authorize();
+
+			return {
+				token: client.credentials.access_token as string,
+				projectId: credentials.project_id,
+			};
+		} catch (error) {
+			logger.error('Error getting FCM token', error);
+			throw new Error('Error getting FCM token');
 		}
 	}
 
@@ -270,7 +399,7 @@ class PushClass {
 				continue;
 			}
 
-			this.sendNotificationNative(app, notification, countApn, countGcm);
+			await this.sendNotificationNative(app, notification, countApn, countGcm);
 		}
 
 		if (settings.get('Log_Level') === '2') {
