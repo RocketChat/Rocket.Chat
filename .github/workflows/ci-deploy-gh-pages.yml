@@ -1,0 +1,38 @@
+# .github/workflows/ci-preview-deploy.yml
+name: Deploy GitHub Pages
+concurrency: preview-deploy-${{ github.ref }}
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: rharkor/caching-for-turbo@v1.5
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: 14.21.3
+          cache-modules: true
+          install: true
+
+      - name: Build
+        run: |
+          yarn turbo run build-preview
+          yarn turbo run .:build-preview-move
+          npx indexifier .preview --html  --extensions .html  > .preview/index.html
+          mv .preview ${{ github.ref_name }}
+          mkdir .preview
+          mv ${{ github.ref_name }} .preview
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .preview
+          keep_files: true

@@ -1,5 +1,113 @@
 # @rocket.chat/ddp-client
 
+## 0.3.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b764c415dc, 7937ff741a, 58c0efc732, e28be46db7, 58c0efc732]:</summary>
+
+  - @rocket.chat/rest-typings@6.12.0
+  - @rocket.chat/core-typings@6.12.0
+  - @rocket.chat/api-client@0.2.6
+  </details>
+
+## 0.3.6-rc.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.6
+  - @rocket.chat/rest-typings@6.12.0-rc.6
+  - @rocket.chat/api-client@0.2.6-rc.6
+  </details>
+
+## 0.3.6-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.5
+  - @rocket.chat/rest-typings@6.12.0-rc.5
+  - @rocket.chat/api-client@0.2.6-rc.5
+  </details>
+
+## 0.3.6-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.4
+  - @rocket.chat/rest-typings@6.12.0-rc.4
+  - @rocket.chat/api-client@0.2.6-rc.4
+  </details>
+
+## 0.3.6-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.3
+  - @rocket.chat/rest-typings@6.12.0-rc.3
+  - @rocket.chat/api-client@0.2.5-rc.3
+  </details>
+
+## 0.3.6-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.2
+  - @rocket.chat/rest-typings@6.12.0-rc.2
+  - @rocket.chat/api-client@0.2.5-rc.2
+  </details>
+
+## 0.3.6-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.0-rc.1
+  - @rocket.chat/rest-typings@6.12.0-rc.1
+  - @rocket.chat/api-client@0.2.5-rc.1
+  </details>
+
+## 0.3.6-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [b764c415dc, 7937ff741a, 58c0efc732, e28be46db7, 58c0efc732]:</summary>
+
+  - @rocket.chat/rest-typings@6.12.0-rc.0
+  - @rocket.chat/core-typings@6.12.0-rc.0
+  - @rocket.chat/api-client@0.2.4-rc.0
+  </details>
+
+## 0.3.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.11.2
+  - @rocket.chat/api-client@0.2.5
+  </details>
+
+## 0.3.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@6.11.1
+  - @rocket.chat/api-client@0.2.4
+  </details>
+
 ## 0.3.3
 
 ### Patch Changes

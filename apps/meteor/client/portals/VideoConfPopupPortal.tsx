@@ -1,18 +1,15 @@
+import { AnchorPortal } from '@rocket.chat/ui-client';
 import type { ReactElement, ReactNode } from 'react';
-import React, { memo, useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
+import React, { memo } from 'react';
 
-import { createAnchor } from '../lib/utils/createAnchor';
-import { deleteAnchor } from '../lib/utils/deleteAnchor';
+const videoConfAnchorId = 'video-conf-root';
 
 type VideoConfPortalProps = {
 	children?: ReactNode;
 };
 
 const VideoConfPortal = ({ children }: VideoConfPortalProps): ReactElement => {
-	const [videoConfRoot] = useState(() => createAnchor('video-conf-root'));
-	useEffect(() => (): void => deleteAnchor(videoConfRoot), [videoConfRoot]);
-	return <>{createPortal(children, videoConfRoot)}</>;
+	return <AnchorPortal id={videoConfAnchorId}>{children}</AnchorPortal>;
 };
 
 export default memo(VideoConfPortal);

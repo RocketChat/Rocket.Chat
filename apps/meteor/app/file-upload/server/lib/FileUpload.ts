@@ -175,7 +175,12 @@ export const FileUpload = {
 			throw new Meteor.Error('error-invalid-file-type', reason);
 		}
 
-		// E2EE files are of type - application/octet-stream, application/octet-stream is whitelisted for E2EE files.
+		// E2EE files should be of type application/octet-stream. no information about them should be disclosed on upload if they are encrypted
+		if (isE2EEUpload(file)) {
+			file.type = 'application/octet-stream';
+		}
+
+		// E2EE files are of type application/octet-stream, which is whitelisted for E2EE files
 		if (!fileUploadIsValidContentType(file?.type, isE2EEUpload(file) ? 'application/octet-stream' : undefined)) {
 			const reason = i18n.t('File_type_is_not_accepted', { lng: language });
 			throw new Meteor.Error('error-invalid-file-type', reason);

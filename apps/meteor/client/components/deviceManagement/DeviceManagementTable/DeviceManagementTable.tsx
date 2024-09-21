@@ -1,9 +1,9 @@
 import type { DeviceManagementSession, DeviceManagementPopulatedSession, Serialized } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import GenericNoResults from '../../GenericNoResults/GenericNoResults';
@@ -37,7 +37,7 @@ const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagem
 	setItemsPerPage,
 	paginationProps,
 }: DeviceManagementTableProps<T>): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	if (!data && phase === AsyncStatePhase.REJECTED) {
 		return (

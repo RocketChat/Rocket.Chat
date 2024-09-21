@@ -2,6 +2,7 @@ import { api } from '@rocket.chat/core-services';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Users } from '@rocket.chat/models';
+import type { TOptions } from 'i18next';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
@@ -103,9 +104,9 @@ export async function executeSendMessage(
 		SystemLogger.error({ msg: 'Error sending message:', err });
 
 		const errorMessage = typeof err === 'string' ? err : err.error || err.message;
-		const errorContext = err.details ?? {};
+		const errorContext: TOptions = err.details ?? {};
 		void api.broadcast('notify.ephemeralMessage', uid, message.rid, {
-			msg: i18n.t(errorMessage, errorContext, user.language),
+			msg: i18n.t(errorMessage, { ...errorContext, lng: user.language }),
 		});
 
 		if (typeof err === 'string') {

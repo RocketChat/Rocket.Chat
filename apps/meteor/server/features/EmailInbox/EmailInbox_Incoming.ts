@@ -22,7 +22,7 @@ import { logger } from './logger';
 type FileAttachment = VideoAttachmentProps & ImageAttachmentProps & AudioAttachmentProps;
 
 const language = settings.get<string>('Language') || 'en';
-const t = (s: string): string => i18n.t(s, { lng: language });
+const t = i18n.getFixedT(language);
 
 async function getGuestByEmail(email: string, name: string, department = ''): Promise<ILivechatVisitor | null> {
 	const guest = await LivechatVisitors.findOneGuestByEmailAddress(email);

@@ -1,5 +1,7 @@
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
+import { GenericMenu } from '@rocket.chat/ui-client';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { MessageComposerAction, MessageComposerActionsDivider } from '@rocket.chat/ui-composer';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
@@ -8,8 +10,6 @@ import React, { memo } from 'react';
 
 import { messageBox } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
-import GenericMenu from '../../../../../components/GenericMenu/GenericMenu';
-import type { GenericMenuItemProps } from '../../../../../components/GenericMenu/GenericMenuItem';
 import { useMessageboxAppsActionButtons } from '../../../../../hooks/useAppActionButtons';
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom } from '../../../contexts/RoomContext';
