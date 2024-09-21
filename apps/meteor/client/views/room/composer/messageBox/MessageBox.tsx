@@ -1,5 +1,6 @@
 /* eslint-disable complexity */
-import type { IMessage, ISubscription, IUpload, IE2EEMessage, FileAttachmentProps } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
@@ -14,8 +15,9 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
+import fileSize from 'filesize';
 import type { ReactElement, MouseEventHandler, FormEvent, ClipboardEventHandler, MouseEvent } from 'react';
-import React, { memo, useRef, useReducer, useCallback, useState } from 'react';
+import React, { memo, useRef, useReducer, useCallback, useState, useEffect } from 'react';
 import { Trans } from 'react-i18next';
 import { useSubscription } from 'use-subscription';
 
@@ -40,16 +42,13 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
+import FilePreview from './FilePreview/FilePreview';
+import { handleSendFiles } from './HandleFileUploads';
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
-import fileSize from 'filesize';
-import { e2e } from '../../../../../app/e2e/client';
-import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
-import { Box } from '@rocket.chat/fuselage';
-import FilePreview from './FilePreview/FilePreview';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -83,6 +82,8 @@ const a: any[] = [];
 const getEmptyArray = () => a;
 
 type MessageBoxProps = {
+	filesToUpload: File[];
+	setFilesToUpload: any;
 	tmid?: IMessage['_id'];
 	readOnly: boolean;
 	onSend?: (params: { value: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean }) => Promise<void>;
@@ -103,6 +104,8 @@ type MessageBoxProps = {
 type HandleFilesToUpload = (filesList: File[], resetFileInput?: () => void) => void;
 
 const MessageBox = ({
+	filesToUpload,
+	setFilesToUpload,
 	tmid,
 	onSend,
 	onJoin,
@@ -125,12 +128,16 @@ const MessageBox = ({
 
 	const [typing, setTyping] = useReducer(reducer, false);
 	const [isUploading, setIsUploading] = useState(false);
-	const [filesToUpload, setFilesToUpload] = useState<File[]>([]);
+
+	useEffect(() => {
+		setIsUploading(filesToUpload.length > 0);
+	}, [filesToUpload]);
+
 	const dispatchToastMessage = useToastMessageDispatch();
 	const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
 
-	const handleFilesToUpload: HandleFilesToUpload = (filesList, resetFileInput) => {
-		setFilesToUpload((prevFiles) => {
+	const handleFilesToUpload: HandleFilesToUpload = (filesList: File[], resetFileInput?: () => void) => {
+		setFilesToUpload((prevFiles: File[]) => {
 			let newFilesToUpload = [...prevFiles, ...filesList];
 			if (newFilesToUpload.length > 6) {
 				newFilesToUpload = newFilesToUpload.slice(0, 6);
@@ -139,28 +146,38 @@ const MessageBox = ({
 					message: "You can't upload more than 6 files at once. Only the first 6 files will be uploaded.",
 				});
 			}
+			let nameError = 0;
+			let sizeError = 0;
 
 			const validFiles = newFilesToUpload.filter((queuedFile) => {
 				const { name, size } = queuedFile;
 
 				if (!name) {
-					dispatchToastMessage({
-						type: 'error',
-						message: t('error-the-field-is-required', { field: t('Name') }),
-					});
+					nameError = 1;
 					return false;
 				}
 
 				if (maxFileSize > -1 && (size || 0) > maxFileSize) {
-					dispatchToastMessage({
-						type: 'error',
-						message: `${t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })}`,
-					});
+					sizeError = 1;
 					return false;
 				}
 
 				return true;
 			});
+
+			if (nameError) {
+				dispatchToastMessage({
+					type: 'error',
+					message: t('error-the-field-is-required', { field: t('Name') }),
+				});
+			}
+
+			if (sizeError) {
+				dispatchToastMessage({
+					type: 'error',
+					message: `${t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })}`,
+				});
+			}
 
 			setIsUploading(validFiles.length > 0);
 			return validFiles;
@@ -168,182 +185,22 @@ const MessageBox = ({
 
 		resetFileInput?.();
 	};
+	const handleRemoveFile = (indexToRemove: number) => {
+		const updatedFiles = [...filesToUpload];
 
-	const handleRemoveFile = (index: number) => {
-		const temp = [...filesToUpload];
-		temp.splice(index, 1);
-		setFilesToUpload(temp);
-		setIsUploading(temp.length > 0);
-	};
-
-	const getHeightAndWidthFromDataUrl = (dataURL: string): Promise<{ height: number; width: number }> => {
-		return new Promise((resolve) => {
-			const img = new Image();
-			img.onload = () => {
-				resolve({
-					height: img.height,
-					width: img.width,
-				});
-			};
-			img.src = dataURL;
-		});
-	};
-	const uploadFile = (
-		file: File[] | File,
-		extraData?: Pick<IMessage, 't' | 'e2e'> & { msg?: string },
-		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
-		fileContent?: { raw: Partial<IUpload>; encrypted?: { algorithm: string; ciphertext: string } | undefined },
-	) => {
-		if (!chat) {
-			console.error('Chat context not found');
-			return;
-		}
-		chat.uploads.send(
-			file,
-			{
-				...extraData,
-			},
-			getContent,
-			fileContent,
-		);
-		chat.composer?.clear();
-		setFilesToUpload([]);
-	};
-
-	const handleEncryptedFilesShared = async (filesToUpload: File[], msg: string, e2eRoom: any) => {
-		const encryptedFilesarray: any = await Promise.all(filesToUpload.map((file) => e2eRoom.encryptFile(file)));
-		const filesarray = encryptedFilesarray.map((file: any) => file?.file);
-
-		if (encryptedFilesarray[0]) {
-			const getContent = async (_id: string[], fileUrl: string[]): Promise<IE2EEMessage['content']> => {
-				const attachments = [];
-				const arrayoffiles = [];
-				for (let i = 0; i < _id.length; i++) {
-					const attachment: FileAttachmentProps = {
-						title: filesToUpload[i].name,
-						type: 'file',
-						title_link: fileUrl[i],
-						title_link_download: true,
-						encryption: {
-							key: encryptedFilesarray[i].key,
-							iv: encryptedFilesarray[i].iv,
-						},
-						hashes: {
-							sha256: encryptedFilesarray[i].hash,
-						},
-					};
-
-					if (/^image\/.+/.test(filesToUpload[i].type)) {
-						const dimensions = await getHeightAndWidthFromDataUrl(window.URL.createObjectURL(filesToUpload[i]));
-
-						attachments.push({
-							...attachment,
-							image_url: fileUrl[i],
-							image_type: filesToUpload[i].type,
-							image_size: filesToUpload[i].size,
-							...(dimensions && {
-								image_dimensions: dimensions,
-							}),
-						});
-					} else if (/^audio\/.+/.test(filesToUpload[i].type)) {
-						attachments.push({
-							...attachment,
-							audio_url: fileUrl[i],
-							audio_type: filesToUpload[i].type,
-							audio_size: filesToUpload[i].size,
-						});
-					} else if (/^video\/.+/.test(filesToUpload[i].type)) {
-						attachments.push({
-							...attachment,
-							video_url: fileUrl[i],
-							video_type: filesToUpload[i].type,
-							video_size: filesToUpload[i].size,
-						});
-					} else {
-						attachments.push({
-							...attachment,
-							size: filesToUpload[i].size,
-							format: getFileExtension(filesToUpload[i].name),
-						});
-					}
-
-					const files = {
-						_id: _id[i],
-						name: filesToUpload[i].name,
-						type: filesToUpload[i].type,
-						size: filesToUpload[i].size,
-					};
-					arrayoffiles.push(files);
-				}
-
-				return e2eRoom.encryptMessageContent({
-					attachments,
-					files: arrayoffiles,
-					file: filesToUpload[0],
-				});
-			};
-
-			const fileContentData = {
-				type: filesToUpload[0].type,
-				typeGroup: filesToUpload[0].type.split('/')[0],
-				name: filesToUpload[0].name,
-				msg: msg || '',
-				encryption: {
-					key: encryptedFilesarray[0].key,
-					iv: encryptedFilesarray[0].iv,
-				},
-				hashes: {
-					sha256: encryptedFilesarray[0].hash,
-				},
-			};
-
-			const fileContent = await e2eRoom.encryptMessageContent(fileContentData);
-
-			const uploadFileData = {
-				raw: {},
-				encrypted: fileContent,
-			};
-			uploadFile(
-				filesarray,
-				{
-					t: 'e2e',
-				},
-				getContent,
-				uploadFileData,
-			);
-		}
-	};
-	const handleSendFiles = async (filesToUpload: File[]) => {
-		if (!chat || !room) {
-			return;
+		const element = document.getElementById(`file-preview-${indexToRemove}`);
+		if (element) {
+			element.style.transition = 'opacity 0.3s ease-in-out';
+			element.style.opacity = '0';
 		}
 
-		const msg = chat.composer?.text ?? '';
-
-		filesToUpload.forEach((file) => {
-			Object.defineProperty(file, 'name', {
-				writable: true,
-				value: file.name,
-			});
-		});
-
-		const e2eRoom = await e2e.getInstanceByRoomId(room._id);
-
-		if (!e2eRoom) {
-			uploadFile(filesToUpload, { msg });
-			return;
-		}
-
-		const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages({ msg });
-
-		if (!shouldConvertSentMessages) {
-			uploadFile(filesToUpload, { msg });
-			return;
-		}
-		handleEncryptedFilesShared(filesToUpload, msg, e2eRoom);
-		chat.composer?.clear();
-		setFilesToUpload([]);
-		return;
+		setTimeout(() => {
+			updatedFiles.splice(indexToRemove, 1);
+			setFilesToUpload(updatedFiles);
+			if (element) {
+				element.style.opacity = '1';
+			}
+		}, 300);
 	};
 
 	const { isMobile } = useLayout();
@@ -386,9 +243,10 @@ const MessageBox = ({
 		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
 	});
 
-	const handleSendMessage = useMutableCallback(async () => {
+	const handleSendMessage = useMutableCallback(() => {
 		if (isUploading) {
-			return handleSendFiles(filesToUpload);
+			setIsUploading(!isUploading);
+			return handleSendFiles(filesToUpload, chat, room, setFilesToUpload);
 		}
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
@@ -646,21 +504,29 @@ const MessageBox = ({
 					aria-activedescendant={ariaActiveDescendant}
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
-				<Box
-					display='flex'
-					style={{
-						gap: '3px',
-						width: '100%',
-					}}
-				>
-					{isUploading && (
-						<>
+				{isUploading && (
+					<>
+						<Box
+							display='flex'
+							flexDirection='row'
+							overflowX='auto'
+							style={{ width: '100%', whiteSpace: 'nowrap', padding: '10px', gap: '10px' }}
+						>
 							{filesToUpload.map((file, index) => (
-								<FilePreview key={index} file={file} index={index} onRemove={handleRemoveFile} />
+								<div
+									key={index}
+									id={`file-preview-${index}`}
+									style={{
+										transition: 'opacity 0.3s ease-in-out',
+										opacity: '1',
+									}}
+								>
+									<FilePreview key={index} file={file} index={index} onRemove={handleRemoveFile} />
+								</div>
 							))}
-						</>
-					)}
-				</Box>
+						</Box>
+					</>
+				)}
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction

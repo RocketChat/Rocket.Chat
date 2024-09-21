@@ -58,11 +58,8 @@ const send = async (
 		},
 	]);
 
-	const fileIds: string[] = [];
-	const fileUrls: string[] = [];
-
-	files.forEach((f) => {
-		new Promise<void>((resolve, reject) => {
+	const uploadPromises = files.map((f) => {
+		return new Promise<{ fileId: string; fileUrl: string }>((resolve, reject) => {
 			const xhr = sdk.rest.upload(
 				`/v1/rooms.media/${rid}`,
 				{
@@ -77,10 +74,6 @@ const send = async (
 							return;
 						}
 						const progress = (event.loaded / event.total) * 100;
-						if (progress === 100) {
-							resolve();
-						}
-
 						updateUploads((uploads) =>
 							uploads.map((upload) => {
 								if (upload.id !== id) {
@@ -113,60 +106,10 @@ const send = async (
 				},
 			);
 
-			xhr.onload = async () => {
+			xhr.onload = () => {
 				if (xhr.readyState === xhr.DONE && xhr.status === 200) {
 					const result = JSON.parse(xhr.responseText);
-					fileIds.push(result.file._id);
-					fileUrls.push(result.file.url);
-					if (fileIds.length === files.length) {
-						if (msg === undefined) {
-							msg = '';
-						}
-
-						const text: IMessage = {
-							rid,
-							_id: id,
-							msg: '',
-							ts: new Date(),
-							u: { _id: id, username: id },
-							_updatedAt: new Date(),
-						};
-
-						try {
-							let content;
-							if (getContent) {
-								content = await getContent(fileIds, fileUrls);
-							}
-							const msgData = {
-								msg,
-								tmid,
-								description,
-								t,
-								content,
-							};
-							await sdk.call('sendMessage', text, fileUrls, fileIds, msgData);
-
-							updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
-						} catch (error) {
-							updateUploads((uploads) =>
-								uploads.map((upload) => {
-									if (upload.id !== id) {
-										return upload;
-									}
-
-									return {
-										...upload,
-										percentage: 0,
-										error: new Error(getErrorMessage(error)),
-									};
-								}),
-							);
-						} finally {
-							if (!uploads.length) {
-								UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
-							}
-						}
-					}
+					resolve({ fileId: result.file._id, fileUrl: result.file.url });
 				}
 			};
 
@@ -177,6 +120,52 @@ const send = async (
 			});
 		});
 	});
+
+	try {
+		const results = await Promise.all(uploadPromises);
+		const fileIds = results.map((result) => result.fileId);
+		const fileUrls = results.map((result) => result.fileUrl);
+
+		if (msg === undefined) {
+			msg = '';
+		}
+
+		let content;
+		if (getContent) {
+			content = await getContent(fileIds, fileUrls);
+		}
+		const text: IMessage = {
+			rid,
+			_id: id,
+			msg: msg || description || '',
+			ts: new Date(),
+			u: { _id: id, username: id },
+			_updatedAt: new Date(),
+			tmid,
+			t,
+			content,
+		};
+		await sdk.call('sendMessage', text, fileUrls, fileIds);
+		updateUploads((uploads) => uploads.filter((upload) => upload.id !== id));
+	} catch (error: unknown) {
+		updateUploads((uploads) =>
+			uploads.map((upload) => {
+				if (upload.id !== id) {
+					return upload;
+				}
+
+				return {
+					...upload,
+					percentage: 0,
+					error: new Error(getErrorMessage(error)),
+				};
+			}),
+		);
+	} finally {
+		if (!uploads.length) {
+			UserAction.stop(rid, USER_ACTIVITIES.USER_UPLOADING, { tmid });
+		}
+	}
 };
 
 export const createUploadsAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): UploadsAPI => ({

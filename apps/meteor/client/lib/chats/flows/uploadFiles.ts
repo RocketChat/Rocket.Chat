@@ -2,6 +2,7 @@ import type { IMessage, FileAttachmentProps, IE2EEMessage, IUpload } from '@rock
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { e2e } from '../../../../app/e2e/client';
+import { settings } from '../../../../app/settings/client';
 import { fileUploadIsValidContentType } from '../../../../app/utils/client';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import FileUploadModal from '../../../views/room/modals/FileUploadModal';
@@ -34,7 +35,7 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 	const uploadFile = (
 		file: File,
 		extraData?: Pick<IMessage, 't' | 'e2e'> & { description?: string },
-		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
+		getContent?: (fileId: string[], fileUrl: string[]) => Promise<IE2EEMessage['content']>,
 		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
 	) => {
 		chat.uploads.send(
@@ -83,6 +84,11 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 						return;
 					}
 
+					if (!settings.get('E2E_Enable_Encrypt_Files')) {
+						uploadFile(file, { description });
+						return;
+					}
+
 					const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages({ msg });
 
 					if (!shouldConvertSentMessages) {
@@ -93,8 +99,10 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					const encryptedFile = await e2eRoom.encryptFile(file);
 
 					if (encryptedFile) {
-						const getContent = async (_id: string, fileUrl: string): Promise<IE2EEMessage['content']> => {
+						const getContent = async (filesId: string[], filesUrl: string[]): Promise<IE2EEMessage['content']> => {
 							const attachments = [];
+							const _id = filesId[0];
+							const fileUrl = filesUrl[0];
 
 							const attachment: FileAttachmentProps = {
 								title: file.name,

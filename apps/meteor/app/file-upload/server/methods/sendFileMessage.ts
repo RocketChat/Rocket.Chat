@@ -16,7 +16,7 @@ import { Meteor } from 'meteor/meteor';
 import { callbacks } from '../../../../lib/callbacks';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import { omit } from '../../../../lib/utils/omit';
-// import { SystemLogger } from '../../../../server/lib/logger/system';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { FileUpload } from '../lib/FileUpload';
@@ -30,122 +30,148 @@ function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtL
 	});
 }
 
+export const parseMultipleFilesIntoMessageAttachments = async (
+	filesToConfirm: Partial<IUpload>[],
+	roomId: string,
+	user: IUser,
+): Promise<{ files: FileProp[]; attachments: MessageAttachment[] }> => {
+	const messageFiles: FileProp[] = [];
+	const messageAttachments: MessageAttachment[] = [];
+
+	const filesAndAttachments = await Promise.all(
+		filesToConfirm
+			.filter((files: Partial<IUpload>) => !!files)
+			.map(async (file) => {
+				try {
+					const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
+					return { files, attachments };
+				} catch (error) {
+					console.error('Error processing file:', file, error);
+					return { files: [], attachments: [] };
+				}
+			}),
+	);
+
+	filesAndAttachments
+		.filter(({ files, attachments }) => files.length || attachments.length)
+		.forEach(({ files, attachments }) => {
+			messageFiles.push(...files);
+			messageAttachments.push(...attachments);
+		});
+
+	return { files: messageFiles, attachments: messageAttachments };
+};
+
 export const parseFileIntoMessageAttachments = async (
-	filearr: Partial<IUpload>[] | Partial<IUpload>,
+	file: Partial<IUpload>,
 	roomId: string,
 	user: IUser,
 ): Promise<FilesAndAttachments> => {
+	validateFileRequiredFields(file);
+
+	await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
+
+	const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
+
 	const attachments: MessageAttachment[] = [];
-	const filesarray: FileProp[] = [];
-	if (!Array.isArray(filearr)) {
-		filearr = [filearr];
-	}
-	filearr.forEach(async (file: Partial<IUpload>) => {
-		validateFileRequiredFields(file);
 
-		await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
+	const files = [
+		{
+			_id: file._id,
+			name: file.name || '',
+			type: file.type || 'file',
+			size: file.size || 0,
+			format: file.identify?.format || '',
+		},
+	];
 
-		const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
+	if (/^image\/.+/.test(file.type as string)) {
+		const attachment: FileAttachmentProps = {
+			title: file.name,
+			type: 'file',
+			description: file?.description,
+			title_link: fileUrl,
+			title_link_download: true,
+			image_url: fileUrl,
+			image_type: file.type as string,
+			image_size: file.size,
+		};
 
-		const files = [
-			{
-				_id: file._id,
-				name: file.name || '',
-				type: file.type || 'file',
-				size: file.size || 0,
-				format: file.identify?.format || '',
-			},
-		];
-
-		if (/^image\/.+/.test(file.type as string)) {
-			const attachment: FileAttachmentProps = {
-				title: file.name,
-				type: 'file',
-				description: file?.description,
-				title_link: fileUrl,
-				title_link_download: true,
-				image_url: fileUrl,
-				image_type: file.type as string,
-				image_size: file.size,
-			};
-
-			if (file.identify?.size) {
-				attachment.image_dimensions = file.identify.size;
-			}
-
-			// try {
-			// 	attachment.image_preview = await FileUpload.resizeImagePreview(file);
-			// 	const thumbResult = await FileUpload.createImageThumbnail(file);
-			// 	if (thumbResult) {
-			// 		const { data: thumbBuffer, width, height, thumbFileType, thumbFileName, originalFileId } = thumbResult;
-			// 		const thumbnail = await FileUpload.uploadImageThumbnail(
-			// 			{
-			// 				thumbFileName,
-			// 				thumbFileType,
-			// 				originalFileId,
-			// 			},
-			// 			thumbBuffer,
-			// 			roomId,
-			// 			user._id,
-			// 		);
-			// 		const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
-			// 		attachment.image_url = thumbUrl;
-			// 		attachment.image_type = thumbnail.type;
-			// 		attachment.image_dimensions = {
-			// 			width,
-			// 			height,
-			// 		};
-			// 		files.push({
-			// 			_id: thumbnail._id,
-			// 			name: thumbnail.name || '',
-			// 			type: thumbnail.type || 'file',
-			// 			size: thumbnail.size || 0,
-			// 			format: thumbnail.identify?.format || '',
-			// 		});
-			// 	}
-			// } catch (e) {
-			// 	SystemLogger.error(e);
-			// }
-			attachments.push(attachment);
-		} else if (/^audio\/.+/.test(file.type as string)) {
-			const attachment: FileAttachmentProps = {
-				title: file.name,
-				type: 'file',
-				description: file.description,
-				title_link: fileUrl,
-				title_link_download: true,
-				audio_url: fileUrl,
-				audio_type: file.type as string,
-				audio_size: file.size,
-			};
-			attachments.push(attachment);
-		} else if (/^video\/.+/.test(file.type as string)) {
-			const attachment: FileAttachmentProps = {
-				title: file.name,
-				type: 'file',
-				description: file.description,
-				title_link: fileUrl,
-				title_link_download: true,
-				video_url: fileUrl,
-				video_type: file.type as string,
-				video_size: file.size as number,
-			};
-			attachments.push(attachment);
-		} else {
-			const attachment = {
-				title: file.name,
-				type: 'file',
-				format: getFileExtension(file.name),
-				description: file.description,
-				title_link: fileUrl,
-				title_link_download: true,
-				size: file.size as number,
-			};
-			attachments.push(attachment);
+		if (file.identify?.size) {
+			attachment.image_dimensions = file.identify.size;
 		}
-		filesarray.push(...files);
-	});
-	return { files: filesarray, attachments };
+
+		try {
+			attachment.image_preview = await FileUpload.resizeImagePreview(file);
+			const thumbResult = await FileUpload.createImageThumbnail(file);
+			if (thumbResult) {
+				const { data: thumbBuffer, width, height, thumbFileType, thumbFileName, originalFileId } = thumbResult;
+				const thumbnail = await FileUpload.uploadImageThumbnail(
+					{
+						thumbFileName,
+						thumbFileType,
+						originalFileId,
+					},
+					thumbBuffer,
+					roomId,
+					user._id,
+				);
+				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
+				attachment.image_url = thumbUrl;
+				attachment.image_type = thumbnail.type;
+				attachment.image_dimensions = {
+					width,
+					height,
+				};
+				files.push({
+					_id: thumbnail._id,
+					name: thumbnail.name || '',
+					type: thumbnail.type || 'file',
+					size: thumbnail.size || 0,
+					format: thumbnail.identify?.format || '',
+				});
+			}
+		} catch (e) {
+			SystemLogger.error(e);
+		}
+		attachments.push(attachment);
+	} else if (/^audio\/.+/.test(file.type as string)) {
+		const attachment: FileAttachmentProps = {
+			title: file.name,
+			type: 'file',
+			description: file.description,
+			title_link: fileUrl,
+			title_link_download: true,
+			audio_url: fileUrl,
+			audio_type: file.type as string,
+			audio_size: file.size,
+		};
+		attachments.push(attachment);
+	} else if (/^video\/.+/.test(file.type as string)) {
+		const attachment: FileAttachmentProps = {
+			title: file.name,
+			type: 'file',
+			description: file.description,
+			title_link: fileUrl,
+			title_link_download: true,
+			video_url: fileUrl,
+			video_type: file.type as string,
+			video_size: file.size as number,
+		};
+		attachments.push(attachment);
+	} else {
+		const attachment = {
+			title: file.name,
+			type: 'file',
+			format: getFileExtension(file.name),
+			description: file.description,
+			title_link: fileUrl,
+			title_link_download: true,
+			size: file.size as number,
+		};
+		attachments.push(attachment);
+	}
+	return { files, attachments };
 };
 
 declare module '@rocket.chat/ddp-client' {

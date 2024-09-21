@@ -27,10 +27,10 @@ const ImagePreview = ({ url, file, onRemove, index }: ImagePreviewProps): ReactE
 	const handleMouseLeave = (): void => setIsHovered(false);
 
 	const buttonStyle: React.CSSProperties = {
-		position: 'absolute',
-		right: 0,
-		top: 0,
-		backgroundColor: 'gray',
+		position: 'absolute' as const,
+		right: '-10px',
+		top: '-8px',
+		backgroundColor: '#6d6c6c',
 		display: isHovered ? 'block' : 'none',
 		cursor: 'pointer',
 		zIndex: 1,
@@ -43,18 +43,18 @@ const ImagePreview = ({ url, file, onRemove, index }: ImagePreviewProps): ReactE
 	}
 
 	return (
-		<Box position='relative' onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+		<Box position='relative' onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} title={file.name}>
 			{loading && <PreviewSkeleton />}
 			<Box
 				is='img'
 				src={url}
 				maxWidth='150px'
-				style={{ objectFit: 'contain', borderRadius: '10px' }}
+				style={{ objectFit: 'contain', borderRadius: '10px', height: '45px' }}
 				onLoad={handleLoad}
 				onError={handleError}
 				display={loading ? 'none' : 'initial'}
 			/>
-			<Icon style={buttonStyle} name='cross' size='x20' mis={-2} mie={4} onClick={() => onRemove(index)} />
+			<Icon style={buttonStyle} name='cross' size='x16' mis={-2} mie={4} onClick={() => onRemove(index)} />
 		</Box>
 	);
 };

@@ -112,7 +112,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		const rids = subscribedRooms.map((room) => room.rid);
 		void notifyOnRoomChangedById(rids);
 
-		await Subscriptions.removeByUserId(userId); // Remove user subscriptions
+		await Subscriptions.removeByUserId(userId);
 
 		// Remove user as livechat agent
 		if (user.roles.includes('livechat-agent')) {

@@ -1,19 +1,19 @@
 import { Apps } from '@rocket.chat/apps';
 import { api, Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUpload } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Uploads } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import { isURL } from '../../../../lib/utils/isURL';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
+import { parseMultipleFilesIntoMessageAttachments } from '../../../file-upload/server/methods/sendFileMessage';
 import { settings } from '../../../settings/server';
 import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
-import { parseFileIntoMessageAttachments } from '../../../../app/file-upload/server/methods/sendFileMessage';
 
 // TODO: most of the types here are wrong, but I don't want to change them now
 
@@ -222,22 +222,27 @@ export const sendMessage = async function (
 	room: any,
 	upsert = false,
 	previewUrls?: string[],
-	filesArray?: Partial<IUpload>[] | Partial<IUpload>,
+	uploadIdsToConfirm?: string[],
 ) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
 
-	if (filesArray !== undefined && (typeof filesArray !== undefined || message?.t !== 'e2e')) {
-		const roomId = message.rid;
-		const { files, attachments } = await parseFileIntoMessageAttachments(
-			Array.isArray(filesArray) ? filesArray : [filesArray],
-			roomId,
-			user,
+	if (uploadIdsToConfirm !== undefined) {
+		const filesToConfirm: Partial<IUpload>[] = await Promise.all(
+			uploadIdsToConfirm.map(async (fileid) => {
+				const file = await Uploads.findOneById(fileid);
+				if (!file) {
+					throw new Meteor.Error('invalid-file');
+				}
+				return file;
+			}),
 		);
-		message.file = files[0];
-		message.files = files;
-		message.attachments = attachments;
+		if (message?.t !== 'e2e') {
+			const { files, attachments } = await parseMultipleFilesIntoMessageAttachments(filesToConfirm, message.rid, user);
+			message.files = files;
+			message.attachments = attachments;
+		}
 	}
 
 	await validateMessage(message, room, user);
@@ -311,6 +316,10 @@ export const sendMessage = async function (
 
 	// TODO: is there an opportunity to send returned data to notifyOnMessageChange?
 	await afterSaveMessage(message, room);
+
+	if (uploadIdsToConfirm !== undefined) {
+		await Promise.all(uploadIdsToConfirm.map((fileid) => Uploads.confirmTemporaryFile(fileid, user._id)));
+	}
 
 	void notifyOnMessageChange({ id: message._id });
 
