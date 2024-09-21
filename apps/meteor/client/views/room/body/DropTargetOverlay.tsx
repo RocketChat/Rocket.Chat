@@ -19,7 +19,7 @@ function DropTargetOverlay({
 	enabled,
 	setFilesToUplaod,
 	reason,
-	onFileDrop,
+	// onFileDrop, // not using onFileDrop anymore as we use setFilesToUplaod
 	visible = true,
 	onDismiss,
 }: DropTargetOverlayProps): ReactElement | null {
