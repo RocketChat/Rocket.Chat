@@ -1338,19 +1338,15 @@ const GETOmnichannelContactsSearchSchema = {
 	properties: {
 		count: {
 			type: 'number',
-			nullable: true,
 		},
 		offset: {
 			type: 'number',
-			nullable: true,
 		},
 		sort: {
 			type: 'string',
-			nullable: true,
 		},
 		searchText: {
 			type: 'string',
-			nullable: true,
 		},
 	},
 	required: [],

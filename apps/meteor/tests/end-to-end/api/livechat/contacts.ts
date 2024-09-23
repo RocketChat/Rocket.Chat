@@ -644,10 +644,7 @@ describe('LIVECHAT - contacts', () => {
 
 		before(async () => {
 			await updatePermission('view-livechat-contact', ['admin']);
-			const { body } = await request
-				.post(api('omnichannel/contacts'))
-				.set(credentials)
-				.send({ ...contact });
+			const { body } = await request.post(api('omnichannel/contacts')).set(credentials).send(contact);
 			contactId = body.contactId;
 		});
 

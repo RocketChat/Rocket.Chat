@@ -17,10 +17,9 @@ import {
 	LivechatContacts,
 } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { Filter, MatchKeysAndValues, OnlyFieldsOfType, RootFilterOperators } from 'mongodb';
+import type { MatchKeysAndValues, OnlyFieldsOfType, Sort } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
@@ -68,7 +67,7 @@ type GetContactsParams = {
 	searchText?: string;
 	count: number;
 	offset: number;
-	sort: Record<string, number>;
+	sort: Sort;
 };
 
 export const Contacts = {
@@ -260,30 +259,19 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 export async function getContacts(params: GetContactsParams): Promise<PaginatedResult<{ contacts: ILivechatContact[] }>> {
 	const { searchText, count, offset, sort } = params;
 
-	const searchRegex = escapeRegExp(searchText || '');
-	const match: Filter<ILivechatContact & RootFilterOperators<ILivechatContact>> = {
-		$or: [
-			{ name: { $regex: searchRegex }, $options: 'i'},
-			{ emails: { $regex: searchRegex }, $options: 'i'},
-			{ phones: { $regex: searchRegex }, $options: 'i'},
-		]
-	};
+	const { cursor, totalCount } = LivechatContacts.findPaginatedContacts(searchText, {
+		limit: count,
+		skip: offset,
+		sort: sort ?? { name: 1 },
+	});
 
-	const { cursor, totalCount } = LivechatContacts.findPaginated(
-		{ ...match },
-		{
-			sort,
-			skip: offset,
-			limit: count,
-			allowDiskUse: true,
-		},
-	);
+	const [contacts, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return {
-		contacts: await cursor.toArray(),
+		contacts,
 		count,
 		offset,
-		total: await totalCount,
+		total,
 	};
 }
 

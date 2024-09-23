@@ -1,6 +1,7 @@
 import type { ILivechatContact, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { ILivechatContactsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db } from 'mongodb';
+import type { FindPaginated, ILivechatContactsModel } from '@rocket.chat/model-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Collection, Db, RootFilterOperators, Filter, FindOptions, FindCursor } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -16,5 +17,24 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			{ returnDocument: 'after' },
 		);
 		return updatedValue.value as ILivechatContact;
+	}
+
+	findPaginatedContacts(searchText?: string, options?: FindOptions): FindPaginated<FindCursor<ILivechatContact>> {
+		const searchRegex = escapeRegExp(searchText || '');
+		const match: Filter<ILivechatContact & RootFilterOperators<ILivechatContact>> = {
+			$or: [
+				{ name: { $regex: searchRegex, $options: 'i' } },
+				{ emails: { $regex: searchRegex, $options: 'i' } },
+				{ phones: { $regex: searchRegex, $options: 'i' } },
+			],
+		};
+
+		return this.findPaginated(
+			{ ...match },
+			{
+				allowDiskUse: true,
+				...options,
+			},
+		);
 	}
 }
