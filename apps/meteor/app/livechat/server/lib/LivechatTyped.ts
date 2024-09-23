@@ -634,25 +634,30 @@ class LivechatClass {
 		visitorDataToUpdate.token = livechatVisitor?.token || token;
 
 		let existingUser = null;
+		let contactName = name;
 
 		if (livechatVisitor) {
 			Livechat.logger.debug('Found matching user by token');
 			visitorDataToUpdate._id = livechatVisitor._id;
+			contactName ??= livechatVisitor.name || livechatVisitor.username;
 		} else if (phone?.number && (existingUser = await LivechatVisitors.findOneVisitorByPhone(phone.number))) {
 			Livechat.logger.debug('Found matching user by phone number');
 			visitorDataToUpdate._id = existingUser._id;
 			// Don't change token when matching by phone number, use current visitor token
 			visitorDataToUpdate.token = existingUser.token;
+			contactName ??= existingUser.name || existingUser.username;
 		} else if (email && (existingUser = await LivechatVisitors.findOneGuestByEmailAddress(email))) {
 			Livechat.logger.debug('Found matching user by email');
 			visitorDataToUpdate._id = existingUser._id;
-		} else if (!livechatVisitor) {
+			contactName ??= existingUser.name || existingUser.username;
+		} else {
 			Livechat.logger.debug(`No matches found. Attempting to create new user with token ${token}`);
 
 			visitorDataToUpdate._id = id || undefined;
 			visitorDataToUpdate.username = username || (await LivechatVisitors.getNextVisitorUsername());
 			visitorDataToUpdate.status = status;
 			visitorDataToUpdate.ts = new Date();
+			contactName ??= visitorDataToUpdate.username;
 
 			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
 				Livechat.logger.debug(`Saving connection data for visitor ${token}`);
@@ -667,7 +672,7 @@ class LivechatClass {
 
 		if (process.env.TEST_MODE?.toUpperCase() === 'TRUE') {
 			const contactId = await createContact({
-				name: name ?? (visitorDataToUpdate.username as string),
+				name: contactName,
 				emails: email ? [email] : [],
 				phones: phone ? [phone.number] : [],
 				unknown: true,
