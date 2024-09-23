@@ -106,7 +106,7 @@ const configureSamlService = function (samlConfigs: Record<string, any>): IServi
 	};
 };
 
-export const loadSamlServiceProviders = async function (): Promise<void> {
+export const loadSamlServiceProviders = async function (shouldNotify = true): Promise<void> {
 	const serviceName = 'saml';
 	const services = settings.getByRegexp(/^(SAML_Custom_)[a-z]+$/i);
 
@@ -121,7 +121,9 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 					const samlConfigs = getSamlConfigs(key);
 					SAMLUtils.log(key);
 					await LoginServiceConfiguration.createOrUpdateService(serviceName, samlConfigs);
-					void notifyOnLoginServiceConfigurationChangedByService(serviceName);
+					if (shouldNotify) {
+						void notifyOnLoginServiceConfigurationChangedByService(serviceName);
+					}
 					return configureSamlService(samlConfigs);
 				}
 
@@ -135,7 +137,9 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 					return false;
 				}
 
-				void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
+				if (shouldNotify) {
+					void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
+				}
 
 				return false;
 			}),
@@ -230,10 +234,12 @@ export const addSettings = async function (name: string): Promise<void> {
 					await this.add(`SAML_Custom_${name}_button_label_color`, '#FFFFFF', {
 						type: 'string',
 						i18nLabel: 'Accounts_OAuth_Custom_Button_Label_Color',
+						alert: 'OAuth_button_colors_alert',
 					});
 					await this.add(`SAML_Custom_${name}_button_color`, '#1d74f5', {
 						type: 'string',
 						i18nLabel: 'Accounts_OAuth_Custom_Button_Color',
+						alert: 'OAuth_button_colors_alert',
 					});
 				});
 

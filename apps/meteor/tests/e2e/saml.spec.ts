@@ -10,6 +10,7 @@ import * as constants from './config/constants';
 import { createUserFixture } from './fixtures/collections/users';
 import { Users } from './fixtures/userStates';
 import { Registration } from './page-objects';
+import { convertHexToRGB } from './utils/convertHexToRGB';
 import { createCustomRole, deleteCustomRole } from './utils/custom-role';
 import { getUserInfo } from './utils/getUserInfo';
 import { parseMeteorResponse } from './utils/parseMeteorResponse';
@@ -59,6 +60,8 @@ const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupO
 		{ _id: 'SAML_Custom_Default_issuer', value: 'http://localhost:3000/_saml/metadata/test-sp' },
 		{ _id: 'SAML_Custom_Default_entry_point', value: 'http://localhost:8080/simplesaml/saml2/idp/SSOService.php' },
 		{ _id: 'SAML_Custom_Default_idp_slo_redirect_url', value: 'http://localhost:8080/simplesaml/saml2/idp/SingleLogoutService.php' },
+		{ _id: 'SAML_Custom_Default_button_label_text', value: 'SAML test login button' },
+		{ _id: 'SAML_Custom_Default_button_color', value: '#185925' },
 	];
 
 	await Promise.all(settings.map(({ _id, value }) => setSettingValueById(api, _id, value)));
@@ -150,6 +153,10 @@ test.describe('SAML', () => {
 	test('Login', async ({ page, api }) => {
 		await test.step('expect to have SAML login button available', async () => {
 			await expect(poRegistration.btnLoginWithSaml).toBeVisible({ timeout: 10000 });
+		});
+
+		await test.step('expect to have SAML login button to have the required background color', async () => {
+			await expect(poRegistration.btnLoginWithSaml).toHaveCSS('background-color', convertHexToRGB('#185925'));
 		});
 
 		await test.step('expect to be redirected to the IdP for login', async () => {

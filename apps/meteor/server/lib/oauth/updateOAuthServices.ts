@@ -15,7 +15,7 @@ import {
 import { settings } from '../../../app/settings/server/cached';
 import { logger } from './logger';
 
-export async function updateOAuthServices(): Promise<void> {
+export async function updateOAuthServices(shouldNotify = true): Promise<void> {
 	const services = settings.getByRegexp(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);
 	const filteredServices = services.filter(([, value]) => typeof value === 'boolean');
 	for await (const [key, value] of filteredServices) {
@@ -117,12 +117,14 @@ export async function updateOAuthServices(): Promise<void> {
 			}
 
 			await LoginServiceConfiguration.createOrUpdateService(serviceKey, data);
-			void notifyOnLoginServiceConfigurationChangedByService(serviceKey);
+			if (shouldNotify) {
+				void notifyOnLoginServiceConfigurationChangedByService(serviceKey);
+			}
 		} else {
 			const service = await LoginServiceConfiguration.findOneByService(serviceName, { projection: { _id: 1 } });
 			if (service?._id) {
 				const { deletedCount } = await LoginServiceConfiguration.removeService(service._id);
-				if (deletedCount > 0) {
+				if (deletedCount > 0 && shouldNotify) {
 					void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
 				}
 			}
