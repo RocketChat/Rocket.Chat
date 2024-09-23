@@ -616,8 +616,18 @@ describe('Meteor.methods', () => {
 
 	describe('[@cleanRoomHistory]', () => {
 		let rid: IRoom['_id'];
-
+		let testUser: IUser;
+		let testUserCredentials: Credentials;
 		let channelName: string;
+
+		before('update permissions', async () => {
+			await updatePermission('clean-channel-history', ['admin', 'user']);
+		});
+
+		before('create test user', async () => {
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+		});
 
 		before('create room', (done) => {
 			channelName = `methods-test-channel-${Date.now()}`;
@@ -676,7 +686,36 @@ describe('Meteor.methods', () => {
 				.end(done);
 		});
 
-		after(() => deleteRoom({ type: 'p', roomId: rid }));
+		after(() =>
+			Promise.all([deleteRoom({ type: 'p', roomId: rid }), deleteUser(testUser), updatePermission('clean-channel-history', ['admin'])]),
+		);
+
+		it('should throw an error if user is not part of the room', async () => {
+			await request
+				.post(methodCall('cleanRoomHistory'))
+				.set(testUserCredentials)
+				.send({
+					message: JSON.stringify({
+						method: 'cleanRoomHistory',
+						params: [
+							{
+								roomId: rid,
+								oldest: { $date: new Date().getTime() },
+								latest: { $date: new Date().getTime() },
+							},
+						],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', true);
+					const data = JSON.parse(res.body.message);
+					expect(data).to.have.a.property('error').that.is.an('object');
+					expect(data.error).to.have.a.property('error', 'error-not-allowed');
+				});
+		});
 
 		it('should not change the _updatedAt value when nothing is changed on the room', async () => {
 			const roomBefore = await request.get(api('groups.info')).set(credentials).query({

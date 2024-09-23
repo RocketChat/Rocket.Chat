@@ -72,7 +72,7 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		description: 'Sidepanel_navigation_description',
 		group: 'Navigation',
 		value: false,
-		enabled: false,
+		enabled: true,
 		enableQuery: {
 			name: 'newNavigation',
 			value: true,
