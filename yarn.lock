@@ -9842,6 +9842,7 @@ __metadata:
     "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/network-broker": "workspace:^"
     "@rocket.chat/omnichannel-services": "workspace:^"
     "@rocket.chat/pdf-worker": "workspace:^"
     "@rocket.chat/tools": "workspace:^"
