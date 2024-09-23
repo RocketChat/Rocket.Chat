@@ -3,7 +3,7 @@ import EJSON from 'ejson';
 import { Errors, Serializers, ServiceBroker } from 'moleculer';
 import { pino } from 'pino';
 
-import { NetworkBroker } from '../NetworkBroker';
+import { NetworkBroker } from './NetworkBroker';
 
 const {
 	MS_NAMESPACE = '',
