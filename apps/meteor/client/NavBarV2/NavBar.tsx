@@ -42,7 +42,7 @@ const NavBar = () => {
 	const { toolbarProps: omnichannelToolbarProps } = useToolbar({ 'aria-label': t('Omnichannel') }, omnichannelToolbarRef);
 
 	const voipToolbarRef = useRef(null);
-	const { toolbarProps: voipToolbarProps } = useToolbar({ 'aria-label': t('Voice_Call') }, omnichannelToolbarRef);
+	const { toolbarProps: voipToolbarProps } = useToolbar({ 'aria-label': t('Voice_Call') }, voipToolbarRef);
 
 	return (
 		<NavBarComponent aria-label='header'>
