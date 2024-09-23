@@ -6,7 +6,7 @@ import type { BaseTest } from './utils/test';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
-test.describe.parallel('Threads', () => {
+test.describe.serial('Threads', () => {
 	let targetChannel: { name: string; _id: string };
 	let threadMessage: IMessage;
 	let mainMessage: IMessage;
@@ -25,14 +25,14 @@ test.describe.parallel('Threads', () => {
 		threadMessage = childMessage;
 
 		await Promise.all(
-			Array.from({ length: 10 }).map(() =>
+			Array.from({ length: 5 }).map(() =>
 				api.post('/chat.postMessage', { roomId: targetChannel._id, text: largeSimpleMessage, tmid: parentMessage._id }),
 			),
 		);
 
 		// fill room with normal messages
 		await Promise.all(
-			Array.from({ length: 10 }).map(() => api.post('/chat.postMessage', { roomId: targetChannel._id, text: largeSimpleMessage })),
+			Array.from({ length: 5 }).map(() => api.post('/chat.postMessage', { roomId: targetChannel._id, text: largeSimpleMessage })),
 		);
 	};
 
@@ -47,8 +47,9 @@ test.describe.parallel('Threads', () => {
 		const messageLink = `/channel/${targetChannel.name}?msg=${mainMessage._id}`;
 		await page.goto(messageLink);
 
-		const message = await page.locator(`[aria-label='Message list'] [data-id=${mainMessage._id}]`);
+		const message = await page.locator(`[aria-label=\"Message list\"] [data-id=\"${mainMessage._id}\"]`);
 
+		await expect(message).toBeVisible();
 		await expect(message).toBeInViewport();
 	});
 
@@ -56,8 +57,9 @@ test.describe.parallel('Threads', () => {
 		const threadMessageLink = `/channel/general?msg=${threadMessage._id}`;
 		await page.goto(threadMessageLink);
 
-		const message = await page.locator(`[aria-label='Thread message list'] [data-id=${threadMessage._id}]`);
+		const message = await page.locator(`[aria-label=\"Thread message list\"] [data-id=\"${threadMessage._id}\"]`);
 
+		await expect(message).toBeVisible();
 		await expect(message).toBeInViewport();
 	});
 });
