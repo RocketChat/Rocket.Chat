@@ -262,6 +262,7 @@
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/mp3-encoder": "0.24.0",
+		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/omnichannel-services": "workspace:^",
 		"@rocket.chat/onboarding-ui": "~0.33.3",
 		"@rocket.chat/password-policies": "workspace:^",

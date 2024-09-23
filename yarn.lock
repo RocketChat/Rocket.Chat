@@ -9396,6 +9396,7 @@ __metadata:
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/mp3-encoder": 0.24.0
+    "@rocket.chat/network-broker": "workspace:^"
     "@rocket.chat/omnichannel-services": "workspace:^"
     "@rocket.chat/onboarding-ui": ~0.33.3
     "@rocket.chat/password-policies": "workspace:^"
@@ -9770,6 +9771,27 @@ __metadata:
   checksum: 24b819efb2188f69dd95a44a84297b3ae5683e53f4d575648e94ae255d85364976c374a6f06ec6094ffc51e7f9bf3ecc22e3d52c5e925d46315deadb27ad76d1
   languageName: node
   linkType: hard
+
+"@rocket.chat/network-broker@workspace:^, @rocket.chat/network-broker@workspace:ee/packages/network-broker":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/network-broker@workspace:ee/packages/network-broker"
+  dependencies:
+    "@rocket.chat/core-services": "workspace:^"
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@types/chai": ~4.3.19
+    "@types/ejson": ^2.2.2
+    "@types/node": ^14.18.63
+    "@types/sinon": ^10.0.20
+    chai: ^4.3.10
+    ejson: ^2.2.3
+    eslint: ~8.45.0
+    jest: ~29.7.0
+    moleculer: ^0.14.34
+    pino: ^8.15.0
+    sinon: ^14.0.2
+    typescript: ~5.5.4
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/omnichannel-services@workspace:^, @rocket.chat/omnichannel-services@workspace:ee/packages/omnichannel-services":
   version: 0.0.0-use.local
@@ -10493,6 +10515,7 @@ __metadata:
     "@codemirror/lang-json": ^6.0.1
     "@codemirror/tooltip": ^0.19.16
     "@lezer/highlight": ^1.1.6
+    "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": ~0.31.25
     "@rocket.chat/fuselage": ^0.59.0
     "@rocket.chat/fuselage-hooks": ^0.33.1
