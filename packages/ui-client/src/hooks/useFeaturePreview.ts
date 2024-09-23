@@ -1,4 +1,5 @@
-import { type FeaturesAvailable, usePreferenceFeaturePreviewList } from './useFeaturePreviewList';
+import { type FeaturesAvailable } from './useFeaturePreviewList';
+import { usePreferenceFeaturePreviewList } from './usePreferenceFeaturePreviewList';
 
 export const useFeaturePreview = (featureName: FeaturesAvailable) => {
 	const { features } = usePreferenceFeaturePreviewList();

@@ -1,6 +1,4 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
 
 export type FeaturesAvailable =
 	| 'quickReactions'
@@ -88,34 +86,15 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 export const enabledDefaultFeatures = defaultFeaturesPreview.filter((feature) => feature.enabled);
 
 // TODO: Remove this logic after we have a way to store object settings.
-const parseSetting = (setting: FeaturePreviewProps[] | string) => {
+export const parseSetting = (setting?: FeaturePreviewProps[] | string) => {
 	if (typeof setting === 'string') {
-		return JSON.parse(setting);
+		try {
+			return JSON.parse(setting) as FeaturePreviewProps[];
+		} catch (_) {
+			return;
+		}
 	}
 	return setting;
-};
-
-export const usePreferenceFeaturePreviewList = () => {
-	const featurePreviewEnabled = useSetting<boolean>('Accounts_AllowFeaturePreview');
-	const userFeaturesPreviewPreference = useUserPreference<FeaturePreviewProps[]>('featuresPreview');
-	const userFeaturesPreview = useMemo<FeaturePreviewProps[]>(
-		() => parseSetting(userFeaturesPreviewPreference!),
-		[userFeaturesPreviewPreference],
-	);
-	const { unseenFeatures, features } = useFeaturePreviewList(userFeaturesPreview);
-
-	if (!featurePreviewEnabled) {
-		return { unseenFeatures: 0, features: [] as FeaturePreviewProps[], featurePreviewEnabled };
-	}
-	return { unseenFeatures, features, featurePreviewEnabled };
-};
-
-export const useDefaultSettingFeaturePreviewList = () => {
-	const featurePreviewSettingJSON = useSetting<string>('Accounts_Default_User_Preferences_featuresPreview');
-
-	const settingFeaturePreview = useMemo<FeaturePreviewProps[]>(() => parseSetting(featurePreviewSettingJSON!), [featurePreviewSettingJSON]);
-
-	return useFeaturePreviewList(settingFeaturePreview);
 };
 
 export const useFeaturePreviewList = (featuresList: Pick<FeaturePreviewProps, 'name' | 'value'>[]) => {

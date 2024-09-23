@@ -1,7 +1,8 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
-import { usePreferenceFeaturePreviewList, enabledDefaultFeatures } from './useFeaturePreviewList';
+import { enabledDefaultFeatures } from './useFeaturePreviewList';
+import { usePreferenceFeaturePreviewList } from './usePreferenceFeaturePreviewList';
 
 it('should return the number of unseen features and Accounts_AllowFeaturePreview enabled ', () => {
 	const { result } = renderHook(() => usePreferenceFeaturePreviewList(), {
