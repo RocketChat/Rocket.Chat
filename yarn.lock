@@ -9980,6 +9980,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/network-broker": "workspace:^"
     "@rocket.chat/presence": "workspace:^"
     "@rocket.chat/string-helpers": ~0.31.25
     "@types/gc-stats": ^1.4.3
