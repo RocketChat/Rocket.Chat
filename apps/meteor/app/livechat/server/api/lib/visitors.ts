@@ -4,6 +4,7 @@ import type { FindOptions } from 'mongodb';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
+import { migrateVisitorToContactId } from '../../lib/Contacts';
 
 export async function findVisitorInfo({ visitorId }: { visitorId: IVisitor['_id'] }) {
 	const visitor = await LivechatVisitors.findOneEnabledById(visitorId);
@@ -12,7 +13,23 @@ export async function findVisitorInfo({ visitorId }: { visitorId: IVisitor['_id'
 	}
 
 	return {
-		visitor,
+		visitor: await ensureVisitorHasContactId(visitor),
+	};
+}
+
+export async function ensureVisitorHasContactId(visitor: ILivechatVisitor): Promise<ILivechatVisitor> {
+	if (!visitor || visitor.contactId) {
+		return visitor;
+	}
+
+	if (process.env.TEST_MODE?.toUpperCase() !== 'TRUE') {
+		return visitor;
+	}
+
+	// If the visitor doesn't have a contactId yet, create a new contact for it using the same _id
+	return {
+		...visitor,
+		contactId: await migrateVisitorToContactId(visitor),
 	};
 }
 

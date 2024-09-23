@@ -6,6 +6,7 @@ import type {
 	IOmnichannelRoom,
 	IUser,
 } from '@rocket.chat/core-typings';
+import type { InsertionModel } from '@rocket.chat/model-typings';
 import {
 	LivechatVisitors,
 	Users,
@@ -202,7 +203,66 @@ export const Contacts = {
 	},
 };
 
-export async function createContact(params: CreateContactParams): Promise<string> {
+async function getContactManagerIdByUsername(username?: IUser['username']): Promise<IUser['_id'] | undefined> {
+	if (!username) {
+		return undefined;
+	}
+
+	const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
+
+	return user?._id;
+}
+
+export async function migrateVisitorIdToContact(visitorId: ILivechatVisitor['_id']): Promise<ILivechatContact | null> {
+	const visitor = await LivechatVisitors.findOneById(visitorId);
+	const contactId = await migrateVisitorToContactId(visitor);
+
+	if (!contactId) {
+		return null;
+	}
+
+	return LivechatContacts.findOneById(contactId);
+}
+
+export async function migrateVisitorToContactId(visitor: ILivechatVisitor | null): Promise<ILivechatContact['_id'] | undefined> {
+	if (!visitor) {
+		return undefined;
+	}
+
+	// If a visitor was found, but it is already associated with a contact, skip the migration
+	if (visitor.contactId) {
+		return undefined;
+	}
+
+	const contactManager = await getContactManagerIdByUsername(visitor.contactManager?.username);
+	// Use upsert so that if there's multiple requests processing at the same time, they don't interfere with each other
+	await createContact(
+		{
+			name: visitor.name || visitor.username,
+			emails: (visitor.visitorEmails || []).map((email) => email.address),
+			phones: (visitor.phone || []).map((phone) => phone.phoneNumber),
+			contactManager: contactManager || undefined,
+			unknown: true,
+			channels: [],
+		},
+		visitor._id,
+	);
+
+	await LivechatVisitors.updateById(visitor._id, { $set: { contactId: visitor._id } });
+	return visitor._id;
+}
+
+export async function getContact(contactId: ILivechatContact['_id']): Promise<ILivechatContact | null> {
+	const contact = await LivechatContacts.findOneById(contactId);
+	if (contact) {
+		return contact;
+	}
+
+	// If the contact was not found, search for a visitor with the same ID and no contactId, then migrate it into a contact
+	return migrateVisitorIdToContact(contactId);
+}
+
+export async function createContact(params: CreateContactParams, upsertId?: ILivechatContact['_id']): Promise<string> {
 	const { name, emails, phones, customFields = {}, contactManager, channels, unknown } = params;
 
 	if (contactManager) {
@@ -212,7 +272,7 @@ export async function createContact(params: CreateContactParams): Promise<string
 	const allowedCustomFields = await getAllowedCustomFields();
 	validateCustomFields(allowedCustomFields, customFields);
 
-	const { insertedId } = await LivechatContacts.insertOne({
+	const data: InsertionModel<ILivechatContact> = {
 		name,
 		emails,
 		phones,
@@ -220,7 +280,14 @@ export async function createContact(params: CreateContactParams): Promise<string
 		channels,
 		customFields,
 		unknown,
-	});
+	};
+
+	if (upsertId) {
+		await LivechatContacts.upsertContact(upsertId, data);
+		return upsertId;
+	}
+
+	const { insertedId } = await LivechatContacts.insertOne(data);
 
 	return insertedId;
 }
