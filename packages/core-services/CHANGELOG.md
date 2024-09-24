@@ -19,6 +19,17 @@
   - @rocket.chat/message-parser@0.31.30-rc.0
   - @rocket.chat/models@0.3.0-rc.0
   </details>
+## 0.6.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3cbb9f6252]:</summary>
+
+  - @rocket.chat/message-parser@0.31.30
+  - @rocket.chat/core-typings@6.12.1
+  - @rocket.chat/rest-typings@6.12.1
+  - @rocket.chat/models@0.2.4
+  </details>
 
 ## 0.6.0
 
