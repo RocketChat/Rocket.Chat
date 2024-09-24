@@ -5857,6 +5857,8 @@
   "view-l-room": "View Omnichannel Rooms",
   "create-livechat-contact": "Create Omnichannel contacts",
   "update-livechat-contact": "Update Omnichannel contacts",
+  "view-livechat-contact": "View Omnichannel contacts",
+  "view-livechat-contact-history": "View Omnichannel contacts history",
   "view-l-room_description": "Permission to view Omnichannel rooms",
   "view-livechat-analytics": "View Omnichannel Analytics",
   "onboarding.page.awaitingConfirmation.subtitle": "We have sent you an email to {{emailAddress}} with a confirmation link. Please verify that the security code below matches the one in the email.",

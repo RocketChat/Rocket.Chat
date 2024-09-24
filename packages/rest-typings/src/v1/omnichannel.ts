@@ -1329,6 +1329,36 @@ const GETOmnichannelContactsSchema = {
 
 export const isGETOmnichannelContactsProps = ajv.compile<GETOmnichannelContactsProps>(GETOmnichannelContactsSchema);
 
+type GETOmnichannelContactHistoryProps = PaginatedRequest<{
+	contactId: string;
+	source?: string;
+}>;
+
+const GETOmnichannelContactHistorySchema = {
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+		},
+		source: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		sort: {
+			type: 'string',
+		},
+	},
+	required: ['contactId'],
+	additionalProperties: false,
+};
+
+export const isGETOmnichannelContactHistoryProps = ajv.compile<GETOmnichannelContactHistoryProps>(GETOmnichannelContactHistorySchema);
+
 type GETOmnichannelContactProps = { contactId: string };
 
 const GETOmnichannelContactSchema = {
@@ -3775,6 +3805,9 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/omnichannel/contacts.get': {
 		GET: (params: GETOmnichannelContactsProps) => { contact: ILivechatContact | null };
+	};
+	'/v1/omnichannel/contacts.history': {
+		GET: (params: GETOmnichannelContactHistoryProps) => PaginatedResult<{ history: VisitorSearchChatsResult[] }>;
 	};
 
 	'/v1/omnichannel/contact.search': {

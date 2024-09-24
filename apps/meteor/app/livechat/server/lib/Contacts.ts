@@ -16,9 +16,10 @@ import {
 	Subscriptions,
 	LivechatContacts,
 } from '@rocket.chat/models';
+import type { PaginatedResult, VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
+import type { MatchKeysAndValues, OnlyFieldsOfType, FindOptions, Sort } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { trim } from '../../../../lib/utils/stringUtils';
@@ -60,6 +61,14 @@ type UpdateContactParams = {
 	customFields?: Record<string, unknown>;
 	contactManager?: string;
 	channels?: ILivechatContactChannel[];
+};
+
+type GetContactHistoryParams = {
+	contactId: string;
+	source?: string;
+	count: number;
+	offset: number;
+	sort: Sort;
 };
 
 export const Contacts = {
@@ -246,6 +255,57 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 	const updatedContact = await LivechatContacts.updateContact(contactId, { name, emails, phones, contactManager, channels, customFields });
 
 	return updatedContact;
+}
+
+export async function getContactHistory(
+	params: GetContactHistoryParams,
+): Promise<PaginatedResult<{ history: VisitorSearchChatsResult[] }>> {
+	const { contactId, source, count, offset, sort } = params;
+
+	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, 'channels'>>(contactId, { projection: { channels: 1 } });
+
+	if (!contact) {
+		throw new Error('error-contact-not-found');
+	}
+
+	const visitorsIds = contact.channels?.map((channel) => channel.visitorId);
+
+	if (!visitorsIds?.length) {
+		return { history: [], count: 0, offset, total: 0 };
+	}
+
+	const options: FindOptions<IOmnichannelRoom> = {
+		sort: sort || { ts: -1 },
+		skip: offset,
+		limit: count,
+		projection: {
+			fname: 1,
+			ts: 1,
+			v: 1,
+			msgs: 1,
+			servedBy: 1,
+			closedAt: 1,
+			closedBy: 1,
+			closer: 1,
+			tags: 1,
+			source: 1,
+		},
+	};
+
+	const { totalCount, cursor } = LivechatRooms.findPaginatedRoomsByVisitorsIdsAndSource({
+		visitorsIds,
+		source,
+		options,
+	});
+
+	const [total, history] = await Promise.all([totalCount, cursor.toArray()]);
+
+	return {
+		history,
+		count: history.length,
+		offset,
+		total,
+	};
 }
 
 async function getAllowedCustomFields(): Promise<ILivechatCustomField[]> {

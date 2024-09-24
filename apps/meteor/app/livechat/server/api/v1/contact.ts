@@ -9,7 +9,8 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
-import { Contacts, createContact, updateContact } from '../../lib/Contacts';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { Contacts, createContact, updateContact, getContactHistory } from '../../lib/Contacts';
 
 API.v1.addRoute(
 	'omnichannel/contact',
@@ -133,6 +134,26 @@ API.v1.addRoute(
 			const contact = await LivechatContacts.findOneById(this.queryParams.contactId);
 
 			return API.v1.success({ contact });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'omnichannel/contacts.history',
+	{ authRequired: true, permissionsRequired: ['view-livechat-contact-history'], validateParams: isGETOmnichannelContactsProps },
+	{
+		async get() {
+			if (process.env.TEST_MODE?.toUpperCase() !== 'TRUE') {
+				throw new Meteor.Error('error-not-allowed', 'This endpoint is only allowed in test mode');
+			}
+
+			const { contactId, source } = this.queryParams;
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+
+			const history = await getContactHistory({ contactId, source, count, offset, sort });
+
+			return API.v1.success({ history });
 		},
 	},
 );
