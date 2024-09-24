@@ -62,6 +62,31 @@ const RoomMessage = ({
 
 	const messageRef = useJumpToMessage(message._id);
 
+
+	const handleRightClick = async (e: React.MouseEvent<HTMLDivElement>) => {
+        e.preventDefault();
+
+       // Check if the click target is an interactive element
+       const target = e.target as HTMLElement;
+       const isInteractiveElement = target.closest('a, button, [role="button"]');
+       if (isInteractiveElement) {
+        // Allow default right-click behavior for interactive elements
+        return;
+}
+		
+       const moreButton = (e.currentTarget as HTMLElement).querySelector('[aria-label^="More options"]') as HTMLElement;
+       if (!moreButton) return;
+
+          // Position and hide the button
+          moreButton.style.position = 'fixed';
+          moreButton.style.top = `${e.clientY}px`;
+          moreButton.style.left = `${e.clientX}px`;
+          moreButton.style.visibility = 'hidden';
+
+         // Simulate click on the element
+          moreButton.click();
+};
+
 	return (
 		<Message
 			ref={messageRef}
@@ -71,6 +96,7 @@ const RoomMessage = ({
 			tabIndex={0}
 			aria-labelledby={`${message._id}-displayName ${message._id}-time ${message._id}-content ${message._id}-read-status`}
 			onClick={selecting ? toggleSelected : undefined}
+			onContextMenu={handleRightClick}
 			isSelected={selected}
 			isEditing={editing}
 			isPending={message.temp}
