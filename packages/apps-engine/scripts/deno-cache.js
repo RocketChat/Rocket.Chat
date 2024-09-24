@@ -19,6 +19,7 @@ childProcess.execSync('deno cache main.ts', {
     cwd: denoRuntimePath,
     env: {
         DENO_DIR,
+        PATH: process.env.PATH,
     },
     stdio: 'inherit',
 });

@@ -143,7 +143,14 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
                 this.appPackage.info.id,
             ];
 
-            const environment = { env: { DENO_DIR } };
+            const environment = {
+                env: {
+                    // We need to pass the PATH, otherwise the shell won't find the deno executable
+                    // But the runtime itself won't have access to the env var because of the parameters
+                    PATH: process.env.PATH,
+                    DENO_DIR,
+                },
+            };
 
             this.deno = child_process.spawn(denoExePath, options, environment);
             this.messenger.setReceiver(this.deno);
