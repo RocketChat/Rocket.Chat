@@ -16,10 +16,6 @@ inputs:
     required: true
     description: 'Deno version'
     type: string
-  deno-dir:
-    required: false
-    description: 'Deno cache directory'
-    default: ~/.deno-cache
   NPM_TOKEN:
     required: false
     description: 'NPM token'
@@ -33,20 +29,19 @@ runs:
   using: composite
 
   steps:
-    - run: echo 'DENO_DIR=${{ inputs.deno-dir }}' >> $GITHUB_ENV
-      shell: bash
-
     - name: Cache Node Modules & Deno
       if: inputs.cache-modules
       id: cache-node-modules
       uses: actions/cache@v3
       with:
+        # We need to cache node_modules for all workspaces with "hoistingLimits" defined
         path: |
           .turbo/cache
           node_modules
-          ${{ env.DENO_DIR }}
           apps/meteor/node_modules
           apps/meteor/ee/server/services/node_modules
+          packages/apps-engine/node_modules
+          packages/apps-engine/.deno-cache
         key: node-modules-${{ hashFiles('yarn.lock') }}-deno-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}
     #
     # Could use this command to list all paths to save:
