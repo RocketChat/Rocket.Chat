@@ -1,11 +1,11 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, ISubscription } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 
 export const provideUsersSuggestedGroupKeys = async (
 	userId: IUser['_id'],
-	usersSuggestedGroupKeys: Record<IRoom['_id'], { _id: IUser['_id']; key: string }[]>,
+	usersSuggestedGroupKeys: Record<IRoom['_id'], { _id: IUser['_id']; key: string; oldKeys: ISubscription['oldRoomKeys'] }[]>,
 ) => {
 	const roomIds = Object.keys(usersSuggestedGroupKeys);
 
@@ -21,7 +21,7 @@ export const provideUsersSuggestedGroupKeys = async (
 
 		const usersWithSuggestedKeys = [];
 		for await (const user of usersSuggestedGroupKeys[roomId]) {
-			const { modifiedCount } = await Subscriptions.setGroupE2ESuggestedKey(user._id, roomId, user.key);
+			const { modifiedCount } = await Subscriptions.setGroupE2ESuggestedKeyAndOldRoomKeys(user._id, roomId, user.key, user.oldKeys);
 			if (!modifiedCount) {
 				continue;
 			}

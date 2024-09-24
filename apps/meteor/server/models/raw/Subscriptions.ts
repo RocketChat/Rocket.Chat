@@ -580,9 +580,9 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	async setGroupE2EKey(_id: string, key: string): Promise<UpdateResult> {
+	async setGroupE2EKeyAndOldRoomKeys(_id: string, key: string, oldRoomKeys: ISubscription['oldRoomKeys']): Promise<UpdateResult> {
 		const query = { _id };
-		const update = { $set: { E2EKey: key } };
+		const update = { $set: { E2EKey: key, ...(oldRoomKeys && { oldRoomKeys }) } };
 		return this.updateOne(query, update);
 	}
 
@@ -593,15 +593,20 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.findOneAndUpdate(query, update, { returnDocument: 'after' });
 	}
 
-	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<UpdateResult> {
+	setGroupE2ESuggestedKeyAndOldRoomKeys(
+		uid: string,
+		rid: string,
+		key: string,
+		suggestedOldRoomKeys: ISubscription['suggestedOldRoomKeys'],
+	): Promise<UpdateResult> {
 		const query = { rid, 'u._id': uid };
-		const update = { $set: { E2ESuggestedKey: key } };
+		const update = { $set: { E2ESuggestedKey: key, ...(suggestedOldRoomKeys && { suggestedOldRoomKeys: suggestedOldRoomKeys })} };
 		return this.updateOne(query, update);
 	}
 
-	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document> {
+	unsetGroupE2ESuggestedKeyAndOldRoomKeys(_id: string): Promise<UpdateResult | Document> {
 		const query = { _id };
-		return this.updateOne(query, { $unset: { E2ESuggestedKey: 1 } });
+		return this.updateOne(query, { $unset: { E2ESuggestedKey: 1, suggestedOldRoomKeys: 1 } });
 	}
 
 	setOnHoldByRoomId(rid: string): Promise<UpdateResult> {
@@ -1700,7 +1705,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 
-		// @ts-expect-error - :(
 		return this.updateMany(query, update);
 	}
 
@@ -1710,7 +1714,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		notificationField: keyof ISubscription,
 		notificationOriginField: keyof ISubscription,
 	): Promise<UpdateResult | Document> {
-		// @ts-expect-error - :(
 		const query: Filter<ISubscription> = {
 			'u._id': userId,
 			[notificationOriginField]: {
@@ -1719,7 +1722,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		const update: UpdateFilter<ISubscription> = {
-			// @ts-expect-error - :(
 			$set: {
 				[notificationField]: userPref,
 				[notificationOriginField]: 'user',

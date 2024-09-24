@@ -24,7 +24,10 @@ export async function handleSuggestedGroupKey(
 	}
 
 	if (handle === 'accept') {
-		await Subscriptions.setGroupE2EKey(sub._id, suggestedKey);
+		// A merging process can happen here, but we're not doing that for now
+		// If a user already has oldRoomKeys, we will ignore the suggested ones
+		const oldKeys = sub.oldRoomKeys ? undefined : sub.suggestedOldRoomKeys;
+		await Subscriptions.setGroupE2EKeyAndOldRoomKeys(sub._id, suggestedKey, oldKeys);
 		await Rooms.removeUsersFromE2EEQueueByRoomId(sub.rid, [userId]);
 	}
 
@@ -32,7 +35,7 @@ export async function handleSuggestedGroupKey(
 		await Rooms.addUserIdToE2EEQueueByRoomIds([sub.rid], userId);
 	}
 
-	const { modifiedCount } = await Subscriptions.unsetGroupE2ESuggestedKey(sub._id);
+	const { modifiedCount } = await Subscriptions.unsetGroupE2ESuggestedKeyAndOldRoomKeys(sub._id);
 	if (modifiedCount) {
 		void notifyOnSubscriptionChangedById(sub._id);
 	}
