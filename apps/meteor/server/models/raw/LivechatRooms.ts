@@ -8,9 +8,8 @@ import type {
 	IOmnichannelServiceLevelAgreements,
 	ReportResult,
 	MACStats,
-	IStats,
 } from '@rocket.chat/core-typings';
-import { UserStatus, LivechatPriorityWeight } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Settings } from '@rocket.chat/models';
