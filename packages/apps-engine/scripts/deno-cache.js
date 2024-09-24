@@ -1,8 +1,3 @@
-// This file needs to be run everytime the apps-engine is installed
-// which includes "production" installations (meant only to be used by apps)
-// Since `ts-node` is a dev dependency and will not be installed by NPM on app
-// projects, we need a JS file for this
-
 const childProcess = require('child_process');
 const path = require('path');
 
@@ -17,10 +12,11 @@ try {
 }
 
 const rootPath = path.join(__dirname, '..');
+const denoRuntimePath = path.join(rootPath, 'deno-runtime');
 const DENO_DIR = process.env.DENO_DIR ?? path.join(rootPath, '.deno-cache');
 
-childProcess.execSync('deno', ['cache', 'main.ts'], {
-    cwd: path.join(rootPath, 'deno-runtime'),
+childProcess.execSync('deno cache main.ts', {
+    cwd: denoRuntimePath,
     env: {
         DENO_DIR,
     },

@@ -13,15 +13,15 @@
         ".:lint:eslint": "eslint .",
         ".:lint:deno": "deno lint --ignore=deno-runtime/.deno deno-runtime/",
         "fix-lint": "eslint . --fix",
-        "build": "run-s .:build:clean .:build:default",
+        "build": "run-s .:build:clean .:build:default .:build:deno-cache",
         ".:build:clean": "rimraf client definition server",
         ".:build:default": "tsc -p tsconfig.json",
+        ".:build:deno-cache": "node scripts/deno-cache.js",
         ".:build:watch": "yarn .:build:default --watch",
         "typecheck": "tsc -p tsconfig.json --noEmit",
         "bundle": "node scripts/bundle.js",
         "gen-doc": "typedoc",
-        "prepack": "yarn bundle",
-        "postinstall": "node scripts/postinstall.js"
+        "prepack": "yarn bundle"
     },
     "repository": {
         "type": "git",
