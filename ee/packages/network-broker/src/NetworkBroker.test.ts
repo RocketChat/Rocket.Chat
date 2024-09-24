@@ -2,8 +2,8 @@ import { ServiceClass } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import { BrokerMocked } from '../../../../tests/mocks/server/BrokerMocked';
-import { NetworkBroker } from '../../../server/NetworkBroker';
+import { BrokerMocked } from '../../../../apps/meteor/tests/mocks/server/BrokerMocked';
+import { NetworkBroker } from './NetworkBroker';
 
 class DelayedStopBroker extends BrokerMocked {
 	async destroyService(name: string) {
