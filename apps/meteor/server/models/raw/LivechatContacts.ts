@@ -29,6 +29,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			{
 				key: { phones: 1 },
 				sparse: true,
+				unique: false,
 			},
 		];
 	}
