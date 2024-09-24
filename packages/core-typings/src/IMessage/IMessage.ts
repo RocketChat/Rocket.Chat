@@ -372,7 +372,6 @@ export const isVoipMessage = (message: IMessage): message is IVoipMessage => 'vo
 export type IE2EEMessage = IMessage & {
 	t: 'e2e';
 	e2e: 'pending' | 'done';
-	e2eKeyId?: string;
 };
 
 export type IE2EEPinnedMessage = IMessage & {
