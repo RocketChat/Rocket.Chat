@@ -40,6 +40,9 @@ COPY ./packages/logger/dist packages/logger/dist
 
 COPY ./packages/server-cloud-communication/ packages/server-cloud-communication/
 
+COPY ./ee/packages/network-broker/package.json ee/packages/network-broker/package.json
+COPY ./ee/packages/network-broker/dist ee/packages/network-broker/dist
+
 COPY ./ee/packages/license/package.json packages/license/package.json
 COPY ./ee/packages/license/dist packages/license/dist
 

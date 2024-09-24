@@ -576,7 +576,8 @@ type POSTLivechatDepartmentProps = {
 		chatClosingTags?: string[];
 		fallbackForwardDepartment?: string;
 	};
-	agents: { agentId: string; count?: number; order?: number }[];
+	agents?: { agentId: string; count?: number; order?: number }[];
+	departmentUnit?: { _id?: string };
 };
 
 const POSTLivechatDepartmentSchema = {
@@ -644,6 +645,15 @@ const POSTLivechatDepartmentSchema = {
 				additionalProperties: false,
 			},
 			nullable: true,
+		},
+		departmentUnit: {
+			type: 'object',
+			properties: {
+				_id: {
+					type: 'string',
+				},
+			},
+			additionalProperties: false,
 		},
 	},
 	required: ['department'],
