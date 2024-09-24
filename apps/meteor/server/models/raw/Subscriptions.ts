@@ -1740,7 +1740,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	): FindCursor<ISubscription> {
 		const value = notificationOriginValue === 'user' ? 'user' : { $ne: 'subscription' };
 
-		// @ts-expect-error - :(
 		const query: Filter<ISubscription> = {
 			'u._id': userId,
 			[notificationOriginField]: value,
