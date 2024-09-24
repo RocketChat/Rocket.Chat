@@ -70,7 +70,8 @@ export interface ISubscription extends IRocketChatRecord {
 
 	/* @deprecated */
 	customFields?: Record<string, any>;
-	oldRoomKeys: OldKey[];
+	oldRoomKeys?: OldKey[];
+	suggestedOldRoomKeys?: OldKey[];
 }
 
 export interface IOmnichannelSubscription extends ISubscription {
