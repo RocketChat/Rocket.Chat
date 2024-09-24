@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser, ISubscription } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({
@@ -89,7 +89,7 @@ const E2eSetRoomKeyIdSchema = {
 export const isE2eSetRoomKeyIdProps = ajv.compile<E2eSetRoomKeyIdProps>(E2eSetRoomKeyIdSchema);
 
 type E2EProvideUsersGroupKeyProps = {
-	usersSuggestedGroupKeys: Record<IRoom['_id'], { _id: IUser['_id']; key: string }[]>;
+	usersSuggestedGroupKeys: Record<IRoom['_id'], { _id: IUser['_id']; key: string; oldKeys: ISubscription['suggestedOldRoomKeys'] }[]>;
 };
 
 const E2EProvideUsersGroupKeySchema = {
@@ -104,6 +104,10 @@ const E2EProvideUsersGroupKeySchema = {
 					properties: {
 						_id: { type: 'string' },
 						key: { type: 'string' },
+						oldKeys: {
+							type: 'array',
+							items: { type: 'object', properties: { e2eKeyId: { type: 'string' }, ts: { type: 'string' }, E2EKey: { type: 'string' } } },
+						},
 					},
 					required: ['_id', 'key'],
 					additionalProperties: false,
