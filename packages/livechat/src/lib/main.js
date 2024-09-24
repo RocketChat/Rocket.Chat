@@ -100,14 +100,14 @@ export const getUnreadMessages = () => {
 };
 
 export const processUnread = async () => {
-	const shouldMarkUnread = shouldMarkAsUnread();
-	if (!shouldMarkUnread) {
-		return;
-	}
-
 	const unreadMessages = getUnreadMessages();
 	if (unreadMessages <= 0) {
 		await store.setState({ unread: 0 });
+		return;
+	}
+
+	const shouldMarkUnread = shouldMarkAsUnread();
+	if (!shouldMarkUnread) {
 		return;
 	}
 
