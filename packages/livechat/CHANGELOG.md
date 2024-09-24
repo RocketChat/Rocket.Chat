@@ -14,6 +14,15 @@
   - @rocket.chat/gazzodown@11.0.0-rc.0
   - @rocket.chat/message-parser@0.31.30-rc.0
   </details>
+## 1.19.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3cbb9f6252]:</summary>
+
+  - @rocket.chat/message-parser@0.31.30
+  - @rocket.chat/gazzodown@10.0.1
+  </details>
 
 ## 1.19.3
 

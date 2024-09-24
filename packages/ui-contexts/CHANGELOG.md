@@ -11,6 +11,16 @@
   - @rocket.chat/core-typings@6.13.0-rc.0
   - @rocket.chat/ddp-client@0.3.7-rc.0
   </details>
+## 10.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.12.1
+  - @rocket.chat/rest-typings@6.12.1
+  - @rocket.chat/ddp-client@0.3.7
+  </details>
 
 ## 10.0.0
 
