@@ -543,6 +543,10 @@ class LivechatClass {
 		}
 	}
 
+	isValidObject(obj: unknown): obj is Record<string, any> {
+		return typeof obj === 'object' && obj !== null;
+	}
+
 	async registerGuest({
 		id,
 		token,
@@ -608,10 +612,10 @@ class LivechatClass {
 			visitorDataToUpdate.status = status;
 			visitorDataToUpdate.ts = new Date();
 
-			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
+			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations') && Livechat.isValidObject(connectionData)) {
 				Livechat.logger.debug(`Saving connection data for visitor ${token}`);
 				const { httpHeaders, clientAddress } = connectionData;
-				if (httpHeaders) {
+				if (Livechat.isValidObject(httpHeaders)) {
 					visitorDataToUpdate.userAgent = httpHeaders['user-agent'];
 					visitorDataToUpdate.ip = httpHeaders['x-real-ip'] || httpHeaders['x-forwarded-for'] || clientAddress;
 					visitorDataToUpdate.host = httpHeaders?.host;
