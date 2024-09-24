@@ -128,7 +128,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			source: {
 				type: OmnichannelSourceType.SMS,
 				alias: service,
-				destination: sms.to, // check if this is correct
+				destination: sms.to,
 			},
 		};
 
