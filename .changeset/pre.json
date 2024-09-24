@@ -63,7 +63,9 @@
     "@rocket.chat/web-ui-registration": "10.0.0"
   },
   "changesets": [
+    "brave-brooms-invent",
     "brown-singers-appear",
+    "bump-patch-1727212585363",
     "cyan-ladybugs-thank",
     "dirty-stingrays-beg",
     "five-coats-rhyme",
@@ -80,6 +82,7 @@
     "mighty-drinks-hide",
     "nasty-tools-enjoy",
     "pink-swans-teach",
+    "quick-rings-wave",
     "quiet-cherries-punch",
     "rich-toes-bow",
     "rotten-rabbits-brush",
