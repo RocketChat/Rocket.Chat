@@ -1,11 +1,11 @@
 ---
 to: ee/apps/<%= name %>/src/service.ts
 ---
+import { api } from '@rocket.chat/core-services';
+import { broker } from '@rocket.chat/network-broker';
 import type { Document } from 'mongodb';
 import polka from 'polka';
-import { api } from '@rocket.chat/core-services';
 
-import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 
