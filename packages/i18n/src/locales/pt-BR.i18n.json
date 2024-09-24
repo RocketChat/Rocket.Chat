@@ -761,7 +761,7 @@
   "Call_Information": "Informação da chamada",
   "Call_provider": "Provedor de chamada",
   "Call_Already_Ended": "Chamada já encerrada",
-  "Call_transfered_to_x": "Chamada transferida para {{name}}",
+  "Call_transfered_to__name__": "Chamada transferida para {{name}}",
   "Call_terminated": "Chamada encerrada",
   "call-management": "Gestão de chamadas",
   "call-management_description": "Permissão para iniciar reunião",

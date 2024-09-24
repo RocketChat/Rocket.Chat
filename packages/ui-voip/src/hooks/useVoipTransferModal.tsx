@@ -27,7 +27,7 @@ export const useVoipTransferModal = ({ session }: UseVoipTransferParams) => {
 			return name || extension;
 		},
 		onSuccess: (name: string) => {
-			dispatchToastMessage({ type: 'success', message: t('Call_transfered_to_x', { name }) });
+			dispatchToastMessage({ type: 'success', message: t('Call_transfered_to__name__', { name }) });
 			close();
 		},
 		onError: () => {

@@ -905,7 +905,7 @@
   "Call_started": "Call started",
   "Call_unavailable_for_federation": "Call is unavailable for Federated rooms",
   "Call_was_not_answered": "Call was not answered",
-  "Call_transfered_to_x": "Call transfered to {{name}}",
+  "Call_transfered_to__name__": "Call transfered to {{name}}",
   "Call_terminated": "Call terminated",
   "Caller": "Caller",
   "Caller_Id": "Caller ID",
