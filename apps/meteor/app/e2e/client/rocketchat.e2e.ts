@@ -187,14 +187,12 @@ class E2E extends Emitter {
 		await e2eRoom.decryptSubscription();
 	}
 
-	debouncedOnSubscriptionChanged = _.debounce(this.onSubscriptionChanged.bind(this), 100);
-
 	observeSubscriptions() {
 		this.observable?.stop();
 
 		this.observable = Subscriptions.find().observe({
 			changed: (sub: ISubscription) => {
-				void this.debouncedOnSubscriptionChanged(sub);
+				setTimeout(() => this.onSubscriptionChanged(sub), 0);
 			},
 			added: (sub: ISubscription) => {
 				setTimeout(async () => {
