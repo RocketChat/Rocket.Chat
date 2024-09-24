@@ -132,6 +132,34 @@ type FindPaginatedUsersByStatusProps = {
 	type: string;
 };
 
+function mountSort(sort: Record<string, 1 | -1> = { username: 1 }) {
+	const actualSort = sort;
+
+	if (sort?.status) {
+		actualSort.active = sort.status;
+	}
+
+	return actualSort;
+}
+
+async function getRegexUserQuery(uid: string, searchTerm?: string): Promise<Filter<IUser & RootFilterOperators<IUser>>[]> {
+	if (!searchTerm) {
+		return [];
+	}
+
+	const canSeeAllUserInfo = await hasPermissionAsync(uid, 'view-full-other-user-info');
+
+	return [
+		...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: escapeRegExp(searchTerm || ''), $options: 'i' } }] : []),
+		{
+			username: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
+		},
+		{
+			name: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
+		},
+	];
+}
+
 export async function findPaginatedUsersByStatus({
 	uid,
 	offset,
@@ -157,58 +185,26 @@ export async function findPaginatedUsersByStatus({
 		federated: 1,
 	};
 
-	const actualSort: Record<string, 1 | -1> = sort || { username: 1 };
-	if (sort?.status) {
-		actualSort.active = sort.status;
-	}
-	if (sort?.name) {
-		actualSort.nameInsensitive = sort.name;
-	}
-	const match: Filter<IUser & RootFilterOperators<IUser>> = {};
-	switch (status) {
-		case 'active':
-			match.active = true;
-			break;
-		case 'deactivated':
-			match.active = false;
-			break;
-	}
+	const actualSort = mountSort(sort);
+	const regexUserQuery = await getRegexUserQuery(uid, searchTerm);
+	const match: Filter<IUser & RootFilterOperators<IUser>> = {
+		...(status ? { active: status === 'active' } : {}),
+		...(hasLoggedIn !== undefined ? { lastLogin: { $exists: hasLoggedIn } } : {}),
+		...(type ? { type } : {}),
+		...(regexUserQuery.length ? { $or: regexUserQuery } : {}),
+		...(roles?.length && !roles.includes('all') ? { roles: { $in: roles } } : {}),
+	};
 
-	if (hasLoggedIn !== undefined) {
-		match.lastLogin = { $exists: hasLoggedIn };
-	}
+	const { cursor, totalCount } = Users.findPaginated(match, {
+		sort: actualSort,
+		skip: offset,
+		limit: count,
+		projection,
+		allowDiskUse: true,
+	});
 
-	if (type) {
-		match.type = type;
-	}
-
-	const canSeeAllUserInfo = await hasPermissionAsync(uid, 'view-full-other-user-info');
-
-	match.$or = [
-		...(canSeeAllUserInfo ? [{ 'emails.address': { $regex: escapeRegExp(searchTerm || ''), $options: 'i' } }] : []),
-		{
-			username: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
-		},
-		{
-			name: { $regex: escapeRegExp(searchTerm || ''), $options: 'i' },
-		},
-	];
-	if (roles?.length && !roles.includes('all')) {
-		match.roles = { $in: roles };
-	}
-	const { cursor, totalCount } = await Users.findPaginated(
-		{
-			...match,
-		},
-		{
-			sort: actualSort,
-			skip: offset,
-			limit: count,
-			projection,
-			allowDiskUse: true,
-		},
-	);
 	const [users, total] = await Promise.all([cursor.toArray(), totalCount]);
+
 	return {
 		users,
 		count: users.length,
