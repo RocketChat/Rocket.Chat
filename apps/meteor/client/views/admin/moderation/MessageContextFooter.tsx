@@ -1,8 +1,8 @@
 import { Button, ButtonGroup, Box } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import GenericMenu from '../../../components/GenericMenu/GenericMenu';
 import useDeactivateUserAction from './hooks/useDeactivateUserAction';
 import useDeleteMessagesAction from './hooks/useDeleteMessagesAction';
 import useDismissUserAction from './hooks/useDismissUserAction';
@@ -11,7 +11,7 @@ import useResetAvatarAction from './hooks/useResetAvatarAction';
 type MessageContextFooterProps = { userId: string; deleted: boolean };
 
 const MessageContextFooter = ({ userId, deleted }: MessageContextFooterProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const dismissUserAction = useDismissUserAction(userId);
 	const deleteMessagesAction = useDeleteMessagesAction(userId);

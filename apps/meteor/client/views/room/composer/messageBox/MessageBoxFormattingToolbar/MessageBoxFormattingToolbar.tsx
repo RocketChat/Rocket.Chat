@@ -1,6 +1,6 @@
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { FormattingButton } from '../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { isPromptButton } from '../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -15,7 +15,7 @@ type MessageBoxFormattingToolbarProps = {
 };
 
 const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disabled }: MessageBoxFormattingToolbarProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	if (variant === 'small') {
 		const collapsedItems = [...items];

@@ -1,9 +1,9 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useSetting, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import type { GenericMenuItemProps } from '../../../../../../components/GenericMenu/GenericMenuItem';
 import ShareLocationModal from '../../../../ShareLocation/ShareLocationModal';
 
 export const useShareLocationAction = (room?: IRoom, tmid?: IMessage['tmid']): GenericMenuItemProps => {

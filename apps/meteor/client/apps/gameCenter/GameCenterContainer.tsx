@@ -1,7 +1,7 @@
 import { Avatar } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
 	ContextualbarTitle,
@@ -19,7 +19,7 @@ interface IGameCenterContainerProps {
 }
 
 const GameCenterContainer = ({ handleClose, handleBack, game }: IGameCenterContainerProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	return (
 		<>

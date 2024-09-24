@@ -1,5 +1,5 @@
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
@@ -19,7 +19,7 @@ const init = (canvas, context, t) =>
 	});
 
 const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const canvas = useRef();
 	const context = useRef();
@@ -59,7 +59,7 @@ const ChatsPerDepartmentChart = ({ params, reloadRef, ...props }) => {
 		}
 	}, [chartData, state, t, updateChartData]);
 
-	return <Chart ref={canvas} {...props} />;
+	return <Chart canvasRef={canvas} {...props} />;
 };
 
 export default ChatsPerDepartmentChart;
