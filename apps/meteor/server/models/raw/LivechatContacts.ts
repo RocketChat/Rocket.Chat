@@ -1,13 +1,36 @@
 import type { ILivechatContact, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatContactsModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Collection, Db, RootFilterOperators, Filter, FindOptions, FindCursor } from 'mongodb';
+import type { Collection, Db, RootFilterOperators, Filter, FindOptions, FindCursor, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements ILivechatContactsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatContact>>) {
 		super(db, 'livechat_contact', trash);
+	}
+
+	protected modelIndexes(): IndexDescription[] {
+		return [
+			{
+				key: { name: 1 },
+				unique: false,
+				sparse: true,
+				name: 'name_insensitive',
+				collation: { locale: 'en', strength: 2, caseLevel: false },
+			},
+			{
+				key: { emails: 1 },
+				unique: false,
+				sparse: true,
+				name: 'emails_insensitive',
+				collation: { locale: 'en', strength: 2, caseLevel: false },
+			},
+			{
+				key: { phones: 1 },
+				sparse: true,
+			},
+		];
 	}
 
 	async updateContact(contactId: string, data: Partial<ILivechatContact>): Promise<ILivechatContact> {
