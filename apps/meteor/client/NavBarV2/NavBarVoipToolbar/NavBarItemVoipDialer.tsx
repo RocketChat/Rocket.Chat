@@ -13,7 +13,7 @@ type NavBarItemVoipDialerProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 const NavBarItemVoipDialer = (props: NavBarItemVoipDialerProps) => {
 	const { t } = useTranslation();
 	const { sidebar } = useLayout();
-	const { isEnabled, isReady, isRegistered } = useVoipState();
+	const { clientError, isEnabled, isReady, isRegistered } = useVoipState();
 	const { open: isDialerOpen, openDialer, closeDialer } = useVoipDialer();
 
 	const handleToggleDialer = useEffectEvent(() => {
@@ -22,16 +22,16 @@ const NavBarItemVoipDialer = (props: NavBarItemVoipDialerProps) => {
 	});
 
 	const title = useMemo(() => {
-		if (!isReady) {
+		if (!isReady && !clientError) {
 			return t('Loading');
 		}
 
-		if (!isRegistered) {
+		if (!isRegistered || clientError) {
 			return t('Voice_calling_disabled');
 		}
 
 		return t('New_Call');
-	}, [isReady, isRegistered, t]);
+	}, [clientError, isReady, isRegistered, t]);
 
 	return isEnabled ? (
 		<NavBarItem
