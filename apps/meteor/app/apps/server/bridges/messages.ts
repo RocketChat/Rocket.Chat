@@ -1,13 +1,11 @@
 import type { IAppServerOrchestrator, IAppsMessage, IAppsUser } from '@rocket.chat/apps';
-import type { IMessageRaw, Reaction } from '@rocket.chat/apps-engine/definition/messages';
+import type { Reaction } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import type { ITypingDescriptor } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
 import { MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBridge';
-import type { GetMessagesOptions } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import { api } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
-import type { Sort } from 'mongodb';
+import { Users, Subscriptions, Messages } from '@rocket.chat/models';
 
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -37,43 +35,6 @@ export class AppMessageBridge extends MessageBridge {
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 		const message: IAppsMessage | undefined = await this.orch.getConverters()?.get('messages').convertById(messageId);
 		return message as IAppsMessage;
-	}
-
-	protected async getUnreadByRoomAndUser(
-		roomId: string,
-		userId: string,
-		options: GetMessagesOptions,
-		appId: string,
-	): Promise<Array<IMessageRaw>> {
-		this.orch.debugLog(`The App ${appId} is getting the unread messages for the user: "${userId}" in the room: "${roomId}"`);
-
-		const messageConverter = this.orch.getConverters()?.get('messages');
-		if (!messageConverter) {
-			throw new Error('Message converter not found');
-		}
-
-		const room = await Rooms.findOneById(roomId, { projection: { _id: 1 } });
-
-		if (!room) {
-			throw new Error('Room not found');
-		}
-
-		const lastSeen = (await Subscriptions.findOneByRoomIdAndUserId(roomId, userId))?.ls;
-
-		if (!lastSeen) {
-			return [];
-		}
-
-		const sort: Sort | undefined = options.sort?.createdAt ? { ts: options.sort.createdAt } : undefined;
-
-		const cursor = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(roomId, lastSeen, new Date(), [], {
-			...options,
-			sort,
-		});
-
-		const messagePromises = await cursor.map((msg) => messageConverter.convertMessageRaw(msg)).toArray();
-
-		return Promise.all(messagePromises);
 	}
 
 	protected async update(message: IAppsMessage, appId: string): Promise<void> {
