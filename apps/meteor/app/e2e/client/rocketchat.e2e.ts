@@ -190,6 +190,7 @@ class E2E extends Emitter {
 					}
 
 					await e2eRoom.decryptSubscription();
+					await e2eRoom.decryptOldRoomKeys();
 				}, 0);
 			},
 			added: (sub: ISubscription) => {
