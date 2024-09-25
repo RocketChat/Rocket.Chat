@@ -17,7 +17,7 @@ const className = css`
 	height: 28px;
 `;
 
-export const VoipDialPadInput = ({ readOnly, value, onChange, onBackpaceClick }: DialPadInputProps) => {
+const VoipDialPadInput = ({ readOnly, value, onChange, onBackpaceClick }: DialPadInputProps) => {
 	const { t } = useTranslation();
 
 	return (

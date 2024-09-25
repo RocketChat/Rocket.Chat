@@ -38,7 +38,7 @@ const Container = styled(
 	z-index: 100;
 `;
 
-export const VoipPopupContainer = ({ children, secondary = false, position = { top: 0, left: 0 }, ...props }: ContainerProps) => (
+const VoipPopupContainer = ({ children, secondary = false, position = { top: 0, left: 0 }, ...props }: ContainerProps) => (
 	<FocusScope autoFocus restoreFocus>
 		<Container aria-labelledby='voiceCallPopupTitle' secondary={secondary} position={position} {...props}>
 			{children}

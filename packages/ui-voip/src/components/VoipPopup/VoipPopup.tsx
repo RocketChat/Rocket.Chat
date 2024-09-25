@@ -2,11 +2,11 @@ import { isVoipErrorSession, isVoipIncomingSession, isVoipOngoingSession, isVoip
 import { useVoipDialer } from '../../hooks/useVoipDialer';
 import { useVoipSession } from '../../hooks/useVoipSession';
 import type { PositionOffsets } from './components/VoipPopupContainer';
-import DialerView from './views/DialerView';
-import ErrorView from './views/ErrorView';
-import IncomingView from './views/IncomingView';
-import OngoingView from './views/OngoingView';
-import OutgoingView from './views/OutgoingView';
+import DialerView from './views/VoipDialerView';
+import ErrorView from './views/VoipErrorView';
+import IncomingView from './views/VoipIncomingView';
+import OngoingView from './views/VoipOngoingView';
+import OutgoingView from './views/VoipOutgoingView';
 
 const VoipPopup = ({ position }: { position?: PositionOffsets }) => {
 	const session = useVoipSession();

@@ -73,5 +73,3 @@ export const useVoipDeviceSettings = () => {
 		sections: [micSection, speakerSection],
 	};
 };
-
-export default useVoipDeviceSettings;

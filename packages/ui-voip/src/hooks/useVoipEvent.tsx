@@ -26,5 +26,3 @@ export const useVoipEvent = <E extends keyof VoipEvents>(eventName: E, initialVa
 
 	return useSyncExternalStore(subscribe, getSnapshot);
 };
-
-export default useVoipEvent;

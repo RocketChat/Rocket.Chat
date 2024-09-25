@@ -1,5 +1,5 @@
-import useVoipAPI from './useVoipAPI';
-import useVoipEvent from './useVoipEvent';
+import { useVoipAPI } from './useVoipAPI';
+import { useVoipEvent } from './useVoipEvent';
 
 export const useVoipDialer = () => {
 	const { openDialer, closeDialer } = useVoipAPI();
@@ -11,5 +11,3 @@ export const useVoipDialer = () => {
 		closeDialer: closeDialer || (() => undefined),
 	};
 };
-
-export default useVoipDialer;

@@ -34,7 +34,7 @@ const isIncoming = (props: VoipActionsProps): props is VoipIncomingActionsProps 
 const isOngoing = (props: VoipActionsProps): props is VoipOngoingActionsProps =>
 	'onEndCall' in props && !('onAccept' in props && 'onDecline' in props);
 
-export const VoipActions = ({ isMuted, isHeld, isDTMFActive, isTransferActive, ...events }: VoipActionsProps) => {
+const VoipActions = ({ isMuted, isHeld, isDTMFActive, isTransferActive, ...events }: VoipActionsProps) => {
 	const { t } = useTranslation();
 
 	return (

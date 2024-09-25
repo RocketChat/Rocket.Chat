@@ -1,4 +1,4 @@
-export { VoipPopupContainer } from './VoipPopupContainer';
-export * from './VoipPopupHeader';
-export * from './VoipPopupContent';
-export * from './VoipPopupFooter';
+export { default as VoipPopupContainer } from './VoipPopupContainer';
+export { default as VoipPopupHeader } from './VoipPopupHeader';
+export { default as VoipPopupContent } from './VoipPopupContent';
+export { default as VoipPopupFooter } from './VoipPopupFooter';

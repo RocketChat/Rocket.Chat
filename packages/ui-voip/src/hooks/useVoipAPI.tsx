@@ -50,5 +50,3 @@ export const useVoipAPI = (): VoipAPI => {
 		};
 	}, [context]);
 };
-
-export default useVoipAPI;

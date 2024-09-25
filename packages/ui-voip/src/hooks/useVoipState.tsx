@@ -1,7 +1,7 @@
 import { useContext, useMemo } from 'react';
 
 import { VoipContext } from '../contexts/VoipContext';
-import useVoipEffect from './useVoipEffect';
+import { useVoipEffect } from './useVoipEffect';
 
 export type VoipState = {
 	isEnabled: boolean;
@@ -43,5 +43,3 @@ export const useVoipState = (): VoipState => {
 		[clientError, isEnabled, callState],
 	);
 };
-
-export default useVoipState;

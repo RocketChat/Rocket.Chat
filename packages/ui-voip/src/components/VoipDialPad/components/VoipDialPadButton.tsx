@@ -22,7 +22,7 @@ const dialPadButtonClass = css`
 	}
 `;
 
-export const VoipDialPadButton = ({ digit, subDigit, longPressDigit, onClick }: DialPadButtonProps) => {
+const VoipDialPadButton = ({ digit, subDigit, longPressDigit, onClick }: DialPadButtonProps) => {
 	const { t } = useTranslation();
 
 	const { longPressProps } = useLongPress({

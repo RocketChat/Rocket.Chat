@@ -14,7 +14,7 @@ type VoipOutgoingViewProps = {
 	position?: PositionOffsets;
 };
 
-export const VoipOutgoingView = ({ session, position }: VoipOutgoingViewProps) => {
+const VoipOutgoingView = ({ session, position }: VoipOutgoingViewProps) => {
 	const { t } = useTranslation();
 	const contactData = useVoipContactId({ session });
 

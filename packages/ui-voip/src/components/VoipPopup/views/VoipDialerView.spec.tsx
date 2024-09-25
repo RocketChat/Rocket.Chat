@@ -2,7 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { VoipDialerView } from './DialerView';
+import VoipDialerView from './VoipDialerView';
 
 const makeCall = jest.fn();
 const closeDialer = jest.fn();

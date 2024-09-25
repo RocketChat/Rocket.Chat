@@ -4,7 +4,7 @@ import { GenericMenu } from '@rocket.chat/ui-client';
 import type { ComponentProps, Ref } from 'react';
 import { forwardRef } from 'react';
 
-import useVoipSettingsMenu from './hooks/useVoipDeviceSettings';
+import { useVoipDeviceSettings } from './hooks/useVoipDeviceSettings';
 
 const CustomizeButton = forwardRef(function CustomizeButton(
 	{ mini, ...props }: ComponentProps<typeof IconButton>,
@@ -14,8 +14,8 @@ const CustomizeButton = forwardRef(function CustomizeButton(
 	return <IconButton {...props} ref={ref} icon='customize' mini width={size} height={size} />;
 });
 
-export const VoipSettingsButton = ({ mini = false }: { mini?: boolean }) => {
-	const menu = useVoipSettingsMenu();
+const VoipSettingsButton = ({ mini = false }: { mini?: boolean }) => {
+	const menu = useVoipDeviceSettings();
 
 	return (
 		<GenericMenu

@@ -16,7 +16,7 @@ type VoipErrorViewProps = {
 	position?: PositionOffsets;
 };
 
-export const VoipErrorView = ({ session, position }: VoipErrorViewProps) => {
+const VoipErrorView = ({ session, position }: VoipErrorViewProps) => {
 	const { t } = useTranslation();
 	const contactData = useVoipContactId({ session });
 

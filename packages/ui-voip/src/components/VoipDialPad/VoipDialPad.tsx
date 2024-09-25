@@ -38,7 +38,7 @@ const dialPadClassName = css`
 	}
 `;
 
-export const VoipDialPad = ({ editable = false, value, longPress = true, onChange }: DialPadProps) => (
+const VoipDialPad = ({ editable = false, value, longPress = true, onChange }: DialPadProps) => (
 	<FocusScope autoFocus>
 		<Box bg='surface-light'>
 			<Box display='flex' pi={12} pbs={4} pbe={8} bg='surface-neutral'>

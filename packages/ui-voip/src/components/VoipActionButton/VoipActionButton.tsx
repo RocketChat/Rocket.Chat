@@ -8,7 +8,7 @@ type ActionButtonProps = Pick<ComponentProps<typeof IconButton>, 'className' | '
 	onClick?: () => void;
 };
 
-export const VoipActionButton = ({ disabled, label, pressed, icon, danger, success, className, onClick }: ActionButtonProps) => (
+const VoipActionButton = ({ disabled, label, pressed, icon, danger, success, className, onClick }: ActionButtonProps) => (
 	<IconButton
 		medium
 		danger={danger}

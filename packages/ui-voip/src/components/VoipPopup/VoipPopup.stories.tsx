@@ -4,7 +4,7 @@ import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 
-import VoipContext from '../../contexts/VoipContext';
+import { VoipContext } from '../../contexts/VoipContext';
 import type { VoipSession } from '../../definitions';
 import type VoipClient from '../../lib/VoipClient';
 import VoipPopup from './VoipPopup';

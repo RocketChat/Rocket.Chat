@@ -87,5 +87,3 @@ export const useVoipClient = ({ autoRegister = true }: VoipClientParams): VoipCl
 
 	return { voipClient, error };
 };
-
-export default useVoipClient;

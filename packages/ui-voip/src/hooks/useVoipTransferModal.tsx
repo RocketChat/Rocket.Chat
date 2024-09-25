@@ -49,5 +49,3 @@ export const useVoipTransferModal = ({ session }: UseVoipTransferParams) => {
 
 	return { startTransfer, cancelTransfer: close };
 };
-
-export default useVoipTransferModal;

@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-export const VoipStatus = ({ isHeld = false, isMuted = false }: { isHeld: boolean; isMuted: boolean }) => {
+const VoipStatus = ({ isHeld = false, isMuted = false }: { isHeld: boolean; isMuted: boolean }) => {
 	const { t } = useTranslation();
 
 	if (!isHeld && !isMuted) {

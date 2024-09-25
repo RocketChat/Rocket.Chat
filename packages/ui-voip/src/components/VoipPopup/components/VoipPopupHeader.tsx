@@ -10,7 +10,7 @@ type VoipPopupHeaderProps = {
 	onClose?: () => void;
 };
 
-export const VoipPopupHeader = ({ children, hideSettings, onClose }: VoipPopupHeaderProps): ReactElement => {
+const VoipPopupHeader = ({ children, hideSettings, onClose }: VoipPopupHeaderProps): ReactElement => {
 	const { t } = useTranslation();
 
 	return (

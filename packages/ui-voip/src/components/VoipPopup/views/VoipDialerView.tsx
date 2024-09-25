@@ -14,7 +14,7 @@ type VoipDialerViewProps = {
 	position?: PositionOffsets;
 };
 
-export const VoipDialerView = ({ position }: VoipDialerViewProps) => {
+const VoipDialerView = ({ position }: VoipDialerViewProps) => {
 	const { t } = useTranslation();
 	const { makeCall, closeDialer } = useVoipAPI();
 	const [number, setNumber] = useState('');

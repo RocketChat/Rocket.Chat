@@ -21,7 +21,7 @@ type VoipOngoingViewProps = {
 	position?: PositionOffsets;
 };
 
-export const VoipOngoingView = ({ session, position }: VoipOngoingViewProps) => {
+const VoipOngoingView = ({ session, position }: VoipOngoingViewProps) => {
 	const { startTransfer } = useVoipTransferModal({ session });
 	const contactData = useVoipContactId({ session, transferEnabled: false });
 

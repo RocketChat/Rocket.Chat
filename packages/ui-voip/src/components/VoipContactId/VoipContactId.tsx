@@ -4,7 +4,7 @@ import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-export const VoipContactId = ({
+const VoipContactId = ({
 	name,
 	username,
 	transferedBy,

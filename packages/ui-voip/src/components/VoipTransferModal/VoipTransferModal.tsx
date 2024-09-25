@@ -13,7 +13,7 @@ type VoipTransferModalProps = {
 	onConfirm(params: { extension: string; name: string | undefined }): void;
 };
 
-export const VoipTransferModal = ({ extension, isLoading = false, onCancel, onConfirm }: VoipTransferModalProps) => {
+const VoipTransferModal = ({ extension, isLoading = false, onCancel, onConfirm }: VoipTransferModalProps) => {
 	const { t } = useTranslation();
 	const [username, setTransferTo] = useState('');
 	const user = useUser();
