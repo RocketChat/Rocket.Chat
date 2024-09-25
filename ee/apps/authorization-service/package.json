@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/authorization-service",
 	"private": true,
-	"version": "0.4.6",
+	"version": "0.4.8-rc.1",
 	"description": "Rocket.Chat Authorization service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -20,6 +20,7 @@
 		"@rocket.chat/emitter": "~0.31.25",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
+		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"@types/node": "^14.18.63",
