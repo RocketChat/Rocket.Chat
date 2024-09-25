@@ -20,12 +20,12 @@ describe('VoipContactId', () => {
 	});
 
 	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const tree = render(<Story />, { wrapper: mockAppRoot().build() });
+		const tree = render(<Story />, { wrapper: mockAppRoot().build(), legacyRoot: true });
 		expect(tree.baseElement).toMatchSnapshot();
 	});
 
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
-		const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
+		const { container } = render(<Story />, { wrapper: mockAppRoot().build(), legacyRoot: true });
 
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
@@ -34,6 +34,7 @@ describe('VoipContactId', () => {
 	it('should display avatar and name when username is available', () => {
 		render(<VoipContactId name='John Doe' username='john.doe' />, {
 			wrapper: mockAppRoot().build(),
+			legacyRoot: true,
 		});
 
 		expect(screen.getByRole('img', { hidden: true })).toHaveAttribute('title', 'john.doe');
@@ -43,6 +44,7 @@ describe('VoipContactId', () => {
 	it('should display transferedBy information when available', () => {
 		render(<VoipContactId name='John Doe' username='john.doe' transferedBy='Jane Doe' />, {
 			wrapper: mockAppRoot().build(),
+			legacyRoot: true,
 		});
 
 		expect(screen.getByText('From: Jane Doe')).toBeInTheDocument();
@@ -52,6 +54,7 @@ describe('VoipContactId', () => {
 		const phone = faker.phone.number();
 		render(<VoipContactId name={phone} />, {
 			wrapper: mockAppRoot().build(),
+			legacyRoot: true,
 		});
 
 		const copyButton = screen.getByRole('button', { name: 'Copy_phone_number' });

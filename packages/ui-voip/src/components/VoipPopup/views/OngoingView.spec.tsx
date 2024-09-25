@@ -10,7 +10,7 @@ const wrapper = mockAppRoot().withEndpoint('GET', '/v1/voip-freeswitch.extension
 const ongoingSession = createMockVoipOngoingSession();
 
 it('should properly render ongoing view', async () => {
-	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build() });
+	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
 
 	expect(screen.getByText('00:00')).toBeInTheDocument();
 	expect(screen.getByRole('button', { name: 'Device_settings' })).toBeInTheDocument();
@@ -23,7 +23,7 @@ it('should display on hold and muted', () => {
 	ongoingSession.isMuted = true;
 	ongoingSession.isHeld = true;
 
-	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build() });
+	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
 
 	expect(screen.getByText('On_Hold')).toBeInTheDocument();
 	expect(screen.getByText('Muted')).toBeInTheDocument();
@@ -33,7 +33,7 @@ it('should display on hold and muted', () => {
 });
 
 it('should only enable ongoing call actions', () => {
-	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build() });
+	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
 
 	expect(within(screen.getByTestId('vc-popup-footer')).queryAllByRole('button')).toHaveLength(5);
 	expect(screen.getByRole('button', { name: 'Turn_off_microphone' })).toBeEnabled();
@@ -44,7 +44,7 @@ it('should only enable ongoing call actions', () => {
 });
 
 it('should properly interact with the voice call session', () => {
-	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build() });
+	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
 
 	screen.getByRole('button', { name: 'Turn_off_microphone' }).click();
 	expect(ongoingSession.mute).toHaveBeenCalled();

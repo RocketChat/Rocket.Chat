@@ -10,7 +10,7 @@ const wrapper = mockAppRoot().withEndpoint('GET', '/v1/voip-freeswitch.extension
 const incomingSession = createMockVoipIncomingSession();
 
 it('should properly render incoming view', async () => {
-	render(<VoipIncomingView session={incomingSession} />, { wrapper: wrapper.build() });
+	render(<VoipIncomingView session={incomingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
 
 	expect(screen.getByText('Incoming_call...')).toBeInTheDocument();
 	expect(screen.getByRole('button', { name: 'Device_settings' })).toBeInTheDocument();
@@ -18,7 +18,7 @@ it('should properly render incoming view', async () => {
 });
 
 it('should only enable incoming actions', () => {
-	render(<VoipIncomingView session={incomingSession} />, { wrapper: wrapper.build() });
+	render(<VoipIncomingView session={incomingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
 
 	expect(within(screen.getByTestId('vc-popup-footer')).queryAllByRole('button')).toHaveLength(5);
 	expect(screen.getByRole('button', { name: 'Decline' })).toBeEnabled();
@@ -29,7 +29,7 @@ it('should only enable incoming actions', () => {
 });
 
 it('should properly interact with the voice call session', () => {
-	render(<VoipIncomingView session={incomingSession} />, { wrapper: wrapper.build() });
+	render(<VoipIncomingView session={incomingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
 
 	screen.getByRole('button', { name: 'Decline' }).click();
 	screen.getByRole('button', { name: 'Accept' }).click();
