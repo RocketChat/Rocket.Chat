@@ -114,7 +114,11 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	updateNameAndFnameByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document>;
 
+	setGroupE2EKey(_id: string, key: string): Promise<UpdateResult>;
+
 	setGroupE2EKeyAndOldRoomKeys(_id: string, key: string, oldRoomKeys: ISubscription['oldRoomKeys']): Promise<UpdateResult>;
+
+	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<UpdateResult>;
 
 	setGroupE2ESuggestedKeyAndOldRoomKeys(
 		uid: string,
