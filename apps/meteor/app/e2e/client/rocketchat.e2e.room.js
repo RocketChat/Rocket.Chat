@@ -78,6 +78,7 @@ export class E2ERoom extends Emitter {
 
 		this.once(E2ERoomState.READY, () => this.decryptPendingMessages());
 		this.once(E2ERoomState.READY, () => this.decryptSubscription());
+		this.once(E2ERoomState.READY, () => this.decryptOldRoomKeys());
 		this.on('STATE_CHANGED', (prev) => {
 			if (this.roomId === RoomManager.opened) {
 				this.log(`[PREV: ${prev}]`, 'State CHANGED');
@@ -212,6 +213,27 @@ export class E2ERoom extends Emitter {
 		this.log('decryptSubscriptions Done');
 	}
 
+	async decryptOldRoomKeys() {
+		const sub = Subscriptions.findOne({ rid: this.roomId });
+
+		if (!sub?.oldRoomKeys || sub?.oldRoomKeys.length === 0) {
+			this.log('decryptOldRoomKeys nothing to do');
+			return;
+		}
+
+		const decryptedOldKeys = await Promise.all(
+			sub.oldRoomKeys.map(async (key) => {
+				return {
+					...key,
+					E2EKey: await this.decryptSessionKey(key.E2EKey),
+				};
+			}),
+		);
+
+		this.oldKeys = decryptedOldKeys;
+		this.log('decryptOldRoomKeys Done');
+	}
+
 	async decryptPendingMessages() {
 		return Messages.find({ rid: this.roomId, t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }) => {
 			Messages.update({ _id }, await this.decryptMessage(msg));
@@ -267,6 +289,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptSessionKey(key) {
+		console.log('Decrypting key: ', key);
 		key = key.slice(12);
 		key = Base64.decode(key);
 
@@ -524,18 +547,13 @@ export class E2ERoom extends Emitter {
 
 		let oldKey = '';
 		if (keyID !== this.keyID) {
-			const sub = Subscriptions.findOne({ rid: this.roomId });
-			const { oldRoomKeys = [] } = sub;
-			const oldRoomKey = oldRoomKeys.find((key) => key.e2eKeyId === keyID);
+			const oldRoomKey = this.oldKeys?.find((key) => key.e2eKeyId === keyID);
+			// Messages already contain a keyID stored with them
+			// That means that if we cannot find a keyID for the key the message has preppended to
+			// The message is indecipherable. In such cases, we'll try to decrypt with the most recent key
 			if (oldRoomKey) {
 				oldKey = oldRoomKey.E2EKey;
-			} else if (oldRoomKeys.length) {
-				oldKey = oldRoomKeys[oldRoomKeys.length - 1]?.E2EKey;
 			}
-		}
-
-		if (oldKey) {
-			oldKey = await this.decryptSessionKey(oldKey);
 		}
 
 		message = message.slice(12);
@@ -543,10 +561,12 @@ export class E2ERoom extends Emitter {
 		const [vector, cipherText] = splitVectorAndEcryptedData(Base64.decode(message));
 
 		try {
+			// For indecipherable messages, we're going to try to decrypt with the most recent key
 			const result = await decryptAES(vector, oldKey || this.groupSessionKey, cipherText);
 			return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
 		} catch (error) {
-			return this.error('Error decrypting message: ', error, message);
+			this.error('Error decrypting message: ', error, message);
+			return { msg: `Message cannot be decrypted with current keys. KeyID ${keyID}` };
 		}
 	}
 
