@@ -1,14 +1,20 @@
+import type { Page } from '@playwright/test';
+
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { Registration } from './page-objects';
 import { test, expect } from './utils/test';
 
 test.describe.serial('Forget session on window close setting', () => {
 	let poRegistration: Registration;
-
+	let secondPage: Page;
 	test.beforeEach(async ({ page }) => {
 		poRegistration = new Registration(page);
 
 		await page.goto('/home');
+	});
+
+	test.afterEach(async () => {
+		await secondPage.close();
 	});
 
 	test.describe('Setting off', async () => {
@@ -23,10 +29,10 @@ test.describe.serial('Forget session on window close setting', () => {
 
 			await expect(page.locator('role=heading[name="Welcome to Rocket.Chat"]')).toBeVisible();
 
-			const newPage = await context.newPage();
-			await newPage.goto('/home');
+			secondPage = await context.newPage();
+			await secondPage.goto('/home');
 
-			await expect(newPage.locator('role=heading[name="Welcome to Rocket.Chat"]')).toBeVisible();
+			await expect(secondPage.locator('role=heading[name="Welcome to Rocket.Chat"]')).toBeVisible();
 		});
 	});
 
@@ -46,10 +52,10 @@ test.describe.serial('Forget session on window close setting', () => {
 
 			await expect(page.locator('role=heading[name="Welcome to Rocket.Chat"]')).toBeVisible();
 
-			const newPage = await context.newPage();
-			await newPage.goto('/home');
+			secondPage = await context.newPage();
+			await secondPage.goto('/home');
 
-			await expect(newPage.locator('role=button[name="Login"]')).toBeVisible();
+			await expect(secondPage.locator('role=button[name="Login"]')).toBeVisible();
 		});
 	});
 });
