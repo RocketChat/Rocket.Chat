@@ -26,16 +26,16 @@ Accounts.onEmailVerificationLink((token: string) => {
 	});
 });
 
-Meteor.startup(() => {
-	Tracker.autorun((computation) => {
-		const forgetUserSessionOnWindowClose = settings.get('Accounts_ForgetUserSessionOnWindowClose');
+// Meteor.startup(() => {
+// 	Tracker.autorun((computation) => {
+// 		const forgetUserSessionOnWindowClose = settings.get('Accounts_ForgetUserSessionOnWindowClose');
 
-		if (forgetUserSessionOnWindowClose === undefined) {
-			return;
-		}
+// 		if (forgetUserSessionOnWindowClose === undefined) {
+// 			return;
+// 		}
 
-		computation.stop();
+// 		computation.stop();
 
-		Accounts.config({ clientStorage: forgetUserSessionOnWindowClose ? 'session' : 'local' });
-	});
-});
+// 		Accounts.config({ clientStorage: forgetUserSessionOnWindowClose ? 'session' : 'local' });
+// 	});
+// });
