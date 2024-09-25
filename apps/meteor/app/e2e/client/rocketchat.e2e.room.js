@@ -329,7 +329,6 @@ export class E2ERoom extends Emitter {
 			this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
 			this.keyID = (await createSha256Hash(this.sessionKeyExportedString)).slice(0, 12);
 
-			this.log(sessionKeyExported, this.sessionKeyExportedString, this.keyID, this.groupSessionKey);
 			await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
 			await this.encryptKeyForOtherParticipants();
 		} catch (error) {
