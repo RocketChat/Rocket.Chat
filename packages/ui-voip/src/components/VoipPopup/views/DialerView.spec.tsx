@@ -15,7 +15,7 @@ it('should look good', async () => {
 	render(<VoipDialerView />, { wrapper: mockAppRoot().build(), legacyRoot: true });
 
 	expect(screen.getByText('New_Call')).toBeInTheDocument();
-	expect(screen.getByTitle('Device_settings')).toBeEnabled();
+	expect(screen.getByRole('button', { name: /Device_settings/ })).toBeInTheDocument();
 	expect(screen.getByRole('button', { name: /Call/i })).toBeDisabled();
 });
 

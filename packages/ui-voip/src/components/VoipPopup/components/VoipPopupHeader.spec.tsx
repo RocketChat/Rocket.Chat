@@ -32,11 +32,11 @@ it('should call onClose when close button is clicked', () => {
 it('should render settings button by default', () => {
 	render(<VoipPopupHeader />, { wrapper: mockAppRoot().build(), legacyRoot: true });
 
-	expect(screen.getByRole('button', { name: 'Device_settings' })).toBeInTheDocument();
+	expect(screen.getByRole('button', { name: /Device_settings/ })).toBeInTheDocument();
 });
 
 it('should not render settings button when hideSettings is true', () => {
 	render(<VoipPopupHeader hideSettings>text</VoipPopupHeader>, { wrapper: mockAppRoot().build(), legacyRoot: true });
 
-	expect(screen.queryByRole('button', { name: 'Device_settings' })).not.toBeInTheDocument();
+	expect(screen.queryByRole('button', { name: /Device_settings/ })).not.toBeInTheDocument();
 });

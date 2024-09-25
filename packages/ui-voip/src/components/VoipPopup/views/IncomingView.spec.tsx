@@ -13,7 +13,7 @@ it('should properly render incoming view', async () => {
 	render(<VoipIncomingView session={incomingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
 
 	expect(screen.getByText('Incoming_call...')).toBeInTheDocument();
-	expect(screen.getByRole('button', { name: 'Device_settings' })).toBeInTheDocument();
+	expect(screen.getByRole('button', { name: /Device_settings/ })).toBeInTheDocument();
 	expect(await screen.findByText('Administrator')).toBeInTheDocument();
 });
 

@@ -13,7 +13,7 @@ it('should properly render ongoing view', async () => {
 	render(<VoipOngoingView session={ongoingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
 
 	expect(screen.getByText('00:00')).toBeInTheDocument();
-	expect(screen.getByRole('button', { name: 'Device_settings' })).toBeInTheDocument();
+	expect(screen.getByRole('button', { name: /Device_settings/ })).toBeInTheDocument();
 	expect(await screen.findByText('Administrator')).toBeInTheDocument();
 	expect(screen.queryByText('On_Hold')).not.toBeInTheDocument();
 	expect(screen.queryByText('Muted')).not.toBeInTheDocument();
