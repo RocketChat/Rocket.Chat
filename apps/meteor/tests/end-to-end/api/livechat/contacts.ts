@@ -709,15 +709,21 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.total).to.be.equal(0);
 		});
 
-		it("should return an error if user doesn't have 'view-livechat-contact' permission", async () => {
-			await removePermissionFromAllRoles('view-livechat-contact');
+		describe('Permissions', () => {
+			before(async () => {
+				await removePermissionFromAllRoles('view-livechat-contact');
+			});
 
-			const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials);
+			after(async () => {
+				await restorePermissionToRoles('view-livechat-contact');
+			});
 
-			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			it("should return an error if user doesn't have 'view-livechat-contact' permission", async () => {
+				const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials);
 
-			await restorePermissionToRoles('view-livechat-contact');
+				expect(res.body).to.have.property('success', false);
+				expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+			});
 		});
 	});
 });
