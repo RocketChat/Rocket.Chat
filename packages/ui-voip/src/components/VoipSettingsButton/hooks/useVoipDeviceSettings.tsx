@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useVoipAPI } from '../../../hooks/useVoipAPI';
 
-export const useVoipSettingsMenu = () => {
+export const useVoipDeviceSettings = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -74,4 +74,4 @@ export const useVoipSettingsMenu = () => {
 	};
 };
 
-export default useVoipSettingsMenu;
+export default useVoipDeviceSettings;
