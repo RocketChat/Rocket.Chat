@@ -11,7 +11,7 @@ export const VoipStatus = ({ isHeld = false, isMuted = false }: { isHeld: boolea
 	return (
 		<Box fontScale='p2' display='flex' justifyContent='space-between' paddingInline={12} pb={4}>
 			{isHeld && (
-				<Box is='span' color='font-default'>
+				<Box is='span' color='default'>
 					{t('On_Hold')}
 				</Box>
 			)}
