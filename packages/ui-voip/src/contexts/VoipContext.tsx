@@ -42,5 +42,3 @@ export const VoipContext = createContext<VoipContextValue>({
 	isEnabled: false,
 	voipClient: null,
 });
-
-export default VoipContext;

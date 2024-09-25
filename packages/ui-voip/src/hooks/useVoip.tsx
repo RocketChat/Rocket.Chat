@@ -1,9 +1,9 @@
 import { useContext, useMemo } from 'react';
 
-import VoipContext from '../contexts/VoipContext';
-import useVoipAPI from './useVoipAPI';
-import useVoipSession from './useVoipSession';
-import useVoipState from './useVoipState';
+import { VoipContext } from '../contexts/VoipContext';
+import { useVoipAPI } from './useVoipAPI';
+import { useVoipSession } from './useVoipSession';
+import { useVoipState } from './useVoipState';
 
 export const useVoip = () => {
 	const { error } = useContext(VoipContext);
@@ -21,5 +21,3 @@ export const useVoip = () => {
 		[state, api, session, error],
 	);
 };
-
-export default useVoip;

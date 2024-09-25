@@ -28,5 +28,3 @@ export const useVoipEffect = <T,>(transform: (voipClient: VoIPClient) => T, init
 
 	return useSyncExternalStore(subscribe, getSnapshot);
 };
-
-export default useVoipEffect;
