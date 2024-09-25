@@ -263,7 +263,7 @@ class E2E extends Emitter {
 		}
 
 		if (!this.instancesByRoomId[rid]) {
-			this.instancesByRoomId[rid] = new E2ERoom(Meteor.userId(), room, room.t);
+			this.instancesByRoomId[rid] = new E2ERoom(Meteor.userId(), rid, room.t);
 		}
 
 		return this.instancesByRoomId[rid];
