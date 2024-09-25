@@ -66,7 +66,7 @@ const AssignExtensionModal = ({ defaultExtension, defaultUsername, onClose }: As
 
 			queryClient.invalidateQueries(['users.list']);
 			if (loggedUser?.username === username) {
-				queryClient.invalidateQueries(['voice-call-client']);
+				queryClient.invalidateQueries(['voip-client']);
 			}
 
 			onClose();

@@ -22,7 +22,7 @@ export const useVoipCallAction = (user: Pick<IUser, '_id' | 'username' | 'freeSw
 
 	const disabled = isSameUser || isMicPermissionDenied || !isRemoteRegistered || !isRegistered || isInCall;
 
-	const voiceCallOption = useMemo<UserInfoAction | undefined>(() => {
+	const voipCallOption = useMemo<UserInfoAction | undefined>(() => {
 		const handleClick = () => {
 			makeCall(user?.freeSwitchExtension as string);
 			closeUserCard();
@@ -40,5 +40,5 @@ export const useVoipCallAction = (user: Pick<IUser, '_id' | 'username' | 'freeSw
 			: undefined;
 	}, [closeUserCard, disabled, isEnabled, isSameUser, makeCall, t, user?.freeSwitchExtension]);
 
-	return voiceCallOption;
+	return voipCallOption;
 };

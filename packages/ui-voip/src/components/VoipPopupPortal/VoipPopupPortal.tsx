@@ -10,11 +10,11 @@ type VoipPopupPortalProps = {
 };
 
 const VoipPopupPortal = ({ children }: VoipPopupPortalProps): ReactElement => {
-	const [voiceCallRoot] = useState(() => createAnchor('voice-call-root'));
+	const [voipRoot] = useState(() => createAnchor('voip-root'));
 
-	useEffect(() => (): void => deleteAnchor(voiceCallRoot), [voiceCallRoot]);
+	useEffect(() => (): void => deleteAnchor(voipRoot), [voipRoot]);
 
-	return <>{createPortal(children, voiceCallRoot)}</>;
+	return <>{createPortal(children, voipRoot)}</>;
 };
 
 export default memo(VoipPopupPortal);

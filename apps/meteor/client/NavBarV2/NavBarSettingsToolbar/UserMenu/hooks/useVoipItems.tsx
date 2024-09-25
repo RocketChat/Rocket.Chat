@@ -50,7 +50,7 @@ export const useVoipItems = (): GenericMenuItemProps[] => {
 
 		return [
 			{
-				id: 'toggle-voice-call',
+				id: 'toggle-voip',
 				icon: isRegistered ? 'phone-disabled' : 'phone',
 				disabled: !isReady || toggleVoip.isLoading,
 				onClick: () => toggleVoip.mutate(),

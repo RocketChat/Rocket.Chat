@@ -44,7 +44,7 @@ const useVoipMenuOptions = () => {
 	return useMemo(() => {
 		const items: GenericMenuItemProps[] = [
 			{
-				id: 'start-voice-call',
+				id: 'start-voip-call',
 				icon: 'phone',
 				disabled,
 				onClick: () => makeCall(remoteUser?.freeSwitchExtension as string),
