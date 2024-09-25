@@ -8962,10 +8962,10 @@ __metadata:
     "@rocket.chat/icons": "*"
     "@rocket.chat/prettier-config": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-avatar": 7.0.0-rc.0
-    "@rocket.chat/ui-contexts": 11.0.0-rc.0
+    "@rocket.chat/ui-avatar": 7.0.0-rc.1
+    "@rocket.chat/ui-contexts": 11.0.0-rc.1
     "@rocket.chat/ui-kit": "*"
-    "@rocket.chat/ui-video-conf": 11.0.0-rc.0
+    "@rocket.chat/ui-video-conf": 11.0.0-rc.1
     "@tanstack/react-query": "*"
     react: "*"
     react-dom: "*"
@@ -9052,8 +9052,8 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "*"
     "@rocket.chat/message-parser": 0.31.31-rc.0
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-client": 11.0.0-rc.0
-    "@rocket.chat/ui-contexts": 11.0.0-rc.0
+    "@rocket.chat/ui-client": 11.0.0-rc.1
+    "@rocket.chat/ui-contexts": 11.0.0-rc.1
     katex: "*"
     react: "*"
   languageName: unknown
@@ -10286,7 +10286,7 @@ __metadata:
     typescript: ~5.5.4
   peerDependencies:
     "@rocket.chat/fuselage": "*"
-    "@rocket.chat/ui-contexts": 11.0.0-rc.0
+    "@rocket.chat/ui-contexts": 11.0.0-rc.1
     react: ~17.0.2
   languageName: unknown
   linkType: soft
@@ -10337,8 +10337,8 @@ __metadata:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/ui-avatar": 7.0.0-rc.0
-    "@rocket.chat/ui-contexts": 11.0.0-rc.0
+    "@rocket.chat/ui-avatar": 7.0.0-rc.1
+    "@rocket.chat/ui-contexts": 11.0.0-rc.1
     react: "*"
     react-i18next: "*"
   languageName: unknown
@@ -10507,8 +10507,8 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-avatar": 7.0.0-rc.0
-    "@rocket.chat/ui-contexts": 11.0.0-rc.0
+    "@rocket.chat/ui-avatar": 7.0.0-rc.1
+    "@rocket.chat/ui-contexts": 11.0.0-rc.1
     react: ^17.0.2
     react-dom: ^17.0.2
   languageName: unknown
@@ -10596,7 +10596,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": 0.2.2
-    "@rocket.chat/ui-contexts": 11.0.0-rc.0
+    "@rocket.chat/ui-contexts": 11.0.0-rc.1
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
