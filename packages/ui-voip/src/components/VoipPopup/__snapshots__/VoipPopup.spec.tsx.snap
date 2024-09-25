@@ -9,7 +9,7 @@ exports[`renders ErrorCall without crashing 1`] = `
     />
     <article
       aria-labelledby="voiceCallPopupTitle"
-      class="rcx-css-hzh480"
+      class="rcx-css-1u0qz2a"
       data-testid="vc-popup-dialer"
     >
       <header
@@ -347,7 +347,7 @@ exports[`renders ErrorCall without crashing 1`] = `
         />
       </section>
       <footer
-        class="rcx-box rcx-box--full rcx-css-xgsss8"
+        class="rcx-box rcx-box--full rcx-css-29fkf"
         data-testid="vc-popup-footer"
       >
         <div
@@ -355,11 +355,9 @@ exports[`renders ErrorCall without crashing 1`] = `
           role="group"
         >
           <button
-            aria-expanded="false"
-            aria-haspopup="true"
-            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button rcx-css-1gnqy84"
-            id="static-id-0"
-            title="Device_settings"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            disabled=""
+            title="Device_settings_not_supported_by_browser"
             type="button"
           >
             <i
@@ -412,7 +410,7 @@ exports[`renders IncomingCall without crashing 1`] = `
     />
     <article
       aria-labelledby="voiceCallPopupTitle"
-      class="rcx-css-hzh480"
+      class="rcx-css-1u0qz2a"
       data-testid="vc-popup-dialer"
     >
       <header
@@ -750,7 +748,7 @@ exports[`renders IncomingCall without crashing 1`] = `
         />
       </section>
       <footer
-        class="rcx-box rcx-box--full rcx-css-xgsss8"
+        class="rcx-box rcx-box--full rcx-css-29fkf"
         data-testid="vc-popup-footer"
       >
         <div
@@ -758,11 +756,9 @@ exports[`renders IncomingCall without crashing 1`] = `
           role="group"
         >
           <button
-            aria-expanded="false"
-            aria-haspopup="true"
-            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button rcx-css-1gnqy84"
-            id="static-id-0"
-            title="Device_settings"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            disabled=""
+            title="Device_settings_not_supported_by_browser"
             type="button"
           >
             <i
@@ -815,7 +811,7 @@ exports[`renders OngoingCall without crashing 1`] = `
     />
     <article
       aria-labelledby="voiceCallPopupTitle"
-      class="rcx-css-hzh480"
+      class="rcx-css-1u0qz2a"
       data-testid="vc-popup-dialer"
     >
       <header
@@ -1153,7 +1149,7 @@ exports[`renders OngoingCall without crashing 1`] = `
         />
       </section>
       <footer
-        class="rcx-box rcx-box--full rcx-css-xgsss8"
+        class="rcx-box rcx-box--full rcx-css-29fkf"
         data-testid="vc-popup-footer"
       >
         <div
@@ -1161,11 +1157,9 @@ exports[`renders OngoingCall without crashing 1`] = `
           role="group"
         >
           <button
-            aria-expanded="false"
-            aria-haspopup="true"
-            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button rcx-css-1gnqy84"
-            id="static-id-0"
-            title="Device_settings"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            disabled=""
+            title="Device_settings_not_supported_by_browser"
             type="button"
           >
             <i
@@ -1218,7 +1212,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
     />
     <article
       aria-labelledby="voiceCallPopupTitle"
-      class="rcx-css-hzh480"
+      class="rcx-css-1u0qz2a"
       data-testid="vc-popup-dialer"
     >
       <header
@@ -1556,7 +1550,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
         />
       </section>
       <footer
-        class="rcx-box rcx-box--full rcx-css-xgsss8"
+        class="rcx-box rcx-box--full rcx-css-29fkf"
         data-testid="vc-popup-footer"
       >
         <div
@@ -1564,11 +1558,9 @@ exports[`renders OutgoingCall without crashing 1`] = `
           role="group"
         >
           <button
-            aria-expanded="false"
-            aria-haspopup="true"
-            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button rcx-css-1gnqy84"
-            id="static-id-0"
-            title="Device_settings"
+            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+            disabled=""
+            title="Device_settings_not_supported_by_browser"
             type="button"
           >
             <i

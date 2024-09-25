@@ -72,7 +72,7 @@ exports[`VoipContactId renders WithTransfer without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-1w6swlw"
         >
           From
-          :
+          : 
           Jane Doe
         </div>
         <div

@@ -69,12 +69,12 @@ it('should prioritize session over dialer', async () => {
 const testCases = Object.values(composeStories(stories)).map((story) => [story.storyName || 'Story', story]);
 
 test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-	const tree = render(<Story />);
+	const tree = render(<Story />, { wrapper: mockAppRoot().build() });
 	expect(replaceReactAriaIds(tree.baseElement)).toMatchSnapshot();
 });
 
 test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
-	const { container } = render(<Story />);
+	const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
 
 	const results = await axe(container);
 	expect(results).toHaveNoViolations();
