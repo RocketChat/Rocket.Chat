@@ -164,11 +164,11 @@ class E2E extends Emitter {
 
 					if (sub.E2ESuggestedKey) {
 						if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
-							await this.acceptSuggestedKey(sub.rid);
+							await this.debouncedAcceptSuggestedKey(sub.rid);
 							e2eRoom.keyReceived();
 						} else {
 							console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
-							await this.rejectSuggestedKey(sub.rid);
+							await this.debouncedRejectSuggestedKey(sub.rid);
 						}
 					}
 
@@ -240,11 +240,11 @@ class E2E extends Emitter {
 
 					if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
 						this.log('Imported valid E2E suggested key');
-						await e2e.acceptSuggestedKey(sub.rid);
+						await this.debouncedAcceptSuggestedKey(sub.rid);
 						e2eRoom.keyReceived();
 					} else {
 						this.error('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
-						await e2e.rejectSuggestedKey(sub.rid);
+						await this.debouncedRejectSuggestedKey(sub.rid);
 					}
 
 					sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
@@ -302,11 +302,15 @@ class E2E extends Emitter {
 		});
 	}
 
+	debouncedAcceptSuggestedKey = _.debounce(this.acceptSuggestedKey.bind(this), 100);
+
 	async rejectSuggestedKey(rid: string): Promise<void> {
 		await sdk.rest.post('/v1/e2e.rejectSuggestedGroupKey', {
 			rid,
 		});
 	}
+
+	debouncedRejectSuggestedKey = _.debounce(this.rejectSuggestedKey.bind(this), 100);
 
 	getKeysFromLocalStorage(): KeyPair {
 		return {
