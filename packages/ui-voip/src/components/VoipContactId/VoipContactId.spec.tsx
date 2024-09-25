@@ -1,4 +1,3 @@
-import '@testing-library/jest-dom';
 import { faker } from '@faker-js/faker';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';

@@ -1,4 +1,3 @@
-import '@testing-library/jest-dom';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, within } from '@testing-library/react';
 
