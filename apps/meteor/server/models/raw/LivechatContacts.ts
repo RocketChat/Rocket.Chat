@@ -15,20 +15,19 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			{
 				key: { name: 1 },
 				unique: false,
-				sparse: true,
 				name: 'name_insensitive',
 				collation: { locale: 'en', strength: 2, caseLevel: false },
 			},
 			{
 				key: { emails: 1 },
 				unique: false,
-				sparse: true,
 				name: 'emails_insensitive',
+				partialFilterExpression: { emails: { $exists: true } },
 				collation: { locale: 'en', strength: 2, caseLevel: false },
 			},
 			{
 				key: { phones: 1 },
-				sparse: true,
+				partialFilterExpression: { phones: { $exists: true } },
 				unique: false,
 			},
 		];
