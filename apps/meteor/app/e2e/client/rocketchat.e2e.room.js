@@ -234,6 +234,21 @@ export class E2ERoom extends Emitter {
 		this.log('decryptOldRoomKeys Done');
 	}
 
+	async exportOldRoomKeys(oldKeys) {
+		if (!oldKeys || oldKeys.length === 0) {
+			return;
+		}
+
+		return Promise.all(
+			oldKeys.map(async (key) => {
+				return {
+					...key,
+					E2EKey: await this.exportSessionKey(key.E2EKey),
+				};
+			}),
+		);
+	}
+
 	async decryptPendingMessages() {
 		return Messages.find({ rid: this.roomId, t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }) => {
 			Messages.update({ _id }, await this.decryptMessage(msg));
@@ -289,13 +304,22 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptSessionKey(key) {
-		console.log('Decrypting key: ', key);
 		key = key.slice(12);
 		key = Base64.decode(key);
 
 		try {
 			const decryptedKey = await decryptRSA(e2e.privateKey, key);
 			return importAESKey(JSON.parse(toString(decryptedKey)));
+		} catch (error) {
+			this.error('Error decrypting key: ', error);
+			return null;
+		}
+	}
+
+	async exportSessionKey(key) {
+		try {
+			const decryptedKey = await decryptRSA(e2e.privateKey, key);
+			return toString(decryptedKey);
 		} catch (error) {
 			this.error('Error decrypting key: ', error);
 			return null;
@@ -363,6 +387,7 @@ export class E2ERoom extends Emitter {
 	async encryptKeyForOtherParticipants() {
 		// Encrypt generated session key for every user in room and publish to subscription model.
 		try {
+			const mySub = Subscriptions.findOne({ rid: this.roomId });
 			const users = (await sdk.call('e2e.getUsersOfRoomWithoutKey', this.roomId)).users.filter((user) => user?.e2e?.public_key);
 
 			if (!users.length) {
@@ -372,13 +397,40 @@ export class E2ERoom extends Emitter {
 			const usersSuggestedGroupKeys = { [this.roomId]: [] };
 			for await (const user of users) {
 				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e.public_key);
+				const oldKeys = await this.encryptOldKeysForParticipant(user.e2e.public_key, await this.exportOldRoomKeys(mySub?.oldRoomKeys));
 
-				usersSuggestedGroupKeys[this.roomId].push({ _id: user._id, key: encryptedGroupKey });
+				usersSuggestedGroupKeys[this.roomId].push({ _id: user._id, key: encryptedGroupKey, ...(oldKeys && { oldKeys }) });
 			}
 
 			await sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', { usersSuggestedGroupKeys });
 		} catch (error) {
 			return this.error('Error getting room users: ', error);
+		}
+	}
+
+	async encryptOldKeysForParticipant(public_key, oldRoomKeys) {
+		if (!oldRoomKeys || oldRoomKeys.length === 0) {
+			return;
+		}
+
+		let userKey;
+
+		try {
+			userKey = await importRSAKey(JSON.parse(public_key), ['encrypt']);
+		} catch (error) {
+			return this.error('Error importing user key: ', error);
+		}
+
+		try {
+			return await Promise.all(
+				oldRoomKeys.map(async (key) => {
+					const encryptedKey = await encryptRSA(userKey, toArrayBuffer(key.E2EKey));
+					const encryptedKeyToString = key.keyID + Base64.encode(new Uint8Array(encryptedKey));
+					return { ...key, E2EKey: encryptedKeyToString };
+				}),
+			);
+		} catch (error) {
+			return this.error('Error encrypting user key: ', error);
 		}
 	}
 
