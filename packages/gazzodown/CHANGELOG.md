@@ -1,5 +1,16 @@
 # @rocket.chat/gazzodown
 
+## 11.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [2f9eea03d2]:</summary>
+
+  - @rocket.chat/ui-client@11.0.0-rc.1
+  - @rocket.chat/ui-contexts@11.0.0-rc.1
+  - @rocket.chat/core-typings@6.13.0-rc.1
+  </details>
+
 ## 11.0.0-rc.0
 
 ### Minor Changes
@@ -15,6 +26,7 @@
   - @rocket.chat/message-parser@0.31.30-rc.0
   - @rocket.chat/ui-contexts@11.0.0-rc.0
   </details>
+
 ## 10.0.1
 
 ### Patch Changes

@@ -1,5 +1,44 @@
 # @rocket.chat/meteor
 
+## 6.13.0-rc.1
+
+### Minor Changes
+
+- ([#33212](https://github.com/RocketChat/Rocket.Chat/pull/33212)) Added new Admin Feature Preview management view, this will allow the workspace admins to both enable feature previewing in the workspace as well as define which feature previews are enabled by default for the users in the workspace.
+
+### Patch Changes
+
+- ([#33339](https://github.com/RocketChat/Rocket.Chat/pull/33339)) Fixes a problem that caused visitor creation to fail when GDPR setting was enabled and visitor was created via Apps Engine or the deprecated `livechat:registerGuest` method.
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies [2f9eea03d2]:</summary>
+
+  - @rocket.chat/i18n@0.8.0-rc.1
+  - @rocket.chat/ui-client@11.0.0-rc.1
+  - @rocket.chat/ui-contexts@11.0.0-rc.1
+  - @rocket.chat/web-ui-registration@11.0.0-rc.1
+  - @rocket.chat/gazzodown@11.0.0-rc.1
+  - @rocket.chat/fuselage-ui-kit@11.0.0-rc.1
+  - @rocket.chat/ui-theming@0.3.0-rc.0
+  - @rocket.chat/ui-avatar@7.0.0-rc.1
+  - @rocket.chat/ui-video-conf@11.0.0-rc.1
+  - @rocket.chat/core-typings@6.13.0-rc.1
+  - @rocket.chat/rest-typings@6.13.0-rc.1
+  - @rocket.chat/license@0.2.8-rc.1
+  - @rocket.chat/omnichannel-services@0.3.5-rc.1
+  - @rocket.chat/pdf-worker@0.2.5-rc.1
+  - @rocket.chat/presence@0.2.8-rc.1
+  - @rocket.chat/api-client@0.2.8-rc.1
+  - @rocket.chat/apps@0.1.8-rc.1
+  - @rocket.chat/core-services@0.7.0-rc.1
+  - @rocket.chat/cron@0.1.8-rc.1
+  - @rocket.chat/model-typings@0.8.0-rc.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.3.0-rc.1
+  - @rocket.chat/instance-status@0.1.8-rc.1
+  </details>
+
 ## 6.13.0-rc.0
 
 ### Minor Changes
