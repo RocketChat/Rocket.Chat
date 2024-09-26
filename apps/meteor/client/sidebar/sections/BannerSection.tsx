@@ -6,7 +6,6 @@ import { useAirGappedRestriction } from '../../hooks/useAirGappedRestriction';
 import AirGappedRestrictionBanner from './AirGappedRestrictionBanner/AirGappedRestrictionBanner';
 import StatusDisabledBanner from './StatusDisabledBanner';
 
-// TODO unit test this
 const BannerSection = () => {
 	const [isRestricted, isWarning, remainingDays] = useAirGappedRestriction();
 	const isAdmin = useRole('admin');
