@@ -12,7 +12,7 @@ const sortRoomByLastMessage = (a: IRoom, b: IRoom) => {
 	if (!b.lm) {
 		return -1;
 	}
-	return new Date(b.lm).toUTCString().localeCompare(new Date(a.lm).toUTCString());
+	return new Date(b.lm).toISOString().localeCompare(new Date(a.lm).toISOString());
 };
 
 export const useTeamsListChildrenUpdate = (
