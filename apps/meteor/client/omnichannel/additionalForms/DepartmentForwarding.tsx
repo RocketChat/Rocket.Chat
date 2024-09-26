@@ -2,8 +2,8 @@ import { Field, FieldLabel, FieldRow, FieldHint, Box, PaginatedMultiSelectFilter
 import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useDepartmentsList } from '../../components/Omnichannel/hooks/useDepartmentsList';
 import { useRecordList } from '../../hooks/lists/useRecordList';
@@ -18,7 +18,7 @@ type DepartmentForwardingProps = {
 };
 
 export const DepartmentForwarding = ({ departmentId, value = [], handler, label }: DepartmentForwardingProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 

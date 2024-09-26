@@ -221,8 +221,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								control={control}
 								name='email'
 								rules={{
-									required: t('Email_is_required'),
-									validate: (email) => (validateEmail(email) ? undefined : t('ensure_email_address_valid')),
+									required: t('Required_field', { field: t('Email') }),
+									validate: (email) => (validateEmail(email) ? undefined : t('error-invalid-email-address')),
 								}}
 								render={({ field }) => (
 									<TextInput
@@ -237,7 +237,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							/>
 						</FieldRow>
 						{errors?.email && (
-							<FieldError aria-live='assertive' id={`${emailId}-error`} fontScale='c1' mbs={12}>
+							<FieldError aria-live='assertive' id={`${emailId}-error`}>
 								{errors.email.message}
 							</FieldError>
 						)}
@@ -286,7 +286,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<Controller
 								control={control}
 								name='name'
-								rules={{ required: t('The_field_is_required', t('Name')) }}
+								rules={{ required: t('Required_field', { field: t('Name') }) }}
 								render={({ field }) => (
 									<TextInput
 										{...field}
@@ -311,7 +311,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<Controller
 								control={control}
 								name='username'
-								rules={{ required: t('The_field_is_required', t('Username')) }}
+								rules={{ required: t('Required_field', { field: t('Username') }) }}
 								render={({ field }) => (
 									<TextInput
 										{...field}
@@ -366,7 +366,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 								<Controller
 									control={control}
 									name='roles'
-									rules={{ required: t('The_field_is_required', t('Roles')) }}
+									rules={{ required: t('Required_field', { field: t('Roles') }) }}
 									render={({ field: { onChange, value } }) => (
 										<MultiSelectFiltered
 											id={rolesId}

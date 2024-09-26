@@ -1,6 +1,7 @@
-import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import { getPeriodRange } from '../../../components/dashboards/periods';
@@ -16,7 +17,7 @@ const formatChartData = (data: { label: string; value: number }[] | undefined = 
 	}));
 
 export const useAgentsSection = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [period, periodSelectorProps] = usePeriodSelectorStorage('reports-agents-period', PERIOD_OPTIONS);
 	const getConversationsByAgent = useEndpoint('GET', '/v1/livechat/analytics/dashboards/conversations-by-agent');
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'total'>('total', 'desc');

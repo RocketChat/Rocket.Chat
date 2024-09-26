@@ -1,8 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageBlock, MessageMetrics, MessageMetricsReply } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useChat } from '../../../views/room/contexts/ChatContext';
 
@@ -12,7 +12,7 @@ type BroadcastMetricsProps = {
 };
 
 const BroadcastMetrics = ({ username, message }: BroadcastMetricsProps): ReactElement => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const chat = useChat();
 
