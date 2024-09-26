@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "6.13.0-develop",
+	"version": "6.14.0-develop",
 	"description": "Rocket.Chat Monorepo",
 	"main": "index.js",
 	"private": true,
@@ -18,10 +18,10 @@
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.26.2",
-		"@types/chart.js": "^2.9.39",
-		"@types/js-yaml": "^4.0.8",
+		"@types/chart.js": "^2.9.41",
+		"@types/js-yaml": "^4.0.9",
 		"ts-node": "^10.9.2",
-		"turbo": "latest"
+		"turbo": "^2.1.2"
 	},
 	"workspaces": [
 		"apps/*",
@@ -64,7 +64,9 @@
 		"@storybook/react-docgen-typescript-plugin@1.0.2-canary.6.9d540b91e815f8fc2f8829189deb00553559ff63.0": "patch:@storybook/react-docgen-typescript-plugin@npm%3A1.0.2-canary.6.9d540b91e815f8fc2f8829189deb00553559ff63.0#./.yarn/patches/@storybook-react-docgen-typescript-plugin-npm-1.0.2-canary.6.9d540b91e815f8fc2f8829189deb00553559ff63.0-b31cc57c40.patch",
 		"mongodb@^4.17.1": "patch:mongodb@npm:4.17.1#.yarn/patches/mongodb-npm-4.17.1-a2fe811ff1.patch",
 		"@rocket.chat/forked-matrix-sdk-crypto-nodejs": "0.1.0-beta.13",
-		"typia@~6.9.0": "patch:typia@npm%3A6.9.0#./.yarn/patches/typia-npm-6.9.0-2fd4d85f25.patch"
+		"typia@~6.9.0": "patch:typia@npm%3A6.9.0#./.yarn/patches/typia-npm-6.9.0-2fd4d85f25.patch",
+		"react-i18next@~15.0.1": "patch:react-i18next@npm%3A15.0.1#./.yarn/patches/react-i18next-npm-15.0.1-0812bb73aa.patch",
+		"moleculer@^0.14.34": "patch:moleculer@npm%3A0.14.34#./.yarn/patches/moleculer-npm-0.14.34-440e26767d.patch"
 	},
 	"dependencies": {
 		"node-gyp": "^9.4.1"
