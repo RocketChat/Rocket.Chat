@@ -158,13 +158,6 @@ export const statistics = {
 				}),
 		);
 
-		// Number of livechat rooms with priorities
-		statsPms.push(
-			LivechatRooms.countLivechatRoomsByPriority().then((count) => {
-				statistics.totalLivechatRoomsWithPriority = count;
-			}),
-		);
-
 		// Number of livechat rooms with department
 		statsPms.push(
 			LivechatRooms.countLivechatRoomsWithDepartment().then((count) => {

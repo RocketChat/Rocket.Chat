@@ -2583,10 +2583,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			.toArray();
 	}
 
-	async countLivechatRoomsByPriority(): Promise<number> {
-		return this.col.countDocuments({ priorityWeight: { $exists: true, $ne: 99 } });
-	}
-
 	countLivechatRoomsWithDepartment(): Promise<number> {
 		return this.col.countDocuments({ departmentId: { $exists: true }, t: 'l' });
 	}
