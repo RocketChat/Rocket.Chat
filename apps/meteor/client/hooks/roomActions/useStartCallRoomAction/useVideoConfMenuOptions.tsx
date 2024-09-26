@@ -64,8 +64,8 @@ const useVideoConfMenuOptions = () => {
 		}
 	});
 
-	const items: GenericMenuItemProps[] = useMemo(
-		() => [
+	return useMemo(() => {
+		const items: GenericMenuItemProps[] = [
 			{
 				id: 'start-video-call',
 				icon: 'video',
@@ -77,20 +77,16 @@ const useVideoConfMenuOptions = () => {
 					</Box>
 				),
 			},
-		],
-		[disabled, handleOpenVideoConf, t, tooltip],
-	);
+		];
 
-	return useMemo(
-		() => ({
+		return {
 			items,
 			disabled,
 			allowed,
 			order,
 			groups,
-		}),
-		[allowed, disabled, groups, items, order],
-	);
+		};
+	}, [allowed, disabled, groups, handleOpenVideoConf, order, t, tooltip]);
 };
 
 export default useVideoConfMenuOptions;
