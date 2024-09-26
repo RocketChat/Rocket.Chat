@@ -3,17 +3,10 @@ import { Meteor } from 'meteor/meteor';
 
 import { throttledCounter } from '../../../../lib/utils/throttledCounter';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { notifyOnSettingChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 
 const incException = throttledCounter((counter) => {
-	Settings.incrementValueById('Uncaught_Exceptions_Count', counter, { returnDocument: 'after' })
-		.then(({ value }) => {
-			if (value) {
-				void notifyOnSettingChanged(value);
-			}
-		})
-		.catch(console.error);
+	Settings.updateValueById('Uncaught_Exceptions_Count', counter).catch(console.error);
 }, 10000);
 
 class ErrorHandler {
@@ -118,5 +111,12 @@ process.on('unhandledRejection', (error) => {
 
 process.on('uncaughtException', async (error) => {
 	incException();
+
+	console.error('=== UnCaughtException ===');
+	console.error(error);
+	console.error('-------------------------');
+	console.error('Errors like this can cause oplog processing errors.');
+	console.error('===========================');
+
 	void errorHandler.trackError(error.message, error.stack);
 });
