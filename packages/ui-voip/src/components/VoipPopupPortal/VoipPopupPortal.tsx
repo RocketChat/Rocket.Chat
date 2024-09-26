@@ -1,20 +1,15 @@
+import { AnchorPortal } from '@rocket.chat/ui-client';
 import type { ReactElement, ReactNode } from 'react';
-import { memo, useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { memo } from 'react';
 
-import { createAnchor } from '../../utils/createAnchor';
-import { deleteAnchor } from '../../utils/deleteAnchor';
+const voipAnchorId = 'voip-root';
 
 type VoipPopupPortalProps = {
 	children?: ReactNode;
 };
 
 const VoipPopupPortal = ({ children }: VoipPopupPortalProps): ReactElement => {
-	const [voipRoot] = useState(() => createAnchor('voip-root'));
-
-	useEffect(() => (): void => deleteAnchor(voipRoot), [voipRoot]);
-
-	return <>{createPortal(children, voipRoot)}</>;
+	return <AnchorPortal id={voipAnchorId}>{children}</AnchorPortal>;
 };
 
 export default memo(VoipPopupPortal);
