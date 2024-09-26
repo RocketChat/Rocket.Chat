@@ -20,6 +20,7 @@ to: ee/apps/<%= name %>/package.json
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/emitter": "next",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",

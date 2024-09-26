@@ -35,4 +35,10 @@ export const createE2ESettings = () =>
 			public: true,
 			enableQuery: { _id: 'E2E_Enable', value: true },
 		});
+
+		await this.add('E2E_Enabled_Mentions', false, {
+			type: 'boolean',
+			public: true,
+			enableQuery: { _id: 'E2E_Enable', value: true },
+		});
 	});
