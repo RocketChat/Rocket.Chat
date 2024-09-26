@@ -21,7 +21,7 @@ import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { ModifyCreator } from './modify/ModifyCreator.ts';
 import { ModifyUpdater } from './modify/ModifyUpdater.ts';
 import { ModifyExtender } from './modify/ModifyExtender.ts';
-import { MessageBuilder } from "./builders/MessageBuilder.ts";
+import { Notifier } from './notifier.ts';
 
 const httpMethods = ['get', 'post', 'put', 'delete', 'head', 'options', 'patch'] as const;
 
@@ -77,6 +77,7 @@ export class AppAccessors {
             ) as T;
 
         this.http = new Http(this.getReader(), this.getPersistence(), this.httpExtend, this.getSenderFn());
+        this.notifier = new Notifier(this.getSenderFn());
     }
 
     public getSenderFn() {
@@ -225,7 +226,7 @@ export class AppAccessors {
                 getPersistenceReader: () => this.proxify('getReader:getPersistenceReader'),
                 getRoomReader: () => this.proxify('getReader:getRoomReader'),
                 getUserReader: () => this.proxify('getReader:getUserReader'),
-                getNotifier: () => this.getNotifier('getReader:getNotifier'),
+                getNotifier: () => this.getNotifier(),
                 getLivechatReader: () => this.proxify('getReader:getLivechatReader'),
                 getUploadReader: () => this.proxify('getReader:getUploadReader'),
                 getCloudWorkspaceReader: () => this.proxify('getReader:getCloudWorkspaceReader'),
@@ -246,7 +247,7 @@ export class AppAccessors {
                 getUpdater: this.getUpdater.bind(this),
                 getExtender: this.getExtender.bind(this),
                 getDeleter: () => this.proxify('getModifier:getDeleter'),
-                getNotifier: () => this.getNotifier('getModifier:getNotifier'),
+                getNotifier: () => this.getNotifier(),
                 getUiController: () => this.proxify('getModifier:getUiController'),
                 getScheduler: () => this.proxify('getModifier:getScheduler'),
                 getOAuthAppsModifier: () => this.proxify('getModifier:getOAuthAppsModifier'),
@@ -293,14 +294,8 @@ export class AppAccessors {
         return this.extender;
     }
 
-    private getNotifier(namespace: string) {
-        if (!this.notifier) {
-            this.notifier = this.proxify(namespace, {
-                getMessageBuilder: () => new MessageBuilder(),
-            });
-        }
-
-         return this.notifier;
+    private getNotifier() {
+        return this.notifier;
     }
 }
 

@@ -34,6 +34,7 @@ export interface IUIActionButtonDescriptor {
     labelI18n: string;
     variant?: 'danger';
     when?: IUActionButtonWhen;
+    category?: 'default' | 'ai';
 }
 export interface IUIActionButton extends IUIActionButtonDescriptor {
     appId: string;
