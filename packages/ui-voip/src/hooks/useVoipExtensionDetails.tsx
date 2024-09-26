@@ -5,7 +5,7 @@ export const useVoipExtensionDetails = ({ extension, enabled = true }: { extensi
 	const isEnabled = !!extension && enabled;
 	const getContactDetails = useEndpoint('GET', '/v1/voip-freeswitch.extension.getDetails');
 	const { data, ...result } = useQuery(
-		['voice-call', 'voice-call-extension-details', extension, getContactDetails],
+		['voip', 'voip-extension-details', extension, getContactDetails],
 		() => getContactDetails({ extension: extension as string }),
 		{
 			enabled: isEnabled,

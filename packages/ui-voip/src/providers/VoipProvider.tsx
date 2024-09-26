@@ -16,7 +16,7 @@ import { useVoipSounds } from '../hooks/useVoipSounds';
 const VoipProvider = ({ children }: { children: ReactNode }) => {
 	// Settings
 	const isVoipEnabled = useSetting<boolean>('VoIP_TeamCollab_Enabled') || false;
-	const [isLocalRegistered, setStorageRegistered] = useLocalStorage('voice-call-registered', true);
+	const [isLocalRegistered, setStorageRegistered] = useLocalStorage('voip-registered', true);
 
 	// Hooks
 	const voipSounds = useVoipSounds();
