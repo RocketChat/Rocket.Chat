@@ -60,8 +60,8 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 
 	// TODO: sanitize Action type to avoid any
 	const actions = useMemo(() => {
-		const mapAction = ([key, { content, icon, iconOnly, onClick }]: any): ReactElement => (
-			<UserInfoAction key={key} iconOnly={iconOnly} title={content} label={content} onClick={onClick} icon={icon} />
+		const mapAction = ([key, { content, title, icon, onClick }]: any): ReactElement => (
+			<UserInfoAction key={key} title={title} label={content} onClick={onClick} icon={icon} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);

@@ -31,10 +31,9 @@ export const useVoipCallAction = (user: Pick<IUser, '_id' | 'username' | 'freeSw
 		return isEnabled && !isSameUser
 			? {
 					type: 'communication',
-					content: t('Voice_call'),
+					title: t('Voice_call'),
 					icon: 'phone',
 					disabled,
-					iconOnly: true,
 					onClick: handleClick,
 			  }
 			: undefined;

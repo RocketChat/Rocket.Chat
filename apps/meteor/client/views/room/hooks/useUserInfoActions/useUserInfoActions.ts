@@ -22,14 +22,25 @@ import { useVoipCallAction } from './actions/useVoipCallAction';
 
 export type UserInfoActionType = 'communication' | 'privileges' | 'management' | 'moderation';
 
-export type UserInfoAction = {
+type UserInfoActionWithOnlyIcon = {
+	type?: UserInfoActionType;
+	content?: string;
+	icon: ComponentProps<typeof Icon>['name'];
+	title: string;
+	variant?: 'danger';
+	onClick: () => void;
+};
+
+type UserInfoActionWithContent = {
 	type?: UserInfoActionType;
 	content: string;
 	icon?: ComponentProps<typeof Icon>['name'];
+	title?: string;
 	variant?: 'danger';
-	iconOnly?: boolean;
 	onClick: () => void;
 };
+
+export type UserInfoAction = UserInfoActionWithContent | UserInfoActionWithOnlyIcon;
 
 type UserMenuAction = {
 	id: string;
@@ -113,7 +124,12 @@ export const useUserInfoActions = ({
 			const group = item.type ? item.type : '';
 			const section = acc.find((section: { id: string }) => section.id === group);
 
-			const newItem = { ...item, id: item.content };
+			const newItem = {
+				...item,
+				id: item.content || item.title || '',
+				content: item.content || item.title,
+			};
+
 			if (section) {
 				section.items.push(newItem);
 				return acc;

@@ -5,16 +5,15 @@ import React from 'react';
 
 type UserInfoActionProps = {
 	icon: IconName;
-	iconOnly?: boolean;
 } & ComponentProps<typeof Button>;
 
-const UserInfoAction = ({ icon, label, iconOnly = false, ...props }: UserInfoActionProps): ReactElement => {
-	if (iconOnly) {
-		return <IconButton small secondary icon={icon} title={label} {...props} mi={4} size={40} />;
+const UserInfoAction = ({ icon, label, title, ...props }: UserInfoActionProps): ReactElement => {
+	if (!label && icon && title) {
+		return <IconButton small secondary icon={icon} title={title} aria-label={title} {...props} mi={4} size={40} />;
 	}
 
 	return (
-		<Button icon={icon} title={label} {...props} mi={4}>
+		<Button icon={icon} {...props} mi={4}>
 			{label}
 		</Button>
 	);

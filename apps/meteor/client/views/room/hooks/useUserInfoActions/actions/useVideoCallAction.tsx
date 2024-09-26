@@ -45,9 +45,8 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username'>): UserI
 		return shouldShowStartCall
 			? {
 					type: 'communication',
-					content: t('Video_call'),
+					title: t('Video_call'),
 					icon: 'video',
-					iconOnly: true,
 					onClick: action,
 			  }
 			: undefined;
