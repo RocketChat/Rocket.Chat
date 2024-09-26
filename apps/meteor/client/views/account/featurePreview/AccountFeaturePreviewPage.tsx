@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import {
 	ButtonGroup,
 	Button,
@@ -12,10 +13,9 @@ import {
 	FieldLabel,
 	FieldRow,
 	FieldHint,
-	Callout,
-	Margins,
 } from '@rocket.chat/fuselage';
-import { usePreferenceFeaturePreviewList } from '@rocket.chat/ui-client';
+import type { FeaturePreviewProps } from '@rocket.chat/ui-client';
+import { useFeaturePreviewList } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
@@ -23,12 +23,26 @@ import React, { useEffect, Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
-import { useFeaturePreviewEnableQuery } from '../../../hooks/useFeaturePreviewEnableQuery';
 
+const handleEnableQuery = (features: FeaturePreviewProps[]) => {
+	return features.map((item) => {
+		if (item.enableQuery) {
+			const expected = item.enableQuery.value;
+			const received = features.find((el) => el.name === item.enableQuery?.name)?.value;
+			if (expected !== received) {
+				item.disabled = true;
+				item.value = false;
+			} else {
+				item.disabled = false;
+			}
+		}
+		return item;
+	});
+};
 const AccountFeaturePreviewPage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { features, unseenFeatures } = usePreferenceFeaturePreviewList();
+	const { features, unseenFeatures } = useFeaturePreviewList();
 
 	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 
@@ -71,7 +85,12 @@ const AccountFeaturePreviewPage = () => {
 		setValue('featuresPreview', updated, { shouldDirty: true });
 	};
 
-	const grouppedFeaturesPreview = useFeaturePreviewEnableQuery(featuresPreview);
+	const grouppedFeaturesPreview = Object.entries(
+		handleEnableQuery(featuresPreview).reduce((result, currentValue) => {
+			(result[currentValue.group] = result[currentValue.group] || []).push(currentValue);
+			return result;
+		}, {} as Record<FeaturePreviewProps['group'], FeaturePreviewProps[]>),
+	);
 
 	return (
 		<Page>
@@ -86,11 +105,14 @@ const AccountFeaturePreviewPage = () => {
 					)}
 					{featuresPreview.length > 0 && (
 						<>
-							<Box>
-								<Margins block={24}>
-									<Box fontScale='p1'>{t('Feature_preview_page_description')}</Box>
-									<Callout>{t('Feature_preview_page_callout')}</Callout>
-								</Margins>
+							<Box
+								className={css`
+									white-space: break-spaces;
+								`}
+								pbe={24}
+								fontScale='p1'
+							>
+								{t('Feature_preview_page_description')}
 							</Box>
 							<Accordion>
 								{grouppedFeaturesPreview?.map(([group, features], index) => (

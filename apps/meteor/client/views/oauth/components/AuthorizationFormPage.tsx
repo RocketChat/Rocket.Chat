@@ -4,6 +4,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { Form } from '@rocket.chat/layout';
 import { useLogout, useRoute } from '@rocket.chat/ui-contexts';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -18,7 +19,7 @@ type AuthorizationFormPageProps = {
 };
 
 const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFormPageProps) => {
-	const token = useMemo(() => Accounts.storageLocation.getItem(Accounts.LOGIN_TOKEN_KEY) ?? undefined, []);
+	const token = useMemo(() => Meteor._localStorage.getItem(Accounts.LOGIN_TOKEN_KEY) ?? undefined, []);
 
 	const formLabelId = useUniqueId();
 

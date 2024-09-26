@@ -1,4 +1,5 @@
-import '@rocket.chat/network-broker';
+import '../../startup/broker';
+
 import { api } from '@rocket.chat/core-services';
 
 import { ECDHProxy } from './ECDHProxy';

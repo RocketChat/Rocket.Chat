@@ -170,7 +170,6 @@ export interface IMessage extends IRocketChatRecord {
 	tcount?: number;
 	t?: MessageTypesValues;
 	e2e?: 'pending' | 'done';
-	e2eMentions?: { e2eUserMentions?: string[]; e2eChannelMentions?: string[] };
 	otrAck?: string;
 
 	urls?: MessageUrl[];

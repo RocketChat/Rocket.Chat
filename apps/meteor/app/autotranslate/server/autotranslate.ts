@@ -113,12 +113,7 @@ export class TranslationProviderRegistry {
 			return;
 		}
 
-		callbacks.add(
-			'afterSaveMessage',
-			(message, { room }) => provider.translateMessage(message, { room }),
-			callbacks.priority.MEDIUM,
-			'autotranslate',
-		);
+		callbacks.add('afterSaveMessage', provider.translateMessage.bind(provider), callbacks.priority.MEDIUM, 'autotranslate');
 	}
 }
 

@@ -167,7 +167,7 @@ function SideBarItemTemplateWithData({
 	const badges = (
 		<Margins inlineStart={8}>
 			{showBadge && isUnread && (
-				<Badge role='status' {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant} title={badgeTitle}>
+				<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant} title={badgeTitle}>
 					{unread + tunread?.length}
 				</Badge>
 			)}
@@ -180,7 +180,6 @@ function SideBarItemTemplateWithData({
 			is='a'
 			id={id}
 			data-qa='sidebar-item'
-			data-unread={highlighted}
 			unread={highlighted}
 			selected={selected}
 			href={href}
@@ -206,7 +205,7 @@ function SideBarItemTemplateWithData({
 						threadUnread={threadUnread}
 						rid={rid}
 						unread={!!unread}
-						roomOpen={selected}
+						roomOpen={false}
 						type={type}
 						cl={cl}
 						name={title}

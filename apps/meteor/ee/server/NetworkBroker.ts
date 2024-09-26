@@ -2,7 +2,7 @@ import { asyncLocalStorage } from '@rocket.chat/core-services';
 import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
-import { EnterpriseCheck } from './EnterpriseCheck';
+import { EnterpriseCheck } from './lib/EnterpriseCheck';
 
 const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',
@@ -25,7 +25,7 @@ const waitForServicesTimeout = parseInt(WAIT_FOR_SERVICES_TIMEOUT, 10) || 10000;
 export class NetworkBroker implements IBroker {
 	private broker: ServiceBroker;
 
-	private started: Promise<boolean> = Promise.resolve(false);
+	private started: Promise<void>;
 
 	metrics: IServiceMetrics;
 
@@ -36,9 +36,7 @@ export class NetworkBroker implements IBroker {
 	}
 
 	async call(method: string, data: any): Promise<any> {
-		if (!(await this.started)) {
-			return;
-		}
+		await this.started;
 
 		const context = asyncLocalStorage.getStore();
 
@@ -56,9 +54,7 @@ export class NetworkBroker implements IBroker {
 	}
 
 	async waitAndCall(method: string, data: any): Promise<any> {
-		if (!(await this.started)) {
-			return;
-		}
+		await this.started;
 
 		try {
 			await this.broker.waitForServices(method.split('.')[0], waitForServicesTimeout);
@@ -186,8 +182,6 @@ export class NetworkBroker implements IBroker {
 	}
 
 	async start(): Promise<void> {
-		await this.broker.start();
-
-		this.started = Promise.resolve(true);
+		this.started = this.broker.start();
 	}
 }

@@ -102,22 +102,23 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 	// Set new username*
 	await Users.setUsername(user._id, username);
 	user.username = username;
-
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
-		const avatarSuggestions = await getAvatarSuggestionForUser(user);
-		let avatarData;
-		let serviceName = 'gravatar';
-
-		for (const service of Object.keys(avatarSuggestions)) {
-			avatarData = avatarSuggestions[service];
+		// eslint-disable-next-line @typescript-eslint/ban-types
+		const avatarSuggestions = (await getAvatarSuggestionForUser(user)) as {};
+		let gravatar;
+		for await (const service of Object.keys(avatarSuggestions)) {
+			const avatarData = avatarSuggestions[+service as keyof typeof avatarSuggestions];
 			if (service !== 'gravatar') {
-				serviceName = service;
+				// eslint-disable-next-line dot-notation
+				await setUserAvatar(user, avatarData['blob'], avatarData['contentType'], service);
+				gravatar = null;
 				break;
 			}
+			gravatar = avatarData;
 		}
-
-		if (avatarData) {
-			await setUserAvatar(user, avatarData.blob, avatarData.contentType, serviceName);
+		if (gravatar != null) {
+			// eslint-disable-next-line dot-notation
+			await setUserAvatar(user, gravatar['blob'], gravatar['contentType'], 'gravatar');
 		}
 	}
 

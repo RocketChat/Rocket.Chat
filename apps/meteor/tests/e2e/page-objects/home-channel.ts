@@ -59,8 +59,4 @@ export class HomeChannel {
 	get roomHeaderToolbar(): Locator {
 		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]');
 	}
-
-	get markUnread(): Locator {
-		return this.page.locator('role=menuitem[name="Mark Unread"]');
-	}
 }

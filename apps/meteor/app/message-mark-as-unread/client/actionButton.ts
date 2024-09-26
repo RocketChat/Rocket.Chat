@@ -19,6 +19,7 @@ Meteor.startup(() => {
 			const { message = messageArgs(this).msg } = props;
 
 			try {
+				await sdk.call('unreadMessages', message);
 				const subscription = ChatSubscription.findOne({
 					rid: message.rid,
 				});
@@ -26,9 +27,8 @@ Meteor.startup(() => {
 				if (subscription == null) {
 					return;
 				}
-				router.navigate('/home');
 				await LegacyRoomManager.close(subscription.t + subscription.name);
-				await sdk.call('unreadMessages', message);
+				return router.navigate('/home');
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}

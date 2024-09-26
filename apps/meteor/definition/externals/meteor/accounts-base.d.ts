@@ -1,6 +1,5 @@
 declare module 'meteor/accounts-base' {
 	namespace Accounts {
-		const storageLocation: Window['localStorage'];
 		function createUser(
 			options: {
 				username?: string;

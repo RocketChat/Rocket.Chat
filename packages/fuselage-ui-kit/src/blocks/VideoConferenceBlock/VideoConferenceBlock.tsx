@@ -1,4 +1,3 @@
-import { VideoConferenceStatus } from '@rocket.chat/core-typings';
 import {
   useGoToRoom,
   useTranslation,
@@ -134,14 +133,9 @@ const VideoConferenceBlock = ({
               <VideoConfMessageButton onClick={callAgainHandler}>
                 {isUserCaller ? t('Call_again') : t('Call_back')}
               </VideoConfMessageButton>
-              {[
-                VideoConferenceStatus.EXPIRED,
-                VideoConferenceStatus.DECLINED,
-              ].includes(data.status) && (
-                <VideoConfMessageFooterText>
-                  {t('Call_was_not_answered')}
-                </VideoConfMessageFooterText>
-              )}
+              <VideoConfMessageFooterText>
+                {t('Call_was_not_answered')}
+              </VideoConfMessageFooterText>
             </>
           )}
           {data.type !== 'direct' &&
@@ -157,21 +151,16 @@ const VideoConferenceBlock = ({
                 </VideoConfMessageFooterText>
               </>
             ) : (
-              [
-                VideoConferenceStatus.EXPIRED,
-                VideoConferenceStatus.DECLINED,
-              ].includes(data.status) && (
-                <VideoConfMessageFooterText>
-                  {t('Call_was_not_answered')}
-                </VideoConfMessageFooterText>
-              )
+              <VideoConfMessageFooterText>
+                {t('Call_was_not_answered')}
+              </VideoConfMessageFooterText>
             ))}
         </VideoConfMessageFooter>
       </VideoConfMessage>
     );
   }
 
-  if (data.type === 'direct' && data.status === VideoConferenceStatus.CALLING) {
+  if (data.type === 'direct' && data.status === 0) {
     return (
       <VideoConfMessage>
         <VideoConfMessageRow>

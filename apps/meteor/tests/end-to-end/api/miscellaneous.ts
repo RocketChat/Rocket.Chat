@@ -186,7 +186,6 @@ describe('miscellaneous', () => {
 					'muteFocusedConversations',
 					'notifyCalendarEvents',
 					'enableMobileRinging',
-					'featuresPreview',
 				].filter((p) => Boolean(p));
 
 				expect(res.body).to.have.property('success', true);

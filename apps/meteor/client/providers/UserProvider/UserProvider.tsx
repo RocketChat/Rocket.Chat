@@ -19,6 +19,8 @@ import { useDeleteUser } from './hooks/useDeleteUser';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useUpdateAvatar } from './hooks/useUpdateAvatar';
 
+const getUserId = (): string | null => Meteor.userId();
+
 const getUser = (): IUser | null => Meteor.user() as IUser | null;
 
 const logout = (): Promise<void> =>
@@ -40,9 +42,9 @@ type UserProviderProps = {
 };
 
 const UserProvider = ({ children }: UserProviderProps): ReactElement => {
-	const user = useReactiveValue(getUser);
-	const userId = user?._id ?? null;
+	const userId = useReactiveValue(getUserId);
 	const previousUserId = useRef(userId);
+	const user = useReactiveValue(getUser);
 	const [userLanguage, setUserLanguage] = useLocalStorage('userLanguage', '');
 	const [preferedLanguage, setPreferedLanguage] = useLocalStorage('preferedLanguage', '');
 

@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/ddp-streamer",
 	"private": true,
-	"version": "0.3.8-rc.1",
+	"version": "0.3.6",
 	"description": "Rocket.Chat DDP-Streamer service",
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
@@ -23,7 +23,6 @@
 		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/models": "workspace:^",
-		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "~0.31.25",
 		"colorette": "^1.4.0",

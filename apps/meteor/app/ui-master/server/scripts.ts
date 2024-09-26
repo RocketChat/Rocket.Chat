@@ -45,7 +45,6 @@ window.addEventListener('load', function() {
 		});
 		window.localStorage.clear();
 		Meteor._localStorage = window.sessionStorage;
-		Accounts.config({ clientStorage: 'session'  });
 	}
 });
 `

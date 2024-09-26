@@ -10,20 +10,7 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
 	const retentionPolicy = useRetentionPolicy(room);
 	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
 
-	const {
-		t,
-		ro,
-		archived,
-		topic,
-		description,
-		announcement,
-		joinCodeRequired,
-		sysMes,
-		encrypted,
-		retention,
-		reactWhenReadOnly,
-		sidepanel,
-	} = room;
+	const { t, ro, archived, topic, description, announcement, joinCodeRequired, sysMes, encrypted, retention, reactWhenReadOnly } = room;
 
 	return useMemo(
 		() => ({
@@ -50,8 +37,6 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
 					retentionFilesOnly: retention?.filesOnly ?? retentionPolicy.filesOnly,
 					retentionIgnoreThreads: retention?.ignoreThreads ?? retentionPolicy.ignoreThreads,
 				}),
-			showDiscussions: sidepanel?.items.includes('discussions'),
-			showChannels: sidepanel?.items.includes('channels'),
 		}),
 		[
 			announcement,
@@ -68,7 +53,6 @@ export const useEditRoomInitialValues = (room: IRoomWithRetentionPolicy) => {
 			encrypted,
 			reactWhenReadOnly,
 			canEditRoomRetentionPolicy,
-			sidepanel,
 		],
 	);
 };

@@ -1,10 +1,12 @@
 ---
 to: ee/apps/<%= name %>/src/service.ts
 ---
-import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
-import { broker } from '@rocket.chat/network-broker';
+import type { Document } from 'mongodb';
 import polka from 'polka';
+import { api } from '@rocket.chat/core-services';
 
+import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
+import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 
 const PORT = process.env.PORT || <%= h.random() %>;
@@ -12,7 +14,9 @@ const PORT = process.env.PORT || <%= h.random() %>;
 (async () => {
 	const db = await getConnection();
 
-	registerServiceModels(db, await getTrashCollection());
+	const trash = await getCollection<Document>(Collections.Trash);
+
+	registerServiceModels(db, trash);
 
 	api.setBroker(broker);
 

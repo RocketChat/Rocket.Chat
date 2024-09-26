@@ -5,16 +5,8 @@ import { Children, Suspense, cloneElement } from 'react';
 import { useFeaturePreview } from '../../hooks/useFeaturePreview';
 import { FeaturesAvailable } from '../../hooks/useFeaturePreviewList';
 
-export const FeaturePreview = ({
-	feature,
-	disabled = false,
-	children,
-}: {
-	disabled?: boolean;
-	feature: FeaturesAvailable;
-	children: ReactElement[];
-}) => {
-	const featureToggleEnabled = useFeaturePreview(feature) && !disabled;
+export const FeaturePreview = ({ feature, children }: { feature: FeaturesAvailable; children: ReactElement[] }) => {
+	const featureToggleEnabled = useFeaturePreview(feature);
 
 	const toggledChildren = Children.map(children, (child) =>
 		cloneElement(child, {

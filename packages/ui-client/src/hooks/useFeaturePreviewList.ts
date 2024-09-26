@@ -1,4 +1,5 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 
 export type FeaturesAvailable =
 	| 'quickReactions'
@@ -23,7 +24,6 @@ export type FeaturePreviewProps = {
 	};
 };
 
-// TODO: Move the features preview array to another directory to be accessed from both BE and FE.
 export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	{
 		name: 'quickReactions',
@@ -47,7 +47,6 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		i18n: 'Enable_timestamp',
 		description: 'Enable_timestamp_description',
 		group: 'Message',
-		imageUrl: 'images/featurePreview/timestamp.png',
 		value: false,
 		enabled: true,
 	},
@@ -56,7 +55,6 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		i18n: 'Contextualbar_resizable',
 		description: 'Contextualbar_resizable_description',
 		group: 'Navigation',
-		imageUrl: 'images/featurePreview/resizable-contextual-bar.png',
 		value: false,
 		enabled: true,
 	},
@@ -65,7 +63,6 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		i18n: 'New_navigation',
 		description: 'New_navigation_description',
 		group: 'Navigation',
-		imageUrl: 'images/featurePreview/enhanced-navigation.png',
 		value: false,
 		enabled: true,
 	},
@@ -75,7 +72,7 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		description: 'Sidepanel_navigation_description',
 		group: 'Navigation',
 		value: false,
-		enabled: true,
+		enabled: false,
 		enableQuery: {
 			name: 'newNavigation',
 			value: true,
@@ -85,27 +82,22 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 
 export const enabledDefaultFeatures = defaultFeaturesPreview.filter((feature) => feature.enabled);
 
-// TODO: Remove this logic after we have a way to store object settings.
-export const parseSetting = (setting?: FeaturePreviewProps[] | string) => {
-	if (typeof setting === 'string') {
-		try {
-			return JSON.parse(setting) as FeaturePreviewProps[];
-		} catch (_) {
-			return;
-		}
-	}
-	return setting;
-};
+export const useFeaturePreviewList = () => {
+	const featurePreviewEnabled = useSetting<boolean>('Accounts_AllowFeaturePreview');
+	const userFeaturesPreview = useUserPreference<FeaturePreviewProps[]>('featuresPreview');
 
-export const useFeaturePreviewList = (featuresList: Pick<FeaturePreviewProps, 'name' | 'value'>[]) => {
+	if (!featurePreviewEnabled) {
+		return { unseenFeatures: 0, features: [] as FeaturePreviewProps[], featurePreviewEnabled };
+	}
+
 	const unseenFeatures = enabledDefaultFeatures.filter(
-		(defaultFeature) => !featuresList?.find((feature) => feature.name === defaultFeature.name),
+		(feature) => !userFeaturesPreview?.find((userFeature) => userFeature.name === feature.name),
 	).length;
 
-	const mergedFeatures = enabledDefaultFeatures.map((defaultFeature) => {
-		const features = featuresList?.find((feature) => feature.name === defaultFeature.name);
-		return { ...defaultFeature, ...features };
+	const mergedFeatures = enabledDefaultFeatures.map((feature) => {
+		const userFeature = userFeaturesPreview?.find((userFeature) => userFeature.name === feature.name);
+		return { ...feature, ...userFeature };
 	});
 
-	return { unseenFeatures, features: mergedFeatures };
+	return { unseenFeatures, features: mergedFeatures, featurePreviewEnabled };
 };
