@@ -2,7 +2,7 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 
 export const useAirGappedRestriction = (): [isRestrictionPhase: boolean, isWarningPhase: boolean, remainingDays: number] => {
 	const airGappedRestrictionRemainingDays = useSetting('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days');
-	console.log(airGappedRestrictionRemainingDays);
+
 	if (typeof airGappedRestrictionRemainingDays !== 'number') {
 		return [false, false, -1];
 	}
