@@ -74,6 +74,7 @@ export const roomFields = {
 	avatarETag: 1,
 	usersCount: 1,
 	msgs: 1,
+	sidepanel: 1,
 
 	// @TODO create an API to register this fields based on room type
 	tags: 1,
