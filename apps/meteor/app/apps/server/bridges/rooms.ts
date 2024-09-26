@@ -245,12 +245,7 @@ export class AppRoomBridge extends RoomBridge {
 		return users.map((user: ICoreUser) => userConverter.convertToApp(user));
 	}
 
-	protected async getUnreadByRoomAndUser(
-		roomId: string,
-		userId: string,
-		options: GetMessagesOptions,
-		appId: string,
-	): Promise<Array<IMessageRaw>> {
+	protected async getUnreadByUser(roomId: string, userId: string, options: GetMessagesOptions, appId: string): Promise<Array<IMessageRaw>> {
 		this.orch.debugLog(`The App ${appId} is getting the unread messages for the user: "${userId}" in the room: "${roomId}"`);
 
 		const messageConverter = this.orch.getConverters()?.get('messages');
@@ -283,7 +278,7 @@ export class AppRoomBridge extends RoomBridge {
 		return Promise.all(messages.map((msg) => messageConverter.convertMessageRaw(msg)));
 	}
 
-	protected async getUserUnreadMessageCountByRoom(uid: string, roomId: string, appId: string): Promise<number> {
+	protected async getUserUnreadMessageCount(roomId: string, uid: string, appId: string): Promise<number> {
 		this.orch.debugLog(`The App ${appId} is getting the unread messages count of the room: "${roomId}" for the user: "${uid}"`);
 
 		const [user, room, subscription] = await Promise.all([
