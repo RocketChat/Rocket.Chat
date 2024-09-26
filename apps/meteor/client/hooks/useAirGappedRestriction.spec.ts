@@ -3,6 +3,7 @@ import { renderHook } from '@testing-library/react';
 
 import { useAirGappedRestriction } from './useAirGappedRestriction';
 
+// [restricted, warning, remainingDays]
 describe('useAirGappedRestriction hook', () => {
 	it('should return [false, false, -1] if setting value is not a number', () => {
 		const { result } = renderHook(() => useAirGappedRestriction(), {
@@ -37,15 +38,15 @@ describe('useAirGappedRestriction hook', () => {
 			wrapper: mockAppRoot().withSetting('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days', 7).build(),
 		});
 
-		expect(result.current).toEqual([true, false]);
+		expect(result.current).toEqual([false, true, 7]);
 	});
 
-	it('should return [false, true, 0] if not on restriction phase', () => {
+	it('should return [true, false, 0] if on restriction phase', () => {
 		const { result } = renderHook(() => useAirGappedRestriction(), {
 			legacyRoot: true,
 			wrapper: mockAppRoot().withSetting('Cloud_Workspace_AirGapped_Restrictions_Remaining_Days', 0).build(),
 		});
 
-		expect(result.current).toEqual([false, true]);
+		expect(result.current).toEqual([true, false, 0]);
 	});
 });
