@@ -75,7 +75,6 @@ import '../app/e2e/server';
 import '../app/version-check/server';
 import '../app/search/server';
 import '../app/discussion/server';
-import '../app/mail-messages/server';
 import '../app/user-status/server';
 import '../app/metrics/server';
 import '../app/notifications/server';
