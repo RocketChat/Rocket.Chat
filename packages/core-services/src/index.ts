@@ -76,6 +76,8 @@ export {
 	AnalyticsOverviewDataResult,
 } from './types/IOmnichannelAnalyticsService';
 
+export { getConnection, getTrashCollection } from './lib/mongo';
+
 export {
 	AutoUpdateRecord,
 	FindVoipRoomsParams,
