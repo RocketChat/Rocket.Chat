@@ -21,7 +21,6 @@ import { useMessageComposerIsArchived } from './hooks/useMessageComposerIsArchiv
 import { useMessageComposerIsBlocked } from './hooks/useMessageComposerIsBlocked';
 import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOnly';
 
-// TODO unit test this
 const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactElement => {
 	const room = useRoom();
 
