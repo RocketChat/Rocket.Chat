@@ -589,6 +589,10 @@ class LivechatClass {
 		}
 	}
 
+	isValidObject(obj: unknown): obj is Record<string, any> {
+		return typeof obj === 'object' && obj !== null;
+	}
+
 	async registerGuest({
 		id,
 		token,
@@ -654,10 +658,10 @@ class LivechatClass {
 			visitorDataToUpdate.status = status;
 			visitorDataToUpdate.ts = new Date();
 
-			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
+			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations') && Livechat.isValidObject(connectionData)) {
 				Livechat.logger.debug(`Saving connection data for visitor ${token}`);
 				const { httpHeaders, clientAddress } = connectionData;
-				if (httpHeaders) {
+				if (Livechat.isValidObject(httpHeaders)) {
 					visitorDataToUpdate.userAgent = httpHeaders['user-agent'];
 					visitorDataToUpdate.ip = httpHeaders['x-real-ip'] || httpHeaders['x-forwarded-for'] || clientAddress;
 					visitorDataToUpdate.host = httpHeaders?.host;
@@ -1789,18 +1793,37 @@ class LivechatClass {
 	 * @param {string|null} _id - The department id
 	 * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
 	 * @param {{upsert?: { agentId: string; count?: number; order?: number; }[], remove?: { agentId: string; count?: number; order?: number; }}} [departmentAgents] - The department agents
+	 * @param {{_id?: string}} [departmentUnit] - The department's unit id
 	 */
 	async saveDepartment(
+		userId: string,
 		_id: string | null,
 		departmentData: LivechatDepartmentDTO,
 		departmentAgents?: {
 			upsert?: { agentId: string; count?: number; order?: number }[];
 			remove?: { agentId: string; count?: number; order?: number };
 		},
+		departmentUnit?: { _id?: string },
 	) {
 		check(_id, Match.Maybe(String));
+		if (departmentUnit?._id !== undefined && typeof departmentUnit._id !== 'string') {
+			throw new Meteor.Error('error-invalid-department-unit', 'Invalid department unit id provided', {
+				method: 'livechat:saveDepartment',
+			});
+		}
 
-		const department = _id ? await LivechatDepartment.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1 } }) : null;
+		const department = _id
+			? await LivechatDepartment.findOneById(_id, { projection: { _id: 1, archived: 1, enabled: 1, parentId: 1 } })
+			: null;
+
+		if (departmentUnit && !departmentUnit._id && department && department.parentId) {
+			const isLastDepartmentInUnit = (await LivechatDepartment.countDepartmentsInUnit(department.parentId)) === 1;
+			if (isLastDepartmentInUnit) {
+				throw new Meteor.Error('error-unit-cant-be-empty', "The last department in a unit can't be removed", {
+					method: 'livechat:saveDepartment',
+				});
+			}
+		}
 
 		if (!department && !(await isDepartmentCreationAvailable())) {
 			throw new Meteor.Error('error-max-departments-number-reached', 'Maximum number of departments reached', {
@@ -1885,6 +1908,10 @@ class LivechatClass {
 		// Disable event
 		if (department?.enabled && !departmentDB?.enabled) {
 			await callbacks.run('livechat.afterDepartmentDisabled', departmentDB);
+		}
+
+		if (departmentUnit) {
+			await callbacks.run('livechat.manageDepartmentUnit', { userId, departmentId: departmentDB._id, unitId: departmentUnit._id });
 		}
 
 		return departmentDB;

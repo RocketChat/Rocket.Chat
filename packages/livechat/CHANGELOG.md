@@ -1,5 +1,39 @@
 # @rocket.chat/livechat Change Log
 
+## 1.20.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@11.0.0-rc.1
+  </details>
+
+## 1.20.0-rc.0
+
+### Minor Changes
+
+- ([#33139](https://github.com/RocketChat/Rocket.Chat/pull/33139)) Added new setting `Allow visitors to finish conversations` that allows admins to decide if omnichannel visitors can close a conversation or not. This doesn't affect agent's capabilities of room closing, neither apps using the livechat bridge to close rooms.
+  However, if currently your integration relies on `livechat/room.close` endpoint for closing conversations, it's advised to use the authenticated version `livechat/room.closeByUser` of it before turning off this setting.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [cd0d50016e, 79c16d315a]:</summary>
+
+  - @rocket.chat/gazzodown@11.0.0-rc.0
+  - @rocket.chat/message-parser@0.31.30-rc.0
+  </details>
+
+## 1.19.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3cbb9f6252]:</summary>
+
+  - @rocket.chat/message-parser@0.31.30
+  - @rocket.chat/gazzodown@10.0.1
+  </details>
+
 ## 1.19.3
 
 ### Patch Changes

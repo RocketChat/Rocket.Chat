@@ -1,5 +1,33 @@
 # @rocket.chat/core-typings
 
+## 6.13.0-rc.1
+
+## 6.13.0-rc.0
+
+### Minor Changes
+
+- ([#32693](https://github.com/RocketChat/Rocket.Chat/pull/32693)) Introduced "create contacts" endpoint to omnichannel
+
+- ([#33225](https://github.com/RocketChat/Rocket.Chat/pull/33225)) Implemented new feature preview for Sidepanel
+
+### Patch Changes
+
+- ([#32510](https://github.com/RocketChat/Rocket.Chat/pull/32510)) Added a new setting to enable mentions in end to end encrypted channels
+
+- <details><summary>Updated dependencies [79c16d315a]:</summary>
+
+  - @rocket.chat/message-parser@0.31.30-rc.0
+  </details>
+
+## 6.12.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [3cbb9f6252]:</summary>
+
+  - @rocket.chat/message-parser@0.31.30
+  </details>
+
 ## 6.12.0
 
 ### Minor Changes

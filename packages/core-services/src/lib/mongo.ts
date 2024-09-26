@@ -5,16 +5,6 @@ const { MONGO_URL = 'mongodb://localhost:27017/rocketchat' } = process.env;
 
 const name = /^mongodb:\/\/.*?(?::[0-9]+)?\/([^?]*)/.exec(MONGO_URL)?.[1];
 
-export enum Collections {
-	Subscriptions = 'rocketchat_subscription',
-	UserSession = 'usersSessions',
-	User = 'users',
-	Trash = 'rocketchat__trash',
-	Messages = 'rocketchat_message',
-	Rooms = 'rocketchat_room',
-	Settings = 'rocketchat_settings',
-}
-
 function connectDb(options?: MongoClientOptions): Promise<MongoClient> {
 	const client = new MongoClient(MONGO_URL, options);
 
@@ -44,9 +34,9 @@ export const getConnection = ((): ((options?: MongoClientOptions) => Promise<Db>
 	};
 })();
 
-export async function getCollection<T extends Document>(name: Collections): Promise<Collection<T>> {
+export async function getTrashCollection<T extends Document>(): Promise<Collection<T>> {
 	if (!db) {
 		db = await getConnection();
 	}
-	return db.collection<T>(name);
+	return db.collection<T>('rocketchat__trash');
 }
