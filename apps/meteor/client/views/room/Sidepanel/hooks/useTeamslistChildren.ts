@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { Mongo } from 'meteor/mongo';
 import { useEffect, useMemo } from 'react';
 
 import { ChatRoom } from '../../../../../app/models/client';
@@ -12,7 +13,7 @@ const sortRoomByLastMessage = (a: IRoom, b: IRoom) => {
 	if (!b.lm) {
 		return -1;
 	}
-	return new Date(b.lm).toUTCString().localeCompare(new Date(a.lm).toUTCString());
+	return b.lm.getTime() - a.lm.getTime();
 };
 
 export const useTeamsListChildrenUpdate = (
@@ -23,7 +24,7 @@ export const useTeamsListChildrenUpdate = (
 	const queryClient = useQueryClient();
 
 	const query = useMemo(() => {
-		const query: Parameters<typeof ChatRoom.find>[0] = {
+		const query: Mongo.Selector<IRoom> = {
 			$or: [
 				{
 					_id: parentRid,
