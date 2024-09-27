@@ -15,7 +15,7 @@ type DepartmentsListOptions = {
 	excludeDepartmentId?: string;
 	enabled?: boolean;
 	showArchived?: boolean;
-	value: string | (string & readonly string[]) | undefined;
+	value?: string | (string & readonly string[]) | undefined;
 };
 
 type DepartmentListItem = {
