@@ -2,4 +2,4 @@
 "@rocket.chat/meteor": major
 ---
 
-Removed deprecated private App installation via URL method
+Removes private App installation via URL method following a deprecation warning.
