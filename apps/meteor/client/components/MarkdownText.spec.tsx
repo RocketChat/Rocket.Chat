@@ -37,6 +37,8 @@ const markdownText = `
   \`\`\`
   **Bold text within __Italics__**
   *Bold text with single asterik and underscore within _Italics_*
+  __Italics within **Bold** text__
+  _Italics within *Bold* text with single underscore and asterik_
 `;
 
 it('should render html elements as expected using default parser', async () => {
@@ -65,6 +67,8 @@ it('should render html elements as expected using default parser', async () => {
 	expect(normalizedHtml).toContain('<pre><code class="language-typescript">const test = \'this is code\' </code></pre>');
 	expect(normalizedHtml).toContain('<strong>Bold text within <em>Italics</em></strong>');
 	expect(normalizedHtml).toContain('<strong>Bold text with single asterik and underscore within <em>Italics</em></strong>');
+	expect(normalizedHtml).toContain('<em>Italics within <strong>Bold</strong> text</em>');
+	expect(normalizedHtml).toContain('<em>Italics within <strong>Bold</strong> text with single underscore and asterik</em>');
 });
 
 it('should render html elements as expected using inline parser', async () => {
@@ -95,4 +99,6 @@ it('should render html elements as expected using inline parser', async () => {
 	expect(normalizedHtml).toContain(`typescript const test = 'this is code'`);
 	expect(normalizedHtml).toContain('<strong>Bold text within <em>Italics</em></strong>');
 	expect(normalizedHtml).toContain('<strong>Bold text with single asterik and underscore within <em>Italics</em></strong>');
+	expect(normalizedHtml).toContain('<em>Italics within <strong>Bold</strong> text</em>');
+	expect(normalizedHtml).toContain('<em>Italics within <strong>Bold</strong> text with single underscore and asterik</em>');
 });
