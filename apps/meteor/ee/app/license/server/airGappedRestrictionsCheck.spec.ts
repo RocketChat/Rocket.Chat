@@ -23,6 +23,7 @@ describe('#checkAirGappedRestrictions()', () => {
 		expect(AirGappedRestriction.removeRestrictions).toHaveBeenCalledTimes(1);
 		expect(AirGappedRestriction.applyRestrictions).not.toHaveBeenCalled();
 		expect(AirGappedRestriction.checkRemainingDaysSinceLastStatsReport).not.toHaveBeenCalled();
+		expect(AirGappedRestriction.isRestricted).toBeFalsy();
 	});
 
 	it('should apply restrictions right away when the workspace doesnt contain a license with the previous module enabled AND there is no statsToken (no report was made before)', async () => {
@@ -32,6 +33,7 @@ describe('#checkAirGappedRestrictions()', () => {
 		expect(AirGappedRestriction.applyRestrictions).toHaveBeenCalledTimes(1);
 		expect(AirGappedRestriction.removeRestrictions).not.toHaveBeenCalled();
 		expect(AirGappedRestriction.checkRemainingDaysSinceLastStatsReport).not.toHaveBeenCalled();
+		expect(AirGappedRestriction.isRestricted).toBeFalsy();
 	});
 
 	it('should check the statsToken validity if there is no valid license and a report to the cloud was made before', async () => {
@@ -41,5 +43,6 @@ describe('#checkAirGappedRestrictions()', () => {
 		expect(AirGappedRestriction.applyRestrictions).not.toHaveBeenCalled();
 		expect(AirGappedRestriction.removeRestrictions).not.toHaveBeenCalled();
 		expect(AirGappedRestriction.checkRemainingDaysSinceLastStatsReport).toHaveBeenCalledWith('token');
+		expect(AirGappedRestriction.isRestricted).toBeFalsy();
 	});
 });
