@@ -1,5 +1,5 @@
 import type { App, AppPermission } from '@rocket.chat/core-typings';
-import { useRouter, useSetModal, useUpload, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useRouter, useSetModal, useUpload } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import React, { useCallback, useState } from 'react';
 
@@ -15,7 +15,7 @@ import { handleInstallError } from '../helpers/handleInstallError';
 import { getManifestFromZippedApp } from '../lib/getManifestFromZippedApp';
 import { useAppsCountQuery } from './useAppsCountQuery';
 
-export const useInstallApp = (file: File, url: string): { install: () => void; isInstalling: boolean } => {
+export const useInstallApp = (file: File): { install: () => void; isInstalling: boolean } => {
 	const reloadAppsList = useAppsReload();
 	const openExternalLink = useExternalLink();
 	const setModal = useSetModal();
@@ -27,9 +27,6 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 
 	const uploadAppEndpoint = useUpload('/apps');
 	const uploadUpdateEndpoint = useUpload('/apps/update');
-
-	// TODO: This function should not be called in a next major version, it will be changed by an endpoint deprecation.
-	const downloadPrivateAppFromUrl = useEndpoint('POST', '/apps');
 
 	const [isInstalling, setInstalling] = useState(false);
 
@@ -102,17 +99,6 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 		await handleAppPermissionsReview(permissions, appFile);
 	};
 
-	/** @deprecated	*/
-	const getAppFile = async (): Promise<File | undefined> => {
-		try {
-			const { buff } = (await downloadPrivateAppFromUrl({ url, downloadOnly: true })) as { buff: { data: ArrayLike<number> } };
-
-			return new File([Uint8Array.from(buff.data)], 'app.zip', { type: 'application/zip' });
-		} catch (error) {
-			handleInstallError(error as Error);
-		}
-	};
-
 	const extractManifestFromAppFile = async (appFile: File) => {
 		try {
 			return getManifestFromZippedApp(appFile);
@@ -122,19 +108,13 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 	};
 
 	const install = async () => {
-		let appFile: File | undefined;
-
 		setInstalling(true);
 
 		if (!appCountQuery.data) {
 			return cancelAction();
 		}
 
-		if (!file) {
-			appFile = await getAppFile();
-		} else {
-			appFile = file;
-		}
+		const appFile = file;
 
 		if (!appFile) {
 			return cancelAction();
@@ -157,7 +137,7 @@ export const useInstallApp = (file: File, url: string): { install: () => void; i
 				limit={appCountQuery.data.limit}
 				appName={manifest.name}
 				handleClose={cancelAction}
-				handleConfirm={() => uploadFile(appFile as File, manifest)}
+				handleConfirm={() => uploadFile(appFile, manifest)}
 				handleEnableUnlimitedApps={() => {
 					openExternalLink(manageSubscriptionUrl);
 					setModal(null);
