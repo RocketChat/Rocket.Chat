@@ -56,7 +56,7 @@ export const useDepartmentsList = (
 				showArchived: options.showArchived ? 'true' : 'false',
 			});
 
-			const normalizedDepartments = await normalizeDepartments(departments, options.value, getDepartment);
+			const normalizedDepartments = options.value ? await normalizeDepartments(departments, options.value, getDepartment) : departments;
 
 			const items = normalizedDepartments
 				.filter((department) => {
