@@ -1,4 +1,4 @@
-import { UIActionButtonCategory, type IUIActionButton, type UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
+import { type IUIActionButton, type UIActionButtonContext } from '@rocket.chat/apps-engine/definition/ui';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useEndpoint, useStream, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
@@ -161,10 +161,7 @@ export const useUserDropdownAppsActionButtons = () => {
 	} as UseQueryResult<GenericMenuItemProps[]>;
 };
 
-export const useMessageActionAppsActionButtons = (
-	context?: MessageActionContext,
-	category: UIActionButtonCategory = UIActionButtonCategory.DEFAULT,
-) => {
+export const useMessageActionAppsActionButtons = (context?: MessageActionContext, category?: string) => {
 	const result = useAppActionButtons('messageAction');
 	const actionManager = useUiKitActionManager();
 	const applyButtonFilters = useApplyButtonFilters();

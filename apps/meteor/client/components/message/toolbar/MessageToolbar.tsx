@@ -1,5 +1,4 @@
 import { useToolbar } from '@react-aria/toolbar';
-import { UIActionButtonCategory } from '@rocket.chat/apps-engine/definition/ui';
 import type { IMessage, IRoom, ISubscription, ITranslatedMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage, isRoomFederated, isVideoConfMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import { MessageToolbar as FuselageMessageToolbar, MessageToolbarItem } from '@rocket.chat/fuselage';
@@ -80,7 +79,7 @@ const MessageToolbar = ({
 
 	const actionButtonApps = useMessageActionAppsActionButtons(context);
 
-	const starsAction = useMessageActionAppsActionButtons(context, UIActionButtonCategory.AI);
+	const starsAction = useMessageActionAppsActionButtons(context, 'ai');
 
 	const { messageToolbox: hiddenActions } = useLayoutHiddenActions();
 
