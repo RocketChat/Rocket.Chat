@@ -1,5 +1,5 @@
-import { ILivechatDepartment, Serialized } from '@rocket.chat/core-typings';
-import { EndpointFunction } from '@rocket.chat/ui-contexts';
+import type { ILivechatDepartment, Serialized } from '@rocket.chat/core-typings';
+import type { EndpointFunction } from '@rocket.chat/ui-contexts';
 
 export const normalizeDepartments = async (
 	departments: Serialized<ILivechatDepartment[]>,
@@ -10,7 +10,7 @@ export const normalizeDepartments = async (
 		return departments;
 	}
 
-    const { department: missingDepartment } = await getDepartment({})
+	const { department: missingDepartment } = await getDepartment({});
 
 	return [...departments, missingDepartment];
 };
