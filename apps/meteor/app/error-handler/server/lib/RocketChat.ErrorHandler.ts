@@ -6,7 +6,13 @@ import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { settings } from '../../../settings/server';
 
 const incException = throttledCounter((counter) => {
-	Settings.updateValueById('Uncaught_Exceptions_Count', counter).catch(console.error);
+	Settings.incrementValueById('Uncaught_Exceptions_Count', counter, { returnDocument: 'after' })
+		.then(({ value }) => {
+			if (value) {
+				settings.set(value);
+			}
+		})
+		.catch(console.error);
 }, 10000);
 
 class ErrorHandler {
