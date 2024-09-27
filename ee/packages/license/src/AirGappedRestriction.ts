@@ -34,19 +34,19 @@ class AirGappedRestrictionClass extends EventEmitter {
 		this.emit('remainingDays', { days: 0 });
 	}
 
-	public removeRestrictions(): void {
+	public removeRestrictions(days = -1): void {
 		this.restricted = false;
-		this.emit('remainingDays', { days: -1 });
+		this.emit('remainingDays', { days });
 	}
 
 	private notifyRemainingDaysUntilRestriction(daysSinceLastStatsReport: number): void {
 		const remainingDaysUntilRestriction = NO_ACTION_PERIOD_IN_DAYS + WARNING_PERIOD_IN_DAYS - daysSinceLastStatsReport;
-		const olderThanTenDays = remainingDaysUntilRestriction < 0;
+		const olderThanTenDays = remainingDaysUntilRestriction <= 0;
 		if (olderThanTenDays) {
 			return this.applyRestrictions();
 		}
 
-		this.emit('remainingDays', { days: remainingDaysUntilRestriction });
+		this.removeRestrictions(remainingDaysUntilRestriction);
 	}
 }
 
