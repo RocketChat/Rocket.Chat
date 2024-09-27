@@ -334,12 +334,6 @@ export class AppsRestApi {
 							orchestrator.getRocketChatLogger().error('Error getting the app from url:', e.response.data);
 							return API.v1.internalError();
 						}
-
-						if (this.bodyParams.downloadOnly) {
-							apiDeprecationLogger.parameter(this.request.route, 'downloadOnly', '7.0.0', this.response);
-
-							return API.v1.success({ buff });
-						}
 					} else if ('appId' in this.bodyParams && this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
 						const baseUrl = orchestrator.getMarketplaceUrl();
 
