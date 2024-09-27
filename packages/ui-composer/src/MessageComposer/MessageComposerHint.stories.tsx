@@ -8,7 +8,7 @@ export default {
 	component: MessageComposerHint,
 } as ComponentMeta<typeof MessageComposerHint>;
 
-export const Editing: ComponentStory<typeof MessageComposerHint> = () => {
+export const HintWithIconAndHelperText: ComponentStory<typeof MessageComposerHint> = () => {
 	const helperText = (
 		<>
 			<strong>esc</strong> to cancel · <strong>enter</strong> to save
@@ -22,8 +22,10 @@ export const Editing: ComponentStory<typeof MessageComposerHint> = () => {
 	);
 };
 
-export const ReadOnly: ComponentStory<typeof MessageComposerHint> = () => <MessageComposerHint>This room is read only</MessageComposerHint>;
+export const HintWithIcon: ComponentStory<typeof MessageComposerHint> = () => (
+	<MessageComposerHint icon='eye'>This room is read only</MessageComposerHint>
+);
 
-export const UnencryptedMessage: ComponentStory<typeof MessageComposerHint> = () => (
+export const HintWithText: ComponentStory<typeof MessageComposerHint> = () => (
 	<MessageComposerHint>You're sending an unencrypted message</MessageComposerHint>
 );
