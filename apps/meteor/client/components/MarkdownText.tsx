@@ -23,9 +23,9 @@ const inlineWithoutBreaks = new marked.Renderer();
 const walkTokens = (token: marked.Token) => {
 	const boldPattern = /^\*[^*]+\*$|^\*\*[^*]+\*\*$/;
 	const italicPattern = /^__(?=\S)([\s\S]*?\S)__(?!_)|^_(?=\S)([\s\S]*?\S)_(?!_)/;
-	if (boldPattern.test(token.raw) && token.type !== 'paragraph') {
+	if (boldPattern.test(token.raw) && token.type === 'em') {
 		token.type = 'strong';
-	} else if (italicPattern.test(token.raw) && token.type !== 'paragraph') {
+	} else if (italicPattern.test(token.raw) && token.type === 'strong') {
 		token.type = 'em';
 	}
 };
