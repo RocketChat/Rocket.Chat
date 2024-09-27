@@ -8,7 +8,7 @@ import GenericModal from '../../../../components/GenericModal';
 
 export type InfoTextIconModalProps = {
 	title: string;
-	infoText: string | ReactNode;
+	infoText: ReactNode;
 };
 
 const InfoTextIconModal = ({ title, infoText }: InfoTextIconModalProps): ReactElement => {

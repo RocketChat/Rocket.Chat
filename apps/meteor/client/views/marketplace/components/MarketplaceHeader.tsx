@@ -1,4 +1,4 @@
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
 import { usePermission, useRoute, useRouteParameter, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -39,11 +39,15 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 
 	return (
 		<PageHeader title={title}>
+			{result.isLoading && <GenericResourceUsageSkeleton mi={16} />}
+
+			{result.isSuccess && !result.data.hasUnlimitedApps && (
+				<Margins inline={16}>
+					<EnabledAppsCount {...result.data} context={context} />
+				</Margins>
+			)}
+
 			<ButtonGroup wrap align='end'>
-				{result.isLoading && <GenericResourceUsageSkeleton />}
-
-				{result.isSuccess && !result.data.hasUnlimitedApps && <EnabledAppsCount {...result.data} context={context} />}
-
 				{isAdmin && result.isSuccess && !result.data.hasUnlimitedApps && context !== 'private' && (
 					<Button
 						onClick={() => {

@@ -28,7 +28,7 @@ const PrivateAppInstallModal = ({ onClose, onProceed }: PrivateAppInstallModalPr
 				<Modal.HeaderText>
 					<Modal.Title>{t('Private_app_install_modal_title')}</Modal.Title>
 				</Modal.HeaderText>
-				<Modal.Close onClick={onClose} />
+				<Modal.Close aria-label={t('Close')} onClick={onClose} />
 			</Modal.Header>
 
 			<Modal.Content>

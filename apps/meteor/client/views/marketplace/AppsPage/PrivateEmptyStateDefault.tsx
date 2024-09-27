@@ -9,7 +9,7 @@ const PrivateEmptyStateDefault = () => {
 		<States>
 			<StatesIcon name='lock' />
 			<StatesTitle>{t('No_private_apps_installed')}</StatesTitle>
-			<StatesSubtitle>{t('Private_apps_are_side-loaded')}</StatesSubtitle>
+			<StatesSubtitle>{t('Private_apps_upgrade_empty_state_description')}</StatesSubtitle>
 		</States>
 	);
 };
