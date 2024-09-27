@@ -7,6 +7,12 @@ const NO_ACTION_PERIOD_IN_DAYS = 3;
 const WARNING_PERIOD_IN_DAYS = 7;
 
 class AirGappedRestrictionClass extends EventEmitter {
+	private restricted = false;
+
+	public get isRestricted(): boolean {
+		return this.restricted;
+	}
+
 	public async checkRemainingDaysSinceLastStatsReport(encryptedToken: string): Promise<void> {
 		try {
 			const { timestamp: lastStatsReportTimestamp } = JSON.parse(await decryptStatsToken(encryptedToken));
@@ -24,10 +30,12 @@ class AirGappedRestrictionClass extends EventEmitter {
 	}
 
 	public applyRestrictions(): void {
+		this.restricted = true;
 		this.emit('remainingDays', { days: 0 });
 	}
 
 	public removeRestrictions(): void {
+		this.restricted = false;
 		this.emit('remainingDays', { days: -1 });
 	}
 
@@ -42,6 +50,8 @@ class AirGappedRestrictionClass extends EventEmitter {
 	}
 }
 
-const airGappedRestriction = new AirGappedRestrictionClass();
+const airGappedRestriction = Object.assign(new AirGappedRestrictionClass(), {
+	WARNING_PERIOD_IN_DAYS,
+});
 
 export { airGappedRestriction as AirGappedRestriction };
