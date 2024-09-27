@@ -6,9 +6,9 @@
 '@rocket.chat/core-typings': patch
 '@rocket.chat/rest-typings': patch
 '@rocket.chat/ui-client': patch
-'@rocket.chat/ui-voip': patch
+'@rocket.chat/ui-voip': major
 '@rocket.chat/i18n': patch
 '@rocket.chat/meteor': patch
 ---
 
-Implemented integration with FreeSwitch to enable VoIP calls for workspace users
+Implements integration with FreeSwitch to enable VoIP calls for team collaboration workspaces
