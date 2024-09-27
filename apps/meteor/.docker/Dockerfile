@@ -14,7 +14,7 @@ RUN groupadd -g 65533 -r rocketchat \
     && apt-get update \
     && apt-get install -y --no-install-recommends fontconfig
 
-COPY --from=deno /bin/deno /bin/deno
+COPY --from=deno /deno /bin/deno
 
 # --chown requires Docker 17.12 and works only on Linux
 ADD --chown=rocketchat:rocketchat . /app
