@@ -30,32 +30,31 @@ const MessageBoxHint = ({ isEditing, e2eEnabled, unencryptedMessagesAllowed, isM
 		!isEditing &&
 		!isReadOnly;
 
-	const showComposerHint = isEditing || isUnencryptedHintVisible || isReadOnly;
+	if (!isEditing && !isUnencryptedHintVisible && !isReadOnly) {
+		return null;
+	}
 
 	const renderHintText = (): string => {
 		if (isEditing) {
 			return t('Editing_message');
 		}
-
 		if (isReadOnly) {
 			return t('This_room_is_read_only');
 		}
-
 		if (isUnencryptedHintVisible) {
 			return t('E2EE_Composer_Unencrypted_Message');
 		}
-
 		return '';
 	};
 
-	return showComposerHint ? (
+	return (
 		<MessageComposerHint
 			icon={isEditing ? 'pencil' : undefined}
 			helperText={isEditing && !isMobile ? <Trans i18nKey='Editing_message_hint' /> : undefined}
 		>
 			{renderHintText()}
 		</MessageComposerHint>
-	) : null;
+	);
 };
 
 export default memo(MessageBoxHint);
