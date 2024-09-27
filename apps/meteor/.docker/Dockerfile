@@ -1,6 +1,6 @@
 ARG DENO_VERSION="1.37.1"
 
-FROM denoland/deno:${DENO_VERSION} as deno
+FROM denoland/deno:bin-${DENO_VERSION} as deno
 
 FROM node:14.21.3-bullseye-slim
 
