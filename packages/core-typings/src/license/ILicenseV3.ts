@@ -60,6 +60,13 @@ export interface ILicenseV3 {
 		monthlyActiveContacts?: LicenseLimit[];
 	};
 	cloudMeta?: Record<string, any>;
+	addOns?: {
+		id: string;
+		limits?: {
+			maxUsers: number;
+		};
+		expiresAt?: Timestamp;
+	}[];
 }
 
 export type LicenseLimitKind = keyof ILicenseV3['limits'];

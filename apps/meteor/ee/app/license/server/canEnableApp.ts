@@ -15,6 +15,10 @@ export const canEnableApp = async (app: IAppStorageItem): Promise<boolean> => {
 		return true;
 	}
 
+	if (app.info.addon && !License.hasValidAddon(app.info.addon)) {
+		return false;
+	}
+
 	const source = getInstallationSourceFromAppStorageItem(app);
 	switch (source) {
 		case 'private':
