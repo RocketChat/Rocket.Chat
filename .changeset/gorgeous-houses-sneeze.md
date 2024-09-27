@@ -6,7 +6,7 @@
 '@rocket.chat/core-typings': patch
 '@rocket.chat/rest-typings': patch
 '@rocket.chat/ui-client': patch
-'@rocket.chat/ui-voip': major
+'@rocket.chat/ui-voip': patch
 '@rocket.chat/i18n': patch
 '@rocket.chat/meteor': patch
 ---
