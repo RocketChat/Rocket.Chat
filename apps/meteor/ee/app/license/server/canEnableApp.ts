@@ -4,22 +4,38 @@ import { License } from '@rocket.chat/license';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
 
-export const canEnableApp = async (app: IAppStorageItem): Promise<boolean> => {
+export const canEnableApp = async (app: IAppStorageItem): Promise<void> => {
 	if (!(await Apps.isInitialized())) {
-		return false;
+		throw new Error('apps-engine-not-initialized');
 	}
 
 	// Migrated apps were installed before the validation was implemented
 	// so they're always allowed to be enabled
 	if (app.migrated) {
-		return true;
+		return;
+	}
+
+	if (app.info.addon && !License.hasModule(app.info.addon)) {
+		throw new Error('app-addon-not-valid');
 	}
 
 	const source = getInstallationSourceFromAppStorageItem(app);
 	switch (source) {
 		case 'private':
-			return !(await License.shouldPreventAction('privateApps'));
+			if (await License.shouldPreventAction('privateApps')) {
+				throw new Error('license-prevented');
+			}
+
+			break;
 		default:
-			return !(await License.shouldPreventAction('marketplaceApps'));
+			if (await License.shouldPreventAction('marketplaceApps')) {
+				throw new Error('license-prevented');
+			}
+
+			if (app.marketplaceInfo?.isEnterpriseOnly && !License.hasValidLicense()) {
+				throw new Error('invalid-license');
+			}
+
+			break;
 	}
 };
