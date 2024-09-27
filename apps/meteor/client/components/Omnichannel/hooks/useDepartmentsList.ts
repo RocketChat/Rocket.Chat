@@ -37,7 +37,7 @@ export const useDepartmentsList = (
 	const reload = useCallback(() => setItemsList(new RecordList<DepartmentListItem>()), []);
 
 	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
-	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: options.value ?? ''});
+	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: options.value ?? '' });
 
 	useComponentDidUpdate(() => {
 		options && reload();
