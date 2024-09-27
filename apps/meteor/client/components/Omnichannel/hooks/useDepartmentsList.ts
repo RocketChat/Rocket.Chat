@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { RecordList } from '../../../lib/lists/RecordList';
+import { normalizeDepartments } from '../normalizeDepartments';
 
 type DepartmentsListOptions = {
 	filter: string;
@@ -14,6 +15,7 @@ type DepartmentsListOptions = {
 	excludeDepartmentId?: string;
 	enabled?: boolean;
 	showArchived?: boolean;
+	value: string | (string & readonly string[]) | undefined;
 };
 
 type DepartmentListItem = {
@@ -35,6 +37,7 @@ export const useDepartmentsList = (
 	const reload = useCallback(() => setItemsList(new RecordList<DepartmentListItem>()), []);
 
 	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
+	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: options.value ?? ''});
 
 	useComponentDidUpdate(() => {
 		options && reload();
@@ -53,7 +56,9 @@ export const useDepartmentsList = (
 				showArchived: options.showArchived ? 'true' : 'false',
 			});
 
-			const items = departments
+			const normalizedDepartments = await normalizeDepartments(departments, options.value, getDepartment);
+
+			const items = normalizedDepartments
 				.filter((department) => {
 					if (options.departmentId && department._id === options.departmentId) {
 						return false;
