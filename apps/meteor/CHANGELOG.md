@@ -1,5 +1,39 @@
 # @rocket.chat/meteor
 
+## 6.13.0-rc.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#33381](https://github.com/RocketChat/Rocket.Chat/pull/33381)) Fixes a race condition that causes livechat conversations to get stuck in the agent's sidebar panel after being forwarded.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.3
+  - @rocket.chat/rest-typings@6.13.0-rc.3
+  - @rocket.chat/license@0.2.8-rc.3
+  - @rocket.chat/omnichannel-services@0.3.5-rc.3
+  - @rocket.chat/pdf-worker@0.2.5-rc.3
+  - @rocket.chat/presence@0.2.8-rc.3
+  - @rocket.chat/api-client@0.2.8-rc.3
+  - @rocket.chat/apps@0.1.8-rc.3
+  - @rocket.chat/core-services@0.7.0-rc.3
+  - @rocket.chat/cron@0.1.8-rc.3
+  - @rocket.chat/fuselage-ui-kit@11.0.0-rc.3
+  - @rocket.chat/gazzodown@11.0.0-rc.3
+  - @rocket.chat/model-typings@0.8.0-rc.3
+  - @rocket.chat/ui-contexts@11.0.0-rc.3
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/models@0.3.0-rc.3
+  - @rocket.chat/ui-theming@0.3.0-rc.0
+  - @rocket.chat/ui-avatar@7.0.0-rc.3
+  - @rocket.chat/ui-client@11.0.0-rc.3
+  - @rocket.chat/ui-video-conf@11.0.0-rc.3
+  - @rocket.chat/web-ui-registration@11.0.0-rc.3
+  - @rocket.chat/instance-status@0.1.8-rc.3
+  </details>
+
 ## 6.13.0-rc.2
 
 ### Patch Changes
