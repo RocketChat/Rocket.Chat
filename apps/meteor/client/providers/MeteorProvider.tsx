@@ -11,6 +11,7 @@ import ConnectionStatusProvider from './ConnectionStatusProvider';
 import CustomSoundProvider from './CustomSoundProvider';
 import { DeviceProvider } from './DeviceProvider/DeviceProvider';
 import EmojiPickerProvider from './EmojiPickerProvider';
+import FloatingVideoProvider from './FloatingVideoProvider';
 import LayoutProvider from './LayoutProvider';
 import ModalProvider from './ModalProvider/ModalProvider';
 import OmnichannelProvider from './OmnichannelProvider';
@@ -42,27 +43,29 @@ const MeteorProvider = ({ children }: MeteorProviderProps) => (
 										<AvatarUrlProvider>
 											<UserProvider>
 												<AuthenticationProvider>
-													<CustomSoundProvider>
-														<DeviceProvider>
-															<ModalProvider>
-																<AuthorizationProvider>
-																	<EmojiPickerProvider>
-																		<OmnichannelRoomIconProvider>
-																			<UserPresenceProvider>
-																				<ActionManagerProvider>
-																					<VideoConfProvider>
-																						<CallProvider>
-																							<OmnichannelProvider>{children}</OmnichannelProvider>
-																						</CallProvider>
-																					</VideoConfProvider>
-																				</ActionManagerProvider>
-																			</UserPresenceProvider>
-																		</OmnichannelRoomIconProvider>
-																	</EmojiPickerProvider>
-																</AuthorizationProvider>
-															</ModalProvider>
-														</DeviceProvider>
-													</CustomSoundProvider>
+													<FloatingVideoProvider>
+														<CustomSoundProvider>
+															<DeviceProvider>
+																<ModalProvider>
+																	<AuthorizationProvider>
+																		<EmojiPickerProvider>
+																			<OmnichannelRoomIconProvider>
+																				<UserPresenceProvider>
+																					<ActionManagerProvider>
+																						<VideoConfProvider>
+																							<CallProvider>
+																								<OmnichannelProvider>{children}</OmnichannelProvider>
+																							</CallProvider>
+																						</VideoConfProvider>
+																					</ActionManagerProvider>
+																				</UserPresenceProvider>
+																			</OmnichannelRoomIconProvider>
+																		</EmojiPickerProvider>
+																	</AuthorizationProvider>
+																</ModalProvider>
+															</DeviceProvider>
+														</CustomSoundProvider>
+													</FloatingVideoProvider>
 												</AuthenticationProvider>
 											</UserProvider>
 										</AvatarUrlProvider>
