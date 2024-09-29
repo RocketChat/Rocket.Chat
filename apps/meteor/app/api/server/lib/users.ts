@@ -161,9 +161,6 @@ export async function findPaginatedUsersByStatus({
 	if (sort?.status) {
 		actualSort.active = sort.status;
 	}
-	if (sort?.name) {
-		actualSort.nameInsensitive = sort.name;
-	}
 	const match: Filter<IUser & RootFilterOperators<IUser>> = {};
 	switch (status) {
 		case 'active':
@@ -196,6 +193,7 @@ export async function findPaginatedUsersByStatus({
 	if (roles?.length && !roles.includes('all')) {
 		match.roles = { $in: roles };
 	}
+
 	const { cursor, totalCount } = await Users.findPaginated(
 		{
 			...match,
