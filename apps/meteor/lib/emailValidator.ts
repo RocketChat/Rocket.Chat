@@ -1,13 +1,18 @@
 export const validateEmail = (email: string, options: { style: string } = { style: 'basic' }): boolean => {
-	const basicEmailRegex = /^[^@]+@[^@]+$/;
-	const rfcEmailRegex =
-		/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+	// Trim whitespace from the input
+	const trimmedEmail = email.trim();
+
+	// Basic regex (updated to check for a valid domain after the "@" symbol)
+	const basicEmailRegex = /^[^@]+@[^@]+\.[a-zA-Z]{2,}$/;
+
+	//  regex (covers most common cases( empty string or null/undefined values))
+	const rfcEmailRegex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/;
 
 	switch (options.style) {
 		case 'rfc':
-			return rfcEmailRegex.test(email);
+			return rfcEmailRegex.test(trimmedEmail);
 		case 'basic':
 		default:
-			return basicEmailRegex.test(email);
+			return basicEmailRegex.test(trimmedEmail);
 	}
 };
