@@ -3,4 +3,4 @@
 "@rocket.chat/i18n": major
 ---
 
-Changed some displays to reflect new Private Apps rules and added a new modal before uploading a private app
+Changes some displays to reflect new rules for private apps and adds a new modal before uploading a private app
