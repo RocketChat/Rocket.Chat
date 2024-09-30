@@ -1,23 +1,35 @@
-import { applyAirGappedRestrictionsValidation } from '../../../app/license/server/airGappedRestrictionsWrapper';
-import { settings } from '../../../app/settings/server';
 import './airGappedRestrictionsWrapper';
+import { expect } from 'chai';
+import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
-jest.mock('../../../app/settings/server', () => ({
-	settings: {
-		get: jest.fn(),
+import { applyAirGappedRestrictionsValidation } from '../../../app/license/server/airGappedRestrictionsWrapper';
+
+let restrictionFlag = true;
+
+const airgappedModule = {
+	get isRestricted() {
+		return restrictionFlag;
 	},
-}));
+};
+
+proxyquire.noCallThru().load('./airGappedRestrictionsWrapper', {
+	'@rocket.chat/license': {
+		AirGappedRestriction: airgappedModule,
+	},
+	'../../../app/license/server/airGappedRestrictionsWrapper': {
+		applyAirGappedRestrictionsValidation,
+	},
+});
 
 describe('#airGappedRestrictionsWrapper()', () => {
 	it('should throw an error when the workspace is restricted', async () => {
-		(settings.get as jest.Mock).mockReturnValue(0);
-		await expect(() => applyAirGappedRestrictionsValidation(jest.fn())).rejects.toThrow(new Error('restricted-workspace'));
+		await expect(applyAirGappedRestrictionsValidation(sinon.stub())).to.be.rejectedWith('restricted-workspace');
 	});
 	it('should NOT throw an error when the workspace is not restricted', async () => {
-		(settings.get as jest.Mock).mockReturnValue(5);
-		const spy = jest.fn();
-		await expect(() => applyAirGappedRestrictionsValidation(spy)).not.toThrow();
-		await applyAirGappedRestrictionsValidation(spy);
-		expect(spy).toHaveBeenCalled();
+		restrictionFlag = false;
+		const spy = sinon.stub();
+		await expect(applyAirGappedRestrictionsValidation(spy)).to.eventually.equal(undefined);
+		expect(spy.calledOnce).to.be.true;
 	});
 });

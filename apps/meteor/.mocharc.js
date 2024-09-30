@@ -27,6 +27,7 @@ module.exports = {
 		'lib/callbacks.spec.ts',
 		'ee/app/license/server/*.spec.ts',
 		'ee/server/lib/ldap/*.spec.ts',
+		'ee/server/patches/*.spec.ts',
 		'ee/tests/**/*.tests.ts',
 		'ee/tests/**/*.spec.ts',
 		'tests/unit/app/**/*.spec.ts',
