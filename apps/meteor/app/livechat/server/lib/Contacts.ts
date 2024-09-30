@@ -245,9 +245,9 @@ export async function getContactHistory(
 		throw new Error('error-contact-not-found');
 	}
 
-	const visitorsIds = contact.channels?.map((channel) => channel.visitorId);
+	const visitorsIds = new Set(contact.channels?.map((channel: ILivechatContactChannel) => channel.visitorId));
 
-	if (!visitorsIds?.length) {
+	if (!visitorsIds?.size) {
 		return { history: [], count: 0, offset, total: 0 };
 	}
 
@@ -270,7 +270,7 @@ export async function getContactHistory(
 	};
 
 	const { totalCount, cursor } = LivechatRooms.findPaginatedRoomsByVisitorsIdsAndSource({
-		visitorsIds,
+		visitorsIds: Array.from(visitorsIds),
 		source,
 		options,
 	});
