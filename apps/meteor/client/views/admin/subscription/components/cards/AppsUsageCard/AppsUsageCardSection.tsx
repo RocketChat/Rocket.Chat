@@ -1,0 +1,32 @@
+import { Box, ProgressBar } from '@rocket.chat/fuselage';
+import type { ReactNode } from 'react';
+import React from 'react';
+
+type AppsUsageCardSectionProps = {
+	title: ReactNode;
+	tip?: string;
+	appsCount: number;
+	appsMaxCount: number;
+	warningThreshold: number;
+};
+
+const AppsUsageCardSection = ({ title, tip, appsCount, appsMaxCount, warningThreshold }: AppsUsageCardSectionProps) => {
+	const percentage = appsMaxCount === 0 ? 100 : Math.round((appsCount * 100) / appsMaxCount);
+	const warningThresholdCrossed = percentage >= warningThreshold;
+
+	return (
+		<Box fontScale='c1' mb={12} title={tip}>
+			<Box display='flex' flexGrow='1' justifyContent='space-between' mbe={4}>
+				<div>{title}</div>
+
+				<Box color={warningThresholdCrossed ? 'status-font-on-danger' : 'status-font-on-success'}>
+					{appsCount} / {appsMaxCount}
+				</Box>
+			</Box>
+
+			<ProgressBar percentage={percentage} variant={warningThresholdCrossed ? 'danger' : 'success'} />
+		</Box>
+	);
+};
+
+export default AppsUsageCardSection;
