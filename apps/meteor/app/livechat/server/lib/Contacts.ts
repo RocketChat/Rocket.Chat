@@ -1,4 +1,5 @@
 import type {
+	AtLeast,
 	ILivechatContact,
 	ILivechatContactChannel,
 	ILivechatCustomField,
@@ -122,41 +123,8 @@ export const Contacts = {
 			}
 		}
 
-		const allowedCF = LivechatCustomField.findByScope<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required' | 'visibility'>>(
-			'visitor',
-			{
-				projection: { _id: 1, label: 1, regexp: 1, required: 1 },
-			},
-			false,
-		);
-
-		const livechatData: Record<string, string> = {};
-
-		for await (const cf of allowedCF) {
-			if (!customFields.hasOwnProperty(cf._id)) {
-				if (cf.required) {
-					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
-				}
-				continue;
-			}
-			const cfValue: string = trim(customFields[cf._id]);
-
-			if (!cfValue || typeof cfValue !== 'string') {
-				if (cf.required) {
-					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
-				}
-				continue;
-			}
-
-			if (cf.regexp) {
-				const regex = new RegExp(cf.regexp);
-				if (!regex.test(cfValue)) {
-					throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
-				}
-			}
-
-			livechatData[cf._id] = cfValue;
-		}
+		const allowedCF = await getAllowedCustomFields();
+		const livechatData: Record<string, string> = validateCustomFields(allowedCF, customFields, { ignoreAdditionalFields: true });
 
 		const fieldsToRemove = {
 			// if field is explicitely set to empty string, remove
@@ -211,15 +179,20 @@ export const Contacts = {
 	},
 };
 
+export function isSingleContactEnabled(): boolean {
+	// The Single Contact feature is not yet available in production, but can already be partially used in test environments.
+	return process.env.TEST_MODE?.toUpperCase() === 'TRUE';
+}
+
 export async function createContact(params: CreateContactParams): Promise<string> {
-	const { name, emails, phones, customFields = {}, contactManager, channels, unknown } = params;
+	const { name, emails, phones, customFields: receivedCustomFields = {}, contactManager, channels, unknown } = params;
 
 	if (contactManager) {
 		await validateContactManager(contactManager);
 	}
 
 	const allowedCustomFields = await getAllowedCustomFields();
-	validateCustomFields(allowedCustomFields, customFields);
+	const customFields = validateCustomFields(allowedCustomFields, receivedCustomFields);
 
 	const { insertedId } = await LivechatContacts.insertOne({
 		name,
@@ -235,7 +208,7 @@ export async function createContact(params: CreateContactParams): Promise<string
 }
 
 export async function updateContact(params: UpdateContactParams): Promise<ILivechatContact> {
-	const { contactId, name, emails, phones, customFields, contactManager, channels } = params;
+	const { contactId, name, emails, phones, customFields: receivedCustomFields, contactManager, channels } = params;
 
 	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id'>>(contactId, { projection: { _id: 1 } });
 
@@ -247,12 +220,16 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		await validateContactManager(contactManager);
 	}
 
-	if (customFields) {
-		const allowedCustomFields = await getAllowedCustomFields();
-		validateCustomFields(allowedCustomFields, customFields);
-	}
+	const customFields = receivedCustomFields && validateCustomFields(await getAllowedCustomFields(), receivedCustomFields);
 
-	const updatedContact = await LivechatContacts.updateContact(contactId, { name, emails, phones, contactManager, channels, customFields });
+	const updatedContact = await LivechatContacts.updateContact(contactId, {
+		name,
+		emails,
+		phones,
+		contactManager,
+		channels,
+		customFields,
+	});
 
 	return updatedContact;
 }
@@ -308,7 +285,7 @@ export async function getContactHistory(
 	};
 }
 
-async function getAllowedCustomFields(): Promise<ILivechatCustomField[]> {
+async function getAllowedCustomFields(): Promise<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>[]> {
 	return LivechatCustomField.findByScope(
 		'visitor',
 		{
@@ -318,7 +295,13 @@ async function getAllowedCustomFields(): Promise<ILivechatCustomField[]> {
 	).toArray();
 }
 
-export function validateCustomFields(allowedCustomFields: ILivechatCustomField[], customFields: Record<string, string | unknown>) {
+export function validateCustomFields(
+	allowedCustomFields: AtLeast<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>[],
+	customFields: Record<string, string | unknown>,
+	options?: { ignoreAdditionalFields?: boolean },
+): Record<string, string> {
+	const validValues: Record<string, string> = {};
+
 	for (const cf of allowedCustomFields) {
 		if (!customFields.hasOwnProperty(cf._id)) {
 			if (cf.required) {
@@ -341,14 +324,20 @@ export function validateCustomFields(allowedCustomFields: ILivechatCustomField[]
 				throw new Error(i18n.t('error-invalid-custom-field-value', { field: cf.label }));
 			}
 		}
+
+		validValues[cf._id] = cfValue;
 	}
 
-	const allowedCustomFieldIds = new Set(allowedCustomFields.map((cf) => cf._id));
-	for (const key in customFields) {
-		if (!allowedCustomFieldIds.has(key)) {
-			throw new Error(i18n.t('error-custom-field-not-allowed', { key }));
+	if (!options?.ignoreAdditionalFields) {
+		const allowedCustomFieldIds = new Set(allowedCustomFields.map((cf) => cf._id));
+		for (const key in customFields) {
+			if (!allowedCustomFieldIds.has(key)) {
+				throw new Error(i18n.t('error-custom-field-not-allowed', { key }));
+			}
 		}
 	}
+
+	return validValues;
 }
 
 export async function validateContactManager(contactManagerUserId: string) {
