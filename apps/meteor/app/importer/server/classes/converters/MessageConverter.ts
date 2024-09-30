@@ -4,7 +4,7 @@ import limax from 'limax';
 
 import { insertMessage } from '../../../../lib/server/functions/insertMessage';
 import type { IConversionCallbacks } from '../../definitions/IConversionCallbacks';
-import { type MentionedChannel } from './ConverterCache';
+import type { UserIdentification, MentionedChannel } from './ConverterCache';
 import { RecordConverter } from './RecordConverter';
 
 export type MessageConversionCallbacks = IConversionCallbacks & { afterImportAllMessagesFn?: (roomIds: string[]) => Promise<void> };
@@ -25,9 +25,16 @@ type IMessageReaction = {
 type IMessageReactions = Record<string, IMessageReaction>;
 
 export class MessageConverter extends RecordConverter<IImportMessageRecord> {
-	async convertMessages({ beforeImportFn, afterImportFn, onErrorFn, afterImportAllMessagesFn }: MessageConversionCallbacks): Promise<void> {
+	private rids: string[] = [];
+
+	async convertMessages({
+		beforeImportFn,
+		afterImportFn,
+		onErrorFn,
+		afterImportAllMessagesFn,
+	}: MessageConversionCallbacks = {}): Promise<void> {
 		const messages = await this.getDataToImport();
-		const rids: string[] = [];
+		this.rids = [];
 
 		for await (const record of messages) {
 			const { data, _id } = record;
@@ -41,67 +48,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 					continue;
 				}
 
-				if (!data.ts || isNaN(data.ts as unknown as number)) {
-					throw new Error('importer-message-invalid-timestamp');
-				}
-
-				const creator = await this._cache.findImportedUser(data.u._id);
-				if (!creator) {
-					this._logger.warn(`Imported user not found: ${data.u._id}`);
-					throw new Error('importer-message-unknown-user');
-				}
-				const rid = await this._cache.findImportedRoomId(data.rid);
-				if (!rid) {
-					throw new Error('importer-message-unknown-room');
-				}
-				if (!rids.includes(rid)) {
-					rids.push(rid);
-				}
-
-				// Convert the mentions and channels first because these conversions can also modify the msg in the message object
-				const mentions = data.mentions && (await this.convertMessageMentions(data));
-				const channels = data.channels && (await this.convertMessageChannels(data));
-
-				const msgObj: MessageObject = {
-					rid,
-					u: {
-						_id: creator._id,
-						username: creator.username,
-					},
-					msg: data.msg,
-					ts: data.ts,
-					t: data.t || undefined,
-					groupable: data.groupable,
-					tmid: data.tmid,
-					tlm: data.tlm,
-					tcount: data.tcount,
-					replies: data.replies && (await this.convertMessageReplies(data.replies)),
-					editedAt: data.editedAt,
-					editedBy: data.editedBy && ((await this._cache.findImportedUser(data.editedBy)) || undefined),
-					mentions,
-					channels,
-					_importFile: data._importFile,
-					url: data.url,
-					attachments: data.attachments,
-					bot: data.bot,
-					emoji: data.emoji,
-					alias: data.alias,
-				};
-
-				if (data._id) {
-					msgObj._id = data._id;
-				}
-
-				if (data.reactions) {
-					msgObj.reactions = await this.convertMessageReactions(data.reactions);
-				}
-
-				try {
-					await insertMessage(creator, msgObj as unknown as IDBMessage, rid, true);
-				} catch (e) {
-					this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
-					this._logger.error(e);
-				}
+				await this.insertMessage(data);
 
 				if (afterImportFn) {
 					await afterImportFn(record, true);
@@ -114,7 +61,14 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 			}
 		}
 
-		for await (const rid of rids) {
+		await this.resetLastMessages();
+		if (afterImportAllMessagesFn) {
+			await afterImportAllMessagesFn(this.rids);
+		}
+	}
+
+	protected async resetLastMessages(): Promise<void> {
+		for await (const rid of this.rids) {
 			try {
 				await Rooms.resetLastMessageById(rid, null);
 			} catch (e) {
@@ -122,9 +76,68 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 				this._logger.error(e);
 			}
 		}
-		if (afterImportAllMessagesFn) {
-			await afterImportAllMessagesFn(rids);
+	}
+
+	protected async insertMessage(data: IImportMessage): Promise<void> {
+		if (!data.ts || isNaN(data.ts as unknown as number)) {
+			throw new Error('importer-message-invalid-timestamp');
 		}
+
+		const creator = await this._cache.findImportedUser(data.u._id);
+		if (!creator) {
+			this._logger.warn(`Imported user not found: ${data.u._id}`);
+			throw new Error('importer-message-unknown-user');
+		}
+		const rid = await this._cache.findImportedRoomId(data.rid);
+		if (!rid) {
+			throw new Error('importer-message-unknown-room');
+		}
+		if (!this.rids.includes(rid)) {
+			this.rids.push(rid);
+		}
+
+		const msgObj = await this.buildMessageObject(data, rid, creator);
+
+		try {
+			await insertMessage(creator, msgObj as unknown as IDBMessage, rid, true);
+		} catch (e) {
+			this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
+			this._logger.error(e);
+		}
+	}
+
+	protected async buildMessageObject(data: IImportMessage, rid: string, creator: UserIdentification): Promise<MessageObject> {
+		// Convert the mentions and channels first because these conversions can also modify the msg in the message object
+		const mentions = data.mentions && (await this.convertMessageMentions(data));
+		const channels = data.channels && (await this.convertMessageChannels(data));
+
+		return {
+			rid,
+			u: {
+				_id: creator._id,
+				username: creator.username,
+			},
+			msg: data.msg,
+			ts: data.ts,
+			t: data.t || undefined,
+			groupable: data.groupable,
+			tmid: data.tmid,
+			tlm: data.tlm,
+			tcount: data.tcount,
+			replies: data.replies && (await this.convertMessageReplies(data.replies)),
+			editedAt: data.editedAt,
+			editedBy: data.editedBy && ((await this._cache.findImportedUser(data.editedBy)) || undefined),
+			mentions,
+			channels,
+			_importFile: data._importFile,
+			url: data.url,
+			attachments: data.attachments,
+			bot: data.bot,
+			emoji: data.emoji,
+			alias: data.alias,
+			...(data._id ? { _id: data._id } : {}),
+			...(data.reactions ? { reactions: await this.convertMessageReactions(data.reactions) } : {}),
+		};
 	}
 
 	protected async convertMessageChannels(message: IImportMessage): Promise<MentionedChannel[] | undefined> {

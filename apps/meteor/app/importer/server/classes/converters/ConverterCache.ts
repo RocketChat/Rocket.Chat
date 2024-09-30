@@ -1,7 +1,7 @@
 import type { IImportUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
-type UserIdentification = {
+export type UserIdentification = {
 	_id: string;
 	username: string | undefined;
 };
@@ -100,19 +100,19 @@ export class ConverterCache {
 	}
 
 	async findImportedUser(importId: string): Promise<UserIdentification | null> {
-		const options = {
-			projection: {
-				_id: 1,
-				username: 1,
-			},
-		};
-
 		if (importId === 'rocket.cat') {
 			return {
 				_id: 'rocket.cat',
 				username: 'rocket.cat',
 			};
 		}
+
+		const options = {
+			projection: {
+				_id: 1,
+				username: 1,
+			},
+		};
 
 		if (this._userCache.has(importId)) {
 			return this._userCache.get(importId) as UserIdentification;
