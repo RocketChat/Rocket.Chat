@@ -62,7 +62,6 @@ export async function resetRoomKey(roomId: string, userId: string, newRoomKey: s
 			pushToLimit(e2eQueue, { userId: sub.u._id, ts: new Date() });
 		}
 
-
 		if (updateOps.length >= 100) {
 			await writeAndNotify(updateOps, notifySubs);
 		}
