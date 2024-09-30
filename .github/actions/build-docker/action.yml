@@ -9,6 +9,10 @@ inputs:
     required: true
     description: 'Node version'
     type: string
+  deno-version:
+    required: true
+    description: 'Deno version'
+    type: string
   platform:
     required: false
     description: 'Platform'
@@ -66,6 +70,7 @@ runs:
       if: inputs.setup == 'true'
       with:
         node-version: ${{ inputs.node-version }}
+        deno-version: ${{ inputs.deno-version }}
         cache-modules: true
         install: true
         NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
@@ -78,6 +83,8 @@ runs:
       shell: bash
       run: |
         args=(rocketchat ${{ inputs.build-containers }})
+
+        export DENO_VERSION="${{ inputs.deno-version }}"
 
         docker compose -f docker-compose-ci.yml build "${args[@]}"
 
