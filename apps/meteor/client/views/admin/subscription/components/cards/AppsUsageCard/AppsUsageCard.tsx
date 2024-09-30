@@ -22,14 +22,10 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 	const { t } = useTranslation();
 
 	if (!privateAppsLimit || !marketplaceAppsLimit) {
+		// FIXME: not accessible enough
 		return (
-			<FeatureUsageCard
-				card={{
-					title: t('Apps'),
-					infoText: t('Apps_InfoText'),
-				}}
-			>
-				<Skeleton variant='rect' width='x112' height='x112' />
+			<FeatureUsageCard card={{ title: t('Apps') }}>
+				<Skeleton variant='rect' width='x112' height='x112' role='presentation' />
 			</FeatureUsageCard>
 		);
 	}
@@ -46,15 +42,15 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 		title: t('Apps'),
 		infoText:
 			privateAppsCount > 0 ? (
-				<Trans i18nKey='Apps_InfoText_limited' tOptions={{ count: marketplaceAppsMaxCount }}>
-					Community workspaces can enable up to {marketplaceAppsMaxCount} marketplace apps. Private apps can only be enabled in
+				<Trans i18nKey='Apps_InfoText_limited' tOptions={{ marketplaceAppsMaxCount }}>
+					Community workspaces can enable up to {{ marketplaceAppsMaxCount }} marketplace apps. Private apps can only be enabled in{' '}
 					<Box is='a' href='https://www.rocket.chat/pricing' target='_blank' color='info'>
 						premium plans
 					</Box>
 					.
 				</Trans>
 			) : (
-				t('Apps_InfoText')
+				t('Apps_InfoText', { privateAppsMaxCount, marketplaceAppsMaxCount })
 			),
 		...(marketplaceAppsAboveWarning && {
 			upgradeButton: (
