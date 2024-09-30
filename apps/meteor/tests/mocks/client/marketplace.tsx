@@ -62,7 +62,7 @@ export const mockedAppsContext = (children: ReactNode) => (
 			},
 			reload: () => Promise.resolve(),
 			orchestrator: mockAppsOrchestrator(),
-			privateAppsDisabled: false,
+			privateAppsEnabled: false,
 		}}
 	>
 		{children}

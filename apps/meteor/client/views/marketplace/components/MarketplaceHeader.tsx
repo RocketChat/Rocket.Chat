@@ -1,26 +1,27 @@
 import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
-import { usePermission, useRoute, useRouteParameter, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
+import { usePermission, useRoute, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { GenericResourceUsageSkeleton } from '../../../components/GenericResourceUsage';
 import { PageHeader } from '../../../components/Page';
 import UpgradeButton from '../../admin/subscription/components/UpgradeButton';
 import UnlimitedAppsUpsellModal from '../UnlimitedAppsUpsellModal';
 import { useAppsCountQuery } from '../hooks/useAppsCountQuery';
-import { usePrivateAppsDisabled } from '../hooks/usePrivateAppsDisabled';
+import { usePrivateAppsEnabled } from '../hooks/usePrivateAppsEnabled';
 import EnabledAppsCount from './EnabledAppsCount';
 import PrivateAppInstallModal from './PrivateAppInstallModal/PrivateAppInstallModal';
 
 const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const isAdmin = usePermission('manage-apps');
 	const context = (useRouteParameter('context') || 'explore') as 'private' | 'explore' | 'installed' | 'premium' | 'requested';
 	const route = useRoute('marketplace');
 	const setModal = useSetModal();
 	const result = useAppsCountQuery(context);
 
-	const privateAppsDisabled = usePrivateAppsDisabled();
+	const privateAppsEnabled = usePrivateAppsEnabled();
 
 	const handleProceed = (): void => {
 		setModal(null);
@@ -28,9 +29,12 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 	};
 
 	const handleClickPrivate = () => {
-		privateAppsDisabled
-			? setModal(<PrivateAppInstallModal onClose={() => setModal(null)} onProceed={handleProceed} />)
-			: route.push({ context, page: 'install' });
+		if (!privateAppsEnabled) {
+			setModal(<PrivateAppInstallModal onClose={() => setModal(null)} onProceed={handleProceed} />);
+			return;
+		}
+
+		route.push({ context, page: 'install' });
 	};
 
 	if (result.isError) {
@@ -60,7 +64,7 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 
 				{isAdmin && context === 'private' && <Button onClick={handleClickPrivate}>{t('Upload_private_app')}</Button>}
 
-				{isAdmin && result.isSuccess && privateAppsDisabled && context === 'private' && (
+				{isAdmin && result.isSuccess && !privateAppsEnabled && context === 'private' && (
 					<UpgradeButton primary icon={undefined} target='private-apps-header' action='upgrade'>
 						{t('Upgrade')}
 					</UpgradeButton>

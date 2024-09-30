@@ -1,14 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
 import React from 'react';
 
-import { usePrivateAppsDisabled } from '../hooks/usePrivateAppsDisabled';
+import { usePrivateAppsEnabled } from '../hooks/usePrivateAppsEnabled';
 import PrivateEmptyStateDefault from './PrivateEmptyStateDefault';
 import PrivateEmptyStateUpgrade from './PrivateEmptyStateUpgrade';
 
 const PrivateEmptyState = () => {
-	const privateAppsDisabled = usePrivateAppsDisabled();
+	const privateAppsEnabled = usePrivateAppsEnabled();
 
-	return <Box mbs='24px'>{privateAppsDisabled ? <PrivateEmptyStateUpgrade /> : <PrivateEmptyStateDefault />}</Box>;
+	return <Box mbs='24px'>{privateAppsEnabled ? <PrivateEmptyStateDefault /> : <PrivateEmptyStateUpgrade />}</Box>;
 };
 
 export default PrivateEmptyState;
