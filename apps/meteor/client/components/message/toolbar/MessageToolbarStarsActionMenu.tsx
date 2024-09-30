@@ -31,8 +31,9 @@ const MessageToolbarStarsActionMenu = ({
 }: MessageActionMenuProps): ReactElement => {
 	const t = useTranslation();
 	const id = useUniqueId();
-	const groupOptions = options
-		.map((option) => ({
+
+	const groupOptions = options.reduce((acc, option) => {
+		const transformedOption = {
 			variant: option.color === 'alert' ? 'danger' : '',
 			id: option.id,
 			icon: option.icon,
@@ -42,43 +43,34 @@ const MessageToolbarStarsActionMenu = ({
 			...(option.disabled && { disabled: option?.disabled?.(context) }),
 			...(option.disabled &&
 				option?.disabled?.(context) && { tooltip: t('Action_not_available_encrypted_content', { action: t(option.label) }) }),
-		}))
-		.reduce((acc, option) => {
-			const group = option.type ? option.type : '';
-			const section = acc.find((section: { id: string }) => section.id === group);
-			if (section) {
-				section.items.push(option);
-				return acc;
-			}
+		};
 
-			const newSection = { id: group, title: '', items: [option] };
-			acc.push(newSection);
-			return acc;
-		}, [] as unknown as MessageActionSection[])
-		.map((section) => {
-			if (section.id !== 'apps') {
-				return section;
-			}
+		const group = option.type || '';
+		let section = acc.find((section: { id: string }) => section.id === group);
 
-			if (!isMessageEncrypted) {
-				return section;
-			}
+		if (!section) {
+			section = { id: group, title: '', items: [] };
+			acc.push(section);
+		}
 
-			return {
-				id: 'apps',
-				title: t('Apps'),
-				items: [
-					{
-						content: t('Unavailable'),
-						type: 'apps',
-						id,
-						disabled: true,
-						gap: false,
-						tooltip: t('Action_not_available_encrypted_content', { action: t('Apps') }),
-					},
-				],
-			};
-		});
+		// Add option to the appropriate section
+		section.items.push(transformedOption);
+
+		// Handle the "apps" section if message is encrypted
+		if (group === 'apps' && isMessageEncrypted) {
+			section.items = [
+				{
+					content: t('Unavailable'),
+					id,
+					disabled: true,
+					gap: false,
+					tooltip: t('Action_not_available_encrypted_content', { action: t('Apps') }),
+				},
+			];
+		}
+
+		return acc;
+	}, [] as MessageActionSection[]);
 
 	return (
 		<GenericMenu
