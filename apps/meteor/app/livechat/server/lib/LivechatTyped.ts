@@ -71,7 +71,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
-import { createContact } from './Contacts';
+import { createContact, isSingleContactEnabled } from './Contacts';
 import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -669,7 +669,7 @@ class LivechatClass {
 			}
 		}
 
-		if (process.env.TEST_MODE?.toUpperCase() === 'TRUE') {
+		if (isSingleContactEnabled()) {
 			const contactId = await createContact({
 				name: name ?? (visitorDataToUpdate.username as string),
 				emails: email ? [email] : [],
