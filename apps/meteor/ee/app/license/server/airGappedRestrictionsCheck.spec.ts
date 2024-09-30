@@ -1,45 +1,63 @@
-import { License, AirGappedRestriction } from '@rocket.chat/license';
-import { Statistics } from '@rocket.chat/models';
+import { expect } from 'chai';
+import proxyquire from 'proxyquire';
+import sinon from 'sinon';
 
-import { checkAirGappedRestrictions } from './airGappedRestrictionsCheck';
+const AirgappedModule = {
+	removeRestrictions: sinon.stub(),
+	applyRestrictions: sinon.stub(),
+	checkRemainingDaysSinceLastStatsReport: sinon.stub(),
+};
 
-jest.mock('@rocket.chat/models', () => ({
-	Statistics: { findLast: jest.fn() },
-}));
+const LicenseModule = {
+	hasModule: sinon.stub(),
+};
 
-jest.mock('@rocket.chat/license', () => ({
-	License: { hasModule: jest.fn() },
-	AirGappedRestriction: { removeRestrictions: jest.fn(), applyRestrictions: jest.fn(), checkRemainingDaysSinceLastStatsReport: jest.fn() },
-}));
+const StatisticsModule = {
+	findLast: sinon.stub(),
+};
+
+const cleanStubs = () => {
+	Object.values(AirgappedModule).forEach((stub) => stub.resetHistory());
+	LicenseModule.hasModule.resetHistory();
+	StatisticsModule.findLast.resetHistory();
+};
+
+const { checkAirGappedRestrictions } = proxyquire.noCallThru().load('./airGappedRestrictionsCheck', {
+	'@rocket.chat/license': {
+		AirGappedRestriction: AirgappedModule,
+		License: LicenseModule,
+	},
+	'@rocket.chat/models': {
+		Statistics: StatisticsModule,
+	},
+});
 
 describe('#checkAirGappedRestrictions()', () => {
-	afterEach(() => {
-		jest.clearAllMocks();
-	});
+	afterEach(cleanStubs);
 
 	it('should remove any restriction and not to check the validity of the stats token when the workspace has "unlimited-presence" module enabled', async () => {
-		(License.hasModule as jest.Mock).mockReturnValueOnce(true);
+		LicenseModule.hasModule.returns(true);
 		await checkAirGappedRestrictions();
-		expect(AirGappedRestriction.removeRestrictions).toHaveBeenCalledTimes(1);
-		expect(AirGappedRestriction.applyRestrictions).not.toHaveBeenCalled();
-		expect(AirGappedRestriction.checkRemainingDaysSinceLastStatsReport).not.toHaveBeenCalled();
+		expect(AirgappedModule.removeRestrictions.calledOnce).to.be.true;
+		expect(AirgappedModule.applyRestrictions.notCalled).to.be.true;
+		expect(AirgappedModule.checkRemainingDaysSinceLastStatsReport.notCalled).to.be.true;
 	});
 
 	it('should apply restrictions right away when the workspace doesnt contain a license with the previous module enabled AND there is no statsToken (no report was made before)', async () => {
-		(License.hasModule as jest.Mock).mockReturnValueOnce(false);
-		(Statistics.findLast as jest.Mock).mockReturnValueOnce(undefined);
+		LicenseModule.hasModule.returns(false);
+		StatisticsModule.findLast.returns(undefined);
 		await checkAirGappedRestrictions();
-		expect(AirGappedRestriction.applyRestrictions).toHaveBeenCalledTimes(1);
-		expect(AirGappedRestriction.removeRestrictions).not.toHaveBeenCalled();
-		expect(AirGappedRestriction.checkRemainingDaysSinceLastStatsReport).not.toHaveBeenCalled();
+		expect(AirgappedModule.applyRestrictions.calledOnce).to.be.true;
+		expect(AirgappedModule.removeRestrictions.notCalled).to.be.true;
+		expect(AirgappedModule.checkRemainingDaysSinceLastStatsReport.notCalled).to.be.true;
 	});
 
 	it('should check the statsToken validity if there is no valid license and a report to the cloud was made before', async () => {
-		(License.hasModule as jest.Mock).mockReturnValueOnce(false);
-		(Statistics.findLast as jest.Mock).mockReturnValueOnce({ statsToken: 'token' });
+		LicenseModule.hasModule.returns(false);
+		StatisticsModule.findLast.returns({ statsToken: 'token' });
 		await checkAirGappedRestrictions();
-		expect(AirGappedRestriction.applyRestrictions).not.toHaveBeenCalled();
-		expect(AirGappedRestriction.removeRestrictions).not.toHaveBeenCalled();
-		expect(AirGappedRestriction.checkRemainingDaysSinceLastStatsReport).toHaveBeenCalledWith('token');
+		expect(AirgappedModule.applyRestrictions.notCalled).to.be.true;
+		expect(AirgappedModule.removeRestrictions.notCalled).to.be.true;
+		expect(AirgappedModule.checkRemainingDaysSinceLastStatsReport.calledWith('token')).to.be.true;
 	});
 });
