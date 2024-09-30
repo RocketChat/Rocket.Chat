@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import { applyAirGappedRestrictionsValidation } from '../../../app/license/server/airGappedRestrictionsWrapper';
+import { applyAirGappedRestrictionsValidation } from '../../../../../app/license/server/airGappedRestrictionsWrapper';
 
 let restrictionFlag = true;
 
@@ -12,7 +12,7 @@ const airgappedModule = {
 	},
 };
 
-proxyquire.noCallThru().load('./airGappedRestrictionsWrapper.ts', {
+proxyquire.noCallThru().load('../../../../server/patches/airGappedRestrictionsWrapper.ts', {
 	'@rocket.chat/license': {
 		AirGappedRestriction: airgappedModule,
 	},
