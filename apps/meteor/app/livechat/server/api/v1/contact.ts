@@ -11,7 +11,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { API } from '../../../../api/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { Contacts, createContact, updateContact, getContacts } from '../../lib/Contacts';
+import { Contacts, createContact, updateContact, getContacts, isSingleContactEnabled } from '../../lib/Contacts';
 
 API.v1.addRoute(
 	'omnichannel/contact',
@@ -101,8 +101,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['create-livechat-contact'], validateParams: isPOSTOmnichannelContactsProps },
 	{
 		async post() {
-			if (process.env.TEST_MODE?.toUpperCase() !== 'TRUE') {
-				throw new Meteor.Error('error-not-allowed', 'This endpoint is only allowed in test mode');
+			if (!isSingleContactEnabled()) {
+				return API.v1.unauthorized();
 			}
 			const contactId = await createContact({ ...this.bodyParams, unknown: false });
 
@@ -116,8 +116,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['update-livechat-contact'], validateParams: isPOSTUpdateOmnichannelContactsProps },
 	{
 		async post() {
-			if (process.env.TEST_MODE?.toUpperCase() !== 'TRUE') {
-				throw new Meteor.Error('error-not-allowed', 'This endpoint is only allowed in test mode');
+			if (!isSingleContactEnabled()) {
+				return API.v1.unauthorized();
 			}
 
 			const contact = await updateContact({ ...this.bodyParams });
@@ -132,8 +132,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-contact'], validateParams: isGETOmnichannelContactsProps },
 	{
 		async get() {
-			if (process.env.TEST_MODE?.toUpperCase() !== 'TRUE') {
-				throw new Meteor.Error('error-not-allowed', 'This endpoint is only allowed in test mode');
+			if (!isSingleContactEnabled()) {
+				return API.v1.unauthorized();
 			}
 			const contact = await LivechatContacts.findOneById(this.queryParams.contactId);
 
