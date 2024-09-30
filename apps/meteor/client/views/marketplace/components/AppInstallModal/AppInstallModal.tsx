@@ -63,7 +63,7 @@ const AppInstallationModal = ({
 			<Modal>
 				<Modal.Header>
 					<Modal.HeaderText>
-						<Modal.Title>{getTitle()}</Modal.Title>
+						<Modal.Title data-qa-id='confirm-app-upload-modal-title'>{getTitle()}</Modal.Title>
 					</Modal.HeaderText>
 					<Modal.Close onClick={handleClose} />
 				</Modal.Header>
@@ -75,7 +75,7 @@ const AppInstallationModal = ({
 				<Modal.Footer>
 					<Modal.FooterControllers>
 						<Button onClick={handleEnableUnlimitedApps}>{t('Enable_unlimited_apps')}</Button>
-						<Button {...(enabled < limit && { primary: true })} onClick={handleConfirm}>
+						<Button {...(enabled < limit && { primary: true })} onClick={handleConfirm} data-qa-id='confirm-app-upload-modal-button'>
 							{enabled < limit ? t('Next') : confirmButtonOverlimitLabel}
 						</Button>
 					</Modal.FooterControllers>

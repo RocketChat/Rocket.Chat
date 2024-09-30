@@ -48,7 +48,15 @@ const AppInstallPage = () => {
 										{...field}
 										value={field.value?.name || ''}
 										addon={
-											<Button icon='upload' small primary onClick={handleUploadButtonClick} mb='neg-x4' mie='neg-x8'>
+											<Button
+												data-qa-id='upload-private-app-file'
+												icon='upload'
+												small
+												primary
+												onClick={handleUploadButtonClick}
+												mb='neg-x4'
+												mie='neg-x8'
+											>
 												{t('Browse_Files')}
 											</Button>
 										}
@@ -59,7 +67,7 @@ const AppInstallPage = () => {
 					</Field>
 					<Field>
 						<ButtonGroup>
-							<Button disabled={!file?.name} loading={isInstalling} onClick={install}>
+							<Button data-qa-id='install-private-app' disabled={!file?.name} loading={isInstalling} onClick={install}>
 								{t('Install')}
 							</Button>
 							<Button onClick={handleCancel}>{t('Cancel')}</Button>
