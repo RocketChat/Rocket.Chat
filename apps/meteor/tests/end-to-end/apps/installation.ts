@@ -112,7 +112,7 @@ describe('Apps - Installation', () => {
 					.end(done);
 			});
 		});
-		describe('Video Conf Provider registration', () => {
+		(IS_EE ? describe : describe.skip)('Video Conf Provider registration', () => {
 			it('should have created two video conf provider successfully', (done) => {
 				void request
 					.get(api('video-conference.providers'))
