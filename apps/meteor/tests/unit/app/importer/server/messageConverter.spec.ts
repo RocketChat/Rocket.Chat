@@ -91,6 +91,8 @@ describe('Message Converter', () => {
 					},
 				});
 		});
+
+		// #TODO: Validate all message attributes
 	});
 
 	describe('callbacks', () => {

@@ -477,6 +477,8 @@ describe('User Converter', () => {
 		});
 	});
 
+	// #TODO: Validate batch conversions
+
 	describe('callbacks', () => {
 		it('beforeImportFn should be triggered', async () => {
 			const beforeImportFn = sinon.stub();
@@ -605,8 +607,6 @@ describe('User Converter', () => {
 			expect(converter.saveError.getCall(0)).to.not.be.null;
 		});
 
-		// it('afterBatchFn should be triggered', () => {
-		// 	#ToDo
-		// });
+		// #TODO: Validate afterBatchFn
 	});
 });

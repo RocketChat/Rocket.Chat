@@ -163,6 +163,8 @@ describe('Room Converter', () => {
 			expect(createDirectMessage.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(createDirectMessage.getCall(0).args).to.be.an('array').with.lengthOf(3).that.deep.includes(['username1', 'username2']);
 		});
+
+		// #TODO: Validate all room types
 	});
 
 	describe('callbacks', () => {
