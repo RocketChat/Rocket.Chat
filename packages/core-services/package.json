@@ -6,6 +6,7 @@
 		"@babel/core": "~7.22.20",
 		"@babel/preset-env": "~7.22.20",
 		"@babel/preset-typescript": "~7.22.15",
+		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@types/jest": "~29.5.13",
@@ -32,7 +33,6 @@
 		"extends": "../../package.json"
 	},
 	"dependencies": {
-		"@rocket.chat/apps-engine": "1.45.0-alpha.868",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/icons": "~0.38.0",
 		"@rocket.chat/message-parser": "workspace:^",
