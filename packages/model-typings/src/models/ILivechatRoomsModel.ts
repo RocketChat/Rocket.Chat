@@ -263,6 +263,6 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	findPaginatedRoomsByVisitorsIdsAndSource(params: {
 		visitorsIds: string[];
 		source?: string;
-		options: FindOptions;
+		options?: FindOptions;
 	}): FindPaginated<FindCursor<IOmnichannelRoom>>;
 }
