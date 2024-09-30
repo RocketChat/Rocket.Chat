@@ -1,7 +1,7 @@
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { notifyOnSubscriptionChangedById, notifyOnRoomChangedById } from '../../../lib/server/lib/notifyListener';
+import { notifyOnSubscriptionChangedById } from '../../../lib/server/lib/notifyListener';
 
 export async function handleSuggestedGroupKey(
 	handle: 'accept' | 'reject',
@@ -28,17 +28,11 @@ export async function handleSuggestedGroupKey(
 		// If a user already has oldRoomKeys, we will ignore the suggested ones
 		const oldKeys = sub.oldRoomKeys ? undefined : sub.suggestedOldRoomKeys;
 		await Subscriptions.setGroupE2EKeyAndOldRoomKeys(sub._id, suggestedKey, oldKeys);
-		const { modifiedCount } = await Rooms.removeUsersFromE2EEQueueByRoomId(sub.rid, [userId]);
-		if (modifiedCount) {
-			void notifyOnRoomChangedById(sub.rid);
-		}
+		await Rooms.removeUsersFromE2EEQueueByRoomId(sub.rid, [userId]);
 	}
 
 	if (handle === 'reject') {
-		const { modifiedCount } = await Rooms.addUserIdToE2EEQueueByRoomIds([sub.rid], userId);
-		if (modifiedCount) {
-			void notifyOnRoomChangedById(sub.rid);
-		}
+		await Rooms.addUserIdToE2EEQueueByRoomIds([sub.rid], userId);
 	}
 
 	const { modifiedCount } = await Subscriptions.unsetGroupE2ESuggestedKeyAndOldRoomKeys(sub._id);

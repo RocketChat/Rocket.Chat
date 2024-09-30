@@ -97,6 +97,8 @@ export const addUserToRoom = async function (
 		void notifyOnSubscriptionChangedById(insertedId, 'inserted');
 	}
 
+	void notifyOnRoomChangedById(rid);
+
 	if (!userToBeAdded.username) {
 		throw new Meteor.Error('error-invalid-user', 'Cannot add an user to a room without a username');
 	}
@@ -145,6 +147,5 @@ export const addUserToRoom = async function (
 		await Rooms.addUserIdToE2EEQueueByRoomIds([room._id], userToBeAdded._id);
 	}
 
-	void notifyOnRoomChangedById(rid);
 	return true;
 };
