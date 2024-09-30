@@ -317,6 +317,9 @@ export class E2ERoom extends Emitter {
 	}
 
 	async exportSessionKey(key) {
+		key = key.slice(12);
+		key = Base64.decode(key);
+
 		try {
 			const decryptedKey = await decryptRSA(e2e.privateKey, key);
 			return toString(decryptedKey);
@@ -425,7 +428,7 @@ export class E2ERoom extends Emitter {
 			return await Promise.all(
 				oldRoomKeys.map(async (key) => {
 					const encryptedKey = await encryptRSA(userKey, toArrayBuffer(key.E2EKey));
-					const encryptedKeyToString = key.keyID + Base64.encode(new Uint8Array(encryptedKey));
+					const encryptedKeyToString = key.e2eKeyId + Base64.encode(new Uint8Array(encryptedKey));
 					return { ...key, E2EKey: encryptedKeyToString };
 				}),
 			);
@@ -641,11 +644,12 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
+		const mySub = Subscriptions.findOne({ rid: this.roomId });
 		const usersWithKeys = await Promise.all(
 			users.map(async (user) => {
 				const { _id, public_key } = user;
 				const key = await this.encryptGroupKeyForParticipant(public_key);
-				const oldKeys = await this.encryptOldKeysForParticipant(public_key, await this.exportOldRoomKeys(this.oldKeys));
+				const oldKeys = await this.encryptOldKeysForParticipant(public_key, await this.exportOldRoomKeys(mySub?.oldRoomKeys));
 				return { _id, key, ...(oldKeys && { oldKeys }) };
 			}),
 		);
