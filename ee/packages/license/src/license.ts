@@ -503,18 +503,4 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 			addOns: license?.addOns,
 		};
 	}
-
-	public getAddon(addonId: string) {
-		const license = this.getLicense();
-
-		return license?.addOns?.find((addon) => addon.id === addonId);
-	}
-
-	public hasValidAddon(addonId: string) {
-		const addon = this.getAddon(addonId);
-
-		const now = new Date();
-
-		return Boolean(addon?.expiresAt && now < new Date(addon.expiresAt));
-	}
 }

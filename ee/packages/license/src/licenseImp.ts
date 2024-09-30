@@ -1,5 +1,6 @@
 import type { LicenseLimitKind, LicenseInfo, LimitContext } from '@rocket.chat/core-typings';
 
+import { getAddon, getAddons, hasValidAddon } from './addons';
 import { getAppsConfig, getMaxActiveUsers, getUnmodifiedLicenseAndModules } from './deprecated';
 import { onLicense } from './events/deprecated';
 import {
@@ -32,6 +33,9 @@ interface License {
 	hasModule: typeof hasModule;
 	getModules: typeof getModules;
 	getTags: typeof getTags;
+	getAddons: typeof getAddons;
+	getAddon: typeof getAddon;
+	hasValidAddon: typeof hasValidAddon;
 	overwriteClassOnLicense: typeof overwriteClassOnLicense;
 	setLicenseLimitCounter: typeof setLicenseLimitCounter;
 	getCurrentValueForLicenseLimit: typeof getCurrentValueForLicenseLimit;
@@ -91,6 +95,12 @@ export class LicenseImp extends LicenseManager implements License {
 	getModules = getModules;
 
 	getTags = getTags;
+
+	getAddons = getAddons;
+
+	getAddon = getAddon;
+
+	hasValidAddon = hasValidAddon;
 
 	overwriteClassOnLicense = overwriteClassOnLicense;
 
