@@ -22,7 +22,7 @@ const cleanStubs = () => {
 	StatisticsModule.findLast.resetHistory();
 };
 
-const { checkAirGappedRestrictions } = proxyquire.noCallThru().load('./airGappedRestrictionsCheck', {
+const { checkAirGappedRestrictions } = proxyquire.noCallThru().load('./airGappedRestrictionsCheck.ts', {
 	'@rocket.chat/license': {
 		AirGappedRestriction: AirgappedModule,
 		License: LicenseModule,
