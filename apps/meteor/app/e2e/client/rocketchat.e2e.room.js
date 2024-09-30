@@ -645,7 +645,8 @@ export class E2ERoom extends Emitter {
 			users.map(async (user) => {
 				const { _id, public_key } = user;
 				const key = await this.encryptGroupKeyForParticipant(public_key);
-				return { _id, key };
+				const oldKeys = await this.encryptOldKeysForParticipant(public_key, await this.exportOldRoomKeys(this.oldKeys));
+				return { _id, key, ...(oldKeys && { oldKeys }) };
 			}),
 		);
 
