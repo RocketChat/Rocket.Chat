@@ -82,7 +82,7 @@ describe('Apps - Installation', () => {
 				})
 				.then(done);
 		});
-		describe('Slash commands registration', () => {
+		(IS_EE ? describe : describe.skip)('Slash commands registration', () => {
 			it('should have created the "test-simple" slash command successfully', (done) => {
 				void request
 					.get(api('commands.get'))
