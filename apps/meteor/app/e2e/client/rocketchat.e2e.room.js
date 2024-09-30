@@ -34,7 +34,7 @@ const PAUSED = Symbol('PAUSED');
 
 const permitedMutations = {
 	[E2ERoomState.NOT_STARTED]: [E2ERoomState.ESTABLISHING, E2ERoomState.DISABLED, E2ERoomState.KEYS_RECEIVED],
-	[E2ERoomState.READY]: [E2ERoomState.DISABLED],
+	[E2ERoomState.READY]: [E2ERoomState.DISABLED, E2ERoomState.CREATING_KEYS],
 	[E2ERoomState.ERROR]: [E2ERoomState.KEYS_RECEIVED, E2ERoomState.NOT_STARTED],
 	[E2ERoomState.WAITING_KEYS]: [E2ERoomState.KEYS_RECEIVED, E2ERoomState.ERROR, E2ERoomState.DISABLED],
 	[E2ERoomState.ESTABLISHING]: [
@@ -383,6 +383,33 @@ export class E2ERoom extends Emitter {
 			await this.encryptKeyForOtherParticipants();
 		} catch (error) {
 			this.error('Error exporting group key: ', error);
+			throw error;
+		}
+	}
+
+	async resetRoomKey() {
+		this.log('Resetting room key');
+		this.setState(E2ERoomState.CREATING_KEYS);
+		try {
+			this.groupSessionKey = await generateAESKey();
+		} catch (error) {
+			console.error('Error generating group key: ', error);
+			throw error;
+		}
+
+		try {
+			const sessionKeyExported = await exportJWKKey(this.groupSessionKey);
+			this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
+			this.keyID = Base64.encode(this.sessionKeyExportedString).slice(0, 12);
+
+			const e2eNewKeys = { e2eKeyId: this.keyID, e2eKey: await this.encryptGroupKeyForParticipant(e2e.publicKey) };
+
+			this.log('Resetting room key ->', this.roomId);
+			this.setState(E2ERoomState.READY);
+
+			return e2eNewKeys;
+		} catch (error) {
+			this.error('Error resetting group key: ', error);
 			throw error;
 		}
 	}
