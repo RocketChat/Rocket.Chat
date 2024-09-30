@@ -1,4 +1,4 @@
-import type { LicenseLimitKind } from './ILicenseV3';
+import type { LicenseAddon, LicenseLimitKind } from './ILicenseV3';
 import type { BehaviorWithContext, LicenseBehavior } from './LicenseBehavior';
 import type { LicenseModule } from './LicenseModule';
 
@@ -20,5 +20,6 @@ export type LicenseEvents = ModuleValidation &
 		validate: undefined;
 		invalidate: undefined;
 		module: { module: LicenseModule; valid: boolean };
+		addon: { addon: LicenseAddon };
 		sync: undefined;
 	};

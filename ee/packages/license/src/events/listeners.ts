@@ -1,4 +1,4 @@
-import type { LicenseLimitKind, LicenseModule, BehaviorWithContext, LicenseBehavior } from '@rocket.chat/core-typings';
+import type { LicenseLimitKind, LicenseModule, BehaviorWithContext, LicenseBehavior, LicenseAddon } from '@rocket.chat/core-typings';
 
 import type { LicenseManager } from '../license';
 import { hasModule } from '../modules';
@@ -85,6 +85,10 @@ export function onToggledFeature(
 
 export function onModule(this: LicenseManager, cb: (data: { module: LicenseModule; valid: boolean }) => void) {
 	this.on('module', cb);
+}
+
+export function onAddon(this: LicenseManager, cb: (data: { addon: LicenseAddon }) => void) {
+	this.on('addon', cb);
 }
 
 export function onValidateLicense(this: LicenseManager, cb: () => void) {
