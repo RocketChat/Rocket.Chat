@@ -208,6 +208,13 @@ export const permissions = [
 	// allows to receive a voip call
 	{ _id: 'inbound-voip-calls', roles: ['livechat-agent'] },
 
+	// Allow managing team collab voip extensions
+	{ _id: 'manage-voip-extensions', roles: ['admin'] },
+	// Allow viewing the extension number of other users
+	{ _id: 'view-user-voip-extension', roles: ['admin', 'user'] },
+	// Allow viewing details of an extension
+	{ _id: 'view-voip-extension-details', roles: ['admin', 'user'] },
+
 	{ _id: 'remove-livechat-department', roles: ['livechat-manager', 'admin'] },
 	{ _id: 'manage-apps', roles: ['admin'] },
 	{ _id: 'post-readonly', roles: ['admin', 'owner', 'moderator'] },
