@@ -50,7 +50,7 @@ test.describe.serial('Private apps upload', () => {
 			await expect(poMarketplace.btnInstallPrivateApp).toBeEnabled();
 			await poMarketplace.btnInstallPrivateApp.click();
 
-			await expect(poMarketplace.confirmAppUploadModalTitle).toHaveText('Private apps limit exceeded');
+			await expect(poMarketplace.confirmAppUploadModalTitle).toHaveText('Private apps limit reached');
 			await expect(poMarketplace.confirmAppUploadModalButton).toBeEnabled();
 			await poMarketplace.confirmAppUploadModalButton.click();
 

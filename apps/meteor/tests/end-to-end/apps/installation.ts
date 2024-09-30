@@ -6,6 +6,7 @@ import { APP_URL, apps } from '../../data/apps/apps-data';
 import { cleanupApps } from '../../data/apps/helper';
 import { updatePermission } from '../../data/permissions.helper';
 import { getUserByUsername } from '../../data/users.helper';
+import { IS_EE } from '/tests/e2e/config/constants';
 
 const APP_USERNAME = 'appsrocketchattester.bot';
 
@@ -34,7 +35,7 @@ describe('Apps - Installation', () => {
 					.end(done);
 			});
 		});
-		it('should install the app successfully from a URL', (done) => {
+		(IS_EE ? it : it.skip)('should succesfully install an app from a URL in EE, which should be auto-enabled', (done) => {
 			void updatePermission('manage-apps', ['admin']).then(() => {
 				void request
 					.post(apps())
@@ -50,6 +51,26 @@ describe('Apps - Installation', () => {
 						expect(res.body.app).to.have.a.property('id');
 						expect(res.body.app).to.have.a.property('version');
 						expect(res.body.app).to.have.a.property('status').and.to.be.equal('auto_enabled');
+					})
+					.end(done);
+			});
+		});
+		(!IS_EE ? it : it.skip)('should succesfully install an app from a URL in CE, which should not be enabled', (done) => {
+			void updatePermission('manage-apps', ['admin']).then(() => {
+				void request
+					.post(apps())
+					.set(credentials)
+					.send({
+						url: APP_URL,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('app');
+						expect(res.body.app).to.have.a.property('id');
+						expect(res.body.app).to.have.a.property('version');
+						expect(res.body.app).to.have.a.property('status').and.to.be.equal('initialized');
 					})
 					.end(done);
 			});
