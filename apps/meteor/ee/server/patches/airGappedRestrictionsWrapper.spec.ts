@@ -13,7 +13,7 @@ const airgappedModule = {
 	},
 };
 
-proxyquire.noCallThru().load('./airGappedRestrictionsWrapper', {
+proxyquire.noCallThru().load('./airGappedRestrictionsWrapper.ts', {
 	'@rocket.chat/license': {
 		AirGappedRestriction: airgappedModule,
 	},
