@@ -6,7 +6,7 @@ import { APP_URL, apps } from '../../data/apps/apps-data';
 import { cleanupApps } from '../../data/apps/helper';
 import { updatePermission } from '../../data/permissions.helper';
 import { getUserByUsername } from '../../data/users.helper';
-import { IS_EE } from '/tests/e2e/config/constants';
+import { IS_EE } from '../../e2e/config/constants';
 
 const APP_USERNAME = 'appsrocketchattester.bot';
 
