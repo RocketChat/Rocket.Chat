@@ -34,12 +34,7 @@ export async function resetRoomKey(roomId: string, userId: string, newRoomKey: s
 		const keys = replicateMongoSlice(room.e2eKeyId, sub);
 		delete sub.E2ESuggestedKey;
 		delete sub.E2EKey;
-
-		// If you're requesting the reset but you don't have the key, that means you won't have a complete "oldRoomKeys"
-		// So we'll put you on the list to get one
-		if (sub.u._id === userId && !sub.E2EKey) {
-			e2eQueue.push({ userId: sub.u._id, ts: new Date() });
-		}
+		delete sub.suggestedOldRoomKeys;
 
 		const updateSet = {
 			$set: {
@@ -50,20 +45,23 @@ export async function resetRoomKey(roomId: string, userId: string, newRoomKey: s
 			updateOne: {
 				filter: { _id: sub._id },
 				update: {
-					$unset: { E2EKey: 1, E2ESuggestedKey: 1 },
+					$unset: { E2EKey: 1, E2ESuggestedKey: 1, suggestedOldRoomKeys: 1 },
 					...(Object.keys(updateSet.$set).length && updateSet),
 				},
 			},
 		});
-		// Avoid notifying requesting user as notify will happen at the end
-		userId !== sub.u._id &&
+
+		if (userId !== sub.u._id) {
+			// Avoid notifying requesting user as notify will happen at the end
 			notifySubs.push({
 				...sub,
 				...(keys && { oldRoomKeys: keys }),
 			});
 
-		// This is for allowing the key distribution process to start inmediately
-		pushToLimit(e2eQueue, { userId: sub.u._id, ts: new Date() });
+			// This is for allowing the key distribution process to start inmediately
+			pushToLimit(e2eQueue, { userId: sub.u._id, ts: new Date() });
+		}
+
 
 		if (updateOps.length >= 100) {
 			await writeAndNotify(updateOps, notifySubs);
@@ -83,7 +81,9 @@ export async function resetRoomKey(roomId: string, userId: string, newRoomKey: s
 	// And set the new key to the user that called the func
 	const result = await Subscriptions.setE2EKeyByUserIdAndRoomId(userId, roomId, newRoomKey);
 
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	void notifyOnSubscriptionChanged(result.value!);
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	void notifyOnRoomChanged(roomResult.value!);
 }
 
