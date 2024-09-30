@@ -17,7 +17,7 @@ test.describe.serial('Private apps upload', () => {
 	test.describe('Premium', () => {
 		test.skip(!IS_EE, 'Premium Only');
 
-		test('expect to allow admin to upload a private app on EE, which should be enabled by default', async ({ page }) => {
+		test('expect to allow admin to upload a private app in EE, which should be enabled by default', async ({ page }) => {
 			const fileChooserPromise = page.waitForEvent('filechooser');
 
 			await poMarketplace.btnUploadPrivateApp.click();
@@ -37,7 +37,7 @@ test.describe.serial('Private apps upload', () => {
 	test.describe('Community Edition', () => {
 		test.skip(IS_EE, 'CE Only');
 
-		test('expect to allow admin to upload a private app on CE, but it should be disabled by default', async ({ page }) => {
+		test('expect to allow admin to upload a private app in CE, but it should be disabled by default', async ({ page }) => {
 			const fileChooserPromise = page.waitForEvent('filechooser');
 
 			await poMarketplace.btnUploadPrivateApp.click();
@@ -58,11 +58,13 @@ test.describe.serial('Private apps upload', () => {
 			await expect(poMarketplace.appStatusTag).toHaveText('Disabled');
 		});
 
-		test('expect not to allow enabling a recently installed private app on CE', async () => {
+		test('expect not to allow enabling a recently installed private app in CE', async ({ page }) => {
 			await poMarketplace.lastAppRow.click();
 			await expect(poMarketplace.appStatusTag).toHaveText('Disabled');
 			await poMarketplace.appMenu.click();
-			await expect(poMarketplace.enableAppAction).toBeDisabled();
+			await expect(poMarketplace.enableAppAction).toBeEnabled();
+			await poMarketplace.enableAppAction.click();
+			await expect(page.locator('.rcx-toastbar.rcx-toastbar--error')).toBeVisible();
 		});
 	});
 });
