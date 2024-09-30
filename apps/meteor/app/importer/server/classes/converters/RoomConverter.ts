@@ -11,45 +11,32 @@ import type { IConversionCallbacks } from '../../definitions/IConversionCallback
 import { RecordConverter } from './RecordConverter';
 
 export class RoomConverter extends RecordConverter<IImportChannelRecord> {
-	async convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn, onErrorFn }: IConversionCallbacks = {}): Promise<void> {
-		const channels = await this.getDataToImport();
+	public startedByUserId: string;
 
-		for await (const record of channels) {
-			const { data, _id } = record;
-			if (this.aborted) {
-				return;
-			}
+	async convertChannels(startedByUserId: string, callbacks: IConversionCallbacks = {}): Promise<void> {
+		this.startedByUserId = startedByUserId;
 
-			try {
-				if (beforeImportFn && !(await beforeImportFn(record))) {
-					await this.skipRecord(_id);
-					continue;
-				}
+		return this.convertData(callbacks);
+	}
 
-				if (!data.name && data.t !== 'd') {
-					throw new Error('importer-channel-missing-name');
-				}
+	protected async convertRecord(record: IImportChannelRecord): Promise<boolean> {
+		const { data } = record;
 
-				data.importIds = data.importIds.filter((item) => item);
-				data.users = [...new Set(data.users)];
-
-				if (!data.importIds.length) {
-					throw new Error('importer-channel-missing-import-id');
-				}
-
-				const existingRoom = await this.findExistingRoom(data);
-				await this.insertOrUpdateRoom(existingRoom, data, startedByUserId);
-
-				if (afterImportFn) {
-					await afterImportFn(record, !existingRoom);
-				}
-			} catch (e) {
-				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
-				if (onErrorFn) {
-					await onErrorFn();
-				}
-			}
+		if (!data.name && data.t !== 'd') {
+			throw new Error('importer-channel-missing-name');
 		}
+
+		data.importIds = data.importIds.filter((item) => item);
+		data.users = [...new Set(data.users)];
+
+		if (!data.importIds.length) {
+			throw new Error('importer-channel-missing-import-id');
+		}
+
+		const existingRoom = await this.findExistingRoom(data);
+		await this.insertOrUpdateRoom(existingRoom, data, this.startedByUserId);
+
+		return !existingRoom;
 	}
 
 	async insertOrUpdateRoom(existingRoom: IRoom | null, data: IImportChannel, startedByUserId: string): Promise<void> {

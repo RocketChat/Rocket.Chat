@@ -5,7 +5,7 @@ import { SHA256 } from '@rocket.chat/sha256';
 import { hash as bcryptHash } from 'bcrypt';
 import { Accounts } from 'meteor/accounts-base';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks as systemCallbacks } from '../../../../../lib/callbacks';
 import { addUserToDefaultChannels } from '../../../../lib/server/functions/addUserToDefaultChannels';
 import { generateUsernameSuggestion } from '../../../../lib/server/functions/getUsernameSuggestion';
 import { saveUserIdentity } from '../../../../lib/server/functions/saveUserIdentity';
@@ -37,32 +37,54 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 
 	private updatedIds = new Set<IUser['_id']>();
 
-	private skippedCount = 0;
+	protected async convertRecord(record: IImportUserRecord): Promise<boolean | undefined> {
+		const { data, _id } = record;
 
-	private failedCount = 0;
+		data.importIds = data.importIds.filter((item) => item);
 
-	public async convertUsers({ beforeImportFn, afterImportFn, onErrorFn, afterBatchFn }: IConversionCallbacks = {}): Promise<void> {
-		const users = await this.getDataToImport();
+		if (!data.emails.length && !data.username) {
+			throw new Error('importer-user-missing-email-and-username');
+		}
 
+		const existingUser = await this.findExistingUser(data);
+		if (existingUser && this._options.skipExistingUsers) {
+			await this.skipRecord(_id);
+			return;
+		}
+		if (!existingUser && this._options.skipNewUsers) {
+			await this.skipRecord(_id);
+			return;
+		}
+
+		await this.insertOrUpdateUser(existingUser, data);
+		return !existingUser;
+	}
+
+	async convertData(userCallbacks: IConversionCallbacks = {}): Promise<void> {
 		this.insertedIds.clear();
 		this.updatedIds.clear();
-		this.skippedCount = 0;
-		this.failedCount = 0;
 
+		if (this._options.quickUserInsertion) {
+			await this.batchConversion(userCallbacks);
+		} else {
+			await super.convertData(userCallbacks);
+		}
+
+		await systemCallbacks.run('afterUserImport', {
+			inserted: [...this.insertedIds],
+			updated: [...this.updatedIds],
+			skipped: this.skippedCount,
+			failed: this.failedCount,
+		});
+	}
+
+	public async batchConversion({ afterBatchFn, ...callbacks }: IConversionCallbacks = {}): Promise<void> {
 		const batchToInsert = new Set<IImportUser>();
 
-		for await (const record of users) {
-			const { data, _id } = record;
-			if (this.aborted) {
-				break;
-			}
-
-			try {
-				if (beforeImportFn && !(await beforeImportFn(record))) {
-					this.skippedCount++;
-					await this.skipRecord(_id);
-					continue;
-				}
+		await this.iterateRecords({
+			...callbacks,
+			processRecord: async (record: IImportUserRecord) => {
+				const { data } = record;
 
 				data.importIds = data.importIds.filter((item) => item);
 
@@ -70,61 +92,25 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 					throw new Error('importer-user-missing-email-and-username');
 				}
 
-				if (this._options.quickUserInsertion) {
-					batchToInsert.add(data);
+				batchToInsert.add(data);
 
-					if (batchToInsert.size >= 50) {
-						const usersToInsert = await this.buildUserBatch([...batchToInsert]);
-						batchToInsert.clear();
+				if (batchToInsert.size >= 50) {
+					const usersToInsert = await this.buildUserBatch([...batchToInsert]);
+					batchToInsert.clear();
 
-						const newIds = await this.insertUserBatch(usersToInsert, { afterBatchFn });
-						newIds.forEach((id) => this.insertedIds.add(id));
-					}
-
-					continue;
+					const newIds = await this.insertUserBatch(usersToInsert, { afterBatchFn });
+					newIds.forEach((id) => this.insertedIds.add(id));
 				}
 
-				const existingUser = await this.findExistingUser(data);
-				if (existingUser && this._options.skipExistingUsers) {
-					this.skippedCount++;
-					await this.skipRecord(_id);
-					continue;
-				}
-				if (!existingUser && this._options.skipNewUsers) {
-					this.skippedCount++;
-					await this.skipRecord(_id);
-					continue;
-				}
-
-				const isNewUser = !existingUser;
-				await this.insertOrUpdateUser(existingUser, data);
-
-				if (afterImportFn) {
-					await afterImportFn(record, isNewUser);
-				}
-			} catch (e) {
-				this._logger.error(e);
-				this.failedCount++;
-				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
-
-				if (onErrorFn) {
-					await onErrorFn();
-				}
-			}
-		}
+				return undefined;
+			},
+		});
 
 		if (batchToInsert.size > 0) {
 			const usersToInsert = await this.buildUserBatch([...batchToInsert]);
 			const newIds = await this.insertUserBatch(usersToInsert, { afterBatchFn });
 			newIds.forEach((id) => this.insertedIds.add(id));
 		}
-
-		await callbacks.run('afterUserImport', {
-			inserted: [...this.insertedIds],
-			updated: [...this.updatedIds],
-			skipped: this.skippedCount,
-			failed: this.failedCount,
-		});
 	}
 
 	private async insertUserBatch(users: IUser[], { afterBatchFn }: IConversionCallbacks): Promise<string[]> {

@@ -4,6 +4,7 @@ import { ImportData } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { type FindCursor, ObjectId } from 'mongodb';
 
+import type { IConversionCallbacks } from '../../definitions/IConversionCallbacks';
 import { ConverterCache } from './ConverterCache';
 
 export type RecordConverterOptions = {
@@ -21,6 +22,10 @@ export class RecordConverter<R extends IImportRecord, T extends RecordConverterO
 	protected _options: Omit<T, keyof RecordConverterOptions>;
 
 	protected _records: R[];
+
+	protected skippedCount = 0;
+
+	protected failedCount = 0;
 
 	public aborted = false;
 
@@ -60,6 +65,7 @@ export class RecordConverter<R extends IImportRecord, T extends RecordConverterO
 	}
 
 	protected async skipRecord(_id: string): Promise<void> {
+		this.skippedCount++;
 		this.skipMemoryRecord(_id);
 		if (!this._converterOptions.workInMemory) {
 			return this.skipDatabaseRecord(_id);
@@ -181,5 +187,51 @@ export class RecordConverter<R extends IImportRecord, T extends RecordConverterO
 		}
 
 		return dbRecords;
+	}
+
+	protected async iterateRecords({
+		beforeImportFn,
+		afterImportFn,
+		onErrorFn,
+		processRecord,
+	}: IConversionCallbacks & { processRecord?: (record: R) => Promise<boolean | undefined> } = {}): Promise<void> {
+		const records = await this.getDataToImport();
+
+		this.skippedCount = 0;
+		this.failedCount = 0;
+
+		for await (const record of records) {
+			const { _id } = record;
+			if (this.aborted) {
+				return;
+			}
+
+			try {
+				if (beforeImportFn && !(await beforeImportFn(record))) {
+					await this.skipRecord(_id);
+					continue;
+				}
+
+				const isNew = await (processRecord || this.convertRecord).call(this, record);
+
+				if (typeof isNew === 'boolean' && afterImportFn) {
+					await afterImportFn(record, isNew);
+				}
+			} catch (e) {
+				this.failedCount++;
+				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
+				if (onErrorFn) {
+					await onErrorFn();
+				}
+			}
+		}
+	}
+
+	async convertData(callbacks: IConversionCallbacks = {}): Promise<void> {
+		return this.iterateRecords(callbacks);
+	}
+
+	protected async convertRecord(_record: R): Promise<boolean | undefined> {
+		return undefined;
 	}
 }

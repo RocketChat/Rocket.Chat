@@ -105,7 +105,7 @@ export class ImportDataConverter {
 	}
 
 	async convertUsers(callbacks: IConversionCallbacks): Promise<void> {
-		return this._userConverter.convertUsers(callbacks);
+		return this._userConverter.convertData(callbacks);
 	}
 
 	async convertChannels(startedByUserId: string, callbacks: IConversionCallbacks): Promise<void> {
@@ -113,13 +113,13 @@ export class ImportDataConverter {
 	}
 
 	async convertMessages(callbacks: MessageConversionCallbacks): Promise<void> {
-		return this._messageConverter.convertMessages(callbacks);
+		return this._messageConverter.convertData(callbacks);
 	}
 
 	async convertData(startedByUserId: string, callbacks: IConversionCallbacks = {}): Promise<void> {
-		await this._userConverter.convertUsers(callbacks);
-		await this._roomConverter.convertChannels(startedByUserId, callbacks);
-		await this._messageConverter.convertMessages(callbacks);
+		await this.convertUsers(callbacks);
+		await this.convertChannels(startedByUserId, callbacks);
+		await this.convertMessages(callbacks);
 
 		process.nextTick(async () => {
 			await this.clearSuccessfullyImportedData();

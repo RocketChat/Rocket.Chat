@@ -27,39 +27,9 @@ type IMessageReactions = Record<string, IMessageReaction>;
 export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 	private rids: string[] = [];
 
-	async convertMessages({
-		beforeImportFn,
-		afterImportFn,
-		onErrorFn,
-		afterImportAllMessagesFn,
-	}: MessageConversionCallbacks = {}): Promise<void> {
-		const messages = await this.getDataToImport();
+	async convertData({ afterImportAllMessagesFn, ...callbacks }: MessageConversionCallbacks = {}): Promise<void> {
 		this.rids = [];
-
-		for await (const record of messages) {
-			const { data, _id } = record;
-			if (this.aborted) {
-				return;
-			}
-
-			try {
-				if (beforeImportFn && !(await beforeImportFn(record))) {
-					await this.skipRecord(_id);
-					continue;
-				}
-
-				await this.insertMessage(data);
-
-				if (afterImportFn) {
-					await afterImportFn(record, true);
-				}
-			} catch (e) {
-				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
-				if (onErrorFn) {
-					await onErrorFn();
-				}
-			}
-		}
+		await super.convertData(callbacks);
 
 		await this.resetLastMessages();
 		if (afterImportAllMessagesFn) {
@@ -104,6 +74,11 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 			this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
 			this._logger.error(e);
 		}
+	}
+
+	protected async convertRecord(record: IImportMessageRecord): Promise<boolean> {
+		await this.insertMessage(record.data);
+		return true;
 	}
 
 	protected async buildMessageObject(data: IImportMessage, rid: string, creator: UserIdentification): Promise<MessageObject> {

@@ -48,6 +48,6 @@ export class LDAPUserConverter extends UserConverter {
 	static async convertSingleUser(userData: IImportUser, options?: UserConverterOptions): Promise<void> {
 		const converter = new LDAPUserConverter(options);
 		await converter.addObject(userData);
-		await converter.convertUsers();
+		await converter.convertData();
 	}
 }

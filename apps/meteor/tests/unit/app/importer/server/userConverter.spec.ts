@@ -77,7 +77,7 @@ describe('User Converter', () => {
 			findExistingUser.throws();
 
 			await converter.addObject(userToImport);
-			await converter.convertUsers();
+			await converter.convertData();
 
 			expect(findExistingUser.getCall(0)).to.not.be.null;
 			expect(callbacks.run.getCall(0)).to.not.be.null;
@@ -330,7 +330,7 @@ describe('User Converter', () => {
 			sinon.stub(converter, 'updateUser');
 
 			await converter.addObject(userToImport);
-			await converter.convertUsers();
+			await converter.convertData();
 
 			expect(converter.updateUser.getCalls()).to.be.an('array').with.lengthOf(0);
 			expect(converter.insertUser.getCalls()).to.be.an('array').with.lengthOf(1);
@@ -345,13 +345,13 @@ describe('User Converter', () => {
 			sinon.stub(converter, 'findExistingUser');
 			sinon.stub(converter, 'insertUser');
 			sinon.stub(converter, 'updateUser');
-			sinon.stub(converter, 'skipRecord');
+			sinon.stub(converter, 'skipMemoryRecord');
 
 			await converter.addObject(userToImport);
-			await converter.convertUsers();
+			await converter.convertData();
 
 			expect(converter.insertUser.getCall(0)).to.be.null;
-			expect(converter.skipRecord.getCall(0)).to.not.be.null;
+			expect(converter.skipMemoryRecord.getCall(0)).to.not.be.null;
 			expect(callbacks.run.getCall(0)).to.not.be.null;
 			expect(callbacks.run.getCall(0).args).to.be.deep.equal(['afterUserImport', { inserted: [], updated: [], skipped: 1, failed: 0 }]);
 		});
@@ -365,7 +365,7 @@ describe('User Converter', () => {
 			sinon.stub(converter, 'updateUser');
 
 			await converter.addObject(userToImport);
-			await converter.convertUsers();
+			await converter.convertData();
 
 			expect(converter.insertUser.getCall(0)).to.be.null;
 			expect(callbacks.run.getCall(0)).to.not.be.null;
@@ -387,7 +387,7 @@ describe('User Converter', () => {
 			converter.insertUser.callsFake(() => 'newId');
 
 			await converter.addObject(userToImport);
-			await converter.convertUsers();
+			await converter.convertData();
 
 			expect(converter.insertUser.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(converter.insertUser.getCall(0).args).to.be.an('array').that.is.not.empty;
@@ -437,7 +437,7 @@ describe('User Converter', () => {
 			sinon.stub(converter, 'updateUser');
 
 			await converter.addObject(userToImport);
-			await converter.convertUsers();
+			await converter.convertData();
 
 			expect(converter.insertUser.getCalls()).to.be.an('array').with.lengthOf(0);
 			expect(converter.updateUser.getCalls()).to.be.an('array').with.lengthOf(1);
@@ -452,13 +452,13 @@ describe('User Converter', () => {
 			converter.findExistingUser.returns({ _id: 'oldId' });
 			sinon.stub(converter, 'insertUser');
 			sinon.stub(converter, 'updateUser');
-			sinon.stub(converter, 'skipRecord');
+			sinon.stub(converter, 'skipMemoryRecord');
 
 			await converter.addObject(userToImport);
-			await converter.convertUsers();
+			await converter.convertData();
 
 			expect(converter.updateUser.getCall(0)).to.be.null;
-			expect(converter.skipRecord.getCall(0)).to.not.be.null;
+			expect(converter.skipMemoryRecord.getCall(0)).to.not.be.null;
 			expect(callbacks.run.getCall(0)).to.not.be.null;
 			expect(callbacks.run.getCall(0).args).to.be.deep.equal(['afterUserImport', { inserted: [], updated: [], skipped: 1, failed: 0 }]);
 		});
@@ -471,7 +471,7 @@ describe('User Converter', () => {
 			sinon.stub(converter, 'updateUser');
 
 			await converter.addObject(userToImport);
-			await converter.convertUsers();
+			await converter.convertData();
 
 			expect(converter.updateUser.getCall(0)).to.be.null;
 		});
@@ -492,7 +492,7 @@ describe('User Converter', () => {
 			sinon.stub(converter, 'updateUser');
 
 			await converter.addObject(userToImport);
-			await converter.convertUsers({
+			await converter.convertData({
 				beforeImportFn,
 			});
 
@@ -509,7 +509,7 @@ describe('User Converter', () => {
 			sinon.stub(converter, 'updateUser');
 
 			await converter.addObject(userToImport);
-			await converter.convertUsers({
+			await converter.convertData({
 				afterImportFn,
 			});
 
@@ -532,18 +532,18 @@ describe('User Converter', () => {
 			sinon.stub(converter, 'findExistingUser');
 			sinon.stub(converter, 'insertUser');
 			sinon.stub(converter, 'updateUser');
-			sinon.stub(converter, 'skipRecord');
+			sinon.stub(converter, 'skipMemoryRecord');
 
 			await converter.addObject(userToImport);
-			await converter.convertUsers({
+			await converter.convertData({
 				beforeImportFn,
 				afterImportFn,
 			});
 
 			expect(beforeImportFn.getCalls()).to.be.an('array').with.lengthOf(1);
-			expect(converter.skipRecord.getCalls()).to.be.an('array').with.lengthOf(1);
+			expect(converter.skipMemoryRecord.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(afterImportFn.getCalls()).to.be.an('array').with.lengthOf(0);
-			expect(converter.skipRecord.getCall(0).args).to.be.an('array').that.is.deep.equal([recordId]);
+			expect(converter.skipMemoryRecord.getCall(0).args).to.be.an('array').that.is.deep.equal([recordId]);
 
 			expect(callbacks.run.getCall(0)).to.not.be.null;
 			expect(callbacks.run.getCall(0).args).to.be.deep.equal(['afterUserImport', { inserted: [], updated: [], skipped: 1, failed: 0 }]);
@@ -567,7 +567,7 @@ describe('User Converter', () => {
 			sinon.stub(converter, 'updateUser');
 
 			await converter.addObject(userToImport);
-			await converter.convertUsers({
+			await converter.convertData({
 				beforeImportFn,
 				afterImportFn,
 			});
@@ -598,7 +598,7 @@ describe('User Converter', () => {
 				emails: [],
 				importIds: [],
 			});
-			await converter.convertUsers({ onErrorFn });
+			await converter.convertData({ onErrorFn });
 
 			expect(converter.insertUser.getCall(0)).to.be.null;
 			expect(callbacks.run.getCall(0)).to.not.be.null;

@@ -68,7 +68,7 @@ describe('Room Converter', () => {
 			sinon.stub(converter, 'insertOrUpdateRoom');
 
 			await converter.addObject(roomToImport);
-			await converter.convertChannels();
+			await converter.convertChannels('startedByUserId');
 
 			expect(converter.findExistingRoom.getCall(0)).to.not.be.null;
 		});
@@ -115,7 +115,7 @@ describe('Room Converter', () => {
 			sinon.stub(converter, 'updateRoom');
 
 			await converter.addObject(roomToImport);
-			await converter.convertChannels();
+			await converter.convertChannels('startedByUserId');
 
 			expect(converter.updateRoom.getCalls()).to.be.an('array').with.lengthOf(0);
 			expect(converter.insertRoom.getCalls()).to.be.an('array').with.lengthOf(1);
@@ -132,7 +132,7 @@ describe('Room Converter', () => {
 			sinon.stub(converter, 'updateRoom');
 
 			await converter.addObject(roomToImport);
-			await converter.convertChannels();
+			await converter.convertChannels('startedByUserId');
 
 			expect(converter.insertRoom.getCall(0)).to.be.null;
 		});

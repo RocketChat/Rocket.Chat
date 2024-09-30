@@ -47,7 +47,7 @@ describe('Message Converter', () => {
 			sinon.stub(converter, 'resetLastMessages');
 
 			await converter.addObject(messageToImport);
-			await converter.convertMessages();
+			await converter.convertData();
 
 			expect(converter.insertMessage.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(converter.insertMessage.getCall(0).args).to.be.an('array').that.is.not.empty;
@@ -105,7 +105,7 @@ describe('Message Converter', () => {
 			sinon.stub(converter, 'resetLastMessages');
 
 			await converter.addObject(messageToImport);
-			await converter.convertMessages({
+			await converter.convertData({
 				beforeImportFn,
 			});
 
@@ -121,7 +121,7 @@ describe('Message Converter', () => {
 			sinon.stub(converter, 'resetLastMessages');
 
 			await converter.addObject(messageToImport);
-			await converter.convertMessages({
+			await converter.convertData({
 				afterImportFn,
 			});
 
@@ -147,7 +147,7 @@ describe('Message Converter', () => {
 			sinon.stub(converter, 'skipRecord');
 
 			await converter.addObject(messageToImport);
-			await converter.convertMessages({
+			await converter.convertData({
 				beforeImportFn,
 				afterImportFn,
 			});
@@ -173,7 +173,7 @@ describe('Message Converter', () => {
 			sinon.stub(converter, 'skipRecord');
 
 			await converter.addObject(messageToImport);
-			await converter.convertMessages({
+			await converter.convertData({
 				beforeImportFn,
 				afterImportFn,
 			});
@@ -194,7 +194,7 @@ describe('Message Converter', () => {
 			sinon.stub(converter, 'saveError');
 
 			await converter.addObject({});
-			await converter.convertMessages({ onErrorFn });
+			await converter.convertData({ onErrorFn });
 
 			expect(onErrorFn.getCall(0)).to.not.be.null;
 			expect(converter.saveError.getCall(0)).to.not.be.null;

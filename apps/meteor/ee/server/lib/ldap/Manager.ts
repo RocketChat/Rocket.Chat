@@ -53,7 +53,7 @@ export class LDAPEEManager extends LDAPManager {
 
 			const membersOfGroupFilter = await ldap.searchMembersOfGroupFilter();
 
-			await converter.convertUsers({
+			await converter.convertData({
 				beforeImportFn: (async ({ options }: IImportRecord): Promise<boolean> => {
 					if (!ldap.options.groupFilterEnabled || !ldap.options.groupFilterGroupMemberFormat) {
 						return true;
