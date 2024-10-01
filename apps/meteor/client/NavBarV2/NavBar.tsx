@@ -1,6 +1,7 @@
 import { useToolbar } from '@react-aria/toolbar';
 import { NavBar as NavBarComponent, NavBarSection, NavBarGroup, NavBarDivider } from '@rocket.chat/fuselage';
 import { usePermission, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useVoipState } from '@rocket.chat/ui-voip';
 import React, { useRef } from 'react';
 
 import { useIsCallEnabled, useIsCallReady } from '../contexts/CallContext';
@@ -16,6 +17,7 @@ import {
 } from './NavBarOmnichannelToolbar';
 import { NavBarItemMarketPlaceMenu, NavBarItemAuditMenu, NavBarItemDirectoryPage, NavBarItemHomePage } from './NavBarPagesToolbar';
 import { NavBarItemLoginPage, NavBarItemAdministrationMenu, UserMenu } from './NavBarSettingsToolbar';
+import { NavBarItemVoipDialer } from './NavBarVoipToolbar';
 
 const NavBar = () => {
 	const t = useTranslation();
@@ -31,12 +33,16 @@ const NavBar = () => {
 	const showOmnichannelQueueLink = useOmnichannelShowQueueLink();
 	const isCallEnabled = useIsCallEnabled();
 	const isCallReady = useIsCallReady();
+	const { isEnabled: showVoip } = useVoipState();
 
 	const pagesToolbarRef = useRef(null);
 	const { toolbarProps: pagesToolbarProps } = useToolbar({ 'aria-label': t('Pages') }, pagesToolbarRef);
 
 	const omnichannelToolbarRef = useRef(null);
 	const { toolbarProps: omnichannelToolbarProps } = useToolbar({ 'aria-label': t('Omnichannel') }, omnichannelToolbarRef);
+
+	const voipToolbarRef = useRef(null);
+	const { toolbarProps: voipToolbarProps } = useToolbar({ 'aria-label': t('Voice_Call') }, voipToolbarRef);
 
 	return (
 		<NavBarComponent aria-label='header'>
@@ -56,6 +62,14 @@ const NavBar = () => {
 							<NavBarItemOmnichannelContact title={t('Contacts')} />
 							{isCallEnabled && <NavBarItemOmnichannelCallToggle />}
 							<NavBarItemOmnichannelLivechatToggle />
+						</NavBarGroup>
+					</>
+				)}
+				{showVoip && (
+					<>
+						<NavBarDivider />
+						<NavBarGroup role='toolbar' ref={voipToolbarRef} {...voipToolbarProps}>
+							<NavBarItemVoipDialer primary={isCallEnabled} />
 						</NavBarGroup>
 					</>
 				)}
