@@ -31,6 +31,20 @@ const EnabledAppsCount = ({
 
 	const percentage = limit === 0 ? 100 : Math.round((enabled * 100) / limit);
 
+	const variant = useMemo(() => {
+		if (enabled + 1 === limit) {
+			return 'warning';
+		}
+
+		if (limit === 0 || enabled >= limit) {
+			return 'danger';
+		}
+
+		return 'success';
+	}, [enabled, limit]);
+
+	const percentage = limit === 0 ? 100 : Math.round((enabled * 100) / limit);
+
 	return (
 		<GenericResourceUsage
 			title={context === 'private' ? t('Private_Apps_Count_Enabled', { count: enabled }) : t('Apps_Count_Enabled', { count: enabled })}
