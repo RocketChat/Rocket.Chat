@@ -51,8 +51,8 @@ test.describe.serial('Private apps upload', () => {
 			await poMarketplace.btnInstallPrivateApp.click();
 
 			await expect(poMarketplace.confirmAppUploadModalTitle).toHaveText('Private apps limit reached');
-			await expect(poMarketplace.confirmAppUploadModalButton).toBeEnabled();
-			await poMarketplace.confirmAppUploadModalButton.click();
+			await expect(poMarketplace.btnConfirmAppUploadModal).toBeEnabled();
+			await poMarketplace.btnConfirmAppUploadModal.click();
 
 			await page.getByRole('button', { name: 'Agree' }).click();
 			await expect(poMarketplace.appStatusTag).toHaveText('Disabled');

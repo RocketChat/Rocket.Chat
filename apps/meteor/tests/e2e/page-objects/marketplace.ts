@@ -8,11 +8,11 @@ export class Marketplace {
 	}
 
 	get btnUploadPrivateApp(): Locator {
-		return this.page.locator('[data-qa-id="upload-private-app"]');
+		return this.page.locator('role=button[name="Upload private app"]');
 	}
 
 	get btnInstallPrivateApp(): Locator {
-		return this.page.locator('[data-qa-id="install-private-app"]');
+		return this.page.locator('role=button[name="Install"]');
 	}
 
 	get btnUploadPrivateAppFile(): Locator {
@@ -27,8 +27,8 @@ export class Marketplace {
 		return this.page.locator('[data-qa-id="confirm-app-upload-modal-title"]');
 	}
 
-	get confirmAppUploadModalButton(): Locator {
-		return this.page.locator('[data-qa-id="confirm-app-upload-modal-button"]');
+	get btnConfirmAppUploadModal(): Locator {
+		return this.page.locator('role=button[name="Upload anyway"]');
 	}
 
 	get lastAppRow(): Locator {

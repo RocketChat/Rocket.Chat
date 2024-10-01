@@ -59,7 +59,7 @@ const AppInstallPage = () => {
 					</Field>
 					<Field>
 						<ButtonGroup>
-							<Button data-qa-id='install-private-app' disabled={!file?.name} loading={isInstalling} onClick={install}>
+							<Button disabled={!file?.name} loading={isInstalling} onClick={install}>
 								{t('Install')}
 							</Button>
 							<Button onClick={handleCancel}>{t('Cancel')}</Button>
