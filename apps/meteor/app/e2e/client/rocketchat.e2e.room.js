@@ -404,8 +404,8 @@ export class E2ERoom extends Emitter {
 
 			const e2eNewKeys = { e2eKeyId: this.keyID, e2eKey: await this.encryptGroupKeyForParticipant(e2e.publicKey) };
 
-			this.log('Resetting room key ->', this.roomId);
 			this.setState(E2ERoomState.READY);
+			this.log(`Room key reset done for room ${this.roomId}`);
 
 			return e2eNewKeys;
 		} catch (error) {
