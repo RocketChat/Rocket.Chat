@@ -10,6 +10,7 @@ import type {
 	LicenseModule,
 	LicenseValidationOptions,
 	LimitContext,
+	LicenseAddon,
 } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 
@@ -44,6 +45,8 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 	tags = new Set<ILicenseTag>();
 
 	modules = new Set<LicenseModule>();
+
+	addons = new Map<LicenseAddon['id'], LicenseAddon>();
 
 	private workspaceUrl: string | undefined;
 

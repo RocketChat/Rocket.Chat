@@ -1,4 +1,4 @@
-import type { BehaviorWithContext, LicenseModule } from '@rocket.chat/core-typings';
+import type { BehaviorWithContext, LicenseAddon, LicenseModule } from '@rocket.chat/core-typings';
 
 import type { LicenseManager } from '../license';
 import { logger } from '../logger';
@@ -26,6 +26,14 @@ export function moduleRemoved(this: LicenseManager, module: LicenseModule) {
 		this.emit(`invalid:${module}`);
 	} catch (error) {
 		logger.error({ msg: `Error running module removed event: ${module}`, error });
+	}
+}
+
+export function addonEvent(this: LicenseManager, data: { addon: LicenseAddon; valid: boolean; isNew: boolean }) {
+	try {
+		this.emit('addon', { addon: data.addon, valid: data.valid, isNew: data.isNew });
+	} catch (error) {
+		logger.error({ msg: `Error running addon event ${data.addon.id}`, error });
 	}
 }
 

@@ -20,6 +20,6 @@ export type LicenseEvents = ModuleValidation &
 		validate: undefined;
 		invalidate: undefined;
 		module: { module: LicenseModule; valid: boolean };
-		addon: { addon: LicenseAddon };
+		addon: { addon: LicenseAddon; valid: boolean; isNew: boolean };
 		sync: undefined;
 	};

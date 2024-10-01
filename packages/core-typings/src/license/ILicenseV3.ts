@@ -65,10 +65,10 @@ export interface ILicenseV3 {
 
 export type LicenseAddon = {
 	id: string;
+	validUntil?: Timestamp;
 	limits?: {
-		maxUsers: number;
+		maxUsers?: number;
 	};
-	expiresAt?: Timestamp;
 };
 
 export type LicenseLimitKind = keyof ILicenseV3['limits'];
