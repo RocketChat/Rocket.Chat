@@ -51,9 +51,7 @@ export const useDepartmentsList = (
 				showArchived: options.showArchived ? 'true' : 'false',
 			});
 
-			const normalizedDepartments = options.value ? await normalizeDepartments(departments, options.value, getDepartment) : departments;
-
-			const items = normalizedDepartments
+			const items = departments
 				.filter((department) => {
 					if (options.departmentId && department._id === options.departmentId) {
 						return false;
@@ -105,7 +103,7 @@ export const useDepartmentsList = (
 		],
 	);
 
-	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);
+	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 5);
 
 	return {
 		reload,
