@@ -236,7 +236,7 @@ test.describe('OC - Current Chats [Auto Selection]', async () => {
 			await expect(poCurrentChats.findRowByName(visitorA)).toBeVisible();
 		});
 
-		await test.step('expect department filter to show selected value after page reload', async() => {
+		await test.step('expect department filter to show selected value after page reload', async () => {
 			await poCurrentChats.selectDepartment(departmentA.name);
 			await page.reload();
 			await expect(poCurrentChats.inputDepartmentValue).toContainText(departmentA.name);
