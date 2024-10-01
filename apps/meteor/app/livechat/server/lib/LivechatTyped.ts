@@ -460,7 +460,7 @@ class LivechatClass {
 			extraData,
 		});
 
-		if (process.env.TEST_MODE?.toUpperCase() === 'TRUE') {
+		if (isSingleContactEnabled()) {
 			const visitorContact = await LivechatVisitors.findOne<Pick<ILivechatVisitor, 'contactId'>>(visitor._id, {
 				projection: { contactId: 1 },
 			});
