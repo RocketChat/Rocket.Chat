@@ -47,6 +47,7 @@ import type { UiKitCoreAppPayload, IUiKitCoreApp, IUiKitCoreAppService } from '.
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
 import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
+import type { IVoipFreeSwitchService } from './types/IVoipFreeSwitchService';
 import type { IVoipService } from './types/IVoipService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
@@ -119,6 +120,7 @@ export {
 	IUiKitCoreAppService,
 	IVideoConfService,
 	IVoipService,
+	IVoipFreeSwitchService,
 	NPSCreatePayload,
 	NPSVotePayload,
 	proxifyWithWait,
@@ -166,6 +168,7 @@ export const MessageReads = proxifyWithWait<IMessageReadsService>('message-reads
 export const Room = proxifyWithWait<IRoomService>('room');
 export const Media = proxifyWithWait<IMediaService>('media');
 export const VoipAsterisk = proxifyWithWait<IVoipService>('voip-asterisk');
+export const VoipFreeSwitch = proxifyWithWait<IVoipFreeSwitchService>('voip-freeswitch');
 export const LivechatVoip = proxifyWithWait<IOmnichannelVoipService>('omnichannel-voip');
 export const Analytics = proxifyWithWait<IAnalyticsService>('analytics');
 export const LDAP = proxifyWithWait<ILDAPService>('ldap');
