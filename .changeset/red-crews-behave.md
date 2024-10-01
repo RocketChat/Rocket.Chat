@@ -4,4 +4,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Introduces new UI context for Rocket.Chat Apps to register actions, apps can use this new context by registering buttons under the `category: AI`
+Introduces new property `category` for Rocket.Chat Apps to register UI action buttons. This property is used to group buttons in the UI. 
