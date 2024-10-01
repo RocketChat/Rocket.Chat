@@ -3,6 +3,7 @@ import {
 	isPOSTOmnichannelContactsProps,
 	isPOSTUpdateOmnichannelContactsProps,
 	isGETOmnichannelContactsProps,
+	isGETOmnichannelContactHistoryProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
@@ -140,7 +141,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'omnichannel/contacts.history',
-	{ authRequired: true, permissionsRequired: ['view-livechat-contact-history'], validateParams: isGETOmnichannelContactsProps },
+	{ authRequired: true, permissionsRequired: ['view-livechat-contact-history'], validateParams: isGETOmnichannelContactHistoryProps },
 	{
 		async get() {
 			if (!isSingleContactEnabled()) {
