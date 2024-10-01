@@ -27,7 +27,6 @@ import './methods/getAnalyticsChartData';
 import './methods/getAnalyticsOverviewData';
 import './methods/getNextAgent';
 import './methods/getRoutingConfig';
-import './methods/loginByToken';
 import './methods/pageVisited';
 import './methods/registerGuest';
 import './methods/removeAgent';
