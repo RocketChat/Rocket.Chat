@@ -121,7 +121,10 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 			return API.v1.success(SMSService.error(new Error('Invalid visitor')));
 		}
 
-		const roomInfo = {
+		const roomInfo: {
+			source?: IOmnichannelRoom['source'];
+			[key: string]: unknown;
+		} = {
 			sms: {
 				from: sms.to,
 			},
