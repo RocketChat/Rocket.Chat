@@ -1,0 +1,7 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "allowJs": true
+    },
+    "include": ["./scripts/*", "./src/**/*", "./tests/**/*", "./gulpfile.js"]
+}
