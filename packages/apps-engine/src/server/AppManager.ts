@@ -720,7 +720,8 @@ export class AppManager {
         aff.setApp(app);
 
         if (updateOptions.loadApp) {
-            await this.updateLocal(stored, app);
+            const shouldEnableApp = AppStatusUtils.isEnabled(descriptor.status);
+            await this.updateLocal(stored, app, shouldEnableApp);
 
             await this.bridges
                 .getAppActivationBridge()
@@ -742,7 +743,7 @@ export class AppManager {
      * With an instance of a ProxiedApp, start it up and replace
      * the reference in the local app collection
      */
-    public async updateLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer) {
+    public async updateLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer, enable: boolean) {
         const app = await (async () => {
             if (appPackageOrInstance instanceof Buffer) {
                 const parseResult = await this.getParser().unpackageApp(appPackageOrInstance);
@@ -762,7 +763,14 @@ export class AppManager {
 
         this.apps.set(app.getID(), app);
 
-        await this.runStartUpProcess(stored, app, false, true);
+        // Should enable === true, then we go through the entire start up process
+        // Otherwise, we only initialize it.
+        if (enable) {
+            // Start up the app
+            await this.runStartUpProcess(stored, app, false, true);
+        } else {
+            await this.initializeApp(stored, app, true, true);
+        }
     }
 
     public getLanguageContent(): { [key: string]: object } {
