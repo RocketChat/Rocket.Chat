@@ -5066,7 +5066,7 @@
   "MAC_InfoText": "Contactos Activos Mensuales (MAC). El número de contactos únicos de Omnichannel con quienes se interactuó durante un mes de facturación",
   "CountMAC_InfoText": "Contactos Activos Mensuales (MAC). El número de contactos únicos de Omnichannel con quienes se interactuó durante un mes calendario",
   "ActiveSessions_InfoText": "Total de conexiones concurrentes. Un usuario puede estar conectado varias veces. El servicio de presencia de usuario se deshabilita cuando el total llega a 200 conexiones para prevenir problemas de rendimiento",
-  "Apps_InfoText": "Comunidad permite hasta 3 aplicaciones privadas y 5 aplicaciones de la tienda ser habilitadas",
+  "Apps_InfoText": "Comunidad permite hasta {{privateAppsMaxCount}} aplicaciones privadas y {{marketplaceAppsMaxCount}} aplicaciones de la tienda ser habilitadas",
   "Remove_RocketChat_Watermark_InfoText": "La marca de agua es removida automticamente cuando una licencia de paga es activada",
   "Remove_RocketChat_Watermark": "Remover marca de agua de Rocket.Chat",
   "High_scalabaility": "Alta escalabilidad",
