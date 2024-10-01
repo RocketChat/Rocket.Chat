@@ -46,7 +46,6 @@ import './methods/saveInfo';
 import './methods/saveIntegration';
 import './methods/saveSurveyFeedback';
 import './methods/saveTrigger';
-import './methods/searchAgent';
 import './methods/sendMessageLivechat';
 import './methods/sendFileLivechatMessage';
 import './methods/sendOfflineMessage';
