@@ -1,6 +1,5 @@
 import { Base64 } from '@rocket.chat/base64';
 import { Emitter } from '@rocket.chat/emitter';
-import { Random } from '@rocket.chat/random';
 import EJSON from 'ejson';
 
 import { RoomManager } from '../../../client/lib/RoomManager';
@@ -25,6 +24,7 @@ import {
 	readFileAsArrayBuffer,
 	encryptAESCTR,
 	generateAESCTRKey,
+	createSha256Hash,
 } from './helper';
 import { log, logError } from './logger';
 import { e2e } from './rocketchat.e2e';
@@ -285,7 +285,7 @@ export class E2ERoom extends Emitter {
 		// When a new e2e room is created, it will be initialized without an e2e key id
 		// This will prevent new rooms from storing `undefined` as the keyid
 		if (!this.keyID) {
-			this.keyID = this.roomKeyId || Random.id(12);
+			this.keyID = this.roomKeyId || (await createSha256Hash(this.sessionKeyExportedString)).slice(0, 12);
 		}
 
 		// Import session key for use.
@@ -314,7 +314,7 @@ export class E2ERoom extends Emitter {
 		try {
 			const sessionKeyExported = await exportJWKKey(this.groupSessionKey);
 			this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
-			this.keyID = Random.id(12);
+			this.keyID = (await createSha256Hash(this.sessionKeyExportedString)).slice(0, 12);
 
 			await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
 			await this.encryptKeyForOtherParticipants();
