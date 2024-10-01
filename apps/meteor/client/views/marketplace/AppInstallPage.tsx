@@ -48,15 +48,7 @@ const AppInstallPage = () => {
 										{...field}
 										value={field.value?.name || ''}
 										addon={
-											<Button
-												data-qa-id='upload-private-app-file'
-												icon='upload'
-												small
-												primary
-												onClick={handleUploadButtonClick}
-												mb='neg-x4'
-												mie='neg-x8'
-											>
+											<Button icon='upload' small primary onClick={handleUploadButtonClick} mb='neg-x4' mie='neg-x8'>
 												{t('Browse_Files')}
 											</Button>
 										}

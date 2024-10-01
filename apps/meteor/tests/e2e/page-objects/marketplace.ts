@@ -16,7 +16,7 @@ export class Marketplace {
 	}
 
 	get btnUploadPrivateAppFile(): Locator {
-		return this.page.locator('[data-qa-id="upload-private-app-file"]');
+		return this.page.locator('role=button[name="Browse Files"]');
 	}
 
 	get appStatusTag(): Locator {
