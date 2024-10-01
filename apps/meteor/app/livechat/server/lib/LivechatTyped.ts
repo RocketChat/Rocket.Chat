@@ -72,7 +72,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
-import { createContact } from './Contacts';
+import { createContact, isSingleContactEnabled } from './Contacts';
 import { parseAgentCustomFields, updateDepartmentAgents, validateEmail, normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -615,6 +615,10 @@ class LivechatClass {
 		}
 	}
 
+	isValidObject(obj: unknown): obj is Record<string, any> {
+		return typeof obj === 'object' && obj !== null;
+	}
+
 	async registerGuest({
 		id,
 		token,
@@ -680,10 +684,10 @@ class LivechatClass {
 			visitorDataToUpdate.status = status;
 			visitorDataToUpdate.ts = new Date();
 
-			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
+			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations') && Livechat.isValidObject(connectionData)) {
 				Livechat.logger.debug(`Saving connection data for visitor ${token}`);
 				const { httpHeaders, clientAddress } = connectionData;
-				if (httpHeaders) {
+				if (Livechat.isValidObject(httpHeaders)) {
 					visitorDataToUpdate.userAgent = httpHeaders['user-agent'];
 					visitorDataToUpdate.ip = httpHeaders['x-real-ip'] || httpHeaders['x-forwarded-for'] || clientAddress;
 					visitorDataToUpdate.host = httpHeaders?.host;
@@ -691,7 +695,7 @@ class LivechatClass {
 			}
 		}
 
-		if (process.env.TEST_MODE?.toUpperCase() === 'TRUE') {
+		if (isSingleContactEnabled()) {
 			const contactId = await createContact({
 				name: name ?? (visitorDataToUpdate.username as string),
 				emails: email ? [email] : [],
