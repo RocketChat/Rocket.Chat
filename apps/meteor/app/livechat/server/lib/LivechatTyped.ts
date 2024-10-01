@@ -461,11 +461,15 @@ class LivechatClass {
 		});
 
 		if (isSingleContactEnabled()) {
-			const visitorContact = await LivechatVisitors.findOne<Pick<ILivechatVisitor, 'contactId'>>(visitor._id, {
-				projection: { contactId: 1 },
-			});
+			let { contactId } = visitor;
+			if (contactId) {
+				const visitorContact = await LivechatVisitors.findOne<Pick<ILivechatVisitor, 'contactId'>>(visitor._id, {
+					projection: { contactId: 1 },
+				});
+				contactId = visitorContact?.contactId;
+			}
 
-			const contact = await LivechatContacts.findOne({ _id: visitorContact?.contactId });
+			const contact = await LivechatContacts.findOne({ _id: contactId });
 
 			if (contact) {
 				const channel = contact.channels?.find((channel) => channel.name === roomInfo.source?.type && channel.visitorId === visitor._id);
@@ -709,6 +713,8 @@ class LivechatClass {
 			upsert: true,
 			returnDocument: 'after',
 		});
+
+		console.log({ upsertedLivechatVisitor });
 
 		if (!upsertedLivechatVisitor.value) {
 			Livechat.logger.debug(`No visitor found after upsert`);
