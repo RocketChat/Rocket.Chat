@@ -15,10 +15,10 @@ type DepartmentsListOptions = {
 	excludeDepartmentId?: string;
 	enabled?: boolean;
 	showArchived?: boolean;
-	value?: string | (string & readonly string[]) | undefined;
+	selectedDepartment?: string;
 };
 
-type DepartmentListItem = {
+export type DepartmentListItem = {
 	_id: string;
 	label: string;
 	value: string;
@@ -37,7 +37,7 @@ export const useDepartmentsList = (
 	const reload = useCallback(() => setItemsList(new RecordList<DepartmentListItem>()), []);
 
 	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
-	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: options.value ?? '' });
+	const getDepartment = useEndpoint('GET', '/v1/livechat/department/:_id', { _id: options.selectedDepartment ?? '' });
 
 	useComponentDidUpdate(() => {
 		options && reload();
@@ -56,39 +56,39 @@ export const useDepartmentsList = (
 				showArchived: options.showArchived ? 'true' : 'false',
 			});
 
-			const normalizedDepartments = options.value ? await normalizeDepartments(departments, options.value, getDepartment) : departments;
-
-			const items = normalizedDepartments
+			const items = departments
 				.filter((department) => {
 					if (options.departmentId && department._id === options.departmentId) {
 						return false;
 					}
 					return true;
 				})
-				.map(({ _id, name, _updatedAt, ...department }): DepartmentListItem => {
-					return {
+				.map(
+					({ _id, name, ...department }): DepartmentListItem => ({
 						_id,
 						label: department.archived ? `${name} [${t('Archived')}]` : name,
 						value: _id,
-					};
-				});
+					}),
+				);
+
+			const normalizedItems = await normalizeDepartments(items, options.selectedDepartment ?? '', getDepartment);
 
 			options.haveAll &&
-				items.unshift({
+				normalizedItems.unshift({
 					_id: '',
 					label: t('All'),
 					value: 'all',
 				});
 
 			options.haveNone &&
-				items.unshift({
+				normalizedItems.unshift({
 					_id: '',
 					label: t('None'),
 					value: '',
 				});
 
 			return {
-				items,
+				items: normalizedItems,
 				itemCount: options.departmentId ? total - 1 : total,
 			};
 		},
@@ -99,14 +99,16 @@ export const useDepartmentsList = (
 			options.excludeDepartmentId,
 			options.enabled,
 			options.showArchived,
+			options.selectedDepartment,
 			options.haveAll,
 			options.haveNone,
 			options.departmentId,
+			getDepartment,
 			t,
 		],
 	);
 
-	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);
+	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 5);
 
 	return {
 		reload,
