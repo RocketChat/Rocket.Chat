@@ -17,8 +17,6 @@ import './hooks/saveLastMessageToInquiry';
 import './hooks/afterUserActions';
 import './hooks/afterAgentRemoved';
 import './hooks/afterSaveOmnichannelMessage';
-import './methods/addAgent';
-import './methods/addManager';
 import './methods/changeLivechatStatus';
 import './methods/closeRoom';
 import './methods/discardTranscript';
