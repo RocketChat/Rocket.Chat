@@ -47,7 +47,11 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 
 			{isSuccess && !data.hasUnlimitedApps && (
 				<Margins inline={16}>
-					<EnabledAppsCount {...data} context={context} />
+					<EnabledAppsCount
+						{...data}
+						tooltip={context === 'private' && !privateAppsEnabled ? t('Private_apps_premium_message') : undefined}
+						context={context}
+					/>
 				</Margins>
 			)}
 
