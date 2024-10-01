@@ -41,8 +41,10 @@ test.describe.serial('Private apps upload', () => {
 			const fileChooserPromise = page.waitForEvent('filechooser');
 
 			await poMarketplace.btnUploadPrivateApp.click();
-			await expect(poMarketplace.btnInstallPrivateApp).toBeDisabled();
+			await expect(poMarketplace.btnConfirmAppUploadModal).toBeEnabled();
+			await poMarketplace.btnConfirmAppUploadModal.click();
 
+			await expect(poMarketplace.btnInstallPrivateApp).toBeDisabled();
 			await poMarketplace.btnUploadPrivateAppFile.click();
 			const fileChooser = await fileChooserPromise;
 			await fileChooser.setFiles('./tests/e2e/fixtures/files/test-app_0.0.1.zip');
@@ -58,13 +60,11 @@ test.describe.serial('Private apps upload', () => {
 			await expect(poMarketplace.appStatusTag).toHaveText('Disabled');
 		});
 
-		test('expect not to allow enabling a recently installed private app in CE', async ({ page }) => {
+		test('expect not to allow enabling a recently installed private app in CE', async () => {
 			await poMarketplace.lastAppRow.click();
 			await expect(poMarketplace.appStatusTag).toHaveText('Disabled');
 			await poMarketplace.appMenu.click();
-			await expect(poMarketplace.enableAppAction).toBeEnabled();
-			await poMarketplace.enableAppAction.click();
-			await expect(page.locator('.rcx-toastbar.rcx-toastbar--error')).toBeVisible();
+			await expect(poMarketplace.enableAppAction).toBeDisabled();
 		});
 	});
 });
