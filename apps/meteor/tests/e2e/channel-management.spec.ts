@@ -51,7 +51,8 @@ test.describe.serial('channel-management', () => {
 
 		await page.keyboard.press('Tab');
 		await page.keyboard.press('Space');
-		await poHomeChannel.content.btnStartCall.waitFor();
+		await page.keyboard.press('Space');
+		await poHomeChannel.content.btnStartVideoCall.waitFor();
 		await page.keyboard.press('Tab');
 
 		await expect(page.getByRole('button', { name: 'Start call' })).toBeFocused();
