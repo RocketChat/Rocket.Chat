@@ -5420,7 +5420,7 @@
   "UpgradeToGetMore_accessibility-certification_Body": "Zgodność ze standardami WCAG i BITV dzięki programowi dostępności Rocket.Chat.",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analityka",
   "UpgradeToGetMore_auditing_Title": "Audyt wiadomości",
-  "Apps_InfoText": "Wersja Community umożliwia włączenie do 3 aplikacji prywatnych i 5 aplikacji marketplace",
+  "Apps_InfoText": "Wersja Community umożliwia włączenie do {{privateAppsMaxCount}} aplikacji prywatnych i {{marketplaceAppsMaxCount}} aplikacji marketplace",
   "Anyone_can_react_to_messages": "Każdy może reagować na wiadomości",
   "Anyone_can_access": "Każdy może uzyskać dostęp",
   "Broadcast_hint_enabled": "Tylko właściciele {{roomType}} mogą pisać nowe wiadomości, ale każdy może odpowiadać w wątku",
