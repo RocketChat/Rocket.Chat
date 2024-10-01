@@ -645,7 +645,6 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should add a channel to a contact when creating a new room', async () => {
-			visitor = await createVisitor();
 			await request.get(api('livechat/room')).query({ token: visitor.token });
 
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
@@ -661,7 +660,6 @@ describe('LIVECHAT - contacts', () => {
 		});
 
 		it('should not add a channel if visitor already has one with same type', async () => {
-			visitor = await createVisitor();
 			const roomResult = await request.get(api('livechat/room')).query({ token: visitor.token });
 
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: visitor.contactId });
