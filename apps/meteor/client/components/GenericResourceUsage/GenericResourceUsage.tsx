@@ -1,4 +1,5 @@
 import { Box, ProgressBar } from '@rocket.chat/fuselage';
+import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 import React from 'react';
 
@@ -22,6 +23,8 @@ const GenericResourceUsage = ({
 	variant?: 'warning' | 'danger' | 'success';
 	tooltip?: string;
 }) => {
+	const labelId = useUniqueId();
+
 	return (
 		<Box
 			title={tooltip}
@@ -35,13 +38,23 @@ const GenericResourceUsage = ({
 			{...props}
 		>
 			<Box display='flex' justifyContent='space-between'>
-				<Box color='default'>{title}</Box>
+				<Box color='default' id={labelId}>
+					{title}
+				</Box>
 				{subTitle && <Box color='hint'>{subTitle}</Box>}
 				<Box color='hint'>
 					{value}/{max}
 				</Box>
 			</Box>
-			<ProgressBar percentage={percentage} variant={variant} />
+			<ProgressBar
+				percentage={percentage}
+				variant={variant}
+				role='progressbar'
+				aria-labelledby={labelId}
+				aria-valuemin={0}
+				aria-valuemax={100}
+				aria-valuenow={percentage}
+			/>
 		</Box>
 	);
 };

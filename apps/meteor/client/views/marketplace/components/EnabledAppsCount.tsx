@@ -1,25 +1,35 @@
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericResourceUsage } from '../../../components/GenericResourceUsage';
 
 const EnabledAppsCount = ({
-	variant,
-	percentage,
 	limit,
 	enabled,
 	context,
 	tooltip,
 }: {
-	variant: 'warning' | 'danger' | 'success';
-	percentage: number;
 	limit: number;
 	enabled: number;
 	context: 'private' | 'explore' | 'installed' | 'premium' | 'requested';
 	tooltip?: string;
 }): ReactElement | null => {
 	const { t } = useTranslation();
+
+	const variant = useMemo(() => {
+		if (enabled + 1 === limit) {
+			return 'warning';
+		}
+
+		if (limit === 0 || enabled >= limit) {
+			return 'danger';
+		}
+
+		return 'success';
+	}, [enabled, limit]);
+
+	const percentage = limit === 0 ? 100 : Math.round((enabled * 100) / limit);
 
 	return (
 		<GenericResourceUsage

@@ -5,15 +5,6 @@ import { useTranslation } from 'react-i18next';
 
 import { usePrivateAppsEnabled } from './usePrivateAppsEnabled';
 
-type Variant = 'success' | 'warning' | 'danger';
-
-const getProgressBarValues = (numberOfEnabledApps: number, enabledAppsLimit: number): { variant: Variant; percentage: number } => ({
-	variant: 'success',
-	...(numberOfEnabledApps + 1 === enabledAppsLimit && { variant: 'warning' }),
-	...((enabledAppsLimit === 0 || numberOfEnabledApps >= enabledAppsLimit) && { variant: 'danger' }),
-	percentage: Math.round(enabledAppsLimit === 0 ? 100 : (numberOfEnabledApps / enabledAppsLimit) * 100),
-});
-
 export type MarketplaceRouteContext = 'private' | 'explore' | 'installed' | 'premium' | 'requested' | 'details';
 
 export function isMarketplaceRouteContext(context: string): context is MarketplaceRouteContext {
@@ -34,12 +25,12 @@ export const useAppsCountQuery = (context: MarketplaceRouteContext) => {
 			const enabledAppsLimit = context === 'private' ? data.maxPrivateApps : data.maxMarketplaceApps;
 			const hasUnlimitedApps = enabledAppsLimit === -1;
 			const tooltip = context === 'private' && !privateAppsEnabled ? t('Private_apps_premium_message') : undefined;
+
 			return {
 				hasUnlimitedApps,
 				enabled: numberOfEnabledApps,
 				limit: enabledAppsLimit,
 				tooltip,
-				...getProgressBarValues(numberOfEnabledApps, enabledAppsLimit),
 			};
 		},
 		{ staleTime: 10_000 },

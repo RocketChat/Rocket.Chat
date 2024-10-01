@@ -19,7 +19,7 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 	const context = (useRouteParameter('context') || 'explore') as 'private' | 'explore' | 'installed' | 'premium' | 'requested';
 	const route = useRoute('marketplace');
 	const setModal = useSetModal();
-	const result = useAppsCountQuery(context);
+	const { isLoading, isError, isSuccess, data } = useAppsCountQuery(context);
 
 	const privateAppsEnabled = usePrivateAppsEnabled();
 
@@ -37,22 +37,22 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 		route.push({ context, page: 'install' });
 	};
 
-	if (result.isError) {
+	if (isError) {
 		return null;
 	}
 
 	return (
 		<PageHeader title={title}>
-			{result.isLoading && <GenericResourceUsageSkeleton mi={16} />}
+			{isLoading && <GenericResourceUsageSkeleton mi={16} />}
 
-			{result.isSuccess && !result.data.hasUnlimitedApps && (
+			{isSuccess && !data.hasUnlimitedApps && (
 				<Margins inline={16}>
-					<EnabledAppsCount {...result.data} context={context} />
+					<EnabledAppsCount {...data} context={context} />
 				</Margins>
 			)}
 
 			<ButtonGroup wrap align='end'>
-				{isAdmin && result.isSuccess && !result.data.hasUnlimitedApps && context !== 'private' && (
+				{isAdmin && isSuccess && !data.hasUnlimitedApps && context !== 'private' && (
 					<Button
 						onClick={() => {
 							setModal(<UnlimitedAppsUpsellModal onClose={() => setModal(null)} />);
@@ -64,7 +64,7 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 
 				{isAdmin && context === 'private' && <Button onClick={handleClickPrivate}>{t('Upload_private_app')}</Button>}
 
-				{isAdmin && result.isSuccess && !privateAppsEnabled && context === 'private' && (
+				{isAdmin && isSuccess && !privateAppsEnabled && context === 'private' && (
 					<UpgradeButton primary icon={undefined} target='private-apps-header' action='upgrade'>
 						{t('Upgrade')}
 					</UpgradeButton>
