@@ -23,7 +23,7 @@ const sendRocketCatWarningToAdmins = async (remainingDays: number) => {
 	if (lastDayOrNoRestrictionsAtAll) {
 		return;
 	}
-	if (remainingDays <= AirGappedRestriction.WARNING_PERIOD_IN_DAYS) {
+	if (AirGappedRestriction.isWarningPeriod(remainingDays)) {
 		await sendMessagesToAdmins({
 			msgs: async ({ adminUser }) => ({
 				msg: i18n.t('AirGapped_Restriction_Warning', { lng: adminUser.language || 'en', remainingDays }),
