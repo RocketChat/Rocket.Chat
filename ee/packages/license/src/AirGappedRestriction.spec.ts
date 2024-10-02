@@ -89,4 +89,21 @@ describe('AirGappedRestriction', () => {
 			expect(AirGappedRestriction.isRestricted).toBe(false);
 		});
 	});
+	describe('#isWarningPeriod', () => {
+		it('should return true if value is between or exactly 0 and 7', async () => {
+			expect(AirGappedRestriction.isWarningPeriod(0)).toBe(true);
+			expect(AirGappedRestriction.isWarningPeriod(1)).toBe(true);
+			expect(AirGappedRestriction.isWarningPeriod(2)).toBe(true);
+			expect(AirGappedRestriction.isWarningPeriod(3)).toBe(true);
+			expect(AirGappedRestriction.isWarningPeriod(4)).toBe(true);
+			expect(AirGappedRestriction.isWarningPeriod(5)).toBe(true);
+			expect(AirGappedRestriction.isWarningPeriod(6)).toBe(true);
+			expect(AirGappedRestriction.isWarningPeriod(7)).toBe(true);
+		});
+		it('should return false if value is lesser than 0 or bigger than 7', async () => {
+			expect(AirGappedRestriction.isWarningPeriod(-1)).toBe(false);
+			expect(AirGappedRestriction.isWarningPeriod(8)).toBe(false);
+			expect(AirGappedRestriction.isWarningPeriod(10)).toBe(false);
+		});
+	});
 });
