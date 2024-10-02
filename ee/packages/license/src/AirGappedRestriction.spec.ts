@@ -1,13 +1,32 @@
 import { AirGappedRestriction } from './AirGappedRestriction';
 import { StatsTokenBuilder } from './MockedLicenseBuilder';
+import { License } from './licenseImp';
+
+jest.mock('./licenseImp', () => ({
+	License: {
+		hasModule: jest.fn().mockReturnValue(false),
+	},
+}));
 
 describe('AirGappedRestriction', () => {
-	describe('#checkRemainingDaysSinceLastStatsReport()', () => {
+	describe('#computeRestriction()', () => {
+		it('should notify remaining days = 0 (apply restriction) when token is not a string', async () => {
+			const handler = jest.fn();
+
+			AirGappedRestriction.on('remainingDays', handler);
+			await AirGappedRestriction.computeRestriction();
+
+			expect(handler).toHaveBeenCalledTimes(1);
+			expect(handler).toHaveBeenCalledWith({
+				days: 0,
+			});
+			expect(AirGappedRestriction.isRestricted).toBe(true);
+		});
 		it('should notify remaining days = 0 (apply restriction) when it was not possible to decrypt the stats token', async () => {
 			const handler = jest.fn();
 
 			AirGappedRestriction.on('remainingDays', handler);
-			await AirGappedRestriction.checkRemainingDaysSinceLastStatsReport('invalid-token');
+			await AirGappedRestriction.computeRestriction('invalid-token');
 
 			expect(handler).toHaveBeenCalledTimes(1);
 			expect(handler).toHaveBeenCalledWith({
@@ -22,7 +41,7 @@ describe('AirGappedRestriction', () => {
 			const handler = jest.fn();
 
 			AirGappedRestriction.on('remainingDays', handler);
-			await AirGappedRestriction.checkRemainingDaysSinceLastStatsReport(token);
+			await AirGappedRestriction.computeRestriction(token);
 
 			expect(handler).toHaveBeenCalledTimes(1);
 			expect(handler).toHaveBeenCalledWith({
@@ -37,7 +56,7 @@ describe('AirGappedRestriction', () => {
 			const handler = jest.fn();
 
 			AirGappedRestriction.on('remainingDays', handler);
-			await AirGappedRestriction.checkRemainingDaysSinceLastStatsReport(token);
+			await AirGappedRestriction.computeRestriction(token);
 
 			expect(handler).toHaveBeenCalledTimes(1);
 			expect(handler).toHaveBeenCalledWith({
@@ -52,7 +71,7 @@ describe('AirGappedRestriction', () => {
 			const handler = jest.fn();
 
 			AirGappedRestriction.on('remainingDays', handler);
-			await AirGappedRestriction.checkRemainingDaysSinceLastStatsReport(token);
+			await AirGappedRestriction.computeRestriction(token);
 
 			expect(handler).toHaveBeenCalledTimes(1);
 			expect(handler).toHaveBeenCalledWith({
@@ -60,27 +79,12 @@ describe('AirGappedRestriction', () => {
 			});
 			expect(AirGappedRestriction.isRestricted).toBe(true);
 		});
-	});
-	describe('#applyRestrictions()', () => {
-		it('should notify remaining days = 0 when restrictions should be applied', () => {
+		it('should notify remaining days = -1 when unlimited-presence module is available', () => {
 			const handler = jest.fn();
+			(License.hasModule as jest.Mock).mockReturnValueOnce(true);
 
 			AirGappedRestriction.on('remainingDays', handler);
-			AirGappedRestriction.applyRestrictions();
-
-			expect(handler).toHaveBeenCalledTimes(1);
-			expect(handler).toHaveBeenCalledWith({
-				days: 0,
-			});
-			expect(AirGappedRestriction.isRestricted).toBe(true);
-		});
-	});
-	describe('#removeRestrictions()', () => {
-		it('should notify remaining days = -1 when restrictions should be reverted', () => {
-			const handler = jest.fn();
-
-			AirGappedRestriction.on('remainingDays', handler);
-			AirGappedRestriction.removeRestrictions();
+			AirGappedRestriction.computeRestriction();
 
 			expect(handler).toHaveBeenCalledTimes(1);
 			expect(handler).toHaveBeenCalledWith({
