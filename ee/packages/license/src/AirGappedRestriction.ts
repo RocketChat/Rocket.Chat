@@ -39,6 +39,13 @@ class AirGappedRestrictionClass extends EventEmitter {
 		this.emit('remainingDays', { days });
 	}
 
+	public isWarningPeriod(days: number) {
+		if (days < 0) {
+			return false;
+		}
+		return days <= WARNING_PERIOD_IN_DAYS;
+	}
+
 	private notifyRemainingDaysUntilRestriction(daysSinceLastStatsReport: number): void {
 		const remainingDaysUntilRestriction = NO_ACTION_PERIOD_IN_DAYS + WARNING_PERIOD_IN_DAYS - daysSinceLastStatsReport;
 		const olderThanTenDays = remainingDaysUntilRestriction <= 0;
@@ -50,8 +57,6 @@ class AirGappedRestrictionClass extends EventEmitter {
 	}
 }
 
-const airGappedRestriction = Object.assign(new AirGappedRestrictionClass(), {
-	WARNING_PERIOD_IN_DAYS,
-});
+const airGappedRestriction = new AirGappedRestrictionClass();
 
 export { airGappedRestriction as AirGappedRestriction };
