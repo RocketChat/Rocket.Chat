@@ -39,7 +39,7 @@ export class Marketplace {
 		return this.page.getByTitle('More options');
 	}
 
-	get enableAppAction(): Locator {
+	get btnEnableApp(): Locator {
 		return this.page.getByRole('menuitem', { name: 'Enable' });
 	}
 }

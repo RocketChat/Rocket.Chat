@@ -64,7 +64,7 @@ test.describe.serial('Private apps upload', () => {
 			await poMarketplace.lastAppRow.click();
 			await expect(poMarketplace.appStatusTag).toHaveText('Disabled');
 			await poMarketplace.appMenu.click();
-			await expect(poMarketplace.enableAppAction).toBeDisabled();
+			await expect(poMarketplace.btnEnableApp).toBeDisabled();
 		});
 	});
 });
