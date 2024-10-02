@@ -5,8 +5,9 @@ import { after, before, describe, it } from 'mocha';
 import { getCredentials, request, credentials } from '../../data/api-data';
 import { apps } from '../../data/apps/apps-data';
 import { installTestApp, cleanupApps } from '../../data/apps/helper';
+import { IS_EE } from '../../e2e/config/constants';
 
-describe('Apps - Uninstall', () => {
+(IS_EE ? describe : describe.skip)('Apps - Uninstall', () => {
 	let app: App;
 
 	before((done) => getCredentials(done));

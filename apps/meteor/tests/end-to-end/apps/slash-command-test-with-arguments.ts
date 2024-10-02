@@ -4,8 +4,9 @@ import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials, api } from '../../data/api-data';
 import { cleanupApps, installTestApp } from '../../data/apps/helper';
+import { IS_EE } from '../../e2e/config/constants';
 
-describe('Apps - Slash Command "test-with-arguments"', () => {
+(IS_EE ? describe : describe.skip)('Apps - Slash Command "test-with-arguments"', () => {
 	before((done) => getCredentials(done));
 	before(async () => {
 		await cleanupApps();

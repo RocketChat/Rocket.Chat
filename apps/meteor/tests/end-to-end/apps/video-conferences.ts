@@ -7,6 +7,7 @@ import { cleanupApps, installTestApp } from '../../data/apps/helper';
 import { updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { adminUsername } from '../../data/user';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('Apps - Video Conferences', () => {
 	before((done) => getCredentials(done));
@@ -65,7 +66,7 @@ describe('Apps - Video Conferences', () => {
 		});
 	});
 
-	describe('[With Test App]', () => {
+	(IS_EE ? describe : describe.skip)('[With Test App]', () => {
 		before(async () => {
 			await cleanupApps();
 			await installTestApp();
