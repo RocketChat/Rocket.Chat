@@ -720,7 +720,7 @@ export class AppManager {
         aff.setApp(app);
 
         if (updateOptions.loadApp) {
-            const shouldEnableApp = AppStatusUtils.isEnabled(descriptor.status);
+            const shouldEnableApp = AppStatusUtils.isEnabled(old.status);
             await this.updateLocal(stored, app, shouldEnableApp);
 
             await this.bridges
