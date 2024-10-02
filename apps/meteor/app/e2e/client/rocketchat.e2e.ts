@@ -145,52 +145,54 @@ class E2E extends Emitter {
 		this.log('observing subscriptions');
 	}
 
+	async onSubscriptionChanged(sub: ISubscription) {
+		this.log('Subscription changed', sub);
+		if (!sub.encrypted && !sub.E2EKey) {
+			this.removeInstanceByRoomId(sub.rid);
+			return;
+		}
+
+		const e2eRoom = await this.getInstanceByRoomId(sub.rid);
+		if (!e2eRoom) {
+			return;
+		}
+
+		if (sub.E2ESuggestedKey) {
+			if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
+				await this.acceptSuggestedKey(sub.rid);
+				e2eRoom.keyReceived();
+			} else {
+				console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+				await this.rejectSuggestedKey(sub.rid);
+			}
+		}
+
+		sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+
+		// Cover private groups and direct messages
+		if (!e2eRoom.isSupportedRoomType(sub.t)) {
+			e2eRoom.disable();
+			return;
+		}
+
+		if (sub.E2EKey && e2eRoom.isWaitingKeys()) {
+			e2eRoom.keyReceived();
+			return;
+		}
+
+		if (!e2eRoom.isReady()) {
+			return;
+		}
+
+		await e2eRoom.decryptSubscription();
+	}
+
 	observeSubscriptions() {
 		this.observable?.stop();
 
 		this.observable = Subscriptions.find().observe({
 			changed: (sub: ISubscription) => {
-				setTimeout(async () => {
-					this.log('Subscription changed', sub);
-					if (!sub.encrypted && !sub.E2EKey) {
-						this.removeInstanceByRoomId(sub.rid);
-						return;
-					}
-
-					const e2eRoom = await this.getInstanceByRoomId(sub.rid);
-					if (!e2eRoom) {
-						return;
-					}
-
-					if (sub.E2ESuggestedKey) {
-						if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
-							await this.acceptSuggestedKey(sub.rid);
-							e2eRoom.keyReceived();
-						} else {
-							console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
-							await this.rejectSuggestedKey(sub.rid);
-						}
-					}
-
-					sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
-
-					// Cover private groups and direct messages
-					if (!e2eRoom.isSupportedRoomType(sub.t)) {
-						e2eRoom.disable();
-						return;
-					}
-
-					if (sub.E2EKey && e2eRoom.isWaitingKeys()) {
-						e2eRoom.keyReceived();
-						return;
-					}
-
-					if (!e2eRoom.isReady()) {
-						return;
-					}
-
-					await e2eRoom.decryptSubscription();
-				}, 0);
+				setTimeout(() => this.onSubscriptionChanged(sub), 0);
 			},
 			added: (sub: ISubscription) => {
 				setTimeout(async () => {
@@ -263,7 +265,7 @@ class E2E extends Emitter {
 		}
 
 		if (!this.instancesByRoomId[rid]) {
-			this.instancesByRoomId[rid] = new E2ERoom(Meteor.userId(), rid, room.t);
+			this.instancesByRoomId[rid] = new E2ERoom(Meteor.userId(), room);
 		}
 
 		return this.instancesByRoomId[rid];
