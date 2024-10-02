@@ -103,7 +103,7 @@ export const useDepartmentsList = (
 		],
 	);
 
-	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 5);
+	const { loadMoreItems, initialItemCount } = useScrollableRecordList(itemsList, fetchData, 25);
 
 	return {
 		reload,
