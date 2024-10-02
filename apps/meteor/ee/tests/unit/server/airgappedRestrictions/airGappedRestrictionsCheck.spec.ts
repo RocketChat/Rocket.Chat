@@ -32,7 +32,8 @@ const { checkAirGappedRestrictions } = proxyquire.noCallThru().load('../../../..
 	},
 });
 
-describe('#checkAirGappedRestrictions()', () => {
+// TODO: remove this test, checkAirGappedRestrictions just fetches the statsToken and passes it to AirGappedRestrictionModule.
+describe.skip('#checkAirGappedRestrictions()', () => {
 	afterEach(cleanStubs);
 
 	it('should remove any restriction and not to check the validity of the stats token when the workspace has "unlimited-presence" module enabled', async () => {
