@@ -10,6 +10,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"build-storybook": "build-storybook",
+		"build-preview": "build-storybook --quiet",
+		".:build-preview-move": "mkdir -p ../../.preview && cp -r ./storybook-static ../../.preview/gazzodown",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
