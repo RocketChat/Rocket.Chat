@@ -15,7 +15,7 @@ const { markRoomResponded } = proxyquire.load('../../../../../app/livechat/serve
 	'@rocket.chat/models': models,
 });
 
-describe.only('markRoomResponded', () => {
+describe('markRoomResponded', () => {
 	beforeEach(() => {
 		models.LivechatVisitors.isVisitorActiveOnPeriod.reset();
 		models.LivechatVisitors.markVisitorActiveForPeriod.reset();
