@@ -400,7 +400,7 @@ export class E2ERoom extends Emitter {
 		try {
 			const sessionKeyExported = await exportJWKKey(this.groupSessionKey);
 			this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
-			this.keyID = Base64.encode(this.sessionKeyExportedString).slice(0, 12);
+			this.keyID = (await createSha256Hash(this.sessionKeyExportedString)).slice(0, 12);
 
 			const e2eNewKeys = { e2eKeyId: this.keyID, e2eKey: await this.encryptGroupKeyForParticipant(e2e.publicKey) };
 

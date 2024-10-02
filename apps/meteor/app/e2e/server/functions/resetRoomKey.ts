@@ -76,6 +76,7 @@ export async function resetRoomKey(roomId: string, userId: string, newRoomKey: s
 	const roomResult = await Rooms.findOneAndUpdate(
 		{ _id: roomId },
 		{ $set: { e2eKeyId: newRoomKeyId, ...(e2eQueue.length && { usersWaitingForE2EKeys: e2eQueue }) } },
+		{ returnDocument: 'after' },
 	);
 	// And set the new key to the user that called the func
 	const result = await Subscriptions.setE2EKeyByUserIdAndRoomId(userId, roomId, newRoomKey);
