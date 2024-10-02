@@ -92,7 +92,8 @@ export class AppServerListener {
 
 		const appPackage = await this.orch.getAppSourceStorage()!.fetch(storageItem);
 
-		await this.orch.getManager()!.updateLocal(storageItem, appPackage);
+		const isEnabled = AppStatusUtils.isEnabled(storageItem.status);
+		await this.orch.getManager()!.updateLocal(storageItem, appPackage, isEnabled);
 
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_UPDATED, appId);
 	}
