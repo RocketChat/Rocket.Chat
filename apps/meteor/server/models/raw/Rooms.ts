@@ -2160,7 +2160,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		]);
 	}
 
-	resetRoomKeyAndSetE2EEQueueByRoomId(roomId: string, e2eKeyId: string, e2eQueue?: IRoom['usersWaitingForE2EKeys']): Promise<ModifyResult<IRoom>> {
+	resetRoomKeyAndSetE2EEQueueByRoomId(
+		roomId: string,
+		e2eKeyId: string,
+		e2eQueue?: IRoom['usersWaitingForE2EKeys'],
+	): Promise<ModifyResult<IRoom>> {
 		return this.findOneAndUpdate(
 			{ _id: roomId },
 			{ $set: { e2eKeyId, ...(e2eQueue?.length && { usersWaitingForE2EKeys: e2eQueue }) } },
