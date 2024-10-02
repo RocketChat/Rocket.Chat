@@ -1,7 +1,9 @@
-import { Apps, type AppMetadataStorage } from '@rocket.chat/apps';
+import { Apps } from '@rocket.chat/apps';
+import type { AppSignatureManager } from '@rocket.chat/apps-engine/server/managers/AppSignatureManager';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { License } from '@rocket.chat/license';
 
+import type { AppRealStorage } from '../../../ee/server/apps/storage';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({
@@ -18,21 +20,21 @@ addMigration({
 		}
 
 		Apps.initialize();
-		const appsStorage = Apps.getStorage();
+
+		const sigMan = Apps.getManager()?.getSignatureManager() as AppSignatureManager;
+		const appsStorage = Apps.getStorage() as AppRealStorage;
 		const apps = await appsStorage.retrieveAllPrivate();
 
-		const promises: Array<ReturnType<AppMetadataStorage['update']>> = [];
+		for await (const app of apps.values()) {
+			const updatedApp = {
+				...app,
+				migrated: true,
+			} as IAppStorageItem;
 
-		apps.forEach((app) => {
-			promises.push(
-				appsStorage.update({
-					...app,
-					migrated: true,
-					installationSource: 'marketplaceInfo' in app ? 'marketplace' : 'private',
-				} as IAppStorageItem),
-			);
-		});
-
-		await Promise.all(promises);
+			await appsStorage.update({
+				...updatedApp,
+				signature: await sigMan.signApp(updatedApp),
+			});
+		}
 	},
 });
