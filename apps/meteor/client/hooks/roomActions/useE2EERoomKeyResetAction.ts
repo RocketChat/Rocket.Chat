@@ -1,6 +1,6 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetting, usePermission, useEndpoint, type TranslationKey } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -66,7 +66,7 @@ export const useE2EEResetRoomKeyRoomAction = () => {
 		return {
 			id: 'e2e-reset',
 			groups: ['direct', 'direct_multiple', 'group', 'team'],
-			title: 'E2E_Key_Reset',
+			title: 'E2E_Key_Reset' as unknown as TranslationKey,
 			icon: 'key',
 			order: 14,
 			action,

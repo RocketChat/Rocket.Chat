@@ -73,11 +73,7 @@ export async function resetRoomKey(roomId: string, userId: string, newRoomKey: s
 
 	// after the old keys have been moved to the new prop, store room key on room + the e2e queue so key can be exchanged
 	// todo move to model method
-	const roomResult = await Rooms.findOneAndUpdate(
-		{ _id: roomId },
-		{ $set: { e2eKeyId: newRoomKeyId, ...(e2eQueue.length && { usersWaitingForE2EKeys: e2eQueue }) } },
-		{ returnDocument: 'after' },
-	);
+	const roomResult = await Rooms.resetRoomKeyAndSetE2EEQueueByRoomId(roomId, newRoomKeyId, e2eQueue);
 	// And set the new key to the user that called the func
 	const result = await Subscriptions.setE2EKeyByUserIdAndRoomId(userId, roomId, newRoomKey);
 
@@ -90,7 +86,7 @@ export async function resetRoomKey(roomId: string, userId: string, newRoomKey: s
 function pushToLimit(
 	arr: NonNullable<IRoom['usersWaitingForE2EKeys']>,
 	item: NonNullable<IRoom['usersWaitingForE2EKeys']>[number],
-	limit = 49,
+	limit = 50,
 ) {
 	if (arr.length < limit) {
 		arr.push(item);
@@ -118,9 +114,5 @@ function replicateMongoSlice(keyId: string, sub: ISubscription) {
 	const keys = sub.oldRoomKeys;
 	keys.sort((a, b) => b.ts.getTime() - a.ts.getTime());
 	keys.unshift({ e2eKeyId: keyId, ts: new Date(), E2EKey: sub.E2EKey });
-	if (keys.length > 10) {
-		return keys.slice(0, 10);
-	}
-
-	return keys;
+	return keys.slice(0, 10);
 }

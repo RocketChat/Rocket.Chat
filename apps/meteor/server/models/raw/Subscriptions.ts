@@ -1729,7 +1729,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		const update: UpdateFilter<ISubscription> = {
-			// @ts-expect-error TODO: fix this
+			// @ts-expect-error - :(
 			$set: {
 				[notificationField]: userPref,
 				[notificationOriginField]: 'user',
