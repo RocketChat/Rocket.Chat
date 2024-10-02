@@ -304,12 +304,8 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptSessionKey(key) {
-		key = key.slice(12);
-		key = Base64.decode(key);
-
 		try {
-			const decryptedKey = await decryptRSA(e2e.privateKey, key);
-			return importAESKey(JSON.parse(toString(decryptedKey)));
+			return importAESKey(JSON.parse(await this.exportSessionKey(key)));
 		} catch (error) {
 			this.error('Error decrypting key: ', error);
 			return null;
@@ -364,20 +360,18 @@ export class E2ERoom extends Emitter {
 		return true;
 	}
 
+	async createNewGroupKey() {
+		this.groupSessionKey = await generateAESKey();
+
+		const sessionKeyExported = await exportJWKKey(this.groupSessionKey);
+		this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
+		this.keyID = (await createSha256Hash(this.sessionKeyExportedString)).slice(0, 12);
+	}
+
 	async createGroupKey() {
 		this.log('Creating room key');
-		// Create group key
 		try {
-			this.groupSessionKey = await generateAESKey();
-		} catch (error) {
-			console.error('Error generating group key: ', error);
-			throw error;
-		}
-
-		try {
-			const sessionKeyExported = await exportJWKKey(this.groupSessionKey);
-			this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
-			this.keyID = (await createSha256Hash(this.sessionKeyExportedString)).slice(0, 12);
+			await this.createNewGroupKey();
 
 			await sdk.call('e2e.setRoomKeyID', this.roomId, this.keyID);
 			await this.encryptKeyForOtherParticipants();
@@ -391,16 +385,7 @@ export class E2ERoom extends Emitter {
 		this.log('Resetting room key');
 		this.setState(E2ERoomState.CREATING_KEYS);
 		try {
-			this.groupSessionKey = await generateAESKey();
-		} catch (error) {
-			console.error('Error generating group key: ', error);
-			throw error;
-		}
-
-		try {
-			const sessionKeyExported = await exportJWKKey(this.groupSessionKey);
-			this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
-			this.keyID = (await createSha256Hash(this.sessionKeyExportedString)).slice(0, 12);
+			await this.createNewGroupKey();
 
 			const e2eNewKeys = { e2eKeyId: this.keyID, e2eKey: await this.encryptGroupKeyForParticipant(e2e.publicKey) };
 
@@ -418,6 +403,7 @@ export class E2ERoom extends Emitter {
 		// Encrypt generated session key for every user in room and publish to subscription model.
 		try {
 			const mySub = Subscriptions.findOne({ rid: this.roomId });
+			const decryptedOldGroupKeys = await this.exportOldRoomKeys(mySub?.oldRoomKeys);
 			const users = (await sdk.call('e2e.getUsersOfRoomWithoutKey', this.roomId)).users.filter((user) => user?.e2e?.public_key);
 
 			if (!users.length) {
@@ -427,7 +413,7 @@ export class E2ERoom extends Emitter {
 			const usersSuggestedGroupKeys = { [this.roomId]: [] };
 			for await (const user of users) {
 				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e.public_key);
-				const oldKeys = await this.encryptOldKeysForParticipant(user.e2e.public_key, await this.exportOldRoomKeys(mySub?.oldRoomKeys));
+				const oldKeys = await this.encryptOldKeysForParticipant(user.e2e.public_key, decryptedOldGroupKeys);
 
 				usersSuggestedGroupKeys[this.roomId].push({ _id: user._id, key: encryptedGroupKey, ...(oldKeys && { oldKeys }) });
 			}
@@ -672,11 +658,12 @@ export class E2ERoom extends Emitter {
 		}
 
 		const mySub = Subscriptions.findOne({ rid: this.roomId });
+		const decryptedOldGroupKeys = await this.exportOldRoomKeys(mySub?.oldRoomKeys);
 		const usersWithKeys = await Promise.all(
 			users.map(async (user) => {
 				const { _id, public_key } = user;
 				const key = await this.encryptGroupKeyForParticipant(public_key);
-				const oldKeys = await this.encryptOldKeysForParticipant(public_key, await this.exportOldRoomKeys(mySub?.oldRoomKeys));
+				const oldKeys = await this.encryptOldKeysForParticipant(public_key, decryptedOldGroupKeys);
 				return { _id, key, ...(oldKeys && { oldKeys }) };
 			}),
 		);
