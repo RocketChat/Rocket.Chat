@@ -24,7 +24,8 @@ import {
 	readFileAsArrayBuffer,
 	encryptAESCTR,
 	generateAESCTRKey,
-	createSha256Hash,
+	sha256HashFromArrayBuffer,
+	createSha256HashFromText,
 } from './helper';
 import { log, logError } from './logger';
 import { e2e } from './rocketchat.e2e';
@@ -344,7 +345,7 @@ export class E2ERoom extends Emitter {
 		// When a new e2e room is created, it will be initialized without an e2e key id
 		// This will prevent new rooms from storing `undefined` as the keyid
 		if (!this.keyID) {
-			this.keyID = this.roomKeyId || (await createSha256Hash(this.sessionKeyExportedString)).slice(0, 12);
+			this.keyID = this.roomKeyId || (await createSha256HashFromText(this.sessionKeyExportedString)).slice(0, 12);
 		}
 
 		// Import session key for use.
@@ -365,7 +366,7 @@ export class E2ERoom extends Emitter {
 
 		const sessionKeyExported = await exportJWKKey(this.groupSessionKey);
 		this.sessionKeyExportedString = JSON.stringify(sessionKeyExported);
-		this.keyID = (await createSha256Hash(this.sessionKeyExportedString)).slice(0, 12);
+		this.keyID = (await createSha256HashFromText(this.sessionKeyExportedString)).slice(0, 12);
 	}
 
 	async createGroupKey() {
@@ -469,16 +470,6 @@ export class E2ERoom extends Emitter {
 		}
 	}
 
-	async sha256Hash(arrayBuffer) {
-		const hashArray = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', arrayBuffer)));
-		return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-	}
-
-	async sha256HashText(text) {
-		const encoder = new TextEncoder();
-		return this.sha256Hash(encoder.encode(text));
-	}
-
 	// Encrypts files before upload. I/O is in arraybuffers.
 	async encryptFile(file) {
 		// if (!this.isSupportedRoomType(this.typeOfRoom)) {
@@ -487,7 +478,7 @@ export class E2ERoom extends Emitter {
 
 		const fileArrayBuffer = await readFileAsArrayBuffer(file);
 
-		const hash = await this.sha256Hash(new Uint8Array(fileArrayBuffer));
+		const hash = await sha256HashFromArrayBuffer(new Uint8Array(fileArrayBuffer));
 
 		const vector = crypto.getRandomValues(new Uint8Array(16));
 		const key = await generateAESCTRKey();
@@ -501,7 +492,7 @@ export class E2ERoom extends Emitter {
 
 		const exportedKey = await window.crypto.subtle.exportKey('jwk', key);
 
-		const fileName = await this.sha256HashText(file.name);
+		const fileName = await createSha256HashFromText(file.name);
 
 		const encryptedFile = new File([toArrayBuffer(result)], fileName);
 
