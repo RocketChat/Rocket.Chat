@@ -7,7 +7,7 @@ describe('Marketplace Restrictions', () => {
 		const LicenseManager = new LicenseImp();
 
 		expect(getAppsConfig.call(LicenseManager)).toEqual({
-			maxPrivateApps: 3,
+			maxPrivateApps: 0,
 			maxMarketplaceApps: 5,
 		});
 	});
