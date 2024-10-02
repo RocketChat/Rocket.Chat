@@ -6,7 +6,11 @@ import Sinon from 'sinon';
 const models = {
 	LivechatVisitors: { isVisitorActiveOnPeriod: Sinon.stub(), markVisitorActiveForPeriod: Sinon.stub() },
 	LivechatInquiry: { markInquiryActiveForPeriod: Sinon.stub() },
-	LivechatRooms: { getVisitorActiveForPeriodUpdateQuery: Sinon.stub(), getAgentLastMessageTsUpdateQuery: Sinon.stub(), getResponseByRoomIdUpdateQuery: Sinon.stub() },
+	LivechatRooms: {
+		getVisitorActiveForPeriodUpdateQuery: Sinon.stub(),
+		getAgentLastMessageTsUpdateQuery: Sinon.stub(),
+		getResponseByRoomIdUpdateQuery: Sinon.stub(),
+	},
 };
 
 const { markRoomResponded } = proxyquire.load('../../../../../app/livechat/server/hooks/markRoomResponded.ts', {
@@ -110,16 +114,30 @@ describe('markRoomResponded', () => {
 
 		expect(res).to.be.deep.equal({ _id: '1234', username: 'username', firstResponseTs: message.ts, lastMessageTs: message.ts });
 		expect(models.LivechatRooms.getResponseByRoomIdUpdateQuery.calledOnce).to.be.true;
-		expect(models.LivechatRooms.getResponseByRoomIdUpdateQuery.getCall(0).args[0]).to.be.deep.equal({ _id: '1234', lastMessageTs: message.ts, firstResponseTs: message.ts, username: 'username' });
+		expect(models.LivechatRooms.getResponseByRoomIdUpdateQuery.getCall(0).args[0]).to.be.deep.equal({
+			_id: '1234',
+			lastMessageTs: message.ts,
+			firstResponseTs: message.ts,
+			username: 'username',
+		});
 	});
 
 	// This should never happpen on the wild, checking because of a data inconsistency bug found
 	it('should update only the lastMessageTs property when a room has both waitingResponse and responseBy properties', async () => {
 		const message = { u: { _id: '1234', username: 'username' }, ts: new Date() };
-		const room = { waitingResponse: true, responseBy: { _id: '1234', username: 'username', firstResponseTs: new Date() }, v: { _id: '1234' } };
+		const room = {
+			waitingResponse: true,
+			responseBy: { _id: '1234', username: 'username', firstResponseTs: new Date() },
+			v: { _id: '1234' },
+		};
 
 		const res = await markRoomResponded(message, room, {});
 
-		expect(res).to.be.deep.equal({ _id: '1234', username: 'username', firstResponseTs: room.responseBy.firstResponseTs, lastMessageTs: message.ts });
+		expect(res).to.be.deep.equal({
+			_id: '1234',
+			username: 'username',
+			firstResponseTs: room.responseBy.firstResponseTs,
+			lastMessageTs: message.ts,
+		});
 	});
 });
