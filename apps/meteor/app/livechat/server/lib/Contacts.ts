@@ -64,6 +64,13 @@ type UpdateContactParams = {
 	channels?: ILivechatContactChannel[];
 };
 
+type GetContactsParams = {
+	searchText?: string;
+	count: number;
+	offset: number;
+	sort: Sort;
+};
+
 type GetContactHistoryParams = {
 	contactId: string;
 	source?: string;
@@ -232,6 +239,25 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 	});
 
 	return updatedContact;
+}
+
+export async function getContacts(params: GetContactsParams): Promise<PaginatedResult<{ contacts: ILivechatContact[] }>> {
+	const { searchText, count, offset, sort } = params;
+
+	const { cursor, totalCount } = LivechatContacts.findPaginatedContacts(searchText, {
+		limit: count,
+		skip: offset,
+		sort: sort ?? { name: 1 },
+	});
+
+	const [contacts, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+	return {
+		contacts,
+		count,
+		offset,
+		total,
+	};
 }
 
 export async function getContactHistory(
