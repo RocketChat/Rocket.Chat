@@ -116,7 +116,7 @@ const AppsProvider = ({ children }: AppsProviderProps) => {
 					await Promise.all([queryClient.invalidateQueries(['marketplace'])]);
 				},
 				orchestrator: AppClientOrchestratorInstance,
-				privateAppsEnabled: (limits?.privateApps?.max ?? 0) > 0,
+				privateAppsEnabled: (limits?.privateApps?.max ?? 0) !== 0,
 			}}
 		/>
 	);
