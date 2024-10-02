@@ -340,7 +340,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		const doesItReachedTheLimit =
 			!app.migrated &&
 			!appCountQuery?.data?.hasUnlimitedApps &&
-			!!appCountQuery?.data?.enabled &&
+			appCountQuery?.data?.enabled !== undefined &&
 			appCountQuery?.data?.enabled >= appCountQuery?.data?.limit;
 
 		const installedAppOptions = [
