@@ -138,7 +138,7 @@ Meteor.methods<ServerMethods>({
 		try {
 			return await applyAirGappedRestrictionsValidation(() => executeSendMessage(uid, message, previewUrls));
 		} catch (error: any) {
-			if ((error.error || error.message) === 'error-not-allowed' || (error.error || error.message) === 'restricted-workspace') {
+			if (['error-not-allowed', 'restricted-workspace'].includes(error.error || error.message)) {
 				throw new Meteor.Error(error.error || error.message, error.reason, {
 					method: 'sendMessage',
 				});
