@@ -1,7 +1,7 @@
 ---
-"@rocket.chat/meteor": minor
-"@rocket.chat/i18n": minor
-"@rocket.chat/license": minor
+"@rocket.chat/meteor": major
+"@rocket.chat/i18n": major
+"@rocket.chat/license": major
 ---
 
-Introduced restrictions (connect to cloud or have a license) to air-gapped environments
+Adds restrictions to air-gapped environments without a license
