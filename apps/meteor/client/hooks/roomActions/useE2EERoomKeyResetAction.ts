@@ -67,7 +67,7 @@ export const useE2EEResetRoomKeyRoomAction = () => {
 			id: 'e2e-reset',
 			groups: ['direct', 'direct_multiple', 'group', 'team'],
 			title: 'E2E_Key_Reset' as unknown as TranslationKey,
-			icon: 'key',
+			icon: 'ai',
 			order: 14,
 			action,
 			type: 'organization',
