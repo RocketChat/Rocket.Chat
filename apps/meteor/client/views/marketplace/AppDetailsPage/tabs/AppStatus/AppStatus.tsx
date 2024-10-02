@@ -151,7 +151,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 			{statuses?.map((status, index) => (
 				<Margins inlineEnd={index !== statuses.length - 1 ? 8 : undefined} key={index}>
-					<Tag variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
+					<Tag data-qa-type='app-status-tag' variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
 						{handleAppRequestsNumber(status)} {t(`${status.label}` as TranslationKey)}
 					</Tag>
 				</Margins>
