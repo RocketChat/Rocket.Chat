@@ -8,6 +8,8 @@ services:
     build:
       dockerfile: ${RC_DOCKERFILE}
       context: /tmp/build
+      args:
+        DENO_VERSION: ${DENO_VERSION}
     image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${RC_DOCKER_TAG}
     environment:
       - TEST_MODE=true
@@ -39,6 +41,7 @@ services:
       context: .
       args:
         SERVICE: authorization-service
+        DENO_VERSION: ${DENO_VERSION}
     image: ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${DOCKER_TAG}
     environment:
       - 'MONGO_URL=${MONGO_URL}'
@@ -73,6 +76,7 @@ services:
       context: .
       args:
         SERVICE: presence-service
+        DENO_VERSION: ${DENO_VERSION}
     image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=${MONGO_URL}

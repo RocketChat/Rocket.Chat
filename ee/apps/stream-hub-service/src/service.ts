@@ -1,11 +1,9 @@
-import { api } from '@rocket.chat/core-services';
+import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import { broker } from '@rocket.chat/network-broker';
-import type { Document } from 'mongodb';
 import polka from 'polka';
 
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
-import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { DatabaseWatcher } from '../../../../apps/meteor/server/database/DatabaseWatcher';
 import { StreamHub } from './StreamHub';
 
@@ -14,9 +12,7 @@ const PORT = process.env.PORT || 3035;
 (async () => {
 	const db = await getConnection();
 
-	const trash = await getCollection<Document>(Collections.Trash);
-
-	registerServiceModels(db, trash);
+	registerServiceModels(db, await getTrashCollection());
 
 	api.setBroker(broker);
 
