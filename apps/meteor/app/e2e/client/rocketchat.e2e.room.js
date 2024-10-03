@@ -631,7 +631,7 @@ export class E2ERoom extends Emitter {
 			// The message is indecipherable.
 			if (!oldRoomKey) {
 				this.error(`Message is indecipherable. Message KeyID ${keyID} not found in old room keys`);
-				return { msg: t('E2E_indecipherable'), t: 'info' };
+				return { msg: t('E2E_indecipherable') };
 			}
 			oldKey = oldRoomKey.E2EKey;
 		}
@@ -645,7 +645,7 @@ export class E2ERoom extends Emitter {
 			return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
 		} catch (error) {
 			this.error('Error decrypting message: ', error, message);
-			return { msg: t('E2E_Key_Error'), t: 'info' };
+			return { msg: t('E2E_Key_Error') };
 		}
 	}
 
