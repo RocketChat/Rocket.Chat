@@ -1,5 +1,11 @@
+import { CoreModules, type ExternalModule, type LicenseModule } from '@rocket.chat/core-typings';
+
 import { moduleRemoved, moduleValidated } from './events/emitter';
 import type { LicenseManager } from './license';
+
+export function isLicenseModule(module: string): module is LicenseModule {
+	return CoreModules.includes(module as LicenseModule);
+}
 
 export function notifyValidatedModules(this: LicenseManager, licenseModules: string[]) {
 	licenseModules.forEach((module) => {
@@ -22,6 +28,32 @@ export function invalidateAll(this: LicenseManager) {
 
 export function getModules(this: LicenseManager) {
 	return [...this.modules];
+}
+
+export function getModuleDefinition(this: LicenseManager, moduleName: string) {
+	const license = this.getLicense();
+
+	if (!license) {
+		throw new Error("License not available, can't look for module");
+	}
+
+	const moduleDefinition = license.grantedModules.find(({ module }) => module === moduleName);
+
+	if (!moduleDefinition) {
+		throw new Error('Module not found');
+	}
+
+	return moduleDefinition;
+}
+
+export function getExternalModules(this: LicenseManager): ExternalModule[] {
+	const license = this.getLicense();
+
+	if (!license) {
+		return [];
+	}
+
+	return [...license.grantedModules.filter<ExternalModule>((value): value is ExternalModule => !isLicenseModule(value.module))];
 }
 
 export function hasModule(this: LicenseManager, module: string) {

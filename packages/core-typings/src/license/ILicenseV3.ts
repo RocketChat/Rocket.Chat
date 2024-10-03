@@ -3,15 +3,10 @@ import type { LicenseLimit } from './LicenseLimit';
 import type { LicenseModule } from './LicenseModule';
 import type { LicensePeriod, Timestamp } from './LicensePeriod';
 
-export type GrantedModules = (
-	| {
-			module: LicenseModule;
-	  }
-	| {
-			module: string;
-			external: boolean;
-	  }
-)[];
+export type InternalModule = { module: LicenseModule };
+export type ExternalModule = { module: string; external: boolean };
+
+export type GrantedModules = (InternalModule | ExternalModule)[];
 
 export interface ILicenseV3 {
 	version: '3.0';
