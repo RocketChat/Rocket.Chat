@@ -11,6 +11,7 @@ import type {
 	IImportData,
 	IImportRecordType,
 	IMessage as IDBMessage,
+	IImportContact,
 } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import { ImportData, Rooms, Users, Subscriptions } from '@rocket.chat/models';
@@ -162,6 +163,10 @@ export class ImportDataConverter {
 
 	async addChannel(data: IImportChannel): Promise<void> {
 		await this.addObject('channel', data);
+	}
+
+	async addContact(data: IImportContact): Promise<void> {
+		await this.addObject('contact', data);
 	}
 
 	async addMessage(data: IImportMessage, useQuickInsert = false): Promise<void> {
@@ -547,6 +552,10 @@ export class ImportDataConverter {
 			skipped: skippedCount,
 			failed: failedCount,
 		});
+	}
+
+	public async convertContacts(_contactCallbacks: IConversionCallbacks = {}): Promise<void> {
+		// #TODO: Implement this contact conversion on a separate PR
 	}
 
 	protected async saveError(importId: string, error: Error): Promise<void> {
@@ -1170,6 +1179,7 @@ export class ImportDataConverter {
 
 	async convertData(startedByUserId: string, callbacks: IConversionCallbacks = {}): Promise<void> {
 		await this.convertUsers(callbacks);
+		await this.convertContacts(callbacks);
 		await this.convertChannels(startedByUserId, callbacks);
 		await this.convertMessages(callbacks);
 

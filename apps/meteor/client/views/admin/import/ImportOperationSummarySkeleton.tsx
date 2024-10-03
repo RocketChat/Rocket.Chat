@@ -34,6 +34,9 @@ function ImportOperationSummarySkeleton({ small = false }: ImportOperationSummar
 					<TableCell>
 						<Skeleton />
 					</TableCell>
+					<TableCell>
+						<Skeleton />
+					</TableCell>
 				</>
 			)}
 		</TableRow>
