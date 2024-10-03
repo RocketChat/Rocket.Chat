@@ -170,7 +170,7 @@ class FileSystem implements IRocketChatFileStore {
 				length: stat.size,
 			};
 		} catch (error1) {
-			//
+			console.log(error1);
 		}
 	}
 
@@ -197,7 +197,7 @@ class FileSystem implements IRocketChatFileStore {
 		try {
 			return await this.remove(fileName);
 		} catch (error1) {
-			//
+			console.log(error1);
 		}
 	}
 }
