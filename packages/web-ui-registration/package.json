@@ -20,6 +20,7 @@
 		"@babel/preset-env": "~7.22.20",
 		"@babel/preset-react": "~7.22.15",
 		"@babel/preset-typescript": "~7.22.15",
+		"@newhighsco/storybook-addon-transpile-modules": "~1.0.0",
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/layout": "~0.31.27",
 		"@rocket.chat/mock-providers": "workspace:~",
@@ -41,7 +42,7 @@
 		"react": "~18.3.1",
 		"react-hook-form": "~7.45.4",
 		"react-i18next": "~13.2.2",
-		"storybook-dark-mode": "~3.0.3",
+		"storybook-dark-mode": "~2.1.1",
 		"typescript": "~5.5.4"
 	},
 	"peerDependencies": {

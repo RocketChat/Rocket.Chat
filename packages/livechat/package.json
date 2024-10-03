@@ -28,6 +28,7 @@
 		"@babel/eslint-parser": "~7.23.10",
 		"@babel/preset-env": "~7.22.20",
 		"@babel/preset-typescript": "~7.22.15",
+		"@newhighsco/storybook-addon-transpile-modules": "~1.0.0",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
@@ -116,7 +117,7 @@
 		"query-string": "^7.1.3",
 		"react-hook-form": "~7.45.4",
 		"react-i18next": "~13.2.2",
-		"storybook-dark-mode": "~3.0.3",
+		"storybook-dark-mode": "~2.1.1",
 		"whatwg-fetch": "^3.6.20"
 	},
 	"browserslist": [
