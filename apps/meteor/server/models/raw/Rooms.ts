@@ -2167,7 +2167,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	): Promise<ModifyResult<IRoom>> {
 		return this.findOneAndUpdate(
 			{ _id: roomId },
-			{ $set: { e2eKeyId, ...(e2eQueue?.length && { usersWaitingForE2EKeys: e2eQueue }) } },
+			{ $set: { e2eKeyId, ...(Array.isArray(e2eQueue) && { usersWaitingForE2EKeys: e2eQueue }) } },
 			{ returnDocument: 'after' },
 		);
 	}
