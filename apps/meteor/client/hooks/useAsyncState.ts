@@ -1,7 +1,7 @@
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useMemo, useState } from 'react';
 
-import { AsyncStatePhase, AsyncState, asyncState } from '../lib/asyncState';
+import { AsyncStatePhase, type AsyncState, asyncState } from '../lib/asyncState';
 
 type AsyncStateObject<T> = AsyncState<T> & {
 	resolve: (value: T | ((prev: T | undefined) => T)) => void;

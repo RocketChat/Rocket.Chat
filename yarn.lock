@@ -8785,6 +8785,7 @@ __metadata:
     "@faker-js/faker": ~8.0.2
     "@google-cloud/storage": ^6.11.0
     "@kaciras/deasync": ^1.0.4
+    "@newhighsco/storybook-addon-transpile-modules": ~1.0.0
     "@nivo/bar": 0.84.0
     "@nivo/core": 0.84.0
     "@nivo/heatmap": 0.84.0
@@ -8868,7 +8869,6 @@ __metadata:
     "@storybook/addon-postcss": ~2.0.0
     "@storybook/addons": ~6.5.16
     "@storybook/react": ~6.5.16
-    "@storybook/testing-library": 0.0.13
     "@tanstack/react-query": ^4.16.1
     "@tanstack/react-query-devtools": ^4.19.1
     "@testing-library/react": ~16.0.1
@@ -11581,7 +11581,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/testing-library@npm:0.0.13, @storybook/testing-library@npm:~0.0.13":
+"@storybook/testing-library@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "@storybook/testing-library@npm:0.2.2"
+  dependencies:
+    "@testing-library/dom": ^9.0.0
+    "@testing-library/user-event": ^14.4.0
+    ts-dedent: ^2.2.0
+  checksum: 8ccdc1fbbb3472264c56b0aaf2f1c5d273f1ae9b230a53adf9cf82bf82c1a555550894f0e8869c206fa07b1fe8423da4d56590377756c58de3ec560b35a96c46
+  languageName: node
+  linkType: hard
+
+"@storybook/testing-library@npm:~0.0.13":
   version: 0.0.13
   resolution: "@storybook/testing-library@npm:0.0.13"
   dependencies:
@@ -11591,17 +11602,6 @@ __metadata:
     "@testing-library/user-event": ^13.2.1
     ts-dedent: ^2.2.0
   checksum: 759361ad3fbc89bdfddfa6d5a15eef06ed6fa9110bfa40c08fcf2497e7acd85e8d5c73c26ea4a46934168b21db294256befb55755fee4292d3d277c576284a1c
-  languageName: node
-  linkType: hard
-
-"@storybook/testing-library@npm:^0.2.2":
-  version: 0.2.2
-  resolution: "@storybook/testing-library@npm:0.2.2"
-  dependencies:
-    "@testing-library/dom": ^9.0.0
-    "@testing-library/user-event": ^14.4.0
-    ts-dedent: ^2.2.0
-  checksum: 8ccdc1fbbb3472264c56b0aaf2f1c5d273f1ae9b230a53adf9cf82bf82c1a555550894f0e8869c206fa07b1fe8423da4d56590377756c58de3ec560b35a96c46
   languageName: node
   linkType: hard
 

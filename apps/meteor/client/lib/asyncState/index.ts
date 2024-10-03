@@ -1,3 +1,3 @@
-export { AsyncState } from './AsyncState';
+export type { AsyncState } from './AsyncState';
 export { AsyncStatePhase } from './AsyncStatePhase';
 export * as asyncState from './functions';

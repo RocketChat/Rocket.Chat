@@ -1,6 +1,7 @@
 import type { ISetting, IUser, Serialized, SettingValue } from '@rocket.chat/core-typings';
 import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
 import { Emitter } from '@rocket.chat/emitter';
+import i18nDict from '@rocket.chat/i18n';
 import languages from '@rocket.chat/i18n/dist/languages';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ModalContextValue, TranslationKey } from '@rocket.chat/ui-contexts';
@@ -366,6 +367,24 @@ export class MockedAppRootBuilder {
 		}
 
 		this.i18n.on('initialized', addResources);
+		return this;
+	}
+
+	withRealTranslations(): this {
+		const addResources = () => {
+			this.i18n.addResources('en', 'core', i18nDict.en);
+			for (const [key, value] of Object.entries(i18nDict.en)) {
+				this.i18n.addResource('en', 'core', key, value);
+			}
+		};
+
+		if (this.i18n.isInitialized) {
+			addResources();
+			return this;
+		}
+
+		this.i18n.on('initialized', addResources);
+
 		return this;
 	}
 

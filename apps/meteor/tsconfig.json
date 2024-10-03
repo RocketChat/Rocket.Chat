@@ -32,6 +32,10 @@
 		// "emitDecoratorMetadata": true,
 		// "experimentalDecorators": true,
 	},
+	"include": [
+		"./*/**/*",
+		".storybook/**/*",
+	],
 	"exclude": [
 		"**/node_modules/**",
 		"./.meteor/**",

@@ -3,4 +3,4 @@ import { compileSort } from './sort';
 
 export const createFilterFromQuery = compileDocumentSelector;
 export const createComparatorFromSort = compileSort;
-export { FieldExpression, Query, Sort } from './types';
+export type { FieldExpression, Query, Sort } from './types';
