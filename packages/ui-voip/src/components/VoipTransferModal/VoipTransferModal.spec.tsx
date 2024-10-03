@@ -51,7 +51,6 @@ it('should be able to select transfer target', async () => {
 				success: true,
 			}))
 			.build(),
-		legacyRoot: true,
 	});
 	const hangUpAnTransferButton = screen.getByRole('button', { name: 'Hang_up_and_transfer_call' });
 
@@ -72,7 +71,6 @@ it('should call onCancel when Cancel is clicked', () => {
 	const cancelFn = jest.fn();
 	render(<VoipTransferModal extension='1000' onConfirm={confirmFn} onCancel={cancelFn} />, {
 		wrapper: mockAppRoot().build(),
-		legacyRoot: true,
 	});
 
 	screen.getByText('Cancel').click();
@@ -85,7 +83,6 @@ it('should call onCancel when X is clicked', () => {
 	const cancelFn = jest.fn();
 	render(<VoipTransferModal extension='1000' onConfirm={confirmFn} onCancel={cancelFn} />, {
 		wrapper: mockAppRoot().build(),
-		legacyRoot: true,
 	});
 
 	screen.getByLabelText('Close').click();

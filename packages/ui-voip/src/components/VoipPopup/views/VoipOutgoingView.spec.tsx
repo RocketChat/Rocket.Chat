@@ -9,7 +9,7 @@ const wrapper = mockAppRoot().withEndpoint('GET', '/v1/voip-freeswitch.extension
 const outgoingSession = createMockVoipOutgoingSession();
 
 it('should properly render outgoing view', async () => {
-	render(<VoipOutgoingView session={outgoingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
+	render(<VoipOutgoingView session={outgoingSession} />, { wrapper: wrapper.build() });
 
 	expect(screen.getByText('Calling...')).toBeInTheDocument();
 	expect(screen.getByRole('button', { name: /Device_settings/ })).toBeInTheDocument();
@@ -17,7 +17,7 @@ it('should properly render outgoing view', async () => {
 });
 
 it('should only enable outgoing actions', () => {
-	render(<VoipOutgoingView session={outgoingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
+	render(<VoipOutgoingView session={outgoingSession} />, { wrapper: wrapper.build() });
 
 	expect(within(screen.getByTestId('vc-popup-footer')).queryAllByRole('button')).toHaveLength(5);
 	expect(screen.getByRole('button', { name: 'Turn_off_microphone' })).toBeDisabled();
@@ -28,7 +28,7 @@ it('should only enable outgoing actions', () => {
 });
 
 it('should properly interact with the voice call session', () => {
-	render(<VoipOutgoingView session={outgoingSession} />, { wrapper: wrapper.build(), legacyRoot: true });
+	render(<VoipOutgoingView session={outgoingSession} />, { wrapper: wrapper.build() });
 
 	screen.getByRole('button', { name: 'End_call' }).click();
 	expect(outgoingSession.end).toHaveBeenCalled();

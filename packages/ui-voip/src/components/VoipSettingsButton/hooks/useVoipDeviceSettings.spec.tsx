@@ -19,7 +19,6 @@ it('should be disabled when there are no devices', () => {
 		wrapper: mockAppRoot()
 			.wrap((children) => <DeviceContext.Provider value={mockDeviceContextValue}>{children}</DeviceContext.Provider>)
 			.build(),
-		legacyRoot: true,
 	});
 
 	expect(result.current.title).toBe('Device_settings_not_supported_by_browser');
@@ -38,7 +37,6 @@ it('should be enabled when there are devices', () => {
 		wrapper: mockAppRoot()
 			.wrap((children) => <DeviceContext.Provider value={mockDeviceContextValue}>{children}</DeviceContext.Provider>)
 			.build(),
-		legacyRoot: true,
 	});
 
 	expect(result.current.title).toBe('Device_settings');
