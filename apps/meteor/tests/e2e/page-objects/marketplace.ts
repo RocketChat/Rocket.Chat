@@ -42,4 +42,12 @@ export class Marketplace {
 	get btnEnableApp(): Locator {
 		return this.page.getByRole('menuitem', { name: 'Enable' });
 	}
+
+	get btnDisableApp(): Locator {
+		return this.page.getByRole('menuitem', { name: 'Disable' });
+	}
+
+	get btnConfirmAppUpdate(): Locator {
+		return this.page.locator('role=button[name="Yes"]');
+	}
 }
