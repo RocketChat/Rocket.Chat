@@ -78,9 +78,9 @@ export class E2ERoom extends Emitter {
 		this.typeOfRoom = room.t;
 		this.roomKeyId = room.e2eKeyId;
 
+		this.once(E2ERoomState.READY, () => this.decryptOldRoomKeys());
 		this.once(E2ERoomState.READY, () => this.decryptPendingMessages());
 		this.once(E2ERoomState.READY, () => this.decryptSubscription());
-		this.once(E2ERoomState.READY, () => this.decryptOldRoomKeys());
 		this.on('STATE_CHANGED', (prev) => {
 			if (this.roomId === RoomManager.opened) {
 				this.log(`[PREV: ${prev}]`, 'State CHANGED');
@@ -255,7 +255,7 @@ export class E2ERoom extends Emitter {
 					continue;
 				}
 
-				const k = await this.decryptSessionKey(key.E2EKey);
+				const k = await this.exportSessionKey(key.E2EKey);
 				keys.push({
 					...key,
 					E2EKey: k,
@@ -449,13 +449,17 @@ export class E2ERoom extends Emitter {
 		}
 
 		try {
-			return await Promise.all(
-				oldRoomKeys.map(async (key) => {
-					const encryptedKey = await encryptRSA(userKey, toArrayBuffer(key.E2EKey));
-					const encryptedKeyToString = key.e2eKeyId + Base64.encode(new Uint8Array(encryptedKey));
-					return { ...key, E2EKey: encryptedKeyToString };
-				}),
-			);
+			const keys = [];
+			for await (const oldRoomKey of oldRoomKeys) {
+				if (!oldRoomKey.E2EKey) {
+					continue;
+				}
+				const encryptedKey = await encryptRSA(userKey, toArrayBuffer(oldRoomKey.E2EKey));
+				const encryptedKeyToString = oldRoomKey.e2eKeyId + Base64.encode(new Uint8Array(encryptedKey));
+
+				keys.push({ ...oldRoomKey, E2EKey: encryptedKeyToString });
+			}
+			return keys;
 		} catch (error) {
 			return this.error('Error encrypting user key: ', error);
 		}
