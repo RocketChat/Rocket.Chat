@@ -3,6 +3,16 @@ import type { LicenseLimit } from './LicenseLimit';
 import type { LicenseModule } from './LicenseModule';
 import type { LicensePeriod, Timestamp } from './LicensePeriod';
 
+export type GrantedModules = (
+	| {
+			module: LicenseModule;
+	  }
+	| {
+			module: string;
+			external: boolean;
+	  }
+)[];
+
 export interface ILicenseV3 {
 	version: '3.0';
 	information: {
@@ -48,9 +58,7 @@ export interface ILicenseV3 {
 			allowedStaleInDays?: number;
 		};
 	};
-	grantedModules: {
-		module: LicenseModule;
-	}[];
+	grantedModules: GrantedModules;
 	limits: {
 		activeUsers?: LicenseLimit[];
 		guestUsers?: LicenseLimit[];
