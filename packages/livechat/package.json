@@ -111,7 +111,7 @@
 		"mem": "^6.1.1",
 		"mitt": "^2.1.0",
 		"path-to-regexp": "^6.2.1",
-		"preact": "10.15.1",
+		"preact": "~10.24.1",
 		"preact-router": "^3.2.1",
 		"query-string": "^7.1.3",
 		"react-hook-form": "~7.45.4",

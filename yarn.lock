@@ -9286,7 +9286,7 @@ __metadata:
     postcss-logical: ^4.0.2
     postcss-scss: ^4.0.9
     postcss-selector-not: ^4.0.1
-    preact: 10.15.1
+    preact: ~10.24.1
     preact-router: ^3.2.1
     query-string: ^7.1.3
     react-dom: ~18.3.1
@@ -35030,17 +35030,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"preact@npm:10.15.1":
-  version: 10.15.1
-  resolution: "preact@npm:10.15.1"
-  checksum: dabad11843b19b40b11846a25ff0b1fc4bc58268909e01a7faddb341a40983d24fbe7d44ad6e2c5d35e43091963af616800552fec9af44dd0a2f0f698d1bba1f
-  languageName: node
-  linkType: hard
-
-"preact@patch:preact@npm:10.15.1#.yarn/patches/preact-npm-10.15.1-bd458de913.patch::locator=rocket.chat%40workspace%3A.":
-  version: 10.15.1
-  resolution: "preact@patch:preact@npm%3A10.15.1#.yarn/patches/preact-npm-10.15.1-bd458de913.patch::version=10.15.1&hash=cf52e4&locator=rocket.chat%40workspace%3A."
-  checksum: 6258efa196625543b88cb02ca1fe4eb3e2867be82bc58209cd8f0dce5aefc3a7da0df4ca440c26731fed9085c780e8b6b265183dd2a16ad66216d8a6480868b7
+"preact@npm:~10.24.1":
+  version: 10.24.1
+  resolution: "preact@npm:10.24.1"
+  checksum: c20fe8dee3b1e6329c3b28252350cfc2873bb5ca6d29909fd1b3f15825c686f9dd636ea2aafb9b0c9dcf2a94597aa814a4ec15fc37d0536d4ef58c200ac290b6
   languageName: node
   linkType: hard
 
