@@ -24,6 +24,7 @@ export type MailExportFormValues = {
 
 const ExportMessages = () => {
 	const { t } = useTranslation();
+
 	const room = useRoom();
 
 	const { closeTab } = useRoomToolbox();
@@ -39,11 +40,13 @@ const ExportMessages = () => {
 			toUsers: [],
 			additionalEmails: '',
 			messagesCount: 0,
-			subject: t('Mail_Messages_Subject', roomName),
+			subject: t('Mail_Messages_Subject', {
+				postProcess: 'sprintf',
+				sprintf: [roomName],
+			}),
 			format: 'html',
 		},
 	});
-
 	const exportOptions = useMemo<SelectOption[]>(
 		() => [
 			['email', t('Send_via_email')],
