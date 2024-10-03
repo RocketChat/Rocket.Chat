@@ -7,6 +7,7 @@ import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 import { ChatRoom, Subscriptions, Messages } from '../../models/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
+import { t } from '../../utils/lib/i18n';
 import { E2ERoomState } from './E2ERoomState';
 import {
 	toString,
@@ -222,16 +223,23 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
-		const decryptedOldKeys = await Promise.all(
-			sub.oldRoomKeys.map(async (key) => {
-				return {
+		const keys = [];
+		for await (const key of sub.oldRoomKeys) {
+			try {
+				const k = await this.decryptSessionKey(key.E2EKey);
+				keys.push({
 					...key,
-					E2EKey: await this.decryptSessionKey(key.E2EKey),
-				};
-			}),
-		);
+					E2EKey: k,
+				});
+			} catch (e) {
+				this.error(
+					`Cannot decrypt old room key with id ${key.e2eKeyId}. This is likely because user private key changed or is missing. Skipping`,
+				);
+				keys.push({ ...key, E2EKey: null });
+			}
+		}
 
-		this.oldKeys = decryptedOldKeys;
+		this.oldKeys = keys;
 		this.log('decryptOldRoomKeys Done');
 	}
 
@@ -240,14 +248,26 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
-		return Promise.all(
-			oldKeys.map(async (key) => {
-				return {
+		const keys = [];
+		for await (const key of oldKeys) {
+			try {
+				if (!key.E2EKey) {
+					continue;
+				}
+
+				const k = await this.decryptSessionKey(key.E2EKey);
+				keys.push({
 					...key,
-					E2EKey: await this.exportSessionKey(key.E2EKey),
-				};
-			}),
-		);
+					E2EKey: k,
+				});
+			} catch (e) {
+				this.error(
+					`Cannot decrypt old room key with id ${key.e2eKeyId}. This is likely because user private key changed or is missing. Skipping`,
+				);
+			}
+		}
+
+		return keys;
 	}
 
 	async decryptPendingMessages() {
@@ -305,25 +325,15 @@ export class E2ERoom extends Emitter {
 	}
 
 	async decryptSessionKey(key) {
-		try {
-			return importAESKey(JSON.parse(await this.exportSessionKey(key)));
-		} catch (error) {
-			this.error('Error decrypting key: ', error);
-			return null;
-		}
+		return importAESKey(JSON.parse(await this.exportSessionKey(key)));
 	}
 
 	async exportSessionKey(key) {
 		key = key.slice(12);
 		key = Base64.decode(key);
 
-		try {
-			const decryptedKey = await decryptRSA(e2e.privateKey, key);
-			return toString(decryptedKey);
-		} catch (error) {
-			this.error('Error decrypting key: ', error);
-			return null;
-		}
+		const decryptedKey = await decryptRSA(e2e.privateKey, key);
+		return toString(decryptedKey);
 	}
 
 	async importGroupKey(groupKey) {
@@ -556,6 +566,10 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
+		if (!this.groupSessionKey) {
+			throw new Error(t('E2E_Invalid_Key'));
+		}
+
 		const ts = new Date();
 
 		const data = new TextEncoder('UTF-8').encode(
@@ -605,14 +619,17 @@ export class E2ERoom extends Emitter {
 		const keyID = message.slice(0, 12);
 
 		let oldKey = '';
+		console.log(keyID, this.keyID, this.roomKeyId);
 		if (keyID !== this.keyID) {
 			const oldRoomKey = this.oldKeys?.find((key) => key.e2eKeyId === keyID);
 			// Messages already contain a keyID stored with them
 			// That means that if we cannot find a keyID for the key the message has preppended to
-			// The message is indecipherable. In such cases, we'll try to decrypt with the most recent key
-			if (oldRoomKey) {
-				oldKey = oldRoomKey.E2EKey;
+			// The message is indecipherable.
+			if (!oldRoomKey) {
+				this.error(`Message is indecipherable. Message KeyID ${keyID} not found in old room keys`);
+				return { msg: t('E2E_indecipherable'), t: 'info' };
 			}
+			oldKey = oldRoomKey.E2EKey;
 		}
 
 		message = message.slice(12);
@@ -620,12 +637,11 @@ export class E2ERoom extends Emitter {
 		const [vector, cipherText] = splitVectorAndEcryptedData(Base64.decode(message));
 
 		try {
-			// For indecipherable messages, we're going to try to decrypt with the most recent key
 			const result = await decryptAES(vector, oldKey || this.groupSessionKey, cipherText);
 			return EJSON.parse(new TextDecoder('UTF-8').decode(new Uint8Array(result)));
 		} catch (error) {
 			this.error('Error decrypting message: ', error, message);
-			return { msg: `Message cannot be decrypted with current keys. KeyID ${keyID}` };
+			return { msg: t('E2E_Key_Error'), t: 'info' };
 		}
 	}
 
