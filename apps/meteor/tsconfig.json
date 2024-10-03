@@ -35,6 +35,9 @@
 	"include": [
 		"./*/**/*",
 		".storybook/**/*",
+		"./jest.config.ts",
+		"./playwright-federation.config.ts",
+		"./playwright.config.ts",
 	],
 	"exclude": [
 		"**/node_modules/**",
