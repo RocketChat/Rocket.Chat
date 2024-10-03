@@ -7,7 +7,6 @@ import type {
 	BehaviorWithContext,
 	LicenseBehavior,
 	LicenseInfo,
-	LicenseModule,
 	LicenseValidationOptions,
 	LimitContext,
 } from '@rocket.chat/core-typings';
@@ -43,7 +42,7 @@ export class LicenseManager extends Emitter<LicenseEvents> {
 
 	tags = new Set<ILicenseTag>();
 
-	modules = new Set<LicenseModule>();
+	modules = new Set<string>();
 
 	private workspaceUrl: string | undefined;
 

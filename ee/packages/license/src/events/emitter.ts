@@ -1,14 +1,23 @@
-import type { BehaviorWithContext, LicenseModule } from '@rocket.chat/core-typings';
+import { CoreModules, type BehaviorWithContext, type LicenseModule } from '@rocket.chat/core-typings';
 
 import type { LicenseManager } from '../license';
 import { logger } from '../logger';
 
-export function moduleValidated(this: LicenseManager, module: LicenseModule) {
+function isLicenseModule(module: string): module is LicenseModule {
+	return CoreModules.includes(module as LicenseModule);
+}
+
+export function moduleValidated(this: LicenseManager, module: string) {
 	try {
 		this.emit('module', { module, valid: true });
 	} catch (error) {
 		logger.error({ msg: `Error running module (valid: true) event: ${module}`, error });
 	}
+
+	if (!isLicenseModule(module)) {
+		return;
+	}
+
 	try {
 		this.emit(`valid:${module}`);
 	} catch (error) {
@@ -16,12 +25,17 @@ export function moduleValidated(this: LicenseManager, module: LicenseModule) {
 	}
 }
 
-export function moduleRemoved(this: LicenseManager, module: LicenseModule) {
+export function moduleRemoved(this: LicenseManager, module: string) {
 	try {
 		this.emit('module', { module, valid: false });
 	} catch (error) {
 		logger.error({ msg: `Error running module (valid: false) event: ${module}`, error });
 	}
+
+	if (!isLicenseModule(module)) {
+		return;
+	}
+
 	try {
 		this.emit(`invalid:${module}`);
 	} catch (error) {

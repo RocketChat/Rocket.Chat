@@ -83,7 +83,7 @@ export function onToggledFeature(
 	};
 }
 
-export function onModule(this: LicenseManager, cb: (data: { module: LicenseModule; valid: boolean }) => void) {
+export function onModule(this: LicenseManager, cb: (data: { module: string; valid: boolean }) => void) {
 	this.on('module', cb);
 }
 
