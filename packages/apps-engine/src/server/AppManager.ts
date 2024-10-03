@@ -721,7 +721,11 @@ export class AppManager {
 
         if (updateOptions.loadApp) {
             const shouldEnableApp = AppStatusUtils.isEnabled(old.status);
-            await this.updateLocal(stored, app, shouldEnableApp);
+            if (shouldEnableApp) {
+                await this.updateAndStartupLocal(stored, app);
+            } else {
+                await this.updateAndInitializeLocal(stored, app);
+            }
 
             await this.bridges
                 .getAppActivationBridge()
@@ -743,7 +747,7 @@ export class AppManager {
      * With an instance of a ProxiedApp, start it up and replace
      * the reference in the local app collection
      */
-    public async updateLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer, enable: boolean) {
+    async updateLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer): Promise<ProxiedApp> {
         const app = await (async () => {
             if (appPackageOrInstance instanceof Buffer) {
                 const parseResult = await this.getParser().unpackageApp(appPackageOrInstance);
@@ -762,15 +766,17 @@ export class AppManager {
         await this.purgeAppConfig(app, { keepScheduledJobs: true });
 
         this.apps.set(app.getID(), app);
+        return app;
+    }
 
-        // Should enable === true, then we go through the entire start up process
-        // Otherwise, we only initialize it.
-        if (enable) {
-            // Start up the app
-            await this.runStartUpProcess(stored, app, false, true);
-        } else {
-            await this.initializeApp(stored, app, true, true);
-        }
+    public async updateAndStartupLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer) {
+        const app = await this.updateLocal(stored, appPackageOrInstance);
+        await this.runStartUpProcess(stored, app, false, true);
+    }
+
+    public async updateAndInitializeLocal(stored: IAppStorageItem, appPackageOrInstance: ProxiedApp | Buffer) {
+        const app = await this.updateLocal(stored, appPackageOrInstance);
+        await this.initializeApp(stored, app, true, true);
     }
 
     public getLanguageContent(): { [key: string]: object } {

@@ -63,7 +63,11 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 			}
 
 			const isEnabled = AppStatusUtils.isEnabled(storageItem.status);
-			await Apps.self?.getManager()?.updateLocal(storageItem, appPackage, isEnabled);
+			if (isEnabled) {
+				await Apps.self?.getManager()?.updateAndStartupLocal(storageItem, appPackage);
+			} else {
+				await Apps.self?.getManager()?.updateAndInitializeLocal(storageItem, appPackage);
+			}
 		});
 
 		this.onEvent('apps.statusUpdate', async (appId: string, status: AppStatus): Promise<void> => {
