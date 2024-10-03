@@ -50,8 +50,8 @@
 		"@types/dompurify": "^3.0.5",
 		"@types/jest": "~29.5.13",
 		"@types/katex": "~0.16.7",
-		"@types/react": "~17.0.80",
-		"@types/react-dom": "~17.0.25",
+		"@types/react": "~18.3.11",
+		"@types/react-dom": "~18.3.0",
 		"@typescript-eslint/eslint-plugin": "~5.60.1",
 		"@typescript-eslint/parser": "~5.60.1",
 		"babel-loader": "^8.3.0",
@@ -65,7 +65,7 @@
 		"katex": "~0.16.11",
 		"outdent": "^0.8.0",
 		"react-docgen-typescript-plugin": "~1.0.8",
-		"react-dom": "~17.0.2",
+		"react-dom": "~18.3.1",
 		"typescript": "~5.5.4"
 	},
 	"peerDependencies": {

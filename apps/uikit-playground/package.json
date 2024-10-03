@@ -32,9 +32,9 @@
     "eslint4b-prebuilt": "^6.7.2",
     "moment": "^2.29.4",
     "rc-scrollbars": "^1.1.6",
-    "react": "^17.0.2",
+    "react": "~18.3.1",
     "react-beautiful-dnd": "^13.1.1",
-    "react-dom": "^17.0.2",
+    "react-dom": "~18.3.1",
     "react-router-dom": "^6.11.2",
     "react-split-pane": "^0.1.92",
     "react-virtuoso": "^4.7.1",
@@ -42,9 +42,9 @@
     "use-subscription": "^1.8.2"
   },
   "devDependencies": {
-    "@types/react": "~17.0.80",
+    "@types/react": "~18.3.11",
     "@types/react-beautiful-dnd": "^13.1.8",
-    "@types/react-dom": "~17.0.25",
+    "@types/react-dom": "~18.3.0",
     "@types/use-subscription": "^1.0.2",
     "@typescript-eslint/eslint-plugin": "~5.60.1",
     "@typescript-eslint/parser": "~5.60.1",
