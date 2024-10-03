@@ -6,6 +6,7 @@ import stream from 'stream';
 
 import type { ObjectId } from 'bson';
 import { MongoInternals } from 'meteor/mongo';
+import mime from 'mime-type/with-db';
 import mkdirp from 'mkdirp';
 import type { GridFSBucketReadStream } from 'mongodb';
 import { GridFSBucket } from 'mongodb';
@@ -166,7 +167,9 @@ class FileSystem implements IRocketChatFileStore {
 			const rs = this.createReadStream(fileName);
 			return {
 				readStream: rs,
-				// contentType: file.contentType
+				// We currently don't store the content type of uploaded custom sounds when using
+				// The filesystem storage. We will use mime to infer its type from the extension.
+				contentType: (mime.lookup(fileName) as string) || 'application/octet-stream',
 				length: stat.size,
 			};
 		} catch (error1) {
