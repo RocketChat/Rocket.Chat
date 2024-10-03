@@ -1,4 +1,13 @@
-import type { ILicenseTag, ILicenseV3, LicenseLimit, LicenseModule, LicensePeriod, Timestamp } from '@rocket.chat/core-typings';
+import {
+	CoreModules,
+	type GrantedModules,
+	type ILicenseTag,
+	type ILicenseV3,
+	type LicenseLimit,
+	type LicenseModule,
+	type LicensePeriod,
+	type Timestamp,
+} from '@rocket.chat/core-typings';
 
 import { encrypt } from './token';
 
@@ -163,9 +172,7 @@ export class MockedLicenseBuilder {
 		return this;
 	}
 
-	grantedModules: {
-		module: LicenseModule;
-	}[] = [];
+	grantedModules: GrantedModules = [];
 
 	limits: {
 		activeUsers?: LicenseLimit[];
@@ -190,13 +197,17 @@ export class MockedLicenseBuilder {
 		return this;
 	}
 
-	public withGratedModules(modules: LicenseModule[]): this {
+	public withGratedModules(modules: string[]): this {
 		this.grantedModules = this.grantedModules ?? [];
-		this.grantedModules.push(...modules.map((module) => ({ module })));
+		this.grantedModules.push(
+			...(modules.map((module) =>
+				CoreModules.includes(module as LicenseModule) ? { module } : { module, external: true },
+			) as GrantedModules),
+		);
 		return this;
 	}
 
-	withNoGratedModules(modules: LicenseModule[]): this {
+	withNoGratedModules(modules: string[]): this {
 		this.grantedModules = this.grantedModules ?? [];
 		this.grantedModules = this.grantedModules.filter(({ module }) => !modules.includes(module));
 		return this;
