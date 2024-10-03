@@ -32,6 +32,56 @@ test.describe.serial('Private apps upload', () => {
 			await page.getByRole('button', { name: 'Agree' }).click();
 			await expect(poMarketplace.appStatusTag).toHaveText('Enabled');
 		});
+
+		test('expect to allow admin to update a enabled private app in EE, which should remain enabled', async ({ page }) => {
+			const fileChooserPromise = page.waitForEvent('filechooser');
+
+			await poMarketplace.btnUploadPrivateApp.click();
+			await expect(poMarketplace.btnInstallPrivateApp).toBeDisabled();
+
+			await poMarketplace.btnUploadPrivateAppFile.click();
+			const fileChooser = await fileChooserPromise;
+			await fileChooser.setFiles('./tests/e2e/fixtures/files/test-app_0.0.1.zip');
+
+			await expect(poMarketplace.btnInstallPrivateApp).toBeEnabled();
+			await poMarketplace.btnInstallPrivateApp.click();
+			await poMarketplace.btnConfirmAppUpdate.click();
+			await page.getByRole('button', { name: 'Agree' }).click();
+
+			await page.goto('/marketplace/private');
+			await poMarketplace.lastAppRow.click();
+			await expect(poMarketplace.appStatusTag).toHaveText('Enabled');
+		});
+
+		test('expect to allow disabling a recently installed private app in EE', async () => {
+			await poMarketplace.lastAppRow.click();
+			await expect(poMarketplace.appStatusTag).toHaveText('Enabled');
+			await poMarketplace.appMenu.click();
+			await expect(poMarketplace.btnDisableApp).toBeEnabled();
+			await poMarketplace.btnDisableApp.click();
+			await poMarketplace.btnConfirmAppUpdate.click();
+			await expect(poMarketplace.appStatusTag).toHaveText('Disabled');
+		});
+
+		test('expect to allow admin to update a disabled private app in EE, which should remain disabled', async ({ page }) => {
+			const fileChooserPromise = page.waitForEvent('filechooser');
+
+			await poMarketplace.btnUploadPrivateApp.click();
+			await expect(poMarketplace.btnInstallPrivateApp).toBeDisabled();
+
+			await poMarketplace.btnUploadPrivateAppFile.click();
+			const fileChooser = await fileChooserPromise;
+			await fileChooser.setFiles('./tests/e2e/fixtures/files/test-app_0.0.1.zip');
+
+			await expect(poMarketplace.btnInstallPrivateApp).toBeEnabled();
+			await poMarketplace.btnInstallPrivateApp.click();
+			await poMarketplace.btnConfirmAppUpdate.click();
+			await page.getByRole('button', { name: 'Agree' }).click();
+
+			await page.goto('/marketplace/private');
+			await poMarketplace.lastAppRow.click();
+			await expect(poMarketplace.appStatusTag).toHaveText('Disabled');
+		});
 	});
 
 	test.describe('Community Edition', () => {
@@ -65,6 +115,33 @@ test.describe.serial('Private apps upload', () => {
 			await expect(poMarketplace.appStatusTag).toHaveText('Disabled');
 			await poMarketplace.appMenu.click();
 			await expect(poMarketplace.btnEnableApp).toBeDisabled();
+		});
+
+		test('expect updated private app in CE to be kept as disabled', async ({ page }) => {
+			const fileChooserPromise = page.waitForEvent('filechooser');
+
+			await poMarketplace.btnUploadPrivateApp.click();
+			await expect(poMarketplace.btnConfirmAppUploadModal).toBeEnabled();
+			await poMarketplace.btnConfirmAppUploadModal.click();
+
+			await expect(poMarketplace.btnInstallPrivateApp).toBeDisabled();
+			await poMarketplace.btnUploadPrivateAppFile.click();
+			const fileChooser = await fileChooserPromise;
+			await fileChooser.setFiles('./tests/e2e/fixtures/files/test-app_0.0.1.zip');
+
+			await expect(poMarketplace.btnInstallPrivateApp).toBeEnabled();
+			await poMarketplace.btnInstallPrivateApp.click();
+
+			await expect(poMarketplace.confirmAppUploadModalTitle).toHaveText('Private apps limit reached');
+			await expect(poMarketplace.btnConfirmAppUploadModal).toBeEnabled();
+			await poMarketplace.btnConfirmAppUploadModal.click();
+
+			await poMarketplace.btnConfirmAppUpdate.click();
+
+			await page.getByRole('button', { name: 'Agree' }).click();
+			await page.goto('/marketplace/private');
+			await poMarketplace.lastAppRow.click();
+			await expect(poMarketplace.appStatusTag).toHaveText('Disabled');
 		});
 	});
 });
