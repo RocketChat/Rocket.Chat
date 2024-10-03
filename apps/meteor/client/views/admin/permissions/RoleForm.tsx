@@ -5,6 +5,13 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 
+type RoleFormData = {
+	name: string;
+	description: string;
+	scope: 'user' | 'room' | 'global';
+	mandatory2fa: boolean;
+};
+
 type RoleFormProps = {
 	className?: string;
 	editing?: boolean;
@@ -18,7 +25,7 @@ const RoleForm = ({ className, editing = false, isProtected = false, isDisabled 
 		register,
 		control,
 		formState: { errors },
-	} = useFormContext();
+	} = useFormContext<RoleFormData>();
 
 	const options: SelectOption[] = useMemo(
 		() => [
@@ -66,7 +73,7 @@ const RoleForm = ({ className, editing = false, isProtected = false, isDisabled 
 					<Controller
 						name='mandatory2fa'
 						control={control}
-						render={({ field }): ReactElement => <ToggleSwitch {...field} checked={field.value} disabled={isDisabled} />}
+						render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={isDisabled} />}
 					/>
 				</FieldRow>
 			</Field>

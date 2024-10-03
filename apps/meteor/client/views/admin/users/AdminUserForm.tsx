@@ -108,7 +108,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 		handleSubmit,
 		formState: { errors, isDirty },
 		setValue,
-	} = useForm({
+	} = useForm<UserFormProps>({
 		values: getInitialValue({
 			data: userData,
 			defaultUserRoles,
@@ -361,8 +361,9 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 					<Field>
 						<FieldLabel htmlFor={rolesId}>{t('Roles')}</FieldLabel>
 						<FieldRow>
-							{roleError && <Callout>{roleError}</Callout>}
-							{!roleError && (
+							{roleError ? (
+								<Callout>{String(roleError)}</Callout>
+							) : (
 								<Controller
 									control={control}
 									name='roles'

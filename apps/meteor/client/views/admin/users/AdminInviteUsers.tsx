@@ -23,7 +23,7 @@ import { useSmtpQuery } from './hooks/useSmtpQuery';
 const AdminInviteUsers = () => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
-	const getEmails = useCallback((text) => text.split(/[\ ,;]+/i).filter((val: string) => validateEmail(val)), []);
+	const getEmails = useCallback((text: string) => text.split(/[\ ,;]+/i).filter((val: string) => validateEmail(val)), []);
 	const adminRouter = useRoute('admin-settings');
 	const sendInvitationMutation = useSendInvitationEmailMutation();
 	const { data, isLoading } = useSmtpQuery();

@@ -23,12 +23,15 @@ import { dispatchToastMessage } from '../../../lib/toast';
 import GenericModal from '../../GenericModal';
 import Tags from '../Tags';
 
-const CloseChatModal = ({
-	department,
-	visitorEmail,
-	onCancel,
-	onConfirm,
-}: {
+type CloseChatModalFormData = {
+	comment?: string;
+	tags?: string[];
+	transcriptPDF?: boolean;
+	transcriptEmail?: boolean;
+	subject?: string;
+};
+
+type CloseChatModalProps = {
 	department?: Serialized<ILivechatDepartment | null>;
 	visitorEmail?: string;
 	onCancel: () => void;
@@ -36,9 +39,11 @@ const CloseChatModal = ({
 		comment?: string,
 		tags?: string[],
 		preferences?: { omnichannelTranscriptPDF: boolean; omnichannelTranscriptEmail: boolean },
-		requestData?: { email: string; subject: string },
+		requestData?: { email: string; subject: string | undefined },
 	) => Promise<void>;
-}): ReactElement => {
+};
+
+const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: CloseChatModalProps): ReactElement => {
 	const t = useTranslation();
 
 	const {
@@ -49,7 +54,7 @@ const CloseChatModal = ({
 		setFocus,
 		setValue,
 		watch,
-	} = useForm();
+	} = useForm<CloseChatModalFormData>();
 
 	const commentRequired = useSetting('Livechat_request_comment_when_closing_conversation') as boolean;
 	const alwaysSendTranscript = useSetting<boolean>('Livechat_transcript_send_always');
@@ -76,7 +81,7 @@ const CloseChatModal = ({
 	};
 
 	const onSubmit = useCallback(
-		({ comment, tags, transcriptPDF, transcriptEmail, subject }): void => {
+		({ comment, tags, transcriptPDF, transcriptEmail, subject }: CloseChatModalFormData): void => {
 			const preferences = {
 				omnichannelTranscriptPDF: !!transcriptPDF,
 				omnichannelTranscriptEmail: alwaysSendTranscript ? true : !!transcriptEmail,

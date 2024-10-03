@@ -50,7 +50,7 @@ export type CustomUserStatusEndpoints = {
 		POST: (params: { customUserStatusId: string }) => void;
 	};
 	'/v1/custom-user-status.update': {
-		POST: (params: { id: string; name?: string; statusType?: string }) => {
+		POST: (params: { _id: string; name?: string; statusType?: string }) => {
 			customUserStatus: ICustomUserStatus;
 		};
 	};

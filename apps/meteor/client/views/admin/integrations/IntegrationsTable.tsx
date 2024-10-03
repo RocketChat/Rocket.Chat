@@ -44,7 +44,7 @@ const IntegrationsTable = ({ type }: { type?: string }) => {
 	const { data, isLoading, isSuccess, isError, refetch } = useQuery(['integrations', query], async () => getIntegrations(query));
 
 	const onClick = useCallback(
-		(_id, type) => () =>
+		(_id: string, type: string) => () =>
 			router.push({
 				context: 'edit',
 				type: type === 'webhook-incoming' ? 'incoming' : 'outgoing',

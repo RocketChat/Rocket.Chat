@@ -180,7 +180,7 @@ export const useQuickActions = (): {
 			comment?: string,
 			tags?: string[],
 			preferences?: { omnichannelTranscriptPDF: boolean; omnichannelTranscriptEmail: boolean },
-			requestData?: { email: string; subject: string },
+			requestData?: { email: string; subject: string | undefined },
 		) => {
 			try {
 				await closeChat({
@@ -192,7 +192,10 @@ export const useQuickActions = (): {
 						? {
 								transcriptEmail: {
 									sendToVisitor: preferences?.omnichannelTranscriptEmail,
-									requestData,
+									requestData: {
+										email: requestData.email,
+										subject: requestData.subject ?? '',
+									},
 								},
 						  }
 						: { transcriptEmail: { sendToVisitor: false } }),

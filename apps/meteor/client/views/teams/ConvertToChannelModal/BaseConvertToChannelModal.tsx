@@ -33,7 +33,7 @@ const BaseConvertToChannelModal = ({
 
 	const eligibleRooms = rooms;
 
-	const onChangeRoomSelection = useCallback((room) => {
+	const onChangeRoomSelection = useCallback((room: Serialized<IRoom>) => {
 		setSelectedRooms((selectedRooms) => {
 			if (selectedRooms[room._id]) {
 				delete selectedRooms[room._id];

@@ -38,7 +38,7 @@ const useOutsideClick = (
 	const hasClicked = useRef<boolean>(false);
 
 	const onMouseDown = useCallback(
-		(e) => {
+		(e: MouseEvent) => {
 			if (isAtBackdropChildren(e, ref)) {
 				hasClicked.current = false;
 				return;

@@ -1,7 +1,7 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useUserId } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ChangeEvent, ReactElement } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
@@ -30,7 +30,7 @@ const DiscussionListContextBar = (): ReactElement | null => {
 	const { discussionsList, loadMoreItems } = useDiscussionsList(options, userId);
 	const { phase, error, items: discussions, itemCount: totalItemCount } = useRecordList<IDiscussionMessage>(discussionsList);
 
-	const handleTextChange = useCallback((e) => {
+	const handleTextChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		setText(e.currentTarget.value);
 	}, []);
 

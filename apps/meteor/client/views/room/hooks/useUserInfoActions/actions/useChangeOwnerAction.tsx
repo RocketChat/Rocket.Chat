@@ -63,43 +63,39 @@ export const useChangeOwnerAction = (user: Pick<IUser, '_id' | 'username'>, rid:
 		closeModal();
 	}, [changeOwner, rid, uid, closeModal]);
 
-	const handleChangeOwner = useCallback(
-		({ userId }) => {
-			if (!isRoomFederated(room)) {
-				return changeOwner({ roomId: rid, userId: uid });
-			}
-			const changingOwnRole = userId === loggedUserId;
+	const changeOwnerAction = useMutableCallback(async () => {
+		if (!isRoomFederated(room)) {
+			return changeOwner({ roomId: rid, userId: uid });
+		}
+		const changingOwnRole = uid === loggedUserId;
 
-			if (changingOwnRole && loggedUserIsOwner) {
-				return setModal(() =>
-					getWarningModalForFederatedRooms(
-						closeModal,
-						handleConfirm,
-						t('Federation_Matrix_losing_privileges'),
-						t('Yes_continue'),
-						t('Federation_Matrix_losing_privileges_warning'),
-					),
-				);
-			}
+		if (changingOwnRole && loggedUserIsOwner) {
+			return setModal(
+				getWarningModalForFederatedRooms(
+					closeModal,
+					handleConfirm,
+					t('Federation_Matrix_losing_privileges'),
+					t('Yes_continue'),
+					t('Federation_Matrix_losing_privileges_warning'),
+				),
+			);
+		}
 
-			if (!changingOwnRole && loggedUserIsOwner) {
-				return setModal(() =>
-					getWarningModalForFederatedRooms(
-						closeModal,
-						handleConfirm,
-						t('Warning'),
-						t('Yes_continue'),
-						t('Federation_Matrix_giving_same_permission_warning'),
-					),
-				);
-			}
+		if (!changingOwnRole && loggedUserIsOwner) {
+			return setModal(
+				getWarningModalForFederatedRooms(
+					closeModal,
+					handleConfirm,
+					t('Warning'),
+					t('Yes_continue'),
+					t('Federation_Matrix_giving_same_permission_warning'),
+				),
+			);
+		}
 
-			changeOwner({ roomId: rid, userId: uid });
-		},
-		[setModal, loggedUserId, loggedUserIsOwner, t, rid, uid, changeOwner, closeModal, handleConfirm, room],
-	);
+		changeOwner({ roomId: rid, userId: uid });
+	});
 
-	const changeOwnerAction = useMutableCallback(async () => handleChangeOwner({ roomId: rid, userId: uid }));
 	const changeOwnerOption = useMemo(
 		() =>
 			(isRoomFederated(room) && roomCanSetOwner) || (!isRoomFederated(room) && roomCanSetOwner && userCanSetOwner)

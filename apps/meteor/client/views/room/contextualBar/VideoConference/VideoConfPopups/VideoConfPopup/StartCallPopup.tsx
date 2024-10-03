@@ -13,7 +13,7 @@ import {
 	VideoConfPopupTitle,
 	VideoConfPopupFooterButtons,
 } from '@rocket.chat/ui-video-conf';
-import type { KeyboardEvent, ReactElement } from 'react';
+import type { ReactElement } from 'react';
 import React, { useCallback, useRef } from 'react';
 
 import { useVideoConfSetPreferences, useVideoConfCapabilities, useVideoConfPreferences } from '../../../../../../contexts/VideoConfContext';
@@ -30,7 +30,7 @@ type StartCallPopupProps = {
 
 const StartCallPopup = ({ id, loading, room, onClose, onConfirm }: StartCallPopupProps): ReactElement => {
 	const t = useTranslation();
-	const ref = useRef(null);
+	const ref = useRef<HTMLDivElement | null>(null);
 	useOutsideClick([ref], !loading ? onClose : () => undefined);
 
 	const setPreferences = useVideoConfSetPreferences();
@@ -51,7 +51,7 @@ const StartCallPopup = ({ id, loading, room, onClose, onConfirm }: StartCallPopu
 	});
 
 	const callbackRef = useCallback(
-		(node) => {
+		(node: HTMLDivElement | null) => {
 			if (!node) {
 				return;
 			}

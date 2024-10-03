@@ -1,3 +1,4 @@
+import type { IOmnichannelRoom, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { Tag, Box, Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
@@ -96,7 +97,8 @@ const ChatTable = () => {
 	const queryHasChanged = defaultQuery !== hashQueryKey([query]);
 
 	const renderRow = useCallback(
-		({ _id, fname, ts, closedAt, department, tags }) => (
+		// FIXME: there is no indication this argument have a `department` property
+		({ _id, fname, ts, closedAt, department, tags }: IOmnichannelRoom & { department?: ILivechatDepartment }) => (
 			<GenericTableRow key={_id} tabIndex={0} role='link' onClick={(): void => onRowClick(_id)} action qa-user-id={_id}>
 				<GenericTableCell withTruncatedText>
 					<Box display='flex' flexDirection='column'>
@@ -157,7 +159,7 @@ const ChatTable = () => {
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>{data?.rooms.map((room) => renderRow(room))}</GenericTableBody>
+						<GenericTableBody>{data?.rooms.map(renderRow)}</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider

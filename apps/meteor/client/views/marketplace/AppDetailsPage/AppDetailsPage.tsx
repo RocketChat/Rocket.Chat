@@ -21,7 +21,13 @@ import AppRequests from './tabs/AppRequests/AppRequests';
 import AppSecurity from './tabs/AppSecurity/AppSecurity';
 import AppSettings from './tabs/AppSettings';
 
-const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
+type AppDetailsPageFormData = Record<string, unknown>;
+
+type AppDetailsPageProps = {
+	id: App['id'];
+};
+
+const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 	const t = useTranslation();
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -46,7 +52,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const isSecurityVisible = Boolean(privacyPolicySummary || permissions || tosLink || privacyLink);
 
 	const saveAppSettings = useCallback(
-		async (data) => {
+		async (data: AppDetailsPageFormData) => {
 			try {
 				await AppClientOrchestratorInstance.setAppSettings(
 					id,
@@ -68,7 +74,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 		return Object.values(settings || {}).reduce((ret, { id, value, packageValue }) => ({ ...ret, [id]: value ?? packageValue }), {});
 	}, [settings]);
 
-	const methods = useForm({ values: reducedSettings });
+	const methods = useForm<AppDetailsPageFormData>({ values: reducedSettings });
 	const {
 		handleSubmit,
 		reset,

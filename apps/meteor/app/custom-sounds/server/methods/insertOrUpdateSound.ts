@@ -1,4 +1,5 @@
 import { api } from '@rocket.chat/core-services';
+import type { ICustomSound } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { CustomSounds } from '@rocket.chat/models';
 import { check } from 'meteor/check';
@@ -7,23 +8,17 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
-export type ICustomSoundData = {
+export type ICustomSoundData = Omit<ICustomSound, '_id'> & {
 	_id?: string;
-	name: string;
-	extension: string;
 	previousName?: string;
-	previousSound?: {
-		extension?: string;
-	};
 	previousExtension?: string;
 	newFile?: boolean;
-	random?: number;
 };
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		insertOrUpdateSound(soundData: ICustomSoundData): Promise<string>;
+		insertOrUpdateSound(soundData: ICustomSoundData): string;
 	}
 }
 

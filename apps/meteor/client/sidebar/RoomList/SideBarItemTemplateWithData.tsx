@@ -199,8 +199,7 @@ function SideBarItemTemplateWithData({
 			menu={
 				!isIOsDevice &&
 				!isAnonymous &&
-				(!isQueued || (isQueued && isPriorityEnabled)) &&
-				((): ReactElement => (
+				(!isQueued || (isQueued && isPriorityEnabled)) && (
 					<RoomMenu
 						alert={alert}
 						threadUnread={threadUnread}
@@ -212,7 +211,7 @@ function SideBarItemTemplateWithData({
 						name={title}
 						hideDefaultOptions={isQueued}
 					/>
-				))
+				)
 			}
 		/>
 	);

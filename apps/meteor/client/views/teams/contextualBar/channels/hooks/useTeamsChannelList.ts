@@ -31,7 +31,7 @@ export const useTeamsChannelList = (
 	}, [options, reload]);
 
 	const fetchData = useCallback(
-		async (start, end) => {
+		async (start: number, end: number) => {
 			const { rooms, total } = await apiEndPoint({
 				teamId: options.teamId,
 				offset: start,
@@ -47,7 +47,7 @@ export const useTeamsChannelList = (
 					_updatedAt: new Date(_updatedAt),
 					...(lastMessage && { lastMessage: mapMessageFromApi(lastMessage) }),
 					...(webRtcCallStartTime && { webRtcCallStartTime: new Date(webRtcCallStartTime) }),
-					...(usersWaitingForE2EKeys && usersWaitingForE2EKeys.map(({ userId, ts }) => ({ userId, ts: new Date(ts) }))),
+					...usersWaitingForE2EKeys?.map(({ userId, ts }) => ({ userId, ts: new Date(ts) })),
 					...room,
 				})),
 				itemCount: total,

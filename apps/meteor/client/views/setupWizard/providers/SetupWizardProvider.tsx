@@ -1,4 +1,5 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { AdminInfoPage } from '@rocket.chat/onboarding-ui';
 import {
 	useToastMessageDispatch,
 	useSessionDispatch,
@@ -10,7 +11,7 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import type { ReactElement, ContextType } from 'react';
+import type { ReactElement, ContextType, ComponentProps } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -56,7 +57,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
 	const goToNextStep = useCallback(() => setCurrentStep((currentStep) => currentStep + 1), [setCurrentStep]);
-	const goToStep = useCallback((step) => setCurrentStep(() => step), [setCurrentStep]);
+	const goToStep = useCallback((step: number) => setCurrentStep(() => step), [setCurrentStep]);
 
 	const _validateEmail = useCallback(
 		(email: string): true | string => {
@@ -70,7 +71,12 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	);
 
 	const registerAdminUser = useCallback(
-		async ({ fullname, username, email, password }): Promise<void> => {
+		async ({
+			fullname,
+			username,
+			email,
+			password,
+		}: Omit<Parameters<ComponentProps<typeof AdminInfoPage>['onSubmit']>[0], 'keepPosted'>): Promise<void> => {
 			await registerUser({ name: fullname, username, email, pass: password });
 			void callbacks.run('userRegistered', {});
 
@@ -97,7 +103,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	);
 
 	const saveAgreementData = useCallback(
-		async (agreement): Promise<void> => {
+		async (agreement: boolean): Promise<void> => {
 			await dispatchSettings([
 				{
 					_id: 'Cloud_Service_Agree_PrivacyTerms',

@@ -1,5 +1,6 @@
 import { Box, PasswordInput, TextInput, FieldGroup, Field, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { FormEvent } from 'react';
 import React, { useState, useCallback } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
@@ -16,15 +17,15 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 	const [inputError, setInputError] = useState<string | undefined>();
 
 	const handleChange = useCallback(
-		(e) => {
-			e.target.value !== '' && setInputError(undefined);
+		(e: FormEvent<HTMLInputElement>) => {
+			e.currentTarget.value !== '' && setInputError(undefined);
 			setInputText(e.currentTarget.value);
 		},
 		[setInputText],
 	);
 
 	const handleSave = useCallback(
-		(e) => {
+		(e: FormEvent<HTMLFormElement>) => {
 			e.preventDefault();
 			if (inputText === '') {
 				setInputError(t('Invalid_field'));

@@ -2,7 +2,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated, isDirectMessageRoom, isTeamRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useUserRoom, useAtLeastOnePermission, useUser, usePermission, useUserSubscription } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { FormEvent, ReactElement } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import * as Federation from '../../../../lib/federation/Federation';
@@ -56,7 +56,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 
 	const canAddUsers = room && user && isFederated ? Federation.isEditableByTheUser(user, room, subscription) : hasPermissionToAddUsers;
 
-	const handleTextChange = useCallback((event) => {
+	const handleTextChange = useCallback((event: FormEvent<HTMLInputElement>) => {
 		setText(event.currentTarget.value);
 	}, []);
 

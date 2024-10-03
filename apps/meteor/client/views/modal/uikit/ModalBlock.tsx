@@ -2,7 +2,7 @@ import { Modal, AnimatedVisibility, Button, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
 import * as UiKit from '@rocket.chat/ui-kit';
-import type { FormEventHandler, ReactElement } from 'react';
+import type { FormEvent, FormEventHandler, ReactElement } from 'react';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { FocusScope } from 'react-aria';
 
@@ -83,11 +83,11 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 	);
 
 	const handleKeyDown = useCallback(
-		(event) => {
+		(event: KeyboardEvent) => {
 			switch (event.keyCode) {
 				case KeyboardCode.get('ENTER'):
-					if (event?.target?.nodeName !== 'TEXTAREA') {
-						return onSubmit(event);
+					if ((event?.target as Node)?.nodeName !== 'TEXTAREA') {
+						return onSubmit(event as unknown as FormEvent<HTMLElement>); // FIXME: mixing React and DOM event types
 					}
 					return;
 				case KeyboardCode.get('ESC'):
@@ -147,7 +147,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 			if (!container.contains(e.target as HTMLElement)) {
 				return;
 			}
-			return handleKeyDown(e);
+			return handleKeyDown(e as KeyboardEvent);
 		};
 
 		document.addEventListener('keydown', ignoreIfNotContains);

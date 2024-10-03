@@ -24,6 +24,8 @@ const getInitialData = (cannedResponseData: Serialized<IOmnichannelCannedRespons
 	departmentId: cannedResponseData?.departmentId || '',
 });
 
+type CannedResponseEditFormData = ReturnType<typeof getInitialData>;
+
 const CannedResponseEdit = ({ cannedResponseData }: CannedResponseEditProps) => {
 	const t = useTranslation();
 	const router = useRouter();
@@ -32,7 +34,7 @@ const CannedResponseEdit = ({ cannedResponseData }: CannedResponseEditProps) => 
 
 	const saveCannedResponse = useEndpoint('POST', '/v1/canned-responses');
 
-	const methods = useForm({ defaultValues: getInitialData(cannedResponseData) });
+	const methods = useForm<CannedResponseEditFormData>({ defaultValues: getInitialData(cannedResponseData) });
 
 	const {
 		handleSubmit,
@@ -43,10 +45,10 @@ const CannedResponseEdit = ({ cannedResponseData }: CannedResponseEditProps) => 
 	const handleDelete = useRemoveCannedResponse();
 
 	const handleSave = useCallback(
-		async ({ departmentId, ...data }) => {
+		async ({ _id, departmentId, ...data }: CannedResponseEditFormData) => {
 			try {
 				await saveCannedResponse({
-					_id: cannedResponseData?._id,
+					_id: _id ?? cannedResponseData?._id,
 					...data,
 					...(departmentId && { departmentId }),
 				});

@@ -258,7 +258,7 @@ const RoomMenu = ({
 			title={t('Options')}
 			mini
 			aria-keyshortcuts='alt'
-			options={menuOptions}
+			options={menuOptions as any} // FIXME: `renderItem` and `options` should be typed right
 			maxHeight={300}
 			renderItem={({ label: { label, icon }, ...props }): JSX.Element => <Option label={label} icon={icon} {...props} />}
 		/>

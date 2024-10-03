@@ -23,7 +23,7 @@ const CustomSoundsPage = () => {
 	const reload = useRef(() => null);
 
 	const handleItemClick = useCallback(
-		(_id) => (): void => {
+		(_id: string) => (): void => {
 			route.push({
 				context: 'edit',
 				id: _id,

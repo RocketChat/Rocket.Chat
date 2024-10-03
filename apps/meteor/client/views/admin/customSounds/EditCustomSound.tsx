@@ -1,7 +1,8 @@
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { FormSkeleton } from '../../../components/Skeleton';
 import EditSound from './EditSound';
@@ -12,8 +13,8 @@ type EditCustomSoundProps = {
 	close?: () => void;
 };
 
-function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): ReactElement | null {
-	const t = useTranslation();
+function EditCustomSound({ _id, onChange, close }: EditCustomSoundProps): ReactElement | null {
+	const { t } = useTranslation();
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
 
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -48,7 +49,7 @@ function EditCustomSound({ _id, onChange, ...props }: EditCustomSoundProps): Rea
 		refetch?.();
 	};
 
-	return <EditSound data={data} onChange={handleChange} {...props} />;
+	return <EditSound key={data._id} data={data} onChange={handleChange} onClose={close} />;
 }
 
 export default EditCustomSound;

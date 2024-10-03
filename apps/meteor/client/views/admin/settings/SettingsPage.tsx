@@ -2,7 +2,7 @@ import { Icon, SearchInput, Skeleton, CardGrid } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useIsSettingsContextLoading, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { FormEvent, ReactElement } from 'react';
 import React, { useCallback, useState } from 'react';
 
 import GenericNoResults from '../../../components/GenericNoResults';
@@ -14,7 +14,7 @@ import { useSettingsGroups } from './hooks/useSettingsGroups';
 const SettingsPage = (): ReactElement => {
 	const t = useTranslation();
 	const [filter, setFilter] = useState('');
-	const handleChange = useCallback((e) => setFilter(e.currentTarget.value), []);
+	const handleChange = useCallback((e: FormEvent<HTMLInputElement>) => setFilter(e.currentTarget.value), []);
 
 	const groups = useSettingsGroups(useDebouncedValue(filter, 400));
 	const isLoadingGroups = useIsSettingsContextLoading();

@@ -24,7 +24,7 @@ type RoomFilesProps = {
 	filesItems: IUploadWithUser[];
 	loadMoreItems: (start: number, end: number) => void;
 	setType: (value: any) => void;
-	setText: (e: FormEvent<HTMLElement>) => void;
+	setText: (e: FormEvent<HTMLInputElement>) => void;
 	total: number;
 	onClickClose: () => void;
 	onClickDelete: (id: IUpload['_id']) => void;

@@ -30,7 +30,7 @@ export const useDepartmentsByUnitsList = (
 	}, [options, reload]);
 
 	const fetchData = useCallback(
-		async (start, end) => {
+		async (start: number, end: number) => {
 			const { departments, total } = await getDepartments({
 				text: options.filter,
 				offset: start,

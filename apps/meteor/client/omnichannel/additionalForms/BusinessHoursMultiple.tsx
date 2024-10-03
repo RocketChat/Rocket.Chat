@@ -1,3 +1,4 @@
+import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -8,12 +9,18 @@ import { Controller, useFormContext } from 'react-hook-form';
 import AutoCompleteDepartmentMultiple from '../../components/AutoCompleteDepartmentMultiple';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
+type BusinessHoursMultipleFormData = {
+	active: boolean;
+	name: string;
+	departments: PaginatedMultiSelectOption[];
+};
+
 const BusinessHoursMultiple = ({ className }: { className?: ComponentProps<typeof Field>['className'] }) => {
 	const t = useTranslation();
 	const {
 		control,
 		formState: { errors },
-	} = useFormContext();
+	} = useFormContext<BusinessHoursMultipleFormData>();
 	const hasLicense = useHasLicenseModule('livechat-enterprise');
 
 	const enabledField = useUniqueId();
