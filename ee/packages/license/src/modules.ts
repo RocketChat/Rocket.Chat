@@ -34,14 +34,10 @@ export function getModuleDefinition(this: LicenseManager, moduleName: string) {
 	const license = this.getLicense();
 
 	if (!license) {
-		throw new Error("License not available, can't look for module");
+		return;
 	}
 
 	const moduleDefinition = license.grantedModules.find(({ module }) => module === moduleName);
-
-	if (!moduleDefinition) {
-		throw new Error('Module not found');
-	}
 
 	return moduleDefinition;
 }

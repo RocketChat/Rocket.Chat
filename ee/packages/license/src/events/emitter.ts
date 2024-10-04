@@ -5,10 +5,10 @@ import { logger } from '../logger';
 import { getModuleDefinition, isLicenseModule } from '../modules';
 
 export function moduleValidated(this: LicenseManager, module: string) {
-	const moduleDefinition = getModuleDefinition.call(this, module);
-	const external = 'external' in moduleDefinition ? moduleDefinition.external : false;
-
 	try {
+		const moduleDefinition = getModuleDefinition.call(this, module);
+		const external = moduleDefinition && 'external' in moduleDefinition ? moduleDefinition.external : false;
+
 		this.emit('module', { module, external, valid: true });
 	} catch (error) {
 		logger.error({ msg: `Error running module (valid: true) event: ${module}`, error });
@@ -26,10 +26,10 @@ export function moduleValidated(this: LicenseManager, module: string) {
 }
 
 export function moduleRemoved(this: LicenseManager, module: string) {
-	const moduleDefinition = getModuleDefinition.call(this, module);
-	const external = 'external' in moduleDefinition ? moduleDefinition.external : false;
-
 	try {
+		const moduleDefinition = getModuleDefinition.call(this, module);
+		const external = moduleDefinition && 'external' in moduleDefinition ? moduleDefinition.external : false;
+
 		this.emit('module', { module, external, valid: false });
 	} catch (error) {
 		logger.error({ msg: `Error running module (valid: false) event: ${module}`, error });

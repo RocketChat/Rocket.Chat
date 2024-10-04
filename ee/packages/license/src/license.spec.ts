@@ -444,6 +444,7 @@ describe('License.removeLicense', () => {
 		await expect(moduleCallback).toHaveBeenNthCalledWith(1, {
 			module: 'auditing',
 			valid: true,
+			external: false,
 		});
 
 		removeLicense.mockClear();
@@ -452,6 +453,7 @@ describe('License.removeLicense', () => {
 
 		await expect(removeLicense).toHaveBeenCalledTimes(1);
 		await expect(moduleCallback).toHaveBeenNthCalledWith(1, {
+			external: false,
 			module: 'auditing',
 			valid: false,
 		});
