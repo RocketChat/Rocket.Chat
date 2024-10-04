@@ -1,5 +1,18 @@
 # Change Log
 
+## 11.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@6.13.0-rc.5
+  - @rocket.chat/gazzodown@11.0.0-rc.5
+  - @rocket.chat/ui-contexts@11.0.0-rc.5
+  - @rocket.chat/ui-avatar@7.0.0-rc.5
+  - @rocket.chat/ui-video-conf@11.0.0-rc.5
+  </details>
+
 ## 11.0.0-rc.4
 
 ### Patch Changes
