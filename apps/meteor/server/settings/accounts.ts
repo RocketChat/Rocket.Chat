@@ -31,6 +31,18 @@ export const createAccountSettings = () =>
 				public: true,
 			});
 
+			await this.add('Accounts_twoFactorAuthentication_email_available_for_OAuth_users', true, {
+				type: 'boolean',
+				enableQuery: [
+					enable2FA,
+					{
+						_id: 'Accounts_TwoFactorAuthentication_By_Email_Enabled',
+						value: true,
+					},
+				],
+				public: true,
+			});
+
 			await this.add('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In', true, {
 				type: 'boolean',
 				enableQuery: [
@@ -730,6 +742,11 @@ export const createAccountSettings = () =>
 				values: defaultUserPreferencesSidebarSectionsOrder.map((key) => ({ key, i18nLabel: key })),
 				i18nLabel: 'Sidebar_Sections_Order',
 				i18nDescription: 'Sidebar_Sections_Order_Description',
+			});
+
+			await this.add('Accounts_Default_User_Preferences_featuresPreview', '[]', {
+				type: 'string',
+				public: true,
 			});
 		});
 

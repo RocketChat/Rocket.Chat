@@ -1,22 +1,27 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
-import GenericMenu from '../../../../components/GenericMenu/GenericMenu';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
-type RoomMembersActionsProps = {
-	username: IUser['username'];
-	name: IUser['name'];
-	_id: IUser['_id'];
+type RoomMembersActionsProps = Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'> & {
 	rid: IRoom['_id'];
 	reload: () => void;
 };
 
-const RoomMembersActions = ({ username, _id, name, rid, reload }: RoomMembersActionsProps): ReactElement | null => {
-	const t = useTranslation();
-	const { menuActions: menuOptions } = useUserInfoActions({ _id, username, name }, rid, reload, 0, true);
+const RoomMembersActions = ({ username, _id, name, rid, freeSwitchExtension, reload }: RoomMembersActionsProps): ReactElement | null => {
+	const { t } = useTranslation();
+
+	const { menuActions: menuOptions } = useUserInfoActions({
+		rid,
+		user: { _id, username, name, freeSwitchExtension },
+		reload,
+		size: 0,
+		isMember: true,
+	});
+
 	if (!menuOptions) {
 		return null;
 	}

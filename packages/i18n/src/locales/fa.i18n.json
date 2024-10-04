@@ -2702,7 +2702,6 @@
   "The_application_name_is_required": "نام نرم افزار مورد نیاز است",
   "The_channel_name_is_required": "نام کانال نیاز است",
   "The_emails_are_being_sent": "ایمیل در حال ارسال.",
-  "The_field_is_required": "زمینه به %s مورد نیاز است.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "تغییر اندازه تصویر به کار نخواهد کرد زیرا ما نمی توانیم تشخیص ImageMagick را یا GraphicsMagick بر روی سرور خود نصب شده است.",
   "The_redirectUri_is_required": "redirectUri مورد نیاز است",
   "The_server_will_restart_in_s_seconds": "سرور در %s ثانیه راه اندازی مجدد خواهد",
