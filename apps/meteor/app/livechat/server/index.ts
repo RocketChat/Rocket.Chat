@@ -29,7 +29,6 @@ import './methods/removeRoom';
 import './methods/saveAgentInfo';
 import './methods/saveCustomField';
 import './methods/saveDepartment';
-import './methods/saveDepartmentAgents';
 import './methods/sendMessageLivechat';
 import './methods/sendFileLivechatMessage';
 import './methods/setDepartmentForVisitor';
