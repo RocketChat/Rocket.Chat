@@ -19,10 +19,12 @@ Meteor.startup(() => {
 
 		if (!enabledApps) return;
 
-		Promise.all(enabledApps.map(async (app) => {
-			if (app.getInfo().addon !== module) return;
+		await Promise.all(
+			enabledApps.map(async (app) => {
+				if (app.getInfo().addon !== module) return;
 
-			await Apps.getManager()?.disable(app.getID(), AppStatus.DISABLED, false);
-		}));
+				await Apps.getManager()?.disable(app.getID(), AppStatus.DISABLED, false);
+			}),
+		);
 	});
 });
