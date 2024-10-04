@@ -8257,9 +8257,9 @@ __metadata:
     "@rocket.chat/icons": "*"
     "@rocket.chat/prettier-config": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-contexts": 2.0.8
+    "@rocket.chat/ui-contexts": 2.0.9
     "@rocket.chat/ui-kit": "*"
-    "@rocket.chat/ui-video-conf": 2.0.8
+    "@rocket.chat/ui-video-conf": 2.0.9
     "@tanstack/react-query": "*"
     react: "*"
     react-dom: "*"
@@ -8341,14 +8341,14 @@ __metadata:
     ts-jest: ~29.0.5
     typescript: ~5.2.2
   peerDependencies:
-    "@rocket.chat/core-typings": 6.4.8
+    "@rocket.chat/core-typings": 6.4.9
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-tokens": "*"
     "@rocket.chat/message-parser": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-client": 2.0.8
-    "@rocket.chat/ui-contexts": 2.0.8
+    "@rocket.chat/ui-client": 2.0.9
+    "@rocket.chat/ui-contexts": 2.0.9
     katex: "*"
     react: "*"
   languageName: unknown
@@ -8702,7 +8702,7 @@ __metadata:
     "@types/node": ^14.18.51
     "@types/node-gcm": ^1.0.1
     "@types/node-rsa": ^1.1.1
-    "@types/nodemailer": ^6.4.8
+    "@types/nodemailer": ^6.4.9
     "@types/oauth2-server": ^3.0.13
     "@types/object-path": ^0.11.1
     "@types/parseurl": ^1.3.1
@@ -9471,7 +9471,7 @@ __metadata:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
-    "@rocket.chat/ui-contexts": 2.0.8
+    "@rocket.chat/ui-contexts": 2.0.9
     react: ~17.0.2
   languageName: unknown
   linkType: soft
@@ -9623,7 +9623,7 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
-    "@rocket.chat/ui-contexts": 2.0.8
+    "@rocket.chat/ui-contexts": 2.0.9
     react: ^17.0.2
     react-dom: ^17.0.2
   languageName: unknown
@@ -9707,7 +9707,7 @@ __metadata:
     typescript: ~5.2.2
   peerDependencies:
     "@rocket.chat/layout": "*"
-    "@rocket.chat/ui-contexts": 2.0.8
+    "@rocket.chat/ui-contexts": 2.0.9
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
@@ -12664,12 +12664,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/nodemailer@npm:*, @types/nodemailer@npm:^6.4.8":
+"@types/nodemailer@npm:*":
   version: 6.4.8
   resolution: "@types/nodemailer@npm:6.4.8"
   dependencies:
     "@types/node": "*"
   checksum: 3cc9b6a0e54f25a1b36124df413964ff5a69e8dc4558c5dfc06818917313a50f4dbfe31fc9190e4270d07a0f8678474da24a2eae42f907933ea81d983b4772d4
+  languageName: node
+  linkType: hard
+
+"@types/nodemailer@npm:^6.4.9":
+  version: 6.4.16
+  resolution: "@types/nodemailer@npm:6.4.16"
+  dependencies:
+    "@types/node": "*"
+  checksum: ef34226b7b69a474a9b9b4681bcfb2461540aed92c54995b934f8072e28deff72aadd4c71522f6825938346048cfec077c69f18cfc2a3ec9f7432db11e5667a3
   languageName: node
   linkType: hard
 
