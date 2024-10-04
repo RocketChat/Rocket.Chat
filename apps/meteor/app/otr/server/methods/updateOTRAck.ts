@@ -26,7 +26,7 @@ Meteor.methods<ServerMethods>({
 			_id: String,
 			rid: String,
 			msg: String,
-			t: String,
+			t: Match.Any,
 			ts: Date,
 			u: {
 				_id: String,
@@ -34,9 +34,14 @@ Meteor.methods<ServerMethods>({
 				name: String,
 			},
 			_updatedAt: Date,
-			urls: Array,
-			mentions: Array,
-			channels: Array,
+			urls: Match.Any,
+			mentions: Match.Any,
+			channels: Match.Optional([
+				{
+					_id: String,
+					name: String,
+				},
+			]),
 			otr: Match.Maybe({ ack: String }),
 		});
 
