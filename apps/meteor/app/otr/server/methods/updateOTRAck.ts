@@ -1,6 +1,6 @@
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Rooms } from '@rocket.chat/models';
-import { check } from 'meteor/check';
+import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../../authorization/server';
@@ -37,6 +37,7 @@ Meteor.methods<ServerMethods>({
 			urls: Array,
 			mentions: Array,
 			channels: Array,
+			otr: Match.Maybe({ ack: String }),
 		});
 
 		if (message?.t !== 'otr') {
