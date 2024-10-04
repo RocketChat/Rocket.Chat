@@ -77,7 +77,7 @@ Meteor.startup(() => {
 		}
 		callbacks.add(
 			'afterSaveMessage',
-			async (message, room) => {
+			async (message, { room }) => {
 				return processThreads(message, room);
 			},
 			callbacks.priority.LOW,

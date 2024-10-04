@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.36.1
+
+### Patch Changes
+
+- ([#33000](https://github.com/RocketChat/Rocket.Chat/pull/33000)) fix UiKit error message: Failed to resolve module: @rocket.chat/icons
+
+## 0.36.1-rc.0
+
+### Patch Changes
+
+- ([#33000](https://github.com/RocketChat/Rocket.Chat/pull/33000)) fix UiKit error message: Failed to resolve module: @rocket.chat/icons
+
 ## 0.36.0
 
 ### Minor Changes

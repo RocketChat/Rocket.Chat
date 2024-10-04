@@ -10,6 +10,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IRoomsModel, IChannelsWithNumberOfMessagesBetweenDate } from '@rocket.chat/model-typings';
 import { Subscriptions } from '@rocket.chat/models';
+import type { Updater } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
@@ -597,7 +598,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		});
 	}
 
-	incUsersCountByIds(ids: Array<IRoom['_id']>, inc = 1): Promise<Document | UpdateResult> {
+	incUsersCountByIds(ids: Array<IRoom['_id']>, inc = 1, options?: UpdateOptions): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
 			_id: {
 				$in: ids,
@@ -610,7 +611,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 
-		return this.updateMany(query, update);
+		return this.updateMany(query, update, options);
 	}
 
 	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }> {
@@ -636,15 +637,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(
 			{
 				broadcast: true,
-			},
-			options,
-		);
-	}
-
-	findByActiveLivestream(options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		return this.find(
-			{
-				'streamingOptions.type': 'livestream',
 			},
 			options,
 		);
@@ -888,6 +880,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
+	getIncMsgCountUpdateQuery(inc: number, roomUpdater: Updater<IRoom>): Updater<IRoom> {
+		return roomUpdater.inc('msgs', inc);
+	}
+
 	decreaseMessageCountById(_id: IRoom['_id'], count = 1) {
 		return this.incMsgCountById(_id, -count);
 	}
@@ -905,6 +901,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findOneByIdAndType(roomId: IRoom['_id'], type: IRoom['t'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+		return this.findOne({ _id: roomId, t: type }, options);
 	}
 
 	setCallStatus(_id: IRoom['_id'], status: IRoom['callStatus']): Promise<UpdateResult> {
@@ -1023,15 +1023,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 		return this.updateOne(query, update);
-	}
-
-	setStreamingOptionsById(_id: IRoom['_id'], streamingOptions: IRoom['streamingOptions']): Promise<UpdateResult> {
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				streamingOptions,
-			},
-		};
-		return this.updateOne({ _id }, update);
 	}
 
 	setReadOnlyById(_id: IRoom['_id'], readOnly: NonNullable<IRoom['ro']>): Promise<UpdateResult> {
@@ -1527,25 +1518,19 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	incMsgCountAndSetLastMessageById(
-		_id: IRoom['_id'],
-		inc = 1,
-		lastMessageTimestamp: NonNullable<IRoom['lm']>,
-		lastMessage?: IMessage,
-	): Promise<UpdateResult> {
-		const query: Filter<IRoom> = { _id };
+	setIncMsgCountAndSetLastMessageUpdateQuery(
+		inc: number,
+		lastMessage: IMessage,
+		shouldStoreLastMessage: boolean,
+		roomUpdater: Updater<IRoom>,
+	): Updater<IRoom> {
+		roomUpdater.inc('msgs', inc).set('lm', lastMessage.ts);
 
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				lm: lastMessageTimestamp,
-				...(lastMessage ? { lastMessage } : {}),
-			},
-			$inc: {
-				msgs: inc,
-			},
-		};
+		if (shouldStoreLastMessage) {
+			roomUpdater.set('lastMessage', lastMessage);
+		}
 
-		return this.updateOne(query, update);
+		return roomUpdater;
 	}
 
 	incUsersCountById(_id: IRoom['_id'], inc = 1): Promise<UpdateResult> {
@@ -1578,16 +1563,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	setLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage']): Promise<UpdateResult> {
-		const query: Filter<IRoom> = { _id };
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				lastMessage,
-			},
-		};
-
-		return this.updateOne(query, update);
+	getLastMessageUpdateQuery(lastMessage: IRoom['lastMessage'], roomUpdater: Updater<IRoom>): Updater<IRoom> {
+		return roomUpdater.set('lastMessage', lastMessage);
 	}
 
 	async resetLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage'] | null, msgCountDelta?: number): Promise<UpdateResult> {
@@ -2085,5 +2062,86 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.updateMany(query, update);
+	}
+
+	findChildrenOfTeam(
+		teamId: string,
+		teamRoomId: string,
+		userId: string,
+		filter?: string,
+		type?: 'channels' | 'discussions',
+		options?: FindOptions<IRoom>,
+	): AggregationCursor<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }> {
+		const nameFilter = filter ? new RegExp(escapeRegExp(filter), 'i') : undefined;
+		return this.col.aggregate<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }>([
+			{
+				$match: {
+					$and: [
+						{
+							$or: [
+								...(!type || type === 'channels' ? [{ teamId }] : []),
+								...(!type || type === 'discussions' ? [{ prid: teamRoomId }] : []),
+							],
+						},
+						...(nameFilter ? [{ $or: [{ fname: nameFilter }, { name: nameFilter }] }] : []),
+					],
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_subscription',
+					let: {
+						roomId: '$_id',
+					},
+					pipeline: [
+						{
+							$match: {
+								$and: [
+									{
+										$expr: {
+											$eq: ['$rid', '$$roomId'],
+										},
+									},
+									{
+										$expr: {
+											$eq: ['$u._id', userId],
+										},
+									},
+									{
+										$expr: {
+											$ne: ['$t', 'c'],
+										},
+									},
+								],
+							},
+						},
+						{
+							$project: { _id: 1 },
+						},
+					],
+					as: 'subscription',
+				},
+			},
+			{
+				$match: {
+					$or: [
+						{ t: 'c' },
+						{
+							$expr: {
+								$ne: [{ $size: '$subscription' }, 0],
+							},
+						},
+					],
+				},
+			},
+			{ $project: { subscription: 0 } },
+			{ $sort: options?.sort || { ts: 1 } },
+			{
+				$facet: {
+					totalCount: [{ $count: 'count' }],
+					paginatedResults: [{ $skip: options?.skip || 0 }, { $limit: options?.limit || 50 }],
+				},
+			},
+		]);
 	}
 }

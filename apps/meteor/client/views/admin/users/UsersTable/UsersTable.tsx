@@ -1,8 +1,9 @@
 import type { IRole, Serialized } from '@rocket.chat/core-typings';
-import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { Pagination } from '@rocket.chat/fuselage';
 import { useEffectEvent, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
-import { useRouter, useTranslation } from '@rocket.chat/ui-contexts';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useRouter, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useMemo } from 'react';
@@ -17,18 +18,18 @@ import {
 } from '../../../../components/GenericTable';
 import type { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import type { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import type { AdminUserTab, UsersFilters, UsersTableSortingOptions } from '../AdminUsersPage';
+import type { AdminUsersTab, UsersFilters, UsersTableSortingOption } from '../AdminUsersPage';
 import UsersTableFilters from './UsersTableFilters';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
-	tab: AdminUserTab;
+	tab: AdminUsersTab;
 	roleData: { roles: IRole[] } | undefined;
 	onReload: () => void;
 	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
 	filteredUsersQueryResult: UseQueryResult<PaginatedResult<{ users: Serialized<DefaultUserInfo>[] }>>;
 	paginationData: ReturnType<typeof usePagination>;
-	sortData: ReturnType<typeof useSort<UsersTableSortingOptions>>;
+	sortData: ReturnType<typeof useSort<UsersTableSortingOption>>;
 	isSeatsCapExceeded: boolean;
 };
 
@@ -48,6 +49,7 @@ const UsersTable = ({
 
 	const isMobile = !breakpoints.includes('xl');
 	const isLaptop = !breakpoints.includes('xxl');
+	const isVoIPEnabled = useSetting<boolean>('VoIP_TeamCollab_Enabled') || false;
 
 	const { data, isLoading, isError, isSuccess } = filteredUsersQueryResult;
 
@@ -110,9 +112,21 @@ const UsersTable = ({
 					{t('Pending_action')}
 				</GenericTableHeaderCell>
 			),
-			<GenericTableHeaderCell key='actions' w={tab === 'pending' ? 'x204' : ''} />,
+			tab === 'all' && isVoIPEnabled && (
+				<GenericTableHeaderCell
+					w='x180'
+					key='freeSwitchExtension'
+					direction={sortDirection}
+					active={sortBy === 'freeSwitchExtension'}
+					onClick={setSort}
+					sort='freeSwitchExtension'
+				>
+					{t('Voice_call_extension')}
+				</GenericTableHeaderCell>
+			),
+			<GenericTableHeaderCell key='actions' w={tab === 'pending' ? 'x204' : 'x50'} />,
 		],
-		[isLaptop, isMobile, setSort, sortBy, sortDirection, t, tab],
+		[isLaptop, isMobile, setSort, sortBy, sortDirection, t, tab, isVoIPEnabled],
 	);
 
 	return (
@@ -129,16 +143,16 @@ const UsersTable = ({
 			)}
 
 			{isError && (
-				<States>
-					<StatesIcon name='warning' variation='danger' />
-					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
-					<StatesActions>
-						<StatesAction onClick={onReload}>{t('Reload_page')}</StatesAction>
-					</StatesActions>
-				</States>
+				<GenericNoResults icon='warning' title={t('Something_went_wrong')} buttonTitle={t('Reload_page')} buttonAction={onReload} />
 			)}
 
-			{isSuccess && data.users.length === 0 && <GenericNoResults />}
+			{isSuccess && data.users.length === 0 && (
+				<GenericNoResults
+					icon='user'
+					title={t('Users_Table_Generic_No_users', t((tab !== 'all' ? tab : '') as TranslationKey))}
+					description={t(`Users_Table_no_${tab}_users_description`)}
+				/>
+			)}
 
 			{isSuccess && !!data?.users && (
 				<>
@@ -155,6 +169,7 @@ const UsersTable = ({
 									onReload={onReload}
 									tab={tab}
 									isSeatsCapExceeded={isSeatsCapExceeded}
+									showVoipExtension={isVoIPEnabled}
 								/>
 							))}
 						</GenericTableBody>
@@ -163,7 +178,7 @@ const UsersTable = ({
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
+						count={data.total || 0}
 						onSetItemsPerPage={setItemsPerPage}
 						onSetCurrent={setCurrent}
 						{...paginationProps}

@@ -1,9 +1,9 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import { useCurrentRoutePath, useTranslation } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
 import React from 'react';
 
-import GenericMenu from '../../components/GenericMenu/GenericMenu';
 import { useAdministrationMenu } from './hooks/useAdministrationMenu';
 
 type NavBarItemAdministrationMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;

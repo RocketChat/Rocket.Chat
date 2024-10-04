@@ -1,5 +1,6 @@
 declare module 'meteor/accounts-base' {
 	namespace Accounts {
+		const storageLocation: Window['localStorage'];
 		function createUser(
 			options: {
 				username?: string;
@@ -41,6 +42,8 @@ declare module 'meteor/accounts-base' {
 		): Record<string, unknown>;
 
 		function _clearAllLoginTokens(userId: string | null): void;
+
+		function config(options: { clientStorage: 'session' | 'local' }): void;
 
 		class ConfigError extends Error {}
 

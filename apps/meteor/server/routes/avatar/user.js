@@ -1,4 +1,5 @@
 import { Avatars, Users } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { FileUpload } from '../../../app/file-upload/server';
 import { settings } from '../../../app/settings/server';
@@ -28,6 +29,13 @@ export const userAvatar = async function (req, res) {
 	if (requestUsername[0] === '@') {
 		const svg = renderSVGLetters(requestUsername.substr(1), avatarSize);
 		serveAvatar(svg, req.query.format, res);
+		return;
+	}
+
+	if (settings.get('Accounts_AvatarExternalProviderUrl')) {
+		const response = await fetch(settings.get('Accounts_AvatarExternalProviderUrl').replace('{username}', requestUsername));
+		response.headers.forEach((value, key) => res.setHeader(key, value));
+		response.body.pipe(res);
 		return;
 	}
 
