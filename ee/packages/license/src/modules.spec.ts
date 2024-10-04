@@ -1,4 +1,3 @@
-import type { LicenseImp } from '.';
 import { MockedLicenseBuilder, getReadyLicenseManager } from '../__tests__/MockedLicenseBuilder';
 
 describe('getModules', () => {
@@ -19,29 +18,45 @@ describe('getModules', () => {
 });
 
 describe('getModuleDefinition', () => {
-	let licenseManager: LicenseImp;
-
-	beforeEach(async () => {
-		licenseManager = await getReadyLicenseManager();
+	it('should not return `external` property for an internal module', async () => {
+		const licenseManager = await getReadyLicenseManager();
 
 		const license = await new MockedLicenseBuilder().withGratedModules(['auditing', 'chat.rocket.test-addon']).sign();
 
 		await licenseManager.setLicense(license);
-	});
 
-	it('should not return `external` property for an internal module', () => {
 		const module = licenseManager.getModuleDefinition('auditing');
 
 		expect(module).toMatchObject({ module: 'auditing' });
 	});
 
-	it('should return `undefined` for a non-existing module', () => {
+	it('should return `undefined` for a non-existing module', async () => {
+		const licenseManager = await getReadyLicenseManager();
+
+		const license = await new MockedLicenseBuilder().withGratedModules(['auditing', 'chat.rocket.test-addon']).sign();
+
+		await licenseManager.setLicense(license);
+
 		const module = licenseManager.getModuleDefinition('livechat-enterprise');
 
 		expect(module).toBeUndefined();
 	});
 
-	it('should return `external` property for an external module', () => {
+	it('should return `undefined` if there is no license available', async () => {
+		const licenseManager = await getReadyLicenseManager();
+
+		const module = licenseManager.getModuleDefinition('livechat-enterprise');
+
+		expect(module).toBeUndefined();
+	});
+
+	it('should return `external` property for an external module', async () => {
+		const licenseManager = await getReadyLicenseManager();
+
+		const license = await new MockedLicenseBuilder().withGratedModules(['auditing', 'chat.rocket.test-addon']).sign();
+
+		await licenseManager.setLicense(license);
+
 		const module = licenseManager.getModuleDefinition('chat.rocket.test-addon');
 
 		expect(module).toMatchObject({ module: 'chat.rocket.test-addon', external: true });
@@ -68,6 +83,14 @@ describe('getExternalModules', () => {
 		const license = await new MockedLicenseBuilder().withGratedModules(['auditing', 'livechat-enterprise']).sign();
 
 		await licenseManager.setLicense(license);
+
+		const modules = licenseManager.getExternalModules();
+
+		expect(modules).toHaveLength(0);
+	});
+
+	it('should return empty array if license is not available', async () => {
+		const licenseManager = await getReadyLicenseManager();
 
 		const modules = licenseManager.getExternalModules();
 
