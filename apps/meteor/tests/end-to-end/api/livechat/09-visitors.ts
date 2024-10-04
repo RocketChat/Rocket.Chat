@@ -986,66 +986,7 @@ describe('LIVECHAT - visitors', () => {
 			expect(res.body.contact).to.be.null;
 		});
 	});
-	// Check if this endpoint is still being used
-	describe('livechat/room.visitor', () => {
-		it('should fail if user doesnt have view-l-room permission', async () => {
-			await updatePermission('view-l-room', []);
-			const res = await request.put(api(`livechat/room.visitor`)).set(credentials).send();
-			expect(res.body).to.have.property('success', false);
-		});
-		it('should fail if rid is not on body params', async () => {
-			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
-			const res = await request.put(api(`livechat/room.visitor`)).set(credentials).send();
-			expect(res.body).to.have.property('success', false);
-		});
-		it('should fail if oldVisitorId is not on body params', async () => {
-			const res = await request.put(api(`livechat/room.visitor`)).set(credentials).send({ rid: 'GENERAL' });
-			expect(res.body).to.have.property('success', false);
-		});
-		it('should fail if newVisitorId is not on body params', async () => {
-			const res = await request.put(api(`livechat/room.visitor`)).set(credentials).send({ rid: 'GENERAL', oldVisitorId: 'GENERAL' });
-			expect(res.body).to.have.property('success', false);
-		});
-		it('should fail if oldVisitorId doesnt point to a valid visitor', async () => {
-			const res = await request
-				.put(api(`livechat/room.visitor`))
-				.set(credentials)
-				.send({ rid: 'GENERAL', oldVisitorId: 'GENERAL', newVisitorId: 'GENERAL' });
-			expect(res.body).to.have.property('success', false);
-		});
-		it('should fail if rid doesnt point to a valid room', async () => {
-			const visitor = await createVisitor();
-			const res = await request
-				.put(api(`livechat/room.visitor`))
-				.set(credentials)
-				.send({ rid: 'GENERAL', oldVisitorId: visitor._id, newVisitorId: visitor._id });
-			expect(res.body).to.have.property('success', false);
-		});
-		it('should fail if oldVisitorId is trying to change a room is not theirs', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			const visitor2 = await createVisitor();
 
-			const res = await request
-				.put(api(`livechat/room.visitor`))
-				.set(credentials)
-				.send({ rid: room._id, oldVisitorId: visitor2._id, newVisitorId: visitor._id });
-			expect(res.body).to.have.property('success', false);
-		});
-		it('should successfully change a room visitor with a new one', async () => {
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			const visitor2 = await createVisitor();
-
-			const res = await request
-				.put(api(`livechat/room.visitor`))
-				.set(credentials)
-				.send({ rid: room._id, oldVisitorId: visitor._id, newVisitorId: visitor2._id });
-			expect(res.body).to.have.property('success', true);
-			expect(res.body.room).to.have.property('v');
-			expect(res.body.room.v._id).to.equal(visitor2._id);
-		});
-	});
 	describe('livechat/visitors.search', () => {
 		it('should fail if user doesnt have view-l-room permission', async () => {
 			await updatePermission('view-l-room', []);
