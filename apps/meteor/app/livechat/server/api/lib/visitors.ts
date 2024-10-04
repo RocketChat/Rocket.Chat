@@ -4,7 +4,7 @@ import type { FindOptions } from 'mongodb';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { canAccessRoomAsync } from '../../../../authorization/server/functions/canAccessRoom';
-import { migrateVisitorToContactId } from '../../lib/Contacts';
+import { isSingleContactEnabled, migrateVisitorToContactId } from '../../lib/Contacts';
 
 export async function findVisitorInfo({ visitorId }: { visitorId: IVisitor['_id'] }) {
 	const visitor = await LivechatVisitors.findOneEnabledById(visitorId);
@@ -22,7 +22,7 @@ export async function ensureVisitorHasContactId(visitor: ILivechatVisitor): Prom
 		return visitor;
 	}
 
-	if (process.env.TEST_MODE?.toUpperCase() !== 'TRUE') {
+	if (isSingleContactEnabled()) {
 		return visitor;
 	}
 
