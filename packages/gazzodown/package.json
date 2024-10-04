@@ -77,6 +77,8 @@
 		"react": "*"
 	},
 	"dependencies": {
+		"@types/dompurify": "^3.0.5",
+		"dompurify": "^3.1.7",
 		"highlight.js": "^11.5.1",
 		"react-error-boundary": "^3.1.4"
 	},
