@@ -400,6 +400,10 @@ export class AppManager {
             rls = rls.filter((rl) => filter.ids.includes(rl.getID()));
         }
 
+        if (typeof filter.installationSource !== 'undefined') {
+            rls = rls.filter((rl) => rl.getInstallationSource() === filter.installationSource);
+        }
+
         if (typeof filter.name === 'string') {
             rls = rls.filter((rl) => rl.getName() === filter.name);
         } else if (filter.name instanceof RegExp) {
@@ -488,6 +492,37 @@ export class AppManager {
         // This is async, but we don't care since it only updates in the database
         // and it should not mutate any properties we care about
         await this.appMetadataStorage.update(storageItem).catch();
+
+        return true;
+    }
+
+    public async migrate(id: string): Promise<boolean> {
+        const app = this.apps.get(id);
+
+        if (!app) {
+            throw new Error(`No App by the id "${id}" exists.`);
+        }
+
+        await app.call(AppMethod.ONUPDATE).catch((e) => console.warn('Error while migrating:', e));
+
+        await this.purgeAppConfig(app, { keepScheduledJobs: true });
+
+        const storageItem = await this.appMetadataStorage.retrieveOne(id);
+
+        app.getStorageItem().marketplaceInfo = storageItem.marketplaceInfo;
+        await app.validateLicense().catch();
+
+        storageItem.migrated = true;
+        storageItem.signature = await this.getSignatureManager().signApp(storageItem);
+        // This is async, but we don't care since it only updates in the database
+        // and it should not mutate any properties we care about
+        const stored = await this.appMetadataStorage.update(storageItem).catch();
+
+        await this.updateLocal(stored, app);
+        await this.bridges
+            .getAppActivationBridge()
+            .doAppUpdated(app)
+            .catch(() => {});
 
         return true;
     }
