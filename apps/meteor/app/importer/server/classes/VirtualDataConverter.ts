@@ -7,6 +7,7 @@ import type {
 	IImportRecordType,
 	IImportData,
 	IImportChannel,
+	IImportContactRecord,
 } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
@@ -19,6 +20,8 @@ export class VirtualDataConverter extends ImportDataConverter {
 	protected _channelRecords: Array<IImportChannelRecord>;
 
 	protected _messageRecords: Array<IImportMessageRecord>;
+
+	protected _contactRecords: Array<IImportContactRecord>;
 
 	protected useVirtual: boolean;
 
@@ -144,6 +147,7 @@ export class VirtualDataConverter extends ImportDataConverter {
 		this._userRecords = [];
 		this._channelRecords = [];
 		this._messageRecords = [];
+		this._contactRecords = [];
 	}
 
 	private getObjectList(type: IImportRecordType): Array<IImportRecord> {
@@ -154,11 +158,13 @@ export class VirtualDataConverter extends ImportDataConverter {
 				return this._channelRecords;
 			case 'message':
 				return this._messageRecords;
+			case 'contact':
+				return this._contactRecords;
 		}
 	}
 
 	private getVirtualRecordById(id: string): IImportRecord | undefined {
-		for (const store of [this._userRecords, this._channelRecords, this._messageRecords]) {
+		for (const store of [this._userRecords, this._channelRecords, this._messageRecords, this._contactRecords]) {
 			for (const record of store) {
 				if (record._id === id) {
 					return record;
