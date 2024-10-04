@@ -33,7 +33,6 @@ import './methods/saveAgentInfo';
 import './methods/saveCustomField';
 import './methods/saveDepartment';
 import './methods/saveDepartmentAgents';
-import './methods/saveIntegration';
 import './methods/saveTrigger';
 import './methods/sendMessageLivechat';
 import './methods/sendFileLivechatMessage';
