@@ -2,18 +2,18 @@ import type { BehaviorWithContext } from '@rocket.chat/core-typings';
 
 import type { LicenseManager } from '../license';
 import { logger } from '../logger';
-import { getModuleDefinition, isLicenseModule } from '../modules';
+import { isLicenseModule } from '../modules';
 
 export function moduleValidated(this: LicenseManager, module: string) {
 	try {
-		const moduleDefinition = getModuleDefinition.call(this, module);
-		const external = moduleDefinition && 'external' in moduleDefinition ? moduleDefinition.external : false;
+		const external = !isLicenseModule(module);
 
 		this.emit('module', { module, external, valid: true });
 	} catch (error) {
 		logger.error({ msg: `Error running module (valid: true) event: ${module}`, error });
 	}
 
+	// Duplicated call for type-guard to work
 	if (!isLicenseModule(module)) {
 		return;
 	}
@@ -27,14 +27,14 @@ export function moduleValidated(this: LicenseManager, module: string) {
 
 export function moduleRemoved(this: LicenseManager, module: string) {
 	try {
-		const moduleDefinition = getModuleDefinition.call(this, module);
-		const external = moduleDefinition && 'external' in moduleDefinition ? moduleDefinition.external : false;
+		const external = !isLicenseModule(module);
 
 		this.emit('module', { module, external, valid: false });
 	} catch (error) {
 		logger.error({ msg: `Error running module (valid: false) event: ${module}`, error });
 	}
 
+	// Duplicated call for type-guard to work
 	if (!isLicenseModule(module)) {
 		return;
 	}
