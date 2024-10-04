@@ -6010,7 +6010,7 @@
   "VoIP_JWT_Secret_description": "Set a secret key for sharing extension details from server to client as JWT instead of plain text. Extension registration details will be sent as plain text if a secret key has not been set.",
   "Voip_is_disabled": "VoIP is disabled",
   "Voip_is_disabled_description": "To view the list of extensions it is necessary to activate VoIP, do so in the Settings tab.",
-  "VoIP_TeamCollab": "Teams voice calls (VoIP)",
+  "VoIP_TeamCollab": "Team voice calls (VoIP)",
   "VoIP_TeamCollab_Description": "Set up FreeSwitch for VoIP in Team collaboration",
   "VoIP_TeamCollab_Enabled": "Enabled",
   "VoIP_TeamCollab_FreeSwitch_Host": "FreeSwitch Host",
