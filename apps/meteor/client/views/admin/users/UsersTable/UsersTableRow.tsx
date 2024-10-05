@@ -7,16 +7,17 @@ import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Roles } from '../../../../../app/models/client';
+import { Roles } from '../../../../../app/models/client/models/Roles';
 import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { UserStatus } from '../../../../components/UserStatus';
-import type { AdminUserTab } from '../AdminUsersPage';
+import type { AdminUsersTab } from '../AdminUsersPage';
 import { useChangeAdminStatusAction } from '../hooks/useChangeAdminStatusAction';
 import { useChangeUserStatusAction } from '../hooks/useChangeUserStatusAction';
 import { useDeleteUserAction } from '../hooks/useDeleteUserAction';
 import { useResetE2EEKeyAction } from '../hooks/useResetE2EEKeyAction';
 import { useResetTOTPAction } from '../hooks/useResetTOTPAction';
 import { useSendWelcomeEmailMutation } from '../hooks/useSendWelcomeEmailMutation';
+import { useVoipExtensionAction } from '../hooks/useVoipExtensionAction';
 
 type UsersTableRowProps = {
 	user: Serialized<DefaultUserInfo>;
@@ -24,14 +25,24 @@ type UsersTableRowProps = {
 	isMobile: boolean;
 	isLaptop: boolean;
 	onReload: () => void;
-	tab: AdminUserTab;
+	tab: AdminUsersTab;
 	isSeatsCapExceeded: boolean;
+	showVoipExtension: boolean;
 };
 
-const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSeatsCapExceeded }: UsersTableRowProps): ReactElement => {
+const UsersTableRow = ({
+	user,
+	onClick,
+	onReload,
+	isMobile,
+	isLaptop,
+	tab,
+	isSeatsCapExceeded,
+	showVoipExtension,
+}: UsersTableRowProps): ReactElement => {
 	const { t } = useTranslation();
 
-	const { _id, emails, username, name, roles, status, active, avatarETag, lastLogin, type } = user;
+	const { _id, emails, username = '', name = '', roles, status, active, avatarETag, lastLogin, type, freeSwitchExtension } = user;
 	const registrationStatusText = useMemo(() => {
 		const usersExcludedFromPending = ['bot', 'app'];
 
@@ -64,10 +75,17 @@ const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSea
 	const resetTOTPAction = useResetTOTPAction(userId);
 	const resetE2EKeyAction = useResetE2EEKeyAction(userId);
 	const resendWelcomeEmail = useSendWelcomeEmailMutation();
+	const voipExtensionAction = useVoipExtensionAction({ extension: freeSwitchExtension, username, name });
 
 	const isNotPendingDeactivatedNorFederated = tab !== 'pending' && tab !== 'deactivated' && !isFederatedUser;
 	const menuOptions = useMemo(
 		() => ({
+			...(voipExtensionAction && {
+				voipExtensionAction: {
+					label: { label: voipExtensionAction.label, icon: voipExtensionAction.icon },
+					action: voipExtensionAction.action,
+				},
+			}),
 			...(isNotPendingDeactivatedNorFederated &&
 				changeAdminStatusAction && {
 					makeAdmin: {
@@ -102,6 +120,7 @@ const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSea
 			isNotPendingDeactivatedNorFederated,
 			resetE2EKeyAction,
 			resetTOTPAction,
+			voipExtensionAction,
 		],
 	);
 
@@ -154,6 +173,12 @@ const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSea
 				</GenericTableCell>
 			)}
 
+			{tab === 'all' && showVoipExtension && username && (
+				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+					{freeSwitchExtension || t('Not_assigned')}
+				</GenericTableCell>
+			)}
+
 			<GenericTableCell
 				onClick={(e): void => {
 					e.stopPropagation();
@@ -179,6 +204,8 @@ const UsersTableRow = ({ user, onClick, onReload, isMobile, isLaptop, tab, isSea
 						placement='bottom-start'
 						flexShrink={0}
 						key='menu'
+						aria-label={t('More_actions')}
+						title={t('More_actions')}
 						renderItem={({ label: { label, icon }, ...props }): ReactElement => (
 							<Option label={label} title={label} icon={icon} variant={label === 'Delete' ? 'danger' : ''} {...props} />
 						)}
