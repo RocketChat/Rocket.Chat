@@ -555,6 +555,7 @@ const MessageBox = ({
 							tmid={tmid}
 							isRecording={isRecording}
 							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
+							isEditing={isEditing}
 							handleFiles={handleFilesToUpload}
 						/>
 					</MessageComposerToolbarActions>
