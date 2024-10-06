@@ -129,10 +129,6 @@ const MessageBox = ({
 	const [typing, setTyping] = useReducer(reducer, false);
 	const [isUploading, setIsUploading] = useState(false);
 
-	useEffect(() => {
-		setIsUploading(filesToUpload.length > 0);
-	}, [filesToUpload]);
-
 	const dispatchToastMessage = useToastMessageDispatch();
 	const maxFileSize = useSetting('FileUpload_MaxFileSize') as number;
 
@@ -345,6 +341,13 @@ const MessageBox = ({
 		subscribe: chat.composer?.editing.subscribe ?? emptySubscribe,
 	});
 
+	useEffect(() => {
+		setIsUploading(filesToUpload.length > 0);
+		if (isEditing) {
+			setFilesToUpload([]);
+		}
+	}, [filesToUpload, isEditing, setFilesToUpload]);
+
 	const isRecordingAudio = useSubscription({
 		getCurrentValue: chat.composer?.recording.get ?? getEmptyFalse,
 		subscribe: chat.composer?.recording.subscribe ?? emptySubscribe,
@@ -552,6 +555,7 @@ const MessageBox = ({
 							tmid={tmid}
 							isRecording={isRecording}
 							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
+							isEditing={isEditing}
 							handleFiles={handleFilesToUpload}
 						/>
 					</MessageComposerToolbarActions>
