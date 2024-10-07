@@ -122,6 +122,22 @@ export class CsvImporter extends Importer {
 				const parsedUsers = this.csvParser(entry.getData().toString());
 				usersCount = parsedUsers.length;
 
+				for await (const u of parsedUsers) {
+					const username = u[0].trim();
+					availableUsernames.add(username);
+
+					const email = u[1].trim();
+					const name = u[2].trim();
+
+					await this.converter.addUser({
+						type: 'user',
+						importIds: [username],
+						emails: [email],
+						username,
+						name,
+					});
+				}
+
 				await super.updateRecord({ 'count.users': usersCount });
 				increaseProgressCount();
 				continue;
