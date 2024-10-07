@@ -65,6 +65,22 @@ export class TestsAppStorage extends AppMetadataStorage {
         });
     }
 
+    public retrieveAllPrivate(): Promise<Map<string, IAppStorageItem>> {
+        return new Promise((resolve, reject) => {
+            this.db.find({ installationSource: 'private' }, (err: Error, docs: Array<IAppStorageItem>) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    const items = new Map<string, IAppStorageItem>();
+
+                    docs.forEach((i) => items.set(i.id, i));
+
+                    resolve(items);
+                }
+            });
+        });
+    }
+
     public update(item: IAppStorageItem): Promise<IAppStorageItem> {
         return new Promise((resolve, reject) => {
             this.db.update({ id: item.id }, item, {}, (err: Error, numOfUpdated: number) => {
