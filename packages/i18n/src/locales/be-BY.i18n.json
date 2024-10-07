@@ -2384,7 +2384,7 @@
   "Thank_you_for_your_feedback": "Дзякуй за ваш водгук",
   "The_application_name_is_required": "Імя прыкладання патрабуецца",
   "The_channel_name_is_required": "Назва канала патрабуецца",
-  "The_emails_are_being_sent": "Лісты былі адпраўленыя.",   
+  "The_emails_are_being_sent": "Лісты былі адпраўленыя.",
   "The_image_resize_will_not_work_because_we_can_not_detect_ImageMagick_or_GraphicsMagick_installed_in_your_server": "Змяніць памер малюнка не будзе працаваць, таму што мы не можам выявіць ImageMagick або GraphicsMagick усталяваны на вашым серверы.",
   "The_redirectUri_is_required": "RedirectUri патрабуецца",
   "The_server_will_restart_in_s_seconds": "Сервер будзе перазагружаны у %s секунд",
