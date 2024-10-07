@@ -6040,7 +6040,6 @@
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "मैं <1>नियम एवं शर्तें</1> और <3>गोपनीयता नीति</3> से सहमत हूं",
   "Larger_amounts_of_active_connections": "बड़ी मात्रा में सक्रिय कनेक्शन के लिए आप हमारे <1>मल्टीपल इंस्टेंस समाधान</1> पर विचार कर सकते हैं।",
   "Uninstall_grandfathered_app": "{{appName}} अनइंस्टॉल करें?",
-  "App_will_lose_grandfathered_status": "**यह {{context}} ऐप अपना दादा दर्जा खो देगा।**\n  \nसमुदाय पर कार्यस्थानों में अधिकतम {{limit}} {{context}} ऐप्स सक्षम हो सकते हैं। दादाजी ऐप्स को सीमा में गिना जाता है लेकिन सीमा उन पर लागू नहीं होती है।",
   "All_rooms": "सभी कमरे",
   "All_visible": "सब दिख रहा है",
   "Filter_by_room": "कमरे के प्रकार के अनुसार फ़िल्टर करें",
