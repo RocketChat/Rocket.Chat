@@ -754,7 +754,7 @@
   "cache_cleared": "Cache limpo",
   "Call": "Ligação",
   "Calling": "Chamando",
-  "Call_Center": "Canal de Voz",
+  "Call_Center": "Omnichannel canal de voz (VoIP)",
   "Call_Center_Description": "Configure o canal de voz no Rocket.Chat",
   "Calls_in_queue_zero": "A fila está Vazia",
   "Calls_in_queue_one": "{{count}} chamadas na fila",
