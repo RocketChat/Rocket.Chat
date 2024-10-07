@@ -170,7 +170,7 @@ class E2E extends Emitter {
 			}
 		}
 
-		if (sub.encrypted && !sub.E2EKey) {
+		if (sub.encrypted && !sub.E2EKey && !sub.E2ESuggestedKey && !e2eRoom.isWaitingKeys()) {
 			e2eRoom.setState(E2ERoomState.WAITING_KEYS);
 			return;
 		}
