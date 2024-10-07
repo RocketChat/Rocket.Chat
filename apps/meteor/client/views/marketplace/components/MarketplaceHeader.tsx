@@ -69,7 +69,7 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 				{isAdmin && context === 'private' && <Button onClick={handleClickPrivate}>{t('Upload_private_app')}</Button>}
 
 				{isAdmin && isSuccess && !privateAppsEnabled && context === 'private' && (
-					<UpgradeButton primary icon={undefined} target='private-apps-header' action='upgrade'>
+					<UpgradeButton primary target='private-apps-header' action='upgrade'>
 						{t('Upgrade')}
 					</UpgradeButton>
 				)}
