@@ -9,6 +9,7 @@ import semver from 'semver';
 import AppStatus from '../AppDetailsPage/tabs/AppStatus/AppStatus';
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
+import AddonChip from './AddonChip';
 
 // TODO: org props
 const AppRow = ({ className, ...props }: App & { className?: string }): ReactElement => {
@@ -67,6 +68,7 @@ const AppRow = ({ className, ...props }: App & { className?: string }): ReactEle
 								{name}
 							</CardTitle>
 							{Boolean(bundledIn?.length) && <BundleChips bundledIn={bundledIn} />}
+							<AddonChip />
 						</CardHeader>
 						{shortDescription && <CardBody id={`${id}-description`}>{shortDescription}</CardBody>}
 					</CardCol>
