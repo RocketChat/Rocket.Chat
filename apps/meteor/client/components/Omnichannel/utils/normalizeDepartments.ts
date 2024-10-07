@@ -12,9 +12,13 @@ export const normalizeDepartments = async (
 		return departments;
 	}
 
-	const { department: missingDepartment } = await getDepartment({});
+	try {
+		const { department: missingDepartment } = await getDepartment({});
 
-	return missingDepartment
-		? [...departments, { _id: missingDepartment._id, label: missingDepartment.name, value: missingDepartment._id }]
-		: departments;
+		return missingDepartment
+			? [...departments, { _id: missingDepartment._id, label: missingDepartment.name, value: missingDepartment._id }]
+			: departments;
+	} catch {
+		return departments;
+	}
 };
