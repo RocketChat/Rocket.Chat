@@ -9,11 +9,11 @@
 		"/dist"
 	],
 	"scripts": {
-		"build": "tsc -p tsconfig.build.json",
-		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"storybook": "start-storybook -p 6006 --no-version-updates"
+		"storybook": "start-storybook -p 6006 --no-version-updates",
+		"build": "tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput"
 	},
 	"devDependencies": {
 		"@babel/core": "~7.22.20",
@@ -40,7 +40,7 @@
 		"eslint": "~8.45.0",
 		"react": "~17.0.2",
 		"react-hook-form": "~7.45.4",
-		"react-i18next": "~15.0.1",
+		"react-i18next": "~13.2.2",
 		"storybook-dark-mode": "~3.0.3",
 		"typescript": "~5.5.4"
 	},
