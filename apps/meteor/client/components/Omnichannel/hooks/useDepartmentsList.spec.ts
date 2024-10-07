@@ -20,12 +20,14 @@ const initialDepartmentsListMock = Array.from(Array(25)).map((_, index) => {
 	};
 });
 
-it('should not add selected department if it is already in the departments list on first fetch', async () => {
+it('should not fetch and add selected department if it is already in the departments list on first fetch', async () => {
 	const selectedDepartmentMappedToOption = {
 		_id: '5',
 		label: 'test_department_5',
 		value: '5',
 	};
+
+	const getDepartmentByIdCallback = jest.fn();
 
 	const { result } = renderHook(
 		() =>
@@ -45,16 +47,18 @@ it('should not add selected department if it is already in the departments list 
 					total: 25,
 					departments: initialDepartmentsListMock,
 				}))
+				.withEndpoint('GET', `/v1/livechat/department/:_id`, getDepartmentByIdCallback)
 				.build(),
 		},
 	);
 
+	expect(getDepartmentByIdCallback).not.toHaveBeenCalled();
 	await waitFor(() => expect(result.current.itemsList.items).toContainEqual(selectedDepartmentMappedToOption));
 	// The expected length is 26 because the hook will add the 'All' item on run time
 	await waitFor(() => expect(result.current.itemsList.items.length).toBe(26));
 });
 
-it('should add selected department if it is not part of departments list on first fetch', async () => {
+it('should fetch and add selected department if it is not part of departments list on first fetch', async () => {
 	const missingDepartmentRawMock = {
 		_id: '56f5be8bcf8cd67f9e9bcfdc',
 		name: 'test_department_25',
