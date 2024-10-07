@@ -266,7 +266,9 @@ class E2E extends Emitter {
 			return null;
 		}
 
-		if (!this.instancesByRoomId[rid]) {
+		// When there's a key ID mismatch, create a new instance
+		// So we always use the latest keyID on room
+		if (!this.instancesByRoomId[rid] || this.instancesByRoomId[rid].keyID !== room.e2eKeyId) {
 			this.instancesByRoomId[rid] = new E2ERoom(Meteor.userId(), room);
 		}
 
