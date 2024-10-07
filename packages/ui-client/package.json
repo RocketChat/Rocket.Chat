@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-client",
-	"version": "10.0.0",
+	"version": "11.0.0-rc.1",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -21,7 +21,7 @@
 		"@babel/core": "~7.22.20",
 		"@react-aria/toolbar": "^3.0.0-beta.1",
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.59.0",
+		"@rocket.chat/fuselage": "^0.59.1",
 		"@rocket.chat/fuselage-hooks": "^0.33.1",
 		"@rocket.chat/icons": "~0.38.0",
 		"@rocket.chat/jest-presets": "workspace:~",
@@ -61,8 +61,8 @@
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
-		"@rocket.chat/ui-avatar": "*",
-		"@rocket.chat/ui-contexts": "*",
+		"@rocket.chat/ui-avatar": "7.0.0-rc.1",
+		"@rocket.chat/ui-contexts": "11.0.0-rc.1",
 		"react": "*",
 		"react-i18next": "*"
 	},

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omnichannel-services",
-	"version": "0.3.3",
+	"version": "0.3.5-rc.1",
 	"private": true,
 	"devDependencies": {
 		"@rocket.chat/eslint-config": "workspace:^",

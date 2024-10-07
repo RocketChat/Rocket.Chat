@@ -1,5 +1,36 @@
 # @rocket.chat/models
 
+## 0.3.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.8.0-rc.1
+  </details>
+
+## 0.3.0-rc.0
+
+### Minor Changes
+
+- ([#32693](https://github.com/RocketChat/Rocket.Chat/pull/32693)) Introduced "create contacts" endpoint to omnichannel
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [9a38c8e13f, 927710d778, 3a161c4310, 12d6307998]:</summary>
+
+  - @rocket.chat/model-typings@0.8.0-rc.0
+  </details>
+
+## 0.2.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/model-typings@0.7.1
+  </details>
+
 ## 0.2.3
 
 ### Patch Changes
