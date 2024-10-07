@@ -16,6 +16,8 @@ import semver from 'semver';
 
 import WarningModal from '../../../components/WarningModal';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
+import type { AddonActionType } from '../AppsList/AddonRequiredModal';
+import AddonRequiredModal from '../AppsList/AddonRequiredModal';
 import IframeModal from '../IframeModal';
 import UninstallGrandfatheredAppModal from '../components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
 import type { Actions } from '../helpers';
@@ -118,10 +120,31 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		setIsPurchased: setPurchased,
 	});
 
+	const addonHandler = useCallback(
+		(actionType: AddonActionType) => {
+			setModal(<AddonRequiredModal actionType={actionType} onDismiss={closeModal} onInstallAnyway={appInstallationHandler} />);
+		},
+		[appInstallationHandler, closeModal, setModal],
+	);
+
+	const handleAddon = useCallback(
+		(actionType: AddonActionType, callback: () => void) => {
+			// TODO: Check for add-on necessity by the app
+			const addon = true;
+
+			if (!addon) {
+				callback();
+			}
+
+			addonHandler(actionType);
+		},
+		[addonHandler],
+	);
+
 	const handleAcquireApp = useCallback(() => {
 		setLoading(true);
-		appInstallationHandler();
-	}, [appInstallationHandler, setLoading]);
+		handleAddon('install', appInstallationHandler);
+	}, [appInstallationHandler, handleAddon]);
 
 	const handleSubscription = useCallback(async () => {
 		if (app?.versionIncompatible && !isSubscribed) {
@@ -181,14 +204,16 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		);
 	}, [app.name, closeModal, setAppStatus, setModal, t]);
 
-	const handleEnable = useCallback(async () => {
-		try {
-			const { status } = await setAppStatus({ status: AppStatus.MANUALLY_ENABLED });
-			warnEnableDisableApp(app.name, status, 'enable');
-		} catch (error) {
-			handleAPIError(error);
-		}
-	}, [app.name, setAppStatus]);
+	const handleEnable = useCallback(() => {
+		handleAddon('enable', async () => {
+			try {
+				const { status } = await setAppStatus({ status: AppStatus.MANUALLY_ENABLED });
+				warnEnableDisableApp(app.name, status, 'enable');
+			} catch (error) {
+				handleAPIError(error);
+			}
+		});
+	}, [app.name, handleAddon, setAppStatus]);
 
 	const handleUninstall = useCallback(() => {
 		const uninstall = async () => {

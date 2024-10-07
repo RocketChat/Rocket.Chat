@@ -381,6 +381,8 @@
   "admin-no-videoconf-provider-app": "**Conference call not enabled**: Conference call apps are available in the Rocket.Chat marketplace.",
   "Administration": "Administration",
   "Add-on": "Add-on",
+  "Add-on_required": "Add-on required",
+  "Add-on_required_modal_enable_content": "App cannot be enabled without the required subscription add-on. Contact sales to get the add-on for this app.",
   "Address": "Address",
   "Adjustable_font_size": "Adjustable font size",
   "Adjustable_font_size_description": "Designed for those who prefer larger or smaller text for improved readability. This flexibility promotes inclusivity by empowering users to tailor the software interface to their specific needs.",
