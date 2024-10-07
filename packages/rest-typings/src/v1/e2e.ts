@@ -106,7 +106,10 @@ const E2EProvideUsersGroupKeySchema = {
 						key: { type: 'string' },
 						oldKeys: {
 							type: 'array',
-							items: { type: 'object', properties: { e2eKeyId: { type: 'string' }, ts: { type: 'string' }, E2EKey: { type: 'string' } } },
+							items: {
+								type: 'object',
+								properties: { e2eKeyId: { type: 'string' }, ts: { type: 'string', format: 'date' }, E2EKey: { type: 'string' } },
+							},
 						},
 					},
 					required: ['_id', 'key'],
