@@ -3,7 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useExternalLink } from '../../../hooks/useExternalLink';
-import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
+import { CONTACT_SALES_LINK } from '../../admin/subscription/utils/links';
 
 export type AddonActionType = 'install' | 'enable';
 
@@ -17,7 +17,6 @@ const AddonRequiredModal = ({ actionType, onDismiss, onInstallAnyway }: AddonReq
 	const { t } = useTranslation();
 
 	const handleOpenLink = useExternalLink();
-	const url = useCheckoutUrl()({ target: '_blank', action: 'manage_subscription' });
 
 	return (
 		<Modal>
@@ -31,7 +30,7 @@ const AddonRequiredModal = ({ actionType, onDismiss, onInstallAnyway }: AddonReq
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					{actionType === 'install' && <Button onClick={onInstallAnyway}>{t('Install_anyway')}</Button>}
-					<Button primary onClick={() => handleOpenLink(url)}>
+					<Button primary onClick={() => handleOpenLink(CONTACT_SALES_LINK)}>
 						{t('Contact_sales')}
 					</Button>
 				</Modal.FooterControllers>
