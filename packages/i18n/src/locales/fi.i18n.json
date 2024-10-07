@@ -5740,7 +5740,6 @@
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "Hyväksyn <1>käyttöehdot</1> ja <3>tietosuojakäytännön</3>",
   "Larger_amounts_of_active_connections": "Jos tarvitset enemmän aktiivisia yhteyksiä, ota harkintaan",
   "Uninstall_grandfathered_app": "Poistetaanko {{appName}}?",
-  "App_will_lose_grandfathered_status": "**Tämä {{context}}sovellus menettää aikaisemmin käytetössä olleen sovelluksen tilansa.**  \n  \nYhteisöversion työtiloissa voi olla käytössä enintään {{limit}} {{context}} sovellusta. aikaisemmin Aikaisemmin käytössä olleet sovellukset lasketaan mukaan rajoitukseen, mutta rajoitusta ei sovelleta niihin.",
   "Theme_Appearence": "Teeman ulkoasu",
   "Enterprise": "Yritys",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
