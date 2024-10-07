@@ -5744,8 +5744,6 @@
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "Jag godkänner <1>villkoren</1> och <3>integritetspolicyn</3>",
   "Larger_amounts_of_active_connections": "För större mängder aktiva anslutningar kan du överväga vår",
   "Uninstall_grandfathered_app": "Avinstallera {{appName}}?",
-  "App_will_lose_grandfathered_status": "**Denna {{context}}-app kommer att förlora sin status som gammal app.**  \n  \nArbetsytorna i Community Edition kan ha upp till {{limit}} {{context}}-appar aktiverade. Gamla appar inkluderas i gränsen, men gränsen tillämpas inte på dem.",
-  "Theme_Appearence": "Utseende för tema",
   "Enterprise": "Enterprise",
   "UpgradeToGetMore_engagement-dashboard_Title": "Analytics"
 }
