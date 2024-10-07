@@ -195,8 +195,8 @@ export async function createContact(params: CreateContactParams): Promise<string
 
 	const { insertedId } = await LivechatContacts.insertOne({
 		name,
-		emails,
-		phones,
+		emails: emails?.map((address) => ({ address })),
+		phones: phones?.map((phoneNumber) => ({ phoneNumber })),
 		contactManager,
 		channels,
 		customFields,
@@ -223,8 +223,8 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 
 	const updatedContact = await LivechatContacts.updateContact(contactId, {
 		name,
-		emails,
-		phones,
+		emails: emails?.map((address) => ({ address })),
+		phones: phones?.map((phoneNumber) => ({ phoneNumber })),
 		contactManager,
 		channels,
 		customFields,
