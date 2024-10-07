@@ -108,7 +108,7 @@ const E2EProvideUsersGroupKeySchema = {
 							type: 'array',
 							items: {
 								type: 'object',
-								properties: { e2eKeyId: { type: 'string' }, ts: { type: 'string', format: 'date' }, E2EKey: { type: 'string' } },
+								properties: { e2eKeyId: { type: 'string' }, ts: { type: 'string' }, E2EKey: { type: 'string' } },
 							},
 						},
 					},
