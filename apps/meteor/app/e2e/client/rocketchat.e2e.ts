@@ -27,6 +27,7 @@ import { getUserAvatarURL } from '../../utils/client';
 import { sdk } from '../../utils/client/lib/SDKClient';
 import { t } from '../../utils/lib/i18n';
 import { E2EEState } from './E2EEState';
+import { E2ERoomState } from './E2ERoomState';
 import {
 	toString,
 	toArrayBuffer,
@@ -169,6 +170,10 @@ class E2E extends Emitter {
 			}
 		}
 
+		if (sub.encrypted && !sub.E2EKey) {
+			e2eRoom.setState(E2ERoomState.WAITING_KEYS);
+			return;
+		}
 		sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 
 		// Cover private groups and direct messages
