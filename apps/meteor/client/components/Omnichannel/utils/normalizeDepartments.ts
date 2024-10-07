@@ -1,6 +1,6 @@
 import type { EndpointFunction } from '@rocket.chat/ui-contexts';
 
-import type { DepartmentListItem } from '../hooks/useDepartmentsList';
+import type { DepartmentListItem } from '../Definitions/DepartmentsDefinitions';
 
 export const normalizeDepartments = async (
 	departments: DepartmentListItem[],
@@ -12,9 +12,13 @@ export const normalizeDepartments = async (
 		return departments;
 	}
 
-	const { department: missingDepartment } = await getDepartment({});
+	try {
+		const { department: missingDepartment } = await getDepartment({});
 
-	return missingDepartment
-		? [...departments, { _id: missingDepartment._id, label: missingDepartment.name, value: missingDepartment._id }]
-		: departments;
+		return missingDepartment
+			? [...departments, { _id: missingDepartment._id, label: missingDepartment.name, value: missingDepartment._id }]
+			: departments;
+	} catch {
+		return departments;
+	}
 };

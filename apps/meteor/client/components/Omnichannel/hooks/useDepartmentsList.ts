@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { RecordList } from '../../../lib/lists/RecordList';
+import type { DepartmentListItem } from '../Definitions/DepartmentsDefinitions';
 import { normalizeDepartments } from '../utils/normalizeDepartments';
 
 type DepartmentsListOptions = {
@@ -16,12 +17,6 @@ type DepartmentsListOptions = {
 	enabled?: boolean;
 	showArchived?: boolean;
 	selectedDepartment?: string;
-};
-
-export type DepartmentListItem = {
-	_id: string;
-	label: string;
-	value: string;
 };
 
 export const useDepartmentsList = (
