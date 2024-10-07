@@ -22,4 +22,6 @@ export const CoreModules = [
 	'unlimited-presence',
 ] as const;
 
-export type LicenseModule = (typeof CoreModules)[number];
+export type InternalModuleName = (typeof CoreModules)[number];
+export type ExternalModuleName = `${string}.${string}`;
+export type LicenseModule = InternalModuleName | ExternalModuleName;

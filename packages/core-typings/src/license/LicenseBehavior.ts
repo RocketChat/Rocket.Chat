@@ -1,4 +1,5 @@
 import type { LicenseLimitKind } from './ILicenseV3';
+import type { LicenseModule } from './LicenseModule';
 
 export type LicenseBehavior =
 	| 'invalidate_license'
@@ -11,12 +12,12 @@ export type LicenseBehavior =
 export type BehaviorWithContext =
 	| {
 			behavior: LicenseBehavior;
-			modules?: string[];
+			modules?: LicenseModule[];
 			reason: 'limit';
 			limit?: LicenseLimitKind;
 	  }
 	| {
 			behavior: LicenseBehavior;
-			modules?: string[];
+			modules?: LicenseModule[];
 			reason: 'period' | 'url';
 	  };

@@ -1,10 +1,12 @@
+import type { LicenseModule } from '@rocket.chat/core-typings';
+
 import { MockedLicenseBuilder, getReadyLicenseManager } from '../__tests__/MockedLicenseBuilder';
 
 describe('getModules', () => {
 	it('should return internal and external', async () => {
 		const licenseManager = await getReadyLicenseManager();
 
-		const modules = ['auditing', 'livechat-enterprise', 'ldap-enterprise', 'chat.rocket.test-addon'];
+		const modules = ['auditing', 'livechat-enterprise', 'ldap-enterprise', 'chat.rocket.test-addon'] as LicenseModule[];
 
 		const license = await new MockedLicenseBuilder().withGratedModules(modules).sign();
 

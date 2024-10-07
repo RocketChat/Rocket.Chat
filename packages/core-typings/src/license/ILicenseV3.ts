@@ -1,10 +1,10 @@
 import type { ILicenseTag } from './ILicenseTag';
 import type { LicenseLimit } from './LicenseLimit';
-import type { LicenseModule } from './LicenseModule';
+import type { ExternalModuleName, InternalModuleName } from './LicenseModule';
 import type { LicensePeriod, Timestamp } from './LicensePeriod';
 
-export type InternalModule = { module: LicenseModule };
-export type ExternalModule = { module: string; external: boolean };
+export type InternalModule = { module: InternalModuleName; external?: false };
+export type ExternalModule = { module: ExternalModuleName; external: true };
 
 export type GrantedModules = (InternalModule | ExternalModule)[];
 

@@ -1,3 +1,4 @@
+import type { InternalModuleName } from '@rocket.chat/core-typings';
 import {
 	CoreModules,
 	type GrantedModules,
@@ -197,17 +198,15 @@ export class MockedLicenseBuilder {
 		return this;
 	}
 
-	public withGratedModules(modules: string[]): this {
+	public withGratedModules(modules: LicenseModule[]): this {
 		this.grantedModules = this.grantedModules ?? [];
 		this.grantedModules.push(
-			...(modules.map((module) =>
-				CoreModules.includes(module as LicenseModule) ? { module } : { module, external: true },
-			) as GrantedModules),
+			...(modules.map((module) => ({ module, external: !CoreModules.includes(module as InternalModuleName) })) as GrantedModules),
 		);
 		return this;
 	}
 
-	withNoGratedModules(modules: string[]): this {
+	withNoGratedModules(modules: LicenseModule[]): this {
 		this.grantedModules = this.grantedModules ?? [];
 		this.grantedModules = this.grantedModules.filter(({ module }) => !modules.includes(module));
 		return this;

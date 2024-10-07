@@ -1,20 +1,21 @@
-import { CoreModules, type ExternalModule, type LicenseModule } from '@rocket.chat/core-typings';
+import type { LicenseModule, InternalModuleName, ExternalModule } from '@rocket.chat/core-typings';
+import { CoreModules } from '@rocket.chat/core-typings';
 
 import { moduleRemoved, moduleValidated } from './events/emitter';
 import type { LicenseManager } from './license';
 
-export function isLicenseModule(module: string): module is LicenseModule {
-	return CoreModules.includes(module as LicenseModule);
+export function isInternalModuleName(module: string): module is InternalModuleName {
+	return CoreModules.includes(module as InternalModuleName);
 }
 
-export function notifyValidatedModules(this: LicenseManager, licenseModules: string[]) {
+export function notifyValidatedModules(this: LicenseManager, licenseModules: LicenseModule[]) {
 	licenseModules.forEach((module) => {
 		this.modules.add(module);
 		moduleValidated.call(this, module);
 	});
 }
 
-export function notifyInvalidatedModules(this: LicenseManager, licenseModules: string[]) {
+export function notifyInvalidatedModules(this: LicenseManager, licenseModules: LicenseModule[]) {
 	licenseModules.forEach((module) => {
 		moduleRemoved.call(this, module);
 		this.modules.delete(module);
@@ -30,7 +31,7 @@ export function getModules(this: LicenseManager) {
 	return [...this.modules];
 }
 
-export function getModuleDefinition(this: LicenseManager, moduleName: string) {
+export function getModuleDefinition(this: LicenseManager, moduleName: LicenseModule) {
 	const license = this.getLicense();
 
 	if (!license) {
@@ -49,14 +50,14 @@ export function getExternalModules(this: LicenseManager): ExternalModule[] {
 		return [];
 	}
 
-	return [...license.grantedModules.filter<ExternalModule>((value): value is ExternalModule => !isLicenseModule(value.module))];
+	return [...license.grantedModules.filter<ExternalModule>((value): value is ExternalModule => !isInternalModuleName(value.module))];
 }
 
-export function hasModule(this: LicenseManager, module: string) {
+export function hasModule(this: LicenseManager, module: LicenseModule) {
 	return this.modules.has(module);
 }
 
-export function replaceModules(this: LicenseManager, newModules: string[]): boolean {
+export function replaceModules(this: LicenseManager, newModules: LicenseModule[]): boolean {
 	let anyChange = false;
 	for (const moduleName of newModules) {
 		if (this.modules.has(moduleName)) {

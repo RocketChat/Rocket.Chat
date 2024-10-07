@@ -1,5 +1,6 @@
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { Apps } from '@rocket.chat/core-services';
+import type { LicenseModule } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../../lib/apps/getInstallationSourceFromAppStorageItem';
@@ -15,7 +16,7 @@ export const canEnableApp = async (app: IAppStorageItem): Promise<void> => {
 		return;
 	}
 
-	if (app.info.addon && !License.hasModule(app.info.addon)) {
+	if (app.info.addon && !License.hasModule(app.info.addon as LicenseModule)) {
 		throw new Error('app-addon-not-valid');
 	}
 
