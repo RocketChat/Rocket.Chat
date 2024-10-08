@@ -320,8 +320,6 @@
   "add-oauth-service_description": "नई OAuth सेवा जोड़ने की अनुमति",
   "bypass-time-limit-edit-and-delete": "समय सीमा को बायपास करें",
   "bypass-time-limit-edit-and-delete_description": "संदेशों को संपादित करने और हटाने के लिए समय सीमा को बायपास करने की अनुमति",
-  "add-team-channel": "टीम चैनल जोड़ें",
-  "add-team-channel_description": "किसी टीम में चैनल जोड़ने की अनुमति",
   "add-team-member": "टीम सदस्य जोड़ें",
   "add-team-member_description": "किसी टीम में सदस्यों को जोड़ने की अनुमति",
   "add-user": "उपयोगकर्ता जोड़ें",
