@@ -34,22 +34,18 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 			return;
 		}
 
+		const onBeforeUnload = (event: BeforeUnloadEvent) => {
+			event.preventDefault();
+			event.returnValue = true;
+		};
+
 		const onCallEstablished = async (): Promise<void> => {
 			voipSounds.stopAll();
+			window.addEventListener('beforeunload', onBeforeUnload);
 
-			if (!voipClient) {
-				return;
+			if (voipClient.isCallee() && remoteAudioMediaRef.current) {
+				voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
 			}
-
-			if (voipClient.isCallee()) {
-				return;
-			}
-
-			if (!remoteAudioMediaRef.current) {
-				return;
-			}
-
-			voipClient.switchMediaRenderer({ remoteMediaElement: remoteAudioMediaRef.current });
 		};
 
 		const onNetworkDisconnected = (): void => {
@@ -69,6 +65,7 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 		const onCallTerminated = (): void => {
 			voipSounds.play('call-ended', false);
 			voipSounds.stopAll();
+			window.removeEventListener('beforeunload', onBeforeUnload);
 		};
 
 		const onRegistrationError = () => {
@@ -106,6 +103,7 @@ const VoipProvider = ({ children }: { children: ReactNode }) => {
 			voipClient.networkEmitter.off('disconnected', onNetworkDisconnected);
 			voipClient.networkEmitter.off('connectionerror', onNetworkDisconnected);
 			voipClient.networkEmitter.off('localnetworkoffline', onNetworkDisconnected);
+			window.addEventListener('beforeunload', onBeforeUnload);
 		};
 	}, [dispatchToastMessage, setStorageRegistered, t, voipClient, voipSounds]);
 
