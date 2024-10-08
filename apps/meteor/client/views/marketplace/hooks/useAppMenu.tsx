@@ -22,6 +22,7 @@ import IframeModal from '../IframeModal';
 import UninstallGrandfatheredAppModal from '../components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
 import type { Actions } from '../helpers';
 import { appEnabledStatuses, appButtonProps } from '../helpers';
+import { doesAppRequireAddon } from '../helpers/doesAppRequireAddon';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { warnEnableDisableApp } from '../helpers/warnEnableDisableApp';
 import { useAppInstallationHandler } from './useAppInstallationHandler';
@@ -129,16 +130,13 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 
 	const handleAddon = useCallback(
 		(actionType: AddonActionType, callback: () => void) => {
-			// TODO: Check for add-on necessity by the app
-			const addon = true;
-
-			if (!addon) {
+			if (!doesAppRequireAddon(app)) {
 				callback();
 			}
 
 			addonHandler(actionType);
 		},
-		[addonHandler],
+		[addonHandler, app],
 	);
 
 	const handleAcquireApp = useCallback(() => {
