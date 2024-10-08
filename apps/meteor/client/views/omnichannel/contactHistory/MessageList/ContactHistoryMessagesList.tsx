@@ -66,7 +66,7 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 		<>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='history' />
-				<ContextualbarTitle>{t('Chat_History')}</ContextualbarTitle>
+				<ContextualbarTitle>{t('Conversation')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 
