@@ -6,10 +6,14 @@ import { useTranslation } from 'react-i18next';
 
 import { E2EEState } from '../../../app/e2e/client/E2EEState';
 import { OtrRoomState } from '../../../app/otr/lib/OtrRoomState';
+import { getRoomTypeTranslation } from '../../lib/getRoomTypeTranslation';
+import { imperativeModal } from '../../lib/imperativeModal';
 import { dispatchToastMessage } from '../../lib/toast';
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
 import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 import { useE2EEState } from '../../views/room/hooks/useE2EEState';
+import BaseDisableE2EEModal from '../../views/room/modals/E2EEModals/BaseDisableE2EEModal';
+import EnableE2EEModal from '../../views/room/modals/E2EEModals/EnableE2EEModal';
 import { useOTR } from '../useOTR';
 
 export const useE2EERoomAction = () => {
@@ -26,7 +30,14 @@ export const useE2EERoomAction = () => {
 	const { t } = useTranslation();
 	const { otrState } = useOTR();
 
+	const enabledOnRoom = !!room.encrypted;
+
+	const roomType = getRoomTypeTranslation(room).toLowerCase();
+	const roomId = room._id;
+
 	const toggleE2E = useEndpoint('POST', '/v1/rooms.saveRoomSettings');
+
+	const canResetRoomKey = enabled && isE2EEReady && (room.t === 'd' || permittedToToggleEncryption);
 
 	const action = useEffectEvent(async () => {
 		if (otrState === OtrRoomState.ESTABLISHED || otrState === OtrRoomState.ESTABLISHING || otrState === OtrRoomState.REQUESTED) {
@@ -35,10 +46,36 @@ export const useE2EERoomAction = () => {
 			return;
 		}
 
+		if (enabledOnRoom) {
+			imperativeModal.open({
+				component: BaseDisableE2EEModal,
+				props: {
+					onClose: imperativeModal.close,
+					onConfirm: handleToogleE2E,
+					roomType,
+					roomId,
+					canResetRoomKey,
+				},
+			});
+		} else {
+			imperativeModal.open({
+				component: EnableE2EEModal,
+				props: {
+					onClose: imperativeModal.close,
+					onConfirm: handleToogleE2E,
+					roomType,
+				},
+			});
+		}
+	});
+
+	const handleToogleE2E = async () => {
 		const { success } = await toggleE2E({ rid: room._id, encrypted: !room.encrypted });
 		if (!success) {
 			return;
 		}
+
+		imperativeModal.close();
 
 		dispatchToastMessage({
 			type: 'success',
@@ -50,9 +87,7 @@ export const useE2EERoomAction = () => {
 		if (subscription?.autoTranslate) {
 			dispatchToastMessage({ type: 'success', message: t('AutoTranslate_Disabled_for_room', { roomName: room.name }) });
 		}
-	});
-
-	const enabledOnRoom = !!room.encrypted;
+	};
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!enabled || !permitted) {
