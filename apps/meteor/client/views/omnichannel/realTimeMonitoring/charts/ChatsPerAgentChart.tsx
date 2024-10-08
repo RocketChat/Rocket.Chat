@@ -1,10 +1,10 @@
 import type { Box } from '@rocket.chat/fuselage';
 import type { OperationParams } from '@rocket.chat/rest-typings';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Chart as ChartType } from 'chart.js';
 import type { TFunction } from 'i18next';
 import type { ComponentProps, MutableRefObject } from 'react';
 import React, { useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { drawLineChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
