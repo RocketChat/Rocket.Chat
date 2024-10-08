@@ -36,7 +36,7 @@ const PAUSED = Symbol('PAUSED');
 
 const permitedMutations = {
 	[E2ERoomState.NOT_STARTED]: [E2ERoomState.ESTABLISHING, E2ERoomState.DISABLED, E2ERoomState.KEYS_RECEIVED],
-	[E2ERoomState.READY]: [E2ERoomState.DISABLED, E2ERoomState.CREATING_KEYS],
+	[E2ERoomState.READY]: [E2ERoomState.DISABLED, E2ERoomState.CREATING_KEYS, E2ERoomState.WAITING_KEYS],
 	[E2ERoomState.ERROR]: [E2ERoomState.KEYS_RECEIVED, E2ERoomState.NOT_STARTED],
 	[E2ERoomState.WAITING_KEYS]: [E2ERoomState.KEYS_RECEIVED, E2ERoomState.ERROR, E2ERoomState.DISABLED],
 	[E2ERoomState.ESTABLISHING]: [
@@ -408,6 +408,15 @@ export class E2ERoom extends Emitter {
 			this.error('Error resetting group key: ', error);
 			throw error;
 		}
+	}
+
+	onRoomKeyReset(keyID) {
+		this.log(`Room keyID was reset. New keyID: ${keyID}`);
+		this.setState(E2ERoomState.WAITING_KEYS);
+		this.keyID = keyID;
+		this.groupSessionKey = undefined;
+		this.sessionKeyExportedString = undefined;
+		this.sessionKeyExported = undefined;
 	}
 
 	async encryptKeyForOtherParticipants() {
