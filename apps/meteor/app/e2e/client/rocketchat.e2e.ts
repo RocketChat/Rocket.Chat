@@ -45,6 +45,7 @@ import { log, logError } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
 
 import './events.js';
+import { E2ERoomState } from './E2ERoomState';
 
 let failedToDecodeKey = false;
 
@@ -273,7 +274,8 @@ class E2E extends Emitter {
 		}
 
 		if (this.instancesByRoomId[rid].keyID !== room.e2eKeyId) {
-			this.instancesByRoomId[rid].keyID = room.e2eKeyId;
+			// KeyID was changed, update instance with new keyID and put room in waiting keys status
+			this.instancesByRoomId[rid].onRoomKeyReset(room.e2eKeyId);
 		}
 
 		return this.instancesByRoomId[rid];
