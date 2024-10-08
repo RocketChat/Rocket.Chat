@@ -1,8 +1,8 @@
 import type { Box } from '@rocket.chat/fuselage';
 import type { OperationParams } from '@rocket.chat/rest-typings';
-import type { TranslationContextValue } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { Chart as ChartType } from 'chart.js';
+import type { TFunction } from 'i18next';
 import type { ComponentProps, MutableRefObject } from 'react';
 import React, { useRef, useEffect } from 'react';
 
@@ -17,7 +17,7 @@ const initialData = {
 	success: true,
 };
 
-const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: TranslationContextValue['translate']) =>
+const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: TFunction) =>
 	drawLineChart(canvas, context, [t('Open'), t('Closed'), t('On_Hold_Chats')], [], [[], []], {
 		legends: true,
 		anim: true,
@@ -30,7 +30,7 @@ type ChatsPerAgentChartProps = {
 } & ComponentProps<typeof Box>;
 
 const ChatsPerAgentChart = ({ params, reloadRef, ...props }: ChatsPerAgentChartProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const canvas: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
 	const context: MutableRefObject<ChartType | undefined> = useRef();
