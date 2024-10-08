@@ -234,6 +234,7 @@ export class AppAccessors {
                 getOAuthAppsReader: () => this.proxify('getReader:getOAuthAppsReader'),
                 getThreadReader: () => this.proxify('getReader:getThreadReader'),
                 getRoleReader: () => this.proxify('getReader:getRoleReader'),
+                getContactReader: () => this.proxify('getReader:getContactReader'),
             };
         }
 
