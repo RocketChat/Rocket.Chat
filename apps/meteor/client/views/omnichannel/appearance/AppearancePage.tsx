@@ -28,6 +28,7 @@ type LivechatAppearanceSettings = {
 	Livechat_conversation_finished_text: string;
 	Livechat_enable_message_character_limit: boolean;
 	Livechat_message_character_limit: number;
+	Omnichannel_allow_visitors_to_close_conversation: boolean;
 };
 
 type AppearanceSettings = Partial<LivechatAppearanceSettings>;

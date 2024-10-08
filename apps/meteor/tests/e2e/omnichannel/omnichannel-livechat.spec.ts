@@ -2,6 +2,7 @@ import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { test, expect } from '../utils/test';
 
@@ -82,6 +83,57 @@ test.describe.serial('OC - Livechat', () => {
 	});
 
 	test('OC - Livechat - Close livechat conversation', async () => {
+		await poHomeOmnichannel.sidenav.openChat(firstVisitor.name);
+
+		await test.step('expect livechat conversation to be closed by agent', async () => {
+			await poHomeOmnichannel.content.btnCloseChat.click();
+			await poHomeOmnichannel.content.closeChatModal.inputComment.fill('this_is_a_test_comment');
+			await poHomeOmnichannel.content.closeChatModal.btnConfirm.click();
+			await expect(poHomeOmnichannel.toastSuccess).toBeVisible();
+		});
+	});
+});
+
+test.describe.serial('OC - Livechat - Visitors closing the room is disabled', () => {
+	let poLiveChat: OmnichannelLiveChat;
+	let poHomeOmnichannel: HomeOmnichannel;
+
+	test.beforeAll(async ({ api }) => {
+		await api.post('/livechat/users/agent', { username: 'user1' });
+	});
+
+	test.beforeAll(async ({ browser, api }) => {
+		const { page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false);
+
+		poLiveChat = new OmnichannelLiveChat(livechatPage, api);
+	});
+
+	test.beforeAll(async ({ browser, api }) => {
+		await setSettingValueById(api, 'Livechat_allow_visitor_closing_chat', false);
+		const { page: omniPage } = await createAuxContext(browser, Users.user1, '/', true);
+		poHomeOmnichannel = new HomeOmnichannel(omniPage);
+	});
+
+	test.afterAll(async ({ api }) => {
+		await setSettingValueById(api, 'Livechat_allow_visitor_closing_chat', true);
+		await api.delete('/livechat/users/agent/user1');
+		await poLiveChat.page.close();
+	});
+
+	test('OC - Livechat - Close Chat disabled', async () => {
+		await poLiveChat.page.reload();
+		await poLiveChat.openAnyLiveChat();
+		await poLiveChat.sendMessage(firstVisitor, false);
+		await poLiveChat.onlineAgentMessage.fill('this_a_test_message_from_user');
+		await poLiveChat.btnSendMessageToOnlineAgent.click();
+
+		await test.step('expect to close a livechat conversation', async () => {
+			await expect(poLiveChat.btnOptions).not.toBeVisible();
+			await expect(poLiveChat.btnCloseChat).not.toBeVisible();
+		});
+	});
+
+	test('OC - Livechat - Close chat disabled, agents can close', async () => {
 		await poHomeOmnichannel.sidenav.openChat(firstVisitor.name);
 
 		await test.step('expect livechat conversation to be closed by agent', async () => {

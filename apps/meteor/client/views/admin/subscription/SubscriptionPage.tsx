@@ -107,7 +107,7 @@ const SubscriptionPage = () => {
 						</Button>
 					)}
 					<UpgradeButton target='subscription_header' action={isEnterprise ? 'manage_subscription' : 'upgrade'} primary>
-						{t(isEnterprise ? 'Manage_subscription' : 'Upgrade')}
+						{isEnterprise ? t('Manage_subscription') : t('Upgrade')}
 					</UpgradeButton>
 				</ButtonGroup>
 			</PageHeader>

@@ -1,7 +1,7 @@
 import { Button, Chip, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, FormEvent } from 'react';
 import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type DepartmentTagsProps = {
 	error: string;
@@ -10,7 +10,7 @@ type DepartmentTagsProps = {
 } & ComponentProps<typeof TextInput>;
 
 const DepartmentTags = ({ error, value: tags, onChange, ...props }: DepartmentTagsProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const [tagText, setTagText] = useState('');
 
 	const handleAddTag = useCallback(() => {

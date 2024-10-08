@@ -1,0 +1,13 @@
+diff --git a/index.d.ts b/index.d.ts
+index f64eda7889619f2a1e7cbd5bb5e3533fc8aaa182..3d815a3b7aaf426235aa92422129079aa5826908 100644
+--- a/index.d.ts
++++ b/index.d.ts
+@@ -725,7 +725,7 @@ declare namespace Moleculer {
+ 		this: T
+ 	) => void | Promise<void>;
+ 
+-	interface ServiceSchema<S = ServiceSettingSchema, T = void> {
++	interface ServiceSchema<S = ServiceSettingSchema, T = Service<S>> {
+ 		name: string;
+ 		version?: string | number;
+ 		settings?: S;

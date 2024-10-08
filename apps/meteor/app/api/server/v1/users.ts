@@ -755,6 +755,12 @@ API.v1.addRoute(
 	{ authRequired: false },
 	{
 		async post() {
+			const isPasswordResetEnabled = settings.get('Accounts_PasswordReset');
+
+			if (!isPasswordResetEnabled) {
+				return API.v1.failure('Password reset is not enabled');
+			}
+
 			const { email } = this.bodyParams;
 			if (!email) {
 				return API.v1.failure("The 'email' param is required");

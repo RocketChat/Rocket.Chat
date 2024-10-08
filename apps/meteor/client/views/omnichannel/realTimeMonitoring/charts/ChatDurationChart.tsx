@@ -1,7 +1,6 @@
 import type { Box } from '@rocket.chat/fuselage';
 import type { OperationParams } from '@rocket.chat/rest-typings';
-import type { TranslationContextValue } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 import type { Chart as ChartType } from 'chart.js';
 import type { ComponentProps, MutableRefObject } from 'react';
 import React, { useRef, useEffect } from 'react';
@@ -14,6 +13,7 @@ import Chart from './Chart';
 import { getMomentChartLabelsAndData } from './getMomentChartLabelsAndData';
 import { getMomentCurrentLabel } from './getMomentCurrentLabel';
 import { useUpdateChartData } from './useUpdateChartData';
+import { TFunction } from 'i18next';
 
 const [labels, initialData] = getMomentChartLabelsAndData();
 const tooltipCallbacks = {
@@ -28,7 +28,7 @@ const tooltipCallbacks = {
 		},
 	},
 };
-const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: TranslationContextValue['translate']) =>
+const init = (canvas: HTMLCanvasElement, context: ChartType | undefined, t: TFunction) =>
 	drawLineChart(canvas, context, [t('Avg_chat_duration'), t('Longest_chat_duration')], labels, [initialData, initialData.slice()], {
 		legends: true,
 		anim: true,
@@ -43,7 +43,7 @@ type ChatDurationChartProps = {
 } & ComponentProps<typeof Box>;
 
 const ChatDurationChart = ({ params, reloadRef, ...props }: ChatDurationChartProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const canvas: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
 	const context: MutableRefObject<ChartType | undefined> = useRef();

@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { AgentsTable, BarChart, ReportCard } from '../components';
 import { useAgentsSection } from '../hooks';
@@ -11,7 +11,7 @@ const BREAKPOINT = 768;
 
 export const AgentsSection = () => {
 	const { data, sortBy, sortDirection, setSort, ...config } = useAgentsSection();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const { ref, contentBoxSize: { inlineSize: cardWidth = 200 } = {} } = useResizeObserver<HTMLElement>();
 	const width = cardWidth * 0.9;
