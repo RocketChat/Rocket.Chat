@@ -32,6 +32,7 @@ it('should return an empty array if have license and not have permissions', asyn
 						// @ts-expect-error: just for testing
 						grantedModules: [{ module: 'auditing' }],
 					},
+					// @ts-expect-error: just for testing
 					activeModules: ['auditing'],
 				},
 			}))
@@ -53,6 +54,7 @@ it('should return auditItems if have license and permissions', async () => {
 						// @ts-expect-error: just for testing
 						grantedModules: [{ module: 'auditing' }],
 					},
+					// @ts-expect-error: just for testing
 					activeModules: ['auditing'],
 				},
 			}))
@@ -87,6 +89,7 @@ it('should return auditMessages item if have license and can-audit permission', 
 						// @ts-expect-error: just for testing
 						grantedModules: [{ module: 'auditing' }],
 					},
+					// @ts-expect-error: just for testing
 					activeModules: ['auditing'],
 				},
 			}))
@@ -114,6 +117,7 @@ it('should return audiLogs item if have license and can-audit-log permission', a
 						// @ts-expect-error: just for testing
 						grantedModules: [{ module: 'auditing' }],
 					},
+					// @ts-expect-error: just for testing
 					activeModules: ['auditing'],
 				},
 			}))
