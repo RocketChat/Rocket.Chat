@@ -320,6 +320,9 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	// which is controlled by Livechat_auto_transfer_chat_timeout setting
 	autoTransferredAt?: Date;
 	autoTransferOngoing?: boolean;
+
+	// Whether the contact is verified or not
+	verified?: boolean;
 }
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {

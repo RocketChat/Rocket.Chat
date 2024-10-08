@@ -146,4 +146,20 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 	async updateLastChatById(contactId: string, visitorId: string, lastChat: ILivechatContact['lastChat']): Promise<UpdateResult> {
 		return this.updateOne({ '_id': contactId, 'channels.visitorId': visitorId }, { $set: { lastChat, 'channels.$.lastChat': lastChat } });
 	}
+
+	async findSimilarVerifiedContacts(
+		{ field, value }: Pick<ILivechatContactChannel, 'field' | 'value'>,
+		originalContactId: string,
+		options?: FindOptions<ILivechatContact>,
+	): Promise<ILivechatContact[]> {
+		return this.find(
+			{
+				'channels.field': field,
+				'channels.value': value,
+				'channels.verified': true,
+				'_id': { $ne: originalContactId },
+			},
+			options,
+		).toArray();
+	}
 }

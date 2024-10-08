@@ -17,4 +17,9 @@ export interface ILivechatContactsModel extends IBaseModel<ILivechatContact> {
 		visitorId: ILivechatVisitor['_id'],
 		options?: FindOptions<ILivechatContact>,
 	): Promise<T | null>;
+	findSimilarVerifiedContacts(
+		channel: Pick<ILivechatContactChannel, 'field' | 'value'>,
+		originalContactId: string,
+		options?: FindOptions<ILivechatContact>,
+	): Promise<ILivechatContact[]>;
 }
