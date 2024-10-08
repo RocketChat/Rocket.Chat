@@ -133,11 +133,13 @@ test.describe.serial('e2e-encryption', () => {
 
 	test.beforeAll(async ({ api }) => {
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: true })).status()).toBe(200);
+		expect((await api.post('/settings/E2E_Enabled_Mentions', { value: true })).status()).toBe(200);
 	});
 
 	test.afterAll(async ({ api }) => {
 		expect((await api.post('/settings/E2E_Enable', { value: false })).status()).toBe(200);
 		expect((await api.post('/settings/E2E_Allow_Unencrypted_Messages', { value: false })).status()).toBe(200);
+		expect((await api.post('/settings/E2E_Enabled_Mentions', { value: false })).status()).toBe(200);
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
@@ -263,6 +265,75 @@ test.describe.serial('e2e-encryption', () => {
 
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
 		await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+	});
+
+	test('expect create a encrypted private channel and mention user', async ({ page }) => {
+		const channelName = faker.string.uuid();
+
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+
+		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.dismissToast();
+
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.content.sendMessage('hello @user1');
+
+		const userMention = await page.getByRole('button', {
+			name: 'user1',
+		});
+
+		await expect(userMention).toBeVisible();
+	});
+
+	test('expect create a encrypted private channel, mention a channel and navigate to it', async ({ page }) => {
+		const channelName = faker.string.uuid();
+
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+
+		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.dismissToast();
+
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.content.sendMessage('Are you in the #general channel?');
+
+		const channelMention = await page.getByRole('button', {
+			name: 'general',
+		});
+
+		await expect(channelMention).toBeVisible();
+
+		await channelMention.click();
+
+		await expect(page).toHaveURL(`/channel/general`);
+	});
+
+	test('expect create a encrypted private channel, mention a channel and user', async ({ page }) => {
+		const channelName = faker.string.uuid();
+
+		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+
+		await expect(page).toHaveURL(`/group/${channelName}`);
+
+		await poHomeChannel.dismissToast();
+
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+
+		await poHomeChannel.content.sendMessage('Are you in the #general channel, @user1 ?');
+
+		const channelMention = await page.getByRole('button', {
+			name: 'general',
+		});
+
+		const userMention = await page.getByRole('button', {
+			name: 'user1',
+		});
+
+		await expect(userMention).toBeVisible();
+		await expect(channelMention).toBeVisible();
 	});
 
 	test('should encrypted field be available on edit room', async ({ page }) => {
