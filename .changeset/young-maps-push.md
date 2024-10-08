@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': major
 ---
 
-Removed deprecated endpoint `livechat/room.visitor`.
+Removes deprecated endpoint `livechat/room.visitor`.
