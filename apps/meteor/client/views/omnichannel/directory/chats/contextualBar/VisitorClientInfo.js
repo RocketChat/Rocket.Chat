@@ -1,5 +1,5 @@
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import UAParser from 'ua-parser-js';
 
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
@@ -10,7 +10,7 @@ import Label from '../../../components/Label';
 import { FormSkeleton } from '../../components/FormSkeleton';
 
 const VisitorClientInfo = ({ uid }) => {
-	const { t } = useTranslation();
+	const t = useTranslation();
 	const {
 		value: userData,
 		phase: state,
