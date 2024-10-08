@@ -751,6 +751,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 					'E2EKey': {
 						$exists: false,
 					},
+					'E2ESuggestedKey': { $exists: false },
 					'u._id': {
 						$ne: excludeUserId,
 					},
