@@ -1,3 +1,5 @@
+import type { Credentials } from '@rocket.chat/api-client';
+import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
@@ -20,6 +22,7 @@ import {
 	createDepartment,
 } from '../../../data/livechat/rooms';
 import { createBotAgent, getRandomVisitorToken } from '../../../data/livechat/users';
+import type { WithRequiredProperty } from '../../../data/livechat/utils';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
@@ -78,6 +81,38 @@ describe('LIVECHAT - Utils', () => {
 	});
 
 	describe('livechat/config', () => {
+		let emptyDepartment: ILivechatDepartment;
+		let forwardDepartment: ILivechatDepartment;
+		let testDepartment: ILivechatDepartment;
+		let agent: { user: WithRequiredProperty<IUser, 'username'>; credentials: Credentials };
+		let agent2: { user: WithRequiredProperty<IUser, 'username'>; credentials: Credentials };
+
+		before(async () => {
+			if (!IS_EE) {
+				return;
+			}
+
+			emptyDepartment = await createDepartment();
+			({ department: forwardDepartment, agent } = await createDepartmentWithAnOnlineAgent());
+			({ department: testDepartment, agent: agent2 } = await createDepartmentWithAnOfflineAgent({
+				departmentsAllowedToForward: [forwardDepartment._id],
+			}));
+		});
+
+		after(() => {
+			if (!IS_EE) {
+				return;
+			}
+
+			return Promise.all([
+				deleteDepartment(emptyDepartment._id),
+				deleteDepartment(forwardDepartment._id),
+				deleteDepartment(testDepartment._id),
+				deleteUser(agent.user),
+				deleteUser(agent2.user),
+			]);
+		});
+
 		it('should return enabled: false if livechat is disabled', async () => {
 			await updateSetting('Livechat_enabled', false);
 			const { body } = await request.get(api('livechat/config')).set(credentials);
@@ -179,12 +214,6 @@ describe('LIVECHAT - Utils', () => {
 			expect(body.config.room).to.have.property('_id', newRoom._id);
 		});
 		(IS_EE ? it : it.skip)('should return list of departments with at least one agent', async () => {
-			const emptyDepartment = await createDepartment();
-			const { department: forwardDepartment, agent } = await createDepartmentWithAnOnlineAgent();
-			const { department: testDepartment, agent: agent2 } = await createDepartmentWithAnOfflineAgent({
-				departmentsAllowedToForward: [forwardDepartment._id],
-			});
-
 			const { body } = await request.get(api('livechat/config')).set(credentials);
 
 			expect(body).to.have.property('success', true);
@@ -211,14 +240,6 @@ describe('LIVECHAT - Utils', () => {
 				showOnOfflineForm: testDepartment.showOnOfflineForm,
 				departmentsAllowedToForward: [forwardDepartment._id],
 			});
-
-			await Promise.all([
-				deleteDepartment(emptyDepartment._id),
-				deleteDepartment(forwardDepartment._id),
-				deleteDepartment(testDepartment._id),
-				deleteUser(agent.user),
-				deleteUser(agent2.user),
-			]);
 		});
 	});
 
