@@ -394,6 +394,11 @@ export class E2ERoom extends Emitter {
 
 	async resetRoomKey() {
 		this.log('Resetting room key');
+		if (!e2e.publicKey) {
+			this.error('Cannot reset room key. No public key found.');
+			return;
+		}
+
 		this.setState(E2ERoomState.CREATING_KEYS);
 		try {
 			await this.createNewGroupKey();
