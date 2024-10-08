@@ -1,3 +1,4 @@
+import { MessageActionContext } from '@rocket.chat/apps-engine/definition/ui';
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 import { useCallback } from 'react';
 
@@ -11,9 +12,8 @@ export const useFilterActionsByContextAndCategory = (context: string | undefined
 			}
 
 			const actionCategory = action?.category ?? DEFAULT_CATEGORY;
-			const isContextMatch = (action.when?.messageActionContext || ['message', 'message-mobile', 'threads', 'starred']).includes(
-				context as any,
-			);
+			const messageActionContext = action.when?.messageActionContext || Object.values(MessageActionContext);
+			const isContextMatch = messageActionContext.includes(context as MessageActionContext);
 
 			const isCategoryMatch = category === DEFAULT_CATEGORY ? actionCategory === DEFAULT_CATEGORY : actionCategory === category;
 
