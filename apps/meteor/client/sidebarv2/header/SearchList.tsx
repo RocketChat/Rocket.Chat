@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, SidebarV2GroupTitle } from '@rocket.chat/fuselage';
 import { useTranslation, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler, ReactElement } from 'react';
 import React, { useMemo, useRef } from 'react';
@@ -12,9 +12,9 @@ import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import Row from '../search/Row';
 import { useSearchItems } from './hooks/useSearchItems';
 
-type SearchListProps = { filterText: string; onEscSearch: () => void };
+type SearchListProps = { filterText: string; onEscSearch: () => void; showRecentSearch?: boolean };
 
-const SearchList = ({ filterText, onEscSearch }: SearchListProps) => {
+const SearchList = ({ filterText, onEscSearch, showRecentSearch }: SearchListProps) => {
 	const t = useTranslation();
 
 	const boxRef = useRef<HTMLDivElement>(null);
@@ -58,12 +58,13 @@ const SearchList = ({ filterText, onEscSearch }: SearchListProps) => {
 			flexShrink={1}
 			h='full'
 			w='full'
-			pbs={8}
+			pbs={showRecentSearch ? 0 : 8}
 			aria-live='polite'
 			aria-atomic='true'
 			aria-busy={isLoading}
 			onClick={handleClick}
 		>
+			{showRecentSearch && <SidebarV2GroupTitle title={t('Recent')} />}
 			<Virtuoso
 				style={{ height: '100%', width: '100%' }}
 				totalCount={items.length}
